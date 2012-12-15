@@ -262,7 +262,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     pbkdf2(temp, numChapitreChar, hash);
 
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-    if(configEnc[0] < '0' || configEnc[0] > '9')
+    if((configEnc[0] < '0' || configEnc[0] > '9') && NETWORK_ACCESS == CONNEXION_OK)
     {
         recoverPassToServ(temp, numeroChapitre);
         AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
@@ -273,6 +273,19 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
             free(configEnc);
             logR("Huge fail: database corrupted\n");
             return NULL;
+        }
+    }
+    else if(NETWORK_ACCESS != CONNEXION_OK)
+    {
+        SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+        TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        if(police == NULL)
+            return NULL;
+        else
+        {
+            SDL_Surface *output = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
+            TTF_CloseFont(police);
+            return output;
         }
     }
     crashTemp(temp, 200);
@@ -345,29 +358,29 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
             (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
 #else
 	#ifdef __APPLE__
-	int c = 0, i = 0, j = 0;
-	unsigned char buffer_fingerprint[5000], command_line[4][100];
+        int c = 0, i = 0, j = 0;
+        unsigned char buffer_fingerprint[5000], command_line[4][100];
 
-	sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
-	sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
-	sprintf((char *) command_line[2], "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
-	sprintf((char *) command_line[3], "system_profiler SPHardwareDataType | grep 'SMC Version'");
+        sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
+        sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
+        sprintf((char *) command_line[2], "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
+        sprintf((char *) command_line[3], "system_profiler SPHardwareDataType | grep 'SMC Version'");
 
-	FILE *system_output = NULL;
-	for(j = 0; j < 4; j++)
-	{
-		system_output = popen(command_line[j], "r");
-		for(c = 0; (c = fgetc(system_output)) != ':' && c != EOF;); //On saute la première partie
-		fgetc(system_output);
-		for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
-		buffer_fingerprint[i++] = ' ';
-		buffer_fingerprint[i] = 0;
-		pclose(system_output);
-	}
+        FILE *system_output = NULL;
+        for(j = 0; j < 4; j++)
+        {
+            system_output = popen(command_line[j], "r");
+            for(c = 0; (c = fgetc(system_output)) != ':' && c != EOF;); //On saute la première partie
+            fgetc(system_output);
+            for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
+            buffer_fingerprint[i++] = ' ';
+            buffer_fingerprint[i] = 0;
+            pclose(system_output);
+        }
 	#else
 
     /**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
-    En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques uns, on les hash et basta**/
+    En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
 
 	#endif
 #endif
@@ -379,7 +392,7 @@ int getPassword(char password[100])
 {
     int xPassword = 0;
     char trad[SIZE_TRAD_ID_26][100];
-    SDL_Surface *ligne = NULL;
+    SDL_Texture *ligne = NULL;
     SDL_Rect position;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
@@ -388,37 +401,46 @@ int getPassword(char password[100])
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     /**Leurs codes sont assez proches donc on les regroupes**/
-    ligne = TTF_RenderText_Blended(police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-    position.x = ecran->w / 2 - ligne->w / 2;
+    ligne = TTF_Write(renderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y = 20;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    refresh_rendering;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
 
-    ligne = TTF_RenderText_Blended(police, trad[6], couleur);
+    ligne = TTF_Write(renderer, police, trad[6], couleur);
     position.y = 100;
     position.x = 50;
     xPassword = position.x + ligne->w + 25;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
 
     TTF_CloseFont(police);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-    ligne = TTF_RenderText_Blended(police, trad[7], couleur); //Disclamer
-    position.x = ecran->w / 2 - ligne->w / 2;
+    ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 85;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    ligne = TTF_RenderText_Blended(police, trad[8], couleur); //Disclamer
-    position.x = ecran->w / 2 - ligne->w / 2;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 30;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    refresh_rendering;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    SDL_RenderPresent(renderer);
 
     if(waitClavier(50, xPassword, 105, password) == PALIER_QUIT)
         return PALIER_QUIT;

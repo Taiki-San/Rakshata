@@ -12,51 +12,52 @@ int ecranAccueil()
     /*En raison de la taille importante de la page d'acceuil (800kb),
     elle est enregistré une seule fois et on lui colle dessus la trad*/
 
-    SDL_Surface *accueil = NULL;
+    SDL_Texture *acceuil = NULL;
 	char temp[TAILLE_BUFFER];
 
-    accueil = IMG_Load("data/acceuil.png");
-    SDL_BlitSurface(accueil, NULL, ecran, NULL);
-    SDL_FreeSurfaceS(accueil);
+    acceuil = IMG_LoadTexture(renderer, "data/acceuil.png");
+    SDL_RenderCopy(renderer, acceuil, NULL, NULL);
+    SDL_DestroyTextureS(acceuil);
 
     sprintf(temp, "data/%s/acceuil.png", LANGUAGE_PATH[langue - 1]); //Traduction
 
-    accueil = IMG_Load(temp);
-    SDL_BlitSurface(accueil, NULL, ecran, NULL);
-    SDL_FreeSurfaceS(accueil);
+    acceuil = IMG_LoadTexture(renderer, temp);
+    SDL_RenderCopy(renderer, acceuil, NULL, NULL);
+    SDL_DestroyTextureS(acceuil);
 
-    refresh_rendering; //Refresh screen
+    SDL_RenderPresent(renderer); //Refresh screen
     return waitEnter();
 }
 
 int showControls()
 {
-    SDL_Surface *controls = NULL;
     int retour = 0;
     char temp[TAILLE_BUFFER];
+    SDL_Texture *controls_texture = NULL;
+    SDL_Surface *controls = NULL;
     SDL_Event event;
+
+    /***Doit passer par une surface pour redimensionner
+        la fenêtre de la taille de la surface ***/
 
     crashTemp(temp, TAILLE_BUFFER);
     sprintf(temp, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
+
     controls = IMG_Load(temp);
 
-    if(ecran->h != controls->h)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(controls->w, controls->h, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, controls->w, controls->h, 32, 0, 0 , 0, 0); //on initialise le fond
-    #ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-    #else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-    #endif
+    if(WINDOW_SIZE_H != controls->h)
+        updateWindowSize(controls->w, controls->h);
+    else
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
-    }
-    applyBackground();
+    controls_texture = SDL_CreateTextureFromSurface(renderer, controls);
+    SDL_FreeSurfaceS(controls);
 
-    SDL_BlitSurface(controls, NULL, ecran, NULL);
-    refresh_rendering;
+
+    SDL_RenderCopy(renderer, controls_texture, NULL, NULL);
+    SDL_DestroyTextureS(controls_texture);
+
+    SDL_RenderPresent(renderer);
 
     while(!retour)
     {
@@ -97,7 +98,7 @@ int showControls()
                 if(!clicNotSlide(event))
                     break;
 
-                if(event.button.x > ecran->w / 2 && event.button.y > ecran->h / 2)
+                if(event.button.x > WINDOW_SIZE_W / 2 && event.button.y > WINDOW_SIZE_H / 2)
                     #ifdef _WIN32
                     ShellExecute(NULL, "open", "http://www.rakshata.com/?page_id=31", NULL, NULL, SW_SHOWDEFAULT);
                     #else
@@ -117,10 +118,22 @@ int showControls()
                 break;
             }
 
+            case SDL_WINDOWEVENT:
+            {
+                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                break;
+            }
+
             default:
+            #ifdef __APPLE__
                 if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
                     retour =
                     PALIER_QUIT;
+            #endif
                 break;
         }
     }

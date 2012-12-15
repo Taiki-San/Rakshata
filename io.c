@@ -9,8 +9,9 @@
 
 int nombreEntree(SDL_Event event)
 {
-    if(event.key.keysym.unicode >= '0' && event.key.keysym.unicode <= '9')
-        return event.key.keysym.unicode - '0';
+    /*SDLK_x == SDLK_KP_x == x :D*/
+    if(event.text.text[0] >= '0' && event.text.text[0] <= '9')
+        return event.text.text[0] - '0';
     return -1;
 }
 
@@ -32,11 +33,6 @@ int waitEnter()
             {
                 switch(event.key.keysym.sym)
                 {
-                    case SDLK_RETURN: //If return
-                    case SDLK_KP_ENTER:
-                        i = 1; //quit the loop
-                        break;
-
                     case SDLK_ESCAPE:
                         i = -3;
                         break;
@@ -47,18 +43,32 @@ int waitEnter()
                         break;
 
                     default: //If other one
+                        i = 1;
                         break;
                 }
                 break;
             }
+
             case SDL_MOUSEBUTTONUP:
-                if(clicNotSlide(event))
-                    i = 1;
+                i = 1;
                 break;
 
+            case SDL_WINDOWEVENT:
+            {
+                if(checkWindowEventValid(event.window.event))
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                break;
+            }
+
+
             default:
+                #ifdef __APPLE__
                 if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
                     i = PALIER_QUIT;
+                #endif
                 break;
         }
     }
@@ -67,12 +77,10 @@ int waitEnter()
 
 int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 {
-    //La fonction a perdue 500+ lignes avec la découverte de SDL_EnableUNICODE(1)
-
     int i = 0, j = 0, epaisseur = 0;
     char affiche[LONGUEUR_URL + 3];
     SDL_Event event;
-    SDL_Surface *numero = NULL, *background = NULL;
+    SDL_Texture *numero = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
@@ -89,12 +97,14 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
         police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
         epaisseur = LARGEUR_MOYENNE_MANGA_PETIT + 10;
     }
-    background = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, epaisseur, 32, 0, 0 , 0, 0);
-#ifdef __APPLE__
-    SDL_FillRect(background, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-    SDL_FillRect(background, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+
+    if(police == NULL)
+    {
+        logR("Failed at open the font file: ");
+        logR((char *) TTF_GetError());
+        logR("\n");
+        return -2;
+    }
 
     for(i = 0; i <= nombreMax; i++)
     {
@@ -104,7 +114,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
         switch(event.type)
         {
             case SDL_QUIT:
-                SDL_FreeSurfaceS(numero);
+                SDL_DestroyTextureS(numero);
                 TTF_CloseFont(police);
                 return PALIER_QUIT;
                 break;
@@ -119,7 +129,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
                         break;
 
                     case SDLK_BACKSPACE:
-                        if(i >= 0) //>= car i++ à la fin de la boucle
+                        if(i >= 0) //>= car i++ Ã  la fin de la boucle
                         {
                             retour[i--] = 0;
                             if(i >= 0)
@@ -148,22 +158,42 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
                         break;
 
                     default:
-                        if(event.key.keysym.unicode > 0 && event.key.keysym.unicode < 128) //Un char
-                            retour[i] = (char) event.key.keysym.unicode;
-                        else
-                            i--;
+                    {
+                        i--;
                         break;
+                    }
                 }
+                break;
             }
-            break;
+
+            case SDL_TEXTINPUT:
+            {
+                if(event.text.text[0] >= ' ' && event.text.text[0] < 128) //Un char
+                    retour[i] = event.text.text[0];//(char) event.text.text[0];
+                else
+                    i--;
+                break;
+            }
+
+            case SDL_WINDOWEVENT:
+            {
+                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                break;
+            }
 
             default:
+                #ifdef __APPLE__
                 if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
                 {
                     SDL_FreeSurfaceS(numero);
                     TTF_CloseFont(police);
                     return PALIER_QUIT;
                 }
+                #endif
                 i--;
                 continue;
                 break;
@@ -179,21 +209,21 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             affiche[j++] = '<';
             affiche[j++] = '-';
             affiche[j] = 0;
-            numero = TTF_RenderText_Blended(police, affiche, couleurTexte);
+            numero = TTF_Write(renderer, police, affiche, couleurTexte);
         }
         else
-            numero = TTF_RenderText_Blended(police, retour, couleurTexte);
-        position.x = startFromX;
+            numero = TTF_Write(renderer, police, retour, couleurTexte);
+
         if(startFromY)
             position.y = startFromY;
         else
-            position.y = ecran->h / 2;
-        SDL_BlitSurface(background, NULL, ecran, &position);
+            position.y = WINDOW_SIZE_H / 2;
+        applyBackground(startFromX, position.y, WINDOW_SIZE_W, epaisseur);
 
         if(!startFromX)
         {
-            position.x = ecran->w / 2 - numero->w / 2;
-            position.y = ecran->h / 2;
+            position.x = WINDOW_SIZE_W / 2 - numero->w / 2;
+            position.y = WINDOW_SIZE_H / 2;
         }
         else
         {
@@ -203,20 +233,22 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 
         if(numero != NULL && numero->w && numero->h) //Si il y a quelquechose d'écrit
         {
-            SDL_BlitSurface(numero, NULL, ecran, &position);
-            SDL_FreeSurfaceS(numero);
+            position.h = numero->h;
+            position.w = numero->w;
+            SDL_RenderCopy(renderer, numero, NULL, &position);
+            SDL_DestroyTextureS(numero);
+
         }
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
     }
     TTF_CloseFont(police);
-    SDL_FreeSurfaceS(background);
     return 0;
 }
 
 int getLetterPushed(SDL_Event event)
 {
-    if(event.key.keysym.unicode >= 'A' && event.key.keysym.unicode <= 'z')
-        return event.key.keysym.unicode;
+    if(event.text.text[0] >= 'A' && event.text.text[0] <= 'z')
+        return event.text.text[0];
     return 0;
 }
 
@@ -241,7 +273,7 @@ void logR(char *error)
 void connexionNeededToAllowANewComputer()
 {
     char trad[SIZE_TRAD_ID_27][100];
-    SDL_Surface *ligne = NULL;
+    SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -249,28 +281,38 @@ void connexionNeededToAllowANewComputer()
     loadTrad(trad, 27);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-    applyBackground();
-    ligne = TTF_RenderText_Blended(police, trad[0], couleur); //Message d'erreur
-    position.x = ecran->w / 2 - ligne->w / 2;
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    ligne = TTF_Write(renderer, police, trad[0], couleur); //Message d'erreur
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y = 50;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    ligne = TTF_RenderText_Blended(police, trad[1], couleur); //Explications
-    position.x = ecran->w / 2 - ligne->w / 2;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(renderer, police, trad[1], couleur); //Explications
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 60;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    ligne = TTF_RenderText_Blended(police, trad[2], couleur); //Explications
-    position.x = ecran->w / 2 - ligne->w / 2;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(renderer, police, trad[2], couleur); //Explications
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 40;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    ligne = TTF_RenderText_Blended(police, trad[3], couleur); //Explications
-    position.x = ecran->w / 2 - ligne->w / 2;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(renderer, police, trad[3], couleur); //Explications
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 40;
-    SDL_BlitSurface(ligne, NULL, ecran, &position);
-    SDL_FreeSurfaceS(ligne);
-    refresh_rendering;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
 
     TTF_CloseFont(police);
 

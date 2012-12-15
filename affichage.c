@@ -1,6 +1,6 @@
 /*********************************************
 **	        	 Rakshata v1.1 		        **
-**     Licence propriÃ©taire, code source    **
+**     Licence propriétaire, code source    **
 **        confidentiel, distribution        **
 **          formellement interdite          **
 **********************************************/
@@ -11,7 +11,7 @@ int showError()
 {
     int i = 0;
     char texte[SIZE_TRAD_ID_1][100];
-    SDL_Surface *texteAAfficher = NULL;
+    SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
@@ -19,10 +19,10 @@ int showError()
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     restartEcran();
-    applyBackground();
-    refresh_rendering;
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderPresent(renderer);
 
-    position.y = ecran->h / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
+    position.y = WINDOW_SIZE_H / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
 
     /*Remplissage des variables*/
     loadTrad(texte, 1);
@@ -32,15 +32,17 @@ int showError()
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
         if(texte[i][0] != 0)
         {
-            texteAAfficher = TTF_RenderText_Blended(police, texte[i], couleurTexte);
-            position.x = (ecran->w / 2) - (texteAAfficher->w / 2);
-            SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texteAAfficher);
+            texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
+            position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
+            position.h = texteAAfficher->h;
+            position.w = texteAAfficher->w;
+            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+            SDL_DestroyTextureS(texteAAfficher);
         }
     }
 
     TTF_CloseFont(police);
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
     return waitEnter();
 }
 
@@ -48,12 +50,12 @@ void initialisationAffichage()
 {
     int i = 0, j = 0;
     char texteAAfficher[SIZE_TRAD_ID_2][100];
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     for(i = 0; i < 6; i++)
     {
@@ -68,15 +70,19 @@ void initialisationAffichage()
 
     for(i = 0; i < 6; i++)
     {
-        SDL_FreeSurfaceS(texte);
-        texte = TTF_RenderText_Blended(police, texteAAfficher[i], couleurTexte);
+        SDL_DestroyTextureS(texte);
+        texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
         if(texteAAfficher[i][0] != 0)
-            position.x = (ecran->w / 2) - (texte->w / 2);
+        {
+            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+        }
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        SDL_BlitSurface(texte, NULL, ecran, &position);
     }
-    refresh_rendering;
-    SDL_FreeSurfaceS(texte);
+    SDL_RenderPresent(renderer);
+    SDL_DestroyTextureS(texte);
     TTF_CloseFont(police);
 }
 
@@ -84,31 +90,33 @@ int erreurReseau()
 {
     int i = 0;
     char texte[SIZE_TRAD_ID_24][100];
-    SDL_Surface *texteAAfficher = NULL;
+    SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     /*Chargement de la traduction*/
     loadTrad(texte, 24);
 
-    /*On prend un point de dÃ©part*/
-    position.y = ecran->h / 2 - 50;
+    /*On prend un point de départ*/
+    position.y = WINDOW_SIZE_H / 2 - 50;
 
     /*On lance la boucle d'affichage*/
     for(i = 0; i < 2; i++)
     {
-        SDL_FreeSurfaceS(texteAAfficher);
-        texteAAfficher = TTF_RenderText_Blended(police, texte[i], couleurTexte);
-        position.x = (ecran->w / 2) - (texteAAfficher->w / 2);
+        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
+        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
+        position.h = texteAAfficher->h;
+        position.w = texteAAfficher->w;
+        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+        SDL_DestroyTextureS(texteAAfficher);
     }
     TTF_CloseFont(police);
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
 
     return waitEnter();
 }
@@ -118,24 +126,14 @@ int affichageMenuGestion()
     int i = 0, j = 0, longueur[NOMBRE_MENU] = {0};
     char menus[SIZE_TRAD_ID_3][LONGUEURTEXTE];
     SDL_Event event;
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-    if(ecran->h != HAUTEUR_SELECTION_REPO || fond->h != HAUTEUR_SELECTION_REPO)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_SELECTION_REPO, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_SELECTION_REPO, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
+    if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)
+        updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
 
     for(i = 0; i < SIZE_TRAD_ID_3; i++)
     {
@@ -146,7 +144,7 @@ int affichageMenuGestion()
     /*Remplissage des variables*/
     loadTrad(menus, 3);
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
     position.y = HAUTEUR_TEXTE;
     TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
     for(i = 0; i < 7; i++)
@@ -159,15 +157,18 @@ int affichageMenuGestion()
         }
         if(menus[i][0] != 0)
         {
-            texteAffiche = TTF_RenderText_Blended(police, menus[i], couleur);
+            texteAffiche = TTF_Write(renderer, police, menus[i], couleur);
 
             /*On centre le menu*/
-            position.x = ecran->w / 2 - texteAffiche->w / 2;
+            position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
 
             if(i > 1)
                 longueur[i - 2] = texteAffiche->w;
-            SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texteAffiche);
+
+            position.h = texteAffiche->h;
+            position.w = texteAffiche->w;
+            SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+            SDL_DestroyTextureS(texteAffiche);
 
             /*On remet la valeur normale*/
             if(!i)
@@ -177,7 +178,7 @@ int affichageMenuGestion()
         }
     }
     TTF_CloseFont(police);
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
 
     /*On attend enter ou un autre evenement*/
 
@@ -222,14 +223,26 @@ int affichageMenuGestion()
                 {
                     i++;
                 }
-                if((ecran->w / 2 - longueur[i] / 2) < event.button.x && (ecran->w / 2 + longueur[i] / 2) > event.button.x)
+                if((WINDOW_SIZE_W / 2 - longueur[i] / 2) < event.button.x && (WINDOW_SIZE_W / 2 + longueur[i] / 2) > event.button.x)
                     j = i + 1;
                 break;
             }
 
+            case SDL_WINDOWEVENT:
+            {
+                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                break;
+            }
+
 			default:
+                #ifdef SDL_LEGACY
 				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
 					j = PALIER_QUIT;
+                #endif
 				break;
         }
         if(j > NOMBRE_MENU)
@@ -241,7 +254,7 @@ int affichageMenuGestion()
 void raffraichissmenent()
 {
     /*Initialisateurs graphique*/
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -251,14 +264,21 @@ void raffraichissmenent()
 
     loadTrad(texte, 5);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h / 2;
-    applyBackground();
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
+    SDL_RenderPresent(renderer);
 
     updateDataBase();
 
@@ -268,7 +288,7 @@ void raffraichissmenent()
 void affichageLancement()
 {
     /*Initialisateurs graphique*/
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -277,43 +297,49 @@ void affichageLancement()
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 6);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h / 2;
-    applyBackground();
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
+    SDL_RenderPresent(renderer);
 
     TTF_CloseFont(police);
 }
 
 int rienALire()
 {
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     char texte[SIZE_TRAD_ID_23][100];
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 	loadTrad(texte, 23);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[1], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 + texteAffiche->h;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
+    SDL_RenderPresent(renderer);
 
     TTF_CloseFont(police);
 
@@ -331,12 +357,12 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int num
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * (INTERLIGNE_UIALERT + EPAISSEUR_LIGNE_MOYENNE) + INTERLIGNE_UIALERT; //DÃ©finition de la taille de la fenÃªtre
-    alertSurface = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
+    hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //Définition de la taille de la fenêtre
+    alertSurface = SDL_CreateRGBSurface(0, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
 #ifdef __APPLE__
     SDL_FillRect(alertSurface, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
 #else
-    SDL_FillRect(alertSurface, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
+    SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, FOND_R, FOND_G, FOND_B)); //We change background color
 #endif
 
     positionSurUIAlert.y = BORDURE_SUP_UIALERT;
@@ -345,26 +371,63 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int num
         bufferWrite = TTF_RenderText_Blended(police, texte[i], couleurTexte);
         positionSurUIAlert.x = alertSurface->w / 2 - bufferWrite->w / 2;
         SDL_BlitSurface(bufferWrite, NULL, alertSurface, &positionSurUIAlert);
-        positionSurUIAlert.y = positionSurUIAlert.y + bufferWrite->h + INTERLIGNE_UIALERT;
+        positionSurUIAlert.y += bufferWrite->h;
         SDL_FreeSurfaceS(bufferWrite);
     }
     TTF_CloseFont(police);
     return alertSurface;
 }
 
-int SDL_BlitRender(SDL_Surface * src, const SDL_Rect * srcrect, SDL_Renderer * dst, SDL_Rect * dstrect)
+SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg)
 {
-    SDL_Texture *buffer = NULL;
+    SDL_Surface *surfText = NULL;
+    SDL_Texture *texture = NULL;
 
-    if(src == NULL)
-        return -1;
+    if(font != NULL && text != NULL)
+        surfText = TTF_RenderText_Blended(font, text, fg);
 
-    buffer = SDL_CreateTextureFromSurface(ecran, src);
-
-    if(buffer == NULL)
-        return -1;
-
-    SDL_RenderCopy(ecran, texture, srcrect, dstrect);
-
-    SDL_DestroyTexture(texture);
+    if(surfText != NULL)
+    {
+        texture = SDL_CreateTextureFromSurface(render, surfText);
+        if(texture == NULL)
+        {
+            logR((char*) SDL_GetError());
+            logR("\n");
+        }
+        SDL_FreeSurfaceS(surfText);
+    }
+    else
+        texture = NULL;
+    return texture;
 }
+
+int getWindowSize(int w1h2)
+{
+    int var = 0;
+    if(w1h2 == 1) //w
+        SDL_GetWindowSize(window, &var, 0);
+    else if(w1h2 == 2) //h
+        SDL_GetWindowSize(window, 0, &var);
+    return var;
+}
+
+void updateWindowSize(int w, int h)
+{
+    if(WINDOW_SIZE_H != h || WINDOW_SIZE_W != w)
+    {
+        WINDOW_SIZE_H = h;
+        WINDOW_SIZE_W = w;
+
+        SDL_RenderFillRect(renderer, NULL);
+        SDL_RenderPresent(renderer);
+
+        SDL_SetWindowSize(window, w, h);
+
+        SDL_DestroyRenderer(renderer);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+    }
+    SDL_RenderFillRect(renderer, NULL);
+    SDL_RenderPresent(renderer);
+}
+

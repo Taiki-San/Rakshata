@@ -14,28 +14,16 @@ void crashTemp(void *temp, int longueur)
 
 void conversionAvant(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX])
 {
-    int i = 0, j = 0;
-    for(i = 0; i < NOMBRE_MANGA_MAX; i++)
-    {
-        for(j = 0; j < LONGUEUR_NOM_MANGA_MAX; j++)
-        {
-            if(mangaDispo[i][j] == '_')
-                mangaDispo[i][j] = ' ';
-        }
-    }
+    int i = 0;
+    for(; i < NOMBRE_MANGA_MAX; i++)
+        changeTo(mangaDispo[i], '_', ' ');
 }
 
 void conversionApres(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX])
 {
-    int i = 0, j = 0;
-    for(i = 0; i < NOMBRE_MANGA_MAX; i++)
-    {
-        for(j = 0; j < LONGUEUR_NOM_MANGA_MAX; j++)
-        {
-            if(mangaDispo[i][j] == ' ')
-                mangaDispo[i][j] = '_';
-        }
-    }
+    int i = 0;
+    for(; i < NOMBRE_MANGA_MAX; i++)
+        changeTo(mangaDispo[i], ' ', '_');
 }
 
 void changeTo(char *string, int toFind, int toPut)
@@ -48,7 +36,7 @@ void changeTo(char *string, int toFind, int toPut)
     }
 }
 
-int plusOuMoins(int compare1, int compare2, int tolerance) //Estime si la différence entre les deux comparés est inférieur à tolerance
+int plusOuMoins(int compare1, int compare2, int tolerance) //Estime si la différence entre les deux comparés est inférieur Ã  tolerance
 {
     if(compare1 + tolerance > compare2 && compare1 - tolerance < compare2)
         return 1;
@@ -63,41 +51,19 @@ int compare(const void *a, const void *b)
     return strcmp(s1, s2);
 }
 
-void resetBackground()
-{
-    if(fond->w == ecran->w && fond->h == ecran->h)
-        return;
-    SDL_FreeSurfaceS(fond);
-    fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-    SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-    SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-}
-
 void restartEcran()
 {
-    if(ecran->w != LARGEUR || ecran->h != HAUTEUR || fond->w != LARGEUR || fond->h != HAUTEUR)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
-    applyBackground();
-    refresh_rendering;
+    if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
+        updateWindowSize(LARGEUR, HAUTEUR);
+
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderPresent(renderer);
 }
 
 void chargement()
 {
 	/*Initialisateurs graphique*/
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -106,12 +72,12 @@ void chargement()
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-	resetBackground();
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     if(police == NULL)
     {
-        refresh_rendering;
+        SDL_RenderFillRect(renderer, NULL);
+        SDL_RenderPresent(renderer);
         return;
     }
 
@@ -120,14 +86,16 @@ void chargement()
     else
         sprintf(texte[0], "Chargement - Loading");
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h / 2;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
     TTF_CloseFont(police);
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
 }
 
 void applyWindowsPathCrap(void *input)
@@ -144,9 +112,14 @@ void applyWindowsPathCrap(void *input)
     #endif
 }
 
-void applyBackground()
+void applyBackground(int x, int y, int w, int h)
 {
-    SDL_BlitSurface(fond, NULL, ecran, NULL);
+    SDL_Rect positionBack;
+    positionBack.x = x;
+    positionBack.y = y;
+    positionBack.w = w;
+    positionBack.h = h;
+    SDL_RenderFillRect(renderer, &positionBack);
 }
 
 void nameWindow(const int value)
@@ -156,9 +129,9 @@ void nameWindow(const int value)
     if(!tradAvailable())
     {
         if(langue == 1) //Français
-            SDL_WM_SetCaption("Rakshata - Environnement corrompu", NULL);
+            SDL_SetWindowTitle(window, "Rakshata - Environnement corrompu");
         else
-            SDL_WM_SetCaption("Rakshata - Environment corrupted", NULL);
+            SDL_SetWindowTitle(window, "Rakshata - Environment corrupted");
         return;
     }
 
@@ -167,15 +140,15 @@ void nameWindow(const int value)
     crashTemp(windowsName, 128);
 
     if(!value) //Si on affiche le nom de la fenetre standard
-        sprintf(windowsName, "[DEV_BUILD] %s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
+        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
 
     else if (value == 1)
-        sprintf(windowsName, "[DEV_BUILD] %s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
+        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
 
     else
-        sprintf(windowsName, "[DEV_BUILD] %s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
+        sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
 
-    SDL_WM_SetCaption(windowsName, NULL);
+    SDL_SetWindowTitle(window, windowsName);
 }
 
 void version(char *output)
@@ -250,7 +223,7 @@ void createPath(char output[])
         mkdirR(folder);
         if(output[longueur_output]) //On est pas au bout du path
         {
-            folder[i++] = '/'; //On ajoute un / au path à construire
+            folder[i++] = '/'; //On ajoute un / au path Ã  construire
 			longueur_output++;
 #ifdef _WIN32
             for(; output[longueur_output] && output[longueur_output] == '\\' ; longueur_output++); //Sous windows, il y a deux \\ .
@@ -263,9 +236,10 @@ void createPath(char output[])
 void getResolution()
 {
     /*Define screen resolution*/
-    const SDL_VideoInfo* datas = SDL_GetVideoInfo();
-    RESOLUTION[0] = datas->current_w;
-    RESOLUTION[1] = datas->current_h;
+    SDL_DisplayMode data;
+    SDL_GetCurrentDisplayMode(0, &data);
+    RESOLUTION[0] = data.w;
+    RESOLUTION[1] = data.h;
     HAUTEUR_MAX = RESOLUTION[1];
 }
 
@@ -339,5 +313,30 @@ void decToHex(const unsigned char *input, size_t length, char *output)
             temp = c % 0x10;
         }
     }
+}
+
+void restrictEvent()
+{
+    SDL_EventState(SDL_SYSWMEVENT, SDL_DISABLE);
+    SDL_EventState(SDL_TEXTEDITING, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTMOTION, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTBUTTONDOWN, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTBUTTONUP, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTWHEEL, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTPROXIMITYIN, SDL_DISABLE);
+    SDL_EventState(SDL_INPUTPROXIMITYOUT, SDL_DISABLE);
+    SDL_EventState(SDL_JOYAXISMOTION, SDL_DISABLE);
+    SDL_EventState(SDL_JOYBALLMOTION, SDL_DISABLE);
+    SDL_EventState(SDL_JOYHATMOTION, SDL_DISABLE);
+    SDL_EventState(SDL_JOYBUTTONDOWN, SDL_DISABLE);
+    SDL_EventState(SDL_JOYBUTTONUP, SDL_DISABLE);
+    SDL_EventState(SDL_FINGERDOWN, SDL_DISABLE);
+    SDL_EventState(SDL_FINGERUP, SDL_DISABLE);
+    SDL_EventState(SDL_FINGERMOTION, SDL_DISABLE);
+    SDL_EventState(SDL_TOUCHBUTTONDOWN, SDL_DISABLE);
+    SDL_EventState(SDL_TOUCHBUTTONUP, SDL_DISABLE);
+    SDL_EventState(SDL_CLIPBOARDUPDATE, SDL_DISABLE);
+    SDL_EventState(SDL_DROPFILE, SDL_DISABLE);
+    SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
 }
 

@@ -35,7 +35,7 @@ void miseEnCache(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], char
             }
             else
             {
-                fscanfs(config, "%s %s %d %d %d %d", mangaDispo[numeroManga], LONGUEUR_NOM_MANGA_MAX, mangaDispoCourt[numeroManga], LONGUEUR_COURT, &premierChapitreDispo[numeroManga], &dernierChapitreDispo[numeroManga], &categorie[numeroManga], &j); //j est lá car cette valeur n'est pas utilisé pour le moment
+                fscanfs(config, "%s %s %d %d %d %d", mangaDispo[numeroManga], LONGUEUR_NOM_MANGA_MAX, mangaDispoCourt[numeroManga], LONGUEUR_COURT, &premierChapitreDispo[numeroManga], &dernierChapitreDispo[numeroManga], &categorie[numeroManga], &j); //j n'est pas utilisé par ce module
 
                 if(premierChapitreDispo[numeroManga] > dernierChapitreDispo[numeroManga])
                 {
@@ -47,7 +47,7 @@ void miseEnCache(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], char
                     continue;
                 }
 
-                if(categorie[numeroManga] < 10) //Si pas ‡ jour, c'est par défaut un shonen
+                if(categorie[numeroManga] < 10) //Si pas â€¡ jour, c'est par défaut un shonen
                     categorie[numeroManga] +=10;
 
                 if(newTeam == 0)
@@ -274,7 +274,7 @@ int deleteManga()
 
 int isItNew(char mangaATester[LONGUEUR_NOM_MANGA_MAX])
 {
-    /*Vérifie si le manga est nouveau ou pas (dossiers ‡ créer)*/
+    /*Vérifie si le manga est nouveau ou pas (dossiers â€¡ créer)*/
 
     int dernierChapDispo = 0, i = 0, j = 0;
     char buffer[LONGUEUR_NOM_MANGA_MAX], team[LONGUEUR_NOM_MANGA_MAX];
@@ -476,7 +476,7 @@ void update_mangas()
         }
         setupBufferDL(bufferDL, 100, 100, 10, 1);
         get_update_mangas(bufferDL, mode, URL);
-        if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<')
+        if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<') //Invalide
         {
             FILE* mangas = fopenR(MANGA_DATABASE, "r");
             if(positionnementApres(mangas, teamLong))

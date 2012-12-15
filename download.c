@@ -92,22 +92,27 @@ int download(char *adresse, char *repertoire, int activation)
         double last_file_size = 0, download_speed = 0;
         char texte[SIZE_TRAD_ID_20][100];
 
-        SDL_Surface *pourcentAffiche = NULL;
+        SDL_Texture *pourcentAffiche = NULL;
         TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
 		SDL_Event event;
 
+		if(WINDOW_SIZE_H != HAUTEUR_FENETRE_DL)
+            updateWindowSize(LARGEUR, HAUTEUR_FENETRE_DL);
+
         /*Remplissage des variables*/
         loadTrad(texte, 20);
-        pourcentAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+        pourcentAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-        position.y = HAUTEUR_POURCENTAGE;
-        position.x = 0;
-        SDL_BlitSurface(fond, NULL, ecran, &position);
-        position.x = ecran->w / 2 - pourcentAffiche->w / 2;
-        SDL_BlitSurface(pourcentAffiche, NULL, ecran, &position);
-        SDL_FreeSurfaceS(pourcentAffiche);
-        refresh_rendering;
+        applyBackground(0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+        position.h = pourcentAffiche->h;
+        position.w = pourcentAffiche->w;
+        SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+        SDL_DestroyTextureS(pourcentAffiche);
+        SDL_RenderPresent(renderer);
+
+        position.x = BORDURE_POURCENTAGE;
 
         while(status != 0)
         {
@@ -123,35 +128,34 @@ int download(char *adresse, char *repertoire, int activation)
 
                     /*Code d'affichage du pourcentage*/
                     sprintf(temp, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
-                    pourcentAffiche = TTF_RenderText_Blended(police, temp, couleur);
+                    pourcentAffiche = TTF_Write(renderer, police, temp, couleur);
 
-                    position.x = 0;
-                    SDL_BlitSurface(fond, NULL, ecran, &position);
-                    position.x = BORDURE_POURCENTAGE;
-                    SDL_BlitSurface(pourcentAffiche, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(pourcentAffiche);
+                    applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                    position.h = pourcentAffiche->h;
+                    position.w = pourcentAffiche->w;
+                    SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+                    SDL_DestroyTextureS(pourcentAffiche);
 
-                    if(ecran->h == HAUTEUR_FENETRE_DL)
-                        refresh_rendering;
-                    else
-                        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_DL, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+                    SDL_RenderPresent(renderer);
 
                     last_refresh = SDL_GetTicks();
                 }
 
-                SDL_PollEvent(&event);
+                SDL_WaitEventTimeout(&event, 100);
 
-                if((event.type == SDL_QUIT) || ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q))
+                if(event.type == SDL_QUIT) //|| ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q))
                 {
-                    pourcentAffiche = TTF_RenderText_Blended(police, texte[5], couleur);
-                    position.y = ecran->h / 2 - pourcentAffiche->h / 2;
-                    position.x = ecran->w / 2 - pourcentAffiche->w / 2;
+                    pourcentAffiche = TTF_Write(renderer, police, texte[5], couleur);
+                    position.y = WINDOW_SIZE_H / 2 - pourcentAffiche->h / 2;
+                    position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+                    position.h = pourcentAffiche->h;
+                    position.w = pourcentAffiche->w;
 
-                    applyBackground();
+                    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
-                    SDL_BlitSurface(pourcentAffiche, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(pourcentAffiche);
-                    refresh_rendering;
+                    SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+                    SDL_DestroyTextureS(pourcentAffiche);
+                    SDL_RenderPresent(renderer);
 
                     alright = -1;
                     break;
@@ -162,14 +166,15 @@ int download(char *adresse, char *repertoire, int activation)
         }
         if(alright > 0)
         {
-            position.x = 0;
-            SDL_BlitSurface(fond, NULL, ecran, &position);
+            applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
             position.x = BORDURE_POURCENTAGE;
             sprintf(temp, "%s %d,%d %s - 100%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], texte[3], (int) download_speed/*Débit*/, texte[4]);
-            pourcentAffiche = TTF_RenderText_Blended(police, temp, couleur);
-            SDL_BlitSurface(pourcentAffiche, NULL, ecran, &position);
-            SDL_FreeSurfaceS(pourcentAffiche);
-            refresh_rendering;
+            pourcentAffiche = TTF_Write(renderer, police, temp, couleur);
+            position.h = pourcentAffiche->h;
+            position.w = pourcentAffiche->w;
+            SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+            SDL_DestroyTextureS(pourcentAffiche);
+            SDL_RenderPresent(renderer);
             TTF_CloseFont(police);
         }
         else
@@ -184,28 +189,25 @@ int download(char *adresse, char *repertoire, int activation)
 		SDL_Event event;
         while(status != 0)
         {
-			SDL_PollEvent(&event);
+			SDL_WaitEventTimeout(&event, 50);
             switch(event.type)
             {
                 case SDL_QUIT:
                     alright = 0;
                     break;
 
-                default:
-                {
-                    if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                        alright = 0;
-
-                    else
-                    {
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                case SDL_TEXTINPUT:
+                case SDL_KEYDOWN:
+                case SDL_WINDOWEVENT:
+                    if(event.type != SDL_WINDOWEVENT || checkWindowEventValid(event.window.event))
                         SDL_PushEvent(&event);
-                        event.type = 0;
-                    }
-#ifdef __APPLE__
-                    SDL_Delay(10);
-#endif
+                    SDL_FlushEvent(event.type);
                     break;
-                }
+
+                default:
+                    break;
             }
         }
     }
@@ -213,7 +215,7 @@ int download(char *adresse, char *repertoire, int activation)
     if(output != NULL)
         free(output);
 
-    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && hostReached == 0) //Si on a pas réussi à ce connecter au serveur distant
+    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && hostReached == 0) //Si on a pas réussi Ã  ce connecter au serveur distant
         return -6;
     else if(!alright)
         return alright;
@@ -259,7 +261,7 @@ static void* downloader(void* envoi)
     if(printToAFile)
     {
         crashTemp(temp, 500);
-        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[0] == REPERTOIREEXECUTION[0]) /*Si le path a déjà été modifié*/)
+        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[0] == REPERTOIREEXECUTION[0]) /*Si le path a déjÃ  été modifié*/)
             sprintf(temp, "%s.download", valeurs->repertoireEcriture);
         else
         {
@@ -383,7 +385,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
     char *buffer = buffer_dl;
     char *input = ptr;
 
-    if(size * nmemb == 0) //Rien à écrire
+    if(size * nmemb == 0) //Rien Ã  écrire
         return 0;
 
     else if(size * nmemb < size_buffer)
@@ -393,6 +395,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
     {
         for(; i < size_buffer; i++)
             buffer[i] = input[i];
+        buffer[i-1] = 0;
     }
     return size*nmemb;
 }

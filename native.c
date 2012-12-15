@@ -292,6 +292,12 @@ void SDL_FreeSurfaceS(SDL_Surface *surface)
     }
 }
 
+void SDL_DestroyTextureS(SDL_Texture *texture)
+{
+    SDL_DestroyTexture(texture); //Gère déjà les cas imprévus
+    texture = NULL;
+}
+
 /**Différent en fonction de l'OS**/
 
 void removeFolder(char *path)
@@ -337,7 +343,7 @@ void ouvrirSite(char team[LONGUEURMANGA])
 
     if(positionnementApres(ressources, team))
     {
-        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe le type de dépÙt
+        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe le type de dépÃ™t
         fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe l'accès
         crashTemp(temp, LONGUEUR_SITE); //On réinitialise
         fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On charge l'URL
@@ -370,7 +376,7 @@ void updateDirectory(char *argv)
     i = strlen(bundleName);
 
 	bundleName[i++] = '/'; //Le / du dossier courant actuel
-    for(; argv[i] != '/' && i < strlen(argv) && argv[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / à la fin du path
+    for(; argv[i] != '/' && i < strlen(argv) && argv[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / Ã  la fin du path
 		bundleName[i] = argv[i];
 	if(bundleName[i] != '/')
 		bundleName[i++] = '/';
@@ -404,7 +410,7 @@ int lancementExternalBinary(char cheminDAcces[100])
  #else
 	crashTemp(superTemp, 400);
     #ifdef __APPLE__
-		if(strcmp(cheminDAcces, "Rakshata.app") == 0) //Si on lance le binaire, on ouvre juste le path (qui contient déjà le nom du bundle
+		if(strcmp(cheminDAcces, "Rakshata.app") == 0) //Si on lance le binaire, on ouvre juste le path (qui contient déjÃ  le nom du bundle
 			sprintf(superTemp, "open -n \"%s\"", REPERTOIREEXECUTION);
 		else
 			sprintf(superTemp, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);

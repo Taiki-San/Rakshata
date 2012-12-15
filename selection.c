@@ -11,7 +11,7 @@ int section()
 {
     /*Initialisation*/
     int i = 0, longueur[NOMBRESECTION], sectionChoisis = 0, hauteurTexte = 0;
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Event event;
@@ -20,60 +20,110 @@ int section()
 
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 
-    if(ecran->h != HAUTEUR_FENETRE_SECTION || fond->h != HAUTEUR_FENETRE_SECTION)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_SECTION, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_FENETRE_SECTION, 32, 0, 0 , 0, 0); //on initialise le fond
-    #ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-    #else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-    #endif
-
-    }
+    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
+        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
+    else
+        SDL_RenderFillRect(renderer, NULL);
 
     /*Affichage du texte*/
-    applyBackground();
-
     loadTrad(texteTrad, 17);
 
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    //police = TTF_OpenFont("font.ttf", POLICE_MOYEN);
+    SDL_RWops *rw = SDL_RWFromFile(FONTUSED, "rb");
+	if ( rw == NULL ) {
+		TTF_SetError(SDL_GetError());
+	}
+	else
+        police = TTF_OpenFontIndexRW(rw, 1, POLICE_MOYEN, 0);
+
+    if(police == NULL)
+        logR((char *)SDL_GetError());
+
     TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
 
-    texte = TTF_RenderText_Blended(police, texteTrad[1], couleurTexte);
-    position.x = (ecran->w / 2) - (texte->w / 2);
+    texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
     position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE_MENU;
-    SDL_BlitSurface(texte, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texte);
+    position.h = texte->h;
+    position.w = texte->w;
+    SDL_RenderCopy(renderer, texte, NULL, &position);
+    SDL_DestroyTextureS(texte);
 
     TTF_CloseFont(police);
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    texte = TTF_RenderText_Blended(police, texteTrad[0], couleurTexte);
-    position.x = (ecran->w / 2) - (texte->w / 2);
+    texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
     position.y = BORDURE_SUP_MENU;
-    SDL_BlitSurface(texte, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texte);
+    position.h = texte->h;
+    position.w = texte->w;
+    SDL_RenderCopy(renderer, texte, NULL, &position);
+    SDL_DestroyTextureS(texte);
 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     for(i = 1; i <= NOMBRESECTION; i++)
     {
-        texte = TTF_RenderText_Blended(police, texteTrad[i + 2], couleurTexte);
+        texte = TTF_Write(renderer, police, texteTrad[i + 2], couleurTexte);
         if(i % 2 == 1) //Colonne de gauche
-            position.x = ecran->w / 4 - texte->w / 2;
+            position.x = WINDOW_SIZE_W / 4 - texte->w / 2;
         else
-            position.x = ecran->w - ecran->w / 4 - texte->w / 2;
+            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texte->w / 2;
         position.y = BORDURE_SUP_SECTION + ((texte->h + INTERLIGNE) * ((i+1) / 2));
-        SDL_BlitSurface(texte, NULL, ecran, &position);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
         longueur[i - 1] = texte->w / 2;
         hauteurTexte = texte->h;
-        SDL_FreeSurfaceS(texte);
+        SDL_DestroyTextureS(texte);
     }
-    refresh_rendering;
+
     TTF_CloseFont(police);
+
+    FILE *checkFile = fopenR("data/section.msg", "r");
+
+    if(checkFile != NULL)
+    {
+        fseek(checkFile, 0, SEEK_END);
+        size_t sizeOfFile = ftell(checkFile);
+
+        if(sizeOfFile != 0 && sizeOfFile < 512)
+        {
+            char *bufferSection = malloc(sizeOfFile), message[5][100];
+            if(bufferSection != NULL)
+            {
+                int i = 0, j = 0, k = 0;
+                AESDecrypt(MESSAGE_PASSWORD, "data/section.msg", bufferSection, OUTPUT_IN_MEMORY);
+                for(; bufferSection[i] != ' ' && bufferSection[i]; i++);
+                for(; bufferSection[i] && j < 5; j++)
+                {
+                    for(k = 0; bufferSection[i] && bufferSection[i] != '\n' && k < 100; message[j][k++] = bufferSection[i++]);
+                    if(bufferSection[i] == '\n')
+                        i++;
+                    message[j][k] = 0;
+                }
+
+                police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+                position.y = WINDOW_SIZE_H;
+                for(j--; j >= 0; j--)
+                {
+                    texte = TTF_Write(renderer, police, message[j], couleurTexte);
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                    position.y -= texte->h;// + MINIINTERLIGNE;
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
+                }
+                TTF_CloseFont(police);
+                free(bufferSection);
+            }
+            else
+                logR("Not enough memory\n");
+        }
+    }
+
+    SDL_RenderPresent(renderer);
 
     /*Attente de l'evenement*/
     while(!sectionChoisis || sectionChoisis > NOMBRESECTION)
@@ -87,11 +137,12 @@ int section()
 
             case SDL_KEYDOWN: //If a keyboard letter is pushed
             {
+                #ifdef __APPLE__
 				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
                     sectionChoisis = PALIER_QUIT;
 				else
 				{
-					sectionChoisis = nombreEntree(event);
+                #endif
 					switch(event.key.keysym.sym)
 					{
 						case SDLK_DELETE:
@@ -111,19 +162,28 @@ int section()
                             sectionChoisis = 2;
                             break;
 
-                        case SDLK_c:
+                        case SDLK_a:
                             sectionChoisis = 3;
                             break;
 
-                        case SDLK_g:
+                        case SDLK_p:
                             sectionChoisis = 4;
                             break;
 
 						default: //If another one
 							break;
 					}
+                #ifdef __APPLE__
 				}
+				#endif
                 break;
+            }
+
+            case SDL_TEXTINPUT:
+            {
+                sectionChoisis = nombreEntree(event);
+                if(sectionChoisis == -1 || sectionChoisis > NOMBRESECTION)
+                    sectionChoisis = 0;
             }
 
             case SDL_MOUSEBUTTONUP:
@@ -131,8 +191,8 @@ int section()
                 if(!clicNotSlide(event))
                     break;
 
-                //Définis la hauteur du clic par rapport à notre liste
-                for(i = 1; ((((hauteurTexte + INTERLIGNE_SECTION) * i + BORDURE_SUP_SECTION) > event.button.y) || ((hauteurTexte + INTERLIGNE_SECTION) * i + BORDURE_SUP_SECTION + hauteurTexte) < event.button.y) && i < NOMBRESECTION/2 + 1; i++);
+                //Définis la hauteur du clic par rapport Ã  notre liste
+                for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION + hauteurTexte) < event.button.y) && i < NOMBRESECTION/2 + 1; i++);
 
                 if(i > NOMBRESECTION/2)
                     i = 0;
@@ -140,27 +200,34 @@ int section()
                 else
                 {
                     int positionBaseEcran = 0, numberTested = 0;
-                    if(event.button.x < ecran->w / 2)
+                    if(event.button.x < WINDOW_SIZE_W / 2)
                     {
                         numberTested = i * 2 - 1;
-                        positionBaseEcran = ecran->w / 4;
+                        positionBaseEcran = WINDOW_SIZE_W / 4;
                     }
                     else
                     {
                         numberTested = i * 2;
-                        positionBaseEcran = ecran->w - ecran->w / 4;
+                        positionBaseEcran = WINDOW_SIZE_W - WINDOW_SIZE_W / 4;
                     }
                     if(positionBaseEcran + longueur[numberTested - 1] >= event.button.x && positionBaseEcran - longueur[numberTested - 1] <= event.button.x)
                         sectionChoisis = numberTested;
                 }
+                if(sectionChoisis > NOMBRESECTION)
+                    sectionChoisis = 0;
+            }
+
+            case SDL_WINDOWEVENT:
+            {
+                SDL_RenderPresent(renderer);
+                break;
             }
 
             default:
                 break;
         }
-        if(sectionChoisis > NOMBRESECTION)
-            sectionChoisis = 0;
     }
+    SDL_FlushEvent(SDL_TEXTINPUT);
     return sectionChoisis;
 }
 
@@ -170,7 +237,7 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
     int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
 	char texteTrad[SIZE_TRAD_ID_18][LONGUEURTEXTE];
 	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
 
@@ -190,30 +257,21 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
         else
             i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
-        if(ecran->h != i || fond->h != i) //Empêche de redimensionner si unicolonne
-        {
-            SDL_FreeSurfaceS(ecran);
-            SDL_FreeSurfaceS(fond);
-            ecran = SDL_SetVideoMode(LARGEUR, i, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-            fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, i, 32, 0, 0 , 0, 0); //on initialise le fond
-    #ifdef __APPLE__
-            SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-    #else
-            SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-    #endif
-        }
-
+        if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
+            updateWindowSize(LARGEUR, i);
         loadTrad(texteTrad, 18);
 
-        applyBackground();
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
         TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
-        texte = TTF_RenderText_Blended(police, texteTrad[1], couleurTexte);
-        position.x = (ecran->w / 2) - (texte->w / 2);
+        texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
         position.y = BORDURE_SUP_TITRE_MANGA + texte->h + INTERLIGNE_MENU;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
         TTF_CloseFont(police);
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -225,16 +283,18 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
                 sprintf(temp, "%s %s", texteTrad[2], texteTrad[0]);
             else
                 sprintf(temp, "%s %s", texteTrad[0], texteTrad[2]);
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
         }
         else
-            texte = TTF_RenderText_Blended(police, texteTrad[0], couleurTexte);
-        position.x = (ecran->w / 2) - (texte->w / 2);
+            texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
         position.y = BORDURE_SUP_TITRE_MANGA;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
 
         if(sectionChoisis == SECTION_CHOISIS_LECTURE)
             hauteurDonnes = BORDURE_SUP_SELEC_MANGA_LECTURE;
@@ -275,7 +335,7 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
     char temp[TAILLE_BUFFER] = {0}, nomsChapitre[NOMBRE_CHAPITRE_MAX+1][LONGUEUR_NOM_MANGA_MAX], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
     register FILE* checkE = NULL; //Make that stuff faster
     TTF_Font *police = NULL;
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Rect position;
 
@@ -418,19 +478,9 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
 		else
             i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
 
-        if(ecran->h != i || fond->h != i) //Empêche de redimensionner si unicolonne
-        {
-            SDL_FreeSurfaceS(ecran);
-            SDL_FreeSurfaceS(fond);
-            ecran = SDL_SetVideoMode(LARGEUR, i, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-            fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, i, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-            SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-            SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-        }
-        applyBackground();
+        if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
+            updateWindowSize(LARGEUR, i);
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         crashTemp(temp, TAILLE_BUFFER);
@@ -438,15 +488,21 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
         if(j == 1 && mode == 2) //Si aucun chapitre (uniquement au DL)
         {
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-            texte = TTF_RenderText_Blended(police, texteTrad[12], couleurTexte);
-            position.x = ecran->w / 2 - texte->w / 2;
-            position.y = ecran->h / 2 - texte->h;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            texte = TTF_RenderText_Blended(police, texteTrad[13], couleurTexte);
-            position.x = ecran->w / 2 - texte->w / 2;
-            position.y = ecran->h / 2 + texte->h;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            refresh_rendering;
+            texte = TTF_Write(renderer, police, texteTrad[12], couleurTexte);
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+            position.y = WINDOW_SIZE_H / 2 - texte->h;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+            texte = TTF_Write(renderer, police, texteTrad[13], couleurTexte);
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+            position.y = WINDOW_SIZE_H / 2 + texte->h;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+            SDL_RenderPresent(renderer);
             chapitreChoisis = waitEnter();
             if(chapitreChoisis > PALIER_CHAPTER)
                 chapitreChoisis = PALIER_CHAPTER;
@@ -460,11 +516,13 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
                 k = j;
             //On affiche pas le même titre en fonction de la section
             sprintf(temp, "%s %s", texteTrad[0], texteTrad[mode]);
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-            position.x = (ecran->w / 2) - (texte->w / 2);
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
+            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
             position.y = BORDURE_SUP_TITRE_CHAPITRE;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
             /*Affichage des infos sur la team*/
             crashTemp(temp, TAILLE_BUFFER);
@@ -494,15 +552,17 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
             police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-            position.x = (ecran->w / 2) - (texte->w / 2);
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
+            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
             position.y = BORDURE_SUP_INFOS_TEAM_CHAPITRE;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
 
             /*Affichage des boutons du bas, central puis gauche, puis droit*/
-            position.y = ecran->h - HAUTEUR_BOUTONS_CHAPITRE;
+            position.y = WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE;
             if(mode == 1 || mode == 3)
             {
                 crashTemp(temp, TAILLE_BUFFER);
@@ -511,27 +571,33 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
                 else
                     sprintf(temp, "%s %d", texteTrad[9], dernierLu);
 
-                texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-                position.x = ecran->w / 2 - texte->w / 2;
-                SDL_BlitSurface(texte, NULL, ecran, &position);
-                SDL_FreeSurfaceS(texte);
+                texte = TTF_Write(renderer, police, temp, couleurTexte);
+                position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                position.h = texte->h;
+                position.w = texte->w;
+                SDL_RenderCopy(renderer, texte, NULL, &position);
+                SDL_DestroyTextureS(texte);
             }
             if(mode == 2)
                 TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
             crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "%s %d", texteTrad[4], extreme[0]);
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = BORDURE_BOUTON_LECTEUR;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
             crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "%s %d", texteTrad[5], extreme[1]);
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-            position.x = ecran->w - texte->w - BORDURE_BOUTON_LECTEUR;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
-            refresh_rendering;
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
+            position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+            SDL_RenderPresent(renderer);
 
             chapitreChoisis = -1;
 

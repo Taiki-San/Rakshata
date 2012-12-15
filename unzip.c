@@ -258,7 +258,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
 
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if(configFileLoader(CONFIGFILE, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du à l'optimisation pour le lecteur
+        if(configFileLoader(CONFIGFILE, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
             logR("config.dat invalid: encryption aborted.\n");
             for(i = 0; filename_inzip[i][0]; remove(filename_inzip[i++])); //On fais le ménage
@@ -357,7 +357,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
             crashTemp(temp, 256);
             AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
-            crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant à lire
+            crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant Ã  lire
         }
         free(hugeBuffer);
     }

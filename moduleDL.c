@@ -22,7 +22,7 @@ void* telechargement()
     FILE* fichier = NULL;
     FILE* ressources = NULL;
     FILE* test = NULL;
-    SDL_Surface *texte;
+    SDL_Texture *texte = NULL;
     TTF_Font *police_big = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
@@ -62,7 +62,7 @@ void* telechargement()
     }
     loadTrad(trad, 22);
 
-    for(mangaActuel = 1; fgetc(fichier) != EOF && glados; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
+    for(mangaActuel = 1; fgetc(fichier) != EOF && glados; mangaActuel++) //On démarre Ã  1 car sinon, le premier pourcentage serait de 0
     {
         if(mangaTotal + (mangaActuel - 1) != 0)
             pourcentage = mangaActuel * 100 / (mangaTotal + mangaActuel -1);
@@ -108,7 +108,7 @@ void* telechargement()
                     {
                         /*Ouverture du site de la team*/
                         for(i = 0; i < 1000 && strcmp(teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
-                        if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjà installé
+                        if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjÃ  installé
                         {
                             ustrcpy(historiqueTeam[i], teamCourt);
                             ouvrirSite(teamCourt);
@@ -158,23 +158,30 @@ void* telechargement()
                         sprintf(temp, "%s %s %s %d %s %s (%d%% %s)", trad[0], mangaLong, trad[1], chapitre, trad[2], teamCourt, pourcentage, trad[3]);
 
                         changeTo(mangaLong, ' ', '_');
-                        //On remplis la fenÕtre
-                        applyBackground();
-                        texte = TTF_RenderText_Blended(police_big, trad[4], couleurTexte);
-                        position.x = ecran->w / 2 - texte->w / 2;
+
+                        //On remplis la fenêtre
+                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        texte = TTF_Write(renderer, police_big, trad[4], couleurTexte);
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                         position.y = HAUTEUR_MESSAGE_INITIALISATION;
-                        SDL_BlitSurface(texte, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(texte);
-                        texte = TTF_RenderText_Blended(police, temp, couleurTexte);
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+
+                        texte = TTF_Write(renderer, police, temp, couleurTexte);
                         position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-                        position.x = ecran->w / 2 - texte->w / 2;
-                        SDL_BlitSurface(texte, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(texte);
-                        refresh_rendering;
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+
+                        SDL_RenderPresent(renderer);
 
                         /**Téléchargement**/
 
-                        /*On teste si le chapitre est déjà installé*/
+                        /*On teste si le chapitre est déjÃ  installé*/
                         crashTemp(temp, 200);
                         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
                         test = fopenR(temp, "r");
@@ -231,7 +238,7 @@ void* telechargement()
                         else if(glados > 0) // Archive pas corrompue
                         {
                             crashTemp(temp, 200);
-                            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre); //chaine déjà traité
+                            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre); //chaine déjÃ  traité
                             ressources = fopenR(temp, "r");
                             if(ressources != NULL)
                             {
@@ -299,8 +306,11 @@ void* telechargement()
                             download(superTemp, temp, 0);
                         }
 
-                        else if(test != NULL)
+                        else if(test != NULL && k)
                             fclose(test);
+
+                        else //Si k = 0 et infos.png existe
+                            removeR(temp);
                     }
                 }
             }
@@ -336,13 +346,16 @@ void* telechargement()
     if(glados)
         removeR("tmp/import.dat");
 
-    applyBackground();
-    texte = TTF_RenderText_Blended(police, trad[5], couleurTexte);
-    position.x = ecran->w / 2 - texte->w / 2;
-    position.y = ecran->h / 2 - texte->h / 2;
-    SDL_BlitSurface(texte, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texte);
-    refresh_rendering;
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    texte = TTF_Write(renderer, police, trad[5], couleurTexte);
+    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
+    position.h = texte->h;
+    position.w = texte->w;
+    SDL_RenderCopy(renderer, texte, NULL, &position);
+    SDL_DestroyTextureS(texte);
+
+    SDL_RenderPresent(renderer);
     TTF_CloseFont(police_big);
     TTF_CloseFont(police);
     while(status > 1)
@@ -418,7 +431,7 @@ void* installation(void* datas)
         test = fopenR(temp, "r");
         if(test == NULL)
         {
-            /*Si le chapitre n'est pas déj‡ installé*/
+            /*Si le chapitre n'est pas déjâ€¡ installé*/
             crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
             test = fopenR(temp, "r");
@@ -538,34 +551,38 @@ int interditWhileDL()
 {
     /*Initialisateurs graphique*/
 	char texte[SIZE_TRAD_ID_9][100];
-	SDL_Surface *texteAffiche = NULL;
+	SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     loadTrad(texte, 9);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[1], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 + texteAffiche->h;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
+    SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     return waitEnter();
 }
@@ -641,7 +658,7 @@ int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDi
 	return nombreChapitre;
 }
 
-int DLmanager() //Equivalent du main, ne fais rien à part lancer et attendre
+int DLmanager() //Equivalent du main, ne fais rien Ã  part lancer et attendre
 {
 	SDL_Event event;
     status = 1;
@@ -650,9 +667,8 @@ int DLmanager() //Equivalent du main, ne fais rien à part lancer et attendre
 
     while(status != 0)
     {
-        SDL_Delay(30);
-        SDL_PollEvent(&event);
-        if(event.type == SDL_QUIT || event.type == SDL_KEYDOWN)
+        SDL_WaitEventTimeout(&event, 100);
+        if(event.type == SDL_QUIT || event.type == SDL_TEXTINPUT)
         {
             SDL_PushEvent(&event);
             event.type = 0;

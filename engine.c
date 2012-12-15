@@ -10,8 +10,7 @@
 int mangaUnicolonne(TTF_Font *police, char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], int sectionChoisis, int nombreMangaElligible, int mangaElligibles[NOMBRE_MANGA_MAX])
 {
     int i = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, mangaChoisis = 0;
-    char temp[TAILLE_BUFFER] = {0};
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurNew = {POLICE_NEW_R, POLICE_NEW_G, POLICE_NEW_B};
 
@@ -19,28 +18,27 @@ int mangaUnicolonne(TTF_Font *police, char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR
     /*Affichage sur une seule colonne*/
     for(i = 0; i < nombreMangaElligible; i++)
     {
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "%s", mangaDispo[mangaElligibles[i]]);
         /*Définis la couleur*/
-        SDL_FreeSurfaceS(texte);
         if(sectionChoisis == 4 && isItNew(mangaDispo[mangaElligibles[i]]))
-            texte = TTF_RenderText_Blended(police, temp, couleurNew);
+            texte = TTF_Write(renderer, police, mangaDispo[mangaElligibles[i]], couleurNew);
         else
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
+            texte = TTF_Write(renderer, police, mangaDispo[mangaElligibles[i]], couleurTexte);
 
         /*Affiche et enregistre des valeurs*/
         tailleTexte[i] = texte->w;
-        position.x = (ecran->w / 2) - (texte->w / 2);
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
         position.y = BORDURE_SUP_SELEC_MANGA + (texte->h + MINIINTERLIGNE) * i;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
     }
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
     TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
 
     mangaChoisis = mangaSelection(1, tailleTexte, 0, &i) - 1;
     if(mangaChoisis < -2)
         mangaChoisis++;
-    SDL_FreeSurfaceS(texte);
     if(mangaChoisis >= 0)
         return mangaElligibles[mangaChoisis];
     return mangaChoisis;
@@ -50,10 +48,10 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 0, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI], mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
-    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, mode = 2, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0;
+    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, mode = 2, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
     int button_selected[6];
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurNew = {POLICE_NEW_R, POLICE_NEW_G, POLICE_NEW_B}, couleurUnread = {POLICE_UNREAD_R, POLICE_UNREAD_G, POLICE_UNREAD_B};
@@ -80,21 +78,15 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
     if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
     {
         //On change la taille du fond pour pas écraser les boutons inférieurs
-        SDL_FreeSurfaceS(fond);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, ecran->h - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+        backgroundH = WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
     }
+    else
+        backgroundH = WINDOW_SIZE_H;
 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     do
     {
-        position.x = 0;
-        position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
-        SDL_BlitSurface(fond, NULL, ecran, &position); //On affiche le fond sans crasher ce qu'on avait écrit avant
+        applyBackground(0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE, WINDOW_SIZE_W, backgroundH);
 
         changementDePage = 0;
         mangaChoisis = 0;
@@ -134,7 +126,7 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
         /**********************************************************************
         ***                         Fonctionnement                          ***
         ***                                                                 ***
-        ***      Commence par positionner i au premier manga à afficher     ***
+        ***      Commence par positionner i au premier manga Ã  afficher     ***
         ***                                                                 ***
         *** Ensuite, affiche un maximum de 30 mangas obéissant aux critères ***
         ***                                                                 ***
@@ -157,13 +149,13 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
 
                 if((sectionChoisis == SECTION_CHOISIS_LECTURE && checkChapitreUnread(mangaDispo[i]) == 1)
                         || (sectionChoisis == SECTION_DL && checkChapitreUnread(mangaDispo[i]) == -1))
-                    texte = TTF_RenderText_Blended(police, temp, couleurUnread);
+                    texte = TTF_Write(renderer, police, temp, couleurUnread);
 
                 else if(sectionChoisis == SECTION_DL && mangaDispo[i][0] && isItNew(mangaDispo[i])) //Si pas encore DL, en rouge
-                        texte = TTF_RenderText_Blended(police, temp, couleurNew);
+                        texte = TTF_Write(renderer, police, temp, couleurNew);
 
                 else
-                    texte = TTF_RenderText_Blended(police, temp, couleurTexte);
+                    texte = TTF_Write(renderer, police, temp, couleurTexte);
 
                 /*Définis la position du texte en fonction de sa colonne*/
                 if(j < mangaColonne[0])
@@ -181,10 +173,12 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
                     position.x = BORDURELATSELECTION + (2 * (BORDURELATSELECTION + LONGUEURMANGA));
                     position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[1]) % mangaColonne[2]));
                 }
-                SDL_BlitSurface(texte , NULL, ecran, &position);
+                position.h = texte->h;
+                position.w = texte->w;
+                SDL_RenderCopy(renderer, texte, NULL, &position);
                 tailleTexte[j++] = texte->w;
-                SDL_FreeSurfaceS(texte);
-                refresh_rendering;
+                SDL_DestroyTextureS(texte);
+                SDL_RenderPresent(renderer);
                 //SDL_Delay(5);
             }
         }
@@ -204,35 +198,41 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
             sprintf(temp, "%s %d %s %d", texte_Trad[12], pageSelection, texte_Trad[13], pageTotale);
 
             position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE; //Page précédente
-            texte = TTF_RenderText_Blended(police, texte_Trad[0], couleurTexte);
+            texte = TTF_Write(renderer, police, texte_Trad[0], couleurTexte);
             position.x = BORDURE_LAT_LECTURE;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
-            texte = TTF_RenderText_Blended(police, texte_Trad[1], couleurTexte); //Page suivante
-            position.x = ecran->w - BORDURE_LAT_LECTURE - texte->w;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            texte = TTF_Write(renderer, police, texte_Trad[1], couleurTexte); //Page suivante
+            position.x = WINDOW_SIZE_W - BORDURE_LAT_LECTURE - texte->w;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
 
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte); //Page X sur Y
-            position.x = ecran->w / 2 - texte->w / 2;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            texte = TTF_Write(renderer, police, temp, couleurTexte); //Page X sur Y
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
         }
 
         if(sectionChoisis == SECTION_DL) //On affiche, si on dl, les boutons de DL/Annulation
         {
-            refresh_rendering;
+            SDL_RenderPresent(renderer);
             if(nombreManga > MANGAPARPAGE_TRI)
                 i = MANGAPARPAGE_TRI;
             else
                 i = nombreManga;
 
-            position.y = ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
+            position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
             crashTemp(temp, TAILLE_BUFFER);
@@ -240,24 +240,30 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
                 sprintf(temp, "%d %s", nombreChapitre, texte_Trad[4]);
             else
                 sprintf(temp, "%d %ss", nombreChapitre, texte_Trad[4]);
-            texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-            position.x = ecran->w / 2;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            texte = TTF_Write(renderer, police, temp, couleurTexte);
+            position.x = WINDOW_SIZE_W / 2;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-            texte = TTF_RenderText_Blended(police, texte_Trad[2], couleurNew);
+            texte = TTF_Write(renderer, police, texte_Trad[2], couleurNew);
             position.x = 50;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
 
-            texte = TTF_RenderText_Blended(police, texte_Trad[3], couleurTexte);
-            position.x = ecran->w - texte->w - 50;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
+            texte = TTF_Write(renderer, police, texte_Trad[3], couleurTexte);
+            position.x = WINDOW_SIZE_W - texte->w - 50;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
         }
 
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
         while(!mangaChoisis)
         {
             if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
@@ -290,18 +296,6 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
         }
     }while(changementDePage);
     TTF_CloseFont(police);
-
-    if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
-    {
-        //On restaure la taille du fond
-        SDL_FreeSurfaceS(fond);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h - HAUTEUR_BOUTONS_CHANGEMENT_PAGE, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
 
     if((limitationLettre || checkButtonPressed(button_selected)) && mangaChoisis >= 0) //Je comprend pas le mangaChoisis >=0... Help?
     {
@@ -356,9 +350,6 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
                     case SDL_KEYDOWN:
                     {
-                        buffer = nombreEntree(event);
-                        if((buffer + choix * 10) <= nombreManga && buffer != -1)
-                            choix = choix * 10 + buffer;
                         switch(event.key.keysym.sym)
                         {
                             case SDLK_RETURN:
@@ -390,6 +381,15 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         }
                         break;
                     }
+
+                    case SDL_TEXTINPUT:
+                    {
+                        buffer = nombreEntree(event);
+                        if((buffer + choix * 10) <= nombreManga && buffer != -1)
+                            choix = choix * 10 + buffer;
+                            break;
+                    }
+
                     case SDL_MOUSEBUTTONUP:
                     {
                         if(!clicNotSlide(event))
@@ -403,9 +403,22 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         }
                         break;
                     }
+
+					case SDL_WINDOWEVENT:
+                    {
+                        if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                        {
+                            SDL_RenderPresent(renderer);
+                            SDL_FlushEvent(SDL_WINDOWEVENT);
+                        }
+                        break;
+                    }
+
 					default:
+					#ifdef __APPLE__
 						if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
 							mangaChoisis = PALIER_QUIT;
+                    #endif
 						break;
                 }
             }
@@ -419,7 +432,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
             while(mangaChoisis == 0)
             {
                 if(mode == 3)
-                    showNumero(police, choix, ecran->h - BORDURE_INF_NUMEROTATION_TRI);
+                    showNumero(police, choix, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
                 SDL_WaitEvent(&event);
                 switch(event.type)
@@ -430,22 +443,6 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
                     case SDL_KEYDOWN:
                     {
-                        if(mode == 3)
-                        {
-                            buffer = nombreEntree(event);
-                            if((((buffer + choix * 10) <= nombreManga && mode == 2) || ((buffer + choix * 10) <= chapitreMax && mode == 3)) && buffer != -1)
-                                choix = choix * 10 + buffer;
-                        }
-                        else
-                        {
-                            //get letter pushed to sort
-                            i = getLetterPushed(event);
-                            if(i >= 'a' && i <= 'z')
-                                i += 'A' - 'a'; //On passe en maj
-                            if(i >= 'A' && i <= 'Z')
-                                mangaChoisis = i * -1;
-
-                        }
                         switch(event.key.keysym.sym)
                         {
                             case SDLK_BACKSPACE:
@@ -491,6 +488,26 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         break;
                     }
 
+                    case SDL_TEXTINPUT:
+                    {
+                        if(mode == 3)
+                        {
+                            buffer = nombreEntree(event);
+                            if((((buffer + choix * 10) <= nombreManga && mode == 2) || ((buffer + choix * 10) <= chapitreMax && mode == 3)) && buffer != -1)
+                                choix = choix * 10 + buffer;
+                        }
+                        else
+                        {
+                            //get letter pushed to sort
+                            i = getLetterPushed(event);
+                            if(i >= 'a' && i <= 'z')
+                                i += 'A' - 'a'; //On passe en maj
+                            if(i >= 'A' && i <= 'Z')
+                                mangaChoisis = i * -1;
+
+                        }
+                    }
+
                     case SDL_MOUSEBUTTONUP:
                     {
                         if(!clicNotSlide(event))
@@ -510,7 +527,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                                 mangaChoisis = -7; // Page Précédente
                             }
 
-                            else if(event.button.x > ecran->w - BORDURE_LAT_LECTURE - LONGUEUR_SUIVANT && event.button.x < ecran->w - BORDURE_LAT_LECTURE) //Suivant
+                            else if(event.button.x > WINDOW_SIZE_W - BORDURE_LAT_LECTURE - LONGUEUR_SUIVANT && event.button.x < WINDOW_SIZE_W - BORDURE_LAT_LECTURE) //Suivant
                             {
                                 mangaChoisis = -6; // Page Suivante
                             }
@@ -525,21 +542,21 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         }
 
                         /*Clic sur les boutons de DL*/
-                        hauteurBandeau = ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
+                        hauteurBandeau = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
                         if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && mode == 2) //Check si clique sur bouton de DL
                         {
-                            if(event.button.x > ecran->w / 2)
+                            if(event.button.x > WINDOW_SIZE_W / 2)
                                 mangaChoisis = -10;
                             else
                                 mangaChoisis = -11;
                         }
 
 
-                        if(mode == 2) //Sinon, clic sur bandeau de contrÙle
+                        if(mode == 2) //Sinon, clic sur bandeau de contrÃ™le
                         {
-                            if(event.button.y > ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
-                               event.button.y < ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
+                            if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
+                               event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                             {
                                 if(event.button.x > COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
                                     bandeauControle = 1; //En cours
@@ -551,8 +568,8 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                                     bandeauControle = 3; //Suspendus
                             }
 
-                            else if(event.button.y > ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 &&
-                                event.button.y < ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
+                            else if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 &&
+                                event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                             {
                                 if(event.button.x > COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
                                     bandeauControle = 10; //En cours
@@ -572,10 +589,10 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
                         else //Checks si clic sur zones cliquable pour le chapitre
                         {
-                            if(event.button.y >= BORDURE_SUP_INFOS_TEAM_CHAPITRE - 5 && event.button.y <= BORDURE_SUP_INFOS_TEAM_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5 && event.button.x > 50 && event.button.x < ecran->w - 50)//Tolérance de 5 pxl
+                            if(event.button.y >= BORDURE_SUP_INFOS_TEAM_CHAPITRE - 5 && event.button.y <= BORDURE_SUP_INFOS_TEAM_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5 && event.button.x > 50 && event.button.x < WINDOW_SIZE_W - 50)//Tolérance de 5 pxl
                                 mangaChoisis = CODE_CLIC_LIEN_CHAPITRE; //Clic sur nom team -> lien
 
-                            else if(event.button.y >= ecran->h - HAUTEUR_BOUTONS_CHAPITRE - 5 && event.button.y <= ecran->h - HAUTEUR_BOUTONS_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5)
+                            else if(event.button.y >= WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - 5 && event.button.y <= WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5)
                             {
                                 if(event.button.x < SEPARATION_COLONNE_1_CHAPITRE) //Premier chapitre
                                     mangaChoisis = CODE_BOUTON_1_CHAPITRE;
@@ -588,10 +605,21 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         break;
                     }
 
+					case SDL_WINDOWEVENT:
+                    {
+                        if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                        {
+                            SDL_RenderPresent(renderer);
+                            SDL_FlushEvent(SDL_WINDOWEVENT);
+                        }
+                        break;
+                    }
+
 					default:
+                        #ifdef __APPLE__
 						if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-							mangaChoisis =
-							PALIER_QUIT;
+							mangaChoisis = PALIER_QUIT;
+                        #endif
 						break;
                 }
             }
@@ -607,31 +635,24 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
 void showNumero(TTF_Font *police, int choix, int hauteurNum)
 {
-    SDL_Surface *numero = NULL, *background = NULL;
+    SDL_Texture *numero = NULL;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Rect position;
     char buffer[5] = {0};
 
     sprintf(buffer, "%d", choix);
-    numero = TTF_RenderText_Blended(police, buffer, couleur);
+    numero = TTF_Write(renderer, police, buffer, couleur);
 
-    background = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-	SDL_FillRect(background, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-	SDL_FillRect(background, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+    applyBackground(0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
 
-    position.x = 0;
+    position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
     position.y = hauteurNum;// - (numero->h / 2);
-    SDL_BlitSurface(background, NULL, ecran, &position);
-    SDL_FreeSurfaceS(background);
+    position.h = numero->h;
+    position.w = numero->w;
+    SDL_RenderCopy(renderer, numero, NULL, &position);
+    SDL_DestroyTextureS(numero);
 
-    position.x = (ecran->w / 2) - (numero->w / 2);
-    SDL_BlitSurface(numero, NULL, ecran, &position);
-    SDL_FreeSurfaceS(numero);
-
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
 }
 
 void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], int sectionsMangas[NOMBRE_MANGA_MAX], int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage)
@@ -813,7 +834,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
 {
     /*Génère le pannel inférieur*/
     int i = 0;
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurNew = {POLICE_ENABLE_R, POLICE_ENABLE_G, POLICE_ENABLE_B}, couleurUnavailable = {POLICE_UNAVAILABLE_R, POLICE_UNAVAILABLE_G, POLICE_UNAVAILABLE_B};
@@ -821,26 +842,25 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    position.x = 0;
-    position.y = ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2;
+    applyBackground(0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
 
-    SDL_BlitSurface(fond, NULL, ecran, &position);
-
-    texte = TTF_RenderText_Blended(police, trad[5], couleurTexte);
+    texte = TTF_Write(renderer, police, trad[5], couleurTexte);
     position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
-    position.y = ecran->h - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
+    position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
+    position.h = texte->h;
+    position.w = texte->w;
 
-    SDL_BlitSurface(texte, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texte);
+    SDL_RenderCopy(renderer, texte, NULL, &position);
+    SDL_DestroyTextureS(texte);
 
     for(i = 0; i < 6; i++)
     {
         if(enable[i] == 1)
-            texte = TTF_RenderText_Blended(police, trad[6+i], couleurNew);
+            texte = TTF_Write(renderer, police, trad[6+i], couleurNew);
         else if(enable[i] == -1)
-            texte = TTF_RenderText_Blended(police, trad[6+i], couleurUnavailable);
+            texte = TTF_Write(renderer, police, trad[6+i], couleurUnavailable);
         else
-            texte = TTF_RenderText_Blended(police, trad[6+i], couleurTexte);
+            texte = TTF_Write(renderer, police, trad[6+i], couleurTexte);
         if(i % 3 == 0)
         {
             position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
@@ -850,10 +870,12 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
             position.x = COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE;
         else
             position.x = COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
     }
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 }
 

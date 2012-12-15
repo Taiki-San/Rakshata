@@ -11,7 +11,7 @@ int changementLangue()
 {
     int i = 0, j = 0, hauteurTexte = 0, longueur[NOMBRE_LANGUE+2] = {0}; //NOMBRE_LANGUE+2 permet de faire disparaitre un warning mais +2 pas utilisé
     char menus[SIZE_TRAD_ID_13][LONGUEURTEXTE];
-    SDL_Surface *texteAAfficher = NULL;
+    SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
@@ -21,38 +21,32 @@ int changementLangue()
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     /*On change la taille de l'écran*/
-    if(ecran->h != HAUTEUR_LANGUE || fond->h != HAUTEUR_LANGUE)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR_LANGUE, HAUTEUR_LANGUE, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR_LANGUE, HAUTEUR_LANGUE, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
+    if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
+        updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
 
     loadTrad(menus, 13);
 
 
     /*On lance la boucle d'affichage*/
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
-    texteAAfficher = TTF_RenderText_Blended(police, menus[0], couleurTexte);
-    position.x = ecran->w / 2 - texteAAfficher->w / 2;
+    texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
+    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
     position.y = HAUTEUR_MENU_LANGUE;
-    SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAAfficher);
+    position.h = texteAAfficher->h;
+    position.w = texteAAfficher->w;
+    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+    SDL_DestroyTextureS(texteAAfficher);
 
     TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
 
-    texteAAfficher = TTF_RenderText_Blended(police, menus[1], couleurTexte);
-    position.x = ecran->w / 2 - texteAAfficher->w / 2;
+    texteAAfficher = TTF_Write(renderer, police, menus[1], couleurTexte);
+    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
     position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
-    SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAAfficher);
+    position.h = texteAAfficher->h;
+    position.w = texteAAfficher->w;
+    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+    SDL_DestroyTextureS(texteAAfficher);
 
     /*On prend un point de départ*/
     position.y = HAUTEUR_TEXTE_LANGUE;
@@ -65,13 +59,16 @@ int changementLangue()
         /*Si il y a quelque chose a écrire*/
         if(menus[i][0] != 0)
         {
-            texteAAfficher = TTF_RenderText_Blended(police, menus[i], couleurTexte);
-            position.x = ecran->w / 2 - texteAAfficher->w / 2;
-            SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
-            hauteurTexte = texteAAfficher->h;
+            texteAAfficher = TTF_Write(renderer, police, menus[i], couleurTexte);
+            position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+            position.h = texteAAfficher->h;
+            position.w = texteAAfficher->w;
+            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+            SDL_DestroyTextureS(texteAAfficher);
+
+            hauteurTexte = position.h;
             if(i > 2)
-                longueur[i-3] = texteAAfficher->w;
-            SDL_FreeSurfaceS(texteAAfficher);
+                longueur[i-3] = position.w;
         }
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
     }
@@ -82,15 +79,17 @@ int changementLangue()
         /*Si il y a quelque chose a écrire*/
         if(menus[i][0] != 0)
         {
-            texteAAfficher = TTF_RenderText_Blended(police, menus[i], couleurTexte);
-            position.x = ecran->w / 2 - texteAAfficher->w / 2;
-            SDL_BlitSurface(texteAAfficher, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texteAAfficher);
+            texteAAfficher = TTF_Write(renderer, police, menus[i], couleurTexte);
+            position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+            position.h = texteAAfficher->h;
+            position.w = texteAAfficher->w;
+            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+            SDL_DestroyTextureS(texteAAfficher);
         }
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
     }
 
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
     /*On attend enter ou un autre evenement*/
 
     j = 0;
@@ -137,13 +136,25 @@ int changementLangue()
 
                 if(j > NOMBRE_LANGUE)
                     j = 0;
-                else if(ecran->w / 2 + longueur[i - 1] / 2 > event.button.x && ecran->w / 2 - longueur[i - 1] / 2 < event.button.x)
+                else if(WINDOW_SIZE_W / 2 + longueur[i - 1] / 2 > event.button.x && WINDOW_SIZE_W / 2 - longueur[i - 1] / 2 < event.button.x)
                     j = i;
             }
 
+            case SDL_WINDOWEVENT:
+            {
+                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                break;
+            }
+
 			default:
+			#ifdef __APPLE__
 				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
 					j = PALIER_QUIT;
+            #endif
 				break;
         }
         if(j > NOMBRE_LANGUE)

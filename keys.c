@@ -66,7 +66,7 @@ int getMasterKey(unsigned char *input)
     {
         fseek(bdd, -1, SEEK_CUR);
         for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; buffer_Load[nombreCle][j++] = i);
-        buffer_Load[nombreCle][SHA256_DIGEST_LENGTH] = 0;
+        buffer_Load[nombreCle][SHA256_DIGEST_LENGTH-1] = 0;
     }
     fclose(bdd);
 
@@ -362,7 +362,7 @@ int get_compte_infos()
         COMPTE_PRINCIPAL_MAIL[i] = output[i];
     free(output);
 
-    /*On vérifie la validité de la chaÓne*/
+    /*On vérifie la validité de la chaÃ“ne*/
     for(; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
     if(!i) //on a pas de @
     {
@@ -396,22 +396,14 @@ int logon()
 {
     int beginingOfEmailAdress = 0, resized = 0, retry = 0;
     char trad[SIZE_TRAD_ID_26][100], adresseEmail[100];
-    SDL_Surface *ligne = NULL;
+    SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
 
-    if(ecran->h != SIZE_WINDOWS_AUTHENTIFICATION || fond->h != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas à redimensionner celle là
+    if(WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas Ã  redimensionner celle lÃ 
     {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
         resized = 1;
     }
 
@@ -436,37 +428,46 @@ int logon()
         retry = 0;
         crashTemp(adresseEmail, 100);
 
-        applyBackground();
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
-        ligne = TTF_RenderText_Blended(police, trad[0], couleur); //Ligne d'explication
-        position.x = ecran->w / 2 - ligne->w / 2;
+        ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
+        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
         position.y = 20;
-        SDL_BlitSurface(ligne, NULL, ecran, &position);
-        SDL_FreeSurfaceS(ligne);
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(renderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
 
-        ligne = TTF_RenderText_Blended(police, trad[1], couleur);
+        ligne = TTF_Write(renderer, police, trad[1], couleur);
         position.y = 100;
         beginingOfEmailAdress = position.x + ligne->w + 25;
-        SDL_BlitSurface(ligne, NULL, ecran, &position);
-        SDL_FreeSurfaceS(ligne);
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(renderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
 
         TTF_CloseFont(police);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-        ligne = TTF_RenderText_Blended(police, trad[2], couleur); //Disclamer
-        position.x = ecran->w / 2 - ligne->w / 2;
+        ligne = TTF_Write(renderer, police, trad[2], couleur); //Disclamer
+        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
         position.y += 85;
-        SDL_BlitSurface(ligne, NULL, ecran, &position);
-        SDL_FreeSurfaceS(ligne);
-        ligne = TTF_RenderText_Blended(police, trad[3], couleur); //Disclamer
-        position.x = ecran->w / 2 - ligne->w / 2;
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(renderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
+
+        ligne = TTF_Write(renderer, police, trad[3], couleur); //Disclamer
+        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
         position.y += 30;
-        SDL_BlitSurface(ligne, NULL, ecran, &position);
-        SDL_FreeSurfaceS(ligne);
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(renderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
 
         TTF_CloseFont(police);
 
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
 
         if(waitClavier(50, beginingOfEmailAdress, 105, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
@@ -476,7 +477,7 @@ int logon()
 
         login = check_login(adresseEmail);
 
-        applyBackground();
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         switch(login)
         {
@@ -485,34 +486,44 @@ int logon()
             {
                 char password[50];
                 /**Leurs codes sont assez proches donc on les regroupes**/
-                ligne = TTF_RenderText_Blended(police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-                position.x = ecran->w / 2 - ligne->w / 2;
+                ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y = 20;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                refresh_rendering;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
 
-                ligne = TTF_RenderText_Blended(police, trad[6], couleur);
+
+                ligne = TTF_Write(renderer, police, trad[6], couleur);
                 position.y = 100;
                 position.x = 50;
                 beginingOfEmailAdress = position.x + ligne->w + 25;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
 
                 TTF_CloseFont(police);
                 police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-                ligne = TTF_RenderText_Blended(police, trad[7], couleur); //Disclamer
-                position.x = ecran->w / 2 - ligne->w / 2;
+                ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y += 85;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                ligne = TTF_RenderText_Blended(police, trad[8], couleur); //Disclamer
-                position.x = ecran->w / 2 - ligne->w / 2;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
+
+                ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y += 30;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                refresh_rendering;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
+
+                SDL_RenderPresent(renderer);
 
                 if((i = waitClavier(50, beginingOfEmailAdress, 105, password)) == PALIER_QUIT)
                     return PALIER_QUIT;
@@ -526,23 +537,32 @@ int logon()
                 {
                     case 0: //Rejected
                     {
-                        applyBackground();
-                        ligne = TTF_RenderText_Blended(police, trad[10], couleur); //Message d'erreur
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        ligne = TTF_Write(renderer, police, trad[10], couleur); //Message d'erreur
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y = 60;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        ligne = TTF_RenderText_Blended(police, trad[11], couleur); //Explications
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        ligne = TTF_Write(renderer, police, trad[11], couleur); //Explications
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y += 110;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        ligne = TTF_RenderText_Blended(police, trad[12], couleur); //Explications
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        ligne = TTF_Write(renderer, police, trad[12], couleur); //Explications
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y += 30;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        refresh_rendering;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        SDL_RenderPresent(renderer);
                         TTF_CloseFont(police);
                         if(waitEnter() == PALIER_QUIT)
                             return PALIER_QUIT;
@@ -560,23 +580,32 @@ int logon()
                     }
                     default: //Else -> erreure critique, me contacter/check de la connexion/du site
                     {
-                        applyBackground();
-                        ligne = TTF_RenderText_Blended(police, trad[13], couleur); //Message d'erreur
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        ligne = TTF_Write(renderer, police, trad[13], couleur); //Message d'erreur
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y = 60;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        ligne = TTF_RenderText_Blended(police, trad[14], couleur); //Explications
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        ligne = TTF_Write(renderer, police, trad[14], couleur); //Explications
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y += 80;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        ligne = TTF_RenderText_Blended(police, trad[15], couleur); //Explications
-                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        ligne = TTF_Write(renderer, police, trad[15], couleur); //Explications
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y += 40;
-                        SDL_BlitSurface(ligne, NULL, ecran, &position);
-                        SDL_FreeSurfaceS(ligne);
-                        refresh_rendering;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+
+                        SDL_RenderPresent(renderer);
                         waitEnter();
                         return PALIER_QUIT;
                         break;
@@ -587,22 +616,31 @@ int logon()
 
             default: //Erreur
             {
-                ligne = TTF_RenderText_Blended(police, trad[9], couleur); //Message d'erreur
-                position.x = ecran->w / 2 - ligne->w / 2;
+                ligne = TTF_Write(renderer, police, trad[9], couleur); //Message d'erreur
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y = 60;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                ligne = TTF_RenderText_Blended(police, trad[11], couleur); //Explications
-                position.x = ecran->w / 2 - ligne->w / 2;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
+
+                ligne = TTF_Write(renderer, police, trad[11], couleur); //Explications
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y += 110;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                ligne = TTF_RenderText_Blended(police, trad[12], couleur); //Explications
-                position.x = ecran->w / 2 - ligne->w / 2;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
+
+                ligne = TTF_Write(renderer, police, trad[12], couleur); //Explications
+                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                 position.y += 30;
-                SDL_BlitSurface(ligne, NULL, ecran, &position);
-                SDL_FreeSurfaceS(ligne);
-                refresh_rendering;
+                position.h = ligne->h;
+                position.w = ligne->w;
+                SDL_RenderCopy(renderer, ligne, NULL, &position);
+                SDL_DestroyTextureS(ligne);
+
+                SDL_RenderPresent(renderer);
                 if(waitEnter() == PALIER_QUIT)
                     return PALIER_QUIT;
                 retry = 1;
@@ -622,7 +660,7 @@ int check_login(char adresseEmail[100])
     int i = 0;
     char URL[300], buffer_output[500];
 
-    /*On vérifie la validité de la chaÓne*/
+    /*On vérifie la validité de la chaÃ“ne*/
     for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
     if(i == 100) //on a pas de @
         return 2;
@@ -662,7 +700,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     int i = 0;
     char URL[300], buffer_output[500], hash1[HASH_LENGTH], hash2[HASH_LENGTH];
 
-    /*On vérifie la validité de la chaÓne*/
+    /*On vérifie la validité de la chaÃ“ne*/
     for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
     if(adresseEmail[i] != '@') //on a pas de @
         return 2;
@@ -748,6 +786,9 @@ int sendPassToServ(unsigned char key[SHA256_DIGEST_LENGTH])
 
 void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
 {
+    if(NETWORK_ACCESS != CONNEXION_OK)
+        return;
+
     int i = 0;
     char temp[400];
     char buffer_dl[500];

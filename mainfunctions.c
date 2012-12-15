@@ -10,7 +10,6 @@
 void mainRakshata()
 {
     int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0, newLangue = 0;
-    char temp[TAILLE_BUFFER];
     FILE* test = NULL;
 
     if((test = fopenR("data/langue", "r")) == NULL)
@@ -28,22 +27,27 @@ void mainRakshata()
         fclose(test);
     }
 
-    nameWindow(0);
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
 
-    crashTemp(temp, TAILLE_BUFFER);
-    sprintf(temp, "SDL_VIDEO_WINDOW_POS=%d,25", RESOLUTION[0] / 2 - LARGEUR / 2);
-    putenv(temp); //On déplace la fenêtre en haut
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR;
 
-    ecran = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, )
-    SDL_SetVideoMode(LARGEUR, HAUTEUR, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-    fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-    SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-    SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
+    SDL_Surface *icon = NULL;
+    icon = IMG_Load("data/icone.png");
+    if(icon != NULL)
+    {
+        SDL_SetWindowIcon(window, icon); //Int icon for the main window
+#ifdef DEV_VERSION
+      //  char *test = (char*) SDL_GetError();
 #endif
+        SDL_FreeSurfaceS(icon);
+    }
+    else
+        logR((char*)SDL_GetError());
 
-    putenv("SDL_VIDEO_WINDOW_POS="); //On supprime la variable SDL_VIDEO_WINDOW comme ça, elle ne sera pas redéplacée
+    nameWindow(0);
 
     chargement();
 
@@ -303,7 +307,7 @@ int mainChoixDL()
             fclose(test);
         #endif
 
-        applyBackground();
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         initialisationAffichage();
         if(NETWORK_ACCESS < CONNEXION_DOWN)
@@ -347,7 +351,7 @@ int mainChoixDL()
                             else
                             {
                                 /*Confirmation */
-                                applyBackground();
+                                applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
                                 continuer = ecritureDansImport(mangaDispo[mangaChoisis], mangaDispoCourt[mangaChoisis], chapitreChoisis, teamsCourt[mangaChoisis]);
 								nombreChapitre = nombreChapitre + continuer;
                                 continuer = -1;
@@ -355,11 +359,11 @@ int mainChoixDL()
                         }
                     }
                 }
-                if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
+                if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
                 {
-                    if(checkLancementUpdate()) //Si il n'y a pas déjà une instance qui DL
+                    if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
                     {
-                        applyBackground();
+                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
                         affichageLancement();
                         lancementModuleDL();
                     }
@@ -380,20 +384,10 @@ int mainChoixDL()
     {
         fclose(test);
         /*Fenetre*/
-        if(ecran->h != HAUTEUR_INTERDIT_WHILE_DL || fond->h != HAUTEUR_INTERDIT_WHILE_DL)
-        {
-            SDL_FreeSurfaceS(ecran);
-            SDL_FreeSurfaceS(fond);
-            ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_INTERDIT_WHILE_DL, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-            fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_INTERDIT_WHILE_DL, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-            SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-            SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+        if(WINDOW_SIZE_H != HAUTEUR_INTERDIT_WHILE_DL)
+            updateWindowSize(LARGEUR, HAUTEUR_INTERDIT_WHILE_DL);
 
-        }
-        applyBackground();
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         continuer = interditWhileDL();
     }
@@ -405,7 +399,7 @@ void mainDL()
     int erreur = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
 	FILE *BLOQUEUR = NULL;
-    SDL_Surface *texte = NULL;
+    SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 	SDL_Rect position;
@@ -433,16 +427,23 @@ void mainDL()
     #endif
 
     /*On affiche la petite fenêtre*/
-    nameWindow(1);
-    putenv("SDL_VIDEO_WINDOW_POS=center"); //On centre la fenêtre
 
-    ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_DL, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-    fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_FENETRE_DL, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-	SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
+    window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, 0);
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR_FENETRE_DL;
+
+    SDL_Surface *icon = IMG_Load("data/icone.png");
+    if(icon != NULL)
+    {
+        SDL_SetWindowIcon(window, icon); //Int icon for the main window
+        SDL_FreeSurfaceS(icon);
+    }
+
+    nameWindow(1);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
     if(get_compte_infos() == PALIER_QUIT)
     {
         fclose(BLOQUEUR);
@@ -462,47 +463,58 @@ void mainDL()
     fclose(BLOQUEUR);
     removeR("data/download");
 
-    applyBackground();
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
     if(!erreur)
     {
-        texte = TTF_RenderText_Blended(police, texteTrad[0], couleurTexte);
-        position.x = ecran->w / 2 - texte->w / 2;
-        position.y = ecran->h / 2 - texte->h / 2 * 3;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = WINDOW_SIZE_H / 2 - texte->h / 2 * 3;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        texte = TTF_RenderText_Blended(police, texteTrad[1], couleurTexte);
-        position.x = ecran->w / 2 - texte->w / 2;
+        texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
         waitEnter();
     }
     else if (erreur > 0)
     {
         crashTemp(temp, TAILLE_BUFFER);
         sprintf(temp, "%s %d %s", texteTrad[2], erreur, texteTrad[3]);
-        texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-        position.x = ecran->w / 2 - texte->w / 2;
+
+        texte = TTF_Write(renderer, police, temp, couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        texte = TTF_RenderText_Blended(police, texteTrad[4], couleurTexte);
-        position.x = ecran->w / 2 - texte->w / 2;
+        texte = TTF_Write(renderer, police, texteTrad[4], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        texte = TTF_RenderText_Blended(police, texteTrad[5], couleurTexte);
-        position.x = ecran->w / 2 - texte->w / 2;
+        texte = TTF_Write(renderer, police, texteTrad[5], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + MINIINTERLIGNE;
-        SDL_BlitSurface(texte, NULL, ecran, &position);
-        SDL_FreeSurfaceS(texte);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
 
-        refresh_rendering;
+        SDL_RenderPresent(renderer);
         waitEnter();
     }
     TTF_CloseFont(police);

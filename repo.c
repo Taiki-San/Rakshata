@@ -27,37 +27,28 @@ int ajoutRepo()
     char teamLong[LONGUEUR_NOM_MANGA_MAX], teamCourt[LONGUEUR_COURT], mode[5], URL[LONGUEUR_URL], ID[LONGUEUR_ID_MAX], temp[TAILLE_BUFFER];
     char site[LONGUEUR_SITE], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
 	FILE* test = NULL;
-    SDL_Surface *texte;
+    SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_NEW_B};
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    if(ecran->h != HAUTEUR_FENETRE_AJOUT_REPO_INIT || fond->h != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
-	applyBackground();
+    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
+        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     loadTrad(texteTrad, 14);
 
-
-    texte = TTF_RenderText_Blended(police, texteTrad[0], couleurTexte);
-    position.x = ecran->w / 2 - texte->w / 2;
-    position.y = ecran->h / 2 - texte->h / 2;
-    SDL_BlitSurface(texte, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texte);
-    refresh_rendering;
-    if(NETWORK_ACCESS < CONNEXION_DOWN)
+    texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+    position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
+    position.h = texte->h;
+    position.w = texte->w;
+    SDL_RenderCopy(renderer, texte, NULL, &position);
+    SDL_DestroyTextureS(texte);
+    SDL_RenderPresent(renderer);
+    if(NETWORK_ACCESS != CONNEXION_DOWN)
     {
         crashTemp(temp, TAILLE_BUFFER);
         /*Lecture du fichier*/
@@ -66,34 +57,24 @@ int ajoutRepo()
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
 
-            if(ecran->h != HAUTEUR_FENETRE_AJOUT_REPO_INIT || fond->h != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
-            {
-                /*Redimension de la fenÍtre, petite optimisation*/
-                SDL_FreeSurfaceS(ecran);
-                SDL_FreeSurfaceS(fond);
-                ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-                fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT, 32, 0, 0 , 0, 0); //on initialise le fond
-    #ifdef __APPLE__
-                SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-    #else
-                SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-    #endif
-                applyBackground();
-            }
+            if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
+                updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
 
             /*On affiche l'écran de sélection*/
-            applyBackground();
-            texte = TTF_RenderText_Blended(police, texteTrad[1], couleurTexte);
-            position.x = ecran->w / 2 - texte->w / 2;
+            applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+            texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
             position.y = HAUTEUR_MENU_AJOUT_REPO;
-            SDL_BlitSurface(texte, NULL, ecran, &position);
-            SDL_FreeSurfaceS(texte);
-            refresh_rendering;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+            SDL_RenderPresent(renderer);
 
             crashTemp(URL, LONGUEUR_URL);
             /*On attend l'URL*/
             continuer = waitClavier(LONGUEUR_URL, 0, 0, URL);
-            applyBackground();
+            applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(URL))
@@ -151,41 +132,38 @@ int ajoutRepo()
 
                 if(!erreur)
                 {
-                    /*Redimension de la fenÍtre*/
-                    if(ecran->h != HAUTEUR_FENETRE_AJOUT_REPO || fond->h != HAUTEUR_FENETRE_AJOUT_REPO)
-                    {
-                        SDL_FreeSurfaceS(ecran);
-                        SDL_FreeSurfaceS(fond);
-                        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-                        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-                        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-                        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-                    }
-                    applyBackground();
-                    texte = TTF_RenderText_Blended(police, texteTrad[2], couleurTexte);
-                    position.x = ecran->w / 2 - texte->w / 2;
+                    /*Redimension de la fenêtre*/
+                    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
+                        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
+
+                    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                    texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = BORDURE_SUP_MENU;
-                    SDL_BlitSurface(texte, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(texte);
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
 
                     crashTemp(temp, TAILLE_BUFFER);
-                    texte = TTF_RenderText_Blended(police, texteTrad[3], couleurTexte);
-                    position.x = ecran->w / 2 - texte->w / 2;
+                    texte = TTF_Write(renderer, police, texteTrad[3], couleurTexte);
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = BORDURE_SUP_MENU + texte->h + MINIINTERLIGNE;
-                    SDL_BlitSurface(texte, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(texte);
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
 
                     /*On affiche les infos*/
                     crashTemp(temp, TAILLE_BUFFER);
                     sprintf(temp, "Team: %s", teamLong);
-                    texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-                    position.x = ecran->w / 2 - texte->w / 2;
+                    texte = TTF_Write(renderer, police, temp, couleurTexte);
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = HAUTEUR_ID_AJOUT_REPO;
-                    SDL_BlitSurface(texte, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(texte);
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
                     crashTemp(temp, TAILLE_BUFFER);
 
                     /*On transforme les '_' en ' '*/
@@ -205,12 +183,14 @@ int ajoutRepo()
                     }
 
 
-                    texte = TTF_RenderText_Blended(police, temp, couleurTexte);
-                    position.x = ecran->w / 2 - texte->w / 2;
+                    texte = TTF_Write(renderer, police, temp, couleurTexte);
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = HAUTEUR_TEAM_AJOUT_REPO;
-                    SDL_BlitSurface(texte, NULL, ecran, &position);
-                    SDL_FreeSurfaceS(texte);
-                    refresh_rendering;
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
+                    SDL_RenderPresent(renderer);
 
                     if(waitEnter() == 1)
                     {
@@ -249,7 +229,7 @@ int deleteRepo()
     FILE* repoNew = NULL;
 
     /*Initialisateurs graphique*/
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -295,46 +275,27 @@ int deleteRepo()
         i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
     }
 
-    if(ecran->h != i || fond->h != i)
-    {
-        SDL_FreeSurfaceS(ecran);
-        SDL_FreeSurfaceS(fond);
-        ecran = SDL_SetVideoMode(LARGEUR, i, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, i, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-    }
-    applyBackground();
+    if(WINDOW_SIZE_H != i)
+        updateWindowSize(LARGEUR, i);
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     loadTrad(texteTrad, 15);
 
-    texteAffiche = TTF_RenderText_Blended(police, texteTrad[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texteTrad[0], couleur);
     position.y = HAUTEUR_TEXTE;
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
     teamChoisis = mangaTriColonne(team, SECTION_CHOISIS_TEAM, mangaElligibles, 0, BORDURE_SUP_SELEC_MANGA);
 
     if(teamChoisis > -3 && team[teamChoisis - 1][0] != 0)
     {
-        if(ecran->h != HAUTEUR_DEL_REPO || fond->h != HAUTEUR_DEL_REPO)
-        {
-            SDL_FreeSurfaceS(ecran);
-            SDL_FreeSurfaceS(fond);
-            ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_DEL_REPO, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-            fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_DEL_REPO, 32, 0, 0 , 0, 0); //on initialise le fond
-#ifdef __APPLE__
-            SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-            SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-        }
-        applyBackground();
+        if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
+            updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
+        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
         confirme = confirmationRepo(team[teamChoisis - 1]);
 
@@ -367,31 +328,40 @@ int affichageRepoIconnue()
 {
     /*Initialisateurs graphique*/
     char texte[SIZE_TRAD_ID_7][100];
-	SDL_Surface *texteAffiche = NULL;
+	SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
 	loadTrad(texte, 7);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 - texteAffiche->h;
-    applyBackground();
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[1], couleur);
+        texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
 
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
-    position.y = ecran->h / 2 + texteAffiche->h;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
-    refresh_rendering;
-
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+        SDL_RenderPresent(renderer);
+    }
+    else
+        return 1;
     TTF_CloseFont(police);
 
     return waitEnter();
@@ -402,7 +372,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     int confirme = 0;
 	char texte[SIZE_TRAD_ID_4][100];
     /*Initialisateurs graphique*/
-    SDL_Surface *texteAffiche = NULL;
+    SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
@@ -413,28 +383,34 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     /*Remplissage des variables*/
     loadTrad(texte, 4);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[0], couleur);
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
+    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = HAUTEUR_MENU_CONFIRMATION_SUPPRESSION;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
-    texteAffiche = TTF_RenderText_Blended(police, texte[1], couleur);
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
+    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = HAUTEUR_CONSIGNES_CONFIRMATION_SUPPRESSION;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    texteAffiche = TTF_RenderText_Blended(police, team, couleur);
-    position.x = ecran->w / 2 - texteAffiche->w / 2;
+    texteAffiche = TTF_Write(renderer, police, team, couleur);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = HAUTEUR_TEAM_CONFIRMATION_SUPPRESSION;
-    SDL_BlitSurface(texteAffiche, NULL, ecran, &position);
-    SDL_FreeSurfaceS(texteAffiche);
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
 
     TTF_CloseFont(police);
-    refresh_rendering;
+    SDL_RenderPresent(renderer);
 
     confirme = waitEnter();
 
