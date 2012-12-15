@@ -1,0 +1,887 @@
+/*********************************************
+**	        	 Rakshata v1.1 		        **
+**     Licence propriétaire, code source    **
+**        confidentiel, distribution        **
+**          formellement interdite          **
+**********************************************/
+
+#include "main.h"
+
+void checkUpdate()
+{
+    FILE* test = fopenR("tmp/update", "r");
+
+    if(test != NULL)
+    {
+        /**********************************************************************************
+        ***                                                                             ***
+        ***                         Application de la MaJ                               ***
+        ***    On peut soit supprimer, soit ajouter, soit mettre à jour des fichiers:   ***
+        ***                                                                             ***
+        ***     -R: Remove                                                             ***
+        ***     -A: Add                                                                 ***
+        ***     -P: Parse, si fichier texte, on rétabli les retours à la ligne          ***
+        ***     -U: Update, metà jour le fichier                                        ***
+        ***     -D: Depreciate, renomme en .old                                         ***
+        ***                                                                             ***
+        ***********************************************************************************/
+
+		int i = 0, j = 0, ligne = 0;
+        char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][100], temp[100], URL[300];
+
+
+		SDL_Surface *infosAvancement = NULL;
+        SDL_Rect position;
+        SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+        TTF_Font *police = NULL;
+
+		remove("Rakshata.old");
+
+        for(; i < TAILLE_BUFFER; i++)
+        {
+            for(j = 0; j < TAILLE_BUFFER; j++)
+                files[i][j] = 0;
+            for(j = 0; j < 2; j++)
+                action[i][j] = 0;
+        }
+
+        //Lecture du fichier de MaJ, protection contre les overflow
+        for(; fgetc(test) != EOF && ligne < TAILLE_BUFFER; ligne++)
+        {
+            fseek(test, -1, SEEK_CUR);
+            fscanfs(test, "%s %s", action[ligne], 2, files[ligne], TAILLE_BUFFER);
+        }
+        fclose(test);
+        removeR("tmp/update"); //Evite des téléchargements en parallèle de l'update
+
+        /*Initialisation écran*/
+        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+
+        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_MAJ, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_MAJ, 32, 0, 0 , 0, 0); //On initialise le fond
+#ifdef __APPLE__
+        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
+#else
+        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
+#endif
+        SDL_WM_SetCaption("Rakshata - Mise à jour en cours - Upgrade in progress", NULL);
+        applyBackground();
+
+        loadTrad(trad, 12); //Chargement du texte puis écriture
+        infosAvancement = TTF_RenderText_Blended(police, trad[0], couleurTexte);
+        position.x = (ecran->w / 2) - (infosAvancement->w / 2);
+        position.y = 20;
+        SDL_BlitSurface(infosAvancement, NULL, ecran, &position);
+        SDL_FreeSurfaceS(infosAvancement);
+        infosAvancement = TTF_RenderText_Blended(police, trad[1], couleurTexte);
+        position.x = (ecran->w / 2) - (infosAvancement->w / 2);
+        position.y = 20 + infosAvancement->h + MINIINTERLIGNE;
+        SDL_BlitSurface(infosAvancement, NULL, ecran, &position);
+        SDL_FreeSurfaceS(infosAvancement);
+        TTF_CloseFont(police);
+        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+
+        for(i = 0; files[i][0] != 0 && i < ligne; i++)
+        {
+            /*Téléchargement et affichage des informations*/
+            crashTemp(temp, 100);
+            position.y = 150;
+            position.x = 0;
+            SDL_BlitSurface(fond, NULL, ecran, &position);
+            sprintf(temp, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
+            infosAvancement = TTF_RenderText_Blended(police, temp, couleurTexte);
+            position.x = (ecran->w / 2) - (infosAvancement->w / 2);
+            SDL_BlitSurface(infosAvancement, NULL, ecran, &position);
+            SDL_FreeSurfaceS(infosAvancement);
+            refresh_rendering;
+
+            /*Application du playload*/
+            if(action[i][0] == 'D') //Depreciate
+            {
+                char *buffer = malloc(strlen(files[i]) + 15);
+                if(buffer == NULL)
+                    exit(0);
+                sprintf(buffer, "%s.old", files[i]);
+                rename(files[i], buffer);
+                free(buffer);
+            }
+            else if(action[i][0] == 'R' || action[i][0] == 'U') //Remove ou Update
+                remove(files[i]);
+
+            else if(action[i][0] == 'A' || action[i][0] == 'P' || action[i][0] == 'U') //Add ou Parse (comme add) ou Update
+            {
+                if(files[i][strlen(files[i]) -1] == '/') //Dossier
+                    mkdirR(files[i]);
+                else
+                {
+                    crashTemp(URL, 300);
+#ifdef DEV_VERSION
+                    sprintf(URL, "http://www.%s/update/dev/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+#else
+    #ifdef _WIN32
+                    sprintf(URL, "http://www.%s/update/win32/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+    #else
+        #ifdef __APPLE__
+                    sprintf(URL, "http://www.%s/update/OSX/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+        #else
+                    sprintf(URL, "http://www.%s/update/linux/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+        #endif
+    #endif
+#endif
+                    crashTemp(temp, TAILLE_BUFFER);
+                    ustrcpy(temp, files[i]);
+                    download(URL, temp, 0);
+
+                    if(action[i][0] == 'P')
+                    {
+                        int j = 0, k = 0;
+                        char *buffer = NULL;
+						size_t size;
+
+						test = fopenR(files[i], "r");
+                        fseek(test, 0, SEEK_END);
+                        size = ftell(test);
+                        rewind(test);
+
+                        buffer = malloc(size*2);
+
+                        while((k=fgetc(test)) != EOF)
+                        {
+                            if(k == '\n')
+                                buffer[j++] = '\r';
+                            buffer[j++] = k;
+                        }
+                        fclose(test);
+                        test = fopenR(files[i], "w+");
+                        for(k=0; k < j; fputc(buffer[k++], test));
+                        fclose(test);
+                        free(buffer);
+                    }
+                }
+            }
+        }
+
+        /*Application des modifications*/
+        lancementExternalBinary(files[ligne - 1]);
+        exit(1);
+    }
+}
+
+void checkJustUpdated(char *argv)
+{
+    if(checkFileExist("Rakshata-N.exe"))
+    {
+        remove("tmp/update");
+        remove("Rakshata.exe");
+        renameR("Rakshata-N.exe", "Rakshata.exe");
+    }
+}
+
+int check_evt()
+{
+    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER];
+    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
+    FILE *test = NULL;
+
+    for(; i < NOMBRE_DE_FICHIER_A_CHECKER; i++)
+    {
+        for(j = 0; j < LONGUEUR_NOMS_DATA; j++)
+            nomsATest[i][j] = 0;
+        fichiersADL[i] = 0;
+    }
+
+    /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
+    sprintf(nomsATest[0], "data/font.ttf");
+    sprintf(nomsATest[1], "data/acceuil.png");
+    sprintf(nomsATest[2], "data/french/acceuil.png");
+    sprintf(nomsATest[3], "data/french/bandeau.png");
+    sprintf(nomsATest[4], "data/french/controls.png");
+    sprintf(nomsATest[5], "data/french/localization");
+    sprintf(nomsATest[6], "data/english/acceuil.png");
+    sprintf(nomsATest[7], "data/english/bandeau.png");
+    sprintf(nomsATest[8], "data/english/controls.png");
+    sprintf(nomsATest[9], "data/english/localization");
+    sprintf(nomsATest[10], "data/italian/acceuil.png");
+    sprintf(nomsATest[11], "data/italian/bandeau.png");
+    sprintf(nomsATest[12], "data/italian/controls.png");
+    sprintf(nomsATest[13], "data/italian/localization");
+    sprintf(nomsATest[14], "data/german/acceuil.png");
+    sprintf(nomsATest[15], "data/german/bandeau.png");
+    sprintf(nomsATest[16], "data/german/controls.png");
+    sprintf(nomsATest[17], "data/german/localization");
+    sprintf(nomsATest[18], "data/icone.png");
+    sprintf(nomsATest[19], "data/repo");
+    sprintf(nomsATest[20], MANGA_DATABASE);
+    sprintf(nomsATest[21], "data/secure.enc");
+
+    /*On test l'existance de tous les fichiers*/
+    j = 0;
+    for(i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
+    {
+        test = fopenR(nomsATest[i], "r");
+        if(test != NULL)
+            fclose(test);
+        else
+        {
+            if(!i)
+                cantwrite = 1;
+            else
+                fichiersADL[j++] = i;
+        }
+    }
+
+    if(j)
+    {
+        char temp[200];
+        SDL_Surface *message = NULL;
+        SDL_Rect position;
+        SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+        TTF_Font *police = NULL;
+
+		while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+
+        mkdirR("data");
+        mkdirR("data/english");
+        mkdirR("data/french");
+        mkdirR("data/german");
+        mkdirR("data/italian");
+
+        /*On vas écrire un message annonçant qu'on va restaurer l'environnement
+        On ne va pas utiliser les fichiers de trad car ils peuvent être corrompus*/
+
+        if(cantwrite) //Si police absente
+        {
+            crashTemp(temp, 200);
+            sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
+            download(temp, nomsATest[0], 0);
+        }
+
+        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+
+        applyBackground();
+        crashTemp(temp, 200);
+        sprintf(temp, "Environement corrompu, veuillez patienter (%d fichier(s)).", j);
+        message = TTF_RenderText_Blended(police, temp, couleur);
+        position.x = ecran->w / 2 - message->w / 2;
+        position.y = ecran->h / 2 - message->h;
+        SDL_BlitSurface(message, NULL, ecran, &position);
+        SDL_FreeSurfaceS(message);
+
+        crashTemp(temp, 200);
+        sprintf(temp, "Environment corrupted, please wait (%d file(s)).", j);
+        message = TTF_RenderText_Blended(police, temp, couleur);
+        position.x = ecran->w / 2 - message->w / 2;
+        position.y = ecran->h / 2 + message->h;
+        SDL_BlitSurface(message, NULL, ecran, &position);
+        SDL_FreeSurfaceS(message);
+
+        refresh_rendering;
+
+        for(i = 0; i < j; i++)
+        {
+            if((test = fopenR(nomsATest[fichiersADL[i]], "r")) == NULL) //On confirme que le fichier est absent
+            {
+                crashTemp(temp, 200);
+                sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
+                download(temp, nomsATest[fichiersADL[i]], 0);
+
+                if(fichiersADL[i] == 5 || fichiersADL[i] == 9 || fichiersADL[i] == 13 || fichiersADL[i] == 17 || fichiersADL[i] == 19 || fichiersADL[i] == 20) //Si c'est un fichier de localization
+                {
+                    int k = 0, j = 0; //On parse
+					char *buffer = NULL;
+					size_t size;
+
+                    test = fopenR(nomsATest[fichiersADL[i]], "r");
+                    fseek(test, 0, SEEK_END);
+                    size = ftell(test);
+                    rewind(test);
+
+                    buffer = malloc(size*2);
+
+                    while((k=fgetc(test)) != EOF)
+                    {
+                        if(k == '\n')
+                            buffer[j++] = '\r';
+                        buffer[j++] = k;
+                    }
+                    fclose(test);
+                    test = fopenR(nomsATest[fichiersADL[i]], "w+");
+                    for(k=0; k < j; fputc(buffer[k++], test));
+                    fclose(test);
+                    free(buffer);
+                }
+
+                if(fichiersADL[i] == 18) //Si c'est l'icone
+                    SDL_WM_SetIcon(IMG_Load("data/icone.png"), NULL); //Int icon for the main window
+            }
+            else
+                fclose(test);
+        }
+        nameWindow(0);
+    }
+    remove("R_ECHEC_VISITEZ_LE_SITE_DE_RAKSHATA_rakshata.com_AU_PLUS_VITE.temp");
+    remove("upgrade.exe");
+    if(get_compte_infos() == PALIER_QUIT)
+        return PALIER_QUIT;
+
+    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
+    if(test == NULL)
+        createSecurePasswordDB(NULL);
+    else
+        fclose(test);
+    return 0;
+}
+
+int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
+{
+    int retour = 0;
+    char temp[TAILLE_BUFFER], team[LONGUEUR_NOM_MANGA_MAX];
+    SDL_Surface *image = NULL;
+    SDL_Event event;
+    SDL_Rect position;
+    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    TTF_Font *police = NULL;
+    FILE* test = NULL;
+
+    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+
+    /*Chargement arborescence*/
+    teamOfProject(projet, team);
+    crashTemp(temp, TAILLE_BUFFER);
+    sprintf(temp, "manga/%s/%s/infos.png", team, projet);
+
+    test = fopenR(temp, "r");
+
+    applyBackground();
+
+    if(test != NULL)
+    {
+        /*Affichage consigne*/
+        char texte[SIZE_TRAD_ID_10][100];
+        loadTrad(texte, 10);
+
+        fclose(test);
+
+        restartEcran();
+
+		image = TTF_RenderText_Blended(police, texte[0], couleur);
+        position.x = LARGEUR / 2 - image->w / 2;
+        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
+        SDL_BlitSurface(image, NULL, ecran, &position);
+        refresh_rendering;
+
+        /*Chargement arborescence*/
+        crashTemp(temp, TAILLE_BUFFER);
+        sprintf(temp, "manga/%s/%s/infos.png", team, projet);
+
+        image = IMG_Load(temp);
+        position.x = 0;
+        position.y = BORDURE_HOR_LECTURE;
+        SDL_BlitSurface(image, NULL, ecran, &position);
+        refresh_rendering;
+        SDL_FreeSurfaceS(image);
+        TTF_CloseFont(police);
+
+        /*Ca ressemble beaucoup au code de waitEnter et c'est normal car c'est un C/C mais un peu modifié
+        J'ai été forcé de le faire car il fallait qu'appuyer sur n'importe quelle touche renvoie quelque chose*/
+
+        while(retour == 0)
+        {
+            event.type = -1;
+            SDL_WaitEvent(&event);
+            switch(event.type)
+            {
+            case SDL_QUIT:
+                retour = PALIER_QUIT;
+                break;
+
+            case SDL_KEYDOWN: //If a keyboard letter is pushed
+            {
+                switch(event.key.keysym.sym)
+                {
+                case SDLK_ESCAPE:
+                    retour = -3;
+                    break;
+
+                case SDLK_DELETE:
+                case SDLK_BACKSPACE:
+                    retour = -2;
+                    break;
+
+                default: //If other one
+                    retour = 1;
+                    break;
+                }
+                break;
+            }
+            case SDL_MOUSEBUTTONUP:
+                if(clicNotSlide(event))
+                    retour = 1;
+                break;
+
+            default:
+                if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
+                    retour = PALIER_QUIT;
+                break;
+            }
+        }
+        return retour;
+    }
+    return 1;
+}
+
+int checkLancementUpdate()
+{
+    FILE* test = NULL;
+    test = fopenR("tmp/import.dat", "r");
+    if(test != NULL)
+    {
+        if(fgetc(test) != EOF)
+        {
+            fclose(test);
+#ifdef _WIN32
+            removeR("data/download");
+            test = fopenR("data/download", "r");
+
+            /*Si un dl est disponible mais qu'aucune instance ne DL*/
+            if(test == NULL)
+                return 1;
+            else
+                fclose(test);
+#else
+            int i = 0;
+            FILE *temp = NULL;
+            temp = fopenR("data/download", "r"); //Si fichier n'existe pas, test != NULL
+            if(temp != NULL)
+            {
+                fscanfs(temp, "%d", &i);
+                fclose(temp);
+                if(!checkPID(i))
+                    return 0;
+                else
+                    return 1;
+            }
+            else
+                return 1;
+#endif
+        }
+        else
+            fclose(test);
+    }
+#ifdef _WIN32
+    else
+    {
+        test = fopenR("data/download", "r");
+        if(test != NULL)
+        {
+            fclose(test);
+            removeR("data/download");
+        }
+    }
+#endif
+    return 0;
+}
+
+void networkAndVersionTest()
+{
+    /*Cette fonction va vérifier si le logiciel est a jour*/
+
+    /*Initialisation*/
+    int i = 0, hostNotReached = 0;
+    char temp[TAILLE_BUFFER], bufferDL[5] = {0, 5, 1, 1, 1}, OS[5];
+
+    NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
+
+    /*Chargement de l'URL*/
+#ifdef DEV_VERSION
+    ustrcpy(OS, "DEV");
+#else
+    #ifdef _WIN32
+        ustrcpy(OS, "WIN");
+    #else
+        ustrcpy(OS, "UNIX");
+    #endif
+#endif
+
+    sprintf(temp, "http://www.%s/System/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, OS);
+
+    if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand même le test avec 2 en activation
+        hostNotReached++;
+    /*Si fichier téléchargé, on teste son intégrité.
+    Le fichier est sensé contenir 1 ou 0.
+    On va donc vérifier. Si ce n'est pas le cas,
+    il y a un probléme avec le serveur*/
+
+    if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
+    {
+#ifdef _WIN32 //On check le fichier HOST
+        checkHostNonModifie();
+#endif
+
+        setupBufferDL(bufferDL, 5, 1, 1, 1);
+        if(download(MAIN_SERVER_URL[1], bufferDL, 2) == -6) //On fais un test avec google.com
+            hostNotReached++;
+
+        if(hostNotReached == 2) //Si on a jamais réussi à ce connecter à un serveur
+            NETWORK_ACCESS = CONNEXION_DOWN;
+        else
+            NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
+    }
+
+    else
+    {
+
+        NETWORK_ACCESS = CONNEXION_OK;
+        if(bufferDL[0] == '1' && !checkFileExist("update/update") && !checkFileExist("update/apply")) //Update needed
+        {
+			int j = 0, k = 0;
+			char *buffer = NULL;
+            FILE* test = NULL;
+			size_t size;
+
+            mkdirR("tmp"); //Au cas où le dossier n'existe pas
+#ifdef DEV_VERSION
+    sprintf(temp, "http://www.%s/update/dev/%d", MAIN_SERVER_URL[0], CURRENTVERSION);
+#else
+    #ifdef _WIN32
+            sprintf(temp, "http://www.%s/update/win32/%d", MAIN_SERVER_URL[0], CURRENTVERSION);
+    #else
+        #ifdef __APPLE__
+                sprintf(temp, "http://www.%s/update/OSX/%d", MAIN_SERVER_URL[0], CURRENTVERSION);
+        #else
+                sprintf(temp, "http://www.%s/update/linux/%d", MAIN_SERVER_URL[0], CURRENTVERSION);
+        #endif
+    #endif
+#endif
+            download(temp, "tmp/update", 0);
+
+			test = fopenR("tmp/update", "r");
+            fseek(test, 0, SEEK_END);
+            size = ftell(test);
+            rewind(test);
+
+            buffer = malloc(size*2);
+
+            while((k=fgetc(test)) != EOF)
+            {
+                if(k == '\n')
+                    buffer[j++] = '\r';
+                buffer[j++] = k;
+            }
+            fclose(test);
+            test = fopenR("tmp/update", "w+");
+            for(k=0; k < j; fputc(buffer[k++], test));
+            fclose(test);
+            free(buffer);
+
+        }
+
+        //Nouveau killswitch
+        if(checkFileExist("data/account.enc"))
+		{
+			FILE* file_account = fopenR("data/account.enc", "a");
+			size_t size = ftell(file_account);
+			char *output = malloc(size+100);
+
+			fclose(file_account);
+
+			crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+			AESDecrypt(FAKE_PASSWORD, "data/account.enc", output, OUTPUT_IN_MEMORY);
+			for(i = 0; i < 100 && output[i]; i++)
+				COMPTE_PRINCIPAL_MAIL[i] = output[i];
+			free(output);
+
+			for(; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
+			if(i == 0 && COMPTE_PRINCIPAL_MAIL[i] != '@')
+                quit_thread(0);
+
+			sprintf(temp, "http://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+			setupBufferDL(bufferDL, 5, 1, 1, 1);
+
+			download(temp, bufferDL, 0);
+
+			if(bufferDL[0] == '1') //Compte valide
+                quit_thread(0);
+
+			/*A partir d'ici, le compte est killswitche*/
+
+			removeFolder("manga");
+			removeFolder("data");
+			remove(MANGA_DATABASE);
+			remove("data/repo");
+			exit(0);
+		}
+    }
+    quit_thread(0);
+}
+
+int checkRestore()
+{
+    FILE *test = NULL;
+    test = fopenR("data/laststate.dat", "r");
+    if(test == NULL)
+        return 0;
+    fclose(test);
+    return 1;
+}
+
+int checkRestoreAvailable()
+{
+    FILE* restore = NULL;
+    restore = fopenR("data/laststate.dat", "r");
+    if(restore != NULL)
+    {
+        int chapitre = 0;
+        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX + 50], team[LONGUEUR_NOM_MANGA_MAX];
+        crashTemp(manga, LONGUEUR_NOM_MANGA_MAX);
+        crashTemp(temp, LONGUEUR_NOM_MANGA_MAX + 50);
+        fscanfs(restore, "%s %d", manga, LONGUEUR_NOM_MANGA_MAX, &chapitre);
+        fclose(restore);
+
+        teamOfProject(manga, team);
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre, CONFIGFILE);
+        return checkFileExist(temp);
+    }
+    return 0;
+}
+
+int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker)
+{
+    int i = 0;
+    char temp[LONGUEUR_NOM_MANGA_MAX];
+    char buffer2[LONGUEUR_COURT];
+    FILE *mangas = NULL;
+    mangas = fopenR(MANGA_DATABASE, "r");
+
+    if(mangas != NULL)
+    {
+        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la premiére team, si il ne correspond pas, on lance la boucle
+        while(strcmp(temp, teamLong) != 0)
+        {
+            while((i = fgetc(mangas)) != '#' && i != EOF);
+            if(i == EOF)
+                break;
+            crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
+            fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT);
+        }
+        if(i != EOF) //Nouvelle team pas concernée
+        {
+            int j = 0, k = 0, l = 0;
+            while(strcmp(temp, nomProjet) != 0 && fgetc(mangas) != EOF)
+            {
+                fseek(mangas, -1, SEEK_CUR);
+                crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
+                crashTemp(buffer2, LONGUEUR_COURT);
+                fscanfs(mangas, "%s %s %d %d %d %d", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT, &i, &j, &k, &l);
+            }
+            fclose(mangas);
+            if(valeurAChecker > l)
+                return 1;
+        }
+        fclose(mangas);
+    }
+    return 0;
+}
+
+int checkNameFileZip(char fileToTest[256])
+{
+    if( fileToTest[0] == '_' &&
+        fileToTest[1] == '_' &&
+        fileToTest[2] == 'M' &&
+        fileToTest[3] == 'A' &&
+        fileToTest[4] == 'C' &&
+        fileToTest[5] == 'O' &&
+        fileToTest[6] == 'S' &&
+        fileToTest[7] == 'X' &&
+        fileToTest[8] == '/') //On vérifie que c'est pas un de ces dossiers parasites créés par MACOS
+        return 0;
+
+    //strlen(fileToTest) - 1 est le dernier caractére, strlen(fileToTest) donnant la longueur de la chaine
+
+    if(fileToTest[strlen(fileToTest) - 1] == '/') //Si c'est un dossier, le dernier caractére est /
+        return 0;
+
+    if(fileToTest[strlen(fileToTest) - 3] == '.' &&
+            fileToTest[strlen(fileToTest) - 2] == 'd' &&
+            fileToTest[strlen(fileToTest) - 1] == 'b')
+        return 0;
+
+    if(fileToTest[strlen(fileToTest) - 4] == '.' &&
+            fileToTest[strlen(fileToTest) - 3] == 'e' &&
+            fileToTest[strlen(fileToTest) - 2] == 'x' &&
+            fileToTest[strlen(fileToTest) - 1] == 'e')
+        return 0;
+
+    return 1;
+}
+
+void checkHostNonModifie()
+{
+    char temp[TAILLE_BUFFER];
+    FILE* host = NULL;
+    sprintf(temp, "C:\\Windows\\System32\\drivers\\etc\\hosts");
+    host = fopenR(temp, "r"); //pas fopenR car on se balade dans le DD, pas dans les fichiers de Rakshata
+    if(host != NULL);
+    {
+        int justeSautDeLigne = 1, j = 0, i = 0;
+        while((i = fgetc(host)) != EOF)
+        {
+            if(i == '#' && justeSautDeLigne)
+                while((i = fgetc(host)) != '\n' && i != EOF);
+
+            if(i == '\n') //Commentaire seulement en début de ligne donc on fais gaffe
+                justeSautDeLigne = 1;
+            else
+                justeSautDeLigne = 0;
+
+            /*Code à améliorer: on peut bloquer l'IP, le rsp, rakshata.com...*/
+
+            if(i == 'r')
+            {
+                fseek(host, -1, SEEK_CUR);
+                crashTemp(temp, TAILLE_BUFFER);
+                j = 0;
+                while((i = fgetc(host)) != '\n' && i != EOF && i != ' ' && j < 50)
+                    temp[j++] = i;
+                for(i = 0; temp[i] == MAIN_SERVER_URL[0][i]; i++);
+                if(i >= 15)
+                {
+                    fclose(host);
+                    logR("Violation détecté: redirection dans host\n");
+                    NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
+                    break; //On quitte la boucle en while
+                }
+            }
+        }
+    }
+}
+
+int clicNotSlide(SDL_Event event)
+{
+    if(event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        if(event.button.button != SDL_BUTTON_WHEELDOWN && event.button.button != SDL_BUTTON_WHEELUP)
+            return 1;
+    }
+    return 0;
+}
+
+int checkPasNouveauChapitreDansDepot(char teamCourt[LONGUEUR_COURT], char mangaLong[LONGUEUR_NOM_MANGA_MAX], int chapitre)
+{
+    int i = 0, j = 0, chapitre_new = 0;
+    char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], mode[10], URL[LONGUEUR_URL];
+    FILE* repo = fopenR("data/repo", "r");
+
+    if(NETWORK_ACCESS == CONNEXION_DOWN || repo == NULL)
+        return 0;
+
+    if(!positionnementApres(repo, teamCourt))
+        return 0;
+    fscanfs(repo, "%s %s\n", mode, 10, URL, LONGUEUR_URL);
+    fclose(repo);
+
+    setupBufferDL(bufferDL, 100, 100, 10, 1);
+    get_update_mangas(bufferDL, mode, URL);
+
+    if(bufferDL[i]) //On a DL quelque chose
+        i += sscanfs(&bufferDL[i], "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, URL, LONGUEUR_URL);
+    else
+        return 0;
+    while(bufferDL[i] && strcmp(mangaLong, temp))
+        i += sscanfs(&bufferDL[i], "%s %s %d %d %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, URL, LONGUEUR_URL, &j, &chapitre_new, &j, &j);
+    if(chapitre_new > chapitre)
+        return chapitre_new;
+    return 0;
+}
+
+int checkFileExist(char filename[])
+{
+    FILE* FileToTest = fopenR(filename, "r");
+    if(FileToTest != NULL)
+    {
+        fclose(FileToTest);
+        return 1;
+    }
+    return 0;
+}
+
+int checkButtonPressed(int button_selected[6])
+{
+    if(checkFirstLineButtonPressed(button_selected) || checkSecondLineButtonPressed(button_selected))
+        return 1;
+    return 0;
+}
+
+int checkFirstLineButtonPressed(int button_selected[6])
+{
+    if(button_selected[0] == 1 || button_selected[1] == 1 || button_selected[2] == 1)
+        return 1;
+    return 0;
+}
+
+int checkSecondLineButtonPressed(int button_selected[6])
+{
+    if(button_selected[3] == 1 || button_selected[4] == 1 || button_selected[5] == 1)
+        return 1;
+    return 0;
+}
+
+int checkFileValide(FILE* file)
+{
+    if(file == NULL || fgetc(file) == '<' || fgetc(file) == '<' || fgetc(file) == '<')
+        return 0;
+    return 1;
+}
+
+int checkChapitreUnread(char nomManga[LONGUEUR_NOM_MANGA_MAX])
+{
+    int i = 0;
+    char nomTeam[LONGUEUR_NOM_MANGA_MAX], temp[200];
+	FILE* configDat = NULL;
+
+    for(i = 0; i < LONGUEUR_NOM_MANGA_MAX && nomManga[i]; i++)
+    {
+        if(nomManga[i] == ' ')
+            nomManga[i] = '_';
+    }
+
+    teamOfProject(nomManga, nomTeam);
+
+    sprintf(temp, "manga/%s/%s/%s", nomTeam, nomManga, CONFIGFILE);
+
+    for(i = 0; i < LONGUEUR_NOM_MANGA_MAX && nomManga[i]; i++)
+    {
+        if(nomManga[i] == '_')
+            nomManga[i] = ' ';
+    }
+
+    configDat = fopenR(temp, "r");
+
+    if(configDat == NULL) //Dans le cas d'un DL, signifie que le mangas n'a pas encore été DL
+        return -1;
+
+    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
+    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
+    fclose(configDat);
+
+    if(i == ' ') //Si le chapitre est déjà lu
+        return 0;
+    return 1;
+}
+
+int checkChapterEncrypted(char teamLong[], char mangaDispo[], int chapitreChoisis)
+{
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
+    FILE* testExistance = NULL;
+
+	sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangaDispo, chapitreChoisis);
+    testExistance = fopenR(temp, "r");
+    if(testExistance != NULL)
+    {
+        fclose(testExistance);
+        return 1;
+    }
+    return 0;
+}
+

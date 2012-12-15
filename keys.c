@@ -1,0 +1,806 @@
+/*********************************************
+**	        	 Rakshata v1.1 		        **
+**     Licence propriétaire, code source    **
+**  	  confidentiel, distribution	    **
+**  	    formellement interdite	        **
+**********************************************/
+
+#include "main.h"
+
+int getMasterKey(unsigned char *input)
+{
+    /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
+    int nombreCle, i, j, fileInvalid;
+    unsigned char date[100], fingerPrint[SHA256_DIGEST_LENGTH], buffer[240], buffer_Load[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+    size_t size;
+
+#ifdef MSVC
+    void *output = NULL;
+    char *output_char = NULL;
+#endif
+
+	FILE* bdd = NULL;
+    *input = 0;
+
+    if(COMPTE_PRINCIPAL_MAIL[0] == 0)
+    {
+        if(get_compte_infos() == PALIER_QUIT)
+            return PALIER_QUIT;
+    }
+
+    do
+    {
+        bdd = fopenR("data/secure.enc", "r");
+
+        if(bdd == NULL)
+        {
+            if(createSecurePasswordDB(NULL))
+                return 1;
+            else
+                bdd = fopenR("data/secure.enc", "r");
+        }
+
+        fseek(bdd, 0, SEEK_END);
+        size = ftell(bdd);
+        fclose(bdd);
+
+        if(!size || size % SHA256_DIGEST_LENGTH != 0)
+        {
+            fileInvalid = 1;
+            removeR("data/secure.enc");
+        }
+        else
+            fileInvalid = 0;
+    } while(fileInvalid);
+
+#ifndef MSVC
+    void *output = NULL;
+    char *output_char = NULL;
+#endif
+
+    for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
+        for(j=0; j<SHA256_DIGEST_LENGTH; buffer_Load[i][j++] = 0);
+
+    bdd = fopenR("data/secure.enc", "rb");
+    for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
+    {
+        fseek(bdd, -1, SEEK_CUR);
+        for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; buffer_Load[nombreCle][j++] = i);
+        buffer_Load[nombreCle][SHA256_DIGEST_LENGTH] = 0;
+    }
+    fclose(bdd);
+
+#ifdef _WIN32
+    get_file_date("data\\secure.enc", (char *) date);
+#else
+	get_file_date("data/secure.enc", (char *) date);
+#endif
+    generateFingerPrint(fingerPrint);
+
+    sprintf((char *) buffer, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+
+    crashTemp(date, 100);
+
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    pbkdf2(buffer, fingerPrint, hash);
+    crashTemp(buffer, 240);
+
+	output = malloc(size + 1);
+	output_char = output;
+
+    for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
+    {
+        AESDecrypt(hash, buffer_Load[i], output, EVERYTHING_IN_MEMORY);
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && isHexa(output_char[j]); j++); //On regarde si c'est bien une clée
+        if(j == SHA256_DIGEST_LENGTH) //C'est la clée
+        {
+            for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+            {
+                input[i] = output_char[i];
+                output_char[i] = 0;
+            }
+            if(output_char[i]) //Juste pour eviter les double-free
+                free(output);
+            break;
+        }
+    }
+    crashTemp(hash, HASH_LENGTH);
+
+    if(!input[0]) //Pas de clée trouvée
+    {
+        unsigned char key[HASH_LENGTH];
+        free(output);
+        recoverPassToServ(key, 0);
+        memcpy(input, key, HASH_LENGTH);
+
+        createSecurePasswordDB(input);
+        crashTemp(key, HASH_LENGTH);
+    }
+    return 0;
+}
+
+int createSecurePasswordDB(unsigned char *key_sent)
+{
+    int i = 0;
+    unsigned char fingerPrint[HASH_LENGTH], date[100], temp[240], *encryption_output = NULL;
+    FILE* bdd = NULL;
+
+#ifdef _WIN32 //On récupère maintenant la date du fichier
+    HANDLE hFile;
+    FILETIME ftLastEdit;
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+    SYSTEMTIME ftTime;
+#endif
+
+    if(key_sent == NULL)
+        bdd = fopenR("data/secure.enc", "w+");
+
+    else
+        bdd = fopenR("data/secure.enc", "a+");
+
+    if(bdd == NULL)
+    {
+        logR("Echec de création de la BDD sécurisé: création de fichier impossible\n");
+        return -1;
+    }
+
+    fclose(bdd);
+
+    crashTemp(fingerPrint, sizeof(fingerPrint));
+    generateFingerPrint(fingerPrint);
+
+#ifdef _WIN32 //On récupère maintenant la date du fichier
+    if(UNZIP_NEW_PATH)
+    {
+        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(temp == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+
+        sprintf(temp, "%s/data/secure.enc", REPERTOIREEXECUTION);
+        applyWindowsPathCrap(temp);
+        hFile = CreateFileA(temp, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+        free(temp);
+
+    }
+
+    else
+
+        hFile = CreateFileA("data/secure.enc",GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+
+    GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupère pas le dernier argument pour faire chier celui qui essaierai de comprendre
+    dwLowDateTime = ftLastEdit.dwLowDateTime;
+    dwHighDateTime = ftLastEdit.dwHighDateTime;
+    FileTimeToSystemTime(&ftLastEdit, &ftTime);
+    CloseHandle(hFile); //Fermeture
+    crashTemp(date, 100);
+    sprintf((char *)date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+#else //On cherche l'heure de la dernière modif
+    struct stat structure_time;
+    if(UNZIP_NEW_PATH)
+    {
+        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(temp == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+
+        sprintf(temp, "%s/data/secure.enc", REPERTOIREEXECUTION);
+
+		if(!stat(temp, &structure_time))
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+		else
+		{
+			logR("Failed at get data from secure.enc\n");
+			exit(0);
+		}
+		free(temp);
+	}
+	else
+	{
+		if(!stat("data/secure.enc", &structure_time))
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+		else
+		{
+			logR("Failed at get data from secure.enc\n");
+			exit(0);
+		}
+	}
+#endif
+    sprintf((char *)temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+
+#ifdef _WIN32
+	do //Le seul but de ces lignes est d'être en accord avec le C89
+	{
+#endif
+		unsigned char key[2][SHA256_DIGEST_LENGTH+1];
+		memset(key[0], 0, SHA256_DIGEST_LENGTH+1);
+		memset(key[1], 0, SHA256_DIGEST_LENGTH+1);
+		if(key_sent == NULL)
+			generateKey(key[0]);
+		else
+			ustrcpy(key[0], key_sent);
+
+		pbkdf2(temp, fingerPrint, key[1]);
+		crashTemp(fingerPrint, HASH_LENGTH);
+		crashTemp(temp, 240);
+
+		encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
+		if(UNZIP_NEW_PATH == 1)
+			sprintf((char *)encryption_output, "%s/data/secure.enc", REPERTOIREEXECUTION);
+		else
+			sprintf((char *)encryption_output, "data/secure.enc");
+
+		if(key_sent == NULL)
+		{
+			AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+			if(sendPassToServ(key[0]))
+				AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+		}
+		else
+		{
+			AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
+			crashTemp(key[0], HASH_LENGTH);
+		}
+
+		free(encryption_output);
+
+		for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
+#ifdef _WIN32
+	}while(0);
+#endif
+
+	get_file_date("data/secure.enc", (char *)temp);
+
+
+    if(strcmp((char *) temp, (char *) date)) //Si on a été trop long et qu'il faut modifier la date du fichier
+    {
+#ifdef _WIN32 //On change la date du fichier
+
+        char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(buffer == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+
+        sprintf(buffer, "%s/data/secure.enc", REPERTOIREEXECUTION);
+        applyWindowsPathCrap(buffer);
+
+        hFile = CreateFileA(buffer, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+        ftLastEdit.dwLowDateTime = dwLowDateTime;
+        ftLastEdit.dwHighDateTime = dwHighDateTime;
+        SetFileTime(hFile, NULL, NULL, &ftLastEdit); //On applique les modifs
+        CloseHandle(hFile); //Fermeture
+
+        free(buffer);
+        crashTemp(temp, 140);
+#ifdef _WIN32
+		get_file_date("data\\secure.enc", (char *) temp);
+#else
+		get_file_date("data/secure.enc", (char *)temp);
+#endif
+
+
+        if(strcmp((char *) temp, (char *) date))
+        {
+            logR("Unexpected time comportement, please leave this programm away from your Dolorean.\n");
+            exit(1);
+        }
+#else
+
+        struct utimbuf ut;
+
+        ut.actime = structure_time.st_atime;
+        ut.modtime = structure_time.st_mtime;
+        utime("data/secure.enc",&ut);
+
+#endif
+    }
+
+    return 0;
+
+}
+
+void generateKey(unsigned char output[HASH_LENGTH])
+{
+    int i = 0;
+    unsigned char randomChar[50];
+    crashTemp(randomChar, 50);
+
+    for(i = 0; i < 50; i++)
+    {
+        randomChar[i] = (rand() + 1) % (255 - 32) + 33; //Génère un nombre ASCII-étendu
+        if(randomChar[i] < ' ')
+            i--;
+    }
+    sha256(randomChar, output);
+
+    unsigned char *buf = output;
+    for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        if(buf[i] <= ' '  || buf[i] == 127 || buf[i] >= 255)
+        {
+            int j = 0;
+            do {
+                j = (rand() + 1) % (255 - 32) + 33;
+            } while(j <= ' ' || j == 127 || j >= 255);
+
+            buf[i] = j;
+        }
+    }
+}
+
+int get_compte_infos()
+{
+    int i = 0;
+    char *output = NULL;
+	size_t size;
+	FILE *account_file = NULL;
+
+	account_file = fopenR("data/account.enc", "r");
+    if(account_file == NULL)
+    {
+        i = logon();
+        if(i == PALIER_QUIT)
+            return i;
+        account_file = fopenR("data/account.enc", "r");
+    }
+    fseek(account_file, 0, SEEK_END);
+    size = ftell(account_file);
+    fclose(account_file);
+
+    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+
+    output = malloc(size+100);
+    AESDecrypt(FAKE_PASSWORD, "data/account.enc", output, OUTPUT_IN_MEMORY);
+    for(i = 0; i < 100 && output[i]; i++)
+        COMPTE_PRINCIPAL_MAIL[i] = output[i];
+    free(output);
+
+    /*On vérifie la validité de la chaÓne*/
+    for(; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
+    if(!i) //on a pas de @
+    {
+        remove("data/account.enc");
+        logR("Pas d'arobase\n");
+        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+        exit(-1);
+    }
+
+    for(; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
+    if(i == 100) //on a pas de point après l'arobase
+    {
+        remove("data/account.enc");
+        logR("Pas de point après l'arobase\n");
+        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+        exit(-1);
+    }
+
+    for(i = 0; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '\'' && COMPTE_PRINCIPAL_MAIL[i] != '\"'; i++); // Injection SQL
+    if(i != 100)
+    {
+        remove("data/account.enc");
+        logR("Overfl0w et/ou injection SQL\n");
+        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+        exit(-1);
+    }
+    return 0;
+}
+
+int logon()
+{
+    int beginingOfEmailAdress = 0, resized = 0, retry = 0;
+    char trad[SIZE_TRAD_ID_26][100], adresseEmail[100];
+    SDL_Surface *ligne = NULL;
+    TTF_Font *police = NULL;
+    SDL_Rect position;
+    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+
+    if(ecran->h != SIZE_WINDOWS_AUTHENTIFICATION || fond->h != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas à redimensionner celle là
+    {
+        SDL_FreeSurfaceS(ecran);
+        SDL_FreeSurfaceS(fond);
+        ecran = SDL_SetVideoMode(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, 32, 0, 0 , 0, 0); //on initialise le fond
+#ifdef __APPLE__
+        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
+#else
+        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
+#endif
+        resized = 1;
+    }
+
+    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+    {
+        chargement();
+        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+    }
+    if(NETWORK_ACCESS != CONNEXION_OK)
+    {
+        connexionNeededToAllowANewComputer();
+        return PALIER_QUIT;
+    }
+    loadTrad(trad, 26); //Chargement de la trad
+    chargement();
+
+    do
+    {
+		int i = 0, login = 0;
+        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
+
+        retry = 0;
+        crashTemp(adresseEmail, 100);
+
+        applyBackground();
+
+        ligne = TTF_RenderText_Blended(police, trad[0], couleur); //Ligne d'explication
+        position.x = ecran->w / 2 - ligne->w / 2;
+        position.y = 20;
+        SDL_BlitSurface(ligne, NULL, ecran, &position);
+        SDL_FreeSurfaceS(ligne);
+
+        ligne = TTF_RenderText_Blended(police, trad[1], couleur);
+        position.y = 100;
+        beginingOfEmailAdress = position.x + ligne->w + 25;
+        SDL_BlitSurface(ligne, NULL, ecran, &position);
+        SDL_FreeSurfaceS(ligne);
+
+        TTF_CloseFont(police);
+        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+
+        ligne = TTF_RenderText_Blended(police, trad[2], couleur); //Disclamer
+        position.x = ecran->w / 2 - ligne->w / 2;
+        position.y += 85;
+        SDL_BlitSurface(ligne, NULL, ecran, &position);
+        SDL_FreeSurfaceS(ligne);
+        ligne = TTF_RenderText_Blended(police, trad[3], couleur); //Disclamer
+        position.x = ecran->w / 2 - ligne->w / 2;
+        position.y += 30;
+        SDL_BlitSurface(ligne, NULL, ecran, &position);
+        SDL_FreeSurfaceS(ligne);
+
+        TTF_CloseFont(police);
+
+        refresh_rendering;
+
+        if(waitClavier(50, beginingOfEmailAdress, 105, adresseEmail) == PALIER_QUIT)
+            return PALIER_QUIT;
+
+        chargement();
+        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
+
+        login = check_login(adresseEmail);
+
+        applyBackground();
+
+        switch(login)
+        {
+            case 0: //New account
+            case 1: //Account exist
+            {
+                char password[50];
+                /**Leurs codes sont assez proches donc on les regroupes**/
+                ligne = TTF_RenderText_Blended(police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y = 20;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                refresh_rendering;
+
+                ligne = TTF_RenderText_Blended(police, trad[6], couleur);
+                position.y = 100;
+                position.x = 50;
+                beginingOfEmailAdress = position.x + ligne->w + 25;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+
+                TTF_CloseFont(police);
+                police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+
+                ligne = TTF_RenderText_Blended(police, trad[7], couleur); //Disclamer
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y += 85;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                ligne = TTF_RenderText_Blended(police, trad[8], couleur); //Disclamer
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y += 30;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                refresh_rendering;
+
+                if((i = waitClavier(50, beginingOfEmailAdress, 105, password)) == PALIER_QUIT)
+                    return PALIER_QUIT;
+                else if (i == PALIER_MENU) //Echap
+                {
+                    TTF_CloseFont(police);
+                    retry = 1;
+                    break;
+                }
+                switch(checkPass(adresseEmail, password, login))
+                {
+                    case 0: //Rejected
+                    {
+                        applyBackground();
+                        ligne = TTF_RenderText_Blended(police, trad[10], couleur); //Message d'erreur
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y = 60;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        ligne = TTF_RenderText_Blended(police, trad[11], couleur); //Explications
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y += 110;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        ligne = TTF_RenderText_Blended(police, trad[12], couleur); //Explications
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y += 30;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        refresh_rendering;
+                        TTF_CloseFont(police);
+                        if(waitEnter() == PALIER_QUIT)
+                            return PALIER_QUIT;
+                        retry = 1;
+                        break;
+                    }
+                    case 1: //Accepted
+                    {
+                        AESEncrypt(FAKE_PASSWORD, adresseEmail, "data/account.enc", INPUT_IN_MEMORY);
+
+                        for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100; beginingOfEmailAdress++)
+                            COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
+                        TTF_CloseFont(police);
+                        break;
+                    }
+                    default: //Else -> erreure critique, me contacter/check de la connexion/du site
+                    {
+                        applyBackground();
+                        ligne = TTF_RenderText_Blended(police, trad[13], couleur); //Message d'erreur
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y = 60;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        ligne = TTF_RenderText_Blended(police, trad[14], couleur); //Explications
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y += 80;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        ligne = TTF_RenderText_Blended(police, trad[15], couleur); //Explications
+                        position.x = ecran->w / 2 - ligne->w / 2;
+                        position.y += 40;
+                        SDL_BlitSurface(ligne, NULL, ecran, &position);
+                        SDL_FreeSurfaceS(ligne);
+                        refresh_rendering;
+                        waitEnter();
+                        return PALIER_QUIT;
+                        break;
+                    }
+                }
+                break;
+            }
+
+            default: //Erreur
+            {
+                ligne = TTF_RenderText_Blended(police, trad[9], couleur); //Message d'erreur
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y = 60;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                ligne = TTF_RenderText_Blended(police, trad[11], couleur); //Explications
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y += 110;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                ligne = TTF_RenderText_Blended(police, trad[12], couleur); //Explications
+                position.x = ecran->w / 2 - ligne->w / 2;
+                position.y += 30;
+                SDL_BlitSurface(ligne, NULL, ecran, &position);
+                SDL_FreeSurfaceS(ligne);
+                refresh_rendering;
+                if(waitEnter() == PALIER_QUIT)
+                    return PALIER_QUIT;
+                retry = 1;
+                break;
+            }
+        }
+    }
+    while (retry);
+
+    if(resized)
+        restartEcran();
+    return 0;
+}
+
+int check_login(char adresseEmail[100])
+{
+    int i = 0;
+    char URL[300], buffer_output[500];
+
+    /*On vérifie la validité de la chaÓne*/
+    for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
+    if(i == 100) //on a pas de @
+        return 2;
+
+    for(; i < 100 && adresseEmail[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
+    if(i == 100) //on a pas de point après l'arobase
+        return 2;
+
+    for(i = 0; i < 100 && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
+    if(i != 100)
+        return 2;
+
+    sprintf(URL, "http://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
+
+    setupBufferDL(buffer_output, 50, 6, 1, 1); //Préparation du buffer
+
+    download(URL, buffer_output, 0);
+    for(i = strlen(buffer_output); i > 0; i--)
+    {
+        if(buffer_output[i] == '\r' || buffer_output[i] == '\n')
+            buffer_output[i] = 0;
+    }
+
+    if(!strcmp(buffer_output, "account_not_found") || !strcmp(buffer_output, "several_results"))
+        return 0;
+
+    else if(!strcmp(buffer_output, "account_exist"))
+        return 1;
+
+    sprintf(buffer_output, "%s\n", buffer_output);
+    logR(buffer_output);
+    return 2;
+}
+
+int checkPass(char adresseEmail[100], char password[100], int login)
+{
+    int i = 0;
+    char URL[300], buffer_output[500], hash1[HASH_LENGTH], hash2[HASH_LENGTH];
+
+    /*On vérifie la validité de la chaÓne*/
+    for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
+    if(adresseEmail[i] != '@') //on a pas de @
+        return 2;
+
+    for(; i < 100 && adresseEmail[i] && adresseEmail[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
+    if(adresseEmail[i] != '.') //on a pas de point après l'arobase
+        return 2;
+
+    for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
+    if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
+        return 2;
+
+    sha256_legacy(password, hash1);
+    sha256_legacy(hash1, hash2); //On hash deux fois
+
+    sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
+
+    setupBufferDL(buffer_output, 50, 6, 1, 1); //Préparation du buffer
+
+    download(URL, buffer_output, 0);
+
+    for(i = strlen(buffer_output); i > 0; i--)
+    {
+        if(i > SHA256_DIGEST_LENGTH && (buffer_output[i] == '\r' || buffer_output[i] == '\n'))
+            buffer_output[i] = 0;
+    }
+
+    sprintf(URL, "%s-access_denied", hash2);
+    sha256_legacy(URL, hash1);
+
+    sprintf(URL, "%s-access_granted", hash2);
+    sha256_legacy(URL, hash2);
+
+    if(!strcmp(buffer_output, hash1) || !strcmp(buffer_output, "access_denied"))
+        return 0;
+
+    else if(!strcmp(buffer_output, hash2)) //access granted
+        return 1;
+
+    sprintf(buffer_output, "%s\n", buffer_output);
+    logR(buffer_output);
+    return 2;
+}
+
+int sendPassToServ(unsigned char key[SHA256_DIGEST_LENGTH])
+{
+    int i = 0;
+    char temp[400], key_64b[65];
+    char buffer_dl[500];
+
+    key_64b[64] = 0;
+    decToHex(key, SHA256_DIGEST_LENGTH, key_64b);
+    crashTemp(key, SHA256_DIGEST_LENGTH);
+
+    sprintf(temp, "http://rsp.%s/newMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, key_64b);
+    crashTemp(key_64b, 65);
+
+    setupBufferDL(buffer_dl, 100, 5, 1, 1);
+
+    download(temp, buffer_dl, 0);
+
+    crashTemp(temp, 400);
+
+    for(i = strlen(buffer_dl); i > 0; i--)
+    {
+        if(buffer_dl[i] == '\r' || buffer_dl[i] == '\n')
+            buffer_dl[i] = 0;
+    }
+
+    if(!strcmp(buffer_dl, "old_key_found"))
+    {
+        recoverPassToServ(key, 0);
+        return 1;
+    }
+    else if(strcmp(buffer_dl, "success"))
+    {
+        sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+        logR(temp);
+        exit(0);
+    }
+    return 0;
+}
+
+void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
+{
+    int i = 0;
+    char temp[400];
+    char buffer_dl[500];
+    if(mode != 0) //On essaie de pas transmettre trop en clair la clée manquante
+    {
+        mode = (mode+5) * (mode+5) +1;
+        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s&authMode=%d", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
+    }
+    else if(rand() / 2)
+    {
+        mode = rand() % 100 + 1 + 5;
+        mode = mode * (mode+10) + 1;
+        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s&authMode=%d", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
+        mode = 0;
+    }
+    else
+        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+
+    crashTemp(key, SHA256_DIGEST_LENGTH);
+
+    setupBufferDL(buffer_dl, 100, 5, 1, 1);
+
+    download(temp, buffer_dl, 0);
+
+    crashTemp(temp, 400);
+
+    for(i = strlen(buffer_dl); i > 0; i--)
+    {
+        if(buffer_dl[i] == '\r' || buffer_dl[i] == '\n')
+            buffer_dl[i] = 0;
+    }
+
+    if(!strcmp(buffer_dl, "fail"))
+    {
+        logR("Failed at get password from server");
+        exit(0);
+    }
+
+    if(mode)
+    {
+        memcpy(key, buffer_dl, 64);
+        key[64] = 0;
+        return;
+    }
+    for(i = 0; i < strlen(buffer_dl) && buffer_dl[i] < 'A' && buffer_dl[i] > 'F'; i++);
+
+    if(i != strlen(buffer_dl))
+    {
+        for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+            key[i] = buffer_dl[i];
+    }
+    else
+        hexToDec(buffer_dl, key);
+    return;
+}
+
