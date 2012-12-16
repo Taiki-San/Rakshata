@@ -201,7 +201,9 @@ int download(char *adresse, char *repertoire, int activation)
                 case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
                 case SDL_WINDOWEVENT:
-                    SDL_PushEvent(&event);
+                    if(event.type != SDL_WINDOWEVENT || event.window.type < SDL_WINDOWEVENT_CLOSE)
+                        SDL_PushEvent(&event);
+                    event.type = 0;
                     break;
 
                 default:
