@@ -189,7 +189,7 @@ int download(char *adresse, char *repertoire, int activation)
 		SDL_Event event;
         while(status != 0)
         {
-			SDL_WaitEventTimeout(&event, 50);
+			SDL_WaitEvent(&event);
             switch(event.type)
             {
                 case SDL_QUIT:
@@ -201,9 +201,7 @@ int download(char *adresse, char *repertoire, int activation)
                 case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
                 case SDL_WINDOWEVENT:
-                    if(event.type != SDL_WINDOWEVENT || checkWindowEventValid(event.window.event))
-                        SDL_PushEvent(&event);
-                    SDL_FlushEvent(event.type);
+                    SDL_PushEvent(&event);
                     break;
 
                 default:
