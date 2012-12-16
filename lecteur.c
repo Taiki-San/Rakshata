@@ -16,9 +16,9 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
     int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, chapMax = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE], teamLong[LONGUEUR_NOM_MANGA_MAX];
     FILE* testExistance = NULL;
-    SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL, *bandeauControle = NULL;
+    SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
     SDL_Surface *explication = NULL, *UIAlert = NULL, *UI_PageAccesDirect = NULL;
-    SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL;
+    SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL, *bandeauControle = NULL;
     TTF_Font *police = NULL;
     SDL_Rect positionInfos, positionPage, positionBandeauControle, positionSlide;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurFinChapitre = {POLICE_NEW_R, POLICE_NEW_G, POLICE_NEW_B};
@@ -91,7 +91,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
         SDL_FreeSurface(OChapitre);
         SDL_FreeSurface(NChapitre);
         SDL_DestroyTextureS(infoSurface);
-        SDL_FreeSurfaceS(bandeauControle);
+        SDL_DestroyTextureS(bandeauControle);
         restartEcran();
         if(i > -3)
             return -2;
@@ -103,8 +103,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
     changementPage = 2;
 
-    sprintf(temp, "data/%s/bandeau.png", LANGUAGE_PATH[langue - 1]);
-    bandeauControle = IMG_Load(temp);
+    bandeauControle = loadControlBar();
 
     while(1)
     {
@@ -124,7 +123,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                 if(pageEnCoursDeLecture < pageTotal)
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
-                SDL_FreeSurfaceS(bandeauControle);
+                SDL_DestroyTextureS(bandeauControle);
                 restartEcran();
                 if(i > -3)
                     return -2;
@@ -163,7 +162,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                 if(pageEnCoursDeLecture < pageTotal)
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
-                SDL_FreeSurfaceS(bandeauControle);
+                SDL_DestroyTextureS(bandeauControle);
                 restartEcran();
                 if(i > -3)
                     return -2;
@@ -233,7 +232,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             if(pageEnCoursDeLecture < pageTotal)
                 SDL_FreeSurface(NChapitre);
             SDL_DestroyTextureS(infoSurface);
-            SDL_FreeSurfaceS(bandeauControle);
+            SDL_DestroyTextureS(bandeauControle);
             restartEcran();
             if(i > -3)
                 return -2;
@@ -982,6 +981,65 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
     return 0;
 }
 
+SDL_Texture* loadControlBar()
+{
+    char temp[200];
+    sprintf(temp, "data/%s/bandeau.png", LANGUAGE_PATH[langue - 1]);
+
+    SDL_Surface *bandeauControleSurfaceBuffer = IMG_Load(temp), *bandeauControleSurface = NULL;
+    SDL_Rect positionIcone;
+
+    /*On crée une surface intermédiaire car bliter directement sur le png loadé ne marche pas*/
+    bandeauControleSurface = SDL_CreateRGBSurface(0, bandeauControleSurfaceBuffer->w, bandeauControleSurfaceBuffer->h, 32, 0, 0, 0, 0);
+    SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurfaceBuffer->format, 255, 255, 255));
+    SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurfaceBuffer->format, 255, 255, 255));
+
+    SDL_BlitSurface(bandeauControleSurfaceBuffer, NULL, bandeauControleSurface, NULL);
+    SDL_FreeSurfaceS(bandeauControleSurfaceBuffer);
+
+    SDL_Surface *icone = IMG_Load("data/favorite.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 - 10 - icone->w;
+        positionIcone.y = bandeauControleSurface->h / 2 - 5 - icone->h;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/fullscreen.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 + 10;
+        positionIcone.y = bandeauControleSurface->h / 2 - 5 - icone->h;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/delete.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 - 10 - icone->w;
+        positionIcone.y = bandeauControleSurface->h / 2 + 5;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/dlmore.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 + 10;
+        positionIcone.y = bandeauControleSurface->h / 2 + 5;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    SDL_Texture *bandeauControle = SDL_CreateTextureFromSurface(renderer, bandeauControleSurface);
+
+    SDL_FreeSurfaceS(bandeauControleSurface);
+
+    return bandeauControle;
+}
+
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, char mangaDispo[LONGUEUR_NOM_MANGA_MAX])
 {
     int extremesManga[2], check4change = 0;
@@ -1036,7 +1094,7 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
     return check4change;
 }
 
-void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Surface *bandeauControle)
+void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle)
 {
     SDL_FreeSurface(chapitre);
     SDL_DestroyTextureS(chapitre_texture);
@@ -1048,7 +1106,7 @@ void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surfa
     OChapitre = NULL;
     NChapitre = NULL;
     SDL_DestroyTextureS(infoSurface);
-    SDL_FreeSurfaceS(bandeauControle);
+    SDL_DestroyTextureS(bandeauControle);
 }
 
 void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX])
@@ -1084,7 +1142,7 @@ int clicOnButton(const int x, const int y, const int positionBandeauX)
     return CLIC_SUR_BANDEAU_NONE;
 }
 
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Surface *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
     SDL_Texture *texture = NULL;
 
@@ -1093,8 +1151,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
 
     positionBandeauControle.h = bandeauControle->h;
     positionBandeauControle.w = bandeauControle->w;
-    texture = SDL_CreateTextureFromSurface(renderer, bandeauControle);
-    SDL_RenderCopy(renderer, texture, NULL, &positionBandeauControle);
+    SDL_RenderCopy(renderer, bandeauControle, NULL, &positionBandeauControle);
     SDL_DestroyTexture(texture);
 
     if(pageAccesDirect && //Si l'utilisateur veut acceder â€¡ une page, on modifie deux trois trucs
