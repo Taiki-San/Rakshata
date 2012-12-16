@@ -67,7 +67,6 @@ int getMasterKey(unsigned char *input)
     {
         fseek(bdd, -1, SEEK_CUR);
         for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; buffer_Load[nombreCle][j++] = i);
-        //buffer_Load[nombreCle][SHA256_DIGEST_LENGTH-1] = 0;
     }
     fclose(bdd);
 
