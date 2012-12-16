@@ -91,7 +91,7 @@ int getMasterKey(unsigned char *input)
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
         AESDecrypt(hash, buffer_Load[i], output, EVERYTHING_IN_MEMORY);
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && isHexa(output_char[j]); j++); //On regarde si c'est bien une clée
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] > ' '  && output_char[j] != 127 && output_char[j] < 255); j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
