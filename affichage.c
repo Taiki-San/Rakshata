@@ -423,9 +423,6 @@ void updateWindowSize(int w, int h)
 
         SDL_SetWindowSize(window, w, h);
 
-        SDL_DestroyRenderer(renderer);
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
     }
     SDL_RenderFillRect(renderer, NULL);
     SDL_RenderPresent(renderer);
