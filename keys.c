@@ -5,6 +5,7 @@
 **  	    formellement interdite	        **
 **********************************************/
 
+#include "AES.h"
 #include "main.h"
 
 int getMasterKey(unsigned char *input)
@@ -66,7 +67,7 @@ int getMasterKey(unsigned char *input)
     {
         fseek(bdd, -1, SEEK_CUR);
         for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; buffer_Load[nombreCle][j++] = i);
-        buffer_Load[nombreCle][SHA256_DIGEST_LENGTH-1] = 0;
+        //buffer_Load[nombreCle][SHA256_DIGEST_LENGTH-1] = 0;
     }
     fclose(bdd);
 
@@ -88,9 +89,22 @@ int getMasterKey(unsigned char *input)
 	output = malloc(size + 1);
 	output_char = output;
 
+    unsigned long rk[RKLENGTH(KEYBITS)];
+    int nrounds = rijndaelSetupDecrypt(rk, hash, KEYBITS);
+
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
-        AESDecrypt(hash, buffer_Load[i], output, EVERYTHING_IN_MEMORY);
+        /*Décryptage manuel car un petit peu délicat*/
+        for(j = 0; j < 2; j++)
+        {
+            unsigned char plaintext[16];
+            unsigned char ciphertext[16];
+            memcpy(ciphertext, buffer_Load[i] + j*16, 16);
+            rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
+            memcpy(output+j*16, plaintext, 16);
+        }
+        output_char[SHA256_DIGEST_LENGTH] = 0;
+
         for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] > ' '  && output_char[j] != 127 && output_char[j] < 255); j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {

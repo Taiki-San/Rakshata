@@ -135,7 +135,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     unsigned char *path_output = _path_output;
     int i, inputMemory = 1, outputMemory = 1;
     int positionDansInput = 0, positionDansOutput = 0;
-    int nrounds;
+    int nrounds, lastRow = 0;
 	int *return_val = NULL;
     FILE *input = NULL;
     FILE *output = NULL;
@@ -180,21 +180,10 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
             break;
         else if(inputMemory)
         {
-            /*Quick and dirty patch: si le truc crypté a un 0x00*/
-            if(cryptIntoMemory == OUTPUT_IN_HDD_BUT_INCREMENTAL)
-            {
-                if(positionDansInput > 3*sizeof(ciphertext))
-                    break;
-                memcpy(ciphertext, path_input+positionDansInput, sizeof(ciphertext));
-                positionDansInput+= sizeof(ciphertext);
-            }
-            else
-            {
-                return_val = memccpy(ciphertext, path_input+positionDansInput, 0, sizeof(ciphertext));
-                positionDansInput+= sizeof(ciphertext);
-                if(return_val != NULL && return_val != (int*)path_input+positionDansInput)
-                    break;
-            }
+            return_val = memccpy(ciphertext, path_input+positionDansInput, 0, sizeof(ciphertext));
+            positionDansInput+= sizeof(ciphertext);
+            if(return_val != NULL && return_val == ciphertext + 0x10)
+                lastRow = 1;
         }
         rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
         if(!outputMemory && output != NULL)
@@ -206,7 +195,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
             memmove(path_output+i, plaintext, sizeof(plaintext));
             i+= sizeof(plaintext);
         }
-    } while (1);
+    } while (!lastRow);
 
 	if(!inputMemory)
         fclose(input);
