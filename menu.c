@@ -34,7 +34,6 @@ int showControls()
     int retour = 0;
     char temp[TAILLE_BUFFER];
     SDL_Texture *controls = NULL;
-//    SDL_Surface *controls = NULL;
     SDL_Event event;
 
     /***Doit passer par une surface pour redimensionner
@@ -49,10 +48,6 @@ int showControls()
         updateWindowSize(controls->w, controls->h);
     else
         applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
-
-    //controls_texture = SDL_CreateTextureFromSurface(renderer, controls);
-    //SDL_FreeSurfaceS(controls);
-
 
     SDL_RenderCopy(renderer, controls, NULL, NULL);
     SDL_DestroyTextureS(controls);
