@@ -1011,7 +1011,7 @@ SDL_Texture* loadControlBar()
     SDL_Surface *icone = IMG_Load("data/icon/pc.png");
     if(icone != NULL)
     {
-        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_PC;
         positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
@@ -1020,7 +1020,7 @@ SDL_Texture* loadControlBar()
     icone = IMG_Load("data/icon/pp.png");
     if(icone != NULL)
     {
-        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_PP;
         positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
@@ -1065,7 +1065,7 @@ SDL_Texture* loadControlBar()
     icone = IMG_Load("data/icon/np.png");
     if(icone != NULL)
     {
-        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_NP;
         positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
