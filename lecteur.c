@@ -14,7 +14,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0, encrypted = 0;
     int deplacementEnCours = 0, extremesManga[2] = {0,0};
     int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, chapMax = 0, pageAccesDirect = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE], teamLong[LONGUEUR_NOM_MANGA_MAX];
+    char temp[LONGUEUR_NOM_MANGA_MAX*5], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE], teamLong[LONGUEUR_NOM_MANGA_MAX];
     FILE* testExistance = NULL;
     SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
     SDL_Surface *explication = NULL, *UIAlert = NULL, *UI_PageAccesDirect = NULL;
@@ -559,6 +559,34 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
                             case CLIC_SUR_BANDEAU_DELETE:
                             {
+                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                internal_deleteChapitre(extremesManga[0], extremesManga[1], *chapitreChoisis, *chapitreChoisis, mangaDispo, teamLong);
+                                anythingNew(extremesManga, mangaDispo);
+                                for(i = *chapitreChoisis; i <= extremesManga[1]; i++)
+                                {
+                                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaDispo, i, CONFIGFILE);
+                                    if(checkFileExist(temp))
+                                        break;
+                                }
+                                if(i > extremesManga[1])
+                                {
+                                    for(i = *chapitreChoisis; i >= extremesManga[0]; i--)
+                                    {
+                                        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaDispo, i, CONFIGFILE);
+                                        if(checkFileExist(temp))
+                                            break;
+                                    }
+                                }
+                                if(i < extremesManga[0] || i > extremesManga[1])
+                                {
+                                    *chapitreChoisis = PALIER_CHAPTER;
+                                    return PALIER_CHAPTER;
+                                }
+                                else
+                                {
+                                    *chapitreChoisis = i;
+                                    return 0;
+                                }
                                 break;
                             }
 
@@ -1365,8 +1393,13 @@ void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX])
 
     sprintf(temp, "manga/%s/%s/%s", team, mangaChoisis, CONFIGFILE);
     test = fopenR(temp, "r");
-    fscanfs(test, "%d %d", &extremes[0], &extremes[1]);
-    fclose(test);
+    if(test != NULL)
+    {
+        fscanfs(test, "%d %d", &extremes[0], &extremes[1]);
+        fclose(test);
+    }
+    else
+        extremes[0] = extremes[1] = 0;
 }
 
 /*Event Management*/

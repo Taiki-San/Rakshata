@@ -151,7 +151,6 @@ int deleteManga()
     char mangaDispoCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], teamsCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT];
     char temp[TAILLE_BUFFER];
     FILE* test = NULL;
-    FILE* GlaDOS = NULL;
 
     /*C/C du choix de manga pour le lecteur.*/
     miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
@@ -188,65 +187,10 @@ int deleteManga()
                             fscanfs(test, "%d", &k);
                         fclose(test);
 
-                        /*i == j si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
-                        if(i != j)
+                        chargement();
+                        if(internal_deleteChapitre(i, j, k, chapitreChoisis, mangaDispo[mangaChoisis], teamsLong[mangaChoisis]))
                         {
-                            test = fopenR(temp, "w+");
-                            crashTemp(temp, TAILLE_BUFFER);
-                            sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], chapitreChoisis);
-                            removeFolder(temp);
-                            /*On édite le config.dat*/
-
-                            /*Si on enlève le premier chapitre*/
-                            if(chapitreChoisis == i)
-                            {
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], i, CONFIGFILE);
-                                GlaDOS = fopenR(temp, "r");
-                                for(; i <= j && !GlaDOS; i++)
-                                {
-                                    crashTemp(temp, TAILLE_BUFFER);
-                                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], i, CONFIGFILE);
-                                    GlaDOS = fopenR(temp, "r");
-                                }
-                                i--;
-                                fclose(GlaDOS);
-                                if(i == j)
-                                    fprintf(test, "%d %d", i, j);
-                                else
-                                    fprintf(test, "%d %d", i, j);
-                            }
-
-                            else if(chapitreChoisis == j)
-                            {
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], j, CONFIGFILE);
-                                GlaDOS = fopenR(temp, "r");
-                                for(; i <= j && !GlaDOS; j--)
-                                {
-                                    crashTemp(temp, TAILLE_BUFFER);
-                                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], j, CONFIGFILE);
-                                    GlaDOS = fopenR(temp, "r");
-                                }
-                                j++;
-                                fclose(GlaDOS);
-                                fprintf(test, "%d %d", i, j);
-                            }
-                            else
-                            {
-                                fprintf(test, "%d %d", i, j);
-                            }
-                            if(k != 0)
-                                fprintf(test, " %d", k);
-                            fclose(test);
-
-                        }
-
-                        else
-                        {
-                            crashTemp(temp, TAILLE_BUFFER);
-                            sprintf(temp, "manga\\%s\\%s\\", teamsLong[mangaChoisis], mangaDispo[mangaChoisis]);
-                            removeFolder(temp);
                             noMoreChapter = 0;
-                            chargement(); //On recharge la liste des mangas dispo
                             miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
                         }
                     }
@@ -530,5 +474,53 @@ void update_mangas()
     repo = fopenR(MANGA_DATABASE, "w+");
     fwrite(manga_new, strlen(manga_new), 1, repo);
     fclose(repo);
+}
+
+int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX])
+{
+    char temp[3*LONGUEUR_NOM_MANGA_MAX];
+    /*i == j si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
+    if(firstChapter != lastChapter)
+    {
+        sprintf(temp, "manga/%s/%s/%s", teamsLong, mangaDispo, CONFIGFILE);
+        FILE* test = fopenR(temp, "w+");
+
+        sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", teamsLong, mangaDispo, chapitreDelete);
+        removeFolder(temp);
+
+        /**On édite le config.dat**/
+
+        int i = 0, lastInstalled = 0;
+        for(i = firstChapter; i <= lastChapter; i++)
+        {
+            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong, mangaDispo, i, CONFIGFILE);
+            if(checkFileExist(temp))
+            {
+                if(!lastInstalled)
+                    firstChapter = i;
+                lastInstalled = i;
+            }
+        }
+
+        fprintf(test, "%d %d", firstChapter, lastInstalled);
+
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong, mangaDispo, lastRead, CONFIGFILE);
+
+        if(lastRead < firstChapter || !checkFileExist(temp))
+            lastRead = firstChapter;
+        else if(lastRead > lastInstalled)
+            lastRead = lastInstalled;
+
+        fprintf(test, " %d", lastRead);
+        fclose(test);
+    }
+
+    else
+    {
+        sprintf(temp, "manga\\%s\\%s\\", teamsLong, mangaDispo);
+        removeFolder(temp);
+        return 1;
+    }
+    return 0;
 }
 

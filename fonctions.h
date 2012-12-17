@@ -51,6 +51,7 @@ void get_update_repo(char *buffer_repo, char mode[10], char URL[LONGUEUR_URL]);
 void get_update_mangas(char *buffer_repo, char mode[10], char URL[LONGUEUR_URL]);
 void update_repo();
 void update_mangas();
+int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX]);
 
 /**Donwload.c**/
 int download(char *adresse, char *repertoire, int activation);

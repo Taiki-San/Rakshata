@@ -183,10 +183,11 @@ int mainLecture()
             {
                 continuer = retourLecteur;
             }
+
             else if(retourLecteur == 1)
             {
                 chapitreChoisis = -1;
-                while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && (chapsExtreme[0] != chapsExtreme[1]))
+                while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && chapsExtreme[0] != chapsExtreme[1] && chapsExtreme[0] != 0)
                 {
                     if(!restoringState)
                         chapitreChoisis = chapitre(teamsLong[mangaChoisis], mangaDispo[mangaChoisis], 1);
