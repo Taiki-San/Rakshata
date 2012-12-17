@@ -182,7 +182,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
         {
             return_val = memccpy(ciphertext, path_input+positionDansInput, 0, sizeof(ciphertext));
             positionDansInput+= sizeof(ciphertext);
-            if(return_val != NULL && return_val == ciphertext + 0x10)
+            if(return_val != NULL && return_val == (int*)ciphertext + 0x10)
                 lastRow = 1;
         }
         rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
