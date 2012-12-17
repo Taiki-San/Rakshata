@@ -28,11 +28,6 @@ void mainRakshata()
     }
 
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-
-    WINDOW_SIZE_W = LARGEUR;
-    WINDOW_SIZE_H = HAUTEUR;
 
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
@@ -45,6 +40,12 @@ void mainRakshata()
         logR((char*)SDL_GetError());
 
     nameWindow(0);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR;
 
     chargement();
 
@@ -432,21 +433,27 @@ void mainDL()
 
     /*On affiche la petite fenêtre*/
 
-    window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, 0);
-    WINDOW_SIZE_W = LARGEUR;
-    WINDOW_SIZE_H = HAUTEUR_FENETRE_DL;
+    window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
 
-    SDL_Surface *icon = IMG_Load("data/icone.png");
+    SDL_Surface *icon = NULL;
+    icon = IMG_Load("data/icone.png");
     if(icon != NULL)
     {
         SDL_SetWindowIcon(window, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
+    else
+        logR((char*)SDL_GetError());
 
     nameWindow(1);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR_FENETRE_DL;
+
+    chargement();
 
     if(get_compte_infos() == PALIER_QUIT)
     {
