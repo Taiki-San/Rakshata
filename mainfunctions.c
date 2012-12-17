@@ -39,9 +39,6 @@ void mainRakshata()
     if(icon != NULL)
     {
         SDL_SetWindowIcon(window, icon); //Int icon for the main window
-#ifdef DEV_VERSION
-      //  char *test = (char*) SDL_GetError();
-#endif
         SDL_FreeSurfaceS(icon);
     }
     else
@@ -223,7 +220,13 @@ int mainLecture()
                             retourLecteur = lecteur(&chapitreChoisis, &fullscreen, mangaDispo[mangaChoisis], teamsCourt[mangaChoisis]);
 
                             if(retourLecteur != 0)
-                                fullscreen = 0;
+                            {
+                                if(fullscreen != 0)
+                                {
+                                    fullscreen = 0;
+                                    SDL_SetWindowFullscreen(window, SDL_FALSE);
+                                }
+                            }
                         }
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;

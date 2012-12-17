@@ -96,16 +96,16 @@ int changementLangue();
 
 /**Lecteur.c**/
 int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char team[LONGUEUR_NOM_MANGA_MAX]);
-int configFileLoader(char *input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
+int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
 SDL_Texture* loadControlBar();
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, char mangaDispo[LONGUEUR_NOM_MANGA_MAX]);
-void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle);
-void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX]);
-int clicOnButton(const int x, const int y, const int positionBandeauX);
+void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
-SDL_Surface *IMG_LoadR(char *file);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
+void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX]);
+int clicOnButton(const int x, const int y, const int positionBandeauX);
+void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
 
 /**Mainfunctions.c**/
 void mainRakshata();

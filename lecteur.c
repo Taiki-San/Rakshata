@@ -92,7 +92,6 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
         SDL_FreeSurface(NChapitre);
         SDL_DestroyTextureS(infoSurface);
         SDL_DestroyTextureS(bandeauControle);
-        restartEcran();
         if(i > -3)
             return -2;
         else
@@ -124,7 +123,6 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
-                restartEcran();
                 if(i > -3)
                     return -2;
                 else
@@ -163,7 +161,6 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
-                restartEcran();
                 if(i > -3)
                     return -2;
                 else
@@ -233,7 +230,6 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                 SDL_FreeSurface(NChapitre);
             SDL_DestroyTextureS(infoSurface);
             SDL_DestroyTextureS(bandeauControle);
-            restartEcran();
             if(i > -3)
                 return -2;
             else
@@ -291,8 +287,8 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             if(changementEtat)
             {
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
-                WINDOW_SIZE_W = RESOLUTION[0];
-                WINDOW_SIZE_H = RESOLUTION[1];
+                WINDOW_SIZE_W = RESOLUTION[0] = window->w;
+                WINDOW_SIZE_H = RESOLUTION[1] = window->h;
             }
 
             applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
@@ -368,6 +364,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             else if (!*fullscreen)
                 positionPage.x = BORDURE_LAT_LECTURE;
         }
+
         else
         {
             positionPage.w = positionSlide.w = WINDOW_SIZE_W - BORDURE_LAT_LECTURE;
@@ -442,8 +439,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                     testExistance = fopenR("data/laststate.dat", "w+");
                     fprintf(testExistance, "%s %d %d", mangaDispo, *chapitreChoisis, pageEnCoursDeLecture);
                     fclose(testExistance);
-                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
-
+                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                     return PALIER_QUIT;
                     break;
                 }
@@ -482,6 +478,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                                 || (WINDOW_SIZE_W >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
                         ouvrirSite(team); //Ouverture du site de la team
                     }
+
                     else if(clicOnButton(event.button.x, event.button.y, positionBandeauControle.x))
                     {
                         switch(clicOnButton(event.button.x, event.button.y, positionBandeauControle.x))
@@ -492,7 +489,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 if(*chapitreChoisis > extremesManga[0])
                                 {
                                     *chapitreChoisis = *chapitreChoisis - 1;
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                                 else
@@ -512,7 +509,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                 if (check4change == -1)
                                 {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                                 break;
@@ -523,7 +520,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                 if (check4change == -1)
                                 {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                                 break;
@@ -535,7 +532,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 if(*chapitreChoisis < extremesManga[1])
                                 {
                                     *chapitreChoisis = *chapitreChoisis + 1; //Il faut faire en sorte qu'il soit possible de changer de chapitre
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                                 else
@@ -546,6 +543,29 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                     else
                                         finDuChapitre = 1;
                                 }
+                                break;
+                            }
+
+                            case CLIC_SUR_BANDEAU_FAVORITE:
+                            {
+                                break;
+                            }
+
+                            case CLIC_SUR_BANDEAU_FULLSCREEN:
+                            {
+                                applyFullscreen(fullscreen, &check4change, &changementEtat);
+                                break;
+                            }
+
+                            case CLIC_SUR_BANDEAU_DELETE:
+                            {
+                                break;
+                            }
+
+                            case CLIC_SUR_BANDEAU_MAINMENU:
+                            {
+                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                return -3;
                                 break;
                             }
                         }
@@ -561,7 +581,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                 if (check4change == -1)
                                 {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                             }
@@ -571,7 +591,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                 if (check4change == -1)
                                 {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
                             }
@@ -650,7 +670,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                             check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                             if (check4change == -1) //changement de chapitre
                                             {
-                                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                                 return 0;
                                             }
                                         }
@@ -660,7 +680,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                             check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                                             if (check4change == -1)
                                             {
-                                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                                 return 0;
                                             }
                                         }
@@ -691,7 +711,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                     {
                         case SDLK_PRINTSCREEN:
                         {
-                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                             screenshotSpoted(teamLong, mangaDispo, *chapitreChoisis);
                             return -4;
                         }
@@ -730,7 +750,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                             check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                             if (check4change == -1)
                             {
-                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                 return 0;
                             }
                             break;
@@ -741,7 +761,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                             check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDispo);
                             if (check4change == -1)
                             {
-                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                 return 0;
                             }
                             break;
@@ -749,8 +769,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
                         case SDLK_ESCAPE:
                         {
-                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
-                            restartEcran();
+                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                             return -3;
                             break;
                         }
@@ -758,8 +777,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                         case SDLK_DELETE:
                         case SDLK_BACKSPACE:
                         {
-                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
-                            restartEcran();
+                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                             return -2;
                             break;
                         }
@@ -833,7 +851,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                     fprintf(testExistance, "%s %d %d", mangaDispo, *chapitreChoisis, pageEnCoursDeLecture);
                                     fclose(testExistance);
 
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
 
                                     return PALIER_QUIT;
                                     break;
@@ -866,12 +884,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
                                 case SDLK_f:
                                 {
-                                    if(*fullscreen == 1)
-                                        *fullscreen = 0;
-                                    else
-                                        *fullscreen = 1;
-                                    check4change = 0;
-                                    changementEtat = 1;
+                                    applyFullscreen(fullscreen, &check4change, &changementEtat);
                                     break;
                                 }
                             }
@@ -922,8 +935,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 						fprintf(testExistance, "%s %d %d", mangaDispo, *chapitreChoisis, pageEnCoursDeLecture);
 						fclose(testExistance);
 
-						cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle);
-
+						cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
 						return PALIER_QUIT;
 					}
 					#endif
@@ -937,6 +949,8 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
     }
     return 0;
 }
+
+/*Loaders*/
 
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE])
 {
@@ -983,10 +997,7 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
 
 SDL_Texture* loadControlBar()
 {
-    char temp[200];
-    sprintf(temp, "data/%s/bandeau.png", LANGUAGE_PATH[langue - 1]);
-
-    SDL_Surface *bandeauControleSurfaceBuffer = IMG_Load(temp), *bandeauControleSurface = NULL;
+    SDL_Surface *bandeauControleSurfaceBuffer = IMG_Load("data/bandeau.png"), *bandeauControleSurface = NULL;
     SDL_Rect positionIcone;
 
     /*On crée une surface intermédiaire car bliter directement sur le png loadé ne marche pas*/
@@ -997,38 +1008,74 @@ SDL_Texture* loadControlBar()
     SDL_BlitSurface(bandeauControleSurfaceBuffer, NULL, bandeauControleSurface, NULL);
     SDL_FreeSurfaceS(bandeauControleSurfaceBuffer);
 
-    SDL_Surface *icone = IMG_Load("data/favorite.png");
+    SDL_Surface *icone = IMG_Load("data/icon/pc.png");
     if(icone != NULL)
     {
-        positionIcone.x = bandeauControleSurface->w / 2 - 10 - icone->w;
-        positionIcone.y = bandeauControleSurface->h / 2 - 5 - icone->h;
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/fullscreen.png");
+    icone = IMG_Load("data/icon/pp.png");
     if(icone != NULL)
     {
-        positionIcone.x = bandeauControleSurface->w / 2 + 10;
-        positionIcone.y = bandeauControleSurface->h / 2 - 5 - icone->h;
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/delete.png");
+    icone = IMG_Load("data/icon/favorite.png");
     if(icone != NULL)
     {
-        positionIcone.x = bandeauControleSurface->w / 2 - 10 - icone->w;
-        positionIcone.y = bandeauControleSurface->h / 2 + 5;
+        positionIcone.x = bandeauControleSurface->w / 2 - BORDURE_BUTTON_W - MINIICONE_W;
+        positionIcone.y = bandeauControleSurface->h / 2 - BORDURE_BUTTON_H - MINIICONE_H;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/dlmore.png");
+    icone = IMG_Load("data/icon/fullscreen.png");
     if(icone != NULL)
     {
-        positionIcone.x = bandeauControleSurface->w / 2 + 10;
-        positionIcone.y = bandeauControleSurface->h / 2 + 5;
+        positionIcone.x = bandeauControleSurface->w / 2 + BORDURE_BUTTON_W;
+        positionIcone.y = bandeauControleSurface->h / 2 - BORDURE_BUTTON_H - MINIICONE_H;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/icon/delete.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 - BORDURE_BUTTON_W - MINIICONE_W;
+        positionIcone.y = bandeauControleSurface->h / 2 + BORDURE_BUTTON_H;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/icon/mainmenu.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = bandeauControleSurface->w / 2 + BORDURE_BUTTON_W;
+        positionIcone.y = bandeauControleSurface->h / 2 + BORDURE_BUTTON_H;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/icon/np.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
+        SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
+        SDL_FreeSurfaceS(icone);
+    }
+
+    icone = IMG_Load("data/icon/nc.png");
+    if(icone != NULL)
+    {
+        positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;
+        positionIcone.y = bandeauControleSurface->h / 2 - icone->h/2;
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
     }
@@ -1039,6 +1086,8 @@ SDL_Texture* loadControlBar()
 
     return bandeauControle;
 }
+
+/*Screen Management*/
 
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, char mangaDispo[LONGUEUR_NOM_MANGA_MAX])
 {
@@ -1094,7 +1143,7 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
     return check4change;
 }
 
-void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle)
+void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
 {
     SDL_FreeSurface(chapitre);
     SDL_DestroyTextureS(chapitre_texture);
@@ -1107,39 +1156,8 @@ void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surfa
     NChapitre = NULL;
     SDL_DestroyTextureS(infoSurface);
     SDL_DestroyTextureS(bandeauControle);
-}
-
-void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX])
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100], team[LONGUEUR_NOM_MANGA_MAX];
-    FILE* test = NULL;
-
-    teamOfProject(mangaChoisis, team);
-
-    sprintf(temp, "manga/%s/%s/%s", team, mangaChoisis, CONFIGFILE);
-    test = fopenR(temp, "r");
-    fscanfs(test, "%d %d", &extremes[0], &extremes[1]);
-    fclose(test);
-}
-
-int clicOnButton(const int x, const int y, const int positionBandeauX)
-{
-    if(y < (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR + 10) || y > (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR + 75))
-        return CLIC_SUR_BANDEAU_NONE; //Clic hors du bandeau
-
-    if(x >= positionBandeauX + 30 && x <= positionBandeauX + 125)
-        return CLIC_SUR_BANDEAU_PREV_CHAPTER; //Chapitre précédent
-
-    else if(x >= positionBandeauX + 185 && x <= positionBandeauX + 285)
-        return CLIC_SUR_BANDEAU_PREV_PAGE; //Page précédente
-
-    else if (x >= positionBandeauX + 510 && x <= positionBandeauX + 605)
-        return CLIC_SUR_BANDEAU_NEXT_PAGE; //Page suivante
-
-    else if (x >= positionBandeauX + 665 && x <= positionBandeauX + 760)
-        return CLIC_SUR_BANDEAU_NEXT_CHAPTER; //Chapitre suivant
-
-    return CLIC_SUR_BANDEAU_NONE;
+    if(police != NULL)
+        TTF_CloseFont(police);
 }
 
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
@@ -1334,5 +1352,74 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
             }
         }
     }
+}
+
+/*Check*/
+
+void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX])
+{
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+100], team[LONGUEUR_NOM_MANGA_MAX];
+    FILE* test = NULL;
+
+    teamOfProject(mangaChoisis, team);
+
+    sprintf(temp, "manga/%s/%s/%s", team, mangaChoisis, CONFIGFILE);
+    test = fopenR(temp, "r");
+    fscanfs(test, "%d %d", &extremes[0], &extremes[1]);
+    fclose(test);
+}
+
+/*Event Management*/
+
+int clicOnButton(const int x, const int y, const int positionBandeauX)
+{
+    if(y < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR + 2 || y > WINDOW_SIZE_H - 2)
+        return CLIC_SUR_BANDEAU_NONE; //Clic hors du bandeau
+
+    if(x >= positionBandeauX + LARGE_BUTTONS_LECTEUR_PC && x <= positionBandeauX + LARGE_BUTTONS_LECTEUR_PC + BIGICONE_W)
+        return CLIC_SUR_BANDEAU_PREV_CHAPTER; //Chapitre précédent
+
+    else if(x >= positionBandeauX + LARGE_BUTTONS_LECTEUR_PP && x <= positionBandeauX + LARGE_BUTTONS_LECTEUR_PP + BIGICONE_W)
+        return CLIC_SUR_BANDEAU_PREV_PAGE; //Page précédente
+
+    else if (x >= positionBandeauX + LARGE_BUTTONS_LECTEUR_NP && x <= positionBandeauX + LARGE_BUTTONS_LECTEUR_NP + BIGICONE_W)
+        return CLIC_SUR_BANDEAU_NEXT_PAGE; //Page suivante
+
+    else if (x >= positionBandeauX + LARGE_BUTTONS_LECTEUR_NC && x <= positionBandeauX + LARGE_BUTTONS_LECTEUR_NC + BIGICONE_W)
+        return CLIC_SUR_BANDEAU_NEXT_CHAPTER; //Chapitre suivant
+
+    else if(x >= positionBandeauX + LARGEUR_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_W - MINIICONE_W && x <= positionBandeauX + LARGEUR_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_W + MINIICONE_W)
+    {
+        /*Clic sur un des boutons centraux*/
+        int xCentral = x - positionBandeauX - (LARGEUR_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_W - MINIICONE_W);
+        if(xCentral >= 0 && xCentral <= MINIICONE_W) //Colonne de gauche
+        {
+            if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
+                return CLIC_SUR_BANDEAU_FAVORITE;
+
+            else if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
+                return CLIC_SUR_BANDEAU_DELETE;
+        }
+        else if(xCentral >= MINIICONE_W + 2*BORDURE_BUTTON_W && xCentral <= 2 * (MINIICONE_W + BORDURE_BUTTON_W))
+        {
+            if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
+                return CLIC_SUR_BANDEAU_FULLSCREEN;
+
+            else if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
+                return CLIC_SUR_BANDEAU_MAINMENU;
+        }
+    }
+
+    return CLIC_SUR_BANDEAU_NONE;
+}
+
+void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
+{
+    if(*var_fullscreen == 1)
+        *var_fullscreen = 0;
+    else
+        *var_fullscreen = 1;
+    *checkChange = 0;
+    *changementEtat = 1;
 }
 
