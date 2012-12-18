@@ -7,14 +7,10 @@
 
 #include "main.h"
 
-static int status;
+int status;
 static int error;
 
-#ifdef _WIN32
-DWORD WINAPI telechargement()
-#else
-void* telechargement()
-#endif
+int telechargement()
 {
     int i = 0, j = 0, k = 0, l = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 1;
     char buffer[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX], teamCourt[LONGUEUR_COURT], temp[200], mangaLong[LONGUEUR_NOM_MANGA_MAX], historiqueTeam[1000][LONGUEUR_COURT];
@@ -160,13 +156,16 @@ void* telechargement()
                         changeTo(mangaLong, ' ', '_');
 
                         //On remplis la fenêtre
-                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+
+                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);;
+                        SDL_RenderPresent(renderer);
                         texte = TTF_Write(renderer, police_big, trad[4], couleurTexte);
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                         position.y = HAUTEUR_MESSAGE_INITIALISATION;
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_RenderPresent(renderer);
                         SDL_DestroyTextureS(texte);
 
                         texte = TTF_Write(renderer, police, temp, couleurTexte);
@@ -658,23 +657,98 @@ int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDi
 	return nombreChapitre;
 }
 
-int DLmanager() //Equivalent du main, ne fais rien Ã  part lancer et attendre
+void DLmanager() //Equivalent du main, ne fais rien à part lancer et attendre
 {
-	SDL_Event event;
-    status = 1;
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
+	SDL_Texture *texte = NULL;
+    TTF_Font *police = NULL;
+    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+	SDL_Rect position;
 
-    createNewThread(telechargement);
+/*On affiche la petite fenêtre*/
 
-    while(status != 0)
+    window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
+
+    SDL_Surface *icon = NULL;
+    icon = IMG_Load("data/icone.png");
+    if(icon != NULL)
     {
-        SDL_WaitEventTimeout(&event, 100);
-        if(event.type == SDL_QUIT || event.type == SDL_TEXTINPUT)
-        {
-            SDL_PushEvent(&event);
-            event.type = 0;
-        }
+        SDL_SetWindowIcon(window, icon); //Int icon for the main window
+        SDL_FreeSurfaceS(icon);
     }
-    return error;
+    else
+        logR((char*)SDL_GetError());
+
+    nameWindow(1);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR_FENETRE_DL;
+
+    chargement();
+
+    telechargement();
+
+    //Chargement de la traduction
+    loadTrad(texteTrad, 16);
+    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    if(!error)
+    {
+        texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = WINDOW_SIZE_H / 2 - texte->h / 2 * 3;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+
+        texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+
+        SDL_RenderPresent(renderer);
+        waitEnter();
+    }
+    else if (error > 0)
+    {
+        crashTemp(temp, TAILLE_BUFFER);
+        sprintf(temp, "%s %d %s", texteTrad[2], error, texteTrad[3]);
+
+        texte = TTF_Write(renderer, police, temp, couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+
+        texte = TTF_Write(renderer, police, texteTrad[4], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+
+        texte = TTF_Write(renderer, police, texteTrad[5], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + MINIINTERLIGNE;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+
+        SDL_RenderPresent(renderer);
+        waitEnter();
+    }
+    TTF_CloseFont(police);
 }
 
 void lancementModuleDL()

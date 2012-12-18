@@ -106,6 +106,7 @@ int download(char *adresse, char *repertoire, int activation)
 
         applyBackground(0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W, WINDOW_SIZE_H);
         position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+        position.y = HAUTEUR_POURCENTAGE;
         position.h = pourcentAffiche->h;
         position.w = pourcentAffiche->w;
         SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);

@@ -120,16 +120,15 @@ int showControls();
 int menuGestion();
 
 /**ModuleDL.c**/
+int telechargement();
 #ifdef _WIN32
-DWORD WINAPI telechargement();
 DWORD WINAPI installation(LPVOID datas);
 #else
-void* telechargement();
 void* installation(void* datas);
 #endif
 int interditWhileDL();
 int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDispoCourt[LONGUEUR_COURT], int chapitreChoisis, char teamsCourt[LONGUEUR_COURT]);
-int DLmanager();
+void DLmanager();
 void lancementModuleDL();
 
 /**Native.c**/

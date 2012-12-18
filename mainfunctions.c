@@ -399,15 +399,12 @@ int mainChoixDL()
     return continuer;
 }
 
+extern int status;
+
 void mainDL()
 {
-    int erreur = 0;
-    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
-	FILE *BLOQUEUR = NULL;
-    SDL_Texture *texte = NULL;
-    TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-	SDL_Rect position;
+    FILE *BLOQUEUR = NULL;
+	SDL_Event event;
 
     if((BLOQUEUR = fopenR("data/langue", "r")) == NULL)
     {
@@ -431,30 +428,6 @@ void mainDL()
     BLOQUEUR = fopenR("data/download", "r");
     #endif
 
-    /*On affiche la petite fenêtre*/
-
-    window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
-
-    SDL_Surface *icon = NULL;
-    icon = IMG_Load("data/icone.png");
-    if(icon != NULL)
-    {
-        SDL_SetWindowIcon(window, icon); //Int icon for the main window
-        SDL_FreeSurfaceS(icon);
-    }
-    else
-        logR((char*)SDL_GetError());
-
-    nameWindow(1);
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-
-    WINDOW_SIZE_W = LARGEUR;
-    WINDOW_SIZE_H = HAUTEUR_FENETRE_DL;
-
-    chargement();
-
     if(get_compte_infos() == PALIER_QUIT)
     {
         fclose(BLOQUEUR);
@@ -462,72 +435,24 @@ void mainDL()
         return;
     }
 
-    chargement();
-
     /*Lancement du module de téléchargement, il est totalement autonome*/
-    erreur = DLmanager();
 
-    //Chargement de la traduction
-    loadTrad(texteTrad, 16);
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    status = 1;
+    createNewThread(DLmanager);
+
+    while(status != 0)
+    {
+        SDL_WaitEventTimeout(&event, 100);
+        if(event.type == SDL_QUIT || event.type == SDL_TEXTINPUT)
+        {
+            SDL_PushEvent(&event);
+            event.type = 0;
+        }
+    }
 
     fclose(BLOQUEUR);
     removeR("data/download");
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
-    if(!erreur)
-    {
-        texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = WINDOW_SIZE_H / 2 - texte->h / 2 * 3;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
 
-        texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
-        SDL_RenderPresent(renderer);
-        waitEnter();
-    }
-    else if (erreur > 0)
-    {
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "%s %d %s", texteTrad[2], erreur, texteTrad[3]);
-
-        texte = TTF_Write(renderer, police, temp, couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
-        texte = TTF_Write(renderer, police, texteTrad[4], couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
-        texte = TTF_Write(renderer, police, texteTrad[5], couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + MINIINTERLIGNE;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
-        SDL_RenderPresent(renderer);
-        waitEnter();
-    }
-    TTF_CloseFont(police);
 }
 
