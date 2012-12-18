@@ -357,8 +357,8 @@ static void* downloader(void* envoi)
 
     else if (printToAFile)
     {
-        remove(valeurs->repertoireEcriture);
-        rename(temp, valeurs->repertoireEcriture);
+        removeR(valeurs->repertoireEcriture);
+        renameR(temp, valeurs->repertoireEcriture);
     }
 
     *valeurs->status = 0;

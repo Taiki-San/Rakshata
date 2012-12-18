@@ -449,10 +449,7 @@ void mainDL()
             event.type = 0;
         }
     }
-
     fclose(BLOQUEUR);
     removeR("data/download");
-
-
 }
 
