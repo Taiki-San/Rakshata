@@ -376,7 +376,7 @@ void updateDirectory(char *argv)
     i = strlen(bundleName);
 
 	bundleName[i++] = '/'; //Le / du dossier courant actuel
-    for(; argv[i] != '/' && i < strlen(argv) && argv[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / Ã  la fin du path
+    for(; argv[i] != '/' && i < strlen(argv) && argv[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / à la fin du path
 		bundleName[i] = argv[i];
 	if(bundleName[i] != '/')
 		bundleName[i++] = '/';
@@ -410,7 +410,7 @@ int lancementExternalBinary(char cheminDAcces[100])
  #else
 	crashTemp(superTemp, 400);
     #ifdef __APPLE__
-		if(strcmp(cheminDAcces, "Rakshata.app") == 0) //Si on lance le binaire, on ouvre juste le path (qui contient déjÃ  le nom du bundle
+		if(strcmp(cheminDAcces, "Rakshata.app") == 0) //Si on lance le binaire, on ouvre juste le path (qui contient déjà le nom du bundle
 			sprintf(superTemp, "open -n \"%s\"", REPERTOIREEXECUTION);
 		else
 			sprintf(superTemp, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);

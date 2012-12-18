@@ -30,7 +30,7 @@ int telechargement()
         quit_thread(0);
 
     police_big = TTF_OpenFont(FONTUSED, POLICE_GROS);
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     fichier = fopenR("tmp/import.dat", "r");
 
@@ -58,7 +58,7 @@ int telechargement()
     }
     loadTrad(trad, 22);
 
-    for(mangaActuel = 1; fgetc(fichier) != EOF && glados; mangaActuel++) //On démarre Ã  1 car sinon, le premier pourcentage serait de 0
+    for(mangaActuel = 1; fgetc(fichier) != EOF && glados; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
     {
         if(mangaTotal + (mangaActuel - 1) != 0)
             pourcentage = mangaActuel * 100 / (mangaTotal + mangaActuel -1);
@@ -104,7 +104,7 @@ int telechargement()
                     {
                         /*Ouverture du site de la team*/
                         for(i = 0; i < 1000 && strcmp(teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
-                        if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjÃ  installé
+                        if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjà installé
                         {
                             ustrcpy(historiqueTeam[i], teamCourt);
                             ouvrirSite(teamCourt);
@@ -158,19 +158,17 @@ int telechargement()
                         //On remplis la fenêtre
 
                         applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);;
-                        SDL_RenderPresent(renderer);
                         texte = TTF_Write(renderer, police_big, trad[4], couleurTexte);
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                         position.y = HAUTEUR_MESSAGE_INITIALISATION;
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
-                        SDL_RenderPresent(renderer);
                         SDL_DestroyTextureS(texte);
 
                         texte = TTF_Write(renderer, police, temp, couleurTexte);
-                        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -180,7 +178,7 @@ int telechargement()
 
                         /**Téléchargement**/
 
-                        /*On teste si le chapitre est déjÃ  installé*/
+                        /*On teste si le chapitre est déjà installé*/
                         crashTemp(temp, 200);
                         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
                         test = fopenR(temp, "r");
@@ -237,7 +235,7 @@ int telechargement()
                         else if(glados > 0) // Archive pas corrompue
                         {
                             crashTemp(temp, 200);
-                            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre); //chaine déjÃ  traité
+                            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre); //chaine déjà traité
                             ressources = fopenR(temp, "r");
                             if(ressources != NULL)
                             {

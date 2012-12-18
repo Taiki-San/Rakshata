@@ -216,7 +216,7 @@ int download(char *adresse, char *repertoire, int activation)
     if(output != NULL)
         free(output);
 
-    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && hostReached == 0) //Si on a pas réussi Ã  ce connecter au serveur distant
+    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && hostReached == 0) //Si on a pas réussi à ce connecter au serveur distant
         return -6;
     else if(!alright)
         return alright;
@@ -262,7 +262,7 @@ static void* downloader(void* envoi)
     if(printToAFile)
     {
         crashTemp(temp, 500);
-        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[0] == REPERTOIREEXECUTION[0]) /*Si le path a déjÃ  été modifié*/)
+        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[0] == REPERTOIREEXECUTION[0]) /*Si le path a déjà été modifié*/)
             sprintf(temp, "%s.download", valeurs->repertoireEcriture);
         else
         {
@@ -386,7 +386,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
     char *buffer = buffer_dl;
     char *input = ptr;
 
-    if(size * nmemb == 0) //Rien Ã  écrire
+    if(size * nmemb == 0) //Rien à écrire
         return 0;
 
     else if(size * nmemb < size_buffer)
