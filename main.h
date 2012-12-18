@@ -7,6 +7,9 @@
 
 #ifdef DEBUG
     #define DEV_VERSION
+    #define SECURE_THREADS 0x0
+#else
+    #define SECURE_THREADS 0x4
 #endif
 
 #ifdef DEV_VERSION

@@ -7,8 +7,12 @@
 
 #include "main.h"
 
+#include <Ntdef.h>
+typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
+
 int status;
 static int error;
+
 
 int telechargement()
 {
@@ -18,13 +22,15 @@ int telechargement()
     FILE* fichier = NULL;
     FILE* ressources = NULL;
     FILE* test = NULL;
+    FUNC ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
     SDL_Texture *texte = NULL;
     TTF_Font *police_big = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
 	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 
-    while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+    while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+        SDL_Delay(10);
 
     if(NETWORK_ACCESS == CONNEXION_DOWN)
         quit_thread(0);
@@ -239,15 +245,24 @@ int telechargement()
                             ressources = fopenR(temp, "r");
                             if(ressources != NULL)
                             {
-                                DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
                                 status += 1; //On signale le lancement d'une installation
 								fclose(ressources);
                                 /**Installation**/
+                                DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
                                 ustrcpy(data_instal->teamCourt, teamCourt);
                                 ustrcpy(data_instal->mangaCourt, buffer);
                                 data_instal->chapitre = chapitre;
                                 #ifdef _WIN32
-                                CreateThread(NULL, 0, installation, data_instal, 0, NULL); //Initialisation du thread
+                                if(!ZwCreateThreadEx)
+                                {
+                                    CreateThread(NULL, 0, installation, data_instal, 0, NULL); //Initialisation du thread
+                                    logR("Failed at export primitives");
+                                }
+                                else
+                                {
+                                    HANDLE hThread=0;
+                                    ZwCreateThreadEx(&hThread, 0x1FFFFF, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x1000,0x10000,0);
+                                }
                                 #else
                                 if (pthread_create(&thread, NULL, installation, data_instal))
                                 {
@@ -655,7 +670,7 @@ int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDi
 	return nombreChapitre;
 }
 
-void DLmanager() //Equivalent du main, ne fais rien à part lancer et attendre
+void DLmanager()
 {
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
 	SDL_Texture *texte = NULL;
