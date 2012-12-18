@@ -53,7 +53,8 @@ int download(char *adresse, char *repertoire, int activation)
 
     if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && activation != 2) //Bypass la sécurité lors du test de connexion
     {
-        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+            SDL_Delay(10);
         if(NETWORK_ACCESS == CONNEXION_DOWN)
             return -1;
     }

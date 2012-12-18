@@ -423,7 +423,8 @@ int logon()
     if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
     {
         chargement();
-        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+            SDL_Delay(10);
     }
     if(NETWORK_ACCESS != CONNEXION_OK)
     {

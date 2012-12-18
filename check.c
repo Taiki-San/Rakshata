@@ -239,7 +239,8 @@ int check_evt()
         SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
         TTF_Font *police = NULL;
 
-		while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS);
+		while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+            SDL_Delay(10);
 
         mkdirR("data");
         mkdirR("data/english");
