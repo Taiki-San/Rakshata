@@ -302,19 +302,51 @@ void SDL_DestroyTextureS(SDL_Texture *texture)
 
 void removeFolder(char *path)
 {
-    int i = 0;
-    char temp[500], buffer[2000];
+    DIR *directory;           /* pointeur de répertoire */
+    struct dirent *entry;     /* représente une entrée dans un répertoire. */
+    struct stat file_stat;    /* informations sur un fichier. */
 
-    crashTemp(temp, 500);
+    char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 100);
+    char buffer[1024] = {0};
 
-    for(i = 0; i < 500 && path[i]; i++)
-        temp[i] =  path[i];
-    #ifdef _WIN32
-        sprintf(buffer, "rmdir /S /Q \"%s\\%s\"", REPERTOIREEXECUTION, temp);
-    #else
-		sprintf(buffer, "rm -rf \"%s/%s\"", REPERTOIREEXECUTION, temp);
-    #endif
-	system(buffer);
+    sprintf(name, "%s/%s", REPERTOIREEXECUTION, path);
+
+    /* On ouvre le dossier. */
+    directory = opendir(name);
+    if ( directory == NULL ) {
+        fprintf(stderr, "cannot open directory %s\n", name);
+        return;
+    }
+
+    /* On boucle sur les entrées du dossier. */
+    while ( (entry = readdir(directory)) != NULL ) {
+
+        /* On "saute" les répertoires "." et "..". */
+        if ( strcmp(entry->d_name, ".") == 0 ||
+             strcmp(entry->d_name, "..") == 0 ) {
+            continue;
+        }
+
+        /* On construit le chemin d'accès du fichier en
+         * concaténant son nom avec le nom du dossier
+         * parent. On intercale "/" entre les deux.
+         * NB: '/' est aussi utilisable sous Windows
+         * comme séparateur de dossier. */
+        snprintf(buffer, 1024, "%s/%s", name, entry->d_name);
+
+        /* On récupère des infos sur le fichier. */
+        stat(buffer, &file_stat);
+
+        if ( S_ISREG(file_stat.st_mode) )
+            removeR(buffer); //On est sur un fichier, on le supprime.
+
+        else if ( S_ISDIR(file_stat.st_mode) )
+            removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+
+    }
+    closedir(directory);
+    rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
+    free(name);
 }
 
 int createNewThread(void *function)
