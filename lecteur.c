@@ -263,7 +263,13 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             if(changementEtat)
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
             /*Si grosse page*/
-            if(largeurValide > LARGEUR_MAX)
+            if(largeurValide > RESOLUTION[0])
+            {
+                largeurValide = RESOLUTION[0];
+                pageTropGrande = 1;
+            }
+
+            else if(largeurValide > LARGEUR_MAX)
             {
                 largeurValide = LARGEUR_MAX;
                 pageTropGrande = 1;
@@ -286,6 +292,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
         {
             if(changementEtat)
             {
+                updateWindowSize(RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
                 WINDOW_SIZE_W = RESOLUTION[0] = window->w;
                 WINDOW_SIZE_H = RESOLUTION[1] = window->h;
@@ -660,12 +667,12 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                     if(deplacementX > 0)
                                     {
                                         /*Si un déplacement vers le droite*/
-                                        slideOneStepDown(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepUp(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     else if (deplacementX < 0)
                                     {
                                         deplacementX *= -1;
-                                        slideOneStepUp(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepDown(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     if(deplacementY > 0)
                                     {
