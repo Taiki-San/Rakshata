@@ -1318,7 +1318,10 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
         if(positionSlide->x > move)
         {
             positionSlide->x -= move;
-            positionPage->w = positionSlide->w = WINDOW_SIZE_W;
+            if(chapitre->w - positionSlide->x - positionPage->x < WINDOW_SIZE_W)
+                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x - positionPage->x;
+            else
+                positionPage->w = positionSlide->w = WINDOW_SIZE_W;
         }
         else if (positionSlide->x != 0)
         {
@@ -1332,8 +1335,11 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
             else
             {
                 positionSlide->x = 0;
-                positionPage->x = BORDURE_LAT_LECTURE;
-                positionPage->w = positionSlide->w = WINDOW_SIZE_W - BORDURE_LAT_LECTURE;
+                if(positionPage->x + move > BORDURE_LAT_LECTURE)
+                    positionPage->x = BORDURE_LAT_LECTURE;
+                else
+                    positionPage->x += move;
+                positionPage->w = positionSlide->w = WINDOW_SIZE_W - positionPage->x;
             }
         }
     }
@@ -1363,25 +1369,28 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
     {
         if(positionPage->x != 0)
         {
-            positionSlide->x = positionPage->x = 0;
-            positionPage->w = positionSlide->w = WINDOW_SIZE_W;
+            positionPage->x -= move;
+            if(positionPage->x <= 0)
+                positionSlide->x = positionPage->x = 0;
+            positionPage->w = positionSlide->w = WINDOW_SIZE_W - positionPage->x;
         }
 
-        else if(positionSlide->x < chapitre->w - (WINDOW_SIZE_W - BORDURE_LAT_LECTURE) - move)
+        else if(positionSlide->x < chapitre->w - WINDOW_SIZE_W - move)
         {
             positionSlide->x += move;
             positionPage->w = positionSlide->w = WINDOW_SIZE_W;
         }
         else
         {
-            if(positionPage->x == 0)
-                *noRefresh = 1;
-            else
+            if(positionSlide->w != WINDOW_SIZE_W - BORDURE_LAT_LECTURE)
             {
-                positionSlide->x = chapitre->w - (WINDOW_SIZE_W - BORDURE_LAT_LECTURE);
-                positionPage->x = 0;
-                positionPage->w = positionSlide->w = WINDOW_SIZE_W - BORDURE_LAT_LECTURE;
+                positionSlide->x += move;
+                if(positionSlide->x > chapitre->w - WINDOW_SIZE_W + BORDURE_LAT_LECTURE)
+                    positionSlide->x = chapitre->w - WINDOW_SIZE_W + BORDURE_LAT_LECTURE;
+                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x;
             }
+            else if(positionPage->x == 0)
+                *noRefresh = 1;
         }
     }
 }
