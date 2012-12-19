@@ -18,7 +18,7 @@
     #define PROJECT_NAME "Rakshata"
 #endif
 
-#define CURRENTVERSION 111
+#define CURRENTVERSION 110
 
 #include "defines.h"
 #include "prototypes.h"
