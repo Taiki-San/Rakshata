@@ -149,7 +149,7 @@ int deleteManga()
     int categorie[NOMBRE_MANGA_MAX] = {0}, dernierChapitreDispo[NOMBRE_MANGA_MAX] = {0};
     char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamsLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX];
     char mangaDispoCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], teamsCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT];
-    char temp[TAILLE_BUFFER];
+    char temp[2*LONGUEUR_NOM_MANGA_MAX + 0x80];
     FILE* test = NULL;
 
     /*C/C du choix de manga pour le lecteur.*/
@@ -180,28 +180,35 @@ int deleteManga()
                 {
                     if(chapitreChoisis != 0)
                     {
-                        sprintf(temp, "manga/%s/%s/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], CONFIGFILE);
+                        snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis], CONFIGFILE);
                         test = fopenR(temp, "r");
-                        fscanfs(test, "%d %d", &i , &j);
-                        if(fgetc(test) != EOF)
-                            fscanfs(test, "%d", &k);
-                        fclose(test);
-
-                        chargement();
-                        if(internal_deleteChapitre(i, j, k, chapitreChoisis, mangaDispo[mangaChoisis], teamsLong[mangaChoisis]))
+                        if(test == NULL)
                         {
-                            noMoreChapter = 0;
-                            miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
+                            snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis]);
+                            removeFolder(temp);
+                        }
+                        else
+                        {
+                            fscanfs(test, "%d %d", &i , &j);
+                            if(fgetc(test) != EOF)
+                                fscanfs(test, "%d", &k);
+                            fclose(test);
+
+                            chargement();
+                            if(internal_deleteChapitre(i, j, k, chapitreChoisis, mangaDispo[mangaChoisis], teamsLong[mangaChoisis]))
+                            {
+                                noMoreChapter = 0;
+                                miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
+                            }
                         }
                     }
 
                     else
                     {
-                        crashTemp(temp, TAILLE_BUFFER);
-                        sprintf(temp, "manga\\%s\\%s\\", teamsLong[mangaChoisis], mangaDispo[mangaChoisis]);
+                        chargement(); //On recharge la liste des mangas dispo
+                        snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", teamsLong[mangaChoisis], mangaDispo[mangaChoisis]);
                         removeFolder(temp);
                         noMoreChapter = 0;
-                        chargement(); //On recharge la liste des mangas dispo
                         miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
                     }
                 }
