@@ -304,10 +304,9 @@ void removeFolder(char *path)
 {
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
-    struct stat file_stat;    /* informations sur un fichier. */
 
     char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 100);
-    char buffer[1024] = {0};
+    char *buffer = NULL;
 
     sprintf(name, "%s/%s", REPERTOIREEXECUTION, path);
 
@@ -323,26 +322,32 @@ void removeFolder(char *path)
 
         /* On "saute" les répertoires "." et "..". */
         if ( strcmp(entry->d_name, ".") == 0 ||
-             strcmp(entry->d_name, "..") == 0 ) {
+             strcmp(entry->d_name, "..") == 0 )
             continue;
-        }
 
         /* On construit le chemin d'accès du fichier en
          * concaténant son nom avec le nom du dossier
          * parent. On intercale "/" entre les deux.
          * NB: '/' est aussi utilisable sous Windows
          * comme séparateur de dossier. */
-        snprintf(buffer, 1024, "%s/%s", name, entry->d_name);
+        buffer = malloc(strlen(path) + strlen(entry->d_name) + 0x10);
+        if(buffer == NULL)
+        {
+            char temp[256];
+            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(path) + strlen(entry->d_name) + 0x10);
+            logR(temp);
+            continue; //On annule pas
+        }
+        snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);
 
         /* On récupère des infos sur le fichier. */
-        stat(buffer, &file_stat);
 
-        if ( S_ISREG(file_stat.st_mode) )
+        if ( checkFileExist(buffer))
             removeR(buffer); //On est sur un fichier, on le supprime.
 
-        else if ( S_ISDIR(file_stat.st_mode) )
+        else
             removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
-
+        free(buffer);
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
