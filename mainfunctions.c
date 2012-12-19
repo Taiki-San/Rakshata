@@ -132,8 +132,7 @@ int mainLecture()
     char mangaDispoCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], teamsCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT];
     FILE* test = NULL;
 
-
-    if(checkRestore() && checkRestoreAvailable())
+    if(checkRestore())
         restoringState = 1;
 
     for(i = 0; i < NOMBRE_MANGA_MAX; i++)

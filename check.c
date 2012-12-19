@@ -170,11 +170,10 @@ void checkUpdate()
 
 void checkJustUpdated(char *argv)
 {
-    if(checkFileExist("Rakshata-N.exe"))
+    if(checkFileExist("Rakshata.exe.old"))
     {
         remove("tmp/update");
-        remove("Rakshata.exe");
-        renameR("Rakshata-N.exe", "Rakshata.exe");
+        remove("Rakshata.exe.old");
     }
 }
 
@@ -642,7 +641,11 @@ int checkRestore()
     if(test == NULL)
         return 0;
     fclose(test);
-    return 1;
+    if(checkRestoreAvailable())
+        return 1;
+
+    removeR("data/laststate.dat");
+    return 0;
 }
 
 int checkRestoreAvailable()
@@ -652,9 +655,7 @@ int checkRestoreAvailable()
     if(restore != NULL)
     {
         int chapitre = 0;
-        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX + 50], team[LONGUEUR_NOM_MANGA_MAX];
-        crashTemp(manga, LONGUEUR_NOM_MANGA_MAX);
-        crashTemp(temp, LONGUEUR_NOM_MANGA_MAX + 50);
+        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*2 + 50], team[LONGUEUR_NOM_MANGA_MAX];
         fscanfs(restore, "%s %d", manga, LONGUEUR_NOM_MANGA_MAX, &chapitre);
         fclose(restore);
 
@@ -815,7 +816,11 @@ int checkPasNouveauChapitreDansDepot(char teamCourt[LONGUEUR_COURT], char mangaL
 
 int checkFileExist(char filename[])
 {
-    FILE* FileToTest = fopenR(filename, "r");
+    FILE* FileToTest = NULL;
+    if(filename[1] == ':')
+        FileToTest = fopen(filename, "r");
+    else
+        FileToTest = fopen(filename, "r");
     if(FileToTest != NULL)
     {
         fclose(FileToTest);
