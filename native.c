@@ -313,7 +313,10 @@ void removeFolder(char *path)
     /* On ouvre le dossier. */
     directory = opendir(name);
     if ( directory == NULL ) {
-        fprintf(stderr, "cannot open directory %s\n", name);
+        logR("Can't open directory ");
+        logR(name);
+        logR("\n");
+        removeR(name);
         return;
     }
 
