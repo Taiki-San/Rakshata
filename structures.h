@@ -9,7 +9,6 @@ typedef struct argmt
 {
     char URL[400];
     char* repertoireEcriture;
-    int* status;
 } ARGUMENT;
 
 typedef struct infos_Team
@@ -22,11 +21,19 @@ typedef struct infos_Team
     char site[LONGUEUR_SITE];
 } INFOS_TEAMS;
 
+typedef struct output_download_with_size
+{
+    char *buf;
+    size_t length;
+} OUT_DL;
+
 typedef struct data_pour_installation
 {
-    char teamCourt[LONGUEUR_COURT];
-    char mangaCourt[LONGUEUR_COURT];
+    char teamLong[LONGUEUR_NOM_MANGA_MAX];
+    char mangaLong[LONGUEUR_NOM_MANGA_MAX];
     int chapitre;
+    OUT_DL *buf;
+
 } DATA_INSTALL;
 
 typedef unsigned char uint8_t;

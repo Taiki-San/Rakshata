@@ -193,7 +193,7 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 void loadTrad(char trad[][100], int IDTrad);
 
 /**Unzip.c**/
-int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type);
+int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);
 
 /**Utilitaires.c**/
 void crashTemp(void *temp, int longueur);

@@ -8,6 +8,8 @@
 #include "main.h"
 #include "unzip/miniunzip.h"
 
+#include "unzip/unz_memory.c"
+
 int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
 {
     uLong i;
@@ -59,7 +61,7 @@ int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256
     return 0;
 }
 
-int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //Type définit si l'extraction est standard ou pas
+int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
 {
     int i = 0, j = 0;
     int opt_do_extract_withoutpath = 0; //Extraire en crashant le path
@@ -70,42 +72,47 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
 	FILE* test = NULL;
     unzFile uf = NULL;
     unzFile uf_tests = NULL;
+    zlib_filefunc_def fileops;
+
 	char *path = NULL;
 
 	int nombreFichiers = 0, nombreFichiersDecompresses = 0;
     char filename_inzip[NOMBRE_PAGE_MAX][256]; //Recevra la liste de tous les fichiers
 
-    if(type) //Si extraction d'un chapitre
+    if(size) //Si extraction d'un chapitre
         opt_do_extract_withoutpath = 1;
-
-    zipFileName = malloc((strlen(inputZip)+1) *2); //Input
+    else
+        zipFileName = malloc((strlen(inputZip)+1) *2); //Input
     zipOutput = malloc((strlen(outputZip)+1) *2); //Output
     password = malloc((strlen(passwordZip)+1) *2);
 
-    if(zipFileName == NULL || zipOutput == NULL || (password == NULL && passwordZip != NULL))
+    if((!size && zipFileName == NULL) || zipOutput == NULL || (password == NULL && passwordZip != NULL))
     {
         logR("Failed at allocate memory into miniunzip\n");
         return 1;
     }
 
-    for(i = j = 0; i < (strlen(inputZip)+1)*2 || j < (strlen(outputZip)+1)*2; i++, j++)
+    for(i = j = 0; (!size && i < (strlen(inputZip)+1)*2) || j < (strlen(outputZip)+1)*2; i++, j++)
     {
-        if(i < (strlen(inputZip)+1)*2 && inputZip[i] != '\0')
-            zipFileName[i] = inputZip[i];
-        else
+        if(!size)
         {
-            if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(inputZip)+1)*2) //Si il manque .zip
+            if(i < (strlen(inputZip)+1)*2 && inputZip[i] != '\0')
+                zipFileName[i] = inputZip[i];
+            else
             {
-                zipFileName[i++] = '.';
-                zipFileName[i++] = 'z';
-                zipFileName[i++] = 'i';
-                zipFileName[i++] = 'p';
-                zipFileName[i++] = '\0';
-            }
-            else if (i < (strlen(inputZip)+1)*2)
-            {
-                zipFileName[i] = 0;
-                i = (strlen(inputZip)+1)*2;
+                if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(inputZip)+1)*2) //Si il manque .zip
+                {
+                    zipFileName[i++] = '.';
+                    zipFileName[i++] = 'z';
+                    zipFileName[i++] = 'i';
+                    zipFileName[i++] = 'p';
+                    zipFileName[i++] = '\0';
+                }
+                else if (i < (strlen(inputZip)+1)*2)
+                {
+                    zipFileName[i] = 0;
+                    i = (strlen(inputZip)+1)*2;
+                }
             }
         }
 
@@ -122,30 +129,39 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
         password[i] = passwordZip[i];
     password[i] = 0;
 
-    path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
-
-    test = fopenR(zipFileName, "r");
-    if (test == NULL)
+    if(!size)
     {
-        logR("Cannot open");
-        logR(zipFileName);
-        logR("\n");
-        goto quit;
-    }
+        path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
 
-    fclose(test);
+        test = fopenR(zipFileName, "r");
+        if (test == NULL)
+        {
+            logR("Cannot open");
+            logR(zipFileName);
+            logR("\n");
+            goto quit;
+        }
 
-    uf = unzOpen(zipFileName);
-    uf_tests = unzOpen(zipFileName); //Ouverture du zip
+        fclose(test);
 
-    if(uf == NULL || uf_tests == NULL)
-    {
-        sprintf(path, "%s/%s", REPERTOIREEXECUTION, zipFileName);
+        uf = unzOpen(zipFileName);
+        uf_tests = unzOpen(zipFileName); //Ouverture du zip
+
+        if(uf == NULL || uf_tests == NULL)
+        {
+            sprintf(path, "%s/%s", REPERTOIREEXECUTION, zipFileName);
 #ifdef _WIN32
-        applyWindowsPathCrap(path);
+            applyWindowsPathCrap(path);
 #endif
-        uf = unzOpen(path);
-        uf_tests = unzOpen(path);
+            uf = unzOpen(path);
+            uf_tests = unzOpen(path);
+        }
+    }
+    else
+    {
+        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);        init_zmemfile(&fileops, inputZip, size);
+        uf = unzOpen2(NULL, &fileops);
+        uf_tests = unzOpen2(NULL, &fileops);
     }
 
     while(UNZIP_NEW_PATH); //Tant qu'une décompression est en cours, on va pas changer le cwd
@@ -162,7 +178,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
     applyWindowsPathCrap(FONTUSED);
 
 
-    if (type && chdir(path)) //On change le dossier courant
+    if (size && chdir(path)) //On change le dossier courant
     {
         createPath(outputZip); //En cas d'échec, on réessaie de créer le dossier
         if (chdir(path)) //Si réechoue
@@ -189,7 +205,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
     for(i=0; i<NOMBRE_PAGE_MAX;i++)
         for(j=0;j<SHA256_DIGEST_LENGTH; pass[i][j++] = 0);
 
-    if(type)
+    if(size)
     {
         if(opt_encrypted == 0)
             opt_encrypted = FULL_ENCRYPTION;
@@ -365,6 +381,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, int type) //T
 quit:
 
     unzClose(uf);
+    if(size)
+        destroy_zmemfile(&fileops);
     chdirR();
 
     free(path);

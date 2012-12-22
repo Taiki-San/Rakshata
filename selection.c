@@ -20,21 +20,17 @@ int section()
 
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 
+    chargement();
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
     else
         SDL_RenderFillRect(renderer, NULL);
+    chargement();
 
     /*Affichage du texte*/
     loadTrad(texteTrad, 17);
 
-    //police = TTF_OpenFont("font.ttf", POLICE_MOYEN);
-    SDL_RWops *rw = SDL_RWFromFile(FONTUSED, "rb");
-	if ( rw == NULL ) {
-		TTF_SetError(SDL_GetError());
-	}
-	else
-        police = TTF_OpenFontIndexRW(rw, 1, POLICE_MOYEN, 0);
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     if(police == NULL)
         logR((char *)SDL_GetError());

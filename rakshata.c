@@ -26,25 +26,13 @@ SDL_Surface *ecran = NULL;
 
 int mainLoader(char *argv)
 {
-    /*Download in memory ~
-    char *downloaded = malloc(20*1024*1024); //20Mb de buffer
-    downloaded[0] = 0;
-    downloaded[1] = 100;
-    downloaded[2] = 100;
-    downloaded[3] = 100;
-    downloaded[4] = 22;
-
-    FILE *out = fopen("file.jpg", "wb");
-    fwrite(downloaded, 1 , download("http://images6.alphacoders.com/322/322450.jpg", downloaded, 0), out);
-    fclose(out);*/
-
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-
     srand(time(NULL)); //Initialisation de l'aléatoire
 
 #ifdef __APPLE__
 	updateDirectory(argv[0]); //Si OSX, on se déplace dans le dossier .app
 #endif
+
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 
     /*Launching SDL & SDL_TTF*/
@@ -65,7 +53,6 @@ int mainLoader(char *argv)
     }
 
     restrictEvent();
-    SDL_StartTextInput();
     getResolution();
 
     checkJustUpdated(argv);

@@ -442,7 +442,7 @@ void mainDL()
     while(status != 0)
     {
         SDL_WaitEventTimeout(&event, 100);
-        if(event.type == SDL_QUIT || event.type == SDL_TEXTINPUT)
+        if(event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT || event.type == SDL_TEXTINPUT)
         {
             SDL_PushEvent(&event);
             event.type = 0;

@@ -28,6 +28,8 @@ int telechargement()
     TTF_Font *police = NULL;
     SDL_Rect position;
 	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    OUT_DL* struc = NULL;
+
 
     while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
         SDL_Delay(10);
@@ -189,47 +191,27 @@ int telechargement()
                         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
                         test = fopenR(temp, "r");
 
-                        crashTemp(temp, 200);
-                        sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre);
-                        ressources = fopenR(temp, "r");
-
-                        if(ressources == NULL && test == NULL)
+                        if(test == NULL)
                         {
-                            if(UNZIP_NEW_PATH) //Il faut modifier le paths
-                            {
-                                crashTemp(temp, 200);
-                                sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre);
-                            }
+                            char command[2] = {0, 0};
+                            struc = (OUT_DL*) download(superTemp, command, 1);
 
-                            glados = download(superTemp, temp, 1);
-
-                            ressources = fopenR(temp, "r");
-
-                            if(glados < -1 && glados != 42)
+                            if(struc == (OUT_DL*) 1) //Si fermeture
                                 glados = -1;
 
-                            if(ressources != NULL && checkFileValide(ressources))
-                                fclose(ressources);
-                            else
+                            else if(struc->buf == NULL || struc->buf[0] == '<' || struc->buf[1] == '<' || struc->buf[2] == '<' || struc->buf[3] == '<')
                             {
-                                if(ressources != NULL)
+                                if(struc->buf == NULL)
                                 {
-                                    fclose(ressources);
-                                    crashTemp(superTemp, 400);
                                     sprintf(superTemp, "Erreur dans le telechargement d'un chapitre: Team: %s\n", teamCourt);
                                     logR(superTemp);
-                                    remove(temp);
                                 }
+                                else
+                                    free(struc->buf);
+                                free(struc);
+
                                 glados = -1;//On annule l'installation
                             }
-                        }
-
-                        else
-                        {
-                            if(ressources != NULL)
-                                fclose(ressources);
-                            if(test != NULL)
-                                fclose(test);
                         }
 
                         if(glados == -1) //Si fermeture
@@ -240,37 +222,33 @@ int telechargement()
 
                         else if(glados > 0) // Archive pas corrompue
                         {
-                            crashTemp(temp, 200);
-                            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, buffer, chapitre); //chaine déjà traité
-                            ressources = fopenR(temp, "r");
-                            if(ressources != NULL)
+                            status += 1; //On signale le lancement d'une installation
+                            nameWindow(status);
+
+                            /**Installation**/
+                            DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
+                            ustrcpy(data_instal->teamLong, teamLong);
+                            ustrcpy(data_instal->mangaLong, mangaLong);
+                            data_instal->chapitre = chapitre;
+                            data_instal->buf = struc;
+                            #ifdef _WIN32
+                            if(!ZwCreateThreadEx)
                             {
-                                status += 1; //On signale le lancement d'une installation
-								fclose(ressources);
-                                /**Installation**/
-                                DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
-                                ustrcpy(data_instal->teamCourt, teamCourt);
-                                ustrcpy(data_instal->mangaCourt, buffer);
-                                data_instal->chapitre = chapitre;
-                                #ifdef _WIN32
-                                if(!ZwCreateThreadEx)
-                                {
-                                    CreateThread(NULL, 0, installation, data_instal, 0, NULL); //Initialisation du thread
-                                    logR("Failed at export primitives");
-                                }
-                                else
-                                {
-                                    HANDLE hThread=0;
-                                    ZwCreateThreadEx(&hThread, 0x1FFFFF, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x1000,0x10000,0);
-                                }
-                                #else
-                                if (pthread_create(&thread, NULL, installation, data_instal))
-                                {
-                                    logR("Failled at create thread MDL\n");
-                                    exit(EXIT_FAILURE);
-                                }
-                                #endif
+                                CreateThread(NULL, 0, installation, data_instal, 0, NULL); //Initialisation du thread
+                                logR("Failed at export primitives");
                             }
+                            else
+                            {
+                                HANDLE hThread=0;
+                                ZwCreateThreadEx(&hThread, 0x1FFFFF, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
+                            }
+                            #else
+                            if (pthread_create(&thread, NULL, installation, data_instal))
+                            {
+                                logR("Failled at create thread MDL\n");
+                                exit(EXIT_FAILURE);
+                            }
+                            #endif
                         }
 
                         sprintf(temp, "manga/%s/%s/infos.png", teamLong, mangaLong);
@@ -278,7 +256,6 @@ int telechargement()
 
                         if(test == NULL && k) //k peut avoir a être > 1
                         {
-                            crashTemp(temp, TAILLE_BUFFER);
                             sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
                             test = fopenR(temp, "r");
                             if(test == NULL)
@@ -384,178 +361,127 @@ DWORD WINAPI installation(LPVOID datas)
 void* installation(void* datas)
 #endif
 {
-    int nouveauDossier = 0, i = 0, j = 0, k = 0, l = 0, extremes[2], erreurs = 0, dernierLu = 0, chapitre = 0;
-    char temp[TAILLE_BUFFER], buffer1[200], mangaLong[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
-    char teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT];
+    int nouveauDossier = 0, extremes[2], erreurs = 0, dernierLu = 0, chapitre = 0;
+    char temp[TAILLE_BUFFER], mangaLong[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
     FILE* ressources = NULL;
-    FILE* test = NULL;
 
 	DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
 
-    nameWindow(status);
-
     /*Récupération des valeurs envoyés*/
-    ustrcpy(teamCourt, valeurs->teamCourt);
-    ustrcpy(mangaCourt, valeurs->mangaCourt);
+    ustrcpy(teamLong, valeurs->teamLong);
+    ustrcpy(mangaLong, valeurs->mangaLong);
     chapitre = valeurs->chapitre;
-
-    teamOfProject(mangaCourt, teamLong);
 
     /*Lecture du fichier*/
     nouveauDossier = 0;
     crashTemp(temp, TAILLE_BUFFER);
-    sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, mangaCourt, chapitre);
-    test = fopenR(temp, "r");
 
-    if(test == NULL) //return;
+    if(valeurs->buf == NULL) //return;
     {
         free(valeurs);
         status--; //On signale la fin de l'installation
-        nameWindow(status);
+//        nameWindow(status);
         quit_thread(0);
     }
 
-    fclose(test);
-    /*On récupère les données de manga relative a ce manga*/
-    /*Etablir relation entre le nom du manga et son nomComplet*/
-    ressources = fopenR(MANGA_DATABASE, "r");
-    crashTemp(temp, TAILLE_BUFFER);
-
-    positionnementApres(ressources, teamCourt); //On se position dans l'espace team
-
-    /*On lit les mangas*/
-    while(fgetc(ressources) != '#' && strcmp(temp, mangaCourt))
+    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
+    ressources = fopenR(temp, "r");
+    if(ressources == NULL)
     {
-        fseek(ressources, -1, SEEK_CUR);
-        crashTemp(temp, TAILLE_BUFFER);
-        crashTemp(mangaLong, LONGUEUR_NOM_MANGA_MAX);
-        i = j = k = 0;
-        fscanfs(ressources, "%s %s %d %d %d %d", mangaLong, LONGUEUR_NOM_MANGA_MAX, temp, TAILLE_BUFFER, &l, &i, &j, &k);
-    }
-    fclose(ressources);
-
-    if(strcmp(temp, mangaCourt) == 0)
-    {
-        /*On continue si tout vas bien*/
-        crashTemp(temp, TAILLE_BUFFER);
-        /*Vérification d'existance*/
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
-        test = fopenR(temp, "r");
-        if(test == NULL)
+        /*Si le manga existe déjà*/
+        sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
+        ressources = fopenR(temp, "r");
+        if(ressources == NULL)
         {
-            /*Si le chapitre n'est pas déjâ€¡ installé*/
-            crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
-            test = fopenR(temp, "r");
-            if(test == NULL)
-            {
-                /*Si le dossier du manga n'existe pas*/
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s", teamLong, mangaLong);
-                #ifdef _WIN32
-                mkdir(temp);
-                #else
-                mkdir(temp, PERMISSIONS);
-                #endif
+            /*Si le dossier du manga n'existe pas*/
+            sprintf(temp, "manga/%s/%s", teamLong, mangaLong);
+            #ifdef _WIN32
+            mkdir(temp);
+            #else
+            mkdir(temp, PERMISSIONS);
+            #endif
 
-                /*On signale le nouveau dossier*/
-                nouveauDossier = 1;
-            }
-            else
-                fclose(test);
-
-            /**Décompression dans le repertoire de destination**/
-
-            /*Création du répertoire de destination*/
-            crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "manga/%s/%s/Chapitre_%d", teamLong, mangaLong, chapitre);
-            mkdirR(temp);
-
-            crashTemp(temp, TAILLE_BUFFER);
-            crashTemp(buffer1, 200);
-
-            sprintf(buffer1, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, mangaCourt, chapitre);
-            sprintf(temp, "manga/%s/%s/Chapitre_%d", teamLong, mangaLong, chapitre);
-
-            applyWindowsPathCrap(temp);
-            erreurs = miniunzip(buffer1, temp, "", chapitre);
-
-            /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
-            if(!erreurs)
-            {
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
-                ressources = fopenR(temp, "r");
-            }
-
-            if(erreurs != -1 && nouveauDossier == 0 && ressources != NULL)
-            {
-                fclose(ressources);
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
-                ressources = fopenR(temp, "r+");
-                fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
-                if(fgetc(ressources) != EOF)
-                    fscanfs(ressources, "%d", &dernierLu);
-                else
-                    dernierLu = -1;
-                fclose(ressources);
-                ressources = fopenR(temp, "w+");
-                if(extremes[0] > chapitre)
-                    fprintf(ressources, "%d %d", chapitre, extremes[1]);
-
-                else if(extremes[1] < chapitre)
-                    fprintf(ressources, "%d %d", extremes[0], chapitre);
-
-                else
-                    fprintf(ressources, "%d %d", extremes[0], extremes[1]);
-                if(dernierLu != -1)
-                    fprintf(ressources, " %d", dernierLu);
-
-                fclose(ressources);
-            }
-
-            else if(erreurs != -1 && ressources != NULL)
-            {
-                fclose(ressources);
-                /*Création du config.dat du nouveau manga*/
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
-                ressources = fopenR(temp, "w+");
-                fprintf(ressources, "%d %d", chapitre, chapitre);
-                fclose(ressources);
-            }
-
-            else //Archive corrompue
-            {
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "Archive Corrompue: %s - %d\n", mangaLong, chapitre);
-                logR(temp);
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/Chapitre_%d", teamLong, mangaLong, chapitre);
-                removeFolder(temp);
-                erreurs = 1;
-            }
-
-            /*On supprime l'archive*/
-            crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, mangaCourt, chapitre);
-            removeR(temp);
+            /*On signale le nouveau dossier*/
+            nouveauDossier = 1;
         }
         else
+            fclose(ressources);
+
+        /**Décompression dans le repertoire de destination**/
+
+        /*Création du répertoire de destination*/
+        sprintf(temp, "manga/%s/%s/Chapitre_%d", teamLong, mangaLong, chapitre);
+        mkdir(temp);
+
+        erreurs = miniunzip (valeurs->buf->buf, temp, "", valeurs->buf->length, chapitre);
+
+        /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
+        if(!erreurs)
         {
-            fclose(test);
             crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "tmp/[%s]%s_Chapitre_%d.zip", teamCourt, mangaCourt, chapitre);
-            removeR(temp);
+            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaLong, chapitre, CONFIGFILE);
+            ressources = fopenR(temp, "r");
+        }
+
+        if(erreurs != -1 && nouveauDossier == 0 && ressources != NULL)
+        {
+            fclose(ressources);
+            crashTemp(temp, TAILLE_BUFFER);
+            sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
+            ressources = fopenR(temp, "r+");
+            fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
+            if(fgetc(ressources) != EOF)
+                fscanfs(ressources, "%d", &dernierLu);
+            else
+                dernierLu = -1;
+            fclose(ressources);
+            ressources = fopenR(temp, "w+");
+            if(extremes[0] > chapitre)
+                fprintf(ressources, "%d %d", chapitre, extremes[1]);
+
+            else if(extremes[1] < chapitre)
+                fprintf(ressources, "%d %d", extremes[0], chapitre);
+
+            else
+                fprintf(ressources, "%d %d", extremes[0], extremes[1]);
+            if(dernierLu != -1)
+                fprintf(ressources, " %d", dernierLu);
+
+            fclose(ressources);
+        }
+
+        else if(erreurs != -1 && ressources != NULL)
+        {
+            fclose(ressources);
+            /*Création du config.dat du nouveau manga*/
+            crashTemp(temp, TAILLE_BUFFER);
+            sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
+            ressources = fopenR(temp, "w+");
+            fprintf(ressources, "%d %d", chapitre, chapitre);
+            fclose(ressources);
+        }
+
+        else //Archive corrompue
+        {
+            crashTemp(temp, TAILLE_BUFFER);
+            sprintf(temp, "Archive Corrompue: %s - %d\n", mangaLong, chapitre);
+            logR(temp);
+            crashTemp(temp, TAILLE_BUFFER);
+            sprintf(temp, "manga/%s/%s/Chapitre_%d", teamLong, mangaLong, chapitre);
+            removeFolder(temp);
+            erreurs = 1;
         }
     }
+    else
+        fclose(ressources);
+
     if(erreurs)
         error++; //On note si le chapitre a posé un problème
 
+    free(valeurs->buf);
     free(valeurs);
     status--; //On signale la fin de l'installation
-    nameWindow(status);
+    //nameWindow(status);
     quit_thread(0);
 }
 

@@ -13,6 +13,7 @@ static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
 static int alright;
 static int hostReached;
+void *internalBuffer;
 
 #define SIZE_OUTPUT_PATH_MAX 1000
 
@@ -45,6 +46,7 @@ int download(char *adresse, char *repertoire, int activation)
 
     FILE_EXPECTED_SIZE = size_buffer = 0;
     alright = hostReached = 1;
+    internalBuffer = NULL;
 
     if(activation == 1)
         CURRENT_FILE_SIZE = MODE_DOWNLOAD_VERBOSE_ENABLE;
@@ -63,7 +65,6 @@ int download(char *adresse, char *repertoire, int activation)
 
     ustrcpy(envoi->URL, adresse);
     envoi->repertoireEcriture = repertoire;
-    envoi->status = &status;
 
     if(*repertoire) //Si on ecrit pas dans un buffer
     {
@@ -73,8 +74,14 @@ int download(char *adresse, char *repertoire, int activation)
     }
     else
     {
-        size_buffer = repertoire[1] * repertoire[2] * repertoire[3] * repertoire[4];
         POSITION_DANS_BUFFER = 0;
+        if(repertoire[1] == 0)
+        {
+            size_buffer = -1;
+            internalBuffer++;
+        }
+        else
+            size_buffer = repertoire[1] * repertoire[2] * repertoire[3] * repertoire[4];
     }
 
 #ifdef _WIN32
@@ -116,8 +123,10 @@ int download(char *adresse, char *repertoire, int activation)
 
         position.x = BORDURE_POURCENTAGE;
 
-        while(status != 0)
+        while(1)
         {
+            if(status == 0)
+                break;
             if(FILE_EXPECTED_SIZE > 0 && alright > 0)
             {
                 if(SDL_GetTicks() - last_refresh >= 500)
@@ -162,6 +171,8 @@ int download(char *adresse, char *repertoire, int activation)
                     alright = -1;
                     break;
                 }
+                else if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_NONE)
+                    status = 0;
             }
             else
                 for(pourcent = 20; pourcent > 0; pourcent--); //Sinon, ne marche pas en mode Release. Minimum: pourcent < 17
@@ -179,6 +190,7 @@ int download(char *adresse, char *repertoire, int activation)
             SDL_RenderPresent(renderer);
             TTF_CloseFont(police);
         }
+
         else
         {
             while(alright == -1)
@@ -189,9 +201,9 @@ int download(char *adresse, char *repertoire, int activation)
     else
     {
 		SDL_Event event;
-        while(status != 0)
+        while(1)
         {
-			SDL_WaitEvent(&event);
+            SDL_WaitEvent(&event);
             switch(event.type)
             {
                 case SDL_QUIT:
@@ -202,16 +214,35 @@ int download(char *adresse, char *repertoire, int activation)
                 case SDL_MOUSEBUTTONUP:
                 case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
-                case SDL_WINDOWEVENT:
-                    if(event.type != SDL_WINDOWEVENT || event.window.type < SDL_WINDOWEVENT_CLOSE)
-                        SDL_PushEvent(&event);
+                    SDL_PushEvent(&event);
                     event.type = 0;
                     break;
 
+                case SDL_WINDOWEVENT:
+                    if(event.window.event == SDL_WINDOWEVENT_NONE)
+                        status = 0;
+                    break;
+
                 default:
+                    SDL_Delay(20);
                     break;
             }
+            if(status == 0)
+                break;
         }
+    }
+
+    if(internalBuffer != NULL && activation != 0)
+    {
+        if(!alright)
+        {
+            free(internalBuffer);
+            return 1;
+        }
+        OUT_DL* outStruct = malloc(sizeof(OUT_DL));
+        outStruct->buf = internalBuffer;
+        outStruct->length = POSITION_DANS_BUFFER;
+        return (int)outStruct;
     }
 
     if(output != NULL)
@@ -362,7 +393,11 @@ static void* downloader(void* envoi)
         renameR(temp, valeurs->repertoireEcriture);
     }
 
-    *valeurs->status = 0;
+    SDL_Event quitEvent;
+    quitEvent.type = SDL_WINDOWEVENT;
+    quitEvent.window.event = SDL_WINDOWEVENT_NONE;
+    SDL_PushEvent(&quitEvent);
+
     free(valeurs);
 
     if(alright == -1)
@@ -384,18 +419,36 @@ static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded,
 static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
 {
     int i = 0;
-    char *buffer = buffer_dl;
+    char *buffer = NULL;
     char *input = ptr;
+
+    if(internalBuffer != NULL && size_buffer == -1)
+    {
+        free(buffer_dl);
+        if(!FILE_EXPECTED_SIZE)
+            size_buffer = 20*1024*1024;
+        else
+            size_buffer = FILE_EXPECTED_SIZE+1;
+        internalBuffer = malloc(size_buffer);
+        if(internalBuffer == NULL)
+            return -1;
+        else
+            buffer = internalBuffer;
+    }
+    else if(internalBuffer != NULL)
+        buffer = internalBuffer;
+    else
+        buffer = buffer_dl;
 
     if(size * nmemb == 0) //Rien à écrire
         return 0;
 
-    else if(size * nmemb < size_buffer)
+    else if(size * nmemb < size_buffer - POSITION_DANS_BUFFER || size_buffer == -1)
         for(; i++ < size*nmemb; buffer[POSITION_DANS_BUFFER++] = *input++);
 
     else //Tronque
     {
-        for(; i < size_buffer; i++)
+        for(i = POSITION_DANS_BUFFER; i < size_buffer; i++)
             buffer[i] = input[i];
         buffer[i-1] = 0;
     }

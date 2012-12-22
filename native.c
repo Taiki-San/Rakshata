@@ -15,7 +15,8 @@ FILE* fopenR(void *_path, char *right)
     unsigned char *path = _path;
     unsigned char *temp = malloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2) * sizeof (unsigned char));
 	FILE* output = NULL;
-
+	if(temp == NULL)
+        return NULL;
 	crashTemp(temp, ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2);
     sprintf((char *)temp, "%s/%s", REPERTOIREEXECUTION, path);
     applyWindowsPathCrap(temp);
@@ -383,7 +384,7 @@ void ouvrirSite(char team[LONGUEURMANGA])
 
     if(positionnementApres(ressources, team))
     {
-        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe le type de dépÃ™t
+        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe le type de dépôt
         fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe l'accès
         crashTemp(temp, LONGUEUR_SITE); //On réinitialise
         fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On charge l'URL
@@ -470,7 +471,7 @@ int unzip(char *path, char *output)
 
     if(output[strlen(output)-1] != 0)
         output[strlen(output)-1] = 0;
-    return miniunzip(path, output, "", 0);
+    return miniunzip(path, output, "", 0, 0);
 }
 
 int checkPID(int PID)
