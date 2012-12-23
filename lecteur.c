@@ -284,6 +284,8 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             else
                 pageTropGrande = 0;
 
+            SDL_DestroyTextureS(infoSurface);
+
             if(WINDOW_SIZE_H != buffer || WINDOW_SIZE_W != largeurValide)
             {
                 #ifdef RENDER_FAIL
@@ -300,6 +302,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
         else
         {
+            SDL_DestroyTextureS(infoSurface);
             if(changementEtat)
             {
                 #ifdef RENDER_FAIL
@@ -343,8 +346,6 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
         }
 
-        SDL_DestroyTextureS(infoSurface);
-
         if(finDuChapitre == 0)
             infoSurface = TTF_Write(renderer, police, infos, couleurTexte);
         else
@@ -367,6 +368,11 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
         /*Création de la texture de la page*/
         chapitre_texture = SDL_CreateTextureFromSurface(renderer, chapitre);
+        if(chapitre_texture == NULL)
+        {
+            logR((char*) SDL_GetError());
+            logR("\n");
+        }
 
         /*Calcul position page*/
         if(!pageTropGrande)
@@ -773,31 +779,15 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                         }
 
                         case SDLK_DOWN:
+                        {
+                            slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            SDL_Delay(10);
+                            break;
+                        }
                         case SDLK_UP:
                         {
-                            int monteoudescend = 0, temps = SDL_GetTicks();
-                            if(event.key.keysym.sym == SDLK_DOWN)
-                            {
-                                slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
-                                monteoudescend = 1;
-                            }
-                            else
-                            {
-                                slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
-                                monteoudescend = -1;
-                            }
-                            refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
-                            for(i = 0; temps + DELAY_KEY_PRESSED_TO_START_PAGE_SLIDE > SDL_GetTicks() && event.type != SDL_KEYUP; SDL_WaitEventTimeout(&event, 10)); //On attend un petit peu
-                            for(;event.type == SDL_KEYDOWN; SDL_WaitEvent(&event))
-                            {
-                                temps = SDL_GetTicks();
-                                if(monteoudescend > 0)
-                                    slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
-                                else if(monteoudescend < 0)
-                                    slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
-                                refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
-                                while(temps + 100 > SDL_GetTicks());
-                            }
+                            slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            SDL_Delay(10);
                             break;
                         }
 
