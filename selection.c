@@ -20,12 +20,10 @@ int section()
 
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 
-    chargement();
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
     else
         SDL_RenderFillRect(renderer, NULL);
-    chargement();
 
     /*Affichage du texte*/
     loadTrad(texteTrad, 17);

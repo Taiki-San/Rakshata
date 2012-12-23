@@ -112,8 +112,7 @@ int getMasterKey(unsigned char *input)
                 input[i] = output_char[i];
                 output_char[i] = 0;
             }
-            if(output_char[i]) //Juste pour eviter les double-free
-                free(output);
+            free(output);
             break;
         }
     }

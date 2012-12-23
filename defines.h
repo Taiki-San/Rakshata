@@ -203,8 +203,8 @@
     #define LARGEUR_CONTROLE_LECTEUR 800
     #define MINIICONE_H 42
     #define MINIICONE_W 42
-    #define BIGICONE_H 95
-    #define BIGICONE_W 95
+    #define BIGICONE_H 90
+    #define BIGICONE_W 90
 
     /*Positions*/
     #define LARGE_BUTTONS_LECTEUR_PC 30

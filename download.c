@@ -13,7 +13,7 @@ static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
 static int alright;
 static int hostReached;
-void *internalBuffer;
+static void *internalBuffer;
 
 #define SIZE_OUTPUT_PATH_MAX 1000
 
@@ -232,7 +232,7 @@ int download(char *adresse, char *repertoire, int activation)
         }
     }
 
-    if(internalBuffer != NULL && activation != 0)
+    if(activation == 1 && internalBuffer != NULL)
     {
         if(!alright)
         {

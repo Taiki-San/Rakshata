@@ -296,7 +296,6 @@ void SDL_FreeSurfaceS(SDL_Surface *surface)
 void SDL_DestroyTextureS(SDL_Texture *texture)
 {
     SDL_DestroyTexture(texture); //Gère déjà les cas imprévus
-    texture = NULL;
 }
 
 /**Différent en fonction de l'OS**/

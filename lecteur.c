@@ -285,15 +285,37 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                 pageTropGrande = 0;
 
             if(WINDOW_SIZE_H != buffer || WINDOW_SIZE_W != largeurValide)
+            {
+                #ifdef RENDER_FAIL
+                    SDL_DestroyTextureS(bandeauControle);
+                #endif
+
                 updateWindowSize(largeurValide, buffer);
+
+                #ifdef RENDER_FAIL
+                    bandeauControle = loadControlBar();
+                #endif
+            }
         }
 
         else
         {
             if(changementEtat)
             {
-                updateWindowSize(RESOLUTION[0], RESOLUTION[1]);
+                #ifdef RENDER_FAIL
+                    SDL_DestroyTextureS(bandeauControle);
+                    SDL_DestroyRenderer(renderer);
+                #endif
+
+                SDL_SetWindowSize(window, RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
+
+                #ifdef RENDER_FAIL
+                    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+                    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+                    bandeauControle = loadControlBar();
+                #endif
+
                 WINDOW_SIZE_W = RESOLUTION[0] = window->w;
                 WINDOW_SIZE_H = RESOLUTION[1] = window->h;
             }
@@ -321,8 +343,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
         }
 
-        if(infoSurface != NULL)
-            SDL_DestroyTextureS(infoSurface);
+        SDL_DestroyTextureS(infoSurface);
 
         if(finDuChapitre == 0)
             infoSurface = TTF_Write(renderer, police, infos, couleurTexte);
@@ -1017,7 +1038,7 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
 
             changeTo(output[i], '&', ' ');
         }
-        *nombrePage -= 1; //PageEnCoursDeLecture est décalé de 1 (car les tableaux commencent â€¡ 0), autant faire de même ici
+        *nombrePage -= 1; //PageEnCoursDeLecture est décalé de 1 (car les tableaux commencent à 0), autant faire de même ici
     }
 
     else
@@ -1233,8 +1254,6 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
 
         SDL_RenderCopy(renderer, texture, NULL, &positionModifie); //On affiche Page: pageAccesDirect
         SDL_DestroyTexture(texture);
-
-        SDL_RenderPresent(renderer);
     }
 
     else //Sinon, on affiche normalement

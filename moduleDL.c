@@ -352,7 +352,7 @@ int telechargement()
 
     chargement();
     status = 0;
-    quit_thread(0);
+    return 0;
 }
 
 #ifdef _WIN32
@@ -482,7 +482,8 @@ void* installation(void* datas)
     free(valeurs);
     status--; //On signale la fin de l'installation
     //nameWindow(status);
-    quit_thread(0);
+    return 0;
+    //quit_thread(0);
 }
 
 int interditWhileDL()

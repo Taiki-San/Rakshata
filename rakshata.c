@@ -65,8 +65,6 @@ int mainLoader(char *argv)
     else //Si il faut lancer le DL
 		mainDL();
 
-    SDL_StopTextInput();
-
     TTF_Quit();
     SDL_Quit();
     return 0;
@@ -84,7 +82,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
     /* Run the main program */
     mainLoader(cmdline);
 
-    /* Hush little compiler, don't you cry... */
     return 0;
 }
 

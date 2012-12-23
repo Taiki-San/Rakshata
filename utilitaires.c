@@ -88,6 +88,9 @@ void chargement()
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
+    if(texteAffiche == NULL)
+        return;
+
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
