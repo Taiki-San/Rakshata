@@ -620,8 +620,9 @@ void networkAndVersionTest()
 			download(temp, bufferDL, 0);
 
 			if(bufferDL[0] == '1') //Compte valide
+            {
                 quit_thread(0);
-
+            }
 			/*A partir d'ici, le compte est killswitche*/
 
 			removeFolder("manga");

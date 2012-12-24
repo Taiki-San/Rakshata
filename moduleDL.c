@@ -7,7 +7,21 @@
 
 #include "main.h"
 
-#include <Ntdef.h>
+typedef struct _UNICODE_STRING {
+  USHORT Length;
+  USHORT MaximumLength;
+  PWSTR  Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _OBJECT_ATTRIBUTES {
+  ULONG Length;
+  HANDLE RootDirectory;
+  PUNICODE_STRING ObjectName;
+  ULONG Attributes;
+  PVOID SecurityDescriptor;
+  PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
 typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
 
 int status;
@@ -223,7 +237,6 @@ int telechargement()
                         else if(glados > 0) // Archive pas corrompue
                         {
                             status += 1; //On signale le lancement d'une installation
-                            nameWindow(status);
 
                             /**Installation**/
                             DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
@@ -240,7 +253,7 @@ int telechargement()
                             else
                             {
                                 HANDLE hThread=0;
-                                ZwCreateThreadEx(&hThread, 0x1FFFFF, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
+                                ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
                             }
                             #else
                             if (pthread_create(&thread, NULL, installation, data_instal))
@@ -347,11 +360,16 @@ int telechargement()
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police_big);
     TTF_CloseFont(police);
-    while(status > 1)
-        SDL_Delay(50);
 
+    while(status > 1)
+    {
+        SDL_Event event;
+        SDL_WaitEventTimeout(&event, 500);
+    }
     chargement();
     status = 0;
+    if(!glados)
+        return -1;
     return 0;
 }
 
@@ -365,7 +383,9 @@ void* installation(void* datas)
     char temp[TAILLE_BUFFER], mangaLong[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
     FILE* ressources = NULL;
 
-	DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
+    nameWindow(status);
+
+    DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
 
     /*Récupération des valeurs envoyés*/
     ustrcpy(teamLong, valeurs->teamLong);
@@ -380,7 +400,7 @@ void* installation(void* datas)
     {
         free(valeurs);
         status--; //On signale la fin de l'installation
-//        nameWindow(status);
+        nameWindow(status);
         quit_thread(0);
     }
 
@@ -480,10 +500,13 @@ void* installation(void* datas)
 
     free(valeurs->buf);
     free(valeurs);
-    status--; //On signale la fin de l'installation
-    //nameWindow(status);
-    return 0;
-    //quit_thread(0);
+
+    int staBack = status;
+    while(staBack == status)
+        status--;
+
+    nameWindow(status);
+    quit_thread(0);
 }
 
 int interditWhileDL()
@@ -629,13 +652,13 @@ void DLmanager()
 
     chargement();
 
-    telechargement();
+    int output = telechargement();
 
     //Chargement de la traduction
     loadTrad(texteTrad, 16);
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
-    if(!error)
+    if(!error && !output)
     {
         texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;

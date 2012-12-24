@@ -36,19 +36,13 @@ int showControls()
     SDL_Texture *controls = NULL;
     SDL_Event event;
 
-    /***Doit passer par une surface pour redimensionner
-        la fenêtre de la taille de la surface ***/
-
-    crashTemp(temp, TAILLE_BUFFER);
-    sprintf(temp, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
-
-    controls = IMG_LoadTexture(renderer, temp);
-
-    if(WINDOW_SIZE_H != controls->h)
-        updateWindowSize(controls->w, controls->h);
+    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AIDE)
+        updateWindowSize(LARGEUR_FENETRE_AIDE, HAUTEUR_FENETRE_AIDE);
     else
         applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
 
+    sprintf(temp, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
+    controls = IMG_LoadTexture(renderer, temp);
     SDL_RenderCopy(renderer, controls, NULL, NULL);
     SDL_DestroyTextureS(controls);
 

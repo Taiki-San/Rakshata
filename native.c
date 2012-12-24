@@ -271,7 +271,7 @@ size_t ustrlen(void *input)
 {
     unsigned char *copy = input;
     while(*(copy++));
-    return (void *) copy - input;
+    return (void*)copy - input;
 }
 
 void ustrcpy(void* output, void* input)

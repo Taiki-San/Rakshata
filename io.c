@@ -21,7 +21,6 @@ int waitEnter()
     SDL_Event event;
     while(!i)
     {
-        event.type = -1;
         SDL_WaitEvent(&event);
         switch(event.type)
         {

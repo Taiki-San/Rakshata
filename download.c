@@ -78,7 +78,7 @@ int download(char *adresse, char *repertoire, int activation)
         if(repertoire[1] == 0)
         {
             size_buffer = -1;
-            internalBuffer++;
+            internalBuffer = (void*) 0x1;
         }
         else
             size_buffer = repertoire[1] * repertoire[2] * repertoire[3] * repertoire[4];
@@ -234,7 +234,7 @@ int download(char *adresse, char *repertoire, int activation)
 
     if(activation == 1 && internalBuffer != NULL)
     {
-        if(!alright)
+        if(alright < 0)
         {
             free(internalBuffer);
             return 1;

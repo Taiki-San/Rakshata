@@ -277,6 +277,9 @@
 #define TYPE_DEPOT_3 "P" //Dépôts payants
 #define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
 
+/*Menu d'aide*/
+#define HAUTEUR_FENETRE_AIDE 600
+#define LARGEUR_FENETRE_AIDE 800
 
 /*Suppression repo*/
 #define HAUTEUR_DEL_REPO 275

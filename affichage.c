@@ -431,6 +431,7 @@ void updateWindowSize(int w, int h)
         #ifdef RENDER_FAIL
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+        #else
             chargement();
         #endif
     }

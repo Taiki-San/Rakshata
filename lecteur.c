@@ -375,7 +375,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
         }
 
         /*Calcul position page*/
-        if(!pageTropGrande)
+        if(!pageTropGrande && !finDuChapitre)
         {
             if(chapitre->w < WINDOW_SIZE_W - (2 * BORDURE_LAT_LECTURE))
                 positionPage.w = positionSlide.w = chapitre->w;
@@ -399,7 +399,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                 positionPage.x = BORDURE_LAT_LECTURE;
         }
 
-        else
+        else if(!finDuChapitre)
         {
             positionPage.w = positionSlide.w = WINDOW_SIZE_W - BORDURE_LAT_LECTURE;
             positionPage.h = positionSlide.h = WINDOW_SIZE_H - BORDURE_HOR_LECTURE;
