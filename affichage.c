@@ -19,8 +19,6 @@ int showError()
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     restartEcran();
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
-    SDL_RenderPresent(renderer);
 
     position.y = WINDOW_SIZE_H / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
 
@@ -55,7 +53,7 @@ void initialisationAffichage()
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     for(i = 0; i < 6; i++)
     {
@@ -96,7 +94,7 @@ int erreurReseau()
     TTF_Font *police = NULL;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     /*Chargement de la traduction*/
     loadTrad(texte, 24);
@@ -144,7 +142,7 @@ int affichageMenuGestion()
     /*Remplissage des variables*/
     loadTrad(menus, 3);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     position.y = HAUTEUR_TEXTE;
     TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
     for(i = 0; i < 7; i++)
@@ -266,7 +264,7 @@ void raffraichissmenent()
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     if(texteAffiche != NULL)
     {
@@ -302,7 +300,7 @@ void affichageLancement()
     position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
     position.w = texteAffiche->w;
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
     SDL_RenderPresent(renderer);
@@ -318,7 +316,7 @@ int rienALire()
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     char texte[SIZE_TRAD_ID_23][100];
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 	loadTrad(texte, 23);
 
@@ -359,11 +357,7 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int num
 
     hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //Définition de la taille de la fenêtre
     alertSurface = SDL_CreateRGBSurface(0, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
-#ifdef __APPLE__
-    SDL_FillRect(alertSurface, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
     SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
 
     positionSurUIAlert.y = BORDURE_SUP_UIALERT;
     for(i = 0; texte[i] && i < numberLine; i++)
@@ -415,27 +409,34 @@ void updateWindowSize(int w, int h)
 {
     if(WINDOW_SIZE_H != h || WINDOW_SIZE_W != w)
     {
-        WINDOW_SIZE_H = h;
+        WINDOW_SIZE_H = h; //Pour repositionner chargement
         WINDOW_SIZE_W = w;
 
-        SDL_RenderFillRect(renderer, NULL);
-        SDL_RenderPresent(renderer);
-
-        #ifdef RENDER_FAIL
-            chargement();
-            SDL_DestroyRenderer(renderer);
-        #endif
+        chargement();
 
         SDL_SetWindowSize(window, w, h);
+        checkRenderBugPresent();
 
-        #ifdef RENDER_FAIL
+        if(RENDER_BUG)
+        {
+            SDL_DestroyRenderer(renderer);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-        #else
             chargement();
-        #endif
+            SDL_RenderPresent(renderer);
+        }
+        else if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
+        {
+            SDL_RenderClear(renderer);
+            SDL_RenderPresent(renderer);
+        }
+        WINDOW_SIZE_H = window->h;
+        WINDOW_SIZE_W = window->w;
     }
-    SDL_RenderFillRect(renderer, NULL);
-    SDL_RenderPresent(renderer);
+    else
+    {
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
+    }
 }
 

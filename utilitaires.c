@@ -56,12 +56,13 @@ void restartEcran()
     if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
         updateWindowSize(LARGEUR, HAUTEUR);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 }
 
 void chargement()
 {
+    char *temp = (char*) SDL_GetError();
 	/*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
@@ -72,7 +73,7 @@ void chargement()
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     if(police == NULL)
     {

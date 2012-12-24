@@ -44,8 +44,8 @@ void mainRakshata()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
 
-    WINDOW_SIZE_W = LARGEUR;
-    WINDOW_SIZE_H = HAUTEUR;
+    WINDOW_SIZE_W = window->w;
+    HAUTEUR = WINDOW_SIZE_H = window->h;
 
     chargement();
 
@@ -58,7 +58,6 @@ void mainRakshata()
     if(newLangue && continuer != PALIER_QUIT)
     {
         continuer = changementLangue();
-        restartEcran();
         if(continuer == PALIER_QUIT)
             removeR("data/langue");
         else
@@ -311,7 +310,7 @@ int mainChoixDL()
             fclose(test);
         #endif
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         initialisationAffichage();
         if(NETWORK_ACCESS < CONNEXION_DOWN)
@@ -355,7 +354,7 @@ int mainChoixDL()
                             else
                             {
                                 /*Confirmation */
-                                applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                                SDL_RenderClear(renderer);
                                 continuer = ecritureDansImport(mangaDispo[mangaChoisis], mangaDispoCourt[mangaChoisis], chapitreChoisis, teamsCourt[mangaChoisis]);
 								nombreChapitre = nombreChapitre + continuer;
                                 continuer = -1;
@@ -367,7 +366,7 @@ int mainChoixDL()
                 {
                     if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
                     {
-                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        SDL_RenderClear(renderer);
                         affichageLancement();
                         lancementModuleDL();
                     }
@@ -391,7 +390,7 @@ int mainChoixDL()
         if(WINDOW_SIZE_H != HAUTEUR_INTERDIT_WHILE_DL)
             updateWindowSize(LARGEUR, HAUTEUR_INTERDIT_WHILE_DL);
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         continuer = interditWhileDL();
     }

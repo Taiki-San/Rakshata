@@ -12,17 +12,20 @@ int ecranAccueil()
     /*En raison de la taille importante de la page d'acceuil (800kb),
     elle est enregistré une seule fois et on lui colle dessus la trad*/
 
+    SDL_Rect position;
     SDL_Texture *acceuil = NULL;
 	char temp[TAILLE_BUFFER];
 
+    position.x = position.y = 0;
+    position.h = WINDOW_SIZE_H;
+    position.w = WINDOW_SIZE_W;
     acceuil = IMG_LoadTexture(renderer, "data/acceuil.png");
-    SDL_RenderCopy(renderer, acceuil, NULL, NULL);
+    SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 
     sprintf(temp, "data/%s/acceuil.png", LANGUAGE_PATH[langue - 1]); //Traduction
-
     acceuil = IMG_LoadTexture(renderer, temp);
-    SDL_RenderCopy(renderer, acceuil, NULL, NULL);
+    SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 
     SDL_RenderPresent(renderer); //Refresh screen
@@ -38,8 +41,8 @@ int showControls()
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AIDE)
         updateWindowSize(LARGEUR_FENETRE_AIDE, HAUTEUR_FENETRE_AIDE);
-    else
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+
+    SDL_RenderClear(renderer);
 
     sprintf(temp, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
     controls = IMG_LoadTexture(renderer, temp);
@@ -178,7 +181,6 @@ int menuGestion()
                 break;
         }
     }
-    restartEcran();
     return menu;
 }
 

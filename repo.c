@@ -36,7 +36,7 @@ int ajoutRepo()
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     loadTrad(texteTrad, 14);
 
@@ -61,7 +61,7 @@ int ajoutRepo()
                 updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
 
             /*On affiche l'écran de sélection*/
-            applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+            SDL_RenderClear(renderer);
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
             position.y = HAUTEUR_MENU_AJOUT_REPO;
@@ -74,7 +74,7 @@ int ajoutRepo()
             crashTemp(URL, LONGUEUR_URL);
             /*On attend l'URL*/
             continuer = waitClavier(LONGUEUR_URL, 0, 0, URL);
-            applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+            SDL_RenderClear(renderer);
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(URL))
@@ -136,7 +136,7 @@ int ajoutRepo()
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
 
-                    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                    SDL_RenderClear(renderer);
                     texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = BORDURE_SUP_MENU;
@@ -277,7 +277,7 @@ int deleteRepo()
 
     if(WINDOW_SIZE_H != i)
         updateWindowSize(LARGEUR, i);
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     loadTrad(texteTrad, 15);
 
@@ -295,7 +295,7 @@ int deleteRepo()
     {
         if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
             updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         confirme = confirmationRepo(team[teamChoisis - 1]);
 
@@ -333,7 +333,7 @@ int affichageRepoIconnue()
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 

@@ -390,7 +390,7 @@ int getPassword(char password[100])
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     /**Leurs codes sont assez proches donc on les regroupes**/
     ligne = TTF_Write(renderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]

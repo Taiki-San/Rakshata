@@ -15,6 +15,7 @@ int langue = 0; //Langue
 int UNZIP_NEW_PATH = 0; //La décompression change le path courant
 int NETWORK_ACCESS = CONNEXION_OK;
 int HAUTEUR = 730;
+int RENDER_BUG = 0;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/test/success.html"};
@@ -22,15 +23,23 @@ char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german
 char COMPTE_PRINCIPAL_MAIL[100];
 SDL_Window* window = NULL;
 SDL_Renderer *renderer = NULL;
-SDL_Surface *ecran = NULL;
 
-int mainLoader(char *argv)
+/* This is where execution begins [windowed apps] */
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 {
+    int i = 0;
+    char *cmdline= GetCommandLine();
+
+    for(i = strlen(cmdline); i > 0 && cmdline[i] != ' '; cmdline[i--] = 0);
+    cmdline[i] = 0;
+
+    /* Real start of Rakshata */
+
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     srand(time(NULL)); //Initialisation de l'aléatoire
 
 #ifdef __APPLE__
-	updateDirectory(argv[0]); //Si OSX, on se déplace dans le dossier .app
+	updateDirectory(cmdline); //Si OSX, on se déplace dans le dossier .app
 #endif
 
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
@@ -54,8 +63,7 @@ int mainLoader(char *argv)
 
     restrictEvent();
     getResolution();
-
-    checkJustUpdated(argv);
+    checkJustUpdated();
 
     if(!checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
     {
@@ -67,21 +75,6 @@ int mainLoader(char *argv)
 
     TTF_Quit();
     SDL_Quit();
-    return 0;
-}
-
-/* This is where execution begins [windowed apps] */
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
-{
-    int i = 0;
-    char *cmdline= GetCommandLine();
-
-    for(i = strlen(cmdline); i > 0 && cmdline[i] != ' '; cmdline[i--] = 0);
-    cmdline[i] = 0;
-
-    /* Run the main program */
-    mainLoader(cmdline);
-
     return 0;
 }
 

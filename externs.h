@@ -13,6 +13,7 @@ extern int langue; //Langue
 extern int UNZIP_NEW_PATH; //La décompression change le path courant
 extern int NETWORK_ACCESS;
 extern int HAUTEUR;
+extern int RENDER_BUG;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];
 extern char MAIN_SERVER_URL[2][100];
@@ -20,4 +21,3 @@ extern char LANGUAGE_PATH[NOMBRE_LANGUE][50];
 extern char COMPTE_PRINCIPAL_MAIL[100];
 extern SDL_Window* window;
 extern SDL_Renderer *renderer;
-extern SDL_Surface *ecran;

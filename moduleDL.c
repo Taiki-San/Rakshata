@@ -179,7 +179,7 @@ int telechargement()
 
                         //On remplis la fenêtre
 
-                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);;
+                        SDL_RenderClear(renderer);
                         texte = TTF_Write(renderer, police_big, trad[4], couleurTexte);
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                         position.y = HAUTEUR_MESSAGE_INITIALISATION;
@@ -348,7 +348,7 @@ int telechargement()
     if(glados)
         removeR("tmp/import.dat");
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
     position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
@@ -519,7 +519,7 @@ int interditWhileDL()
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     loadTrad(texte, 9);
 
@@ -544,7 +544,7 @@ int interditWhileDL()
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     return waitEnter();
 }
@@ -657,7 +657,7 @@ void DLmanager()
     //Chargement de la traduction
     loadTrad(texteTrad, 16);
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     if(!error && !output)
     {
         texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);

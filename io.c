@@ -280,7 +280,7 @@ void connexionNeededToAllowANewComputer()
     loadTrad(trad, 27);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     ligne = TTF_Write(renderer, police, trad[0], couleur); //Message d'erreur
     position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y = 50;

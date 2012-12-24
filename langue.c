@@ -28,7 +28,7 @@ int changementLangue()
 
 
     /*On lance la boucle d'affichage*/
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
 
     texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
     position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;

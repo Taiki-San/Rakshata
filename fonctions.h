@@ -20,7 +20,8 @@ void updateWindowSize(int w, int h);
 
 /**check.c**/
 void checkUpdate();
-void checkJustUpdated(char *argv);
+void checkJustUpdated();
+void checkRenderBugPresent();
 int check_evt();
 int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX]);
 int checkLancementUpdate();

@@ -56,17 +56,8 @@ void checkUpdate()
 
         /*Initialisation écran*/
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-#ifdef SDL_LEGACY
-        ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR_MAJ, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        fond = SDL_CreateRGBSurface(SDL_HWSURFACE, LARGEUR, HAUTEUR_MAJ, 32, 0, 0 , 0, 0); //On initialise le fond
-#ifdef __APPLE__
-        SDL_FillRect(fond, NULL, SDL_Swap32(SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B))); //We change background color
-#else
-        SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, FOND_R, FOND_G, FOND_B)); //We change background color
-#endif
-#endif
         SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         loadTrad(trad, 12); //Chargement du texte puis écriture
         infosAvancement = TTF_Write(renderer, police, trad[0], couleurTexte);
@@ -168,13 +159,30 @@ void checkUpdate()
     }
 }
 
-void checkJustUpdated(char *argv)
+void checkJustUpdated()
 {
     if(checkFileExist("Rakshata.exe.old"))
     {
         remove("tmp/update");
         remove("Rakshata.exe.old");
     }
+}
+
+void checkRenderBugPresent()
+{
+    if(RENDER_BUG)
+        return;
+    SDL_RenderClear(renderer);
+    SDL_Texture *texture = IMG_LoadTexture(renderer, "data/icone.png");
+    if(texture == NULL)
+    {
+        RENDER_BUG = 1;
+        SDL_DestroyRenderer(renderer);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+    }
+    else
+        SDL_DestroyTextureS(texture);
 }
 
 int check_evt()
@@ -263,7 +271,7 @@ int check_evt()
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
         crashTemp(temp, 200);
         sprintf(temp, "Environement corrompu, veuillez patienter (%d fichier(s)).", j);
         message = TTF_Write(renderer, police, temp, couleur);
@@ -369,7 +377,7 @@ int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
 
     test = fopenR(temp, "r");
 
-    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+    SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
     if(test != NULL)

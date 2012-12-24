@@ -441,7 +441,7 @@ int logon()
         retry = 0;
         crashTemp(adresseEmail, 100);
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -490,7 +490,7 @@ int logon()
 
         login = check_login(adresseEmail);
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         switch(login)
         {
@@ -550,7 +550,7 @@ int logon()
                 {
                     case 0: //Rejected
                     {
-                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        SDL_RenderClear(renderer);
                         ligne = TTF_Write(renderer, police, trad[10], couleur); //Message d'erreur
                         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y = 60;
@@ -593,7 +593,7 @@ int logon()
                     }
                     default: //Else -> erreure critique, me contacter/check de la connexion/du site
                     {
-                        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                        SDL_RenderClear(renderer);
                         ligne = TTF_Write(renderer, police, trad[13], couleur); //Message d'erreur
                         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                         position.y = 60;

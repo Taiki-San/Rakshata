@@ -162,7 +162,7 @@ int download(char *adresse, char *repertoire, int activation)
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
 
-                    applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                    SDL_RenderClear(renderer);
 
                     SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
                     SDL_DestroyTextureS(pourcentAffiche);

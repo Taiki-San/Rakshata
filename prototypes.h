@@ -43,4 +43,5 @@
 	#include <SDL/SDL.h>
 	#include <SDL_Image/SDL_image.h>
 	#include <SDL_TTF/SDL_ttf.h>
+	#define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
 #endif

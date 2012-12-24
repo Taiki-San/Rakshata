@@ -12,8 +12,6 @@
     #define SECURE_THREADS 0x4
 #endif
 
-#define RENDER_FAIL
-
 #ifdef DEV_VERSION
     #define PROJECT_NAME "[DEV_BUILD] Rakshata"
 #else

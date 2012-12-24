@@ -22,8 +22,8 @@ int section()
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
-    else
-        SDL_RenderFillRect(renderer, NULL);
+
+    SDL_RenderClear(renderer);
 
     /*Affichage du texte*/
     loadTrad(texteTrad, 17);
@@ -255,7 +255,7 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
             updateWindowSize(LARGEUR, i);
         loadTrad(texteTrad, 18);
 
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
         TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
@@ -474,7 +474,7 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
 
         if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
             updateWindowSize(LARGEUR, i);
-        applyBackground(0, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+        SDL_RenderClear(renderer);
 
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         crashTemp(temp, TAILLE_BUFFER);
@@ -742,7 +742,6 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
         return buffer;
     }
     TTF_CloseFont(police);
-    restartEcran();
     return chapitreChoisis;
 }
 
