@@ -62,7 +62,6 @@ void restartEcran()
 
 void chargement()
 {
-    char *temp = (char*) SDL_GetError();
 	/*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
