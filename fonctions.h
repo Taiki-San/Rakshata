@@ -69,6 +69,11 @@ int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
 int buttonLimitationEnforced(int button_selected[6], int sectionsMangasToTest);
 void button_available(int sectionsMangas[NOMBRE_MANGA_MAX], int button[6]);
 
+/**Error.c**/
+void logR(char *error);
+void connexionNeededToAllowANewComputer();
+int libcurlErrorCode(CURLcode code);
+
 /**Interface.c**/
 void updateSectionMessage(char messageVersion[5]);
 void checkSectionMessageUpdate();
@@ -79,8 +84,6 @@ int waitEnter();
 int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour);
 int getLetterPushed(SDL_Event event);
 int checkIfNumber (int c);
-void logR(char *error);
-void connexionNeededToAllowANewComputer();
 
 /**Keys.c**/
 int createSecurePasswordDB(unsigned char *key_sent);
@@ -143,6 +146,7 @@ int charToInt(char *input);
 void fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(void *input);
+void usstrcpy(void* output, size_t length, void* input);
 void ustrcpy(void* output, void* input);
 void SDL_FreeSurfaceS(SDL_Surface *surface);
 void SDL_DestroyTextureS(SDL_Texture *texture);
