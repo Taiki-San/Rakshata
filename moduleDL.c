@@ -7,6 +7,9 @@
 
 #include "main.h"
 
+extern int INSTALL_DONE;
+extern int CURRENT_TOKEN;
+
 typedef struct _UNICODE_STRING {
   USHORT Length;
   USHORT MaximumLength;
@@ -43,6 +46,9 @@ int telechargement()
     SDL_Rect position;
 	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     OUT_DL* struc = NULL;
+
+    INSTALL_DONE = 0;
+    CURRENT_TOKEN = 0;
 
 
     while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
@@ -443,10 +449,10 @@ void* installation(void* datas)
             ressources = fopenR(temp, "r");
         }
 
+        sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
         if(erreurs != -1 && nouveauDossier == 0 && ressources != NULL)
         {
             fclose(ressources);
-            crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
             ressources = fopenR(temp, "r+");
             fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
@@ -470,11 +476,10 @@ void* installation(void* datas)
             fclose(ressources);
         }
 
-        else if(erreurs != -1 && ressources != NULL)
+        else if(erreurs != -1 && !checkFileExist(temp) && ressources != NULL)
         {
             fclose(ressources);
             /*Création du config.dat du nouveau manga*/
-            crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "manga/%s/%s/%s", teamLong, mangaLong, CONFIGFILE);
             ressources = fopenR(temp, "w+");
             fprintf(ressources, "%d %d", chapitre, chapitre);
@@ -498,6 +503,7 @@ void* installation(void* datas)
     if(erreurs)
         error++; //On note si le chapitre a posé un problème
 
+    free(valeurs->buf->buf);
     free(valeurs->buf);
     free(valeurs);
 

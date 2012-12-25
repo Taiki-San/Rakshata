@@ -274,6 +274,11 @@ size_t ustrlen(void *input)
     return (void*)copy - input;
 }
 
+void usstrcpy(void* output, size_t length, void* input)
+{
+    memcpy(output, input, length);
+}
+
 void ustrcpy(void* output, void* input)
 {
     memcpy(output, input, ustrlen(input));

@@ -85,6 +85,9 @@
 		<Unit filename="engine.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="error.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="externs.h" />
 		<Unit filename="fonctions.h" />
 		<Unit filename="interface.c">

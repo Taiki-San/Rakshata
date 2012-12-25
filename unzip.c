@@ -10,6 +10,9 @@
 
 #include "unzip/unz_memory.c"
 
+int INSTALL_DONE;
+int CURRENT_TOKEN;
+
 int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
 {
     uLong i;
@@ -66,7 +69,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     int i = 0, j = 0;
     int opt_do_extract_withoutpath = 0; //Extraire en crashant le path
 	int opt_overwrite = 1; /*Overwrite*/
-	int opt_encrypted = 0, ret_value=0;
+	int opt_encrypted = 0, ret_value=0, mytoken = CURRENT_TOKEN++;
    	char *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
 
 	FILE* test = NULL;
@@ -164,7 +167,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         uf_tests = unzOpen2(NULL, &fileops);
     }
 
-    while(UNZIP_NEW_PATH); //Tant qu'une décompression est en cours, on va pas changer le cwd
+    while(mytoken != INSTALL_DONE) //Tant qu'une décompression est en cours, on va pas changer le cwd
+        SDL_Delay(50);
 
     UNZIP_NEW_PATH = 1; //Changer le répertoire par défaut change beaucoup (trop) de trucs
 
@@ -285,8 +289,16 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         for(i = 0; strcmp(filename_inzip[i], CONFIGFILE) && i < NOMBRE_PAGE_MAX; i++);
         if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
         {
-            for(j=0; j<256; j++)
+            for(j=0; filename_inzip[i][j] && j < 256; j++)
                 filename_inzip[i][j] = 0;
+            for(j = NOMBRE_PAGE_MAX-1; j > i && filename_inzip[j][0] == 0; j--);
+            if(j > i)
+            {
+                ustrcpy(filename_inzip[i], filename_inzip[j]);
+                usstrcpy(pass[i], SHA256_DIGEST_LENGTH, pass[j]);
+                for(i = 0; i < 256; filename_inzip[j][i++] = 0);
+                for(i = 0; i < SHA256_DIGEST_LENGTH; pass[j][i++] = 0);
+            }
 
         }
         nombreFichiers--;
@@ -325,26 +337,6 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
                 crashTemp(temp, 256);
             }
         }
-
-/*Avant, on virait config.dat ici, je l'ai déplacé avant la première consolidation, voir si ça pose problème
-
-        if(i < NOMBRE_PAGE_MAX-1 && filename_inzip[i+1][0]) //Si il faut reconsolider les variables
-        {
-            for(i = j = 0; i < NOMBRE_PAGE_MAX; i++, j++) //on consolide la liste des noms (fichiers invalides dégagés)
-            {
-                if(!filename_inzip[i][0])//Fichier manquant
-                {
-                    for(; !filename_inzip[i][0] && i < NOMBRE_PAGE_MAX; i++);
-                    if(i >= NOMBRE_PAGE_MAX)
-                        break;
-                    ustrcpy(filename_inzip[j], filename_inzip[i]);
-                    crashTemp(filename_inzip[i], 256);
-                    ustrcpy(pass[j], pass[i]);
-                    crashTemp(pass[i], SHA256_DIGEST_LENGTH);
-                }
-            }
-        }*/
-
         hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 15 ) * sizeof(unsigned char)); //+1 pour \n, +15 pour le nombre en tête et le \n qui suis
         if(hugeBuffer== NULL)
         {
@@ -391,6 +383,7 @@ quit:
     free(password);
 
     UNZIP_NEW_PATH = 0;
+    INSTALL_DONE++;
 
     return ret_value;
 }

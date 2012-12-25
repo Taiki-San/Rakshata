@@ -283,6 +283,7 @@ static void* downloader(void* envoi)
             IPProxy[proxy] = i;
         }
         fclose(fichier);
+        fichier = NULL;
         proxy = 1;
     }
 #endif
@@ -349,7 +350,7 @@ static void* downloader(void* envoi)
 
         if(res != CURLE_OK) //Si problème
         {
-            char *errorOutput = malloc(sizeof(res) + 40);
+            char *errorOutput = malloc(sizeof(res) + 64);
             if(errorOutput == NULL)
                 logR("Failed at allocate memory in file 5 - 2\n");
 
@@ -373,7 +374,7 @@ static void* downloader(void* envoi)
 
         }
         curl_easy_cleanup(curl);
-        if(printToAFile && fichier != NULL)
+        if(fichier != NULL)
       	  fclose(fichier);
     }
     else
