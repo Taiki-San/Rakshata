@@ -685,7 +685,7 @@ void DLmanager()
         SDL_RenderPresent(renderer);
         waitEnter();
     }
-    else if (error > 0)
+    else if (error > 0 && output != -1)
     {
         crashTemp(temp, TAILLE_BUFFER);
         sprintf(temp, "%s %d %s", texteTrad[2], error, texteTrad[3]);

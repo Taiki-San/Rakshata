@@ -175,7 +175,7 @@ int download(char *adresse, char *repertoire, int activation)
                     status = 0;
             }
             else
-                for(pourcent = 20; pourcent > 0; pourcent--); //Sinon, ne marche pas en mode Release. Minimum: pourcent < 17
+                SDL_Delay(25);
         }
         if(alright > 0)
         {

@@ -9,7 +9,6 @@
 
 int nombreEntree(SDL_Event event)
 {
-    /*SDLK_x == SDLK_KP_x == x :D*/
     if(event.text.text[0] >= '0' && event.text.text[0] <= '9')
         return event.text.text[0] - '0';
     return -1;
