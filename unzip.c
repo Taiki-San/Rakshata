@@ -192,6 +192,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             exit(-1);
         }
     }
+    if(checkFileExist(CONFIGFILE))
+        goto quit;
 
     for(i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinitialise les noms de page
     {

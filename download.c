@@ -141,7 +141,7 @@ int download(char *adresse, char *repertoire, int activation)
                     sprintf(temp, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
                     pourcentAffiche = TTF_Write(renderer, police, temp, couleur);
 
-                    applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
+                    applyBackground(0, position.y, WINDOW_SIZE_W, pourcentAffiche->h + 5);
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
                     SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
@@ -181,8 +181,7 @@ int download(char *adresse, char *repertoire, int activation)
         {
             applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
             position.x = BORDURE_POURCENTAGE;
-            sprintf(temp, "%s %d,%d %s - 100%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], texte[3], (int) download_speed/*Débit*/, texte[4]);
-            pourcentAffiche = TTF_Write(renderer, police, temp, couleur);
+            pourcentAffiche = TTF_Write(renderer, police, texte[6], couleur);
             position.h = pourcentAffiche->h;
             position.w = pourcentAffiche->w;
             SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);

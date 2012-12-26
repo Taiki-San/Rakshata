@@ -373,7 +373,6 @@ int telechargement()
         SDL_WaitEventTimeout(&event, 500);
     }
     chargement();
-    status = 0;
     if(!glados)
         return -1;
     return 0;
@@ -718,6 +717,7 @@ void DLmanager()
         waitEnter();
     }
     TTF_CloseFont(police);
+    status = 0;
 }
 
 void lancementModuleDL()
