@@ -59,6 +59,7 @@ void checkSectionMessageUpdate()
     fseek(checkFile, 0, SEEK_END);
 
     size_t sizeOfFile = ftell(checkFile);
+    fclose(checkFile);
 
     if(sizeOfFile != 0 && sizeOfFile < 512)
     {
