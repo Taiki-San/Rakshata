@@ -359,6 +359,11 @@ void removeFolder(char *path)
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
+#ifdef DEV_VERSION
+    logR("Removed: ");
+    logR(name);
+    logR("\n");
+#endif
     free(name);
 }
 
