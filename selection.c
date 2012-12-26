@@ -58,7 +58,7 @@ int section()
 
     for(i = 1; i <= NOMBRESECTION; i++)
     {
-        texte = TTF_Write(renderer, police, texteTrad[i + 2], couleurTexte);
+        texte = TTF_Write(renderer, police, texteTrad[i + 1], couleurTexte);
         if(i % 2 == 1) //Colonne de gauche
             position.x = WINDOW_SIZE_W / 4 - texte->w / 2;
         else

@@ -99,9 +99,6 @@
 		<Unit filename="keys.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="langue.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lecteur.c">
 			<Option compilerVar="CC" />
 		</Unit>

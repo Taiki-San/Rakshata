@@ -25,18 +25,15 @@ int showError()
     /*Remplissage des variables*/
     loadTrad(texte, 1);
 
-    for(i = 0; i < 7; i++)
+    for(i = 0; i < SIZE_TRAD_ID_1; i++)
     {
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        if(texte[i][0] != 0)
-        {
-            texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-            position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-            position.h = texteAAfficher->h;
-            position.w = texteAAfficher->w;
-            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-            SDL_DestroyTextureS(texteAAfficher);
-        }
+        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
+        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
+        position.h = texteAAfficher->h;
+        position.w = texteAAfficher->w;
+        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+        SDL_DestroyTextureS(texteAAfficher);
     }
 
     TTF_CloseFont(police);
@@ -46,7 +43,7 @@ int showError()
 
 void initialisationAffichage()
 {
-    int i = 0, j = 0;
+    int i = 0;
     char texteAAfficher[SIZE_TRAD_ID_2][100];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -55,29 +52,22 @@ void initialisationAffichage()
 
     SDL_RenderClear(renderer);
 
-    for(i = 0; i < 6; i++)
-    {
-        for(j = 0; j < 100; j++)
-            texteAAfficher[i][j] = 0;
-    }
-
     loadTrad(texteAAfficher, 2);
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     position.y = HAUTEUR_AFFICHAGE_INITIALISATION;
 
-    for(i = 0; i < 6; i++)
+    for(i = 0; i < SIZE_TRAD_ID_2; i++)
     {
         SDL_DestroyTextureS(texte);
         texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
-        if(texteAAfficher[i][0] != 0)
-        {
-            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-            position.h = texte->h;
-            position.w = texte->w;
-            SDL_RenderCopy(renderer, texte, NULL, &position);
-        }
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        if(i == 1) //Saut de ligne
+            position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+        position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
     }
     SDL_RenderPresent(renderer);
     SDL_DestroyTextureS(texte);

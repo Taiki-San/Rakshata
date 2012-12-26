@@ -338,14 +338,14 @@
 
 /*Trad*/
 #define NOMBRE_TRAD_ID_MAX 28
-#define SIZE_TRAD_ID_1 7
-#define SIZE_TRAD_ID_2 6
+#define SIZE_TRAD_ID_1 6
+#define SIZE_TRAD_ID_2 5
 #define SIZE_TRAD_ID_3 7
 #define SIZE_TRAD_ID_4 2
 #define SIZE_TRAD_ID_5 1
 #define SIZE_TRAD_ID_6 2
 #define SIZE_TRAD_ID_7 2
-#define SIZE_TRAD_ID_8 2
+#define SIZE_TRAD_ID_8 1
 #define SIZE_TRAD_ID_9 2
 #define SIZE_TRAD_ID_10 2
 #define SIZE_TRAD_ID_11 14
@@ -354,7 +354,7 @@
 #define SIZE_TRAD_ID_14 4
 #define SIZE_TRAD_ID_15 1
 #define SIZE_TRAD_ID_16 6
-#define SIZE_TRAD_ID_17 7
+#define SIZE_TRAD_ID_17 6
 #define SIZE_TRAD_ID_18 3
 #define SIZE_TRAD_ID_19 14
 #define SIZE_TRAD_ID_20 7
