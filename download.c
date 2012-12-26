@@ -349,32 +349,13 @@ static void* downloader(void* envoi)
 
         if(res != CURLE_OK) //Si problème
         {
-            char *errorOutput = malloc(sizeof(res) + 64);
-            if(errorOutput == NULL)
-                logR("Failed at allocate memory in file 5 - 2\n");
-
-            else if (res != CURLE_ABORTED_BY_CALLBACK) //Si on a pas quitté volontairement
-            {
-                if(res == CURLE_COULDNT_RESOLVE_HOST) //Failed at resolve remote host
-                {
-                    sprintf(errorOutput, "Fail during download: Host unreacheable\n");
-                    hostReached = 0;
-                }
-                else if (res == CURLE_COULDNT_CONNECT)
-                {
-                    sprintf(errorOutput, "Fail during download: Failed at connect\n");
-                    hostReached = 0;
-                }
-                else
-                    sprintf(errorOutput, "Fail during download: %d\n", res);
-                logR(errorOutput);
-                free(errorOutput);
-            }
-
+            hostReached = libcurlErrorCode(res);
+            if(hostReached == -1)
+                alright = -1;
         }
         curl_easy_cleanup(curl);
         if(fichier != NULL)
-      	  fclose(fichier);
+            fclose(fichier);
     }
     else
     {

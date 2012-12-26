@@ -69,5 +69,56 @@ void connexionNeededToAllowANewComputer()
 
 int libcurlErrorCode(CURLcode code)
 {
-    return 0;
+    int ret_value = 1;
+    char log_message[100];
+    switch(code)
+    {
+        case CURLE_FAILED_INIT :
+        {
+            sprintf(log_message, "Initialization failed\n");
+            break;
+        }
+
+        case CURLE_URL_MALFORMAT:
+        {
+            sprintf(log_message, "URL is malformated\n");
+            break;
+        }
+        case CURLE_COULDNT_RESOLVE_PROXY:
+        {
+            sprintf(log_message, "Failed at resolve the proxy\n");
+            break;
+        }
+        case CURLE_COULDNT_RESOLVE_HOST:
+        case CURLE_COULDNT_CONNECT:
+        {
+            sprintf(log_message, "Failed at resolve host\n");
+            ret_value = 0;
+            break;
+        }
+        case CURLE_PARTIAL_FILE :
+        {
+            sprintf(log_message, "Partial file\n");
+            ret_value = 0;
+            break;
+        }
+        case CURLE_OUT_OF_MEMORY:
+        {
+            sprintf(log_message, "Everything is screwed up...\n");
+            ret_value = -1;
+            break;
+        }
+        case CURLE_ABORTED_BY_CALLBACK:
+        {
+            return -1;
+            break;
+        }
+        default:
+        {
+            sprintf(log_message, "Unknown libcURL error: %d", code);
+            break;
+        }
+    }
+    logR(log_message);
+    return ret_value;
 }
