@@ -53,6 +53,8 @@ int waitEnter()
 
             case SDL_WINDOWEVENT:
             {
+                if(event.window.event == SDL_WINDOWEVENT_NONE)
+                        SDL_PushEvent(&event);
                 if(checkWindowEventValid(event.window.event))
                 {
                     SDL_RenderPresent(renderer);

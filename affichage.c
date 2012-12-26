@@ -121,14 +121,14 @@ int erreurReseau()
 
 int affichageMenuGestion()
 {
-    int i = 0, j = 0, longueur[NOMBRE_MENU] = {0};
+    int i = 0, j = 0, longueur[SIZE_TRAD_ID_3-1] = {0}, hauteurTexte = 0, menuChoisis;
     char menus[SIZE_TRAD_ID_3][LONGUEURTEXTE];
     SDL_Event event;
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)
         updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
@@ -143,66 +143,59 @@ int affichageMenuGestion()
     loadTrad(menus, 3);
 
     SDL_RenderClear(renderer);
+
+    texteAffiche = TTF_Write(renderer, police, menus[0], couleur);
+    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = HAUTEUR_TEXTE;
-    TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
-    for(i = 0; i < 7; i++)
+    position.h = texteAffiche->h;
+    position.w = texteAffiche->w;
+    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_DestroyTextureS(texteAffiche);
+
+    /*On remet la valeur normale*/
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+
+    for(i = 1; i < SIZE_TRAD_ID_3; i++)
     {
-        if(i == 2)
-        {
-            TTF_CloseFont(police);
-            police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-        }
-        if(menus[i][0] != 0)
-        {
-            texteAffiche = TTF_Write(renderer, police, menus[i], couleur);
-
-            /*On centre le menu*/
-            position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-
-            if(i > 1)
-                longueur[i - 2] = texteAffiche->w;
-
-            position.h = texteAffiche->h;
-            position.w = texteAffiche->w;
-            SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-            SDL_DestroyTextureS(texteAffiche);
-
-            /*On remet la valeur normale*/
-            if(!i)
-                position.y = HAUTEUR_CHOIX;
-            else
-                position.y = position.y + LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE;
-        }
+        texteAffiche = TTF_Write(renderer, police, menus[i], couleur);
+        if(i % 2 == 1) //Colonne de gauche
+            position.x = WINDOW_SIZE_W / 4 - texteAffiche->w / 2;
+        else
+            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texteAffiche->w / 2;
+        position.y = HAUTEUR_CHOIX + ((texteAffiche->h + INTERLIGNE) * ((i+1) / 2));
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        longueur[i - 1] = texteAffiche->w / 2;
+        if(!hauteurTexte)
+            hauteurTexte = texteAffiche->h;
+        SDL_DestroyTextureS(texteAffiche);
     }
-    TTF_CloseFont(police);
+
     SDL_RenderPresent(renderer);
+    TTF_CloseFont(police);
 
     /*On attend enter ou un autre evenement*/
 
-    j = 0;
-    while(j == 0)
+    menuChoisis = 0;
+    while(!menuChoisis)
     {
-        event.type = -1;
         SDL_WaitEvent(&event);
         switch(event.type)
         {
             case SDL_QUIT:
-                j = PALIER_QUIT;
+                menuChoisis = PALIER_QUIT;
                 break;
 
             case SDL_KEYDOWN: //If a keyboard letter is pushed
             {
-                j = nombreEntree(event);
+                menuChoisis = nombreEntree(event);
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_BACKSPACE:
                     case SDLK_DELETE:
-                        j = -2;
-                        break;
-
                     case SDLK_ESCAPE:
-                        j = -3;
+                        menuChoisis = PALIER_MENU;
                         break;
 
                     default: //If other one
@@ -211,18 +204,50 @@ int affichageMenuGestion()
                 break;
             }
 
+            case SDL_TEXTINPUT:
+            {
+                menuChoisis = nombreEntree(event);
+                if(menuChoisis == -1 || menuChoisis > NOMBRESECTION)
+                {
+                    menuChoisis = event.text.text[0];
+                    if(menuChoisis >= 'a' && menuChoisis <= 'z')
+                        menuChoisis += 'A' - 'a';
+                    for(i = 1; i <= NOMBRESECTION && menuChoisis != menus[i][0]; i++);
+                    if(i <= NOMBRE_MENU_GESTION)
+                        menuChoisis = i;
+                    else
+                        menuChoisis = 0;
+                }
+            }
+
             case SDL_MOUSEBUTTONUP:
             {
                 if(!clicNotSlide(event))
                     break;
+                //Définis la hauteur du clic par rapport à notre liste
+                for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX + hauteurTexte) < event.button.y) && i < NOMBRE_MENU_GESTION/2 + 1; i++);
 
-                i = 0;
-                while(((((LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE) * i + HAUTEUR_CHOIX) > event.button.y) || ((LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE) * i + LARGEUR_MOYENNE_MANGA_GROS + HAUTEUR_CHOIX) < event.button.y) && i < NOMBRE_MENU)
+                if(i > NOMBRE_MENU_GESTION/2)
+                    i = 0;
+
+                else
                 {
-                    i++;
+                    int positionBaseEcran = 0, numberTested = 0;
+                    if(event.button.x < WINDOW_SIZE_W / 2)
+                    {
+                        numberTested = i * 2 - 1;
+                        positionBaseEcran = WINDOW_SIZE_W / 4;
+                    }
+                    else
+                    {
+                        numberTested = i * 2;
+                        positionBaseEcran = WINDOW_SIZE_W - WINDOW_SIZE_W / 4;
+                    }
+                    if(positionBaseEcran + longueur[numberTested - 1] >= event.button.x && positionBaseEcran - longueur[numberTested - 1] <= event.button.x)
+                        menuChoisis = numberTested;
                 }
-                if((WINDOW_SIZE_W / 2 - longueur[i] / 2) < event.button.x && (WINDOW_SIZE_W / 2 + longueur[i] / 2) > event.button.x)
-                    j = i + 1;
+                if(menuChoisis > NOMBRE_MENU_GESTION)
+                    menuChoisis = 0;
                 break;
             }
 
@@ -243,10 +268,10 @@ int affichageMenuGestion()
                 #endif
 				break;
         }
-        if(j > NOMBRE_MENU)
-            j = 0;
+        if(menuChoisis > NOMBRE_MENU_GESTION)
+            menuChoisis = 0;
     }
-    return j;
+    return menuChoisis;
 }
 
 void raffraichissmenent()

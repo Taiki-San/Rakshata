@@ -18,31 +18,20 @@ int changementLangue()
     SDL_Event event;
     FILE* fileLangue = 0;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     /*On change la taille de l'écran*/
     if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
         updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
 
-    loadTrad(menus, 13);
-
-
-    /*On lance la boucle d'affichage*/
     SDL_RenderClear(renderer);
 
+    loadTrad(menus, 13);
+
+    /*On lance la boucle d'affichage*/
     texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
     position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
     position.y = HAUTEUR_MENU_LANGUE;
-    position.h = texteAAfficher->h;
-    position.w = texteAAfficher->w;
-    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-    SDL_DestroyTextureS(texteAAfficher);
-
-    TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
-
-    texteAAfficher = TTF_Write(renderer, police, menus[1], couleurTexte);
-    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-    position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
     position.h = texteAAfficher->h;
     position.w = texteAAfficher->w;
     SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
@@ -54,40 +43,29 @@ int changementLangue()
 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    for(i = 2; i < 8; i++)
+    for(i = 0; i < NOMBRE_LANGUE; i++)
     {
         /*Si il y a quelque chose a écrire*/
-        if(menus[i][0] != 0)
-        {
-            texteAAfficher = TTF_Write(renderer, police, menus[i], couleurTexte);
-            position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-            position.h = texteAAfficher->h;
-            position.w = texteAAfficher->w;
-            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-            SDL_DestroyTextureS(texteAAfficher);
+        texteAAfficher = TTF_Write(renderer, police, menus[i+1], couleurTexte);
+        position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+        position.h = texteAAfficher->h;
+        position.w = texteAAfficher->w;
+        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+        SDL_DestroyTextureS(texteAAfficher);
 
-            hauteurTexte = position.h;
-            if(i > 2)
-                longueur[i-3] = position.w;
-        }
+        hauteurTexte = position.h;
+        if(i > 2)
+            longueur[i-3] = position.w;
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
     }
     TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
 
-    for(; i < 6 + NOMBRE_LANGUE; i++)
-    {
-        /*Si il y a quelque chose a écrire*/
-        if(menus[i][0] != 0)
-        {
-            texteAAfficher = TTF_Write(renderer, police, menus[i], couleurTexte);
-            position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-            position.h = texteAAfficher->h;
-            position.w = texteAAfficher->w;
-            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-            SDL_DestroyTextureS(texteAAfficher);
-        }
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE_LANGUE);
-    }
+    texteAAfficher = TTF_Write(renderer, police, menus[i+1], couleurTexte);
+    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+    position.h = texteAAfficher->h;
+    position.w = texteAAfficher->w;
+    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+    SDL_DestroyTextureS(texteAAfficher);
 
     SDL_RenderPresent(renderer);
     /*On attend enter ou un autre evenement*/

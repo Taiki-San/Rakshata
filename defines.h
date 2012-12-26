@@ -69,7 +69,7 @@
 #define LARGEUR_LANGUE 800
 #define HAUTEUR_LANGUE 400
 #define HAUTEUR_MENU_LANGUE 30
-#define HAUTEUR_TEXTE_LANGUE 100
+#define HAUTEUR_TEXTE_LANGUE 85
 #define INTERLIGNE_LANGUE 10
 
 /*Police*/
@@ -254,15 +254,15 @@
 #define HAUTEUR_BORDURE_AFFICHAGE_NUMERO 30
 
 /*Module Gestion*/
-#define NOMBRE_MENU_GESTION 3
+#define NOMBRE_MENU_GESTION 6
 #define HAUTEUR_TEXTE 30
 #ifdef NEW_FONT
-    #define HAUTEUR_CHOIX 75
+    #define HAUTEUR_CHOIX 50
+    #define HAUTEUR_SELECTION_REPO 325
 #else
     #define HAUTEUR_CHOIX 100
+    #define HAUTEUR_SELECTION_REPO 350
 #endif
-#define NOMBRE_MENU 5
-#define HAUTEUR_SELECTION_REPO 350
 
 /*Ajout repo*/
 #define BUFFER_MAX 100
@@ -350,14 +350,14 @@
 #define SIZE_TRAD_ID_10 2
 #define SIZE_TRAD_ID_11 14
 #define SIZE_TRAD_ID_12 4
-#define SIZE_TRAD_ID_13 10
+#define SIZE_TRAD_ID_13 6
 #define SIZE_TRAD_ID_14 4
 #define SIZE_TRAD_ID_15 1
 #define SIZE_TRAD_ID_16 6
 #define SIZE_TRAD_ID_17 7
 #define SIZE_TRAD_ID_18 3
 #define SIZE_TRAD_ID_19 14
-#define SIZE_TRAD_ID_20 6
+#define SIZE_TRAD_ID_20 7
 #define SIZE_TRAD_ID_21 20
 #define SIZE_TRAD_ID_22 6
 #define SIZE_TRAD_ID_23 2

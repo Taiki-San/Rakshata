@@ -80,6 +80,7 @@ int section()
     {
         fseek(checkFile, 0, SEEK_END);
         size_t sizeOfFile = ftell(checkFile);
+        fclose(checkFile);
 
         if(sizeOfFile != 0 && sizeOfFile < 512)
         {
@@ -148,23 +149,7 @@ int section()
 							sectionChoisis = -3;
 							break;
 
-                        case SDLK_l:
-                            sectionChoisis = 1;
-                            break;
-
-                        case SDLK_t:
-                            sectionChoisis = 2;
-                            break;
-
-                        case SDLK_a:
-                            sectionChoisis = 3;
-                            break;
-
-                        case SDLK_p:
-                            sectionChoisis = 4;
-                            break;
-
-						default: //If another one
+                        default: //If another one
 							break;
 					}
                 #ifdef __APPLE__
@@ -177,15 +162,23 @@ int section()
             {
                 sectionChoisis = nombreEntree(event);
                 if(sectionChoisis == -1 || sectionChoisis > NOMBRESECTION)
-                    sectionChoisis = 0;
+                {
+                    sectionChoisis = event.text.text[0];
+                    if(sectionChoisis >= 'a' && sectionChoisis <= 'z')
+                        sectionChoisis += 'A' - 'a';
+                    for(i = 0; i <= NOMBRESECTION && sectionChoisis != texteTrad[i+2][0]; i++);
+                    if(i <= NOMBRESECTION)
+                        sectionChoisis = i;
+                    else
+                        sectionChoisis = 0;
+                }
             }
 
             case SDL_MOUSEBUTTONUP:
             {
                 if(!clicNotSlide(event))
                     break;
-
-                //Définis la hauteur du clic par rapport Ã  notre liste
+                //Définis la hauteur du clic par rapport à notre liste
                 for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION + hauteurTexte) < event.button.y) && i < NOMBRESECTION/2 + 1; i++);
 
                 if(i > NOMBRESECTION/2)

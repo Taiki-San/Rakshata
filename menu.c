@@ -177,6 +177,10 @@ int menuGestion()
                 menu = changementLangue();
                 break;
 
+            case 6:
+                menu = PALIER_MENU; //Retour au menu principal
+                break;
+
             default:
                 break;
         }
