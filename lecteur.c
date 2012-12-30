@@ -361,10 +361,13 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
         }
 
         /*On prépare les coordonnées des surfaces*/
-        positionInfos.x = (WINDOW_SIZE_W / 2) - (infoSurface->w / 2);
-        positionInfos.y = (BORDURE_HOR_LECTURE / 2) - (infoSurface->h / 2);
-        positionInfos.h = infoSurface->h;
-        positionInfos.w = infoSurface->w;
+        if(infoSurface != NULL)
+        {
+            positionInfos.x = (WINDOW_SIZE_W / 2) - (infoSurface->w / 2);
+            positionInfos.y = (BORDURE_HOR_LECTURE / 2) - (infoSurface->h / 2);
+            positionInfos.h = infoSurface->h;
+            positionInfos.w = infoSurface->w;
+        }
         positionBandeauControle.y = (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR);
         positionBandeauControle.x = (WINDOW_SIZE_W / 2) - (bandeauControle->w / 2);
 
@@ -509,7 +512,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
 
                     else if (event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
                     {
-                        if((!pageAccesDirect && event.button.x >= WINDOW_SIZE_W/2 - infoSurface->w/2 && event.button.x <= WINDOW_SIZE_W/2 + infoSurface->w/2) //Si pas de page affiché
+                        if((!pageAccesDirect && infoSurface != NULL && event.button.x >= WINDOW_SIZE_W/2 - infoSurface->w/2 && event.button.x <= WINDOW_SIZE_W/2 + infoSurface->w/2) //Si pas de page affiché
                             || (pageAccesDirect && ((WINDOW_SIZE_W < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
                                                 || (WINDOW_SIZE_W >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
                         ouvrirSite(team); //Ouverture du site de la team
@@ -825,8 +828,13 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                         case SDLK_DELETE:
                         case SDLK_BACKSPACE:
                         {
-                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                            return -2;
+                            if(pageAccesDirect != 0)
+                                pageAccesDirect /= 10;
+                            else
+                            {
+                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                return -2;
+                            }
                             break;
                         }
 
@@ -1217,8 +1225,8 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
     SDL_RenderCopy(renderer, bandeauControle, NULL, &positionBandeauControle);
     SDL_DestroyTexture(texture);
 
-    if(pageAccesDirect && //Si l'utilisateur veut acceder â€¡ une page, on modifie deux trois trucs
-        infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= WINDOW_SIZE_W) //Assez de place
+    if(pageAccesDirect && //Si l'utilisateur veut acceder à une page, on modifie deux trois trucs
+        infoSurface != NULL && infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= WINDOW_SIZE_W) //Assez de place
 
     {
         int distanceOptimalePossible = 0;

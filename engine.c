@@ -179,7 +179,6 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
                 tailleTexte[j++] = texte->w;
                 SDL_DestroyTextureS(texte);
                 SDL_RenderPresent(renderer);
-                //SDL_Delay(5);
             }
         }
         if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != SECTION_CHOISIS_TEAM)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
@@ -266,33 +265,41 @@ int mangaTriColonne(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], i
         SDL_RenderPresent(renderer);
         while(!mangaChoisis)
         {
-            if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
-                manuel = 0;
-            else
-                manuel = chapterDisplayed;
-            //Manuel => si le nombre a été entré a la main
-            do
+            if(sectionChoisis != SECTION_CHOISIS_CHAPITRE || chapterDisplayed > 1)
             {
-                mangaChoisis = mangaSelection(mode, tailleTexte, hauteurAffichage, &manuel);
-
-                if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
-                    mangaChoisis = PALIER_CHAPTER;
-                else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z' && sectionChoisis == SECTION_CHOISIS_LECTURE) //A-1 = backspace
-                    break;
-
-            }while((mangaChoisis <= -10 && sectionChoisis == SECTION_CHOISIS_LECTURE));
-
-            analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDispo, sectionsMangas, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage);
-            if(refreshMultipage && changementDePage)
-            {
-                for(i = 0, nombreManga = 0; i < NOMBRE_MANGA_MAX && mangaDispo[i][0]; i++)
+                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
+                    manuel = 0;
+                else
+                    manuel = chapterDisplayed;
+                //Manuel => si le nombre a été entré a la main
+                do
                 {
-                    if(letterLimitationEnforced(limitationLettre, mangaDispo[i][0]) && buttonLimitationEnforced(button_selected, sectionsMangas[i]))
-                            nombreManga++;
+                    mangaChoisis = mangaSelection(mode, tailleTexte, hauteurAffichage, &manuel);
+
+                    if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
+                        mangaChoisis = PALIER_CHAPTER;
+                    else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z' && sectionChoisis == SECTION_CHOISIS_LECTURE) //A-1 = backspace
+                        break;
+
+                }while((mangaChoisis <= -10 && sectionChoisis == SECTION_CHOISIS_LECTURE));
+
+                analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDispo, sectionsMangas, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage);
+                if(refreshMultipage && changementDePage)
+                {
+                    for(i = 0, nombreManga = 0; i < NOMBRE_MANGA_MAX && mangaDispo[i][0]; i++)
+                    {
+                        if(letterLimitationEnforced(limitationLettre, mangaDispo[i][0]) && buttonLimitationEnforced(button_selected, sectionsMangas[i]))
+                                nombreManga++;
+                    }
+                    loadMultiPage(nombreManga, &pageTotale, &pageSelection);
+                    refreshMultipage = 0;
                 }
-                loadMultiPage(nombreManga, &pageTotale, &pageSelection);
-                refreshMultipage = 0;
             }
+
+            else if(chapterDisplayed == 1)
+                mangaChoisis = chapterDisplayed;
+            else
+                mangaChoisis = PALIER_CHAPTER;
         }
     }while(changementDePage);
     TTF_CloseFont(police);
@@ -344,8 +351,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                 switch(event.type)
                 {
                     case SDL_QUIT:
-                        mangaChoisis =
-                        PALIER_QUIT;
+                        mangaChoisis = PALIER_QUIT;
                         break;
 
                     case SDL_KEYDOWN:
@@ -451,7 +457,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                                     if(choix != 0)
                                         choix = choix / 10;
                                     else
-                                        mangaChoisis = -2;
+                                        mangaChoisis = PALIER_CHAPTER;
                                 }
                                 else
                                     mangaChoisis = ('A' - 1) * -1; //Le return doit être géré plus loin, lorsque le code saura si une lettre est pressé
@@ -659,7 +665,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, ch
 {
     int i = 0;
     if(sectionChoisis == SECTION_DL && *mangaChoisis == -1) //Annuler?
-        *mangaChoisis = -3;
+        *mangaChoisis = PALIER_MENU;
 
     else if(*mangaChoisis == -6 || *mangaChoisis == -7) //Boutons pages suivant/précédente
     {

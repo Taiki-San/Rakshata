@@ -166,7 +166,7 @@ int section()
                     sectionChoisis = event.text.text[0];
                     if(sectionChoisis >= 'a' && sectionChoisis <= 'z')
                         sectionChoisis += 'A' - 'a';
-                    for(i = 0; i <= NOMBRESECTION && sectionChoisis != texteTrad[i+2][0]; i++);
+                    for(i = 1; i <= NOMBRESECTION && sectionChoisis != texteTrad[i+1][0]; i++);
                     if(i <= NOMBRESECTION)
                         sectionChoisis = i;
                     else
@@ -331,11 +331,8 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
 	loadTrad(texteTrad, 19);
 
     /*On convertit mangaATester*/
-    for(i = 0; i < LONGUEUR_NOM_MANGA_MAX; i++)
-    {
-        if(mangaSoumis[i] == ' ')
-            mangaSoumis[i] = '_';
-    }
+    changeTo(mangaSoumis, ' ', '_');
+
     for(i = 0; i < NOMBRE_CHAPITRE_MAX; i++)
         for(dernierLu = 0; dernierLu < 100; nomsChapitre[i][dernierLu++] = 0);
 
