@@ -122,3 +122,4 @@ int libcurlErrorCode(CURLcode code)
     logR(log_message);
     return ret_value;
 }
+
