@@ -12,20 +12,7 @@ void mainRakshata()
     int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0, newLangue = 0;
     FILE* test = NULL;
 
-    if((test = fopenR("data/langue", "r")) == NULL)
-    {
-        mkdirR("data");
-        langue = LANGUE_PAR_DEFAUT;
-        test = fopenR("data/langue", "w+");
-        fprintf(test, "%d", langue);
-        fclose(test);
-        newLangue = 1;
-    }
-    else
-    {
-        fscanfs(test, "%d", &langue);
-        fclose(test);
-    }
+    newLangue = loadLangueProfile();
 
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL);
 
@@ -404,18 +391,7 @@ void mainDL()
     FILE *BLOQUEUR = NULL;
 	SDL_Event event;
 
-    if((BLOQUEUR = fopenR("data/langue", "r")) == NULL)
-    {
-        langue = LANGUE_PAR_DEFAUT;
-        BLOQUEUR = fopenR("data/langue", "w+");
-        fprintf(BLOQUEUR, "%d", langue);
-        fclose(BLOQUEUR);
-    }
-    else
-    {
-        fscanfs(BLOQUEUR, "%d", &langue);
-        fclose(BLOQUEUR);
-    }
+    loadLangueProfile();
 
     #ifdef _WIN32
     BLOQUEUR = fopenR("data/download", "w+");

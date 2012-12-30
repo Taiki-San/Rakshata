@@ -96,9 +96,6 @@ int checkPass(char adresseEmail[100], char password[100], int login);
 int sendPassToServ(unsigned char key[HASH_LENGTH]);
 void recoverPassToServ(unsigned char key[HASH_LENGTH], int mode);
 
-/**Langue.c**/
-int changementLangue();
-
 /**Lecteur.c**/
 int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char team[LONGUEUR_NOM_MANGA_MAX]);
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
@@ -196,6 +193,8 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 
 /**Translation.c**/
 void loadTrad(char trad[][100], int IDTrad);
+int changementLangue();
+int loadLangueProfile();
 
 /**Unzip.c**/
 int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);

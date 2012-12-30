@@ -25,13 +25,7 @@ void loadTrad(char trad[][100], int IDTrad)
 
 
     if(langue == 0)
-    {
-        fichierTrad = fopen("data/langue", "r");
-        if(fichierTrad == NULL)
-            return;
-        fscanfs(fichierTrad, "%d", &langue);
-        fclose(fichierTrad);
-    }
+        loadLangueProfile();
 
     buffer = malloc(ustrlen(REPERTOIREEXECUTION) + 20 + ustrlen(LANGUAGE_PATH[langue - 1]));
     sprintf(buffer, "%s/data/%s/localization", REPERTOIREEXECUTION, LANGUAGE_PATH[langue - 1]);
@@ -250,5 +244,26 @@ int changementLangue()
     }
     TTF_CloseFont(police);
     return j;
+}
+
+int loadLangueProfile()
+{
+    FILE* langueFile = NULL;
+    if((langueFile = fopenR("data/langue", "r")) == NULL)
+    {
+        mkdirR("data");
+        langue = LANGUE_PAR_DEFAUT;
+        langueFile = fopenR("data/langue", "w+");
+        fprintf(langueFile, "%d", langue);
+        fclose(langueFile);
+        return 1;
+
+    }
+    else
+    {
+        fscanfs(langueFile, "%d", &langue);
+        fclose(langueFile);
+        return 0;
+    }
 }
 
