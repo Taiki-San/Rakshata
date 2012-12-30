@@ -56,7 +56,7 @@ int download(char *adresse, char *repertoire, int activation)
     if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && activation != 2) //Bypass la sécurité lors du test de connexion
     {
         while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
-            SDL_Delay(10);
+            SDL_Delay(25);
         if(NETWORK_ACCESS == CONNEXION_DOWN)
             return -1;
     }
@@ -202,7 +202,8 @@ int download(char *adresse, char *repertoire, int activation)
 		SDL_Event event;
         while(1)
         {
-            SDL_WaitEvent(&event);
+            event.type = 0;
+            SDL_WaitEventTimeout(&event, 250);
             switch(event.type)
             {
                 case SDL_QUIT:

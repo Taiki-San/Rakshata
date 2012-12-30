@@ -188,43 +188,18 @@ void checkRenderBugPresent()
 int check_evt()
 {
     int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER];
-    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
+    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA] = {"data/font.ttf", "data/acceuil.png", "data/french/acceuil.png", 
+                            "data/french/controls.png", "data/french/localization", "data/english/acceuil.png", "data/english/controls.png", 
+                            "data/english/localization", "data/italian/acceuil.png", "data/italian/controls.png", "data/italian/localization", 
+                            "data/german/acceuil.png", "data/german/controls.png", "data/german/localization", "data/icon/d.png", "data/icon/f.png", 
+                            "data/icon/fs.png", "data/icon/mm.png", "data/icon/nc.png", "data/icon/np.png", "data/icon/pc.png", "data/icon/pp.png",
+                            "data/icone.png", "data/repo", MANGA_DATABASE, "data/secure.enc"};
     FILE *test = NULL;
 
     for(; i < NOMBRE_DE_FICHIER_A_CHECKER; i++)
     {
-        for(j = 0; j < LONGUEUR_NOMS_DATA; j++)
-            nomsATest[i][j] = 0;
         fichiersADL[i] = 0;
     }
-
-    /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
-    sprintf(nomsATest[0], "data/font.ttf");
-    sprintf(nomsATest[1], "data/acceuil.png");
-    sprintf(nomsATest[2], "data/french/acceuil.png");
-    sprintf(nomsATest[3], "data/french/controls.png");
-    sprintf(nomsATest[4], "data/french/localization");
-    sprintf(nomsATest[5], "data/english/acceuil.png");
-    sprintf(nomsATest[6], "data/english/controls.png");
-    sprintf(nomsATest[7], "data/english/localization");
-    sprintf(nomsATest[7], "data/italian/acceuil.png");
-    sprintf(nomsATest[8], "data/italian/controls.png");
-    sprintf(nomsATest[9], "data/italian/localization");
-    sprintf(nomsATest[10], "data/german/acceuil.png");
-    sprintf(nomsATest[11], "data/german/controls.png");
-    sprintf(nomsATest[12], "data/german/localization");
-    sprintf(nomsATest[13], "data/icon/d.png");
-    sprintf(nomsATest[14], "data/icon/f.png");
-    sprintf(nomsATest[15], "data/icon/fs.png");
-    sprintf(nomsATest[16], "data/icon/mm.png");
-    sprintf(nomsATest[17], "data/icon/nc.png");
-    sprintf(nomsATest[18], "data/icon/np.png");
-    sprintf(nomsATest[19], "data/icon/pc.png");
-    sprintf(nomsATest[20], "data/icon/pp.png");
-    sprintf(nomsATest[21], "data/icone.png");
-    sprintf(nomsATest[22], "data/repo");
-    sprintf(nomsATest[23], MANGA_DATABASE);
-    sprintf(nomsATest[24], "data/secure.enc");
 
     /*On test l'existance de tous les fichiers*/
     j = 0;
@@ -343,8 +318,8 @@ int check_evt()
         }
         nameWindow(0);
     }
-    remove("R_ECHEC_VISITEZ_LE_SITE_DE_RAKSHATA_rakshata.com_AU_PLUS_VITE.temp");
-    remove("upgrade.exe");
+
+
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;
 
