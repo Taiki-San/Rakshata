@@ -849,7 +849,7 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                                 if(nouveauChapitreATelecharger == 2)
                                     nouveauChapitreATelecharger = 1;
                             }
-                            else if (pageAccesDirect <= pageTotal+1 && pageAccesDirect > 0 && pageEnCoursDeLecture != pageAccesDirect)
+                            else if (pageAccesDirect <= pageTotal+1 && pageAccesDirect > 0 && (pageEnCoursDeLecture+1) != pageAccesDirect)
                             {
                                 pageAccesDirect--;
                                 if(pageEnCoursDeLecture > pageAccesDirect)
@@ -956,6 +956,9 @@ int lecteur(int *chapitreChoisis, int *fullscreen, char mangaDispo[LONGUEUR_NOM_
                     {
                         pageAccesDirect *= 10;
                         pageAccesDirect += event.text.text[0] - '0';
+
+                        if(pageAccesDirect > pageTotal+1)
+                            pageAccesDirect = pageTotal+1;
 
                         SDL_FreeSurfaceS(UI_PageAccesDirect);
                         sprintf(temp, "%s: %d", texteTrad[1], pageAccesDirect); //Page: xx
