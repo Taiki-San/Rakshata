@@ -24,8 +24,10 @@ void mainRakshata()
         SDL_FreeSurfaceS(icon);
     }
     else
+    {
         logR((char*)SDL_GetError());
-
+        logR("\n");
+    }
     nameWindow(0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

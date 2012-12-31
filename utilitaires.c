@@ -51,6 +51,11 @@ int compare(const void *a, const void *b)
     return strcmp(s1, s2);
 }
 
+int compare2(MANGAS_DATA *struc1, MANGAS_DATA *struc2)
+{
+    return strcmp(struc1->mangaName, struc2->mangaName);
+}
+
 void restartEcran()
 {
     if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
@@ -180,13 +185,14 @@ void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4)
 
 int positionnementApres(FILE* stream, char *stringToFind)
 {
-    int i = 0;
-    char temp[200];
+    int i = 0, length = strlen(stringToFind) + 10;
+    char *temp = malloc(length);
     while((i = fgetc(stream)) != EOF && strcmp(temp, stringToFind))
     {
         fseek(stream, -1, SEEK_CUR);
-        fscanfs(stream, "%s", temp, 200);
+        fscanfs(stream, "%s", temp, length);
     }
+    free(temp);
     if(i == EOF)
         return 0;
     return 1;

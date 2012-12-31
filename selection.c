@@ -30,9 +30,6 @@ int section()
 
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-    if(police == NULL)
-        logR((char *)SDL_GetError());
-
     TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
 
     texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);

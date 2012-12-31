@@ -753,8 +753,10 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     else if(!strcmp(buffer_output, hash2)) //access granted
         return 1;
 
+#ifdef DEV_VERSION
     sprintf(buffer_output, "%s\n", buffer_output);
     logR(buffer_output);
+#endif
     return 2;
 }
 

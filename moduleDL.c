@@ -263,10 +263,7 @@ int telechargement()
                             }
                             #else
                             if (pthread_create(&thread, NULL, installation, data_instal))
-                            {
-                                logR("Failled at create thread MDL\n");
                                 exit(EXIT_FAILURE);
-                            }
                             #endif
                         }
 
