@@ -13,13 +13,28 @@ typedef struct argmt
 
 typedef struct infos_Team
 {
-    char ID[LONGUEUR_ID_MAX];
+    char IDTeam[LONGUEUR_ID_TEAM];
     char teamLong[LONGUEUR_NOM_MANGA_MAX];
     char teamCourt[LONGUEUR_COURT];
-    char mode[BUFFER_MAX];
-    char URL[LONGUEUR_URL];
+    char type[LONGUEUR_TYPE_TEAM];
+    char URL_depot[LONGUEUR_URL];
     char site[LONGUEUR_SITE];
-} INFOS_TEAMS;
+} TEAMS_DATA;
+
+typedef struct dataMangas
+{
+    char mangaName[LONGUEUR_NOM_MANGA_MAX];
+    char mangaNameShort[LONGUEUR_COURT];
+    int firstChapter;
+    int lastChapter;
+    int status;
+    int genre;
+    int pageInfos;
+
+    /*Team*/
+    TEAMS_DATA *team;
+
+} MANGAS_DATA;
 
 typedef struct output_download_with_size
 {
@@ -29,21 +44,13 @@ typedef struct output_download_with_size
 
 typedef struct data_pour_installation
 {
-    char teamLong[LONGUEUR_NOM_MANGA_MAX];
-    char mangaLong[LONGUEUR_NOM_MANGA_MAX];
+    MANGAS_DATA mangaDB;
     int chapitre;
     OUT_DL *buf;
 
 } DATA_INSTALL;
 
 typedef unsigned char uint8_t;
-
-typedef void (*I2prf) (
-            const uint8_t   *key,
-            uint32_t        keylen,
-            const uint8_t   *txt,
-            uint32_t        txtlen,
-            uint8_t         *digest_ret);
 
 #ifndef _WIN32
 

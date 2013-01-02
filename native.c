@@ -115,6 +115,9 @@ void fscanfs(FILE* stream, const char *format, ...)
 {
     int i = 0, j = 0, format_read = 0;
 
+    if(stream == NULL)
+        return;
+
     va_list pointer_argument;
     va_start (pointer_argument, format);
 
@@ -276,12 +279,12 @@ size_t ustrlen(void *input)
 
 void usstrcpy(void* output, size_t length, void* input)
 {
-    memcpy(output, input, length);
+    memccpy(output, input, 0, length);
 }
 
 void ustrcpy(void* output, void* input)
 {
-    memcpy(output, input, ustrlen(input));
+    usstrcpy(output, ustrlen(input), input);
 }
 
 void SDL_FreeSurfaceS(SDL_Surface *surface)
@@ -383,33 +386,20 @@ int createNewThread(void *function)
 	return 1;
 }
 
-void ouvrirSite(char team[LONGUEURMANGA])
+void ouvrirSite(TEAMS_DATA* teams)
 {
-    char temp[LONGUEUR_SITE];
-    FILE* ressources = NULL;
-
-    ressources = fopenR("data/repo", "r");
-    crashTemp(temp, LONGUEUR_SITE);
-
-    if(positionnementApres(ressources, team))
-    {
-        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe le type de dépôt
-        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On passe l'accès
-        crashTemp(temp, LONGUEUR_SITE); //On réinitialise
-        fscanfs(ressources, "%s", temp, LONGUEUR_SITE); //On charge l'URL
-        #ifdef _WIN32
-        ShellExecute(NULL, "open", temp, NULL, NULL, SW_SHOWDEFAULT);
+    #ifdef _WIN32
+        ShellExecute(NULL, "open", teams->site, NULL, NULL, SW_SHOWDEFAULT);
+    #else
+        char superTemp[200];
+        crashTemp(superTemp, 200);
+        #ifdef __APPLE__
+            sprintf(superTemp, "open %s", teams->site);
         #else
-            char superTemp[200];
-            crashTemp(superTemp, 200);
-            #ifdef __APPLE__
-            sprintf(superTemp, "open %s", temp);
-            #else
-            sprintf(superTemp, "firefox %s", temp);
-            #endif
-            system(superTemp);
+            sprintf(superTemp, "firefox %s", teams->site);
         #endif
-    }
+        system(superTemp);
+    #endif
 }
 
 void updateDirectory(char *argv)

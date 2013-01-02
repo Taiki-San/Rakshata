@@ -35,7 +35,7 @@ void checkUpdate()
         SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
         TTF_Font *police = NULL;
 
-		remove("Rakshata.old");
+		remove("Rakshata.exe.old");
 
         for(; i < TAILLE_BUFFER; i++)
         {
@@ -90,12 +90,9 @@ void checkUpdate()
             /*Application du playload*/
             if(action[i][0] == 'D') //Depreciate
             {
-                char *buffer = malloc(strlen(files[i]) + 15);
-                if(buffer == NULL)
-                    exit(0);
+                char buffer[TAILLE_BUFFER+5];
                 sprintf(buffer, "%s.old", files[i]);
                 rename(files[i], buffer);
-                free(buffer);
             }
             else if(action[i][0] == 'R' || action[i][0] == 'U') //Remove ou Update
                 remove(files[i]);
@@ -106,6 +103,9 @@ void checkUpdate()
                     mkdirR(files[i]);
                 else
                 {
+                    if(action[i][0] == 'U')
+                        remove(files[i]);
+
                     crashTemp(URL, 300);
 #ifdef DEV_VERSION
                     sprintf(URL, "http://www.%s/update/dev/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
@@ -135,7 +135,7 @@ void checkUpdate()
                         size = ftell(test);
                         rewind(test);
 
-                        buffer = malloc(size*2);
+                        buffer = malloc(size*2+1);
 
                         while((k=fgetc(test)) != EOF)
                         {
@@ -154,6 +154,11 @@ void checkUpdate()
         }
 
         /*Application des modifications*/
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+
         lancementExternalBinary(files[ligne - 1]);
         exit(1);
     }
@@ -177,7 +182,6 @@ void checkRenderBugPresent()
     if(texture == NULL)
     {
         RENDER_BUG = 1;
-        logR("Render bug set :(\n");
         SDL_DestroyRenderer(renderer);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
@@ -218,7 +222,7 @@ int check_evt()
     sprintf(nomsATest[19], "data/icon/pc.png");
     sprintf(nomsATest[20], "data/icon/pp.png");
     sprintf(nomsATest[21], "data/icone.png");
-    sprintf(nomsATest[22], "data/repo");
+    sprintf(nomsATest[22], REPO_DATABASE);
     sprintf(nomsATest[23], MANGA_DATABASE);
     sprintf(nomsATest[24], "data/secure.enc");
 
@@ -352,12 +356,10 @@ int check_evt()
     return 0;
 }
 
-int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
+int checkProjet(MANGAS_DATA mangaDB)
 {
-    int retour = 0;
-    char temp[TAILLE_BUFFER], team[LONGUEUR_NOM_MANGA_MAX];
+    char temp[TAILLE_BUFFER];
     SDL_Texture *image = NULL;
-    SDL_Event event;
     SDL_Rect position;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
@@ -366,15 +368,11 @@ int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    /*Chargement arborescence*/
-    teamOfProject(projet, team);
-    crashTemp(temp, TAILLE_BUFFER);
-    sprintf(temp, "manga/%s/%s/infos.png", team, projet);
-
+    /*Chargement arborescence*/;
+    sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
     test = fopenR(temp, "r");
 
     SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
 
     if(test != NULL)
     {
@@ -393,10 +391,7 @@ int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
         position.w = image->w;
         SDL_RenderCopy(renderer, image, NULL, &position);
         SDL_DestroyTextureS(image);
-
-        /*Chargement arborescence*/
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "manga/%s/%s/infos.png", team, projet);
+        TTF_CloseFont(police);
 
         image = IMG_LoadTexture(renderer, temp);
         position.x = 0;
@@ -406,67 +401,8 @@ int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
         SDL_RenderCopy(renderer, image, NULL, &position);
         SDL_RenderPresent(renderer);
         SDL_DestroyTextureS(image);
-        TTF_CloseFont(police);
 
-        /*Ca ressemble beaucoup au code de waitEnter et c'est normal car c'est un C/C mais un peu modifié
-        J'ai été forcé de le faire car il fallait qu'appuyer sur n'importe quelle touche renvoie quelque chose*/
-
-        while(retour == 0)
-        {
-            event.type = -1;
-            SDL_WaitEvent(&event);
-            switch(event.type)
-            {
-                case SDL_QUIT:
-                    retour = PALIER_QUIT;
-                    break;
-
-                case SDL_KEYDOWN: //If a keyboard letter is pushed
-                {
-                    switch(event.key.keysym.sym)
-                    {
-                    case SDLK_ESCAPE:
-                        retour = -3;
-                        break;
-
-                    case SDLK_DELETE:
-                    case SDLK_BACKSPACE:
-                        retour = -2;
-                        break;
-
-                    default: //If other one
-                        retour = 1;
-                        break;
-                    }
-                    break;
-                }
-
-                case SDL_MOUSEBUTTONUP:
-                {
-                    if(clicNotSlide(event))
-                        retour = 1;
-                    break;
-                }
-
-                case SDL_WINDOWEVENT:
-                {
-                    if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                    {
-                        SDL_RenderPresent(renderer);
-                        SDL_FlushEvent(SDL_WINDOWEVENT);
-                    }
-                    break;
-                }
-
-                default:
-                #ifdef __APPLE__
-                    if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                        retour = PALIER_QUIT;
-                #endif
-                    break;
-            }
-        }
-        return retour;
+        return waitEnter();
     }
     return 1;
 }
@@ -474,7 +410,7 @@ int checkProjet(char projet[LONGUEUR_NOM_MANGA_MAX])
 int checkLancementUpdate()
 {
     FILE* test = NULL;
-    test = fopenR("tmp/import.dat", "r");
+    test = fopenR(INSTALL_DATABASE, "r");
     if(test != NULL)
     {
         if(fgetc(test) != EOF)
@@ -526,11 +462,8 @@ int checkLancementUpdate()
 void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
-
-    /*Initialisation*/
     int i = 0, hostNotReached = 0;
     char temp[TAILLE_BUFFER], bufferDL[5] = {0, 5, 1, 1, 1};
-
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
 
     /*Chargement de l'URL*/
@@ -538,10 +471,9 @@ void networkAndVersionTest()
 
     if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
-    /*Si fichier téléchargé, on teste son intégrité.
-    Le fichier est sensé contenir 1 ou 0.
-    On va donc vérifier. Si ce n'est pas le cas,
-    il y a un probléme avec le serveur*/
+
+    /*Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
+    Si ce n'est pas le cas, il y a un probléme avec le serveur*/
 
     if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
     {
@@ -632,7 +564,7 @@ void networkAndVersionTest()
 			removeFolder("manga");
 			removeFolder("data");
 			remove(MANGA_DATABASE);
-			remove("data/repo");
+			remove(REPO_DATABASE);
 			exit(0);
 		}
     }
@@ -791,29 +723,27 @@ int clicNotSlide(SDL_Event event)
     return 0;
 }
 
-int checkPasNouveauChapitreDansDepot(char teamCourt[LONGUEUR_COURT], char mangaLong[LONGUEUR_NOM_MANGA_MAX], int chapitre)
+int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
 {
     int i = 0, j = 0, chapitre_new = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], mode[10], URL[LONGUEUR_URL];
-    FILE* repo = fopenR("data/repo", "r");
+    char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], teamCourt[LONGUEUR_COURT];
 
-    if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || repo == NULL)
+    if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
         return 0;
-
-    if(!positionnementApres(repo, teamCourt))
-        return 0;
-    fscanfs(repo, "%s %s\n", mode, 10, URL, LONGUEUR_URL);
-    fclose(repo);
 
     setupBufferDL(bufferDL, 100, 100, 10, 1);
-    get_update_mangas(bufferDL, mode, URL);
+    get_update_mangas(bufferDL, mangasDB.team);
 
     if(bufferDL[i]) //On a DL quelque chose
-        i += sscanfs(&bufferDL[i], "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, URL, LONGUEUR_URL);
+        i += sscanfs(&bufferDL[i], "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
     else
         return 0;
-    while(bufferDL[i] && strcmp(mangaLong, temp))
-        i += sscanfs(&bufferDL[i], "%s %s %d %d %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, URL, LONGUEUR_URL, &j, &chapitre_new, &j, &j);
+
+    if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
+        return 0;
+
+    while(bufferDL[i] && strcmp(mangasDB.mangaName, temp))
+        i += sscanfs(&bufferDL[i], "%s %s %d %d %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX, &j, &chapitre_new, &j, &j);
     if(chapitre_new > chapitre)
         return chapitre_new;
     return 0;
@@ -862,27 +792,15 @@ int checkFileValide(FILE* file)
     return 1;
 }
 
-int checkChapitreUnread(char nomManga[LONGUEUR_NOM_MANGA_MAX])
+int checkChapitreUnread(MANGAS_DATA mangasDB)
 {
     int i = 0;
-    char nomTeam[LONGUEUR_NOM_MANGA_MAX], temp[200];
+    char temp[200];
 	FILE* configDat = NULL;
 
-    for(i = 0; i < LONGUEUR_NOM_MANGA_MAX && nomManga[i]; i++)
-    {
-        if(nomManga[i] == ' ')
-            nomManga[i] = '_';
-    }
-
-    teamOfProject(nomManga, nomTeam);
-
-    sprintf(temp, "manga/%s/%s/%s", nomTeam, nomManga, CONFIGFILE);
-
-    for(i = 0; i < LONGUEUR_NOM_MANGA_MAX && nomManga[i]; i++)
-    {
-        if(nomManga[i] == '_')
-            nomManga[i] = ' ';
-    }
+    changeTo(mangasDB.mangaName, ' ', '_');
+    sprintf(temp, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
+    changeTo(mangasDB.mangaName, '_', ' ');
 
     configDat = fopenR(temp, "r");
 
@@ -898,18 +816,12 @@ int checkChapitreUnread(char nomManga[LONGUEUR_NOM_MANGA_MAX])
     return 1;
 }
 
-int checkChapterEncrypted(char teamLong[], char mangaDispo[], int chapitreChoisis)
+int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
 {
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    FILE* testExistance = NULL;
-
-	sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangaDispo, chapitreChoisis);
-    testExistance = fopenR(temp, "r");
-    if(testExistance != NULL)
-    {
-        fclose(testExistance);
+    sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
+    if(checkFileExist(temp))
         return 1;
-    }
     return 0;
 }
 

@@ -24,7 +24,7 @@ int defineTypeRepo(char *URL)
 int ajoutRepo()
 {
     int i = 0, j = 0, continuer = 0, existant = 0, erreur = 0;
-    char teamLong[LONGUEUR_NOM_MANGA_MAX], teamCourt[LONGUEUR_COURT], mode[5], URL[LONGUEUR_URL], ID[LONGUEUR_ID_MAX], temp[TAILLE_BUFFER];
+    char teamLong[LONGUEUR_NOM_MANGA_MAX], teamCourt[LONGUEUR_COURT], mode[5], URL[LONGUEUR_URL], ID[LONGUEUR_ID_TEAM], temp[TAILLE_BUFFER];
     char site[LONGUEUR_SITE], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
 	FILE* test = NULL;
     SDL_Texture *texte;
@@ -114,13 +114,13 @@ int ajoutRepo()
                 if(!erreur && bufferDL[i])
                 {
                     //Si on pointe sur un vrai dépôt
-                    crashTemp(ID, LONGUEUR_ID_MAX);
+                    crashTemp(ID, LONGUEUR_ID_TEAM);
                     crashTemp(teamLong, LONGUEUR_NOM_MANGA_MAX);
                     crashTemp(teamCourt, LONGUEUR_COURT);
                     crashTemp(mode, 5);
                     crashTemp(URL, LONGUEUR_URL);
                     crashTemp(site, LONGUEUR_SITE);
-                    sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_MAX, teamLong, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, mode, 5, URL, LONGUEUR_URL, site, LONGUEUR_SITE);
+                    sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teamLong, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, mode, 5, URL, LONGUEUR_URL, site, LONGUEUR_SITE);
                 }
                 else
                 {
@@ -194,7 +194,7 @@ int ajoutRepo()
 
                     if(waitEnter() == 1)
                     {
-                        test = fopenR("data/repo", "r+");
+                        test = fopenR(REPO_DATABASE, "r+");
                         existant = 0;
                         while(fgetc(test) != EOF)
                         {
@@ -220,11 +220,11 @@ int ajoutRepo()
 
 int deleteRepo()
 {
-    int i = 0, j = 0, continuer = 0, mangaElligibles[NOMBRE_MANGA_MAX], teamChoisis = 0, nombreTeam = 0;
-    int confirme = 0;
-    char team[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], texteTrad[SIZE_TRAD_ID_15][LONGUEURTEXTE];
+    int i = 0, continuer = 0, teamChoisis = 0, nombreTeam = 0, confirme = 0;
+    char texteTrad[SIZE_TRAD_ID_15][LONGUEURTEXTE];
 
-	INFOS_TEAMS teams_global[NOMBRE_MANGA_MAX/2];
+    MANGAS_DATA* mangaDB = allocateDatabase(NOMBRE_MANGA_MAX);
+
     FILE* repo = NULL;
     FILE* repoNew = NULL;
 
@@ -241,39 +241,27 @@ int deleteRepo()
     ***           pour jarter les mangas de la team)            ***
     **************************************************************/
 
-    repo = fopenR("data/repo", "r");
-    for(i = 0; fgetc(repo) != EOF && i < NOMBRE_MANGA_MAX/2; i++)
+    repo = fopenR(REPO_DATABASE, "r");
+    for(nombreTeam = 0; fgetc(repo) != EOF && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++)
     {
         fseek(repo, -1, SEEK_CUR);
-        fscanfs(repo, "%s %s %s %s %s %s", teams_global[i].ID, LONGUEUR_ID_MAX, teams_global[i].teamLong, LONGUEUR_NOM_MANGA_MAX, teams_global[i].teamCourt, LONGUEUR_COURT, teams_global[i].mode, BUFFER_MAX, teams_global[i].URL, LONGUEUR_URL, teams_global[i].site, LONGUEUR_SITE);
-        ustrcpy(team[i], teams_global[i].teamLong);
+        fscanfs(repo, "%s %s %s %s %s %s", mangaDB[nombreTeam].team->IDTeam, LONGUEUR_ID_TEAM, mangaDB[nombreTeam].team->teamLong, LONGUEUR_NOM_MANGA_MAX, mangaDB[nombreTeam].team->teamCourt, LONGUEUR_COURT, mangaDB[nombreTeam].team->type, BUFFER_MAX, mangaDB[nombreTeam].team->URL_depot, LONGUEUR_URL, mangaDB[nombreTeam].team->site, LONGUEUR_SITE);
+        ustrcpy(mangaDB[nombreTeam].mangaName, mangaDB[nombreTeam].team->teamLong);
     }
     fclose(repo);
-    nombreTeam = i;
 
-    for(i = 0; i < NOMBRE_MANGA_MAX; i++)
-    {
-        for(j = 0; j < LONGUEUR_NOM_MANGA_MAX; j++)
-        {
-            if(team[i][j] == '_')
-                team[i][j] = ' ';
-        }
-    }
+    mangaDB[nombreTeam].mangaName[0] = 0;
+    for(i = 0; i < NOMBRE_MANGA_MAX && i < nombreTeam; changeTo(mangaDB[i++].mangaName, '_', ' '));
 
     /*On met 5 pour chaque nom de team puis on complËte avec un -1 (signal de fin)*/
-    for(j = 0; j < nombreTeam; j++)
-        mangaElligibles[j] = 0;
-    mangaElligibles[nombreTeam] = -1;
+    for(i = 0; i < nombreTeam; i++)
+        mangaDB[i].status = mangaDB[i].genre = 0;
 
     /*On va changer la taille de la fenetre en pompant l'algorithme de la selection de manga*/
     if(nombreTeam <= MANGAPARPAGE_TRI)
-    {
         i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (nombreTeam / NBRCOLONNES_TRI + 1) + 50;
-    }
     else
-    {
         i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
-    }
 
     if(WINDOW_SIZE_H != i)
         updateWindowSize(LARGEUR, i);
@@ -289,31 +277,29 @@ int deleteRepo()
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
 
-    teamChoisis = mangaTriColonne(team, SECTION_CHOISIS_TEAM, mangaElligibles, 0, BORDURE_SUP_SELEC_MANGA);
+    teamChoisis = displayMangas(mangaDB, SECTION_CHOISIS_TEAM, 0, BORDURE_SUP_SELEC_MANGA);
 
-    if(teamChoisis > -3 && team[teamChoisis - 1][0] != 0)
+    if(teamChoisis > -3 && mangaDB[teamChoisis-1].mangaName[0] != 0)
     {
         if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
             updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
         SDL_RenderClear(renderer);
 
-        confirme = confirmationRepo(team[teamChoisis - 1]);
+        confirme = confirmationRepo(mangaDB[teamChoisis-1].mangaName);
 
         if(confirme)
         {
             char temp[LONGUEUR_NOM_MANGA_MAX];
-            sprintf(temp, "manga/%s", teams_global[teamChoisis-1].teamLong);
+            sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
             removeFolder(temp); //Suppresion du dossier de la team
 
-            repoNew = fopenR("data/repo.del", "w+");
+            repoNew = fopenR(REPO_DATABASE, "w+");
             for(i = 0; i < nombreTeam; i++)
             {
                 if(i != teamChoisis - 1)
-                    fprintf(repoNew, "%s %s %s %s %s %s\n", teams_global[i].ID, teams_global[i].teamLong, teams_global[i].teamCourt, teams_global[i].mode, teams_global[i].URL, teams_global[i].site);
+                    fprintf(repoNew, "%s %s %s %s %s %s\n", mangaDB[i].team->IDTeam, mangaDB[i].team->teamLong, mangaDB[i].team->teamCourt, mangaDB[i].team->type, mangaDB[i].team->URL_depot, mangaDB[i].team->site);
             }
             fclose(repoNew);
-            removeR("data/repo");
-            renameR("data/repo.del", "data/repo");
         }
         else if (confirme == PALIER_QUIT)
             return PALIER_QUIT;

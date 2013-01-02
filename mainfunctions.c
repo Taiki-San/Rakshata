@@ -87,13 +87,13 @@ void mainRakshata()
 
             case 4:
             {
-                test = fopenR("tmp/import.dat", "r");
+                test = fopenR(INSTALL_DATABASE, "r");
                 if(test != NULL)
                 {
                     fclose(test);
-                    removeR("tmp/import.dat");
+                    removeR(INSTALL_DATABASE);
                 }
-                test = fopenR("tmp/import.dat", "r");
+                test = fopenR(INSTALL_DATABASE, "r");
                 if(test == NULL)
                 {
                     continuer = menuGestion();
@@ -114,42 +114,23 @@ void mainRakshata()
 
 int mainLecture()
 {
-    int continuer = PALIER_DEFAULT, buffer = 0, mangaChoisis = 0, chapitreChoisis = -1, retourLecteur = 0, restoringState = 0, i = 0, fullscreen = 0, chapsExtreme[2] = {0, 1};
-    int categorie[NOMBRE_MANGA_MAX], dernierChapitreDispo[NOMBRE_MANGA_MAX], premierChapitreDispo[NOMBRE_MANGA_MAX];
-    char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamsLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX];
-    char mangaDispoCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], teamsCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT];
+    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, retourLecteur = 0, restoringState = 0, fullscreen = 0, chapsExtreme[2] = {0, 1};
     FILE* test = NULL;
 
     if(checkRestore())
         restoringState = 1;
 
-    for(i = 0; i < NOMBRE_MANGA_MAX; i++)
-    {
-        for(buffer = 0; buffer < LONGUEUR_NOM_MANGA_MAX; buffer++)
-        {
-            mangaDispo[i][buffer] = 0;
-            teamsLong[i][buffer] = 0;
-        }
-        for(buffer = 0; buffer < LONGUEUR_COURT; buffer++)
-        {
-            mangaDispoCourt[i][buffer] = 0;
-            teamsCourt[i][buffer] = 0;
-        }
-    }
-    buffer = 0;
-
     while(continuer > PALIER_MENU)
     {
-        mangaChoisis = 0;
-        chapitreChoisis = 0;
+        mangaChoisis = chapitreChoisis = 0;
         chapsExtreme[0] = -1;
         chapsExtreme[1] = 0;
 
-        miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 1);
+        MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
 
         /*Appel des selectionneurs*/
         if(!restoringState)
-            mangaChoisis = manga(SECTION_CHOISIS_LECTURE, categorie, mangaDispo, 0);
+            mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangaDB, 0);
 
         if(mangaChoisis <= -2)
         {
@@ -159,10 +140,11 @@ int mainLecture()
             else
                 continuer = mangaChoisis;
         }
+
         if(mangaChoisis > -1 || restoringState == 1)
         {
             if(!restoringState)
-                retourLecteur = checkProjet(mangaDispo[mangaChoisis]);
+                retourLecteur = checkProjet(mangaDB[mangaChoisis]);
 
             else
                 retourLecteur = 1;
@@ -178,7 +160,7 @@ int mainLecture()
                 while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && chapsExtreme[0] != chapsExtreme[1] && chapsExtreme[0] != 0)
                 {
                     if(!restoringState)
-                        chapitreChoisis = chapitre(teamsLong[mangaChoisis], mangaDispo[mangaChoisis], 1);
+                        chapitreChoisis = chapitre(mangaDB[mangaChoisis], 1);
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
                         continuer = chapitreChoisis;
@@ -198,15 +180,15 @@ int mainLecture()
                                 fscanfs(test, "%s %d", temp, LONGUEUR_NOM_MANGA_MAX, &chapitreChoisis);
                                 fclose(test);
 
-                                for(mangaChoisis = 0; strcmp(temp, mangaDispo[mangaChoisis]) != 0; mangaChoisis++);
+                                for(mangaChoisis = 0; strcmp(temp, mangaDB[mangaChoisis].mangaName) != 0; mangaChoisis++);
 
                                 restoringState = 0;
                             }
                             chargement();
 
-                            lastChapitreLu(mangaDispo[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
+                            lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 
-                            retourLecteur = lecteur(&chapitreChoisis, &fullscreen, mangaDispo[mangaChoisis], teamsCourt[mangaChoisis]);
+                            retourLecteur = lecteur(mangaDB[mangaChoisis], &chapitreChoisis, &fullscreen);
 
                             if(retourLecteur != 0)
                             {
@@ -220,43 +202,25 @@ int mainLecture()
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else
-                            anythingNew(chapsExtreme, mangaDispo[mangaChoisis]);
+                            anythingNew(chapsExtreme, mangaDB[mangaChoisis].mangaName);
                     }
                 }
             }
         }
+        freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
     }
     return continuer;
 }
 
 int mainChoixDL()
 {
-    int continuer = PALIER_DEFAULT, buffer = 0, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0;
-    int categorie[NOMBRE_MANGA_MAX], dernierChapitreDispo[NOMBRE_MANGA_MAX], premierChapitreDispo[NOMBRE_MANGA_MAX], i = 0;
-    char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamsLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX];
-    char mangaDispoCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], teamsCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT];
-
+    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0;
     FILE* test = NULL;
-
-    for(i = 0; i < NOMBRE_MANGA_MAX; i++)
-    {
-        for(buffer = 0; buffer < LONGUEUR_NOM_MANGA_MAX; buffer++)
-        {
-            mangaDispo[i][buffer] = 0;
-            teamsLong[i][buffer] = 0;
-        }
-        for(buffer = 0; buffer < LONGUEUR_COURT; buffer++)
-        {
-            mangaDispoCourt[i][buffer] = 0;
-            teamsCourt[i][buffer] = 0;
-        }
-    }
-    buffer = 0;
 
     mkdirR("manga");
 	mkdirR("tmp");
     #ifdef _WIN32
-    test = fopenR("tmp/import.dat", "r");
+    test = fopenR(INSTALL_DATABASE, "r");
 
     if(test != NULL)
     {
@@ -307,7 +271,7 @@ int mainChoixDL()
             updateDataBase();
             if(continuer != PALIER_QUIT)
             {
-                miseEnCache(mangaDispo, mangaDispoCourt, categorie, premierChapitreDispo, dernierChapitreDispo, teamsLong, teamsCourt, 2);
+                MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
 
                 /*C/C du choix de manga pour le lecteur.*/
                 while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
@@ -317,7 +281,7 @@ int mainChoixDL()
                     supprUsedInChapitre = 0;
 
                     /*Appel des selectionneurs*/
-                    mangaChoisis = manga(SECTION_DL, categorie, mangaDispo, nombreChapitre);
+                    mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
 
                     if(mangaChoisis == -11 || mangaChoisis == -10)
                         continuer = PALIER_CHAPTER;
@@ -331,7 +295,7 @@ int mainChoixDL()
                         continuer = 0;
                         while(chapitreChoisis > PALIER_CHAPTER && !continuer)
                         {
-                            chapitreChoisis = chapitre(teamsLong[mangaChoisis], mangaDispo[mangaChoisis], 2);
+                            chapitreChoisis = chapitre(mangaDB[mangaChoisis], 2);
 
                             if (chapitreChoisis <= PALIER_CHAPTER)
                             {
@@ -344,13 +308,14 @@ int mainChoixDL()
                             {
                                 /*Confirmation */
                                 SDL_RenderClear(renderer);
-                                continuer = ecritureDansImport(mangaDispo[mangaChoisis], mangaDispoCourt[mangaChoisis], chapitreChoisis, teamsCourt[mangaChoisis]);
+                                continuer = ecritureDansImport(mangaDB[mangaChoisis].mangaName, mangaDB[mangaChoisis].mangaNameShort, chapitreChoisis, mangaDB[mangaChoisis].team->teamCourt);
 								nombreChapitre = nombreChapitre + continuer;
                                 continuer = -1;
                             }
                         }
                     }
                 }
+
                 if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
                 {
                     if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
@@ -361,7 +326,9 @@ int mainChoixDL()
                     }
                 }
                 else if(checkLancementUpdate())
-                    removeR("tmp/import.dat");
+                    removeR(INSTALL_DATABASE);
+
+                freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
             }
         }
         else

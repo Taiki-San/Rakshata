@@ -77,8 +77,8 @@ int waitEnter()
 
 int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 {
-    int i = 0, j = 0, epaisseur = 0;
-    char affiche[LONGUEUR_URL + 3];
+    int i = 0, epaisseur = 0;
+    char affiche[LONGUEUR_URL + 10];
     SDL_Event event;
     SDL_Texture *numero = NULL;
     SDL_Rect position;
@@ -106,10 +106,8 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
         return -2;
     }
 
-    for(i = 0; i <= nombreMax; i++)
+    for(i = 0; i <= nombreMax;)
     {
-        if(i == nombreMax)
-            i--;
         SDL_WaitEvent(&event);
         switch(event.type)
         {
@@ -158,10 +156,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
                         break;
 
                     default:
-                    {
-                        i--;
                         break;
-                    }
                 }
                 break;
             }
@@ -169,9 +164,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             case SDL_TEXTINPUT:
             {
                 if(event.text.text[0] >= ' ' && event.text.text[0] < 128) //Un char
-                    retour[i] = event.text.text[0];//(char) event.text.text[0];
-                else
-                    i--;
+                    retour[i++] = event.text.text[0];//(char) event.text.text[0];
                 break;
             }
 
@@ -194,21 +187,13 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
                     return PALIER_QUIT;
                 }
                 #endif
-                i--;
                 continue;
                 break;
         }
 
         if(!startFromX && i < nombreMax)
         {
-            sprintf(affiche, "-> ");
-            for(j = 0; j < nombreMax && j < i+1; j++)
-                affiche[j+3] = retour[j];
-            j+=3;
-            affiche[j++] = ' ';
-            affiche[j++] = '<';
-            affiche[j++] = '-';
-            affiche[j] = 0;
+            snprintf(affiche, LONGUEUR_URL + 10, "-> %s <-", retour);
             numero = TTF_Write(renderer, police, affiche, couleurTexte);
         }
         else

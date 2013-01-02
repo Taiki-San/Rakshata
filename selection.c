@@ -215,7 +215,7 @@ int section()
     return sectionChoisis;
 }
 
-int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], int nombreChapitre)
+int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 {
     /*Initilisation*/
     int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
@@ -225,7 +225,7 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
     SDL_Rect position;
     TTF_Font *police = NULL;
 
-    for(nombreMangaElligible = 0; nombreMangaElligible < NOMBRE_MANGA_MAX && mangaDispo[nombreMangaElligible][0]; nombreMangaElligible++); //Enumération
+    for(nombreMangaElligible = 0; nombreMangaElligible < NOMBRE_MANGA_MAX && mangas_db[nombreMangaElligible].mangaName[0]; nombreMangaElligible++); //Enumération
 
     if(nombreMangaElligible > 0)
     {
@@ -286,19 +286,14 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
             hauteurDonnes = BORDURE_SUP_SELEC_MANGA;
 
         /*Définition de l'affichage*/
-        conversionAvant(mangaDispo);
+        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; i++)
+            changeTo(mangas_db[i].mangaName, '_', ' ');
 
-        if((BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE) * nombreMangaElligible) < HAUTEUR_MAX && nombreMangaElligible < 6 && sectionChoisis!= SECTION_DL)
-        {
-            int mangaElligibles[NOMBRE_MANGA_MAX];
-            for(i = nombreMangaElligible=0; sectionManga[i] != 0; mangaElligibles[nombreMangaElligible++] = i++);
-            mangaElligibles[nombreMangaElligible] = -1;
-            mangaChoisis = mangaUnicolonne(police, mangaDispo, sectionChoisis, nombreMangaElligible, mangaElligibles);
-        }
-        else
-            mangaChoisis = mangaTriColonne(mangaDispo, sectionChoisis, sectionManga, nombreChapitre, hauteurDonnes);
+        mangaChoisis = displayMangas(mangas_db, sectionChoisis, nombreChapitre, hauteurDonnes);
 
-        conversionApres(mangaDispo);
+        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; i++)
+            changeTo(mangas_db[i].mangaName, ' ', '_');
+
     }
     else
     {
@@ -311,152 +306,169 @@ int manga(int sectionChoisis, int sectionManga[NOMBRE_MANGA_MAX], char mangaDisp
     return mangaChoisis;
 }
 
-int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MANGA_MAX], int mode)
+int chapitre(MANGAS_DATA mangaDB, int mode)
 {
+    /**************************
+    **  mode:                **
+    **        1: lecture     **
+    **        2: choix DL    **
+    **        3: deleteManga **
+    **************************/
+
     /*Initialisations*/
-    int extreme[2] = {0, 0}, buffer = 0, i = 0, j = 0, k = 0, chapitreChoisis = 0, dernierLu = 0, nombreChapitre = 0;
-    int hauteur_chapitre = 0;
-    char temp[TAILLE_BUFFER] = {0}, nomsChapitre[NOMBRE_CHAPITRE_MAX+1][LONGUEUR_NOM_MANGA_MAX], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
-    register FILE* checkE = NULL; //Make that stuff faster
+    int buffer = 0, i = 0, j = 0, k = 0, chapitreChoisis = 0, dernierLu = -1;
+    int hauteur_chapitre = 0, nombreChapitre = 0, nombreMaxChapitre = 0;
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
+    register FILE* file = NULL; //Make that stuff faster
     TTF_Font *police = NULL;
     SDL_Texture *texte = NULL;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Rect position;
 
-	chargement();
+    chargement();
+    loadTrad(texteTrad, 19);
 
-	loadTrad(texteTrad, 19);
-
-    /*On convertit mangaATester*/
-    changeTo(mangaSoumis, ' ', '_');
-
-    for(i = 0; i < NOMBRE_CHAPITRE_MAX; i++)
-        for(dernierLu = 0; dernierLu < 100; nomsChapitre[i][dernierLu++] = 0);
-
-    dernierLu = 0;
-
-    /*Recherche la ligne puis le dernier chapitre disponible du manga*/
-
-    checkE = fopenR(MANGA_DATABASE, "r");
-    if(positionnementApres(checkE, mangaSoumis))
-        fscanfs(checkE, "%s %d %d", temp, TAILLE_BUFFER, &extreme[0], &extreme[1]);
-    else
-        return -1;
-    fclose(checkE);
-
-    if(extreme[0] == extreme[1]) //Si une seul chapitre, on le séléctionne automatiquement
-        return extreme[0];
-
-    crashTemp(temp, TAILLE_BUFFER);
-    sprintf(temp, "manga/%s/%s/%s", team, mangaSoumis, CONFIGFILE);
-    checkE = fopenR(temp, "r");
-
-    if(checkE != NULL || mode == 2)
+    if(mangaDB.firstChapter == mangaDB.lastChapter) //Si une seul chapitre, on le séléctionne automatiquement
     {
-        if(checkE == NULL && mode == 2)
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.lastChapter, CONFIGFILE);
+        if(checkFileExist(temp))
+            return mangaDB.lastChapter;
+        else
         {
-            i = extreme[0];
-            dernierLu = -1;
+            sprintf(temp, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
+            removeFolder(temp);
+            return PALIER_MENU;
         }
+    }
 
-        else if (mode != 2)
+    sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+    if(checkFileExist(temp) || mode == 2)
+    {
+        if (mode != 2) //Si on DL, on s'en fout, on propose tout
         {
-            fscanfs(checkE, "%d %d", &i, &extreme[1]);
-            if(fgetc(checkE) != EOF)
-            {
-                fseek(checkE, -1, SEEK_CUR);
-                fscanfs(checkE, "%d", &dernierLu);
-            }
-            else
-                dernierLu = -1;
-            fclose(checkE);
+            int first = 0, end = 0;
+            file = fopenR(temp, "r");
+            fscanfs(file, "%d %d %d", &first, &end, &dernierLu);
+            fclose(file);
 
-            if(i < extreme[0]) //Si il y a des chapitre a supprimer
+            /*Si il y a pas des chapitres retiré de la base installé*/
+            if(first < mangaDB.firstChapter)
             {
-                for(; i < extreme[0]; i++)
+                for(; first < mangaDB.firstChapter; first++)
                 {
-                    crashTemp(temp, TAILLE_BUFFER);
-                    sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", team, mangaSoumis, i);
+                    sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, first);
                     removeFolder(temp);
                 }
-                for(; checkE == NULL; i++)
+                do
                 {
-                    crashTemp(temp, TAILLE_BUFFER);
-                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                    checkE = fopenR(temp, "r");
+                    first++;
+                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, first, CONFIGFILE);
+                }while(!checkFileExist(temp) && first <= end);
+            }
+            mangaDB.firstChapter = first;
+
+            if(end > mangaDB.lastChapter)
+            {
+                for(; end > mangaDB.lastChapter; end--)
+                {
+                    sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, end);
+                    removeFolder(temp);
                 }
-                fclose(checkE);
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/%s", team, mangaSoumis, CONFIGFILE);
-                checkE = fopenR(temp, "w+");
-                fprintf(checkE, "%d %d", i, extreme[1]);
-                if(dernierLu != -1)
-                    fprintf(checkE, " %d", dernierLu);
-                fclose(checkE);
+                do
+                {
+                    end--;
+                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, end, CONFIGFILE);
+                }while(!checkFileExist(temp) && first <= end);
+
+            }
+            mangaDB.lastChapter = end;
+
+            if(mangaDB.firstChapter > dernierLu)
+                dernierLu = mangaDB.firstChapter;
+            else if(mangaDB.lastChapter < dernierLu)
+                dernierLu = mangaDB.lastChapter;
+
+            if(first > end)
+            {
+                sprintf(temp, "manga\\%s\\%s", mangaDB.team->teamLong, mangaDB.mangaName);
+                removeFolder(temp);
+                return PALIER_MENU;
             }
             else
-                extreme[0] = i;
-
-            if(mode == 3)
-                dernierLu = -1;
-        }
-
-        /************************************************************
-        ** Génère le noms des chapitre en vérifiant leur existance **
-        **    Sauf si on télécharge auquel cas, c'est l'inverse    **
-        ************************************************************/
-        nombreChapitre = 0;
-        if(mode == 2 || mode == 3) //Bouton All
-            sprintf(nomsChapitre[nombreChapitre++], "%s", texteTrad[11]);
-
-        if(dernierLu == -1)
-        {
-            for(i = extreme[0]; i <= extreme[1]; i++)
             {
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                checkE = fopenR(temp, "r");
-                if(checkE != NULL && (mode == 1 || mode == 3))
-                {
-                    sprintf(nomsChapitre[nombreChapitre++], "%s %d", texteTrad[10], i);
-                    fclose(checkE);
-                }
-                else if(checkE == NULL && mode == 2)
-                    sprintf(nomsChapitre[nombreChapitre++], "%s %d", texteTrad[10], i);
-
-                else if(checkE != NULL)
-                    fclose(checkE);
+                sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+                file = fopenR(temp, "w+");
+                fprintf(file, "%d %d", first, end);
+                if(dernierLu != 0)
+                    fprintf(file, " %d", dernierLu);
+                fclose(file);
             }
         }
         else
         {
-            for(i = extreme[1]; i >= extreme[0]; i--)
-            {
-                crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                checkE = fopenR(temp, "r");
-                if(checkE != NULL && (mode == 1 || mode == 3))
-                {
-                    sprintf(nomsChapitre[nombreChapitre++], "%s %d", texteTrad[10], i);
-                    fclose(checkE);
-                }
-                else if(checkE == NULL && mode == 2)
-                {
-                    sprintf(nomsChapitre[nombreChapitre++], "%s %d", texteTrad[10], i);
-                }
-                else if (checkE != NULL)
-                    fclose(checkE);
-            }
+            sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+            if(checkFileExist(temp))
+                dernierLu = 0; //Si un manga est déjà installé, on le met dans le sens décroissant
         }
 
-        if(nombreChapitre <= MANGAPARPAGE_TRI)
-		{
-			if(nombreChapitre < NBRCOLONNES_TRI) //Si une seule ligne
-				i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (nombreChapitre / NBRCOLONNES_TRI + 1) + 100;
-			else
-				i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (nombreChapitre / NBRCOLONNES_TRI + 1) + 50;
+        /*On prépare maintenant la structure*/
+        nombreMaxChapitre = mangaDB.lastChapter - mangaDB.firstChapter + 3;
+        MANGAS_DATA *chapitreDB = calloc(nombreMaxChapitre, sizeof(MANGAS_DATA));
+
+        for(i = 0; i < nombreMaxChapitre; chapitreDB[i++].mangaName[0] = 0);
+
+        /************************************************************
+        ** Génère le noms des chapitre en vérifiant leur existance **
+        **              Si on télécharge, on met tout              **
+        ************************************************************/
+        nombreChapitre = 0;
+
+        if(mode == 2 || mode == 3) //Bouton All
+        {
+            chapitreDB[nombreChapitre].pageInfos = 0;
+            usstrcpy(chapitreDB[nombreChapitre++].mangaName, LONGUEUR_NOM_MANGA_MAX, texteTrad[11]);
         }
-		else
+        if(dernierLu == -1) //Ordre croissant
+        {
+            for(i = mangaDB.firstChapter; i <= mangaDB.lastChapter; i++)
+            {
+                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, i, CONFIGFILE);
+                file = fopenR(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
+                if((file != NULL && mode != 2) || (file == NULL && mode == 2))
+                {
+                    if(mode != 2)
+                        fclose(file);
+                    chapitreDB[nombreChapitre].pageInfos = i;
+                    snprintf(chapitreDB[nombreChapitre++].mangaName, LONGUEUR_NOM_MANGA_MAX, "%s %d", texteTrad[10], i);
+                }
+                else if(mode == 2)
+                    fclose(file);
+            }
+        }
+        else //Ordre décroissant
+        {
+            for(i = mangaDB.lastChapter; i >= mangaDB.firstChapter; i--)
+            {
+                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, i, CONFIGFILE);
+                file = fopenR(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
+                if((file != NULL && mode != 2) || (file == NULL && mode == 2))
+                {
+                    if(mode != 2)
+                        fclose(file);
+                    chapitreDB[nombreChapitre].pageInfos = i;
+                    snprintf(chapitreDB[nombreChapitre++].mangaName, LONGUEUR_NOM_MANGA_MAX, "%s %d", texteTrad[10], i);
+                }
+                else if(mode == 2)
+                    fclose(file);
+            }
+        }
+        if(nombreChapitre < NOMBRE_CHAPITRE_MAX)
+            chapitreDB[nombreChapitre].mangaName[0] = chapitreDB[nombreChapitre].pageInfos = 0;
+
+        /*On calcule la taille de la fenêtre*/
+        if(nombreChapitre <= MANGAPARPAGE_TRI)
+            i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (nombreChapitre / NBRCOLONNES_TRI + 1) + 50;
+        else
             i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
 
         if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
@@ -491,8 +503,6 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
         }
         else
         {
-			int section_inutile_mais_reclame[NOMBRE_MANGA_MAX]; //Je le mettais beaucoup plus bas mais notre cher VS ne supporte pas le C99 <3
-
             if(j == 1)
                 k = j;
             //On affiche pas le même titre en fonction de la section
@@ -508,26 +518,13 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
             /*Affichage des infos sur la team*/
             crashTemp(temp, TAILLE_BUFFER);
 
+            changeTo(mangaDB.mangaName, '_', ' ');
+            changeTo(mangaDB.team->teamLong, '_', ' ');
 
-            for(i = 0; i < LONGUEUR_NOM_MANGA_MAX; i++)
-            {
-                if(mangaSoumis[i] == '_')
-                    mangaSoumis[i] = ' ';
+            sprintf(temp, "%s '%s' %s '%s'", texteTrad[6], mangaDB.mangaName, texteTrad[7], mangaDB.team->teamLong);
 
-                if(team[i] == '_')
-                    team[i] = ' ';
-            }
-
-            sprintf(temp, "%s '%s' %s '%s'", texteTrad[6], mangaSoumis, texteTrad[7], team);
-
-            for(i = 0; i < LONGUEUR_NOM_MANGA_MAX; i++)
-            {
-                if(mangaSoumis[i] == ' ')
-                    mangaSoumis[i] = '_';
-
-                if(team[i] == ' ')
-                    team[i] = '_';
-            }
+            changeTo(mangaDB.mangaName, ' ', '_');
+            changeTo(mangaDB.team->teamLong, ' ', '_');
 
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
@@ -562,7 +559,7 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
             if(mode == 2)
                 TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
             crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "%s %d", texteTrad[4], extreme[0]);
+            sprintf(temp, "%s %d", texteTrad[4], mangaDB.firstChapter);
             texte = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = BORDURE_BOUTON_LECTEUR;
             position.h = texte->h;
@@ -571,7 +568,7 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
             SDL_DestroyTextureS(texte);
 
             crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "%s %d", texteTrad[5], extreme[1]);
+            sprintf(temp, "%s %d", texteTrad[5], mangaDB.lastChapter);
             texte = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
             position.h = texte->h;
@@ -582,150 +579,56 @@ int chapitre(char team[LONGUEUR_NOM_MANGA_MAX], char mangaSoumis[LONGUEUR_NOM_MA
 
             chapitreChoisis = -1;
 
-            if(nombreChapitre >= MANGAPARPAGE_TRI)
-                hauteur_chapitre = BORDURE_SUP_SELEC_MANGA;
+            if(nombreChapitre > MANGAPARPAGE_TRI)
+                hauteur_chapitre = BORDURE_SUP_SELEC_CHAPITRE_FULL;
 
             else
-                hauteur_chapitre = BORDURE_SUP_SELEC_MANGA - 25;
+                hauteur_chapitre = BORDURE_SUP_SELEC_CHAPITRE_PARTIAL;
 
-            section_inutile_mais_reclame[nombreChapitre] = -1;
             while(chapitreChoisis == -1)
             {
                 do
                 {
-                    section_inutile_mais_reclame[0] = 0;
-                    chapitreChoisis = mangaTriColonne(nomsChapitre, SECTION_CHOISIS_CHAPITRE, section_inutile_mais_reclame, extreme[1], hauteur_chapitre);
+                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHOISIS_CHAPITRE, mangaDB.lastChapter, hauteur_chapitre);
                     if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
-                    {
-                        /*Il nous faut le nom court du manga or, on a que le long*/
-                        checkE = fopenR("data/repo", "r");
-                        if(checkE == NULL)
-                        {
-                            logR("\"repo\" introuvable\n");
-                            exit(0);
-                        }
-                        positionnementApres(checkE, team);
-                        crashTemp(temp, TAILLE_BUFFER);
-                        fscanfs(checkE, "%s ", temp, TAILLE_BUFFER);
-                        ouvrirSite(temp);
-                    }
+                        ouvrirSite(mangaDB.team);
                 }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team
                         || (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode == 2) //On reste dans la boucle si dans le module de DL on clic sur les trucs en bas (inactifs)
                         || (dernierLu == -1 && chapitreChoisis == CODE_BOUTON_2_CHAPITRE)); //Si on clic sur premiere lecture en bas
 
-                if(mode != 1 && chapitreChoisis >= 0 && section_inutile_mais_reclame[0] != -1 //Entré manuellement
-                   && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
+                if(mode != 1 && chapitreChoisis >= 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
+                    chapitreChoisis--; //on vire all
+
+                j = 0;
+                if(chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
+                    chapitreChoisis = chapitreDB[chapitreChoisis-1].pageInfos;
+
+                else if (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode != 2)
                 {
-                    chapitreChoisis--;
-                    if(chapitreChoisis == 0) //Si bouton all choisis
-                        section_inutile_mais_reclame[0] = -1;
+                    if(chapitreChoisis == CODE_BOUTON_1_CHAPITRE) //Premier chapitre
+                        chapitreChoisis = mangaDB.firstChapter;
+
+                    else if(chapitreChoisis == CODE_BOUTON_2_CHAPITRE)
+                        chapitreChoisis = dernierLu; //Dernier lu
+
+                    else
+                        chapitreChoisis = mangaDB.lastChapter; //Dernier chapitre
                 }
 
-                if(section_inutile_mais_reclame[0] != -1) //Si ce n'est pas all
-                {
-                    j = 0;
-                    if(dernierLu == -1 && chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
-                    {
-                        if(mode != 2)
-                        {
-                            for(i = extreme[0]; i <= extreme[1] && chapitreChoisis != j; i++)
-                            {
-                                crashTemp(temp, TAILLE_BUFFER);
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                                checkE = fopenR(temp, "r");
-                                if(checkE != NULL)
-                                {
-                                    fclose(checkE);
-                                    j++;
-                                }
-                            }
-                        }
-
-                        else
-                        {
-                            for(i = extreme[0]; i <= extreme[1] && chapitreChoisis != j; i++)
-                            {
-                                crashTemp(temp, TAILLE_BUFFER);
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                                checkE = fopenR(temp, "r");
-                                if(checkE == NULL)
-                                    j++;
-                                else
-                                    fclose(checkE);
-                            }
-                        }
-                        i--;
-                        if(i <= extreme[1])
-                            chapitreChoisis = i;
-                        else
-                            chapitreChoisis = -1;
-                    }
-
-                    else if (chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
-                    {
-                        if(mode != 2)
-                        {
-                            for(i = extreme[1]; i >= extreme[0] && chapitreChoisis != j; i--)
-                            {
-                                crashTemp(temp, TAILLE_BUFFER);
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                                checkE = fopenR(temp, "r");
-                                if(checkE != NULL)
-                                {
-                                    fclose(checkE);
-                                    j++;
-                                }
-                            }
-                        }
-
-                        else
-                        {
-                            for(i = extreme[1]; i >= extreme[0] && chapitreChoisis != j; i--)
-                            {
-                                crashTemp(temp, TAILLE_BUFFER);
-                                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, mangaSoumis, i, CONFIGFILE);
-                                checkE = fopenR(temp, "r");
-                                if(checkE == NULL)
-                                    j++;
-                                else
-                                    fclose(checkE);
-                            }
-                        }
-                        if(chapitreChoisis == j)
-                            chapitreChoisis = i + 1;
-                        else
-                            chapitreChoisis = -1;
-                    }
-
-                    else if (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode != 2)
-                    {
-                        if(chapitreChoisis == CODE_BOUTON_1_CHAPITRE) //Premier chapitre
-                            chapitreChoisis = extreme[0];
-                        else if(chapitreChoisis == CODE_BOUTON_2_CHAPITRE)
-                        {
-                            if(mode == 3)
-                                chapitreChoisis = -1;
-                            else
-                                chapitreChoisis = dernierLu; //Dernier lu
-                        }
-                        else
-                            chapitreChoisis = extreme[1]; //Dernier chapitre
-                    }
-
-                    else if(chapitreChoisis >= 0)
-                        chapitreChoisis--;
-                }
+                else if(chapitreChoisis < PALIER_QUIT) //Numéro entré manuellement
+                    chapitreChoisis = (chapitreChoisis + PALIER_QUIT) * -1;
 
                 if(k && chapitreChoisis > -1)
                     chapitreChoisis--;
             }
         }
+        free(chapitreDB);
     }
     else
     {
         buffer = showError();
-        if(buffer > -3) // Si pas de demande spéciale
-            buffer = -3;
+        if(buffer > PALIER_MENU) // Si pas de demande spéciale
+            buffer = PALIER_MENU;
         return buffer;
     }
     TTF_CloseFont(police);

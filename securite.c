@@ -525,10 +525,10 @@ void getPasswordArchive(char *fileName, char password[300])
     crashTemp(MK, SHA256_DIGEST_LENGTH);
 }
 
-void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_MAX])
+void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM])
 {
     int i, j, k;
-    char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_MAX], temp[350];
+    char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM], temp[350];
 
 	for(i = 0; i < NUMBER_MAX_TEAM_KILLSWITCHE; i++)
         for(j=0; j < 100; killswitch_string[i][j++] = 0);
@@ -538,7 +538,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
 
     sprintf(temp, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
 
-    setupBufferDL(bufferDL, NUMBER_MAX_TEAM_KILLSWITCHE/2, 2, LONGUEUR_ID_MAX, 1);
+    setupBufferDL(bufferDL, NUMBER_MAX_TEAM_KILLSWITCHE/2, 2, LONGUEUR_ID_TEAM, 1);
 
     download(temp, bufferDL, 0);
 
@@ -555,7 +555,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
     }
 }
 
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_MAX], char ID_To_Test[LONGUEUR_ID_MAX])
+int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], char ID_To_Test[LONGUEUR_ID_TEAM])
 {
     int i = 0;
     if(NETWORK_ACCESS != CONNEXION_OK)
@@ -567,26 +567,12 @@ int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR
     return 0;
 }
 
-void killswitchEnabled(char nomTeamCourt[5])
+void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char temp[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
-    FILE *repo = fopenR("data/repo", "r");
-
-    if(repo != NULL)
-    {
-        while(strcmp(temp, nomTeamCourt) && fgetc(repo) != EOF)
-        {
-            fseek(repo, -1, SEEK_CUR);
-            fscanfs(repo, "%s %s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, teamLong, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX);
-        }
-        if(!strcmp(temp, nomTeamCourt))
-        {
-            sprintf(temp, "manga/%s", teamLong);
-            removeFolder(temp);
-        }
-    }
-    fclose(repo);
+    char temp[LONGUEUR_NOM_MANGA_MAX+10];
+    sprintf(temp, "manga/%s", teamLong);
+    removeFolder(temp);
 }
 
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)

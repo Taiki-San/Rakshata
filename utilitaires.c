@@ -12,20 +12,6 @@ void crashTemp(void *temp, int longueur)
     memset(temp, 0, longueur);
 }
 
-void conversionAvant(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX])
-{
-    int i = 0;
-    for(; i < NOMBRE_MANGA_MAX; i++)
-        changeTo(mangaDispo[i], '_', ' ');
-}
-
-void conversionApres(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX])
-{
-    int i = 0;
-    for(; i < NOMBRE_MANGA_MAX; i++)
-        changeTo(mangaDispo[i], ' ', '_');
-}
-
 void changeTo(char *string, int toFind, int toPut)
 {
     while(*string)
@@ -46,13 +32,8 @@ int plusOuMoins(int compare1, int compare2, int tolerance) //Estime si la diffé
 
 int compare(const void *a, const void *b)
 {
-    const char *s1 = a;
-    const char *s2 = b;
-    return strcmp(s1, s2);
-}
-
-int compare2(MANGAS_DATA *struc1, MANGAS_DATA *struc2)
-{
+    const MANGAS_DATA *struc1 = a;
+    const MANGAS_DATA *struc2 = b;
     return strcmp(struc1->mangaName, struc2->mangaName);
 }
 
