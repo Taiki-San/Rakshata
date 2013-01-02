@@ -255,9 +255,9 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 
 	else
 	{
-		logR("failed at read mode(repo): ");
-		logR(teams->type);
-		logR("\n");
+	    char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
+        snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(repo): %s", teams->type);
+        logR(temp2);
 		return;
 	}
 
@@ -278,9 +278,9 @@ void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
 
 	else
 	{
-		logR("failed at read mode(manga database): ");
-		logR(teams->type);
-		logR("\n");
+	    char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
+        snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(manga database): %s", teams->type);
+        logR(temp2);
 		return;
 	}
 

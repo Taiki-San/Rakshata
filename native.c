@@ -320,10 +320,11 @@ void removeFolder(char *path)
 
     /* On ouvre le dossier. */
     directory = opendir(name);
-    if ( directory == NULL ) {
-        logR("Can't open directory ");
-        logR(name);
-        logR("\n");
+    if ( directory == NULL )
+    {
+        char temp[300];
+        snprintf(temp, 300, "Can't open directory %s\n", name);
+        logR(temp);
         removeR(name);
         return;
     }
@@ -363,9 +364,9 @@ void removeFolder(char *path)
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
 #ifdef DEV_VERSION
-    logR("Removed: ");
-    logR(name);
-    logR("\n");
+    char temp2[300];
+    snprintf(temp2, 300, "Removed: %s\n", name);
+    logR(temp2);
 #endif
     free(name);
 }
@@ -402,12 +403,16 @@ void ouvrirSite(TEAMS_DATA* teams)
     #endif
 }
 
-void updateDirectory(char *argv)
+void updateDirectory()
 {
 #ifdef __APPLE__
-    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
     int i = 0;
-    char *bundleName = malloc(strlen(argv) + strlen(REPERTOIREEXECUTION));
+    char *cmdline= GetCommandLine();
+
+    for(i = 0; i < strlen(cmdline) && cmdline[i] != ' '; cmdline[i--] = 0);
+    cmdline[i] = 0;
+
+    char *bundleName = malloc(strlen(cmdline) + strlen(REPERTOIREEXECUTION));
     if(bundleName == NULL)
         exit(-1);
 
@@ -416,12 +421,13 @@ void updateDirectory(char *argv)
     i = strlen(bundleName);
 
 	bundleName[i++] = '/'; //Le / du dossier courant actuel
-    for(; argv[i] != '/' && i < strlen(argv) && argv[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / à la fin du path
-		bundleName[i] = argv[i];
+    for(; cmdline[i] != '/' && i < strlen(cmdline) && cmdline[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / à la fin du path
+		bundleName[i] = cmdline[i];
 	if(bundleName[i] != '/')
 		bundleName[i++] = '/';
 	bundleName[i] = 0;
     chdir(bundleName);
+    usstrcpy(REPERTOIREEXECUTION, 350, bundleName);
 	free(bundleName);
 #endif
 }
@@ -475,24 +481,21 @@ int unzip(char *path, char *output)
 
 int checkPID(int PID)
 {
+#ifndef _WIN32
     int i = 0;
     char temp[TAILLE_BUFFER];
     FILE *test = NULL;
 
-    crashTemp(temp, TAILLE_BUFFER);
-
     if(!PID)
         return 1;
     #ifdef __APPLE__
-    sprintf(temp, "ps %d > \"%s/get.dat\"", PID, REPERTOIREEXECUTION);
-    system(temp);
-    test = fopenR("get.dat", "r");
+    sprintf(temp, "ps %d", PID);
+    test = popen(temp, "r");
     if(test != NULL)
     {
         while(fgetc(test) != '\n');
         for(i = 0; i < 10 && fgetc(test) != EOF; i++);
         fclose(test);
-		removeR("get.dat");
         if(i == 10) //Si le PID existe
             return 0;
         else
@@ -514,6 +517,7 @@ int checkPID(int PID)
     else //Sinon
         return 1;
     #endif
+#endif
     return 0;
 }
 
@@ -551,7 +555,10 @@ int tradAvailable()
 	FILE *test = NULL;
 
 	if(temp == NULL)
-		exit(0);
+    {
+        logR("Failed at allocate memory\n");
+        exit(0);
+    }
     sprintf(temp, "data/%s/localization", LANGUAGE_PATH[langue-1]);
     test = fopenR(temp, "r");
 

@@ -33,7 +33,7 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_
         for(k=0; k<prf_hlen; k++){
             u[k] ^= buffer[k];
         }
-    } 
+    }
 
     return;
 }

@@ -135,13 +135,12 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     if(!size)
     {
         path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
-
         test = fopenR(zipFileName, "r");
         if (test == NULL)
         {
-            logR("Cannot open");
-            logR(zipFileName);
-            logR("\n");
+            char temp[500];
+            snprintf(temp, 500, "Can't open %s\n", zipFileName);
+            logR(temp);
             goto quit;
         }
 

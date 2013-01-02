@@ -101,12 +101,12 @@ void recoverPassToServ(unsigned char key[HASH_LENGTH], int mode);
 int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen);
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
 SDL_Texture* loadControlBar();
-int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, char mangaDispo[LONGUEUR_NOM_MANGA_MAX]);
+int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA mangaDB);
 void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
-void anythingNew(int extremes[2], char mangaChoisis[LONGUEUR_NOM_MANGA_MAX]);
+void anythingNew(int extremes[2], MANGAS_DATA mangaDB);
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
 
@@ -129,7 +129,7 @@ DWORD WINAPI installation(LPVOID datas);
 void* installation(void* datas);
 #endif
 int interditWhileDL();
-int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDispoCourt[LONGUEUR_COURT], int chapitreChoisis, char teamsCourt[LONGUEUR_COURT]);
+int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
 
@@ -152,7 +152,7 @@ void SDL_DestroyTextureS(SDL_Texture *texture);
 void removeFolder(char *path);
 int createNewThread(void *function);
 void ouvrirSite(TEAMS_DATA* teams);
-void updateDirectory(char *argv);
+void updateDirectory();
 int lancementExternalBinary(char cheminDAcces[100]);
 int unzip(char *path, char *output);
 int checkPID(int PID);
@@ -201,11 +201,9 @@ int loadLangueProfile();
 int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);
 
 /**Utilitaires.c**/
-void crashTemp(void *temp, int longueur);
-void conversionAvant(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX]);
-void conversionApres(char mangaDispo[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX]);
+#define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, int toFind, int toPut);
-int plusOuMoins(int compare1, int compare2, int tolerance);
+#define plusOuMoins(compare1, compare2, tolerance) (compare1 + tolerance > compare2 && compare1 - tolerance < compare2)?1:0
 int compare(const void *a, const void *b);
 void restartEcran();
 void chargement();
@@ -218,7 +216,7 @@ int positionnementApres(FILE* stream, char *stringToFind);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char output[]);
 void getResolution();
-int isHexa(char caract);
+#define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);

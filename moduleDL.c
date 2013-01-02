@@ -32,11 +32,10 @@ static int error;
 
 int telechargement()
 {
-    int i = 0, j = 0, k = 0, l = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 1, posVariable = 0;
+    int i = 0, j = 0, k = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 1, posVariable = 0;
     char temp[200], mangaCourt[LONGUEUR_COURT], teamCourt[LONGUEUR_COURT], historiqueTeam[1000][LONGUEUR_COURT];
     char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100];
     FILE* fichier = NULL;
-    FILE* ressources = NULL;
     FILE* test = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
     FUNC ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
@@ -61,8 +60,8 @@ int telechargement()
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     fichier = fopenR(INSTALL_DATABASE, "r");
-
-    crashTemp(MOT_DE_PASSE_COMPTE, 100);
+    if(fichier == NULL)
+        return 0;
 
     /*On compte le nombre de mangas*/
     mangaTotal = 1;
@@ -208,7 +207,7 @@ int telechargement()
 
                     /**Installation**/
                     DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
-                    data_instal.mangaDB = mangaDB[posVariable];
+                    data_instal->mangaDB = mangaDB[posVariable];
                     data_instal->chapitre = chapitre;
                     data_instal->buf = struc;
                     #ifdef _WIN32
@@ -228,19 +227,19 @@ int telechargement()
                     #endif
                 }
 
-                sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
+                sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
                 test = fopenR(temp, "r");
 
                 if(test == NULL && k) //k peut avoir a être > 1
                 {
-                    sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+                    sprintf(temp, "manga/%s/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName, CONFIGFILE);
                     test = fopenR(temp, "r");
                     if(test == NULL)
                     {
                         crashTemp(temp, TAILLE_BUFFER);
-                        sprintf(temp, "manga/%s", mangaDB.team->teamLong);
+                        sprintf(temp, "manga/%s", mangaDB[posVariable].team->teamLong);
                         mkdirR(temp);
-                        sprintf(temp, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
+                        sprintf(temp, "manga/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
                         mkdirR(temp);
                     }
                     else
@@ -248,27 +247,27 @@ int telechargement()
 
                     crashTemp(superTemp, 400);
                     /*Génération de l'URL*/
-                    if(!strcmp(mangaDB.team->type, TYPE_DEPOT_1))
+                    if(!strcmp(mangaDB[posVariable].team->type, TYPE_DEPOT_1))
                     {
-                        sprintf(superTemp, "http://dl-web.dropbox.com/u/%s/%s/infos.png", mangaDB.team->URL_depot, mangaLong);
+                        sprintf(superTemp, "http://dl-web.dropbox.com/u/%s/%s/infos.png", mangaDB[posVariable].team->URL_depot, mangaDB[posVariable].mangaName);
                     }
-                    else if (!strcmp(mangaDB.team->type, TYPE_DEPOT_2))
+                    else if (!strcmp(mangaDB[posVariable].team->type, TYPE_DEPOT_2))
                     {
-                        sprintf(superTemp, "http://%s/%s/infos.png", mangaDB.team->URL_depot, mangaLong);
+                        sprintf(superTemp, "http://%s/%s/infos.png", mangaDB[posVariable].team->URL_depot, mangaDB[posVariable].mangaName);
                     }
-                    else if(!strcmp(mangaDB.team->type, TYPE_DEPOT_3))
+                    else if(!strcmp(mangaDB[posVariable].team->type, TYPE_DEPOT_3))
                     {
-                        sprintf(superTemp, "http://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], mangaDB.team->teamLong, mangaDB.mangaName);
+                        sprintf(superTemp, "http://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
                     }
                     else
                     {
-                        sprintf(superTemp, "URL non gérée: %s\n", mangaDB.team->type);
+                        sprintf(superTemp, "URL non gérée: %s\n", mangaDB[posVariable].team->type);
                         logR(superTemp);
                         continue;
                     }
 
                     crashTemp(temp, TAILLE_BUFFER);
-                    sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
+                    sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
                     download(superTemp, temp, 0);
                 }
 
@@ -329,7 +328,7 @@ int telechargement()
         SDL_Event event;
         SDL_WaitEventTimeout(&event, 500);
     }
-    freeMangaData(mangaDB);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
 
     chargement();
     if(!glados)
@@ -344,7 +343,7 @@ void* installation(void* datas)
 #endif
 {
     int nouveauDossier = 0, extremes[2], erreurs = 0, dernierLu = 0, chapitre = 0;
-    char temp[TAILLE_BUFFER], mangaLong[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
+    char temp[TAILLE_BUFFER];
     FILE* ressources = NULL;
 
     nameWindow(status);
@@ -352,7 +351,7 @@ void* installation(void* datas)
     DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
 
     /*Récupération des valeurs envoyés*/
-    MANGAS_DATA* mangaDB = valeurs.mangaDB;
+    MANGAS_DATA mangaDB = valeurs->mangaDB;
     chapitre = valeurs->chapitre;
 
     /*Lecture du fichier*/
@@ -512,14 +511,11 @@ int interditWhileDL()
     return waitEnter();
 }
 
-int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDispoCourt[LONGUEUR_COURT], int chapitreChoisis, char teamsCourt[LONGUEUR_COURT])
+int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
 {
     FILE* fichier = NULL;
-    FILE* test = NULL;
-    char temp[TAILLE_BUFFER], teamLong[LONGUEUR_NOM_MANGA_MAX];
-    int dernierChap = 0, i = 0, j = 0, nombreChapitre = 0;
-
-    teamOfProject(mangaDispoLong, teamLong);
+    char temp[TAILLE_BUFFER];
+    int i = 0, nombreChapitre = 0;
 
     /*On ouvre le fichier d'import*/
     fichier = fopenR(INSTALL_DATABASE, "a+");
@@ -529,54 +525,20 @@ int ecritureDansImport(char mangaDispoLong[LONGUEUR_NOM_MANGA_MAX], char mangaDi
 		nombreChapitre = 1;
         /*On test l'existance du fichier (zipé ou dézipé)*/
         crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaDispoLong, chapitreChoisis, CONFIGFILE);
-        test = fopenR(temp, "r");
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.zip", teamLong, mangaDispoLong, chapitreChoisis);
-        if(test == NULL)
-        {
-            test = fopenR(temp, "r");
-            if(test == NULL)
-            {
-                fprintf(fichier, "\n%s %s %d", teamsCourt, mangaDispoCourt, chapitreChoisis);
-            }
-            else
-            {
-                fclose(test);
-            }
-        }
-        else
-            fclose(test);
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis, CONFIGFILE);
+        if(!checkFileExist(temp))
+            fprintf(fichier, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, chapitreChoisis);
     }
     else
     {
-        test = fopenR(MANGA_DATABASE, "r");
-        if(!positionnementApres(test, mangaDispoCourt))
-            return -1;
-        fscanfs(test, "%d %d", &j, &dernierChap);
-        fclose(test);
-        for(i = j; i <= dernierChap; i++)
+        for(i = mangaDB.firstChapter; i <= mangaDB.lastChapter; i++)
         {
-            crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangaDispoLong, i, CONFIGFILE);
-            test = fopenR(temp, "r");
-            crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.zip", teamLong, mangaDispoLong, i);
-            if(test == NULL)
+            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, i, CONFIGFILE);
+            if(!checkFileExist(temp))
             {
-                test = fopenR(temp, "r");
-                if(test == NULL)
-                {
-                    fprintf(fichier, "\n%s %s %d", teamsCourt, mangaDispoCourt, i);
-					nombreChapitre++;
-                }
-                else
-                {
-                    fclose(test);
-                }
+                fprintf(fichier, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, i);
+                nombreChapitre++;
             }
-            else
-                fclose(test);
         }
     }
     fclose(fichier);

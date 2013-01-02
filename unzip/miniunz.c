@@ -86,53 +86,53 @@ int mymkdir(const char* dirname)
 
 int makedir (char *newdir)
 {
-  char *buffer ;
-  char *p;
-  int  len = (int)strlen(newdir);
+    char *buffer ;
+    char *p;
+    int  len = (int)strlen(newdir);
 
-  if (len <= 0)
-    return 0;
+    if (len <= 0)
+        return 0;
 
-  buffer = (char*)malloc(len+1);
-        if (buffer==NULL)
-        {
-                logR("Error allocating memory\n");
-                return UNZ_INTERNALERROR;
-        }
-  strcpy(buffer,newdir);
-
-  if (buffer[len-1] == '/') {
-    buffer[len-1] = '\0';
-  }
-  if (mymkdir(buffer) == 0)
+    buffer = (char*)malloc(len+1);
+    if (buffer==NULL)
     {
-      free(buffer);
-      return 1;
+        logR("Error allocating memory\n");
+        return UNZ_INTERNALERROR;
+    }
+    strcpy(buffer,newdir);
+
+    if (buffer[len-1] == '/') {
+        buffer[len-1] = '\0';
+    }
+    if (mymkdir(buffer) == 0)
+    {
+        free(buffer);
+        return 1;
     }
 
-  p = buffer+1;
-  while (1)
+    p = buffer+1;
+    while (1)
     {
-      char hold;
+        char hold;
 
-      while(*p && *p != '\\' && *p != '/')
-        p++;
-      hold = *p;
-      *p = 0;
-      if ((mymkdir(buffer) == -1) && (errno == ENOENT))
+        while(*p && *p != '\\' && *p != '/')
+            p++;
+        hold = *p;
+        *p = 0;
+        if ((mymkdir(buffer) == -1) && (errno == ENOENT))
         {
-          logR("couldn't create directory");
-          logR(buffer);
-          logR("\n");
-          free(buffer);
-          return 0;
+            char temp[500];
+            snprintf(temp, 500, "Couldn't create directory: %s\n", buffer);
+            logR(temp);
+            free(buffer);
+            return 0;
         }
       if (hold == 0)
         break;
       *p++ = hold;
     }
-  free(buffer);
-  return 1;
+    free(buffer);
+    return 1;
 }
 
 void Display64BitsSize(ZPOS64_T n, int size_char)

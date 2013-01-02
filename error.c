@@ -9,12 +9,14 @@
 
 void logR(char *error)
 {
-    FILE* test = NULL;
-    test = fopenR("log", "a+");
-    if(test != NULL)
+    FILE* logFile = NULL;
+    logFile = fopenR("log", "a+");
+    if(logFile != NULL)
     {
-        fprintf(test, error);
-        fclose(test);
+        fprintf(logFile, error);
+        if(error[strlen(error)-1] != '\n')
+            fputc('\n', logFile);
+        fclose(logFile);
     }
 }
 

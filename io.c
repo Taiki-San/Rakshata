@@ -100,9 +100,9 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 
     if(police == NULL)
     {
-        logR("Failed at open the font file: ");
-        logR((char *) TTF_GetError());
-        logR("\n");
+        char temp[300];
+        snprintf(temp, 300, "Failed at open the font file: %s\n", TTF_GetError());
+        logR(temp);
         return -2;
     }
 

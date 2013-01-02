@@ -24,32 +24,20 @@ char COMPTE_PRINCIPAL_MAIL[100];
 SDL_Window* window = NULL;
 SDL_Renderer *renderer = NULL;
 
-/* This is where execution begins [windowed apps] */
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
+int main()
 {
-    int i = 0;
-    char *cmdline= GetCommandLine();
-
-    for(i = strlen(cmdline); i > 0 && cmdline[i] != ' '; cmdline[i--] = 0);
-    cmdline[i] = 0;
-
     /* Real start of Rakshata */
-
-    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     srand(time(NULL)); //Initialisation de l'aléatoire
-
-#ifdef __APPLE__
-	updateDirectory(cmdline); //Si OSX, on se déplace dans le dossier .app
-#endif
-
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
+	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
+	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
     {
-        logR("Failed at launch the SDL: ");
-        logR((char *) SDL_GetError());
-        logR("\n");
+        char temp[400];
+        snprintf(temp, 400, "Failed at launch the SDL: %s", SDL_GetError());
+        logR(temp);
         exit(EXIT_FAILURE);
     }
 
@@ -57,7 +45,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 
     if(TTF_Init())
     {
-        logR("Failed at launch SDL_TTF\n");
+        char temp[400];
+        snprintf(temp, 400, "Failed at launch the SDL_TTF: %s", TTF_GetError());
+        logR(temp);
         exit(EXIT_FAILURE);
     }
 

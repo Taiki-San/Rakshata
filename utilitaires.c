@@ -7,11 +7,6 @@
 
 #include "main.h"
 
-void crashTemp(void *temp, int longueur)
-{
-    memset(temp, 0, longueur);
-}
-
 void changeTo(char *string, int toFind, int toPut)
 {
     while(*string)
@@ -20,14 +15,6 @@ void changeTo(char *string, int toFind, int toPut)
             *string = toPut;
         string++;
     }
-}
-
-int plusOuMoins(int compare1, int compare2, int tolerance) //Estime si la différence entre les deux comparés est inférieur Ã  tolerance
-{
-    if(compare1 + tolerance > compare2 && compare1 - tolerance < compare2)
-        return 1;
-
-    return 0;
 }
 
 int compare(const void *a, const void *b)
@@ -231,14 +218,6 @@ void getResolution()
     RESOLUTION[0] = data.w;
     RESOLUTION[1] = data.h;
     HAUTEUR_MAX = RESOLUTION[1];
-}
-
-int isHexa(char caract)
-{
-    if((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))
-        return 1;
-
-    return 0;
 }
 
 void MajToMin(char* input)

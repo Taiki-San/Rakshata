@@ -24,10 +24,7 @@ void mainRakshata()
         SDL_FreeSurfaceS(icon);
     }
     else
-    {
         logR((char*)SDL_GetError());
-        logR("\n");
-    }
     nameWindow(0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -202,7 +199,7 @@ int mainLecture()
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else
-                            anythingNew(chapsExtreme, mangaDB[mangaChoisis].mangaName);
+                            anythingNew(chapsExtreme, mangaDB[mangaChoisis]);
                     }
                 }
             }
@@ -308,7 +305,7 @@ int mainChoixDL()
                             {
                                 /*Confirmation */
                                 SDL_RenderClear(renderer);
-                                continuer = ecritureDansImport(mangaDB[mangaChoisis].mangaName, mangaDB[mangaChoisis].mangaNameShort, chapitreChoisis, mangaDB[mangaChoisis].team->teamCourt);
+                                continuer = ecritureDansImport(mangaDB[mangaChoisis], chapitreChoisis);
 								nombreChapitre = nombreChapitre + continuer;
                                 continuer = -1;
                             }
