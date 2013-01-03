@@ -79,7 +79,7 @@ int ajoutRepo()
             crashTemp(teams.URL_depot, LONGUEUR_URL);
             /*On attend l'URL*/
             continuer = waitClavier(LONGUEUR_URL, 0, 0, teams.URL_depot);
-            SDL_RenderClear(renderer);
+            chargement();
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(teams.URL_depot))
@@ -308,7 +308,7 @@ int affichageRepoIconnue()
     if(texteAffiche != NULL)
     {
         position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
+        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2 * 3;
         position.h = texteAffiche->h;
         position.w = texteAffiche->w;
         SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
@@ -317,7 +317,7 @@ int affichageRepoIconnue()
         texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
 
         position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
+        position.y = WINDOW_SIZE_H / 2;
         position.h = texteAffiche->h;
         position.w = texteAffiche->w;
         SDL_RenderCopy(renderer, texteAffiche, NULL, &position);

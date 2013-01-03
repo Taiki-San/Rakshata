@@ -586,7 +586,7 @@ void DLmanager()
 
     //Chargement de la traduction
     loadTrad(texteTrad, 16);
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
     SDL_RenderClear(renderer);
     if(!error && !output)
     {
@@ -600,7 +600,7 @@ void DLmanager()
 
         texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
+        position.y = WINDOW_SIZE_H / 2 + texte->h / 2;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);

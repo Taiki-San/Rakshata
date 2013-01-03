@@ -231,15 +231,14 @@ int check_evt()
     sprintf(nomsATest[23], MANGA_DATABASE);
     sprintf(nomsATest[24], "data/secure.enc");
 
+    SDL_Delay(1000);
+
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
     {
-        test = fopenR(nomsATest[i], "r");
-        if(test != NULL)
-            fclose(test);
-        else
+        if(!checkFileExist(nomsATest[i]))
         {
-            if(!i)
+            if(i == 0)
                 cantwrite = 1;
             else
                 fichiersADL[j++] = i;
@@ -269,41 +268,36 @@ int check_evt()
 
         if(cantwrite) //Si police absente
         {
-            crashTemp(temp, 200);
             sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
             download(temp, nomsATest[0], 0);
         }
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-        SDL_RenderClear(renderer);
-        crashTemp(temp, 200);
-        sprintf(temp, "Environement corrompu, veuillez patienter (%d fichier(s)).", j);
-        message = TTF_Write(renderer, police, temp, couleur);
-        position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-        position.y = WINDOW_SIZE_H / 2 - message->h;
-        position.h = message->h;
-        position.w = message->w;
-        SDL_RenderCopy(renderer, message, NULL, &position);
-        SDL_DestroyTextureS(message);
-
-        crashTemp(temp, 200);
-        sprintf(temp, "Environment corrupted, please wait (%d file(s)).", j);
-        message = TTF_Write(renderer, police, temp, couleur);
-        position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-        position.y = WINDOW_SIZE_H / 2 + message->h;
-        position.h = message->h;
-        position.w = message->w;
-        SDL_RenderCopy(renderer, message, NULL, &position);
-        SDL_DestroyTextureS(message);
-
-        SDL_RenderPresent(renderer);
-
         for(i = 0; i < j; i++)
         {
-            if((test = fopenR(nomsATest[fichiersADL[i]], "r")) == NULL) //On confirme que le fichier est absent
+            if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
             {
-                crashTemp(temp, 200);
+                SDL_RenderClear(renderer);
+                sprintf(temp, "Environement corrompu, veuillez patienter (%d fichier(s)).", j-i);
+                message = TTF_Write(renderer, police, temp, couleur);
+                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                position.y = WINDOW_SIZE_H / 2 - message->h;
+                position.h = message->h;
+                position.w = message->w;
+                SDL_RenderCopy(renderer, message, NULL, &position);
+                SDL_DestroyTextureS(message);
+
+                sprintf(temp, "Environment corrupted, please wait (%d file(s)).", j-i);
+                message = TTF_Write(renderer, police, temp, couleur);
+                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                position.y = WINDOW_SIZE_H / 2 + message->h;
+                position.h = message->h;
+                position.w = message->w;
+                SDL_RenderCopy(renderer, message, NULL, &position);
+                SDL_DestroyTextureS(message);
+                SDL_RenderPresent(renderer);
+
                 sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
                 download(temp, nomsATest[fichiersADL[i]], 0);
 
@@ -333,7 +327,7 @@ int check_evt()
                     free(buffer);
                 }
 
-                if(fichiersADL[i] == 18) //Si c'est l'icone
+                if(fichiersADL[i] == 21) //Si c'est l'icone
                 {
                     SDL_Surface *icon = IMG_Load("data/icone.png");
                     if(icon != NULL)
@@ -343,8 +337,6 @@ int check_evt()
                     }
                 }
             }
-            else
-                fclose(test);
         }
         nameWindow(0);
     }
@@ -750,7 +742,7 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
         return 0;
 
     while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
-        i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX, &j, &chapitre_new);
+        i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
     if(chapitre_new > chapitre)
         return chapitre_new;
     return 0;
