@@ -28,8 +28,6 @@ void mainRakshata()
         SDL_SetWindowIcon(window, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
-    else
-        logR((char*)SDL_GetError());
     nameWindow(0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

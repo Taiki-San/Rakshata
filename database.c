@@ -314,9 +314,8 @@ void update_repo()
 		get_update_repo(bufferDL, &infosTeam);
 
 		if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(infosTeam.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") ||
-																											  !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") ||
-																											  !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
-		{
+                                                            !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
+        {
 			sprintf(bufferDL, "%s %s %s %s %s %s", infosTeam.IDTeam, infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site);
 			for(i = 0; positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && bufferDL[i]; repo_new[positionDansBuffer++] = bufferDL[i++]);
 		}
@@ -374,8 +373,7 @@ void update_mangas()
 		setupBufferDL(bufferDL, 100, 100, 10, 1);
 		get_update_mangas(bufferDL, &teams);
 		if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") ||
-																											  !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") ||
-																											  !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
+                                                            !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
 		{
 			FILE* mangas = fopenR(MANGA_DATABASE, "r");
 			if(positionnementApres(mangas, teams.teamLong))
