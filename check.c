@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -249,8 +254,8 @@ int check_evt()
         SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
         TTF_Font *police = NULL;
 
-		while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
-            SDL_Delay(10);
+		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+            SDL_Delay(50);
 
         mkdirR("data");
         mkdirR("data/english");
@@ -464,7 +469,10 @@ void networkAndVersionTest()
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int i = 0, hostNotReached = 0;
     char temp[TAILLE_BUFFER], bufferDL[5] = {0, 5, 1, 1, 1};
+
+    MUTEX_LOCK;
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
+    MUTEX_UNLOCK;
 
     /*Chargement de l'URL*/
     sprintf(temp, "http://www.%s/System/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
@@ -472,8 +480,8 @@ void networkAndVersionTest()
     if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
-    /*Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
-    Si ce n'est pas le cas, il y a un probléme avec le serveur*/
+    /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
+        Si ce n'est pas le cas, il y a un probléme avec le serveur  */
 
     if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
     {
@@ -484,17 +492,19 @@ void networkAndVersionTest()
         setupBufferDL(bufferDL, 5, 1, 1, 1);
         if(download(MAIN_SERVER_URL[1], bufferDL, 2) == -6) //On fais un test avec google.com
             hostNotReached++;
-
+        MUTEX_LOCK;
         if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
+        MUTEX_UNLOCK;
     }
 
     else
     {
-
+        MUTEX_LOCK;
         NETWORK_ACCESS = CONNEXION_OK;
+        MUTEX_UNLOCK;
         if(bufferDL[0] == '1' && !checkFileExist("update/update") && !checkFileExist("update/apply")) //Update needed
         {
 			int j = 0, k = 0;
@@ -705,7 +715,9 @@ void checkHostNonModifie()
                 {
                     fclose(host);
                     logR("Violation détecté: redirection dans host\n");
+                    MUTEX_LOCK;
                     NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
+                    MUTEX_UNLOCK;
                     break; //On quitte la boucle en while
                 }
             }
@@ -713,37 +725,32 @@ void checkHostNonModifie()
     }
 }
 
-int clicNotSlide(SDL_Event event)
-{
-    if(event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEBUTTONDOWN)
-    {
-        if(event.type != SDL_MOUSEWHEEL)
-            return 1;
-    }
-    return 0;
-}
-
 int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
 {
     int i = 0, j = 0, chapitre_new = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], teamCourt[LONGUEUR_COURT];
 
+    MUTEX_LOCK;
     if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+    {
+        MUTEX_UNLOCK;
         return 0;
+    }
+    MUTEX_UNLOCK;
 
     setupBufferDL(bufferDL, 100, 100, 10, 1);
     get_update_mangas(bufferDL, mangasDB.team);
 
     if(bufferDL[i]) //On a DL quelque chose
-        i += sscanfs(&bufferDL[i], "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
+        i += sscanfs(&bufferDL[i], "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
     else
         return 0;
 
     if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
         return 0;
 
-    while(bufferDL[i] && strcmp(mangasDB.mangaName, temp))
-        i += sscanfs(&bufferDL[i], "%s %s %d %d %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX, &j, &chapitre_new, &j, &j);
+    while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
+        i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX, &j, &chapitre_new);
     if(chapitre_new > chapitre)
         return chapitre_new;
     return 0;
@@ -839,6 +846,18 @@ int checkWindowEventValid(int EventWindowEvent)
             return 1;
             break;
     }
+    return 0;
+}
+
+int checkNetworkState(int state)
+{
+    MUTEX_LOCK;
+    if(NETWORK_ACCESS == state)
+    {
+        MUTEX_UNLOCK;
+        return 1;
+    }
+    MUTEX_UNLOCK;
     return 0;
 }
 

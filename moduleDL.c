@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -50,10 +55,10 @@ int telechargement()
     CURRENT_TOKEN = 0;
 
 
-    while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
-        SDL_Delay(10);
+    while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+        SDL_Delay(100);
 
-    if(NETWORK_ACCESS == CONNEXION_DOWN)
+    if(checkNetworkState(CONNEXION_DOWN))
         quit_thread(0);
 
     police_big = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -93,8 +98,8 @@ int telechargement()
         fclose(fichier);
         do
         {
-            for(posVariable = 0; posVariable < NOMBRE_MANGA_MAX && strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && strcmp(mangaDB[posVariable].team->teamCourt, teamCourt); posVariable++);
-            if(posVariable < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && strcmp(mangaDB[posVariable].team->teamCourt, teamCourt))
+            for(posVariable = 0; posVariable < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) || strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)); posVariable++);
+            if(posVariable < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posVariable].team->teamCourt, teamCourt))
             {
                 /*Ouverture du site de la team*/
                 for(i = 0; i < 1000 && strcmp(mangaDB[posVariable].team->teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);

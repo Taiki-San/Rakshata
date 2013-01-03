@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 typedef struct argmt
 {
@@ -52,8 +57,14 @@ typedef struct data_pour_installation
 
 typedef unsigned char uint8_t;
 
-#ifndef _WIN32
+#ifdef _WIN32
 
+    #define MUTEX_VAR HANDLE
+    #define MUTEX_DEFAULT_VALUE CreateMutex(NULL, FALSE, NULL)
+    #define MUTEX_LOCK WaitForSingleObject(mutex, INFINITE);
+    #define MUTEX_UNLOCK ReleaseMutex(mutex);
+
+#else
     /**UNIX only**/
     #define handle_error_en(en, msg) \
        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -66,4 +77,10 @@ typedef unsigned char uint8_t;
     int       thread_num;       /* Application-defined thread # */
     char     *argv_string;      /* From command-line argument */
     };
+
+    #define MUTEX_VAR pthread_mutex_t
+    #define MUTEX_DEFAULT_VALUE PTHREAD_MUTEX_INITIALIZER
+    #define MUTEX_LOCK pthread_mutex_lock(mutex);
+    #define MUTEX_UNLOCK pthread_mutex_unlock(mutex);
+
 #endif

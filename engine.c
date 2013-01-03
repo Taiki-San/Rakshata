@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -380,21 +385,25 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         mangaChoisis = i * -1;
 
                 }
+                break;
             }
 
             case SDL_MOUSEBUTTONUP:
             {
-                if(!clicNotSlide(event))
-                    break;
-
                 if(event.button.y > hauteurChapitre && event.button.y < hauteurChapitre + LARGEUR_MOYENNE_MANGA_PETIT)
                     i = 0;
 
                 else
                     for(i = 0; (((hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i) > event.button.y || (hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i + LARGEUR_MOYENNE_MANGA_PETIT) < event.button.y) && i < NOMBRE_MANGA_MAX); i++);
 
+                if(i != 500 && tailleTexte[i * NBRCOLONNES_TRI] != 0 && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
+                {
+                    /*Nombre Colonne*/
+                    for(buffer = 0; ((BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer) > event.button.x || (BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer + LONGUEURMANGA) < event.button.x) && buffer < NBRCOLONNES_TRI; buffer++);
+                    mangaChoisis = buffer * 100 + (i + 1);
+                }
                 /*Si appuis sur un bouton pour changer de page*/
-                if(event.button.y >= HAUTEUR_BOUTONS_CHANGEMENT_PAGE && event.button.y <= HAUTEUR_BOUTONS_CHANGEMENT_PAGE + LARGEUR_MOYENNE_MANGA_PETIT)
+                else if(event.button.y >= HAUTEUR_BOUTONS_CHANGEMENT_PAGE && event.button.y <= HAUTEUR_BOUTONS_CHANGEMENT_PAGE + LARGEUR_MOYENNE_MANGA_PETIT)
                 {
                     if(event.button.x > BORDURE_LAT_LECTURE && event.button.x < BORDURE_LAT_LECTURE + LONGUEUR_PRECENDENT) //Précédent
                     {
@@ -405,14 +414,6 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                     {
                         mangaChoisis = -6; // Page Suivante
                     }
-                }
-
-                /*Si on choisis un chapitre*/
-                else if(i != 500 && tailleTexte[i * NBRCOLONNES_TRI] != 0)
-                {
-                    /*Nombre Colonne*/
-                    for(buffer = 0; ((BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer) > event.button.x || (BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer + LONGUEURMANGA) < event.button.x) && buffer < NBRCOLONNES_TRI; buffer++);
-                    mangaChoisis = buffer * 100 + (i + 1);
                 }
 
                 /*Clic sur les boutons de DL*/
@@ -605,7 +606,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
         if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
             *mangaChoisis = *mangaChoisis + MANGAPARPAGE_TRI * (*pageSelection - 1);
         else
-            *mangaChoisis = (*mangaChoisis + PALIER_QUIT) * -1; //Pour pouvoir contourner les code de retour
+            *mangaChoisis = *mangaChoisis * -1 + PALIER_QUIT; //Pour pouvoir contourner les code de retour
     }
 
     else if(*mangaChoisis > 0 && manuel == 2) //Bandeau de contrôle

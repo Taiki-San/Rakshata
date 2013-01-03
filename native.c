@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include <stdarg.h>
 #include "main.h"
@@ -446,9 +451,7 @@ int lancementExternalBinary(char cheminDAcces[100])
     for(i = 0; i < 250 && REPERTOIREEXECUTION[i] != 0; i++)
     {
         if(REPERTOIREEXECUTION[i] == '\\')
-        {
             temp[j++] = '\\';
-        }
         temp[j++] = REPERTOIREEXECUTION[i];
     }
     sprintf(superTemp, "\"%s\\\\%s\"", temp, cheminDAcces);

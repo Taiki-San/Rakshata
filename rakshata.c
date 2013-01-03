@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -23,6 +28,7 @@ char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german
 char COMPTE_PRINCIPAL_MAIL[100];
 SDL_Window* window = NULL;
 SDL_Renderer *renderer = NULL;
+MUTEX_VAR mutex;
 
 int main()
 {
@@ -31,6 +37,7 @@ int main()
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
 	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+	mutex = MUTEX_DEFAULT_VALUE;
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 /**Affichage.c**/
 int showError();
@@ -31,7 +36,6 @@ int checkRestoreAvailable();
 int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker);
 int checkNameFileZip(char fileToTest[256]);
 void checkHostNonModifie();
-int clicNotSlide(SDL_Event event);
 int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre);
 int checkFileExist(char filename[]);
 int checkButtonPressed(int button_selected[6]);
@@ -41,6 +45,7 @@ int checkFileValide(FILE* file);
 int checkChapitreUnread(MANGAS_DATA mangasDB);
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis);
 int checkWindowEventValid(int EventWindowEvent);
+int checkNetworkState(int state);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -83,8 +88,8 @@ void checkSectionMessageUpdate();
 int nombreEntree(SDL_Event event);
 int waitEnter();
 int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour);
-int getLetterPushed(SDL_Event event);
-int checkIfNumber (int c);
+#define getLetterPushed(event) (event.text.text[0] >= 'A' && event.text.text[0] <= 'z')?event.text.text[0]:0
+#define checkIfNumber(c) (c >= '0' && c <= '9')?1:0
 
 /**Keys.c**/
 int createSecurePasswordDB(unsigned char *key_sent);
@@ -95,7 +100,7 @@ int logon();
 int check_login(char adresseEmail[100]);
 int checkPass(char adresseEmail[100], char password[100], int login);
 int sendPassToServ(unsigned char key[HASH_LENGTH]);
-void recoverPassToServ(unsigned char key[HASH_LENGTH], int mode);
+void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
 
 /**Lecteur.c**/
 int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen);
@@ -203,7 +208,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, int toFind, int toPut);
-#define plusOuMoins(compare1, compare2, tolerance) (compare1 + tolerance > compare2 && compare1 - tolerance < compare2)?1:0
+int plusOuMoins(int compare1, int compare2, int tolerance);
 int compare(const void *a, const void *b);
 void restartEcran();
 void chargement();

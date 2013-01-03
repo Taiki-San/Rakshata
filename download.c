@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**  	  confidentiel, distribution	    **
-**  	    formellement interdite	        **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -11,6 +16,7 @@ static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
+static int status;
 static int alright;
 static int hostReached;
 static void *internalBuffer;
@@ -35,17 +41,17 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 
 int download(char *adresse, char *repertoire, int activation)
 {
-    int status = 1, pourcent = 0, last_refresh = 0;
+    int pourcent = 0, last_refresh = 0;
     char temp[TAILLE_BUFFER];
     char *output = NULL;
     SDL_Rect position;
 	ARGUMENT* envoi = malloc(sizeof(ARGUMENT));
 
-    if(NETWORK_ACCESS == CONNEXION_DOWN)
+    if(checkNetworkState(CONNEXION_DOWN))
         return 0;
 
     FILE_EXPECTED_SIZE = size_buffer = 0;
-    alright = hostReached = 1;
+    status = alright = hostReached = 1;
     internalBuffer = NULL;
 
     if(activation == 1)
@@ -53,11 +59,12 @@ int download(char *adresse, char *repertoire, int activation)
     else
         CURRENT_FILE_SIZE = 0;
 
-    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && activation != 2) //Bypass la sécurité lors du test de connexion
+    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS) && activation != 2) //Bypass la sécurité lors du test de connexion
     {
-        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
-            SDL_Delay(25);
-        if(NETWORK_ACCESS == CONNEXION_DOWN)
+        while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+            SDL_Delay(50);
+
+        if(checkNetworkState(CONNEXION_DOWN))
             return -1;
     }
     else if(activation == 2)
@@ -125,8 +132,13 @@ int download(char *adresse, char *repertoire, int activation)
 
         while(1)
         {
+            MUTEX_LOCK;
             if(status == 0)
+            {
+                MUTEX_UNLOCK;
                 break;
+            }
+            MUTEX_UNLOCK;
             if(FILE_EXPECTED_SIZE > 0 && alright > 0)
             {
                 if(SDL_GetTicks() - last_refresh >= 500)
@@ -171,8 +183,6 @@ int download(char *adresse, char *repertoire, int activation)
                     alright = -1;
                     break;
                 }
-                else if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_NONE)
-                    status = 0;
             }
             else
                 SDL_Delay(25);
@@ -218,18 +228,16 @@ int download(char *adresse, char *repertoire, int activation)
                     event.type = 0;
                     break;
 
-                case SDL_WINDOWEVENT:
-                    if(event.window.event == SDL_WINDOWEVENT_NONE)
-                        status = 0;
-                    break;
-
                 default:
-                    SDL_Delay(20);
+                    SDL_Delay(50);
                     break;
             }
+            MUTEX_LOCK;
             if(status == 0)
                 break;
+            MUTEX_UNLOCK;
         }
+        MUTEX_UNLOCK;
     }
 
     if(activation == 1 && internalBuffer != NULL)
@@ -248,9 +256,10 @@ int download(char *adresse, char *repertoire, int activation)
     if(output != NULL)
         free(output);
 
-    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS && hostReached == 0) //Si on a pas réussi à ce connecter au serveur distant
+    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS) && hostReached == 0) //Si on a pas réussi à ce connecter au serveur distant
         return -6;
-    else if(!alright)
+
+    if(!alright)
         return alright;
     return POSITION_DANS_BUFFER;
 }
@@ -375,10 +384,9 @@ static void* downloader(void* envoi)
         renameR(temp, valeurs->repertoireEcriture);
     }
 
-    SDL_Event quitEvent;
-    quitEvent.type = SDL_WINDOWEVENT;
-    quitEvent.window.event = SDL_WINDOWEVENT_NONE;
-    SDL_PushEvent(&quitEvent);
+    MUTEX_LOCK;
+    status = 0;
+    MUTEX_UNLOCK;
 
     free(valeurs);
 

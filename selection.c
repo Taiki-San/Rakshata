@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -173,8 +178,6 @@ int section()
 
             case SDL_MOUSEBUTTONUP:
             {
-                if(!clicNotSlide(event))
-                    break;
                 //Définis la hauteur du clic par rapport à notre liste
                 for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION + hauteurTexte) < event.button.y) && i < NOMBRESECTION/2 + 1; i++);
 
@@ -374,12 +377,9 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
                     sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, end);
                     removeFolder(temp);
                 }
-                do
-                {
-                    end--;
-                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, end, CONFIGFILE);
-                }while(!checkFileExist(temp) && first <= end);
 
+                for(; !checkFileExist(temp) && first <= end; end--)
+                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, end, CONFIGFILE);
             }
             mangaDB.lastChapter = end;
 
@@ -616,7 +616,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
                 }
 
                 else if(chapitreChoisis < PALIER_QUIT) //Numéro entré manuellement
-                    chapitreChoisis = (chapitreChoisis + PALIER_QUIT) * -1;
+                    chapitreChoisis = chapitreChoisis * -1 + PALIER_QUIT;
 
                 if(k && chapitreChoisis > -1)
                     chapitreChoisis--;

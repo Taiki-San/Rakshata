@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -229,19 +234,4 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
     TTF_CloseFont(police);
     return 0;
 }
-
-int getLetterPushed(SDL_Event event)
-{
-    if(event.text.text[0] >= 'A' && event.text.text[0] <= 'z')
-        return event.text.text[0];
-    return 0;
-}
-
-int checkIfNumber (int c)
-{
-    if(c >= '0' && c <= '9')
-        return 1;
-    return 0;
-}
-
 

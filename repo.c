@@ -1,19 +1,24 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propri»taire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriÈtaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
 int defineTypeRepo(char *URL)
 {
     int i = 0;
-    if(URL[8] == 0) //SI DB, seulement 8 chiffres
+    if(strlen(URL) == 8) //SI DB, seulement 8 chiffres
     {
-        for(i = 7; i > 0 && URL[i] <= '9' && URL[i] >= '0'; i--);
-        if(i == 0) //Si que des chiffres
+        for(i = 7; i >= 0 && URL[i] <= '9' && URL[i] >= '0'; i--);
+        if(i < 0) //Si que des chiffres
             return 1; //DB
     }
     if(strlen(URL) == 5) //GOO.GL
@@ -23,14 +28,14 @@ int defineTypeRepo(char *URL)
 
 int ajoutRepo()
 {
-    int i = 0, j = 0, continuer = 0, existant = 0, erreur = 0;
-    char teamLong[LONGUEUR_NOM_MANGA_MAX], teamCourt[LONGUEUR_COURT], mode[5], URL[LONGUEUR_URL], ID[LONGUEUR_ID_TEAM], temp[TAILLE_BUFFER];
-    char site[LONGUEUR_SITE], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
+    int continuer = 0, existant = 0, erreur = 0;
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
 	FILE* test = NULL;
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_NEW_B};
+    TEAMS_DATA teams;
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
@@ -48,7 +53,7 @@ int ajoutRepo()
     SDL_RenderCopy(renderer, texte, NULL, &position);
     SDL_DestroyTextureS(texte);
     SDL_RenderPresent(renderer);
-    if(NETWORK_ACCESS != CONNEXION_DOWN)
+    if(!checkNetworkState(CONNEXION_DOWN))
     {
         crashTemp(temp, TAILLE_BUFFER);
         /*Lecture du fichier*/
@@ -71,24 +76,24 @@ int ajoutRepo()
             SDL_DestroyTextureS(texte);
             SDL_RenderPresent(renderer);
 
-            crashTemp(URL, LONGUEUR_URL);
+            crashTemp(teams.URL_depot, LONGUEUR_URL);
             /*On attend l'URL*/
-            continuer = waitClavier(LONGUEUR_URL, 0, 0, URL);
+            continuer = waitClavier(LONGUEUR_URL, 0, 0, teams.URL_depot);
             SDL_RenderClear(renderer);
 
             /*Si que des chiffres, DB, sinon, O*/
-            switch(defineTypeRepo(URL))
+            switch(defineTypeRepo(teams.URL_depot))
             {
                 case 1:
-                    ustrcpy(mode, TYPE_DEPOT_1); //Dropbox
+                    ustrcpy(teams.type, TYPE_DEPOT_1); //Dropbox
                     break;
 
                 case 2:
-                    ustrcpy(mode, TYPE_DEPOT_2); //Other
+                    ustrcpy(teams.type, TYPE_DEPOT_2); //Other
                     break;
 
                 case 3: //Goo.gl
-                    ustrcpy(mode, TYPE_DEPOT_4);
+                    ustrcpy(teams.type, TYPE_DEPOT_4);
                     break;
                 }
 
@@ -96,42 +101,22 @@ int ajoutRepo()
             {
                 char bufferDL[1000];
                 setupBufferDL(bufferDL, 100, 10, 1, 1);
-                if(!strcmp(mode, TYPE_DEPOT_1))
-                    sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-repo-1", URL);
+                if(!strcmp(teams.type, TYPE_DEPOT_1))
+                    sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-repo-1", teams.URL_depot);
 
-                else if(!strcmp(mode, TYPE_DEPOT_2))
-                    sprintf(temp, "http://%s/rakshata-repo-1", URL);
+                else if(!strcmp(teams.type, TYPE_DEPOT_2))
+                    sprintf(temp, "http://%s/rakshata-repo-1", teams.URL_depot);
 
-                else if(!strcmp(mode, TYPE_DEPOT_4))
-                    sprintf(temp, "http://goo.gl/%s", URL);
+                else if(!strcmp(teams.type, TYPE_DEPOT_4))
+                    sprintf(temp, "http://goo.gl/%s", teams.URL_depot);
 
                 download(temp, bufferDL, 0);
-                for(i = 0; i < 5; i++)
-                {
-                    if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<')
-                        erreur = 1;
-                }
-                if(!erreur && bufferDL[i])
-                {
-                    //Si on pointe sur un vrai dÈpÙt
-                    crashTemp(ID, LONGUEUR_ID_TEAM);
-                    crashTemp(teamLong, LONGUEUR_NOM_MANGA_MAX);
-                    crashTemp(teamCourt, LONGUEUR_COURT);
-                    crashTemp(mode, 5);
-                    crashTemp(URL, LONGUEUR_URL);
-                    crashTemp(site, LONGUEUR_SITE);
-                    sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teamLong, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, mode, 5, URL, LONGUEUR_URL, site, LONGUEUR_SITE);
-                }
-                else
-                {
-                    erreur = 1;
-                    continuer = affichageRepoIconnue();
-                    if(continuer >= -3)
-                        continuer = -1;
-                }
+                for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
 
-                if(!erreur)
+                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dÈpÙt
                 {
+                    sscanfs(bufferDL, "%s %s %s %s %s %s", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+
                     /*Redimension de la fenÍtre*/
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
@@ -155,8 +140,9 @@ int ajoutRepo()
                     SDL_DestroyTextureS(texte);
 
                     /*On affiche les infos*/
-                    crashTemp(temp, TAILLE_BUFFER);
-                    sprintf(temp, "Team: %s", teamLong);
+                    changeTo(teams.teamLong, '_', ' ');
+                    sprintf(temp, "Team: %s", teams.teamLong);
+                    changeTo(teams.teamLong, ' ', '_');
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = HAUTEUR_ID_AJOUT_REPO;
@@ -166,23 +152,7 @@ int ajoutRepo()
                     SDL_DestroyTextureS(texte);
                     crashTemp(temp, TAILLE_BUFFER);
 
-                    /*On transforme les '_' en ' '*/
-                    for(j = 0; j < LONGUEUR_NOM_MANGA_MAX; j++)
-                    {
-                        if(teamLong[j] == '_')
-                            teamLong[j] = ' ';
-                    }
-
-                    sprintf(temp, "Site: %s", site);
-
-                    /*On transforme les '_' en ' '*/
-                    for(j = 0; j < LONGUEUR_NOM_MANGA_MAX; j++)
-                    {
-                        if(teamLong[j] == ' ')
-                            teamLong[j] = '_';
-                    }
-
-
+                    sprintf(temp, "Site: %s", teams.site);
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = HAUTEUR_TEAM_AJOUT_REPO;
@@ -198,18 +168,26 @@ int ajoutRepo()
                         existant = 0;
                         while(fgetc(test) != EOF)
                         {
-                            fscanfs(test, "%s\n", temp, 100);
-                            if(!strcmp(temp, ID))
+                            fscanfs(test, "%s\n", temp, LONGUEUR_ID_TEAM);
+                            if(!strcmp(temp, teams.IDTeam))
                                 existant = 1;
                         }
                         if(temp[0]) //Si le fichier n'est pas vide, qu'on a lu quelquechose
                             fputc('\n', test);
                         if(existant == 0)
-                            fprintf(test, "%s %s %s %s %s %s", ID, teamLong, teamCourt, mode, URL, site);
+                            fprintf(test, "%s %s %s %s %s %s", teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site);
 
                         fclose(test);
                         continuer = -1;
                     }
+                }
+
+                else
+                {
+                    erreur = 1;
+                    continuer = affichageRepoIconnue();
+                    if(continuer >= -3)
+                        continuer = -1;
                 }
             }
         }

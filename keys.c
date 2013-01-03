@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**  	  confidentiel, distribution	    **
-**  	    formellement interdite	        **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "AES.h"
 #include "main.h"
@@ -123,8 +128,7 @@ int getMasterKey(unsigned char *input)
         unsigned char key[HASH_LENGTH];
         free(output);
         recoverPassToServ(key, 0);
-        memcpy(input, key, HASH_LENGTH);
-
+        memcpy(input, key, SHA256_DIGEST_LENGTH);
         createSecurePasswordDB(input);
         crashTemp(key, HASH_LENGTH);
     }
@@ -419,13 +423,13 @@ int logon()
         resized = 1;
     }
 
-    if(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
         chargement();
-        while(NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
-            SDL_Delay(10);
+        while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+            SDL_Delay(50);
     }
-    if(NETWORK_ACCESS != CONNEXION_OK)
+    if(!checkNetworkState(CONNEXION_OK))
     {
         connexionNeededToAllowANewComputer();
         return PALIER_QUIT;
@@ -801,7 +805,7 @@ int sendPassToServ(unsigned char key[SHA256_DIGEST_LENGTH])
 
 void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
 {
-    if(NETWORK_ACCESS != CONNEXION_OK)
+    if(!checkNetworkState(CONNEXION_OK))
         return;
 
     int i = 0;

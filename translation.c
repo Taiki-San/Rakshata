@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -201,9 +206,6 @@ int changementLangue()
 
             case SDL_MOUSEBUTTONUP:
             {
-                if(!clicNotSlide(event))
-                    break;
-
                 for(i = 0;( ( ( (hauteurTexte + INTERLIGNE_LANGUE) * i + HAUTEUR_TEXTE_LANGUE) > event.button.y) || ((hauteurTexte + INTERLIGNE_LANGUE) * i + hauteurTexte + HAUTEUR_TEXTE_LANGUE) < event.button.y) && i < NOMBRE_LANGUE; i++);
 
                 if(i > NOMBRE_LANGUE)

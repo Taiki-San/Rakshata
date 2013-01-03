@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "AES.h"
 #include "main.h"
@@ -39,7 +44,8 @@ int AESEncrypt(void *_password, void *_path_input, void *_path_output, int crypt
             else
             {
 				size_t sizeOfFile = 0;
-                output = fopen((char *) path_output, "a"); //C'était fopenR mais vu qu'on utilise fopen un tout petit peu plus loin...
+                output = fopen((char *) path_output, "r"); //C'était fopenR mais vu qu'on utilise fopen un tout petit peu plus loin...
+                fseek(output, 0, SEEK_END);
                 sizeOfFile = ftell(output);
                 if(sizeOfFile)
                 {
@@ -251,30 +257,33 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     pbkdf2(temp, numChapitreChar, hash);
 
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-    if((configEnc[0] < '0' || configEnc[0] > '9') && NETWORK_ACCESS == CONNEXION_OK)
+    if((configEnc[0] < '0' || configEnc[0] > '9'))
     {
-        recoverPassToServ(temp, numeroChapitre);
-        AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-        if(configEnc[0] >= '0' && configEnc[0] <= '9')
-            AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
-        else
+        if(checkNetworkState(CONNEXION_OK))
         {
-            free(configEnc);
-            logR("Huge fail: database corrupted\n");
-            return NULL;
+            recoverPassToServ(temp, numeroChapitre);
+            AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
+            if(configEnc[0] >= '0' && configEnc[0] <= '9')
+                AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
+            else
+            {
+                free(configEnc);
+                logR("Huge fail: database corrupted\n");
+                return NULL;
+            }
         }
-    }
-    else if(NETWORK_ACCESS != CONNEXION_OK)
-    {
-        SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-        TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-        if(police == NULL)
-            return NULL;
         else
         {
-            SDL_Surface *output = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
-            TTF_CloseFont(police);
-            return output;
+            SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+            TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+            if(police == NULL)
+                return NULL;
+            else
+            {
+                SDL_Surface *output = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
+                TTF_CloseFont(police);
+                return output;
+            }
         }
     }
     crashTemp(temp, 200);
@@ -320,9 +329,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     AESDecrypt(key, path, buf_page, MODE_RAK);
 
 #ifdef VERBOSE_DECRYPT
-    AESDecrypt(key, path, "test.png", EVERYTHING_IN_HDD);
+    AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
 
-    FILE *newFile = fopen("test.jpg", "wb");
+    FILE *newFile = fopen("buffer.png", "wb");
 	fwrite(buf_page, 1, size, newFile);
 	fclose(newFile);
 #endif
@@ -533,7 +542,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
 	for(i = 0; i < NUMBER_MAX_TEAM_KILLSWITCHE; i++)
         for(j=0; j < 100; killswitch_string[i][j++] = 0);
 
-    if(NETWORK_ACCESS != CONNEXION_OK)
+    if(!checkNetworkState(CONNEXION_OK))
         return;
 
     sprintf(temp, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
@@ -558,7 +567,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], char ID_To_Test[LONGUEUR_ID_TEAM])
 {
     int i = 0;
-    if(NETWORK_ACCESS != CONNEXION_OK)
+    if(!checkNetworkState(CONNEXION_OK))
         return 0;
 
     for(; strcmp(killswitch_string[i], ID_To_Test) && i < NUMBER_MAX_TEAM_KILLSWITCHE && killswitch_string[i][0]; i++);

@@ -1,9 +1,15 @@
-/*********************************************
-**               Rakshata v1.1              **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
+
 #include "main.h"
 
 int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
@@ -220,7 +226,6 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
             sprintf(temp, "Page non-existant: Team: %s - Manga: %s - Chapitre: %d - Nom Page: %s\n", mangaDB.team->teamLong, mangaDB.mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture]);
             logR(temp);
 
-            i = showError();
             SDL_FreeSurface(chapitre);
             SDL_DestroyTextureS(chapitre_texture);
             if(pageEnCoursDeLecture > 0)
@@ -229,6 +234,7 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                 SDL_FreeSurface(NChapitre);
             SDL_DestroyTextureS(infoSurface);
             SDL_DestroyTextureS(bandeauControle);
+            i = showError();
             if(i > -3)
                 return -2;
             else
@@ -431,7 +437,7 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
             else
                 noRefresh = 0;
 
-            if(!pageCharge && (!encrypted || NETWORK_ACCESS == CONNEXION_OK)) //Bufferisation
+            if(!pageCharge && (!encrypted || checkNetworkState(CONNEXION_OK))) //Bufferisation
             {
                 if(changementPage == 1)
                 {
@@ -501,7 +507,6 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                         tempsDebutExplication = 0;
                         if(nouveauChapitreATelecharger == 2)
                             nouveauChapitreATelecharger = 1;
-                        break;
                     }
 
                     else if (event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
@@ -633,33 +638,8 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                     }
 
                     else
-                    {
-                        if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
-                        {
-                            //Clic détécté: on cherche de quel côté
-                            if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
-                            {
-                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
-                                if (check4change == -1)
-                                {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                                    return 0;
-                                }
-                            }
-
-                            else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
-                            {
-                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
-                                if (check4change == -1)
-                                {
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                                    return 0;
-                                }
-                            }
-                        }
-                        else
-                            pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
-                    }
+                        pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
+                    break;
                 }
 
                 case SDL_MOUSEBUTTONDOWN:
@@ -718,11 +698,8 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
 
                                 case SDL_MOUSEBUTTONUP:
                                 {
-                                    if(!clicNotSlide(event))
-                                        break;
-
-                                    deplacementEnCours = 0;
                                     /*Si on a pas bougé la souris, on change de page*/
+                                    deplacementEnCours = 0;
                                     if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
                                     {
                                         //Clic détécté: on cherche de quel côté

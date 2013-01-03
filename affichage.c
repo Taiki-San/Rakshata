@@ -1,9 +1,14 @@
-/*********************************************
-**	        	 Rakshata v1.1 		        **
-**     Licence propriétaire, code source    **
-**        confidentiel, distribution        **
-**          formellement interdite          **
-**********************************************/
+/*********************************************************************************************
+**      __________         __           .__            __                ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/           **
+**                                                                                          **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**                                                                                          **
+*********************************************************************************************/
 
 #include "main.h"
 
@@ -212,8 +217,6 @@ int affichageMenuGestion()
 
             case SDL_MOUSEBUTTONUP:
             {
-                if(!clicNotSlide(event))
-                    break;
                 //Définis la hauteur du clic par rapport à notre liste
                 for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX + hauteurTexte) < event.button.y) && i < NOMBRE_MENU_GESTION/2 + 1; i++);
 
