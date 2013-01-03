@@ -49,6 +49,7 @@ MANGAS_DATA* miseEnCache(int mode)
 		else
 		{
             int cat = 0;
+            fseek(mangaDB, -1, SEEK_CUR);
 			fscanfs(mangaDB, "%s %s %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &cat, &mangas[numeroManga].pageInfos); //j n'est pas utilisé par ce module
 
 			if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)

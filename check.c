@@ -279,7 +279,7 @@ int check_evt()
             if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
             {
                 SDL_RenderClear(renderer);
-                sprintf(temp, "Environement corrompu, veuillez patienter (%d fichier(s)).", j-i);
+                sprintf(temp, "Environement corrompu, veuillez patienter (%d/%d fichiers restaures).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
                 position.x = WINDOW_SIZE_W / 2 - message->w / 2;
                 position.y = WINDOW_SIZE_H / 2 - message->h;
@@ -288,7 +288,7 @@ int check_evt()
                 SDL_RenderCopy(renderer, message, NULL, &position);
                 SDL_DestroyTextureS(message);
 
-                sprintf(temp, "Environment corrupted, please wait (%d file(s)).", j-i);
+                sprintf(temp, "Environment corrupted, please wait (%d/%d files restored).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
                 position.x = WINDOW_SIZE_W / 2 - message->w / 2;
                 position.y = WINDOW_SIZE_H / 2 + message->h;

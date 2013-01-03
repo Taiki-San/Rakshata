@@ -128,15 +128,19 @@ void fscanfs(FILE* stream, const char *format, ...)
 
     for(format_read = 0; format[format_read]; format_read++)
     {
-        if(format[format_read] != '%' && format[format_read] != ' ' && format[format_read] != fgetc(stream)) //Si on attend pas d'argument, on attend d'arriver au char demandé
+        if(format[format_read] != '%' && format[format_read] != ' ') //Si on attend pas d'argument, on attend d'arriver au char demandé
         {
-            fseek(stream, -1, SEEK_CUR);
-            while((j = fgetc(stream)) != format[format_read] && j != EOF);
+            if(format[format_read] != fgetc(stream))
+            {
+                fseek(stream, -1, SEEK_CUR);
+                while((j = fgetc(stream)) != format[format_read] && j != EOF);
+            }
+            else
+                fseek(stream, -1, SEEK_CUR);
         }
 
         else if(format[format_read] == '%') //Les choses interessantes commenencent
         {
-            fseek(stream, -1, SEEK_CUR);
             format_read++;
             switch(format[format_read])
             {
