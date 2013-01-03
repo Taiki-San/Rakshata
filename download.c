@@ -50,6 +50,18 @@ int download(char *adresse, char *repertoire, int activation)
     if(checkNetworkState(CONNEXION_DOWN))
         return 0;
 
+    if(activation != 2)
+    {
+        MUTEX_LOCK;
+        while(status != -1)
+        {
+            MUTEX_UNLOCK;
+            SDL_Delay(50);
+            MUTEX_LOCK;
+        }
+        MUTEX_UNLOCK;
+    }
+
     FILE_EXPECTED_SIZE = size_buffer = 0;
     status = alright = hostReached = 1;
     internalBuffer = NULL;
@@ -241,6 +253,9 @@ int download(char *adresse, char *repertoire, int activation)
         MUTEX_UNLOCK;
     }
 
+    MUTEX_LOCK;
+    status = -1;
+    MUTEX_UNLOCK;
     if(activation == 1 && internalBuffer != NULL)
     {
         if(alright < 0)
