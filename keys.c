@@ -712,7 +712,7 @@ int check_login(char adresseEmail[100])
     return 2;
 }
 
-int checkPass(char adresseEmail[100], char password[100], int login)
+int checkPass(char adresseEmail[100], char password[50], int login)
 {
     int i = 0;
     char URL[300], buffer_output[500], hash1[HASH_LENGTH], hash2[HASH_LENGTH];
@@ -730,8 +730,12 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
         return 2;
 
+    crashTemp(hash1, HASH_LENGTH);
     sha256_legacy(password, hash1);
+    MajToMin(hash1);
+    crashTemp(hash2, HASH_LENGTH);
     sha256_legacy(hash1, hash2); //On hash deux fois
+    MajToMin(hash2);
 
     sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
 
@@ -744,6 +748,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
         if(i > SHA256_DIGEST_LENGTH && (buffer_output[i] == '\r' || buffer_output[i] == '\n'))
             buffer_output[i] = 0;
     }
+    minToMaj(buffer_output);
 
     sprintf(URL, "%s-access_denied", hash2);
     sha256_legacy(URL, hash1);

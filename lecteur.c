@@ -735,6 +735,35 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                                         SDL_RenderPresent(renderer);
                                         SDL_FlushEvent(SDL_WINDOWEVENT);
                                     }
+                                    else if(event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE)
+                                    {
+                                        deplacementEnCours = 0;
+                                        if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
+                                        {
+                                            //Clic détécté: on cherche de quel côté
+                                            if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
+                                            {
+                                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
+                                                if (check4change == -1) //changement de chapitre
+                                                {
+                                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                                    return 0;
+                                                }
+                                            }
+
+                                            else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
+                                            {
+                                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
+                                                if (check4change == -1)
+                                                {
+                                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                                    return 0;
+                                                }
+                                            }
+                                        }
+                                        else
+                                            pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
+                                    }
                                     break;
                                 }
                             }

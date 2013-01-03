@@ -132,11 +132,11 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
                         break;
 
                     case SDLK_BACKSPACE:
-                        if(i >= 0) //>= car i++ Ã  la fin de la boucle
+                        if(i >= 0)
                         {
                             retour[i--] = 0;
                             if(i >= 0)
-                                retour[i--] = 0;
+                                retour[i] = 0;
                             else
                             {
                                 TTF_CloseFont(police);

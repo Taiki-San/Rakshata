@@ -98,7 +98,7 @@ void generateKey(unsigned char output[HASH_LENGTH]);
 int get_compte_infos();
 int logon();
 int check_login(char adresseEmail[100]);
-int checkPass(char adresseEmail[100], char password[100], int login);
+int checkPass(char adresseEmail[100], char password[50], int login);
 int sendPassToServ(unsigned char key[HASH_LENGTH]);
 void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
 

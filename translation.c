@@ -49,7 +49,7 @@ void loadTrad(char trad[][100], int IDTrad)
     fscanfs(fichierTrad, "%d", &i);
     while(i != IDTrad)
     {
-        while((i = fgetc(fichierTrad)) != ']' && i != EOF);
+        for(i = fgetc(fichierTrad); i != ']' && i != EOF; i = fgetc(fichierTrad));
         if(i == EOF)
         {
             char temp[100];
@@ -63,9 +63,11 @@ void loadTrad(char trad[][100], int IDTrad)
             else
                 exit(0);
         }
-        while(((i = fgetc(fichierTrad)) < '0' || i > '9' ) && i != EOF);
+        for(i = fgetc(fichierTrad); (i < '0' || i > '9') && i != EOF; i = fgetc(fichierTrad));
 
         numeroID[0] = i;
+        numeroID[1] = 0;
+
         if((i = fgetc(fichierTrad)) >= '0' && i <= '9' && i != EOF)
             numeroID[1] = i;
         else if (i != EOF)

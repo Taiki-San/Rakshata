@@ -206,7 +206,7 @@ int sscanfs(char *char_input, const char *format, ...)
     for(format_read = 0; format[format_read]; format_read++)
     {
         if(format[format_read] != '%' && format[format_read] != ' ' && format[format_read] != *char_input) //Si on attend pas d'argument, on attend d'arriver au char demandé
-            while((j = ++*char_input) != format[format_read] && j != EOF);
+            while((j = *(++char_input)) != format[format_read] && j != 0);
 
         else if(format[format_read] == '%') //Les choses interessantes commenencent
         {
@@ -264,7 +264,7 @@ int sscanfs(char *char_input, const char *format, ...)
                     format_read--;
                     break;
             }
-            if(format[format_read] && format[format_read+1])
+            if(format[format_read] && format[format_read+1] && format[format_read+1] != '\n')
                 format_read++;
         }
 
