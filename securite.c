@@ -447,8 +447,10 @@ int getPassword(char password[100])
         int i = 0, j = 0;
         char temp[HASH_LENGTH+5], serverTime[500];
         sha256_legacy(password, temp);
+        MajToMin(temp);
         crashTemp(password, 100);
         sha256_legacy(temp, password);
+        MajToMin(password);
         ustrcpy(temp, password);
 
         sprintf(password, "http://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
@@ -464,6 +466,7 @@ int getPassword(char password[100])
         temp[j] = 0;
 
         sha256_legacy(temp, password);
+        MajToMin(password);
         return 1;
     }
     return 0;

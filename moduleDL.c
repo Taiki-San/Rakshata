@@ -39,7 +39,7 @@ int telechargement()
 {
     int i = 0, j = 0, k = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 1, posVariable = 0;
     char temp[200], mangaCourt[LONGUEUR_COURT], teamCourt[LONGUEUR_COURT], historiqueTeam[1000][LONGUEUR_COURT];
-    char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100];
+    char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100] = {0};
     FILE* fichier = NULL;
     FILE* test = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
@@ -181,6 +181,14 @@ int telechargement()
                 {
                     char command[2] = {0, 0};
                     struc = (OUT_DL*) download(superTemp, command, 1);
+
+                    #ifdef DEV_VERSION
+                        if(!strcmp(mangaDB[posVariable].team->type, TYPE_DEPOT_3) && struc->length < 50)
+                        {
+                            logR(struc->buf);
+                            exit(0);
+                        }
+                    #endif
 
                     if(struc == (OUT_DL*) 1) //Si fermeture
                         glados = -1;

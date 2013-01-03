@@ -232,11 +232,13 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 
     if(nombreMangaElligible > 0)
     {
-        if(sectionChoisis == SECTION_DL && nombreMangaElligible <= 3)
-            i = BORDURE_SUP_SELEC_MANGA + LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
+        if(sectionChoisis == SECTION_CHOISIS_LECTURE)
+            hauteurDonnes = BORDURE_SUP_SELEC_MANGA_LECTURE;
+        else
+            hauteurDonnes = BORDURE_SUP_SELEC_MANGA;
 
-        else if(sectionChoisis != SECTION_DL && nombreMangaElligible <= 6) //Affichage unicolonne
-            i = BORDURE_SUP_SELEC_MANGA + nombreMangaElligible * (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE) + nombreMangaElligible*10;
+        if(nombreMangaElligible <= 3)
+            i = BORDURE_SUP_SELEC_MANGA + LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
         else if(nombreMangaElligible <= MANGAPARPAGE_TRI)
             i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * ((nombreMangaElligible / NBRCOLONNES_TRI)+1) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
@@ -282,11 +284,6 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
         SDL_DestroyTextureS(texte);
 
         SDL_RenderPresent(renderer);
-
-        if(sectionChoisis == SECTION_CHOISIS_LECTURE)
-            hauteurDonnes = BORDURE_SUP_SELEC_MANGA_LECTURE;
-        else
-            hauteurDonnes = BORDURE_SUP_SELEC_MANGA;
 
         /*Définition de l'affichage*/
         for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; i++)

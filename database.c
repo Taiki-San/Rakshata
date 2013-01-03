@@ -44,7 +44,7 @@ MANGAS_DATA* miseEnCache(int mode)
 			fscanfs(mangaDB, "\n%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
 			for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
 			nombreMangaDansDepot = 1;
-			numeroManga--;
+            numeroManga--;
 		}
 		else
 		{
