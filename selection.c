@@ -333,6 +333,8 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
 
     if(mangaDB.firstChapter == mangaDB.lastChapter) //Si une seul chapitre, on le séléctionne automatiquement
     {
+        if(mode == 2)
+            return mangaDB.firstChapter;
         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.lastChapter, CONFIGFILE);
         if(checkFileExist(temp))
             return mangaDB.lastChapter;

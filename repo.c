@@ -111,7 +111,7 @@ int ajoutRepo()
                     sprintf(temp, "http://goo.gl/%s", teams.URL_depot);
 
                 download(temp, bufferDL, 0);
-                for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
+                for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur--);
 
                 if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt
                 {

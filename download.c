@@ -192,6 +192,7 @@ int download(char *adresse, char *repertoire, int activation)
             applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
             position.x = BORDURE_POURCENTAGE;
             pourcentAffiche = TTF_Write(renderer, police, texte[6], couleur);
+            position.y = WINDOW_SIZE_H / 2 - pourcentAffiche->h / 2;
             position.h = pourcentAffiche->h;
             position.w = pourcentAffiche->w;
             SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);

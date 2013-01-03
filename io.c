@@ -111,7 +111,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
         return -2;
     }
 
-    for(i = 0; i <= nombreMax;)
+    for(i = 0; i < nombreMax;)
     {
         SDL_WaitEvent(&event);
         switch(event.type)
