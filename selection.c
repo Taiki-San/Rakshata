@@ -15,11 +15,9 @@
 int section()
 {
     /*Initialisation*/
-    int i = 0, longueur[NOMBRESECTION], sectionChoisis = 0, hauteurTexte = 0;
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Event event;
 
 	char texteTrad[SIZE_TRAD_ID_17][LONGUEURTEXTE];
 
@@ -32,20 +30,6 @@ int section()
 
     /*Affichage du texte*/
     loadTrad(texteTrad, 17);
-
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-
-    TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
-
-    texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
-    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-    position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE_MENU;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
-
-    TTF_CloseFont(police);
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
@@ -55,25 +39,6 @@ int section()
     position.w = texte->w;
     SDL_RenderCopy(renderer, texte, NULL, &position);
     SDL_DestroyTextureS(texte);
-
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-    for(i = 1; i <= NOMBRESECTION; i++)
-    {
-        texte = TTF_Write(renderer, police, texteTrad[i + 1], couleurTexte);
-        if(i % 2 == 1) //Colonne de gauche
-            position.x = WINDOW_SIZE_W / 4 - texte->w / 2;
-        else
-            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texte->w / 2;
-        position.y = BORDURE_SUP_SECTION + ((texte->h + INTERLIGNE) * ((i+1) / 2));
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        longueur[i - 1] = texte->w / 2;
-        hauteurTexte = texte->h;
-        SDL_DestroyTextureS(texte);
-    }
-
     TTF_CloseFont(police);
 
     FILE *checkFile = fopenR("data/section.msg", "r");
@@ -106,7 +71,7 @@ int section()
                 {
                     texte = TTF_Write(renderer, police, message[j], couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y -= texte->h;// + MINIINTERLIGNE;
+                    position.y -= texte->h;
                     position.h = texte->h;
                     position.w = texte->w;
                     SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -119,103 +84,7 @@ int section()
                 logR("Not enough memory\n");
         }
     }
-
-    SDL_RenderPresent(renderer);
-
-    /*Attente de l'evenement*/
-    while(!sectionChoisis || sectionChoisis > NOMBRESECTION)
-    {
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                sectionChoisis = PALIER_QUIT;
-                break;
-
-            case SDL_KEYDOWN: //If a keyboard letter is pushed
-            {
-                #ifdef __APPLE__
-				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                    sectionChoisis = PALIER_QUIT;
-				else
-				{
-                #endif
-					switch(event.key.keysym.sym)
-					{
-						case SDLK_DELETE:
-						case SDLK_BACKSPACE:
-							sectionChoisis = -2;
-							break;
-
-						case SDLK_ESCAPE:
-							sectionChoisis = -3;
-							break;
-
-                        default: //If another one
-							break;
-					}
-                #ifdef __APPLE__
-				}
-				#endif
-                break;
-            }
-
-            case SDL_TEXTINPUT:
-            {
-                sectionChoisis = nombreEntree(event);
-                if(sectionChoisis == -1 || sectionChoisis > NOMBRESECTION)
-                {
-                    sectionChoisis = event.text.text[0];
-                    if(sectionChoisis >= 'a' && sectionChoisis <= 'z')
-                        sectionChoisis += 'A' - 'a';
-                    for(i = 1; i <= NOMBRESECTION && sectionChoisis != texteTrad[i+1][0]; i++);
-                    if(i <= NOMBRESECTION)
-                        sectionChoisis = i;
-                    else
-                        sectionChoisis = 0;
-                }
-            }
-
-            case SDL_MOUSEBUTTONUP:
-            {
-                //Définis la hauteur du clic par rapport à notre liste
-                for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + BORDURE_SUP_SECTION + hauteurTexte) < event.button.y) && i < NOMBRESECTION/2 + 1; i++);
-
-                if(i > NOMBRESECTION/2)
-                    i = 0;
-
-                else
-                {
-                    int positionBaseEcran = 0, numberTested = 0;
-                    if(event.button.x < WINDOW_SIZE_W / 2)
-                    {
-                        numberTested = i * 2 - 1;
-                        positionBaseEcran = WINDOW_SIZE_W / 4;
-                    }
-                    else
-                    {
-                        numberTested = i * 2;
-                        positionBaseEcran = WINDOW_SIZE_W - WINDOW_SIZE_W / 4;
-                    }
-                    if(positionBaseEcran + longueur[numberTested - 1] >= event.button.x && positionBaseEcran - longueur[numberTested - 1] <= event.button.x)
-                        sectionChoisis = numberTested;
-                }
-                if(sectionChoisis > NOMBRESECTION)
-                    sectionChoisis = 0;
-            }
-
-            case SDL_WINDOWEVENT:
-            {
-                SDL_RenderPresent(renderer);
-                break;
-            }
-
-            default:
-                break;
-        }
-    }
-    SDL_FlushEvent(SDL_TEXTINPUT);
-    return sectionChoisis;
+    return displayMenu(&(texteTrad[2]), NOMBRESECTION, BORDURE_SUP_SECTION);
 }
 
 int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)

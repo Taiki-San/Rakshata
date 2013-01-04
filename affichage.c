@@ -116,9 +116,8 @@ int erreurReseau()
 
 int affichageMenuGestion()
 {
-    int i = 0, j = 0, longueur[SIZE_TRAD_ID_3-1] = {0}, hauteurTexte = 0, menuChoisis;
+    int i = 0, j = 0;
     char menus[SIZE_TRAD_ID_3][LONGUEURTEXTE];
-    SDL_Event event;
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
@@ -146,125 +145,9 @@ int affichageMenuGestion()
     position.w = texteAffiche->w;
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
-
-    /*On remet la valeur normale*/
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-    for(i = 1; i < SIZE_TRAD_ID_3; i++)
-    {
-        texteAffiche = TTF_Write(renderer, police, menus[i], couleur);
-        if(i % 2 == 1) //Colonne de gauche
-            position.x = WINDOW_SIZE_W / 4 - texteAffiche->w / 2;
-        else
-            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texteAffiche->w / 2;
-        position.y = HAUTEUR_CHOIX + ((texteAffiche->h + INTERLIGNE) * ((i+1) / 2));
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        longueur[i - 1] = texteAffiche->w / 2;
-        if(!hauteurTexte)
-            hauteurTexte = texteAffiche->h;
-        SDL_DestroyTextureS(texteAffiche);
-    }
-
-    SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 
-    /*On attend enter ou un autre evenement*/
-
-    menuChoisis = 0;
-    while(!menuChoisis)
-    {
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                menuChoisis = PALIER_QUIT;
-                break;
-
-            case SDL_KEYDOWN: //If a keyboard letter is pushed
-            {
-                menuChoisis = nombreEntree(event);
-                switch(event.key.keysym.sym)
-                {
-                    case SDLK_BACKSPACE:
-                    case SDLK_DELETE:
-                    case SDLK_ESCAPE:
-                        menuChoisis = PALIER_MENU;
-                        break;
-
-                    default: //If other one
-                        break;
-                }
-                break;
-            }
-
-            case SDL_TEXTINPUT:
-            {
-                menuChoisis = nombreEntree(event);
-                if(menuChoisis == -1 || menuChoisis > NOMBRESECTION)
-                {
-                    menuChoisis = event.text.text[0];
-                    if(menuChoisis >= 'a' && menuChoisis <= 'z')
-                        menuChoisis += 'A' - 'a';
-                    for(i = 1; i <= NOMBRESECTION && menuChoisis != menus[i][0]; i++);
-                    if(i <= NOMBRE_MENU_GESTION)
-                        menuChoisis = i;
-                    else
-                        menuChoisis = 0;
-                }
-            }
-
-            case SDL_MOUSEBUTTONUP:
-            {
-                //Définis la hauteur du clic par rapport à notre liste
-                for(i = 1; ((((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + HAUTEUR_CHOIX + hauteurTexte) < event.button.y) && i < NOMBRE_MENU_GESTION/2 + 1; i++);
-
-                if(i > NOMBRE_MENU_GESTION/2)
-                    i = 0;
-
-                else
-                {
-                    int positionBaseEcran = 0, numberTested = 0;
-                    if(event.button.x < WINDOW_SIZE_W / 2)
-                    {
-                        numberTested = i * 2 - 1;
-                        positionBaseEcran = WINDOW_SIZE_W / 4;
-                    }
-                    else
-                    {
-                        numberTested = i * 2;
-                        positionBaseEcran = WINDOW_SIZE_W - WINDOW_SIZE_W / 4;
-                    }
-                    if(positionBaseEcran + longueur[numberTested - 1] >= event.button.x && positionBaseEcran - longueur[numberTested - 1] <= event.button.x)
-                        menuChoisis = numberTested;
-                }
-                if(menuChoisis > NOMBRE_MENU_GESTION)
-                    menuChoisis = 0;
-                break;
-            }
-
-            case SDL_WINDOWEVENT:
-            {
-                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                    SDL_RenderPresent(renderer);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
-                break;
-            }
-
-			default:
-                #ifdef SDL_LEGACY
-				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-					j = PALIER_QUIT;
-                #endif
-				break;
-        }
-        if(menuChoisis > NOMBRE_MENU_GESTION)
-            menuChoisis = 0;
-    }
-    return menuChoisis;
+    return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);
 }
 
 void raffraichissmenent()

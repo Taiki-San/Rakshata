@@ -502,6 +502,131 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
     return mangaChoisis;
 }
 
+int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
+{
+    int i = 0, hauteurTexte = 0, ret_value = 0, *longueur = malloc(nombreElements*sizeof(int));
+    SDL_Texture *texture = NULL;
+    SDL_Rect position;
+    SDL_Event event;
+    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+
+    for(i = 0; i < nombreElements; i++)
+    {
+        texture = TTF_Write(renderer, police, texte[i], couleurTexte);
+        if(i % 2 == 0) //Colonne de gauche
+            position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
+        else
+            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texture->w / 2;
+        position.y = hauteurBloc + ((texture->h + INTERLIGNE) * (i / 2 + 1));
+        position.h = texture->h;
+        position.w = texture->w;
+        SDL_RenderCopy(renderer, texture, NULL, &position);
+        longueur[i] = texture->w / 2;
+        hauteurTexte = texture->h;
+        SDL_DestroyTextureS(texture);
+    }
+
+    SDL_RenderPresent(renderer);
+    TTF_CloseFont(police);
+
+    while(!ret_value || ret_value > nombreElements)
+    {
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_QUIT:
+                ret_value = PALIER_QUIT;
+                break;
+
+            case SDL_KEYDOWN: //If a keyboard letter is pushed
+            {
+                #ifdef __APPLE__
+				if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
+                    ret_value = PALIER_QUIT;
+				else
+				{
+                #endif
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_DELETE:
+						case SDLK_BACKSPACE:
+							ret_value = PALIER_CHAPTER;
+							break;
+
+						case SDLK_ESCAPE:
+							ret_value = PALIER_MENU;
+							break;
+
+                        default: //If another one
+							break;
+					}
+                #ifdef __APPLE__
+				}
+				#endif
+                break;
+            }
+
+            case SDL_TEXTINPUT:
+            {
+                ret_value = nombreEntree(event);
+                if(ret_value == -1 || ret_value >= nombreElements)
+                {
+                    ret_value = event.text.text[0];
+                    if(ret_value >= 'a' && ret_value <= 'z')
+                        ret_value += 'A' - 'a';
+                    for(i = 0; i < nombreElements && ret_value != texte[i][0]; i++);
+                    if(i < nombreElements)
+                        ret_value = i+1;
+                    else
+                        ret_value = 0;
+                }
+            }
+
+            case SDL_MOUSEBUTTONUP:
+            {
+                //Définis la hauteur du clic par rapport à notre liste
+                for(i = 0; ((((hauteurTexte + INTERLIGNE) * i + hauteurBloc) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + hauteurBloc + hauteurTexte) < event.button.y) && i < nombreElements/2 + 1; i++);
+
+                if(i > nombreElements/2)
+                    i = 0;
+
+                else
+                {
+                    int positionBaseEcran = 0, numberTested = 0;
+                    if(event.button.x < WINDOW_SIZE_W / 2)
+                    {
+                        numberTested = i * 2 - 1;
+                        positionBaseEcran = WINDOW_SIZE_W / 4;
+                    }
+                    else
+                    {
+                        numberTested = i * 2;
+                        positionBaseEcran = WINDOW_SIZE_W - WINDOW_SIZE_W / 4;
+                    }
+                    if(positionBaseEcran + longueur[numberTested - 1] >= event.button.x && positionBaseEcran - longueur[numberTested - 1] <= event.button.x)
+                        ret_value = numberTested;
+                }
+                if(ret_value > nombreElements)
+                    ret_value = 0;
+            }
+
+            case SDL_WINDOWEVENT:
+            {
+                SDL_RenderPresent(renderer);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    free(longueur);
+    return ret_value;
+}
+
 void showNumero(TTF_Font *police, int choix, int hauteurNum)
 {
     SDL_Texture *numero = NULL;

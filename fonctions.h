@@ -67,6 +67,7 @@ int download(char *adresse, char *repertoire, int activation);
 /**Engine.c**/
 int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage);
 int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel);
+int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
 void showNumero(TTF_Font *police, int choix, int hauteurNum);
 void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage);
 void generateChoicePanel(char trad[13][100], int enable[6]);
