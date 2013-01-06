@@ -323,12 +323,12 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
                     bandeauControle = loadControlBar();
                 }
+                SDL_RenderClear(renderer);
+                SDL_RenderPresent(renderer);
 
                 WINDOW_SIZE_W = RESOLUTION[0] = window->w;
                 WINDOW_SIZE_H = RESOLUTION[1] = window->h;
             }
-
-            SDL_RenderClear(renderer);
 
             /*Si grosse page*/
             if(largeurValide > WINDOW_SIZE_W)
@@ -429,6 +429,9 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
             positionPage.y = BORDURE_HOR_LECTURE;
 
         check4change = 1;
+        noRefresh = 0;
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
 
         do
         {
@@ -896,50 +899,43 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                             break;
                         }
 
-                        default:
+                        case SDLK_q:
                         {
-                            switch (event.key.keysym.sym)
+                            /*Si on quitte, on enregistre le point d'arret*/
+                            testExistance = fopenR("data/laststate.dat", "w+");
+                            fprintf(testExistance, "%s %d %d", mangaDB.mangaName, *chapitreChoisis, pageEnCoursDeLecture);
+                            fclose(testExistance);
+
+                            cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+
+                            return PALIER_QUIT;
+                            break;
+                        }
+
+                        case SDLK_y:
+                        case SDLK_n:
+                        {
+                            if(nouveauChapitreATelecharger == 1)
                             {
-                                case SDLK_q:
+                                if(event.key.keysym.sym == SDLK_y) //Lancement du DL
                                 {
-                                    /*Si on quitte, on enregistre le point d'arret*/
-                                    testExistance = fopenR("data/laststate.dat", "w+");
-                                    fprintf(testExistance, "%s %d %d", mangaDB.mangaName, *chapitreChoisis, pageEnCoursDeLecture);
-                                    fclose(testExistance);
-
-                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-
-                                    return PALIER_QUIT;
-                                    break;
-                                }
-
-                                case SDLK_y:
-                                case SDLK_n:
-                                {
-                                    if(nouveauChapitreATelecharger == 1)
+                                    FILE* updateControler = fopenR(INSTALL_DATABASE, "a+");
+                                    if(updateControler != NULL)
                                     {
-                                        if(event.key.keysym.sym == SDLK_y) //Lancement du DL
-                                        {
-                                            FILE* updateControler = fopenR(INSTALL_DATABASE, "a+");
-                                            if(updateControler != NULL)
-                                            {
-                                                fprintf(updateControler, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, *chapitreChoisis+1);
-                                                fclose(updateControler);
-                                                if(checkLancementUpdate())
-                                                    createNewThread(lancementModuleDL);
-                                            }
-                                        }
-                                        tempsDebutExplication = -1;
+                                        fprintf(updateControler, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, *chapitreChoisis+1);
+                                        fclose(updateControler);
+                                        if(checkLancementUpdate())
+                                            createNewThread(lancementModuleDL);
                                     }
-                                    break;
                                 }
-
-                                case SDLK_f:
-                                {
-                                    applyFullscreen(fullscreen, &check4change, &changementEtat);
-                                    break;
-                                }
+                                tempsDebutExplication = -1;
                             }
+                            break;
+                        }
+
+                        case SDLK_f:
+                        {
+                            applyFullscreen(fullscreen, &check4change, &changementEtat);
                             break;
                         }
                     }
@@ -1215,7 +1211,6 @@ void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surfa
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
     SDL_Texture *texture = NULL;
-
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, chapitre, &positionSlide, &positionPage);
 

@@ -19,7 +19,7 @@ void mainRakshata()
 
     newLangue = loadLangueProfile();
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_MOUSE_FOCUS);
 
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
