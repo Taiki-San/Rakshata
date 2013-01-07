@@ -227,6 +227,8 @@ int download(char *adresse, char *repertoire, int activation)
         {
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
+            if(event.type == 0)
+                continue;
             switch(event.type)
             {
                 case SDL_QUIT:

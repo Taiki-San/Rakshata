@@ -284,8 +284,10 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     if(surfText != NULL)
     {
         texture = SDL_CreateTextureFromSurface(render, surfText);
+#ifdef DEV_BUILD
         if(texture == NULL)
             logR((char*) SDL_GetError());
+#endif
         SDL_FreeSurfaceS(surfText);
     }
     else
