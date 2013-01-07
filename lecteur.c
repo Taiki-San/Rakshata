@@ -420,8 +420,6 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
 
         if(!changementEtat)
             pageCharge = 0;
-        else
-            changementEtat = 0;
 
         if(*fullscreen && BORDURE_HOR_LECTURE + chapitre->h + BORDURE_CONTROLE_LECTEUR < WINDOW_SIZE_H)
             positionPage.y = (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - chapitre->h) / 2 + BORDURE_HOR_LECTURE;
@@ -437,6 +435,13 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
         {
             if(!noRefresh)
                 refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
+
+            else if(changementEtat)
+            {
+                /*Bug bizarre*/
+                refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
+                changementEtat= 0;
+            }
             else
                 noRefresh = 0;
 
@@ -792,12 +797,14 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                             SDL_Delay(10);
                             break;
                         }
+
                         case SDLK_UP:
                         {
                             slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
                             SDL_Delay(10);
                             break;
                         }
+
 
                         case SDLK_RIGHT:
                         {
@@ -971,8 +978,10 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                 case SDL_WINDOWEVENT:
                 {
                     SDL_RenderPresent(renderer);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
                     noRefresh = 1;
+                    if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                        noRefresh=0;
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
                     break;
                 }
 
