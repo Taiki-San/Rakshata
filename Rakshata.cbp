@@ -13,7 +13,6 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O1" />
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 				</Compiler>
@@ -133,6 +132,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="selection.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="settings.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="sha256.c">

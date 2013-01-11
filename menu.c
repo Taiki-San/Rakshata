@@ -6,7 +6,7 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriŽtaire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -15,7 +15,7 @@
 int ecranAccueil()
 {
     /*En raison de la taille importante de la page d'acceuil (800kb),
-    elle est enregistré une seule fois et on lui colle dessus la trad*/
+    elle est enregistrŽ une seule fois et on lui colle dessus la trad*/
 
     SDL_Rect position;
     SDL_Texture *acceuil = NULL;
@@ -133,61 +133,4 @@ int showControls()
     }
     return retour;
 }
-
-int menuGestion()
-{
-    int menu = 0;
-    while(menu > -3)
-    {
-        menu = affichageMenuGestion();
-        switch(menu)
-        {
-            case -2:
-                menu = -3;
-                break;
-
-            case 1:
-                /*Ajouter un dépot*/
-                menu = ajoutRepo();
-
-                raffraichissmenent();
-                break;
-
-            case 2:
-                /*Supprimer un dépot*/
-                menu = deleteRepo();
-
-                /*Raffraichissement*/
-                raffraichissmenent();
-                break;
-
-            case 3:
-                /*Supprimer des mangas*/
-                menu = deleteManga();
-
-                if(menu == -5)
-                    menu = -2;
-                break;
-
-            case 4:
-                /*RaffraÓchissement de la BDD*/
-                raffraichissmenent();
-                break;
-
-            case 5:
-                /*Changer langue*/
-                menu = changementLangue();
-                break;
-
-            case 6:
-                menu = PALIER_MENU; //Retour au menu principal
-                break;
-
-            default:
-                break;
-        }
-    }
-    return menu;
-}
-
 

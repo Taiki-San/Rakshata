@@ -18,7 +18,18 @@
 int INSTALL_DONE;
 int CURRENT_TOKEN;
 
-int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
+int unzip(char *path, char *output)
+{
+#ifdef _WIN32
+    applyWindowsPathCrap(output);
+#endif
+	
+    if(output[strlen(output)-1] != 0)
+        output[strlen(output)-1] = 0;
+    return miniunzip(path, output, "", 0, 0);
+}
+
+static int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
 {
     uLong i;
     unz_global_info64 gi;
@@ -166,7 +177,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     }
     else
     {
-        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);        init_zmemfile(&fileops, inputZip, size);
+        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
+        init_zmemfile(&fileops, inputZip, size);
         uf = unzOpen2(NULL, &fileops);
         uf_tests = unzOpen2(NULL, &fileops);
     }

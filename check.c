@@ -6,11 +6,169 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriÈtaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propri√©taire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
 #include "main.h"
+
+int check_evt()
+{
+    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER];
+    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
+    FILE *test = NULL;
+
+    for(; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
+
+    /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
+    sprintf(nomsATest[0], "data/font.ttf");
+    sprintf(nomsATest[1], "data/acceuil.png");
+    sprintf(nomsATest[2], "data/french/acceuil.png");
+    sprintf(nomsATest[3], "data/french/controls.png");
+    sprintf(nomsATest[4], "data/french/localization");
+    sprintf(nomsATest[5], "data/english/acceuil.png");
+    sprintf(nomsATest[6], "data/english/controls.png");
+    sprintf(nomsATest[7], "data/english/localization");
+    sprintf(nomsATest[7], "data/italian/acceuil.png");
+    sprintf(nomsATest[8], "data/italian/controls.png");
+    sprintf(nomsATest[9], "data/italian/localization");
+    sprintf(nomsATest[10], "data/german/acceuil.png");
+    sprintf(nomsATest[11], "data/german/controls.png");
+    sprintf(nomsATest[12], "data/german/localization");
+    sprintf(nomsATest[13], "data/icon/d.png");
+    sprintf(nomsATest[14], "data/icon/f.png");
+    sprintf(nomsATest[15], "data/icon/fs.png");
+    sprintf(nomsATest[16], "data/icon/mm.png");
+    sprintf(nomsATest[17], "data/icon/nc.png");
+    sprintf(nomsATest[18], "data/icon/np.png");
+    sprintf(nomsATest[19], "data/icon/pc.png");
+    sprintf(nomsATest[20], "data/icon/pp.png");
+    sprintf(nomsATest[21], "data/icone.png");
+    sprintf(nomsATest[22], REPO_DATABASE);
+    sprintf(nomsATest[23], MANGA_DATABASE);
+    sprintf(nomsATest[24], SECURE_DATABASE);
+
+    SDL_Delay(1000);
+
+    /*On test l'existance de tous les fichiers*/
+    for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
+    {
+        if(!checkFileExist(nomsATest[i]))
+        {
+            if(i == 0)
+                cantwrite = 1;
+            else
+                fichiersADL[j++] = i;
+        }
+    }
+
+    if(j)
+    {
+        char temp[200];
+        SDL_Texture *message = NULL;
+        SDL_Rect position;
+        SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+        TTF_Font *police = NULL;
+
+		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+            SDL_Delay(50);
+
+        mkdirR("data");
+        mkdirR("data/english");
+        mkdirR("data/french");
+        mkdirR("data/german");
+        mkdirR("data/italian");
+        mkdirR("data/icon");
+
+        /*On vas √©crire un message annon√ßant qu'on va restaurer l'environnement
+		 On ne va pas utiliser les fichiers de trad car ils peuvent √™tre corrompus*/
+
+        if(cantwrite) //Si police absente
+        {
+            snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
+            download(temp, nomsATest[0], 0);
+        }
+
+        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+
+        for(i = 0; i < j; i++)
+        {
+            if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
+            {
+                SDL_RenderClear(renderer);
+                snprintf(temp, 200, "Environement corrompu, veuillez patienter (%d/%d fichiers restaures).", i, j);
+                message = TTF_Write(renderer, police, temp, couleur);
+                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                position.y = WINDOW_SIZE_H / 2 - message->h;
+                position.h = message->h;
+                position.w = message->w;
+                SDL_RenderCopy(renderer, message, NULL, &position);
+                SDL_DestroyTextureS(message);
+
+                snprintf(temp, 200, "Environment corrupted, please wait (%d/%d files restored).", i, j);
+                message = TTF_Write(renderer, police, temp, couleur);
+                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                position.y = WINDOW_SIZE_H / 2 + message->h;
+                position.h = message->h;
+                position.w = message->w;
+                SDL_RenderCopy(renderer, message, NULL, &position);
+                SDL_DestroyTextureS(message);
+                SDL_RenderPresent(renderer);
+
+                snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
+                download(temp, nomsATest[fichiersADL[i]], 0);
+
+                if(fichiersADL[i] == 5 || fichiersADL[i] == 9 || fichiersADL[i] == 13 || fichiersADL[i] == 17 || fichiersADL[i] == 19 || fichiersADL[i] == 20) //Si c'est un fichier de localization
+                {
+                    int k = 0, j = 0; //On parse
+					char *buffer = NULL;
+					size_t size;
+
+                    test = fopenR(nomsATest[fichiersADL[i]], "r");
+                    fseek(test, 0, SEEK_END);
+                    size = ftell(test);
+                    rewind(test);
+
+                    buffer = malloc(size*2);
+
+                    while((k=fgetc(test)) != EOF)
+                    {
+                        if(k == '\n')
+                            buffer[j++] = '\r';
+                        buffer[j++] = k;
+                    }
+                    fclose(test);
+                    test = fopenR(nomsATest[fichiersADL[i]], "w+");
+                    for(k=0; k < j; fputc(buffer[k++], test));
+                    fclose(test);
+                    free(buffer);
+                }
+
+                if(fichiersADL[i] == 21) //Si c'est l'icone
+                {
+                    SDL_Surface *icon = IMG_Load("data/icone.png");
+                    if(icon != NULL)
+                    {
+                        SDL_SetWindowIcon(window, icon); //Int icon for the main window
+                        SDL_FreeSurfaceS(icon);
+                    }
+                }
+            }
+        }
+        nameWindow(0);
+    }
+
+
+    if(get_compte_infos() == PALIER_QUIT)
+        return PALIER_QUIT;
+
+    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
+    if(test == NULL)
+        createSecurePasswordDB(NULL);
+    else
+        fclose(test);
+    return 0;
+}
 
 void checkUpdate()
 {
@@ -21,12 +179,12 @@ void checkUpdate()
         /**********************************************************************************
         ***                                                                             ***
         ***                         Application de la MaJ                               ***
-        ***    On peut soit supprimer, soit ajouter, soit mettre ‡ jour des fichiers:   ***
+        ***    On peut soit supprimer, soit ajouter, soit mettre √† jour des fichiers:   ***
         ***                                                                             ***
-        ***     -R: Remove                                                             ***
+        ***     -R: Remove                                                              ***
         ***     -A: Add                                                                 ***
-        ***     -P: Parse, si fichier texte, on rÈtabli les retours ‡ la ligne          ***
-        ***     -U: Update, met†‡ jour le fichier                                        ***
+        ***     -P: Parse, si fichier texte, on r√©tabli les retours √† la ligne          ***
+        ***     -U: Update, met √† jour le fichier                                       ***
         ***     -D: Depreciate, renomme en .old                                         ***
         ***                                                                             ***
         ***********************************************************************************/
@@ -57,14 +215,14 @@ void checkUpdate()
             fscanfs(test, "%s %s", action[ligne], 2, files[ligne], TAILLE_BUFFER);
         }
         fclose(test);
-        removeR("tmp/update"); //Evite des tÈlÈchargements en parall√É¬®le de l'update
+        removeR("tmp/update"); //Evite des t√©l√©chargements en parall√®le de l'update
 
-        /*Initialisation Ècran*/
+        /*Initialisation √©cran*/
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-        SDL_SetWindowTitle(window, "Rakshata - Mise ‡ jour en cours - Upgrade in progress");
+        SDL_SetWindowTitle(window, "Rakshata - Mise √† jour en cours - Upgrade in progress");
         SDL_RenderClear(renderer);
 
-        loadTrad(trad, 12); //Chargement du texte puis Ècriture
+        loadTrad(trad, 12); //Chargement du texte puis √©criture
         infosAvancement = TTF_Write(renderer, police, trad[0], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
         position.y = 20;
@@ -82,7 +240,7 @@ void checkUpdate()
 
         for(i = 0; files[i][0] != 0 && i < ligne; i++)
         {
-            /*TÈlÈchargement et affichage des informations*/
+            /*T√©l√©chargement et affichage des informations*/
             crashTemp(temp, 100);
             applyBackground(150, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
             sprintf(temp, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
@@ -178,232 +336,6 @@ void checkJustUpdated()
     }
 }
 
-void checkRenderBugPresent()
-{
-    if(RENDER_BUG)
-        return;
-    SDL_RenderClear(renderer);
-    SDL_Texture *texture = IMG_LoadTexture(renderer, "data/icone.png");
-    if(texture == NULL)
-    {
-        RENDER_BUG = 1;
-        SDL_DestroyRenderer(renderer);
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-    }
-    else
-        SDL_DestroyTextureS(texture);
-}
-
-int check_evt()
-{
-    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER];
-    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
-    FILE *test = NULL;
-
-    for(; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
-
-    /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
-    sprintf(nomsATest[0], "data/font.ttf");
-    sprintf(nomsATest[1], "data/acceuil.png");
-    sprintf(nomsATest[2], "data/french/acceuil.png");
-    sprintf(nomsATest[3], "data/french/controls.png");
-    sprintf(nomsATest[4], "data/french/localization");
-    sprintf(nomsATest[5], "data/english/acceuil.png");
-    sprintf(nomsATest[6], "data/english/controls.png");
-    sprintf(nomsATest[7], "data/english/localization");
-    sprintf(nomsATest[7], "data/italian/acceuil.png");
-    sprintf(nomsATest[8], "data/italian/controls.png");
-    sprintf(nomsATest[9], "data/italian/localization");
-    sprintf(nomsATest[10], "data/german/acceuil.png");
-    sprintf(nomsATest[11], "data/german/controls.png");
-    sprintf(nomsATest[12], "data/german/localization");
-    sprintf(nomsATest[13], "data/icon/d.png");
-    sprintf(nomsATest[14], "data/icon/f.png");
-    sprintf(nomsATest[15], "data/icon/fs.png");
-    sprintf(nomsATest[16], "data/icon/mm.png");
-    sprintf(nomsATest[17], "data/icon/nc.png");
-    sprintf(nomsATest[18], "data/icon/np.png");
-    sprintf(nomsATest[19], "data/icon/pc.png");
-    sprintf(nomsATest[20], "data/icon/pp.png");
-    sprintf(nomsATest[21], "data/icone.png");
-    sprintf(nomsATest[22], REPO_DATABASE);
-    sprintf(nomsATest[23], MANGA_DATABASE);
-    sprintf(nomsATest[24], "data/secure.enc");
-
-    SDL_Delay(1000);
-
-    /*On test l'existance de tous les fichiers*/
-    for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
-    {
-        if(!checkFileExist(nomsATest[i]))
-        {
-            if(i == 0)
-                cantwrite = 1;
-            else
-                fichiersADL[j++] = i;
-        }
-    }
-
-    if(j)
-    {
-        char temp[200];
-        SDL_Texture *message = NULL;
-        SDL_Rect position;
-        SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-        TTF_Font *police = NULL;
-
-		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-            SDL_Delay(50);
-
-        mkdirR("data");
-        mkdirR("data/english");
-        mkdirR("data/french");
-        mkdirR("data/german");
-        mkdirR("data/italian");
-        mkdirR("data/icon");
-
-        /*On vas Ècrire un message annonÁant qu'on va restaurer l'environnement
-        On ne va pas utiliser les fichiers de trad car ils peuvent Ítre corrompus*/
-
-        if(cantwrite) //Si police absente
-        {
-            sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
-            download(temp, nomsATest[0], 0);
-        }
-
-        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-
-        for(i = 0; i < j; i++)
-        {
-            if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
-            {
-                SDL_RenderClear(renderer);
-                sprintf(temp, "Environement corrompu, veuillez patienter (%d/%d fichiers restaures).", i, j);
-                message = TTF_Write(renderer, police, temp, couleur);
-                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                position.y = WINDOW_SIZE_H / 2 - message->h;
-                position.h = message->h;
-                position.w = message->w;
-                SDL_RenderCopy(renderer, message, NULL, &position);
-                SDL_DestroyTextureS(message);
-
-                sprintf(temp, "Environment corrupted, please wait (%d/%d files restored).", i, j);
-                message = TTF_Write(renderer, police, temp, couleur);
-                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                position.y = WINDOW_SIZE_H / 2 + message->h;
-                position.h = message->h;
-                position.w = message->w;
-                SDL_RenderCopy(renderer, message, NULL, &position);
-                SDL_DestroyTextureS(message);
-                SDL_RenderPresent(renderer);
-
-                sprintf(temp, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
-                download(temp, nomsATest[fichiersADL[i]], 0);
-
-                if(fichiersADL[i] == 5 || fichiersADL[i] == 9 || fichiersADL[i] == 13 || fichiersADL[i] == 17 || fichiersADL[i] == 19 || fichiersADL[i] == 20) //Si c'est un fichier de localization
-                {
-                    int k = 0, j = 0; //On parse
-					char *buffer = NULL;
-					size_t size;
-
-                    test = fopenR(nomsATest[fichiersADL[i]], "r");
-                    fseek(test, 0, SEEK_END);
-                    size = ftell(test);
-                    rewind(test);
-
-                    buffer = malloc(size*2);
-
-                    while((k=fgetc(test)) != EOF)
-                    {
-                        if(k == '\n')
-                            buffer[j++] = '\r';
-                        buffer[j++] = k;
-                    }
-                    fclose(test);
-                    test = fopenR(nomsATest[fichiersADL[i]], "w+");
-                    for(k=0; k < j; fputc(buffer[k++], test));
-                    fclose(test);
-                    free(buffer);
-                }
-
-                if(fichiersADL[i] == 21) //Si c'est l'icone
-                {
-                    SDL_Surface *icon = IMG_Load("data/icone.png");
-                    if(icon != NULL)
-                    {
-                        SDL_SetWindowIcon(window, icon); //Int icon for the main window
-                        SDL_FreeSurfaceS(icon);
-                    }
-                }
-            }
-        }
-        nameWindow(0);
-    }
-
-
-    if(get_compte_infos() == PALIER_QUIT)
-        return PALIER_QUIT;
-
-    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
-    if(test == NULL)
-        createSecurePasswordDB(NULL);
-    else
-        fclose(test);
-    return 0;
-}
-
-int checkProjet(MANGAS_DATA mangaDB)
-{
-    char temp[TAILLE_BUFFER];
-    SDL_Texture *image = NULL;
-    SDL_Rect position;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-    TTF_Font *police = NULL;
-    FILE* test = NULL;
-
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-    /*Chargement arborescence*/;
-    sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
-    test = fopenR(temp, "r");
-
-    SDL_RenderClear(renderer);
-
-    if(test != NULL)
-    {
-        /*Affichage consigne*/
-        char texte[SIZE_TRAD_ID_10][100];
-        loadTrad(texte, 10);
-
-        fclose(test);
-
-        restartEcran();
-
-		image = TTF_Write(renderer, police, texte[0], couleur);
-        position.x = LARGEUR / 2 - image->w / 2;
-        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
-        position.h = image->h;
-        position.w = image->w;
-        SDL_RenderCopy(renderer, image, NULL, &position);
-        SDL_DestroyTextureS(image);
-        TTF_CloseFont(police);
-
-        image = IMG_LoadTexture(renderer, temp);
-        position.x = 0;
-        position.y = BORDURE_HOR_LECTURE;
-        position.h = image->h;
-        position.w = image->w;
-        SDL_RenderCopy(renderer, image, NULL, &position);
-        SDL_RenderPresent(renderer);
-        SDL_DestroyTextureS(image);
-
-        return waitEnter();
-    }
-    return 1;
-}
-
 int checkLancementUpdate()
 {
     FILE* test = NULL;
@@ -458,7 +390,7 @@ int checkLancementUpdate()
 
 void networkAndVersionTest()
 {
-    /*Cette fonction va vÈrifier si le logiciel est a jour*/
+    /*Cette fonction va v√©rifier si le logiciel est a jour*/
     int i = 0, hostNotReached = 0;
     char temp[TAILLE_BUFFER], bufferDL[5] = {0, 5, 1, 1, 1};
 
@@ -469,11 +401,11 @@ void networkAndVersionTest()
     /*Chargement de l'URL*/
     sprintf(temp, "http://www.%s/System/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
 
-    if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand mÍme le test avec 2 en activation
+    if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand m√™me le test avec 2 en activation
         hostNotReached++;
 
-    /*  Si fichier tÈlÈchargÈ, on teste son intÈgritÈ. Le fichier est sensÈ contenir 1 ou 0.
-        Si ce n'est pas le cas, il y a un problÈme avec le serveur  */
+    /*  Si fichier t√©l√©charg√©, on teste son int√©grit√©. Le fichier est sens√© contenir 1 ou 0.
+	 Si ce n'est pas le cas, il y a un probl√©me avec le serveur  */
 
     if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
     {
@@ -485,7 +417,7 @@ void networkAndVersionTest()
         if(download(MAIN_SERVER_URL[1], bufferDL, 2) == -6) //On fais un test avec google.com
             hostNotReached++;
         MUTEX_LOCK;
-        if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais rÈussi ‡ ce connecter ‡ un serveur
+        if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais r√©ussi √† ce connecter √† un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
@@ -504,7 +436,7 @@ void networkAndVersionTest()
             FILE* test = NULL;
 			size_t size;
 
-            mkdirR("tmp"); //Au cas o˘ le dossier n'existe pas
+            mkdirR("tmp"); //Au cas oÀò le dossier n'existe pas
 
             sprintf(temp, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
 
@@ -534,21 +466,9 @@ void networkAndVersionTest()
         checkSectionMessageUpdate();
 
         //Nouveau killswitch
-        if(checkFileExist("data/account.enc"))
+        if(!loadEmailProfile())
 		{
-			FILE* file_account = fopenR("data/account.enc", "a");
-			size_t size = ftell(file_account);
-			char *output = malloc(size+100);
-
-			fclose(file_account);
-
-			crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-			AESDecrypt(FAKE_PASSWORD, "data/account.enc", output, OUTPUT_IN_MEMORY);
-			for(i = 0; i < 100 && output[i]; i++)
-				COMPTE_PRINCIPAL_MAIL[i] = output[i];
-			free(output);
-
-			for(; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vÈrifie que c'est une adresse email
+			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On v√©rifie que c'est une adresse email
 			if(i == 0 && COMPTE_PRINCIPAL_MAIL[i] != '@')
                 quit_thread(0);
 
@@ -561,16 +481,70 @@ void networkAndVersionTest()
             {
                 quit_thread(0);
             }
-			/*A partir d'ici, le compte est killswitche*/
 
+			/*A partir d'ici, le compte est killswitche*/
 			removeFolder("manga");
 			removeFolder("data");
-			remove(MANGA_DATABASE);
-			remove(REPO_DATABASE);
 			exit(0);
 		}
+		else
+            removeR(SECURE_DATABASE);
     }
     quit_thread(0);
+}
+
+int checkNetworkState(int state)
+{
+    MUTEX_LOCK;
+    if(NETWORK_ACCESS == state)
+    {
+        MUTEX_UNLOCK;
+        return 1;
+    }
+    MUTEX_UNLOCK;
+    return 0;
+}
+
+void checkHostNonModifie()
+{
+    char temp[TAILLE_BUFFER];
+    FILE* host = NULL;
+    host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopenR car on se balade dans le DD, pas dans les fichiers de Rakshata
+    if(host != NULL);
+    {
+        int justeSautDeLigne = 1, j = 0, i = 0;
+        while((i = fgetc(host)) != EOF)
+        {
+            if(i == '#' && justeSautDeLigne)
+                while((i = fgetc(host)) != '\n' && i != EOF);
+
+            if(i == '\n') //Commentaire seulement en d√©but de ligne donc on fais gaffe
+                justeSautDeLigne = 1;
+            else
+                justeSautDeLigne = 0;
+
+            /*Code √† am√©liorer: on peut bloquer l'IP, le rsp, rakshata.com...*/
+
+            if(i == 'r')
+            {
+                fseek(host, -1, SEEK_CUR);
+                crashTemp(temp, TAILLE_BUFFER);
+                j = 0;
+                while((i = fgetc(host)) != '\n' && i != EOF && i != ' ' && j < 50)
+                    temp[j++] = i;
+                for(i = 0; temp[i] == MAIN_SERVER_URL[0][i]; i++);
+                if(i >= 15)
+                {
+                    fclose(host);
+                    logR("Violation d√©tect√©: redirection dans host\n");
+                    MUTEX_LOCK;
+                    NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalit√©s r√©seau
+                    MUTEX_UNLOCK;
+                    break; //On quitte la boucle en while
+                }
+            }
+        }
+    }
 }
 
 int checkRestore()
@@ -615,7 +589,7 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
 
     if(mangas != NULL)
     {
-        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la premiÈre team, si il ne correspond pas, on lance la boucle
+        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la premi√©re team, si il ne correspond pas, on lance la boucle
         while(strcmp(temp, teamLong) != 0)
         {
             while((i = fgetc(mangas)) != '#' && i != EOF);
@@ -624,7 +598,7 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
             crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
             fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT);
         }
-        if(i != EOF) //Nouvelle team pas concernÈe
+        if(i != EOF) //Nouvelle team pas concern√©e
         {
             int j = 0, k = 0, l = 0;
             while(strcmp(temp, nomProjet) != 0 && fgetc(mangas) != EOF)
@@ -641,80 +615,6 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
         fclose(mangas);
     }
     return 0;
-}
-
-int checkNameFileZip(char fileToTest[256])
-{
-    if( fileToTest[0] == '_' &&
-        fileToTest[1] == '_' &&
-        fileToTest[2] == 'M' &&
-        fileToTest[3] == 'A' &&
-        fileToTest[4] == 'C' &&
-        fileToTest[5] == 'O' &&
-        fileToTest[6] == 'S' &&
-        fileToTest[7] == 'X' &&
-        fileToTest[8] == '/') //On vÈrifie que c'est pas un de ces dossiers parasites crÈÈs par MACOS
-        return 0;
-
-    //strlen(fileToTest) - 1 est le dernier caractÈre, strlen(fileToTest) donnant la longueur de la chaine
-
-    if(fileToTest[strlen(fileToTest) - 1] == '/') //Si c'est un dossier, le dernier caractÈre est /
-        return 0;
-
-    if(fileToTest[strlen(fileToTest) - 3] == '.' &&
-            fileToTest[strlen(fileToTest) - 2] == 'd' &&
-            fileToTest[strlen(fileToTest) - 1] == 'b')
-        return 0;
-
-    if(fileToTest[strlen(fileToTest) - 4] == '.' &&
-            fileToTest[strlen(fileToTest) - 3] == 'e' &&
-            fileToTest[strlen(fileToTest) - 2] == 'x' &&
-            fileToTest[strlen(fileToTest) - 1] == 'e')
-        return 0;
-
-    return 1;
-}
-
-void checkHostNonModifie()
-{
-    char temp[TAILLE_BUFFER];
-    FILE* host = NULL;
-    host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopenR car on se balade dans le DD, pas dans les fichiers de Rakshata
-    if(host != NULL);
-    {
-        int justeSautDeLigne = 1, j = 0, i = 0;
-        while((i = fgetc(host)) != EOF)
-        {
-            if(i == '#' && justeSautDeLigne)
-                while((i = fgetc(host)) != '\n' && i != EOF);
-
-            if(i == '\n') //Commentaire seulement en dÈbut de ligne donc on fais gaffe
-                justeSautDeLigne = 1;
-            else
-                justeSautDeLigne = 0;
-
-            /*Code ‡ amÈliorer: on peut bloquer l'IP, le rsp, rakshata.com...*/
-
-            if(i == 'r')
-            {
-                fseek(host, -1, SEEK_CUR);
-                crashTemp(temp, TAILLE_BUFFER);
-                j = 0;
-                while((i = fgetc(host)) != '\n' && i != EOF && i != ' ' && j < 50)
-                    temp[j++] = i;
-                for(i = 0; temp[i] == MAIN_SERVER_URL[0][i]; i++);
-                if(i >= 15)
-                {
-                    fclose(host);
-                    logR("Violation dÈtectÈ: redirection dans host\n");
-                    MUTEX_LOCK;
-                    NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalitÈs rÈseau
-                    MUTEX_UNLOCK;
-                    break; //On quitte la boucle en while
-                }
-            }
-        }
-    }
 }
 
 int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
@@ -748,24 +648,48 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     return 0;
 }
 
-int checkFileExist(char filename[])
+int isItNew(MANGAS_DATA mangasDB)
 {
-    FILE* FileToTest = NULL;
-    if(filename[1] == ':')
-        FileToTest = fopen(filename, "r");
-    else
-        FileToTest = fopen(filename, "r");
-    if(FileToTest != NULL)
-    {
-        fclose(FileToTest);
+	/*V√©rifie si le manga est nouveau ou pas (dossiers √† cr√©er)*/
+    char buffer[2*LONGUEUR_NOM_MANGA_MAX+100];
+
+    changeTo(mangasDB.mangaName, ' ', '_');
+	sprintf(buffer, "manga/%s/%s/Chapitre_%d/%s", mangasDB.team->teamLong, mangasDB.mangaName, mangasDB.lastChapter, CONFIGFILE);
+    changeTo(mangasDB.mangaName, '_', ' ');
+	if(!checkFileExist(buffer))
         return 1;
-    }
-    return 0;
+	return 0;
 }
 
-int checkButtonPressed(int button_selected[6])
+int checkChapitreUnread(MANGAS_DATA mangasDB)
 {
-    if(checkFirstLineButtonPressed(button_selected) || checkSecondLineButtonPressed(button_selected))
+    int i = 0;
+    char temp[200];
+	FILE* configDat = NULL;
+
+    changeTo(mangasDB.mangaName, ' ', '_');
+    sprintf(temp, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
+    changeTo(mangasDB.mangaName, '_', ' ');
+
+    configDat = fopenR(temp, "r");
+
+    if(configDat == NULL) //Dans le cas d'un DL, signifie que le mangas n'a pas encore √©t√© DL
+        return -1;
+
+    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
+    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
+    fclose(configDat);
+
+    if(i == ' ') //Si le chapitre est d√©j√† lu
+        return 0;
+    return 1;
+}
+
+int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
+{
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
+    sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
+    if(checkFileExist(temp))
         return 1;
     return 0;
 }
@@ -784,42 +708,9 @@ int checkSecondLineButtonPressed(int button_selected[6])
     return 0;
 }
 
-int checkFileValide(FILE* file)
+int checkButtonPressed(int button_selected[6])
 {
-    if(file == NULL || fgetc(file) == '<' || fgetc(file) == '<' || fgetc(file) == '<')
-        return 0;
-    return 1;
-}
-
-int checkChapitreUnread(MANGAS_DATA mangasDB)
-{
-    int i = 0;
-    char temp[200];
-	FILE* configDat = NULL;
-
-    changeTo(mangasDB.mangaName, ' ', '_');
-    sprintf(temp, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
-    changeTo(mangasDB.mangaName, '_', ' ');
-
-    configDat = fopenR(temp, "r");
-
-    if(configDat == NULL) //Dans le cas d'un DL, signifie que le mangas n'a pas encore ÈtÈ DL
-        return -1;
-
-    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
-    for(; (i = fgetc(configDat)) != ' ' && i != EOF;);
-    fclose(configDat);
-
-    if(i == ' ') //Si le chapitre est dÈj‡ lu
-        return 0;
-    return 1;
-}
-
-int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
-    if(checkFileExist(temp))
+    if(checkFirstLineButtonPressed(button_selected) || checkSecondLineButtonPressed(button_selected))
         return 1;
     return 0;
 }
@@ -841,15 +732,76 @@ int checkWindowEventValid(int EventWindowEvent)
     return 0;
 }
 
-int checkNetworkState(int state)
+void checkRenderBugPresent()
 {
-    MUTEX_LOCK;
-    if(NETWORK_ACCESS == state)
+    if(RENDER_BUG)
+        return;
+    SDL_RenderClear(renderer);
+    SDL_Texture *texture = IMG_LoadTexture(renderer, "data/icone.png");
+    if(texture == NULL)
     {
-        MUTEX_UNLOCK;
+        RENDER_BUG = 1;
+        SDL_DestroyRenderer(renderer);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+    }
+    else
+        SDL_DestroyTextureS(texture);
+}
+
+int checkNameFileZip(char fileToTest[256])
+{
+    if( fileToTest[0] == '_' &&
+        fileToTest[1] == '_' &&
+        fileToTest[2] == 'M' &&
+        fileToTest[3] == 'A' &&
+        fileToTest[4] == 'C' &&
+        fileToTest[5] == 'O' &&
+        fileToTest[6] == 'S' &&
+        fileToTest[7] == 'X' &&
+        fileToTest[8] == '/') //On v√©rifie que c'est pas un de ces dossiers parasites cr√©√©s par MACOS
+        return 0;
+
+    //strlen(fileToTest) - 1 est le dernier caract√©re, strlen(fileToTest) donnant la longueur de la chaine
+
+    if(fileToTest[strlen(fileToTest) - 1] == '/') //Si c'est un dossier, le dernier caract√©re est /
+        return 0;
+
+    if(fileToTest[strlen(fileToTest) - 3] == '.' &&
+            fileToTest[strlen(fileToTest) - 2] == 'd' &&
+            fileToTest[strlen(fileToTest) - 1] == 'b')
+        return 0;
+
+    if(fileToTest[strlen(fileToTest) - 4] == '.' &&
+            fileToTest[strlen(fileToTest) - 3] == 'e' &&
+            fileToTest[strlen(fileToTest) - 2] == 'x' &&
+            fileToTest[strlen(fileToTest) - 1] == 'e')
+        return 0;
+
+    return 1;
+}
+
+int checkFileExist(char filename[])
+{
+    FILE* FileToTest = NULL;
+    if(filename[1] == ':')
+        FileToTest = fopen(filename, "r");
+    else
+        FileToTest = fopen(filename, "r");
+    if(FileToTest != NULL)
+    {
+        fclose(FileToTest);
         return 1;
     }
-    MUTEX_UNLOCK;
     return 0;
 }
+
+int checkFileValide(FILE* file)
+{
+    if(file == NULL || fgetc(file) == '<' || fgetc(file) == '<' || fgetc(file) == '<')
+        return 0;
+    return 1;
+}
+
+
 

@@ -33,11 +33,13 @@ MUTEX_VAR mutex;
 int main()
 {
     /* Real start of Rakshata */
-    srand(time(NULL)); //Initialisation de l'aléatoire
+    srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
 	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
 	mutex = MUTEX_DEFAULT_VALUE;
+	//AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, "file.txt", EVERYTHING_IN_HDD);
+	//AESEncrypt(SETTINGS_PASSWORD, "file.txt", SETTINGS_FILE, EVERYTHING_IN_HDD);
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

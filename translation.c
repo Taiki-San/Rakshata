@@ -6,7 +6,7 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriÃ©taire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -116,11 +116,10 @@ int changementLangue()
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
-    FILE* fileLangue = 0;
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    /*On change la taille de l'écran*/
+    /*On change la taille de l'Ã©cran*/
     if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
         updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
 
@@ -150,33 +149,32 @@ int changementLangue()
     if(j > 0)
     {
         langue = j;
-        fileLangue = fopenR("data/langue", "w+");
-        fprintf(fileLangue, "%d", langue);
-        fclose(fileLangue);
+        removeFromPref(SETTINGS_LANGUE_FLAG);
+        snprintf(menus[0], LONGUEURTEXTE, "<%c>\n%d\n</%c>", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+        addToPref(SETTINGS_LANGUE_FLAG, menus[0]);
         nameWindow(0);
         return 0;
     }
     return j;
 }
 
-int loadLangueProfile()
+int tradAvailable()
 {
-    FILE* langueFile = NULL;
-    if((langueFile = fopenR("data/langue", "r")) == NULL)
-    {
-        mkdirR("data");
-        langue = LANGUE_PAR_DEFAUT;
-        langueFile = fopenR("data/langue", "w+");
-        fprintf(langueFile, "%d", langue);
-        fclose(langueFile);
-        return 1;
+    char *temp = malloc(50 + strlen(LANGUAGE_PATH[langue-1]));
+	FILE *test = NULL;
 
-    }
-    else
+	if(temp == NULL)
     {
-        fscanfs(langueFile, "%d", &langue);
-        fclose(langueFile);
+        logR("Failed at allocate memory\n");
+        exit(0);
+    }
+    sprintf(temp, "data/%s/localization", LANGUAGE_PATH[langue-1]);
+    test = fopenR(temp, "r");
+
+	free(temp);
+    if(test == NULL)
         return 0;
-    }
-}
 
+    fclose(test);
+    return 1;
+}

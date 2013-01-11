@@ -43,8 +43,7 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_
     return;
 }
 
-
-int I2pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret)
+static int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret)
 {
     int         rc = 0;
     uint32_t    l,r;
@@ -91,5 +90,20 @@ end:
     }
 
     return 0;
+}
+
+void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[])
+{
+    uint32_t inputLength = 0, saltLength = 0, hash_size = SHA256_DIGEST_LENGTH;
+	
+    for(inputLength = 0; input[inputLength]; inputLength++);
+    for(saltLength = 0; salt[saltLength]; saltLength++);
+	
+    internal_pbkdf2(hash_size,
+			 input, inputLength,
+			 salt, saltLength,
+			 2048, //Nombre d'itération
+			 PBKDF2_OUTPUT_LENGTH,
+			 output);
 }
 

@@ -45,13 +45,7 @@ void mainRakshata()
     continuer = ecranAccueil();
 
     if(newLangue && continuer != PALIER_QUIT)
-    {
         continuer = changementLangue();
-        if(continuer == PALIER_QUIT)
-            removeR("data/langue");
-        else
-            continuer = showControls();
-    }
 
     while(continuer > PALIER_QUIT)
     {

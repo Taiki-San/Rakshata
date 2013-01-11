@@ -175,6 +175,57 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
     return mangaChoisis;
 }
 
+int checkProjet(MANGAS_DATA mangaDB)
+{
+    char temp[TAILLE_BUFFER];
+    SDL_Texture *image = NULL;
+    SDL_Rect position;
+    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    TTF_Font *police = NULL;
+    FILE* test = NULL;
+	
+    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+	
+    /*Chargement arborescence*/;
+    sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
+    test = fopenR(temp, "r");
+	
+    SDL_RenderClear(renderer);
+	
+    if(test != NULL)
+    {
+        /*Affichage consigne*/
+        char texte[SIZE_TRAD_ID_10][100];
+        loadTrad(texte, 10);
+		
+        fclose(test);
+		
+        restartEcran();
+		
+		image = TTF_Write(renderer, police, texte[0], couleur);
+        position.x = LARGEUR / 2 - image->w / 2;
+        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
+        position.h = image->h;
+        position.w = image->w;
+        SDL_RenderCopy(renderer, image, NULL, &position);
+        SDL_DestroyTextureS(image);
+        TTF_CloseFont(police);
+		
+        image = IMG_LoadTexture(renderer, temp);
+        position.x = 0;
+        position.y = BORDURE_HOR_LECTURE;
+        position.h = image->h;
+        position.w = image->w;
+        SDL_RenderCopy(renderer, image, NULL, &position);
+        SDL_RenderPresent(renderer);
+        SDL_DestroyTextureS(image);
+		
+        return waitEnter();
+    }
+    return 1;
+}
+
 int chapitre(MANGAS_DATA mangaDB, int mode)
 {
     /**************************
@@ -286,7 +337,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
         for(i = 0; i < nombreMaxChapitre; chapitreDB[i++].mangaName[0] = 0);
 
         /************************************************************
-        ** Génère le noms des chapitre en vérifiant leur existance **
+        ** Génére le noms des chapitre en vérifiant leur existance **
         **              Si on télécharge, on met tout              **
         ************************************************************/
         nombreChapitre = 0;

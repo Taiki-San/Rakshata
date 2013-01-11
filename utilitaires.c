@@ -22,61 +22,18 @@ void changeTo(char *string, int toFind, int toPut)
     }
 }
 
+int plusOuMoins(int compare1, int compare2, int tolerance)
+{
+    if(compare1 + tolerance > compare2 && compare1 - tolerance < compare2)
+        return 1;
+    return 0;
+}
+
 int compare(const void *a, const void *b)
 {
     const MANGAS_DATA *struc1 = a;
     const MANGAS_DATA *struc2 = b;
     return strcmp(struc1->mangaName, struc2->mangaName);
-}
-
-void restartEcran()
-{
-    if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
-        updateWindowSize(LARGEUR, HAUTEUR);
-
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-}
-
-void chargement()
-{
-	/*Initialisateurs graphique*/
-    SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police = NULL;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-
-	char texte[SIZE_TRAD_ID_8][100];
-
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    SDL_RenderClear(renderer);
-
-    if(police == NULL)
-    {
-        SDL_RenderFillRect(renderer, NULL);
-        SDL_RenderPresent(renderer);
-        return;
-    }
-
-    if(tradAvailable())
-        loadTrad(texte, 8);
-    else
-        sprintf(texte[0], "Chargement - Loading");
-
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
-    if(texteAffiche == NULL)
-        return;
-
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
 }
 
 void applyWindowsPathCrap(void *input)
@@ -91,45 +48,6 @@ void applyWindowsPathCrap(void *input)
             temp[i] = '\\';
     }
     #endif
-}
-
-void applyBackground(int x, int y, int w, int h)
-{
-    SDL_Rect positionBack;
-    positionBack.x = x;
-    positionBack.y = y;
-    positionBack.w = w;
-    positionBack.h = h;
-    SDL_RenderFillRect(renderer, &positionBack);
-}
-
-void nameWindow(const int value)
-{
-    char windowsName[128], trad[SIZE_TRAD_ID_25][100], versionOfSoftware[6];
-
-    if(!tradAvailable())
-    {
-        if(langue == 1) //Français
-            SDL_SetWindowTitle(window, "Rakshata - Environnement corrompu");
-        else
-            SDL_SetWindowTitle(window, "Rakshata - Environment corrupted");
-        return;
-    }
-
-    version(versionOfSoftware);
-    loadTrad(trad, 25);
-    crashTemp(windowsName, 128);
-
-    if(!value) //Si on affiche le nom de la fenetre standard
-        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
-
-    else if (value == 1)
-        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
-
-    else
-        sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
-
-    SDL_SetWindowTitle(window, windowsName);
 }
 
 void version(char *output)
@@ -169,6 +87,23 @@ int positionnementApres(FILE* stream, char *stringToFind)
     if(i == EOF)
         return 0;
     return 1;
+}
+
+int positionnementApresChar(char* input, char *stringToFind)
+{
+    int length = strlen(stringToFind) + 100, i = 0;//, j = 0;
+    char *temp = malloc(length);
+
+    while(input[i] && strcmp(temp, stringToFind))
+    {
+        for(; input[i] == '\r' || input[i] == '\n'; i++);
+        i += sscanfs(&input[i], "%s", temp, length);
+    }
+    free(temp);
+    if(!input[i])
+        return 0;
+    for(; input[i] == '\r' || input[i] == '\n'; i++);
+    return i;
 }
 
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
@@ -213,34 +148,6 @@ void createPath(char output[])
         }
     }
 
-}
-
-void getResolution()
-{
-    /*Define screen resolution*/
-    SDL_DisplayMode data;
-    SDL_GetCurrentDisplayMode(0, &data);
-    RESOLUTION[0] = data.w;
-    RESOLUTION[1] = data.h;
-    HAUTEUR_MAX = RESOLUTION[1];
-}
-
-void MajToMin(char* input)
-{
-    for(; *input; input++)
-    {
-        if(*input >= 'A' && *input <= 'Z')
-            *input += 'a' - 'A';
-    }
-}
-
-void minToMaj(char* input)
-{
-    for(; *input; input++)
-    {
-        if(*input >= 'a' && *input <= 'z')
-            *input += 'A' - 'a';
-    }
 }
 
 void hexToDec(const char *input, unsigned char *output)
@@ -289,6 +196,24 @@ void decToHex(const unsigned char *input, size_t length, char *output)
     }
 }
 
+void MajToMin(char* input)
+{
+    for(; *input; input++)
+    {
+        if(*input >= 'A' && *input <= 'Z')
+            *input += 'a' - 'A';
+    }
+}
+
+void minToMaj(char* input)
+{
+    for(; *input; input++)
+    {
+        if(*input >= 'a' && *input <= 'z')
+            *input += 'A' - 'a';
+    }
+}
+
 void restrictEvent()
 {
     SDL_EventState(SDL_SYSWMEVENT, SDL_DISABLE);
@@ -312,12 +237,5 @@ void restrictEvent()
     SDL_EventState(SDL_CLIPBOARDUPDATE, SDL_DISABLE);
     SDL_EventState(SDL_DROPFILE, SDL_DISABLE);
     SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
-}
-
-int plusOuMoins(int compare1, int compare2, int tolerance)
-{
-    if(compare1 + tolerance > compare2 && compare1 - tolerance < compare2)
-        return 1;
-    return 0;
 }
 

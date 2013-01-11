@@ -6,45 +6,11 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriÃ©taire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
 #include "main.h"
-
-int showError()
-{
-    int i = 0;
-    char texte[SIZE_TRAD_ID_1][100];
-    SDL_Texture *texteAAfficher = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-    TTF_Font *police = NULL;
-
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    restartEcran();
-
-    position.y = WINDOW_SIZE_H / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
-
-    /*Remplissage des variables*/
-    loadTrad(texte, 1);
-
-    for(i = 0; i < SIZE_TRAD_ID_1; i++)
-    {
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
-    }
-
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
-    return waitEnter();
-}
 
 void initialisationAffichage()
 {
@@ -77,77 +43,6 @@ void initialisationAffichage()
     SDL_RenderPresent(renderer);
     SDL_DestroyTextureS(texte);
     TTF_CloseFont(police);
-}
-
-int erreurReseau()
-{
-    int i = 0;
-    char texte[SIZE_TRAD_ID_24][100];
-    SDL_Texture *texteAAfficher = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-    TTF_Font *police = NULL;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    SDL_RenderClear(renderer);
-
-    /*Chargement de la traduction*/
-    loadTrad(texte, 24);
-
-    /*On prend un point de départ*/
-    position.y = WINDOW_SIZE_H / 2 - 50;
-
-    /*On lance la boucle d'affichage*/
-    for(i = 0; i < 2; i++)
-    {
-        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
-    }
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
-
-    return waitEnter();
-}
-
-int affichageMenuGestion()
-{
-    int i = 0, j = 0;
-    char menus[SIZE_TRAD_ID_3][LONGUEURTEXTE];
-    SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)
-        updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
-
-    for(i = 0; i < SIZE_TRAD_ID_3; i++)
-    {
-        for(j = 0; j < LONGUEURTEXTE; j++)
-            menus[i][j] = 0;
-    }
-
-    /*Remplissage des variables*/
-    loadTrad(menus, 3);
-
-    SDL_RenderClear(renderer);
-
-    texteAffiche = TTF_Write(renderer, police, menus[0], couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = HAUTEUR_TEXTE;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-    TTF_CloseFont(police);
-
-    return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);
 }
 
 void raffraichissmenent()
@@ -209,40 +104,45 @@ void affichageLancement()
     TTF_CloseFont(police);
 }
 
-int rienALire()
+void chargement()
 {
+	/*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
-    TTF_Font *police;
+    TTF_Font *police = NULL;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-    char texte[SIZE_TRAD_ID_23][100];
-
+	
+	char texte[SIZE_TRAD_ID_8][100];
+	
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+	
     SDL_RenderClear(renderer);
-	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	loadTrad(texte, 23);
-
+	
+    if(police == NULL)
+    {
+        SDL_RenderFillRect(renderer, NULL);
+        SDL_RenderPresent(renderer);
+        return;
+    }
+	
+    if(tradAvailable())
+        loadTrad(texte, 8);
+    else
+        sprintf(texte[0], "Chargement - Loading");
+	
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
+	
+    if(texteAffiche == NULL)
+        return;
+	
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
+    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
     position.w = texteAffiche->w;
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
-
-    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-    SDL_RenderPresent(renderer);
-
     TTF_CloseFont(police);
-
-    return waitEnter();
+    SDL_RenderPresent(renderer);
 }
 
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)
@@ -256,7 +156,7 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int num
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //Définition de la taille de la fenêtre
+    hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //DÃ©finition de la taille de la fenÃªtre
     alertSurface = SDL_CreateRGBSurface(0, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
     SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, FOND_R, FOND_G, FOND_B)); //We change background color
 
@@ -293,6 +193,16 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     else
         texture = NULL;
     return texture;
+}
+
+void applyBackground(int x, int y, int w, int h)
+{
+    SDL_Rect positionBack;
+    positionBack.x = x;
+    positionBack.y = y;
+    positionBack.w = w;
+    positionBack.h = h;
+    SDL_RenderFillRect(renderer, &positionBack);
 }
 
 int getWindowSize(int w1h2)
@@ -339,4 +249,53 @@ void updateWindowSize(int w, int h)
         SDL_RenderPresent(renderer);
     }
 }
+
+void getResolution()
+{
+    /*Define screen resolution*/
+    SDL_DisplayMode data;
+    SDL_GetCurrentDisplayMode(0, &data);
+    RESOLUTION[0] = data.w;
+    RESOLUTION[1] = data.h;
+    HAUTEUR_MAX = RESOLUTION[1];
+}
+
+void restartEcran()
+{
+    if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
+        updateWindowSize(LARGEUR, HAUTEUR);
+	
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+}
+
+void nameWindow(const int value)
+{
+    char windowsName[128], trad[SIZE_TRAD_ID_25][100], versionOfSoftware[6];
+	
+    if(!tradAvailable())
+    {
+        if(langue == 1) //FranÃ§ais
+            SDL_SetWindowTitle(window, "Rakshata - Environnement corrompu");
+        else
+            SDL_SetWindowTitle(window, "Rakshata - Environment corrupted");
+        return;
+    }
+	
+    version(versionOfSoftware);
+    loadTrad(trad, 25);
+    crashTemp(windowsName, 128);
+	
+    if(!value) //Si on affiche le nom de la fenetre standard
+        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
+	
+    else if (value == 1)
+        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
+	
+    else
+        sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
+	
+    SDL_SetWindowTitle(window, windowsName);
+}
+
 

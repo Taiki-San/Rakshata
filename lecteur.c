@@ -47,7 +47,7 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
     if(restoreState)
     {
         testExistance = fopenR("data/laststate.dat", "r");
-        fscanfs(testExistance, "%s %d %d", temp, LONGUEUR_NOM_MANGA_MAX, &i, &pageEnCoursDeLecture); //Récupère la page
+        fscanfs(testExistance, "%s %d %d", temp, LONGUEUR_NOM_MANGA_MAX, &i, &pageEnCoursDeLecture); //Récupére la page
         fclose(testExistance);
         removeR("data/laststate.dat");
 
@@ -171,7 +171,7 @@ int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen)
                     return i;
             }
 
-            if(pageEnCoursDeLecture + 1 < pageTotal) //On viens de changer de page, on veut savoir si on était â€¡ la dernière
+            if(pageEnCoursDeLecture + 1 < pageTotal) //On viens de changer de page, on veut savoir si on était â€¡ la derniére
             {
                 SDL_FreeSurface(NChapitre);
                 NChapitre = NULL;
@@ -1236,7 +1236,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         SDL_Rect positionModifie;
 
         if(infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= WINDOW_SIZE_W) //Distance optimale utilisable
-            distanceOptimalePossible = WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupère le début de texte
+            distanceOptimalePossible = WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
 
         positionModifie.y = positionInfos.y;
         positionModifie.x = distanceOptimalePossible + BORDURE_LAT_LECTURE;

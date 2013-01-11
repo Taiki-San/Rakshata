@@ -36,14 +36,14 @@ int getMasterKey(unsigned char *input)
 
     do
     {
-        bdd = fopenR("data/secure.enc", "r");
+        bdd = fopenR(SECURE_DATABASE, "r");
 
         if(bdd == NULL)
         {
             if(createSecurePasswordDB(NULL))
                 return 1;
             else
-                bdd = fopenR("data/secure.enc", "r");
+                bdd = fopenR(SECURE_DATABASE, "r");
         }
 
         fseek(bdd, 0, SEEK_END);
@@ -53,7 +53,7 @@ int getMasterKey(unsigned char *input)
         if(!size || size % SHA256_DIGEST_LENGTH != 0)
         {
             fileInvalid = 1;
-            removeR("data/secure.enc");
+            removeR(SECURE_DATABASE);
         }
         else
             fileInvalid = 0;
@@ -67,7 +67,7 @@ int getMasterKey(unsigned char *input)
     for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
         for(j=0; j<SHA256_DIGEST_LENGTH; buffer_Load[i][j++] = 0);
 
-    bdd = fopenR("data/secure.enc", "rb");
+    bdd = fopenR(SECURE_DATABASE, "rb");
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
@@ -78,7 +78,7 @@ int getMasterKey(unsigned char *input)
 #ifdef _WIN32
     get_file_date("data\\secure.enc", (char *) date);
 #else
-	get_file_date("data/secure.enc", (char *) date);
+	get_file_date(SECURE_DATABASE, (char *) date);
 #endif
     generateFingerPrint(fingerPrint);
 
@@ -135,193 +135,6 @@ int getMasterKey(unsigned char *input)
     return 0;
 }
 
-int createSecurePasswordDB(unsigned char *key_sent)
-{
-    int i = 0;
-    unsigned char fingerPrint[HASH_LENGTH], date[100], temp[240], *encryption_output = NULL;
-    FILE* bdd = NULL;
-
-#ifdef _WIN32 //On récupère maintenant la date du fichier
-    HANDLE hFile;
-    FILETIME ftLastEdit;
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-    SYSTEMTIME ftTime;
-#endif
-
-    if(key_sent == NULL)
-        bdd = fopenR("data/secure.enc", "w+");
-
-    else
-        bdd = fopenR("data/secure.enc", "a+");
-
-    if(bdd == NULL)
-    {
-        logR("Echec de création de la BDD sécurisé: création de fichier impossible\n");
-        return -1;
-    }
-
-    fclose(bdd);
-
-    crashTemp(fingerPrint, sizeof(fingerPrint));
-    generateFingerPrint(fingerPrint);
-
-#ifdef _WIN32 //On récupère maintenant la date du fichier
-    if(UNZIP_NEW_PATH)
-    {
-        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(temp == NULL)
-        {
-            logR("Failed at allocate memory\n");
-            exit(-1);
-        }
-
-        sprintf(temp, "%s/data/secure.enc", REPERTOIREEXECUTION);
-        applyWindowsPathCrap(temp);
-        hFile = CreateFileA(temp, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-        free(temp);
-
-    }
-
-    else
-
-        hFile = CreateFileA("data/secure.enc",GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-
-    GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupère pas le dernier argument pour faire chier celui qui essaierai de comprendre
-    dwLowDateTime = ftLastEdit.dwLowDateTime;
-    dwHighDateTime = ftLastEdit.dwHighDateTime;
-    FileTimeToSystemTime(&ftLastEdit, &ftTime);
-    CloseHandle(hFile); //Fermeture
-    crashTemp(date, 100);
-    sprintf((char *)date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
-#else //On cherche l'heure de la dernière modif
-    struct stat structure_time;
-    if(UNZIP_NEW_PATH)
-    {
-        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(temp == NULL)
-        {
-            logR("Failed at allocate memory\n");
-            exit(-1);
-        }
-
-        sprintf(temp, "%s/data/secure.enc", REPERTOIREEXECUTION);
-
-		if(!stat(temp, &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
-		else
-		{
-			logR("Failed at get data from secure.enc\n");
-			exit(0);
-		}
-		free(temp);
-	}
-	else
-	{
-		if(!stat("data/secure.enc", &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
-		else
-		{
-			logR("Failed at get data from secure.enc\n");
-			exit(0);
-		}
-	}
-#endif
-    sprintf((char *)temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
-
-#ifdef _WIN32
-	do //Le seul but de ces lignes est d'être en accord avec le C89
-	{
-#endif
-		unsigned char key[2][SHA256_DIGEST_LENGTH+1];
-		memset(key[0], 0, SHA256_DIGEST_LENGTH+1);
-		memset(key[1], 0, SHA256_DIGEST_LENGTH+1);
-		if(key_sent == NULL)
-			generateKey(key[0]);
-		else
-			ustrcpy(key[0], key_sent);
-
-		pbkdf2(temp, fingerPrint, key[1]);
-		crashTemp(fingerPrint, HASH_LENGTH);
-		crashTemp(temp, 240);
-
-		encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
-		if(UNZIP_NEW_PATH == 1)
-			sprintf((char *)encryption_output, "%s/data/secure.enc", REPERTOIREEXECUTION);
-		else
-			sprintf((char *)encryption_output, "data/secure.enc");
-
-		if(key_sent == NULL)
-		{
-			AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
-			if(sendPassToServ(key[0]))
-				AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
-		}
-		else
-		{
-			AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
-			crashTemp(key[0], HASH_LENGTH);
-		}
-
-		free(encryption_output);
-
-		for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
-#ifdef _WIN32
-	}while(0);
-#endif
-
-	get_file_date("data/secure.enc", (char *)temp);
-
-
-    if(strcmp((char *) temp, (char *) date)) //Si on a été trop long et qu'il faut modifier la date du fichier
-    {
-#ifdef _WIN32 //On change la date du fichier
-
-        char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(buffer == NULL)
-        {
-            logR("Failed at allocate memory\n");
-            exit(-1);
-        }
-
-        sprintf(buffer, "%s/data/secure.enc", REPERTOIREEXECUTION);
-        applyWindowsPathCrap(buffer);
-
-        hFile = CreateFileA(buffer, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-        ftLastEdit.dwLowDateTime = dwLowDateTime;
-        ftLastEdit.dwHighDateTime = dwHighDateTime;
-        SetFileTime(hFile, NULL, NULL, &ftLastEdit); //On applique les modifs
-        CloseHandle(hFile); //Fermeture
-
-        free(buffer);
-        crashTemp(temp, 140);
-#ifdef _WIN32
-		get_file_date("data\\secure.enc", (char *) temp);
-#else
-		get_file_date("data/secure.enc", (char *)temp);
-#endif
-
-
-        if(strcmp((char *) temp, (char *) date))
-        {
-            logR("Unexpected time comportement, please leave this programm away from your Dolorean.\n");
-            exit(1);
-        }
-#else
-
-        struct utimbuf ut;
-
-        ut.actime = structure_time.st_atime;
-        ut.modtime = structure_time.st_mtime;
-        utime("data/secure.enc",&ut);
-
-#endif
-    }
-
-    return 0;
-
-}
-
 void generateKey(unsigned char output[HASH_LENGTH])
 {
     int i = 0;
@@ -330,7 +143,7 @@ void generateKey(unsigned char output[HASH_LENGTH])
 
     for(i = 0; i < 50; i++)
     {
-        randomChar[i] = (rand() + 1) % (255 - 32) + 33; //Génère un nombre ASCII-étendu
+        randomChar[i] = (rand() + 1) % (255 - 32) + 33; //Génére un nombre ASCII-étendu
         if(randomChar[i] < ' ')
             i--;
     }
@@ -354,45 +167,34 @@ void generateKey(unsigned char output[HASH_LENGTH])
 int get_compte_infos()
 {
     int i = 0;
-    char *output = NULL;
-	size_t size;
-	FILE *account_file = NULL;
-
-	account_file = fopenR("data/account.enc", "r");
-    if(account_file == NULL)
+	if(loadEmailProfile())
     {
         i = logon();
         if(i == PALIER_QUIT)
             return i;
-        account_file = fopenR("data/account.enc", "r");
+        if(loadEmailProfile())
+        {
+            logR("Failed at get email after re-enter it\n");
+            removeR(SETTINGS_FILE);
+            exit(0);
+        }
     }
-    fseek(account_file, 0, SEEK_END);
-    size = ftell(account_file);
-    fclose(account_file);
 
-    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-
-    output = malloc(size+100);
-    AESDecrypt(FAKE_PASSWORD, "data/account.enc", output, OUTPUT_IN_MEMORY);
-    for(i = 0; i < 100 && output[i]; i++)
-        COMPTE_PRINCIPAL_MAIL[i] = output[i];
-    free(output);
-
-    /*On vérifie la validité de la chaÃ“ne*/
-    for(; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
+    /*On vérifie la validité de la chaine*/
+    for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
     if(!i) //on a pas de @
     {
-        remove("data/account.enc");
+        removeFromPref(SETTINGS_EMAIL_FLAG);
         logR("Pas d'arobase\n");
         crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
         exit(-1);
     }
 
-    for(; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
-    if(i == 100) //on a pas de point après l'arobase
+    for(; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
+    if(i == 100) //on a pas de point aprés l'arobase
     {
-        remove("data/account.enc");
-        logR("Pas de point après l'arobase\n");
+        removeFromPref(SETTINGS_EMAIL_FLAG);
+        logR("Pas de point aprés l'arobase\n");
         crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
         exit(-1);
     }
@@ -400,7 +202,7 @@ int get_compte_infos()
     for(i = 0; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '\'' && COMPTE_PRINCIPAL_MAIL[i] != '\"'; i++); // Injection SQL
     if(i != 100)
     {
-        remove("data/account.enc");
+        removeFromPref(SETTINGS_EMAIL_FLAG);
         logR("Overfl0w et/ou injection SQL\n");
         crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
         exit(-1);
@@ -588,11 +390,15 @@ int logon()
                     }
                     case 1: //Accepted
                     {
-                        AESEncrypt(FAKE_PASSWORD, adresseEmail, "data/account.enc", INPUT_IN_MEMORY);
-
-                        for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100; beginingOfEmailAdress++)
-                            COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
+                        char temp[200];
                         TTF_CloseFont(police);
+
+                        for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100 && adresseEmail[beginingOfEmailAdress]; beginingOfEmailAdress++)
+                            COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
+
+                        removeFromPref(SETTINGS_EMAIL_FLAG);
+                        snprintf(temp, 200, "<%c>\n%s\n</%c>", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
+                        addToPref(SETTINGS_EMAIL_FLAG, temp);
                         break;
                     }
                     default: //Else -> erreure critique, me contacter/check de la connexion/du site
@@ -682,8 +488,8 @@ int check_login(char adresseEmail[100])
     if(i == 100) //on a pas de @
         return 2;
 
-    for(; i < 100 && adresseEmail[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
-    if(i == 100) //on a pas de point après l'arobase
+    for(; i < 100 && adresseEmail[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
+    if(i == 100) //on a pas de point aprés l'arobase
         return 2;
 
     for(i = 0; i < 100 && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
@@ -722,8 +528,8 @@ int checkPass(char adresseEmail[100], char password[50], int login)
     if(adresseEmail[i] != '@') //on a pas de @
         return 2;
 
-    for(; i < 100 && adresseEmail[i] && adresseEmail[i] != '.'; i++); // . après l'arobase (.com/.co.uk/.fr)
-    if(adresseEmail[i] != '.') //on a pas de point après l'arobase
+    for(; i < 100 && adresseEmail[i] && adresseEmail[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
+    if(adresseEmail[i] != '.') //on a pas de point aprés l'arobase
         return 2;
 
     for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
@@ -767,6 +573,191 @@ int checkPass(char adresseEmail[100], char password[50], int login)
     logR(buffer_output);
 #endif
     return 2;
+}
+
+int createSecurePasswordDB(unsigned char *key_sent)
+{
+    int i = 0;
+    unsigned char fingerPrint[HASH_LENGTH], date[100], temp[240], *encryption_output = NULL;
+    FILE* bdd = NULL;
+
+#ifdef _WIN32 //On récupére maintenant la date du fichier
+    HANDLE hFile;
+    FILETIME ftLastEdit;
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+    SYSTEMTIME ftTime;
+#endif
+
+    if(key_sent == NULL)
+        bdd = fopenR(SECURE_DATABASE, "w+");
+
+    else
+        bdd = fopenR(SECURE_DATABASE, "a+");
+
+    if(bdd == NULL)
+    {
+        logR("Echec de création de la BDD sécurisé: création de fichier impossible\n");
+        return -1;
+    }
+
+    fclose(bdd);
+
+    crashTemp(fingerPrint, sizeof(fingerPrint));
+    generateFingerPrint(fingerPrint);
+
+#ifdef _WIN32 //On récupére maintenant la date du fichier
+    if(UNZIP_NEW_PATH)
+    {
+        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(temp == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+        applyWindowsPathCrap(temp);
+        hFile = CreateFileA(temp, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+        free(temp);
+
+    }
+
+    else
+
+        hFile = CreateFileA(SECURE_DATABASE,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+
+    GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupére pas le dernier argument pour faire chier celui qui essaierai de comprendre
+    dwLowDateTime = ftLastEdit.dwLowDateTime;
+    dwHighDateTime = ftLastEdit.dwHighDateTime;
+    FileTimeToSystemTime(&ftLastEdit, &ftTime);
+    CloseHandle(hFile); //Fermeture
+    crashTemp(date, 100);
+    sprintf((char *)date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+#else //On cherche l'heure de la derniére modif
+    struct stat structure_time;
+    if(UNZIP_NEW_PATH)
+    {
+        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(temp == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+
+		if(!stat(temp, &structure_time))
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+		else
+		{
+			logR("Failed at get data from secure.enc\n");
+			exit(0);
+		}
+		free(temp);
+	}
+	else
+	{
+		if(!stat(SECURE_DATABASE, &structure_time))
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+		else
+		{
+			logR("Failed at get data from secure.enc\n");
+			exit(0);
+		}
+	}
+#endif
+    sprintf((char *)temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+
+#ifdef _WIN32
+	do //Le seul but de ces lignes est d'être en accord avec le C89
+	{
+#endif
+		unsigned char key[2][SHA256_DIGEST_LENGTH+1];
+		memset(key[0], 0, SHA256_DIGEST_LENGTH+1);
+		memset(key[1], 0, SHA256_DIGEST_LENGTH+1);
+		if(key_sent == NULL)
+			generateKey(key[0]);
+		else
+			ustrcpy(key[0], key_sent);
+
+		pbkdf2(temp, fingerPrint, key[1]);
+		crashTemp(fingerPrint, HASH_LENGTH);
+		crashTemp(temp, 240);
+
+		encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
+		if(UNZIP_NEW_PATH == 1)
+			sprintf((char *)encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+		else
+			sprintf((char *)encryption_output, SECURE_DATABASE);
+
+		if(key_sent == NULL)
+		{
+			AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+			if(sendPassToServ(key[0]))
+				AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+		}
+		else
+		{
+			AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
+			crashTemp(key[0], HASH_LENGTH);
+		}
+
+		free(encryption_output);
+
+		for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
+#ifdef _WIN32
+	}while(0);
+#endif
+
+	get_file_date(SECURE_DATABASE, (char *)temp);
+
+
+    if(strcmp((char *) temp, (char *) date)) //Si on a été trop long et qu'il faut modifier la date du fichier
+    {
+#ifdef _WIN32 //On change la date du fichier
+
+        char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
+        if(buffer == NULL)
+        {
+            logR("Failed at allocate memory\n");
+            exit(-1);
+        }
+
+        sprintf(buffer, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+        applyWindowsPathCrap(buffer);
+
+        hFile = CreateFileA(buffer, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+        ftLastEdit.dwLowDateTime = dwLowDateTime;
+        ftLastEdit.dwHighDateTime = dwHighDateTime;
+        SetFileTime(hFile, NULL, NULL, &ftLastEdit); //On applique les modifs
+        CloseHandle(hFile); //Fermeture
+
+        free(buffer);
+        crashTemp(temp, 140);
+#ifdef _WIN32
+		get_file_date("data\\secure.enc", (char *) temp);
+#else
+		get_file_date(SECURE_DATABASE, (char *)temp);
+#endif
+
+
+        if(strcmp((char *) temp, (char *) date))
+        {
+            logR("Unexpected time comportement, please leave this programm away from your Dolorean.\n");
+            exit(1);
+        }
+#else
+
+        struct utimbuf ut;
+
+        ut.actime = structure_time.st_atime;
+        ut.modtime = structure_time.st_mtime;
+        utime(SECURE_DATABASE,&ut);
+
+#endif
+    }
+
+    return 0;
+
 }
 
 int sendPassToServ(unsigned char key[SHA256_DIGEST_LENGTH])

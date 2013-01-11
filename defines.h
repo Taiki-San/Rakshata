@@ -105,6 +105,16 @@
 #define FOND_G 214
 #define FOND_B 214
 
+/*Settings*/
+#define SECURE_DATABASE "data/secure.enc"
+#define SETTINGS_FILE "data/settings"
+#define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr1s36~8713ue68"
+#define SETTINGS_EMAIL_FLAG 'E'
+#define SETTINGS_FAVORITE_FLAG 'F'
+#define SETTINGS_LANGUE_FLAG 'L'
+#define SETTINGS_MANGADB_FLAG 'M'
+#define SETTINGS_REPODB_FLAG 'R'
+
 /*Section*/
 #define NOMBRESECTION 4
 #define SECTION_CHOISIS_LECTURE 1

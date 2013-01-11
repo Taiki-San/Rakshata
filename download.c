@@ -375,7 +375,7 @@ static void* downloader(void* envoi)
 
         res = curl_easy_perform(curl);
 
-        if(res != CURLE_OK) //Si problème
+        if(res != CURLE_OK) //Si probléme
         {
             hostReached = libcurlErrorCode(res);
             if(hostReached == -1)

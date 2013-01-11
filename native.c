@@ -231,7 +231,7 @@ int sscanfs(char *char_input, const char *format, ...)
                     for(; *char_input == ' ' || *char_input == '\r' || *char_input == '\n'; char_input++);
                     for(i = 0; i < lenght && *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input; char_input++)
                         buffer[i++] = *char_input;
-                    for(; *char_input != ' ' && *char_input != '\n' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
+                    for(; *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
 
                     if(i >= lenght)
                         i--;
@@ -254,9 +254,9 @@ int sscanfs(char *char_input, const char *format, ...)
                     while(*char_input < '0' || *char_input > '9')
                         char_input++;
 
-                    for(i = 0; i < 9 /*limite de int*/ && *char_input != ' ' && *char_input != '\n' && *char_input && *char_input >= '0' && *char_input <= '9'; char_input++)
+                    for(i = 0; i < 9 /*limite de int*/ && *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input && *char_input >= '0' && *char_input <= '9'; char_input++)
                         buffer[i++] = *char_input;
-                    for(; *char_input != ' ' && *char_input != '\n' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
+                    for(; *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
 
                     buffer[i] = 0;
                     *number = charToInt(buffer);
@@ -312,7 +312,7 @@ void SDL_FreeSurfaceS(SDL_Surface *surface)
 
 void SDL_DestroyTextureS(SDL_Texture *texture)
 {
-    SDL_DestroyTexture(texture); //Gère déjà les cas imprévus
+    SDL_DestroyTexture(texture); //Gére déjà les cas imprévus
 }
 
 /**Différent en fonction de l'OS**/
@@ -346,7 +346,7 @@ void removeFolder(char *path)
              strcmp(entry->d_name, "..") == 0 )
             continue;
 
-        /* On construit le chemin d'accès du fichier en
+        /* On construit le chemin d'accés du fichier en
          * concaténant son nom avec le nom du dossier
          * parent. On intercale "/" entre les deux.
          * NB: '/' est aussi utilisable sous Windows
@@ -361,7 +361,7 @@ void removeFolder(char *path)
         }
         snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);
 
-        /* On récupère des infos sur le fichier. */
+        /* On récupére des infos sur le fichier. */
 
         if ( checkFileExist(buffer))
             removeR(buffer); //On est sur un fichier, on le supprime.
@@ -475,17 +475,6 @@ int lancementExternalBinary(char cheminDAcces[100])
     return 0;
 }
 
-int unzip(char *path, char *output)
-{
-    #ifdef _WIN32
-    applyWindowsPathCrap(output);
-    #endif
-
-    if(output[strlen(output)-1] != 0)
-        output[strlen(output)-1] = 0;
-    return miniunzip(path, output, "", 0, 0);
-}
-
 int checkPID(int PID)
 {
 #ifndef _WIN32
@@ -528,52 +517,4 @@ int checkPID(int PID)
     return 0;
 }
 
-void get_file_date(const char *filename, char *date)
-{
-#ifdef _WIN32
-    char *input_parsed = malloc(strlen(filename) + strlen(REPERTOIREEXECUTION) + 5);
-
-    HANDLE hFile;
-    FILETIME ftEdit;
-    SYSTEMTIME ftTime;
-
-	sprintf(input_parsed, "%s\\%s", REPERTOIREEXECUTION, filename);
-
-    hFile = CreateFileA(input_parsed,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-    GetFileTime(hFile, NULL, NULL, &ftEdit);
-    CloseHandle(hFile);
-    FileTimeToSystemTime(&ftEdit, &ftTime);
-
-    sprintf(date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
-#else
-    char *input_parsed = malloc(strlen(filename) + 500);
-    sprintf(input_parsed, "%s/%s", REPERTOIREEXECUTION, filename);
-
-    struct stat buf;
-    if(!stat(input_parsed, &buf))
-        strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
-#endif
-    free(input_parsed);
-}
-
-int tradAvailable()
-{
-    char *temp = malloc(50 + strlen(LANGUAGE_PATH[langue-1]));
-	FILE *test = NULL;
-
-	if(temp == NULL)
-    {
-        logR("Failed at allocate memory\n");
-        exit(0);
-    }
-    sprintf(temp, "data/%s/localization", LANGUAGE_PATH[langue-1]);
-    test = fopenR(temp, "r");
-
-	free(temp);
-    if(test == NULL)
-        return 0;
-
-    fclose(test);
-    return 1;
-}
 

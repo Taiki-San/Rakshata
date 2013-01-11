@@ -6,16 +6,16 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriŽtaire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
-extern int HAUTEUR_MAX; //Hauteur maxiamle (généralement écran)
-extern int RESOLUTION[2]; //Résolution
+extern int HAUTEUR_MAX; //Hauteur maxiamle (gŽnŽralement Žcran)
+extern int RESOLUTION[2]; //RŽsolution
 extern int WINDOW_SIZE_H;
 extern int WINDOW_SIZE_W;
 extern int langue; //Langue
-extern int UNZIP_NEW_PATH; //La décompression change le path courant
+extern int UNZIP_NEW_PATH; //La dŽcompression change le path courant
 extern int NETWORK_ACCESS;
 extern int HAUTEUR;
 extern int RENDER_BUG;

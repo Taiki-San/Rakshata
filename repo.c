@@ -6,25 +6,11 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriÃ©taire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
 #include "main.h"
-
-int defineTypeRepo(char *URL)
-{
-    int i = 0;
-    if(strlen(URL) == 8) //SI DB, seulement 8 chiffres
-    {
-        for(i = 7; i >= 0 && URL[i] <= '9' && URL[i] >= '0'; i--);
-        if(i < 0) //Si que des chiffres
-            return 1; //DB
-    }
-    if(strlen(URL) == 5) //GOO.GL
-        return 3;
-    return 2; //O
-}
 
 int ajoutRepo()
 {
@@ -65,7 +51,7 @@ int ajoutRepo()
             if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
                 updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
 
-            /*On affiche l'écran de sélection*/
+            /*On affiche l'Ã©cran de sÃ©lection*/
             SDL_RenderClear(renderer);
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
@@ -113,11 +99,11 @@ int ajoutRepo()
                 download(temp, bufferDL, 0);
                 for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur--);
 
-                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt
+                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dÃ©pÃ™t
                 {
                     sscanfs(bufferDL, "%s %s %s %s %s %s", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
 
-                    /*Redimension de la fenêtre*/
+                    /*Redimension de la fenÃªtre*/
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
 
@@ -214,8 +200,8 @@ int deleteRepo()
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     /**************************************************************
-    ***     On va commencer par récuperer les noms de teams     ***
-    ***  On ne va pas actualiser (ou alors aprËs et en profiter ***
+    ***     On va commencer par rÃ©cuperer les noms de teams     ***
+    ***  On ne va pas actualiser (ou alors aprÃ€s et en profiter ***
     ***           pour jarter les mangas de la team)            ***
     **************************************************************/
 
@@ -231,7 +217,7 @@ int deleteRepo()
     mangaDB[nombreTeam].mangaName[0] = 0;
     for(i = 0; i < NOMBRE_MANGA_MAX && i < nombreTeam; changeTo(mangaDB[i++].mangaName, '_', ' '));
 
-    /*On met 5 pour chaque nom de team puis on complËte avec un -1 (signal de fin)*/
+    /*On met 5 pour chaque nom de team puis on complÃ€te avec un -1 (signal de fin)*/
     for(i = 0; i < nombreTeam; i++)
         mangaDB[i].status = mangaDB[i].genre = 0;
 
@@ -288,47 +274,18 @@ int deleteRepo()
     return continuer;
 }
 
-int affichageRepoIconnue()
+int defineTypeRepo(char *URL)
 {
-    /*Initialisateurs graphique*/
-    char texte[SIZE_TRAD_ID_7][100];
-	SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-
-    SDL_RenderClear(renderer);
-
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-	loadTrad(texte, 7);
-
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
-    if(texteAffiche != NULL)
+    int i = 0;
+    if(strlen(URL) == 8) //SI DB, seulement 8 chiffres
     {
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2 * 3;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-
-        texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-        SDL_RenderPresent(renderer);
+        for(i = 7; i >= 0 && URL[i] <= '9' && URL[i] >= '0'; i--);
+        if(i < 0) //Si que des chiffres
+            return 1; //DB
     }
-    else
-        return 1;
-    TTF_CloseFont(police);
-
-    return waitEnter();
+    if(strlen(URL) == 5) //GOO.GL
+        return 3;
+    return 2; //O
 }
 
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
@@ -379,7 +336,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     confirme = waitEnter();
 
     if(confirme == 1)
-        /*Confirmé*/
+        /*ConfirmÃ©*/
         return 1;
     else if (confirme == -3)
         return 0;

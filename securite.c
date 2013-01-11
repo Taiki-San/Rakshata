@@ -212,7 +212,96 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     return 0;
 }
 
-//#define VERBOSE_DECRYPT
+void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
+{
+#ifdef _WIN32
+    unsigned char buffer_fingerprint[5000], buf_name[1024];
+    SYSTEM_INFO infos_system;
+    DWORD dwCompNameLen = 1024;
+
+    GetComputerName((char *)buf_name, &dwCompNameLen);
+    GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
+    sprintf((char *)buffer_fingerprint, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
+            (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
+#else
+	#ifdef __APPLE__
+        int c = 0, i = 0, j = 0;
+        unsigned char buffer_fingerprint[5000], command_line[4][100];
+
+        sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
+        sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
+        sprintf((char *) command_line[2], "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
+        sprintf((char *) command_line[3], "system_profiler SPHardwareDataType | grep 'SMC Version'");
+
+        FILE *system_output = NULL;
+        for(j = 0; j < 4; j++)
+        {
+            system_output = popen(command_line[j], "r");
+            for(c = 0; (c = fgetc(system_output)) != ':' && c != EOF;); //On saute la premiére partie
+            fgetc(system_output);
+            for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
+            buffer_fingerprint[i++] = ' ';
+            buffer_fingerprint[i] = 0;
+            pclose(system_output);
+        }
+	#else
+
+    /**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
+    En faisant à nouveau le coup de popen ou de fopen, on en récupére quelques un, on les hash et basta**/
+
+	#endif
+#endif
+    memset(output, 0, SHA256_DIGEST_LENGTH);
+    sha256(buffer_fingerprint, output);
+}
+
+void get_file_date(const char *filename, char *date)
+{
+#ifdef _WIN32
+    char *input_parsed = malloc(strlen(filename) + strlen(REPERTOIREEXECUTION) + 5);
+	
+    HANDLE hFile;
+    FILETIME ftEdit;
+    SYSTEMTIME ftTime;
+	
+	sprintf(input_parsed, "%s\\%s", REPERTOIREEXECUTION, filename);
+	
+    hFile = CreateFileA(input_parsed,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+    GetFileTime(hFile, NULL, NULL, &ftEdit);
+    CloseHandle(hFile);
+    FileTimeToSystemTime(&ftEdit, &ftTime);
+	
+    sprintf(date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+#else
+    char *input_parsed = malloc(strlen(filename) + 500);
+    sprintf(input_parsed, "%s/%s", REPERTOIREEXECUTION, filename);
+	
+    struct stat buf;
+    if(!stat(input_parsed, &buf))
+        strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
+#endif
+    free(input_parsed);
+}
+
+void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
+{
+    //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
+    char temp[LONGUEUR_NOM_MANGA_MAX+10];
+    sprintf(temp, "manga/%s", teamLong);
+    removeFolder(temp);
+}
+
+void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
+{
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
+    sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis);
+    removeFolder(temp);
+    logR("Shhhhttt, don't imagine I didn't thought about that...\n");
+}
+
+#ifdef DEV_VERSION
+	//#define VERBOSE_DECRYPT
+#endif
 
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
 {
@@ -221,22 +310,22 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     char path[100+LONGUEUR_NOM_MANGA_MAX+LONGUEUR_NOM_MANGA_MAX+10+LONGUEUR_NOM_PAGE], key[SHA256_DIGEST_LENGTH];
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
-
+	
 	size_t size = 0;
-
+	
     sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
     test = fopenR(path, "r");
-
+	
     if(test == NULL) //Si on trouve pas la page
         return NULL;
-
+	
     fseek(test, 0, SEEK_END);
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
     fclose(test);
-
+	
     sprintf(path, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre);
     test = fopenR(path, "r");
-
+	
     if(test == NULL) //Si on trouve pas config.enc
     {
         sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
@@ -244,7 +333,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         return IMG_Load(path);
     }
     fclose(test);
-
+	
     crashTemp(temp, 200);
     if(getMasterKey(temp))
     {
@@ -255,7 +344,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     unsigned char numChapitreChar[10];
     sprintf((char *) numChapitreChar, "%d", numeroChapitre);
     pbkdf2(temp, numChapitreChar, hash);
-
+	
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
     if((configEnc[0] < '0' || configEnc[0] > '9'))
     {
@@ -288,9 +377,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     }
     crashTemp(temp, 200);
     crashTemp(hash, SHA256_DIGEST_LENGTH);
-
+	
     sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
-
+	
     for(i=0; nombreEspace <= page && nombreEspace < NOMBRE_PAGE_MAX && configEnc[i]; i++) //On se déplace sur la clée. <= car page 0 = 1 espace (nombrepage clé1 clé2...)
     {
         if(configEnc[i] == ' ')
@@ -306,7 +395,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         logR("Huge fail: database corrupted\n");
         return NULL;
     }
-    /*La, configEnc[i] est la première lettre de la clé*/
+    /*La, configEnc[i] est la premiére lettre de la clé*/
     for(nombreEspace = 0; nombreEspace < SHA256_DIGEST_LENGTH && configEnc[i]; key[nombreEspace++] = configEnc[i++]); //On parse la clée
     if(configEnc[i] && configEnc[i] != ' ')
     {
@@ -323,67 +412,24 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     }
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
-
+	
     void *buf_page = malloc(size+5);
-
+	
     AESDecrypt(key, path, buf_page, MODE_RAK);
-
+	
 #ifdef VERBOSE_DECRYPT
     AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
-
+	
     FILE *newFile = fopen("buffer.png", "wb");
 	fwrite(buf_page, 1, size, newFile);
 	fclose(newFile);
 #endif
-
+	
     crashTemp(key, SHA256_DIGEST_LENGTH);
-
+	
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
     free(buf_page);
     return surface_page;
-}
-
-void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
-{
-#ifdef _WIN32
-    unsigned char buffer_fingerprint[5000], buf_name[1024];
-    SYSTEM_INFO infos_system;
-    DWORD dwCompNameLen = 1024;
-
-    GetComputerName((char *)buf_name, &dwCompNameLen);
-    GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
-    sprintf((char *)buffer_fingerprint, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
-            (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
-#else
-	#ifdef __APPLE__
-        int c = 0, i = 0, j = 0;
-        unsigned char buffer_fingerprint[5000], command_line[4][100];
-
-        sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
-        sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
-        sprintf((char *) command_line[2], "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
-        sprintf((char *) command_line[3], "system_profiler SPHardwareDataType | grep 'SMC Version'");
-
-        FILE *system_output = NULL;
-        for(j = 0; j < 4; j++)
-        {
-            system_output = popen(command_line[j], "r");
-            for(c = 0; (c = fgetc(system_output)) != ':' && c != EOF;); //On saute la première partie
-            fgetc(system_output);
-            for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
-            buffer_fingerprint[i++] = ' ';
-            buffer_fingerprint[i] = 0;
-            pclose(system_output);
-        }
-	#else
-
-    /**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
-    En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
-
-	#endif
-#endif
-    memset(output, 0, SHA256_DIGEST_LENGTH);
-    sha256(buffer_fingerprint, output);
 }
 
 int getPassword(char password[100])
@@ -457,7 +503,7 @@ int getPassword(char password[100])
         setupBufferDL(serverTime, 100, 5, 1, 1);
         download(password, serverTime, 0);
 
-        for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la dernière donnée
+        for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
         {
             if(serverTime[i] == '\r' || serverTime[i] == '\n')
                 serverTime[i] = 0;
@@ -488,12 +534,12 @@ void getPasswordArchive(char *fileName, char password[300])
         return;
     }
 
-    /*On récupère le nom du fichier*/
+    /*On récupére le nom du fichier*/
     for(i = sizeof(fileNameWithoutDirectory); i >= 0 && fileNameWithoutDirectory[i] != '/'; i--);
     for(j = 0, i++; i < sizeof(fileNameWithoutDirectory) && fileNameWithoutDirectory[i] ; fileNameWithoutDirectory[j++] = fileNameWithoutDirectory[i++]);
     fileNameWithoutDirectory[j] = 0;
 
-    /*Pour identifier le fichier, on va hasher ses 1024 premiers caractères*/
+    /*Pour identifier le fichier, on va hasher ses 1024 premiers caractéres*/
 #ifndef MSVC
     unsigned char buffer[1024+1];
     char hash[SHA256_DIGEST_LENGTH];
@@ -501,7 +547,7 @@ void getPasswordArchive(char *fileName, char password[300])
     for(i = 0; i < 1024 && (j = fgetc(zipFile)) != EOF; buffer[i++] = j);
     sha256((unsigned char *) buffer, hash);
 
-    /*On génère l'URL*/
+    /*On génére l'URL*/
     URL = malloc(50 + sizeof(MAIN_SERVER_URL[0]) + sizeof(COMPTE_PRINCIPAL_MAIL) + sizeof(fileNameWithoutDirectory) + sizeof(hash));
     if(URL == NULL)
     {
@@ -528,7 +574,7 @@ void getPasswordArchive(char *fileName, char password[300])
         return;
     }
 
-    /*On récupère le pass*/
+    /*On récupére le pass*/
 #ifndef MSVC
     unsigned char MK[SHA256_DIGEST_LENGTH];
 #endif
@@ -577,36 +623,5 @@ int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR
     if(i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(killswitch_string[i], ID_To_Test))
         return 1;
     return 0;
-}
-
-void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
-{
-    //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char temp[LONGUEUR_NOM_MANGA_MAX+10];
-    sprintf(temp, "manga/%s", teamLong);
-    removeFolder(temp);
-}
-
-void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
-    sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis);
-    removeFolder(temp);
-    logR("Shhhhttt, don't imagine I didn't thought about that...\n");
-}
-
-void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[])
-{
-    uint32_t inputLength = 0, saltLength = 0, hash_size = SHA256_DIGEST_LENGTH;
-
-    for(inputLength = 0; input[inputLength]; inputLength++);
-    for(saltLength = 0; salt[saltLength]; saltLength++);
-
-    I2pbkdf2(hash_size,
-        input, inputLength,
-        salt, saltLength,
-        2048, //Nombre d'itération
-        PBKDF2_OUTPUT_LENGTH,
-        output);
 }
 

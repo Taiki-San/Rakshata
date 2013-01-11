@@ -70,7 +70,7 @@ int telechargement()
 
     /*On compte le nombre de mangas*/
     mangaTotal = 1;
-    fgetc(fichier);//Si la première ligne est vide, on la compte pas
+    fgetc(fichier);//Si la premiére ligne est vide, on la compte pas
     while((i = fgetc(fichier)) != EOF)
     {
         if(i == '\n')
@@ -226,14 +226,12 @@ int telechargement()
                     #ifdef _WIN32
                     if(!ZwCreateThreadEx)
                     {
-                        CreateThread(NULL, 0, installation, data_instal, 0, NULL); //Initialisation du thread
+                        /*NtSetInformationThread(*/CreateThread(NULL, 0, installation, data_instal, 0, NULL)/*, 0x11, NULL, 0)*/; //Initialisation du thread
                         logR("Failed at export primitives");
                     }
                     else
-                    {
-                        HANDLE hThread=0;
-                        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
-                    }
+                        ZwCreateThreadEx(NULL, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
+
                     #else
                     if (pthread_create(&thread, NULL, installation, data_instal))
                         exit(EXIT_FAILURE);
@@ -298,10 +296,10 @@ int telechargement()
             test = fopenR("tmp/import.dat.tmp", "a+");
             fichier = fopenR(INSTALL_DATABASE, "r");
 
-            fgetc(fichier); //On saute le premier caractère qui est parfoisun saut de ligne
+            fgetc(fichier); //On saute le premier caractére qui est parfoisun saut de ligne
             while((i = fgetc(fichier)) != '\n' && i != EOF); //On saute la ligne actuelle
 
-            mangaTotal = 1; //Pour compter la dernière ligne, sans \n
+            mangaTotal = 1; //Pour compter la derniére ligne, sans \n
             while((i = fgetc(fichier)) != EOF) //On copie la fin du fichier dans un buffer
             {
                 fputc(i, test);
@@ -470,7 +468,7 @@ void* installation(void* datas)
         fclose(ressources);
 
     if(erreurs)
-        error++; //On note si le chapitre a posé un problème
+        error++; //On note si le chapitre a posé un probléme
 
     free(valeurs->buf->buf);
     free(valeurs->buf);
