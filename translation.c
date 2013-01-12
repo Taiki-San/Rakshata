@@ -28,7 +28,6 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
     if(IDTrad > NOMBRE_TRAD_ID_MAX)
         return;
 
-
     if(langue == 0)
         loadLangueProfile();
 

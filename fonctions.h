@@ -200,6 +200,7 @@ int menuGestion();
 char *loadPrefFile();
 void addToPref(char flag, char *stringToAdd);
 void removeFromPref(char flag);
+void updatePrefs(char flag, char *stringToAdd);
 int loadLangueProfile();
 int loadEmailProfile();
 char* loadLargePrefs(char flag);

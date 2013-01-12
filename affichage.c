@@ -55,11 +55,9 @@ void raffraichissmenent()
     char texte[SIZE_TRAD_ID_5][100]; // Il faut forcement un tableau en 2D
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
     loadTrad(texte, 5);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
     SDL_RenderClear(renderer);
 
     if(texteAffiche != NULL)
@@ -73,10 +71,9 @@ void raffraichissmenent()
         SDL_DestroyTextureS(texteAffiche);
     }
     SDL_RenderPresent(renderer);
+    TTF_CloseFont(police);
 
     updateDataBase();
-
-    TTF_CloseFont(police);
 }
 
 void affichageLancement()
@@ -111,30 +108,30 @@ void chargement()
     SDL_Rect position;
     TTF_Font *police = NULL;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-	
+
 	char texte[SIZE_TRAD_ID_8][100];
-	
+
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	
+
     SDL_RenderClear(renderer);
-	
+
     if(police == NULL)
     {
         SDL_RenderFillRect(renderer, NULL);
         SDL_RenderPresent(renderer);
         return;
     }
-	
+
     if(tradAvailable())
         loadTrad(texte, 8);
     else
         sprintf(texte[0], "Chargement - Loading");
-	
+
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-	
+
     if(texteAffiche == NULL)
         return;
-	
+
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
@@ -264,7 +261,7 @@ void restartEcran()
 {
     if(WINDOW_SIZE_W != LARGEUR || WINDOW_SIZE_H != HAUTEUR)
         updateWindowSize(LARGEUR, HAUTEUR);
-	
+
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 }
@@ -272,7 +269,7 @@ void restartEcran()
 void nameWindow(const int value)
 {
     char windowsName[128], trad[SIZE_TRAD_ID_25][100], versionOfSoftware[6];
-	
+
     if(!tradAvailable())
     {
         if(langue == 1) //Français
@@ -281,20 +278,20 @@ void nameWindow(const int value)
             SDL_SetWindowTitle(window, "Rakshata - Environment corrupted");
         return;
     }
-	
+
     version(versionOfSoftware);
     loadTrad(trad, 25);
     crashTemp(windowsName, 128);
-	
+
     if(!value) //Si on affiche le nom de la fenetre standard
         sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
-	
+
     else if (value == 1)
         sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
-	
+
     else
         sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
-	
+
     SDL_SetWindowTitle(window, windowsName);
 }
 

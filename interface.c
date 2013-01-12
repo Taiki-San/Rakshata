@@ -20,7 +20,7 @@ void updateSectionMessage(char messageVersion[5])
         return;
 
     int i = 0, j = 0;
-    char URL[200], bufferDL[500], bufferMessage[500];
+    char URL[200], bufferDL[500], bufferMessage[550];
 
     sprintf(URL, "http://rsp.%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
     setupBufferDL(bufferDL, 5, 10, 10, 1);
@@ -32,7 +32,8 @@ void updateSectionMessage(char messageVersion[5])
     if(*messageVersion != '0' && bufferDL[i] != ' ' && i > 0)
         return;
 
-    for(i = j = 0; i < 500 && bufferDL[i] != 0; bufferMessage[j++] = bufferDL[i++])
+    sprintf(bufferMessage, "\n<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
+    for(j = strlen(bufferMessage), i = 0; i < 520 && bufferDL[i] != 0; bufferMessage[j++] = bufferDL[i++])
     {
         if(bufferDL[i] == '\r') //I assume the first char isn't a \r
         {
@@ -40,47 +41,42 @@ void updateSectionMessage(char messageVersion[5])
             continue;
         }
     }
+    bufferMessage[j++] = '\n';
+    bufferMessage[j++] = '<';
+    bufferMessage[j++] = '/';
+    bufferMessage[j++] = SETTINGS_MESSAGE_SECTION_FLAG;
+    bufferMessage[j++] = '>';
+    bufferMessage[j++] = '\n';
     bufferMessage[j] = 0;
 
-    if(bufferMessage[0] != '<' && bufferMessage[1] != '<' && bufferMessage[2] != '<')
-        AESEncrypt(MESSAGE_PASSWORD, bufferMessage, "data/section.msg", INPUT_IN_MEMORY);
-
-    else
+    if(bufferMessage[6] != '<' && bufferMessage[7] != '<' && bufferMessage[8] != '<')
     {
-        FILE *file = fopenR("data/section.msg", "w+");
-        fclose(file);
+        if(*messageVersion == '0')
+            addToPref(SETTINGS_MESSAGE_SECTION_FLAG, bufferMessage);
+        else
+            updatePrefs(SETTINGS_MESSAGE_SECTION_FLAG, bufferMessage);
     }
+    else
+        removeFromPref(SETTINGS_MESSAGE_SECTION_FLAG);
 }
 
 void checkSectionMessageUpdate()
 {
-    FILE *checkFile = fopenR("data/section.msg", "r");
-
-    if(checkFile == NULL)
+    char *message = NULL;
+    if((message = loadLargePrefs(SETTINGS_MESSAGE_SECTION_FLAG)) == NULL)
     {
         updateSectionMessage("0");
         return;
     }
 
-    fseek(checkFile, 0, SEEK_END);
-
-    size_t sizeOfFile = ftell(checkFile);
-    fclose(checkFile);
-
+    size_t sizeOfFile = strlen(message);
     if(sizeOfFile != 0 && sizeOfFile < 512)
     {
-        char *bufferSection = malloc(sizeOfFile);
-        if(bufferSection != NULL)
-        {
-            int i;
-            char version[5] = {0, 0, 0, 0, 0};
-            AESDecrypt(MESSAGE_PASSWORD, "data/section.msg", bufferSection, OUTPUT_IN_MEMORY);
-            for(i = 0; i < 5 && bufferSection[i] != ' ' && bufferSection[i]; i++)
-                version[i] = bufferSection[i];
-            updateSectionMessage(version);
-        }
-        else
-            logR("Not enough memory\n");
+        int i;
+        char version[5] = {0, 0, 0, 0, 0};
+        for(i = 0; i < 5 && message[i] != ' ' && message[i]; i++)
+            version[i] = message[i];
+        updateSectionMessage(version);
     }
     else
         updateSectionMessage("0");

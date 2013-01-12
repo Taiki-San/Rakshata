@@ -167,12 +167,12 @@ void generateKey(unsigned char output[HASH_LENGTH])
 int get_compte_infos()
 {
     int i = 0;
-	if(loadEmailProfile())
+	if(!loadEmailProfile())
     {
         i = logon();
         if(i == PALIER_QUIT)
             return i;
-        if(loadEmailProfile())
+        if(!loadEmailProfile())
         {
             logR("Failed at get email after re-enter it\n");
             removeR(SETTINGS_FILE);
@@ -288,7 +288,7 @@ int logon()
 
         SDL_RenderPresent(renderer);
 
-        if(waitClavier(50, beginingOfEmailAdress, 105, adresseEmail) == PALIER_QUIT)
+        if(waitClavier(50, beginingOfEmailAdress, 109, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
 
         chargement();
@@ -312,7 +312,6 @@ int logon()
                 position.w = ligne->w;
                 SDL_RenderCopy(renderer, ligne, NULL, &position);
                 SDL_DestroyTextureS(ligne);
-
 
                 ligne = TTF_Write(renderer, police, trad[6], couleur);
                 position.y = 100;
@@ -344,7 +343,7 @@ int logon()
 
                 SDL_RenderPresent(renderer);
 
-                if((i = waitClavier(50, beginingOfEmailAdress, 105, password)) == PALIER_QUIT)
+                if((i = waitClavier(50, beginingOfEmailAdress, 109, password)) == PALIER_QUIT)
                     return PALIER_QUIT;
                 else if (i == PALIER_MENU) //Echap
                 {

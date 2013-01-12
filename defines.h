@@ -112,6 +112,7 @@
 #define SETTINGS_EMAIL_FLAG 'E'
 #define SETTINGS_FAVORITE_FLAG 'F'
 #define SETTINGS_LANGUE_FLAG 'L'
+#define SETTINGS_MESSAGE_SECTION_FLAG 'S'
 #define SETTINGS_MANGADB_FLAG 'M'
 #define SETTINGS_REPODB_FLAG 'R'
 
@@ -259,7 +260,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 25
+#define NOMBRE_DE_FICHIER_A_CHECKER 23
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

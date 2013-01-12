@@ -15,12 +15,10 @@
 int section()
 {
     /*Initialisation*/
+	char texteTrad[SIZE_TRAD_ID_17][LONGUEURTEXTE], *sectionMessage = NULL;
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
-
-	char texteTrad[SIZE_TRAD_ID_17][LONGUEURTEXTE];
-
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
@@ -41,48 +39,36 @@ int section()
     SDL_DestroyTextureS(texte);
     TTF_CloseFont(police);
 
-    FILE *checkFile = fopenR("data/section.msg", "r");
-
-    if(checkFile != NULL)
+    if((sectionMessage = loadLargePrefs(SETTINGS_MESSAGE_SECTION_FLAG)) != NULL)
     {
-        fseek(checkFile, 0, SEEK_END);
-        size_t sizeOfFile = ftell(checkFile);
-        fclose(checkFile);
-
-        if(sizeOfFile != 0 && sizeOfFile < 512)
+        if(strlen(sectionMessage) != 0 && strlen(sectionMessage) < 512)
         {
-            char *bufferSection = malloc(sizeOfFile), message[5][100];
-            if(bufferSection != NULL)
+            int i, j, k;
+            char message[5][100];
+            for(i = 0; sectionMessage[i] != ' ' && sectionMessage[i]; i++);
+            for(j = 0; sectionMessage[i] && j < 5; j++)
             {
-                int i = 0, j = 0, k = 0;
-                AESDecrypt(MESSAGE_PASSWORD, "data/section.msg", bufferSection, OUTPUT_IN_MEMORY);
-                for(; bufferSection[i] != ' ' && bufferSection[i]; i++);
-                for(; bufferSection[i] && j < 5; j++)
-                {
-                    for(k = 0; bufferSection[i] && bufferSection[i] != '\n' && k < 100; message[j][k++] = bufferSection[i++]);
-                    if(bufferSection[i] == '\n')
-                        i++;
-                    message[j][k] = 0;
-                }
-
-                police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-                position.y = WINDOW_SIZE_H;
-                for(j--; j >= 0; j--)
-                {
-                    texte = TTF_Write(renderer, police, message[j], couleurTexte);
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y -= texte->h;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
-                }
-                TTF_CloseFont(police);
-                free(bufferSection);
+                for(k = 0; sectionMessage[i] && sectionMessage[i] != '\n' && k < 100; message[j][k++] = sectionMessage[i++]);
+                if(sectionMessage[i] == '\n')
+                    i++;
+                message[j][k] = 0;
             }
-            else
-                logR("Not enough memory\n");
+
+            police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+            position.y = WINDOW_SIZE_H;
+            for(j--; j >= 0; j--)
+            {
+                texte = TTF_Write(renderer, police, message[j], couleurTexte);
+                position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                position.y -= texte->h;
+                position.h = texte->h;
+                position.w = texte->w;
+                SDL_RenderCopy(renderer, texte, NULL, &position);
+                SDL_DestroyTextureS(texte);
+            }
+            TTF_CloseFont(police);
         }
+        free(sectionMessage);
     }
     return displayMenu(&(texteTrad[2]), NOMBRESECTION, BORDURE_SUP_SECTION);
 }
@@ -97,7 +83,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
     SDL_Rect position;
     TTF_Font *police = NULL;
 
-    for(nombreMangaElligible = 0; nombreMangaElligible < NOMBRE_MANGA_MAX && mangas_db[nombreMangaElligible].mangaName[0]; nombreMangaElligible++); //Enumération
+    for(nombreMangaElligible = 0; mangas_db != NULL && nombreMangaElligible < NOMBRE_MANGA_MAX && mangas_db[nombreMangaElligible].mangaName[0]; nombreMangaElligible++); //Enumération
 
     if(nombreMangaElligible > 0)
     {
@@ -183,26 +169,26 @@ int checkProjet(MANGAS_DATA mangaDB)
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
     FILE* test = NULL;
-	
+
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-	
+
     /*Chargement arborescence*/;
     sprintf(temp, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
     test = fopenR(temp, "r");
-	
+
     SDL_RenderClear(renderer);
-	
+
     if(test != NULL)
     {
         /*Affichage consigne*/
         char texte[SIZE_TRAD_ID_10][100];
         loadTrad(texte, 10);
-		
+
         fclose(test);
-		
+
         restartEcran();
-		
+
 		image = TTF_Write(renderer, police, texte[0], couleur);
         position.x = LARGEUR / 2 - image->w / 2;
         position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
@@ -211,7 +197,7 @@ int checkProjet(MANGAS_DATA mangaDB)
         SDL_RenderCopy(renderer, image, NULL, &position);
         SDL_DestroyTextureS(image);
         TTF_CloseFont(police);
-		
+
         image = IMG_LoadTexture(renderer, temp);
         position.x = 0;
         position.y = BORDURE_HOR_LECTURE;
@@ -220,7 +206,7 @@ int checkProjet(MANGAS_DATA mangaDB)
         SDL_RenderCopy(renderer, image, NULL, &position);
         SDL_RenderPresent(renderer);
         SDL_DestroyTextureS(image);
-		
+
         return waitEnter();
     }
     return 1;

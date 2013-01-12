@@ -10,15 +10,14 @@
 **                                                                                          **
 *********************************************************************************************/
 
-
 #include "main.h"
 
 MANGAS_DATA* miseEnCache(int mode)
 {
 	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0;
 	char ID[NOMBRE_MANGA_MAX][LONGUEUR_ID_TEAM], teamLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], type[NOMBRE_MANGA_MAX][LONGUEUR_TYPE_TEAM], URL[NOMBRE_MANGA_MAX][LONGUEUR_URL], site[NOMBRE_MANGA_MAX][LONGUEUR_SITE];
-    char* repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
-	char* mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG);
+    char *repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
+	char *mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak = NULL;
 
     MANGAS_DATA *mangas = allocateDatabase(NOMBRE_MANGA_MAX);
 
@@ -26,9 +25,11 @@ MANGAS_DATA* miseEnCache(int mode)
 		return NULL;
 
 	for(; *repoDB != 0 && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++) //Tant qu'on a pas fini de lire le fichier de base de données
-		repoDB += sscanfs(repoDB, "%s %s %s %s %s %s", ID[nombreTeam], LONGUEUR_ID_TEAM, teamLong[nombreTeam], LONGUEUR_NOM_MANGA_MAX, teamCourt[nombreTeam], LONGUEUR_COURT, type[nombreTeam], LONGUEUR_TYPE_TEAM, URL[nombreTeam], LONGUEUR_URL, site[nombreTeam], LONGUEUR_SITE);
-
-	free(repoDB);
+    {
+        repoDB += sscanfs(repoDB, "%s %s %s %s %s %s", ID[nombreTeam], LONGUEUR_ID_TEAM, teamLong[nombreTeam], LONGUEUR_NOM_MANGA_MAX, teamCourt[nombreTeam], LONGUEUR_COURT, type[nombreTeam], LONGUEUR_TYPE_TEAM, URL[nombreTeam], LONGUEUR_URL, site[nombreTeam], LONGUEUR_SITE);
+        for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
+	}
+	free(repoBak);
 
 	char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 2 + 100];
 	mangaDB += sscanfs(mangaDB,"%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
@@ -39,7 +40,10 @@ MANGAS_DATA* miseEnCache(int mode)
 		if(*mangaDB == '#')
 		{
 		    mangaDB++;
-			mangaDB += sscanfs(mangaDB, "\n%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
+		    for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
+			mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
+			for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
+
 			for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
 			nombreMangaDansDepot = 1;
             numeroManga--;
@@ -48,6 +52,7 @@ MANGAS_DATA* miseEnCache(int mode)
 		{
             int cat = 0;
 			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &cat, &mangas[numeroManga].pageInfos); //j n'est pas utilisé par ce module
+            for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
 			if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
 			{
@@ -95,11 +100,7 @@ MANGAS_DATA* miseEnCache(int mode)
 			}
 		}
 	}
-	free(mangaDB);
-
-    int i;
-	for(i = 0; i < numeroManga;)
-	    i++;
+	free(mangaBak);
 
 	qsort(mangas, numeroManga, sizeof(MANGAS_DATA), compare);
 	mangas[numeroManga].mangaName[0] = 0;
@@ -118,6 +119,9 @@ MANGAS_DATA* allocateDatabase(size_t length)
 
 void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
 {
+    if(mangasDB == NULL)
+        return;
+
     size_t pos = 0;
     for(; pos < length; free(mangasDB[pos++].team));
     free(mangasDB);
@@ -157,14 +161,22 @@ void update_repo()
 	int i = 0, positionDansBuffer = 0;
 	int limites[7] = {0, LONGUEUR_ID_TEAM, LONGUEUR_NOM_MANGA_MAX, LONGUEUR_COURT, 10, LONGUEUR_URL, LONGUEUR_SITE}, limiteActuelle[7] = {1, 0, 0, 0, 0, 0, 0};
 	char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], repo_new[SIZE_BUFFER_UPDATE_DATABASE], killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
-	FILE* repo = fopenR(REPO_DATABASE, "r");
+	char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA infosTeam;
+
+	if(repo == NULL)
+        return;
+
+    repoBak = repo;
+    sprintf(repo_new, "\n<%c>\n", SETTINGS_REPODB_FLAG);
+    positionDansBuffer = strlen(repo_new);
 
 	Load_KillSwitch(killswitch);
 
-	while(i != EOF && i != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+	while(*repo != 0 && *repo != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
 	{
-		fscanfs(repo, "%s %s %s %s %s %s", infosTeam.IDTeam, LONGUEUR_ID_TEAM, infosTeam.teamLong, LONGUEUR_NOM_MANGA_MAX, infosTeam.teamCourt, LONGUEUR_COURT, infosTeam.type, LONGUEUR_ID_TEAM, infosTeam.URL_depot, LONGUEUR_URL, infosTeam.site, LONGUEUR_SITE);
+		repo += sscanfs(repo, "%s %s %s %s %s %s", infosTeam.IDTeam, LONGUEUR_ID_TEAM, infosTeam.teamLong, LONGUEUR_NOM_MANGA_MAX, infosTeam.teamCourt, LONGUEUR_COURT, infosTeam.type, LONGUEUR_ID_TEAM, infosTeam.URL_depot, LONGUEUR_URL, infosTeam.site, LONGUEUR_SITE);
+		for(; *repo == '\r' || *repo == '\n'; repo++);
 		if(checkKillSwitch(killswitch, infosTeam.IDTeam))
 		{
 			killswitchEnabled(infosTeam.teamLong);
@@ -197,19 +209,16 @@ void update_repo()
 					positionDansBuffer--;
 			}
 		}
-		while((i = fgetc(repo)) == '\n' || i == '\r');
-		fseek(repo, -1, SEEK_CUR);
-		if(i != EOF && i != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+		for(; *repo == '\n' || *repo == '\r'; repo++);
+		if(*repo != 0 && *repo != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
 		{
 			repo_new[positionDansBuffer++] = '\n';
 			repo_new[positionDansBuffer] = 0;
 		}
 	}
-	repo_new[positionDansBuffer] = 0;
-	fclose(repo);
-	repo = fopenR(REPO_DATABASE, "w+");
-	for(i = 0; repo_new[i]; fputc(repo_new[i++], repo));
-	fclose(repo);
+	free(repoBak);
+	sprintf(&repo_new[positionDansBuffer], "\n</%c>", SETTINGS_REPODB_FLAG);
+	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
 }
 
 void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
@@ -240,14 +249,22 @@ void update_mangas()
 	int i = 0, positionDansBuffer = 0, premiereLigne = 0;
 	int limites[7] = {0, LONGUEUR_NOM_MANGA_MAX, LONGUEUR_COURT, 1, 1, 1, 1}, limiteActuelle[7] = {1, 0, 0, 0, 0, 0, 0};
 	char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], manga_new[SIZE_BUFFER_UPDATE_DATABASE], killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
-	FILE* repo = fopenR(REPO_DATABASE, "r");
+    char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA teams;
+
+    repoBak = repo;
+    sprintf(manga_new, "\n<%c>\n", SETTINGS_MANGADB_FLAG);
+    positionDansBuffer = strlen(manga_new);
+
+    if(repo == NULL)
+        return;
 
 	Load_KillSwitch(killswitch);
 
-	while(i != EOF && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+	while(*repo != 0 && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
 	{
-		fscanfs(repo, "%s %s %s %s %s\n", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_ID_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+		repo += sscanfs(repo, "%s %s %s %s %s %s", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_ID_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+		for(; *repo == '\r' || *repo == '\n'; repo++);
 		if(checkKillSwitch(killswitch, teams.IDTeam))
 		{
 			killswitchEnabled(teams.teamLong);
@@ -295,21 +312,16 @@ void update_mangas()
 				}
 			}
 		}
-		i = fgetc(repo);
-		fseek(repo, -1, SEEK_CUR);
-
 		if(manga_new[positionDansBuffer-1] != '\n')
 			manga_new[positionDansBuffer-1] = '\n';
 		if(positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && manga_new[positionDansBuffer-1] != '#')
 			manga_new[positionDansBuffer++] = '#';
-		if(i != EOF && i != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+		if(*repo != 0 && *repo != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
 			manga_new[positionDansBuffer++] = '\n';
 	}
-	manga_new[positionDansBuffer] = 0;
-	fclose(repo);
-	repo = fopenR(MANGA_DATABASE, "w+");
-	fwrite(manga_new, strlen(manga_new), 1, repo);
-	fclose(repo);
+	sprintf(&manga_new[positionDansBuffer], "\n</%c>", SETTINGS_MANGADB_FLAG);
+	free(repoBak);
+	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
 }
 
 int deleteManga()

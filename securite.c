@@ -259,23 +259,23 @@ void get_file_date(const char *filename, char *date)
 {
 #ifdef _WIN32
     char *input_parsed = malloc(strlen(filename) + strlen(REPERTOIREEXECUTION) + 5);
-	
+
     HANDLE hFile;
     FILETIME ftEdit;
     SYSTEMTIME ftTime;
-	
+
 	sprintf(input_parsed, "%s\\%s", REPERTOIREEXECUTION, filename);
-	
+
     hFile = CreateFileA(input_parsed,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
     GetFileTime(hFile, NULL, NULL, &ftEdit);
     CloseHandle(hFile);
     FileTimeToSystemTime(&ftEdit, &ftTime);
-	
+
     sprintf(date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
     char *input_parsed = malloc(strlen(filename) + 500);
     sprintf(input_parsed, "%s/%s", REPERTOIREEXECUTION, filename);
-	
+
     struct stat buf;
     if(!stat(input_parsed, &buf))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
@@ -310,22 +310,22 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     char path[100+LONGUEUR_NOM_MANGA_MAX+LONGUEUR_NOM_MANGA_MAX+10+LONGUEUR_NOM_PAGE], key[SHA256_DIGEST_LENGTH];
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
-	
+
 	size_t size = 0;
-	
+
     sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
     test = fopenR(path, "r");
-	
+
     if(test == NULL) //Si on trouve pas la page
         return NULL;
-	
+
     fseek(test, 0, SEEK_END);
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
     fclose(test);
-	
+
     sprintf(path, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre);
     test = fopenR(path, "r");
-	
+
     if(test == NULL) //Si on trouve pas config.enc
     {
         sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
@@ -333,7 +333,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         return IMG_Load(path);
     }
     fclose(test);
-	
+
     crashTemp(temp, 200);
     if(getMasterKey(temp))
     {
@@ -344,7 +344,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     unsigned char numChapitreChar[10];
     sprintf((char *) numChapitreChar, "%d", numeroChapitre);
     pbkdf2(temp, numChapitreChar, hash);
-	
+
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
     if((configEnc[0] < '0' || configEnc[0] > '9'))
     {
@@ -377,9 +377,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     }
     crashTemp(temp, 200);
     crashTemp(hash, SHA256_DIGEST_LENGTH);
-	
+
     sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
-	
+
     for(i=0; nombreEspace <= page && nombreEspace < NOMBRE_PAGE_MAX && configEnc[i]; i++) //On se déplace sur la clée. <= car page 0 = 1 espace (nombrepage clé1 clé2...)
     {
         if(configEnc[i] == ' ')
@@ -412,21 +412,21 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     }
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
-	
+
     void *buf_page = malloc(size+5);
-	
+
     AESDecrypt(key, path, buf_page, MODE_RAK);
-	
+
 #ifdef VERBOSE_DECRYPT
     AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
-	
+
     FILE *newFile = fopen("buffer.png", "wb");
 	fwrite(buf_page, 1, size, newFile);
 	fclose(newFile);
 #endif
-	
+
     crashTemp(key, SHA256_DIGEST_LENGTH);
-	
+
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
     free(buf_page);
     return surface_page;
@@ -589,7 +589,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
     char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM], temp[350];
 
 	for(i = 0; i < NUMBER_MAX_TEAM_KILLSWITCHE; i++)
-        for(j=0; j < 100; killswitch_string[i][j++] = 0);
+        for(j=0; j < LONGUEUR_ID_TEAM; killswitch_string[i][j++] = 0);
 
     if(!checkNetworkState(CONNEXION_OK))
         return;

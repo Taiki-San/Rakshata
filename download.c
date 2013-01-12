@@ -223,38 +223,37 @@ int download(char *adresse, char *repertoire, int activation)
     else
     {
 		SDL_Event event;
-        while(1)
+        MUTEX_LOCK;
+        while(status)
         {
+            MUTEX_UNLOCK;
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
-            if(event.type == 0)
-                continue;
-            switch(event.type)
+            if(event.type != 0)
             {
-                case SDL_QUIT:
-                    alright = 0;
-                    break;
+                switch(event.type)
+                {
+                    case SDL_QUIT:
+                        alright = 0;
+                        break;
 
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEBUTTONUP:
-                case SDL_TEXTINPUT:
-                case SDL_KEYDOWN:
-                    SDL_PushEvent(&event);
-                    event.type = 0;
-                    break;
+                    case SDL_MOUSEBUTTONDOWN:
+                    case SDL_MOUSEBUTTONUP:
+                    case SDL_TEXTINPUT:
+                    case SDL_KEYDOWN:
+                        SDL_PushEvent(&event);
+                        event.type = 0;
+                        break;
 
-                default:
-                    SDL_Delay(50);
-                    break;
+                    default:
+                        SDL_Delay(50);
+                        break;
+                }
             }
             MUTEX_LOCK;
-            if(status == 0)
-                break;
-            MUTEX_UNLOCK;
         }
         MUTEX_UNLOCK;
     }
-
     MUTEX_LOCK;
     status = -1;
     MUTEX_UNLOCK;

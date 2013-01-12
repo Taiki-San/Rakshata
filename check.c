@@ -22,7 +22,7 @@ int check_evt()
 
     /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
     sprintf(nomsATest[0], "data/font.ttf");
-    sprintf(nomsATest[1], "data/acceuil.png");
+    sprintf(nomsATest[1], "data/icone.png");
     sprintf(nomsATest[2], "data/french/acceuil.png");
     sprintf(nomsATest[3], "data/french/controls.png");
     sprintf(nomsATest[4], "data/french/localization");
@@ -43,10 +43,8 @@ int check_evt()
     sprintf(nomsATest[18], "data/icon/np.png");
     sprintf(nomsATest[19], "data/icon/pc.png");
     sprintf(nomsATest[20], "data/icon/pp.png");
-    sprintf(nomsATest[21], "data/icone.png");
-    sprintf(nomsATest[22], REPO_DATABASE);
-    sprintf(nomsATest[23], MANGA_DATABASE);
-    sprintf(nomsATest[24], SECURE_DATABASE);
+    sprintf(nomsATest[21], "data/acceuil.png");
+    sprintf(nomsATest[22], SECURE_DATABASE);
 
     SDL_Delay(1000);
 
@@ -118,7 +116,7 @@ int check_evt()
                 snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
                 download(temp, nomsATest[fichiersADL[i]], 0);
 
-                if(fichiersADL[i] == 5 || fichiersADL[i] == 9 || fichiersADL[i] == 13 || fichiersADL[i] == 17 || fichiersADL[i] == 19 || fichiersADL[i] == 20) //Si c'est un fichier de localization
+                if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 9 || fichiersADL[i] == 12) //Si c'est un fichier de localization
                 {
                     int k = 0, j = 0; //On parse
 					char *buffer = NULL;
@@ -144,7 +142,7 @@ int check_evt()
                     free(buffer);
                 }
 
-                if(fichiersADL[i] == 21) //Si c'est l'icone
+                if(fichiersADL[i] == 1) //Si c'est l'icone
                 {
                     SDL_Surface *icon = IMG_Load("data/icone.png");
                     if(icon != NULL)
@@ -157,16 +155,11 @@ int check_evt()
         }
         nameWindow(0);
     }
-
-
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;
 
-    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
-    if(test == NULL)
+    if(!checkFileExist(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]))
         createSecurePasswordDB(NULL);
-    else
-        fclose(test);
     return 0;
 }
 
@@ -466,7 +459,7 @@ void networkAndVersionTest()
         checkSectionMessageUpdate();
 
         //Nouveau killswitch
-        if(!loadEmailProfile())
+        if(loadEmailProfile())
 		{
 			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
 			if(i == 0 && COMPTE_PRINCIPAL_MAIL[i] != '@')
@@ -802,6 +795,4 @@ int checkFileValide(FILE* file)
         return 0;
     return 1;
 }
-
-
 
