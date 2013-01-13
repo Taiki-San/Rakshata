@@ -164,7 +164,9 @@ int tradAvailable()
 
 	if(temp == NULL)
     {
-        logR("Failed at allocate memory\n");
+        char temp[256];
+        snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", 50 + strlen(LANGUAGE_PATH[langue-1]));
+        logR(temp);
         exit(0);
     }
     sprintf(temp, "data/%s/localization", LANGUAGE_PATH[langue-1]);

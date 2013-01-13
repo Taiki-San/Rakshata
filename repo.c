@@ -261,16 +261,22 @@ int deleteRepo()
         {
             int j = 0;
             char *repoNew = NULL;
-            char temp[LONGUEUR_NOM_MANGA_MAX];
+            char temp[LONGUEUR_NOM_MANGA_MAX+100];
             repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
 
             sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
             removeFolder(temp); //Suppresion du dossier de la team
+
+            repoNew[j++] = '<';
+            repoNew[j++] = SETTINGS_REPODB_FLAG;
+            repoNew[j++] = '>';
+            repoNew[j++] = '\n';
+
             for(i = 0; i < nombreTeam; i++)
             {
-                while(repo!=NULL && *repo && *repo != '\n')
-                    repoNew[j++] = *repo++;
-                sscanfs(repo, "%s", temp, LONGUEUR_NOM_MANGA_MAX);
+                for(; repo!=NULL && *repo && *repo != '\n'; repoNew[j++] = *repo++);
+                for(; repo!=NULL && *repo && *repo == '\n'; repo++);
+                sscanfs(repo, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX);
                 if(!strcmp(temp, mangaDB[teamChoisis-1].team->teamLong))
                     for(; repo!=NULL && *repo && *repo != '\n'; repo++);
                 else
@@ -280,6 +286,7 @@ int deleteRepo()
             repoNew[j++] = '/';
             repoNew[j++] = SETTINGS_REPODB_FLAG;
             repoNew[j++] = '>';
+            repoNew[j++] = '\n';
             repoNew[j] = 0;
             updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
             free(repoBak);
