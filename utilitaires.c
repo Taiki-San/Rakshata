@@ -108,25 +108,24 @@ int positionnementApresChar(char* input, char *stringToFind)
 
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
 {
-    int i = 0;
-
     char temp[LONGUEUR_NOM_MANGA_MAX], buffer[LONGUEUR_COURT];
-    FILE* ressource = fopenR(MANGA_DATABASE, "r");
+    char* manga = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak;
+    mangaBak = manga;
 
-    fscanfs(ressource, "%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-    while(strcmp(temp, nomProjet) && strcmp(buffer, nomProjet))
+    manga += sscanfs(manga, "%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
+    while(manga != NULL && strcmp(temp, nomProjet) && strcmp(buffer, nomProjet) && *manga)
     {
-        if((i = fgetc(ressource)) == '#')
-            fscanfs(ressource, "\n%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-        else if(i != EOF)
+        if(*manga == '#')
         {
-            fseek(ressource, -1, SEEK_CUR);
-            fscanfs(ressource, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
+            manga++;
+            manga += sscanfs(manga, "\n%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
         }
+        else if(*manga)
+            manga += sscanfs(manga, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
         else
             break;
     }
-    fclose(ressource);
+    free(mangaBak);
 }
 
 void createPath(char output[])

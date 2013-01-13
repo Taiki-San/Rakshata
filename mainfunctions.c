@@ -209,151 +209,82 @@ int mainLecture()
 int mainChoixDL()
 {
     int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0;
-    FILE* test = NULL;
-
     mkdirR("manga");
-	mkdirR("tmp");
-    #ifdef _WIN32
-    test = fopenR(INSTALL_DATABASE, "r");
+    initialisationAffichage();
 
-    if(test != NULL)
+    MUTEX_LOCK;
+    if(NETWORK_ACCESS < CONNEXION_DOWN)
     {
-        fclose(test);
-        removeR("data/bloq");
-        test = fopenR("data/bloq", "r");
-    }
-    if(test == NULL)
-	#else
-	int allowed = 0;
-	test = fopenR("data/bloq", "r");
-	if(test != NULL)
-    {
-        fscanfs(test, "%d", &nombreChapitre);
-        if(!checkPID(nombreChapitre))
-            allowed = 1;
-        nombreChapitre = 0;
-        fclose(test);
-    }
+        MUTEX_UNLOCK;
+        updateDataBase();
+        MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
 
-    if(!allowed)
-    {
-        test = fopenR("data/download", "r");
-        if(test != NULL)
+        /*C/C du choix de manga pour le lecteur.*/
+        while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
         {
-            fscanfs(test, "%d", &nombreChapitre);
-            if(!checkPID(nombreChapitre))
-                allowed = 1;
-            nombreChapitre = 0;
-            fclose(test);
-        }
-    }
+            mangaChoisis = 0;
+            chapitreChoisis = 0;
+            supprUsedInChapitre = 0;
 
-    if(!allowed)
-    #endif
-    {
-        test = fopenR("data/bloq", "w+");
-        #ifndef _WIN32
-            fprintf(test, "%d", getpid());
-            fclose(test);
-        #endif
+            /*Appel des selectionneurs*/
+            mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
 
-        SDL_RenderClear(renderer);
-
-        initialisationAffichage();
-        MUTEX_LOCK;
-        if(NETWORK_ACCESS < CONNEXION_DOWN)
-        {
-            MUTEX_UNLOCK;
-            updateDataBase();
-            if(continuer != PALIER_QUIT)
+            if(mangaChoisis == -11 || mangaChoisis == -10)
+                continuer = PALIER_CHAPTER;
+            else if(mangaChoisis < PALIER_CHAPTER)
+                continuer = mangaChoisis;
+            else if(mangaChoisis == PALIER_CHAPTER)
+                continuer = PALIER_MENU;
+            else if(mangaChoisis > PALIER_DEFAULT)
             {
-                MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
-
-                /*C/C du choix de manga pour le lecteur.*/
-                while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
+                chapitreChoisis = PALIER_DEFAULT;
+                continuer = 0;
+                while(chapitreChoisis > PALIER_CHAPTER && !continuer)
                 {
-                    mangaChoisis = 0;
-                    chapitreChoisis = 0;
-                    supprUsedInChapitre = 0;
+                    chapitreChoisis = chapitre(mangaDB[mangaChoisis], 2);
 
-                    /*Appel des selectionneurs*/
-                    mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
-
-                    if(mangaChoisis == -11 || mangaChoisis == -10)
-                        continuer = PALIER_CHAPTER;
-                    else if(mangaChoisis < PALIER_CHAPTER)
-                        continuer = mangaChoisis;
-                    else if(mangaChoisis == PALIER_CHAPTER)
-                        continuer = PALIER_MENU;
-                    else if(mangaChoisis > PALIER_DEFAULT)
+                    if (chapitreChoisis <= PALIER_CHAPTER)
                     {
-                        chapitreChoisis = PALIER_DEFAULT;
-                        continuer = 0;
-                        while(chapitreChoisis > PALIER_CHAPTER && !continuer)
-                        {
-                            chapitreChoisis = chapitre(mangaDB[mangaChoisis], 2);
-
-                            if (chapitreChoisis <= PALIER_CHAPTER)
-                            {
-                                continuer = chapitreChoisis;
-                                if(chapitreChoisis == PALIER_CHAPTER)
-                                    supprUsedInChapitre = 1;
-                            }
-
-                            else
-                            {
-                                /*Confirmation */
-                                SDL_RenderClear(renderer);
-                                continuer = ecritureDansImport(mangaDB[mangaChoisis], chapitreChoisis);
-								nombreChapitre = nombreChapitre + continuer;
-                                continuer = -1;
-                            }
-                        }
+                        continuer = chapitreChoisis;
+                        if(chapitreChoisis == PALIER_CHAPTER)
+                            supprUsedInChapitre = 1;
                     }
-                }
 
-                if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
-                {
-                    if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
+                    else
                     {
+                        /*Confirmation */
                         SDL_RenderClear(renderer);
-                        affichageLancement();
-                        lancementModuleDL();
+                        continuer = ecritureDansImport(mangaDB[mangaChoisis], chapitreChoisis);
+                        nombreChapitre = nombreChapitre + continuer;
+                        continuer = -1;
                     }
                 }
-                else if(checkLancementUpdate())
-                    removeR(INSTALL_DATABASE);
-
-                freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
             }
         }
-        else
-        {
-            MUTEX_UNLOCK;
-            continuer = erreurReseau();
-        }
-        #ifdef _WIN32
-            fclose(test);
-        #endif
-        removeR("data/bloq");
-    }
 
+        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
+        {
+            if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
+            {
+                SDL_RenderClear(renderer);
+                affichageLancement();
+                lancementModuleDL();
+            }
+        }
+        else if(checkLancementUpdate())
+            removeR(INSTALL_DATABASE);
+
+        freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+    }
     else
     {
-        fclose(test);
-        /*Fenetre*/
-        if(WINDOW_SIZE_H != HAUTEUR_INTERDIT_WHILE_DL)
-            updateWindowSize(LARGEUR, HAUTEUR_INTERDIT_WHILE_DL);
-
-        SDL_RenderClear(renderer);
-
-        continuer = interditWhileDL();
+        MUTEX_UNLOCK;
+        continuer = erreurReseau();
     }
     return continuer;
 }
 
 extern int status;
-
 void mainDL()
 {
     FILE *BLOQUEUR = NULL;

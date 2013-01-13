@@ -147,7 +147,7 @@ int telechargement()
                 crashTemp(temp, 200);
 
                 changeTo(mangaDB[posVariable].mangaName, '_', ' ');
-                sprintf(temp, "%s %s %s %d %s %s (%d%% %s)", trad[0], mangaDB[posVariable].mangaName, trad[1], chapitre, trad[2], mangaDB[posVariable].team->teamCourt, pourcentage, trad[3]);
+                snprintf(temp, 200, "%s %s %s %d %s %s (%d%% %s)", trad[0], mangaDB[posVariable].mangaName, trad[1], chapitre, trad[2], mangaDB[posVariable].team->teamCourt, pourcentage, trad[3]);
                 changeTo(mangaDB[posVariable].mangaName, ' ', '_');
 
                 //On remplis la fenêtre
@@ -230,8 +230,10 @@ int telechargement()
                         logR("Failed at export primitives");
                     }
                     else
-                        ZwCreateThreadEx(NULL, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
-
+                    {
+                        HANDLE hThread=0;
+                        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
+                    }
                     #else
                     if (pthread_create(&thread, NULL, installation, data_instal))
                         exit(EXIT_FAILURE);
@@ -293,7 +295,7 @@ int telechargement()
 
         if(glados > 0)
         {
-            test = fopenR("tmp/import.dat.tmp", "a+");
+            test = fopenR("data/import.tmp", "a+");
             fichier = fopenR(INSTALL_DATABASE, "r");
 
             fgetc(fichier); //On saute le premier caractére qui est parfoisun saut de ligne
@@ -310,7 +312,7 @@ int telechargement()
             fclose(fichier);
 
             removeR(INSTALL_DATABASE);
-            renameR("tmp/import.dat.tmp", INSTALL_DATABASE);
+            renameR("data/import.tmp", INSTALL_DATABASE);
 
             fichier = fopenR(INSTALL_DATABASE, "r");
         }

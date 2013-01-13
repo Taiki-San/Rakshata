@@ -548,10 +548,12 @@ void getPasswordArchive(char *fileName, char password[300])
     sha256((unsigned char *) buffer, hash);
 
     /*On génére l'URL*/
-    URL = malloc(50 + sizeof(MAIN_SERVER_URL[0]) + sizeof(COMPTE_PRINCIPAL_MAIL) + sizeof(fileNameWithoutDirectory) + sizeof(hash));
+    URL = malloc((50 + strlen(MAIN_SERVER_URL[0]) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)) * sizeof(unsigned char));
     if(URL == NULL)
     {
-        logR("Failed at allocate memory\n");
+        char temp[256];
+        snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", (50 + strlen(MAIN_SERVER_URL[0]) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)) * sizeof(unsigned char));
+        logR(temp);
         return;
     }
     sprintf(URL, "http://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);

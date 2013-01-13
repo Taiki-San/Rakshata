@@ -396,7 +396,7 @@ int logon()
                             COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
 
                         removeFromPref(SETTINGS_EMAIL_FLAG);
-                        snprintf(temp, 200, "<%c>\n%s\n</%c>", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
+                        snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
                         addToPref(SETTINGS_EMAIL_FLAG, temp);
                         break;
                     }
@@ -611,7 +611,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
         char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
         if(temp == NULL)
         {
-            logR("Failed at allocate memory\n");
+            char temp[256];
+            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            logR(temp);
             exit(-1);
         }
         sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
@@ -639,7 +641,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
         char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
         if(temp == NULL)
         {
-            logR("Failed at allocate memory\n");
+            char temp[256];
+            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            logR(temp);
             exit(-1);
         }
         sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
@@ -717,7 +721,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
         char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
         if(buffer == NULL)
         {
-            logR("Failed at allocate memory\n");
+            char temp[256];
+            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            logR(temp);
             exit(-1);
         }
 

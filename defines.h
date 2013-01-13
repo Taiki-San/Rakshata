@@ -35,7 +35,7 @@
 /*Environnement*/
 #define REPO_DATABASE "data/repo"
 #define MANGA_DATABASE "data/mangas"
-#define INSTALL_DATABASE "tmp/import.dat"
+#define INSTALL_DATABASE "data/import.dat"
 #define FONT_USED_BY_DEFAULT "data/font.ttf"
 
 #ifdef DEV_VERSION

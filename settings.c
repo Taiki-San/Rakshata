@@ -116,14 +116,16 @@ char *loadPrefFile()
     }
     fseek(pref, 0, SEEK_END);
     output = calloc(1, ftell(pref) + 10); //Set at 0
-    fclose(pref);
 
     if(output == NULL)
     {
-        logR("Failed at allocate memory\n");
+        char temp[256];
+        snprintf(temp, 256, "Failed at allocate memory for : %ld bytes\n", (ftell(pref) + 10));
+        logR(temp);
         return NULL;
     }
 
+    fclose(pref);
     AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
     if(output[0] != '<')
@@ -249,7 +251,7 @@ int loadLangueProfile()
     mkdirR("data");
     char temp[100];
     langue = LANGUE_PAR_DEFAUT;
-    sprintf(temp, "<%c>\n%d\n</%c>", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+    sprintf(temp, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
     AESEncrypt(SETTINGS_PASSWORD, temp, SETTINGS_FILE, INPUT_IN_MEMORY);
     return 1;
 }
@@ -278,15 +280,22 @@ char* loadLargePrefs(char flag)
 		}
 		else if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
 		{
-			char temp[200], *buffer = NULL;
+			char temp[200], *buffer = NULL, *buffer2 = NULL;
 			if(flag == SETTINGS_MANGADB_FLAG)
 				snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, MANGA_DATABASE);
 			else
 				snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, REPO_DATABASE);
+
 			buffer = calloc(1, 0x10000);
 			setupBufferDL(buffer, 0x10, 0x10, 0x10, 0x10);
 			download(temp, buffer, 0);
-			addToPref(flag, buffer);
+
+			buffer2 = calloc(1, strlen(buffer)+50);
+			snprintf(buffer2, strlen(buffer)+50, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
+
+			addToPref(flag, buffer2);
+			free(buffer2);
+			free(buffer);
 		}
 	}
 	return NULL;

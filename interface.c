@@ -32,7 +32,7 @@ void updateSectionMessage(char messageVersion[5])
     if(*messageVersion != '0' && bufferDL[i] != ' ' && i > 0)
         return;
 
-    sprintf(bufferMessage, "\n<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
+    sprintf(bufferMessage, "<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
     for(j = strlen(bufferMessage), i = 0; i < 520 && bufferDL[i] != 0; bufferMessage[j++] = bufferDL[i++])
     {
         if(bufferDL[i] == '\r') //I assume the first char isn't a \r

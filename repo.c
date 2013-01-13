@@ -16,7 +16,6 @@ int ajoutRepo()
 {
     int continuer = 0, existant = 0, erreur = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
-	FILE* test = NULL;
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
@@ -150,20 +149,28 @@ int ajoutRepo()
 
                     if(waitEnter() == 1)
                     {
-                        test = fopenR(REPO_DATABASE, "r+");
-                        existant = 0;
-                        while(fgetc(test) != EOF)
+                        char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
+                        repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
+                        repoBak = repo;
+                        while(repo !=NULL && *repo)
                         {
-                            fscanfs(test, "%s\n", temp, LONGUEUR_ID_TEAM);
+                            repo+= sscanfs(repo, "%s\n", temp, LONGUEUR_ID_TEAM);
                             if(!strcmp(temp, teams.IDTeam))
                                 existant = 1;
                         }
-                        if(temp[0]) //Si le fichier n'est pas vide, qu'on a lu quelquechose
-                            fputc('\n', test);
                         if(existant == 0)
-                            fprintf(test, "%s %s %s %s %s %s", teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site);
-
-                        fclose(test);
+                        {
+                            if(*repoBak)
+                            {
+                                int i = strlen(repoBak);
+                                repoBak[i++] = '\n';
+                                repoBak[i] = 0;
+                            }
+                            sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
+                        }
+                        free(repoBak);
+                        free(repoNew);
                         continuer = -1;
                     }
                 }
@@ -189,8 +196,8 @@ int deleteRepo()
 
     MANGAS_DATA* mangaDB = allocateDatabase(NOMBRE_MANGA_MAX);
 
-    FILE* repo = NULL;
-    FILE* repoNew = NULL;
+    char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
+    repoBak = repo;
 
     /*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
@@ -205,14 +212,13 @@ int deleteRepo()
     ***           pour jarter les mangas de la team)            ***
     **************************************************************/
 
-    repo = fopenR(REPO_DATABASE, "r");
-    for(nombreTeam = 0; fgetc(repo) != EOF && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++)
+    for(nombreTeam = 0; repo != NULL && *repo != 0 && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++)
     {
-        fseek(repo, -1, SEEK_CUR);
-        fscanfs(repo, "%s %s %s %s %s %s", mangaDB[nombreTeam].team->IDTeam, LONGUEUR_ID_TEAM, mangaDB[nombreTeam].team->teamLong, LONGUEUR_NOM_MANGA_MAX, mangaDB[nombreTeam].team->teamCourt, LONGUEUR_COURT, mangaDB[nombreTeam].team->type, BUFFER_MAX, mangaDB[nombreTeam].team->URL_depot, LONGUEUR_URL, mangaDB[nombreTeam].team->site, LONGUEUR_SITE);
+        repo += sscanfs(repo, "%s %s %s %s %s %s", mangaDB[nombreTeam].team->IDTeam, LONGUEUR_ID_TEAM, mangaDB[nombreTeam].team->teamLong, LONGUEUR_NOM_MANGA_MAX, mangaDB[nombreTeam].team->teamCourt, LONGUEUR_COURT, mangaDB[nombreTeam].team->type, BUFFER_MAX, mangaDB[nombreTeam].team->URL_depot, LONGUEUR_URL, mangaDB[nombreTeam].team->site, LONGUEUR_SITE);
+        for(;*repo == '\n'; repo++);
         ustrcpy(mangaDB[nombreTeam].mangaName, mangaDB[nombreTeam].team->teamLong);
     }
-    fclose(repo);
+    repo = repoBak;
 
     mangaDB[nombreTeam].mangaName[0] = 0;
     for(i = 0; i < NOMBRE_MANGA_MAX && i < nombreTeam; changeTo(mangaDB[i++].mangaName, '_', ' '));
@@ -253,24 +259,44 @@ int deleteRepo()
 
         if(confirme)
         {
+            int j = 0;
+            char *repoNew = NULL;
             char temp[LONGUEUR_NOM_MANGA_MAX];
+            repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
+
             sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
             removeFolder(temp); //Suppresion du dossier de la team
-
-            repoNew = fopenR(REPO_DATABASE, "w+");
             for(i = 0; i < nombreTeam; i++)
             {
-                if(i != teamChoisis - 1)
-                    fprintf(repoNew, "%s %s %s %s %s %s\n", mangaDB[i].team->IDTeam, mangaDB[i].team->teamLong, mangaDB[i].team->teamCourt, mangaDB[i].team->type, mangaDB[i].team->URL_depot, mangaDB[i].team->site);
+                while(repo!=NULL && *repo && *repo != '\n')
+                    repoNew[j++] = *repo++;
+                sscanfs(repo, "%s", temp, LONGUEUR_NOM_MANGA_MAX);
+                if(!strcmp(temp, mangaDB[teamChoisis-1].team->teamLong))
+                    for(; repo!=NULL && *repo && *repo != '\n'; repo++);
+                else
+                    repoNew[j++] = '\n';
             }
-            fclose(repoNew);
+            repoNew[j++] = '<';
+            repoNew[j++] = '/';
+            repoNew[j++] = SETTINGS_REPODB_FLAG;
+            repoNew[j++] = '>';
+            repoNew[j] = 0;
+            updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
+            free(repoBak);
+            free(repoNew);
+
         }
         else if (confirme == PALIER_QUIT)
+        {
+            free(repoBak);
             return PALIER_QUIT;
+        }
     }
     else
+    {
+        free(repoBak);
         continuer = teamChoisis;
-
+    }
     return continuer;
 }
 

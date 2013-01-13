@@ -501,10 +501,6 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
                         || (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode == 2) //On reste dans la boucle si dans le module de DL on clic sur les trucs en bas (inactifs)
                         || (dernierLu == -1 && chapitreChoisis == CODE_BOUTON_2_CHAPITRE)); //Si on clic sur premiere lecture en bas
 
-                if(mode != 1 && chapitreChoisis >= 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
-                    chapitreChoisis--; //on vire all
-
-                j = 0;
                 if(chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
                     chapitreChoisis = chapitreDB[chapitreChoisis-1].pageInfos;
 

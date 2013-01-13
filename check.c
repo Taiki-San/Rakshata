@@ -165,7 +165,7 @@ int check_evt()
 
 void checkUpdate()
 {
-    FILE* test = fopenR("tmp/update", "r");
+    FILE* test = fopenR("data/update", "r");
 
     if(test != NULL)
     {
@@ -208,7 +208,7 @@ void checkUpdate()
             fscanfs(test, "%s %s", action[ligne], 2, files[ligne], TAILLE_BUFFER);
         }
         fclose(test);
-        removeR("tmp/update"); //Evite des téléchargements en parallèle de l'update
+        removeR("data/update"); //Evite des téléchargements en parallèle de l'update
 
         /*Initialisation écran*/
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
@@ -324,7 +324,7 @@ void checkJustUpdated()
 {
     if(checkFileExist("Rakshata.exe.old"))
     {
-        remove("tmp/update");
+        removeFolder("tmp");
         remove("Rakshata.exe.old");
     }
 }
@@ -429,13 +429,11 @@ void networkAndVersionTest()
             FILE* test = NULL;
 			size_t size;
 
-            mkdirR("tmp"); //Au cas o˘ le dossier n'existe pas
-
+            mkdirR("data"); //Au cas où le dossier n'existe pas
             sprintf(temp, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
+            download(temp, "data/update", 0);
 
-            download(temp, "tmp/update", 0);
-
-			test = fopenR("tmp/update", "r");
+			test = fopenR("data/update", "r");
             fseek(test, 0, SEEK_END);
             size = ftell(test);
             rewind(test);
@@ -449,7 +447,7 @@ void networkAndVersionTest()
                 buffer[j++] = k;
             }
             fclose(test);
-            test = fopenR("tmp/update", "w+");
+            test = fopenR("data/update", "w+");
             for(k=0; k < j; fputc(buffer[k++], test));
             fclose(test);
             free(buffer);
@@ -582,7 +580,7 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
 
     if(mangas != NULL)
     {
-        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la premiére team, si il ne correspond pas, on lance la boucle
+        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la première team, si il ne correspond pas, on lance la boucle
         while(strcmp(temp, teamLong) != 0)
         {
             while((i = fgetc(mangas)) != '#' && i != EOF);

@@ -23,7 +23,7 @@ int unzip(char *path, char *output)
 #ifdef _WIN32
     applyWindowsPathCrap(output);
 #endif
-	
+
     if(output[strlen(output)-1] != 0)
         output[strlen(output)-1] = 0;
     return miniunzip(path, output, "", 0, 0);
@@ -107,7 +107,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
     if((!size && zipFileName == NULL) || zipOutput == NULL || (password == NULL && passwordZip != NULL))
     {
-        logR("Failed at allocate memory into miniunzip\n");
+        logR("Failed at allocate memory\n");
         return 1;
     }
 

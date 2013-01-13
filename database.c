@@ -168,7 +168,7 @@ void update_repo()
         return;
 
     repoBak = repo;
-    sprintf(repo_new, "\n<%c>\n", SETTINGS_REPODB_FLAG);
+    sprintf(repo_new, "<%c>\n", SETTINGS_REPODB_FLAG);
     positionDansBuffer = strlen(repo_new);
 
 	Load_KillSwitch(killswitch);
@@ -217,7 +217,7 @@ void update_repo()
 		}
 	}
 	free(repoBak);
-	sprintf(&repo_new[positionDansBuffer], "\n</%c>", SETTINGS_REPODB_FLAG);
+	sprintf(&repo_new[positionDansBuffer], "\n</%c>\n", SETTINGS_REPODB_FLAG);
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
 }
 
@@ -253,7 +253,7 @@ void update_mangas()
 	TEAMS_DATA teams;
 
     repoBak = repo;
-    sprintf(manga_new, "\n<%c>\n", SETTINGS_MANGADB_FLAG);
+    sprintf(manga_new, "<%c>\n", SETTINGS_MANGADB_FLAG);
     positionDansBuffer = strlen(manga_new);
 
     if(repo == NULL)
@@ -319,7 +319,7 @@ void update_mangas()
 		if(*repo != 0 && *repo != '#' && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
 			manga_new[positionDansBuffer++] = '\n';
 	}
-	sprintf(&manga_new[positionDansBuffer], "\n</%c>", SETTINGS_MANGADB_FLAG);
+	sprintf(&manga_new[positionDansBuffer], "\n</%c>\n", SETTINGS_MANGADB_FLAG);
 	free(repoBak);
 	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
 }
