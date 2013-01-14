@@ -260,7 +260,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 23
+#define NOMBRE_DE_FICHIER_A_CHECKER 24
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/
@@ -380,7 +380,7 @@
 #define SIZE_TRAD_ID_18 3
 #define SIZE_TRAD_ID_19 14
 #define SIZE_TRAD_ID_20 7
-#define SIZE_TRAD_ID_21 20
+#define SIZE_TRAD_ID_21 13
 #define SIZE_TRAD_ID_22 6
 #define SIZE_TRAD_ID_23 2
 #define SIZE_TRAD_ID_24 2

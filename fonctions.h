@@ -86,6 +86,10 @@ int showError();
 int rienALire();
 int affichageRepoIconnue();
 
+/**Favoris.c**/
+int checkIfFaved(MANGAS_DATA* mangaDB, char *favs);
+void setPrefs(MANGAS_DATA* mangaDB);
+
 /**Interface.c**/
 void updateSectionMessage(char messageVersion[5]);
 void checkSectionMessageUpdate();
@@ -109,9 +113,9 @@ int sendPassToServ(unsigned char key[HASH_LENGTH]);
 void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
 
 /**Lecteur.c**/
-int lecteur(MANGAS_DATA mangaDB, int *chapitreChoisis, int *fullscreen);
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen);
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
-SDL_Texture* loadControlBar();
+SDL_Texture* loadControlBar(int favState);
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA mangaDB);
 void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);

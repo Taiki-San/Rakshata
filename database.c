@@ -78,13 +78,14 @@ MANGAS_DATA* miseEnCache(int mode)
                 ustrcpy(mangas[numeroManga].team->type, type[numeroTeam]);
                 ustrcpy(mangas[numeroManga].team->URL_depot, URL[numeroTeam]);
                 ustrcpy(mangas[numeroManga].team->site, site[numeroTeam]);
+                mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], NULL);
 				nombreMangaDansDepot++;
 			}
 			else
 			{
 				memset(mangas[numeroManga].mangaName, 0, LONGUEUR_NOM_MANGA_MAX);
 				memset(mangas[numeroManga].mangaNameShort, 0, LONGUEUR_COURT);
-				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].pageInfos = 0;
+				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
                 numeroManga--;
 			}
 

@@ -35,6 +35,7 @@ typedef struct dataMangas
     int status;
     int genre;
     int pageInfos;
+    int favoris;
 
     /*Team*/
     TEAMS_DATA *team;

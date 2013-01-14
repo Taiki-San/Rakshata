@@ -90,6 +90,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="externs.h" />
+		<Unit filename="favoris.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="fonctions.h" />
 		<Unit filename="interface.c">
 			<Option compilerVar="CC" />

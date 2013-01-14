@@ -37,14 +37,15 @@ int check_evt()
     sprintf(nomsATest[12], "data/german/localization");
     sprintf(nomsATest[13], "data/icon/d.png");
     sprintf(nomsATest[14], "data/icon/f.png");
-    sprintf(nomsATest[15], "data/icon/fs.png");
-    sprintf(nomsATest[16], "data/icon/mm.png");
-    sprintf(nomsATest[17], "data/icon/nc.png");
-    sprintf(nomsATest[18], "data/icon/np.png");
-    sprintf(nomsATest[19], "data/icon/pc.png");
-    sprintf(nomsATest[20], "data/icon/pp.png");
-    sprintf(nomsATest[21], "data/acceuil.png");
-    sprintf(nomsATest[22], SECURE_DATABASE);
+    sprintf(nomsATest[15], "data/icon/nf.png");
+    sprintf(nomsATest[16], "data/icon/fs.png");
+    sprintf(nomsATest[17], "data/icon/mm.png");
+    sprintf(nomsATest[18], "data/icon/nc.png");
+    sprintf(nomsATest[19], "data/icon/np.png");
+    sprintf(nomsATest[20], "data/icon/pc.png");
+    sprintf(nomsATest[21], "data/icon/pp.png");
+    sprintf(nomsATest[22], "data/acceuil.png");
+    sprintf(nomsATest[23], SECURE_DATABASE);
 
     SDL_Delay(1000);
 

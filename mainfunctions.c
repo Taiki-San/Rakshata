@@ -38,7 +38,7 @@ void mainRakshata()
 
     chargement();
 
-    if(check_evt() == PALIER_QUIT) //Check ENV
+    if(check_evt() == PALIER_QUIT) //Check envt
         return;
 
     restoringState = checkRestore();
@@ -182,7 +182,7 @@ int mainLecture()
 
                             lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 
-                            retourLecteur = lecteur(mangaDB[mangaChoisis], &chapitreChoisis, &fullscreen);
+                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, &fullscreen);
 
                             if(retourLecteur != 0)
                             {
