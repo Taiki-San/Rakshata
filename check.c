@@ -540,14 +540,8 @@ void checkHostNonModifie()
 
 int checkRestore()
 {
-    FILE *test = NULL;
-    test = fopenR("data/laststate.dat", "r");
-    if(test == NULL)
-        return 0;
-    fclose(test);
     if(checkRestoreAvailable())
         return 1;
-
     removeR("data/laststate.dat");
     return 0;
 }

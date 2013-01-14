@@ -112,20 +112,32 @@ void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR
     char* manga = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak;
     mangaBak = manga;
 
-    manga += sscanfs(manga, "%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-    while(manga != NULL && strcmp(temp, nomProjet) && strcmp(buffer, nomProjet) && *manga)
+    if(manga != NULL)
     {
-        if(*manga == '#')
+        manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
+        for(; *manga && *manga != '\n'; manga++);
+        for(; *manga == '\n'; manga++);
+        while(strcmp(temp, nomProjet) && strcmp(buffer, nomProjet) && *manga)
         {
-            manga++;
-            manga += sscanfs(manga, "\n%s\n", nomTeam, LONGUEUR_NOM_MANGA_MAX);
+            if(*manga == '#')
+            {
+                manga++;
+                for(;*manga == '\n'; manga++);
+                manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
+                for(; *manga && *manga != '\n'; manga++);
+                for(; *manga == '\n'; manga++);
+            }
+            else if(*manga)
+            {
+                manga += sscanfs(manga, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
+                for(; *manga && *manga != '\n'; manga++);
+                for(; *manga == '\n'; manga++);
+            }
+            else
+                break;
         }
-        else if(*manga)
-            manga += sscanfs(manga, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
-        else
-            break;
+        free(mangaBak);
     }
-    free(mangaBak);
 }
 
 void createPath(char output[])
