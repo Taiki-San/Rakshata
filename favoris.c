@@ -117,3 +117,73 @@ void setPrefs(MANGAS_DATA* mangaDB)
     }
 }
 
+void updateFavorites()
+{
+    if(checkFileExist(INSTALL_DATABASE))
+        return;
+
+    updateDataBase();
+    MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+    if(mangaDB == NULL)
+        return;
+
+    int i;
+    for(i = 0; mangaDB[i].mangaName[0]; i++)
+    {
+        if(mangaDB[i].favoris)
+        {
+            char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
+            snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].lastChapter, CONFIGFILE);
+            if(!checkFileExist(temp))
+            {
+                MUTEX_LOCK;
+                favorisToDL = 1;
+                MUTEX_UNLOCK;
+                break;
+            }
+        }
+    }
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+    MUTEX_LOCK;
+    alreadyRefreshed = 1;
+    if(!favorisToDL)
+        favorisToDL = -1;
+    MUTEX_UNLOCK;
+}
+
+void getNewFavs()
+{
+    FILE* import = NULL;
+    MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+    if(mangaDB == NULL)
+        return;
+
+    int i, j, WEGOTSOMETHING = 0;
+    for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++)
+    {
+        if(mangaDB[i].favoris)
+        {
+            char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
+            for(j = mangaDB[i].firstChapter; j <= mangaDB[i].lastChapter; j++)
+            {
+                snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, j, CONFIGFILE);
+                if(!checkFileExist(temp))
+                {
+                    import = fopenR(INSTALL_DATABASE, "a+");
+                    if(import != NULL)
+                    {
+                        WEGOTSOMETHING = 1;
+                        fprintf(import, "%s %s %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, j);
+                        fclose(import);
+                        import = NULL;
+                    }
+                }
+            }
+        }
+    }
+    if(WEGOTSOMETHING && checkLancementUpdate())
+        lancementModuleDL();
+
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+}
+

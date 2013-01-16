@@ -69,8 +69,7 @@ int telechargement()
         return 0;
 
     /*On compte le nombre de mangas*/
-    mangaTotal = 1;
-    fgetc(fichier);//Si la premiére ligne est vide, on la compte pas
+    mangaTotal = 0;
     while((i = fgetc(fichier)) != EOF)
     {
         if(i == '\n')

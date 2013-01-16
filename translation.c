@@ -20,7 +20,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
                                   SIZE_TRAD_ID_11, SIZE_TRAD_ID_12, SIZE_TRAD_ID_13, SIZE_TRAD_ID_14, SIZE_TRAD_ID_15,
                                   SIZE_TRAD_ID_16, SIZE_TRAD_ID_17, SIZE_TRAD_ID_18, SIZE_TRAD_ID_19, SIZE_TRAD_ID_20,
                                   SIZE_TRAD_ID_21, SIZE_TRAD_ID_22, SIZE_TRAD_ID_23, SIZE_TRAD_ID_24, SIZE_TRAD_ID_25,
-                                  SIZE_TRAD_ID_26, SIZE_TRAD_ID_27, SIZE_TRAD_ID_28};
+                                  SIZE_TRAD_ID_26, SIZE_TRAD_ID_27, SIZE_TRAD_ID_28, SIZE_TRAD_ID_29};
 
     char numeroID[3] = {0, 0, 0}, *buffer = NULL;
     FILE* fichierTrad = NULL;

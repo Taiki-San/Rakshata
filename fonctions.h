@@ -89,6 +89,8 @@ int affichageRepoIconnue();
 /**Favoris.c**/
 int checkIfFaved(MANGAS_DATA* mangaDB, char *favs);
 void setPrefs(MANGAS_DATA* mangaDB);
+void updateFavorites();
+void getNewFavs();
 
 /**Interface.c**/
 void updateSectionMessage(char messageVersion[5]);
@@ -215,7 +217,7 @@ int sha256_legacy(char input[], char output[HASH_LENGTH]);
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
 
 /**Translation.c**/
-void loadTrad(char trad[][100], int IDTrad);
+void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);
 int changementLangue();
 int tradAvailable();
 

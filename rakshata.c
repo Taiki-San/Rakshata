@@ -21,6 +21,8 @@ int UNZIP_NEW_PATH = 0; //La décompression change le path courant
 int NETWORK_ACCESS = CONNEXION_OK;
 int HAUTEUR = 730;
 int RENDER_BUG = 0;
+int favorisToDL = 0;
+int alreadyRefreshed = 0;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/test/success.html"};

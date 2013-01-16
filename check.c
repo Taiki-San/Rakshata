@@ -471,6 +471,7 @@ void networkAndVersionTest()
 
 			if(bufferDL[0] == '1') //Compte valide
             {
+                updateFavorites();
                 quit_thread(0);
             }
 
