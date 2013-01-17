@@ -37,11 +37,10 @@ static int error;
 
 int telechargement()
 {
-    int i = 0, j = 0, k = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 1, posVariable = 0;
+    int i = 0, j = 0, k = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 0, posVariable = 0;
     char temp[200], mangaCourt[LONGUEUR_COURT], teamCourt[LONGUEUR_COURT], historiqueTeam[1000][LONGUEUR_COURT];
     char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100] = {0};
-    FILE* fichier = NULL;
-    FILE* test = NULL;
+    FILE *fichier = NULL, *fichier2 = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
     FUNC ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
     SDL_Texture *texte = NULL;
@@ -84,7 +83,7 @@ int telechargement()
 
     loadTrad(trad, 22);
 
-    for(mangaActuel = 1; fgetc(fichier) != EOF && glados; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
+    for(mangaActuel = 1; fgetc(fichier) != EOF && glados != CODE_RETOUR_DL_CLOSE; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
     {
         if(mangaTotal + (mangaActuel - 1) != 0)
             pourcentage = mangaActuel * 100 / (mangaTotal + mangaActuel -1);
@@ -125,7 +124,7 @@ int telechargement()
 
                     else if(i == PALIER_QUIT)
                     {
-                        glados = 0;
+                        glados = CODE_RETOUR_DL_CLOSE;
                         break;
                     }
 
@@ -174,11 +173,10 @@ int telechargement()
                 /*On teste si le chapitre est déjà installé*/
                 crashTemp(temp, 200);
                 sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName, chapitre, CONFIGFILE);
-                test = fopenR(temp, "r");
-
-                if(test == NULL)
+                if(!checkFileExist(temp))
                 {
                     char command[2] = {0, 0};
+                    glados = CODE_RETOUR_OK;
                     struc = (OUT_DL*) download(superTemp, command, 1);
 
                     #ifdef DEV_VERSION
@@ -189,8 +187,12 @@ int telechargement()
                         }
                     #endif
 
-                    if(struc == (OUT_DL*) 1) //Si fermeture
-                        glados = -1;
+                    if(struc <= (OUT_DL*) CODE_RETOUR_MAX)
+                    {
+                        glados = (int)struc;
+                        if(glados == CODE_RETOUR_DL_CLOSE)
+                            break;
+                    }
 
                     else if(struc->buf == NULL || struc->buf[0] == '<' || struc->buf[1] == '<' || struc->buf[2] == '<' || struc->buf[3] == '<')
                     {
@@ -203,17 +205,11 @@ int telechargement()
                             free(struc->buf);
                         free(struc);
 
-                        glados = -1;//On annule l'installation
+                        glados = CODE_RETOUR_INTERNAL_FAIL;//On annule l'installation
                     }
                 }
 
-                if(glados == -1) //Si fermeture
-                {
-                    glados = 0;
-                    break;
-                }
-
-                else if(glados > 0) // Archive pas corrompue
+                if(glados == CODE_RETOUR_OK) // Archive pas corrompue
                 {
                     status += 1; //On signale le lancement d'une installation
 
@@ -239,14 +235,19 @@ int telechargement()
                     #endif
                 }
 
-                sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
-                test = fopenR(temp, "r");
+                else if(glados == CODE_RETOUR_INTERNAL_FAIL)
+                {
+                    glados = CODE_RETOUR_OK;
+                    sprintf(temp, "Echec telechargement: %s - %d\n", mangaDB[posVariable].mangaName, chapitre);
+                    logR(temp);
+                    error++;
+                }
 
-                if(test == NULL && k) //k peut avoir a être > 1
+                sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
+                if(!checkFileExist(temp) && k) //k peut avoir a être > 1
                 {
                     sprintf(temp, "manga/%s/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName, CONFIGFILE);
-                    test = fopenR(temp, "r");
-                    if(test == NULL)
+                    if(!checkFileExist(temp))
                     {
                         crashTemp(temp, TAILLE_BUFFER);
                         sprintf(temp, "manga/%s", mangaDB[posVariable].team->teamLong);
@@ -254,8 +255,6 @@ int telechargement()
                         sprintf(temp, "manga/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
                         mkdirR(temp);
                     }
-                    else
-                        fclose(test);
 
                     crashTemp(superTemp, 400);
                     /*Génération de l'URL*/
@@ -283,18 +282,15 @@ int telechargement()
                     download(superTemp, temp, 0);
                 }
 
-                else if(test != NULL && k)
-                    fclose(test);
-
                 else //Si k = 0 et infos.png existe
                     removeR(temp);
             }
 
         } while(0); //Permet d'interrompre le code avec break;
 
-        if(glados > 0)
+        if(glados == CODE_RETOUR_OK)
         {
-            test = fopenR("data/import.tmp", "a+");
+            fichier2 = fopenR("data/import.tmp", "a+");
             fichier = fopenR(INSTALL_DATABASE, "r");
 
             fgetc(fichier); //On saute le premier caractére qui est parfoisun saut de ligne
@@ -303,11 +299,11 @@ int telechargement()
             mangaTotal = 1; //Pour compter la derniére ligne, sans \n
             while((i = fgetc(fichier)) != EOF) //On copie la fin du fichier dans un buffer
             {
-                fputc(i, test);
+                fputc(i, fichier2);
                 if(i == '\n')
                     mangaTotal++;
             }
-            fclose(test);
+            fclose(fichier2);
             fclose(fichier);
 
             removeR(INSTALL_DATABASE);
@@ -319,7 +315,7 @@ int telechargement()
     if(fichier != NULL)
         fclose(fichier);
 
-    if(glados)
+    if(glados == CODE_RETOUR_OK)
         removeR(INSTALL_DATABASE);
 
     SDL_RenderClear(renderer);
@@ -343,7 +339,7 @@ int telechargement()
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
 
     chargement();
-    if(!glados)
+    if(glados == CODE_RETOUR_DL_CLOSE)
         return -1;
     return 0;
 }

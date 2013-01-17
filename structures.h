@@ -12,8 +12,8 @@
 
 typedef struct argmt
 {
-    char URL[400];
-    char* repertoireEcriture;
+    char *URL;
+    char *repertoireEcriture;
 } ARGUMENT;
 
 typedef struct infos_Team

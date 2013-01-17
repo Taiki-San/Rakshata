@@ -76,7 +76,7 @@ void connexionNeededToAllowANewComputer()
 
 int libcurlErrorCode(CURLcode code)
 {
-    int ret_value = 1;
+    int ret_value = -1;
     char log_message[100];
     switch(code)
     {
@@ -100,24 +100,30 @@ int libcurlErrorCode(CURLcode code)
         case CURLE_COULDNT_CONNECT:
         {
             sprintf(log_message, "Failed at resolve host\n");
-            ret_value = 0;
+            ret_value = CODE_FAILED_AT_RESOLVE_INTERNAL;
             break;
         }
-        case CURLE_PARTIAL_FILE :
+        case CURLE_PARTIAL_FILE:
         {
             sprintf(log_message, "Partial file\n");
-            ret_value = 0;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
         {
             sprintf(log_message, "Everything is screwed up...\n");
-            ret_value = -1;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            break;
+        }
+        case CURLE_OPERATION_TIMEDOUT:
+        {
+            sprintf(log_message, "Request timed out\n");
+            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
         case CURLE_ABORTED_BY_CALLBACK:
         {
-            return -1;
+            return CODE_RETOUR_DL_CLOSE_INTERNAL;
             break;
         }
         default:
@@ -139,15 +145,15 @@ int erreurReseau()
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	
+
     SDL_RenderClear(renderer);
-	
+
     /*Chargement de la traduction*/
     loadTrad(texte, 24);
-	
+
     /*On prend un point de départ*/
     position.y = WINDOW_SIZE_H / 2 - 50;
-	
+
     /*On lance la boucle d'affichage*/
     for(i = 0; i < 2; i++)
     {
@@ -161,7 +167,7 @@ int erreurReseau()
     }
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
-	
+
     return waitEnter();
 }
 
@@ -173,16 +179,16 @@ int showError()
     SDL_Rect position;
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
-	
+
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	
+
     restartEcran();
-	
+
     position.y = WINDOW_SIZE_H / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
-	
+
     /*Remplissage des variables*/
     loadTrad(texte, 1);
-	
+
     for(i = 0; i < SIZE_TRAD_ID_1; i++)
     {
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
@@ -193,7 +199,7 @@ int showError()
         SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
         SDL_DestroyTextureS(texteAAfficher);
     }
-	
+
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
     return waitEnter();
@@ -206,22 +212,22 @@ int rienALire()
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     char texte[SIZE_TRAD_ID_23][100];
-	
+
     SDL_RenderClear(renderer);
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 	loadTrad(texte, 23);
-	
+
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-	
+
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
     position.h = texteAffiche->h;
     position.w = texteAffiche->w;
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
-	
+
     texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-	
+
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
     position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
     position.h = texteAffiche->h;
@@ -229,9 +235,9 @@ int rienALire()
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
     SDL_RenderPresent(renderer);
-	
+
     TTF_CloseFont(police);
-	
+
     return waitEnter();
 }
 
@@ -243,15 +249,15 @@ int affichageRepoIconnue()
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
-	
+
     SDL_RenderClear(renderer);
-	
+
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	
+
 	loadTrad(texte, 7);
-	
+
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-	
+
     if(texteAffiche != NULL)
     {
         position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
@@ -260,9 +266,9 @@ int affichageRepoIconnue()
         position.w = texteAffiche->w;
         SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
         SDL_DestroyTextureS(texteAffiche);
-		
+
         texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-		
+
         position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
         position.y = WINDOW_SIZE_H / 2;
         position.h = texteAffiche->h;
@@ -274,7 +280,7 @@ int affichageRepoIconnue()
     else
         return 1;
     TTF_CloseFont(police);
-	
+
     return waitEnter();
 }
 

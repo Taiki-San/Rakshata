@@ -31,7 +31,6 @@
     #define quit_thread(a) pthread_exit(a)
 #endif
 
-
 /*Environnement*/
 #define REPO_DATABASE "data/repo"
 #define MANGA_DATABASE "data/mangas"
@@ -51,7 +50,6 @@
         #endif
     #endif
 #endif
-
 
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
@@ -86,24 +84,46 @@
 #define POLICE_GROS 26
 
 /*Couleurs*/
-#define POLICE_R 0
-#define POLICE_G 0
-#define POLICE_B 0
-#define POLICE_NEW_R 255
-#define POLICE_NEW_G 47
-#define POLICE_NEW_B 47
-#define POLICE_UNREAD_R 48
-#define POLICE_UNREAD_G 170
-#define POLICE_UNREAD_B 0
-#define POLICE_ENABLE_R 255
-#define POLICE_ENABLE_G 47
-#define POLICE_ENABLE_B 47
-#define POLICE_UNAVAILABLE_R 77 //Ou 102
-#define POLICE_UNAVAILABLE_G 77
-#define POLICE_UNAVAILABLE_B 77
-#define FOND_R 214
-#define FOND_G 214
-#define FOND_B 214
+//#define NEW_COLOR
+#ifdef NEW_COLOR
+    #define POLICE_R 85
+    #define POLICE_G 200
+    #define POLICE_B 85
+    #define POLICE_NEW_R 203
+    #define POLICE_NEW_G 35
+    #define POLICE_NEW_B 39
+    #define POLICE_UNREAD_R 72
+    #define POLICE_UNREAD_G 76
+    #define POLICE_UNREAD_B 246
+    #define POLICE_ENABLE_R 203
+    #define POLICE_ENABLE_G 35
+    #define POLICE_ENABLE_B 39
+    #define POLICE_UNAVAILABLE_R 77
+    #define POLICE_UNAVAILABLE_G 77
+    #define POLICE_UNAVAILABLE_B 77
+    #define FOND_R 23
+    #define FOND_G 29
+    #define FOND_B 27
+#else
+    #define POLICE_R 0
+    #define POLICE_G 0
+    #define POLICE_B 0
+    #define POLICE_NEW_R 203
+    #define POLICE_NEW_G 47
+    #define POLICE_NEW_B 47
+    #define POLICE_UNREAD_R 48
+    #define POLICE_UNREAD_G 170
+    #define POLICE_UNREAD_B 0
+    #define POLICE_ENABLE_R 203
+    #define POLICE_ENABLE_G 47
+    #define POLICE_ENABLE_B 47
+    #define POLICE_UNAVAILABLE_R 77
+    #define POLICE_UNAVAILABLE_G 77
+    #define POLICE_UNAVAILABLE_B 77
+    #define FOND_R 214
+    #define FOND_G 214
+    #define FOND_B 214
+#endif
 
 /*Settings*/
 #define SECURE_DATABASE "data/secure.enc"
@@ -307,7 +327,7 @@
     #define HAUTEUR_TEXTE_TELECHARGEMENT 105
     #define HAUTEUR_POURCENTAGE 180
 	#define BORDURE_POURCENTAGE 140
-    #define HAUTEUR_AFFICHAGE_INITIALISATION 100
+    #define HAUTEUR_AFFICHAGE_INITIALISATION 75
 #else
     #define HAUTEUR_MESSAGE_INITIALISATION 50
     #define HAUTEUR_TEXTE_TELECHARGEMENT 125
@@ -322,6 +342,20 @@
 
 /*Download.c*/
 #define MODE_DOWNLOAD_VERBOSE_ENABLE 1
+#define CODE_RETOUR_OK 0
+#define CODE_RETOUR_DL_CLOSE 1
+#define CODE_FAILED_AT_RESOLVE 2
+#define CODE_RETOUR_INTERNAL_FAIL 3
+#define CODE_RETOUR_DL_CLOSE_INTERNAL -1
+#define CODE_FAILED_AT_RESOLVE_INTERNAL -2
+#define CODE_RETOUR_INTERNAL_FAIL_INTERNAL -3
+#define CODE_RETOUR_MAX 3
+
+#define STATUS_IT_IS_OVER -10
+#define STATUS_FORCE_CLOSE -1
+#define STATUS_END 0
+#define STATUS_DOWNLOADING 1
+
 
 /*Database*/
 #define NOMBRE_MANGA_MAX 1000//8395

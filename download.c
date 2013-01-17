@@ -16,22 +16,18 @@ static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
-static int status;
-static int alright;
-static int hostReached;
+static int status; //Status du DL: en cours, terminé...
+static int errCode;
 static void *internalBuffer;
 
-#define SIZE_OUTPUT_PATH_MAX 1000
-
 #ifdef _WIN32
-static DWORD WINAPI downloader(LPVOID envoi);
+    static DWORD WINAPI downloader(LPVOID envoi);
 #else
-static void* downloader(void* envoi);
+    static void* downloader(void* envoi);
 #endif
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
 static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
-
 
 /*Controle: activation = 0: DL simple
 	    activation = 1: DL verbose
@@ -47,13 +43,13 @@ int download(char *adresse, char *repertoire, int activation)
     SDL_Rect position;
 	ARGUMENT* envoi = malloc(sizeof(ARGUMENT));
 
-    if(checkNetworkState(CONNEXION_DOWN))
-        return 0;
+    if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
+        return CODE_RETOUR_DL_CLOSE_INTERNAL;
 
-    if(activation != 2)
+    if(activation != 2) //Pas check réseau
     {
         MUTEX_LOCK;
-        while(status != -1)
+        while(status != STATUS_IT_IS_OVER)
         {
             MUTEX_UNLOCK;
             SDL_Delay(50);
@@ -62,12 +58,12 @@ int download(char *adresse, char *repertoire, int activation)
         MUTEX_UNLOCK;
     }
 
-    FILE_EXPECTED_SIZE = size_buffer = 0;
-    status = alright = hostReached = 1;
+    FILE_EXPECTED_SIZE = size_buffer = errCode = 0;
+    status = STATUS_DOWNLOADING;
     internalBuffer = NULL;
 
-    if(activation == 1)
-        CURRENT_FILE_SIZE = MODE_DOWNLOAD_VERBOSE_ENABLE;
+    if(activation == 1) //Download verbose
+        CURRENT_FILE_SIZE = 1;
     else
         CURRENT_FILE_SIZE = 0;
 
@@ -77,27 +73,25 @@ int download(char *adresse, char *repertoire, int activation)
             SDL_Delay(50);
 
         if(checkNetworkState(CONNEXION_DOWN))
-            return -1;
+            return CODE_RETOUR_DL_CLOSE_INTERNAL;
     }
-    else if(activation == 2)
-        activation = 0;
 
-    ustrcpy(envoi->URL, adresse);
+    envoi->URL = adresse;
     envoi->repertoireEcriture = repertoire;
 
-    if(*repertoire) //Si on ecrit pas dans un buffer
+    if(*repertoire) //Si on ecrit dans un fichier
     {
-        output = malloc(strlen(repertoire)+1);
+        output = calloc(1, strlen(repertoire)+1);
         ustrcpy(output, repertoire);
         envoi->repertoireEcriture = output;
     }
-    else
+    else //Dans un buffer
     {
         POSITION_DANS_BUFFER = 0;
-        if(repertoire[1] == 0)
+        if(!*(repertoire+1))
         {
-            size_buffer = -1;
-            internalBuffer = (void*) 0x1;
+            size_buffer = 1;
+            internalBuffer = (void*) 1;
         }
         else
             size_buffer = repertoire[1] * repertoire[2] * repertoire[3] * repertoire[4];
@@ -114,7 +108,7 @@ int download(char *adresse, char *repertoire, int activation)
     }
 #endif
 
-    if(activation)
+    if(activation == 1)
     {
         double last_file_size = 0, download_speed = 0;
         char texte[SIZE_TRAD_ID_20][100];
@@ -145,13 +139,13 @@ int download(char *adresse, char *repertoire, int activation)
         while(1)
         {
             MUTEX_LOCK;
-            if(status == 0)
+            if(status != STATUS_DOWNLOADING)
             {
                 MUTEX_UNLOCK;
                 break;
             }
             MUTEX_UNLOCK;
-            if(FILE_EXPECTED_SIZE > 0 && alright > 0)
+            if(FILE_EXPECTED_SIZE > 0 && status == STATUS_DOWNLOADING)
             {
                 if(SDL_GetTicks() - last_refresh >= 500)
                 {
@@ -187,19 +181,18 @@ int download(char *adresse, char *repertoire, int activation)
                     position.w = pourcentAffiche->w;
 
                     SDL_RenderClear(renderer);
-
                     SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
                     SDL_DestroyTextureS(pourcentAffiche);
                     SDL_RenderPresent(renderer);
 
-                    alright = -1;
+                    status = STATUS_FORCE_CLOSE;
                     break;
                 }
             }
             else
                 SDL_Delay(25);
         }
-        if(alright > 0)
+        if(status == STATUS_END)
         {
             applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
             pourcentAffiche = TTF_Write(renderer, police, texte[6], couleur);
@@ -215,8 +208,14 @@ int download(char *adresse, char *repertoire, int activation)
 
         else
         {
-            while(alright == -1)
-                SDL_Delay(50);
+            MUTEX_LOCK;
+            while(status == STATUS_FORCE_CLOSE)
+            {
+                MUTEX_UNLOCK;
+                SDL_Delay(250);
+                MUTEX_LOCK;
+            }
+            MUTEX_UNLOCK;
         }
     }
 
@@ -224,7 +223,7 @@ int download(char *adresse, char *repertoire, int activation)
     {
 		SDL_Event event;
         MUTEX_LOCK;
-        while(status)
+        while(status == STATUS_DOWNLOADING)
         {
             MUTEX_UNLOCK;
             event.type = 0;
@@ -234,7 +233,7 @@ int download(char *adresse, char *repertoire, int activation)
                 switch(event.type)
                 {
                     case SDL_QUIT:
-                        alright = 0;
+                        status = STATUS_FORCE_CLOSE;
                         break;
 
                     case SDL_MOUSEBUTTONDOWN:
@@ -254,30 +253,44 @@ int download(char *adresse, char *repertoire, int activation)
         }
         MUTEX_UNLOCK;
     }
-    MUTEX_LOCK;
-    status = -1;
-    MUTEX_UNLOCK;
+
     if(activation == 1 && internalBuffer != NULL)
     {
-        if(alright < 0)
+
+        if(status == STATUS_FORCE_CLOSE) //Fermeture demandée ou erreur
         {
             free(internalBuffer);
+            MUTEX_LOCK;
+            status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
+            MUTEX_UNLOCK;
             return 1;
+        }
+        else if(errCode != 0)
+        {
+            MUTEX_LOCK;
+            status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
+            MUTEX_UNLOCK;
+            return errCode*-1;
         }
         OUT_DL* outStruct = malloc(sizeof(OUT_DL));
         outStruct->buf = internalBuffer;
         outStruct->length = POSITION_DANS_BUFFER;
+        MUTEX_LOCK;
+        status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
+        MUTEX_UNLOCK;
         return (int)outStruct;
     }
+
+    MUTEX_LOCK;
+    status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
 
     if(output != NULL)
         free(output);
 
-    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS) && hostReached == 0) //Si on a pas réussi à ce connecter au serveur distant
-        return -6;
+    MUTEX_UNLOCK;
 
-    if(!alright)
-        return alright;
+    if(errCode)
+        return errCode;
     return POSITION_DANS_BUFFER;
 }
 
@@ -314,7 +327,6 @@ static void* downloader(void* envoi)
     }
 #endif
 
-
     if(valeurs->repertoireEcriture[0])
         printToAFile = 1;
 
@@ -332,7 +344,6 @@ static void* downloader(void* envoi)
     }
 
     curl = curl_easy_init();
-
     if(curl && (fichier != NULL || !printToAFile))
     {
     #ifdef DEV_VERSION
@@ -354,12 +365,14 @@ static void* downloader(void* envoi)
     #endif
 #endif
 
-        if(CURRENT_FILE_SIZE == MODE_DOWNLOAD_VERBOSE_ENABLE) //Get data about speed
+        if(CURRENT_FILE_SIZE == 1) //Get data about speed
         {
             curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
             curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, downloadData);
             CURRENT_FILE_SIZE = 0;
         }
+        else
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
 
         if(printToAFile) //Save datas into a file
         {
@@ -376,9 +389,9 @@ static void* downloader(void* envoi)
 
         if(res != CURLE_OK) //Si probléme
         {
-            hostReached = libcurlErrorCode(res);
-            if(hostReached == -1)
-                alright = -1;
+            MUTEX_LOCK;
+            errCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+            MUTEX_UNLOCK;
         }
         curl_easy_cleanup(curl);
         if(fichier != NULL)
@@ -392,7 +405,7 @@ static void* downloader(void* envoi)
         exit(EXIT_FAILURE);
     }
 
-    if(alright <= 0 && printToAFile)
+    if(status == STATUS_FORCE_CLOSE && errCode != 0 && printToAFile)
         remove(temp);
 
     else if (printToAFile)
@@ -402,20 +415,17 @@ static void* downloader(void* envoi)
     }
 
     MUTEX_LOCK;
-    status = 0;
+    status = STATUS_END;
     MUTEX_UNLOCK;
 
     free(valeurs);
-
-    if(alright == -1)
-        alright--;
 
     return 0;
 }
 
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
 {
-    if(alright < 0)
+    if(status == STATUS_FORCE_CLOSE)
         return -1;
 
     FILE_EXPECTED_SIZE = TotalToDownload;
@@ -429,7 +439,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
     char *buffer = NULL;
     char *input = ptr;
 
-    if(internalBuffer != NULL && size_buffer == -1)
+    if(internalBuffer == (void*) 1 && size_buffer == 1)
     {
         free(buffer_dl);
         if(!FILE_EXPECTED_SIZE)

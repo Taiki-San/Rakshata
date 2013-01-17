@@ -30,7 +30,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     SDL_Event event;
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
 
     loadTrad(texteTrad, 21);
 
@@ -248,19 +248,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         if(buffer > HAUTEUR_MAX - BARRE_DES_TACHES_WINDOWS)
             buffer = HAUTEUR_MAX - BARRE_DES_TACHES_WINDOWS;
 
-        /*Affichage des infos*/
-        changeTo(mangaDB->mangaName, '_', ' ');
-        changeTo(mangaDB->team->teamCourt, '_', ' ');
-
-        if(*fullscreen)
-            sprintf(infos, "%s - %s - Manga: %s - %s: %d - %s: %d / %d - %s", texteTrad[6], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], *chapitreChoisis, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1, texteTrad[7]);
-
-        else
-            sprintf(infos, "%s - Manga: %s - %s: %d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], *chapitreChoisis, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1);
-
-        changeTo(mangaDB->mangaName, ' ', '_');
-        changeTo(mangaDB->team->teamCourt, ' ', '_');
-
         /*Initialisation des différentes surfaces*/
 
         if(!*fullscreen)
@@ -348,8 +335,21 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_TOUT_PETIT);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
         }
+
+        /*Affichage des infos*/
+        changeTo(mangaDB->mangaName, '_', ' ');
+        changeTo(mangaDB->team->teamCourt, '_', ' ');
+
+        if(*fullscreen)
+            sprintf(infos, "%s - %s - Manga: %s - %s: %d - %s: %d / %d - %s", texteTrad[6], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], *chapitreChoisis, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1, texteTrad[7]);
+
+        else
+            sprintf(infos, "%s - Manga: %s - %s: %d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], *chapitreChoisis, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1);
+
+        changeTo(mangaDB->mangaName, ' ', '_');
+        changeTo(mangaDB->team->teamCourt, ' ', '_');
 
         if(finDuChapitre == 0)
             infoSurface = TTF_Write(renderer, police, infos, couleurTexte);
@@ -360,7 +360,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         {
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
         }
 
         /*On prépare les coordonnées des surfaces*/
@@ -966,7 +966,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         sprintf(temp, "%s: %d", texteTrad[1], pageAccesDirect); //Page: xx
                         TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
                         UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
-                        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+                        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
                     }
                     break;
                 }
@@ -1065,8 +1065,8 @@ SDL_Texture* loadControlBar(int favState)
 
     /*On crée une surface intermédiaire car bliter directement sur le png loadé ne marche pas*/
     bandeauControleSurface = SDL_CreateRGBSurface(0, LARGEUR_CONTROLE_LECTEUR, BORDURE_CONTROLE_LECTEUR, 32, 0, 0, 0, 0);
-    SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, 255, 255, 255));
-    SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, 255, 255, 255));
+    SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
+    SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
 
     SDL_Surface *icone = IMG_Load("data/icon/pc.png"); //Previous Chapter
     if(icone != NULL)

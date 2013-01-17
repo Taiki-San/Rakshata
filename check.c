@@ -395,7 +395,7 @@ void networkAndVersionTest()
     /*Chargement de l'URL*/
     sprintf(temp, "http://www.%s/System/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
 
-    if(download(temp, bufferDL, 2) == -6) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download(temp, bufferDL, 2) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
@@ -408,7 +408,7 @@ void networkAndVersionTest()
 #endif
 
         setupBufferDL(bufferDL, 5, 1, 1, 1);
-        if(download(MAIN_SERVER_URL[1], bufferDL, 2) == -6) //On fais un test avec google.com
+        if(download(MAIN_SERVER_URL[1], bufferDL, 2) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
         MUTEX_LOCK;
         if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
