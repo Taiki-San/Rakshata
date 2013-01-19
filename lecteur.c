@@ -30,7 +30,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     SDL_Event event;
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
+    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
 
     loadTrad(texteTrad, 21);
 
@@ -335,7 +335,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_TOUT_PETIT);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
+            TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
 
         /*Affichage des infos*/
@@ -360,7 +360,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         {
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
+            TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
 
         /*On prépare les coordonnées des surfaces*/
@@ -966,7 +966,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         sprintf(temp, "%s: %d", texteTrad[1], pageAccesDirect); //Page: xx
                         TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
                         UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
-                        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
+                        TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
                     }
                     break;
                 }

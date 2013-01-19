@@ -84,27 +84,8 @@
 #define POLICE_GROS 26
 
 /*Couleurs*/
-//#define NEW_COLOR
-#ifdef NEW_COLOR
-    #define POLICE_R 85
-    #define POLICE_G 200
-    #define POLICE_B 85
-    #define POLICE_NEW_R 203
-    #define POLICE_NEW_G 35
-    #define POLICE_NEW_B 39
-    #define POLICE_UNREAD_R 72
-    #define POLICE_UNREAD_G 76
-    #define POLICE_UNREAD_B 246
-    #define POLICE_ENABLE_R 203
-    #define POLICE_ENABLE_G 35
-    #define POLICE_ENABLE_B 39
-    #define POLICE_UNAVAILABLE_R 77
-    #define POLICE_UNAVAILABLE_G 77
-    #define POLICE_UNAVAILABLE_B 77
-    #define FOND_R 23
-    #define FOND_G 29
-    #define FOND_B 27
-#else
+#define OLD_STYLE
+#ifdef OLD_STYLE
     #define POLICE_R 0
     #define POLICE_G 0
     #define POLICE_B 0
@@ -123,6 +104,27 @@
     #define FOND_R 214
     #define FOND_G 214
     #define FOND_B 214
+    #define BANDEAU_INFOS_LECTEUR_STYLES TTF_STYLE_UNDERLINE
+#else
+    #define POLICE_R 85
+    #define POLICE_G 200
+    #define POLICE_B 85
+    #define POLICE_NEW_R 203
+    #define POLICE_NEW_G 35
+    #define POLICE_NEW_B 39
+    #define POLICE_UNREAD_R 72
+    #define POLICE_UNREAD_G 76
+    #define POLICE_UNREAD_B 246
+    #define POLICE_ENABLE_R 203
+    #define POLICE_ENABLE_G 35
+    #define POLICE_ENABLE_B 39
+    #define POLICE_UNAVAILABLE_R 77
+    #define POLICE_UNAVAILABLE_G 77
+    #define POLICE_UNAVAILABLE_B 77
+    #define FOND_R 54
+    #define FOND_G 54
+    #define FOND_B 54
+    #define BANDEAU_INFOS_LECTEUR_STYLES TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD
 #endif
 
 /*Settings*/
@@ -137,6 +139,8 @@
 #define SETTINGS_REPODB_FLAG 'R'
 
 /*Section*/
+#define POSITION_ICONE_MENUS 10
+#define TAILLE_ICONE_MENUS 60
 #define NOMBRESECTION 4
 #define SECTION_CHOISIS_LECTURE 1
 #define SECTION_DL 2
@@ -157,7 +161,7 @@
 
 /*Selection manga*/
 #ifdef NEW_FONT
-	#define BORDURE_SUP_TITRE_MANGA 15
+	#define BORDURE_SUP_TITRE_MANGA 25
 	#define LARGEUR_MOYENNE_MANGA_PETIT 30
 	#define LARGEUR_MOYENNE_MANGA_MOYEN 36
 	#define LARGEUR_MOYENNE_MANGA_GROS 43
@@ -411,7 +415,7 @@
 #define SIZE_TRAD_ID_15 1
 #define SIZE_TRAD_ID_16 6
 #define SIZE_TRAD_ID_17 6
-#define SIZE_TRAD_ID_18 3
+#define SIZE_TRAD_ID_18 2
 #define SIZE_TRAD_ID_19 14
 #define SIZE_TRAD_ID_20 7
 #define SIZE_TRAD_ID_21 13

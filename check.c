@@ -35,17 +35,19 @@ int check_evt()
     sprintf(nomsATest[10], "data/german/acceuil.png");
     sprintf(nomsATest[11], "data/german/controls.png");
     sprintf(nomsATest[12], "data/german/localization");
-    sprintf(nomsATest[13], "data/icon/d.png");
-    sprintf(nomsATest[14], "data/icon/f.png");
-    sprintf(nomsATest[15], "data/icon/nf.png");
-    sprintf(nomsATest[16], "data/icon/fs.png");
-    sprintf(nomsATest[17], "data/icon/mm.png");
-    sprintf(nomsATest[18], "data/icon/nc.png");
-    sprintf(nomsATest[19], "data/icon/np.png");
-    sprintf(nomsATest[20], "data/icon/pc.png");
-    sprintf(nomsATest[21], "data/icon/pp.png");
-    sprintf(nomsATest[22], "data/acceuil.png");
-    sprintf(nomsATest[23], SECURE_DATABASE);
+    sprintf(nomsATest[13], "data/icon/d.png");  //Delete
+    sprintf(nomsATest[14], "data/icon/f.png");  //Favorite
+    sprintf(nomsATest[15], "data/icon/fb.png"); //Favorite Big
+    sprintf(nomsATest[16], "data/icon/nf.png"); //Not Favorite
+    sprintf(nomsATest[17], "data/icon/fs.png"); //Fullscreen
+    sprintf(nomsATest[18], "data/icon/mm.png"); //Main Menu
+    sprintf(nomsATest[19], "data/icon/mb.png"); //Main menu Big
+    sprintf(nomsATest[20], "data/icon/nc.png"); //Next Chapter
+    sprintf(nomsATest[21], "data/icon/np.png"); //Next Page
+    sprintf(nomsATest[22], "data/icon/pc.png"); //Previous Chapter
+    sprintf(nomsATest[23], "data/icon/pp.png"); //Previous Page
+    sprintf(nomsATest[24], "data/acceuil.png");
+    sprintf(nomsATest[25], SECURE_DATABASE);
 
     SDL_Delay(1000);
 

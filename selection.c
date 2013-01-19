@@ -77,7 +77,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 {
     /*Initilisation*/
     int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
-	char texteTrad[SIZE_TRAD_ID_18][LONGUEURTEXTE];
+	char texteTrad[SIZE_TRAD_ID_18][TRAD_LENGTH];
 	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -105,30 +105,9 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
             updateWindowSize(LARGEUR, i);
         loadTrad(texteTrad, 18);
 
-        SDL_RenderClear(renderer);
-
-        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-        TTF_SetFontStyle(police, TTF_STYLE_ITALIC);
-        texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-        position.y = BORDURE_SUP_TITRE_MANGA + texte->h + INTERLIGNE_MENU;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
-        TTF_CloseFont(police);
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
         if(sectionChoisis == SECTION_DL)
-        {
-            char temp[TAILLE_BUFFER];
-            if(langue == 4) //Petit détail dans la syntax de la traduction allemande
-                sprintf(temp, "%s %s", texteTrad[2], texteTrad[0]);
-            else
-                sprintf(temp, "%s %s", texteTrad[0], texteTrad[2]);
-            texte = TTF_Write(renderer, police, temp, couleurTexte);
-        }
+            texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
         else
             texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);

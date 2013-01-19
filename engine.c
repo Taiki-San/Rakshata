@@ -91,7 +91,12 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                             ret_value += 'A' - 'a';
                         for(i = 0; i < nombreElements && ret_value != texte[i][0]; i++);
                         if(i < nombreElements)
+                        {
                             ret_value = i+1;
+
+                            if(favorisToDL == 2)
+                                favorisToDL--;
+                        }
                         else
                             ret_value = 0;
                     }
@@ -132,6 +137,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                     }
                     if(ret_value > nombreElements)
                         ret_value = 0;
+                    else if(favorisToDL == 2)
+                        favorisToDL--;
                 }
 
                 case SDL_WINDOWEVENT:
@@ -173,28 +180,30 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
             SDL_DestroyTextureS(texture);
             SDL_RenderPresent(renderer);
         }
+
         else if(favorisToDL == -1)
         {
             applyBackground(5, 5, 50, 50);
             SDL_RenderPresent(renderer);
             favorisToDL--;
         }
+
         else if(favorisToDL == 1) //Refresh done
         {
             char trad[SIZE_TRAD_ID_29][TRAD_LENGTH];
             loadTrad(trad, 29);
             applyBackground(5, 5, 50, 50);
-            TTF_CloseFont(police);
-            police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-            texture = TTF_Write(renderer, police, trad[0], couleurTexte);
-            sizeFavsDispo[0] = position.x = 15;
-            sizeFavsDispo[2] = position.y = BORDURE_SUP_MENU;
-            sizeFavsDispo[1] = position.w = texture->w;
-            sizeFavsDispo[3] = position.h = texture->h;
-            SDL_RenderCopy(renderer, texture, NULL, &position);
-            SDL_DestroyTextureS(texture);
-            SDL_RenderPresent(renderer);
+            texture = IMG_LoadTexture(renderer, "data/icon/fb.png");
+            if(texture != NULL)
+            {
+                sizeFavsDispo[0] = position.x = POSITION_ICONE_MENUS;
+                sizeFavsDispo[2] = position.y = POSITION_ICONE_MENUS;
+                sizeFavsDispo[1] = position.w = TAILLE_ICONE_MENUS;
+                sizeFavsDispo[3] = position.h = TAILLE_ICONE_MENUS;
+                SDL_RenderCopy(renderer, texture, NULL, &position);
+                SDL_DestroyTextureS(texture);
+                SDL_RenderPresent(renderer);
+            }
             favorisToDL++;
         }
     }
@@ -221,6 +230,17 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     button_available(mangaDB, button_selected);
 
     for(nombreManga = 0; mangaDB[nombreManga].mangaName[0]; nombreManga++);
+
+    texte = IMG_LoadTexture(renderer, "data/icon/mb.png");
+    if(texte != NULL)
+    {
+        position.x = POSITION_ICONE_MENUS;
+        position.y = POSITION_ICONE_MENUS;
+        position.h = TAILLE_ICONE_MENUS;
+        position.w = TAILLE_ICONE_MENUS;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
 
     if(sectionChoisis == SECTION_CHOISIS_CHAPITRE) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
     {
@@ -284,7 +304,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         /**********************************************************************
         ***                         Fonctionnement                          ***
         ***                                                                 ***
-        ***      Commence par positionner i au premier manga Ã  afficher     ***
+        ***      Commence par positionner i au premier manga à afficher     ***
         ***                                                                 ***
         *** Ensuite, affiche un maximum de 30 mangas obéissant aux critéres ***
         ***                                                                 ***
@@ -606,11 +626,11 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                         break;
 
                     case SDLK_ESCAPE:
-                        mangaChoisis = -3;
+                        mangaChoisis = PALIER_MENU;
                         break;
 
                     case SDLK_DELETE:
-                        mangaChoisis = -2;
+                        mangaChoisis = PALIER_CHAPTER;
                         break;
 
                     case SDLK_LEFT:
@@ -650,6 +670,13 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
             case SDL_MOUSEBUTTONUP:
             {
+                if(event.button.x > POSITION_ICONE_MENUS && event.button.x < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS &&
+                   event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS) //Clic sur icône
+                {
+                    mangaChoisis = PALIER_MENU;
+                    break;
+                }
+
                 if(event.button.y > hauteurChapitre && event.button.y < hauteurChapitre + LARGEUR_MOYENNE_MANGA_PETIT)
                     i = 0;
 
