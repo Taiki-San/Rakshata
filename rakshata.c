@@ -34,10 +34,11 @@ MUTEX_VAR mutex;
 
 int main()
 {
-    /* Real start of Rakshata */
     srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
+
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
+
 	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
 	mutex = MUTEX_DEFAULT_VALUE;
 

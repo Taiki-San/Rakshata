@@ -88,7 +88,6 @@ int affichageRepoIconnue();
 
 /**Favoris.c**/
 int checkIfFaved(MANGAS_DATA* mangaDB, char *favs);
-void setPrefs(MANGAS_DATA* mangaDB);
 void updateFavorites();
 void getNewFavs();
 
@@ -210,6 +209,7 @@ void updatePrefs(char flag, char *stringToAdd);
 int loadLangueProfile();
 int loadEmailProfile();
 char* loadLargePrefs(char flag);
+void setPrefs(MANGAS_DATA* mangaDB);
 
 /**SHA256.c**/
 int sha256(unsigned char* input, void* output);

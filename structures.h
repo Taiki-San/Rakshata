@@ -32,6 +32,8 @@ typedef struct dataMangas
     char mangaNameShort[LONGUEUR_COURT];
     int firstChapter;
     int lastChapter;
+    int firstTome;
+    int lastTome;
     int status;
     int genre;
     int pageInfos;
@@ -59,14 +61,12 @@ typedef struct data_pour_installation
 typedef unsigned char uint8_t;
 
 #ifdef _WIN32
-
     #define MUTEX_VAR HANDLE
     #define MUTEX_DEFAULT_VALUE CreateMutex(NULL, FALSE, NULL)
     #define MUTEX_LOCK WaitForSingleObject(mutex, INFINITE);
     #define MUTEX_UNLOCK ReleaseMutex(mutex);
 
 #else
-    /**UNIX only**/
     #define handle_error_en(en, msg) \
        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
@@ -74,9 +74,9 @@ typedef unsigned char uint8_t;
        do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
     struct thread_info {        /* Used as argument to thread_start() */
-    pthread_t thread_id;        /* ID returned by pthread_create() */
-    int       thread_num;       /* Application-defined thread # */
-    char     *argv_string;      /* From command-line argument */
+        pthread_t thread_id;        /* ID returned by pthread_create() */
+        int       thread_num;       /* Application-defined thread # */
+        char     *argv_string;      /* From command-line argument */
     };
 
     #define MUTEX_VAR pthread_mutex_t

@@ -313,6 +313,7 @@
 #define TYPE_DEPOT_2 "O" //Dépôt classique
 #define TYPE_DEPOT_3 "P" //Dépôts payants
 #define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
+#define TYPE_DEPOT_5 "MG" //Dépôts MEGA
 
 /*Menu d'aide*/
 #define HAUTEUR_FENETRE_AIDE 600

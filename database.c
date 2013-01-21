@@ -14,7 +14,7 @@
 
 MANGAS_DATA* miseEnCache(int mode)
 {
-	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0;
+	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0, depotPayant = 0;
 	char ID[NOMBRE_MANGA_MAX][LONGUEUR_ID_TEAM], teamLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], type[NOMBRE_MANGA_MAX][LONGUEUR_TYPE_TEAM], URL[NOMBRE_MANGA_MAX][LONGUEUR_URL], site[NOMBRE_MANGA_MAX][LONGUEUR_SITE];
     char *repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	char *mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak = NULL;
@@ -28,12 +28,16 @@ MANGAS_DATA* miseEnCache(int mode)
     {
         repoDB += sscanfs(repoDB, "%s %s %s %s %s %s", ID[nombreTeam], LONGUEUR_ID_TEAM, teamLong[nombreTeam], LONGUEUR_NOM_MANGA_MAX, teamCourt[nombreTeam], LONGUEUR_COURT, type[nombreTeam], LONGUEUR_TYPE_TEAM, URL[nombreTeam], LONGUEUR_URL, site[nombreTeam], LONGUEUR_SITE);
         for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
-	}
+    }
 	free(repoBak);
 
 	char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 2 + 100];
 	mangaDB += sscanfs(mangaDB,"%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
 	for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
+    if(!strcmp(type[numeroTeam], TYPE_DEPOT_3))
+        depotPayant = 1;
+    else
+        depotPayant = 0;
 
 	for(numeroManga = 0; *mangaDB != 0 && numeroManga <= NOMBRE_MANGA_MAX; numeroManga++)
 	{
@@ -43,6 +47,10 @@ MANGAS_DATA* miseEnCache(int mode)
 		    for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 			mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
 			for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
+			if(!strcmp(type[numeroTeam], TYPE_DEPOT_3))
+                depotPayant = 1;
+            else
+                depotPayant = 0;
 
 			for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
 			nombreMangaDansDepot = 1;
@@ -51,7 +59,12 @@ MANGAS_DATA* miseEnCache(int mode)
 		else
 		{
             int cat = 0;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &cat, &mangas[numeroManga].pageInfos); //j n'est pas utilisé par ce module
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &cat, &mangas[numeroManga].pageInfos);
+            if(depotPayant && *mangaDB != '\n' && *mangaDB != '\r')
+            {
+                mangas[numeroManga].firstTome = mangas[numeroManga].pageInfos;
+                mangaDB += sscanfs(mangaDB, "%d %d", &mangas[numeroManga].lastTome, &mangas[numeroManga].pageInfos);
+            }
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
 			if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
