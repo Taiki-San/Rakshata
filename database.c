@@ -289,18 +289,25 @@ void update_mangas()
 		if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") ||
                                                             !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
 		{
-			FILE* mangas = fopenR(MANGA_DATABASE, "r");
-			if(positionnementApres(mangas, teams.teamLong))
-				fseek(mangas, (strlen(teams.teamLong)+2) *-1, SEEK_CUR); //On retourne au début de la ligne
-			while(positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && (i = fgetc(mangas)) != '#' && i != EOF)
-				manga_new[positionDansBuffer++] = i;
+		    char *mangas = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangasBak = NULL;
+		    if(mangas != NULL)
+		    {
+		        mangasBak = mangas;
+		        mangas += positionnementApresChar(mangas, teams.teamLong);
+		        if(mangas != mangasBak)
+                {
+                    for(; *mangas != '\n' && mangas > mangasBak; mangas++);
+                    for(; positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && *mangas != '#' && mangas; manga_new[positionDansBuffer++] = *mangas++);
+                }
+                free(mangasBak);
+		    }
 		}
 		else
 		{
 			for(i = 1; i < 7; limiteActuelle[i++] = 0);
 			for(i = 0, limiteActuelle[0] = 1, premiereLigne = 1; positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && i < SIZE_BUFFER_UPDATE_DATABASE && bufferDL[i] && bufferDL[i] != '#'; i++, positionDansBuffer++)
 			{
-				if((limites[limiteActuelle[0]] == 1 && ((bufferDL[i] >= '0' && bufferDL[i] <= '9') || bufferDL[i] == ' ' || bufferDL[i] == '\n') && limiteActuelle[limiteActuelle[0]] < 9) || (bufferDL[i] && bufferDL[i] != '\r' && limiteActuelle[limiteActuelle[0]] < limites[limiteActuelle[0]] && limites[limiteActuelle[0]] > 1))
+				if((limites[limiteActuelle[0]] == 1 && ((bufferDL[i] >= '0' && bufferDL[i] <= '9') || bufferDL[i] == ' ' || bufferDL[i] == '\r' || bufferDL[i] == '\n') && limiteActuelle[limiteActuelle[0]] < 9) || (bufferDL[i] && bufferDL[i] != '\r' && limiteActuelle[limiteActuelle[0]] < limites[limiteActuelle[0]] && limites[limiteActuelle[0]] > 1))
 				{
 					manga_new[positionDansBuffer] = bufferDL[i];
 					limiteActuelle[limiteActuelle[0]]++;
