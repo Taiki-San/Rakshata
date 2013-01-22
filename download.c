@@ -441,7 +441,8 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
 
     if(internalBuffer == (void*) 1 && size_buffer == 1)
     {
-        free(buffer_dl);
+        if((char*)buffer_dl == 0)
+            free(buffer_dl);
         if(!FILE_EXPECTED_SIZE)
             size_buffer = 20*1024*1024;
         else
