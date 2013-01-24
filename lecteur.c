@@ -935,7 +935,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                         fprintf(updateControler, "\n%s %s %d", mangaDB->team->teamCourt, mangaDB->mangaNameShort, *chapitreChoisis+1);
                                         fclose(updateControler);
                                         if(checkLancementUpdate())
-                                            createNewThread(lancementModuleDL);
+                                            createNewThread(lancementModuleDL, NULL);
                                     }
                                 }
                                 tempsDebutExplication = -1;

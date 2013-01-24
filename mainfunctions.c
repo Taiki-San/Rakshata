@@ -39,7 +39,7 @@ void mainRakshata()
     chargement();
 
     if(check_evt() == PALIER_QUIT) //Check envt
-        return;
+        quit_thread(0);
 
     restoringState = checkRestore();
     continuer = ecranAccueil();
@@ -104,6 +104,7 @@ void mainRakshata()
                 break;
         }
     }
+    quit_thread(0);
 }
 
 int mainLecture()
@@ -272,7 +273,7 @@ int mainChoixDL()
 
         if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
         {
-            if(checkLancementUpdate()) //Si il n'y a pas déjÃ  une instance qui DL
+            if(checkLancementUpdate()) //Si il n'y a pas déjà une instance qui DL
             {
                 SDL_RenderClear(renderer);
                 affichageLancement();
@@ -292,45 +293,25 @@ int mainChoixDL()
     return continuer;
 }
 
+extern int INSTANCE_RUNNING;
 extern int status;
 void mainDL()
 {
-    FILE *BLOQUEUR = NULL;
-	SDL_Event event;
-
+    if(!INSTANCE_RUNNING)
+        INSTANCE_RUNNING = 1;
+    else
+    {
+        INSTANCE_RUNNING = -1;
+        quit_thread(0);
+    }
     loadLangueProfile();
 
-    #ifdef _WIN32
-    BLOQUEUR = fopenR("data/download", "w+");
-    #else
-    BLOQUEUR = fopenR("data/download", "w+");
-    fprintf(BLOQUEUR, "%d", getpid());
-    fclose(BLOQUEUR);
-    BLOQUEUR = fopenR("data/download", "r");
-    #endif
-
-    if(get_compte_infos() == PALIER_QUIT)
+    if(get_compte_infos() != PALIER_QUIT)
     {
-        fclose(BLOQUEUR);
-        removeR("data/download");
-        return;
+        /*Lancement du module de téléchargement, il est totalement autonome*/
+        status = 1;
+        createNewThread(DLmanager, NULL);
     }
-
-    /*Lancement du module de téléchargement, il est totalement autonome*/
-
-    status = 1;
-    createNewThread(DLmanager);
-
-    while(status != 0)
-    {
-        SDL_WaitEventTimeout(&event, 500);
-        if(event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT || event.type == SDL_TEXTINPUT)
-        {
-            SDL_PushEvent(&event);
-            event.type = 0;
-        }
-    }
-    fclose(BLOQUEUR);
-    removeR("data/download");
+    quit_thread(0);
 }
 

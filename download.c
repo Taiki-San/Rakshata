@@ -97,16 +97,7 @@ int download(char *adresse, char *repertoire, int activation)
             size_buffer = repertoire[1] * repertoire[2] * repertoire[3] * repertoire[4];
     }
 
-#ifdef _WIN32
-    CreateThread(NULL, 0, downloader, envoi, 0, NULL);
-#else
-    pthread_t thread;
-    if (pthread_create(&thread, NULL, downloader, envoi))
-    {
-        logR("Failed at create thread\n");
-        exit(EXIT_FAILURE);
-    }
-#endif
+    createNewThread(downloader, envoi);
 
     if(activation == 1)
     {
@@ -222,10 +213,8 @@ int download(char *adresse, char *repertoire, int activation)
     else
     {
 		SDL_Event event;
-        MUTEX_LOCK;
-        while(status == STATUS_DOWNLOADING)
+        while(1)
         {
-            MUTEX_UNLOCK;
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
             if(event.type != 0)
@@ -250,6 +239,9 @@ int download(char *adresse, char *repertoire, int activation)
                 }
             }
             MUTEX_LOCK;
+            if(status != STATUS_DOWNLOADING)
+                break;
+            MUTEX_UNLOCK;
         }
         MUTEX_UNLOCK;
     }
@@ -419,8 +411,7 @@ static void* downloader(void* envoi)
     MUTEX_UNLOCK;
 
     free(valeurs);
-
-    return 0;
+    quit_thread(0);
 }
 
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)

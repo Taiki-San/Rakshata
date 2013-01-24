@@ -380,19 +380,54 @@ void removeFolder(char *path)
     free(name);
 }
 
-int createNewThread(void *function)
+typedef struct _UNICODE_STRING {
+  USHORT Length;
+  USHORT MaximumLength;
+  PWSTR  Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _OBJECT_ATTRIBUTES {
+  ULONG Length;
+  HANDLE RootDirectory;
+  PUNICODE_STRING ObjectName;
+  ULONG Attributes;
+  PVOID SecurityDescriptor;
+  PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
+FUNC ZwCreateThreadEx;
+
+int createNewThread(void *function, void *arg)
 {
 #ifdef _WIN32
-	CreateThread(NULL, 0, function, NULL, 0, NULL);
+    if(ZwCreateThreadEx == NULL)
+    {
+        ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
+        if(ZwCreateThreadEx == NULL)
+        {
+            logR("Failed at export primitives");
+            CreateThread(NULL, 0, function, arg, 0, NULL);
+        }
+        else
+        {
+            HANDLE hThread=0;
+            ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS/*HiddenFromDebugger*/,0,0,0,0);
+        }
+    }
+
 #else
     pthread_t thread;
 
     if (pthread_create(&thread, NULL, function, NULL))
     {
-        logR("Failled at create thread MDL\n");
+        logR("Failed at create thread MDL\n");
         exit(EXIT_FAILURE);
     }
 #endif
+    MUTEX_LOCK;
+    THREAD_COUNT++;
+    MUTEX_UNLOCK;
 	return 1;
 }
 

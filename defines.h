@@ -26,9 +26,15 @@
 
 /*Thread*/
 #ifdef _WIN32
-    #define quit_thread(a) ExitThread(a)
+    #define quit_thread(a) MUTEX_LOCK;\
+                           THREAD_COUNT--;\
+                           MUTEX_UNLOCK;\
+                           ExitThread(a)
 #else
-    #define quit_thread(a) pthread_exit(a)
+    #define quit_thread(a) MUTEX_LOCK;\
+                           THREAD_COUNT--;\
+                           MUTEX_UNLOCK;\
+                           pthread_exit(a)
 #endif
 
 /*Environnement*/

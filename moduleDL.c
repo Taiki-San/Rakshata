@@ -15,34 +15,17 @@
 extern int INSTALL_DONE;
 extern int CURRENT_TOKEN;
 
-typedef struct _UNICODE_STRING {
-  USHORT Length;
-  USHORT MaximumLength;
-  PWSTR  Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
-
-typedef struct _OBJECT_ATTRIBUTES {
-  ULONG Length;
-  HANDLE RootDirectory;
-  PUNICODE_STRING ObjectName;
-  ULONG Attributes;
-  PVOID SecurityDescriptor;
-  PVOID SecurityQualityOfService;
-} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
-
-typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
-
 int status;
 static int error;
+int INSTANCE_RUNNING = 0;
 
 int telechargement()
 {
     int i = 0, j = 0, k = 0, chapitre = 0, mangaActuel = 0, mangaTotal = 0, pourcentage = 0, glados = 0, posVariable = 0;
     char temp[200], mangaCourt[LONGUEUR_COURT], teamCourt[LONGUEUR_COURT], historiqueTeam[1000][LONGUEUR_COURT];
-    char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100] = {0};
-    FILE *fichier = NULL, *fichier2 = NULL;
+    char superTemp[400], trad[SIZE_TRAD_ID_22][100], MOT_DE_PASSE_COMPTE[100] = {0}, **bufferTodo = NULL, **bufferTodoBak = NULL;
+    FILE *fichier = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
-    FUNC ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
     SDL_Texture *texte = NULL;
     TTF_Font *police_big = NULL;
     TTF_Font *police = NULL;
@@ -76,24 +59,46 @@ int telechargement()
     }
     rewind(fichier);
 
-    for(i = 0; i < SIZE_TRAD_ID_22; i++)
-        for(j = 0; j < LONGUEUR_COURT; trad[i][j++] = 0);
-    for(i = 0; i < 1000; i++)
-        for(j = 100; j < 100; historiqueTeam[i][j] = 0);
+    bufferTodo = (char**) calloc(mangaTotal, sizeof(int*));
+    for(i = 0; i < mangaTotal; bufferTodo[i++] = calloc(LONGUEUR_COURT*2 + 50, sizeof(char)));
+    bufferTodoBak = bufferTodo;
 
+    if(bufferTodo == NULL)
+    {
+        char temp[200];
+        snprintf(temp, 200, "Failed at allocate: %d * %d bytes", mangaTotal, LONGUEUR_COURT*2 + 50);
+        logR(temp);
+        quit_thread(0);
+    }
+
+    for(j = k = 0; (i = fgetc(fichier)) != EOF;)
+    {
+        if(k >= LONGUEUR_COURT*2 + 50)
+            while((i = fgetc(fichier)) != '\n' && i != EOF);
+        if(i == '\n' && j+1 < mangaTotal)
+        {
+            j++;
+            k = 0;
+        }
+        else if(i != '\n' && i != EOF && k < LONGUEUR_COURT*2 + 50)
+            bufferTodo[j][k++] = i;
+    }
+    fclose(fichier);
+    removeR(INSTALL_DATABASE);
+    mangaTotal--; //On décale d'un cran
+
+    for(i = 0; i < 1000; historiqueTeam[i][0] = 0);
     loadTrad(trad, 22);
 
-    for(mangaActuel = 1; fgetc(fichier) != EOF && glados != CODE_RETOUR_DL_CLOSE; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
+    for(mangaActuel = 1; mangaTotal >= 0 && glados != CODE_RETOUR_DL_CLOSE; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
     {
         if(mangaTotal + (mangaActuel - 1) != 0)
-            pourcentage = mangaActuel * 100 / (mangaTotal + mangaActuel -1);
+            pourcentage = mangaActuel * 100 / (mangaTotal + mangaActuel);
         else
             pourcentage = 100;
 
         /*Extraction du chapitre*/
-        fseek(fichier, -1, SEEK_CUR);
-        fscanfs(fichier, "%s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, &chapitre);
-        fclose(fichier);
+        sscanfs(bufferTodo[0], "%s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, &chapitre);
         do
         {
             for(posVariable = 0; posVariable < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) || strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)); posVariable++);
@@ -218,21 +223,7 @@ int telechargement()
                     data_instal->mangaDB = mangaDB[posVariable];
                     data_instal->chapitre = chapitre;
                     data_instal->buf = struc;
-                    #ifdef _WIN32
-                    if(!ZwCreateThreadEx)
-                    {
-                        /*NtSetInformationThread(*/CreateThread(NULL, 0, installation, data_instal, 0, NULL)/*, 0x11, NULL, 0)*/; //Initialisation du thread
-                        logR("Failed at export primitives");
-                    }
-                    else
-                    {
-                        HANDLE hThread=0;
-                        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), installation, data_instal, SECURE_THREADS/*HiddenFromDebugger*/,0,0x0,0x0,0);
-                    }
-                    #else
-                    if (pthread_create(&thread, NULL, installation, data_instal))
-                        exit(EXIT_FAILURE);
-                    #endif
+                    createNewThread(installation, data_instal);
                 }
 
                 else if(glados == CODE_RETOUR_INTERNAL_FAIL)
@@ -288,35 +279,74 @@ int telechargement()
 
         } while(0); //Permet d'interrompre le code avec break;
 
-        if(glados == CODE_RETOUR_OK)
+        if(glados == CODE_RETOUR_OK && mangaTotal)
         {
-            fichier2 = fopenR("data/import.tmp", "a+");
-            fichier = fopenR(INSTALL_DATABASE, "r");
+            char **newBufferTodo = NULL;
+            while(**bufferTodo++ != '\n' && **bufferTodo);
+            for(; **bufferTodo == '\n'; bufferTodo++);
 
-            fgetc(fichier); //On saute le premier caractére qui est parfoisun saut de ligne
-            while((i = fgetc(fichier)) != '\n' && i != EOF); //On saute la ligne actuelle
-
-            mangaTotal = 1; //Pour compter la derniére ligne, sans \n
-            while((i = fgetc(fichier)) != EOF) //On copie la fin du fichier dans un buffer
+            if(INSTANCE_RUNNING == -1 && checkFileExist(INSTALL_DATABASE))
             {
-                fputc(i, fichier2);
-                if(i == '\n')
-                    mangaTotal++;
+                int oldSize = mangaTotal;
+                fichier = fopenR(INSTALL_DATABASE, "r");
+                while((i = fgetc(fichier)) != EOF)
+                {
+                    if(i == '\n')
+                        mangaTotal++;
+                }
+                rewind(fichier);
+                newBufferTodo = calloc(mangaTotal, sizeof(char**));
+                for(i = 0; i < mangaTotal; newBufferTodo[i++] = calloc(LONGUEUR_COURT*2 + 50, sizeof(char)));
+                if(oldSize)
+                    memcpy(newBufferTodo, &bufferTodo[1], oldSize*LONGUEUR_COURT*2+50);
+
+                for(j = oldSize, k = 0; (i = fgetc(fichier)) != EOF;)
+                {
+                    if(k >= LONGUEUR_COURT*2 + 50)
+                        while((i = fgetc(fichier)) != '\n' && i != EOF);
+                    if(i == '\n' && j+1 < mangaTotal)
+                    {
+                        j++;
+                        k = 0;
+                    }
+                    else if(i != '\n' && i != EOF && k < LONGUEUR_COURT*2 + 50)
+                        newBufferTodo[j][k++] = i;
+                }
+                fclose(fichier);
+                removeR(INSTALL_DATABASE);
+                for(i = 0; i < oldSize; free(bufferTodoBak[i++]));
+                free(bufferTodoBak);
             }
-            fclose(fichier2);
-            fclose(fichier);
+            else
+            {
+                newBufferTodo = calloc(mangaTotal, LONGUEUR_COURT*2+50);
+                memcpy(newBufferTodo, bufferTodo, mangaTotal*LONGUEUR_COURT*2+50);
 
-            removeR(INSTALL_DATABASE);
-            renameR("data/import.tmp", INSTALL_DATABASE);
-
-            fichier = fopenR(INSTALL_DATABASE, "r");
+                for(i = 0; i < mangaTotal; free(bufferTodoBak[i++]));
+                free(bufferTodoBak);
+            }
+            bufferTodoBak = bufferTodo = newBufferTodo;
+            mangaTotal--;
         }
     }
-    if(fichier != NULL)
-        fclose(fichier);
-
-    if(glados == CODE_RETOUR_OK)
-        removeR(INSTALL_DATABASE);
+    if(glados != CODE_RETOUR_OK)
+    {
+        fichier = fopenR(INSTALL_DATABASE, "a+");
+        if(fichier != NULL)
+        {
+            for(i = 0; i <= mangaTotal; i++)
+            {
+                fputs(bufferTodo[i], fichier);
+                fputc('\n', fichier);
+            }
+            fclose(fichier);
+        }
+    }
+    else
+    {
+        free(*bufferTodoBak);
+        free(bufferTodoBak);
+    }
 
     SDL_RenderClear(renderer);
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
@@ -535,7 +565,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
         crashTemp(temp, TAILLE_BUFFER);
         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis, CONFIGFILE);
         if(!checkFileExist(temp))
-            fprintf(fichier, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, chapitreChoisis);
+            fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, chapitreChoisis);
     }
     else
     {
@@ -544,7 +574,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
             sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, i, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                fprintf(fichier, "\n%s %s %d", mangaDB.team->teamCourt, mangaDB.mangaNameShort, i);
+                fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, i);
                 nombreChapitre++;
             }
         }
@@ -650,13 +680,16 @@ void DLmanager()
 
 void lancementModuleDL()
 {
-    #ifdef _WIN32
-    lancementExternalBinary("Rakshata.exe");
-    #else
-        #ifdef __APPLE__
-        lancementExternalBinary("Rakshata.app");
+    createNewThread(mainDL, NULL);
+    #if 0
+        #ifdef _WIN32
+        lancementExternalBinary("Rakshata.exe");
         #else
-        lancementExternalBinary("Rakshata");
+            #ifdef __APPLE__
+            lancementExternalBinary("Rakshata.app");
+            #else
+            lancementExternalBinary("Rakshata");
+            #endif
         #endif
     #endif
 }

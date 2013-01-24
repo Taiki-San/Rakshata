@@ -401,7 +401,7 @@ void networkAndVersionTest()
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
-	 Si ce n'est pas le cas, il y a un probléme avec le serveur  */
+	 Si ce n'est pas le cas, il y a un problème avec le serveur  */
 
     if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
     {

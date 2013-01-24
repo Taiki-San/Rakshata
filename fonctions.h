@@ -165,7 +165,7 @@ void SDL_FreeSurfaceS(SDL_Surface *surface);
 void SDL_DestroyTextureS(SDL_Texture *texture);
 
 void removeFolder(char *path);
-int createNewThread(void *function);
+int createNewThread(void *function, void *arg);
 void ouvrirSite(TEAMS_DATA* teams);
 void updateDirectory();
 int lancementExternalBinary(char cheminDAcces[100]);
