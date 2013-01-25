@@ -101,7 +101,7 @@ void affichageLancement()
     TTF_CloseFont(police);
 }
 
-void chargement()
+void chargement(SDL_Renderer* rendererVar)
 {
 	/*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
@@ -113,12 +113,12 @@ void chargement()
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(rendererVar);
 
     if(police == NULL)
     {
-        SDL_RenderFillRect(renderer, NULL);
-        SDL_RenderPresent(renderer);
+        SDL_RenderFillRect(rendererVar, NULL);
+        SDL_RenderPresent(rendererVar);
         return;
     }
 
@@ -127,19 +127,19 @@ void chargement()
     else
         sprintf(texte[0], "Chargement - Loading");
 
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
+    texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
 
     if(texteAffiche == NULL)
         return;
 
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
+    position.x = rendererVar->viewport.w / 2 - texteAffiche->w / 2;
+    position.y = rendererVar->viewport.h / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
     position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+    SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
     TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(rendererVar);
 }
 
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)
@@ -192,14 +192,14 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     return texture;
 }
 
-void applyBackground(int x, int y, int w, int h)
+void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h)
 {
     SDL_Rect positionBack;
     positionBack.x = x;
     positionBack.y = y;
     positionBack.w = w;
     positionBack.h = h;
-    SDL_RenderFillRect(renderer, &positionBack);
+    SDL_RenderFillRect(renderVar, &positionBack);
 }
 
 int getWindowSize(int w1h2)
@@ -219,17 +219,17 @@ void updateWindowSize(int w, int h)
         WINDOW_SIZE_H = h; //Pour repositionner chargement
         WINDOW_SIZE_W = w;
 
-        chargement();
+        chargement(renderer);
 
         SDL_SetWindowSize(window, w, h);
-        checkRenderBugPresent();
+        checkRenderBugPresent(window, renderer);
 
         if(RENDER_BUG)
         {
             SDL_DestroyRenderer(renderer);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-            chargement();
+            chargement(renderer);
             SDL_RenderPresent(renderer);
         }
         else if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
@@ -266,16 +266,16 @@ void restartEcran()
     SDL_RenderPresent(renderer);
 }
 
-void nameWindow(const int value)
+void nameWindow(SDL_Window* windows, const int value)
 {
     char windowsName[128], trad[SIZE_TRAD_ID_25][100], versionOfSoftware[6];
 
-    if(!tradAvailable())
+    if(!tradAvailable() || value < 0)
     {
         if(langue == 1) //Français
-            SDL_SetWindowTitle(window, "Rakshata - Environnement corrompu");
+            SDL_SetWindowTitle(windows, "Rakshata - Environnement corrompu");
         else
-            SDL_SetWindowTitle(window, "Rakshata - Environment corrupted");
+            SDL_SetWindowTitle(windows, "Rakshata - Environment corrupted");
         return;
     }
 
@@ -283,16 +283,13 @@ void nameWindow(const int value)
     loadTrad(trad, 25);
     crashTemp(windowsName, 128);
 
-    if(!value) //Si on affiche le nom de la fenetre standard
+    if(value <= 1) //Si on affiche le nom de la fenetre standard ou sans nombre d'installe
         sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
-
-    else if (value == 1)
-        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
 
     else
         sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
 
-    SDL_SetWindowTitle(window, windowsName);
+    SDL_SetWindowTitle(windows, windowsName);
 }
 
 

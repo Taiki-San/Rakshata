@@ -210,7 +210,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Rect position;
 
-    chargement();
+    chargement(renderer);
     loadTrad(texteTrad, 19);
 
     if(mangaDB.firstChapter == mangaDB.lastChapter) //Si une seul chapitre, on le séléctionne automatiquement

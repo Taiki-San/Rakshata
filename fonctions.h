@@ -14,15 +14,15 @@
 void initialisationAffichage();
 void raffraichissmenent();
 void affichageLancement();
-void chargement();
+void chargement(SDL_Renderer* renderer);
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
-void applyBackground(int x, int y, int w, int h);
+void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
 int getWindowSize(int w1h2);
 void updateWindowSize(int w, int h);
 void getResolution();
 void restartEcran();
-void nameWindow(const int value);
+void nameWindow(SDL_Window* windows, const int value);
 
 /**check.c**/
 int check_evt();
@@ -43,7 +43,7 @@ int checkFirstLineButtonPressed(int button_selected[6]);
 int checkSecondLineButtonPressed(int button_selected[6]);
 int checkButtonPressed(int button_selected[6]);
 int checkWindowEventValid(int EventWindowEvent);
-void checkRenderBugPresent();
+void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileExist(char filename[]);
 int checkFileValide(FILE* file);
@@ -147,6 +147,7 @@ int interditWhileDL();
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
+void updateWindowSizeDL(int w, int h);
 
 /**Native.c**/
 FILE* fopenR(void *_path, char *right);

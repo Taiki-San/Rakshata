@@ -395,7 +395,7 @@ int deleteManga()
 								fscanfs(test, "%d", &k);
 							fclose(test);
 
-							chargement();
+							chargement(renderer);
 							if(internal_deleteChapitre(i, j, k, chapitreChoisis, mangas[mangaChoisis].mangaName, mangas[mangaChoisis].team->teamLong))
 							{
 								noMoreChapter = 0;
@@ -407,7 +407,7 @@ int deleteManga()
 
 					else
 					{
-						chargement(); //On recharge la liste des mangas dispo
+						chargement(renderer); //On recharge la liste des mangas dispo
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 						removeFolder(temp);
 						noMoreChapter = 0;

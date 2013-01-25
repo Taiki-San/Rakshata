@@ -108,7 +108,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                        event.button.y > sizeFavsDispo[2] && event.button.y < sizeFavsDispo[2]+sizeFavsDispo[3] && favorisToDL == 2)
                     {
                         getNewFavs();
-                        applyBackground(sizeFavsDispo[0], sizeFavsDispo[2], sizeFavsDispo[1], sizeFavsDispo[3]);
+                        applyBackground(renderer, sizeFavsDispo[0], sizeFavsDispo[2], sizeFavsDispo[1], sizeFavsDispo[3]);
                         SDL_RenderPresent(renderer);
                         favorisToDL = -2; //On fait tout disparaitre
                     }
@@ -175,7 +175,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
             position.y = 25 - texture->h / 2;
             position.h = texture->h;
             position.w = texture->w;
-            applyBackground(5, 5, 50, 50);
+            applyBackground(renderer, 5, 5, 50, 50);
             SDL_RenderCopy(renderer, texture, NULL, &position);
             SDL_DestroyTextureS(texture);
             SDL_RenderPresent(renderer);
@@ -183,7 +183,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 
         else if(favorisToDL == -1)
         {
-            applyBackground(5, 5, 50, 50);
+            applyBackground(renderer, 5, 5, 50, 50);
             SDL_RenderPresent(renderer);
             favorisToDL--;
         }
@@ -192,7 +192,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         {
             char trad[SIZE_TRAD_ID_29][TRAD_LENGTH];
             loadTrad(trad, 29);
-            applyBackground(5, 5, 50, 50);
+            applyBackground(renderer, 5, 5, 50, 50);
             texture = IMG_LoadTexture(renderer, "data/icon/fb.png");
             if(texture != NULL)
             {
@@ -264,7 +264,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     do
     {
-        applyBackground(0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE, WINDOW_SIZE_W, backgroundH);
+        applyBackground(renderer, 0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE, WINDOW_SIZE_W, backgroundH);
 
         changementDePage = 0;
         mangaChoisis = 0;
@@ -512,7 +512,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    applyBackground(0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
+    applyBackground(renderer, 0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
 
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
     position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
@@ -559,7 +559,7 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
     sprintf(buffer, "%d", choix);
     numero = TTF_Write(renderer, police, buffer, couleur);
 
-    applyBackground(0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
+    applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
 
     position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
     position.y = hauteurNum;// - (numero->h / 2);

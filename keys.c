@@ -227,7 +227,7 @@ int logon()
 
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
-        chargement();
+        chargement(renderer);
         while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             SDL_Delay(50);
     }
@@ -237,7 +237,7 @@ int logon()
         return PALIER_QUIT;
     }
     loadTrad(trad, 26); //Chargement de la trad
-    chargement();
+    chargement(renderer);
 
     do
     {
@@ -291,7 +291,7 @@ int logon()
         if(waitClavier(50, beginingOfEmailAdress, 109, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
 
-        chargement();
+        chargement(renderer);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         login = check_login(adresseEmail);

@@ -151,7 +151,7 @@ int changementLangue()
         removeFromPref(SETTINGS_LANGUE_FLAG);
         snprintf(menus[0], LONGUEURTEXTE, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
         addToPref(SETTINGS_LANGUE_FLAG, menus[0]);
-        nameWindow(0);
+        nameWindow(window, 0);
         return 0;
     }
     return j;

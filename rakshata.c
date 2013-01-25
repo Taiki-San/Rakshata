@@ -30,7 +30,9 @@ char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/te
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
 SDL_Window* window = NULL;
+SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;
+SDL_Renderer *rendererDL = NULL;
 MUTEX_VAR mutex;
 
 int main()

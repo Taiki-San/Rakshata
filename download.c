@@ -12,6 +12,9 @@
 
 #include "main.h"
 
+extern int WINDOW_SIZE_H_DL;
+extern int WINDOW_SIZE_W_DL;
+
 static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static unsigned long POSITION_DANS_BUFFER;
@@ -109,21 +112,21 @@ int download(char *adresse, char *repertoire, int activation)
         SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
 		SDL_Event event;
 
-		if(WINDOW_SIZE_H != HAUTEUR_FENETRE_DL)
-            updateWindowSize(LARGEUR, HAUTEUR_FENETRE_DL);
+		if(WINDOW_SIZE_H_DL != HAUTEUR_FENETRE_DL)
+            updateWindowSizeDL(LARGEUR, HAUTEUR_FENETRE_DL);
 
         /*Remplissage des variables*/
         loadTrad(texte, 20);
-        pourcentAffiche = TTF_Write(renderer, police, texte[0], couleur);
+        pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
 
-        applyBackground(0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W, WINDOW_SIZE_H);
-        position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+        applyBackground(rendererDL, 0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL);
+        position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
         position.y = HAUTEUR_POURCENTAGE;
         position.h = pourcentAffiche->h;
         position.w = pourcentAffiche->w;
-        SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+        SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
         SDL_DestroyTextureS(pourcentAffiche);
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(rendererDL);
 
         position.x = BORDURE_POURCENTAGE;
 
@@ -148,33 +151,33 @@ int download(char *adresse, char *repertoire, int activation)
 
                     /*Code d'affichage du pourcentage*/
                     sprintf(temp, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
-                    pourcentAffiche = TTF_Write(renderer, police, temp, couleur);
+                    pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
 
-                    applyBackground(0, position.y, WINDOW_SIZE_W, pourcentAffiche->h + 5);
+                    applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
-                    SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+                    SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
                     SDL_DestroyTextureS(pourcentAffiche);
 
-                    SDL_RenderPresent(renderer);
+                    SDL_RenderPresent(rendererDL);
 
                     last_refresh = SDL_GetTicks();
                 }
 
                 SDL_WaitEventTimeout(&event, 100);
 
-                if(event.type == SDL_QUIT) //|| ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q))
+                if(event.type == SDL_QUIT)
                 {
-                    pourcentAffiche = TTF_Write(renderer, police, texte[5], couleur);
-                    position.y = WINDOW_SIZE_H / 2 - pourcentAffiche->h / 2;
-                    position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+                    pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
+                    position.y = WINDOW_SIZE_H_DL / 2 - pourcentAffiche->h / 2;
+                    position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
 
-                    SDL_RenderClear(renderer);
-                    SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+                    SDL_RenderClear(rendererDL);
+                    SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
                     SDL_DestroyTextureS(pourcentAffiche);
-                    SDL_RenderPresent(renderer);
+                    SDL_RenderPresent(rendererDL);
 
                     status = STATUS_FORCE_CLOSE;
                     break;
@@ -185,15 +188,15 @@ int download(char *adresse, char *repertoire, int activation)
         }
         if(status == STATUS_END)
         {
-            applyBackground(0, position.y, WINDOW_SIZE_W, WINDOW_SIZE_H);
-            pourcentAffiche = TTF_Write(renderer, police, texte[6], couleur);
-            position.x = WINDOW_SIZE_W / 2 - pourcentAffiche->w / 2;
+            applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H);
+            pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
+            position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
             position.y = HAUTEUR_POURCENTAGE;
             position.h = pourcentAffiche->h;
             position.w = pourcentAffiche->w;
-            SDL_RenderCopy(renderer, pourcentAffiche, NULL, &position);
+            SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
             SDL_DestroyTextureS(pourcentAffiche);
-            SDL_RenderPresent(renderer);
+            SDL_RenderPresent(rendererDL);
             TTF_CloseFont(police);
         }
 

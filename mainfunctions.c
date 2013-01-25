@@ -28,7 +28,7 @@ void mainRakshata()
         SDL_SetWindowIcon(window, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
-    nameWindow(0);
+    nameWindow(window, 0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
@@ -36,11 +36,12 @@ void mainRakshata()
     WINDOW_SIZE_W = window->w;
     HAUTEUR = WINDOW_SIZE_H = window->h;
 
-    chargement();
+    chargement(renderer);
 
     if(check_evt() == PALIER_QUIT) //Check envt
+    {
         quit_thread(0);
-
+    }
     restoringState = checkRestore();
     continuer = ecranAccueil();
 
@@ -179,7 +180,7 @@ int mainLecture()
 
                                 restoringState = 0;
                             }
-                            chargement();
+                            chargement(renderer);
 
                             lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 
@@ -294,7 +295,6 @@ int mainChoixDL()
 }
 
 extern int INSTANCE_RUNNING;
-extern int status;
 void mainDL()
 {
     if(!INSTANCE_RUNNING)
@@ -309,8 +309,7 @@ void mainDL()
     if(get_compte_infos() != PALIER_QUIT)
     {
         /*Lancement du module de téléchargement, il est totalement autonome*/
-        status = 1;
-        createNewThread(DLmanager, NULL);
+        DLmanager();
     }
     quit_thread(0);
 }

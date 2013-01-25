@@ -203,7 +203,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             position.y = startFromY;
         else
             position.y = WINDOW_SIZE_H / 2;
-        applyBackground(startFromX, position.y, WINDOW_SIZE_W, epaisseur);
+        applyBackground(renderer, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
 
         if(!startFromX)
         {

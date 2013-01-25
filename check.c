@@ -156,7 +156,7 @@ int check_evt()
                 }
             }
         }
-        nameWindow(0);
+        nameWindow(window, 0);
     }
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;
@@ -238,7 +238,7 @@ void checkUpdate()
         {
             /*Téléchargement et affichage des informations*/
             crashTemp(temp, 100);
-            applyBackground(150, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
+            applyBackground(renderer, 150, 0, WINDOW_SIZE_W, WINDOW_SIZE_H);
             sprintf(temp, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
             infosAvancement = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
@@ -464,8 +464,9 @@ void networkAndVersionTest()
 		{
 			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
 			if(i == 0 && COMPTE_PRINCIPAL_MAIL[i] != '@')
+            {
                 quit_thread(0);
-
+            }
 			sprintf(temp, "http://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 			setupBufferDL(bufferDL, 5, 1, 1, 1);
 
@@ -721,18 +722,18 @@ int checkWindowEventValid(int EventWindowEvent)
     return 0;
 }
 
-void checkRenderBugPresent()
+void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar)
 {
     if(RENDER_BUG)
         return;
-    SDL_RenderClear(renderer);
-    SDL_Texture *texture = IMG_LoadTexture(renderer, "data/icone.png");
+    SDL_RenderClear(renderVar);
+    SDL_Texture *texture = IMG_LoadTexture(renderVar, "data/icone.png");
     if(texture == NULL)
     {
         RENDER_BUG = 1;
-        SDL_DestroyRenderer(renderer);
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+        SDL_DestroyRenderer(renderVar);
+        renderVar = SDL_CreateRenderer(windows, -1, SDL_RENDERER_ACCELERATED);
+        SDL_SetRenderDrawColor(renderVar, FOND_R, FOND_G, FOND_B, 255);
     }
     else
         SDL_DestroyTextureS(texture);
