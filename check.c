@@ -315,9 +315,9 @@ void checkUpdate()
         /*Application des modifications*/
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        window = NULL;
         TTF_Quit();
         SDL_Quit();
-
         lancementExternalBinary(files[ligne - 1]);
         exit(1);
     }
@@ -729,12 +729,7 @@ void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar)
     SDL_RenderClear(renderVar);
     SDL_Texture *texture = IMG_LoadTexture(renderVar, "data/icone.png");
     if(texture == NULL)
-    {
         RENDER_BUG = 1;
-        SDL_DestroyRenderer(renderVar);
-        renderVar = SDL_CreateRenderer(windows, -1, SDL_RENDERER_ACCELERATED);
-        SDL_SetRenderDrawColor(renderVar, FOND_R, FOND_G, FOND_B, 255);
-    }
     else
         SDL_DestroyTextureS(texture);
 }

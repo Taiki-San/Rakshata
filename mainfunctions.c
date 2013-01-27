@@ -36,7 +36,7 @@ void mainRakshata()
     WINDOW_SIZE_W = window->w;
     HAUTEUR = WINDOW_SIZE_H = window->h;
 
-    chargement(renderer);
+    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
     if(check_evt() == PALIER_QUIT) //Check envt
     {
@@ -72,7 +72,6 @@ void mainRakshata()
                 break;
 
             case 2:
-                //Appel du telechargement de manga
                 continuer = mainChoixDL();
                 break;
 
@@ -105,13 +104,16 @@ void mainRakshata()
                 break;
         }
     }
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    window = NULL;
     quit_thread(0);
 }
 
 int mainLecture()
 {
-    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, retourLecteur = 0, restoringState = 0, fullscreen = 0, chapsExtreme[2] = {0, 1};
-    FILE* test = NULL;
+    int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur;
+    int restoringState = 0, fullscreen = 0, chapsExtreme[2];
 
     if(checkRestore())
         restoringState = 1;
@@ -170,7 +172,7 @@ int mainLecture()
                             if(restoringState == 1)
                             {
                                 char temp[LONGUEUR_NOM_MANGA_MAX];
-                                crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
+                                FILE* test = NULL;
 
                                 test = fopenR("data/laststate.dat", "r");
                                 fscanfs(test, "%s %d", temp, LONGUEUR_NOM_MANGA_MAX, &chapitreChoisis);
@@ -180,7 +182,7 @@ int mainLecture()
 
                                 restoringState = 0;
                             }
-                            chargement(renderer);
+                            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
                             lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 

@@ -14,7 +14,7 @@
 void initialisationAffichage();
 void raffraichissmenent();
 void affichageLancement();
-void chargement(SDL_Renderer* renderer);
+void chargement(SDL_Renderer* rendererVar, int h, int w);
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
@@ -97,8 +97,9 @@ void checkSectionMessageUpdate();
 
 /**IO.c**/
 int nombreEntree(SDL_Event event);
-int waitEnter();
+int waitEnter(SDL_Window* windows);
 int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour);
+int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 #define getLetterPushed(event) (event.text.text[0] >= 'A' && event.text.text[0] <= 'z')?event.text.text[0]:0
 #define checkIfNumber(c) (c >= '0' && c <= '9')?1:0
 

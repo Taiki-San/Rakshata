@@ -101,7 +101,7 @@ void affichageLancement()
     TTF_CloseFont(police);
 }
 
-void chargement(SDL_Renderer* rendererVar)
+void chargement(SDL_Renderer* rendererVar, int h, int w)
 {
 	/*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
@@ -132,8 +132,8 @@ void chargement(SDL_Renderer* rendererVar)
     if(texteAffiche == NULL)
         return;
 
-    position.x = rendererVar->viewport.w / 2 - texteAffiche->w / 2;
-    position.y = rendererVar->viewport.h / 2 - texteAffiche->h / 2;
+    position.x = w / 2 - texteAffiche->w / 2;
+    position.y = h / 2 - texteAffiche->h / 2;
     position.h = texteAffiche->h;
     position.w = texteAffiche->w;
     SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
@@ -219,9 +219,12 @@ void updateWindowSize(int w, int h)
         WINDOW_SIZE_H = h; //Pour repositionner chargement
         WINDOW_SIZE_W = w;
 
-        chargement(renderer);
+        chargement(renderer, h, w);
 
+        SDL_FlushEvent(SDL_WINDOWEVENT); //Evite de trimbaler des variables corrompues
         SDL_SetWindowSize(window, w, h);
+        SDL_FlushEvent(SDL_WINDOWEVENT);
+
         checkRenderBugPresent(window, renderer);
 
         if(RENDER_BUG)
@@ -229,14 +232,11 @@ void updateWindowSize(int w, int h)
             SDL_DestroyRenderer(renderer);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-            chargement(renderer);
+            chargement(renderer, h, w);
             SDL_RenderPresent(renderer);
         }
         else if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
-        {
-            SDL_RenderClear(renderer);
             SDL_RenderPresent(renderer);
-        }
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;
     }

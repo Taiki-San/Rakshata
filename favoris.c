@@ -38,11 +38,11 @@ int checkIfFaved(MANGAS_DATA* mangaDB, char *favs)
 void updateFavorites()
 {
     char *favs = NULL;
-    if(checkFileExist(INSTALL_DATABASE) || (favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL)
-    {
-        favorisToDL = -1;
+    if(!checkFileExist(INSTALL_DATABASE) && (favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) != NULL)
+        favorisToDL = 0;
+
+    else
         return;
-    }
 
     if(favs != NULL)
         free(favs);

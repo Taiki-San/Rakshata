@@ -45,7 +45,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     {
         event.type = 0;
         SDL_WaitEventTimeout(&event, 100);
-        if(event.type != 0)
+        if(event.type != 0 && haveInputFocus(&event, window))
         {
             switch(event.type)
             {
@@ -55,29 +55,20 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 
                 case SDL_KEYDOWN: //If a keyboard letter is pushed
                 {
-    #ifdef __APPLE__
-                    if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                        ret_value = PALIER_QUIT;
-                    else
-                    {
-    #endif
-                        switch(event.key.keysym.sym)
-                        {
-                            case SDLK_DELETE:
-                            case SDLK_BACKSPACE:
-                                ret_value = PALIER_CHAPTER;
-                                break;
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_DELETE:
+						case SDLK_BACKSPACE:
+							ret_value = PALIER_CHAPTER;
+							break;
 
-                            case SDLK_ESCAPE:
-                                ret_value = PALIER_MENU;
-                                break;
+						case SDLK_ESCAPE:
+							ret_value = PALIER_MENU;
+							break;
 
-                            default: //If another one
-                                break;
-                        }
-    #ifdef __APPLE__
-                    }
-    #endif
+						default: //If another one
+							break;
+					}
                     break;
                 }
 
@@ -594,6 +585,9 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
             showNumero(police, choix, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
         SDL_WaitEvent(&event);
+        if(!haveInputFocus(&event, window))
+            continue;
+
         switch(event.type)
         {
             case SDL_QUIT:
@@ -776,13 +770,6 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                 }
                 break;
             }
-
-            default:
-#ifdef __APPLE__
-                if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                    mangaChoisis = PALIER_QUIT;
-#endif
-                break;
         }
     }
     TTF_CloseFont(police);

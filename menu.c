@@ -34,7 +34,7 @@ int ecranAccueil()
     SDL_DestroyTextureS(acceuil);
 
     SDL_RenderPresent(renderer); //Refresh screen
-    return waitEnter();
+    return waitEnter(window);
 }
 
 int showControls()
@@ -58,8 +58,10 @@ int showControls()
 
     while(!retour)
     {
-        event.type = -1;
         SDL_WaitEvent(&event);
+        if(!haveInputFocus(&event, window))
+            continue;
+
         switch(event.type)
         {
             case SDL_QUIT:
@@ -121,14 +123,6 @@ int showControls()
                 }
                 break;
             }
-
-            default:
-            #ifdef __APPLE__
-                if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                    retour =
-                    PALIER_QUIT;
-            #endif
-                break;
         }
     }
     return retour;

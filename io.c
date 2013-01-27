@@ -19,13 +19,16 @@ int nombreEntree(SDL_Event event)
     return -1;
 }
 
-int waitEnter()
+int waitEnter(SDL_Window* windows)
 {
     int i = 0;
     SDL_Event event;
     while(!i)
     {
         SDL_WaitEvent(&event);
+        if(!haveInputFocus(&event, windows))
+            continue;
+
         switch(event.type)
         {
             case SDL_QUIT:
@@ -62,14 +65,6 @@ int waitEnter()
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 break;
             }
-
-
-            default:
-                #ifdef __APPLE__
-                if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                    i = PALIER_QUIT;
-                #endif
-                break;
         }
     }
     return i;
@@ -109,6 +104,9 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
     for(i = 0; i < nombreMax;)
     {
         SDL_WaitEvent(&event);
+        if(!haveInputFocus(&event, window))
+            continue;
+
         switch(event.type)
         {
             case SDL_QUIT:
@@ -164,7 +162,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             case SDL_TEXTINPUT:
             {
                 if(event.text.text[0] >= ' ' && event.text.text[0] < 128) //Un char
-                    retour[i++] = event.text.text[0];//(char) event.text.text[0];
+                    retour[i++] = event.text.text[0];
                 break;
             }
 
@@ -179,14 +177,6 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             }
 
             default:
-                #ifdef __APPLE__
-                if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-                {
-                    SDL_FreeSurfaceS(numero);
-                    TTF_CloseFont(police);
-                    return PALIER_QUIT;
-                }
-                #endif
                 continue;
                 break;
         }
@@ -228,5 +218,56 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
     }
     TTF_CloseFont(police);
     return 0;
+}
+
+int haveInputFocus(SDL_Event *event, SDL_Window *windows)
+{
+    if(windowDL != NULL)
+    {
+        int state = 1;
+        switch(event->type)
+        {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+            {
+                if(event->key.windowID != windows->id)
+                    state = 0;
+                break;
+            }
+
+            case SDL_MOUSEMOTION:
+            {
+                if(event->motion.windowID != windows->id)
+                    state = 0;
+                break;
+            }
+
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+            {
+                if(event->button.windowID != windows->id)
+                    state = 0;
+                break;
+            }
+
+            case SDL_MOUSEWHEEL:
+            {
+                if(event->wheel.windowID != windows->id)
+                    state = 0;
+                break;
+            }
+
+            case SDL_TEXTINPUT:
+            {
+                if(event->text.windowID != windows->id)
+                    state = 0;
+                break;
+            }
+        }
+        if(!state)
+            SDL_PushEvent(event);
+        return state;
+    }
+    return 1;
 }
 

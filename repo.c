@@ -64,7 +64,7 @@ int ajoutRepo()
             crashTemp(teams.URL_depot, LONGUEUR_URL);
             /*On attend l'URL*/
             continuer = waitClavier(LONGUEUR_URL, 0, 0, teams.URL_depot);
-            chargement(renderer);
+            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(teams.URL_depot))
@@ -147,7 +147,7 @@ int ajoutRepo()
                     SDL_DestroyTextureS(texte);
                     SDL_RenderPresent(renderer);
 
-                    if(waitEnter() == 1)
+                    if(waitEnter(window) == 1)
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
                         repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
@@ -160,13 +160,15 @@ int ajoutRepo()
                         }
                         if(existant == 0)
                         {
-                            if(*repoBak)
+                            if(repoBak != NULL && *repoBak)
                             {
                                 int i = strlen(repoBak);
                                 repoBak[i++] = '\n';
                                 repoBak[i] = 0;
+                                sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                             }
-                            sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            else
+                                sprintf(repoNew, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                             updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
                         }
                         free(repoBak);
@@ -366,7 +368,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
 
-    confirme = waitEnter();
+    confirme = waitEnter(window);
 
     if(confirme == 1)
         /*Confirmé*/

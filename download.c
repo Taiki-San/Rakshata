@@ -166,7 +166,7 @@ int download(char *adresse, char *repertoire, int activation)
 
                 SDL_WaitEventTimeout(&event, 100);
 
-                if(event.type == SDL_QUIT)
+                if(haveInputFocus(&event, windowDL) && event.type == SDL_QUIT)
                 {
                     pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
                     position.y = WINDOW_SIZE_H_DL / 2 - pourcentAffiche->h / 2;
@@ -220,7 +220,7 @@ int download(char *adresse, char *repertoire, int activation)
         {
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
-            if(event.type != 0)
+            if(event.type != 0 && haveInputFocus(&event, window))
             {
                 switch(event.type)
                 {

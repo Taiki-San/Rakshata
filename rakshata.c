@@ -22,7 +22,7 @@ int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 int HAUTEUR = 730;
 int RENDER_BUG = 0;
-int favorisToDL = 0;
+int favorisToDL = -1;
 int alreadyRefreshed = 0;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
@@ -33,17 +33,22 @@ SDL_Window* window = NULL;
 SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
+#ifndef _WIN32
+MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
+#else
 MUTEX_VAR mutex;
+#endif
 
 int main()
 {
     srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
-
+#ifdef _WIN32
+    mutex = CreateMutex(NULL, FALSE, NULL);
+#endif
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
 
 	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-	mutex = MUTEX_DEFAULT_VALUE;
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
@@ -75,6 +80,7 @@ int main()
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;
+    int compteur = 0;
     MUTEX_LOCK;
     while(THREAD_COUNT)
     {
@@ -84,8 +90,16 @@ int main()
         {
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
-            if(event.type != 0)
+            if(event.type != 0 || (event.type == SDL_WINDOWEVENT && event.window.event != SDL_WINDOWEVENT_RESIZED))
                 SDL_PushEvent(&event);
+        }
+        if(timeSinceLastCheck > 10000 && window == NULL && windowDL == NULL)
+        {
+            event.type = SDL_QUIT; //Si un thread refuse de quitter
+            SDL_PushEvent(&event);
+            compteur++;
+            if(compteur > 10) //Si il s'accroche vraiment =<
+                break;
         }
         MUTEX_LOCK;
     }

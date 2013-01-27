@@ -186,7 +186,7 @@ int checkProjet(MANGAS_DATA mangaDB)
         SDL_RenderPresent(renderer);
         SDL_DestroyTextureS(image);
 
-        return waitEnter();
+        return waitEnter(window);
     }
     return 1;
 }
@@ -210,7 +210,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     SDL_Rect position;
 
-    chargement(renderer);
+    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     loadTrad(texteTrad, 19);
 
     if(mangaDB.firstChapter == mangaDB.lastChapter) //Si une seul chapitre, on le séléctionne automatiquement
@@ -380,7 +380,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTextureS(texte);
             SDL_RenderPresent(renderer);
-            chapitreChoisis = waitEnter();
+            chapitreChoisis = waitEnter(window);
             if(chapitreChoisis > PALIER_CHAPTER)
                 chapitreChoisis = PALIER_CHAPTER;
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);

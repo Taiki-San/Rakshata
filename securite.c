@@ -226,7 +226,8 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
 #else
 	#ifdef __APPLE__
         int c = 0, i = 0, j = 0;
-        unsigned char buffer_fingerprint[5000], command_line[4][100];
+        unsigned char buffer_fingerprint[5000];
+		char command_line[4][100];
 
         sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
         sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");

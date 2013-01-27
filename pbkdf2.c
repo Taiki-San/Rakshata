@@ -10,8 +10,12 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#define ENOMEM 1
-#define EINVAL 2
+#ifndef ENOMEM
+	#define ENOMEM 1
+#endif
+#ifndef EINVAL
+	#define EINVAL 2
+#endif
 
 #define MAX(a,b)    ((a>b)?a:b)
 

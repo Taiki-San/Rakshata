@@ -166,17 +166,16 @@ void generateKey(unsigned char output[HASH_LENGTH])
 
 int get_compte_infos()
 {
-    int i = 0;
+    int i;
 	if(!loadEmailProfile())
     {
-        i = logon();
-        if(i == PALIER_QUIT)
-            return i;
+        if(logon() == PALIER_QUIT)
+            return PALIER_QUIT;
         if(!loadEmailProfile())
         {
             logR("Failed at get email after re-enter it\n");
             removeR(SETTINGS_FILE);
-            exit(0);
+            return PALIER_QUIT;
         }
     }
 
@@ -227,7 +226,7 @@ int logon()
 
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
-        chargement(renderer);
+        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             SDL_Delay(50);
     }
@@ -237,7 +236,7 @@ int logon()
         return PALIER_QUIT;
     }
     loadTrad(trad, 26); //Chargement de la trad
-    chargement(renderer);
+    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
     do
     {
@@ -291,7 +290,7 @@ int logon()
         if(waitClavier(50, beginingOfEmailAdress, 109, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
 
-        chargement(renderer);
+        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         login = check_login(adresseEmail);
@@ -382,7 +381,7 @@ int logon()
 
                         SDL_RenderPresent(renderer);
                         TTF_CloseFont(police);
-                        if(waitEnter() == PALIER_QUIT)
+                        if(waitEnter(window) == PALIER_QUIT)
                             return PALIER_QUIT;
                         retry = 1;
                         break;
@@ -398,6 +397,7 @@ int logon()
                         removeFromPref(SETTINGS_EMAIL_FLAG);
                         snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
                         addToPref(SETTINGS_EMAIL_FLAG, temp);
+                        removeR(SECURE_DATABASE);
                         break;
                     }
                     default: //Else -> erreure critique, me contacter/check de la connexion/du site
@@ -428,7 +428,7 @@ int logon()
                         SDL_DestroyTextureS(ligne);
 
                         SDL_RenderPresent(renderer);
-                        waitEnter();
+                        waitEnter(window);
                         return PALIER_QUIT;
                         break;
                     }
@@ -463,7 +463,7 @@ int logon()
                 SDL_DestroyTextureS(ligne);
 
                 SDL_RenderPresent(renderer);
-                if(waitEnter() == PALIER_QUIT)
+                if(waitEnter(window) == PALIER_QUIT)
                     return PALIER_QUIT;
                 retry = 1;
                 break;
@@ -649,7 +649,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
         sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
 		if(!stat(temp, &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+			strftime((char*) date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
 		else
 		{
 			logR("Failed at get data from secure.enc\n");
@@ -660,7 +660,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 	else
 	{
 		if(!stat(SECURE_DATABASE, &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+			strftime((char*) date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
 		else
 		{
 			logR("Failed at get data from secure.enc\n");

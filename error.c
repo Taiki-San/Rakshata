@@ -71,7 +71,7 @@ void connexionNeededToAllowANewComputer()
 
     TTF_CloseFont(police);
 
-    waitEnter();
+    waitEnter(window);
 }
 
 int libcurlErrorCode(CURLcode code)
@@ -168,7 +168,7 @@ int erreurReseau()
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
 
-    return waitEnter();
+    return waitEnter(window);
 }
 
 int showError()
@@ -202,7 +202,7 @@ int showError()
 
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
-    return waitEnter();
+    return waitEnter(window);
 }
 
 int rienALire()
@@ -238,7 +238,7 @@ int rienALire()
 
     TTF_CloseFont(police);
 
-    return waitEnter();
+    return waitEnter(window);
 }
 
 int affichageRepoIconnue()
@@ -281,7 +281,7 @@ int affichageRepoIconnue()
         return 1;
     TTF_CloseFont(police);
 
-    return waitEnter();
+    return waitEnter(window);
 }
 
 

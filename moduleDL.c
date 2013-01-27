@@ -139,7 +139,7 @@ int telechargement()
                     else
                         MOT_DE_PASSE_COMPTE[0] = -1;
 
-                    chargement(rendererDL);
+                    chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
                 }
 
                 else
@@ -367,12 +367,12 @@ int telechargement()
 
     while(status > 1)
     {
-        SDL_Event event;
-        SDL_WaitEventTimeout(&event, 500);
+        SDL_Delay(500);
+        SDL_RenderPresent(rendererDL);
     }
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
 
-    chargement(rendererDL);
+    chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
     if(glados == CODE_RETOUR_DL_CLOSE)
         return -1;
     return 0;
@@ -435,7 +435,7 @@ void* installation(void* datas)
 
         /*Création du répertoire de destination*/
         sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre);
-        mkdir(temp);
+        mkdirR(temp);
 
         erreurs = miniunzip (valeurs->buf->buf, temp, "", valeurs->buf->length, chapitre);
 
@@ -550,7 +550,7 @@ int interditWhileDL()
 
     SDL_RenderClear(renderer);
 
-    return waitEnter();
+    return waitEnter(window);
 }
 
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
@@ -618,7 +618,7 @@ void DLmanager()
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
 
-    chargement(rendererDL);
+    chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
 
     int output = telechargement();
 
@@ -645,7 +645,7 @@ void DLmanager()
         SDL_DestroyTextureS(texte);
 
         SDL_RenderPresent(rendererDL);
-        waitEnter();
+        waitEnter(window);
     }
     else if (error > 0 && output != -1)
     {
@@ -677,11 +677,12 @@ void DLmanager()
         SDL_DestroyTextureS(texte);
 
         SDL_RenderPresent(rendererDL);
-        waitEnter();
+        waitEnter(windowDL);
     }
     TTF_CloseFont(police);
     SDL_DestroyRenderer(rendererDL);
     SDL_DestroyWindow(windowDL);
+    windowDL = NULL;
 }
 
 void lancementModuleDL()
@@ -707,7 +708,7 @@ void updateWindowSizeDL(int w, int h)
         WINDOW_SIZE_H_DL = h; //Pour repositionner chargement
         WINDOW_SIZE_W_DL = w;
 
-        chargement(rendererDL);
+        chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
 
         SDL_SetWindowSize(windowDL, w, h);
         checkRenderBugPresent(windowDL, rendererDL);
@@ -717,7 +718,7 @@ void updateWindowSizeDL(int w, int h)
             SDL_DestroyRenderer(rendererDL);
             rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
-            chargement(rendererDL);
+            chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
             SDL_RenderPresent(rendererDL);
         }
         else if(WINDOW_SIZE_H_DL > h || WINDOW_SIZE_W_DL > w)

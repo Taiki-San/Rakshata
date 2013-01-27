@@ -477,6 +477,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             }
 
             SDL_WaitEvent(&event);
+            if(!haveInputFocus(&event, window))
+                noRefresh = 1;
 
             switch(event.type)
             {
@@ -669,6 +671,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                             anciennePositionY = event.button.y;
                             SDL_FlushEvent(SDL_MOUSEMOTION);
                             SDL_WaitEvent(&event);
+                            if(!haveInputFocus(&event, window))
+                                continue;
                             switch(event.type)
                             {
                                 case SDL_MOUSEMOTION:
@@ -990,19 +994,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
 				default:
 				{
-				    #ifdef __APPLE__
-				    if ((KMOD_LMETA & event.key.keysym.mod) && event.key.keysym.sym == SDLK_q)
-					{
-						/*Si on quitte, on enregistre le point d'arret*/
-						testExistance = fopenR("data/laststate.dat", "w+");
-						fprintf(testExistance, "%s %d %d", mangaDB->mangaName, *chapitreChoisis, pageEnCoursDeLecture);
-						fclose(testExistance);
-
-						cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-						return PALIER_QUIT;
-					}
-					#endif
-					SDL_FlushEvent(event.type);
+					//SDL_FlushEvent(event.type);
 					noRefresh = 1;
 					break;
                 }
