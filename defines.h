@@ -290,7 +290,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 24
+#define NOMBRE_DE_FICHIER_A_CHECKER 26
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

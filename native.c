@@ -18,13 +18,11 @@
 FILE* fopenR(void *_path, char *right)
 {
     unsigned char *path = _path;
-    unsigned char *temp = malloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2) * sizeof (unsigned char));
+    unsigned char *temp = calloc(1, (ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2) * sizeof (unsigned char));
 	FILE* output = NULL;
 	if(temp == NULL)
         return NULL;
-	crashTemp(temp, ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    sprintf((char *)temp, "%s/%s", REPERTOIREEXECUTION, path);
-    applyWindowsPathCrap(temp);
+    snprintf((char *)temp, ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
     output = fopen((char *) temp, right);
     free(temp);
     return output;
@@ -408,7 +406,7 @@ int createNewThread(void *function, void *arg)
         ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
         if(ZwCreateThreadEx == NULL)
         {
-            logR("Failed at export primitives");
+        //    logR("Failed at export primitives");
             CreateThread(NULL, 0, function, arg, 0, NULL);
         }
     }
@@ -423,7 +421,7 @@ int createNewThread(void *function, void *arg)
 
     if (pthread_create(&thread, NULL, function, NULL))
     {
-        logR("Failed at create thread MDL\n");
+        logR("Failed at create thread\n");
         exit(EXIT_FAILURE);
     }
 #endif

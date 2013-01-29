@@ -127,7 +127,7 @@ int telechargement()
                     if(MOT_DE_PASSE_COMPTE[0] == -1)
                         break;
 
-                    else if(MOT_DE_PASSE_COMPTE[0] || (i = getPassword(MOT_DE_PASSE_COMPTE)) == 1)
+                    else if(MOT_DE_PASSE_COMPTE[0] || (i = getPassword(MOT_DE_PASSE_COMPTE, 1, 1)) == 1)
                         sprintf(superTemp, "http://rsp.%s/main_controler.php?target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], mangaDB[posVariable].team->URL_depot, mangaDB[posVariable].mangaName, chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
 
                     else if(i == PALIER_QUIT)
@@ -238,7 +238,7 @@ int telechargement()
                 }
 
                 sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
-                if(!checkFileExist(temp) && k) //k peut avoir a être > 1
+                if(!checkFileExist(temp) && mangaDB[posVariable].pageInfos) //k peut avoir a être > 1
                 {
                     sprintf(temp, "manga/%s/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName, CONFIGFILE);
                     if(!checkFileExist(temp))
@@ -276,7 +276,7 @@ int telechargement()
                     download(superTemp, temp, 0);
                 }
 
-                else //Si k = 0 et infos.png existe
+                else if(mangaDB[posVariable].pageInfos)//Si k = 0 et infos.png existe
                     removeR(temp);
             }
 
@@ -322,11 +322,8 @@ int telechargement()
                 }
                 else
                 {
-                    newBufferTodo = calloc(mangaTotal, LONGUEUR_COURT*2+50);
-                    memcpy(newBufferTodo, &bufferTodo[1], mangaTotal*LONGUEUR_COURT*2+50);
-
-                    for(i = 0; i < mangaTotal; free(bufferTodo[i++]));
-                    free(bufferTodo);
+                    newBufferTodo = &bufferTodo[1];
+                    free(bufferTodo[0]);
                 }
                 bufferTodo = newBufferTodo;
             }
@@ -349,7 +346,6 @@ int telechargement()
     else
     {
         free(*bufferTodo);
-        free(bufferTodo);
     }
 
     SDL_RenderClear(rendererDL);
@@ -596,6 +592,11 @@ void DLmanager()
 	SDL_Rect position;
 
     /*On affiche la petite fenêtre*/
+    #ifdef _WIN32
+        WaitForSingleObject(mutexRS, INFINITE);
+    #else
+        pthread_mutex_lock(&mutexRS);
+    #endif
 
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
 
@@ -614,6 +615,12 @@ void DLmanager()
 
     rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
+
+    #ifdef _WIN32
+        ReleaseMutex(mutexRS);
+    #else
+        pthread_mutex_unlock(&mutexRS);
+    #endif
 
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;

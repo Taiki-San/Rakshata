@@ -32,3 +32,4 @@ extern SDL_Window* windowDL;
 extern SDL_Renderer *renderer;
 extern SDL_Renderer *rendererDL;
 extern MUTEX_VAR mutex;
+extern MUTEX_VAR mutexRS;

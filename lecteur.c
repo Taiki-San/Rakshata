@@ -1010,7 +1010,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE])
 {
     int i, j, scriptUtilise = 0;
-    FILE* file_input = fopen(input, "r");
+    FILE* file_input = fopenR(input, "r");
 	if(file_input == NULL)
         return 1;
 

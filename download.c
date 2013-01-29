@@ -166,7 +166,7 @@ int download(char *adresse, char *repertoire, int activation)
 
                 SDL_WaitEventTimeout(&event, 100);
 
-                if(haveInputFocus(&event, windowDL) && event.type == SDL_QUIT)
+                if((event.type == SDL_QUIT || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)) && haveInputFocus(&event, windowDL))
                 {
                     pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
                     position.y = WINDOW_SIZE_H_DL / 2 - pourcentAffiche->h / 2;
@@ -220,7 +220,7 @@ int download(char *adresse, char *repertoire, int activation)
         {
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
-            if(event.type != 0 && haveInputFocus(&event, window))
+            if(event.type != 0)
             {
                 switch(event.type)
                 {
@@ -328,13 +328,10 @@ static void* downloader(void* envoi)
     if(printToAFile)
     {
         crashTemp(temp, 500);
-        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[0] == REPERTOIREEXECUTION[0]) /*Si le path a déjà été modifié*/)
+        if(!UNZIP_NEW_PATH || (valeurs->repertoireEcriture[1] == REPERTOIREEXECUTION[1]) /*Si le path a déjà été modifié*/)
             sprintf(temp, "%s.download", valeurs->repertoireEcriture);
         else
-        {
             sprintf(temp, "%s/%s.download", REPERTOIREEXECUTION, valeurs->repertoireEcriture);
-            applyWindowsPathCrap(temp);
-        }
         fichier = fopen(temp, "wb");
     }
 

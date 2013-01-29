@@ -19,7 +19,13 @@ void mainRakshata()
 
     newLangue = loadLangueProfile();
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_MOUSE_FOCUS);
+    #ifdef _WIN32
+        WaitForSingleObject(mutexRS, INFINITE);
+    #else
+        pthread_mutex_lock(&mutexRS);
+    #endif
+
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
 
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
@@ -32,6 +38,12 @@ void mainRakshata()
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
+    #ifdef _WIN32
+        ReleaseMutex(mutexRS);
+    #else
+        pthread_mutex_unlock(&mutexRS);
+    #endif
 
     WINDOW_SIZE_W = window->w;
     HAUTEUR = WINDOW_SIZE_H = window->h;

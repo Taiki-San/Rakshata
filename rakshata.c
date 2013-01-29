@@ -35,8 +35,10 @@ SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
 #ifndef _WIN32
 MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
+MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
 #else
 MUTEX_VAR mutex;
+MUTEX_VAR mutexRS;
 #endif
 
 int main()
@@ -44,6 +46,7 @@ int main()
     srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
 #ifdef _WIN32
     mutex = CreateMutex(NULL, FALSE, NULL);
+    mutexRS = CreateMutex(NULL, FALSE, NULL);
 #endif
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
@@ -91,7 +94,19 @@ int main()
             event.type = 0;
             SDL_WaitEventTimeout(&event, 250);
             if(event.type != 0 || (event.type == SDL_WINDOWEVENT && event.window.event != SDL_WINDOWEVENT_RESIZED))
+            {
+                #ifdef _WIN32
+                    WaitForSingleObject(mutexRS, INFINITE);
+                #else
+                    pthread_mutex_lock(&mutexRS);
+                #endif
                 SDL_PushEvent(&event);
+                #ifdef _WIN32
+                    ReleaseMutex(mutexRS);
+                #else
+                    pthread_mutex_unlock(&mutexRS);
+                #endif
+            }
         }
         if(timeSinceLastCheck > 10000 && window == NULL && windowDL == NULL)
         {

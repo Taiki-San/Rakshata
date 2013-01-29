@@ -49,8 +49,6 @@ int check_evt()
     sprintf(nomsATest[24], "data/acceuil.png");
     sprintf(nomsATest[25], SECURE_DATABASE);
 
-    SDL_Delay(1000);
-
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
     {
@@ -59,7 +57,8 @@ int check_evt()
             if(i == 0)
                 cantwrite = 1;
             else
-                fichiersADL[j++] = i;
+                fichiersADL[j] = i;
+            j++;
         }
     }
 
@@ -88,6 +87,7 @@ int check_evt()
         {
             snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
             download(temp, nomsATest[0], 0);
+            j--;
         }
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
@@ -156,6 +156,8 @@ int check_evt()
                 }
             }
         }
+
+        TTF_CloseFont(police);
         nameWindow(window, 0);
     }
     if(get_compte_infos() == PALIER_QUIT)
@@ -772,7 +774,7 @@ int checkFileExist(char filename[])
     if(filename[1] == ':')
         FileToTest = fopen(filename, "r");
     else
-        FileToTest = fopen(filename, "r");
+        FileToTest = fopenR(filename, "r");
     if(FileToTest != NULL)
     {
         fclose(FileToTest);

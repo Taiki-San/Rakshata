@@ -108,7 +108,7 @@ char *loadPrefFile()
 {
     char *output = NULL;
     FILE* pref = NULL;
-    pref = fopen(SETTINGS_FILE, "r");
+    pref = fopenR(SETTINGS_FILE, "r");
     if(pref == NULL)
     {
         logR("Couldn't open settings\n");
@@ -128,10 +128,13 @@ char *loadPrefFile()
     fclose(pref);
     AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
-    if(output[0] != '<')
+    if(output[0] != '<' && output[1] != '<')
     {
         free(output);
         logR("Incorrect settings decryption\n");
+        #ifdef DEV_VERSION
+            logR(output);
+        #endif
         return NULL;
     }
     return output;

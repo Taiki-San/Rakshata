@@ -70,7 +70,7 @@ int waitEnter(SDL_Window* windows)
     return i;
 }
 
-int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
+int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int startFromY, int showTyped, char *retour)
 {
     int i = 0, epaisseur = 0;
     char affiche[LONGUEUR_URL + 10];
@@ -170,7 +170,7 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
             {
                 if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
                 {
-                    SDL_RenderPresent(renderer);
+                    SDL_RenderPresent(rendererVar);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
                 break;
@@ -183,17 +183,37 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 
         if(!startFromX && i < nombreMax)
         {
-            snprintf(affiche, LONGUEUR_URL + 10, "-> %s <-", retour);
-            numero = TTF_Write(renderer, police, affiche, couleurTexte);
-        }
-        else
-            numero = TTF_Write(renderer, police, retour, couleurTexte);
+            if(showTyped)
+                snprintf(affiche, LONGUEUR_URL + 10, "-> %s <-", retour);
+            else
+            {
+                int nmbr = 0;
+                char temp[100];
+                for(; nmbr < i; temp[nmbr++] = '*');
+                temp[nmbr] = 0;
+                snprintf(affiche, LONGUEUR_URL + 10, "%s", temp);
+            }
 
+            numero = TTF_Write(rendererVar, police, affiche, couleurTexte);
+        }
+        else if(i < nombreMax)
+        {
+            if(showTyped)
+                numero = TTF_Write(rendererVar, police, retour, couleurTexte);
+            else
+            {
+                int nmbr = 0;
+                char temp[100];
+                for(; nmbr < i && nmbr < 100; temp[nmbr++] = '*');
+                temp[nmbr] = 0;
+                numero = TTF_Write(rendererVar, police, temp, couleurTexte);
+            }
+        }
         if(startFromY)
             position.y = startFromY;
         else
             position.y = WINDOW_SIZE_H / 2;
-        applyBackground(renderer, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
+        applyBackground(rendererVar, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
 
         if(!startFromX)
         {
@@ -210,11 +230,11 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
         {
             position.h = numero->h;
             position.w = numero->w;
-            SDL_RenderCopy(renderer, numero, NULL, &position);
+            SDL_RenderCopy(rendererVar, numero, NULL, &position);
             SDL_DestroyTextureS(numero);
 
         }
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(rendererVar);
     }
     TTF_CloseFont(police);
     return 0;
@@ -222,11 +242,26 @@ int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour)
 
 int haveInputFocus(SDL_Event *event, SDL_Window *windows)
 {
+    int state = 1;
     if(windowDL != NULL)
     {
-        int state = 1;
         switch(event->type)
         {
+            case SDL_QUIT:
+            case SDL_WINDOWEVENT:
+            {
+                if(event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE)
+                {
+                    if(event->window.windowID != windows->id)
+                        state = 0;
+                    else
+                        event->type = SDL_QUIT;
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                else if(event->type == SDL_QUIT && windows != SDL_GetMouseFocus())
+                    state = 0;
+                break;
+            }
             case SDL_KEYDOWN:
             case SDL_KEYUP:
             {
@@ -266,8 +301,7 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
         }
         if(!state)
             SDL_PushEvent(event);
-        return state;
     }
-    return 1;
+    return state;
 }
 

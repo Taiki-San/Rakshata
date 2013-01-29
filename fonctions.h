@@ -98,7 +98,7 @@ void checkSectionMessageUpdate();
 /**IO.c**/
 int nombreEntree(SDL_Event event);
 int waitEnter(SDL_Window* windows);
-int waitClavier(int nombreMax, int startFromX, int startFromY, char *retour);
+int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int startFromY, int showTyped, char *retour);
 int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 #define getLetterPushed(event) (event.text.text[0] >= 'A' && event.text.text[0] <= 'z')?event.text.text[0]:0
 #define checkIfNumber(c) (c >= '0' && c <= '9')?1:0
@@ -111,8 +111,8 @@ int logon();
 int check_login(char adresseEmail[100]);
 int checkPass(char adresseEmail[100], char password[50], int login);
 int createSecurePasswordDB(unsigned char *key_sent);
-int sendPassToServ(unsigned char key[HASH_LENGTH]);
-void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
+int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
+void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
 
 /**Lecteur.c**/
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen);
@@ -174,6 +174,7 @@ int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);
 
 /**PBKDF2.c**/
+int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret);
 void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
 
 /**Repo.c**/
@@ -190,7 +191,7 @@ void get_file_date(const char *filename, char *date);
 void killswitchEnabled(char nomTeamCourt[5]);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page);
-int getPassword(char password[100]);
+int getPassword(char password[100], int dlUI, int salt);
 void getPasswordArchive(char *fileName, char password[300]);
 void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM]);
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], char ID_To_Test[LONGUEUR_ID_TEAM]);
