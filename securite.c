@@ -188,8 +188,13 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
         {
             return_val = memccpy(ciphertext, path_input+positionDansInput, 0, sizeof(ciphertext));
             positionDansInput+= sizeof(ciphertext);
-            if(return_val != NULL && return_val == (int*)ciphertext + 0x10)
-                lastRow = 1;
+            if(return_val != NULL)// && return_val == (int*)ciphertext + 0x10)
+            {
+                if(*return_val == 0)
+                    break;
+                else
+                    lastRow = 1;
+            }
         }
         rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
         if(!outputMemory && output != NULL)
@@ -301,7 +306,8 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 }
 
 #ifdef DEV_VERSION
-	//#define VERBOSE_DECRYPT
+	//#define VERBOSE_DECRYPTv
+	int pbkdf2_leg(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret);
 #endif
 
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
@@ -347,13 +353,24 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     pbkdf2(temp, numChapitreChar, hash);
 
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-    if((configEnc[0] < '0' || configEnc[0] > '9'))
+    for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
+    if(i == 0 || configEnc[i] != ' ')
     {
         if(checkNetworkState(CONNEXION_OK))
         {
-            recoverPassToServ(temp, numeroChapitre);
+            #ifdef DEV_VERSION
+            unsigned char hash_2[SHA256_DIGEST_LENGTH];
+            pbkdf2_leg(SHA256_DIGEST_LENGTH, (unsigned char*) "0e8b74ee20201de08d4b199af00038c8", 32, numChapitreChar, strlen((char*) numChapitreChar), 2048, PBKDF2_OUTPUT_LENGTH, hash_2);
+            AESDecrypt(hash_2, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
+            for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
+            if(i != 0 && configEnc[i] == ' ')
+                AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
+            else {
+            #endif
+            recoverPassFromServ(temp, numeroChapitre);
             AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-            if(configEnc[0] >= '0' && configEnc[0] <= '9')
+            for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
+            if(i != 0 && configEnc[i] == ' ')
                 AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
             else
             {
@@ -361,6 +378,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
                 logR("Huge fail: database corrupted\n");
                 return NULL;
             }
+            #ifdef DEV_VERSION
+            }
+            #endif
         }
         else
         {
@@ -381,21 +401,25 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
 
-    for(i=0; nombreEspace <= page && nombreEspace < NOMBRE_PAGE_MAX && configEnc[i]; i++) //On se déplace sur la clée. <= car page 0 = 1 espace (nombrepage clé1 clé2...)
+
+    int length = ustrlen(configEnc)-1; //pour le \0
+    for(i = 0; i < length && configEnc[i] != ' '; i++); //On saute le nombre de page
+    if((length - i) % (SHA256_DIGEST_LENGTH+1) && (length - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
-        if(configEnc[i] == ' ')
+        //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
+        //Au cas où ça se reproduit, cette condition devrait bloquer le bug
+        if(((length - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length-1] == ' ');
+        else
         {
-            nombreEspace++;
-            for(; configEnc[i+1] && configEnc[i+1] == ' '; i++); //Si plusieurs espaces, on saute
+            for(i = (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX; i > 0; configEnc[i--] = 0); //On écrase les clés: DAYTAYCAY PIRATE =P
+            free(configEnc);
+            logR("Huge fail: database corrupted\n");
+            return NULL;
         }
     }
-    if(page+1 != nombreEspace) //Si trop de page
-    {
-        for(i = (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX; i > 0; configEnc[i--] = 0); //On écrase les clés: DAYTAYCAY PIRATE =P
-        free(configEnc);
-        logR("Huge fail: database corrupted\n");
-        return NULL;
-    }
+
+    i += 1 + page * (SHA256_DIGEST_LENGTH+1);
+
     /*La, configEnc[i] est la premiére lettre de la clé*/
     for(nombreEspace = 0; nombreEspace < SHA256_DIGEST_LENGTH && configEnc[i]; key[nombreEspace++] = configEnc[i++]); //On parse la clée
     if(configEnc[i] && configEnc[i] != ' ')
@@ -433,90 +457,114 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     return surface_page;
 }
 
-int getPassword(char password[100])
+int getPassword(char password[100], int dlUI, int salt)
 {
-    int xPassword = 0;
+    int xPassword = 0, resized = 0;
     char trad[SIZE_TRAD_ID_26][100];
     SDL_Texture *ligne = NULL;
     SDL_Rect position;
     SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
+    SDL_Renderer *currentRenderer = NULL;
+
+    if(dlUI)
+    {
+        currentRenderer = rendererDL;
+    }
+    else
+    {
+        if(!salt && WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION)
+        {
+            resized = WINDOW_SIZE_H;
+            updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+        }
+        currentRenderer = renderer;
+    }
 
     loadTrad(trad, 26);
 
+    SDL_RenderClear(currentRenderer);
+
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    SDL_RenderClear(renderer);
-
-    /**Leurs codes sont assez proches donc on les regroupes**/
-    ligne = TTF_Write(renderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+    ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
     position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y = 20;
     position.h = ligne->h;
     position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
     SDL_DestroyTextureS(ligne);
 
-    ligne = TTF_Write(renderer, police, trad[6], couleur);
+    ligne = TTF_Write(currentRenderer, police, trad[6], couleur);
     position.y = 100;
     position.x = 50;
     xPassword = position.x + ligne->w + 25;
     position.h = ligne->h;
     position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
     SDL_DestroyTextureS(ligne);
 
     TTF_CloseFont(police);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
-    ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
+    ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
     position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 85;
     position.h = ligne->h;
     position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
     SDL_DestroyTextureS(ligne);
 
-    ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
+    ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
     position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
     position.y += 30;
     position.h = ligne->h;
     position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
     SDL_DestroyTextureS(ligne);
+    TTF_CloseFont(police);
 
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(currentRenderer);
 
-    if(waitClavier(50, xPassword, 105, password) == PALIER_QUIT)
-        return PALIER_QUIT;
-    if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+    while(1)
     {
-        int i = 0, j = 0;
-        char temp[HASH_LENGTH+5], serverTime[500];
-        sha256_legacy(password, temp);
-        MajToMin(temp);
-        crashTemp(password, 100);
-        sha256_legacy(temp, password);
-        MajToMin(password);
-        ustrcpy(temp, password);
+        if(waitClavier(currentRenderer, 50, xPassword, 105, 0, password) == PALIER_QUIT)
+            return PALIER_QUIT;
 
-        sprintf(password, "http://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
-        setupBufferDL(serverTime, 100, 5, 1, 1);
-        download(password, serverTime, 0);
-
-        for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
+        if(resized)
         {
-            if(serverTime[i] == '\r' || serverTime[i] == '\n')
-                serverTime[i] = 0;
+            updateWindowSize(LARGEUR, resized);
+            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         }
-        for(j = strlen(temp), i++; j < HASH_LENGTH + 5 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
-        temp[j] = 0;
+        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+        {
+            if(!salt)
+                return 1;
 
-        sha256_legacy(temp, password);
-        MajToMin(password);
-        return 1;
+            int i = 0, j = 0;
+            char temp[HASH_LENGTH+5], serverTime[500];
+            sha256_legacy(password, temp);
+            MajToMin(temp);
+            crashTemp(password, 100);
+            sha256_legacy(temp, password);
+            MajToMin(password);
+            ustrcpy(temp, password);
+
+            sprintf(password, "http://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
+            setupBufferDL(serverTime, 100, 5, 1, 1);
+            download(password, serverTime, 0);
+
+            for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
+            {
+                if(serverTime[i] == '\r' || serverTime[i] == '\n')
+                    serverTime[i] = 0;
+            }
+            for(j = strlen(temp), i++; j < HASH_LENGTH + 5 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
+            temp[j] = 0;
+            sha256_legacy(temp, password);
+            MajToMin(password);
+            return 1;
+        }
     }
-    return 0;
 }
 
 void getPasswordArchive(char *fileName, char password[300])

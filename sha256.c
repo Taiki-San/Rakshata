@@ -319,6 +319,19 @@ int sha256_legacy(char input[], char output[HASH_LENGTH])
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output)
 {
     sha256_context ctx;
+	uint8_t *salt_copy = (uint8_t *) salt;
+	uint8_t *input_copy = (uint8_t *) input;
+
+	sha256_starts(&ctx);
+	sha256_update(&ctx, input_copy, inputLen);
+	sha256_update(&ctx, salt_copy, saltlen);
+	sha256_finish(&ctx, output);
+}
+
+#ifdef DEV_VERSION
+void sha256_salted_legacy(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output)
+{
+    sha256_context ctx;
 	uint8_t k_pad[SHA256_BLOCK_LENGTH];
 	uint8_t tk[SHA256_DIGEST_LENGTH];
 	uint8_t *salt_copy = (uint8_t *) salt;
@@ -354,4 +367,4 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 	sha256_update(&ctx, output, SHA256_DIGEST_LENGTH);
 	sha256_finish(&ctx, output);
 }
-
+#endif

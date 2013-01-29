@@ -13,6 +13,8 @@
 #include "AES.h"
 #include "main.h"
 
+static char passwordGB[100];
+
 int getMasterKey(unsigned char *input)
 {
     /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
@@ -61,7 +63,7 @@ int getMasterKey(unsigned char *input)
 
 #ifndef MSVC
     void *output = NULL;
-    char *output_char = NULL;
+    unsigned char *output_char = NULL;
 #endif
 
     for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
@@ -109,7 +111,7 @@ int getMasterKey(unsigned char *input)
         }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] > ' '  && output_char[j] != 127 && output_char[j] < 255); j++); //On regarde si c'est bien une clée
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] >= ' '  && output_char[j] < 255); j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
@@ -121,13 +123,13 @@ int getMasterKey(unsigned char *input)
             break;
         }
     }
-    crashTemp(hash, HASH_LENGTH);
+    crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     if(!input[0]) //Pas de clée trouvée
     {
         unsigned char key[HASH_LENGTH];
         free(output);
-        recoverPassToServ(key, 0);
+        recoverPassFromServ(key, 0);
         memcpy(input, key, SHA256_DIGEST_LENGTH);
         createSecurePasswordDB(input);
         crashTemp(key, HASH_LENGTH);
@@ -135,11 +137,10 @@ int getMasterKey(unsigned char *input)
     return 0;
 }
 
-void generateKey(unsigned char output[HASH_LENGTH])
+void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
 {
     int i = 0;
     unsigned char randomChar[50];
-    crashTemp(randomChar, 50);
 
     for(i = 0; i < 50; i++)
     {
@@ -148,18 +149,16 @@ void generateKey(unsigned char output[HASH_LENGTH])
             i--;
     }
     sha256(randomChar, output);
-
-    unsigned char *buf = output;
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
-        if(buf[i] <= ' '  || buf[i] == 127 || buf[i] >= 255)
+        if(output[i] <= ' '  || output[i] == 127 || output[i] >= 255)
         {
             int j = 0;
             do {
                 j = (rand() + 1) % (255 - 32) + 33;
             } while(j <= ' ' || j == 127 || j >= 255);
 
-            buf[i] = j;
+            output[i] = j;
         }
     }
 }
@@ -287,7 +286,7 @@ int logon()
 
         SDL_RenderPresent(renderer);
 
-        if(waitClavier(50, beginingOfEmailAdress, 109, adresseEmail) == PALIER_QUIT)
+        if(waitClavier(renderer, 50, beginingOfEmailAdress, 109, 1, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
@@ -342,7 +341,7 @@ int logon()
 
                 SDL_RenderPresent(renderer);
 
-                if((i = waitClavier(50, beginingOfEmailAdress, 109, password)) == PALIER_QUIT)
+                if((i = waitClavier(renderer, 50, beginingOfEmailAdress, 109, ((login==0)?1:0), password)) == PALIER_QUIT)
                     return PALIER_QUIT;
                 else if (i == PALIER_MENU) //Echap
                 {
@@ -520,7 +519,9 @@ int check_login(char adresseEmail[100])
 int checkPass(char adresseEmail[100], char password[50], int login)
 {
     int i = 0;
-    char URL[300], buffer_output[500], hash1[HASH_LENGTH], hash2[HASH_LENGTH];
+    char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1];
+
+    crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
 
     /*On vérifie la validité de la chaÃ“ne*/
     for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
@@ -535,17 +536,14 @@ int checkPass(char adresseEmail[100], char password[50], int login)
     if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
         return 2;
 
-    crashTemp(hash1, HASH_LENGTH);
     sha256_legacy(password, hash1);
     MajToMin(hash1);
-    crashTemp(hash2, HASH_LENGTH);
+    crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
     sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
-
-    setupBufferDL(buffer_output, 50, 6, 1, 1); //Préparation du buffer
-
+    setupBufferDL(buffer_output, 50, 10, 1, 1); //Préparation du buffer
     download(URL, buffer_output, 0);
 
     for(i = strlen(buffer_output); i > 0; i--)
@@ -565,7 +563,15 @@ int checkPass(char adresseEmail[100], char password[50], int login)
         return 0;
 
     else if(!strcmp(buffer_output, hash2)) //access granted
+    {
+        sha256_legacy(password, hash1);
+        MajToMin(hash1);
+        crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
+        sha256_legacy(hash1, hash2); //On hash deux fois
+        MajToMin(hash2);
+        ustrcpy(passwordGB, hash2);
         return 1;
+    }
 
 #ifdef DEV_VERSION
     sprintf(buffer_output, "%s\n", buffer_output);
@@ -589,8 +595,12 @@ int createSecurePasswordDB(unsigned char *key_sent)
 #endif
 
     if(key_sent == NULL)
+    {
+        int ret_value = getPassword(passwordGB, 0, 0);
+        if(ret_value < 0)
+            return ret_value;
         bdd = fopenR(SECURE_DATABASE, "w+");
-
+    }
     else
         bdd = fopenR(SECURE_DATABASE, "a+");
 
@@ -670,50 +680,36 @@ int createSecurePasswordDB(unsigned char *key_sent)
 #endif
     sprintf((char *)temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
-#ifdef _WIN32
-	do //Le seul but de ces lignes est d'être en accord avec le C89
-	{
-#endif
-		unsigned char key[2][SHA256_DIGEST_LENGTH+1];
-		memset(key[0], 0, SHA256_DIGEST_LENGTH+1);
-		memset(key[1], 0, SHA256_DIGEST_LENGTH+1);
-		if(key_sent == NULL)
-			generateKey(key[0]);
-		else
-			ustrcpy(key[0], key_sent);
+    unsigned char key[2][SHA256_DIGEST_LENGTH+1];
+    crashTemp(key[0], SHA256_DIGEST_LENGTH+1);
+    crashTemp(key[1], SHA256_DIGEST_LENGTH+1);
+    pbkdf2(temp, fingerPrint, key[1]);
+    crashTemp(fingerPrint, HASH_LENGTH);
+    crashTemp(temp, 240);
 
-		pbkdf2(temp, fingerPrint, key[1]);
-		crashTemp(fingerPrint, HASH_LENGTH);
-		crashTemp(temp, 240);
+    encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
+    if(UNZIP_NEW_PATH == 1)
+        sprintf((char *)encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    else
+        sprintf((char *)encryption_output, SECURE_DATABASE);
 
-		encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
-		if(UNZIP_NEW_PATH == 1)
-			sprintf((char *)encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-		else
-			sprintf((char *)encryption_output, SECURE_DATABASE);
+    if(key_sent == NULL)
+    {
+        createNewMK(passwordGB, key[0]);
+        AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+    }
+    else
+    {
+        ustrcpy(key[0], key_sent);
+        AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
+        crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
+    }
 
-		if(key_sent == NULL)
-		{
-			AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
-			if(sendPassToServ(key[0]))
-				AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
-		}
-		else
-		{
-			AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
-			crashTemp(key[0], HASH_LENGTH);
-		}
+    free(encryption_output);
 
-		free(encryption_output);
-
-		for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
-#ifdef _WIN32
-	}while(0);
-#endif
+    for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
 
 	get_file_date(SECURE_DATABASE, (char *)temp);
-
-
     if(strcmp((char *) temp, (char *) date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
@@ -765,46 +761,91 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
 }
 
-int sendPassToServ(unsigned char key[SHA256_DIGEST_LENGTH])
+int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
 {
-    int i = 0;
-    char temp[400], key_64b[65];
-    char buffer_dl[500];
+    char temp[400], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
+    unsigned char outputRAW[SHA256_DIGEST_LENGTH+1];
 
-    key_64b[64] = 0;
-    decToHex(key, SHA256_DIGEST_LENGTH, key_64b);
-    crashTemp(key, SHA256_DIGEST_LENGTH);
+    generateKey(outputRAW);
+    decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
+    MajToMin(randomKeyHex);
 
-    sprintf(temp, "http://rsp.%s/newMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, key_64b);
-    crashTemp(key_64b, 65);
-
+    snprintf(temp, 400, "http://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
     setupBufferDL(buffer_dl, 100, 5, 1, 1);
-
     download(temp, buffer_dl, 0);
 
     crashTemp(temp, 400);
-
-    for(i = strlen(buffer_dl); i > 0; i--)
+    sscanfs(buffer_dl, "%s", temp, 100);
+    if(!strcmp(temp, "success")) //Si ça s'est bien passé
     {
-        if(buffer_dl[i] == '\r' || buffer_dl[i] == '\n')
-            buffer_dl[i] = 0;
+        int bufferDL_pos = 0;
+        while(buffer_dl[bufferDL_pos++] != ' ' && buffer_dl[bufferDL_pos]);
+        if(buffer_dl[bufferDL_pos-1] == ' ')
+        {
+            int i = 0;
+            unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH];
+            crashTemp(seed, 2*SHA256_DIGEST_LENGTH+1);
+
+            for(; i < SHA256_DIGEST_LENGTH && buffer_dl[bufferDL_pos] != 0; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
+            outputRAW[i] = 0;
+            pbkdf2((unsigned char*) randomKeyHex, (unsigned char*) COMPTE_PRINCIPAL_MAIL, passSeed);
+            AESDecrypt(passSeed, outputRAW, seed, EVERYTHING_IN_MEMORY);
+
+            //On a désormais le seed
+            generateKey(derivation);
+            decToHex(derivation, SHA256_DIGEST_LENGTH, randomKeyHex);
+
+            snprintf(temp, 400, "http://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+            setupBufferDL(buffer_dl, 100, 5, 1, 1);
+            download(temp, buffer_dl, 0);
+            if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
+            {
+                int i;
+                unsigned char key_2[SHA256_DIGEST_LENGTH];
+                internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key_2);
+                for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+                {
+                    if(key_2[i] < 0)
+                        key_2[i] *= -1;
+                    if(key_2[i] < ' ')
+                        key_2[i] += ' ';
+                }
+                memcpy(key, key_2, SHA256_DIGEST_LENGTH);
+            }
+            else
+            {
+                sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+                logR(temp);
+                return 1;
+            }
+        }
+        else
+        {
+            sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+            logR(temp);
+            return 1;
+        }
     }
-
-    if(!strcmp(buffer_dl, "old_key_found"))
+    else if(!strcmp(buffer_dl, "old_key_found"))
     {
-        recoverPassToServ(key, 0);
+        recoverPassFromServ(key, 0);
         return 1;
     }
-    else if(strcmp(buffer_dl, "success"))
+    else if(!strcmp(buffer_dl, "account_not_found"))
+    {
+        logon();
+        return 1;
+    }
+    else
     {
         sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
         logR(temp);
-        exit(0);
+        return 1;
     }
     return 0;
 }
 
-void recoverPassToServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
+void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
 {
     if(!checkNetworkState(CONNEXION_OK))
         return;
