@@ -168,16 +168,13 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         if(uf == NULL || uf_tests == NULL)
         {
             sprintf(path, "%s/%s", REPERTOIREEXECUTION, zipFileName);
-#ifdef _WIN32
-            applyWindowsPathCrap(path);
-#endif
             uf = unzOpen(path);
             uf_tests = unzOpen(path);
         }
     }
     else
     {
-        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
+        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3);
         init_zmemfile(&fileops, inputZip, size);
         uf = unzOpen2(NULL, &fileops);
         uf_tests = unzOpen2(NULL, &fileops);
@@ -188,11 +185,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
     UNZIP_NEW_PATH = 1; //Changer le répertoire par défaut change beaucoup (trop) de trucs
 
-    #ifdef _WIN32
-        sprintf(path, "%s\\%s", REPERTOIREEXECUTION, outputZip);
-    #else
-        sprintf(path, "%s/%s", REPERTOIREEXECUTION, outputZip);
-    #endif
+    sprintf(path, "%s/%s", REPERTOIREEXECUTION, outputZip);
 
     sprintf(FONTUSED, "%s/%s", REPERTOIREEXECUTION, FONT_USED_BY_DEFAULT);
     applyWindowsPathCrap(FONTUSED);
@@ -296,42 +289,38 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if(configFileLoader(CONFIGFILE, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
+        char *path2 = malloc(strlen(outputZip) + strlen(CONFIGFILE) + 10);
+        snprintf(path2, strlen(outputZip) + strlen(CONFIGFILE) + 10, "%s/%s", outputZip, CONFIGFILE);
+        if(configFileLoader(path2, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
+            free(path2);
             logR("config.dat invalid: encryption aborted.\n");
             for(i = 0; filename_inzip[i][0]; remove(filename_inzip[i++])); //On fais le ménage
             ret_value = -1;
             goto quit;
         }
+        free(path2);
 
         for(i = 0; strcmp(filename_inzip[i], CONFIGFILE) && i < NOMBRE_PAGE_MAX; i++);
         if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
         {
-            for(j=0; filename_inzip[i][j] && j < 256; j++)
-                filename_inzip[i][j] = 0;
-            for(j = NOMBRE_PAGE_MAX-1; j > i && filename_inzip[j][0] == 0; j--);
-            if(j > i)
-            {
-                ustrcpy(filename_inzip[i], filename_inzip[j]);
-                usstrcpy(pass[i], SHA256_DIGEST_LENGTH, pass[j]);
-                for(i = 0; i < 256; filename_inzip[j][i++] = 0);
-                for(i = 0; i < SHA256_DIGEST_LENGTH; pass[j][i++] = 0);
-            }
-
+            for(j=0; filename_inzip[i][j] && j < 256; filename_inzip[i][j++] = 0);
+            for(j=0; j < SHA256_DIGEST_LENGTH; pass[i][j++] = 0);
         }
         nombreFichiers--;
 
         for(i = j = 0; i < NOMBRE_PAGE_MAX; i++, j++) //on consolide la liste des noms (fichiers invalides dégagés)
         {
-            MajToMin(filename_inzip[j]); //On en profite pour tout passer en minuscule
+            MajToMin(filename_inzip[i]);
             if(filename_inzip[i][0] < ' ')//Fichier manquant
             {
                 for(; filename_inzip[i][0] < ' ' && i < NOMBRE_PAGE_MAX; i++);
                 if(i >= NOMBRE_PAGE_MAX)
                     break;
+                MajToMin(filename_inzip[i]);
                 ustrcpy(filename_inzip[j], filename_inzip[i]);
                 crashTemp(filename_inzip[i], 256);
-                ustrcpy(pass[j], pass[i]);
+                usstrcpy(pass[j], SHA256_DIGEST_LENGTH, pass[i]);
                 crashTemp(pass[i], SHA256_DIGEST_LENGTH);
                 i--;
             }

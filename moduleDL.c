@@ -17,7 +17,7 @@ extern int CURRENT_TOKEN;
 
 int WINDOW_SIZE_H_DL = 0;
 int WINDOW_SIZE_W_DL = 0;
-int status;
+volatile int status;
 static int error;
 int INSTANCE_RUNNING = 0;
 
@@ -220,6 +220,7 @@ int telechargement()
                 if(glados == CODE_RETOUR_OK) // Archive pas corrompue
                 {
                     status += 1; //On signale le lancement d'une installation
+                    nameWindow(windowDL, status);
 
                     /**Installation**/
                     DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL));
@@ -361,10 +362,16 @@ int telechargement()
     TTF_CloseFont(police_big);
     TTF_CloseFont(police);
 
+    SDL_Event event;
+
     while(status > 1)
     {
-        SDL_Delay(500);
+        SDL_Delay(250);
+        event.type = 0;
+        SDL_WaitEventTimeout(&event, 1000);
         SDL_RenderPresent(rendererDL);
+        if(event.type != 0)
+            SDL_PushEvent(&event);
     }
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
 
@@ -383,8 +390,6 @@ void* installation(void* datas)
     int nouveauDossier = 0, extremes[2], erreurs = 0, dernierLu = 0, chapitre = 0;
     char temp[TAILLE_BUFFER];
     FILE* ressources = NULL;
-
-    nameWindow(windowDL, status);
 
     DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
 
@@ -652,7 +657,7 @@ void DLmanager()
         SDL_DestroyTextureS(texte);
 
         SDL_RenderPresent(rendererDL);
-        waitEnter(window);
+        waitEnter(windowDL);
     }
     else if (error > 0 && output != -1)
     {

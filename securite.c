@@ -306,38 +306,43 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 }
 
 #ifdef DEV_VERSION
-	//#define VERBOSE_DECRYPTv
-	int pbkdf2_leg(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret);
+	//#define VERBOSE_DECRYPT
 #endif
 
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
 {
     int i = 0, nombreEspace = 0;
     unsigned char *configEnc = malloc(((HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10) * sizeof(unsigned char)); //+1 pour \n, +10 pour le nombre en tête et le \n qui suis
-    char path[100+LONGUEUR_NOM_MANGA_MAX+LONGUEUR_NOM_MANGA_MAX+10+LONGUEUR_NOM_PAGE], key[SHA256_DIGEST_LENGTH];
+    char *path, key[SHA256_DIGEST_LENGTH];
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
 
-	size_t size = 0;
+	size_t size = 0, length = strlen(REPERTOIREEXECUTION) + strlen(teamLong) + strlen(mangas) + strlen(nomPage) + 30;
 
-    sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
-    test = fopenR(path, "r");
+	path = malloc(length);
+    snprintf(path, length, "%s/manga/%s/%s/Chapitre_%d/%s", REPERTOIREEXECUTION, teamLong, mangas, numeroChapitre, nomPage);
+    test = fopen(path, "r");
 
     if(test == NULL) //Si on trouve pas la page
+    {
+        free(path);
         return NULL;
+    }
 
     fseek(test, 0, SEEK_END);
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
     fclose(test);
 
-    sprintf(path, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre);
+    snprintf(path, length, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre);
     test = fopenR(path, "r");
 
     if(test == NULL) //Si on trouve pas config.enc
     {
-        sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
+        snprintf(path, length, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
         free(configEnc);
-        return IMG_Load(path);
+        surface_page = IMG_Load(path);
+        free(path);
+        return surface_page;
     }
     fclose(test);
 
@@ -358,15 +363,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     {
         if(checkNetworkState(CONNEXION_OK))
         {
-            #ifdef DEV_VERSION
-            unsigned char hash_2[SHA256_DIGEST_LENGTH];
-            pbkdf2_leg(SHA256_DIGEST_LENGTH, (unsigned char*) "0e8b74ee20201de08d4b199af00038c8", 32, numChapitreChar, strlen((char*) numChapitreChar), 2048, PBKDF2_OUTPUT_LENGTH, hash_2);
-            AESDecrypt(hash_2, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-            for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
-            if(i != 0 && configEnc[i] == ' ')
-                AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
-            else {
-            #endif
             recoverPassFromServ(temp, numeroChapitre);
             AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
             for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
@@ -376,44 +372,47 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
             {
                 free(configEnc);
                 logR("Huge fail: database corrupted\n");
+                free(path);
                 return NULL;
             }
-            #ifdef DEV_VERSION
-            }
-            #endif
         }
         else
         {
             SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
             TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
             if(police == NULL)
+            {
+                free(path);
                 return NULL;
+            }
             else
             {
-                SDL_Surface *output = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
+                surface_page = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
                 TTF_CloseFont(police);
-                return output;
+                free(path);
+                return surface_page;
             }
         }
     }
     crashTemp(temp, 200);
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
-    sprintf(path, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
+    snprintf(path, length, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
 
 
-    int length = ustrlen(configEnc)-1; //pour le \0
-    for(i = 0; i < length && configEnc[i] != ' '; i++); //On saute le nombre de page
-    if((length - i) % (SHA256_DIGEST_LENGTH+1) && (length - i) % (2*SHA256_DIGEST_LENGTH+1))
+    int length2 = ustrlen(configEnc)-1; //pour le \0
+    for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
+    if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
         //Au cas où ça se reproduit, cette condition devrait bloquer le bug
-        if(((length - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length-1] == ' ');
+        if(((length2 - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length2 - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length2-1] == ' ');
         else
         {
             for(i = (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX; i > 0; configEnc[i--] = 0); //On écrase les clés: DAYTAYCAY PIRATE =P
             free(configEnc);
             logR("Huge fail: database corrupted\n");
+            free(path);
             return NULL;
         }
     }
@@ -433,6 +432,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         free(configEnc);
         crashTemp(key, SHA256_DIGEST_LENGTH);
         logR("Huge fail: database corrupted\n");
+        free(path);
         return NULL;
     }
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
@@ -454,6 +454,11 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
     free(buf_page);
+#ifdef DEV_VERSION
+    if(surface_page == NULL)
+        AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
+#endif
+    free(path);
     return surface_page;
 }
 

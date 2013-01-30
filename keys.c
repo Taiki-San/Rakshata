@@ -103,11 +103,11 @@ int getMasterKey(unsigned char *input)
         /*Décryptage manuel car un petit peu délicat*/
         for(j = 0; j < 2; j++)
         {
-            unsigned char plaintext[16];
+			unsigned char plaintext[16];
             unsigned char ciphertext[16];
             memcpy(ciphertext, buffer_Load[i] + j*16, 16);
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
-            memcpy(output+j*16, plaintext, 16);
+            memcpy(j*16+output , plaintext, 16);
         }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
@@ -783,17 +783,22 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
         if(buffer_dl[bufferDL_pos-1] == ' ')
         {
             int i = 0;
-            unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH];
+            unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
             crashTemp(seed, 2*SHA256_DIGEST_LENGTH+1);
 
             for(; i < SHA256_DIGEST_LENGTH && buffer_dl[bufferDL_pos] != 0; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
             outputRAW[i] = 0;
             pbkdf2((unsigned char*) randomKeyHex, (unsigned char*) COMPTE_PRINCIPAL_MAIL, passSeed);
+
             AESDecrypt(passSeed, outputRAW, seed, EVERYTHING_IN_MEMORY);
 
             //On a désormais le seed
             generateKey(derivation);
-            decToHex(derivation, SHA256_DIGEST_LENGTH, randomKeyHex);
+            internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
+            internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, strlen(password), 2048, PBKDF2_OUTPUT_LENGTH, passDer);
+            AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY);
+            decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
+            randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 
             snprintf(temp, 400, "http://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
             setupBufferDL(buffer_dl, 100, 5, 1, 1);
@@ -805,8 +810,6 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
                 internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key_2);
                 for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
                 {
-                    if(key_2[i] < 0)
-                        key_2[i] *= -1;
                     if(key_2[i] < ' ')
                         key_2[i] += ' ';
                 }
@@ -850,7 +853,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
     if(!checkNetworkState(CONNEXION_OK))
         return;
 
-    int i = 0;
+    int i = 0, j = 0;
     char temp[400];
     char buffer_dl[500];
     if(mode != 0) //On essaie de pas transmettre trop en clair la clée manquante
@@ -862,11 +865,11 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
     {
         mode = rand() % 100 + 1 + 5;
         mode = mode * (mode+10) + 1;
-        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s&authMode=%d", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
+        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s&authMode=%d&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
         mode = 0;
     }
     else
-        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+        sprintf(temp, "http://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
 
@@ -894,15 +897,16 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
         key[64] = 0;
         return;
     }
-    for(i = 0; i < strlen(buffer_dl) && buffer_dl[i] < 'A' && buffer_dl[i] > 'F'; i++);
-
-    if(i != strlen(buffer_dl))
+    unsigned char derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
+    for(i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
+    for(i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
+    internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, tmp);
+    for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
-        for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-            key[i] = buffer_dl[i];
+        if(tmp[i] < ' ')
+            tmp[i] += ' ';
+        key[i] = tmp[i];
     }
-    else
-        hexToDec(buffer_dl, key);
     return;
 }
 

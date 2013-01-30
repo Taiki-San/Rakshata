@@ -15,7 +15,7 @@
 int ecranAccueil()
 {
     /*En raison de la taille importante de la page d'acceuil (800kb),
-    elle est enregistrŽ une seule fois et on lui colle dessus la trad*/
+    elle est enregistré une seule fois et on lui colle dessus la trad*/
 
     SDL_Rect position;
     SDL_Texture *acceuil = NULL;

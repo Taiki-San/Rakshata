@@ -19,7 +19,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0, encrypted = 0;
     int deplacementEnCours = 0, extremesManga[2] = {0,0};
     int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, chapMax = 0, pageAccesDirect = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX*5], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE];
+    char temp[LONGUEUR_NOM_MANGA_MAX*5+350], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE];
     FILE* testExistance = NULL;
     SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
     SDL_Surface *explication = NULL, *UIAlert = NULL, *UI_PageAccesDirect = NULL;
@@ -81,7 +81,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         *chapitreChoisis = *chapitreChoisis + 1;
         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, CONFIGFILE);
         testExistance = fopenR(temp, "r");
-        encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
     }
 
     if(testExistance == NULL || configFileLoader(temp, &pageTotal, nomPage))
@@ -102,9 +101,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     }
 
     fclose(testExistance);
+    encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
 
     changementPage = 2;
-
     bandeauControle = loadControlBar(mangaDB->favoris);
 
     while(1)
@@ -217,8 +216,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 chapitre = IMG_Load(temp);
             }
             else
-                chapitre = IMG_LoadS(chapitre,
-                                     mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture], pageEnCoursDeLecture);
+                chapitre = IMG_LoadS(chapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture], pageEnCoursDeLecture);
             changementPage = 1; //Mettra en cache la page n+1
         }
 
@@ -301,8 +299,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                     SDL_DestroyRenderer(renderer);
                 }
 
+                SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowSize(window, RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
+                SDL_FlushEvent(SDL_WINDOWEVENT);
 
                 if(RENDER_BUG)
                 {
@@ -453,7 +453,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         NChapitre = NULL;
                     else if(!encrypted)
                     {
-                        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture + 1]);
+                        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture + 1]);
                         NChapitre = IMG_Load(temp);
                     }
                     else
@@ -466,7 +466,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                     else if(!encrypted)
                     {
-                        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1]);
+                        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1]);
                         OChapitre = IMG_Load(temp);
                     }
                     else

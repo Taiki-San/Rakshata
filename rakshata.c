@@ -83,24 +83,27 @@ int main()
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;
-    int compteur = 0;
+    int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
     MUTEX_LOCK;
     while(THREAD_COUNT)
     {
         MUTEX_UNLOCK;
-        int timeSinceLastCheck = SDL_GetTicks();
-        while(SDL_GetTicks() - timeSinceLastCheck < 1000) //Test chaque seconde, pour pas abuser avec le mutex
+
+        event.type = 0;
+        SDL_WaitEventTimeout(&event, 250);
+        if(event.type != 0 && (event.type != SDL_WINDOWEVENT || event.window.event != SDL_WINDOWEVENT_RESIZED))
         {
-            event.type = 0;
-            SDL_WaitEventTimeout(&event, 250);
-            if(event.type != 0 || (event.type == SDL_WINDOWEVENT && event.window.event != SDL_WINDOWEVENT_RESIZED))
+            if(event.type == SDL_WINDOWEVENT)
             {
                 #ifdef _WIN32
                     WaitForSingleObject(mutexRS, INFINITE);
                 #else
                     pthread_mutex_lock(&mutexRS);
                 #endif
-                SDL_PushEvent(&event);
+            }
+            SDL_PushEvent(&event);
+            if(event.type == SDL_WINDOWEVENT)
+            {
                 #ifdef _WIN32
                     ReleaseMutex(mutexRS);
                 #else
@@ -108,10 +111,13 @@ int main()
                 #endif
             }
         }
-        if(timeSinceLastCheck > 10000 && window == NULL && windowDL == NULL)
+        SDL_Delay(1000);
+
+        if(window == NULL && windowDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 10000)
         {
             event.type = SDL_QUIT; //Si un thread refuse de quitter
             SDL_PushEvent(&event);
+            timeSinceLastCheck = SDL_GetTicks();
             compteur++;
             if(compteur > 10) //Si il s'accroche vraiment =<
                 break;

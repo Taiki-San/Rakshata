@@ -13,7 +13,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
+#ifdef MSVC
+	#include <dirent.msvc.h>
+#else
+	#include <dirent.h>
+#endif
 #include <time.h>
 #include <curl/curl.h>
 #include <sys/stat.h>
@@ -26,6 +30,7 @@
 			#define getcwd(a, b) _getcwd(a, b)
 			#define mkdir(a) _mkdir(a)
 			#define chdir(a) _chdir(a)
+			#define snprintf _snprintf
 		#endif
 	#endif
     #include <windows.h>

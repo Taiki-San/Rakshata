@@ -48,19 +48,15 @@ void renameR(char *initialName, char *newName)
 	char *temp = malloc(strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2); //+1 pour le / et +1 pour \0
 	char *temp2 = malloc(strlen(newName) + strlen(REPERTOIREEXECUTION) + 2);
 
-    if(!UNZIP_NEW_PATH)
-    {
-        ustrcpy(temp, initialName);
-        ustrcpy(temp2, newName);
-    }
-    else
-    {
+    if(initialName[1] != ':')
         sprintf(temp, "%s/%s", REPERTOIREEXECUTION, initialName);
+    else
+        strcpy(temp, initialName);
+    if(newName[1] != ':')
         sprintf(temp2, "%s/%s", REPERTOIREEXECUTION, newName);
-        applyWindowsPathCrap(temp);
-        applyWindowsPathCrap(temp2);
-    }
-	rename(temp, temp2);
+    else
+        strcpy(temp, newName);
+    rename(temp, temp2);
 	free(temp);
 	free(temp2);
 }
@@ -281,7 +277,7 @@ size_t ustrlen(void *input)
 {
     unsigned char *copy = input;
     while(*(copy++));
-    return (void*)copy - input;
+    return copy - (unsigned char *)input;
 }
 
 void usstrcpy(void* output, size_t length, void* input)
