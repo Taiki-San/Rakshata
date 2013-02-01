@@ -503,10 +503,7 @@ int lancementExternalBinary(char cheminDAcces[100])
  #else
 	crashTemp(superTemp, 400);
     #ifdef __APPLE__
-		if(strcmp(cheminDAcces, "Rakshata.app") == 0) //Si on lance le binaire, on ouvre juste le path (qui contient déjà le nom du bundle
-			sprintf(superTemp, "open -n \"%s\"", REPERTOIREEXECUTION);
-		else
-			sprintf(superTemp, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);
+        sprintf(superTemp, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);
     #else
         sprintf(superTemp, "\"%s/%s\" &", REPERTOIREEXECUTION, cheminDAcces);
     #endif

@@ -140,9 +140,9 @@ int getMasterKey(unsigned char *input)
 void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
 {
     int i = 0;
-    unsigned char randomChar[50];
+    unsigned char randomChar[128];
 
-    for(i = 0; i < 50; i++)
+    for(i = 0; i < 128; i++)
     {
         randomChar[i] = (rand() + 1) % (255 - 32) + 33; //Génére un nombre ASCII-étendu
         if(randomChar[i] < ' ')
@@ -153,14 +153,52 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
     {
         if(output[i] <= ' '  || output[i] == 127 || output[i] >= 255)
         {
-            int j = 0;
+            int j;
             do {
                 j = (rand() + 1) % (255 - 32) + 33;
-            } while(j <= ' ' || j == 127 || j >= 255);
+            } while(j <= ' ');
 
             output[i] = j;
         }
     }
+}
+
+int earlyInit()
+{
+    srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
+#ifdef _WIN32
+    mutex = CreateMutex(NULL, FALSE, NULL);
+    mutexRS = CreateMutex(NULL, FALSE, NULL);
+#endif
+    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
+	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
+
+    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
+    crashTemp(passwordGB, 100);
+
+    /*Launching SDL & SDL_TTF*/
+    if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
+    {
+        char temp[400];
+        snprintf(temp, 400, "Failed at launch the SDL: %s", SDL_GetError());
+        logR(temp);
+        return 0;
+    }
+
+    createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
+
+    if(TTF_Init())
+    {
+        SDL_Quit();
+        char temp[400];
+        snprintf(temp, 400, "Failed at launch the SDL_TTF: %s", TTF_GetError());
+        logR(temp);
+        return 0;
+    }
+
+    restrictEvent();
+    getResolution();
+    return 1;
 }
 
 int get_compte_infos()
@@ -474,6 +512,120 @@ int logon()
     if(resized)
         restartEcran();
     return 0;
+}
+
+int getPassword(char password[100], int dlUI, int salt)
+{
+    int xPassword = 0, resized = 0;
+    char trad[SIZE_TRAD_ID_26][100];
+    SDL_Texture *ligne = NULL;
+    SDL_Rect position;
+    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    TTF_Font *police = NULL;
+    SDL_Renderer *currentRenderer = NULL;
+
+    if(passwordGB[0] != 0)
+        ustrcpy(password, passwordGB);
+
+    if(dlUI)
+    {
+        currentRenderer = rendererDL;
+    }
+    else
+    {
+        if(!salt && WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION)
+        {
+            resized = WINDOW_SIZE_H;
+            updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+        }
+        currentRenderer = renderer;
+    }
+
+    loadTrad(trad, 26);
+
+    SDL_RenderClear(currentRenderer);
+
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.y = 20;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(currentRenderer, police, trad[6], couleur);
+    position.y = 100;
+    position.x = 50;
+    xPassword = position.x + ligne->w + 25;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    TTF_CloseFont(police);
+    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+
+    ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.y += 85;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+
+    ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
+    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.y += 30;
+    position.h = ligne->h;
+    position.w = ligne->w;
+    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+    SDL_DestroyTextureS(ligne);
+    TTF_CloseFont(police);
+
+    SDL_RenderPresent(currentRenderer);
+
+    while(1)
+    {
+        if(waitClavier(currentRenderer, 50, xPassword, 105, 0, password) == PALIER_QUIT)
+            return PALIER_QUIT;
+
+        if(resized)
+        {
+            updateWindowSize(LARGEUR, resized);
+            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+        }
+        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+        {
+            if(!salt)
+                return 1;
+
+            int i = 0, j = 0;
+            char temp[HASH_LENGTH+5], serverTime[500];
+            sha256_legacy(password, temp);
+            MajToMin(temp);
+            crashTemp(password, 100);
+            sha256_legacy(temp, password);
+            MajToMin(password);
+            ustrcpy(temp, password);
+            ustrcpy(passwordGB, password);
+
+            sprintf(password, "http://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
+            setupBufferDL(serverTime, 100, 5, 1, 1);
+            download(password, serverTime, 0);
+
+            for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
+            {
+                if(serverTime[i] == '\r' || serverTime[i] == '\n')
+                    serverTime[i] = 0;
+            }
+            for(j = strlen(temp), i++; j < HASH_LENGTH + 5 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
+            temp[j] = 0;
+            sha256_legacy(temp, password);
+            MajToMin(password);
+            return 1;
+        }
+    }
 }
 
 int check_login(char adresseEmail[100])

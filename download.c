@@ -394,7 +394,6 @@ static void* downloader(void* envoi)
         char buffer_erreur[600];
         sprintf(buffer_erreur, "Fail at create output download file: %s\n", temp);
         logR(buffer_erreur);
-        exit(EXIT_FAILURE);
     }
 
     if(status == STATUS_FORCE_CLOSE && errCode != 0 && printToAFile)
@@ -405,7 +404,6 @@ static void* downloader(void* envoi)
         removeR(valeurs->repertoireEcriture);
         renameR(temp, valeurs->repertoireEcriture);
     }
-
     MUTEX_LOCK;
     status = STATUS_END;
     MUTEX_UNLOCK;
@@ -437,8 +435,8 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
         if(!FILE_EXPECTED_SIZE)
             size_buffer = 20*1024*1024;
         else
-            size_buffer = FILE_EXPECTED_SIZE+1;
-        internalBuffer = malloc(size_buffer);
+            size_buffer = FILE_EXPECTED_SIZE+FILE_EXPECTED_SIZE/10; //10% de marge
+        internalBuffer = calloc(1, size_buffer);
         if(internalBuffer == NULL)
             return -1;
         else

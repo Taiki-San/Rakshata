@@ -221,6 +221,12 @@ void updateWindowSize(int w, int h)
 
         chargement(renderer, h, w);
 
+        #ifdef _WIN32
+            WaitForSingleObject(mutexRS, INFINITE);
+        #else
+            pthread_mutex_lock(&mutexRS);
+        #endif
+
         SDL_FlushEvent(SDL_WINDOWEVENT); //Evite de trimbaler des variables corrompues
         SDL_SetWindowSize(window, w, h);
         SDL_FlushEvent(SDL_WINDOWEVENT);
@@ -229,29 +235,21 @@ void updateWindowSize(int w, int h)
 
         if(RENDER_BUG)
         {
-            #ifdef _WIN32
-                WaitForSingleObject(mutexRS, INFINITE);
-            #else
-                pthread_mutex_lock(&mutexRS);
-            #endif
-
             SDL_DestroyRenderer(renderer);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-
-            #ifdef _WIN32
-                ReleaseMutex(mutexRS);
-            #else
-                pthread_mutex_unlock(&mutexRS);
-            #endif
-
             chargement(renderer, h, w);
-            SDL_RenderPresent(renderer);
         }
         else if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
             SDL_RenderPresent(renderer);
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;
+
+        #ifdef _WIN32
+            ReleaseMutex(mutexRS);
+        #else
+            pthread_mutex_unlock(&mutexRS);
+        #endif
     }
     else
     {

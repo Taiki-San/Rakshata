@@ -43,37 +43,9 @@ MUTEX_VAR mutexRS;
 
 int main()
 {
-    srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
-#ifdef _WIN32
-    mutex = CreateMutex(NULL, FALSE, NULL);
-    mutexRS = CreateMutex(NULL, FALSE, NULL);
-#endif
-    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
-	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
+    if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
+        return -1; //Si echec
 
-	crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-
-    /*Launching SDL & SDL_TTF*/
-    if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
-    {
-        char temp[400];
-        snprintf(temp, 400, "Failed at launch the SDL: %s", SDL_GetError());
-        logR(temp);
-        exit(EXIT_FAILURE);
-    }
-
-    createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
-
-    if(TTF_Init())
-    {
-        char temp[400];
-        snprintf(temp, 400, "Failed at launch the SDL_TTF: %s", TTF_GetError());
-        logR(temp);
-        exit(EXIT_FAILURE);
-    }
-
-    restrictEvent();
-    getResolution();
     checkJustUpdated();
 
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.

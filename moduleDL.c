@@ -38,6 +38,19 @@ int telechargement()
     INSTALL_DONE = 0;
     CURRENT_TOKEN = 0;
 
+#ifdef _WIN32
+    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDLModule");
+    if (WaitForSingleObject (hSem, 0) == WAIT_TIMEOUT)
+    {
+        logR("Fail: instance already running\n");
+        CloseHandle (hSem);
+        quit_thread(-1);
+    }
+#else
+    FILE *fileBlocker = fopenR("data/download", "w+");
+    fprintf(fileBlocker, "%d", getpid());
+    fclose(fileBlocker);
+#endif
 
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
         SDL_Delay(100);
@@ -202,7 +215,7 @@ int telechargement()
                             break;
                     }
 
-                    else if(struc->buf == NULL || struc->buf[0] == '<' || struc->buf[1] == '<' || struc->buf[2] == '<' || struc->buf[3] == '<')
+                    else if(struc->buf == NULL || struc->length < 50 || struc->length > 400000000 || struc->buf[0] == '<' || struc->buf[1] == '<' || struc->buf[2] == '<' || struc->buf[3] == '<')
                     {
                         if(struc->buf == NULL)
                         {
@@ -289,7 +302,7 @@ int telechargement()
             {
                 char **newBufferTodo = NULL;
 
-                if(INSTANCE_RUNNING == -1 && checkFileExist(INSTALL_DATABASE))
+                if(INSTANCE_RUNNING == -1 && checkLancementUpdate())
                 {
                     int oldSize = mangaTotal;
                     fichier = fopenR(INSTALL_DATABASE, "r");
@@ -373,9 +386,19 @@ int telechargement()
         if(event.type != 0)
             SDL_PushEvent(&event);
     }
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
+    INSTANCE_RUNNING = 0;
+
+#ifdef _WIN32
+    ReleaseSemaphore (hSem, 1, NULL);
+    CloseHandle (hSem);
+#else
+    removeR("data/download");
+#endif
+
     if(glados == CODE_RETOUR_DL_CLOSE)
         return -1;
     return 0;
@@ -387,8 +410,9 @@ DWORD WINAPI installation(LPVOID datas)
 void* installation(void* datas)
 #endif
 {
-    int nouveauDossier = 0, extremes[2], erreurs = 0, dernierLu = 0, chapitre = 0;
+    int extremes[2], erreurs = 0, dernierLu = -1, chapitre = 0;
     char temp[TAILLE_BUFFER];
+    size_t length;
     FILE* ressources = NULL;
 
     DATA_INSTALL *valeurs = (DATA_INSTALL*)datas;
@@ -396,11 +420,6 @@ void* installation(void* datas)
     /*Récupération des valeurs envoyés*/
     MANGAS_DATA mangaDB = valeurs->mangaDB;
     chapitre = valeurs->chapitre;
-
-    /*Lecture du fichier*/
-    nouveauDossier = 0;
-    crashTemp(temp, TAILLE_BUFFER);
-
     if(valeurs->buf == NULL) //return;
     {
         free(valeurs);
@@ -408,6 +427,7 @@ void* installation(void* datas)
         nameWindow(windowDL, status);
         quit_thread(0);
     }
+    length = valeurs->buf->length;
 
     sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre, CONFIGFILE);
     ressources = fopenR(temp, "r");
@@ -421,13 +441,10 @@ void* installation(void* datas)
             /*Si le dossier du manga n'existe pas*/
             sprintf(temp, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
             #ifdef _WIN32
-            mkdir(temp);
+                mkdir(temp);
             #else
-            mkdir(temp, PERMISSIONS);
+                mkdir(temp, PERMISSIONS);
             #endif
-
-            /*On signale le nouveau dossier*/
-            nouveauDossier = 1;
         }
         else
             fclose(ressources);
@@ -449,10 +466,9 @@ void* installation(void* datas)
         }
 
         sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
-        if(erreurs != -1 && nouveauDossier == 0 && ressources != NULL)
+        if(erreurs != -1 && checkFileExist(temp) && ressources != NULL)
         {
             fclose(ressources);
-            sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
             ressources = fopenR(temp, "r+");
             fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
             if(fgetc(ressources) != EOF)
@@ -487,10 +503,10 @@ void* installation(void* datas)
 
         else //Archive corrompue
         {
-            crashTemp(temp, TAILLE_BUFFER);
+            if(ressources == NULL)
+                fclose(ressources);
             sprintf(temp, "Archive Corrompue: %s - %d\n", mangaDB.mangaName, chapitre);
             logR(temp);
-            crashTemp(temp, TAILLE_BUFFER);
             sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre);
             removeFolder(temp);
             erreurs = 1;
@@ -502,7 +518,8 @@ void* installation(void* datas)
     if(erreurs)
         error++; //On note si le chapitre a posé un probléme
 
-    free(valeurs->buf->buf);
+    if(length == valeurs->buf->length)
+        free(valeurs->buf->buf);
     free(valeurs->buf);
     free(valeurs);
 

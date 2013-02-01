@@ -187,7 +187,7 @@ void checkUpdate()
         ***                                                                             ***
         ***********************************************************************************/
 
-		int i = 0, j = 0, ligne = 0;
+		int i, j, ligne = 0;
         char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][100], temp[100], URL[300];
 
 
@@ -198,12 +198,10 @@ void checkUpdate()
 
 		remove("Rakshata.exe.old");
 
-        for(; i < TAILLE_BUFFER; i++)
+        for(i = 0; i < TAILLE_BUFFER; i++)
         {
-            for(j = 0; j < TAILLE_BUFFER; j++)
-                files[i][j] = 0;
-            for(j = 0; j < 2; j++)
-                action[i][j] = 0;
+            for(j = 0; j < TAILLE_BUFFER; files[i][j++] = 0);
+            for(j = 0; j < 2; action[i][j++] = 0);
         }
 
         //Lecture du fichier de MaJ, protection contre les overflow
@@ -334,53 +332,40 @@ void checkJustUpdated()
     }
 }
 
+extern int INSTANCE_RUNNING;
 int checkLancementUpdate()
 {
-    FILE* test = NULL;
-    test = fopenR(INSTALL_DATABASE, "r");
+    if(INSTANCE_RUNNING != 0 || checkFileExist(INSTALL_DATABASE))
+        return 0;
+
+#ifdef _WIN32
+    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDLModule");
+    if (WaitForSingleObject (hSem, 0) != WAIT_TIMEOUT)
+    {
+        CloseHandle (hSem);
+        return 1;
+    }
+    CloseHandle (hSem);
+#else
+    FILE* test = fopenR("data/download", "r");
     if(test != NULL)
     {
         if(fgetc(test) != EOF)
         {
-            fclose(test);
-#ifdef _WIN32
-            removeR("data/download");
-            test = fopenR("data/download", "r");
-
-            /*Si un dl est disponible mais qu'aucune instance ne DL*/
-            if(test == NULL)
-                return 1;
-            else
-                fclose(test);
-#else
             int i = 0;
-            FILE *temp = NULL;
-            temp = fopenR("data/download", "r"); //Si fichier n'existe pas, test != NULL
-            if(temp != NULL)
+            rewind(test);
+            if(test != NULL)
             {
-                fscanfs(temp, "%d", &i);
-                fclose(temp);
-                if(!checkPID(i))
-                    return 0;
-                else
+                fscanfs(test, "%d", &i);
+                fclose(test);
+                if(checkPID(i))
                     return 1;
             }
             else
                 return 1;
-#endif
         }
         else
             fclose(test);
-    }
-#ifdef _WIN32
-    else
-    {
-        test = fopenR("data/download", "r");
-        if(test != NULL)
-        {
-            fclose(test);
-            removeR("data/download");
-        }
     }
 #endif
     return 0;
