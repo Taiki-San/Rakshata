@@ -18,6 +18,8 @@
   return UNZ_OK if there is no problem.
 */
 
+extern char *tmp;
+
 #ifndef _WIN32
         #ifndef __USE_FILE_OFFSET64
                 #define __USE_FILE_OFFSET64
@@ -269,7 +271,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
         if (skip==0 && err==UNZ_OK)
         {
-            fout=fopen64(write_filename,"wb");
+            fout = fopen(write_filename,"wb");
 
             //some zipfile don't contain directory alone before file
             if ((fout==NULL) && ((*popt_extract_without_path)==0) &&
@@ -302,15 +304,10 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
         if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la volée
         {
-            int nrounds;
+            int nrounds, i;
             unsigned long rk[RKLENGTH(KEYBITS)];
-            unsigned char *buf_char = NULL;
-            unsigned char key[KEYLENGTH(KEYBITS)];
-
             generateKey(passwordPageCrypted);
-            for (nrounds = 0; nrounds < sizeof(key); nrounds++)
-                key[nrounds] = *passwordPageCrypted!= 0 ? *passwordPageCrypted++ : 0;
-            nrounds = rijndaelSetupEncrypt(rk, key, 256);
+            nrounds = rijndaelSetupEncrypt(rk, passwordPageCrypted, KEYBITS);
             do
             {
                 err = unzReadCurrentFile(uf,buf,size_buf);
@@ -319,20 +316,18 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
                     printf("error %d with zipfile in unzReadCurrentFile\n",err);
                     break;
                 }
-                if (err>0)
+                else if (err>0)
                 {
-                    int i;
+                    int j;
                     for(i = 0; i<err;)
                     {
                         unsigned char plaintext[16];
                         unsigned char ciphertext[16];
-                        buf_char = (unsigned char *) buf;
-                        int j;
-                        for (j = 0; j < sizeof(plaintext) && i < err;)
-                            plaintext[j++] = buf_char[i++];
-                        for (; j < sizeof(plaintext); plaintext[j++] = 0);
+                        memset(plaintext, 0, 16);
+                        memcpy(plaintext, buf+i, 16);
+                        i+=16;
                         rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
-
+                        for(j = 0; j < sizeof(ciphertext); fputc(ciphertext[j++], fout));
                         if (fwrite(ciphertext, sizeof(ciphertext), 1, fout) != 1)
                         {
                             fclose(fout);
@@ -344,7 +339,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
             }while (err>0);
         }
 
-        else if (fout!=NULL) //Décompression normale
+        else if (fout!=NULL) //DÈcompression normale
         {
             do
             {

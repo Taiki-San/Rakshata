@@ -10,12 +10,14 @@
 **                                                                                          **
 *********************************************************************************************/
 
+char *tmp;
+
 #include "main.h"
 #include "unzip/miniunzip.h"
 
 #include "unzip/unz_memory.c"
 
-int INSTALL_DONE;
+volatile int INSTALL_DONE;
 int CURRENT_TOKEN;
 
 int unzip(char *path, char *output)
@@ -90,7 +92,6 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
 	FILE* test = NULL;
     unzFile uf = NULL;
-    unzFile uf_tests = NULL;
     zlib_filefunc_def fileops;
 
 	char *path = NULL;
@@ -111,46 +112,37 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         return 1;
     }
 
-    for(i = j = 0; (!size && i < (strlen(inputZip)+1)*2) || j < (strlen(outputZip)+1)*2; i++, j++)
+    for(i = j = 0; !size && i < (strlen(inputZip)+1)*2; i++, j++)
     {
-        if(!size)
+        if(i < (strlen(inputZip)+1)*2 && inputZip[i] != '\0')
+            zipFileName[i] = inputZip[i];
+        else
         {
-            if(i < (strlen(inputZip)+1)*2 && inputZip[i] != '\0')
-                zipFileName[i] = inputZip[i];
-            else
+            if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(inputZip)+1)*2) //Si il manque .zip
             {
-                if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(inputZip)+1)*2) //Si il manque .zip
-                {
-                    zipFileName[i++] = '.';
-                    zipFileName[i++] = 'z';
-                    zipFileName[i++] = 'i';
-                    zipFileName[i++] = 'p';
-                    zipFileName[i++] = '\0';
-                }
-                else if (i < (strlen(inputZip)+1)*2)
-                {
-                    zipFileName[i] = 0;
-                    i = (strlen(inputZip)+1)*2;
-                }
+                zipFileName[i++] = '.';
+                zipFileName[i++] = 'z';
+                zipFileName[i++] = 'i';
+                zipFileName[i++] = 'p';
+                zipFileName[i++] = '\0';
+            }
+            else if (i < (strlen(inputZip)+1)*2)
+            {
+                zipFileName[i] = 0;
+                i = (strlen(inputZip)+1)*2;
             }
         }
-
-        if(j < (strlen(outputZip)+1)*2 && outputZip[j])
-            zipOutput[j] = outputZip[j];
-        else if(j <(strlen(outputZip)+1) *2)
-        {
-            zipOutput[j] = 0;
-            j = (strlen(outputZip)+1) *2;
-        }
     }
+    memcpy(zipOutput, outputZip, strlen(outputZip)+1);
+    if(passwordZip != NULL)
+        memcpy(password, passwordZip, strlen(passwordZip)+1);
 
-    for(i = 0; i < (strlen(passwordZip)+1)*2 && passwordZip != NULL && passwordZip[i] != '\0'; i++)
-        password[i] = passwordZip[i];
-    password[i] = 0;
+    while(mytoken != INSTALL_DONE) //Tant qu'une décompression est en cours, on va pas changer le cwd
+        SDL_Delay(50);
 
     if(!size)
     {
-        path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3*1);
+        path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 5);
         test = fopenR(zipFileName, "r");
         if (test == NULL)
         {
@@ -163,13 +155,11 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         fclose(test);
 
         uf = unzOpen(zipFileName);
-        uf_tests = unzOpen(zipFileName); //Ouverture du zip
 
-        if(uf == NULL || uf_tests == NULL)
+        if(uf == NULL)
         {
             sprintf(path, "%s/%s", REPERTOIREEXECUTION, zipFileName);
             uf = unzOpen(path);
-            uf_tests = unzOpen(path);
         }
     }
     else
@@ -177,19 +167,12 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3);
         init_zmemfile(&fileops, inputZip, size);
         uf = unzOpen2(NULL, &fileops);
-        uf_tests = unzOpen2(NULL, &fileops);
     }
-
-    while(mytoken != INSTALL_DONE) //Tant qu'une décompression est en cours, on va pas changer le cwd
-        SDL_Delay(50);
 
     UNZIP_NEW_PATH = 1; //Changer le répertoire par défaut change beaucoup (trop) de trucs
 
     sprintf(path, "%s/%s", REPERTOIREEXECUTION, outputZip);
-
     sprintf(FONTUSED, "%s/%s", REPERTOIREEXECUTION, FONT_USED_BY_DEFAULT);
-    applyWindowsPathCrap(FONTUSED);
-
 
     if (size && chdir(path)) //On change le dossier courant
     {
@@ -205,13 +188,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         goto quit;
 
     for(i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinitialise les noms de page
-    {
-        for(j = 0; j < 256; j++)
-            filename_inzip[i][j] = 0;
-    }
+        for(j = 0; j < 256; filename_inzip[i][j++] = 0);
 
-    ret_value = do_list(uf_tests, &opt_encrypted, filename_inzip); //On lit l'archive
-    unzClose(uf_tests);
+    ret_value = do_list(uf, &opt_encrypted, filename_inzip); //On lit l'archive
 
     for(nombreFichiers = 0; nombreFichiers < NOMBRE_PAGE_MAX && filename_inzip[nombreFichiers][0] != 0; nombreFichiers++); //Nombre de fichier dans l'archive ZIP
 
@@ -234,6 +213,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             }
         }
     }
+    tmp = inputZip;
 
     for(i = 0; i < nombreFichiers; i++)
     {
