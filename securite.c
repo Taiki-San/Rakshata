@@ -356,6 +356,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     unsigned char numChapitreChar[10];
     sprintf((char *) numChapitreChar, "%d", numeroChapitre);
     pbkdf2(temp, numChapitreChar, hash);
+    crashTemp(temp, 200);
 
     AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
     for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
@@ -394,7 +395,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
             }
         }
     }
-    crashTemp(temp, 200);
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     snprintf(path, length, "manga/%s/%s/Chapitre_%d/%s", teamLong, mangas, numeroChapitre, nomPage);
@@ -444,20 +444,19 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
 #ifdef VERBOSE_DECRYPT
     AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
-
     FILE *newFile = fopen("buffer.png", "wb");
 	fwrite(buf_page, 1, size, newFile);
 	fclose(newFile);
 #endif
 
-    crashTemp(key, SHA256_DIGEST_LENGTH);
-
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
     free(buf_page);
+
 #ifdef DEV_VERSION
     if(surface_page == NULL)
         AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
 #endif
+    crashTemp(key, SHA256_DIGEST_LENGTH);
     free(path);
     return surface_page;
 }

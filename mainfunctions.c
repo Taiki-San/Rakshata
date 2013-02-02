@@ -321,10 +321,8 @@ void mainDL()
     loadLangueProfile();
 
     if(get_compte_infos() != PALIER_QUIT)
-    {
-        /*Lancement du module de téléchargement, il est totalement autonome*/
-        DLmanager();
-    }
+        DLmanager(); //Lancement du module de téléchargement, il est totalement autonome
+
     quit_thread(0);
 }
 

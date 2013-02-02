@@ -335,13 +335,14 @@ void checkJustUpdated()
 extern int INSTANCE_RUNNING;
 int checkLancementUpdate()
 {
-    if(INSTANCE_RUNNING != 0 || checkFileExist(INSTALL_DATABASE))
+    if(INSTANCE_RUNNING != 0 || !checkFileExist(INSTALL_DATABASE))
         return 0;
 
 #ifdef _WIN32
     HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDLModule");
     if (WaitForSingleObject (hSem, 0) != WAIT_TIMEOUT)
     {
+        ReleaseSemaphore (hSem, 1, NULL);
         CloseHandle (hSem);
         return 1;
     }

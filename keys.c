@@ -602,14 +602,8 @@ int getPassword(char password[100], int dlUI, int salt)
 
             int i = 0, j = 0;
             char temp[HASH_LENGTH+5], serverTime[500];
-            sha256_legacy(password, temp);
-            MajToMin(temp);
-            crashTemp(password, 100);
-            sha256_legacy(temp, password);
-            MajToMin(password);
-            ustrcpy(temp, password);
-            ustrcpy(passwordGB, password);
-
+            crashTemp(temp, HASH_LENGTH+5);
+            ustrcpy(temp, passwordGB);
             sprintf(password, "http://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
             setupBufferDL(serverTime, 100, 5, 1, 1);
             download(password, serverTime, 0);
@@ -688,6 +682,7 @@ int checkPass(char adresseEmail[100], char password[50], int login)
     if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
         return 2;
 
+    crashTemp(hash1, 2*SHA256_DIGEST_LENGTH+1);
     sha256_legacy(password, hash1);
     MajToMin(hash1);
     crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
@@ -695,16 +690,11 @@ int checkPass(char adresseEmail[100], char password[50], int login)
     MajToMin(hash2);
 
     sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
+    crashTemp(buffer_output, 500);
     setupBufferDL(buffer_output, 50, 10, 1, 1); //Préparation du buffer
     download(URL, buffer_output, 0);
 
-    for(i = strlen(buffer_output); i > 0; i--)
-    {
-        if(i > SHA256_DIGEST_LENGTH && (buffer_output[i] == '\r' || buffer_output[i] == '\n'))
-            buffer_output[i] = 0;
-    }
     minToMaj(buffer_output);
-
     sprintf(URL, "%s-access_denied", hash2);
     sha256_legacy(URL, hash1);
 

@@ -80,8 +80,8 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
     TTF_Font *police = NULL;
 
-    for(i = 0; i < nombreMax; i++)
-        retour[i] = 0;
+    for(i = 0; i < nombreMax; retour[i++] = 0);
+
     if(nombreMax < 30)
     {
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -104,7 +104,7 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
     for(i = 0; i < nombreMax;)
     {
         SDL_WaitEvent(&event);
-        if(!haveInputFocus(&event, window))
+        if(!haveInputFocus(&event, rendererVar->window))
             continue;
 
         switch(event.type)

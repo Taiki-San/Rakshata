@@ -1054,13 +1054,15 @@ SDL_Texture* loadControlBar(int favState)
 {
     SDL_Surface *bandeauControleSurface = NULL;
     SDL_Rect positionIcone;
+    char path[350+100];
 
     /*On crée une surface intermédiaire car bliter directement sur le png loadé ne marche pas*/
     bandeauControleSurface = SDL_CreateRGBSurface(0, LARGEUR_CONTROLE_LECTEUR, BORDURE_CONTROLE_LECTEUR, 32, 0, 0, 0, 0);
     SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
     SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
 
-    SDL_Surface *icone = IMG_Load("data/icon/pc.png"); //Previous Chapter
+    snprintf(path, 350+100, "%s/data/icon/pc.png", REPERTOIREEXECUTION);
+    SDL_Surface *icone = IMG_Load(path); //Previous Chapter
     if(icone != NULL)
     {
         positionIcone.x = LARGE_BUTTONS_LECTEUR_PC;
@@ -1069,7 +1071,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/pp.png"); //Previous Page
+    snprintf(path, 350+100, "%s/data/icon/pp.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //Previous Page
     if(icone != NULL)
     {
         positionIcone.x = LARGE_BUTTONS_LECTEUR_PP;
@@ -1079,10 +1082,11 @@ SDL_Texture* loadControlBar(int favState)
     }
 
     if(!favState)
-        icone = IMG_Load("data/icon/nf.png"); //Non-Favoris
+        snprintf(path, 350+100, "%s/data/icon/nf.png", REPERTOIREEXECUTION);
     else
-        icone = IMG_Load("data/icon/f.png"); //Favoris
+        snprintf(path, 350+100, "%s/data/icon/f.png", REPERTOIREEXECUTION);
 
+    icone = IMG_Load(path);
     if(icone != NULL)
     {
         positionIcone.x = bandeauControleSurface->w / 2 - BORDURE_BUTTON_W - MINIICONE_W;
@@ -1091,7 +1095,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/fs.png"); //FullScreen
+    snprintf(path, 350+100, "%s/data/icon/fs.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //FullScreen
     if(icone != NULL)
     {
         positionIcone.x = bandeauControleSurface->w / 2 + BORDURE_BUTTON_W;
@@ -1100,7 +1105,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/d.png"); //Delete
+    snprintf(path, 350+100, "%s/data/icon/d.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //Delete
     if(icone != NULL)
     {
         positionIcone.x = bandeauControleSurface->w / 2 - BORDURE_BUTTON_W - MINIICONE_W;
@@ -1109,7 +1115,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/mm.png"); //Main menu
+    snprintf(path, 350+100, "%s/data/icon/mm.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //Main menu
     if(icone != NULL)
     {
         positionIcone.x = bandeauControleSurface->w / 2 + BORDURE_BUTTON_W;
@@ -1118,7 +1125,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/np.png"); //Next Page
+    snprintf(path, 350+100, "%s/data/icon/np.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //Next Page
     if(icone != NULL)
     {
         positionIcone.x = LARGE_BUTTONS_LECTEUR_NP;
@@ -1127,7 +1135,8 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    icone = IMG_Load("data/icon/nc.png"); //Next Chapter
+    snprintf(path, 350+100, "%s/data/icon/nc.png", REPERTOIREEXECUTION);
+    icone = IMG_Load(path); //Next Chapter
     if(icone != NULL)
     {
         positionIcone.x = LARGE_BUTTONS_LECTEUR_NC;

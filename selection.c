@@ -178,6 +178,11 @@ int checkProjet(MANGAS_DATA mangaDB)
         TTF_CloseFont(police);
 
         image = IMG_LoadTexture(renderer, temp);
+        if(image == NULL)
+        {
+            removeR(temp);
+            return 1;
+        }
         position.x = 0;
         position.y = BORDURE_HOR_LECTURE;
         position.h = image->h;

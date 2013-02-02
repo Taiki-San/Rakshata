@@ -59,7 +59,6 @@ int telechargement()
     {
         quit_thread(0);
     }
-
     police_big = TTF_OpenFont(FONTUSED, POLICE_GROS);
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
@@ -383,7 +382,7 @@ int telechargement()
         event.type = 0;
         SDL_WaitEventTimeout(&event, 1000);
         SDL_RenderPresent(rendererDL);
-        if(event.type != 0)
+        if(event.type != 0 && !haveInputFocus(&event, windowDL))
             SDL_PushEvent(&event);
     }
 
