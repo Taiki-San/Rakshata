@@ -253,9 +253,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             if(changementEtat)
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
             /*Si grosse page*/
-            if(largeurValide > RESOLUTION[0])
+            if(largeurValide > RESOLUTION[0] - 50)
             {
-                largeurValide = RESOLUTION[0];
+                largeurValide = RESOLUTION[0]-50;
                 pageTropGrande = 1;
             }
 
@@ -1037,7 +1037,8 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
 
             changeTo(output[i], '&', ' ');
         }
-        *nombrePage -= 1; //PageEnCoursDeLecture est décalé de 1 (car les tableaux commencent à 0), autant faire de même ici
+        for(*nombrePage -= 1; *nombrePage >= 0 && !output[*nombrePage][0]; *nombrePage -= 1);
+         //PageEnCoursDeLecture est décalé de 1 (car les tableaux commencent à 0), autant faire de même ici
     }
 
     else
