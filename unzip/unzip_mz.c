@@ -1686,7 +1686,6 @@ extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64( unzFile file)
 
 extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
 {
-    struct zmem_data *data;
     int err=UNZ_OK;
     uInt iRead = 0;
     unz64_s* s;
@@ -1694,7 +1693,6 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
     if (file==NULL)
         return UNZ_PARAMERROR;
     s=(unz64_s*)file;
-    data = (struct zmem_data*) s->z_filefunc.zfile_func64.opaque;
     pfile_in_zip_read_info=s->pfile_in_zip_read;
 
     if (pfile_in_zip_read_info==NULL)

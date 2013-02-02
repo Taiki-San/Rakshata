@@ -10,12 +10,14 @@
 **                                                                                          **
 *********************************************************************************************/
 
-char *tmp;
-
 #include "main.h"
 #include "unzip/miniunzip.h"
-
 #include "unzip/unz_memory.c"
+
+#ifdef DEV_VERSION
+    char *tmp = NULL;
+#endif
+
 
 volatile int INSTALL_DONE;
 int CURRENT_TOKEN;
@@ -213,8 +215,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             }
         }
     }
+#ifdef DEV_VERSION
     tmp = inputZip;
-
+#endif
     for(i = 0; i < nombreFichiers; i++)
     {
         if(checkNameFileZip(filename_inzip[i]))
@@ -226,14 +229,21 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             else
                 ret_value = do_extract_onefile(uf, filename_inzip[i], opt_do_extract_withoutpath, opt_overwrite, NULL, NULL);
             nombreFichiersDecompresses++;
+
+            if ((i+1) < nombreFichiers)
+            {
+                if (unzGoToNextFile(uf) != UNZ_OK)
+                    break;
+            }
         }
         else
-            for(j=0; j<256; filename_inzip[i][j++]=0);
-
-        if ((i+1) < nombreFichiers)
         {
-            if (unzGoToNextFile(uf) != UNZ_OK)
-                break;
+            if (filename_inzip[0] && filename_inzip[i][strlen(filename_inzip[i])-1] != '/' && (i+1) < nombreFichiers)
+            {
+                if (unzGoToNextFile(uf) != UNZ_OK)
+                    break;
+            }
+            for(j=0; j<256; filename_inzip[i][j++]=0);
         }
     }
 
