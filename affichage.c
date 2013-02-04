@@ -290,7 +290,7 @@ void nameWindow(SDL_Window* windows, const int value)
         return;
     }
 
-    version(versionOfSoftware);
+    versionRak(versionOfSoftware);
     loadTrad(trad, 25);
     crashTemp(windowsName, 128);
 

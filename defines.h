@@ -60,7 +60,7 @@
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
 #define VERSION_REPO 1
-#define VERSION_MANGA 1
+#define VERSION_MANGA 2
 
 /*Réseau*/
 #define CONNEXION_TEST_IN_PROGRESS -1

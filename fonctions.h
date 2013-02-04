@@ -60,6 +60,7 @@ void update_mangas();
 int deleteManga();
 int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX]);
 void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);
+int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
 int download(char *adresse, char *repertoire, int activation);
@@ -158,7 +159,8 @@ void removeR(char *path);
 void renameR(char *initialName, char *newName);
 void mkdirR(char *path);
 void chdirR();
-void strend(char *recepter, const char *sender);
+int strend(char *recepter, size_t length, const char *sender);
+char* mergeS(char* input1, char* input2);
 int charToInt(char *input);
 void fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
@@ -235,7 +237,7 @@ void changeTo(char *string, int toFind, int toPut);
 int plusOuMoins(int compare1, int compare2, int tolerance);
 int compare(const void *a, const void *b);
 void applyWindowsPathCrap(void *input);
-void version(char *output);
+void versionRak(char *output);
 void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4);
 int positionnementApres(FILE* stream, char *stringToFind);
 int positionnementApresChar(char* input, char *stringToFind);

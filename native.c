@@ -91,16 +91,28 @@ void chdirR()
 	chdir(REPERTOIREEXECUTION);
 }
 
-void strend(char *recepter, const char *sender)
+int strend(char *recepter, size_t length, const char *sender)
 {
+    int i = 0;
     if(recepter > 0 && sender > 0)
     {
-        for(; *recepter; recepter++);
-        for(; *sender; recepter++, sender++)
+        for(; *recepter; i++, recepter++);
+        for(; *sender && length > i; i++, recepter++, sender++)
             *recepter = *sender;
+        if(length <= i)
+            return 1;
     }
-    else
-        logR("strend: Argument invalid\n");
+    return 0;
+}
+
+char* mergeS(char* input1, char* input2)
+{
+    char *output = NULL;
+    output = calloc(1, strlen(input1) + strlen(input2)+10);
+    memcpy(output, input1, strlen(input1));
+    memcpy(output+strlen(output), input2, strlen(input2));
+    free(input1);
+    return output;
 }
 
 int charToInt(char *input)
@@ -237,7 +249,7 @@ int sscanfs(char *char_input, const char *format, ...)
 
                 case 'd':
                 {
-                    int *number = NULL;
+                    int *number = NULL, negative = 0;
                     char buffer[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
                     number = va_arg (pointer_argument, int*);
@@ -246,14 +258,24 @@ int sscanfs(char *char_input, const char *format, ...)
                         break;
 
                     while(*char_input < '0' || *char_input > '9')
-                        char_input++;
-
+                    {
+                        if(*char_input == '-')
+                        {
+                            char_input++;
+                            if(*char_input >= '0' && *char_input <= '9')
+                                negative = 1;
+                        }
+                        else
+                            char_input++;
+                    }
                     for(i = 0; i < 9 /*limite de int*/ && *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input && *char_input >= '0' && *char_input <= '9'; char_input++)
                         buffer[i++] = *char_input;
                     for(; *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
 
                     buffer[i] = 0;
                     *number = charToInt(buffer);
+                    if(negative)
+                        *number *= -1;
                     number = NULL;
                     break;
                 }

@@ -297,7 +297,7 @@ static void* downloader(void* envoi)
 {
     int printToAFile = 0;
     char temp[500];
-    CURL *curl;
+    CURL *curl = NULL;
 
     CURLcode res; //Get return from download
     FILE* fichier = NULL;

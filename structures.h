@@ -32,6 +32,7 @@ typedef struct dataMangas
     char mangaNameShort[LONGUEUR_COURT];
     int firstChapter;
     int lastChapter;
+    int *chapitreSpeciaux;
     int firstTome;
     int lastTome;
     int status;

@@ -50,7 +50,7 @@ void applyWindowsPathCrap(void *input)
     #endif
 }
 
-void version(char *output)
+void versionRak(char *output)
 {
     int centaine = 0, dizaine = 0, unite = 0;
 
