@@ -122,10 +122,11 @@ void mainRakshata()
     quit_thread(0);
 }
 
+extern int curPage; //Too lazy to use an argument
 int mainLecture()
 {
     int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur;
-    int restoringState = 0, fullscreen = 0, chapsExtreme[2];
+    int restoringState = 0, fullscreen = 0, chapsExtreme[2], pageManga = 1, pageChapitre = 1;
 
     if(checkRestore())
         restoringState = 1;
@@ -140,8 +141,11 @@ int mainLecture()
 
         /*Appel des selectionneurs*/
         if(!restoringState)
+        {
+            curPage = pageManga;
             mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangaDB, 0);
-
+            pageManga = curPage;
+        }
         if(mangaChoisis <= -2)
         {
             if(mangaChoisis == -2)
@@ -167,11 +171,15 @@ int mainLecture()
             else if(retourLecteur == 1)
             {
                 chapitreChoisis = -1;
+                pageChapitre = 1;
                 while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && chapsExtreme[0] != chapsExtreme[1] && chapsExtreme[0] != 0)
                 {
                     if(!restoringState)
+                    {
+                        curPage = pageChapitre;
                         chapitreChoisis = chapitre(mangaDB[mangaChoisis], 1);
-
+                        pageChapitre = curPage;
+                    }
                     if (chapitreChoisis <= PALIER_CHAPTER)
                         continuer = chapitreChoisis;
 
@@ -209,6 +217,7 @@ int mainLecture()
                                 }
                             }
                         }
+                pageChapitre = 1;
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else
@@ -224,7 +233,7 @@ int mainLecture()
 
 int mainChoixDL()
 {
-    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0;
+    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1, pageChapitre = 1;
     mkdirR("manga");
     initialisationAffichage();
 
@@ -251,7 +260,9 @@ int mainChoixDL()
             supprUsedInChapitre = 0;
 
             /*Appel des selectionneurs*/
+            curPage = pageManga;
             mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
+            pageManga = curPage;
 
             if(mangaChoisis == -11 || mangaChoisis == -10)
                 continuer = PALIER_CHAPTER;
@@ -263,9 +274,12 @@ int mainChoixDL()
             {
                 chapitreChoisis = PALIER_DEFAULT;
                 continuer = 0;
+                pageChapitre = 1;
                 while(chapitreChoisis > PALIER_CHAPTER && !continuer)
                 {
+                    curPage = pageChapitre;
                     chapitreChoisis = chapitre(mangaDB[mangaChoisis], 2);
+                    pageChapitre = curPage;
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
                     {

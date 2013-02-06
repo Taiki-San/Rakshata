@@ -203,12 +203,13 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     return ret_value;
 }
 
+int curPage; //Too lazy to use an argument
 int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage)
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 0, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI], mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
     int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, mode = 1, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
-    int button_selected[6];
+    int button_selected[8];
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -361,7 +362,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         if(pageTotale != 1) //Affichage du nombre de page
         {
             crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "%s %d %s %d", texte_Trad[12], pageSelection, texte_Trad[13], pageTotale);
+            sprintf(temp, "%s %d %s %d", texte_Trad[14], pageSelection, texte_Trad[15], pageTotale);
 
             position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE; //Page précédente
             texte = TTF_Write(renderer, police, texte_Trad[0], couleurTexte);
@@ -491,7 +492,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     return mangaChoisis;
 }
 
-void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
+void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
 {
     /*Génére le pannel inférieur*/
     int i = 0;
@@ -514,7 +515,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
     SDL_RenderCopy(renderer, texte, NULL, &position);
     SDL_DestroyTextureS(texte);
 
-    for(i = 0; i < 6; i++)
+    for(i = 0; i < 8; i++)
     {
         if(enable[i] == 1)
             texte = TTF_Write(renderer, police, trad[6+i], couleurNew);
@@ -522,15 +523,17 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[6])
             texte = TTF_Write(renderer, police, trad[6+i], couleurUnavailable);
         else
             texte = TTF_Write(renderer, police, trad[6+i], couleurTexte);
-        if(i % 3 == 0)
+        if(i % 4 == 0)
         {
             position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
             position.y += LARGEUR_INTERLIGNE_BANDEAU_CONTROLE;
         }
-        else if(i % 3 == 1)
+        else if(i % 4 == 1)
             position.x = COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE;
-        else
+        else if(i % 4 == 2)
             position.x = COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE;
+        else
+            position.x = COORDONEE_X_QUATRIEME_COLONNE_BANDEAU_CONTROLE;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -806,6 +809,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
             if(*mangaChoisis == -6 && *pageSelection < pageTotale) // Page Suivante
             {
                 *pageSelection += 1;
+                curPage += 1;
                 *changementDePage = 1;
                 *mangaChoisis = -1;
             }
@@ -813,6 +817,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
             else if(*mangaChoisis == -7 && *pageSelection > 1) //Page précédente
             {
                 *pageSelection -= 1;
+                curPage -= 1;
                 *changementDePage = 1;
                 *mangaChoisis = -1;
             }
@@ -987,23 +992,35 @@ int buttonLimitationEnforced(int button_selected[6], int statusMangasToTest, int
     return 0;
 }
 
-void button_available(MANGAS_DATA* mangaDB, int button[6])
+void button_available(MANGAS_DATA* mangaDB, int button[8])
 {
     int i, casTeste;
-    for(casTeste = 0; casTeste < 6; casTeste++)
+    for(casTeste = 0; casTeste < 8; casTeste++)
     {
-        for(i = 0; mangaDB[i].genre && ((casTeste < 3 && mangaDB[i].status - 1 != casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 != casTeste)); i++);
+        if(casTeste != 3)
+        {
+            for(i = 0; mangaDB[i].genre && ((casTeste < 3 && mangaDB[i].status - 1 != casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 != casTeste)); i++);
 
-        if(!mangaDB[i].genre)
-            button[casTeste] = -1;
+            if(!mangaDB[i].genre)
+                button[casTeste] = -1;
 
-        else if ((casTeste < 3 && mangaDB[i].status - 1 == casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 == casTeste))
-            button[casTeste] = 0;
+            else if ((casTeste < 3 && mangaDB[i].status - 1 == casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 == casTeste))
+                button[casTeste] = 0;
 
+            else
+            {
+                logR("Fail at define which button is available!\n");
+                button[casTeste] = 0;
+            }
+        }
         else
         {
-            logR("Fail at define which button is available!\n");
-            button[casTeste] = 0;
+            for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0] && mangaDB[i].favoris == 0; i++);
+
+            if(i >= NOMBRE_MANGA_MAX || mangaDB[i].mangaName[0])
+                button[casTeste] = -1;
+            else
+                button[casTeste] = 0;
         }
     }
 }
@@ -1015,12 +1032,13 @@ void loadMultiPage(int nombreManga, int *pageTotale, int *pageSelection)
         *pageTotale = nombreManga / MANGAPARPAGE_TRI;
         if(nombreManga % MANGAPARPAGE_TRI > 0)
             *pageTotale += 1;
-        *pageSelection = 1;
+        if(*pageTotale < curPage)
+            curPage = *pageTotale;
+        *pageSelection = curPage;
     }
     else
     {
-        *pageSelection = 1;
-        *pageTotale = 1;
+        *pageSelection = *pageTotale = curPage = 1;
     }
 }
 

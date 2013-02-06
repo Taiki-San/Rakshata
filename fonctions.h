@@ -57,6 +57,8 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
 void update_repo();
 void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
 void update_mangas();
+int checkUpdateSpecChapter(MANGAS_DATA mangas);
+void get_update_spec_chapter(MANGAS_DATA mangas);
 int deleteManga();
 int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX]);
 void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);

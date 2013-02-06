@@ -50,19 +50,11 @@ MANGAS_DATA* miseEnCache(int mode)
 		}
 		else
 		{
-            int cat = 0, chapitreBonus = 0;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &chapitreBonus);
-            if(chapitreBonus)
-            {
-                mangas[numeroManga].chapitreSpeciaux = calloc(chapitreBonus, sizeof(int));
-                for(c = 0; *mangaDB && *mangaDB != '\r' && *mangaDB != '\n'; c++)
-                {
-                    mangaDB += sscanfs(mangaDB, "%d ", &mangas[numeroManga].chapitreSpeciaux[c]);
-                }
-            }
+            int cat = 0;
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].chapitreSpeciaux);
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
-			if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
+            if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
 			{
 			    memset(mangas[numeroManga].mangaName, 0, LONGUEUR_NOM_MANGA_MAX);
 				memset(mangas[numeroManga].mangaNameShort, 0, LONGUEUR_COURT);
@@ -96,6 +88,11 @@ MANGAS_DATA* miseEnCache(int mode)
 				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
                 numeroManga--;
 			}
+
+			if(mode == LOAD_DATABASE_ALL && mangas[numeroManga].chapitreSpeciaux && checkUpdateSpecChapter(mangas[numeroManga]))
+            {
+                get_update_spec_chapter(mangas[numeroManga]);
+            }
 
 			if(nombreMangaDansDepot >= NOMBRE_MANGA_MAX_PAR_DEPOT)
 			{
@@ -232,7 +229,7 @@ void update_repo()
 
 void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
 {
-	int defaultVersion = VERSION_MANGA, time = SDL_GetTicks();
+	int defaultVersion = VERSION_MANGA;
 	char temp[500];
     do
 	{
@@ -256,7 +253,6 @@ void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
         download(temp, buffer_manga, 0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
-	time -= SDL_GetTicks();
 }
 
 void update_mangas()
@@ -333,7 +329,7 @@ void update_mangas()
             for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\r' && bufferDL[positionBuffer] != '\n'; positionBuffer++);
             for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
 
-            sprintf(manga_new_tmp, "\n%s %s\n", buffer_char[0], buffer_char[1]);
+            sprintf(manga_new_tmp, "%s %s\n", buffer_char[0], buffer_char[1]);
 
             while(length > positionBuffer && bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#')
             {
@@ -364,6 +360,50 @@ void update_mangas()
 	sprintf(&manga_new[strlen(manga_new)], "</%c>\n", SETTINGS_MANGADB_FLAG);
 	free(repoBak);
 	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
+}
+
+int checkUpdateSpecChapter(MANGAS_DATA mangas)
+{
+    char temp[LONGUEUR_NOM_MANGA_MAX*4];
+    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
+    if(checkFileExist(temp))
+    {
+        FILE* dbenc = fopenR(temp, "r");
+        if(dbenc != NULL)
+        {
+            int nombreChapSpeciaux = 0;
+            fscanfs(dbenc, "%d", &nombreChapSpeciaux);
+            if(nombreChapSpeciaux == mangas.chapitreSpeciaux)
+            {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+void get_update_spec_chapter(MANGAS_DATA mangas)
+{
+    char temp[512];
+    if(!strcmp(mangas.team->type, TYPE_DEPOT_1))
+        snprintf(temp, 512, "http://dl.dropbox.com/u/%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
+
+    else if(!strcmp(mangas.team->type, TYPE_DEPOT_2))
+        snprintf(temp, 512, "http://%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
+
+    else if(!strcmp(mangas.team->type, TYPE_DEPOT_3)) //Payant
+        snprintf(temp, 512, "http://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
+
+    else
+    {
+        char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
+        snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(spec chap): %s", mangas.team->type);
+        logR(temp2);
+        return;
+    }
+    char output[LONGUEUR_NOM_MANGA_MAX*4];
+    snprintf(output, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
+    download(temp, output, 0);
 }
 
 int deleteManga()
@@ -529,3 +569,4 @@ int databaseVersion(char* mangaDB)
     }
     return 0;
 }
+
