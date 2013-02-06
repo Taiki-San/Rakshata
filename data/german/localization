@@ -1,0 +1,173 @@
+1
+Seite fehlt&
+Dieses Kapitel ist beschädigt&
+Wenn sie die Manga Datenbank&
+nicht manuel verändert haben&
+Melden sie den Fehler an Taiki&
+Drücken sie die Eingabe Taste und gehen sie zurück zur Kapitel Auswahl.&]
+2
+Initialisierung des Download&
+Moduls im Gange.&
+Bitte warten sie einen Moment (das könnte etwas&
+mehr Zeit in Anspruch nehmen, wenn sie einen langsamen&
+Internet Zugang haben oder viele Repos öffnen)&]
+3
+Bitte wählen sie ein Menu&
+Eine Quelle hinzufügen&
+Eine Quelle löschen&
+Mangas aus der Datenbank löschen&
+Die Manga Datenbank aktualisieren&
+Sprache ändern&]
+4
+Bestätigen sie die Löschung der Quelle von&
+Eingabe Taste drücken um zu bestätigen, Escape zum Abbrechen&]
+5
+Aktualisierung im Gange&]
+6
+Start im Gange&]
+7
+Unbekannter Fehler&
+Drücken sie die Eingabetaste&]
+8
+Lade Daten&]
+9
+Aktion verboten während eines Download Vorgangs&
+Drücken sie die Eingabetaste&]
+10
+Entfernen drücken zum Abbrechen - Alle andere Tasten zum Fortfahren&]
+11
+Vorherige Seite&
+Nächste Seite&
+Download&
+Alles abbrechen&
+Kapitel&
+Mangas verstecken:&
+In Arbeit&
+Gesperrt&
+Fertig&
+Shonen&
+Shojo&
+Seinen&
+Seite&
+auf&]
+12
+Download des Updates im Gange, bitte warten.&
+Bitte alle Rakshata Fenster schliessen&
+Datei&
+auf&]
+13
+Hier kann die Sprache des Rakshata geändert werden&
+Wählen sie ihre Sprache (mehr Sprachen werden hinzugefügt werden)&
+Français&
+English&
+Italiano&
+Deutsch&
+Wenn sie den Rakshata übersetzen wollen,&
+benachrichtigen sie Taiki =).&]
+14
+Initialisierung im Gange&
+Bitte gebe die URL der Repo an&
+Bestätigen?&
+Escape drücken um abzubrechen, Eingabetaste um zu bestätigen&]
+15
+Welche Repo wollen sie löschen?&]
+16
+Zum Hauptmenu zurückkehren um die Änderungen zu speichern&
+Drücken sie in das Fenster um es zu schließen&
+Fehler gefunden:&
+Kapitel beschädigt&
+Bitte kontaktieren sie das Besitzer und/oder Taiki&
+mit der "log" Datei, die sich im Rakshata Ordner befindet&]
+17
+Hauptmenu&
+Wählen sie eine Sektion darauf klicken =)&
+Reader&
+Mehr Mangas downloaden&
+Steuerelemente anzeigen&
+Repository und Manga Datenbank Verwaltung&]
+18
+Verfügbare Mangas&
+Wählen sie das das Projekt aus, indem sie darauf klicken, =)&
+Zum download&]
+19
+Welches Kapitel wollen sie&
+lesen?&
+hinzufügen?&
+löschen?&
+Ältestes:&
+Neustes&
+Projekt&
+vom&
+Das erste mal, dass sie diesen Manga lesen&
+Zuletzt gelesenes Kapitel&
+Kapitel&
+Alle&
+Keine neuen Kapitel verfügbar, später noch einmal&
+versuchen (drücken sie um zum Menü zurückzukommen)&]
+20
+Initialisierung&
+Größe:&
+Mb&
+Geschwindigkeit:&
+Kb/s&
+Schliessung&]
+21
+Kapitel&
+Seite&
+Um in das Menu zurückzukommen&
+drücken sie "Esc"&
+Um dieses Fenster zu schließen&
+die Eingabetaste.&
+F um den Vollbildmodus zu beenden&
+Q um den Rakshata zu beenden&
+Neue Kapitel&
+sind verfügbar,&
+herunterladen?&
+(Y) Ja | (N) Nein&
+Hauptmenü&
+Manga&
+Auswahl&
+Zu Favoriten&
+hinzufügen&
+Löschung&]
+22
+Downloading&
+Kapitel&
+am&
+der Lsite&
+Donwload im Gange, bitte warten&
+Installation im Gange, bitte warten&]
+23
+Hier sind keine Mangas verfügbar, lade welche herunter ;)&
+Eingabetaste oder Maus drücken, um in das Menu zurück zukommen =)&]
+24
+Keine Internetverbindung :(&
+drücken um ins Menü zurückzukommen&]
+25
+Der Manga und Comics Reader&
+Download Modul&]
+26
+Bitte Mail-Adresse angeben&
+E-Mail:&
+Die Adresse wird an niemanden weitergegeben&
+und wird nur zur Authentifikation verwendet&
+Bitte ein Passwort angeben&
+Bitte das Passwort eingeben&
+Passwort:&
+Dieser Account dient zur Authentifikation bei den Rakshata&
+Diensten, es wird niemals etwas versendet&
+/!\ ERROR: E-Mail Adresse abgelehnt /!\&
+/!\ ERROR: Passwort abgelehnt /!\&
+Bitte erneut versuchen und/oder Taiki kontaktieren&
+Hier drücken um es mit einer neuen Mail Adresse erneut zu probieren&
+/!\ Schwerwiegender Fehler /!\&
+/!\ Bitte prüfen, ob der Zugriff auf die Rakshata Website funktioniert /!\&
+/!\ Wenn ja, erneut versuchen, dann Taiki kontaktieren /!\&]
+27
+/!\ Fehler: Verbindung zum Server fehlgeschlagen. /!\&
+Es muss mindestens einmal eine Verbindung zum Sever auf jedem neuen&
+Computer hergestellt werden, um die Manga Datenbank auszulesen.&
+Bitte prüfen, ob der Zugriff auf die Rakshata Website funktioniert.&]
+28
+Bitte Account Passwort eingeben&
+Passwort:&]
