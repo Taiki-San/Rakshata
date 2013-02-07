@@ -33,6 +33,7 @@ SDL_Window* window = NULL;
 SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
+
 #ifndef _WIN32
 MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
 MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;

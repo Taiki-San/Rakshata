@@ -610,33 +610,36 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                             case CLIC_SUR_BANDEAU_DELETE:
                             {
-                                cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                                internal_deleteChapitre(extremesManga[0], extremesManga[1], *chapitreChoisis, *chapitreChoisis, mangaDB->mangaName, mangaDB->team->teamLong);
-                                anythingNew(extremesManga, *mangaDB);
-                                for(i = *chapitreChoisis; i <= extremesManga[1]; i++)
+                                if(unlocked)
                                 {
-                                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, i, CONFIGFILE);
-                                    if(checkFileExist(temp))
-                                        break;
-                                }
-                                if(i > extremesManga[1])
-                                {
-                                    for(i = *chapitreChoisis; i >= extremesManga[0]; i--)
+                                    cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
+                                    internal_deleteChapitre(extremesManga[0], extremesManga[1], *chapitreChoisis, *chapitreChoisis, mangaDB->mangaName, mangaDB->team->teamLong);
+                                    anythingNew(extremesManga, *mangaDB);
+                                    for(i = *chapitreChoisis; i <= extremesManga[1]; i++)
                                     {
                                         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, i, CONFIGFILE);
                                         if(checkFileExist(temp))
                                             break;
                                     }
-                                }
-                                if(i < extremesManga[0] || i > extremesManga[1])
-                                {
-                                    *chapitreChoisis = PALIER_CHAPTER;
-                                    return PALIER_CHAPTER;
-                                }
-                                else
-                                {
-                                    *chapitreChoisis = i;
-                                    return 0;
+                                    if(i > extremesManga[1])
+                                    {
+                                        for(i = *chapitreChoisis; i >= extremesManga[0]; i--)
+                                        {
+                                            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, i, CONFIGFILE);
+                                            if(checkFileExist(temp))
+                                                break;
+                                        }
+                                    }
+                                    if(i < extremesManga[0] || i > extremesManga[1])
+                                    {
+                                        *chapitreChoisis = PALIER_CHAPTER;
+                                        return PALIER_CHAPTER;
+                                    }
+                                    else
+                                    {
+                                        *chapitreChoisis = i;
+                                        return 0;
+                                    }
                                 }
                                 break;
                             }

@@ -222,6 +222,8 @@ void update_repo()
 			repo_new[positionDansBuffer] = 0;
 		}
 	}
+	if(positionDansBuffer > 0)
+        positionDansBuffer--;
 	free(repoBak);
 	sprintf(&repo_new[positionDansBuffer], "\n</%c>\n", SETTINGS_REPODB_FLAG);
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);

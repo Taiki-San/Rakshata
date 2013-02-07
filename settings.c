@@ -111,7 +111,9 @@ char *loadPrefFile()
     pref = fopenR(SETTINGS_FILE, "r");
     if(pref == NULL)
     {
-        logR("Couldn't open settings\n");
+#ifndef DEV_VERSION
+        removeFolder("manga");
+#endif
         return NULL;
     }
     fseek(pref, 0, SEEK_END);

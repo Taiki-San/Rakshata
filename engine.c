@@ -12,6 +12,9 @@
 
 #include "main.h"
 
+int unlocked;
+int curPage; //Too lazy to use an argument
+
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
     int i = 0, hauteurTexte = 0, ret_value = 0, *longueur = malloc(nombreElements*sizeof(int));
@@ -203,7 +206,6 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     return ret_value;
 }
 
-int curPage; //Too lazy to use an argument
 int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage)
 {
     /*Initialisation*/
@@ -304,7 +306,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
 
         for(i = j = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0] && (j <= (pageSelection-1) * MANGAPARPAGE_TRI || !j); i++) //Si la liste a été restreinte
         {
-            if(sectionChoisis == SECTION_CHOISIS_CHAPITRE || (letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre)))
+            if(sectionChoisis == SECTION_CHOISIS_CHAPITRE || (letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris)))
                 j++;
         }
 
@@ -456,7 +458,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 {
                     for(i = 0, nombreManga = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++)
                     {
-                        if(letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre))
+                        if(letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris))
                                 nombreManga++;
                     }
                     loadMultiPage(nombreManga, &pageTotale, &pageSelection);
@@ -479,7 +481,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         {
             for(i = (pageSelection-1) * MANGAPARPAGE_TRI, j = 0; mangaDB[i].mangaName[0] && j < mangaChoisis; i++) //tant qu'il y a des mangas
             {
-                if(letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre)) //Manga
+                if(letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris)) //Manga
                     j++;
             }
             mangaChoisis = i;
@@ -507,7 +509,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
     applyBackground(renderer, 0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
 
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
-    position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
+    position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
     position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
     position.h = texte->h;
     position.w = texte->w;
@@ -525,15 +527,11 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
             texte = TTF_Write(renderer, police, trad[6+i], couleurTexte);
         if(i % 4 == 0)
         {
-            position.x = COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE;
+            position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
             position.y += LARGEUR_INTERLIGNE_BANDEAU_CONTROLE;
         }
-        else if(i % 4 == 1)
-            position.x = COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE;
-        else if(i % 4 == 2)
-            position.x = COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE;
         else
-            position.x = COORDONEE_X_QUATRIEME_COLONNE_BANDEAU_CONTROLE;
+            position.x += LARGEUR_COLONNE_BOUTON_RESTRICTION;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -717,27 +715,18 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                     if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
                        event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                     {
-                        if(event.button.x > COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 1; //En cours
-
-                        else if(event.button.x > COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 2; //Suspendus
-
-                        else if(event.button.x > COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 3; //Suspendus
+                        for(bandeauControle = 0; bandeauControle < 5 && (event.button.x < PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION || event.button.x > PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION + LARGEUR_MOYENNE_BOUTON_RESTRICTION); bandeauControle++);
+                        bandeauControle++;
+                        if(bandeauControle >= 5)
+                            bandeauControle = 0;
                     }
 
                     else if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 &&
 							event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                     {
-                        if(event.button.x > COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_PREMIERE_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 10; //En cours
-
-                        else if(event.button.x > COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_DEUXIEME_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 20; //Suspendus
-
-                        else if(event.button.x > COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE && event.button.x < COORDONEE_X_TROISIEME_COLONNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_BOUTON_RESTRICTION)
-                            bandeauControle = 30; //Suspendus
+                        for(bandeauControle = 0; event.button.x >= PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION && event.button.x < PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION + LARGEUR_MOYENNE_BOUTON_RESTRICTION; bandeauControle++);
+                        bandeauControle++;
+                        bandeauControle*=10;
                     }
                     if(bandeauControle)
                     {
@@ -790,7 +779,7 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 	if(!letterLimitationEnforced(limitationLettre, mangaDB.mangaName[0]))
 		return 0;
 
-	if(!buttonLimitationEnforced(button_selected, mangaDB.status, mangaDB.genre))
+	if(!buttonLimitationEnforced(button_selected, mangaDB.status, mangaDB.genre, mangaDB.favoris))
 		return 0;
 
 	return 1;
@@ -914,7 +903,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
         }
         for(i = j = 0; !j && i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++) //On va vérifier si des mangas répondent au critére
         {
-            if(buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre))
+            if(buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris))
                 j++; //Si pas de manga répond au critére, limitationlettre pas modifié donc pas d'impact
         }
         if(!j) //Si pas de manga valable
@@ -980,13 +969,19 @@ int letterLimitationEnforced(int letter, char firstLetterOfTheManga)
     return 0;
 }
 
-int buttonLimitationEnforced(int button_selected[6], int statusMangasToTest, int genreMangasToTest)
+int buttonLimitationEnforced(int button_selected[8], int statusMangasToTest, int genreMangasToTest, int favorite)
 {
+    if(genreMangasToTest == GENRE_HENTAI && unlocked == 0) //Hentai alors que verrouillé
+        return 0;
+
     if(!checkButtonPressed(button_selected)) //Si aucun bouton n'est pressé
         return 1;
 
+    if(button_selected[POS_BUTTON_STATUS_FAVORIS] == 1 && favorite && (genreMangasToTest != GENRE_HENTAI || unlocked))
+        return 1; //Hentai favoris bloqués
+
     if((!checkFirstLineButtonPressed(button_selected) || button_selected[statusMangasToTest - 1] == 1) //En cours/Suspendus/Terminé
-	   && (!checkSecondLineButtonPressed(button_selected) || button_selected[genreMangasToTest + 2] == 1)) //Shonen/Shojo/Seinen
+	   && (!checkSecondLineButtonPressed(button_selected) || button_selected[genreMangasToTest + 3] == 1)) //Shonen/Shojo/Seinen
         return 1;
 
     return 0;
@@ -997,9 +992,22 @@ void button_available(MANGAS_DATA* mangaDB, int button[8])
     int i, casTeste;
     for(casTeste = 0; casTeste < 8; casTeste++)
     {
-        if(casTeste != 3)
+        if(casTeste == 3)
         {
-            for(i = 0; mangaDB[i].genre && ((casTeste < 3 && mangaDB[i].status - 1 != casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 != casTeste)); i++);
+            for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0] && mangaDB[i].favoris == 0; i++);
+
+            if(i >= NOMBRE_MANGA_MAX || !mangaDB[i].mangaName[0])
+                button[casTeste] = -1;
+            else
+                button[casTeste] = 0;
+        }
+        else if(casTeste == 7 && unlocked == 0)
+        {
+            button[casTeste] = -1;
+        }
+        else
+        {
+            for(i = 0; mangaDB[i].genre && ((casTeste < 3 && mangaDB[i].status - 1 != casTeste) || (casTeste > 3 && mangaDB[i].genre != casTeste-3)); i++);
 
             if(!mangaDB[i].genre)
                 button[casTeste] = -1;
@@ -1012,15 +1020,6 @@ void button_available(MANGAS_DATA* mangaDB, int button[8])
                 logR("Fail at define which button is available!\n");
                 button[casTeste] = 0;
             }
-        }
-        else
-        {
-            for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0] && mangaDB[i].favoris == 0; i++);
-
-            if(i >= NOMBRE_MANGA_MAX || mangaDB[i].mangaName[0])
-                button[casTeste] = -1;
-            else
-                button[casTeste] = 0;
         }
     }
 }

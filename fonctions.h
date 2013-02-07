@@ -39,9 +39,9 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre);
 int isItNew(MANGAS_DATA mangasDB); //Remplacer par checkNewManga
 int checkChapitreUnread(MANGAS_DATA mangasDB);
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis);
-int checkFirstLineButtonPressed(int button_selected[6]);
-int checkSecondLineButtonPressed(int button_selected[6]);
-int checkButtonPressed(int button_selected[6]);
+int checkFirstLineButtonPressed(int button_selected[8]);
+int checkSecondLineButtonPressed(int button_selected[8]);
+int checkButtonPressed(int button_selected[8]);
 int checkWindowEventValid(int EventWindowEvent);
 void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar);
 int checkNameFileZip(char fileToTest[256]);
@@ -76,8 +76,8 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6]);
 void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage);
 int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
-int buttonLimitationEnforced(int button_selected[6], int statusMangasToTest, int genreMangasToTest);
-void button_available(MANGAS_DATA* mangaDB, int button[6]);
+int buttonLimitationEnforced(int button_selected[8], int statusMangasToTest, int genreMangasToTest, int favorite);
+void button_available(MANGAS_DATA* mangaDB, int button[8]);
 void loadMultiPage(int nombreManga, int *pageTotale, int *pageSelection);
 
 /**Error.c**/

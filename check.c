@@ -672,21 +672,21 @@ int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
     return 0;
 }
 
-int checkFirstLineButtonPressed(int button_selected[6])
+int checkFirstLineButtonPressed(int button_selected[8])
 {
-    if(button_selected[0] == 1 || button_selected[1] == 1 || button_selected[2] == 1)
+    if(button_selected[0] == 1 || button_selected[1] == 1 || button_selected[2] == 1 || button_selected[3] == 1)
         return 1;
     return 0;
 }
 
-int checkSecondLineButtonPressed(int button_selected[6])
+int checkSecondLineButtonPressed(int button_selected[8])
 {
-    if(button_selected[3] == 1 || button_selected[4] == 1 || button_selected[5] == 1)
+    if(button_selected[4] == 1 || button_selected[5] == 1 || button_selected[6] == 1 || button_selected[7] == 1)
         return 1;
     return 0;
 }
 
-int checkButtonPressed(int button_selected[6])
+int checkButtonPressed(int button_selected[8])
 {
     if(checkFirstLineButtonPressed(button_selected) || checkSecondLineButtonPressed(button_selected))
         return 1;

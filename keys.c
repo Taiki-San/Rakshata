@@ -163,9 +163,10 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
     }
 }
 
+extern int unlocked;
 int earlyInit()
 {
-    srand(time(NULL)+GetTickCount()); //Initialisation de l'aléatoire
+    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #ifdef _WIN32
     mutex = CreateMutex(NULL, FALSE, NULL);
     mutexRS = CreateMutex(NULL, FALSE, NULL);
@@ -198,6 +199,15 @@ int earlyInit()
 
     restrictEvent();
     getResolution();
+
+    char *temp;
+    if((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL)
+        unlocked = 1;
+    else
+    {
+        free(temp);
+        unlocked = 0;
+    }
     return 1;
 }
 
@@ -525,7 +535,10 @@ int getPassword(char password[100], int dlUI, int salt)
     SDL_Renderer *currentRenderer = NULL;
 
     if(passwordGB[0] != 0)
+    {
         ustrcpy(password, passwordGB);
+        return 1;
+    }
 
     if(dlUI)
     {
@@ -1020,12 +1033,6 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
     download(temp, buffer_dl, 0);
 
     crashTemp(temp, 400);
-
-    for(i = strlen(buffer_dl); i > 0; i--)
-    {
-        if(buffer_dl[i] == '\r' || buffer_dl[i] == '\n')
-            buffer_dl[i] = 0;
-    }
 
     if(!strcmp(buffer_dl, "fail"))
     {
