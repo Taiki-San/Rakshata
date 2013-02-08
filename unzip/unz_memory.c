@@ -4,10 +4,10 @@ struct zmem_data {
 };
 
 static voidpf zmemopen(voidpf opaque, const char *filename, int mode) {
-  if ((mode&ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ) return NULL;
-  uLong *pos = malloc(sizeof(uLong));
-  *pos = 0;
-  return pos;
+    if ((mode&ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ)
+        return NULL;
+
+    uLong *pos = malloc(sizeof(uLong));    *pos = 0;    return pos;
 }
 
 static uLong zmemread(voidpf opaque, voidpf stream, void* buf, uLong size) {

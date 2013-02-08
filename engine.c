@@ -210,7 +210,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 0, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI], mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
-    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, mode = 1, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
+    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
     int button_selected[8];
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
     SDL_Texture *texte = NULL;
@@ -241,7 +241,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         //On récupére le chapitre max
         chapitreMax = nombreChapitre;
         nombreChapitre = 0;
-        mode = 2;
+        modeChapitre = 1;
     }
 
     /*Multi-Page*/
@@ -355,10 +355,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             generateChoicePanel(texte_Trad, button_selected);
         else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
         {
-            if(j < 30 && chapitreMax >= 30) //Si on affiche moins de 30 chapitres et que le nombre de chapitre total est supérieur
-                chapterDisplayed = j;
-            else
-                chapterDisplayed = chapitreMax;
+            chapterDisplayed = chapitreMax;
         }
 
         if(pageTotale != 1) //Affichage du nombre de page
@@ -444,7 +441,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 //Manuel => si le nombre a été entré a la main
                 do
                 {
-                    mangaChoisis = mangaSelection(mode, tailleTexte, hauteurAffichage, &manuel);
+                    mangaChoisis = mangaSelection(modeChapitre, tailleTexte, hauteurAffichage, &manuel);
 
                     if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
                         mangaChoisis = PALIER_CHAPTER;
@@ -563,7 +560,7 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
     SDL_RenderPresent(renderer);
 }
 
-int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
+int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
 {
     /*Initialisations*/
     int i = 0, nombreManga = 0, mangaChoisis = 0, choix = 0, buffer = 0, hauteurBandeau = 0, chapitreMax = 0, bandeauControle = 0;
@@ -573,7 +570,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
     for(nombreManga = 0; tailleTexte[nombreManga] != 0; nombreManga++);
 
-    if(mode == 2)
+    if(modeChapitre)
     {
         chapitreMax = *manuel;
         *manuel = 0;
@@ -582,7 +579,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
     /*On vois quelle est la forme de la fenetre*/
     while(mangaChoisis == 0)
     {
-        if(mode == 2)
+        if(modeChapitre)
             showNumero(police, choix, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
         SDL_WaitEvent(&event);
@@ -600,7 +597,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_BACKSPACE:
-                        if(mode == 2)
+                        if(modeChapitre)
                         {
                             if(choix != 0)
                                 choix = choix / 10;
@@ -613,7 +610,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
-                        if(choix != 0 && mode == 2)
+                        if(choix != 0 && modeChapitre)
                         {
                             mangaChoisis = choix;
                             *manuel = 1;
@@ -644,10 +641,10 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
 
             case SDL_TEXTINPUT:
             {
-                if(mode == 2)
+                if(modeChapitre)
                 {
                     buffer = nombreEntree(event);
-                    if((((buffer + choix * 10) <= nombreManga && mode == 1) || ((buffer + choix * 10) <= chapitreMax && mode == 2)) && buffer != -1)
+                    if((((buffer + choix * 10) <= nombreManga && !modeChapitre) || ((buffer + choix * 10) <= chapitreMax && modeChapitre)) && buffer != -1)
                         choix = choix * 10 + buffer;
                 }
                 else
@@ -701,7 +698,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                 /*Clic sur les boutons de DL*/
                 hauteurBandeau = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
-                if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && mode == 1) //Check si clique sur bouton de DL
+                if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && !modeChapitre) //Check si clique sur bouton de DL
                 {
                     if(event.button.x > WINDOW_SIZE_W / 2)
                         mangaChoisis = -10;
@@ -710,7 +707,7 @@ int mangaSelection(int mode, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapi
                 }
 
 
-                if(mode == 1) //Sinon, clic sur bandeau de contrôle
+                if(!modeChapitre) //Sinon, clic sur bandeau de contrôle
                 {
                     if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
                        event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
@@ -1012,7 +1009,7 @@ void button_available(MANGAS_DATA* mangaDB, int button[8])
             if(!mangaDB[i].genre)
                 button[casTeste] = -1;
 
-            else if ((casTeste < 3 && mangaDB[i].status - 1 == casTeste) || (casTeste >= 3 && mangaDB[i].genre + 2 == casTeste))
+            else if ((casTeste < 3 && mangaDB[i].status - 1 == casTeste) || (casTeste >= 3 && mangaDB[i].genre + 3 == casTeste))
                 button[casTeste] = 0;
 
             else

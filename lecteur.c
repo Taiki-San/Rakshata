@@ -12,6 +12,8 @@
 
 #include "main.h"
 
+extern int unlocked;
+
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 {
     int i = 0, pageEnCoursDeLecture = 0, check4change = 0, changementPage = 0, pageTotal = 0, restoreState = 0, finDuChapitre = 0, new_chapitre = 0;

@@ -612,7 +612,8 @@ void DLmanager()
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 	SDL_Rect position;
 
-    /*On affiche la petite fenêtre*/
+    /*On affiche la petite fenêtre, le mutex est déjà réservé*/
+
     #ifdef _WIN32
         WaitForSingleObject(mutexRS, INFINITE);
     #else
