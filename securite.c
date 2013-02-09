@@ -499,7 +499,7 @@ void getPasswordArchive(char *fileName, char password[300])
         logR(temp);
         return;
     }
-    sprintf(URL, "http://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
+    sprintf(URL, "https://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
 
     free(fileNameWithoutDirectory);
 

@@ -270,7 +270,7 @@ char* loadLargePrefs(char flag)
 		size_t bufferSize = 0;
 		char flag_db[10];
 		sprintf(flag_db, "<%c>", flag);
-		if((i = positionnementApresChar(prefs, flag_db)))
+		if((i = positionnementApresChar(prefs, flag_db)) && *(prefs+i) != '<' && *(prefs+i+1) != '/')
 		{
 			prefs += i;
 			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag || prefs[bufferSize+3] != '>'));
@@ -285,6 +285,7 @@ char* loadLargePrefs(char flag)
 		}
 		else if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
 		{
+		    removeFromPref(flag);
 			char temp[200], *buffer = NULL, *buffer2 = NULL;
 			if(flag == SETTINGS_MANGADB_FLAG)
 				snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, MANGA_DATABASE);

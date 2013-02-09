@@ -135,8 +135,11 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
 
 void updateDataBase()
 {
-	update_repo();
-	update_mangas();
+    if(!checkNetworkState(CONNEXION_DOWN))
+	{
+	    update_repo();
+        update_mangas();
+	}
 }
 
 void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
@@ -149,7 +152,7 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 		sprintf(temp, "http://%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-		sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot);
+		sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot);
 
 	else
 	{
@@ -242,7 +245,7 @@ void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             sprintf(temp, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {
@@ -355,7 +358,8 @@ void update_mangas()
                 manga_new_tmp[curLength++] = '#';
             if(curLength < length)
                 manga_new_tmp[curLength++] = '\n';
-            manga_new = mergeS(manga_new, manga_new_tmp);
+            if(curLength > 2)
+                manga_new = mergeS(manga_new, manga_new_tmp);
             free(manga_new_tmp);
 		}
 	}
@@ -394,7 +398,7 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
         snprintf(temp, 512, "http://%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
 
     else if(!strcmp(mangas.team->type, TYPE_DEPOT_3)) //Payant
-        snprintf(temp, 512, "http://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
+        snprintf(temp, 512, "https://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
 
     else
     {

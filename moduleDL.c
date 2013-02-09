@@ -140,7 +140,7 @@ int telechargement()
                         break;
 
                     else if(MOT_DE_PASSE_COMPTE[0] || (i = getPassword(MOT_DE_PASSE_COMPTE, 1, 1)) == 1)
-                        sprintf(superTemp, "http://rsp.%s/main_controler.php?target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], mangaDB[posVariable].team->URL_depot, mangaDB[posVariable].mangaName, chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
+                        sprintf(superTemp, "https://rsp.%s/main_controler.php?target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], mangaDB[posVariable].team->URL_depot, mangaDB[posVariable].mangaName, chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
 
                     else if(i == PALIER_QUIT)
                     {
@@ -621,7 +621,6 @@ void DLmanager()
     #endif
 
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
-
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
     if(icon != NULL)
@@ -629,8 +628,6 @@ void DLmanager()
         SDL_SetWindowIcon(windowDL, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
-    else
-        logR((char*)SDL_GetError());
 
     status = 1;
     nameWindow(windowDL, status);
@@ -717,17 +714,6 @@ void DLmanager()
 void lancementModuleDL()
 {
     createNewThread(mainDL, NULL);
-    #if 0
-        #ifdef _WIN32
-        lancementExternalBinary("Rakshata.exe");
-        #else
-            #ifdef __APPLE__
-            lancementExternalBinary("Rakshata.app");
-            #else
-            lancementExternalBinary("Rakshata");
-            #endif
-        #endif
-    #endif
 }
 
 void updateWindowSizeDL(int w, int h)

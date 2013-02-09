@@ -217,7 +217,7 @@ int mainLecture()
                                 }
                             }
                         }
-                pageChapitre = 1;
+                        pageChapitre = 1;
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else

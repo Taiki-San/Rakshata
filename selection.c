@@ -238,7 +238,7 @@ int chapitre(MANGAS_DATA mangaDB, int mode)
     {
         if (mode != 2) //Si on DL, on s'en fout, on propose tout
         {
-            int first = 0, end = 0;
+            int first = -1, end = -1;
             file = fopenR(temp, "r");
             fscanfs(file, "%d %d %d", &first, &end, &dernierLu);
             fclose(file);

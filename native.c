@@ -347,9 +347,11 @@ void removeFolder(char *path)
     directory = opendir(name);
     if ( directory == NULL )
     {
+#ifdef DEV_VERSION
         char temp[300];
         snprintf(temp, 300, "Can't open directory %s\n", name);
         logR(temp);
+#endif
         removeR(name);
         return;
     }

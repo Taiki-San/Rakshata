@@ -14,7 +14,7 @@
 
 int check_evt()
 {
-    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER];
+    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
     char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
     FILE *test = NULL;
 
@@ -455,7 +455,7 @@ void networkAndVersionTest()
             {
                 quit_thread(0);
             }
-			sprintf(temp, "http://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+			sprintf(temp, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 			setupBufferDL(bufferDL, 5, 1, 1, 1);
 
 			download(temp, bufferDL, 0);

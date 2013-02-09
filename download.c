@@ -143,7 +143,10 @@ int download(char *adresse, char *repertoire, int activation)
             {
                 if(SDL_GetTicks() - last_refresh >= 500)
                 {
-                    download_speed = (CURRENT_FILE_SIZE - last_file_size) / 1024;
+                    if(!download_speed)
+                        download_speed = (CURRENT_FILE_SIZE - last_file_size) / 1024;
+                    else
+                        download_speed = (download_speed*3 + (CURRENT_FILE_SIZE - last_file_size) / 1024) / 4;
                     last_file_size = CURRENT_FILE_SIZE;
 
                     if(download_speed != 0)
@@ -356,6 +359,17 @@ static void* downloader(void* envoi)
             curl_easy_setopt(curl, CURLOPT_USERAGENT, "Rakshata_UNIX");
     #endif
 #endif
+        if(valeurs->URL[4] == 's') //HTTPS
+        {
+            mkdirR("data");
+            FILE *cert = fopenR("data/buf.crt", "wb");
+            if(cert != NULL)
+            {
+                fputs("-----BEGIN CERTIFICATE-----\nMIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\nVQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\nYXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\ndGEuY29tMSEwHwYJKoZIhvcNAQkBFhJ0YWlraUByYWtzaGF0YS5jb20wHhcNMTMw\nMjA5MTAzODQ5WhcNMTQwMjA5MTAzODQ5WjCBjzELMAkGA1UEBhMCRlIxCzAJBgNV\nBAgMAkZSMQ4wDAYDVQQHDAVQYXJpczENMAsGA1UECgwETWF2eTEWMBQGA1UECwwN\nSGF1dC1EZS1TZWluZTEZMBcGA1UEAwwQcnNwLnJha3NoYXRhLmNvbTEhMB8GCSqG\nSIb3DQEJARYSdGFpa2lAcmFrc2hhdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC\nAQ8AMIIBCgKCAQEAuSNt4VcENmWpGZ4FEnK7f3Fmdeby++Zw3n1dv73EUuz1Tjg2\nGTqo6HdClyD/KQMOdeZirwFSUm1MPrQUVbZOzTcy0ypZhK5P7RMn1FvgoFT3PwJ1\nwDh2UavrHhqm1te5xwqkDTs56ewxivvynvWne3laNwzgY/XV43TEmwrNpgbu8Zby\nuft6wJ3/NgoAqzgMMBkCCc9oWaTPcqroKH33P6bEyshIIdjNlgNchrXY71OEYsqB\nQsKv82VpefebJm0pKXdysQHCQOzVDLWGoKowGMdWfTuCapOHTB3OVE3O34GKHpcU\nx5GDCIpmFn7Ix6F4/LCFptmg4m1f7MqvqkARxwIDAQABo1AwTjAdBgNVHQ4EFgQU\nwEzOMozaBG5bY8Ahn99LUlS+ItYwHwYDVR0jBBgwFoAUwEzOMozaBG5bY8Ahn99L\nUlS+ItYwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAQO6givlna7kT\n/28IkrySq1UD8HPQrAGwBMQI7bol0H9mLAJoIEfdMkAIRVtmqqCPOiTRHmPOsrPB\ncZbv1X9vPQOPR6zA7OaEuux+0SsdUihLeoFwf7IsU5eeI2wu1WuEbtxC7WBDYSaF\npYFf3xwB2tFkZGm2fbCacfVT80dk43X6JJlnLNp9jEraRDXYRW5UaJbDqF0BZBhD\n7TSvKtDISFYrPxc0g01zUQBoQL9uDxC+T6f7PCtDuiEa+gmVExOaGKU3jP9hYVlf\nn2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\nhg0fHpfL7w==\n-----END CERTIFICATE-----\n", cert);
+                fclose(cert);
+                curl_easy_setopt(curl, CURLOPT_CAINFO, "data/buf.crt");
+            }
+        }
 
         if(CURRENT_FILE_SIZE == 1) //Get data about speed
         {
@@ -378,6 +392,9 @@ static void* downloader(void* envoi)
         }
 
         res = curl_easy_perform(curl);
+
+        if(valeurs->URL[4] == 's') //HTTPS
+            removeR("data/buf.crt");
 
         if(res != CURLE_OK) //Si probléme
         {
