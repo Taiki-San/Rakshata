@@ -503,7 +503,10 @@ int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int
 		sprintf(temp, "manga/%s/%s/%s", teamsLong, mangaDispo, CONFIGFILE);
 		FILE* test = fopenR(temp, "w+");
 
-		sprintf(temp, "manga\\%s\\%s\\Chapitre_%d", teamsLong, mangaDispo, chapitreDelete);
+        if(chapitreDelete < 0)
+            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", teamsLong, mangaDispo, chapitreDelete/-10, chapitreDelete%-10);
+        else
+            sprintf(temp, "manga/%s/%s/Chapitre_%d", teamsLong, mangaDispo, chapitreDelete);
 		removeFolder(temp);
 
 		/**On édite le config.dat**/

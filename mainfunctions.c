@@ -14,10 +14,10 @@
 
 void mainRakshata()
 {
-    int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0, newLangue = 0;
+    int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0/*, newLangue = 0*/;
     FILE* test = NULL;
 
-    newLangue = loadLangueProfile();
+    /*newLangue = */loadLangueProfile();
 
     #ifdef _WIN32
         WaitForSingleObject(mutexRS, INFINITE);
@@ -57,8 +57,9 @@ void mainRakshata()
     restoringState = checkRestore();
     continuer = ecranAccueil();
 
+    /* C'est chiant et pas necessaire pour le moment mais on le garde sous le coude
     if(newLangue && continuer != PALIER_QUIT)
-        continuer = changementLangue();
+        continuer = changementLangue();*/
 
     while(continuer > PALIER_QUIT)
     {
@@ -180,9 +181,8 @@ int mainLecture()
                         chapitreChoisis = chapitre(mangaDB[mangaChoisis], 1);
                         pageChapitre = curPage;
                     }
-                    if (chapitreChoisis <= PALIER_CHAPTER)
+                    if (chapitreChoisis >= PALIER_QUIT && chapitreChoisis <= PALIER_CHAPTER)
                         continuer = chapitreChoisis;
-
                     else
                     {
                         /*Lancement Lecteur*/

@@ -666,7 +666,10 @@ int checkChapitreUnread(MANGAS_DATA mangasDB)
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
 {
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
+    if(chapitreChoisis < 0)
+        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, (-1*chapitreChoisis)/10, (-1*chapitreChoisis)%10);
+    else
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
     if(checkFileExist(temp))
         return 1;
     return 0;

@@ -24,6 +24,9 @@ void getResolution();
 void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
 
+/**Chapitre.c**/
+int chapitre(MANGAS_DATA mangaDB, int mode);
+
 /**check.c**/
 int check_evt();
 void checkUpdate();
@@ -205,7 +208,6 @@ int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR
 int section();
 int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre);
 int checkProjet(MANGAS_DATA mangaDB);
-int chapitre(MANGAS_DATA mangaDB, int mode);
 
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting
