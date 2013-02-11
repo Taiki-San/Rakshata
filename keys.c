@@ -209,6 +209,8 @@ int earlyInit()
         free(temp);
         unlocked = 0;
     }
+    checkJustUpdated();
+
     return 1;
 }
 

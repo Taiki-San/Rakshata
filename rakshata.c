@@ -47,8 +47,6 @@ int main()
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
-    checkJustUpdated();
-
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
     {
         createNewThread(mainDL, NULL);

@@ -327,8 +327,34 @@ void checkJustUpdated()
 {
     if(checkFileExist("Rakshata.exe.old"))
     {
+        MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+        int i = 0, min, max, last;
+        char temp[600];
+        FILE *config = NULL;
+        for(; mangaDB[i].mangaName[0]; i++)
+        {
+            snprintf(temp, 600, "manga/%s/%s/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, CONFIGFILE);
+            config = fopenR(temp, "r+");
+            if(config != NULL)
+            {
+                last = -1;
+                fscanfs(config, "%d %d", &min, &max);
+                if(fgetc(config) != EOF)
+                {
+                    fseek(config, -1, SEEK_CUR);
+                    fscanfs(config, "%d", &last);
+                }
+                rewind(config);
+                fprintf(config, "%d %d", min*10, max*10);
+                if(last != -1)
+                    fprintf(config, " %d", last*10);
+                fclose(config);
+            }
+        }
+        freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
         removeFolder("tmp");
-        remove("Rakshata.exe.old");
+        while(checkFileExist("Rakshata.exe.old"))
+            remove("Rakshata.exe.old");
     }
 }
 

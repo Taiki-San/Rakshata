@@ -176,7 +176,7 @@ int mainLecture()
                     length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
                 chapitreChoisis = -1;
                 pageChapitre = 1;
-                while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[length-1]))// && mangaDB[mangaChoisis].chapitres[0] != 0) ?
+                do
                 {
                     if(!restoringState)
                     {
@@ -227,7 +227,7 @@ int mainLecture()
                         else
                             length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
                     }
-                }
+                }while(chapitreChoisis > PALIER_CHAPTER && continuer > PALIER_MENU && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[length-1]));// && mangaDB[mangaChoisis].chapitres[0] != 0) ?
             }
         }
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
