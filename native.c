@@ -467,44 +467,6 @@ void ouvrirSite(TEAMS_DATA* teams)
     #endif
 }
 
-void updateDirectory()
-{
-#ifdef __APPLE__
-
-#if 1
-	char bundleName[5000];
-	snprintf(bundleName, 5000, "%s/%s", REPERTOIREEXECUTION, "Rakshata.app");
-	chdir(bundleName);
-	getcwd(REPERTOIREEXECUTION, 350);
-#else
-
-    int i = 0;
-    char *cmdline= GetCommandLine();
-
-    for(i = 0; i < strlen(cmdline) && cmdline[i] != ' '; cmdline[i--] = 0);
-    cmdline[i] = 0;
-
-    char *bundleName = malloc(strlen(cmdline) + strlen(REPERTOIREEXECUTION));
-    if(bundleName == NULL)
-        exit(-1);
-
-    ustrcpy(bundleName, REPERTOIREEXECUTION);
-
-    i = strlen(bundleName);
-
-	bundleName[i++] = '/'; //Le / du dossier courant actuel
-    for(; cmdline[i] != '/' && i < strlen(cmdline) && cmdline[i]; i++) //Lorsque le binaire est lancé par lui même, il n'y a pas de / à la fin du path
-		bundleName[i] = cmdline[i];
-	if(bundleName[i] != '/')
-		bundleName[i++] = '/';
-	bundleName[i] = 0;
-    chdir(bundleName);
-    usstrcpy(REPERTOIREEXECUTION, 350, bundleName);
-	free(bundleName);
-#endif
-#endif
-}
-
 int lancementExternalBinary(char cheminDAcces[100])
 {
     char superTemp[400];

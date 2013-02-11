@@ -19,8 +19,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     int i = 0, pageEnCoursDeLecture = 0, check4change = 0, changementPage = 0, pageTotal = 0, restoreState = 0, finDuChapitre = 0, new_chapitre = 0;
     int buffer = 0, largeurValide = 0, pageTropGrande = 0, tempsDebutExplication = 0, nouveauChapitreATelecharger = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0, encrypted = 0;
-    int deplacementEnCours = 0, extremesManga[2] = {0,0}, chapitreChoisisInterne = *chapitreChoisis;
-    int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, chapMax = 0, pageAccesDirect = 0;
+    int deplacementEnCours = 0, length, chapitreChoisisInterne = *chapitreChoisis/10, decimale = *chapitreChoisis%10, curPosIntoStruct = 0;
+    int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE];
     FILE* testExistance = NULL;
     SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
@@ -36,14 +36,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
     loadTrad(texteTrad, 21);
 
-    encrypted = checkChapterEncrypted(*mangaDB, chapitreChoisisInterne);
     restoreState = checkRestore();
 
-    if(chapitreChoisisInterne < 0)
-        chapitreChoisisInterne /= -10;
+    length = getUpdatedChapterList(mangaDB);
+    for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct]; curPosIntoStruct++);
+    curPosIntoStruct--;
 
-    anythingNew(extremesManga, *mangaDB);
-    if(chapitreChoisisInterne == extremesManga[1] && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, chapitreChoisisInterne)))
+    if(chapitreChoisisInterne == mangaDB->chapitres[length-1] && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, chapitreChoisisInterne)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[8], 5);
@@ -64,35 +63,24 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     positionSlide.x = 0;
     positionSlide.y = 0;
 
-    sprintf(temp, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-    testExistance = fopenR(temp, "r");
-    if(testExistance != NULL)
-    {
-        fscanfs(testExistance, "%d %d", &i, &chapMax);
-        fclose(testExistance);
-    }
-    else
-    {
-        char temp2[6*LONGUEUR_NOM_MANGA_MAX];
-        snprintf(temp2, 6*LONGUEUR_NOM_MANGA_MAX, "Missing config file: %s", temp);
-        logR(temp2);
-    }
-    if(*chapitreChoisis < 0)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, *chapitreChoisis%-10, CONFIGFILE);
+    if(decimale)
+        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
     else
         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
-    testExistance = fopenR(temp, "r");
 
     /*Si chapitre manquant*/
-    while(testExistance == NULL && chapitreChoisisInterne < chapMax)
+    while(!checkFileExist(temp) && curPosIntoStruct < length)
     {
-        *chapitreChoisis = chapitreChoisisInterne + 1;
-        chapitreChoisisInterne = *chapitreChoisis;
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, CONFIGFILE);
-        testExistance = fopenR(temp, "r");
+        *chapitreChoisis = mangaDB->chapitres[curPosIntoStruct++];
+        chapitreChoisisInterne = *chapitreChoisis/10;
+        decimale = *chapitreChoisis%10;
+        if(decimale)
+            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
+        else
+            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
     }
 
-    if(testExistance == NULL || configFileLoader(temp, &pageTotal, nomPage))
+    if(!checkFileExist(temp) || configFileLoader(temp, &pageTotal, nomPage))
     {
         sprintf(temp, "Chapitre non-existant: Team: %s - Manga: %s - Chapitre: %d\n", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
         logR(temp);
@@ -108,8 +96,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         else
             return i;
     }
-
-    fclose(testExistance);
     encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
 
     changementPage = 2;
@@ -206,8 +192,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 }
                 if(!encrypted)
                 {
-                    if(*chapitreChoisis < 0)
-                        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, *chapitreChoisis%-10, nomPage[pageEnCoursDeLecture - 1]);
+                    if(decimale)
+                        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, nomPage[pageEnCoursDeLecture - 1]);
                     else
                         sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, nomPage[pageEnCoursDeLecture - 1]);
                     OChapitre = IMG_Load(temp);
@@ -224,8 +210,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             }
             if(!encrypted)
             {
-                if(*chapitreChoisis < 0)
-                    sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, *chapitreChoisis%-10, nomPage[pageEnCoursDeLecture]);
+                if(decimale)
+                    sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, nomPage[pageEnCoursDeLecture]);
                 else
                     sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, nomPage[pageEnCoursDeLecture]);
 
@@ -360,16 +346,16 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
         if(*fullscreen)
         {
-            if(*chapitreChoisis < 0)
-                sprintf(infos, "%s - %s - Manga: %s - %s: %d.%d - %s: %d / %d - %s", texteTrad[6], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, *chapitreChoisis%-10,texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1, texteTrad[7]);
+            if(decimale)
+                sprintf(infos, "%s - %s - Manga: %s - %s: %d.%d - %s: %d / %d - %s", texteTrad[6], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, decimale,texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1, texteTrad[7]);
             else
                 sprintf(infos, "%s - %s - Manga: %s - %s: %d - %s: %d / %d - %s", texteTrad[6], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1, texteTrad[7]);
         }
 
         else
         {
-            if(*chapitreChoisis < 0)
-                sprintf(infos, "%s - Manga: %s - %s: %d.%d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, *chapitreChoisis%-10, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1);
+            if(decimale)
+                sprintf(infos, "%s - Manga: %s - %s: %d.%d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, decimale, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1);
             else
                 sprintf(infos, "%s - Manga: %s - %s: %d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], chapitreChoisisInterne, texteTrad[1], pageEnCoursDeLecture + 1, pageTotal + 1);
         }
@@ -479,8 +465,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         NChapitre = NULL;
                     else if(!encrypted)
                     {
-                        if(*chapitreChoisis < 0)
-                            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d.%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, *chapitreChoisis%-10, nomPage[pageEnCoursDeLecture + 1]);
+                        if(decimale)
+                            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d.%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, nomPage[pageEnCoursDeLecture + 1]);
                         else
                             snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, nomPage[pageEnCoursDeLecture + 1]);
                         NChapitre = IMG_Load(temp);
@@ -495,8 +481,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                     else if(!encrypted)
                     {
-                        if(*chapitreChoisis < 0)
-                            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d.%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, *chapitreChoisis%-10, nomPage[pageEnCoursDeLecture - 1]);
+                        if(decimale)
+                            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d.%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, nomPage[pageEnCoursDeLecture - 1]);
                         else
                             snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s/manga/%s/%s/Chapitre_%d/%s", REPERTOIREEXECUTION, mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, nomPage[pageEnCoursDeLecture - 1]);
                         OChapitre = IMG_Load(temp);
@@ -565,13 +551,17 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         {
                             case CLIC_SUR_BANDEAU_PREV_CHAPTER:
                             {
-                                anythingNew(extremesManga, *mangaDB);
-                                if(chapitreChoisisInterne > extremesManga[0])
+                                length = getUpdatedChapterList(mangaDB);
+                                if(*chapitreChoisis > mangaDB->chapitres[0])
                                 {
-                                    if(*chapitreChoisis < 0)
-                                        chapitreChoisisInterne = *chapitreChoisis;
+                                    for(i = 0; i < length && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    if(i > 0)
+                                        *chapitreChoisis = mangaDB->chapitres[i-1];
                                     else
-                                        *chapitreChoisis = *chapitreChoisis - 1;
+                                    {
+                                        for(i = length; i >= 0 && mangaDB->chapitres[i] > *chapitreChoisis; i--);
+                                        *chapitreChoisis = mangaDB->chapitres[i];
+                                    }
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
@@ -589,7 +579,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                             case CLIC_SUR_BANDEAU_PREV_PAGE:
                             {
-                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                 if (check4change == -1)
                                 {
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -600,7 +590,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                             case CLIC_SUR_BANDEAU_NEXT_PAGE:
                             {
-                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                 if (check4change == -1)
                                 {
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -611,10 +601,17 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                             case CLIC_SUR_BANDEAU_NEXT_CHAPTER:
                             {
-                                anythingNew(extremesManga, *mangaDB);
-                                if(chapitreChoisisInterne < extremesManga[1])
+                                length = getUpdatedChapterList(mangaDB);
+                                if(*chapitreChoisis < mangaDB->chapitres[length-1])
                                 {
-                                    *chapitreChoisis = chapitreChoisisInterne + 1; //Il faut faire en sorte qu'il soit possible de changer de chapitre
+                                    for(i = 0; i < length && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    if(i < length-1)
+                                        *chapitreChoisis = mangaDB->chapitres[i+1];
+                                    else
+                                    {
+                                        for(i = 0; i < length-1 && mangaDB->chapitres[i] < *chapitreChoisis; i++);
+                                        *chapitreChoisis = mangaDB->chapitres[i];
+                                    }
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     return 0;
                                 }
@@ -647,34 +644,23 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                             {
                                 if(unlocked)
                                 {
+                                    length = getUpdatedChapterList(mangaDB);
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                                    internal_deleteChapitre(extremesManga[0], extremesManga[1], chapitreChoisisInterne, *chapitreChoisis, mangaDB->mangaName, mangaDB->team->teamLong);
-                                    anythingNew(extremesManga, *mangaDB);
-                                    for(i = chapitreChoisisInterne; i <= extremesManga[1]; i++)
-                                    {
-                                        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, i, CONFIGFILE);
-                                        if(checkFileExist(temp))
-                                            break;
-                                    }
-                                    if(i > extremesManga[1])
-                                    {
-                                        for(i = chapitreChoisisInterne; i >= extremesManga[0]; i--)
-                                        {
-                                            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, i, CONFIGFILE);
-                                            if(checkFileExist(temp))
-                                                break;
-                                        }
-                                    }
-                                    if(i < extremesManga[0] || i > extremesManga[1])
+                                    internal_deleteChapitre(*mangaDB, *chapitreChoisis);
+                                    for(i = 0; i < length-1 && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    length = getUpdatedChapterList(mangaDB);
+
+                                    if(length == 0)
                                     {
                                         *chapitreChoisis = PALIER_CHAPTER;
                                         return PALIER_CHAPTER;
                                     }
+                                    else if(i+1 >= length)
+                                        *chapitreChoisis = mangaDB->chapitres[length-1];
                                     else
-                                    {
-                                        *chapitreChoisis = i;
-                                        return 0;
-                                    }
+                                        *chapitreChoisis = mangaDB->chapitres[i+1];
+
+                                    return 0;
                                 }
                                 break;
                             }
@@ -758,7 +744,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                         //Clic détécté: on cherche de quel côté
                                         if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
                                         {
-                                            check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                            check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                             if (check4change == -1) //changement de chapitre
                                             {
                                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -768,7 +754,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                                         else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
                                         {
-                                            check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                            check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                             if (check4change == -1)
                                             {
                                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -796,7 +782,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                             //Clic détécté: on cherche de quel côté
                                             if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
                                             {
-                                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                                check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                                 if (check4change == -1) //changement de chapitre
                                                 {
                                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -806,7 +792,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                                             else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
                                             {
-                                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                                                check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                                                 if (check4change == -1)
                                                 {
                                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -853,7 +839,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                         case SDLK_RIGHT:
                         {
-                            check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                            check4change = changementDePage(1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                             if (check4change == -1)
                             {
                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -864,7 +850,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                         case SDLK_LEFT:
                         {
-                            check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, *mangaDB);
+                            check4change = changementDePage(-1, &changementPage, &finDuChapitre, &pageEnCoursDeLecture, pageTotal, chapitreChoisis, mangaDB);
                             if (check4change == -1)
                             {
                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -1193,11 +1179,13 @@ SDL_Texture* loadControlBar(int favState)
 
 /*Screen Management*/
 
-int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA mangaDB)
+int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB)
 {
-    int extremesManga[2], check4change = 0;
+    int check4change = 0, posChapitre = 0;
 
-    anythingNew(extremesManga, mangaDB);
+    int length = getUpdatedChapterList(mangaDB);
+    for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
+
     if(direction == 1) //Page suivante
     {
         if (*pageEnCoursDeLecture < pageTotal)
@@ -1207,9 +1195,9 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
             check4change = 0;
             *finDuChapitre = 0;
         }
-        else if(*chapitreChoisis < extremesManga[1])
+        else if(mangaDB->chapitres[posChapitre+1] != 0 && mangaDB->chapitres[posChapitre+1] < mangaDB->chapitres[length-1])
         {
-            *chapitreChoisis = *chapitreChoisis + 1;
+            *chapitreChoisis = (*chapitreChoisis/10 + 1)*10;
             return -1;
         }
         else
@@ -1230,9 +1218,9 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
             check4change = 0;
             *finDuChapitre = 0;
         }
-        else if(*chapitreChoisis > extremesManga[0])
+        else if(posChapitre > 0)
         {
-            *chapitreChoisis = *chapitreChoisis - 1;
+            *chapitreChoisis = mangaDB->chapitres[posChapitre-1];
             return -1;
         }
         else
@@ -1462,24 +1450,6 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
                 *noRefresh = 1;
         }
     }
-}
-
-/*Check*/
-
-void anythingNew(int extremes[2], MANGAS_DATA mangaDB)
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    FILE* test = NULL;
-
-    sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
-    test = fopenR(temp, "r");
-    if(test != NULL)
-    {
-        fscanfs(test, "%d %d", &extremes[0], &extremes[1]);
-        fclose(test);
-    }
-    else
-        extremes[0] = extremes[1] = 0;
 }
 
 /*Event Management*/

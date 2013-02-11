@@ -161,7 +161,7 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
 
             case SDL_TEXTINPUT:
             {
-                if(event.text.text[0] >= ' ' && event.text.text[0] < 128) //Un char
+                if(event.text.text[0] >= ' ' && event.text.text[0] != 127) //Un char
                     retour[i++] = event.text.text[0];
                 break;
             }

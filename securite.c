@@ -300,7 +300,10 @@ void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
 {
     char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
-    sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis);
+    if(chapitreChoisis%10)
+        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
+    else
+        sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
     removeFolder(temp);
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
@@ -321,14 +324,13 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
 	path = malloc(length);
 	root = malloc(length);
-	if(numeroChapitre < 0)
-        snprintf(root, length, "%s/manga/%s/%s/Chapitre_%d.%d", REPERTOIREEXECUTION, teamLong, mangas, numeroChapitre/-10, numeroChapitre%-10);
+	if(numeroChapitre % 10)
+        snprintf(root, length, "manga/%s/%s/Chapitre_%d.%d", teamLong, mangas, numeroChapitre/10, numeroChapitre%10);
 	else
-        snprintf(root, length, "%s/manga/%s/%s/Chapitre_%d", REPERTOIREEXECUTION, teamLong, mangas, numeroChapitre);
+        snprintf(root, length, "manga/%s/%s/Chapitre_%d", teamLong, mangas, numeroChapitre/10);
 
     snprintf(path, length, "%s/%s", root, nomPage);
-    test = fopen(path, "r");
-
+    test = fopenR(path, "r");
     if(test == NULL) //Si on trouve pas la page
     {
         free(path);
@@ -360,7 +362,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         exit(-1);
     }
     unsigned char numChapitreChar[10];
-    sprintf((char *) numChapitreChar, "%d", numeroChapitre);
+    sprintf((char *) numChapitreChar, "%d", numeroChapitre/10);
     pbkdf2(temp, numChapitreChar, hash);
     crashTemp(temp, 200);
 

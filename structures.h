@@ -32,13 +32,14 @@ typedef struct dataMangas
     char mangaNameShort[LONGUEUR_COURT];
     int firstChapter;
     int lastChapter;
-    int chapitreSpeciaux;
+    int *chapitres;
     int firstTome;
     int lastTome;
     int status;
     int genre;
     int pageInfos;
     int favoris;
+    int chapitreSpeciauxDisponibles;
 
     /*Team*/
     TEAMS_DATA *team;

@@ -21,7 +21,7 @@ int UNZIP_NEW_PATH = 0; //La décompression change le path courant
 int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 int HAUTEUR = 730;
-int RENDER_BUG = 1;
+int RENDER_BUG = 0;
 int favorisToDL = -1;
 int alreadyRefreshed = 0;
 char REPERTOIREEXECUTION[350];
@@ -55,6 +55,7 @@ int main()
     }
 
     checkUpdate();
+    SDL_Delay(300); //On patiente un peu
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;

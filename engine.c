@@ -612,7 +612,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                     case SDLK_KP_ENTER:
                         if(choix != 0 && modeChapitre)
                         {
-                            mangaChoisis = choix;
+                            mangaChoisis = choix*10;
                             *manuel = 1;
                         }
                         break;

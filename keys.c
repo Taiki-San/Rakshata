@@ -107,7 +107,7 @@ int getMasterKey(unsigned char *input)
             unsigned char ciphertext[16];
             memcpy(ciphertext, buffer_Load[i] + j*16, 16);
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
-            memcpy(j*16+output , plaintext, 16);
+            memcpy(output+j*16 , plaintext, 16);
         }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
@@ -166,13 +166,14 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
 extern int unlocked;
 int earlyInit()
 {
-    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #ifdef _WIN32
     mutex = CreateMutex(NULL, FALSE, NULL);
     mutexRS = CreateMutex(NULL, FALSE, NULL);
+    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
+#else
+	srand(time(NULL)+rand()); //Initialisation de l'aléatoire
 #endif
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
-	updateDirectory(); //Si OSX, on se déplace dans le dossier .app
 
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 100);
@@ -1013,6 +1014,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
     char buffer_dl[500];
     if(mode != 0) //On essaie de pas transmettre trop en clair la clée manquante
     {
+        mode /= 10;
         mode = (mode+5) * (mode+5) +1;
         sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&authMode=%d", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
     }

@@ -551,7 +551,10 @@ int checkRestoreAvailable()
         fclose(restore);
 
         teamOfProject(manga, team);
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre, CONFIGFILE);
+        if(chapitre%10)
+            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
+        else
+            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
         return checkFileExist(temp);
     }
     return 0;
@@ -666,10 +669,10 @@ int checkChapitreUnread(MANGAS_DATA mangasDB)
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
 {
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    if(chapitreChoisis < 0)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, (-1*chapitreChoisis)/10, (-1*chapitreChoisis)%10);
+    if(chapitreChoisis%10)
+        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10, chapitreChoisis%10);
     else
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis);
+        sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10);
     if(checkFileExist(temp))
         return 1;
     return 0;
@@ -717,12 +720,8 @@ void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar)
 {
     if(RENDER_BUG)
         return;
-    SDL_RenderClear(renderVar);
-    SDL_Texture *texture = IMG_LoadTexture(renderVar, "data/icone.png");
-    if(texture == NULL)
+    if(SDL_RenderClear(renderVar))
         RENDER_BUG = 1;
-    else
-        SDL_DestroyTextureS(texture);
 }
 
 int checkNameFileZip(char fileToTest[256])

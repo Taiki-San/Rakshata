@@ -25,7 +25,10 @@ void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
 
 /**Chapitre.c**/
-int chapitre(MANGAS_DATA mangaDB, int mode);
+int refreshChaptersList(MANGAS_DATA *mangaDB);
+int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
+int getUpdatedChapterList(MANGAS_DATA *mangaDB);
+int chapitre(MANGAS_DATA *mangaDB, int mode);
 
 /**check.c**/
 int check_evt();
@@ -63,7 +66,7 @@ void update_mangas();
 int checkUpdateSpecChapter(MANGAS_DATA mangas);
 void get_update_spec_chapter(MANGAS_DATA mangas);
 int deleteManga();
-int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX]);
+int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
 void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
@@ -126,12 +129,11 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen);
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
 SDL_Texture* loadControlBar(int favState);
-int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA mangaDB);
+int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB);
 void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
-void anythingNew(int extremes[2], MANGAS_DATA mangaDB);
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
 
@@ -178,7 +180,6 @@ void SDL_DestroyTextureS(SDL_Texture *texture);
 void removeFolder(char *path);
 int createNewThread(void *function, void *arg);
 void ouvrirSite(TEAMS_DATA* teams);
-void updateDirectory();
 int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);
 
@@ -239,7 +240,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, int toFind, int toPut);
 int plusOuMoins(int compare1, int compare2, int tolerance);
-int compare(const void *a, const void *b);
+int sortNumbers(const void *a, const void *b);
+int sortMangas(const void *a, const void *b);
 void applyWindowsPathCrap(void *input);
 void versionRak(char *output);
 void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4);

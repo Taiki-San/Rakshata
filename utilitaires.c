@@ -29,7 +29,16 @@ int plusOuMoins(int compare1, int compare2, int tolerance)
     return 0;
 }
 
-int compare(const void *a, const void *b)
+int sortNumbers(const void *a, const void *b)
+{
+    if(*(int*)a == 0)
+        return 1;
+    else if(*(int*)b == 0)
+        return -1;
+    return ( *(int*)a - *(int*)b );
+}
+
+int sortMangas(const void *a, const void *b)
 {
     const MANGAS_DATA *struc1 = a;
     const MANGAS_DATA *struc2 = b;

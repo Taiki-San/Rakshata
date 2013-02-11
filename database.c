@@ -51,7 +51,7 @@ MANGAS_DATA* miseEnCache(int mode)
 		else
 		{
             int cat = 0;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].chapitreSpeciaux);
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].chapitreSpeciauxDisponibles);
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
             if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
@@ -89,7 +89,7 @@ MANGAS_DATA* miseEnCache(int mode)
                 numeroManga--;
 			}
 
-			if(mode == LOAD_DATABASE_ALL && mangas[numeroManga].chapitreSpeciaux && checkUpdateSpecChapter(mangas[numeroManga]))
+			if(mode == LOAD_DATABASE_ALL && mangas[numeroManga].chapitreSpeciauxDisponibles && checkUpdateSpecChapter(mangas[numeroManga]))
             {
                 get_update_spec_chapter(mangas[numeroManga]);
             }
@@ -108,7 +108,7 @@ MANGAS_DATA* miseEnCache(int mode)
 	}
 	free(mangaBak);
 
-	qsort(mangas, numeroManga, sizeof(MANGAS_DATA), compare);
+	qsort(mangas, numeroManga, sizeof(MANGAS_DATA), sortMangas);
 	mangas[numeroManga].mangaName[0] = 0;
 	return mangas;
 }
@@ -129,7 +129,12 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
         return;
 
     size_t pos = 0;
-    for(; pos < length; free(mangasDB[pos++].team));
+    for(; pos < length; pos++)
+    {
+        if(mangasDB[pos].chapitres != NULL)
+            free(mangasDB[pos].chapitres);
+        free(mangasDB[pos].team);
+    }
     free(mangasDB);
 }
 
@@ -379,7 +384,7 @@ int checkUpdateSpecChapter(MANGAS_DATA mangas)
         {
             int nombreChapSpeciaux = 0;
             fscanfs(dbenc, "%d", &nombreChapSpeciaux);
-            if(nombreChapSpeciaux == mangas.chapitreSpeciaux)
+            if(nombreChapSpeciaux == mangas.chapitreSpeciauxDisponibles)
             {
                 return 0;
             }
@@ -415,9 +420,8 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
 int deleteManga()
 {
 	/*Cette fonction va pomper comme un porc dans le module de selection de manga du lecteur*/
-	int continuer = -1, mangaChoisis = 0, chapitreChoisis = -1, i = 0, j = 0, k = 0, noMoreChapter = 1;
+	int continuer = -1, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1;
 	char temp[2*LONGUEUR_NOM_MANGA_MAX + 0x80];
-	FILE* test = NULL;
 
 	/*C/C du choix de manga pour le lecteur.*/
 	MANGAS_DATA *mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
@@ -439,7 +443,7 @@ int deleteManga()
 			continuer = 0;
 			while(chapitreChoisis > -2 && !continuer && noMoreChapter)
 			{
-				chapitreChoisis = chapitre(mangas[mangaChoisis], 3);
+				chapitreChoisis = chapitre(&mangas[mangaChoisis], 3);
 
 				if (chapitreChoisis <= -2)
 					continuer = chapitreChoisis;
@@ -449,21 +453,15 @@ int deleteManga()
 					if(chapitreChoisis != 0)
 					{
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName, CONFIGFILE);
-						test = fopenR(temp, "r");
-						if(test == NULL)
+						if(!checkFileExist(temp))
 						{
 							snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 							removeFolder(temp);
 						}
 						else
 						{
-							fscanfs(test, "%d %d", &i , &j);
-							if(fgetc(test) != EOF)
-								fscanfs(test, "%d", &k);
-							fclose(test);
-
 							chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-							if(internal_deleteChapitre(i, j, k, chapitreChoisis, mangas[mangaChoisis].mangaName, mangas[mangaChoisis].team->teamLong))
+							if(internal_deleteChapitre(mangas[mangaChoisis], chapitreChoisis))
 							{
 								noMoreChapter = 0;
 								freeMangaData(mangas, NOMBRE_MANGA_MAX);
@@ -494,50 +492,53 @@ int deleteManga()
 	return continuer;
 }
 
-int internal_deleteChapitre(int firstChapter, int lastChapter, int lastRead, int chapitreDelete, char mangaDispo[LONGUEUR_NOM_MANGA_MAX], char teamsLong[LONGUEUR_NOM_MANGA_MAX])
+int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 {
 	char temp[3*LONGUEUR_NOM_MANGA_MAX];
-	/*i == j si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
-	if(firstChapter != lastChapter)
+	/*si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
+	if(mangaDB.chapitres[1] != 0)
 	{
-		sprintf(temp, "manga/%s/%s/%s", teamsLong, mangaDispo, CONFIGFILE);
-		FILE* test = fopenR(temp, "w+");
+		sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
 
-        if(chapitreDelete < 0)
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", teamsLong, mangaDispo, chapitreDelete/-10, chapitreDelete%-10);
+        if(chapitreDelete%10)
+            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
         else
-            sprintf(temp, "manga/%s/%s/Chapitre_%d", teamsLong, mangaDispo, chapitreDelete);
+            sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
 		removeFolder(temp);
 
-		/**On édite le config.dat**/
-		int i = 0, lastInstalled = 0;
-		for(i = firstChapter; i <= lastChapter; i++)
+		int length = 0;
+		for(; mangaDB.chapitres[length]; length++); //On énumère
+
+		if(mangaDB.chapitres[0] == chapitreDelete || mangaDB.chapitres[length-1] == chapitreDelete)
 		{
-			sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong, mangaDispo, i, CONFIGFILE);
-			if(checkFileExist(temp))
-			{
-				if(!lastInstalled)
-					firstChapter = i;
-				lastInstalled = i;
-			}
+		    sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+
+            int i = 0;
+            FILE* config = fopen(temp, "r");
+            fscanfs(config, "%d %d %d", &i, &i, &i);
+            fclose(config);
+            config = fopen(temp, "w+");
+
+            if(mangaDB.chapitres[0] == chapitreDelete)
+                fprintf(config, "%d ", mangaDB.chapitres[1]);
+            else
+                fprintf(config, "%d ", mangaDB.chapitres[0]);
+
+            if(mangaDB.chapitres[length-1] == chapitreDelete)
+                fprintf(config, "%d ", mangaDB.chapitres[length-2]);
+            else
+                fprintf(config, "%d ", mangaDB.chapitres[length-1]);
+
+            if(i != 0)
+                fprintf(config, "%d", i);
+
+            fclose(config);
 		}
-
-		fprintf(test, "%d %d", firstChapter, lastInstalled);
-
-		sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", teamsLong, mangaDispo, lastRead, CONFIGFILE);
-
-		if(lastRead < firstChapter || !checkFileExist(temp))
-			lastRead = firstChapter;
-		else if(lastRead > lastInstalled)
-			lastRead = lastInstalled;
-
-		fprintf(test, " %d", lastRead);
-		fclose(test);
 	}
 
 	else
 	{
-		sprintf(temp, "manga/%s/%s/", teamsLong, mangaDispo);
+		sprintf(temp, "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
 		removeFolder(temp);
 		return 1;
 	}
