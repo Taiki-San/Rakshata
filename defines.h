@@ -43,6 +43,20 @@
 #define INSTALL_DATABASE "data/import.dat"
 #define FONT_USED_BY_DEFAULT "data/font.ttf"
 
+#define ICONE_DELETE "data/icon/d.png"
+#define ICONE_FAVORITED "data/icon/f.png"
+#define ICONE_FAVORIS_MENU "data/icon/fb.png"
+#define ICONE_NOT_FAVORITED "data/icon/nf.png"
+#define ICONE_FULLSCREEN "data/icon/fs.png"
+#define ICONE_MAIN_MENU "data/icon/mm.png"
+#define ICONE_MAIN_MENU_BIG "data/icon/mb.png"
+#define ICONE_PREVIOUS_CHAPTER "data/icon/pc.png"
+#define ICONE_PREVIOUS_PAGE "data/icon/pp.png"
+#define ICONE_NEXT_PAGE "data/icon/np.png"
+#define ICONE_NEXT_CHAPTER "data/icon/nc.png"
+#define ICONE_LOCK "data/icon/l.png"
+#define ICONE_UNLOCK "data/icon/u.png"
+
 #ifdef DEV_VERSION
     #define BUILD "dev"
 #else
@@ -304,7 +318,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 26
+#define NOMBRE_DE_FICHIER_A_CHECKER 28
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

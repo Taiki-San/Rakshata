@@ -1086,7 +1086,7 @@ SDL_Texture* loadControlBar(int favState)
     SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
     SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
 
-    snprintf(path, 350+100, "%s/data/icon/pc.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_PREVIOUS_CHAPTER);
     SDL_Surface *icone = IMG_Load(path); //Previous Chapter
     if(icone != NULL)
     {
@@ -1096,7 +1096,7 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/pp.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_PREVIOUS_PAGE);
     icone = IMG_Load(path); //Previous Page
     if(icone != NULL)
     {
@@ -1107,9 +1107,9 @@ SDL_Texture* loadControlBar(int favState)
     }
 
     if(!favState)
-        snprintf(path, 350+100, "%s/data/icon/nf.png", REPERTOIREEXECUTION);
+        snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_NOT_FAVORITED);
     else
-        snprintf(path, 350+100, "%s/data/icon/f.png", REPERTOIREEXECUTION);
+        snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORITED);
 
     icone = IMG_Load(path);
     if(icone != NULL)
@@ -1120,7 +1120,7 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/fs.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_FULLSCREEN);
     icone = IMG_Load(path); //FullScreen
     if(icone != NULL)
     {
@@ -1130,17 +1130,22 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/d.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_DELETE);
     icone = IMG_Load(path); //Delete
     if(icone != NULL)
     {
         positionIcone.x = bandeauControleSurface->w / 2 - BORDURE_BUTTON_W - MINIICONE_W;
         positionIcone.y = bandeauControleSurface->h / 2 + BORDURE_BUTTON_H;
+
+
+        if(!unlocked)
+            SDL_SetSurfaceAlphaMod(icone, 120);
+
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/mm.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_MAIN_MENU);
     icone = IMG_Load(path); //Main menu
     if(icone != NULL)
     {
@@ -1150,7 +1155,7 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/np.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_NEXT_PAGE);
     icone = IMG_Load(path); //Next Page
     if(icone != NULL)
     {
@@ -1160,7 +1165,7 @@ SDL_Texture* loadControlBar(int favState)
         SDL_FreeSurfaceS(icone);
     }
 
-    snprintf(path, 350+100, "%s/data/icon/nc.png", REPERTOIREEXECUTION);
+    snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_NEXT_CHAPTER);
     icone = IMG_Load(path); //Next Chapter
     if(icone != NULL)
     {

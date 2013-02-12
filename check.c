@@ -35,19 +35,21 @@ int check_evt()
     sprintf(nomsATest[10], "data/german/acceuil.png");
     sprintf(nomsATest[11], "data/german/controls.png");
     sprintf(nomsATest[12], "data/german/localization");
-    sprintf(nomsATest[13], "data/icon/d.png");  //Delete
-    sprintf(nomsATest[14], "data/icon/f.png");  //Favorite
-    sprintf(nomsATest[15], "data/icon/fb.png"); //Favorite Big
-    sprintf(nomsATest[16], "data/icon/nf.png"); //Not Favorite
-    sprintf(nomsATest[17], "data/icon/fs.png"); //Fullscreen
-    sprintf(nomsATest[18], "data/icon/mm.png"); //Main Menu
-    sprintf(nomsATest[19], "data/icon/mb.png"); //Main menu Big
-    sprintf(nomsATest[20], "data/icon/nc.png"); //Next Chapter
-    sprintf(nomsATest[21], "data/icon/np.png"); //Next Page
-    sprintf(nomsATest[22], "data/icon/pc.png"); //Previous Chapter
-    sprintf(nomsATest[23], "data/icon/pp.png"); //Previous Page
-    sprintf(nomsATest[24], "data/acceuil.png");
-    sprintf(nomsATest[25], SECURE_DATABASE);
+    sprintf(nomsATest[13], ICONE_DELETE);
+    sprintf(nomsATest[14], ICONE_FAVORITED);
+    sprintf(nomsATest[15], ICONE_FAVORIS_MENU);
+    sprintf(nomsATest[16], ICONE_NOT_FAVORITED);
+    sprintf(nomsATest[17], ICONE_FULLSCREEN);
+    sprintf(nomsATest[18], ICONE_MAIN_MENU);
+    sprintf(nomsATest[19], ICONE_MAIN_MENU_BIG);
+    sprintf(nomsATest[20], ICONE_PREVIOUS_CHAPTER);
+    sprintf(nomsATest[21], ICONE_PREVIOUS_PAGE);
+    sprintf(nomsATest[22], ICONE_NEXT_CHAPTER);
+    sprintf(nomsATest[23], ICONE_NEXT_PAGE);
+    sprintf(nomsATest[24], ICONE_LOCK);
+    sprintf(nomsATest[25], ICONE_UNLOCK);
+    sprintf(nomsATest[26], "data/acceuil.png");
+    sprintf(nomsATest[27], SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)

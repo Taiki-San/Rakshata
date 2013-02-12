@@ -19,6 +19,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
     int i = 0, hauteurTexte = 0, ret_value = 0, *longueur = malloc(nombreElements*sizeof(int));
     int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0};
+    char tempPath[450];
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     SDL_Event event;
@@ -39,6 +40,22 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         SDL_RenderCopy(renderer, texture, NULL, &position);
         longueur[i] = texture->w / 2;
         hauteurTexte = texture->h;
+        SDL_DestroyTextureS(texture);
+    }
+
+    if(unlocked)
+        snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_UNLOCK);
+    else
+        snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_LOCK);
+
+    texture = IMG_LoadTexture(renderer, tempPath);
+    if(texture != NULL)
+    {
+        position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
+        position.y = POSITION_ICONE_MENUS;
+        position.w = TAILLE_ICONE_MENUS;
+        position.h = TAILLE_ICONE_MENUS;
+        SDL_RenderCopy(renderer, texture, NULL, &position);
         SDL_DestroyTextureS(texture);
     }
 
@@ -105,6 +122,32 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                         applyBackground(renderer, sizeFavsDispo[0], sizeFavsDispo[2], sizeFavsDispo[1], sizeFavsDispo[3]);
                         SDL_RenderPresent(renderer);
                         favorisToDL = -2; //On fait tout disparaitre
+                    }
+
+                    else if(event.button.x > WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x < WINDOW_SIZE_W-POSITION_ICONE_MENUS &&
+                       event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS)
+                    {
+                        if(unlocked == 1)
+                            unlocked = 0;
+                        else
+                            unlocked = 1;
+
+                        if(unlocked)
+                            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_UNLOCK);
+                        else
+                            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_LOCK);
+
+                        texture = IMG_LoadTexture(renderer, tempPath);
+                        if(texture != NULL)
+                        {
+                            position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
+                            position.y = POSITION_ICONE_MENUS;
+                            position.w = TAILLE_ICONE_MENUS;
+                            position.h = TAILLE_ICONE_MENUS;
+                            SDL_RenderFillRect(renderer, &position);
+                            SDL_RenderCopy(renderer, texture, NULL, &position);
+                            SDL_DestroyTextureS(texture);
+                        }
                     }
 
                     //Définis la hauteur du clic par rapport à notre liste
@@ -185,9 +228,12 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         else if(favorisToDL == 1) //Refresh done
         {
             char trad[SIZE_TRAD_ID_29][TRAD_LENGTH];
+
             loadTrad(trad, 29);
             applyBackground(renderer, 5, 5, 50, 50);
-            texture = IMG_LoadTexture(renderer, "data/icon/fb.png");
+
+            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORIS_MENU);
+            texture = IMG_LoadTexture(renderer, tempPath);
             if(texture != NULL)
             {
                 sizeFavsDispo[0] = position.x = POSITION_ICONE_MENUS;
@@ -225,7 +271,9 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
 
     for(nombreManga = 0; mangaDB[nombreManga].mangaName[0]; nombreManga++);
 
-    texte = IMG_LoadTexture(renderer, "data/icon/mb.png");
+    char tempPath[450];
+    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_MAIN_MENU_BIG);
+    texte = IMG_LoadTexture(renderer, tempPath);
     if(texte != NULL)
     {
         position.x = POSITION_ICONE_MENUS;
