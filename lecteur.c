@@ -170,12 +170,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 SDL_FreeSurface(NChapitre);
                 NChapitre = NULL;
             }
-            NChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0 , 0, 0);
+            NChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0, 0, 0);
             SDL_FillRect(NChapitre, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
             SDL_BlitSurface(chapitre, NULL, NChapitre, NULL);
             SDL_FreeSurface(chapitre);
             SDL_DestroyTextureS(chapitre_texture);
-            chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0 , 0, 0);
+            chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0, 0, 0);
             SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(OChapitre);
             OChapitre = NULL;

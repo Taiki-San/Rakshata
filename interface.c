@@ -6,7 +6,7 @@
 **       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
 **              \/      \/     \/     \/     \/     \/          \/             \/           **
 **                                                                                          **
-**   Licence propriŽtaire, code source confidentiel, distribution formellement interdite    **
+**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -29,7 +29,7 @@ void updateSectionMessage(char messageVersion[5])
 
     for(i = 0; bufferDL[i] == messageVersion[i] && i < 5 && bufferDL[i] != ' ' && bufferDL[i]; i++);
 
-    if(*messageVersion != '0' && bufferDL[i] == ' ' && i > 0)
+    if(!bufferDL[i] || (*messageVersion != '0' && bufferDL[i] == ' ' && i > 0))
         return;
 
     sprintf(bufferMessage, "<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
