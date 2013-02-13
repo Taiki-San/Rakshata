@@ -259,3 +259,28 @@ void restrictEvent()
     SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
 }
 
+static int maxSize = 0;
+int defineMaxTextureSize(int sizeIssue)
+{
+    if(maxSize)
+        return maxSize;
+    SDL_Texture *texture = NULL;
+    if(sizeIssue > 16384)
+    {
+        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, 16384, 16384);
+        if(texture != NULL)
+        {
+            SDL_DestroyTexture(texture);
+            maxSize = 16384;
+            return 16384;
+        }
+    }
+    do
+    {
+        sizeIssue -= 10;
+        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, sizeIssue, sizeIssue);
+    }while(texture != NULL && sizeIssue > 0);
+    maxSize = sizeIssue;
+    return sizeIssue;
+}
+

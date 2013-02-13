@@ -13,6 +13,7 @@
 #include "main.h"
 
 extern int unlocked;
+static int pageWaaaayyyyTooBig;
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 {
@@ -35,6 +36,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
 
     loadTrad(texteTrad, 21);
+    pageWaaaayyyyTooBig = 0;
 
     restoreState = checkRestore();
 
@@ -113,7 +115,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                 i = showError();
                 SDL_FreeSurface(chapitre);
-                SDL_DestroyTextureS(chapitre_texture);
+                freeCurrentPage(chapitre_texture);
                 if(pageEnCoursDeLecture > 0)
                     SDL_FreeSurface(OChapitre);
                 if(pageEnCoursDeLecture < pageTotal)
@@ -136,7 +138,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_FillRect(OChapitre, NULL, SDL_MapRGB(OChapitre->format, FOND_R, FOND_G, FOND_B));
             SDL_BlitSurface(chapitre, NULL, OChapitre, NULL);
             SDL_FreeSurface(chapitre);
-            SDL_DestroyTextureS(chapitre_texture);
+            freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, NChapitre->w, NChapitre->h, 32, 0, 0 , 0, 0);
             SDL_BlitSurface(NChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(NChapitre);
@@ -152,7 +154,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
                 i = showError();
                 SDL_FreeSurface(chapitre);
-                SDL_DestroyTextureS(chapitre_texture);
+                freeCurrentPage(chapitre_texture);
                 if(pageEnCoursDeLecture > 0)
                     SDL_FreeSurface(OChapitre);
                 if(pageEnCoursDeLecture < pageTotal)
@@ -174,7 +176,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_FillRect(NChapitre, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
             SDL_BlitSurface(chapitre, NULL, NChapitre, NULL);
             SDL_FreeSurface(chapitre);
-            SDL_DestroyTextureS(chapitre_texture);
+            freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0, 0, 0);
             SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(OChapitre);
@@ -205,7 +207,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             if(chapitre != NULL)
             {
                 SDL_FreeSurface(chapitre);
-                SDL_DestroyTextureS(chapitre_texture);
+                freeCurrentPage(chapitre_texture);
                 chapitre = NULL;
             }
             if(!encrypted)
@@ -228,7 +230,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             logR(temp);
 
             SDL_FreeSurface(chapitre);
-            SDL_DestroyTextureS(chapitre_texture);
+            freeCurrentPage(chapitre_texture);
             if(pageEnCoursDeLecture > 0)
                 SDL_FreeSurface(OChapitre);
             if(pageEnCoursDeLecture < pageTotal)
@@ -389,7 +391,34 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         /*Création de la texture de la page*/
         chapitre_texture = SDL_CreateTextureFromSurface(renderer, chapitre);
         if(chapitre_texture == NULL)
-            logR((char*) SDL_GetError());
+        {
+            int sizeMax = defineMaxTextureSize(chapitre->h), i;
+            int nombreMiniTexture = chapitre->h/sizeMax + (chapitre->h%sizeMax?1:0);
+            SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture));
+            SDL_Surface *chap_buf = NULL;
+            SDL_Rect pos;
+            pos.w = chapitre->w;
+            pos.h = sizeMax;
+            for(pos.x = i = 0; i < nombreMiniTexture-1; i++)
+            {
+                pos.y = i*sizeMax;
+                chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
+                SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
+                texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
+                SDL_FreeSurface(chap_buf);
+            }
+            if(chapitre->h%sizeMax)
+            {
+                pos.y = i*sizeMax;
+                pos.h = chapitre->h%pos.y;
+                chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
+                SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
+                texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
+                SDL_FreeSurface(chap_buf);
+            }
+            pageWaaaayyyyTooBig = sizeMax;
+            chapitre_texture = (SDL_Texture*) texture;
+        }
 
         /*Calcul position page*/
         if(!pageTropGrande && !finDuChapitre)
@@ -1243,7 +1272,7 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
 void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
 {
     SDL_FreeSurface(chapitre);
-    SDL_DestroyTextureS(chapitre_texture);
+    freeCurrentPage(chapitre_texture);
     if(OChapitre != NULL && OChapitre->w > 0)
         SDL_FreeSurface(OChapitre);
     if(NChapitre != NULL && NChapitre->w > 0)
@@ -1257,11 +1286,53 @@ void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surfa
         TTF_CloseFont(police);
 }
 
+void freeCurrentPage(SDL_Texture *texture)
+{
+    if(pageWaaaayyyyTooBig)
+    {
+        int i = 0;
+        SDL_Texture ** texture_big = (SDL_Texture **) texture;
+        for(; texture_big[i]; SDL_DestroyTextureS(texture_big[i++]));
+        pageWaaaayyyyTooBig = 0;
+    }
+    else
+        SDL_DestroyTextureS(texture);
+}
+
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
     SDL_Texture *texture = NULL;
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, chapitre, &positionSlide, &positionPage);
+    if(pageWaaaayyyyTooBig)
+    {
+        SDL_Texture **texture_big = (SDL_Texture**) chapitre;
+        SDL_Rect page = positionSlide, ecran = positionPage;
+        int sizeMax = pageWaaaayyyyTooBig, nbMorceaux = 0, i = positionSlide.y/sizeMax;
+        for(; texture_big[nbMorceaux]; nbMorceaux++);
+
+        /*On va blitter seulement la bonne partie, bonne chance*/
+
+        if((i+1)*sizeMax < positionSlide.y + positionSlide.h)
+            ecran.h = page.h = (i+1)*sizeMax - positionSlide.y;
+        if(i)
+        {
+            int j = 0;
+            for(; j < i; page.y -= texture_big[j++]->h);
+        }
+        for(; ecran.y < WINDOW_SIZE_H && i < nbMorceaux; i++)
+        {
+            SDL_RenderCopy(renderer, texture_big[i], &page, &ecran);
+            ecran.y += page.h;
+            page.y = 0;
+            if(WINDOW_SIZE_H > page.h + sizeMax)
+                ecran.h = page.h = sizeMax;
+            else
+                ecran.h = page.h = WINDOW_SIZE_H - page.h;
+        }
+
+    }
+    else
+        SDL_RenderCopy(renderer, chapitre, &positionSlide, &positionPage);
 
     positionBandeauControle.h = bandeauControle->h;
     positionBandeauControle.w = bandeauControle->w;
@@ -1366,7 +1437,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
             positionSlide->y = 0;
         }
 
-        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y)
+        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y && chapitre->h - positionSlide->y <= WINDOW_SIZE_H)
         {
             positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
         }
