@@ -84,17 +84,16 @@ int menuGestion()
                 break;
 
             case 4:
-                /*Raffra”chissement de la BDD*/
+                /*Raffraîchissement de la BDD*/
                 raffraichissmenent();
                 break;
 
             case 5:
-                /*Changer langue*/
-                menu = changementLangue();
+                /*mettre un mot de passe?*/
                 break;
 
             case 6:
-                menu = PALIER_MENU; //Retour au menu principal
+                menu = changementLangue(); //Changement de langue
                 break;
 
             default:

@@ -140,6 +140,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_FreeSurface(chapitre);
             freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, NChapitre->w, NChapitre->h, 32, 0, 0 , 0, 0);
+            SDL_FillRect(chapitre, NULL, SDL_MapRGB(OChapitre->format, FOND_R, FOND_G, FOND_B));
             SDL_BlitSurface(NChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(NChapitre);
             NChapitre = NULL;
@@ -178,6 +179,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_FreeSurface(chapitre);
             freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0, 0, 0);
+            SDL_FillRect(chapitre, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
             SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(OChapitre);
             OChapitre = NULL;
@@ -403,6 +405,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 pos.y = i*sizeMax;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
+                SDL_FillRect(chap_buf, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
                 SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
                 texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
@@ -1217,9 +1220,6 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
 {
     int check4change = 0, posChapitre = 0;
 
-    int length = getUpdatedChapterList(mangaDB);
-    for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
-
     if(direction == 1) //Page suivante
     {
         if (*pageEnCoursDeLecture < pageTotal)
@@ -1229,18 +1229,24 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
             check4change = 0;
             *finDuChapitre = 0;
         }
-        else if(mangaDB->chapitres[posChapitre+1] != 0 && mangaDB->chapitres[posChapitre+1] < mangaDB->chapitres[length-1])
-        {
-            *chapitreChoisis = (*chapitreChoisis/10 + 1)*10;
-            return -1;
-        }
         else
         {
-            check4change = 0;
-            if(*finDuChapitre == 1)
-                check4change = 1;
+            getUpdatedChapterList(mangaDB);
+            for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
+
+            if(mangaDB->chapitres[posChapitre+1] != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                *chapitreChoisis = (*chapitreChoisis/10 + 1)*10;
+                return -1;
+            }
             else
-                *finDuChapitre = 1;
+            {
+                check4change = 0;
+                if(*finDuChapitre == 1)
+                    check4change = 1;
+                else
+                    *finDuChapitre = 1;
+            }
         }
     }
     else
@@ -1252,18 +1258,24 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
             check4change = 0;
             *finDuChapitre = 0;
         }
-        else if(posChapitre > 0)
-        {
-            *chapitreChoisis = mangaDB->chapitres[posChapitre-1];
-            return -1;
-        }
         else
         {
-            check4change = 0;
-            if(*finDuChapitre == 1)
-                check4change = 1;
+            getUpdatedChapterList(mangaDB);
+            for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
+
+            if(posChapitre > 0)
+            {
+                *chapitreChoisis = mangaDB->chapitres[posChapitre-1];
+                return -1;
+            }
             else
-                *finDuChapitre = 1;
+            {
+                check4change = 0;
+                if(*finDuChapitre == 1)
+                    check4change = 1;
+                else
+                    *finDuChapitre = 1;
+            }
         }
     }
     return check4change;

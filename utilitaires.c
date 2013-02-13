@@ -31,9 +31,9 @@ int plusOuMoins(int compare1, int compare2, int tolerance)
 
 int sortNumbers(const void *a, const void *b)
 {
-    if(*(int*)a == 0)
+    if(*(int*)a == VALEUR_FIN_STRUCTURE_CHAPITRE)
         return 1;
-    else if(*(int*)b == 0)
+    else if(*(int*)b == VALEUR_FIN_STRUCTURE_CHAPITRE)
         return -1;
     return ( *(int*)a - *(int*)b );
 }

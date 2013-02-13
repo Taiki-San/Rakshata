@@ -166,7 +166,6 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
         logR(temp2);
 		return;
 	}
-
 	download(temp, buffer_repo, 0);
 }
 

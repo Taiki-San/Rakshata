@@ -607,7 +607,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
     /*On ouvre le fichier d'import*/
     fichier = fopenR(INSTALL_DATABASE, "a+");
 
-    if(chapitreChoisis != 0)
+    if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
 		nombreChapitre = 1;
         /*On test l'existance du fichier (zipé ou dézipé)*/
@@ -618,12 +618,16 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
     }
     else
     {
-        for(i = mangaDB.firstChapter; i <= mangaDB.lastChapter; i++)
+
+        for(i = 0; mangaDB.chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE; i++)
         {
-            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, i, CONFIGFILE);
+            if(mangaDB.chapitres[i]%10)
+                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
+            else
+                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, i);
+                fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitres[i]);
                 nombreChapitre++;
             }
         }

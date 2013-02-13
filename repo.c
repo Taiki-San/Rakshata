@@ -107,6 +107,9 @@ int ajoutRepo()
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
 
                     SDL_RenderClear(renderer);
+                    TTF_CloseFont(police);
+                    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+
                     texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = BORDURE_SUP_MENU;

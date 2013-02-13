@@ -177,7 +177,7 @@ void fscanfs(FILE* stream, const char *format, ...)
 
                 case 'd':
                 {
-                    int *number = NULL;
+                    int *number = NULL, negatif = 0;
                     char buffer[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
                     number = va_arg (pointer_argument, int*);
@@ -187,11 +187,18 @@ void fscanfs(FILE* stream, const char *format, ...)
                     while(((j = fgetc(stream)) < '0' ||  j > '9') && j != EOF);
                     buffer[0] = j;
 
+                    if(fgetc(stream) == '-')
+                        negatif = 1;
+                    else
+                        fseek(stream, -1, SEEK_CUR);
+
                     for(i = 1; i < 9 /*limite de int*/ && (j = fgetc(stream)) >= '0' && j <= '9'; buffer[i++] = j);
                     for(; j != ' ' && j != '\n' && j != EOF; j = fgetc(stream)); //On finis le mot si on a bloqué un buffer overflow
 
                     buffer[i] = 0;
                     *number = charToInt(buffer);
+                    if(negatif)
+                        *number = *number *-1;
                     number = NULL;
                     break;
                 }
