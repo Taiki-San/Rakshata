@@ -227,9 +227,6 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 
         else if(favorisToDL == 1) //Refresh done
         {
-            char trad[SIZE_TRAD_ID_29][TRAD_LENGTH];
-
-            loadTrad(trad, 29);
             applyBackground(renderer, 5, 5, 50, 50);
 
             snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORIS_MENU);

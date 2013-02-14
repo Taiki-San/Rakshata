@@ -70,7 +70,7 @@ int section()
         }
         free(sectionMessage);
     }
-    return displayMenu(&(texteTrad[2]), NOMBRESECTION, BORDURE_SUP_SECTION);
+    return displayMenu(&(texteTrad[1]), NOMBRESECTION, BORDURE_SUP_SECTION);
 }
 
 int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)

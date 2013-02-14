@@ -450,7 +450,7 @@
 #define SIZE_TRAD_ID_14 4
 #define SIZE_TRAD_ID_15 1
 #define SIZE_TRAD_ID_16 6
-#define SIZE_TRAD_ID_17 6
+#define SIZE_TRAD_ID_17 5
 #define SIZE_TRAD_ID_18 2
 #define SIZE_TRAD_ID_19 14
 #define SIZE_TRAD_ID_20 7

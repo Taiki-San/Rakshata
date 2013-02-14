@@ -73,6 +73,9 @@ int telechargement()
         if(i == '\n')
             mangaTotal++;
     }
+    if(!mangaTotal)
+        mangaTotal = 1; //Si un seul manga sans retour à la ligne
+
     rewind(fichier);
 
     bufferTodo = (char**) calloc(mangaTotal, sizeof(int*));
@@ -267,7 +270,7 @@ int telechargement()
                 }
 
                 sprintf(temp, "manga/%s/%s/infos.png", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName);
-                if(!checkFileExist(temp) && mangaDB[posVariable].pageInfos) //k peut avoir a être > 1
+                if(mangaDB[posVariable].pageInfos && !checkFileExist(temp)) //k peut avoir a être > 1
                 {
                     sprintf(temp, "manga/%s/%s/%s", mangaDB[posVariable].team->teamLong, mangaDB[posVariable].mangaName, CONFIGFILE);
                     if(!checkFileExist(temp))
@@ -305,7 +308,7 @@ int telechargement()
                     download(superTemp, temp, 0);
                 }
 
-                else if(mangaDB[posVariable].pageInfos)//Si k = 0 et infos.png existe
+                else if(!mangaDB[posVariable].pageInfos)//Si k = 0 et infos.png existe
                     removeR(temp);
             }
 
@@ -711,7 +714,7 @@ void DLmanager()
         sprintf(temp, "%s %d %s", texteTrad[2], error, texteTrad[3]);
 
         texte = TTF_Write(rendererDL, police, temp, couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
         position.h = texte->h;
         position.w = texte->w;
@@ -719,7 +722,7 @@ void DLmanager()
         SDL_DestroyTextureS(texte);
 
         texte = TTF_Write(rendererDL, police, texteTrad[4], couleurTexte);
-        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
         position.h = texte->h;
         position.w = texte->w;

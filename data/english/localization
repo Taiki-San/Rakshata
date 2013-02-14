@@ -1,25 +1,26 @@
 1
-Page missing&
+Page missing or unusable&
 This chapter seems corrupted&
-If you haven't modified the manga&
-database manually&
-Please report the issue to Taiki&
+If you haven't modified the database&
+manually, please report the issue&
+to the repository manager.&
 Press Enter to go back to the chapter selection.&]
 2
 Initialization of the download&
 module currently in progress.&
-Please wait (it may take more&
+Please wait (it may take some&
 time if you have a low Internet&
 access or a lot of repo)&]
 3
-Please choose a menu&
+Settings&
 Add a repo&
 Delete a repo&
 Delete mangas from database&
 Refresh the manga database&
+Set a password&
 Change language&]
 4
-Do you confirm the deletion of the repo of the&
+Do you confirm the deletion of the repo of&
 Enter to confirm, Escape to cancel&]
 5
 Reload in progress&]
@@ -45,25 +46,25 @@ Display mangas:&
 In progress&
 Suspended&
 Done&
+Favorite&
 Shonen&
 Shojo&
 Seinen&
+Hentai (-16/18)&
 Page&
 on&]
 12
-Downloading an update, please wait a bit.&
+Downloading an update, please wait a little bit.&
 Please shut others Rakshata's windows.&
 File&
 on&]
 13
 You can change here Rakshata's language&
-Select your language (more to come)&
 Français&
 English&
 Italiano&
 Deutsch&
-If you want to help us to translate&
-Rakshata, please notify Taiki =)&]
+If you want to translate Rakshata, please notify us on our website.&]
 14
 Initialization in progress&
 Please type the repo's URL&
@@ -80,15 +81,13 @@ Please contact the maintainer and/or Taiki&
 and attach "log" file located in Rakshata's folder&]
 17
 Main menu&
-Choose your section by clicking it =)&
 Reader&
 Download more mangas&
-Controls&
+Help&
 Settings&]
 18
-Availables manga&
-Choose the project by clicking it =)&
-to download&]
+Availables manga at the reading&
+Availables manga at the download&]
 19
 Which chapter do you wish to&
 read?&
@@ -98,7 +97,7 @@ Oldest:&
 Newest:&
 Project&
 by the&
-First time that you read this manga&
+First time read this manga&
 Last chapter read&
 Chapter&
 All&
@@ -110,7 +109,8 @@ Size:&
 MB&
 Speed:&
 kB/s&
-Closing, please wait&]
+Closing, please wait&
+Analysing&]
 21
 Chapter&
 Page&
@@ -121,17 +121,10 @@ window, click.&
 F to quit the fullscreen&
 Q to quit Rakshata&
 New chapters&
-are available,&
-do you want to&
-download them?&
-(Y) Yes | (N) No&
-Main&
-menu&
-Manga&
-selection&
-Add to&
-favorites&
-Deletion&]
+are availables,&
+do you want&
+to get them?&
+(Y) Yes | (N) No&]
 22
 Downloading&
 chapter&
@@ -140,7 +133,7 @@ of the list&
 Download in progress, please wait&
 Installation in progress, please wait&]
 23
-No manga available here, download some ;)&
+No manga available here, grab some ;)&
 Return or click to go back to the menu =)&]
 24
 No internet access :(&
