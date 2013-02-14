@@ -135,7 +135,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
 
     if(mangaDB->chapitres[0] > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        *dernierLu = mangaDB->firstChapter;
+        *dernierLu = mangaDB->chapitres[0];
 
     else if(mangaDB->chapitres[nbElem-1] < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
         *dernierLu = mangaDB->chapitres[nbElem-1];
@@ -206,16 +206,16 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     if(checkFileExist(temp) || mode == 2)
     {
         chapitreLength = refreshChaptersList(mangaDB);
-        if (mode != 2) //Si on DL, on s'en fout, on propose tout
+        if (mode != 2)
         {
             if((chapitreLength = checkChapitreValable(mangaDB, &dernierLu)) == PALIER_MENU)
                 return PALIER_MENU;
         }
-        else
+        else //Si on DL, on s'en fout, on propose tout
         {
             snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
             if(checkFileExist(temp))
-                dernierLu = 0; //Si un manga est déjà installé, on le met dans le sens décroissant
+                dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE; //Si un manga est déjà installé, on le met dans le sens décroissant
         }
 
         /*On prépare maintenant la structure*/

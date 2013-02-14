@@ -222,7 +222,7 @@ void updateWindowSize(int w, int h)
         chargement(renderer, h, w);
 
         #ifdef _WIN32
-            WaitForSingleObject(mutexRS, INFINITE);
+            for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
         #else
             pthread_mutex_lock(&mutexRS);
         #endif
@@ -238,18 +238,27 @@ void updateWindowSize(int w, int h)
             SDL_DestroyRenderer(renderer);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+
+            #ifdef _WIN32
+                ReleaseSemaphore(mutexRS, 1, NULL);
+            #else
+                pthread_mutex_unlock(&mutexRS);
+            #endif
+
             chargement(renderer, h, w);
         }
-        else if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
-            SDL_RenderPresent(renderer);
+        else
+        {
+            #ifdef _WIN32
+                ReleaseSemaphore(mutexRS, 1, NULL);
+            #else
+                pthread_mutex_unlock(&mutexRS);
+            #endif
+            if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
+                SDL_RenderPresent(renderer);
+        }
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;
-
-        #ifdef _WIN32
-            ReleaseMutex(mutexRS);
-        #else
-            pthread_mutex_unlock(&mutexRS);
-        #endif
     }
     else
     {

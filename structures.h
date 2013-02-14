@@ -64,8 +64,8 @@ typedef unsigned char uint8_t;
 
 #ifdef _WIN32
     #define MUTEX_VAR HANDLE
-    #define MUTEX_LOCK WaitForSingleObject(mutex, INFINITE);
-    #define MUTEX_UNLOCK ReleaseMutex(mutex);
+    #define MUTEX_LOCK for(; WaitForSingleObject(mutex, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_UNLOCK ReleaseSemaphore (mutex, 1, NULL)
 #else
     #define handle_error_en(en, msg) \
        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -80,7 +80,7 @@ typedef unsigned char uint8_t;
     };
 
     #define MUTEX_VAR pthread_mutex_t
-    #define MUTEX_LOCK pthread_mutex_lock(&mutex);
-    #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex);
+    #define MUTEX_LOCK pthread_mutex_lock(&mutex)
+    #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)
 
 #endif

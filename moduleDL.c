@@ -647,15 +647,13 @@ void DLmanager()
     SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
 	SDL_Rect position;
 
-    /*On affiche la petite fenêtre, le mutex est déjà réservé*/
+    /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
+    d'une réservation à deux endroits en parallèle, et ça marche pas*/
 
-    #ifdef _WIN32
-        WaitForSingleObject(mutexRS, INFINITE);
-    #else
-        pthread_mutex_lock(&mutexRS);
-    #endif
-
+    SDL_FlushEvent(SDL_WINDOWEVENT);
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
+    SDL_FlushEvent(SDL_WINDOWEVENT);
+
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
     if(icon != NULL)
@@ -667,14 +665,16 @@ void DLmanager()
     status = 1;
     nameWindow(windowDL, status);
 
+    SDL_FlushEvent(SDL_WINDOWEVENT);
     rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
+    SDL_FlushEvent(SDL_WINDOWEVENT);
 
-    #ifdef _WIN32
-        ReleaseMutex(mutexRS);
+/*    #ifdef _WIN32
+        ReleaseSemaphore(mutexRS, 1, NULL);
     #else
         pthread_mutex_unlock(&mutexRS);
-    #endif
+    #endif*/
 
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;

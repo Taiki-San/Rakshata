@@ -595,12 +595,15 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
 
     applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
 
-    position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
-    position.y = hauteurNum;// - (numero->h / 2);
-    position.h = numero->h;
-    position.w = numero->w;
-    SDL_RenderCopy(renderer, numero, NULL, &position);
-    SDL_DestroyTextureS(numero);
+    if(numero != NULL)
+    {
+        position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
+        position.y = hauteurNum;// - (numero->h / 2);
+        position.h = numero->h;
+        position.w = numero->w;
+        SDL_RenderCopy(renderer, numero, NULL, &position);
+        SDL_DestroyTextureS(numero);
+    }
 
     SDL_RenderPresent(renderer);
 }

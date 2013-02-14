@@ -167,8 +167,8 @@ extern int unlocked;
 int earlyInit()
 {
 #ifdef _WIN32
-    mutex = CreateMutex(NULL, FALSE, NULL);
-    mutexRS = CreateMutex(NULL, FALSE, NULL);
+    mutex = CreateSemaphore (NULL, 1, 1, NULL);
+    mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else
 	srand(time(NULL)+rand()); //Initialisation de l'aléatoire

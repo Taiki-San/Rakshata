@@ -41,8 +41,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     restoreState = checkRestore();
 
     length = getUpdatedChapterList(mangaDB);
-    for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct]; curPosIntoStruct++);
-    curPosIntoStruct--;
+    for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
 
     if(chapitreChoisisInterne == mangaDB->chapitres[length-1] && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, chapitreChoisisInterne)))
     {

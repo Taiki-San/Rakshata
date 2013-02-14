@@ -57,7 +57,7 @@ int main()
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;
-    int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
+    int compteur = 0, timeSinceLastCheck = SDL_GetTicks(), eventWindow = 0;
     MUTEX_LOCK;
     while(THREAD_COUNT)
     {
@@ -70,19 +70,21 @@ int main()
             if(event.type == SDL_WINDOWEVENT)
             {
                 #ifdef _WIN32
-                    WaitForSingleObject(mutexRS, INFINITE);
+                    for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
                 #else
                     pthread_mutex_lock(&mutexRS);
                 #endif
+                eventWindow = 1;
             }
             SDL_PushEvent(&event);
-            if(event.type == SDL_WINDOWEVENT)
+            if(eventWindow)
             {
                 #ifdef _WIN32
-                    ReleaseMutex(mutexRS);
+                    ReleaseSemaphore(mutexRS, 1, NULL);
                 #else
                     pthread_mutex_unlock(&mutexRS);
                 #endif
+                eventWindow = 0;
             }
         }
         SDL_Delay(1000);

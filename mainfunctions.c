@@ -20,7 +20,7 @@ void mainRakshata()
     /*newLangue = */loadLangueProfile();
 
     #ifdef _WIN32
-        WaitForSingleObject(mutexRS, INFINITE);
+        for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
     #else
         pthread_mutex_lock(&mutexRS);
     #endif
@@ -40,7 +40,7 @@ void mainRakshata()
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
 
     #ifdef _WIN32
-        ReleaseMutex(mutexRS);
+        ReleaseSemaphore(mutexRS, 1, NULL);
     #else
         pthread_mutex_unlock(&mutexRS);
     #endif
@@ -339,7 +339,7 @@ void mainDL()
     }
     loadLangueProfile();
 
-    if(get_compte_infos() != PALIER_QUIT)
+    if(loadEmailProfile())
         DLmanager(); //Lancement du module de téléchargement, il est totalement autonome
 
     quit_thread(0);

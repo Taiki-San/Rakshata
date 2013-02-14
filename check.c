@@ -94,7 +94,7 @@ int check_evt()
 
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-        for(i = 0; i < j; i++)
+        for(i = 0; i <= j; i++)
         {
             if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
             {
