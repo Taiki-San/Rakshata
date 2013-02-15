@@ -184,13 +184,15 @@ void fscanfs(FILE* stream, const char *format, ...)
 
                     if(!number)
                         break;
-                    while(((j = fgetc(stream)) < '0' ||  j > '9') && j != EOF);
+                    while((j = fgetc(stream)) != EOF && (j < '0' ||  j > '9'))
+                    {
+                        if(j == '-')
+                        {
+                            if((j = fgetc(stream)) != EOF && j >= '0' && j <= '9')
+                                negatif = 1;
+                        }
+                    }
                     buffer[0] = j;
-
-                    if(fgetc(stream) == '-')
-                        negatif = 1;
-                    else
-                        fseek(stream, -1, SEEK_CUR);
 
                     for(i = 1; i < 9 /*limite de int*/ && (j = fgetc(stream)) >= '0' && j <= '9'; buffer[i++] = j);
                     for(; j != ' ' && j != '\n' && j != EOF; j = fgetc(stream)); //On finis le mot si on a bloqué un buffer overflow

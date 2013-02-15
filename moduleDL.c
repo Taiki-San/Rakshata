@@ -381,7 +381,7 @@ int telechargement()
     }
 
     SDL_RenderClear(rendererDL);
-    texte = TTF_Write(rendererDL, police, trad[5], couleurTexte);
+    texte = TTF_Write(rendererDL, police_big, trad[5], couleurTexte);
     position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
     position.y = WINDOW_SIZE_H_DL / 2 - texte->h / 2;
     position.h = texte->h;
@@ -648,7 +648,7 @@ void DLmanager()
 	SDL_Rect position;
 
     /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
-    d'une réservation à deux endroits en parallèle, et ça marche pas*/
+    d'une réservation à deux endroits en parallèle, qui cause des crashs*/
 
     SDL_FlushEvent(SDL_WINDOWEVENT);
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
@@ -669,12 +669,6 @@ void DLmanager()
     rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
     SDL_FlushEvent(SDL_WINDOWEVENT);
-
-/*    #ifdef _WIN32
-        ReleaseSemaphore(mutexRS, 1, NULL);
-    #else
-        pthread_mutex_unlock(&mutexRS);
-    #endif*/
 
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;

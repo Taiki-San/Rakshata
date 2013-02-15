@@ -129,7 +129,7 @@ char *loadPrefFile()
     fclose(pref);
     AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
-    if(output[0] != '<' && output[1] != '<')
+    if(output[0] != '<' && output[1] != '<' && output[2] != '<' && output[3] != '<')
     {
         free(output);
         logR("Incorrect settings decryption\n");

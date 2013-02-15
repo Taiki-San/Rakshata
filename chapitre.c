@@ -236,6 +236,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             chapitreDB[nombreChapitre].pageInfos = VALEUR_FIN_STRUCTURE_CHAPITRE;
             usstrcpy(chapitreDB[nombreChapitre++].mangaName, LONGUEUR_NOM_MANGA_MAX, texteTrad[11]);
         }
+
         if(dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE) //Ordre croissant
             i = 0;
         else
@@ -266,7 +267,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
                 i--;
         }
 
-        if(nombreChapitre < NOMBRE_CHAPITRE_MAX)
+        if(nombreChapitre <= nombreMaxChapitre)
             chapitreDB[nombreChapitre].mangaName[0] = chapitreDB[nombreChapitre].pageInfos = 0;
 
         /*On calcule la taille de la fenêtre*/
@@ -395,7 +396,6 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
 
             else
                 hauteur_chapitre = BORDURE_SUP_SELEC_CHAPITRE_PARTIAL;
-
             while(chapitreChoisis == PALIER_QUIT-1)
             {
                 do
