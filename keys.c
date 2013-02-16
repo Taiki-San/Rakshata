@@ -105,7 +105,7 @@ int getMasterKey(unsigned char *input)
         {
 			unsigned char plaintext[16];
             unsigned char ciphertext[16];
-            memcpy(ciphertext, buffer_Load[i] + j*16, 16);
+			memcpy(ciphertext, buffer_Load[i] + j*16, 16);
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
             memcpy(output+j*16 , plaintext, 16);
         }

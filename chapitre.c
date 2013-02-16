@@ -220,7 +220,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
 
         /*On prépare maintenant la structure*/
         for(nombreMaxChapitre = 0; mangaDB->chapitres[nombreMaxChapitre] != VALEUR_FIN_STRUCTURE_CHAPITRE; nombreMaxChapitre++);
-        MANGAS_DATA *chapitreDB = calloc(nombreMaxChapitre+1, sizeof(MANGAS_DATA));
+        MANGAS_DATA *chapitreDB = calloc(nombreMaxChapitre+2, sizeof(MANGAS_DATA));
         for(i = 0; i < nombreMaxChapitre; chapitreDB[i++].mangaName[0] = 0);
 
         nombreMaxChapitre--;
