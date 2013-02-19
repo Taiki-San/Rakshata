@@ -254,7 +254,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 0, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI], mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
     int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
-    int button_selected[8];
+    int button_selected[8], chapitreTomeDisponible = 0;
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -281,12 +281,20 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         SDL_DestroyTextureS(texte);
     }
 
-    if(sectionChoisis == SECTION_CHOISIS_CHAPITRE) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
+    if(sectionChoisis == SECTION_CHOISIS_CHAPITRE || sectionChoisis == SECTION_CHOISIS_TOME || sectionChoisis == SECTION_CHAPITRE_ONLY) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
     {
-        //On récupére le chapitre max
-        chapitreMax = nombreChapitre;
+        modeChapitre = 2;
+        if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
+            chapitreTomeDisponible = 1;
+        else if(sectionChoisis == SECTION_CHOISIS_TOME)
+            chapitreTomeDisponible = -1;
+        else
+            modeChapitre = 1; //L'icône est-elle affichée
+
+        chapitreMax = nombreChapitre; //On récupére le chapitre max
         nombreChapitre = 0;
-        modeChapitre = 1;
+
+        sectionChoisis = SECTION_CHOISIS_CHAPITRE;
     }
 
     /*Multi-Page*/
@@ -396,11 +404,32 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 SDL_RenderPresent(renderer);
             }
         }
-        if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != SECTION_CHOISIS_TEAM)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
+        if(sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_DL)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
             generateChoicePanel(texte_Trad, button_selected);
         else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
         {
             chapterDisplayed = chapitreMax;
+
+            //On affiche le bouton de switch
+            if(chapitreTomeDisponible)
+            {
+                char tempPath[450];
+                if(chapitreTomeDisponible == 1) //On affiche les chapitres, montrer le bouton 'Tome'
+                    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_TOME);
+                else if(chapitreTomeDisponible == -1) //On affiche les tomes, montrer le bouton 'Chapitre'
+                    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_CHAPITRE);
+
+                texte = IMG_LoadTexture(renderer, tempPath);
+                if(texte != NULL)
+                {
+                    position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texte->w;
+                    position.y = POSITION_ICONE_MENUS;
+                    position.w = TAILLE_ICONE_MENUS;
+                    position.h = TAILLE_ICONE_MENUS;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
+                }
+            }
         }
 
         if(pageTotale != 1) //Affichage du nombre de page
@@ -793,6 +822,12 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                             mangaChoisis = CODE_BOUTON_3_CHAPITRE;
                         else
                             mangaChoisis = CODE_BOUTON_2_CHAPITRE; //Bouton central, dernier chapitre choisis
+                    }
+                    else if(modeChapitre == 2 /*icone dispo*/ && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
+                            && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
+                    {
+                        //Switch sur l'autre
+                        mangaChoisis = CODE_ICONE_SWITCH;
                     }
                 }
                 break;
