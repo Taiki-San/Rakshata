@@ -48,8 +48,10 @@ int check_evt()
     sprintf(nomsATest[23], ICONE_NEXT_PAGE);
     sprintf(nomsATest[24], ICONE_LOCK);
     sprintf(nomsATest[25], ICONE_UNLOCK);
-    sprintf(nomsATest[26], "data/acceuil.png");
-    sprintf(nomsATest[27], SECURE_DATABASE);
+    sprintf(nomsATest[25], ICONE_SWITCH_CHAPITRE);
+    sprintf(nomsATest[26], ICONE_SWITCH_TOME);
+    sprintf(nomsATest[27], "data/acceuil.png");
+    sprintf(nomsATest[28], SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)

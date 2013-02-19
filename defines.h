@@ -56,6 +56,8 @@
 #define ICONE_NEXT_CHAPTER "data/icon/nc.png"
 #define ICONE_LOCK "data/icon/l.png"
 #define ICONE_UNLOCK "data/icon/u.png"
+#define ICONE_SWITCH_CHAPITRE "data/icon/c.png"
+#define ICONE_SWITCH_TOME "data/icon/t.png"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"
@@ -179,7 +181,7 @@
 #define NOMBRESECTION 4
 #define SECTION_CHOISIS_LECTURE 1
 #define SECTION_DL 2
-#define SECTION_CHOISIS_TEAM 5
+#define SECTION_CHOISIS_TEAM 3
 #ifdef NEW_FONT
 	#define BORDURE_SUP_MENU 35
 	#define INTERLIGNE_MENU 15
@@ -256,7 +258,10 @@
 #define CODE_BOUTON_1_CHAPITRE 13371338
 #define CODE_BOUTON_2_CHAPITRE 13371339
 #define CODE_BOUTON_3_CHAPITRE 13371340
-#define SECTION_CHOISIS_CHAPITRE 7
+#define CODE_ICONE_SWITCH 13371341
+#define SECTION_CHOISIS_CHAPITRE 4
+#define SECTION_CHOISIS_TOME 5
+#define SECTION_CHAPITRE_ONLY 6
 #define VALEUR_FIN_STRUCTURE_CHAPITRE -1
 
 /**Lecteur**/
@@ -319,7 +324,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 28
+#define NOMBRE_DE_FICHIER_A_CHECKER 29
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

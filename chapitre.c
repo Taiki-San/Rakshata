@@ -175,8 +175,8 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     **************************/
 
     /*Initialisations*/
-    int buffer = 0, i = 0, j = 0, k = 0, chapitreChoisis = 0, dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    int hauteur_chapitre = 0, nombreChapitre = 0, nombreMaxChapitre = 0, chapitreLength;
+    int buffer = 0, i = 0, j = 0, k = 0, chapitreChoisis = 0, dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE, iconeDisponible = 0;
+    int hauteur_chapitre = 0, nombreChapitre = 0, nombreMaxChapitre = 0, chapitreLength, chapitreOuTome = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
     register FILE* file = NULL; //Make that stuff faster
     TTF_Font *police = NULL;
@@ -187,7 +187,19 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     loadTrad(texteTrad, 19);
 
-    if(mangaDB->firstChapter == mangaDB->lastChapter) //Si une seul chapitre, on le séléctionne automatiquement
+    if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        iconeDisponible = chapitreOuTome = 1;
+    }
+    else if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
+        chapitreOuTome = 1;
+    else if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+        chapitreOuTome = 2;
+    else
+        return PALIER_CHAPTER;
+
+
+    if(mangaDB->firstChapter == mangaDB->lastChapter && mode != 2) //Si une seul chapitre, on le séléctionne automatiquement
     {
         if(mode == 2)
             return mangaDB->firstChapter*10;
@@ -404,7 +416,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
                     if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                         ouvrirSite(mangaDB->team);
                 }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team
-                        || (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode == 2) //On reste dans la boucle si dans le module de DL on clic sur les trucs en bas (inactifs)
+                        || (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && (chapitreChoisis < CODE_ICONE_SWITCH || !iconeDisponible) && mode == 2) //On reste dans la boucle si dans le module de DL on clic sur les trucs en bas (inactifs)
                         || (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis == CODE_BOUTON_2_CHAPITRE)); //Si on clic sur premiere lecture en bas
 
                 if(chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
