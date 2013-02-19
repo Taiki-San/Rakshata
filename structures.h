@@ -52,6 +52,12 @@ typedef struct output_download_with_size
     size_t length;
 } OUT_DL;
 
+typedef struct data_loaded_from_download_list
+{
+    int chapitre;
+    MANGAS_DATA* datas;
+} DATA_LOADED;
+
 typedef struct data_pour_installation
 {
     MANGAS_DATA mangaDB;

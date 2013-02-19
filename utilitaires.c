@@ -29,6 +29,33 @@ int plusOuMoins(int compare1, int compare2, int tolerance)
     return 0;
 }
 
+int sortMangasToDownload(const void *a, const void *b)
+{
+    int ptsA = 0, ptsB = 0;
+    const DATA_LOADED *struc1 = *(DATA_LOADED**)a;
+    const DATA_LOADED *struc2 = *(DATA_LOADED**)b;
+
+    if(struc1->datas == struc2->datas) //Si même manga, ils pointent vers la même structure, pas besoin de compter les points
+        return struc1->chapitre - struc2->chapitre;
+
+    if(struc1->datas->favoris)
+        ptsA = 2;
+    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_3))
+        ptsA += 1;
+
+    if(struc2->datas->favoris)
+        ptsB = 2;
+    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_3))
+        ptsB += 1;
+
+    if(ptsA > ptsB)
+        return -1;
+    else if(ptsA < ptsB)
+        return 1;
+    else
+        return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
+}
+
 int sortNumbers(const void *a, const void *b)
 {
     if(*(int*)a == VALEUR_FIN_STRUCTURE_CHAPITRE)

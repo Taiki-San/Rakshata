@@ -241,6 +241,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, int toFind, int toPut);
 int plusOuMoins(int compare1, int compare2, int tolerance);
+int sortMangasToDownload(const void *a, const void *b);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
 void applyWindowsPathCrap(void *input);
