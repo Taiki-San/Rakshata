@@ -14,11 +14,6 @@
 #include "unzip/miniunzip.h"
 #include "unzip/unz_memory.c"
 
-#ifdef DEV_VERSION
-    char *tmp = NULL;
-#endif
-
-
 volatile int INSTALL_DONE;
 int CURRENT_TOKEN;
 
@@ -42,9 +37,11 @@ static int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_M
     err = unzGetGlobalInfo64(uf,&gi);
     if (err!=UNZ_OK)
 	{
+#ifdef DEV_VERSION
 	    char temp[100];
 		sprintf(temp, "error %d with zipfile in unzGetGlobalInfo \n",err);
 		logR(temp);
+#endif
 		return -1;
 	}
 
@@ -284,7 +281,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         if(configFileLoader(path2, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
             free(path2);
+#ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
+#endif
             for(i = 0; filename_inzip[i][0]; remove(filename_inzip[i++])); //On fais le ménage
             ret_value = -1;
             goto quit;

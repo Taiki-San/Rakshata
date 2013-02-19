@@ -135,36 +135,6 @@ int makedir (char *newdir)
     return 1;
 }
 
-void Display64BitsSize(ZPOS64_T n, int size_char)
-{
-  /* to avoid compatibility problem , we do here the conversion */
-  char number[21];
-  int offset=19;
-  int pos_string = 19;
-  number[20]=0;
-  for (;;) {
-      number[offset]=(char)((n%10)+'0');
-      if (number[offset] != '0')
-          pos_string=offset;
-      n/=10;
-      if (offset==0)
-          break;
-      offset--;
-  }
-  {
-      int size_display_string = 19-pos_string;
-      while (size_char > size_display_string)
-      {
-          size_char--;
-          printf(" ");
-      }
-  }
-
-  printf("%s",&number[pos_string]);
-}
-
-
-
 /* change_file_date : change the date/time of a file
     filename : the filename of the file where date/time must be modified
     dosdate : the new date at the MSDos format (4 bytes)
@@ -226,11 +196,13 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
     if (err!=UNZ_OK)
     {
-        printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
+#ifdef DEV_VERSION
+	    char temp[100];
+		sprintf(temp, "error %d with zipfile in 1\n",err);
+		logR(temp);
+#endif
         return err;
     }
-
-
 
     p = filename_withoutpath = filename_inzip;
     for(;(*p) != '\0'; p++)
@@ -242,10 +214,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
     if ((*filename_withoutpath)=='\0') //Si on est au bout du nom du fichier (/ final), c'est un dossier
     {
         if (!(*popt_extract_without_path))
-        {
-            printf("creating directory: %s\n",filename_inzip);
             mymkdir(filename_inzip);
-        }
     }
     else
     {
@@ -261,7 +230,11 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
 		if (err!=UNZ_OK)
         {
-            printf("error %d with zipfile in unzOpenCurrentFilePassword\n",err);
+#ifdef DEV_VERSION
+	    char temp[100];
+		sprintf(temp, "error %d with zipfile in 2\n",err);
+		logR(temp);
+#endif
         }
 
         if (((*popt_overwrite)==0) && (err==UNZ_OK))
@@ -288,7 +261,11 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
             if (fout==NULL)
             {
-                printf("error opening %s\n",write_filename);
+#ifdef DEV_VERSION
+                char temp[200];
+                snprintf(temp, 200, "error opening %s\n", write_filename);
+                logR(temp);
+#endif
             }
         }
 
@@ -316,35 +293,40 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
                 err = unzReadCurrentFile(uf,buf,size_buf);
                 if (err<0)
                 {
-                    printf("error %d with zipfile in unzReadCurrentFile\n",err);
+#ifdef DEV_VERSION
+                    char temp[100];
+                    sprintf(temp, "error %d with zipfile in 3\n",err);
+                    logR(temp);
+#endif
                     break;
                 }
-                if (err>0)
+                else if (err>0)
                 {
-                    int i;
+                    int i, j;
+                    buf_char = (unsigned char *) buf;
                     for(i = 0; i<err;)
                     {
-                        unsigned char plaintext[16];
-                        unsigned char ciphertext[16];
-                        buf_char = (unsigned char *) buf;
-                        int j;
-                        for (j = 0; j < sizeof(plaintext) && i < err;)
-                            plaintext[j++] = buf_char[i++];
-                        for (; j < sizeof(plaintext); plaintext[j++] = 0);
+                        unsigned char plaintext[AES_BUFFER_SIZE], ciphertext[AES_BUFFER_SIZE];
+                        for (j = 0; j < AES_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+                        for (; j < AES_BUFFER_SIZE; plaintext[j++] = 0);
                         rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
 
-                        if (fwrite(ciphertext, sizeof(ciphertext), 1, fout) != 1)
+                        if (fwrite(ciphertext, AES_BUFFER_SIZE, 1, fout) != 1)
                         {
-                            fclose(fout);
+#ifdef DEV_VERSION
                             logR("File write error\n");
+#endif
+                            fclose(fout);
                             return 1;
                         }
                     }
                 }
-            }while (err>0);
+                else
+                    break;
+            }while (1);
         }
 
-        else if (fout!=NULL) //DŽcompression normale
+        else if (fout!=NULL) //Décompression normale
         {
             do
             {
@@ -352,7 +334,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
                 if (err<0)
                 {
                     char temp[100];
-                    sprintf(temp, "error %d with zipfile in unzReadCurrentFile\n", err);
+                    sprintf(temp, "error %d with zipfile in 4\n", err);
                     logR(temp);
                     break;
                 }
@@ -377,7 +359,11 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
             err = unzCloseCurrentFile (uf);
             if (err!=UNZ_OK)
             {
-                printf("error %d with zipfile in unzCloseCurrentFile\n",err);
+#ifdef DEV_VERSION
+                char temp[100];
+                sprintf(temp, "error %d with zipfile in 5 \n",err);
+                logR(temp);
+#endif
             }
         }
         else
@@ -401,7 +387,13 @@ int do_extract(uf, input, opt_extract_without_path,opt_overwrite,password)
 
     err = unzGetGlobalInfo64(uf,&gi);
     if (err!=UNZ_OK)
-        printf("error %d with zipfile in unzGetGlobalInfo \n",err);
+#ifdef DEV_VERSION
+    {
+        char temp[100];
+        sprintf(temp, "error %d with zipfile in 6\n",err);
+        logR(temp);
+    }
+#endif
 
     for (i=0;i<gi.number_entry;i++)
     {
@@ -413,7 +405,11 @@ int do_extract(uf, input, opt_extract_without_path,opt_overwrite,password)
             err = unzGoToNextFile(uf);
             if (err!=UNZ_OK)
             {
-                printf("error %d with zipfile in unzGoToNextFile\n",err);
+#ifdef DEV_VERSION
+                char temp[100];
+                sprintf(temp, "error %d with zipfile in 7\n",err);
+                logR(temp);
+#endif
                 break;
             }
         }
@@ -432,7 +428,11 @@ int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,passwo
 {
     if (unzLocateFile(uf,filename,CASESENSITIVITY)!=UNZ_OK)
     {
-        printf("file %s not found in the zipfile\n",filename);
+#ifdef DEV_VERSION
+                char temp[100];
+                sprintf(temp, "404 %s\n",filename); //File not found
+                logR(temp);
+#endif
         return 2;
     }
 

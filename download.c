@@ -378,7 +378,7 @@ static void* downloader(void* envoi)
             CURRENT_FILE_SIZE = 0;
         }
         else
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
 
         if(printToAFile) //Save datas into a file
         {
@@ -445,19 +445,31 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
     char *buffer = NULL;
     char *input = ptr;
 
-    if(internalBuffer == (void*) 1 && size_buffer == 1)
+    if((internalBuffer == (void*) 1 && size_buffer == 1) || (internalBuffer != NULL && size_buffer < FILE_EXPECTED_SIZE && size * nmemb >= size_buffer - POSITION_DANS_BUFFER))
     {
-        if((char*)buffer_dl == 0)
-            free(buffer_dl);
-        if(!FILE_EXPECTED_SIZE)
-            size_buffer = 20*1024*1024;
-        else
-            size_buffer = FILE_EXPECTED_SIZE+FILE_EXPECTED_SIZE/10; //10% de marge
-        internalBuffer = calloc(1, size_buffer);
-        if(internalBuffer == NULL)
-            return -1;
-        else
-            buffer = internalBuffer;
+        if(internalBuffer == (void*) 1)
+        {
+            if((char*)buffer_dl == 0)
+                free(buffer_dl);
+            if(!FILE_EXPECTED_SIZE)
+                size_buffer = 20*1024*1024;
+            else
+                size_buffer = 2*FILE_EXPECTED_SIZE; //10% de marge
+            internalBuffer = calloc(1, size_buffer);
+            if(internalBuffer == NULL)
+                return -1;
+            else
+                buffer = internalBuffer;
+        }
+        else //Buffer trop petit, on l'agrandit
+        {
+            size_t size_buffer_tmp = 2*FILE_EXPECTED_SIZE;
+            void *tmp = calloc(1, size_buffer_tmp);
+            memcpy(tmp, internalBuffer, size_buffer);
+            free(internalBuffer);
+            buffer = internalBuffer = tmp;
+            size_buffer = size_buffer_tmp;
+        }
     }
     else if(internalBuffer != NULL)
         buffer = internalBuffer;
@@ -468,7 +480,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
         return 0;
 
     else if(size * nmemb < size_buffer - POSITION_DANS_BUFFER || size_buffer == -1)
-        for(; i++ < size*nmemb; buffer[POSITION_DANS_BUFFER++] = *input++);
+        for(; i++ < size*nmemb && POSITION_DANS_BUFFER < size_buffer; buffer[POSITION_DANS_BUFFER++] = *input++);
 
     else //Tronque
     {
