@@ -40,12 +40,12 @@ int waitEnter(SDL_Window* windows)
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_ESCAPE:
-                        i = -3;
+                        i = PALIER_MENU;
                         break;
 
                     case SDLK_DELETE:
                     case SDLK_BACKSPACE:
-                        i = -2;
+                        i = PALIER_CHAPTER;
                         break;
 
                     default: //If other one
@@ -61,7 +61,10 @@ int waitEnter(SDL_Window* windows)
 
             case SDL_WINDOWEVENT:
             {
-                SDL_RenderPresent(renderer);
+                if(renderer!= NULL && renderer->window == windows)
+                    SDL_RenderPresent(renderer);
+                else if(rendererDL != NULL)
+                    SDL_RenderPresent(rendererDL);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 break;
             }

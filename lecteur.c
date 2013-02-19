@@ -97,7 +97,11 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         else
             return i;
     }
-    encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
+    else
+    {
+        lastChapitreLu(mangaDB, *chapitreChoisis); //On écrit le dernier chapitre lu
+        encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
+    }
 
     changementPage = 2;
     bandeauControle = loadControlBar(mangaDB->favoris);

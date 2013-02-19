@@ -14,8 +14,7 @@
 
 void logR(char *error)
 {
-    FILE* logFile = NULL;
-    logFile = fopenR("log", "a+");
+    FILE* logFile = fopenR("log", "a+");
     if(logFile != NULL)
     {
         fputs(error, logFile);
