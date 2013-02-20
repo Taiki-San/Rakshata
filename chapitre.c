@@ -412,7 +412,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             {
                 do
                 {
-                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHOISIS_CHAPITRE, nombreChapitre, hauteur_chapitre);
+                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, nombreChapitre, hauteur_chapitre);
                     if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                         ouvrirSite(mangaDB->team);
                 }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team

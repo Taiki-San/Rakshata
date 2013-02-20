@@ -212,9 +212,6 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             }
         }
     }
-#ifdef DEV_VERSION
-    tmp = inputZip;
-#endif
     for(i = 0; i < nombreFichiers; i++)
     {
         if(checkNameFileZip(filename_inzip[i]))

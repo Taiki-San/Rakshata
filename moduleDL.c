@@ -688,7 +688,16 @@ void DLmanager()
     nameWindow(windowDL, status);
 
     SDL_FlushEvent(SDL_WINDOWEVENT);
-    rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
+    do
+    {
+        if(rendererDL != NULL)
+        {
+            SDL_Delay(100);
+            SDL_DestroyRenderer(rendererDL);
+        }
+        rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
+    }while(!rendererDL->magic); //En cas de mauvais timing
+
     SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
     SDL_FlushEvent(SDL_WINDOWEVENT);
 

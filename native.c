@@ -463,7 +463,7 @@ int createNewThread(void *function, void *arg)
 void ouvrirSite(TEAMS_DATA* teams)
 {
     #ifdef _WIN32
-        ShellExecute(NULL, "open", teams->site, NULL, NULL, SW_SHOWDEFAULT);
+        ShellExecute(NULL, "open", teams->site, NULL, NULL, SW_SHOWNOACTIVATE);
     #else
         char superTemp[200];
         crashTemp(superTemp, 200);

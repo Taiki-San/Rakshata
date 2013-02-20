@@ -36,7 +36,15 @@ void mainRakshata()
     }
     nameWindow(window, 0);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    do
+    {
+        if(renderer != NULL)
+        {
+            SDL_DestroyRenderer(renderer);
+        }
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    }while(!renderer->magic); //En cas de mauvais timing
+
     SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
 
     #ifdef _WIN32
