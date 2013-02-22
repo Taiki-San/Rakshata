@@ -47,7 +47,7 @@
 
 #include "unzip.h"
 #include "../main.h"
-#include "../AES.h"
+#include "../crypto/crypto.h"
 
 #define fopen64 fopen
 
@@ -306,12 +306,12 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
                     buf_char = (unsigned char *) buf;
                     for(i = 0; i<err;)
                     {
-                        unsigned char plaintext[AES_BUFFER_SIZE], ciphertext[AES_BUFFER_SIZE];
-                        for (j = 0; j < AES_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
-                        for (; j < AES_BUFFER_SIZE; plaintext[j++] = 0);
+                        unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
+                        for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+                        for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
                         rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
 
-                        if (fwrite(ciphertext, AES_BUFFER_SIZE, 1, fout) != 1)
+                        if (fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout) != 1)
                         {
 #ifdef DEV_VERSION
                             logR("File write error\n");

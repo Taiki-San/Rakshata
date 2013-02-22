@@ -66,10 +66,6 @@
 			<Add library="data\lib\Version.Lib" />
 			<Add library="data\lib\OleAut32.Lib" />
 		</Linker>
-		<Unit filename="AES-rjindael.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="AES.h" />
 		<Unit filename="affichage.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -79,6 +75,19 @@
 		<Unit filename="check.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="crypto\AES-rjindael.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crypto\AES.h" />
+		<Unit filename="crypto\Serpent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crypto\Serpent.h" />
+		<Unit filename="crypto\Twofish.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crypto\Twofish.h" />
+		<Unit filename="crypto\Twofish_data.h" />
 		<Unit filename="database.c">
 			<Option compilerVar="CC" />
 		</Unit>
