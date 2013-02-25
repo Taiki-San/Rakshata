@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #define CRYPTO_BUFFER_SIZE 16
+typedef unsigned long DWORD;
 
 /*****************************************************
 **                                                  **
@@ -36,9 +37,13 @@ void rijndaelDecrypt(const unsigned long *rk, int nrounds, const unsigned char c
 **                                                  **
 *****************************************************/
 
-void Serpent_set_key(unsigned long *l_key,const unsigned long *in_key, const unsigned long key_len);
-void Serpent_encrypt(const unsigned long *l_key,const unsigned long *in_blk, unsigned long *out_blk);
-void Serpent_decrypt(const unsigned long *l_key,const unsigned long *in_blk, unsigned long *out_blk);
+typedef struct {
+	DWORD	key[140];
+} SERPENT_STATIC_DATA;
+
+void Serpent_set_key(SERPENT_STATIC_DATA *l_key,const unsigned long *in_key, const unsigned long key_len);
+void Serpent_encrypt(SERPENT_STATIC_DATA *l_key,const unsigned long *in_blk, unsigned long *out_blk);
+void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const unsigned long *in_blk, unsigned long *out_blk);
 
 
 /*****************************************************
@@ -47,18 +52,9 @@ void Serpent_decrypt(const unsigned long *l_key,const unsigned long *in_blk, uns
 **                                                  **
 *****************************************************/
 
-typedef struct {
-	unsigned long	k_len;
-	unsigned long	l_key[40];
-	unsigned long	s_key[4];
-    unsigned long	qt_gen;
-	unsigned char	q_tab[2][256];
-	unsigned long	mt_gen;
-	unsigned long	m_tab[4][256];
-	unsigned long	mk_tab[4][256];
-} TWOFISH_DATA;
+typedef unsigned long   u4byte;
 
-void Twofish_set_key(TWOFISH_DATA *pTfd,const unsigned long *in_key, const unsigned long key_len);
-void Twofish_encrypt(const TWOFISH_DATA *pTfd,const unsigned long *in_blk, unsigned long *out_blk);
-void Twofish_decrypt(const TWOFISH_DATA *pTfd,const unsigned long *in_blk, unsigned long *out_blk);
+unsigned long Twofish_set_key(const unsigned long *in_key, const unsigned long key_len);
+void Twofish_encrypt(const unsigned long *in_blk, unsigned long *out_blk);
+void Twofish_decrypt(const unsigned long *in_blk, unsigned long *out_blk);
 

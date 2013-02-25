@@ -32,8 +32,6 @@ int chapitre(MANGAS_DATA *mangaDB, int mode);
 
 /**check.c**/
 int check_evt();
-void checkUpdate();
-void checkJustUpdated();
 int checkLancementUpdate();
 void networkAndVersionTest();
 int checkNetworkState(int state);
@@ -195,8 +193,11 @@ int defineTypeRepo(char *URL);
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX]);
 
 /**Securite.c**/
+int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB); //Cachés dans crypto/rijndael.c
+int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB);
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
+void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf_len);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH]);
 void get_file_date(const char *filename, char *date);
 void killswitchEnabled(char nomTeamCourt[5]);
@@ -236,6 +237,10 @@ int tradAvailable();
 /**Unzip.c**/
 int unzip(char *path, char *output);
 int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);
+
+/**Update.c**/
+void checkUpdate();
+void checkJustUpdated();
 
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)

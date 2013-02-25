@@ -75,10 +75,10 @@
 		<Unit filename="check.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\AES-rjindael.c">
+		<Unit filename="crypto\Rijndael.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\AES.h" />
+		<Unit filename="crypto\Rijndael.h" />
 		<Unit filename="crypto\Serpent.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -88,6 +88,7 @@
 		</Unit>
 		<Unit filename="crypto\Twofish.h" />
 		<Unit filename="crypto\Twofish_data.h" />
+		<Unit filename="crypto\crypto.h" />
 		<Unit filename="database.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -181,6 +182,9 @@
 		</Unit>
 		<Unit filename="unzip\zlib\zconf.h" />
 		<Unit filename="unzip\zlib\zlib.h" />
+		<Unit filename="update.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="utilitaires.c">
 			<Option compilerVar="CC" />
 		</Unit>

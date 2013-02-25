@@ -68,18 +68,12 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     fBack = first;
     eBack = end;
 
-    if(first/10 < mangaDB->firstChapter)
-        first = mangaDB->firstChapter*10;
-
-    if(end/10 > mangaDB->lastChapter)
-        end = mangaDB->lastChapter*10;
-
     int nbElem = 0;
     for(; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
     nbElem--;
 
     /*Si il y a pas des chapitres retiré de la base installé*/
-    if(first > mangaDB->chapitres[0])
+    if(first < mangaDB->chapitres[0])
     {
         for(i = 0; first > mangaDB->chapitres[i]; i++)
         {
@@ -103,8 +97,13 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         }while(!checkFileExist(temp) && i <= nbElem);
         first = mangaDB->chapitres[i];
     }
+    else
+    {
+        for(i = 0; i < nbElem && first < mangaDB->chapitres[i]; i++)
+            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    }
 
-    if(end/10 < mangaDB->chapitres[nbElem]/10) //Pour supporter si le dernier chapitre est un chapitre special
+    if(end/10 > mangaDB->chapitres[nbElem]/10) //Pour supporter si le dernier chapitre est un chapitre special
     {
         for(i = nbElem; end < mangaDB->chapitres[i] && i > 0; i--)
         {
@@ -130,6 +129,12 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         }
         end = mangaDB->chapitres[i];
     }
+    else
+    {
+        for(i = nbElem; i > 0 && end/10 > mangaDB->chapitres[i] / 10; i--)
+            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    }
+
     qsort(mangaDB->chapitres, nbElem, sizeof(int), sortNumbers);
 
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);

@@ -361,6 +361,7 @@ static void* downloader(void* envoi)
 #endif
         if(valeurs->URL[4] == 's') //HTTPS
         {
+
             mkdirR("data");
             FILE *cert = fopenR("data/buf.crt", "wb");
             if(cert != NULL)
@@ -480,7 +481,7 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
         return 0;
 
     else if(size * nmemb < size_buffer - POSITION_DANS_BUFFER || size_buffer == -1)
-        for(; i++ < size*nmemb && POSITION_DANS_BUFFER < size_buffer; buffer[POSITION_DANS_BUFFER++] = *input++);
+        for(; i++ < size*nmemb && POSITION_DANS_BUFFER < size_buffer; buffer[POSITION_DANS_BUFFER++] = *(input++));
 
     else //Tronque
     {

@@ -228,13 +228,13 @@ int telechargement()
                     glados = CODE_RETOUR_OK;
                     struc = (OUT_DL*) download(superTemp, command, 1);
 
-                    #ifdef DEV_VERSION
-                        if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
-                        {
-                            logR(struc->buf);
-                            exit(0);
-                        }
-                    #endif
+                #ifdef DEV_VERSION
+                    if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
+                    {
+                        logR(struc->buf);
+                        exit(0);
+                    }
+                #endif
 
                     if(struc <= (OUT_DL*) CODE_RETOUR_MAX)
                     {
@@ -672,6 +672,7 @@ void DLmanager()
     /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
     d'une réservation à deux endroits en parallèle, qui cause des crashs*/
 
+    SDL_Delay(2000);
     SDL_FlushEvent(SDL_WINDOWEVENT);
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
     SDL_FlushEvent(SDL_WINDOWEVENT);

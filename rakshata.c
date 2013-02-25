@@ -42,6 +42,8 @@ MUTEX_VAR mutex;
 MUTEX_VAR mutexRS;
 #endif
 
+#include "crypto/crypto.h"
+
 int main()
 {
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
@@ -50,7 +52,6 @@ int main()
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
     {
         createNewThread(mainDL, NULL);
-        SDL_Delay(300); //On patiente un peu
     }
 
     checkUpdate();

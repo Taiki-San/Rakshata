@@ -15,206 +15,51 @@
 
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-    unsigned long rk[RKLENGTH(KEYBITS)];
-    unsigned char key[KEYLENGTH(KEYBITS)];
-    unsigned char *password = _password;
-    unsigned char *path_input = _path_input;
-    unsigned char *path_output = _path_output;
-    int i, inputMemory = 1, outputMemory = 1;
-    int positionDansInput = 0, positionDansOutput = 0;
-    int nrounds;
-    FILE *input = NULL;
-    FILE *output = NULL;
-
-    for (i = 0; i < KEYLENGTH(KEYBITS); i++)
-        key[i] = *password != 0 ? *password++ : 0;
-
-    if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
-    {
-        if(cryptIntoMemory == EVERYTHING_IN_HDD || cryptIntoMemory == OUTPUT_IN_MEMORY)
-        {
-            input = fopenR(path_input, "rb");
-            inputMemory = 0;
-        }
-        if(cryptIntoMemory != OUTPUT_IN_MEMORY)
-        {
-            if(cryptIntoMemory != OUTPUT_IN_HDD_BUT_INCREMENTAL)
-                output = fopen((char *) path_output, "wb");
-
-            else
-            {
-				size_t sizeOfFile = 0;
-                output = fopen((char *) path_output, "r"); //C'était fopenR mais vu qu'on utilise fopen un tout petit peu plus loin...
-                fseek(output, 0, SEEK_END);
-                sizeOfFile = ftell(output);
-                if(sizeOfFile)
-                {
-                    unsigned char *buffer = malloc(sizeOfFile+1);
-                    if(buffer == NULL)
-                        exit(0);
-                    rewind(output);
-                    fread(buffer, sizeof(unsigned char*), sizeOfFile, output);
-                    fclose(output);
-                    output = fopen((char *) path_output, "wb");
-                    for(i = 0; i < sizeOfFile; fputc(buffer[i++], output));
-                    free(buffer);
-                }
-                else
-                {
-                    fclose(output);
-                    output = fopen((char *) path_output, "wb");
-                }
-                inputMemory = 1;
-            }
-            outputMemory = 0;
-            if (output == NULL)
-            {
-                logR("File write error\n");
-                return 1;
-            }
-        }
-    }
-
-    nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
-    while ((!inputMemory && fgetc(input) != EOF) || (inputMemory && path_input[positionDansInput]))
-    {
-        unsigned char plaintext[16];
-        unsigned char ciphertext[16];
-        int j;
-
-		if(!inputMemory)
-            fseek(input, -1, SEEK_CUR);
-
-		for (j = 0; j < sizeof(plaintext); j++)
-        {
-            if(!inputMemory)
-            {
-                int c = fgetc(input);
-                if (c == EOF)
-                    break;
-                plaintext[j] = c;
-            }
-            else
-            {
-                if (!path_input[positionDansInput])
-                    break;
-                plaintext[j] = path_input[positionDansInput++];
-            }
-        }
-        if (!j)
-            break;
-        else if(j < sizeof(plaintext))
-            plaintext[j++] = 0;
-        for (; j < sizeof(plaintext); j++)
-            plaintext[j] = 0;
-        rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
-        if(!outputMemory)
-        {
-            if (fwrite(ciphertext, sizeof(ciphertext), 1, output) != 1)
-            {
-                fclose(output);
-                logR("File write error\n");
-                return 1;
-            }
-        }
-        else
-        {
-            memcpy(path_output+positionDansOutput, ciphertext, sizeof(ciphertext));
-            positionDansOutput+=sizeof(ciphertext);
-        }
-    }
-    if(!outputMemory)
-        fclose(output);
-    else
-        path_output[positionDansOutput] = 0;
-    if(!inputMemory)
-        fclose(input);
-    return 0;
+    return _AESEncrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
 int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-    unsigned long rk[RKLENGTH(KEYBITS)];
-    unsigned char key[KEYLENGTH(KEYBITS)];
+    return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
+}
+
+void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf_len)
+{
+    int posIV, i = 0, j = 0, k = 0;
     unsigned char *password = _password;
-    unsigned char *path_input = _path_input;
-    unsigned char *path_output = _path_output;
-    int i, inputMemory = 1, outputMemory = 1;
-    int positionDansInput = 0, positionDansOutput = 0;
-    int nrounds, lastRow = 0;
-	int *return_val = NULL;
-    FILE *input = NULL;
-    FILE *output = NULL;
+    unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
+    SERPENT_STATIC_DATA pSer;
+    FILE* in = fopenR(path_input, "rb");
+    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
 
-    for (i = 0; i < KEYLENGTH(KEYBITS); i++)
-        key[i] = *password != 0 ? *password++ : 0;
+    Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
+    Twofish_set_key((u4byte*) key, KEYBITS);
+    posIV = -1;
 
-    if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
+    for(k = 0; i != EOF && k*2*CRYPTO_BUFFER_SIZE <= buf_len; k++)
     {
-        if(cryptIntoMemory != INPUT_IN_MEMORY)
-        {
-            input = fopenR(path_input, "rb");
-            if (input == NULL)
-            {
-                fputs("File read error", stderr);
-                return 1;
-            }
-            inputMemory = 0;
-        }
-        if(cryptIntoMemory != OUTPUT_IN_MEMORY && cryptIntoMemory != MODE_RAK)
-        {
-            output = fopenR(path_output, "wb");
-            if (output == NULL)
-            {
-                logR("File write error\n");
-                return 1;
-            }
-            outputMemory = 0;
-        }
+        unsigned char ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
+
+        for (j = 0; j < CRYPTO_BUFFER_SIZE && (i = fgetc(in)) != EOF; ciphertext[j++] = i);
+        for (; j < CRYPTO_BUFFER_SIZE; ciphertext[j++] = 0);
+        Serpent_decrypt(&pSer, (DWORD*) ciphertext, (DWORD*) plaintext);
+        if(posIV != -1) //Pas premier passage, IV existante
+            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
+        memcpy(buffer_out, plaintext, CRYPTO_BUFFER_SIZE);
+        buffer_out += CRYPTO_BUFFER_SIZE;
+        memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
+
+        for (j = 0; j < CRYPTO_BUFFER_SIZE && (i = fgetc(in)) != EOF; ciphertext[j++] = i);
+        for (; j < CRYPTO_BUFFER_SIZE; ciphertext[j++] = 0);
+        Twofish_decrypt((u4byte*) ciphertext, (u4byte*) plaintext);
+        if(posIV != -1) //Pas premier passage, IV existante
+            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
+        memcpy(buffer_out, plaintext, CRYPTO_BUFFER_SIZE);
+        buffer_out += CRYPTO_BUFFER_SIZE;
+        memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
+        posIV = 0;
     }
-    nrounds = rijndaelSetupDecrypt(rk, key, KEYBITS);
-
-    i = 0;
-    do
-    {
-        unsigned char plaintext[16];
-        unsigned char ciphertext[16];
-
-		crashTemp((char *) plaintext, 16);
-        crashTemp((char *) ciphertext, 16);
-        if (!inputMemory && fread(ciphertext, sizeof(ciphertext), 1, input) != 1)
-            break;
-        else if(inputMemory)
-        {
-            return_val = memccpy(ciphertext, path_input+positionDansInput, 0, sizeof(ciphertext));
-            positionDansInput+= sizeof(ciphertext);
-            if(return_val != NULL)// && return_val == (int*)ciphertext + 0x10)
-            {
-                if(*return_val == 0)
-                    break;
-                else
-                    lastRow = 1;
-            }
-        }
-        rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
-        if(!outputMemory && output != NULL)
-            fwrite(plaintext, sizeof(plaintext), 1, output);
-        else if(cryptIntoMemory != MODE_RAK)
-            for(i=0; plaintext[i] && i < sizeof(plaintext); path_output[positionDansOutput++] = plaintext[i++]);
-        else
-        {
-            memmove(path_output+i, plaintext, sizeof(plaintext));
-            i+= sizeof(plaintext);
-        }
-    } while (!lastRow);
-
-	if(!inputMemory)
-        fclose(input);
-    if(!outputMemory)
-        fclose(output);
-    else if (cryptIntoMemory != MODE_RAK)
-        path_output[positionDansOutput] = 0;
-    return 0;
+    fclose(in);
 }
 
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
@@ -446,9 +291,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
 
-    void *buf_page = malloc(size+5);
+    void *buf_page = malloc(size+100);
 
-    AESDecrypt(key, path, buf_page, MODE_RAK);
+    decryptPage(key, path, buf_page, size);
 
 #ifdef VERBOSE_DECRYPT
     AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
@@ -460,10 +305,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
     free(buf_page);
 
-#ifdef DEV_VERSION
-    if(surface_page == NULL)
-        AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
-#endif
     crashTemp(key, SHA256_DIGEST_LENGTH);
     free(path);
     return surface_page;

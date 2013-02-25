@@ -21,12 +21,6 @@ int getMasterKey(unsigned char *input)
     int nombreCle, i, j, fileInvalid;
     unsigned char date[100], fingerPrint[SHA256_DIGEST_LENGTH], buffer[240], buffer_Load[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
     size_t size;
-
-#ifdef MSVC
-    void *output = NULL;
-    char *output_char = NULL;
-#endif
-
 	FILE* bdd = NULL;
     *input = 0;
 
@@ -61,10 +55,8 @@ int getMasterKey(unsigned char *input)
             fileInvalid = 0;
     } while(fileInvalid);
 
-#ifndef MSVC
     void *output = NULL;
     unsigned char *output_char = NULL;
-#endif
 
     for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
         for(j=0; j<SHA256_DIGEST_LENGTH; buffer_Load[i][j++] = 0);
@@ -107,8 +99,9 @@ int getMasterKey(unsigned char *input)
             unsigned char ciphertext[16];
 			memcpy(ciphertext, buffer_Load[i] + j*16, 16);
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
-            memcpy(output+j*16 , plaintext, 16);
+            memcpy(&output_char[j*16] , plaintext, 16);
         }
+        for(j = 16; j < 32; j++) { output_char[j] ^= buffer_Load[i][j]; }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
         for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] >= ' '  && output_char[j] < 255); j++); //On regarde si c'est bien une clée
@@ -527,6 +520,9 @@ int logon()
     return 0;
 }
 
+extern int WINDOW_SIZE_H_DL;
+extern int WINDOW_SIZE_W_DL;
+
 int getPassword(char password[100], int dlUI, int salt)
 {
     int xPassword = 0, resized = 0;
@@ -563,7 +559,7 @@ int getPassword(char password[100], int dlUI, int salt)
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
     position.y = 20;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -583,7 +579,7 @@ int getPassword(char password[100], int dlUI, int salt)
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
     position.y += 85;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -591,7 +587,7 @@ int getPassword(char password[100], int dlUI, int salt)
     SDL_DestroyTextureS(ligne);
 
     ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
     position.y += 30;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -606,16 +602,17 @@ int getPassword(char password[100], int dlUI, int salt)
         if(waitClavier(currentRenderer, 50, xPassword, 105, 0, password) == PALIER_QUIT)
             return PALIER_QUIT;
 
-        if(resized)
-        {
-            updateWindowSize(LARGEUR, resized);
-            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-        }
         if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
             if(!salt)
+            {
+                if(resized)
+                {
+                    updateWindowSize(LARGEUR, resized);
+                    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+                }
                 return 1;
-
+            }
             int i = 0, j = 0;
             char temp[HASH_LENGTH+5], serverTime[500];
             crashTemp(temp, HASH_LENGTH+5);
@@ -633,6 +630,12 @@ int getPassword(char password[100], int dlUI, int salt)
             temp[j] = 0;
             sha256_legacy(temp, password);
             MajToMin(password);
+
+            if(resized)
+            {
+                updateWindowSize(LARGEUR, resized);
+                chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+            }
             return 1;
         }
     }
@@ -678,14 +681,12 @@ int check_login(char adresseEmail[100])
     return 2;
 }
 
-int checkPass(char adresseEmail[100], char password[50], int login)
+int checkPass(char adresseEmail[100], char password[100], int login)
 {
     int i = 0;
     char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1];
 
-    crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
-
-    /*On vérifie la validité de la chaÃ“ne*/
+    /*On vérifie la validité de la chaîne*/
     for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
     if(adresseEmail[i] != '@') //on a pas de @
         return 2;
@@ -948,13 +949,13 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             outputRAW[i] = 0;
             pbkdf2((unsigned char*) randomKeyHex, (unsigned char*) COMPTE_PRINCIPAL_MAIL, passSeed);
 
-            AESDecrypt(passSeed, outputRAW, seed, EVERYTHING_IN_MEMORY);
+            _AESDecrypt(passSeed, outputRAW, seed, EVERYTHING_IN_MEMORY, 1);
 
             //On a désormais le seed
             generateKey(derivation);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, strlen(password), 2048, PBKDF2_OUTPUT_LENGTH, passDer);
-            AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY);
+            _AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY, 1);
             decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
             randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 

@@ -269,8 +269,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
             }
         }
 
-        size_buf = WRITEBUFFERSIZE;
-        buf = (void*)malloc(size_buf);
+        buf = (void*)malloc((size_buf = WRITEBUFFERSIZE));
         if (buf==NULL)
         {
             logR("Error allocating memory\n");
@@ -279,15 +278,19 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 
         if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la volée
         {
-            int nrounds;
-            unsigned long rk[RKLENGTH(KEYBITS)];
-            unsigned char *buf_char = NULL;
-            unsigned char key[KEYLENGTH(KEYBITS)];
+            int posIV;
+            unsigned char *buf_char = (unsigned char *) buf;;
+            unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
+            SERPENT_STATIC_DATA pSer;
 
             generateKey(passwordPageCrypted);
-            for (nrounds = 0; nrounds < sizeof(key); nrounds++)
-                key[nrounds] = *passwordPageCrypted!= 0 ? *passwordPageCrypted++ : 0;
-            nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
+            for (posIV = 0; posIV < sizeof(key); posIV++)
+                key[posIV] = *passwordPageCrypted!= 0 ? *passwordPageCrypted++ : 0;
+
+            Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
+            Twofish_set_key((u4byte*)  key, KEYBITS);
+            posIV = -1;
+
             do
             {
                 err = unzReadCurrentFile(uf,buf,size_buf);
@@ -302,23 +305,27 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
                 }
                 else if (err>0)
                 {
-                    int i, j;
-                    buf_char = (unsigned char *) buf;
-                    for(i = 0; i<err;)
+                    int i = 0, j;
+                    while(i < err)
                     {
                         unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
+
                         for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
                         for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
-                        rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
+                        if(posIV != -1) //Pas premier passage, IV existante
+                            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
+                        Serpent_encrypt(&pSer, (DWORD*) plaintext, (DWORD*) ciphertext);
+                        fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout);
+                        memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
 
-                        if (fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout) != 1)
-                        {
-#ifdef DEV_VERSION
-                            logR("File write error\n");
-#endif
-                            fclose(fout);
-                            return 1;
-                        }
+                        for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+                        for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
+                        if(posIV != -1) //Pas premier passage, IV existante
+                            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
+                        Twofish_encrypt((u4byte*)  plaintext, (u4byte*) ciphertext);
+                        fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout);
+                        memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
+                        posIV = 0;
                     }
                 }
                 else
