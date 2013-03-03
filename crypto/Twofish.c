@@ -239,7 +239,7 @@ u1byte  sb[4][256];
 #define q42(x)  q(1,q(0,q(0, q(0, x) ^ byte(key[3],2)) ^ byte(key[2],2)) ^ byte(key[1],2)) ^ byte(key[0],2)
 #define q43(x)  q(1,q(1,q(0, q(1, x) ^ byte(key[3],3)) ^ byte(key[2],3)) ^ byte(key[1],3)) ^ byte(key[0],3)
 
-gen_mk_tab(u4byte key[])
+void gen_mk_tab(u4byte key[])
 {   u4byte  i;
     u1byte  by;
 
@@ -283,7 +283,7 @@ gen_mk_tab(u4byte key[])
 #endif
             }
     }
-};
+}
 
 #  ifdef ONE_STEP
 #    define g0_fun(x) ( mk_tab[0][byte(x,0)] ^ mk_tab[1][byte(x,1)] \

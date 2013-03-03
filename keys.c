@@ -101,7 +101,7 @@ int getMasterKey(unsigned char *input)
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
             memcpy(&output_char[j*16] , plaintext, 16);
         }
-        for(j = 16; j < 32; j++) { output_char[j] ^= buffer_Load[i][j]; }
+        for(j = 16; j < 32; j++) { output_char[j] ^= buffer_Load[i][j-16]; }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
         for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] >= ' '  && output_char[j] < 255); j++); //On regarde si c'est bien une clée

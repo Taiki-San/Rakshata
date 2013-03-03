@@ -206,52 +206,23 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         free(configEnc);
         exit(-1);
     }
-    unsigned char numChapitreChar[10];
+    unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     sprintf((char *) numChapitreChar, "%d", numeroChapitre/10);
     pbkdf2(temp, numChapitreChar, hash);
+
     crashTemp(temp, 200);
 
-    AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
+    _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
     for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
     if(i == 0 || configEnc[i] != ' ')
     {
-        if(checkNetworkState(CONNEXION_OK))
-        {
-            recoverPassFromServ(temp, numeroChapitre);
-            AESDecrypt(temp, path, configEnc, OUTPUT_IN_MEMORY); //On décrypte config.enc
-            for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
-            if(i != 0 && configEnc[i] == ' ')
-                AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY);
-            else
-            {
-                free(configEnc);
-                logR("Huge fail: database corrupted\n");
-                free(path);
-                return NULL;
-            }
-        }
-        else
-        {
-            SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
-            TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-            if(police == NULL)
-            {
-                free(path);
-                return NULL;
-            }
-            else
-            {
-                surface_page = TTF_RenderText_Blended(police, "Vous avez besoin d'un acces internet pour lire sur un nouvel ordinateur", couleurTexte);
-                TTF_CloseFont(police);
-                free(path);
-                return surface_page;
-            }
-        }
+        free(configEnc);
+        logR("Huge fail: database corrupted\n");
+        free(path);
+        return (void*) 0x1;
     }
     crashTemp(hash, SHA256_DIGEST_LENGTH);
-
     snprintf(path, length, "%s/%s", root, nomPage);
-
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
     for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
@@ -296,7 +267,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     decryptPage(key, path, buf_page, size);
 
 #ifdef VERBOSE_DECRYPT
-    AESDecrypt(key, path, "direct.png", EVERYTHING_IN_HDD);
     FILE *newFile = fopen("buffer.png", "wb");
 	fwrite(buf_page, 1, size, newFile);
 	fclose(newFile);
@@ -314,9 +284,6 @@ void getPasswordArchive(char *fileName, char password[300])
 {
     int i = 0, j = 0;
     char *fileNameWithoutDirectory = malloc(strlen(fileName)), *URL = NULL;
-#ifdef MSVC
-	char buffer[1024+1], MK[SHA256_DIGEST_LENGTH], hash[SHA256_DIGEST_LENGTH], bufferDL[1000];
-#endif
 
     FILE* zipFile = fopenR(fileName, "r");
 
@@ -332,10 +299,9 @@ void getPasswordArchive(char *fileName, char password[300])
     fileNameWithoutDirectory[j] = 0;
 
     /*Pour identifier le fichier, on va hasher ses 1024 premiers caractéres*/
-#ifndef MSVC
     unsigned char buffer[1024+1];
     char hash[SHA256_DIGEST_LENGTH];
-#endif
+
     for(i = 0; i < 1024 && (j = fgetc(zipFile)) != EOF; buffer[i++] = j);
     sha256((unsigned char *) buffer, hash);
 
@@ -353,9 +319,7 @@ void getPasswordArchive(char *fileName, char password[300])
     free(fileNameWithoutDirectory);
 
     /*On prépare le buffer de téléchargement*/
-#ifndef MSVC
     char bufferDL[1000];
-#endif
     setupBufferDL(bufferDL, 100, 10, 1, 1);
 
     download(URL, bufferDL, 0); //Téléchargement
@@ -369,9 +333,7 @@ void getPasswordArchive(char *fileName, char password[300])
     }
 
     /*On récupére le pass*/
-#ifndef MSVC
     unsigned char MK[SHA256_DIGEST_LENGTH];
-#endif
     getMasterKey(MK);
     AESDecrypt(MK, bufferDL, password, EVERYTHING_IN_MEMORY);
     crashTemp(MK, SHA256_DIGEST_LENGTH);

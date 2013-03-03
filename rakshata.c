@@ -35,11 +35,11 @@ SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
 
 #ifndef _WIN32
-MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
-MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
+    MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
+    MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
 #else
-MUTEX_VAR mutex;
-MUTEX_VAR mutexRS;
+    MUTEX_VAR mutex;
+    MUTEX_VAR mutexRS;
 #endif
 
 #include "crypto/crypto.h"

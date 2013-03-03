@@ -52,12 +52,12 @@ int refreshChaptersList(MANGAS_DATA *mangaDB)
 
 int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
-    int first = -1, end = -1, fBack, eBack, i = 0;
+    int first = -1, end = -1, fBack, eBack, nbElem = 0;
     char temp[TAILLE_BUFFER];
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
-    fscanfs(file, "%d %d", &first, &end);
+    fscanfs(file, "%d %d", &fBack, &eBack);
     if(fgetc(file) != EOF)
     {
         fseek(file, -1, SEEK_CUR);
@@ -65,14 +65,22 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     }
     fclose(file);
 
-    fBack = first;
-    eBack = end;
+    for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
+    {
+        if(mangaDB->chapitres[nbElem]%10)
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10, CONFIGFILE);
+        else
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, CONFIGFILE);
+        if(!checkFileExist(temp))
+            mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    }
 
-    int nbElem = 0;
+#if 0
+    /*int nbElem = 0;
     for(; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
     nbElem--;
 
-    /*Si il y a pas des chapitres retiré de la base installé*/
+    //Si il y a pas des chapitres retiré de la base installé
     if(first < mangaDB->chapitres[0])
     {
         for(i = 0; first > mangaDB->chapitres[i]; i++)
@@ -98,10 +106,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         first = mangaDB->chapitres[i];
     }
     else
-    {
-        for(i = 0; i < nbElem && first < mangaDB->chapitres[i]; i++)
-            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    }
+        for(i = 0; i < nbElem && first > mangaDB->chapitres[i]; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
 
     if(end/10 > mangaDB->chapitres[nbElem]/10) //Pour supporter si le dernier chapitre est un chapitre special
     {
@@ -130,19 +135,19 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         end = mangaDB->chapitres[i];
     }
     else
-    {
-        for(i = nbElem; i > 0 && end/10 > mangaDB->chapitres[i] / 10; i--)
-            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    }
-
+        for(i = nbElem; i > 0 && end/10 < mangaDB->chapitres[i] / 10; mangaDB->chapitres[i--] = VALEUR_FIN_STRUCTURE_CHAPITRE);
+*/
+#endif
     qsort(mangaDB->chapitres, nbElem, sizeof(int), sortNumbers);
-
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
 
-    if(mangaDB->chapitres[0] > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    first = mangaDB->chapitres[0];
+    end = mangaDB->chapitres[nbElem-1];
+
+    if(first > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
         *dernierLu = mangaDB->chapitres[0];
 
-    else if(mangaDB->chapitres[nbElem-1] < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    else if(end < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
         *dernierLu = mangaDB->chapitres[nbElem-1];
 
     if((first != fBack || end != eBack) && first <= end)
@@ -283,6 +288,12 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             else
                 i--;
         }
+        if(nombreChapitre == 0)
+        {
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/", mangaDB->team->teamLong, mangaDB->mangaName);
+            removeFolder(temp);
+            return PALIER_MENU;
+        }
 
         if(nombreChapitre <= nombreMaxChapitre)
             chapitreDB[nombreChapitre].mangaName[0] = chapitreDB[nombreChapitre].pageInfos = 0;
@@ -417,7 +428,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             {
                 do
                 {
-                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, nombreChapitre, hauteur_chapitre);
+                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, mangaDB->chapitres[nombreMaxChapitre]/10, hauteur_chapitre);
                     if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                         ouvrirSite(mangaDB->team);
                 }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team

@@ -279,7 +279,7 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
         if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la volée
         {
             int posIV;
-            unsigned char *buf_char = (unsigned char *) buf;;
+            unsigned char *buf_char = (unsigned char *) buf;
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
             SERPENT_STATIC_DATA pSer;
 

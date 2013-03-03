@@ -596,21 +596,6 @@ int checkNameFileZip(char fileToTest[256])
     return 1;
 }
 
-int checkFileExist(char filename[])
-{
-    FILE* FileToTest = NULL;
-    if(filename[1] == ':')
-        FileToTest = fopen(filename, "r");
-    else
-        FileToTest = fopenR(filename, "r");
-    if(FileToTest != NULL)
-    {
-        fclose(FileToTest);
-        return 1;
-    }
-    return 0;
-}
-
 int checkFileValide(FILE* file)
 {
     if(file == NULL || fgetc(file) == '<' || fgetc(file) == '<' || fgetc(file) == '<')

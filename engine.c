@@ -506,7 +506,12 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         SDL_RenderPresent(renderer);
         while(!mangaChoisis)
         {
-            if(sectionChoisis != SECTION_CHOISIS_CHAPITRE || chapterDisplayed > 1)
+            if(sectionChoisis != SECTION_CHOISIS_CHAPITRE ||
+#ifdef CHAPTER_AUTO_SELECTED
+            chapterDisplayed > 1)
+#else
+            chapterDisplayed > 0) //Retourne au menu principal si 0 chapitres
+#endif
             {
                 if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
                     manuel = 0;
@@ -537,8 +542,10 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 }
             }
 
+#ifdef CHAPTER_AUTO_SELECTED
             else if(chapterDisplayed == 1)
                 mangaChoisis = chapterDisplayed;
+#endif
             else
                 mangaChoisis = PALIER_CHAPTER;
         }

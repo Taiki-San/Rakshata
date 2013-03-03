@@ -366,31 +366,22 @@ void removeFolder(char *path)
     }
 
     /* On boucle sur les entrées du dossier. */
-    while ( (entry = readdir(directory)) != NULL ) {
-
-        /* On "saute" les répertoires "." et "..". */
-        if ( strcmp(entry->d_name, ".") == 0 ||
-             strcmp(entry->d_name, "..") == 0 )
+    while ( (entry = readdir(directory)) != NULL )
+    {
+        if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
             continue;
 
-        /* On construit le chemin d'accés du fichier en
-         * concaténant son nom avec le nom du dossier
-         * parent. On intercale "/" entre les deux.
-         * NB: '/' est aussi utilisable sous Windows
-         * comme séparateur de dossier. */
         buffer = malloc(strlen(path) + strlen(entry->d_name) + 0x10);
         if(buffer == NULL)
         {
             char temp[256];
             snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(path) + strlen(entry->d_name) + 0x10);
             logR(temp);
-            continue; //On annule pas
+            continue;
         }
         snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);
 
-        /* On récupére des infos sur le fichier. */
-
-        if ( checkFileExist(buffer))
+        if(checkFileExist(buffer))
             removeR(buffer); //On est sur un fichier, on le supprime.
 
         else
@@ -549,4 +540,41 @@ int checkPID(int PID)
     return 0;
 }
 
+int checkFileExist(char *filename)
+{
+    FILE* FileToTest = NULL;
+    if(filename[1] == ':')
+        FileToTest = fopen(filename, "r");
+    else
+        FileToTest = fopenR(filename, "r");
+    if(FileToTest != NULL)
+    {
+        fclose(FileToTest);
+        return 1;
+    }
+    return 0;
+}
+
+int checkDirExist(char *dirname)
+{
+    DIR *directory = NULL;
+    if(dirname[1] == ':')
+        directory = opendir(dirname);
+    else
+    {
+        char *directory_fullname = calloc(1, strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128);
+        if(directory_fullname != NULL)
+        {
+            snprintf(directory_fullname, strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128, "%s/%s", REPERTOIREEXECUTION, dirname);
+            directory = opendir(directory_fullname);
+            free(directory_fullname);
+        }
+    }
+    if(directory != NULL)
+    {
+        closedir(directory);
+        return 1;
+    }
+    return 0;
+}
 

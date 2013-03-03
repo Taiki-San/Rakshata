@@ -206,7 +206,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                     OChapitre = IMG_Load(temp);
                 }
                 else
+                {
                     OChapitre = IMG_LoadS(OChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1], pageEnCoursDeLecture-1);
+                    if(OChapitre == (SDL_Surface*) 0x1)
+                    {
+                        internal_deleteChapitre(*mangaDB, *chapitreChoisis);
+                        OChapitre = 0;
+                    }
+                }
             }
 
             if(chapitre != NULL)
@@ -225,7 +232,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 chapitre = IMG_Load(temp);
             }
             else
+            {
                 chapitre = IMG_LoadS(chapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture], pageEnCoursDeLecture);
+                if(chapitre == (SDL_Surface*) 0x1)
+                {
+                    internal_deleteChapitre(*mangaDB, *chapitreChoisis);
+                    chapitre = 0;
+                }
+            }
             changementPage = 1; //Mettra en cache la page n+1
         }
 
@@ -408,7 +422,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 pos.y = i*sizeMax;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
-                SDL_FillRect(chap_buf, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
+                SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, FOND_R, FOND_G, FOND_B));
                 SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
                 texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
@@ -507,7 +521,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         NChapitre = IMG_Load(temp);
                     }
                     else
+                    {
                         NChapitre = IMG_LoadS(NChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture+1], pageEnCoursDeLecture+1);
+                        if(NChapitre == (SDL_Surface*) 0x1)
+                        {
+                            internal_deleteChapitre(*mangaDB, *chapitreChoisis);
+                            NChapitre = 0;
+                        }
+                    }
                 }
                 if (changementPage == -1)
                 {
@@ -523,7 +544,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         OChapitre = IMG_Load(temp);
                     }
                     else
+                    {
                         OChapitre = IMG_LoadS(OChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1], pageEnCoursDeLecture-1);
+                        if(OChapitre == (SDL_Surface*) 0x1)
+                        {
+                            internal_deleteChapitre(*mangaDB, *chapitreChoisis);
+                            OChapitre = 0;
+                        }
+                    }
                 }
                 pageCharge = 1;
                 changementPage = 0;
@@ -1096,7 +1124,7 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
 
             changeTo(output[i], '&', ' ');
         }
-        for(*nombrePage -= 1; *nombrePage >= 0 && !output[*nombrePage][0]; *nombrePage -= 1);
+        i--;
          //PageEnCoursDeLecture est décalé de 1 (car les tableaux commencent à 0), autant faire de même ici
     }
 
@@ -1106,7 +1134,21 @@ int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][
             sprintf(output[i], "%d.jpg", i);
     }
     fclose(file_input);
+    for(i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
 
+    char temp[300];
+    for(i = *nombrePage; i >= 0; i--)
+    {
+        if(output[i][0])
+        {
+            snprintf(temp, 300, "%s%s", input, output[i]);
+            if(checkFileExist(temp))
+            {
+                *nombrePage = i;
+                break;
+            }
+        }
+    }
     return 0;
 }
 
@@ -1235,7 +1277,8 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
         else
         {
             getUpdatedChapterList(mangaDB);
-            for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
+            //On se positionne dans la structure
+            for(; mangaDB->chapitres[posChapitre] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
 
             if(mangaDB->chapitres[posChapitre+1] != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {

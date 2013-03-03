@@ -485,9 +485,8 @@ static size_t save_data(void *ptr, size_t size, size_t nmemb, void *buffer_dl)
 
     else //Tronque
     {
-        for(i = POSITION_DANS_BUFFER; i < size_buffer; i++)
-            buffer[i] = input[i];
-        buffer[i-1] = 0;
+        for(i = 0; POSITION_DANS_BUFFER < size_buffer; buffer[POSITION_DANS_BUFFER++] = input[i++]);
+        buffer[POSITION_DANS_BUFFER-1] = 0;
     }
     return size*nmemb;
 }

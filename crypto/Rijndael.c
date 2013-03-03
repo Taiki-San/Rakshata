@@ -1261,7 +1261,6 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             outputMemory = 0;
             if (output == NULL)
             {
-                logR("File write error\n");
                 return 1;
             }
         }
@@ -1307,9 +1306,6 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             if (fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, output) != 1)
             {
                 fclose(output);
-#ifdef DEV_VERSION
-                logR("File write error\n");
-#endif
                 return 1;
             }
         }
@@ -1351,7 +1347,6 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
             input = fopenR(path_input, "rb");
             if (input == NULL)
             {
-                logR("File read error");
                 return 1;
             }
             inputMemory = 0;
@@ -1361,7 +1356,6 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
             output = fopenR(path_output, "wb");
             if (output == NULL)
             {
-                logR("File write error\n");
                 return 1;
             }
             outputMemory = 0;

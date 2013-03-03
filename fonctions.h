@@ -49,7 +49,6 @@ int checkButtonPressed(int button_selected[8]);
 int checkWindowEventValid(int EventWindowEvent);
 void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar);
 int checkNameFileZip(char fileToTest[256]);
-int checkFileExist(char filename[]);
 int checkFileValide(FILE* file);
 
 /**Database.c**/
@@ -181,6 +180,8 @@ int createNewThread(void *function, void *arg);
 void ouvrirSite(TEAMS_DATA* teams);
 int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);
+int checkFileExist(char *filename);
+int checkDirExist(char *dirname);
 
 /**PBKDF2.c**/
 int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret);

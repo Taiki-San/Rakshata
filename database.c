@@ -131,7 +131,7 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
     size_t pos = 0;
     for(; pos < length; pos++)
     {
-        if(mangasDB[pos].chapitres != NULL)
+        if(mangasDB[pos].chapitres != NULL && *mangasDB[pos].chapitres != VALEUR_FIN_STRUCTURE_CHAPITRE)
             free(mangasDB[pos].chapitres);
         free(mangasDB[pos].team);
     }
@@ -500,7 +500,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 {
 	char temp[3*LONGUEUR_NOM_MANGA_MAX];
 	/*si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
-	if(mangaDB.chapitres[1] != 0)
+	if(mangaDB.chapitres[1] != VALEUR_FIN_STRUCTURE_CHAPITRE)
 	{
 		sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
 
@@ -511,7 +511,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 		removeFolder(temp);
 
 		int length = 0;
-		for(; mangaDB.chapitres[length]; length++); //On énumère
+		for(; mangaDB.chapitres[length] == VALEUR_FIN_STRUCTURE_CHAPITRE; length++); //On énumère
 
 		if(mangaDB.chapitres[0] == chapitreDelete || mangaDB.chapitres[length-1] == chapitreDelete)
 		{
