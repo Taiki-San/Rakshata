@@ -64,24 +64,37 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     positionSlide.x = 0;
     positionSlide.y = 0;
 
+    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
     if(decimale)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
+    {
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
+        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale);
+    }
     else
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
+    {
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
+        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne);
+    }
 
     /*Si chapitre manquant*/
-    while(!checkFileExist(temp) && curPosIntoStruct < length)
+    while((!checkFileExist(temp) || checkFileExist(pathInstallFlag)) && curPosIntoStruct < length)
     {
         *chapitreChoisis = mangaDB->chapitres[curPosIntoStruct++];
         chapitreChoisisInterne = *chapitreChoisis/10;
         decimale = *chapitreChoisis%10;
         if(decimale)
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
+        {
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale, CONFIGFILE);
+            snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, decimale);
+        }
         else
-            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
+        {
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne, CONFIGFILE);
+            snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, chapitreChoisisInterne);
+        }
     }
 
-    if(!checkFileExist(temp) || configFileLoader(temp, &pageTotal, nomPage))
+    if(!checkFileExist(temp) || checkFileExist(pathInstallFlag) || configFileLoader(temp, &pageTotal, nomPage))
     {
         sprintf(temp, "Chapitre non-existant: Team: %s - Manga: %s - Chapitre: %d\n", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
         logR(temp);
@@ -501,7 +514,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 /*Bug bizarre*/
                 refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
-                changementEtat= 0;
+                changementEtat = 0;
             }
             else
                 noRefresh = 0;

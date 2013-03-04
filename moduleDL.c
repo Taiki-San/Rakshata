@@ -496,12 +496,24 @@ void* installation(void* datas)
 
         /*Création du répertoire de destination*/
         if(chapitre%10)
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
         else
-            sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
         mkdirR(temp);
 
+        //On crée un message pour ne pas lire un chapitre en cours d'installe
+        char temp_path_install[TAILLE_BUFFER];
+        if(chapitre%10)
+            snprintf(temp_path_install, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+        else
+            snprintf(temp_path_install, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+        ressources = fopenR(temp_path_install, "w+");
+        if(ressources != NULL)
+            fclose(ressources);
+
         erreurs = miniunzip (valeurs->buf->buf, temp, "", valeurs->buf->length, chapitre);
+
+        removeR(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
         if(!erreurs)
