@@ -231,32 +231,14 @@ void updateWindowSize(int w, int h)
         SDL_SetWindowSize(window, w, h);
         SDL_FlushEvent(SDL_WINDOWEVENT);
 
-        checkRenderBugPresent(window, renderer);
+        #ifdef _WIN32
+            ReleaseSemaphore(mutexRS, 1, NULL);
+        #else
+            pthread_mutex_unlock(&mutexRS);
+        #endif
+        if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
+            SDL_RenderPresent(renderer);
 
-        if(RENDER_BUG)
-        {
-            SDL_DestroyRenderer(renderer);
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-
-            #ifdef _WIN32
-                ReleaseSemaphore(mutexRS, 1, NULL);
-            #else
-                pthread_mutex_unlock(&mutexRS);
-            #endif
-
-            chargement(renderer, h, w);
-        }
-        else
-        {
-            #ifdef _WIN32
-                ReleaseSemaphore(mutexRS, 1, NULL);
-            #else
-                pthread_mutex_unlock(&mutexRS);
-            #endif
-            if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
-                SDL_RenderPresent(renderer);
-        }
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;
     }

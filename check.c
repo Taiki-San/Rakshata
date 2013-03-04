@@ -556,14 +556,6 @@ int checkWindowEventValid(int EventWindowEvent)
     return 0;
 }
 
-void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar)
-{
-    if(RENDER_BUG)
-        return;
-    if(SDL_RenderClear(renderVar))
-        RENDER_BUG = 1;
-}
-
 int checkNameFileZip(char fileToTest[256])
 {
     if( fileToTest[0] == '_' &&

@@ -264,6 +264,7 @@ int logon()
     if(WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas Ã  redimensionner celle lÃ 
     {
         updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+        SDL_RenderClear(renderer);
         resized = 1;
     }
 

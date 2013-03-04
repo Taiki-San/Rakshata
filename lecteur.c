@@ -313,15 +313,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_DestroyTextureS(infoSurface);
 
             if(WINDOW_SIZE_H != buffer || WINDOW_SIZE_W != largeurValide)
-            {
-                if(RENDER_BUG)
-                    SDL_DestroyTextureS(bandeauControle);
-
                 updateWindowSize(largeurValide, buffer);
-
-                if(RENDER_BUG)
-                    bandeauControle = loadControlBar(mangaDB->favoris);
-            }
+            SDL_RenderClear(renderer);
         }
 
         else
@@ -329,23 +322,11 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             SDL_DestroyTextureS(infoSurface);
             if(changementEtat)
             {
-                if(RENDER_BUG)
-                {
-                    SDL_DestroyTextureS(bandeauControle);
-                    SDL_DestroyRenderer(renderer);
-                }
-
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowSize(window, RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
-                if(RENDER_BUG)
-                {
-                    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-                    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
-                    bandeauControle = loadControlBar(mangaDB->favoris);
-                }
                 SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
 

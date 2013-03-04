@@ -21,7 +21,6 @@ int UNZIP_NEW_PATH = 0; //La décompression change le path courant
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 int HAUTEUR = 730;
-int RENDER_BUG = 0;
 int favorisToDL = -1;
 int alreadyRefreshed = 0;
 char REPERTOIREEXECUTION[350];

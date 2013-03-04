@@ -114,6 +114,7 @@ int download(char *adresse, char *repertoire, int activation)
 
 		if(WINDOW_SIZE_H_DL != HAUTEUR_FENETRE_DL)
             updateWindowSizeDL(LARGEUR, HAUTEUR_FENETRE_DL);
+        SDL_RenderClear(rendererDL);
 
         /*Remplissage des variables*/
         loadTrad(texte, 20);

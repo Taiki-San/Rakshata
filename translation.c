@@ -121,7 +121,6 @@ int changementLangue()
     /*On change la taille de l'écran*/
     if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
         updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
-
     SDL_RenderClear(renderer);
 
     loadTrad(menus, 13);

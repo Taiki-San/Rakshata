@@ -47,7 +47,6 @@ int checkFirstLineButtonPressed(int button_selected[8]);
 int checkSecondLineButtonPressed(int button_selected[8]);
 int checkButtonPressed(int button_selected[8]);
 int checkWindowEventValid(int EventWindowEvent);
-void checkRenderBugPresent(SDL_Window* windows, SDL_Renderer* renderVar);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
 

@@ -799,17 +799,8 @@ void updateWindowSizeDL(int w, int h)
         chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
 
         SDL_SetWindowSize(windowDL, w, h);
-        checkRenderBugPresent(windowDL, rendererDL);
 
-        if(RENDER_BUG)
-        {
-            SDL_DestroyRenderer(rendererDL);
-            rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
-            SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
-            chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
-            SDL_RenderPresent(rendererDL);
-        }
-        else if(WINDOW_SIZE_H_DL > h || WINDOW_SIZE_W_DL > w)
+        if(WINDOW_SIZE_H_DL > h || WINDOW_SIZE_W_DL > w)
         {
             SDL_RenderClear(rendererDL);
             SDL_RenderPresent(rendererDL);

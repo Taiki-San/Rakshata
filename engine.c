@@ -17,7 +17,7 @@ int curPage; //Too lazy to use an argument
 
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
-    int i = 0, hauteurTexte = 0, ret_value = 0, *longueur = malloc(nombreElements*sizeof(int));
+    int i = 0, hauteurTexte = 0, ret_value = 0, time_since_refresh = 0, *longueur = malloc(nombreElements*sizeof(int));
     int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0};
     char tempPath[450];
     SDL_Texture *texture = NULL;
@@ -189,59 +189,63 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
             }
         }
 
-        else if(favorisToDL == 0) //Refresh en cours
+        if(SDL_GetTicks() - time_since_refresh > 100)
         {
-            posRoundFav++;
-            posRoundFav %= 4;
-            switch(posRoundFav)
+            if(favorisToDL == 0) //Refresh en cours
             {
-                case 0:
-                    texture = TTF_Write(renderer, police, "|", couleurTexte);
-                    break;
-                case 1:
-                    texture = TTF_Write(renderer, police, "/", couleurTexte);
-                    break;
-                case 2:
-                    texture = TTF_Write(renderer, police, "--", couleurTexte);
-                    break;
-                case 3:
-                    texture = TTF_Write(renderer, police, "\\", couleurTexte);
-                    break;
-            }
-            position.x = 25 - texture->w / 2;
-            position.y = 25 - texture->h / 2;
-            position.h = texture->h;
-            position.w = texture->w;
-            applyBackground(renderer, 5, 5, 50, 50);
-            SDL_RenderCopy(renderer, texture, NULL, &position);
-            SDL_DestroyTextureS(texture);
-            SDL_RenderPresent(renderer);
-        }
-
-        else if(favorisToDL == -1)
-        {
-            applyBackground(renderer, 5, 5, 50, 50);
-            SDL_RenderPresent(renderer);
-            favorisToDL--;
-        }
-
-        else if(favorisToDL == 1) //Refresh done
-        {
-            applyBackground(renderer, 5, 5, 50, 50);
-
-            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORIS_MENU);
-            texture = IMG_LoadTexture(renderer, tempPath);
-            if(texture != NULL)
-            {
-                sizeFavsDispo[0] = position.x = POSITION_ICONE_MENUS;
-                sizeFavsDispo[2] = position.y = POSITION_ICONE_MENUS;
-                sizeFavsDispo[1] = position.w = TAILLE_ICONE_MENUS;
-                sizeFavsDispo[3] = position.h = TAILLE_ICONE_MENUS;
+                posRoundFav++;
+                posRoundFav %= 4;
+                switch(posRoundFav)
+                {
+                    case 0:
+                        texture = TTF_Write(renderer, police, "|", couleurTexte);
+                        break;
+                    case 1:
+                        texture = TTF_Write(renderer, police, "/", couleurTexte);
+                        break;
+                    case 2:
+                        texture = TTF_Write(renderer, police, "--", couleurTexte);
+                        break;
+                    case 3:
+                        texture = TTF_Write(renderer, police, "\\", couleurTexte);
+                        break;
+                }
+                position.x = 25 - texture->w / 2;
+                position.y = 25 - texture->h / 2;
+                position.h = texture->h;
+                position.w = texture->w;
+                applyBackground(renderer, 5, 5, 50, 50);
                 SDL_RenderCopy(renderer, texture, NULL, &position);
                 SDL_DestroyTextureS(texture);
                 SDL_RenderPresent(renderer);
+                time_since_refresh = SDL_GetTicks();
             }
-            favorisToDL++;
+
+            else if(favorisToDL == -1)
+            {
+                applyBackground(renderer, 5, 5, 50, 50);
+                SDL_RenderPresent(renderer);
+                favorisToDL--;
+            }
+
+            else if(favorisToDL == 1) //Refresh done
+            {
+                applyBackground(renderer, 5, 5, 50, 50);
+
+                snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORIS_MENU);
+                texture = IMG_LoadTexture(renderer, tempPath);
+                if(texture != NULL)
+                {
+                    sizeFavsDispo[0] = position.x = POSITION_ICONE_MENUS;
+                    sizeFavsDispo[2] = position.y = POSITION_ICONE_MENUS;
+                    sizeFavsDispo[1] = position.w = TAILLE_ICONE_MENUS;
+                    sizeFavsDispo[3] = position.h = TAILLE_ICONE_MENUS;
+                    SDL_RenderCopy(renderer, texture, NULL, &position);
+                    SDL_DestroyTextureS(texture);
+                    SDL_RenderPresent(renderer);
+                }
+                favorisToDL++;
+            }
         }
     }
     TTF_CloseFont(police);

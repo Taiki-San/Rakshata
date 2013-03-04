@@ -49,9 +49,9 @@ int ajoutRepo()
 
             if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
                 updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
+            SDL_RenderClear(renderer);
 
             /*On affiche l'écran de sélection*/
-            SDL_RenderClear(renderer);
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
             position.y = HAUTEUR_MENU_AJOUT_REPO;

@@ -24,17 +24,13 @@ int affichageMenuGestion()
 
     if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)
         updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
+    SDL_RenderClear(renderer);
 
     for(i = 0; i < SIZE_TRAD_ID_3; i++)
-    {
-        for(j = 0; j < LONGUEURTEXTE; j++)
-            menus[i][j] = 0;
-    }
+        for(j = 0; j < LONGUEURTEXTE; menus[i][j++] = 0);
 
     /*Remplissage des variables*/
     loadTrad(menus, 3);
-
-    SDL_RenderClear(renderer);
 
     texteAffiche = TTF_Write(renderer, police, menus[0], couleur);
     position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
