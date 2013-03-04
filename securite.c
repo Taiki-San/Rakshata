@@ -226,7 +226,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
     for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
-    if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
+    if((length2 - i) % (SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
         //Au cas où ça se reproduit, cette condition devrait bloquer le bug

@@ -42,8 +42,6 @@ SDL_Renderer *rendererDL = NULL;
     MUTEX_VAR mutexRS;
 #endif
 
-#include "crypto/crypto.h"
-
 int main()
 {
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main

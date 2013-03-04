@@ -53,7 +53,7 @@ int refreshChaptersList(MANGAS_DATA *mangaDB)
 int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
     int first = -1, end = -1, fBack, eBack, nbElem = 0;
-    char temp[TAILLE_BUFFER];
+    char temp[TAILLE_BUFFER*5], temp_path_flag[TAILLE_BUFFER*5];
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
@@ -68,76 +68,19 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
     {
         if(mangaDB->chapitres[nbElem]%10)
-            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10, CONFIGFILE);
+        {
+            snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10, CONFIGFILE);
+            snprintf(temp_path_flag, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10);
+        }
         else
-            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, CONFIGFILE);
-        if(!checkFileExist(temp))
+        {
+            snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, CONFIGFILE);
+            snprintf(temp_path_flag, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10);
+        }
+        if(!checkFileExist(temp) || checkFileExist(temp_path_flag))
             mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
     }
 
-#if 0
-    /*int nbElem = 0;
-    for(; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
-    nbElem--;
-
-    //Si il y a pas des chapitres retiré de la base installé
-    if(first < mangaDB->chapitres[0])
-    {
-        for(i = 0; first > mangaDB->chapitres[i]; i++)
-        {
-            if(mangaDB->chapitres[i]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10);
-            else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10);
-
-            removeFolder(temp);
-            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        }
-        do
-        {
-            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-            i++;
-            if(mangaDB->chapitres[i]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10, CONFIGFILE);
-            else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, CONFIGFILE);
-
-        }while(!checkFileExist(temp) && i <= nbElem);
-        first = mangaDB->chapitres[i];
-    }
-    else
-        for(i = 0; i < nbElem && first > mangaDB->chapitres[i]; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
-
-    if(end/10 > mangaDB->chapitres[nbElem]/10) //Pour supporter si le dernier chapitre est un chapitre special
-    {
-        for(i = nbElem; end < mangaDB->chapitres[i] && i > 0; i--)
-        {
-            if(mangaDB->chapitres[i]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10);
-            else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10);
-
-            removeFolder(temp);
-            mangaDB->chapitres[i] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        }
-
-        for(; first <= mangaDB->chapitres[i];)
-        {
-            if(mangaDB->chapitres[i]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10, CONFIGFILE);
-            else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, CONFIGFILE);
-            if(checkFileExist(temp))
-                break;
-            else
-                mangaDB->chapitres[i--] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        }
-        end = mangaDB->chapitres[i];
-    }
-    else
-        for(i = nbElem; i > 0 && end/10 < mangaDB->chapitres[i] / 10; mangaDB->chapitres[i--] = VALEUR_FIN_STRUCTURE_CHAPITRE);
-*/
-#endif
     qsort(mangaDB->chapitres, nbElem, sizeof(int), sortNumbers);
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
 
@@ -154,14 +97,17 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     {
         snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
         file = fopenR(temp, "w+");
-        fprintf(file, "%d %d", first, end);
-        if(*dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            fprintf(file, " %d", *dernierLu);
-        fclose(file);
+        if(temp != NULL)
+        {
+            fprintf(file, "%d %d", first, end);
+            if(*dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                fprintf(file, " %d", *dernierLu);
+            fclose(file);
+        }
     }
     else if(first > end)
     {
-        snprintf(temp, TAILLE_BUFFER, "manga\\%s\\%s", mangaDB->team->teamLong, mangaDB->mangaName);
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
         removeFolder(temp);
         return PALIER_MENU;
     }

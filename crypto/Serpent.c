@@ -21,9 +21,9 @@
 //
 ///////////////////////////////////////////////
 
+#include <stdlib.h>
+
 typedef unsigned long DWORD;
-unsigned long _lrotl(unsigned long value, int shift);
-unsigned long _lrotr(unsigned long value, int shift);
 
 #  define rotr(x,n) _lrotr(x,n)
 #  define rotl(x,n) _lrotl(x,n)

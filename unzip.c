@@ -180,7 +180,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         {
             sprintf(password, "Error changing into %s, aborting\n", outputZip);
             logR(password);
-            exit(-1);
+            exit(1);
         }
     }
     if(checkFileExist(CONFIGFILE))
@@ -356,7 +356,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             pbkdf2((uint8_t *) temp, chapter, hash);
 
             crashTemp(temp, 256);
-            AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY);
+            _AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY, 1);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
             crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant Ã  lire
         }

@@ -420,7 +420,7 @@ extern int curPage; //Too lazy to use an argument
 int deleteManga()
 {
 	/*Cette fonction va pomper comme un porc dans le module de selection de manga du lecteur*/
-	int continuer = -1, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1, pageManga = 1, pageChapitre = 1;;
+	int continuer = -1, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1, pageManga = 1, pageChapitre = 1;
 	char temp[2*LONGUEUR_NOM_MANGA_MAX + 0x80];
 
 	/*C/C du choix de manga pour le lecteur.*/
