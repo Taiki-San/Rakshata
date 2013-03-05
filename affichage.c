@@ -150,6 +150,46 @@ void loadPalette()
     palette.police_unread.r = POLICE_UNREAD_R; palette.police_unread.g = POLICE_UNREAD_G; palette.police_unread.b = POLICE_UNREAD_B;
     palette.police_actif.r = POLICE_ENABLE_R; palette.police_actif.g = POLICE_ENABLE_G; palette.police_actif.b = POLICE_ENABLE_B;
     palette.police_indispo.r = POLICE_UNAVAILABLE_R; palette.police_indispo.g = POLICE_UNAVAILABLE_G; palette.police_indispo.b = POLICE_UNAVAILABLE_B;
+
+#ifdef DEV_VERSION
+    FILE* res = NULL;
+    if(checkFileExist("data/background.txt"))
+    {
+        res = fopenR("data/background.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.fond.r, &palette.fond.g, &palette.fond.b);
+        fclose(res);
+    }
+    if(checkFileExist("data/font_normal.txt"))
+    {
+        res = fopenR("data/font_normal.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.police.r, &palette.police.g, &palette.police.b);
+        fclose(res);
+    }
+    if(checkFileExist("data/font_new.txt"))
+    {
+        res = fopenR("data/font_new.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.police_new.r, &palette.police_new.g, &palette.police_new.b);
+        fclose(res);
+    }
+    if(checkFileExist("data/font_unread.txt"))
+    {
+        res = fopenR("data/font_unread.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.police_unread.r, &palette.police_unread.g, &palette.police_unread.b);
+        fclose(res);
+    }
+    if(checkFileExist("data/font_menu_actif.txt"))
+    {
+        res = fopenR("data/font_menu_actif.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.police_actif.r, &palette.police_actif.g, &palette.police_actif.b);
+        fclose(res);
+    }
+    if(checkFileExist("data/font_menu_indisponible.txt"))
+    {
+        res = fopenR("data/font_menu_indisponible.txt", "r");
+        fscanfs(res, "%d %d %d", &palette.police_indispo.r, &palette.police_indispo.g, &palette.police_indispo.b);
+        fclose(res);
+    }
+#endif
 }
 
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)

@@ -168,8 +168,6 @@ int earlyInit()
 
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 100);
-
-    /*On remplis la palette*/
     loadPalette();
 
     /*Launching SDL & SDL_TTF*/
