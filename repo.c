@@ -19,7 +19,7 @@ int ajoutRepo()
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_NEW_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TEAMS_DATA teams;
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -208,7 +208,7 @@ int deleteRepo()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     /**************************************************************
@@ -334,7 +334,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     police = NULL;
 
 	police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);

@@ -29,7 +29,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL, *bandeauControle = NULL;
     TTF_Font *police = NULL;
     SDL_Rect positionInfos, positionPage, positionBandeauControle, positionSlide;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurFinChapitre = {POLICE_NEW_R, POLICE_NEW_G, POLICE_NEW_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
@@ -151,12 +151,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             }
 
             OChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0 , 0, 0);
-            SDL_FillRect(OChapitre, NULL, SDL_MapRGB(OChapitre->format, FOND_R, FOND_G, FOND_B));
+            SDL_FillRect(OChapitre, NULL, SDL_MapRGB(OChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
             SDL_BlitSurface(chapitre, NULL, OChapitre, NULL);
             SDL_FreeSurface(chapitre);
             freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, NChapitre->w, NChapitre->h, 32, 0, 0 , 0, 0);
-            SDL_FillRect(chapitre, NULL, SDL_MapRGB(OChapitre->format, FOND_R, FOND_G, FOND_B));
+            SDL_FillRect(chapitre, NULL, SDL_MapRGB(OChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
             SDL_BlitSurface(NChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(NChapitre);
             NChapitre = NULL;
@@ -190,12 +190,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 NChapitre = NULL;
             }
             NChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0, 0, 0);
-            SDL_FillRect(NChapitre, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
+            SDL_FillRect(NChapitre, NULL, SDL_MapRGB(NChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
             SDL_BlitSurface(chapitre, NULL, NChapitre, NULL);
             SDL_FreeSurface(chapitre);
             freeCurrentPage(chapitre_texture);
             chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0, 0, 0);
-            SDL_FillRect(chapitre, NULL, SDL_MapRGB(NChapitre->format, FOND_R, FOND_G, FOND_B));
+            SDL_FillRect(chapitre, NULL, SDL_MapRGB(NChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
             SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(OChapitre);
             OChapitre = NULL;
@@ -416,7 +416,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 pos.y = i*sizeMax;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
-                SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, FOND_R, FOND_G, FOND_B));
+                SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, palette.fond.r, palette.fond.g, palette.fond.b));
                 SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
                 texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
@@ -1154,8 +1154,8 @@ SDL_Texture* loadControlBar(int favState)
 
     /*On crée une surface intermédiaire car bliter directement sur le png loadé ne marche pas*/
     bandeauControleSurface = SDL_CreateRGBSurface(0, LARGEUR_CONTROLE_LECTEUR, BORDURE_CONTROLE_LECTEUR, 32, 0, 0, 0, 0);
-    SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
-    SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, FOND_R, FOND_G, FOND_B));
+    SDL_FillRect(bandeauControleSurface, NULL, SDL_MapRGB(bandeauControleSurface->format, palette.fond.r, palette.fond.g, palette.fond.b));
+    SDL_SetColorKey(bandeauControleSurface, SDL_TRUE, SDL_MapRGB(bandeauControleSurface->format, palette.fond.r, palette.fond.g, palette.fond.b));
 
     snprintf(path, 350+100, "%s/%s", REPERTOIREEXECUTION, ICONE_PREVIOUS_CHAPTER);
     SDL_Surface *icone = IMG_Load(path); //Previous Chapter

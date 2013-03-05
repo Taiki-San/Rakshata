@@ -19,7 +19,7 @@ int section()
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
@@ -78,7 +78,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
     /*Initilisation*/
     int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
 	char texteTrad[SIZE_TRAD_ID_18][TRAD_LENGTH];
-	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
@@ -146,7 +146,7 @@ int checkProjet(MANGAS_DATA mangaDB)
     char temp[TAILLE_BUFFER];
     SDL_Texture *image = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
     FILE* test = NULL;
 

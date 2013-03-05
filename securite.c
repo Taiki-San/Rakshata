@@ -265,14 +265,15 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     void *buf_page = malloc(size+100);
 
     decryptPage(key, path, buf_page, size);
-
-#ifdef VERBOSE_DECRYPT
-    FILE *newFile = fopen("buffer.png", "wb");
-	fwrite(buf_page, 1, size, newFile);
-	fclose(newFile);
-#endif
-
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
+#ifdef DEV_VERSION
+    if(surface_page == NULL)
+    {
+        FILE *newFile = fopen("buffer.png", "wb");
+        fwrite(buf_page, 1, size, newFile);
+        fclose(newFile);
+    }
+#endif
     free(buf_page);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);

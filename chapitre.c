@@ -137,7 +137,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     register FILE* file = NULL; //Make that stuff faster
     TTF_Font *police = NULL;
     SDL_Texture *texte = NULL;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
 
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);

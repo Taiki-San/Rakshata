@@ -33,7 +33,7 @@ int telechargement()
     TTF_Font *police_big = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
-	SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     OUT_DL* struc = NULL;
 
     INSTALL_DONE = 0;
@@ -602,7 +602,7 @@ int interditWhileDL()
 	SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     SDL_RenderClear(renderer);
@@ -678,7 +678,7 @@ void DLmanager()
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
 	SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 	SDL_Rect position;
 
     /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
@@ -711,7 +711,7 @@ void DLmanager()
         rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
     }while(!rendererDL->magic); //En cas de mauvais timing
 
-    SDL_SetRenderDrawColor(rendererDL, FOND_R, FOND_G, FOND_B, 255);
+    SDL_SetRenderDrawColor(rendererDL, palette.fond.r, palette.fond.g, palette.fond.b, 255);
     SDL_FlushEvent(SDL_WINDOWEVENT);
 
     WINDOW_SIZE_W_DL = LARGEUR;

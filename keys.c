@@ -162,14 +162,15 @@ int earlyInit()
 #ifdef _WIN32
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
-    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
-#else
-	srand(time(NULL)+rand()); //Initialisation de l'aléatoire
 #endif
+
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 100);
+
+    /*On remplis la palette*/
+    loadPalette();
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
@@ -193,6 +194,13 @@ int earlyInit()
 
     restrictEvent();
     getResolution();
+
+#ifdef _WIN32
+    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
+#else
+	srand(time(NULL)+rand()); //Initialisation de l'aléatoire
+#endif
+
 
     char *temp;
     if((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL)
@@ -259,7 +267,7 @@ int logon()
     SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
     if(WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas Ã  redimensionner celle lÃ 
     {
@@ -530,7 +538,7 @@ int getPassword(char password[100], int dlUI, int salt)
     char trad[SIZE_TRAD_ID_26][100];
     SDL_Texture *ligne = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
     SDL_Renderer *currentRenderer = NULL;
 

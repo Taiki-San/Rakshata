@@ -30,7 +30,7 @@ void connexionNeededToAllowANewComputer()
     SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
     loadTrad(trad, 27);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
@@ -141,7 +141,7 @@ int erreurReseau()
     char texte[SIZE_TRAD_ID_24][100];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
@@ -176,7 +176,7 @@ int showError()
     char texte[SIZE_TRAD_ID_1][100];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -209,7 +209,7 @@ int rienALire()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     char texte[SIZE_TRAD_ID_23][100];
 
     SDL_RenderClear(renderer);
@@ -247,7 +247,7 @@ int affichageRepoIconnue()
 	SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
     SDL_RenderClear(renderer);
 

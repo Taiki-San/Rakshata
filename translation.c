@@ -113,7 +113,7 @@ int changementLangue()
     char menus[SIZE_TRAD_ID_13][LONGUEURTEXTE];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);

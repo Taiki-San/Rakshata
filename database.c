@@ -434,7 +434,7 @@ int deleteManga()
 
 		/*Appel des selectionneurs*/
 		curPage = pageManga;
-		mangaChoisis = manga(3, mangas, 0);
+		mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangas, 0);
         pageManga = curPage;
 
 		if(mangaChoisis <= -2)
@@ -452,9 +452,9 @@ int deleteManga()
 				if (chapitreChoisis <= -2)
 					continuer = chapitreChoisis;
 
-				else if (chapitreChoisis > -1)
+				else if (chapitreChoisis >= VALEUR_FIN_STRUCTURE_CHAPITRE)
 				{
-					if(chapitreChoisis != 0)
+					if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
 					{
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName, CONFIGFILE);
 						if(!checkFileExist(temp))

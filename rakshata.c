@@ -28,6 +28,7 @@ char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/test/success.html"};
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
+PALETTE_GLOBALE palette;
 SDL_Window* window = NULL;
 SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;

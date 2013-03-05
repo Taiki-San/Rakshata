@@ -109,12 +109,11 @@ int download(char *adresse, char *repertoire, int activation)
 
         SDL_Texture *pourcentAffiche = NULL;
         TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-        SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+        SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 		SDL_Event event;
 
 		if(WINDOW_SIZE_H_DL != HAUTEUR_FENETRE_DL)
             updateWindowSizeDL(LARGEUR, HAUTEUR_FENETRE_DL);
-        SDL_RenderClear(rendererDL);
 
         /*Remplissage des variables*/
         loadTrad(texte, 20);

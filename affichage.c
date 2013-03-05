@@ -18,7 +18,7 @@ void initialisationAffichage()
     char texteAAfficher[SIZE_TRAD_ID_2][100];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     SDL_RenderClear(renderer);
@@ -51,7 +51,7 @@ void raffraichissmenent()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     char texte[SIZE_TRAD_ID_5][100]; // Il faut forcement un tableau en 2D
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -82,7 +82,7 @@ void affichageLancement()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     char texte[SIZE_TRAD_ID_6][100]; // Il faut forcement un tableau en 2D
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -107,7 +107,7 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
 	char texte[SIZE_TRAD_ID_8][100];
 
@@ -142,12 +142,22 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     SDL_RenderPresent(rendererVar);
 }
 
+void loadPalette()
+{
+    palette.fond.r = FOND_R; palette.fond.g = FOND_G; palette.fond.b = FOND_B;
+    palette.police.r = POLICE_R; palette.police.g = POLICE_G; palette.police.b = POLICE_B;
+    palette.police_new.r = POLICE_NEW_R; palette.police_new.g = POLICE_NEW_G; palette.police_new.b = POLICE_NEW_B;
+    palette.police_unread.r = POLICE_UNREAD_R; palette.police_unread.g = POLICE_UNREAD_G; palette.police_unread.b = POLICE_UNREAD_B;
+    palette.police_actif.r = POLICE_ENABLE_R; palette.police_actif.g = POLICE_ENABLE_G; palette.police_actif.b = POLICE_ENABLE_B;
+    palette.police_indispo.r = POLICE_UNAVAILABLE_R; palette.police_indispo.g = POLICE_UNAVAILABLE_G; palette.police_indispo.b = POLICE_UNAVAILABLE_B;
+}
+
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)
 {
     int hauteurUIAlert = 0, i = 0;
     SDL_Surface *bufferWrite = NULL;
     SDL_Rect positionSurUIAlert;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
@@ -155,7 +165,7 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int num
 
     hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //Définition de la taille de la fenêtre
     alertSurface = SDL_CreateRGBSurface(0, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
-    SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, FOND_R, FOND_G, FOND_B)); //We change background color
+    SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, palette.fond.r, palette.fond.g, palette.fond.b)); //We change background color
 
     positionSurUIAlert.y = BORDURE_SUP_UIALERT;
     for(i = 0; texte[i] && i < numberLine; i++)

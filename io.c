@@ -80,7 +80,7 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
     SDL_Event event;
     SDL_Texture *numero = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     for(i = 0; i < nombreMax; retour[i++] = 0);

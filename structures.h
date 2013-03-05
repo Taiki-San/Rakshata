@@ -66,6 +66,23 @@ typedef struct data_pour_installation
 
 } DATA_INSTALL;
 
+typedef struct
+{
+    int r;
+    int g;
+    int b;
+} PALETTE_RGB;
+
+typedef struct
+{
+    PALETTE_RGB fond;               //Background
+    PALETTE_RGB police;             //Police normale
+    PALETTE_RGB police_new;         //Police nouveau manga (rouge)
+    PALETTE_RGB police_unread;      //Police non-lu (vert)
+    PALETTE_RGB police_actif;       //Police pour menus actifs (rouge)
+    PALETTE_RGB police_indispo;     //Police pour menus indisponibles (gris)
+} PALETTE_GLOBALE;
+
 typedef unsigned char uint8_t;
 
 #ifdef _WIN32

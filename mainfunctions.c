@@ -45,7 +45,7 @@ void mainRakshata()
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     }while(!renderer->magic); //En cas de mauvais timing
 
-    SDL_SetRenderDrawColor(renderer, FOND_R, FOND_G, FOND_B, 255);
+    SDL_SetRenderDrawColor(renderer, palette.fond.r, palette.fond.g, palette.fond.b, 255);
 
     #ifdef _WIN32
         ReleaseSemaphore(mutexRS, 1, NULL);

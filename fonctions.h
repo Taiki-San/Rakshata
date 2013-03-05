@@ -15,6 +15,7 @@ void initialisationAffichage();
 void raffraichissmenent();
 void affichageLancement();
 void chargement(SDL_Renderer* rendererVar, int h, int w);
+void loadPalette();
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);

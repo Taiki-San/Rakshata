@@ -23,7 +23,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     SDL_Event event;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
@@ -263,7 +263,8 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurNew = {POLICE_NEW_R, POLICE_NEW_G, POLICE_NEW_B}, couleurUnread = {POLICE_UNREAD_R, POLICE_UNREAD_G, POLICE_UNREAD_B};
+
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b}, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b};
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
 
@@ -583,7 +584,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
     SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {POLICE_R, POLICE_G, POLICE_B}, couleurNew = {POLICE_ENABLE_R, POLICE_ENABLE_G, POLICE_ENABLE_B}, couleurUnavailable = {POLICE_UNAVAILABLE_R, POLICE_UNAVAILABLE_G, POLICE_UNAVAILABLE_B};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_actif.r, palette.police_actif.g, palette.police_actif.b}, couleurUnavailable = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b};
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
@@ -626,7 +627,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
 void showNumero(TTF_Font *police, int choix, int hauteurNum)
 {
     SDL_Texture *numero = NULL;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
     char buffer[5] = {0};
 
@@ -947,7 +948,8 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
             int nombreDeMangaDispoApresLimitation=0;
             for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++) //tant qu'il y a des mangas
             {
-                if((!checkFirstLineButtonPressed(button_selected) || button_selected[mangaDB[i].status -1] == 1) && (!checkSecondLineButtonPressed(button_selected) || button_selected[mangaDB[i].genre + 2] == 1))//Manga élligible
+                if((!checkFirstLineButtonPressed(button_selected) || button_selected[mangaDB[i].status -1] == 1 || (button_selected[3] == 1 && mangaDB[i].favoris)) &&
+                   (!checkSecondLineButtonPressed(button_selected) || button_selected[mangaDB[i].genre + 3] == 1))//Manga élligible
                     nombreDeMangaDispoApresLimitation++;
             }
             if(*mangaChoisis > nombreDeMangaDispoApresLimitation)

@@ -19,7 +19,7 @@ int affichageMenuGestion()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)

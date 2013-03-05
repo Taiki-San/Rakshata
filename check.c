@@ -71,7 +71,7 @@ int check_evt()
         char temp[200];
         SDL_Texture *message = NULL;
         SDL_Rect position;
-        SDL_Color couleur = {POLICE_R, POLICE_G, POLICE_B};
+        SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
         TTF_Font *police = NULL;
 
 		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
