@@ -31,14 +31,17 @@ void initialisationAffichage()
     for(i = 0; i < SIZE_TRAD_ID_2; i++)
     {
         SDL_DestroyTextureS(texte);
-        texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        if(i == 1) //Saut de ligne
+        if(texte != NULL)
+        {
+            texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
+            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            if(i == 1) //Saut de ligne
+                position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
             position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-        position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+        }
     }
     SDL_RenderPresent(renderer);
     SDL_DestroyTextureS(texte);
@@ -89,15 +92,17 @@ void affichageLancement()
     loadTrad(texte, 6);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
     SDL_RenderPresent(renderer);
-
     TTF_CloseFont(police);
 }
 

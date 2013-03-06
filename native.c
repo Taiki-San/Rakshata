@@ -439,7 +439,7 @@ int createNewThread(void *function, void *arg)
 #else
     pthread_t thread;
 
-    if (pthread_create(&thread, NULL, function, NULL))
+    if (pthread_create(&thread, NULL, function, arg))
     {
         logR("Failed at create thread\n");
         exit(EXIT_FAILURE);

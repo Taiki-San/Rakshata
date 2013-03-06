@@ -27,6 +27,7 @@ void mainRakshata()
 
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
 
+#ifndef __APPLE__
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
     if(icon != NULL)
@@ -34,6 +35,7 @@ void mainRakshata()
         SDL_SetWindowIcon(window, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
+#endif
     nameWindow(window, 0);
 
     do
@@ -92,7 +94,7 @@ void mainRakshata()
                 break;
 
             case 1:
-                continuer = mainLecture(sectionChoisis);
+                continuer = mainLecture();
                 break;
 
             case 2:
@@ -268,8 +270,6 @@ int mainChoixDL()
         /*C/C du choix de manga pour le lecteur.*/
         while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
         {
-            mangaChoisis = 0;
-            chapitreChoisis = 0;
             supprUsedInChapitre = 0;
 
             /*Appel des selectionneurs*/

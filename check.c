@@ -61,6 +61,9 @@ int check_evt()
             if(i == 0)
                 cantwrite = 1;
             else
+#ifdef __APPLE__
+                if(i != 1) //Pas besoin d'icone sur OSX
+#endif
                 fichiersADL[j] = i;
             j++;
         }
@@ -151,12 +154,14 @@ int check_evt()
 
                 if(fichiersADL[i] == 1) //Si c'est l'icone
                 {
+                    #ifndef __APPLE__
                     SDL_Surface *icon = IMG_Load("data/icone.png");
                     if(icon != NULL)
                     {
                         SDL_SetWindowIcon(window, icon); //Int icon for the main window
                         SDL_FreeSurfaceS(icon);
                     }
+                    #endif
                 }
             }
         }

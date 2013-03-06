@@ -17,7 +17,10 @@ int curPage; //Too lazy to use an argument
 
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
-    int i = 0, hauteurTexte = 0, ret_value = 0, time_since_refresh = 0, *longueur = malloc(nombreElements*sizeof(int));
+    if(nombreElements <= 1)
+        return PALIER_QUIT;
+    
+    int i = 0, hauteurTexte = 0, ret_value = 0, time_since_refresh = 0, *longueur = calloc(nombreElements, sizeof(int));
     int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0};
     char tempPath[450];
     SDL_Texture *texture = NULL;
@@ -153,10 +156,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                     //Définis la hauteur du clic par rapport à notre liste
                     for(i = 0; ((((hauteurTexte + INTERLIGNE) * i + hauteurBloc) > event.button.y) || ((hauteurTexte + INTERLIGNE) * i + hauteurBloc + hauteurTexte) < event.button.y) && i < nombreElements/2 + 1; i++);
 
-                    if(i > nombreElements/2)
-                        i = 0;
-
-                    else
+                    if(i <= nombreElements/2)
                     {
                         int positionBaseEcran = 0, numberTested = 0;
                         if(event.button.x < WINDOW_SIZE_W / 2)
@@ -256,7 +256,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage)
 {
     /*Initialisation*/
-    int pageSelection = 0, pageTotale = 0, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI], mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
+    int pageSelection = 0, pageTotale = 1, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI] = {0, 0, 0}, mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
     int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
     int button_selected[8], chapitreTomeDisponible = 0;
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
@@ -472,11 +472,6 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         if(sectionChoisis == SECTION_DL) //On affiche, si on dl, les boutons de DL/Annulation
         {
             SDL_RenderPresent(renderer);
-            if(nombreManga > MANGAPARPAGE_TRI)
-                i = MANGAPARPAGE_TRI;
-            else
-                i = nombreManga;
-
             position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
@@ -924,14 +919,14 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
             if(mangaColonne[1] - mangaColonne[0] < (*mangaChoisis % 100) - 1)
                 *mangaChoisis = 0;
             if(mangaColonne[1] - mangaColonne[0] >= (*mangaChoisis % 100) - 1)
-                *mangaChoisis = (mangaColonne[*mangaChoisis / 100 - 1] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+                *mangaChoisis = (mangaColonne[0] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
         }
         else if(*mangaChoisis / 100 == 2) //Troisiéme colonne
         {
             if (mangaColonne[2] - mangaColonne[1] < (*mangaChoisis % 100) - 1)
                 *mangaChoisis = 0;
             if (mangaColonne[2] - mangaColonne[1] >= (*mangaChoisis % 100) - 1)
-                *mangaChoisis = (mangaColonne[*mangaChoisis / 100 - 1] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+                *mangaChoisis = (mangaColonne[1] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
         }
 
         //Maintenant, on va vérifier que la requête pointe bien sur quelque chose de valide en cas de limitation

@@ -24,7 +24,7 @@ int checkIfFaved(MANGAS_DATA* mangaDB, char *favs)
         return 0;
 
     favsBak = favs;
-    while(*favs && (strcmp(mangaDB->team->teamLong, teamLong) || strcmp(mangaDB->mangaName, mangaLong)))
+    while(favs != NULL && *favs && (strcmp(mangaDB->team->teamLong, teamLong) || strcmp(mangaDB->mangaName, mangaLong)))
     {
         favs += sscanfs(favs, "%s %s", teamLong, LONGUEUR_NOM_MANGA_MAX, mangaLong, LONGUEUR_NOM_MANGA_MAX);
         for(; favs != NULL && *favs && (*favs == '\n' || *favs == '\r'); favs++);

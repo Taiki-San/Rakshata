@@ -337,13 +337,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             /*Si grosse page*/
             if(largeurValide > WINDOW_SIZE_W)
             {
-                largeurValide = WINDOW_SIZE_W;
+                //largeurValide = WINDOW_SIZE_W;
                 pageTropGrande = 1;
             }
 
             else if(largeurValide < LARGEUR)
             {
-                largeurValide = LARGEUR;
+                //largeurValide = LARGEUR;
                 pageTropGrande = 0;
             }
 
@@ -407,7 +407,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         {
             int sizeMax = defineMaxTextureSize(chapitre->h), i;
             int nombreMiniTexture = chapitre->h/sizeMax + (chapitre->h%sizeMax?1:0);
-            SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture));
+            SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
             SDL_Surface *chap_buf = NULL;
             SDL_Rect pos;
             pos.w = chapitre->w;
@@ -421,7 +421,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
             }
-            if(chapitre->h%sizeMax)
+            if(sizeMax && i && chapitre->h%sizeMax)
             {
                 pos.y = i*sizeMax;
                 pos.h = chapitre->h%pos.y;
@@ -731,8 +731,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         }
                     }
 
-                    else
-                        pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
+/*                    else
+                        pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;*/
                     break;
                 }
 
@@ -1369,7 +1369,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         if(i)
         {
             int j = 0;
-            for(; j < i; page.y -= texture_big[j++]->h);
+            for(; j < i && texture_big[j]; page.y -= texture_big[j++]->h);
         }
         for(; ecran.y < WINDOW_SIZE_H && i < nbMorceaux; i++)
         {

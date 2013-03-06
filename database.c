@@ -297,9 +297,9 @@ void update_mangas()
 			killswitchEnabled(teams.teamLong);
 			continue;
 		}
+        bufferDL[0] = 0;
 		get_update_mangas(bufferDL, &teams);
-		if(bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' ||
-        (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") || !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
+		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") || !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
 		{
 		    char *mangas = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangasBak = NULL;
 		    if(mangas != NULL)
@@ -429,9 +429,6 @@ int deleteManga()
 	while((continuer > -2 && continuer < 1)|| continuer == 2 ||continuer == 4)
 	{
 		noMoreChapter = 1;
-		mangaChoisis = 0;
-		chapitreChoisis = 0;
-
 		/*Appel des selectionneurs*/
 		curPage = pageManga;
 		mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangas, 0);

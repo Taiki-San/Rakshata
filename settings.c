@@ -376,10 +376,11 @@ void setPrefs(MANGAS_DATA* mangaDB)
             favsNew[pos++] = '\n';
             favsNew[pos] = 0;
             updatePrefs(SETTINGS_FAVORITE_FLAG, favsNew);
-            free(favsNew);
         }
         else
             removeFromPref(SETTINGS_FAVORITE_FLAG);
+
+        free(favsNew);
         mangaDB->favoris = mangaDB->favoris?0:1;
     }
 }

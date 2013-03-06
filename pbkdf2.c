@@ -79,7 +79,7 @@ end:
     if(outbuff) free(outbuff);
 
     if(rc){
-        errno = rc;
+        //errno = rc;
         return -1;
     }
     return 0;

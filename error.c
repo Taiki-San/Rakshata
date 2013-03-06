@@ -98,8 +98,7 @@ int libcurlErrorCode(CURLcode code)
         case CURLE_COULDNT_RESOLVE_HOST:
         case CURLE_COULDNT_CONNECT:
         {
-            sprintf(log_message, "Failed at resolve host\n");
-            ret_value = CODE_FAILED_AT_RESOLVE_INTERNAL;
+            return CODE_FAILED_AT_RESOLVE_INTERNAL;
             break;
         }
         case CURLE_PARTIAL_FILE:

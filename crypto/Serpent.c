@@ -21,8 +21,12 @@
 //
 ///////////////////////////////////////////////
 
-#include <stdlib.h>
-
+#ifdef _WIN32
+	#include <stdlib.h>
+#else
+	#define _lrotr(x, n)        ((((unsigned long)(x)) >> ((int) ((n) & 31))) | (((unsigned long)(x)) << ((int) ((-(n)) & 31))))
+	#define _lrotl(x, n)        ((((unsigned long)(x)) << ((int) ((n) & 31))) | (((unsigned long)(x)) >> ((int) ((-(n)) & 31))))
+#endif
 typedef unsigned long DWORD;
 
 #  define rotr(x,n) _lrotr(x,n)

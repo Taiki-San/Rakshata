@@ -116,7 +116,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
 int getUpdatedChapterList(MANGAS_DATA *mangaDB)
 {
-    int i;
+    int i = VALEUR_FIN_STRUCTURE_CHAPITRE;
     refreshChaptersList(mangaDB);
     return checkChapitreValable(mangaDB, &i);
 }

@@ -47,7 +47,11 @@ int download(char *adresse, char *repertoire, int activation)
 	ARGUMENT* envoi = malloc(sizeof(ARGUMENT));
 
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
+    {
+        if(envoi != NULL)
+            free(envoi);
         return CODE_RETOUR_DL_CLOSE_INTERNAL;
+    }
 
     if(activation != 2) //Pas check réseau
     {
@@ -76,7 +80,11 @@ int download(char *adresse, char *repertoire, int activation)
             SDL_Delay(50);
 
         if(checkNetworkState(CONNEXION_DOWN))
+        {
+            if(envoi != NULL)
+                free(envoi);
             return CODE_RETOUR_DL_CLOSE_INTERNAL;
+        }
     }
 
     envoi->URL = adresse;

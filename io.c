@@ -220,8 +220,11 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
 
         if(!startFromX)
         {
-            position.x = WINDOW_SIZE_W / 2 - numero->w / 2;
-            position.y = WINDOW_SIZE_H / 2;
+            if(numero != NULL)
+            {
+                position.x = WINDOW_SIZE_W / 2 - numero->w / 2;
+                position.y = WINDOW_SIZE_H / 2;
+            }
         }
         else
         {

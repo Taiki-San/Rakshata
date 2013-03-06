@@ -88,7 +88,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
         for(j = 0; j < 4; j++)
         {
             system_output = popen(command_line[j], "r");
-            for(c = 0; (c = fgetc(system_output)) != ':' && c != EOF;); //On saute la premiére partie
+            while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la premiére partie
             fgetc(system_output);
             for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
             buffer_fingerprint[i++] = ' ';
@@ -178,6 +178,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     test = fopenR(path, "r");
     if(test == NULL) //Si on trouve pas la page
     {
+        free(configEnc);
         free(path);
         return NULL;
     }
@@ -226,7 +227,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
     for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
-    if((length2 - i) % (SHA256_DIGEST_LENGTH+1))
+    if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
         //Au cas où ça se reproduit, cette condition devrait bloquer le bug
@@ -284,20 +285,22 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 void getPasswordArchive(char *fileName, char password[300])
 {
     int i = 0, j = 0;
-    char *fileNameWithoutDirectory = malloc(strlen(fileName)), *URL = NULL;
+    char *fileNameWithoutDirectory = calloc(1, strlen(fileName)+5);
+    char *URL = NULL;
 
     FILE* zipFile = fopenR(fileName, "r");
 
     if(fileNameWithoutDirectory == NULL || zipFile == NULL)
     {
+        if(fileNameWithoutDirectory)
+            free(fileNameWithoutDirectory);
         logR("Failed at allocate memory / find file\n");
         return;
     }
 
     /*On récupére le nom du fichier*/
-    for(i = sizeof(fileNameWithoutDirectory); i >= 0 && fileNameWithoutDirectory[i] != '/'; i--);
-    for(j = 0, i++; i < sizeof(fileNameWithoutDirectory) && fileNameWithoutDirectory[i] ; fileNameWithoutDirectory[j++] = fileNameWithoutDirectory[i++]);
-    fileNameWithoutDirectory[j] = 0;
+    for(i = strlen(fileName); i >= 0 && fileName[i] != '/'; i--);
+    for(j = 0, i++; i < strlen(fileName) && fileName[i] ; fileNameWithoutDirectory[j++] = fileName[i++]);
 
     /*Pour identifier le fichier, on va hasher ses 1024 premiers caractéres*/
     unsigned char buffer[1024+1];
@@ -307,12 +310,13 @@ void getPasswordArchive(char *fileName, char password[300])
     sha256((unsigned char *) buffer, hash);
 
     /*On génére l'URL*/
-    URL = malloc((50 + strlen(MAIN_SERVER_URL[0]) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)) * sizeof(unsigned char));
+    URL = malloc((50 + strlen(MAIN_SERVER_URL[0]) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)));
     if(URL == NULL)
     {
         char temp[256];
         snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", (50 + strlen(MAIN_SERVER_URL[0]) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)) * sizeof(unsigned char));
         logR(temp);
+        free(fileNameWithoutDirectory);
         return;
     }
     sprintf(URL, "https://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
@@ -327,7 +331,7 @@ void getPasswordArchive(char *fileName, char password[300])
     free(URL);
 
     /*Analyse du buffer*/
-    if(!strcmp(bufferDL, "not_allowed") || !strcmp(bufferDL, "rejected") || sizeof(bufferDL) > sizeof(password))
+    if(!strcmp(bufferDL, "not_allowed") || !strcmp(bufferDL, "rejected") || strlen(bufferDL) > sizeof(password))
     {
         logR("Failed at get password, cancel the installation\n");
         return;

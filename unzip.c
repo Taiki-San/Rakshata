@@ -101,12 +101,18 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     if(size) //Si extraction d'un chapitre
         opt_do_extract_withoutpath = 1;
     else
-        zipFileName = malloc((strlen(inputZip)+1) *2); //Input
-    zipOutput = malloc((strlen(outputZip)+1) *2); //Output
-    password = malloc((strlen(passwordZip)+1) *2);
+        zipFileName = calloc(1, (strlen(inputZip)+1) *2); //Input
+    zipOutput = calloc(1, (strlen(outputZip)+1) *2); //Output
+    password = calloc(1, (strlen(passwordZip)+1) *2);
 
     if((!size && zipFileName == NULL) || zipOutput == NULL || (password == NULL && passwordZip != NULL))
     {
+        if(zipFileName)
+            free(zipFileName);
+        if(zipOutput)
+            free(zipOutput);
+        if(password)
+            free(password);
         logR("Failed at allocate memory\n");
         return 1;
     }
@@ -356,7 +362,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             pbkdf2((uint8_t *) temp, chapter, hash);
 
             crashTemp(temp, 256);
-            _AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY, 1);
+            AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
             crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant Ã  lire
         }

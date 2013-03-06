@@ -204,7 +204,6 @@ void hexToDec(const char *input, unsigned char *output)
     {
         for(j = 0; j < 2; j++)
         {
-            temp = 0;
             c = *input++;
             if(c >= '0' && c <= '9')
                 temp = c - '0';

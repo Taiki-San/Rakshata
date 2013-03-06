@@ -116,8 +116,9 @@ int telechargement()
     fclose(fichier);
     removeR(INSTALL_DATABASE);
     mangaTotal--; //On décale d'un cran
+    int nbrMaxElem = (mangaTotal>1000?1000:mangaTotal);
 
-    for(i = 0; i < (mangaTotal>1000?1000:mangaTotal); historiqueTeam[i++][0] = 0);
+    for(i = 0; i < nbrMaxElem; historiqueTeam[i++][0] = 0);
     loadTrad(trad, 22);
 
     for(mangaActuel = 1; mangaTotal >= 0 && glados != CODE_RETOUR_DL_CLOSE; mangaActuel++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
@@ -133,8 +134,8 @@ int telechargement()
             if(todoList[0]->datas != NULL)
             {
                 /*Ouverture du site de la team*/
-                for(i = 0; i < 1000 && historiqueTeam[i][0] && strcmp(todoList[0]->datas->team->teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
-                if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjà installé
+                for(i = 0; i < nbrMaxElem && historiqueTeam[i][0] && strcmp(todoList[0]->datas->team->teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
+                if(i < nbrMaxElem && historiqueTeam[i][0] == 0) //Si pas déjà installé
                 {
                     ustrcpy(historiqueTeam[i], todoList[0]->datas->team->teamCourt);
                     ouvrirSite(todoList[0]->datas->team);
@@ -689,6 +690,7 @@ void DLmanager()
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
     SDL_FlushEvent(SDL_WINDOWEVENT);
 
+#ifndef __APPLE__
     SDL_Surface *icon = NULL;
     icon = IMG_Load("data/icone.png");
     if(icon != NULL)
@@ -696,6 +698,7 @@ void DLmanager()
         SDL_SetWindowIcon(windowDL, icon); //Int icon for the main window
         SDL_FreeSurfaceS(icon);
     }
+#endif
 
     status = 1;
     nameWindow(windowDL, status);

@@ -182,7 +182,6 @@ int ajoutRepo()
 
                 else
                 {
-                    erreur = 1;
                     continuer = affichageRepoIconnue();
                     if(continuer >= -3)
                         continuer = -1;
@@ -194,6 +193,7 @@ int ajoutRepo()
     return continuer;
 }
 
+extern int curPage; //Too lazy to use an argument
 int deleteRepo()
 {
     int i = 0, continuer = 0, teamChoisis = 0, nombreTeam = 0, confirme = 0;
@@ -251,7 +251,8 @@ int deleteRepo()
     position.w = texteAffiche->w;
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
-
+    
+    curPage = 1;
     teamChoisis = displayMangas(mangaDB, SECTION_CHOISIS_TEAM, 0, BORDURE_SUP_SELEC_MANGA);
 
     if(teamChoisis > -3 && mangaDB[teamChoisis-1].mangaName[0] != 0)

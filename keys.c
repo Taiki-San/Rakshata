@@ -818,7 +818,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
         if(temp == NULL)
         {
             char temp[256];
-            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            snprintf(temp, 256, "Failed at allocate memory for : %ld bytes\n", strlen(REPERTOIREEXECUTION) + 100);
             logR(temp);
             exit(-1);
         }
@@ -853,7 +853,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
     crashTemp(fingerPrint, HASH_LENGTH);
     crashTemp(temp, 240);
 
-    encryption_output = malloc((strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char*));
+    encryption_output = calloc(1, (strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char));
     if(UNZIP_NEW_PATH == 1)
         sprintf((char *)encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
     else
@@ -950,7 +950,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
         {
             int i = 0;
             unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
-            crashTemp(seed, 2*SHA256_DIGEST_LENGTH+1);
+            crashTemp(seed, SHA256_DIGEST_LENGTH);
 
             for(; i < SHA256_DIGEST_LENGTH && buffer_dl[bufferDL_pos] != 0; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
             outputRAW[i] = 0;
