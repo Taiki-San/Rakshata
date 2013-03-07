@@ -172,6 +172,15 @@ int check_evt()
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;
 
+    //On charge les données par défaut si elles n'existent pas encore
+    char *buf;
+    buf = loadLargePrefs(SETTINGS_MANGADB_FLAG);
+    if(buf)
+        free(buf);
+    buf = loadLargePrefs(SETTINGS_REPODB_FLAG);
+    if(buf)
+        free(buf);
+
     if(!checkFileExist(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]))
         createSecurePasswordDB(NULL);
     return 0;

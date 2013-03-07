@@ -14,7 +14,7 @@
 
 int ajoutRepo()
 {
-    int continuer = 0, existant = 0, erreur = 0;
+    int continuer = 0, existant = 0, erreur = 0, somethingAdded = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
     SDL_Texture *texte;
     TTF_Font *police = NULL;
@@ -173,23 +173,26 @@ int ajoutRepo()
                             else
                                 sprintf(repoNew, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                             updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
+                            somethingAdded = 1;
                         }
                         free(repoBak);
                         free(repoNew);
-                        continuer = -1;
+                        continuer = 1;
                     }
                 }
 
                 else
                 {
                     continuer = affichageRepoIconnue();
-                    if(continuer >= -3)
+                    if(continuer >= PALIER_MENU)
                         continuer = -1;
                 }
             }
         }
     }
     TTF_CloseFont(police);
+    if(continuer >= PALIER_MENU)
+        continuer = somethingAdded;
     return continuer;
 }
 
@@ -251,11 +254,11 @@ int deleteRepo()
     position.w = texteAffiche->w;
     SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
     SDL_DestroyTextureS(texteAffiche);
-    
+
     curPage = 1;
     teamChoisis = displayMangas(mangaDB, SECTION_CHOISIS_TEAM, 0, BORDURE_SUP_SELEC_MANGA);
 
-    if(teamChoisis > -3 && mangaDB[teamChoisis-1].mangaName[0] != 0)
+    if(teamChoisis >= 1 && mangaDB[teamChoisis-1].mangaName[0] != 0)
     {
         if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
             updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
@@ -297,6 +300,7 @@ int deleteRepo()
             updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
             free(repoBak);
             free(repoNew);
+            return 1;
 
         }
         else if (confirme == PALIER_QUIT)
@@ -307,9 +311,9 @@ int deleteRepo()
     }
     else
     {
-        free(repoBak);
         continuer = teamChoisis;
     }
+    free(repoBak);
     return continuer;
 }
 

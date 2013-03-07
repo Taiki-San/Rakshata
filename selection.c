@@ -59,12 +59,15 @@ int section()
             for(j--; j >= 0; j--)
             {
                 texte = TTF_Write(renderer, police, message[j], couleurTexte);
-                position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                position.y -= texte->h;
-                position.h = texte->h;
-                position.w = texte->w;
-                SDL_RenderCopy(renderer, texte, NULL, &position);
-                SDL_DestroyTextureS(texte);
+                position.y -= 36; //texte->h; //Gère les sauts de ligne
+                if(texte != NULL)
+                {
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
+                }
             }
             TTF_CloseFont(police);
         }

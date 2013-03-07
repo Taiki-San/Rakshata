@@ -59,16 +59,15 @@ int menuGestion()
             case 1:
                 /*Ajouter un dépot*/
                 menu = ajoutRepo();
-
-                raffraichissmenent();
+                if(menu == 1)
+                    raffraichissmenent();
                 break;
 
             case 2:
                 /*Supprimer un dépot*/
                 menu = deleteRepo();
-
-                /*Raffraichissement*/
-                raffraichissmenent();
+                if(menu == 1)
+                    raffraichissmenent();
                 break;
 
             case 3:
@@ -144,23 +143,27 @@ void addToPref(char flag, char *stringToAdd)
     snprintf(setFlag, 10, "<%c>", flag);
 
     prefs = loadPrefFile();
-    if(prefs == NULL)
-        return;
+    if(prefs != NULL)
+    {
+        if(positionnementApresChar(prefs, setFlag))
+            removeFromPref(flag);
 
-    if(positionnementApresChar(prefs, setFlag))
-        removeFromPref(flag);
+        i = strlen(prefs);
+        length = i + strlen(stringToAdd);
+        newPrefs = calloc(1, length+5);
+        if(prefs == NULL)
+            return;
 
-    i = strlen(prefs);
-    length = i + strlen(stringToAdd);
-    newPrefs = calloc(1, length);
-    if(prefs == NULL)
-        return;
-
-    ustrcpy(newPrefs, prefs);
-    for(j = 0; i < length && stringToAdd[j]; newPrefs[i++] = stringToAdd[j++]);
-    newPrefs[i] = 0;
-
-    AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+        ustrcpy(newPrefs, prefs);
+        free(prefs);
+        prefs = newPrefs;
+        for(j = 0; i < length && stringToAdd[j]; newPrefs[i++] = stringToAdd[j++]);
+        newPrefs[i] = 0;
+        AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+        free(prefs);
+    }
+    else
+        AESEncrypt(SETTINGS_PASSWORD, stringToAdd, SETTINGS_FILE, INPUT_IN_MEMORY);
 }
 
 void removeFromPref(char flag)

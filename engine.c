@@ -19,7 +19,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
     if(nombreElements <= 1)
         return PALIER_QUIT;
-    
+
     int i = 0, hauteurTexte = 0, ret_value = 0, time_since_refresh = 0, *longueur = calloc(nombreElements, sizeof(int));
     int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0};
     char tempPath[450];
@@ -513,10 +513,12 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             chapterDisplayed > 0) //Retourne au menu principal si 0 chapitres
 #endif
             {
-                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
+                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != SECTION_CHOISIS_TEAM)
                     manuel = 0;
-                else
+                else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
                     manuel = chapterDisplayed;
+                else
+                    manuel = -1;
                 //Manuel => si le nombre a été entré a la main
                 do
                 {
@@ -647,13 +649,18 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
 int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
 {
     /*Initialisations*/
-    int i = 0, nombreManga = 0, mangaChoisis = 0, choix = 0, buffer = 0, hauteurBandeau = 0, chapitreMax = 0, bandeauControle = 0;
+    int i = 0, nombreManga = 0, mangaChoisis = 0, choix = 0, buffer = 0, hauteurBandeau = 0, chapitreMax = 0, bandeauControle = 0, modeTeam = 0;
     SDL_Event event;
     TTF_Font *police = NULL;
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     for(nombreManga = 0; tailleTexte[nombreManga] != 0; nombreManga++);
 
+    if(*manuel == -1) //SECTION_CHOISIS_TEAM
+    {
+        *manuel = 0;
+        modeTeam = 1;
+    }
     if(modeChapitre)
     {
         chapitreMax = *manuel;
@@ -778,6 +785,8 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                         mangaChoisis = -6; // Page Suivante
                     }
                 }
+                if(modeTeam)
+                    break;
 
                 /*Clic sur les boutons de DL*/
                 hauteurBandeau = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;

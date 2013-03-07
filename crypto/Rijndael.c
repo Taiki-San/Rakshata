@@ -1363,7 +1363,6 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
     }
     nrounds = rijndaelSetupDecrypt(rk, key, KEYBITS);
 
-    i = 0;
     unsigned char previous_cipher[CRYPTO_BUFFER_SIZE] = {0};
     do
     {
@@ -1393,12 +1392,10 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
 
         if(!outputMemory && output != NULL)
             fwrite(plaintext, sizeof(plaintext), 1, output);
-        else if(cryptIntoMemory != MODE_RAK)
-            for(i=0; plaintext[i] && i < sizeof(plaintext); path_output[positionDansOutput++] = plaintext[i++]);
         else
         {
-            memmove(path_output+i, plaintext, sizeof(plaintext));
-            i+= sizeof(plaintext);
+            memmove(path_output+positionDansOutput, plaintext, sizeof(plaintext));
+            positionDansOutput += sizeof(plaintext);
         }
         memcpy(previous_cipher, ciphertext, CRYPTO_BUFFER_SIZE); //On copie dans le buffer pour le XOR
     } while (!lastRow);

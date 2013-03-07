@@ -31,9 +31,9 @@ void initialisationAffichage()
     for(i = 0; i < SIZE_TRAD_ID_2; i++)
     {
         SDL_DestroyTextureS(texte);
+        texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
         if(texte != NULL)
         {
-            texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
             position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
             position.h = texte->h;
             position.w = texte->w;
