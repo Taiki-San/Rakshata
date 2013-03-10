@@ -180,7 +180,10 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 
                 case SDL_WINDOWEVENT:
                 {
-                    SDL_RenderPresent(renderer);
+                    if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                        ret_value = PALIER_QUIT;
+                    else
+                        SDL_RenderPresent(renderer);
                     break;
                 }
 

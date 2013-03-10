@@ -29,29 +29,29 @@ int check_evt()
     sprintf(nomsATest[5], "data/english/acceuil.png");
     sprintf(nomsATest[6], "data/english/controls.png");
     sprintf(nomsATest[7], "data/english/localization");
-    sprintf(nomsATest[7], "data/italian/acceuil.png");
-    sprintf(nomsATest[8], "data/italian/controls.png");
-    sprintf(nomsATest[9], "data/italian/localization");
-    sprintf(nomsATest[10], "data/german/acceuil.png");
-    sprintf(nomsATest[11], "data/german/controls.png");
-    sprintf(nomsATest[12], "data/german/localization");
-    sprintf(nomsATest[13], ICONE_DELETE);
-    sprintf(nomsATest[14], ICONE_FAVORITED);
-    sprintf(nomsATest[15], ICONE_FAVORIS_MENU);
-    sprintf(nomsATest[16], ICONE_NOT_FAVORITED);
-    sprintf(nomsATest[17], ICONE_FULLSCREEN);
-    sprintf(nomsATest[18], ICONE_MAIN_MENU);
-    sprintf(nomsATest[19], ICONE_MAIN_MENU_BIG);
-    sprintf(nomsATest[20], ICONE_PREVIOUS_CHAPTER);
-    sprintf(nomsATest[21], ICONE_PREVIOUS_PAGE);
-    sprintf(nomsATest[22], ICONE_NEXT_CHAPTER);
-    sprintf(nomsATest[23], ICONE_NEXT_PAGE);
-    sprintf(nomsATest[24], ICONE_LOCK);
-    sprintf(nomsATest[25], ICONE_UNLOCK);
-    sprintf(nomsATest[25], ICONE_SWITCH_CHAPITRE);
-    sprintf(nomsATest[26], ICONE_SWITCH_TOME);
-    sprintf(nomsATest[27], "data/acceuil.png");
-    sprintf(nomsATest[28], SECURE_DATABASE);
+    sprintf(nomsATest[8], "data/italian/acceuil.png");
+    sprintf(nomsATest[9], "data/italian/controls.png");
+    sprintf(nomsATest[10], "data/italian/localization");
+    sprintf(nomsATest[11], "data/german/acceuil.png");
+    sprintf(nomsATest[12], "data/german/controls.png");
+    sprintf(nomsATest[13], "data/german/localization");
+    sprintf(nomsATest[14], ICONE_DELETE);
+    sprintf(nomsATest[15], ICONE_FAVORITED);
+    sprintf(nomsATest[16], ICONE_FAVORIS_MENU);
+    sprintf(nomsATest[17], ICONE_NOT_FAVORITED);
+    sprintf(nomsATest[18], ICONE_FULLSCREEN);
+    sprintf(nomsATest[19], ICONE_MAIN_MENU);
+    sprintf(nomsATest[20], ICONE_MAIN_MENU_BIG);
+    sprintf(nomsATest[21], ICONE_PREVIOUS_CHAPTER);
+    sprintf(nomsATest[22], ICONE_PREVIOUS_PAGE);
+    sprintf(nomsATest[23], ICONE_NEXT_CHAPTER);
+    sprintf(nomsATest[24], ICONE_NEXT_PAGE);
+    sprintf(nomsATest[25], ICONE_LOCK);
+    sprintf(nomsATest[26], ICONE_UNLOCK);
+    sprintf(nomsATest[27], ICONE_SWITCH_CHAPITRE);
+    sprintf(nomsATest[28], ICONE_SWITCH_TOME);
+    sprintf(nomsATest[29], "data/acceuil.png");
+    sprintf(nomsATest[30], SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -79,6 +79,14 @@ int check_evt()
 
 		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             SDL_Delay(50);
+
+        if(!checkNetworkState(CONNEXION_OK))
+        {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Accès internet manquant", "Un accès Internet est nécessaire pour récupérer\nles fichiers nécessaires au bon fonctionnement\nde Rakshata, veuillez relancer Rakshata avec un\naccès Internet. Néanmoins, il est possible que\ncette erreur apparaisse car nos serveurs sont\nhors-ligne. Auquel cas, attendez que\nwww.rakshata.com soit de nouveau accessible.", NULL);
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            quit_thread(1);
+        }
 
         mkdirR("data");
         mkdirR("data/english");
@@ -126,7 +134,7 @@ int check_evt()
                 snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
                 download(temp, nomsATest[fichiersADL[i]], 0);
 
-                if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 9 || fichiersADL[i] == 12) //Si c'est un fichier de localization
+                if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
                 {
                     int k = 0, j = 0; //On parse
 					char *buffer = NULL;

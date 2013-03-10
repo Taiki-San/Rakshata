@@ -108,25 +108,22 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
 
 void get_file_date(const char *filename, char *date)
 {
+    int length = strlen(filename) + strlen(REPERTOIREEXECUTION) + 5;
+    char *input_parsed = malloc(length);
+	snprintf(input_parsed, length, "%s/%s", REPERTOIREEXECUTION, filename);
 #ifdef _WIN32
-    char *input_parsed = malloc(strlen(filename) + strlen(REPERTOIREEXECUTION) + 5);
-
     HANDLE hFile;
     FILETIME ftEdit;
     SYSTEMTIME ftTime;
 
-	sprintf(input_parsed, "%s\\%s", REPERTOIREEXECUTION, filename);
-
     hFile = CreateFileA(input_parsed,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
     GetFileTime(hFile, NULL, NULL, &ftEdit);
     CloseHandle(hFile);
+
     FileTimeToSystemTime(&ftEdit, &ftTime);
 
     sprintf(date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
-    char *input_parsed = malloc(strlen(filename) + 500);
-    sprintf(input_parsed, "%s/%s", REPERTOIREEXECUTION, filename);
-
     struct stat buf;
     if(!stat(input_parsed, &buf))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));

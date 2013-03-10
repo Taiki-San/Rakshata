@@ -21,7 +21,7 @@ int refreshChaptersList(MANGAS_DATA *mangaDB)
     /*On commence par énumérer les chapitres spéciaux*/
     int nbElem = 0, i;
     char temp[TAILLE_BUFFER];
-    snprintf(temp, TAILLE_BUFFER, "manga\\%s\\%s\\chapDB", mangaDB->team->teamLong, mangaDB->mangaName);
+    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/chapDB", mangaDB->team->teamLong, mangaDB->mangaName);
     FILE* chapSpeciaux = fopenR(temp, "r");
     if(chapSpeciaux != NULL)
     {

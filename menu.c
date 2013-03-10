@@ -25,6 +25,12 @@ int ecranAccueil()
     position.h = WINDOW_SIZE_H;
     position.w = WINDOW_SIZE_W;
     acceuil = IMG_LoadTexture(renderer, "data/acceuil.png");
+    if(acceuil == NULL)
+        return PALIER_QUIT;
+
+    if(WINDOW_SIZE_H != acceuil->h)
+        updateWindowSize(acceuil->w, acceuil->h);
+
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 

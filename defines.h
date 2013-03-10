@@ -26,10 +26,13 @@
 
 /*Thread*/
 #ifdef _WIN32
-    #define quit_thread(a) MUTEX_LOCK;\
-                           THREAD_COUNT--;\
-                           MUTEX_UNLOCK;\
-                           ExitThread(a)
+    #define quit_thread(a) do{ \
+                            MUTEX_LOCK;\
+                            THREAD_COUNT--;\
+                            MUTEX_UNLOCK;\
+                            ExitThread(a);\
+                            }while(0)
+
 #else
     #define quit_thread(a) MUTEX_LOCK;\
                            THREAD_COUNT--;\
@@ -324,7 +327,7 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 29
+#define NOMBRE_DE_FICHIER_A_CHECKER 31
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

@@ -749,16 +749,9 @@ int checkPass(char adresseEmail[100], char password[100], int login)
 int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
-    unsigned char fingerPrint[HASH_LENGTH], date[100], temp[240], *encryption_output = NULL;
+    unsigned char fingerPrint[HASH_LENGTH];
+    char date[200], temp[240], *encryption_output = NULL;
     FILE* bdd = NULL;
-
-#ifdef _WIN32 //On récupére maintenant la date du fichier
-    HANDLE hFile;
-    FILETIME ftLastEdit;
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-    SYSTEMTIME ftTime;
-#endif
 
     if(key_sent == NULL)
     {
@@ -781,83 +774,78 @@ int createSecurePasswordDB(unsigned char *key_sent)
     crashTemp(fingerPrint, sizeof(fingerPrint));
     generateFingerPrint(fingerPrint);
 
-#ifdef _WIN32 //On récupére maintenant la date du fichier
-    if(UNZIP_NEW_PATH)
+#ifdef _WIN32 //On cherche l'heure de la derniére modif
+    HANDLE hFile;
+    FILETIME ftLastEdit;
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+    SYSTEMTIME ftTime;
+    char *path = malloc(strlen(REPERTOIREEXECUTION) + 100);
+    if(path == NULL)
     {
-        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(temp == NULL)
-        {
-            char temp[256];
-            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
-            logR(temp);
-            exit(-1);
-        }
-        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-        applyWindowsPathCrap(temp);
-        hFile = CreateFileA(temp, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-        free(temp);
-
+        snprintf(temp, 240, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+        logR(temp);
+        exit(1);
     }
-
-    else
-
-        hFile = CreateFileA(SECURE_DATABASE,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-
+    sprintf(path, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    hFile = CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+    free(path);
     GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupére pas le dernier argument pour faire chier celui qui essaierai de comprendre
+
     dwLowDateTime = ftLastEdit.dwLowDateTime;
     dwHighDateTime = ftLastEdit.dwHighDateTime;
-    FileTimeToSystemTime(&ftLastEdit, &ftTime);
+
     CloseHandle(hFile); //Fermeture
-    crashTemp(date, 100);
-    sprintf((char *)date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
-#else //On cherche l'heure de la derniére modif
+    FileTimeToSystemTime(&ftLastEdit, &ftTime);
+
+    snprintf(date, 200, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+#else
     struct stat structure_time;
     if(UNZIP_NEW_PATH)
     {
         char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
         if(temp == NULL)
         {
-            char temp[256];
-            snprintf(temp, 256, "Failed at allocate memory for : %ld bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            snprintf(temp, 240, "Failed at allocate memory for : %ld bytes\n", strlen(REPERTOIREEXECUTION) + 100);
             logR(temp);
-            exit(-1);
+            exit(1);
         }
         sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
 		if(!stat(temp, &structure_time))
-			strftime((char*) date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
 		else
 		{
 			logR("Failed at get data from secure.enc\n");
-			exit(0);
+			exit(1);
 		}
 		free(temp);
 	}
 	else
 	{
 		if(!stat(SECURE_DATABASE, &structure_time))
-			strftime((char*) date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
 		else
 		{
 			logR("Failed at get data from secure.enc\n");
-			exit(0);
+			exit(1);
 		}
 	}
 #endif
-    sprintf((char *)temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    sprintf(temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
     unsigned char key[2][SHA256_DIGEST_LENGTH+1];
     crashTemp(key[0], SHA256_DIGEST_LENGTH+1);
     crashTemp(key[1], SHA256_DIGEST_LENGTH+1);
-    pbkdf2(temp, fingerPrint, key[1]);
+    pbkdf2((unsigned char *)temp, fingerPrint, key[1]);
     crashTemp(fingerPrint, HASH_LENGTH);
     crashTemp(temp, 240);
 
-    encryption_output = calloc(1, (strlen(REPERTOIREEXECUTION) + 32) * sizeof(unsigned char));
+    encryption_output = calloc(1, (strlen(REPERTOIREEXECUTION) + 32));
     if(UNZIP_NEW_PATH == 1)
-        sprintf((char *)encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+        sprintf(encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
     else
-        sprintf((char *)encryption_output, SECURE_DATABASE);
+        sprintf(encryption_output, SECURE_DATABASE);
 
     if(key_sent == NULL)
     {
@@ -873,20 +861,18 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     free(encryption_output);
 
-    for(i=0; i < HASH_LENGTH; key[1][i++] = 0);
+    for(i=0; i < SHA256_DIGEST_LENGTH+1; i++) { key[0][i] = key[1][i] = 0; }
 
-	get_file_date(SECURE_DATABASE, (char *)temp);
-    if(strcmp((char *) temp, (char *) date)) //Si on a été trop long et qu'il faut modifier la date du fichier
+	get_file_date(SECURE_DATABASE, temp);
+    if(strcmp(temp, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
-
         char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
         if(buffer == NULL)
         {
-            char temp[256];
-            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
+            snprintf(temp, 240, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
             logR(temp);
-            exit(-1);
+            exit(1);
         }
 
         sprintf(buffer, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
@@ -900,16 +886,12 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
         free(buffer);
         crashTemp(temp, 140);
-#ifdef _WIN32
-		get_file_date("data\\secure.enc", (char *) temp);
-#else
-		get_file_date(SECURE_DATABASE, (char *)temp);
-#endif
+		get_file_date(SECURE_DATABASE, temp);
 
-
-        if(strcmp((char *) temp, (char *) date))
+        if(strcmp(temp, date))
         {
-            logR("Unexpected time comportement, please leave this programm away from your Dolorean.\n");
+            logR("Unexpected time comportement, please leave this programm away from your Delorean.\n");
+            removeR(SECURE_DATABASE);
             exit(1);
         }
 #else

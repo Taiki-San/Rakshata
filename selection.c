@@ -106,8 +106,9 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 
         if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
             updateWindowSize(LARGEUR, i);
-        SDL_RenderClear(renderer);
+
         loadTrad(texteTrad, 18);
+        SDL_RenderClear(renderer);
 
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         if(sectionChoisis == SECTION_DL)

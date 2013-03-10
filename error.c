@@ -282,4 +282,21 @@ int affichageRepoIconnue()
     return waitEnter(window);
 }
 
-
+int UI_Alert(char* titre, char* contenu)
+{
+    int ret_value = 0;
+    SDL_MessageBoxData alerte;
+    SDL_MessageBoxButtonData bouton;
+    alerte.flags = SDL_MESSAGEBOX_ERROR;
+    alerte.title = titre;
+    alerte.message = contenu;
+    alerte.numbuttons = 1;
+    bouton.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton.buttonid = 1; //Valeur retournée
+    bouton.text = "OK";
+    alerte.buttons = &bouton;
+    alerte.window = window;
+    alerte.colorScheme = NULL;
+    SDL_ShowMessageBox(&alerte, &ret_value);
+    return ret_value;
+}

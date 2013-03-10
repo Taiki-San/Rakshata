@@ -19,7 +19,7 @@ static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
-static int status; //Status du DL: en cours, terminé...
+static volatile int status; //Status du DL: en cours, terminé...
 static int errCode;
 static void *internalBuffer;
 
@@ -344,6 +344,11 @@ static void* downloader(void* envoi)
         else
             sprintf(temp, "%s/%s.download", REPERTOIREEXECUTION, valeurs->repertoireEcriture);
         fichier = fopen(temp, "wb");
+        if(fichier == NULL) //Génération du path
+        {
+            createPath(valeurs->repertoireEcriture);
+            fichier = fopen(temp, "wb");
+        }
     }
 
     curl = curl_easy_init();

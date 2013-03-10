@@ -426,7 +426,9 @@ int createNewThread(void *function, void *arg)
         ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
         if(ZwCreateThreadEx == NULL)
         {
-        //    logR("Failed at export primitives");
+#ifdef DEV_VERSION
+            logR("Failed at export primitives");
+#endif
             CreateThread(NULL, 0, function, arg, 0, NULL);
         }
     }
@@ -441,7 +443,9 @@ int createNewThread(void *function, void *arg)
 
     if (pthread_create(&thread, NULL, function, arg))
     {
+#ifdef DEV_VERSION
         logR("Failed at create thread\n");
+#endif
         exit(EXIT_FAILURE);
     }
 #endif
