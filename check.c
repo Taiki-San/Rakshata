@@ -14,11 +14,11 @@
 
 int check_evt()
 {
-    int i = 0, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
+    int i, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
     char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
     FILE *test = NULL;
 
-    for(; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
+    for(i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
 
     /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
     sprintf(nomsATest[0], "data/font.ttf");
@@ -201,7 +201,7 @@ int checkLancementUpdate()
         return 0;
 
 #ifdef _WIN32
-    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDLModule");
+    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDL2");
     if (WaitForSingleObject (hSem, 0) != WAIT_TIMEOUT)
     {
         ReleaseSemaphore (hSem, 1, NULL);
@@ -230,6 +230,8 @@ int checkLancementUpdate()
         else
             fclose(test);
     }
+    else
+        return 1;
 #endif
     return 0;
 }
@@ -329,8 +331,8 @@ void networkAndVersionTest()
             }
 
 			/*A partir d'ici, le compte est killswitche*/
-			removeFolder("manga");
-			removeFolder("data");
+			removeFolder("4", "manga");
+			removeFolder("5", "data");
 			exit(0);
 		}
 		else

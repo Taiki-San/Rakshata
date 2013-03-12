@@ -40,7 +40,7 @@ int telechargement()
     CURRENT_TOKEN = 0;
 
 #ifdef _WIN32
-    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDLModule");
+    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDL2");
     if (WaitForSingleObject (hSem, 0) == WAIT_TIMEOUT)
     {
         logR("Fail: instance already running\n");
@@ -163,7 +163,7 @@ int telechargement()
                     if(MOT_DE_PASSE_COMPTE[0] == -1)
                         break;
 
-                    else if(MOT_DE_PASSE_COMPTE[0] || (i = getPassword(MOT_DE_PASSE_COMPTE, 1, 1)) == 1)
+                    else if((i = getPassword(MOT_DE_PASSE_COMPTE, 1, 1)) == 1)
                         sprintf(superTemp, "https://rsp.%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], CURRENTVERSION, todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
 
                     else if(i == PALIER_QUIT)
@@ -229,13 +229,13 @@ int telechargement()
                     glados = CODE_RETOUR_OK;
                     struc = (OUT_DL*) download(superTemp, command, 1);
 
-                #ifdef DEV_VERSION
+//                #ifdef DEV_VERSION
                     if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
                     {
                         logR(struc->buf);
                         exit(0);
                     }
-                #endif
+//                #endif
 
                     if(struc <= (OUT_DL*) CODE_RETOUR_MAX)
                     {
@@ -244,7 +244,7 @@ int telechargement()
                             break;
                     }
 
-                    else if(struc->buf == NULL || struc->length < 50 || struc->length > 400000000 || struc->buf[0] == '<' || struc->buf[1] == '<' || struc->buf[2] == '<' || struc->buf[3] == '<')
+                    else if(struc->buf == NULL || struc->length < 50 || struc->length > 400*1024*1024 || struc->buf[0] != 'P' || struc->buf[1] != 'K')
                     {
                         if(struc->buf == NULL)
                         {
@@ -573,7 +573,7 @@ void* installation(void* datas)
                 sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
             else
                 sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
-            removeFolder(temp);
+            removeFolder("10", temp);
             erreurs = 1;
         }
     }

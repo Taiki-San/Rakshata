@@ -311,14 +311,14 @@ size_t ustrlen(void *input)
     return copy - (unsigned char *)input;
 }
 
-void usstrcpy(void* output, size_t length, void* input)
+void usstrcpy(void* output, size_t length, const void* input)
 {
     memccpy(output, input, 0, length);
 }
 
-void ustrcpy(void* output, void* input)
+void ustrcpy(void* output, const void* input)
 {
-    usstrcpy(output, ustrlen(input), input);
+    usstrcpy(output, ustrlen((void*)input), input);
 }
 
 void SDL_FreeSurfaceS(SDL_Surface *surface)
@@ -342,7 +342,7 @@ void SDL_DestroyTextureS(SDL_Texture *texture)
 
 /**Différent en fonction de l'OS**/
 
-void removeFolder(char *path)
+void removeFolder(char *caller, char *path)
 {
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
@@ -385,14 +385,14 @@ void removeFolder(char *path)
             removeR(buffer); //On est sur un fichier, on le supprime.
 
         else
-            removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+            removeFolder(caller, buffer); // On est sur un dossier, on appelle cette fonction.
         free(buffer);
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
 #ifdef DEV_VERSION
     char temp2[300];
-    snprintf(temp2, 300, "Removed: %s\n", name);
+    snprintf(temp2, 300, "[%s] Removed: %s\n", caller, name);
     logR(temp2);
 #endif
     free(name);

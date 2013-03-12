@@ -457,7 +457,7 @@ int deleteManga()
 						if(!checkFileExist(temp))
 						{
 							snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
-							removeFolder(temp);
+							removeFolder("6", temp);
 						}
 						else
 						{
@@ -475,7 +475,7 @@ int deleteManga()
 					{
 						chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W); //On recharge la liste des mangas dispo
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
-						removeFolder(temp);
+						removeFolder("7", temp);
 						noMoreChapter = 0;
 						freeMangaData(mangas, NOMBRE_MANGA_MAX);
                         mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
@@ -505,7 +505,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
             sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
         else
             sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
-		removeFolder(temp);
+		removeFolder("8", temp);
 
 		int length = 0;
 		for(; mangaDB.chapitres[length] == VALEUR_FIN_STRUCTURE_CHAPITRE; length++); //On énumère
@@ -540,7 +540,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 	else
 	{
 		sprintf(temp, "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
-		removeFolder(temp);
+		removeFolder("9", temp);
 		return 1;
 	}
 	return 0;

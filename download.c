@@ -59,7 +59,7 @@ int download(char *adresse, char *repertoire, int activation)
         while(status != STATUS_IT_IS_OVER)
         {
             MUTEX_UNLOCK;
-            SDL_Delay(50);
+            SDL_Delay(200);
             MUTEX_LOCK;
         }
         MUTEX_UNLOCK;

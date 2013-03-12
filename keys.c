@@ -144,7 +144,7 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
     sha256(randomChar, output);
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
-        if(output[i] <= ' '  || output[i] == 127 || output[i] >= 255)
+        if(output[i] <= ' '  || output[i] >= 255)
         {
             int j;
             do {
@@ -270,7 +270,6 @@ int logon()
     if(WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas Ã  redimensionner celle lÃ 
     {
         updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
-        SDL_RenderClear(renderer);
         resized = 1;
     }
 
@@ -352,7 +351,8 @@ int logon()
             case 0: //New account
             case 1: //Account exist
             {
-                char password[50];
+                char password[100];
+                crashTemp(password, 100);
                 /**Leurs codes sont assez proches donc on les regroupes**/
                 ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
                 position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -543,6 +543,8 @@ int getPassword(char password[100], int dlUI, int salt)
     if(passwordGB[0] != 0)
     {
         ustrcpy(password, passwordGB);
+        if(dlUI)
+            passToLoginData(password);
         return 1;
     }
 
@@ -620,23 +622,7 @@ int getPassword(char password[100], int dlUI, int salt)
                 }
                 return 1;
             }
-            int i = 0, j = 0;
-            char temp[HASH_LENGTH+5], serverTime[500];
-            crashTemp(temp, HASH_LENGTH+5);
-            ustrcpy(temp, passwordGB);
-            sprintf(password, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
-            setupBufferDL(serverTime, 100, 5, 1, 1);
-            download(password, serverTime, 0);
-
-            for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
-            {
-                if(serverTime[i] == '\r' || serverTime[i] == '\n')
-                    serverTime[i] = 0;
-            }
-            for(j = strlen(temp), i++; j < HASH_LENGTH + 5 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
-            temp[j] = 0;
-            sha256_legacy(temp, password);
-            MajToMin(password);
+            passToLoginData(password);
 
             if(resized)
             {
@@ -646,6 +632,28 @@ int getPassword(char password[100], int dlUI, int salt)
             return 1;
         }
     }
+}
+
+void passToLoginData(char password[100])
+{
+    int i = 0, j = 0;
+    char temp[100], serverTime[500];
+    crashTemp(temp, 100);
+    ustrcpy(temp, password);
+    sprintf(password, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
+    setupBufferDL(serverTime, 100, 5, 1, 1);
+    download(password, serverTime, 0);
+
+    for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
+    {
+        if(serverTime[i] == '\r' || serverTime[i] == '\n')
+            serverTime[i] = 0;
+    }
+    for(j = strlen(temp), i++; j < 100 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
+    temp[j<99 ? j : 99] = 0;
+    crashTemp(password, 100);
+    sha256_legacy(temp, password);
+    MajToMin(password);
 }
 
 int check_login(char adresseEmail[100])
@@ -719,43 +727,35 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     download(URL, buffer_output, 0);
 
     minToMaj(buffer_output);
-    sprintf(URL, "%s-access_denied", hash2);
-    sha256_legacy(URL, hash1);
-
     sprintf(URL, "%s-access_granted", hash2);
     sha256_legacy(URL, hash2);
 
-    if(!strcmp(buffer_output, hash1) || !strcmp(buffer_output, "access_denied"))
-        return 0;
-
-    else if(!strcmp(buffer_output, hash2)) //access granted
+    if(!strcmp(buffer_output, hash2)) //access granted
     {
+        crashTemp(hash1, 2*SHA256_DIGEST_LENGTH+1);
+        crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
+
         sha256_legacy(password, hash1);
         MajToMin(hash1);
-        crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
         sha256_legacy(hash1, hash2); //On hash deux fois
         MajToMin(hash2);
         ustrcpy(passwordGB, hash2);
+        ustrcpy(password, hash2);
         return 1;
     }
-
-#ifdef DEV_VERSION
-    sprintf(buffer_output, "%s\n", buffer_output);
-    logR(buffer_output);
-#endif
-    return 2;
+    return 0;
 }
 
 int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
     unsigned char fingerPrint[HASH_LENGTH];
-    char date[200], temp[240], *encryption_output = NULL;
+    char password[100], date[200], temp[240], *encryption_output = NULL;
     FILE* bdd = NULL;
 
     if(key_sent == NULL)
     {
-        int ret_value = getPassword(passwordGB, 0, 0);
+        int ret_value = getPassword(password, 0, 0);
         if(ret_value < 0)
             return ret_value;
         bdd = fopenR(SECURE_DATABASE, "w+");
@@ -849,7 +849,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     if(key_sent == NULL)
     {
-        createNewMK(passwordGB, key[0]);
+        createNewMK(password, key[0]);
         AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
     }
     else

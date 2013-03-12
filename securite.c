@@ -136,7 +136,7 @@ void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char temp[LONGUEUR_NOM_MANGA_MAX+10];
     sprintf(temp, "manga/%s", teamLong);
-    removeFolder(temp);
+    removeFolder("12", temp);
 }
 
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
@@ -146,7 +146,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
         sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
     else
         sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
-    removeFolder(temp);
+    removeFolder("13", temp);
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 

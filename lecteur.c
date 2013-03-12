@@ -927,7 +927,17 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                         case SDLK_BACKSPACE:
                         {
                             if(pageAccesDirect != 0)
+                            {
                                 pageAccesDirect /= 10;
+                                SDL_FreeSurfaceS(UI_PageAccesDirect);
+                                if(pageAccesDirect)
+                                {
+                                    sprintf(temp, "%s: %d", texteTrad[1], pageAccesDirect); //Page: xx
+                                    TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
+                                    UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
+                                    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
+                                }
+                            }
                             else
                             {
                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);

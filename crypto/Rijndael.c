@@ -1394,7 +1394,7 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
             fwrite(plaintext, sizeof(plaintext), 1, output);
         else
         {
-            memmove(path_output+positionDansOutput, plaintext, sizeof(plaintext));
+            memcpy(&path_output[positionDansOutput], plaintext, sizeof(plaintext));
             positionDansOutput += sizeof(plaintext);
         }
         memcpy(previous_cipher, ciphertext, CRYPTO_BUFFER_SIZE); //On copie dans le buffer pour le XOR
