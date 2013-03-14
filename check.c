@@ -190,7 +190,9 @@ int check_evt()
         free(buf);
 
     if(!checkFileExist(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]))
+    {
         createSecurePasswordDB(NULL);
+    }
     return 0;
 }
 

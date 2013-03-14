@@ -59,15 +59,17 @@ int section()
             for(j--; j >= 0; j--)
             {
                 texte = TTF_Write(renderer, police, message[j], couleurTexte);
-                position.y -= 36; //texte->h; //Gère les sauts de ligne
                 if(texte != NULL)
                 {
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                    position.y -= texte->h; //Gère les sauts de ligne
                     position.h = texte->h;
                     position.w = texte->w;
                     SDL_RenderCopy(renderer, texte, NULL, &position);
                     SDL_DestroyTextureS(texte);
                 }
+                else
+                    position.y -= 36; //Gère les sauts de ligne
             }
             TTF_CloseFont(police);
         }
@@ -173,15 +175,6 @@ int checkProjet(MANGAS_DATA mangaDB)
 
         restartEcran();
 
-		image = TTF_Write(renderer, police, texte[0], couleur);
-        position.x = LARGEUR / 2 - image->w / 2;
-        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
-        position.h = image->h;
-        position.w = image->w;
-        SDL_RenderCopy(renderer, image, NULL, &position);
-        SDL_DestroyTextureS(image);
-        TTF_CloseFont(police);
-
         image = IMG_LoadTexture(renderer, temp);
         if(image == NULL)
         {
@@ -190,11 +183,24 @@ int checkProjet(MANGAS_DATA mangaDB)
         }
         position.x = 0;
         position.y = BORDURE_HOR_LECTURE;
-        position.h = image->h;
         position.w = image->w;
+
+        position.h = renderer->window->h - BORDURE_HOR_LECTURE;
+        if(position.h > image->h)
+            position.h = image->h;
+
         SDL_RenderCopy(renderer, image, NULL, &position);
         SDL_RenderPresent(renderer);
         SDL_DestroyTextureS(image);
+
+		image = TTF_Write(renderer, police, texte[0], couleur);
+        position.x = LARGEUR / 2 - image->w / 2;
+        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
+        position.h = image->h;
+        position.w = image->w;
+        SDL_RenderCopy(renderer, image, NULL, &position);
+        SDL_DestroyTextureS(image);
+        TTF_CloseFont(police);
 
         return waitEnter(window);
     }

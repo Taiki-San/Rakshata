@@ -60,7 +60,9 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
                 fail++;
             }
             else
+            {
                 exit(0);
+            }
         }
         for(i = fgetc(fichierTrad); (i < '0' || i > '9') && i != EOF; i = fgetc(fichierTrad));
 

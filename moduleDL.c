@@ -229,13 +229,11 @@ int telechargement()
                     glados = CODE_RETOUR_OK;
                     struc = (OUT_DL*) download(superTemp, command, 1);
 
-//                #ifdef DEV_VERSION
                     if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
                     {
                         logR(struc->buf);
                         exit(0);
                     }
-//                #endif
 
                     if(struc <= (OUT_DL*) CODE_RETOUR_MAX)
                     {

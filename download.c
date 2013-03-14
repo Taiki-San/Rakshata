@@ -408,7 +408,9 @@ static void* downloader(void* envoi)
         res = curl_easy_perform(curl);
 
         if(valeurs->URL[4] == 's') //HTTPS
+#ifndef DEV_VERSION
             removeR("data/buf.crt");
+#endif
 
         if(res != CURLE_OK) //Si probléme
         {

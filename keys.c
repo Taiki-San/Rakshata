@@ -768,7 +768,6 @@ int createSecurePasswordDB(unsigned char *key_sent)
         logR("Echec de création de la BDD sécurisé: création de fichier impossible\n");
         return -1;
     }
-
     fclose(bdd);
 
     crashTemp(fingerPrint, sizeof(fingerPrint));
@@ -858,7 +857,6 @@ int createSecurePasswordDB(unsigned char *key_sent)
         AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
         crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
     }
-
     free(encryption_output);
 
     for(i=0; i < SHA256_DIGEST_LENGTH+1; i++) { key[0][i] = key[1][i] = 0; }
@@ -904,9 +902,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
 #endif
     }
-
     return 0;
-
 }
 
 int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])

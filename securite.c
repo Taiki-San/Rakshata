@@ -150,10 +150,6 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 
-#ifdef DEV_VERSION
-	//#define VERBOSE_DECRYPT
-#endif
-
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
 {
     int i = 0, nombreEspace = 0;
@@ -217,7 +213,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         free(configEnc);
         logR("Huge fail: database corrupted\n");
         free(path);
-        return (void*) 0x1;
+        return NULL;
     }
     crashTemp(hash, SHA256_DIGEST_LENGTH);
     snprintf(path, length, "%s/%s", root, nomPage);
@@ -231,7 +227,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         if(((length2 - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length2 - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length2-1] == ' ');
         else
         {
-            for(i = (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX; i > 0; configEnc[i--] = 0); //On écrase les clés: DAYTAYCAY PIRATE =P
             free(configEnc);
             logR("Huge fail: database corrupted\n");
             free(path);
@@ -250,11 +245,10 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     }
     if(nombreEspace != SHA256_DIGEST_LENGTH || (configEnc[i] && configEnc[i] != ' '))//Ouate is this? > || configEnc[i-nombreEspace-1] != ' ') //On vérifie que le parsage est complet
     {
-        for(i = ustrlen(configEnc); i >= 0; configEnc[i--] = 0); //On écrase les clés: DAYTAYCAY PIRATE =P
-        free(configEnc);
         crashTemp(key, SHA256_DIGEST_LENGTH);
-        logR("Huge fail: database corrupted\n");
+        free(configEnc);
         free(path);
+        logR("Huge fail: database corrupted\n");
         return NULL;
     }
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
@@ -264,14 +258,14 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     decryptPage(key, path, buf_page, size);
     surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
-#ifdef DEV_VERSION
     if(surface_page == NULL)
     {
+#ifdef DEV_VERSION
         FILE *newFile = fopen("buffer.png", "wb");
         fwrite(buf_page, 1, size, newFile);
         fclose(newFile);
-    }
 #endif
+    }
     free(buf_page);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);

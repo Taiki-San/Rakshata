@@ -221,7 +221,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 else
                 {
                     OChapitre = IMG_LoadS(OChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1], pageEnCoursDeLecture-1);
-                    if(OChapitre == (SDL_Surface*) 0x1)
+                    if(OChapitre == NULL)
                     {
                         internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                         OChapitre = 0;
@@ -247,7 +247,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             else
             {
                 chapitre = IMG_LoadS(chapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture], pageEnCoursDeLecture);
-                if(chapitre == (SDL_Surface*) 0x1)
+                if(chapitre == NULL)
                 {
                     internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                     chapitre = 0;
@@ -517,7 +517,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                     else
                     {
                         NChapitre = IMG_LoadS(NChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture+1], pageEnCoursDeLecture+1);
-                        if(NChapitre == (SDL_Surface*) 0x1)
+                        if(NChapitre == NULL)
                         {
                             internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                             NChapitre = 0;
@@ -540,7 +540,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                     else
                     {
                         OChapitre = IMG_LoadS(OChapitre, mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis, nomPage[pageEnCoursDeLecture - 1], pageEnCoursDeLecture-1);
-                        if(OChapitre == (SDL_Surface*) 0x1)
+                        if(OChapitre == NULL)
                         {
                             internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                             OChapitre = 0;
