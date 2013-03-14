@@ -216,7 +216,10 @@ void update_repo()
 					limiteActuelle[limiteActuelle[0]]++;
 				}
 				if(!bufferDL[i] || bufferDL[i] == ' ' || bufferDL[i] == '\r' || bufferDL[i] == '\n' || limiteActuelle[limiteActuelle[0]] >= limites[limiteActuelle[0]])
-					limiteActuelle[0]++;
+                {
+                    for(; bufferDL[i+1] == ' '; i++); //Si trop d'espace dans le fichier
+                    limiteActuelle[0]++;
+                }
 
 				if(bufferDL[i] == '\r' || bufferDL[i] == '\n')
 					positionDansBuffer--;
