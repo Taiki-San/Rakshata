@@ -327,7 +327,11 @@
 #endif
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 31
+#ifdef DEV_VERSION
+    #define NOMBRE_DE_FICHIER_A_CHECKER 31
+#else
+    #define NOMBRE_DE_FICHIER_A_CHECKER 29
+#endif
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

@@ -34,12 +34,10 @@ void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf
 
     Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
     Twofish_set_key((u4byte*) key, KEYBITS);
-    posIV = -1;
 
-    for(k = 0; i != EOF && k*2*CRYPTO_BUFFER_SIZE <= buf_len; k++)
+    for(k = 0, posIV = -1; i != EOF && k*2*CRYPTO_BUFFER_SIZE <= buf_len; k++)
     {
         unsigned char ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
-
         for (j = 0; j < CRYPTO_BUFFER_SIZE && (i = fgetc(in)) != EOF; ciphertext[j++] = i);
         for (; j < CRYPTO_BUFFER_SIZE; ciphertext[j++] = 0);
         Serpent_decrypt(&pSer, (DWORD*) ciphertext, (DWORD*) plaintext);
@@ -59,6 +57,11 @@ void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf
         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
         posIV = 0;
     }
+#ifdef DEV_VERSION
+    if(k*2*CRYPTO_BUFFER_SIZE > buf_len)
+        logR("Not enough space");
+#endif
+
     fclose(in);
 }
 
@@ -136,7 +139,7 @@ void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char temp[LONGUEUR_NOM_MANGA_MAX+10];
     sprintf(temp, "manga/%s", teamLong);
-    removeFolder("12", temp);
+    removeFolder(temp);
 }
 
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
@@ -146,7 +149,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
         sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
     else
         sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
-    removeFolder("13", temp);
+    removeFolder(temp);
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 
@@ -254,21 +257,23 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
 
-    void *buf_page = malloc(size+100);
+    void *buf_page = malloc(size + size/2 + 500);
 
-    decryptPage(key, path, buf_page, size);
-    surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
+    for(i = 0; i < 3 && surface_page == NULL; i++)
+    {
+        decryptPage(key, path, buf_page, size + size/2);
+        surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
+    }
     if(surface_page == NULL)
     {
 #ifdef DEV_VERSION
-        FILE *newFile = fopen("buffer.png", "wb");
+        FILE *newFile = fopenR("buffer.png", "wb");
         fwrite(buf_page, 1, size, newFile);
         fclose(newFile);
 #endif
     }
-    free(buf_page);
-
     crashTemp(key, SHA256_DIGEST_LENGTH);
+    free(buf_page);
     free(path);
     return surface_page;
 }

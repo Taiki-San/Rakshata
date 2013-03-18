@@ -514,8 +514,7 @@ void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
 	DWORD  i,lk,a,b,c,d,e,f,g,h;
     DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
 
-    if(key_len < 0 || key_len > 256)
-
+    if(key_len > 256)
         return;
 
     i = 0; lk = (key_len + 31) / 32;

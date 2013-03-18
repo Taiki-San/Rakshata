@@ -274,7 +274,7 @@ int deleteRepo()
             repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
 
             sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
-            removeFolder("11", temp); //Suppresion du dossier de la team
+            removeFolder(temp); //Suppresion du dossier de la team
 
             repoNew[j++] = '<';
             repoNew[j++] = SETTINGS_REPODB_FLAG;

@@ -335,7 +335,6 @@ int logon()
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
-
         if(waitClavier(renderer, 50, beginingOfEmailAdress, 109, 1, adresseEmail) == PALIER_QUIT)
             return PALIER_QUIT;
 
@@ -391,7 +390,6 @@ int logon()
                 SDL_DestroyTextureS(ligne);
 
                 SDL_RenderPresent(renderer);
-
                 if((i = waitClavier(renderer, 50, beginingOfEmailAdress, 109, ((login==0)?1:0), password)) == PALIER_QUIT)
                     return PALIER_QUIT;
                 else if (i == PALIER_MENU) //Echap

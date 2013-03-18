@@ -19,8 +19,8 @@ extern int UNZIP_NEW_PATH; //La décompression change le path courant
 extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;
 extern int HAUTEUR;
-extern int favorisToDL;
-extern int alreadyRefreshed;
+extern volatile int favorisToDL;
+extern volatile int alreadyRefreshed;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];
 extern char MAIN_SERVER_URL[2][100];

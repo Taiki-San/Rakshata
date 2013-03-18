@@ -127,18 +127,25 @@ int positionnementApres(FILE* stream, char *stringToFind)
 
 int positionnementApresChar(char* input, char *stringToFind)
 {
-    int length = strlen(stringToFind) + 100, i = 0;//, j = 0;
-    char *temp = malloc(length);
-
-    while(input[i] && strcmp(temp, stringToFind))
+    int i = 0;
+    while(input[i])
     {
-        for(; input[i] == '\r' || input[i] == '\n'; i++);
-        i += sscanfs(&input[i], "%s", temp, length);
+        for(; input[i] != stringToFind[0] && input[i] != 0; i++);
+        if(input[i] == stringToFind[0])
+        {
+            int j = 0;
+            for(; j < strlen(stringToFind) && input[j+i] && stringToFind[j] && input[j+i] == stringToFind[j]; j++);
+            if(stringToFind[j] == 0)
+            {
+                i += j;
+                for(; input[i] == '\r' || input[i] == '\n'; i++);
+                break;
+            }
+            i++;
+        }
     }
-    free(temp);
     if(!input[i])
         return 0;
-    for(; input[i] == '\r' || input[i] == '\n'; i++);
     return i;
 }
 
@@ -190,7 +197,8 @@ void createPath(char output[])
             folder[i++] = '/'; //On ajoute un / au path Ã  construire
 			longueur_output++;
 #ifdef _WIN32
-            for(; output[longueur_output] && output[longueur_output] == '\\' ; longueur_output++); //Sous windows, il y a deux \\ .
+            if(output[longueur_output] == '\\')
+                for(; output[longueur_output] && output[longueur_output] == '\\' ; longueur_output++); //Sous windows, il y a deux \\ .
 #endif
         }
     }

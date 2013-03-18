@@ -94,7 +94,7 @@ void chdirR()
 int strend(char *recepter, size_t length, const char *sender)
 {
     int i = 0;
-    if(recepter > 0 && sender > 0)
+    if(recepter && sender)
     {
         for(; *recepter; i++, recepter++);
         for(; *sender && length > i; i++, recepter++, sender++)
@@ -342,7 +342,7 @@ void SDL_DestroyTextureS(SDL_Texture *texture)
 
 /**Différent en fonction de l'OS**/
 
-void removeFolder(char *caller, char *path)
+void removeFolder(char *path)
 {
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
@@ -385,14 +385,14 @@ void removeFolder(char *caller, char *path)
             removeR(buffer); //On est sur un fichier, on le supprime.
 
         else
-            removeFolder(caller, buffer); // On est sur un dossier, on appelle cette fonction.
+            removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
         free(buffer);
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
 #ifdef DEV_VERSION
     char temp2[300];
-    snprintf(temp2, 300, "[%s] Removed: %s\n", caller, name);
+    snprintf(temp2, 300, "Removed: %s\n", name);
     logR(temp2);
 #endif
     free(name);
@@ -547,7 +547,7 @@ int checkPID(int PID)
 int checkFileExist(char *filename)
 {
     FILE* FileToTest = NULL;
-    if(filename[1] == ':')
+    if(filename[1] == ':' || filename[0] == '/')
         FileToTest = fopen(filename, "r");
     else
         FileToTest = fopenR(filename, "r");
@@ -562,7 +562,7 @@ int checkFileExist(char *filename)
 int checkDirExist(char *dirname)
 {
     DIR *directory = NULL;
-    if(dirname[1] == ':')
+    if(dirname[1] == ':' || dirname[0] == '/')
         directory = opendir(dirname);
     else
     {

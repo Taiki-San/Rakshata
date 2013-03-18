@@ -26,7 +26,11 @@ int ecranAccueil()
     position.w = WINDOW_SIZE_W;
     acceuil = IMG_LoadTexture(renderer, "data/acceuil.png");
     if(acceuil == NULL)
+    {
+        removeR("data/accueil.png");
+        logR("Failed at load main page");
         return PALIER_QUIT;
+    }
 
     if(WINDOW_SIZE_H != acceuil->h)
         updateWindowSize(acceuil->w, acceuil->h);
@@ -36,6 +40,13 @@ int ecranAccueil()
 
     sprintf(temp, "data/%s/acceuil.png", LANGUAGE_PATH[langue - 1]); //Traduction
     acceuil = IMG_LoadTexture(renderer, temp);
+
+    if(acceuil == NULL)
+    {
+        removeR(temp);
+        logR("Failed at load translated main page");
+        return PALIER_QUIT;
+    }
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 

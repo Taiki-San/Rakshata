@@ -175,9 +175,10 @@ void change_file_date(filename,dosdate,tmu_date)
 #endif
 }
 
-int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_overwrite,password, passwordPageCrypted)
+int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_path,popt_overwrite,password, passwordPageCrypted)
     unzFile uf;
     char* filename_inzip;
+    char* output_path;
     const int* popt_extract_without_path;
     int* popt_overwrite;
     const char* password;
@@ -218,14 +219,19 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
     }
     else
     {
-        char* write_filename;
+        char* write_filename = NULL;
         int skip=0;
 
         if ((*popt_extract_without_path)==0)
-            write_filename = filename_inzip;
+        {
+            write_filename = calloc(1, strlen(filename_inzip) + strlen(output_path) + 10);
+            snprintf(write_filename, strlen(filename_inzip) + strlen(output_path) + 10, "%s/%s", output_path, filename_inzip);
+        }
         else
-            write_filename = filename_withoutpath;
-
+        {
+            write_filename = calloc(1, strlen(filename_withoutpath) + strlen(output_path) + 10);
+            snprintf(write_filename, strlen(filename_withoutpath) + strlen(output_path) + 10, "%s/%s", output_path, filename_withoutpath);
+        }
 		err = unzOpenCurrentFilePassword(uf,password);
 
 		if (err!=UNZ_OK)
@@ -381,9 +387,10 @@ int do_extract_currentfile(uf,filename_inzip,popt_extract_without_path,popt_over
 }
 
 
-int do_extract(uf, input, opt_extract_without_path,opt_overwrite,password)
+int do_extract(uf, input, output_path, opt_extract_without_path,opt_overwrite,password)
     unzFile uf;
     char *input;
+    char *output_path;
     int opt_extract_without_path;
     int opt_overwrite;
     const char* password;
@@ -404,7 +411,7 @@ int do_extract(uf, input, opt_extract_without_path,opt_overwrite,password)
 
     for (i=0;i<gi.number_entry;i++)
     {
-        if (do_extract_currentfile(uf,input, &opt_extract_without_path, &opt_overwrite, NULL, NULL) != UNZ_OK)
+        if (do_extract_currentfile(uf,input,output_path, &opt_extract_without_path, &opt_overwrite, NULL, NULL) != UNZ_OK)
             break;
 
         if ((i+1)<gi.number_entry)
@@ -425,9 +432,10 @@ int do_extract(uf, input, opt_extract_without_path,opt_overwrite,password)
     return 0;
 }
 
-int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,password,passwordPageCrypted)
+int do_extract_onefile(uf,filename,output_path,opt_extract_without_path,opt_overwrite,password,passwordPageCrypted)
     unzFile uf;
     const char* filename;
+    char* output_path;
     int opt_extract_without_path;
     int opt_overwrite;
     const char* password;
@@ -443,7 +451,7 @@ int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,passwo
         return 2;
     }
 
-    if (do_extract_currentfile(uf,filename,&opt_extract_without_path, &opt_overwrite, password, passwordPageCrypted) == UNZ_OK)
+    if (do_extract_currentfile(uf,filename,output_path,&opt_extract_without_path, &opt_overwrite, password, passwordPageCrypted) == UNZ_OK)
         return 0;
     else
         return 1;

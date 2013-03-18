@@ -23,17 +23,17 @@
 
 static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t i, uint8_t *buffer, uint8_t *u)
 {
-    uint32_t    j,k;
+    uint32_t k;
     memcpy(buffer,salt,saltlen);
     sha256_salted(pw,pwlen,buffer,saltlen,buffer);
 
     memcpy(u,buffer,prf_hlen);
 
-    for(j=1; j<count; j++){
+    for(i=1; i<count; i++)
+    {
         sha256_salted(pw,pwlen,buffer,prf_hlen,buffer);
-        for(k=0; k<prf_hlen; k++){
+        for(k=0; k<prf_hlen; k++)
             u[k] ^= buffer[k];
-        }
     }
 }
 

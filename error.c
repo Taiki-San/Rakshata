@@ -124,6 +124,13 @@ int libcurlErrorCode(CURLcode code)
             return CODE_RETOUR_DL_CLOSE_INTERNAL;
             break;
         }
+        case CURLE_SSL_CACERT_BADFILE:
+        {
+            sprintf(log_message, "SSL error\n");
+            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            break;
+        }
+
         default:
         {
             sprintf(log_message, "Unknown libcURL error: %d", code);

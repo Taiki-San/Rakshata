@@ -176,7 +176,7 @@ void ustrcpy(void* output, const void* input);
 void SDL_FreeSurfaceS(SDL_Surface *surface);
 void SDL_DestroyTextureS(SDL_Texture *texture);
 
-void removeFolder(char *caller, char *path);
+void removeFolder(char *path);
 int createNewThread(void *function, void *arg);
 void ouvrirSite(TEAMS_DATA* teams);
 int lancementExternalBinary(char cheminDAcces[100]);

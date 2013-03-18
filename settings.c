@@ -106,7 +106,7 @@ char *loadPrefFile()
     if(pref == NULL)
     {
 #ifndef DEV_VERSION
-        removeFolder("14", "manga");
+        removeFolder("manga");
 #endif
         return NULL;
     }

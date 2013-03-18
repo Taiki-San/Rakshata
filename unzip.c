@@ -88,6 +88,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 	int opt_overwrite = 1; /*Overwrite*/
 	int opt_encrypted = 0, ret_value=0, mytoken = CURRENT_TOKEN++;
    	char *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
+    char *pathToConfigFile = NULL;
 
 	FILE* test = NULL;
     unzFile uf = NULL;
@@ -169,27 +170,29 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     }
     else
     {
-        path = malloc(strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 3);
+        path = calloc(1, strlen(outputZip) + 3);
         init_zmemfile(&fileops, inputZip, size);
         uf = unzOpen2(NULL, &fileops);
     }
 
     UNZIP_NEW_PATH = 1; //Changer le répertoire par défaut change beaucoup (trop) de trucs
 
-    sprintf(path, "%s/%s", REPERTOIREEXECUTION, outputZip);
-    sprintf(FONTUSED, "%s/%s", REPERTOIREEXECUTION, FONT_USED_BY_DEFAULT);
-
-    if (size && chdir(path)) //On change le dossier courant
+    sprintf(path, "%s", outputZip);
+    if (size && !checkDirExist(path)) //On change le dossier courant
     {
         createPath(outputZip); //En cas d'échec, on réessaie de créer le dossier
-        if (chdir(path)) //Si réechoue
+        if (!checkDirExist(path)) //Si réechoue
         {
-            sprintf(password, "Error changing into %s, aborting\n", outputZip);
-            logR(password);
-            exit(1);
+            char temp[1000];
+            snprintf(temp, 1000, "Error changing into %s, aborting\n", outputZip);
+            logR(temp);
+            goto quit;
         }
     }
-    if(checkFileExist(CONFIGFILE))
+
+    pathToConfigFile = calloc(1, strlen(path) + 50);
+    snprintf(pathToConfigFile, strlen(path) + 50, "%s/%s", path, CONFIGFILE);
+    if(checkFileExist(pathToConfigFile))
         goto quit;
 
     for(i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinitialise les noms de page
@@ -223,11 +226,11 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         if(checkNameFileZip(filename_inzip[i]))
         {
             if(opt_encrypted && password[0] != 0) //Si mot de passe
-                do_extract_onefile(uf, filename_inzip[i], opt_do_extract_withoutpath, opt_overwrite, password, pass[i]);
+                do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, password, pass[i]);
             else if(opt_encrypted)
-                do_extract_onefile(uf, filename_inzip[i], opt_do_extract_withoutpath, opt_overwrite, NULL, pass[i]);
+                do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, NULL, pass[i]);
             else
-                ret_value = do_extract_onefile(uf, filename_inzip[i], opt_do_extract_withoutpath, opt_overwrite, NULL, NULL);
+                ret_value = do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, NULL, NULL);
             nombreFichiersDecompresses++;
 
             if ((i+1) < nombreFichiers)
@@ -279,11 +282,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        char *path2 = malloc(strlen(outputZip) + strlen(CONFIGFILE) + 10);
-        snprintf(path2, strlen(outputZip) + strlen(CONFIGFILE) + 10, "%s/%s", outputZip, CONFIGFILE);
-        if(configFileLoader(path2, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
+        if(configFileLoader(pathToConfigFile, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
-            free(path2);
 #ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
 #endif
@@ -291,7 +291,6 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             ret_value = -1;
             goto quit;
         }
-        free(path2);
 
         for(i = 0; strcmp(filename_inzip[i], CONFIGFILE) && i < NOMBRE_PAGE_MAX; i++);
         if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
@@ -339,7 +338,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 15 ) * sizeof(unsigned char)); //+1 pour \n, +15 pour le nombre en tête et le \n qui suis
         if(hugeBuffer== NULL)
         {
-            logR("Failed at allocate memore to hugeBuffer\n");
+#ifdef DEV_VERSION
+            logR("Failed at allocate memory to buffer\n");
+#endif
             exit(-1);
         }
         sprintf((char *) hugeBuffer, "%d", nombreFichiers);
@@ -362,7 +363,8 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             pbkdf2((uint8_t *) temp, chapter, hash);
 
             crashTemp(temp, 256);
-            _AESEncrypt(hash, hugeBuffer, "config.enc", INPUT_IN_MEMORY, 1);
+            snprintf(pathToConfigFile, strlen(path) + 50, "%s/config.enc", path);
+            _AESEncrypt(hash, hugeBuffer, pathToConfigFile, INPUT_IN_MEMORY, 1);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
             crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant Ã  lire
         }
@@ -376,10 +378,16 @@ quit:
         destroy_zmemfile(&fileops);
     chdirR();
 
-    free(path);
-    free(zipFileName);
-    free(zipOutput);
-    free(password);
+    if(path != NULL)
+        free(path);
+    if(pathToConfigFile != NULL)
+        free(pathToConfigFile);
+    if(zipFileName != NULL)
+        free(zipFileName);
+    if(zipOutput != NULL)
+        free(zipOutput);
+    if(password != NULL)
+        free(password);
 
     UNZIP_NEW_PATH = 0;
     INSTALL_DONE++;

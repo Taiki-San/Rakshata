@@ -108,7 +108,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     else if(first > end)
     {
         snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-        removeFolder("1", temp);
+        removeFolder(temp);
         return PALIER_MENU;
     }
     return nbElem;
@@ -165,7 +165,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
         else
         {
             snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-            removeFolder("2", temp);
+            removeFolder(temp);
             return PALIER_MENU;
         }
     }
@@ -237,7 +237,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
         if(nombreChapitre == 0)
         {
             snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/", mangaDB->team->teamLong, mangaDB->mangaName);
-            removeFolder("3", temp);
+            removeFolder(temp);
             return PALIER_MENU;
         }
 

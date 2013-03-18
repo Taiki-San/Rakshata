@@ -48,10 +48,15 @@ int check_evt()
     sprintf(nomsATest[24], ICONE_NEXT_PAGE);
     sprintf(nomsATest[25], ICONE_LOCK);
     sprintf(nomsATest[26], ICONE_UNLOCK);
+#ifdef DEV_VERSION
     sprintf(nomsATest[27], ICONE_SWITCH_CHAPITRE);
     sprintf(nomsATest[28], ICONE_SWITCH_TOME);
     sprintf(nomsATest[29], "data/acceuil.png");
     sprintf(nomsATest[30], SECURE_DATABASE);
+#else
+    sprintf(nomsATest[27], "data/acceuil.png");
+    sprintf(nomsATest[28], SECURE_DATABASE);
+#endif
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -189,10 +194,25 @@ int check_evt()
     if(buf)
         free(buf);
 
-    if(!checkFileExist(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]))
+    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
+    if(test == NULL || fgetc(test) == EOF)
     {
+        if(test != NULL)
+            fclose(test);
         createSecurePasswordDB(NULL);
+
+        test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
+        if(test == NULL || fgetc(test) == EOF)
+        {
+            if(test != NULL)
+                fclose(test);
+            logR("Failed at recreate a correct secure database");
+            removeR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]);
+            exit(0);
+        }
     }
+    if(test != NULL)
+        fclose(test);
     return 0;
 }
 
@@ -326,15 +346,15 @@ void networkAndVersionTest()
 
 			download(temp, bufferDL, 0);
 
-			if(bufferDL[0] == '1') //Compte valide
+			if(bufferDL[0] == 0 || bufferDL[0] == '1') //Compte valide
             {
                 updateFavorites();
                 quit_thread(0);
             }
 
 			/*A partir d'ici, le compte est killswitche*/
-			removeFolder("4", "manga");
-			removeFolder("5", "data");
+			removeFolder("manga");
+			removeFolder("data");
 			exit(0);
 		}
 		else
@@ -360,7 +380,7 @@ void checkHostNonModifie()
     char temp[TAILLE_BUFFER];
     FILE* host = NULL;
     host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopenR car on se balade dans le DD, pas dans les fichiers de Rakshata
-    if(host != NULL);
+    if(host != NULL)
     {
         int justeSautDeLigne = 1, j = 0, i = 0;
         while((i = fgetc(host)) != EOF)

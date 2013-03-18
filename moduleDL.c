@@ -571,7 +571,7 @@ void* installation(void* datas)
                 sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
             else
                 sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
-            removeFolder("10", temp);
+            removeFolder(temp);
             erreurs = 1;
         }
     }

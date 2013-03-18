@@ -32,6 +32,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
 
+    SDL_Window window_backup;
+
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
 
@@ -286,8 +288,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
         if(!*fullscreen)
         {
-            if(changementEtat)
-                SDL_SetWindowFullscreen(window, SDL_FALSE);
             /*Si grosse page*/
             if(largeurValide > RESOLUTION[0] - 50)
             {
@@ -312,7 +312,17 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
 
             SDL_DestroyTextureS(infoSurface);
 
-            if(WINDOW_SIZE_H != buffer || WINDOW_SIZE_W != largeurValide)
+            if(changementEtat)
+            {
+                SDL_FlushEvent(SDL_WINDOWEVENT);
+                SDL_SetWindowFullscreen(window, SDL_FALSE);
+                SDL_SetWindowSize(window, largeurValide, buffer);
+                WINDOW_SIZE_H = memcmp(&window_backup, window, sizeof(SDL_Window));
+                SDL_FlushEvent(SDL_WINDOWEVENT);
+                WINDOW_SIZE_W = largeurValide;
+                WINDOW_SIZE_H = buffer;
+            }
+            else
                 updateWindowSize(largeurValide, buffer);
             SDL_RenderClear(renderer);
         }
@@ -323,6 +333,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             if(changementEtat)
             {
                 SDL_FlushEvent(SDL_WINDOWEVENT);
+                memcpy(&window_backup, window, sizeof(SDL_Window));
                 SDL_SetWindowSize(window, RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
