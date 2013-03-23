@@ -905,18 +905,18 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
 int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
 {
-    char temp[400], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
+    char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
     unsigned char outputRAW[SHA256_DIGEST_LENGTH+1];
 
     generateKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     MajToMin(randomKeyHex);
 
-    snprintf(temp, 400, "https://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+    snprintf(temp, 1024, "https://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
     setupBufferDL(buffer_dl, 100, 5, 1, 1);
     download(temp, buffer_dl, 0);
 
-    crashTemp(temp, 400);
+    crashTemp(temp, 1024);
     sscanfs(buffer_dl, "%s", temp, 100);
     if(!strcmp(temp, "success")) //Si ça s'est bien passé
     {
@@ -942,7 +942,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
             randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 
-            snprintf(temp, 400, "https://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+            snprintf(temp, 1024, "https://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
             setupBufferDL(buffer_dl, 100, 5, 1, 1);
             download(temp, buffer_dl, 0);
             if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
@@ -983,8 +983,11 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     }
     else
     {
-        sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+        snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
         logR(temp);
+#ifdef DEV_VERSION
+        logR(randomKeyHex);
+#endif
         return 1;
     }
     return 0;
