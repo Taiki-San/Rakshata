@@ -1,14 +1,14 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
 
@@ -299,22 +299,17 @@ int defineMaxTextureSize(int sizeIssue)
     if(maxSize)
         return maxSize;
     SDL_Texture *texture = NULL;
-    if(sizeIssue > 16384)
+    for(sizeIssue = 16384; texture == NULL && sizeIssue > 0; sizeIssue -= 10)
     {
-        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, 16384, 16384);
-        if(texture != NULL)
-        {
-            SDL_DestroyTexture(texture);
-            maxSize = 16384;
-            return 16384;
-        }
-    }
-    do
-    {
-        sizeIssue -= 10;
         texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, sizeIssue, sizeIssue);
-    }while(texture != NULL && sizeIssue > 0);
+    }
+    SDL_DestroyTexture(texture);
     maxSize = sizeIssue;
+#ifdef DEV_BUILD
+    char temp[100];
+    sprintf(temp, "Max size: %d\n", maxSize);
+    logR(temp);
+#endif
     return sizeIssue;
 }
 

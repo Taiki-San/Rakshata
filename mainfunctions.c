@@ -1,16 +1,18 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
+
+extern int INSTANCE_RUNNING;
 
 void mainRakshata()
 {
@@ -105,14 +107,7 @@ void mainRakshata()
 
             case 4:
             {
-                test = fopenR(INSTALL_DATABASE, "r");
-                if(test != NULL)
-                {
-                    fclose(test);
-                    removeR(INSTALL_DATABASE);
-                }
-                test = fopenR(INSTALL_DATABASE, "r");
-                if(test == NULL)
+                if(!INSTANCE_RUNNING)
                 {
                     continuer = menuGestion();
                 }
@@ -275,8 +270,19 @@ int mainChoixDL()
             mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
             pageManga = curPage;
 
-            if(mangaChoisis == -11 || mangaChoisis == -10)
+            if(mangaChoisis == -11) //Télécharger
                 continuer = PALIER_CHAPTER;
+            else if(mangaChoisis == -10) //Annuler
+            {
+                if(nombreChapitre > 0)
+                {
+                    continuer = -1;
+                    nombreChapitre = 0;
+                    removeR(INSTALL_DATABASE);
+                }
+                else
+                    continuer = PALIER_CHAPTER;
+            }
             else if(mangaChoisis < PALIER_CHAPTER)
                 continuer = mangaChoisis;
             else if(mangaChoisis == PALIER_CHAPTER)
@@ -333,7 +339,6 @@ int mainChoixDL()
     return continuer;
 }
 
-extern int INSTANCE_RUNNING;
 void mainDL()
 {
     if(!INSTANCE_RUNNING && checkLancementUpdate())

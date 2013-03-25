@@ -1,14 +1,14 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
 
@@ -251,6 +251,9 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
             }
         }
     }
+
+    if(favorisToDL == 2)
+        favorisToDL = 1;
     TTF_CloseFont(police);
     free(longueur);
     return ret_value;
@@ -887,8 +890,11 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage)
 {
     int i = 0;
-    if(sectionChoisis == SECTION_DL && *mangaChoisis == -1) //Annuler?
+    if(sectionChoisis == SECTION_DL && *mangaChoisis == -1) //WTF???
+    {
         *mangaChoisis = PALIER_MENU;
+        logR("SPOTTED!!!");
+    }
 
     else if(*mangaChoisis == -6 || *mangaChoisis == -7) //Boutons pages suivant/précédente
     {

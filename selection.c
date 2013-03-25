@@ -1,14 +1,14 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
 
@@ -127,14 +127,9 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
         SDL_RenderPresent(renderer);
 
         /*Définition de l'affichage*/
-        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; i++)
-            changeTo(mangas_db[i].mangaName, '_', ' ');
-
+        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, '_', ' '));
         mangaChoisis = displayMangas(mangas_db, sectionChoisis, nombreChapitre, hauteurDonnes);
-
-        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; i++)
-            changeTo(mangas_db[i].mangaName, ' ', '_');
-
+        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, ' ', '_'));
     }
     else
     {

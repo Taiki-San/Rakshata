@@ -1,14 +1,14 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
 
@@ -349,11 +349,10 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTextureS(texte);
 
-            crashTemp(temp, TAILLE_BUFFER);
-            if(mangaDB->chapitres[0]%10)
-                snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[4], mangaDB->chapitres[chapitreLength-1]/10, mangaDB->chapitres[chapitreLength-1]%10);
+            if(mangaDB->chapitres[chapitreLength-1]%10)
+                snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[5], mangaDB->chapitres[chapitreLength-1]/10, mangaDB->chapitres[chapitreLength-1]%10);
             else
-                snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[4], mangaDB->chapitres[chapitreLength-1]/10);
+                snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[5], mangaDB->chapitres[chapitreLength-1]/10);
 
             texte = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;

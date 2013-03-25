@@ -1,14 +1,14 @@
-/*********************************************************************************************
-**      __________         __           .__            __                ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/           **
-**                                                                                          **
-**   Licence propriétaire, code source confidentiel, distribution formellement interdite    **
-**                                                                                          **
-*********************************************************************************************/
+/******************************************************************************************************
+**      __________         __           .__            __                ____     ____     ____      **
+**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
+**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
+**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
+**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
+**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**                                                                                                   **
+**         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
+**                                                                                                   **
+******************************************************************************************************/
 
 #include "main.h"
 
@@ -45,7 +45,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     length = getUpdatedChapterList(mangaDB);
     for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
 
-    if(chapitreChoisisInterne == mangaDB->chapitres[length-1] && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, chapitreChoisisInterne)))
+    if(*chapitreChoisis == mangaDB->chapitres[length-1] && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, chapitreChoisisInterne)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[8], 5);
@@ -763,7 +763,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                             anciennePositionY = event.button.y;
                             SDL_FlushEvent(SDL_MOUSEMOTION);
                             SDL_WaitEvent(&event);
-                            if(!haveInputFocus(&event, window))
+                            if(!haveInputFocus(&event, window) && event.window.event != SDL_WINDOWEVENT_LEAVE)
                                 continue;
                             switch(event.type)
                             {
@@ -842,7 +842,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                         SDL_RenderPresent(renderer);
                                         SDL_FlushEvent(SDL_WINDOWEVENT);
                                     }
-                                    else if(event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE)
+                                    else if(/*event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || */event.window.event == SDL_WINDOWEVENT_LEAVE)
                                     {
                                         deplacementEnCours = 0;
                                         if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
@@ -1038,7 +1038,16 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                     FILE* updateControler = fopenR(INSTALL_DATABASE, "a+");
                                     if(updateControler != NULL)
                                     {
-                                        fprintf(updateControler, "\n%s %s %d", mangaDB->team->teamCourt, mangaDB->mangaNameShort, chapitreChoisisInterne+1);
+                                        if((chapitreChoisisInterne+1)*10 == new_chapitre)
+                                        {
+                                            fprintf(updateControler, "\n%s %s %d", mangaDB->team->teamCourt, mangaDB->mangaNameShort, new_chapitre);
+                                        }
+                                        else
+                                        {
+                                            int i = (chapitreChoisisInterne+1)*10;
+                                            for(; i <= new_chapitre; i+= 10)
+                                                fprintf(updateControler, "\n%s %s %d", mangaDB->team->teamCourt, mangaDB->mangaNameShort, i);
+                                        }
                                         fclose(updateControler);
                                         if(checkLancementUpdate())
                                             createNewThread(lancementModuleDL, NULL);
@@ -1090,7 +1099,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                     noRefresh = 1;
                     if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                         noRefresh=0;
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
                     break;
                 }
 
@@ -1107,7 +1115,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     return 0;
 }
 
-/*Loaders*/
+/** Loaders **/
 
 int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE])
 {
@@ -1274,7 +1282,7 @@ SDL_Texture* loadControlBar(int favState)
     return bandeauControle;
 }
 
-/*Screen Management*/
+/** Screen Management **/
 
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB)
 {
@@ -1601,7 +1609,7 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
     }
 }
 
-/*Event Management*/
+/** Event Management **/
 
 int clicOnButton(const int x, const int y, const int positionBandeauX)
 {
