@@ -28,8 +28,8 @@ int refreshChaptersList(MANGAS_DATA *mangaDB)
         fscanfs(chapSpeciaux, "%d", &nbElem);
     }
     nbElem += mangaDB->lastChapter - mangaDB->firstChapter + 1;
-    mangaDB->chapitres = calloc(1, (nbElem+1)*sizeof(int));
-    for(i = 0; i <= nbElem; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
+    mangaDB->chapitres = calloc(1, (nbElem+5)*sizeof(int));
+    for(i = 0; i < nbElem+5; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
 
     for(i = 0; i <= mangaDB->lastChapter-mangaDB->firstChapter; i++)
         mangaDB->chapitres[i] = (i+mangaDB->firstChapter)*10;
@@ -57,6 +57,8 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
+    if(temp == NULL)
+        return 0;
     fscanfs(file, "%d %d", &fBack, &eBack);
     if(fgetc(file) != EOF)
     {

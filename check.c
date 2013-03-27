@@ -353,6 +353,7 @@ void networkAndVersionTest()
             }
 
 			/*A partir d'ici, le compte est killswitche*/
+			logR("Ugh, you did wrong things =/");
 			removeFolder("manga");
 			removeFolder("data");
 			exit(0);
@@ -490,7 +491,7 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], teamCourt[LONGUEUR_COURT];
 
     MUTEX_LOCK;
-    if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS)
+    if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
     {
         MUTEX_UNLOCK;
         return 0;
@@ -498,12 +499,14 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     MUTEX_UNLOCK;
 
     setupBufferDL(bufferDL, 100, 100, 10, 1);
-    get_update_mangas(bufferDL, mangasDB.team);
+    int version = get_update_mangas(bufferDL, mangasDB.team);
 
     if(bufferDL[i]) //On a DL quelque chose
         i += sscanfs(&bufferDL[i], "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
     else
         return 0;
+    if(version == 2)
+        while(bufferDL[i++] != '\n');
 
     if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
         return 0;
@@ -511,7 +514,9 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
         i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
     if(chapitre_new > chapitre)
-        return chapitre_new;
+    {
+        return chapitre_new * 10;
+    }
     return 0;
 }
 

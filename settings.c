@@ -10,6 +10,8 @@
 **                                                                                                   **
 ******************************************************************************************************/
 
+#include "main.h"
+
 int affichageMenuGestion()
 {
     int i = 0, j = 0;
@@ -104,6 +106,7 @@ char *loadPrefFile()
     if(pref == NULL)
     {
 #ifndef DEV_VERSION
+        logR("Things went really wrong");
         removeFolder("manga");
 #endif
         return NULL;

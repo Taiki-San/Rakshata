@@ -416,6 +416,13 @@ typedef struct _OBJECT_ATTRIBUTES {
 
 typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
 FUNC ZwCreateThreadEx;
+
+#ifdef DEV_VERSION
+    #define SECURE_THREADS 0x0
+#else
+    #define SECURE_THREADS 0x4
+#endif
+
 #endif
 
 int createNewThread(void *function, void *arg)
@@ -434,8 +441,9 @@ int createNewThread(void *function, void *arg)
     }
     if(ZwCreateThreadEx != NULL)
     {
-        HANDLE hThread=0;
-        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS/*HiddenFromDebugger*/,0,0,0,0);
+        CreateThread(NULL, 0, function, arg, 0, NULL);
+        /*HANDLE hThread=0;
+        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);*/
     }
 
 #else

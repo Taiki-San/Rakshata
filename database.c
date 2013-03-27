@@ -239,7 +239,7 @@ void update_repo()
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
 }
 
-void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
+int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
 {
 	int defaultVersion = VERSION_MANGA;
 	char temp[500];
@@ -259,12 +259,13 @@ void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
             snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(manga database): %s", teams->type);
             logR(temp2);
-            return;
+            return 0;
         }
         setupBufferDL(buffer_manga, 100, 100, 10, 1);
         download(temp, buffer_manga, 0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
+    return defaultVersion+1;
 }
 
 void update_mangas()

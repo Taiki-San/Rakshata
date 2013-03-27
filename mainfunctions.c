@@ -230,7 +230,7 @@ int mainLecture()
                         else
                             length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
                     }
-                }while(chapitreChoisis > PALIER_CHAPTER && (continuer > PALIER_MENU || (continuer == PALIER_CHAPTER && !mangaDB[mangaChoisis].chapitres[1]))
+                }while(chapitreChoisis > PALIER_CHAPTER && (continuer > PALIER_MENU || (continuer == PALIER_CHAPTER && mangaDB[mangaChoisis].chapitres[1] == VALEUR_FIN_STRUCTURE_CHAPITRE))
                        && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[length-1]));
             }
         }

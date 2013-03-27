@@ -58,7 +58,7 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length);
 void updateDataBase();
 void get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
 void update_repo();
-void get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
+int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
 void update_mangas();
 int checkUpdateSpecChapter(MANGAS_DATA mangas);
 void get_update_spec_chapter(MANGAS_DATA mangas);
@@ -69,6 +69,7 @@ int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
 int download(char *adresse, char *repertoire, int activation);
+int checkDLInProgress();
 
 /**Engine.c**/
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);

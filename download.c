@@ -59,7 +59,7 @@ int download(char *adresse, char *repertoire, int activation)
         while(status != STATUS_IT_IS_OVER)
         {
             MUTEX_UNLOCK;
-            SDL_Delay(200);
+            SDL_Delay(250);
             MUTEX_LOCK;
         }
         MUTEX_UNLOCK;
@@ -509,3 +509,7 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
     return fwrite(ptr, size, nmemb, input);
 }
 
+int checkDLInProgress() //Mutex should be set
+{
+    return status == STATUS_DOWNLOADING;
+}

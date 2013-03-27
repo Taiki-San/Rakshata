@@ -32,8 +32,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
 
-    SDL_Window window_backup;
-
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
 
@@ -65,6 +63,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
     positionPage.x = BORDURE_LAT_LECTURE;
     positionSlide.x = 0;
     positionSlide.y = 0;
+
+    snprintf(infos, 300, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
+    if(!checkFileExist(infos) || *chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        *chapitreChoisis = PALIER_CHAPTER;
+        return PALIER_CHAPTER;
+    }
 
     char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
     if(decimale)
@@ -317,7 +322,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
                 SDL_SetWindowSize(window, largeurValide, buffer);
-                WINDOW_SIZE_H = memcmp(&window_backup, window, sizeof(SDL_Window));
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 WINDOW_SIZE_W = largeurValide;
                 WINDOW_SIZE_H = buffer;
@@ -333,34 +337,20 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             if(changementEtat)
             {
                 SDL_FlushEvent(SDL_WINDOWEVENT);
-                memcpy(&window_backup, window, sizeof(SDL_Window));
                 SDL_SetWindowSize(window, RESOLUTION[0], RESOLUTION[1]);
                 SDL_SetWindowFullscreen(window, SDL_TRUE);
-                SDL_FlushEvent(SDL_WINDOWEVENT);
-
                 SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
-
+                SDL_FlushEvent(SDL_WINDOWEVENT);
+                SDL_RenderClear(renderer);
+                SDL_RenderPresent(renderer);
                 WINDOW_SIZE_W = RESOLUTION[0] = window->w;
                 WINDOW_SIZE_H = RESOLUTION[1] = window->h;
             }
 
+            pageTropGrande = largeurValide > WINDOW_SIZE_W;
+
             /*Si grosse page*/
-            if(largeurValide > WINDOW_SIZE_W)
-            {
-                //largeurValide = WINDOW_SIZE_W;
-                pageTropGrande = 1;
-            }
-
-            else if(largeurValide < LARGEUR)
-            {
-                //largeurValide = LARGEUR;
-                pageTropGrande = 0;
-            }
-
-            else
-                pageTropGrande = 0;
-
             TTF_CloseFont(police);
             police = TTF_OpenFont(FONTUSED, POLICE_TOUT_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
@@ -500,7 +490,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
         do
         {
             if(!noRefresh)
+            {
                 refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
+            }
 
             else if(changementEtat)
             {
@@ -715,7 +707,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                     length = getUpdatedChapterList(mangaDB);
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     internal_deleteChapitre(*mangaDB, *chapitreChoisis);
-                                    for(i = 0; i < length-1 && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    for(i = 0; i < length-1 && mangaDB->chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[i] != *chapitreChoisis; i++);
                                     length = getUpdatedChapterList(mangaDB);
 
                                     if(length == 0)
@@ -727,7 +719,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                                         *chapitreChoisis = mangaDB->chapitres[length-1];
                                     else
                                         *chapitreChoisis = mangaDB->chapitres[i+1];
-
                                     return 0;
                                 }
                                 break;
@@ -736,7 +727,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                             case CLIC_SUR_BANDEAU_MAINMENU:
                             {
                                 cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
-                                return -3;
+                                return PALIER_MENU;
                                 break;
                             }
                         }
@@ -1330,7 +1321,7 @@ int changementDePage(int direction, int *changementPage, int *finDuChapitre, int
         else
         {
             getUpdatedChapterList(mangaDB);
-            for(; mangaDB->chapitres[posChapitre] && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
+            for(; mangaDB->chapitres[posChapitre] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[posChapitre] != *chapitreChoisis; posChapitre++);
 
             if(posChapitre > 0)
             {
