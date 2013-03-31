@@ -12,6 +12,75 @@
 
 #include "main.h"
 
+void welcome()
+{
+    SDL_Texture *texte = NULL;
+    SDL_Rect position;
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN-2);
+
+    updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+
+	texte = TTF_Write(renderer, police, "Soyez le bienvenue dans Rakshata", couleurTexte);
+	if(texte != NULL)
+	{
+		position.h = texte->h;
+		position.w = texte->w;
+		position.y = 20;
+		position.x = WINDOW_SIZE_W/2 - position.w/2;
+		SDL_RenderCopy(renderer, texte, NULL, &position);
+		SDL_DestroyTexture(texte);
+	}
+
+	texte = TTF_Write(renderer, police, "Le logiciel va vous demander d'entrer une adresse email et un mot de passe", couleurTexte);
+	if(texte != NULL)
+	{
+		position.h = texte->h;
+		position.w = texte->w;
+		position.y = 90;
+		position.x = WINDOW_SIZE_W/2 - position.w/2;
+		SDL_RenderCopy(renderer, texte, NULL, &position);
+		SDL_DestroyTexture(texte);
+	}
+
+	texte = TTF_Write(renderer, police, "afin de pouvoir vous identifier et utiliser toute la puissance du logiciel.", couleurTexte);
+	if(texte != NULL)
+	{
+		position.h = texte->h;
+		position.w = texte->w;
+		position.y = 120;
+		position.x = WINDOW_SIZE_W/2 - position.w/2;
+		SDL_RenderCopy(renderer, texte, NULL, &position);
+		SDL_DestroyTexture(texte);
+	}
+
+	texte = TTF_Write(renderer, police, "Ces donnees ne seront JAMAIS transmises a quiconque sans votre accord.", couleurTexte);
+	if(texte != NULL)
+	{
+		position.h = texte->h;
+		position.w = texte->w;
+		position.y = 150;
+		position.x = WINDOW_SIZE_W/2 - position.w/2;
+		SDL_RenderCopy(renderer, texte, NULL, &position);
+		SDL_DestroyTexture(texte);
+	}
+
+	texte = TTF_Write(renderer, police, "Merci encore d'utiliser Rakshata!  - Taiki, le developpeur", couleurTexte);
+	if(texte != NULL)
+	{
+		position.h = texte->h;
+		position.w = texte->w;
+		position.y = 200;
+		position.x = WINDOW_SIZE_W/2 - position.w/2;
+		SDL_RenderCopy(renderer, texte, NULL, &position);
+		SDL_DestroyTexture(texte);
+	}
+
+    TTF_CloseFont(police);
+	SDL_RenderPresent(renderer);
+	waitEnter(window);
+}
+
 void initialisationAffichage()
 {
     int i = 0;
