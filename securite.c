@@ -23,9 +23,10 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
-void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf_len)
+void decryptPage(void *_password, void *path_input, void *buffer_out_void, size_t buf_len)
 {
     int posIV, i = 0, j = 0, k = 0;
+	unsigned char *buffer_out = buffer_out_void;
     unsigned char *password = _password;
     unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
     SERPENT_STATIC_DATA pSer;
@@ -281,7 +282,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 void getPasswordArchive(char *fileName, char password[300])
 {
     int i = 0, j = 0;
-    char *fileNameWithoutDirectory = calloc(1, strlen(fileName)+5);
+    char *fileNameWithoutDirectory = ralloc(strlen(fileName)+5);
     char *URL = NULL;
 
     FILE* zipFile = fopenR(fileName, "r");
@@ -303,6 +304,7 @@ void getPasswordArchive(char *fileName, char password[300])
     char hash[SHA256_DIGEST_LENGTH];
 
     for(i = 0; i < 1024 && (j = fgetc(zipFile)) != EOF; buffer[i++] = j);
+    buffer[i] = 0;
     sha256((unsigned char *) buffer, hash);
 
     /*On génére l'URL*/
@@ -321,9 +323,9 @@ void getPasswordArchive(char *fileName, char password[300])
 
     /*On prépare le buffer de téléchargement*/
     char bufferDL[1000];
-    setupBufferDL(bufferDL, 100, 10, 1, 1);
+    crashTemp(bufferDL, 1000);
+    download_mem(URL, bufferDL, 1000, 1); //Téléchargement
 
-    download(URL, bufferDL, 0); //Téléchargement
     free(URL);
 
     /*Analyse du buffer*/
@@ -353,9 +355,8 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
 
     sprintf(temp, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
 
-    setupBufferDL(bufferDL, NUMBER_MAX_TEAM_KILLSWITCHE/2, 2, LONGUEUR_ID_TEAM, 1);
-
-    download(temp, bufferDL, 0);
+    crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM);
+    download_mem(temp, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM, 0);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;

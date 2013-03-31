@@ -102,9 +102,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     if(size) //Si extraction d'un chapitre
         opt_do_extract_withoutpath = 1;
     else
-        zipFileName = calloc(1, (strlen(inputZip)+1) *2); //Input
-    zipOutput = calloc(1, (strlen(outputZip)+1) *2); //Output
-    password = calloc(1, (strlen(passwordZip)+1) *2);
+        zipFileName = ralloc((strlen(inputZip)+1) *2); //Input
+    zipOutput = ralloc((strlen(outputZip)+1) *2); //Output
+    password = ralloc((strlen(passwordZip)+1) *2);
 
     if((!size && zipFileName == NULL) || zipOutput == NULL || (password == NULL && passwordZip != NULL))
     {
@@ -170,12 +170,10 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     }
     else
     {
-        path = calloc(1, strlen(outputZip) + 3);
+        path = ralloc(strlen(outputZip) + 3);
         init_zmemfile(&fileops, inputZip, size);
         uf = unzOpen2(NULL, &fileops);
     }
-
-    UNZIP_NEW_PATH = 1; //Changer le répertoire par défaut change beaucoup (trop) de trucs
 
     sprintf(path, "%s", outputZip);
     if (size && !checkDirExist(path)) //On change le dossier courant
@@ -190,7 +188,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         }
     }
 
-    pathToConfigFile = calloc(1, strlen(path) + 50);
+    pathToConfigFile = ralloc(strlen(path) + 50);
     snprintf(pathToConfigFile, strlen(path) + 50, "%s/%s", path, CONFIGFILE);
     if(checkFileExist(pathToConfigFile))
         goto quit;
@@ -389,9 +387,7 @@ quit:
     if(password != NULL)
         free(password);
 
-    UNZIP_NEW_PATH = 0;
     INSTALL_DONE++;
-
     return ret_value;
 }
 

@@ -23,9 +23,9 @@ void updateSectionMessage(char messageVersion[5])
     char URL[200], bufferDL[500], bufferMessage[550];
 
     sprintf(URL, "https://rsp.%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
-    setupBufferDL(bufferDL, 5, 10, 10, 1);
 
-    download(URL, bufferDL, 0);
+    crashTemp(bufferDL, 500);
+    download_mem(URL, bufferDL, 500, 1);
 
     for(i = 0; bufferDL[i] == messageVersion[i] && i < 5 && bufferDL[i] != ' ' && bufferDL[i]; i++);
 

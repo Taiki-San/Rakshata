@@ -224,12 +224,12 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
 
         if ((*popt_extract_without_path)==0)
         {
-            write_filename = calloc(1, strlen(filename_inzip) + strlen(output_path) + 10);
+            write_filename = ralloc(strlen(filename_inzip) + strlen(output_path) + 10);
             snprintf(write_filename, strlen(filename_inzip) + strlen(output_path) + 10, "%s/%s", output_path, filename_inzip);
         }
         else
         {
-            write_filename = calloc(1, strlen(filename_withoutpath) + strlen(output_path) + 10);
+            write_filename = ralloc(strlen(filename_withoutpath) + strlen(output_path) + 10);
             snprintf(write_filename, strlen(filename_withoutpath) + strlen(output_path) + 10, "%s/%s", output_path, filename_withoutpath);
         }
 		err = unzOpenCurrentFilePassword(uf,password);
@@ -286,6 +286,7 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
         {
             int posIV;
             unsigned char *buf_char = (unsigned char *) buf;
+            unsigned char *buf_enc = malloc(size_buf);
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
             SERPENT_STATIC_DATA pSer;
 
@@ -311,9 +312,10 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
                 }
                 else if (err>0)
                 {
-                    int i = 0, j;
+                    int i = 0, j, posDebChunk;
                     while(i < err)
                     {
+                        posDebChunk = i;
                         unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
 
                         for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
@@ -321,7 +323,7 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
                         if(posIV != -1) //Pas premier passage, IV existante
                             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
                         Serpent_encrypt(&pSer, (DWORD*) plaintext, (DWORD*) ciphertext);
-                        fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout);
+                        memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
                         memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
 
                         for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
@@ -329,14 +331,17 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
                         if(posIV != -1) //Pas premier passage, IV existante
                             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
                         Twofish_encrypt((u4byte*)  plaintext, (u4byte*) ciphertext);
-                        fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, fout);
                         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
+                        memcpy(&buf_enc[posDebChunk+CRYPTO_BUFFER_SIZE], ciphertext, CRYPTO_BUFFER_SIZE);
                         posIV = 0;
+                        posDebChunk+=2*CRYPTO_BUFFER_SIZE;
                     }
+                    fwrite(buf_enc, posDebChunk, 1, fout);
                 }
                 else
                     break;
             }while (1);
+            free(buf_enc);
         }
 
         else if (fout!=NULL) //Décompression normale

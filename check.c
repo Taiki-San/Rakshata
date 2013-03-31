@@ -76,6 +76,9 @@ int check_evt()
 
     if(j)
     {
+        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+
         char temp[200];
         SDL_Texture *message = NULL;
         SDL_Rect position;
@@ -90,6 +93,7 @@ int check_evt()
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Accès internet manquant", "Un accès Internet est nécessaire pour récupérer\nles fichiers nécessaires au bon fonctionnement\nde Rakshata, veuillez relancer Rakshata avec un\naccès Internet. Néanmoins, il est possible que\ncette erreur apparaisse car nos serveurs sont\nhors-ligne. Auquel cas, attendez que\nwww.rakshata.com soit de nouveau accessible.", NULL);
             SDL_DestroyRenderer(renderer);
             SDL_DestroyWindow(window);
+            renderer = NULL;
             quit_thread(1);
         }
 
@@ -106,7 +110,7 @@ int check_evt()
         if(cantwrite) //Si police absente
         {
             snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
-            download(temp, nomsATest[0], 0);
+            download_disk(temp, nomsATest[0], 0);
             j--;
         }
 
@@ -119,25 +123,31 @@ int check_evt()
                 SDL_RenderClear(renderer);
                 snprintf(temp, 200, "Environement corrompu, veuillez patienter (%d/%d fichiers restaures).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
-                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                position.y = WINDOW_SIZE_H / 2 - message->h;
-                position.h = message->h;
-                position.w = message->w;
-                SDL_RenderCopy(renderer, message, NULL, &position);
-                SDL_DestroyTextureS(message);
+                if(message != NULL)
+                {
+                    position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                    position.y = WINDOW_SIZE_H / 2 - (message->h*3)/2;
+                    position.h = message->h;
+                    position.w = message->w;
+                    SDL_RenderCopy(renderer, message, NULL, &position);
+                    SDL_DestroyTextureS(message);
+                }
 
                 snprintf(temp, 200, "Environment corrupted, please wait (%d/%d files restored).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
-                position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                position.y = WINDOW_SIZE_H / 2 + message->h;
-                position.h = message->h;
-                position.w = message->w;
-                SDL_RenderCopy(renderer, message, NULL, &position);
-                SDL_DestroyTextureS(message);
+                if(message != NULL)
+                {
+                    position.x = WINDOW_SIZE_W / 2 - message->w / 2;
+                    position.y = WINDOW_SIZE_H / 2 + message->h;
+                    position.h = message->h;
+                    position.w = message->w;
+                    SDL_RenderCopy(renderer, message, NULL, &position);
+                    SDL_DestroyTextureS(message);
+                }
                 SDL_RenderPresent(renderer);
 
                 snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
-                download(temp, nomsATest[fichiersADL[i]], 0);
+                download_disk(temp, nomsATest[fichiersADL[i]], 0);
 
                 if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
                 {
@@ -150,35 +160,36 @@ int check_evt()
                     size = ftell(test);
                     rewind(test);
 
-                    buffer = malloc(size*2);
+                    buffer = ralloc(size*2);
 
-                    while((k=fgetc(test)) != EOF)
+                    while((k=fgetc(test)) != EOF && j < size)
                     {
                         if(k == '\n')
                             buffer[j++] = '\r';
                         buffer[j++] = k;
                     }
                     fclose(test);
+
                     test = fopenR(nomsATest[fichiersADL[i]], "w+");
-                    for(k=0; k < j; fputc(buffer[k++], test));
+                    fwrite(buffer, j, 1, test);
                     fclose(test);
+
                     free(buffer);
                 }
 
+#ifndef __APPLE__
                 if(fichiersADL[i] == 1) //Si c'est l'icone
                 {
-                    #ifndef __APPLE__
                     SDL_Surface *icon = IMG_Load("data/icone.png");
                     if(icon != NULL)
                     {
                         SDL_SetWindowIcon(window, icon); //Int icon for the main window
                         SDL_FreeSurfaceS(icon);
                     }
-                    #endif
                 }
+#endif
             }
         }
-
         TTF_CloseFont(police);
         nameWindow(window, 0);
     }
@@ -186,33 +197,33 @@ int check_evt()
         return PALIER_QUIT;
 
     //On charge les données par défaut si elles n'existent pas encore
-    char *buf;
-    buf = loadLargePrefs(SETTINGS_MANGADB_FLAG);
-    if(buf)
+    char *buf = loadLargePrefs(SETTINGS_REPODB_FLAG);
+    if(buf != NULL)
+    {
         free(buf);
-    buf = loadLargePrefs(SETTINGS_REPODB_FLAG);
-    if(buf)
-        free(buf);
+    }
 
-    test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
-    if(test == NULL || fgetc(test) == EOF)
+    test = fopenR(SECURE_DATABASE, "r");
+    if(test == NULL || (test != NULL && fgetc(test) == EOF))
     {
         if(test != NULL)
             fclose(test);
         createSecurePasswordDB(NULL);
-
-        test = fopenR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1], "r");
+        test = fopenR(SECURE_DATABASE, "r");
         if(test == NULL || fgetc(test) == EOF)
         {
             if(test != NULL)
                 fclose(test);
             logR("Failed at recreate a correct secure database");
-            removeR(nomsATest[NOMBRE_DE_FICHIER_A_CHECKER-1]);
+            removeR(SECURE_DATABASE);
             exit(0);
         }
     }
     if(test != NULL)
         fclose(test);
+
+    updateWindowSize(LARGEUR, 730);
+    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     return 0;
 }
 
@@ -262,16 +273,17 @@ void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int i = 0, hostNotReached = 0;
-    char temp[TAILLE_BUFFER], bufferDL[5] = {0, 5, 1, 1, 1};
+    char temp[TAILLE_BUFFER], bufferDL[100];
+	crashTemp(bufferDL, 100);
 
     MUTEX_LOCK;
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
     MUTEX_UNLOCK;
 
     /*Chargement de l'URL*/
-    sprintf(temp, "http://www.%s/System/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
+    snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD); //HTTPS_DISABLED
 
-    if(download(temp, bufferDL, 2) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(temp, bufferDL, 100, 1) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
@@ -282,9 +294,8 @@ void networkAndVersionTest()
 #ifdef _WIN32 //On check le fichier HOST
         checkHostNonModifie();
 #endif
-
-        setupBufferDL(bufferDL, 5, 1, 1, 1);
-        if(download(MAIN_SERVER_URL[1], bufferDL, 2) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
+        crashTemp(bufferDL, 100);
+        if(download_mem(MAIN_SERVER_URL[1], bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
         MUTEX_LOCK;
         if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
@@ -308,7 +319,7 @@ void networkAndVersionTest()
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
             sprintf(temp, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
-            download(temp, "data/update", 0);
+            download_disk(temp, "data/update", 0);
 
 			test = fopenR("data/update", "r");
             fseek(test, 0, SEEK_END);
@@ -342,10 +353,9 @@ void networkAndVersionTest()
                 quit_thread(0);
             }
 			sprintf(temp, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
-			setupBufferDL(bufferDL, 5, 1, 1, 1);
 
-			download(temp, bufferDL, 0);
-
+            crashTemp(bufferDL, 5);
+			download_mem(temp, bufferDL, 5, 1);
 			if(bufferDL[0] == 0 || bufferDL[0] == '1') //Compte valide
             {
                 updateFavorites();

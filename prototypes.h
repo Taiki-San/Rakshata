@@ -13,8 +13,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef MSVC
+#ifdef __INTEL_COMPILER
 	#include <dirent.msvc.h>
+	#pragma comment(lib, "SDL.lib")
+	#pragma comment(lib, "libjpeg.lib")
+	#pragma comment(lib, "libpng.lib")
+	#pragma comment(lib, "libSDL_image.a")
+	#pragma comment(lib, "libfreetype.lib")
+	#pragma comment(lib, "SDL2_ttf.lib")
+	#pragma comment(lib, "libcurl.lib")
+	#pragma comment(lib, "libeay32.lib")
+	#pragma comment(lib, "ssleay32.lib")
+/*	#pragma comment(lib, "librtmp.a")
+	#pragma comment(lib, "libidn.a")
+	#pragma comment(lib, "libssl.a")
+	#pragma comment(lib, "libssh2.a")
+	#pragma comment(lib, "libcrypto.a")*/
+	#pragma comment(lib, "Wldap32.lib")
+	#pragma comment(lib, "ws2_32.lib")
+	#pragma comment(lib, "winmm.lib")
+	#pragma comment(lib, "Gdi32.lib")
+	#pragma comment(lib, "user32.lib")
+	#pragma comment(lib, "dxguid.lib") 
+	#pragma comment(lib, "libzip.a")
+	#pragma comment(lib, "Ole32.lib")
+	#pragma comment(lib, "Imm32.lib")
+	#pragma comment(lib, "Uuid.lib")
+	#pragma comment(lib, "Version.lib")
+	#pragma comment(lib, "OleAut32.lib")
 #else
 	#include <dirent.h>
 #endif
@@ -22,11 +48,12 @@
 #include <curl/curl.h>
 #include <sys/stat.h>
 
+
 #ifdef _WIN32
 	#ifdef __MINGW32__
 		#include <dir.h>
 	#else
-		#ifdef MSVC
+		#ifdef __INTEL_COMPILER
 			#define getcwd(a, b) _getcwd(a, b)
 			#define mkdir(a) _mkdir(a)
 			#define chdir(a) _chdir(a)

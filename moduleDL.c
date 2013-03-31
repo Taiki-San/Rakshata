@@ -116,7 +116,7 @@ int telechargement()
     fclose(fichier);
     removeR(INSTALL_DATABASE);
     mangaTotal--; //On décale d'un cran
-    int nbrMaxElem = (mangaTotal>1000?1000:mangaTotal);
+    int nbrMaxElem = (mangaTotal+1>1000)?1000:(mangaTotal+1);
 
     for(i = 0; i < nbrMaxElem; historiqueTeam[i++][0] = 0);
     loadTrad(trad, 22);
@@ -145,9 +145,9 @@ int telechargement()
                 if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                 {
                     if(todoList[0]->chapitre%10)
-                        sprintf(superTemp, "http://dl-web.dropbox.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
+                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
                     else
-                        sprintf(superTemp, "http://dl-web.dropbox.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
+                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
                 }
 
                 else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
@@ -225,15 +225,8 @@ int telechargement()
                     sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, todoList[0]->chapitre/10, CONFIGFILE);
                 if(!checkFileExist(temp))
                 {
-                    char command[2] = {0, 0};
                     glados = CODE_RETOUR_OK;
-                    struc = (OUT_DL*) download(superTemp, command, 1);
-
-                    if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
-                    {
-                        logR(struc->buf);
-                        exit(0);
-                    }
+                    struc = download_UI(superTemp);
 
                     if(struc <= (OUT_DL*) CODE_RETOUR_MAX)
                     {
@@ -254,6 +247,11 @@ int telechargement()
                         free(struc);
 
                         glados = CODE_RETOUR_INTERNAL_FAIL;//On annule l'installation
+                    }
+                    if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
+                    {
+                        logR(struc->buf);
+                        exit(0);
                     }
                 }
 
@@ -295,7 +293,7 @@ int telechargement()
                     /*Génération de l'URL*/
                     if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                     {
-                        sprintf(superTemp, "http://dl-web.dropbox.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
+                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
                     }
                     else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
                     {
@@ -314,7 +312,7 @@ int telechargement()
 
                     crashTemp(temp, TAILLE_BUFFER);
                     sprintf(temp, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
-                    download(superTemp, temp, 0);
+                    download_disk(superTemp, temp, 0);
                 }
 
                 else if(!todoList[0]->datas->pageInfos)//Si k = 0 et infos.png existe
@@ -708,6 +706,7 @@ void DLmanager()
         {
             SDL_Delay(100);
             SDL_DestroyRenderer(rendererDL);
+            rendererDL = NULL;
         }
         rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
     }while(!rendererDL->magic); //En cas de mauvais timing
@@ -782,6 +781,7 @@ void DLmanager()
     TTF_CloseFont(police);
     SDL_DestroyRenderer(rendererDL);
     SDL_DestroyWindow(windowDL);
+    rendererDL = NULL;
     windowDL = NULL;
 }
 

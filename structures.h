@@ -10,12 +10,6 @@
 **                                                                                                   **
 ******************************************************************************************************/
 
-typedef struct argmt
-{
-    char *URL;
-    char *repertoireEcriture;
-} ARGUMENT;
-
 typedef struct infos_Team
 {
     char IDTeam[LONGUEUR_ID_TEAM];
@@ -51,6 +45,13 @@ typedef struct output_download_with_size
     char *buf;
     size_t length;
 } OUT_DL;
+
+typedef struct download_data_struct
+{
+    char *buf;
+    size_t length;
+    size_t current_pos;
+} TMP_DL;
 
 typedef struct data_loaded_from_download_list
 {

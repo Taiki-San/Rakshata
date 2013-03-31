@@ -10,12 +10,11 @@
 **                                                                                                   **
 ******************************************************************************************************/
 
-extern int HAUTEUR_MAX; //Hauteur maxiamle (généralement écran)
+extern int HAUTEUR_MAX; //Hauteur maxiamle (gÈnÈralement Ècran)
 extern int RESOLUTION[2]; //RÈsolution
 extern int WINDOW_SIZE_H;
 extern int WINDOW_SIZE_W;
 extern int langue; //Langue
-extern int UNZIP_NEW_PATH; //La décompression change le path courant
 extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;
 extern int HAUTEUR;

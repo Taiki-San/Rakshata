@@ -100,9 +100,9 @@ MANGAS_DATA* miseEnCache(int mode)
 				while((c = *(mangaDB++)) != '#' && c != EOF);
 				if(c == '#')
 					mangaDB--;
-				sprintf(temp, "http://%s/System/overuse.php?team=%s", MAIN_SERVER_URL[0], teamLong[numeroTeam]);
-				setupBufferDL(bufferOutput, 50, 2, 1, 1);
-				download(temp, bufferOutput, 0);
+				sprintf(temp, "https://rsp.%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamLong[numeroTeam]);
+				crashTemp(bufferOutput, 100);
+				download_mem(temp, bufferOutput, 100, 1);
 			}
 		}
 	}
@@ -118,7 +118,7 @@ MANGAS_DATA* allocateDatabase(size_t length)
     size_t pos;
     MANGAS_DATA* database = calloc(length, sizeof(MANGAS_DATA));
     for(pos = 0; pos < length; pos++)
-        database[pos].team = calloc(1, sizeof(TEAMS_DATA));
+        database[pos].team = ralloc(sizeof(TEAMS_DATA));
 
     return database;
 }
@@ -157,7 +157,7 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 		sprintf(temp, "http://%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-		sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot);
+		sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot); //HTTPS_DISABLED
 
 	else
 	{
@@ -166,7 +166,7 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
         logR(temp2);
 		return;
 	}
-	download(temp, buffer_repo, 0);
+	download_mem(temp, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, 0);
 }
 
 void update_repo()
@@ -195,7 +195,7 @@ void update_repo()
 			killswitchEnabled(infosTeam.teamLong);
 			continue;
 		}
-		setupBufferDL(bufferDL, 100, 100, 10, 1);
+		crashTemp(bufferDL, SIZE_BUFFER_UPDATE_DATABASE);
 		get_update_repo(bufferDL, &infosTeam);
 
 		if(strlen(bufferDL) < 5 || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(infosTeam.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request")|| !strcmp(bufferDL, "editor_not_found")
@@ -252,7 +252,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             sprintf(temp, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
 
         else
         {
@@ -261,8 +261,8 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             logR(temp2);
             return 0;
         }
-        setupBufferDL(buffer_manga, 100, 100, 10, 1);
-        download(temp, buffer_manga, 0);
+        crashTemp(buffer_manga, SIZE_BUFFER_UPDATE_DATABASE);
+        download_mem(temp, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, 0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
     return defaultVersion+1;
@@ -276,7 +276,7 @@ void update_mangas()
 	TEAMS_DATA teams;
 
     repoBak = repo;
-    manga_new = calloc(1, 10);
+    manga_new = ralloc(10);
     if(manga_new == NULL)
     {
         char temp[100];
@@ -326,7 +326,7 @@ void update_mangas()
 		else
 		{
 		    size_t length = strlen(bufferDL);
-		    char *manga_new_tmp = calloc(1, length * 2); //Pour avoir un peu de marge
+		    char *manga_new_tmp = ralloc(length * 2); //Pour avoir un peu de marge
 		    if(manga_new_tmp == NULL)
             {
                 char temp[100];
@@ -406,7 +406,7 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
         snprintf(temp, 512, "http://%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
 
     else if(!strcmp(mangas.team->type, TYPE_DEPOT_3)) //Payant
-        snprintf(temp, 512, "https://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
+        snprintf(temp, 512, "http://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);//HTTPS_DISABLED
 
     else
     {
@@ -417,7 +417,7 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
     }
     char output[LONGUEUR_NOM_MANGA_MAX*4];
     snprintf(output, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
-    download(temp, output, 0);
+    download_disk(temp, output, 0);
 }
 
 extern int curPage; //Too lazy to use an argument

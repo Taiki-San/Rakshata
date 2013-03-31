@@ -125,6 +125,7 @@ void mainRakshata()
     }
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    renderer = NULL;
     window = NULL;
     quit_thread(0);
 }

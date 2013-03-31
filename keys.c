@@ -218,6 +218,8 @@ int get_compte_infos()
     int i;
 	if(!loadEmailProfile())
     {
+        if(!checkFileExist(SECURE_DATABASE))
+            welcome();
         if(logon() == PALIER_QUIT)
             return PALIER_QUIT;
         if(!loadEmailProfile())
@@ -344,7 +346,6 @@ int logon()
         login = check_login(adresseEmail);
 
         SDL_RenderClear(renderer);
-
         switch(login)
         {
             case 0: //New account
@@ -390,14 +391,18 @@ int logon()
                 SDL_DestroyTextureS(ligne);
 
                 SDL_RenderPresent(renderer);
-                if((i = waitClavier(renderer, 50, beginingOfEmailAdress, 109, ((login==0)?1:0), password)) == PALIER_QUIT)
-                    return PALIER_QUIT;
-                else if (i == PALIER_MENU) //Echap
-                {
-                    TTF_CloseFont(police);
-                    retry = 1;
-                    break;
-                }
+                do
+				{
+					if((i = waitClavier(renderer, 50, beginingOfEmailAdress, 109, ((login==0)?1:0), password)) == PALIER_QUIT)
+						return PALIER_QUIT;
+					else if (i == PALIER_MENU) //Echap
+					{
+						TTF_CloseFont(police);
+						retry = 1;
+						break;
+					}
+				}while(!password[0]);
+				chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
                 switch(checkPass(adresseEmail, password, login))
                 {
                     case 0: //Rejected
@@ -611,16 +616,8 @@ int getPassword(char password[100], int dlUI, int salt)
 
         if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
-            if(!salt)
-            {
-                if(resized)
-                {
-                    updateWindowSize(LARGEUR, resized);
-                    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-                }
-                return 1;
-            }
-            passToLoginData(password);
+            if(salt)
+                passToLoginData(password);
 
             if(resized)
             {
@@ -635,18 +632,17 @@ int getPassword(char password[100], int dlUI, int salt)
 void passToLoginData(char password[100])
 {
     int i = 0, j = 0;
-    char temp[100], serverTime[500];
-    crashTemp(temp, 100);
-    ustrcpy(temp, password);
-    sprintf(password, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
-    setupBufferDL(serverTime, 100, 5, 1, 1);
-    download(password, serverTime, 0);
+    char temp[100], serverTime[300];
+    snprintf(temp, 100, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur //HTTPS_DISABLED
+    crashTemp(serverTime, 300);
+    download_mem(temp, serverTime, 300, 1);
 
     for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
     {
         if(serverTime[i] == '\r' || serverTime[i] == '\n')
             serverTime[i] = 0;
     }
+    ustrcpy(temp, password);
     for(j = strlen(temp), i++; j < 100 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
     temp[j<99 ? j : 99] = 0;
     crashTemp(password, 100);
@@ -672,11 +668,11 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    sprintf(URL, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
+    sprintf(URL, "http://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL //HTTPS_DISABLED
 
-    setupBufferDL(buffer_output, 50, 6, 1, 1); //Préparation du buffer
+    crashTemp(buffer_output, 500);
+    download_mem(URL, buffer_output, 500, 0);
 
-    download(URL, buffer_output, 0);
     for(i = strlen(buffer_output); i > 0; i--)
     {
         if(buffer_output[i] == '\r' || buffer_output[i] == '\n')
@@ -712,6 +708,9 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
         return 2;
 
+	if(password[0] == 0)
+		return 2;
+
     crashTemp(hash1, 2*SHA256_DIGEST_LENGTH+1);
     sha256_legacy(password, hash1);
     MajToMin(hash1);
@@ -719,10 +718,9 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    sprintf(URL, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
+    sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL//HTTPS_DISABLED
     crashTemp(buffer_output, 500);
-    setupBufferDL(buffer_output, 50, 10, 1, 1); //Préparation du buffer
-    download(URL, buffer_output, 0);
+    download_mem(URL, buffer_output, 500, 0);
 
     minToMaj(buffer_output);
     sprintf(URL, "%s-access_granted", hash2);
@@ -737,8 +735,8 @@ int checkPass(char adresseEmail[100], char password[100], int login)
         MajToMin(hash1);
         sha256_legacy(hash1, hash2); //On hash deux fois
         MajToMin(hash2);
-        ustrcpy(passwordGB, hash2);
-        ustrcpy(password, hash2);
+        usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, hash2);
+        usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, hash2);
         return 1;
     }
     return 0;
@@ -798,36 +796,21 @@ int createSecurePasswordDB(unsigned char *key_sent)
     snprintf(date, 200, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
     struct stat structure_time;
-    if(UNZIP_NEW_PATH)
-    {
-        char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(temp == NULL)
-        {
-            snprintf(temp, 240, "Failed at allocate memory for : %ld bytes\n", strlen(REPERTOIREEXECUTION) + 100);
-            logR(temp);
-            exit(1);
-        }
-        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
-		if(!stat(temp, &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
-		else
-		{
-			logR("Failed at get data from secure.enc\n");
-			exit(1);
-		}
-		free(temp);
-	}
-	else
-	{
-		if(!stat(SECURE_DATABASE, &structure_time))
-			strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
-		else
-		{
-			logR("Failed at get data from secure.enc\n");
-			exit(1);
-		}
-	}
+    char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
+    if(temp == NULL)
+        exit(1);
+
+    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+
+    if(!stat(temp, &structure_time))
+        strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+    else
+    {
+        logR("Failed at get data from secure.enc\n");
+        exit(1);
+    }
+    free(temp);
 #endif
     sprintf(temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
@@ -837,12 +820,8 @@ int createSecurePasswordDB(unsigned char *key_sent)
     pbkdf2((unsigned char *)temp, fingerPrint, key[1]);
     crashTemp(fingerPrint, HASH_LENGTH);
     crashTemp(temp, 240);
-
-    encryption_output = calloc(1, (strlen(REPERTOIREEXECUTION) + 32));
-    if(UNZIP_NEW_PATH == 1)
-        sprintf(encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-    else
-        sprintf(encryption_output, SECURE_DATABASE);
+    encryption_output = ralloc((strlen(REPERTOIREEXECUTION) + 32));
+    sprintf(encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
     if(key_sent == NULL)
     {
@@ -907,14 +886,14 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
 {
     char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
     unsigned char outputRAW[SHA256_DIGEST_LENGTH+1];
-
     generateKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     MajToMin(randomKeyHex);
-
+    randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
     snprintf(temp, 1024, "https://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
-    setupBufferDL(buffer_dl, 100, 5, 1, 1);
-    download(temp, buffer_dl, 0);
+
+    crashTemp(buffer_dl, 500);
+    download_mem(temp, buffer_dl, 500, 1);
 
     crashTemp(temp, 1024);
     sscanfs(buffer_dl, "%s", temp, 100);
@@ -943,8 +922,9 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 
             snprintf(temp, 1024, "https://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
-            setupBufferDL(buffer_dl, 100, 5, 1, 1);
-            download(temp, buffer_dl, 0);
+
+            crashTemp(buffer_dl, 500);
+            download_mem(temp, buffer_dl, 500, 1);
             if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
             {
                 int i;
@@ -1018,10 +998,9 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
         sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
+    crashTemp(buffer_dl, 500);
 
-    setupBufferDL(buffer_dl, 100, 5, 1, 1);
-
-    download(temp, buffer_dl, 0);
+    download_mem(temp, buffer_dl, 500, 0);
 
     crashTemp(temp, 400);
 

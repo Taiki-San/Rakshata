@@ -100,38 +100,42 @@ int menuGestion()
 
 char *loadPrefFile()
 {
+    size_t filesize;
     char *output = NULL;
-    FILE* pref = NULL;
-    pref = fopenR(SETTINGS_FILE, "r");
+    FILE* pref = fopenR(SETTINGS_FILE, "r");
     if(pref == NULL)
     {
-#ifndef DEV_VERSION
-        logR("Things went really wrong");
-        removeFolder("manga");
+#ifdef DEV_VERSION
+        logR("Failed at open settings");
 #endif
         return NULL;
     }
     fseek(pref, 0, SEEK_END);
-    output = calloc(1, ftell(pref) + 10); //Set at 0
+    filesize = ftell(pref);
+    fclose(pref);
 
-    if(output == NULL)
+    if(filesize == 0)
     {
-        char temp[256];
-        snprintf(temp, 256, "Failed at allocate memory for : %ld bytes\n", (ftell(pref) + 10));
-        logR(temp);
+#ifdef DEV_VERSION
+        logR("Empty file");
+#endif
         return NULL;
     }
-
-    fclose(pref);
+    output = malloc(filesize+10);
+    if(output == NULL)
+    {
+        return NULL;
+    }
+    crashTemp(output, filesize+10);
     AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
     if(output[0] != '<' && output[1] != '<' && output[2] != '<' && output[3] != '<')
     {
-        free(output);
         logR("Incorrect settings decryption\n");
         #ifdef DEV_VERSION
             logR(output);
         #endif
+        free(output);
         return NULL;
     }
     return output;
@@ -151,7 +155,8 @@ void addToPref(char flag, char *stringToAdd)
 
         i = strlen(prefs);
         length = i + strlen(stringToAdd);
-        newPrefs = calloc(1, length+5);
+        newPrefs = malloc(length+5);
+        crashTemp(newPrefs, length+5);
         if(prefs == NULL)
             return;
 
@@ -180,7 +185,7 @@ void removeFromPref(char flag)
         return;
     }
     length = strlen(prefs);
-    newPrefs = calloc(1, length);
+    newPrefs = ralloc(length);
     if(newPrefs == NULL)
     {
         free(prefs);
@@ -273,7 +278,7 @@ char* loadLargePrefs(char flag)
 		{
 			prefs += i;
 			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag || prefs[bufferSize+3] != '>'));
-			char* databaseRAW = calloc(1, bufferSize + 5);
+			char* databaseRAW = ralloc(bufferSize + 5);
 			if(databaseRAW != NULL)
 			{
 				memccpy(databaseRAW, prefs, 0, bufferSize);
@@ -282,28 +287,22 @@ char* loadLargePrefs(char flag)
 
 			}
 		}
-		else if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
-		{
-		    removeFromPref(flag);
-			char temp[200], *buffer = NULL, *buffer2 = NULL;
-			if(flag == SETTINGS_MANGADB_FLAG)
-				snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, MANGA_DATABASE);
-			else
-				snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, REPO_DATABASE);
-
-			buffer = calloc(1, 0x10000);
-			setupBufferDL(buffer, 0x10, 0x10, 0x10, 0x10);
-			download(temp, buffer, 0);
-
-			buffer2 = calloc(1, strlen(buffer)+50);
-			snprintf(buffer2, strlen(buffer)+50, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
-
-			addToPref(flag, buffer2);
-			free(buffer2);
-			free(buffer);
-		}
 	}
-	return NULL;
+	if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
+    {
+        removeFromPref(flag);
+        char temp[200], buffer[65000], buffer2[65100];
+        if(flag == SETTINGS_MANGADB_FLAG)
+            snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, MANGA_DATABASE);
+        else
+            snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, REPO_DATABASE);
+
+        crashTemp(buffer, 65000);
+        download_mem(temp, buffer, 65000, 0);
+        snprintf(buffer2, 65100, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
+        addToPref(flag, buffer2);
+	}
+    return NULL;
 }
 
 void setPrefs(MANGAS_DATA* mangaDB)

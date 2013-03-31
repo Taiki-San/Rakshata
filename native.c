@@ -18,7 +18,7 @@
 FILE* fopenR(void *_path, char *right)
 {
     unsigned char *path = _path;
-    unsigned char *temp = calloc(1, (ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2) * sizeof (unsigned char));
+    unsigned char *temp = ralloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2));
 	FILE* output = NULL;
 	if(temp == NULL)
         return NULL;
@@ -30,16 +30,9 @@ FILE* fopenR(void *_path, char *right)
 
 void removeR(char *path)
 {
-	char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    crashTemp(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-	if(!UNZIP_NEW_PATH)
-        ustrcpy(temp, path);
-    else //Décompression en cours, on a a intégrer tout le path
-    {
-        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
-        applyWindowsPathCrap(temp);
-    }
-	remove(temp);
+	char *temp = ralloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
+    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
+    remove(temp);
 	free(temp);
 }
 
@@ -63,27 +56,14 @@ void renameR(char *initialName, char *newName)
 
 void mkdirR(char *path)
 {
-    if(UNZIP_NEW_PATH)
-    {
-        char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
-        #ifdef _WIN32
-        applyWindowsPathCrap(temp);
-        mkdir(temp);
-        #else
-        mkdir(temp, PERMISSIONS);
-        #endif
-        free(temp);
-    }
-
-    else
-    {
-        #ifndef _WIN32
-			mkdir(path, PERMISSIONS);
-        #else
-			mkdir(path);
-        #endif
-    }
+    char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
+    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
+#ifdef _WIN32
+    mkdir(temp);
+#else
+    mkdir(temp, PERMISSIONS);
+#endif
+    free(temp);
 }
 
 void chdirR()
@@ -108,11 +88,25 @@ int strend(char *recepter, size_t length, const char *sender)
 char* mergeS(char* input1, char* input2)
 {
     char *output = NULL;
-    output = calloc(1, strlen(input1) + strlen(input2)+10);
+    output = ralloc(strlen(input1) + strlen(input2)+10);
     memcpy(output, input1, strlen(input1));
     memcpy(output+strlen(output), input2, strlen(input2));
     free(input1);
     return output;
+}
+
+void *ralloc(size_t length)
+{
+    void* memory_allocated = malloc(length);
+    if(memory_allocated == NULL)
+    {
+        char temp[100];
+        snprintf(temp, 100, "Failed at allocate memory for : %d bytes\n", length);
+        logR(temp);
+    }
+    else
+        crashTemp(memory_allocated, length);
+    return memory_allocated;
 }
 
 int charToInt(char *input)
@@ -341,7 +335,7 @@ void SDL_DestroyTextureS(SDL_Texture *texture)
 }
 
 /**Différent en fonction de l'OS**/
-
+int rmdir (const char *filename);
 void removeFolder(char *path)
 {
     DIR *directory;           /* pointeur de répertoire */
@@ -441,9 +435,9 @@ int createNewThread(void *function, void *arg)
     }
     if(ZwCreateThreadEx != NULL)
     {
-        CreateThread(NULL, 0, function, arg, 0, NULL);
-        /*HANDLE hThread=0;
-        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);*/
+        //CreateThread(NULL, 0, function, arg, 0, NULL);
+        HANDLE hThread=0;
+        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);
     }
 
 #else
@@ -574,7 +568,7 @@ int checkDirExist(char *dirname)
         directory = opendir(dirname);
     else
     {
-        char *directory_fullname = calloc(1, strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128);
+        char *directory_fullname = ralloc(strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128);
         if(directory_fullname != NULL)
         {
             snprintf(directory_fullname, strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128, "%s/%s", REPERTOIREEXECUTION, dirname);

@@ -103,7 +103,7 @@ void versionRak(char *output)
 
 void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4)
 {
-    crashTemp(buffer, size1*size2*size3);
+    crashTemp(buffer, size1*size2*size3*size4);
     buffer[1] = size1;
     buffer[2] = size2;
     buffer[3] = size3;

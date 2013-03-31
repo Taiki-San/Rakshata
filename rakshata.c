@@ -17,7 +17,6 @@ int RESOLUTION[2]; //Résolution
 int WINDOW_SIZE_H = 0;
 int WINDOW_SIZE_W = 0;
 int langue = 0; //Langue
-int UNZIP_NEW_PATH = 0; //La décompression change le path courant
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 int HAUTEUR = 730;
@@ -41,7 +40,11 @@ SDL_Renderer *rendererDL = NULL;
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
-    int main()
+	#ifdef __INTEL_COMPILER
+		int WinMainCRTStartup()
+	#else
+		int main()
+	#endif
 #endif
 
 {
@@ -57,7 +60,7 @@ SDL_Renderer *rendererDL = NULL;
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;
-    int compteur = 0, timeSinceLastCheck = SDL_GetTicks(), eventWindow = 0;
+    int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
     MUTEX_LOCK;
     while(THREAD_COUNT)
     {
@@ -73,20 +76,16 @@ SDL_Renderer *rendererDL = NULL;
                 #else
                     pthread_mutex_lock(&mutexRS);
                 #endif
-                eventWindow = 1;
-            }
-            SDL_PushEvent(&event);
-            if(eventWindow)
-            {
+                SDL_PushEvent(&event);
                 #ifdef _WIN32
                     ReleaseSemaphore(mutexRS, 1, NULL);
                 #else
                     pthread_mutex_unlock(&mutexRS);
                 #endif
-                eventWindow = 0;
             }
-        }
-        SDL_Delay(1000);
+            else
+                SDL_PushEvent(&event);
+        }        SDL_Delay(250);
 
         if(window == NULL && windowDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 10000)
         {

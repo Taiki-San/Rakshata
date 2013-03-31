@@ -85,7 +85,6 @@ int ajoutRepo()
             if(!continuer)
             {
                 char bufferDL[1000];
-                setupBufferDL(bufferDL, 100, 10, 1, 1);
                 if(!strcmp(teams.type, TYPE_DEPOT_1))
                     sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-repo-1", teams.URL_depot);
 
@@ -95,10 +94,11 @@ int ajoutRepo()
                 else if(!strcmp(teams.type, TYPE_DEPOT_4))
                     sprintf(temp, "http://goo.gl/%s", teams.URL_depot);
 
-                download(temp, bufferDL, 0);
+                crashTemp(bufferDL, 1000);
+                download_mem(temp, bufferDL, 1000, 0);
                 for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur--);
 
-                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépÙt
+                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt
                 {
                     sscanfs(bufferDL, "%s %s %s %s %s %s", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
 
@@ -153,7 +153,7 @@ int ajoutRepo()
                     if(waitEnter(window) == 1)
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
-                        repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
+                        repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
                         repoBak = repo;
                         while(repo !=NULL && *repo)
                         {
@@ -271,7 +271,7 @@ int deleteRepo()
             int j = 0;
             char *repoNew = NULL;
             char temp[LONGUEUR_NOM_MANGA_MAX+100];
-            repoNew = calloc(1, (repo!=NULL?strlen(repo):0) +500);
+            repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
 
             sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
             removeFolder(temp); //Suppresion du dossier de la team

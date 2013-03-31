@@ -11,6 +11,7 @@
 ******************************************************************************************************/
 
 /**Affichage.c**/
+void welcome();
 void initialisationAffichage();
 void raffraichissmenent();
 void affichageLancement();
@@ -68,7 +69,9 @@ void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
-int download(char *adresse, char *repertoire, int activation);
+OUT_DL *download_UI(char *adresse);
+int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled);
+int download_disk(char* adresse, char *file_name, int SSL_enabled);
 int checkDLInProgress();
 
 /**Engine.c**/
@@ -168,6 +171,7 @@ void mkdirR(char *path);
 void chdirR();
 int strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
+void *ralloc(size_t length);
 int charToInt(char *input);
 void fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
@@ -200,7 +204,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
 int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB);
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
-void decryptPage(void *_password, void *path_input, void *buffer_out, size_t buf_len);
+void decryptPage(void *_password, void *path_input, void *buffer_out_void, size_t buf_len);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH]);
 void get_file_date(const char *filename, char *date);
 void killswitchEnabled(char nomTeamCourt[5]);
