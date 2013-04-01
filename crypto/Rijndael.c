@@ -1215,7 +1215,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
     unsigned char *path_output = _path_output;
     int i, inputMemory = 1, outputMemory = 1;
     int positionDansInput = 0, positionDansOutput = 0;
-    int nrounds;
+    int nrounds, CBC_started = 0;
     FILE* input = NULL;
     FILE* output = NULL;
 
@@ -1298,8 +1298,10 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             break;
 
         for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
-        if(!ECB && ciphertext[0]) //Si ce n'est pas le premier passage
+        if(!ECB && CBC_started) //Si ce n'est pas le premier passage
             for (j = 0; j < CRYPTO_BUFFER_SIZE; j++) { plaintext[j] ^= ciphertext[j]; } //On xor avec le dernier bloc, afin d'empecher la mise en corélation entre deux plaintext identiques/proches
+        else if(!ECB)
+            CBC_started = 1;
         rijndaelEncrypt(rk, nrounds, plaintext, ciphertext);
         if(!outputMemory)
         {
@@ -1333,7 +1335,7 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
     unsigned char *path_output = _path_output;
     int i, inputMemory = 1, outputMemory = 1;
     int positionDansInput = 0, positionDansOutput = 0;
-    int nrounds, lastRow = 0;
+    int nrounds, lastRow = 0, CBC_started = 0;
 	int *return_val = NULL;
     FILE *input = NULL;
     FILE *output = NULL;
@@ -1387,7 +1389,7 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
         }
         rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
 
-        if(!ECB && previous_cipher[0])
+        if(!ECB && CBC_started)
             for (i = 0; i < CRYPTO_BUFFER_SIZE; i++) { plaintext[i] ^= previous_cipher[i]; } //On xor avec le dernier bloc, afin d'empecher la mise en corélation entre deux plaintext identiques/proches
 
         if(!outputMemory && output != NULL)
@@ -1397,7 +1399,11 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
             memcpy(&path_output[positionDansOutput], plaintext, sizeof(plaintext));
             positionDansOutput += sizeof(plaintext);
         }
-        memcpy(previous_cipher, ciphertext, CRYPTO_BUFFER_SIZE); //On copie dans le buffer pour le XOR
+        if(!ECB)
+        {
+            memcpy(previous_cipher, ciphertext, CRYPTO_BUFFER_SIZE); //On copie dans le buffer pour le XOR
+            CBC_started = 1;
+        }
     } while (!lastRow);
 
 	if(!inputMemory)
