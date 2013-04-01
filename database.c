@@ -217,7 +217,7 @@ void update_repo()
 				}
 				if(!bufferDL[i] || bufferDL[i] == ' ' || bufferDL[i] == '\r' || bufferDL[i] == '\n' || limiteActuelle[limiteActuelle[0]] >= limites[limiteActuelle[0]])
                 {
-                    for(; bufferDL[i+1] == ' '; i++); //Si trop d'espace dans le fichier
+                    for(; bufferDL[i] && bufferDL[i+1] == ' '; i++); //Si trop d'espace dans le fichier
                     limiteActuelle[0]++;
                 }
 
@@ -325,12 +325,12 @@ void update_mangas()
 		}
 		else
 		{
-		    size_t length = strlen(bufferDL);
-		    char *manga_new_tmp = ralloc(length * 2); //Pour avoir un peu de marge
+		    size_t length = (strlen(bufferDL) + 50) *3; //Pour avoir plein de marge
+		    char *manga_new_tmp = ralloc(length);
 		    if(manga_new_tmp == NULL)
             {
                 char temp[100];
-                snprintf(temp, 100, "Failed at allocate %d bytes\n", strlen(bufferDL)*2);
+                snprintf(temp, 100, "Failed at allocate %d bytes\n", strlen(bufferDL)+50);
                 logR(temp);
                 return;
             }
@@ -359,13 +359,12 @@ void update_mangas()
                     snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, buffer_char[0], buffer_char[1], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
                 }
             }
-
-            length *= 2;
             size_t curLength = strlen(manga_new_tmp);
             if(curLength < length)
                 manga_new_tmp[curLength++] = '#';
             if(curLength < length)
                 manga_new_tmp[curLength++] = '\n';
+
             if(curLength > 2)
                 manga_new = mergeS(manga_new, manga_new_tmp);
             free(manga_new_tmp);

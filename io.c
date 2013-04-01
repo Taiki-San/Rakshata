@@ -19,14 +19,14 @@ int nombreEntree(SDL_Event event)
     return -1;
 }
 
-int waitEnter(SDL_Window* windows)
+int waitEnter(SDL_Renderer* rendererVar)
 {
     int i = 0;
     SDL_Event event;
     while(!i)
     {
         SDL_WaitEvent(&event);
-        if(!haveInputFocus(&event, windows))
+        if(!haveInputFocus(&event, rendererVar->window))
             continue;
 
         switch(event.type)
@@ -61,10 +61,7 @@ int waitEnter(SDL_Window* windows)
 
             case SDL_WINDOWEVENT:
             {
-                if(renderer!= NULL && renderer->window == windows)
-                    SDL_RenderPresent(renderer);
-                else if(rendererDL != NULL)
-                    SDL_RenderPresent(rendererDL);
+                SDL_RenderPresent(rendererVar);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 break;
             }

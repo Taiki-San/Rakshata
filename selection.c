@@ -197,7 +197,7 @@ int checkProjet(MANGAS_DATA mangaDB)
         SDL_DestroyTextureS(image);
         TTF_CloseFont(police);
 
-        return waitEnter(window);
+        return waitEnter(renderer);
     }
     return 1;
 }

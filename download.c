@@ -241,7 +241,7 @@ OUT_DL *download_UI(char *adresse)
 
         mkdirR("data");
         char certificate_name[50];
-        snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand()/rand())%100);
+        snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand())%8096);
         FILE *cert = fopenR(certificate_name, "wb");
         if(cert != NULL)
         {
@@ -307,7 +307,7 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
         if(SSL_enabled)
         {
-            snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand()/rand())%100);
+            snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand())%8096);
             FILE *cert = fopenR(certificate_name, "wb");
             if(cert != NULL)
             {

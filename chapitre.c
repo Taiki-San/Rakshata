@@ -277,7 +277,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTextureS(texte);
             SDL_RenderPresent(renderer);
-            chapitreChoisis = waitEnter(window);
+            chapitreChoisis = waitEnter(renderer);
             if(chapitreChoisis > PALIER_CHAPTER)
                 chapitreChoisis = PALIER_CHAPTER;
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);

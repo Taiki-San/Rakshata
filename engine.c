@@ -529,12 +529,15 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 do
                 {
                     mangaChoisis = mangaSelection(modeChapitre, tailleTexte, hauteurAffichage, &manuel);
-
                     if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
                         mangaChoisis = PALIER_CHAPTER;
-                    else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z' && sectionChoisis == SECTION_CHOISIS_LECTURE) //A-1 = backspace
-                        break;
-
+                    else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z') //A-1 = backspace
+                    {
+                        if(sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_DL)
+                            break;
+                        else
+                            mangaChoisis = 0;
+                    }
                 }while((mangaChoisis <= -10 && sectionChoisis == SECTION_CHOISIS_LECTURE));
 
                 analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage);

@@ -107,7 +107,7 @@ void checkSectionMessageUpdate();
 
 /**IO.c**/
 int nombreEntree(SDL_Event event);
-int waitEnter(SDL_Window* windows);
+int waitEnter(SDL_Renderer* rendererVar);
 int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int startFromY, int showTyped, char *retour);
 int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 #define getLetterPushed(event) (event.text.text[0] >= 'A' && event.text.text[0] <= 'z')?event.text.text[0]:0

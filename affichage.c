@@ -78,7 +78,7 @@ void welcome()
 
     TTF_CloseFont(police);
 	SDL_RenderPresent(renderer);
-	waitEnter(window);
+	waitEnter(renderer);
 }
 
 void initialisationAffichage()

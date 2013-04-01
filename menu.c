@@ -51,7 +51,7 @@ int ecranAccueil()
     SDL_DestroyTextureS(acceuil);
 
     SDL_RenderPresent(renderer); //Refresh screen
-    return waitEnter(window);
+    return waitEnter(renderer);
 }
 
 int showControls()

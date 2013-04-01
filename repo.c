@@ -150,7 +150,7 @@ int ajoutRepo()
                     SDL_DestroyTextureS(texte);
                     SDL_RenderPresent(renderer);
 
-                    if(waitEnter(window) == 1)
+                    if(waitEnter(renderer) == 1)
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
                         repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
@@ -376,7 +376,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
 
-    confirme = waitEnter(window);
+    confirme = waitEnter(renderer);
 
     if(confirme == 1)
         /*Confirmé*/

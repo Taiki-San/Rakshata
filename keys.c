@@ -434,7 +434,7 @@ int logon()
 
                         SDL_RenderPresent(renderer);
                         TTF_CloseFont(police);
-                        if(waitEnter(window) == PALIER_QUIT)
+                        if(waitEnter(renderer) == PALIER_QUIT)
                             return PALIER_QUIT;
                         retry = 1;
                         break;
@@ -481,7 +481,7 @@ int logon()
                         SDL_DestroyTextureS(ligne);
 
                         SDL_RenderPresent(renderer);
-                        waitEnter(window);
+                        waitEnter(renderer);
                         return PALIER_QUIT;
                         break;
                     }
@@ -516,7 +516,7 @@ int logon()
                 SDL_DestroyTextureS(ligne);
 
                 SDL_RenderPresent(renderer);
-                if(waitEnter(window) == PALIER_QUIT)
+                if(waitEnter(renderer) == PALIER_QUIT)
                     return PALIER_QUIT;
                 retry = 1;
                 break;

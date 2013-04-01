@@ -36,6 +36,7 @@ int telechargement()
 	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     OUT_DL* struc = NULL;
 
+    error = 0;
     INSTALL_DONE = 0;
     CURRENT_TOKEN = 0;
 
@@ -81,7 +82,7 @@ int telechargement()
     rewind(fichier);
 
     todoListPtrBak = todoList = calloc(mangaTotal+1, sizeof(DATA_LOADED*));
-    for(i = 0; i < mangaTotal; todoList[i++] = (DATA_LOADED*) calloc(LONGUEUR_COURT*2 + 50, sizeof(DATA_LOADED)));
+    for(i = 0; i < mangaTotal; todoList[i++] = (DATA_LOADED*) calloc(1, sizeof(DATA_LOADED)));
 
     if(todoList == NULL)
     {
@@ -315,30 +316,28 @@ int telechargement()
                     download_disk(superTemp, temp, 0);
                 }
 
-                else if(!todoList[0]->datas->pageInfos)//Si k = 0 et infos.png existe
+                else if(!todoList[0]->datas->pageInfos && checkFileExist(temp))//Si k = 0 et infos.png existe
                     removeR(temp);
             }
-
         } while(0); //Permet d'interrompre le code avec break;
 
         if(glados == CODE_RETOUR_OK)
         {
-            if(mangaTotal)
+            DATA_LOADED **newBufferTodo = NULL;
+            if(INSTANCE_RUNNING == -1 && checkFileExist(INSTALL_DATABASE))
             {
-                DATA_LOADED **newBufferTodo = NULL;
-
-                if(INSTANCE_RUNNING == -1 && checkFileExist(INSTALL_DATABASE))
+                int oldSize = mangaTotal;
+                fichier = fopenR(INSTALL_DATABASE, "r");
+                while((i = fgetc(fichier)) != EOF)
                 {
-                    int oldSize = mangaTotal;
-                    fichier = fopenR(INSTALL_DATABASE, "r");
-                    while((i = fgetc(fichier)) != EOF)
-                    {
-                        if(i == '\n')
-                            mangaTotal++;
-                    }
-                    rewind(fichier);
+                    if(i == '\n')
+                        mangaTotal++;
+                }
+                rewind(fichier);
+                if(mangaTotal)
+                {
                     newBufferTodo = calloc(mangaTotal, sizeof(DATA_LOADED*));
-                    for(i = 0; i < mangaTotal; newBufferTodo[i++] = (DATA_LOADED*) calloc(LONGUEUR_COURT*2 + 50, sizeof(DATA_LOADED)));
+                    for(i = 0; i < mangaTotal; newBufferTodo[i++] = (DATA_LOADED*) calloc(1, sizeof(DATA_LOADED))); //LONGUEUR_COURT*2 + 50
                     if(oldSize)
                     {
                         memcpy(newBufferTodo, &todoList[1], oldSize*sizeof(DATA_LOADED));
@@ -370,13 +369,13 @@ int telechargement()
                     fclose(fichier);
                     removeR(INSTALL_DATABASE);
                 }
-                else
-                {
-                    newBufferTodo = &todoList[1];
-                    free(todoList[0]);
-                }
-                todoList = newBufferTodo;
             }
+            else
+            {
+                newBufferTodo = &todoList[1];
+                free(todoList[0]);
+            }
+            todoList = newBufferTodo;
             mangaTotal--;
         }
     }
@@ -425,8 +424,7 @@ int telechargement()
     }
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
-
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On tue la mémoire utilisé seulement quand c'est vraiment fini.
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);//On libère la mémoire utilisé seulement quand c'est vraiment fini.
     INSTANCE_RUNNING = 0;
 
 #ifdef _WIN32
@@ -435,7 +433,6 @@ int telechargement()
 #else
     removeR("data/download");
 #endif
-
     if(glados == CODE_RETOUR_DL_CLOSE)
         return -1;
     return 0;
@@ -629,7 +626,7 @@ int interditWhileDL()
 
     SDL_RenderClear(renderer);
 
-    return waitEnter(window);
+    return waitEnter(renderer);
 }
 
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
@@ -721,68 +718,72 @@ void DLmanager()
 
     int output = telechargement();
 
+    SDL_Renderer *rendererDLCurrent = rendererDL;
+    SDL_Window *windowDLCurrent = windowDL;
+
+    rendererDL = NULL;
+    windowDL = NULL;
+
     //Chargement de la traduction
     loadTrad(texteTrad, 16);
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-    SDL_RenderClear(rendererDL);
+    SDL_RenderClear(rendererDLCurrent);
     if(!error && !output)
     {
-        texte = TTF_Write(rendererDL, police, texteTrad[0], couleurTexte);
+        texte = TTF_Write(rendererDLCurrent, police, texteTrad[0], couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = WINDOW_SIZE_H_DL / 2 - texte->h / 2 * 3;
         position.h = texte->h;
         position.w = texte->w;
-        SDL_RenderCopy(rendererDL, texte, NULL, &position);
+        SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
 
-        texte = TTF_Write(rendererDL, police, texteTrad[1], couleurTexte);
+        texte = TTF_Write(rendererDLCurrent, police, texteTrad[1], couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = WINDOW_SIZE_H_DL / 2 + texte->h / 2;
         position.h = texte->h;
         position.w = texte->w;
-        SDL_RenderCopy(rendererDL, texte, NULL, &position);
+        SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
 
-        SDL_RenderPresent(rendererDL);
-        waitEnter(windowDL);
+        SDL_RenderPresent(rendererDLCurrent);
+        waitEnter(rendererDLCurrent);
     }
     else if (error > 0 && output != -1)
     {
         crashTemp(temp, TAILLE_BUFFER);
         sprintf(temp, "%s %d %s", texteTrad[2], error, texteTrad[3]);
 
-        texte = TTF_Write(rendererDL, police, temp, couleurTexte);
+        texte = TTF_Write(rendererDLCurrent, police, temp, couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
         position.h = texte->h;
         position.w = texte->w;
-        SDL_RenderCopy(rendererDL, texte, NULL, &position);
+        SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
 
-        texte = TTF_Write(rendererDL, police, texteTrad[4], couleurTexte);
+        texte = TTF_Write(rendererDLCurrent, police, texteTrad[4], couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
         position.h = texte->h;
         position.w = texte->w;
-        SDL_RenderCopy(rendererDL, texte, NULL, &position);
+        SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
 
-        texte = TTF_Write(rendererDL, police, texteTrad[5], couleurTexte);
+        texte = TTF_Write(rendererDLCurrent, police, texteTrad[5], couleurTexte);
         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
         position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + MINIINTERLIGNE;
         position.h = texte->h;
         position.w = texte->w;
-        SDL_RenderCopy(rendererDL, texte, NULL, &position);
+        SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
 
-        SDL_RenderPresent(rendererDL);
-        waitEnter(windowDL);
+        SDL_RenderPresent(rendererDLCurrent);
+        waitEnter(rendererDLCurrent);
     }
     TTF_CloseFont(police);
-    SDL_DestroyRenderer(rendererDL);
-    SDL_DestroyWindow(windowDL);
-    rendererDL = NULL;
-    windowDL = NULL;
+    SDL_DestroyRenderer(rendererDLCurrent);
+    SDL_DestroyWindow(windowDLCurrent);
 }
 
 void lancementModuleDL()
