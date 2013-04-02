@@ -715,6 +715,8 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                             mangaChoisis = choix*10;
                             *manuel = 1;
                         }
+                        else
+                            mangaChoisis = -11; //Télécharger
                         break;
 
                     case SDLK_ESCAPE:
@@ -802,10 +804,10 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
 
                 if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && !modeChapitre) //Check si clique sur bouton de DL
                 {
-                    if(event.button.x > WINDOW_SIZE_W / 2)
-                        mangaChoisis = -10;
-                    else
-                        mangaChoisis = -11;
+                    if(event.button.x > WINDOW_SIZE_W*2/3)
+                        mangaChoisis = -10; //Annuler
+                    else if(event.button.x < WINDOW_SIZE_W/3)
+                        mangaChoisis = -11; //Télécharger
                 }
 
 

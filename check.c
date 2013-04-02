@@ -85,8 +85,14 @@ int check_evt()
         SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
         TTF_Font *police = NULL;
 
-		while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+		SDL_Event event;
+		while(1)
+        {
+            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+                break;
+            SDL_PollEvent(&event);
             SDL_Delay(50);
+        }
 
         if(!checkNetworkState(CONNEXION_OK))
         {

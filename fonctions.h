@@ -125,7 +125,7 @@ void passToLoginData(char password[100]);
 int checkPass(char adresseEmail[100], char password[100], int login);
 int createSecurePasswordDB(unsigned char *key_sent);
 int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
-void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode);
+void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen);
@@ -157,7 +157,6 @@ DWORD WINAPI installation(LPVOID datas);
 #else
 void* installation(void* datas);
 #endif
-int interditWhileDL();
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();

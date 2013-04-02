@@ -435,7 +435,6 @@ int createNewThread(void *function, void *arg)
     }
     if(ZwCreateThreadEx != NULL)
     {
-        //CreateThread(NULL, 0, function, arg, 0, NULL);
         HANDLE hThread=0;
         ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);
     }

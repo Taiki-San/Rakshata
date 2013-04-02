@@ -53,7 +53,7 @@ SDL_Renderer *rendererDL = NULL;
 
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
     {
-        createNewThread(mainDL, NULL);
+        lancementModuleDL();
     }
 
     checkUpdate();

@@ -34,10 +34,12 @@
                             }while(0)
 
 #else
-    #define quit_thread(a) MUTEX_LOCK;\
-                           THREAD_COUNT--;\
-                           MUTEX_UNLOCK;\
-                           pthread_exit(a)
+    #define quit_thread(a) do{ \
+                            MUTEX_LOCK;\
+                            THREAD_COUNT--;\
+                            MUTEX_UNLOCK;\
+                            pthread_exit(a);\
+                            }while(0)
 #endif
 
 /*Environnement*/

@@ -46,7 +46,7 @@ int getMasterKey(unsigned char *input)
         size = ftell(bdd);
         fclose(bdd);
 
-        if(!size || size % SHA256_DIGEST_LENGTH != 0)
+        if(!size || size % SHA256_DIGEST_LENGTH != 0)// || size > 20*SHA256_DIGEST_LENGTH)
         {
             fileInvalid = 1;
             removeR(SECURE_DATABASE);
@@ -101,10 +101,9 @@ int getMasterKey(unsigned char *input)
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
             memcpy(&output_char[j*16] , plaintext, 16);
         }
-        for(j = 16; j < 32; j++) { output_char[j] ^= buffer_Load[i][j-16]; }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && (output_char[j] >= ' '  && output_char[j] < 255); j++); //On regarde si c'est bien une clée
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && output_char[j] >= ' '  && output_char[j] < 255; j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
@@ -122,7 +121,7 @@ int getMasterKey(unsigned char *input)
     {
         unsigned char key[HASH_LENGTH];
         free(output);
-        recoverPassFromServ(key, 0);
+        recoverPassFromServ(key);
         memcpy(input, key, SHA256_DIGEST_LENGTH);
         createSecurePasswordDB(input);
         crashTemp(key, HASH_LENGTH);
@@ -278,8 +277,15 @@ int logon()
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-        while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+        SDL_Event event;
+        while(1)
+        {
+            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+                break;
+            SDL_PollEvent(&event);
             SDL_Delay(50);
+        }
+
     }
     if(!checkNetworkState(CONNEXION_OK))
     {
@@ -826,12 +832,12 @@ int createSecurePasswordDB(unsigned char *key_sent)
     if(key_sent == NULL)
     {
         createNewMK(password, key[0]);
-        AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY);
+        _AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY, 1);
     }
     else
     {
         ustrcpy(key[0], key_sent);
-        AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL);
+        _AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL, 1);
         crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
     }
     free(encryption_output);
@@ -953,7 +959,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     }
     else if(!strcmp(buffer_dl, "old_key_found"))
     {
-        recoverPassFromServ(key, 0);
+        recoverPassFromServ(key);
         return 1;
     }
     else if(!strcmp(buffer_dl, "account_not_found"))
@@ -973,7 +979,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     return 0;
 }
 
-void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
+void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 {
     if(!checkNetworkState(CONNEXION_OK))
         return;
@@ -981,26 +987,12 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
     int i = 0, j = 0;
     char temp[400];
     char buffer_dl[500];
-    if(mode != 0) //On essaie de pas transmettre trop en clair la clée manquante
-    {
-        mode /= 10;
-        mode = (mode+5) * (mode+5) +1;
-        sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&authMode=%d", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
-    }
-    else if(rand() / 2)
-    {
-        mode = rand() % 100 + 1 + 5;
-        mode = mode * (mode+10) + 1;
-        sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&authMode=%d&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, mode);
-        mode = 0;
-    }
-    else
-        sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+    sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);
 
-    download_mem(temp, buffer_dl, 500, 0);
+    download_mem(temp, buffer_dl, 500, 1);
 
     crashTemp(temp, 400);
 
@@ -1010,12 +1002,6 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH], int mode)
         exit(0);
     }
 
-    if(mode)
-    {
-        memcpy(key, buffer_dl, 64);
-        key[64] = 0;
-        return;
-    }
     unsigned char derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
     for(i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
     for(i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);

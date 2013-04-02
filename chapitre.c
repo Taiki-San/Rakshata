@@ -238,7 +238,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
         }
         if(nombreChapitre == 0)
         {
-            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/", mangaDB->team->teamLong, mangaDB->mangaName);
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
             removeFolder(temp);
             return PALIER_MENU;
         }

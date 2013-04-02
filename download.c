@@ -53,8 +53,14 @@ OUT_DL *download_UI(char *adresse)
 
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
-        while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+        SDL_Event event;
+        while(1)
+        {
+            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+                break;
+            SDL_PollEvent(&event);
             SDL_Delay(50);
+        }
 
         if(checkNetworkState(CONNEXION_DOWN))
             return (OUT_DL*) CODE_RETOUR_DL_CLOSE_INTERNAL;
@@ -150,10 +156,8 @@ OUT_DL *download_UI(char *adresse)
         else
             SDL_Delay(25);
     }
-    MUTEX_LOCK;
     if(status == STATUS_END)
     {
-        MUTEX_UNLOCK;
         applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H);
         pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
@@ -164,20 +168,20 @@ OUT_DL *download_UI(char *adresse)
         SDL_DestroyTextureS(pourcentAffiche);
         SDL_RenderPresent(rendererDL);
         TTF_CloseFont(police);
+        MUTEX_LOCK;
     }
 
     else
     {
+        MUTEX_LOCK;
         while(status == STATUS_FORCE_CLOSE)
         {
             MUTEX_UNLOCK;
             SDL_Delay(250);
             MUTEX_LOCK;
         }
-        MUTEX_UNLOCK;
     }
 
-    MUTEX_LOCK;
     if(status == STATUS_FORCE_CLOSE) //Fermeture demandée ou erreur
     {
         free(internalBuffer);
@@ -188,6 +192,7 @@ OUT_DL *download_UI(char *adresse)
     else if(errCode != 0)
     {
         status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
+        MUTEX_UNLOCK;
         return (OUT_DL*) (errCode*-1);
     }
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
@@ -267,8 +272,13 @@ OUT_DL *download_UI(char *adresse)
     }
     MUTEX_LOCK;
     status = STATUS_END;
+    THREAD_COUNT--;
     MUTEX_UNLOCK;
-    quit_thread(0);
+#ifdef _WIN32
+    ExitThread(0);
+#else
+    pthread_exit(0);
+#endif
 }
 
 static int internal_download_easy(char* adresse, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled);

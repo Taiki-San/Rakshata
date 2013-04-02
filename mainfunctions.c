@@ -17,8 +17,6 @@ extern int INSTANCE_RUNNING;
 void mainRakshata()
 {
     int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0/*, newLangue = 0*/;
-    FILE* test = NULL;
-
     /*newLangue = */loadLangueProfile();
 
     #ifdef _WIN32
@@ -80,7 +78,6 @@ void mainRakshata()
 
         if(!restoringState)
             sectionChoisis = section();
-
         else
         {
             sectionChoisis = 1;
@@ -106,20 +103,11 @@ void mainRakshata()
                 break;
 
             case 4:
-            {
-                if(!INSTANCE_RUNNING)
-                {
-                    continuer = menuGestion();
-                }
-                else
-                {
-                    fclose(test);
-                    continuer = interditWhileDL();
-                }
+                continuer = menuGestion();
                 break;
-            }
 
             default:
+                sectionChoisis = 0;
                 break;
         }
     }
@@ -318,14 +306,11 @@ int mainChoixDL()
             }
         }
 
-        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation nÂ°2*/ && nombreChapitre /*Il y a bien des chapitres Ã  DL*/)
+        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation n°°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
-            if(checkLancementUpdate()) //Si il n'y a pas déjà une instance qui DL
-            {
-                SDL_RenderClear(renderer);
-                affichageLancement();
-                lancementModuleDL();
-            }
+            SDL_RenderClear(renderer);
+            affichageLancement();
+            lancementModuleDL();
         }
         else if(checkLancementUpdate())
             removeR(INSTALL_DATABASE);
@@ -343,17 +328,17 @@ int mainChoixDL()
 void mainDL()
 {
     if(!INSTANCE_RUNNING && checkLancementUpdate())
+    {
         INSTANCE_RUNNING = 1;
+        loadLangueProfile();
+
+        if(loadEmailProfile())
+            DLmanager();
+    }
     else
     {
         INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
-        quit_thread(0);
     }
-    loadLangueProfile();
-
-    if(loadEmailProfile())
-        DLmanager(); //Lancement du module de téléchargement, il est totalement autonome
-
     quit_thread(0);
 }
 

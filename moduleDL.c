@@ -34,6 +34,7 @@ int telechargement()
     TTF_Font *police = NULL;
     SDL_Rect position;
 	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    SDL_Event event;
     OUT_DL* struc = NULL;
 
     error = 0;
@@ -46,7 +47,7 @@ int telechargement()
     {
         logR("Fail: instance already running\n");
         CloseHandle (hSem);
-        quit_thread(-1);
+        return -1;
     }
 #else
     FILE *fileBlocker = fopenR("data/download", "w+");
@@ -54,8 +55,14 @@ int telechargement()
     fclose(fileBlocker);
 #endif
 
-    while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-        SDL_Delay(100);
+    while(1)
+    {
+        if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+            break;
+        SDL_PollEvent(&event);
+        SDL_Delay(50);
+    }
+
 
     if(checkNetworkState(CONNEXION_DOWN))
     {
@@ -89,15 +96,13 @@ int telechargement()
         char temp[200];
         snprintf(temp, 200, "Failed at allocate: %d * %d bytes", mangaTotal, LONGUEUR_COURT*2 + 50);
         logR(temp);
-        quit_thread(0);
+        return -1;
     }
 
     for(j = k = 0; j < mangaTotal && (i = fgetc(fichier)) != EOF;)
     {
         fseek(fichier, -1, SEEK_CUR);
         fscanfs(fichier, "%s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, &k);
-        //while((k = fgetc(fichier)) != '\n' && k != EOF);
-
         if(posVariable < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)) //On vérifie si c'estpas le même manga, pour éviter de se retapper toute la liste
         {
             todoList[j]->chapitre = k;
@@ -244,15 +249,13 @@ int telechargement()
                             logR(superTemp);
                         }
                         else
+                        {
+                            if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
+                                logR(struc->buf);
                             free(struc->buf);
+                        }
                         free(struc);
-
                         glados = CODE_RETOUR_INTERNAL_FAIL;//On annule l'installation
-                    }
-                    if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3) && struc->length < 50)
-                    {
-                        logR(struc->buf);
-                        exit(0);
                     }
                 }
 
@@ -337,35 +340,40 @@ int telechargement()
                 if(mangaTotal)
                 {
                     newBufferTodo = calloc(mangaTotal, sizeof(DATA_LOADED*));
-                    for(i = 0; i < mangaTotal; newBufferTodo[i++] = (DATA_LOADED*) calloc(1, sizeof(DATA_LOADED))); //LONGUEUR_COURT*2 + 50
-                    if(oldSize)
+                    for(i = 0; i < mangaTotal; i++)
                     {
-                        memcpy(newBufferTodo, &todoList[1], oldSize*sizeof(DATA_LOADED));
-                        free(todoList[0]);
-                        free(todoList);
+                        newBufferTodo[i] = calloc(1, sizeof(DATA_LOADED));
+                        if(i < oldSize) //Pas besoin de oldSize != 0 car i commence à 0 et (0 < 0) = 0
+                        {
+                            newBufferTodo[i]->chapitre = todoList[i+1]->chapitre;
+                            newBufferTodo[i]->datas = todoList[i+1]->datas;
+                            free(todoList[i+1]);
+                        }
                     }
+                    free(todoList[0]);
+                    free(todoList);
 
                     for(j = oldSize; j < mangaTotal && (i = fgetc(fichier)) != EOF;)
                     {
+                        fseek(fichier, -1, SEEK_CUR);
                         fscanfs(fichier, "%s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, &k);
-                        while((k = fgetc(fichier)) != '\n' && k != EOF);
 
                         if(posVariable < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)) //On vérifie si c'estpas le même manga, pour éviter de se retapper toute la liste
                         {
-                            todoList[j]->chapitre = k;
-                            todoList[j++]->datas = &mangaDB[posVariable];
+                            newBufferTodo[j]->chapitre = k;
+                            newBufferTodo[j++]->datas = &mangaDB[posVariable];
                         }
                         else
                         {
                             for(posVariable = 0; posVariable < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) || strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)); posVariable++);
                             if(posVariable < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posVariable].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posVariable].team->teamCourt, teamCourt)) //On vérifie si c'estpas le même manga, pour éviter de se retapper toute la liste
                             {
-                                todoList[j]->chapitre = k;
-                                todoList[j++]->datas = &mangaDB[posVariable];
+                                newBufferTodo[j]->chapitre = k;
+                                newBufferTodo[j++]->datas = &mangaDB[posVariable];
                             }
                         }
                     }
-                    qsort(todoList, j, sizeof(DATA_LOADED), sortMangasToDownload);
+                    qsort(newBufferTodo, j, sizeof(DATA_LOADED*), sortMangasToDownload);
                     fclose(fichier);
                     removeR(INSTALL_DATABASE);
                 }
@@ -410,8 +418,6 @@ int telechargement()
     SDL_RenderPresent(rendererDL);
     TTF_CloseFont(police_big);
     TTF_CloseFont(police);
-
-    SDL_Event event;
 
     while(status > 1)
     {
@@ -589,7 +595,7 @@ void* installation(void* datas)
     quit_thread(0);
 }
 
-int interditWhileDL()
+int interditWhileDL() ///A DEGAGER DE LA LOCALIZATION
 {
     /*Initialisateurs graphique*/
 	char texte[SIZE_TRAD_ID_9][100];
@@ -625,7 +631,6 @@ int interditWhileDL()
     TTF_CloseFont(police);
 
     SDL_RenderClear(renderer);
-
     return waitEnter(renderer);
 }
 
@@ -678,7 +683,6 @@ void DLmanager()
     /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
     d'une réservation à deux endroits en parallèle, qui cause des crashs*/
 
-    SDL_Delay(2000);
     SDL_FlushEvent(SDL_WINDOWEVENT);
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
     SDL_FlushEvent(SDL_WINDOWEVENT);
@@ -784,11 +788,20 @@ void DLmanager()
     TTF_CloseFont(police);
     SDL_DestroyRenderer(rendererDLCurrent);
     SDL_DestroyWindow(windowDLCurrent);
+    return;
 }
 
 void lancementModuleDL()
 {
+    SDL_Event event;
     createNewThread(mainDL, NULL);
+    while(1)
+    {
+        if(windowDL != NULL)
+            break;
+        SDL_PollEvent(&event);
+        SDL_Delay(100);
+    }
 }
 
 void updateWindowSizeDL(int w, int h)
