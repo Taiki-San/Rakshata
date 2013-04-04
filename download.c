@@ -23,11 +23,7 @@ static volatile int status = STATUS_DOWNLOADING; //Status du DL: en cours, termi
 static int errCode;
 static void *internalBuffer;
 
-#ifdef _WIN32
-    static void downloader(char *adresse);
-#else
-    static void* downloader_UI(char *adresse);
-#endif
+static void downloader(char *adresse);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
 static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *buffer_dl);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
@@ -203,11 +199,7 @@ OUT_DL *download_UI(char *adresse)
     return outStruct;
 }
 
-#ifdef _WIN32
-    static void downloader(char *adresse)
-#else
-    static void* downloader_UI(char *adresse)
-#endif
+static void downloader(char *adresse)
 {
     CURL *curl = NULL;
     CURLcode res; //Get return from download
@@ -419,8 +411,10 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *useless)
         else //Buffer trop petit, on l'agrandit
         {
             size_buffer = 2*FILE_EXPECTED_SIZE;
-            realloc(internalBuffer, 2*FILE_EXPECTED_SIZE);
-            output = internalBuffer;
+            void *internalBufferTmp = realloc(internalBuffer, 2*FILE_EXPECTED_SIZE);
+            if(internalBufferTmp == NULL)
+                return -1;
+            output = internalBuffer = internalBufferTmp;
         }
     }
     else if(internalBuffer != NULL)

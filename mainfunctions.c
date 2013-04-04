@@ -107,7 +107,6 @@ void mainRakshata()
                 break;
 
             default:
-                sectionChoisis = 0;
                 break;
         }
     }

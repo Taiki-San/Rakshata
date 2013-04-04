@@ -14,7 +14,7 @@
 
 int ajoutRepo()
 {
-    int continuer = 0, existant = 0, erreur = 0, somethingAdded = 0;
+    int continuer = 0, erreur = 0, somethingAdded = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
     SDL_Texture *texte;
     TTF_Font *police = NULL;
@@ -155,29 +155,21 @@ int ajoutRepo()
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
                         repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
                         repoBak = repo;
-                        while(repo !=NULL && *repo)
+                        if(repoBak != NULL && *repoBak)
                         {
-                            repo+= sscanfs(repo, "%s\n", temp, LONGUEUR_ID_TEAM);
-                            if(!strcmp(temp, teams.IDTeam))
-                                existant = 1;
+                            int i = strlen(repoBak);
+                            repoBak[i++] = '\n';
+                            repoBak[i] = 0;
+                            sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                         }
-                        if(existant == 0)
-                        {
-                            if(repoBak != NULL && *repoBak)
-                            {
-                                int i = strlen(repoBak);
-                                repoBak[i++] = '\n';
-                                repoBak[i] = 0;
-                                sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
-                            }
-                            else
-                                sprintf(repoNew, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
-                            updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
-                            somethingAdded = 1;
-                        }
-                        free(repoBak);
+                        else
+                            sprintf(repoNew, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                        updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
+
+                        if(repoBak)
+                            free(repoBak);
                         free(repoNew);
-                        continuer = 1;
+                        somethingAdded = continuer = 1;
                     }
                 }
 

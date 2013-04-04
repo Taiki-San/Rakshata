@@ -174,11 +174,14 @@ void update_repo()
 	int i = 0, positionDansBuffer = 0;
 	int limites[7] = {0, LONGUEUR_ID_TEAM, LONGUEUR_NOM_MANGA_MAX, LONGUEUR_COURT, 10, LONGUEUR_URL, LONGUEUR_SITE}, limiteActuelle[7] = {1, 0, 0, 0, 0, 0, 0};
 	char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], repo_new[SIZE_BUFFER_UPDATE_DATABASE], killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
+    char URLRepoConnus[1000][LONGUEUR_URL];
 	char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA infosTeam;
 
 	if(repo == NULL)
         return;
+
+    for(i = 0; i < 1000; URLRepoConnus[i++][0] = 0);
 
     repoBak = repo;
     sprintf(repo_new, "<%c>\n", SETTINGS_REPODB_FLAG);
@@ -195,6 +198,14 @@ void update_repo()
 			killswitchEnabled(infosTeam.teamLong);
 			continue;
 		}
+
+		//Vérification si repo déjà raffraichie
+		for(i = 0; i < 1000 && URLRepoConnus[i][0] && strcmp(URLRepoConnus[i], infosTeam.URL_depot); i++);
+		if(URLRepoConnus[i][0] && i < 1000) //Il y a une corrélation (ces conditions sont plus rapides que strcmp)
+            continue;
+        else if(i < 1000)
+            strcpy(URLRepoConnus[i], infosTeam.URL_depot); //Ajout aux URL connues
+
 		crashTemp(bufferDL, SIZE_BUFFER_UPDATE_DATABASE);
 		get_update_repo(bufferDL, &infosTeam);
 

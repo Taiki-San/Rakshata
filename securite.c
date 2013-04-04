@@ -207,7 +207,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     sprintf((char *) numChapitreChar, "%d", numeroChapitre/10);
     pbkdf2(temp, numChapitreChar, hash);
-
     crashTemp(temp, 200);
 
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc

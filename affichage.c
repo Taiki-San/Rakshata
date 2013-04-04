@@ -20,6 +20,7 @@ void welcome()
     TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN-2);
 
     updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
+    SDL_RenderClear(renderer);
 
 	texte = TTF_Write(renderer, police, "Soyez le bienvenue dans Rakshata", couleurTexte);
 	if(texte != NULL)

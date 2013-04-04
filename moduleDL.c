@@ -352,7 +352,8 @@ int telechargement()
                     }
                     free(todoList[0]);
                     free(todoList);
-
+                    todoListPtrBak = todoList = newBufferTodo;
+                    
                     for(j = oldSize; j < mangaTotal && (i = fgetc(fichier)) != EOF;)
                     {
                         fseek(fichier, -1, SEEK_CUR);
@@ -382,8 +383,8 @@ int telechargement()
             {
                 newBufferTodo = &todoList[1];
                 free(todoList[0]);
+                todoList = newBufferTodo;
             }
-            todoList = newBufferTodo;
             mangaTotal--;
         }
     }
@@ -402,7 +403,8 @@ int telechargement()
     }
     else
     {
-        free(todoList[0]);
+        if(todoList != NULL)
+            free(todoList[0]);
     }
     free(todoListPtrBak);
 
