@@ -1,10 +1,10 @@
 /******************************************************************************************************
-**      __________         __           .__            __                ____     ____     ____      **
-**      \______   \_____  |  | __  _____|  |__ _____ _/  |______    /\  /_   |   /_   |   /_   |     **
-**       |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \/   |   |    |   |    |   |     **
-**       |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_ /\   |   |    |   |    |   |     **
-**       |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  / \/   |___| /\ |___| /\ |___|     **
-**              \/      \/     \/     \/     \/     \/          \/             \/       \/           **
+**  __________         __           .__            __                  ____     ____     ________    **
+**  \______   \_____  |  | __  _____|  |__ _____ _/  |______    ___  _/_   |   /_   |    \_____  \   **
+**   |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \   \  \/ /|   |    |   |     /  ____/   **
+**   |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_  \   / |   |    |   |    /       \   **
+**   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ |___| /\ \_______ \  **
+**          \/      \/     \/     \/     \/     \/          \/               \/       \/         \/  **
 **                                                                                                   **
 **         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
 **                                                                                                   **
@@ -24,17 +24,12 @@
 	#pragma comment(lib, "libcurl.lib")
 	#pragma comment(lib, "libeay32.lib")
 	#pragma comment(lib, "ssleay32.lib")
-/*	#pragma comment(lib, "librtmp.a")
-	#pragma comment(lib, "libidn.a")
-	#pragma comment(lib, "libssl.a")
-	#pragma comment(lib, "libssh2.a")
-	#pragma comment(lib, "libcrypto.a")*/
 	#pragma comment(lib, "Wldap32.lib")
 	#pragma comment(lib, "ws2_32.lib")
 	#pragma comment(lib, "winmm.lib")
 	#pragma comment(lib, "Gdi32.lib")
 	#pragma comment(lib, "user32.lib")
-	#pragma comment(lib, "dxguid.lib") 
+	#pragma comment(lib, "dxguid.lib")
 	#pragma comment(lib, "libzip.a")
 	#pragma comment(lib, "Ole32.lib")
 	#pragma comment(lib, "Imm32.lib")
@@ -57,7 +52,7 @@
 			#define getcwd(a, b) _getcwd(a, b)
 			#define mkdir(a) _mkdir(a)
 			#define chdir(a) _chdir(a)
-			#define snprintf _snprintf
+			#define snprintf(a, b, ...) _snprintf_s(a, b, _TRUNCATE, ##__VA_ARGS__)
 		#endif
 	#endif
     #include <windows.h>
