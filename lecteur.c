@@ -321,10 +321,19 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
-                SDL_SetWindowSize(window, largeurValide, buffer);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
+
+                //We restart the window
+                SDL_DestroyTexture(bandeauControle);
+                SDL_DestroyRenderer(renderer);
+                SDL_DestroyWindow(window);
+                window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
                 WINDOW_SIZE_W = largeurValide;
                 WINDOW_SIZE_H = buffer;
+                loadIcon(window);
+                nameWindow(window, 0);
+                renderer = setupRendererSafe(window);
+                bandeauControle = loadControlBar(mangaDB->favoris);
             }
             else
                 updateWindowSize(largeurValide, buffer);
