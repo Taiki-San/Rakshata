@@ -26,26 +26,9 @@ void mainRakshata()
     #endif
 
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
-
-#ifndef __APPLE__
-    SDL_Surface *icon = NULL;
-    icon = IMG_Load("data/icone.png");
-    if(icon != NULL)
-    {
-        SDL_SetWindowIcon(window, icon); //Int icon for the main window
-        SDL_FreeSurfaceS(icon);
-    }
-#endif
+    loadIcon(window);
     nameWindow(window, 0);
-
-    do
-    {
-        if(renderer != NULL)
-            SDL_DestroyRenderer(renderer);
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    }while(!renderer->magic); //En cas de mauvais timing
-
-    SDL_SetRenderDrawColor(renderer, palette.fond.r, palette.fond.g, palette.fond.b, 255);
+    renderer = setupRendererSafe(window);
 
     #ifdef _WIN32
         ReleaseSemaphore(mutexRS, 1, NULL);

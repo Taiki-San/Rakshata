@@ -267,6 +267,37 @@ void loadPalette()
 #endif
 }
 
+void loadIcon(SDL_Window *window_ptr)
+{
+#ifndef __APPLE__
+    SDL_Surface *icon = NULL;
+    icon = IMG_Load("data/icone.png");
+    if(icon != NULL)
+    {
+        SDL_SetWindowIcon(window_ptr, icon); //Int icon for the main window
+        SDL_FreeSurfaceS(icon);
+    }
+#endif
+}
+
+SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr)
+{
+    SDL_Renderer *renderer_ptr = NULL;
+    do
+    {
+        if(renderer_ptr != NULL)
+        {
+            SDL_Delay(50 + rand()%50);
+            SDL_DestroyRenderer(renderer_ptr);
+            renderer_ptr = NULL;
+        }
+        renderer_ptr = SDL_CreateRenderer(window_ptr, -1, SDL_RENDERER_ACCELERATED);
+    }while(renderer_ptr == NULL || !renderer_ptr->magic); //En cas de mauvais timing
+
+    SDL_SetRenderDrawColor(renderer_ptr, palette.fond.r, palette.fond.g, palette.fond.b, 255);
+    return renderer_ptr;
+}
+
 SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)
 {
     int hauteurUIAlert = 0, i = 0;
