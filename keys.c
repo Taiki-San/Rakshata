@@ -45,7 +45,7 @@ int getMasterKey(unsigned char *input)
         size = ftell(bdd);
         fclose(bdd);
 
-        if(!size || size % SHA256_DIGEST_LENGTH != 0)// || size > 20*SHA256_DIGEST_LENGTH)
+        if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
         {
             fileInvalid = 1;
             removeR(SECURE_DATABASE);
@@ -160,6 +160,7 @@ int earlyInit()
 #ifdef _WIN32
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
+    mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
 #endif
 
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
@@ -638,7 +639,7 @@ void passToLoginData(char password[100])
 {
     int i = 0, j = 0;
     char temp[100], serverTime[300];
-    snprintf(temp, 100, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur //HTTPS_DISABLED
+    snprintf(temp, 100, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
     crashTemp(serverTime, 300);
     download_mem(temp, serverTime, 300, 1);
 
@@ -673,10 +674,10 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    sprintf(URL, "http://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL //HTTPS_DISABLED
+    sprintf(URL, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
 
     crashTemp(buffer_output, 500);
-    download_mem(URL, buffer_output, 500, 0);
+    download_mem(URL, buffer_output, 500, 1);
 
     for(i = strlen(buffer_output); i > 0; i--)
     {
@@ -723,9 +724,9 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    sprintf(URL, "http://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL//HTTPS_DISABLED
+    sprintf(URL, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
-    download_mem(URL, buffer_output, 500, 0);
+    download_mem(URL, buffer_output, 500, 1);
 
     minToMaj(buffer_output);
     sprintf(URL, "%s-access_granted", hash2);
@@ -831,11 +832,21 @@ int createSecurePasswordDB(unsigned char *key_sent)
     if(key_sent == NULL)
     {
         createNewMK(password, key[0]);
+        for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+        {
+            if(key[0][i] < ' ')
+                key[0][i] += ' ';
+        }
         _AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY, 1);
     }
     else
     {
         ustrcpy(key[0], key_sent);
+        for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+        {
+            if(key[0][i] < ' ')
+                key[0][i] += ' ';
+        }
         _AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL, 1);
         crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
     }

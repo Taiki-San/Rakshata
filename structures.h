@@ -90,6 +90,8 @@ typedef unsigned char uint8_t;
     #define MUTEX_VAR HANDLE
     #define MUTEX_LOCK for(; WaitForSingleObject(mutex, 50) == WAIT_TIMEOUT; SDL_Delay(50))
     #define MUTEX_UNLOCK ReleaseSemaphore (mutex, 1, NULL)
+    #define MUTEX_LOCK_DECRYPT for(; WaitForSingleObject(mutex_decrypt, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_UNLOCK_DECRYPT ReleaseSemaphore (mutex_decrypt, 1, NULL)
 #else
     #define handle_error_en(en, msg) \
        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -106,5 +108,7 @@ typedef unsigned char uint8_t;
     #define MUTEX_VAR pthread_mutex_t
     #define MUTEX_LOCK pthread_mutex_lock(&mutex)
     #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)
+    #define MUTEX_LOCK_DECRYPT pthread_mutex_lock(&mutex_decrypt)
+    #define MUTEX_UNLOCK_DECRYPT pthread_mutex_unlock(&mutex_decrypt)
 
 #endif

@@ -23,47 +23,40 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
-void decryptPage(void *_password, void *path_input, void *buffer_out_void, size_t buf_len)
+void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffer_out, size_t length)
 {
-    int posIV, i = 0, j = 0, k = 0;
-	unsigned char *buffer_out = buffer_out_void;
+    MUTEX_LOCK_DECRYPT;
+    int posIV, i, j = 0, k;
+    size_t pos_buffer;
     unsigned char *password = _password;
     unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
     SERPENT_STATIC_DATA pSer;
-    FILE* in = fopenR(path_input, "rb");
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
 
     Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
     Twofish_set_key((u4byte*) key, KEYBITS);
 
-    for(k = 0, posIV = -1; i != EOF && k*2*CRYPTO_BUFFER_SIZE <= buf_len; k++)
+    for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {
         unsigned char ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
-        for (j = 0; j < CRYPTO_BUFFER_SIZE && (i = fgetc(in)) != EOF; ciphertext[j++] = i);
-        for (; j < CRYPTO_BUFFER_SIZE; ciphertext[j++] = 0);
+        memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
         Serpent_decrypt(&pSer, (DWORD*) ciphertext, (DWORD*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
-        memcpy(buffer_out, plaintext, CRYPTO_BUFFER_SIZE);
-        buffer_out += CRYPTO_BUFFER_SIZE;
+        memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
+        pos_buffer += CRYPTO_BUFFER_SIZE;
         memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
 
-        for (j = 0; j < CRYPTO_BUFFER_SIZE && (i = fgetc(in)) != EOF; ciphertext[j++] = i);
-        for (; j < CRYPTO_BUFFER_SIZE; ciphertext[j++] = 0);
+        memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
         Twofish_decrypt((u4byte*) ciphertext, (u4byte*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
-        memcpy(buffer_out, plaintext, CRYPTO_BUFFER_SIZE);
-        buffer_out += CRYPTO_BUFFER_SIZE;
+        memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
+        pos_buffer += CRYPTO_BUFFER_SIZE;
         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
         posIV = 0;
     }
-#ifdef DEV_VERSION
-    if(k*2*CRYPTO_BUFFER_SIZE > buf_len)
-        logR("Not enough space");
-#endif
-
-    fclose(in);
+    MUTEX_UNLOCK_DECRYPT;
 }
 
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
@@ -182,6 +175,9 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 
     fseek(test, 0, SEEK_END);
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
+
+    if(size%CRYPTO_BUFFER_SIZE*2) //Si chunks de 16o
+        size += CRYPTO_BUFFER_SIZE;
     fclose(test);
 
     snprintf(path, length, "%s/config.enc", root);
@@ -257,21 +253,29 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
 
-    void *buf_page = malloc(size + size/2 + 500);
+    void *buf_page = ralloc(size + 0xff);
+    void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
 
-    for(i = 0; i < 3 && surface_page == NULL; i++)
+    test = fopenR(path, "rb");
+    i = 0;
+    do
     {
-        decryptPage(key, path, buf_page, size + size/2);
+        fread(buf_in, 1, size, test);
+        decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
         surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
-    }
+        if(surface_page == NULL)
+            rewind(test);
+    }while(i++ < 64 && surface_page == NULL && (isPNG(buf_page) || isJPEG(buf_page)));
+    fclose(test);
+
+#ifdef DEV_VERSION
     if(surface_page == NULL)
     {
-#ifdef DEV_VERSION
         FILE *newFile = fopenR("buffer.png", "wb");
         fwrite(buf_page, 1, size, newFile);
         fclose(newFile);
-#endif
     }
+#endif
     crashTemp(key, SHA256_DIGEST_LENGTH);
     free(buf_page);
     free(path);

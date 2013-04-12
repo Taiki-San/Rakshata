@@ -305,3 +305,19 @@ int defineMaxTextureSize(int sizeIssue)
     return sizeIssue;
 }
 
+int isJPEG(void *input)
+{
+    unsigned char *_input = input;
+    if(_input[0] == (unsigned char) '\xff' && _input[1] == (unsigned char) '\xd8')
+        return 1;
+    return 0;
+}
+
+int isPNG(void *input)
+{
+    unsigned char *_input = input;
+    if(_input[0] == (unsigned char) '\x89' && _input[1] == (unsigned char) 'P' && _input[2] == (unsigned char) 'N' && _input[3] == (unsigned char) 'G')
+        return 1;
+    return 0;
+}
+

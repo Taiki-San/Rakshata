@@ -36,10 +36,12 @@ SDL_Renderer *rendererDL = NULL;
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
+    MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;
     int rakshata()
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
+    MUTEX_VAR mutex_decrypt;
 	#ifdef __INTEL_COMPILER
 		int WinMainCRTStartup()
 	#else
