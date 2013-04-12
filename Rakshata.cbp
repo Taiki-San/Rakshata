@@ -36,6 +36,7 @@
 			<Add option="-Wall" />
 			<Add option="-DCURL_STATICLIB" />
 			<Add directory="data\lib\include" />
+			<Add directory="data\lib\include\curl" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc" />
