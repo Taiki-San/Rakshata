@@ -183,17 +183,8 @@ int check_evt()
                     free(buffer);
                 }
 
-#ifndef __APPLE__
                 if(fichiersADL[i] == 1) //Si c'est l'icone
-                {
-                    SDL_Surface *icon = IMG_Load("data/icone.png");
-                    if(icon != NULL)
-                    {
-                        SDL_SetWindowIcon(window, icon); //Int icon for the main window
-                        SDL_FreeSurfaceS(icon);
-                    }
-                }
-#endif
+                    loadIcon(window);
             }
         }
         TTF_CloseFont(police);
@@ -287,7 +278,7 @@ void networkAndVersionTest()
     MUTEX_UNLOCK;
 
     /*Chargement de l'URL*/
-    snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD); //HTTPS_DISABLED
+    snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
 
     if(download_mem(temp, bufferDL, 100, 1) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;

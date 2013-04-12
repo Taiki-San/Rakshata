@@ -150,9 +150,9 @@ int telechargement()
                 if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                 {
                     if(todoList[0]->chapitre%10)
-                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
+                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
                     else
-                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
+                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
                 }
 
                 else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
@@ -296,7 +296,7 @@ int telechargement()
                     /*Génération de l'URL*/
                     if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                     {
-                        sprintf(superTemp, "http://dl.dropbox.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
+                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
                     }
                     else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
                     {
@@ -304,7 +304,7 @@ int telechargement()
                     }
                     else if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3))
                     {
-                        sprintf(superTemp, "http://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
+                        sprintf(superTemp, "https://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
                     }
                     else
                     {
@@ -315,7 +315,7 @@ int telechargement()
 
                     crashTemp(temp, TAILLE_BUFFER);
                     sprintf(temp, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
-                    download_disk(superTemp, temp, 0);
+                    download_disk(superTemp, temp, strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2)?1:0);
                 }
 
                 else if(!todoList[0]->datas->pageInfos && checkFileExist(temp))//Si k = 0 et infos.png existe
@@ -688,32 +688,12 @@ void DLmanager()
     windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
     SDL_FlushEvent(SDL_WINDOWEVENT);
 
-#ifndef __APPLE__
-    SDL_Surface *icon = NULL;
-    icon = IMG_Load("data/icone.png");
-    if(icon != NULL)
-    {
-        SDL_SetWindowIcon(windowDL, icon); //Int icon for the main window
-        SDL_FreeSurfaceS(icon);
-    }
-#endif
-
+    loadIcon(windowDL);
     status = 1;
     nameWindow(windowDL, status);
 
     SDL_FlushEvent(SDL_WINDOWEVENT);
-    do
-    {
-        if(rendererDL != NULL)
-        {
-            SDL_Delay(100);
-            SDL_DestroyRenderer(rendererDL);
-            rendererDL = NULL;
-        }
-        rendererDL = SDL_CreateRenderer(windowDL, -1, SDL_RENDERER_ACCELERATED);
-    }while(!rendererDL->magic); //En cas de mauvais timing
-
-    SDL_SetRenderDrawColor(rendererDL, palette.fond.r, palette.fond.g, palette.fond.b, 255);
+    rendererDL = setupRendererSafe(windowDL);
     SDL_FlushEvent(SDL_WINDOWEVENT);
 
     WINDOW_SIZE_W_DL = LARGEUR;

@@ -86,7 +86,7 @@ int ajoutRepo()
             {
                 char bufferDL[1000];
                 if(!strcmp(teams.type, TYPE_DEPOT_1))
-                    sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-repo-1", teams.URL_depot);
+                    sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-1", teams.URL_depot);
 
                 else if(!strcmp(teams.type, TYPE_DEPOT_2))
                     sprintf(temp, "http://%s/rakshata-repo-1", teams.URL_depot);
@@ -95,7 +95,7 @@ int ajoutRepo()
                     sprintf(temp, "http://goo.gl/%s", teams.URL_depot);
 
                 crashTemp(bufferDL, 1000);
-                download_mem(temp, bufferDL, 1000, 0);
+                download_mem(temp, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
                 for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur--);
 
                 if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt

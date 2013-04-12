@@ -150,13 +150,13 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 {
 	char temp[500];
 	if(!strcmp(teams->type, TYPE_DEPOT_1))
-		sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
+		sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_2))
 		sprintf(temp, "http://%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-		sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot); //HTTPS_DISABLED
+		sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot); //HTTPS_DISABLED
 
 	else
 	{
@@ -165,7 +165,7 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
         logR(temp2);
 		return;
 	}
-	download_mem(temp, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, 0);
+	download_mem(temp, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
 }
 
 void update_repo()
@@ -242,8 +242,6 @@ void update_repo()
 			repo_new[positionDansBuffer] = 0;
 		}
 	}
-	if(positionDansBuffer > 0)
-        positionDansBuffer--;
 	free(repoBak);
 	sprintf(&repo_new[positionDansBuffer], "\n</%c>\n", SETTINGS_REPODB_FLAG);
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
@@ -256,13 +254,13 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
     do
 	{
 	    if(!strcmp(teams->type, TYPE_DEPOT_1))
-            sprintf(temp, "http://dl.dropbox.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
             sprintf(temp, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            sprintf(temp, "http://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
+            sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
 
         else
         {
@@ -272,7 +270,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             return 0;
         }
         crashTemp(buffer_manga, SIZE_BUFFER_UPDATE_DATABASE);
-        download_mem(temp, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, 0);
+        download_mem(temp, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
     return defaultVersion+1;
@@ -409,13 +407,13 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
 {
     char temp[512];
     if(!strcmp(mangas.team->type, TYPE_DEPOT_1))
-        snprintf(temp, 512, "http://dl.dropbox.com/u/%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
+        snprintf(temp, 512, "https://dl.dropboxusercontent.com/u/%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
 
     else if(!strcmp(mangas.team->type, TYPE_DEPOT_2))
         snprintf(temp, 512, "http://%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
 
     else if(!strcmp(mangas.team->type, TYPE_DEPOT_3)) //Payant
-        snprintf(temp, 512, "http://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);//HTTPS_DISABLED
+        snprintf(temp, 512, "https://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
 
     else
     {
@@ -426,7 +424,7 @@ void get_update_spec_chapter(MANGAS_DATA mangas)
     }
     char output[LONGUEUR_NOM_MANGA_MAX*4];
     snprintf(output, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
-    download_disk(temp, output, 0);
+    download_disk(temp, output, strcmp(mangas.team->type, TYPE_DEPOT_2)?1:0);
 }
 
 extern int curPage; //Too lazy to use an argument
