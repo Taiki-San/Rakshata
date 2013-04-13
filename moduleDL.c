@@ -648,14 +648,15 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
     {
 		nombreChapitre = 1;
         /*On test l'existance du fichier (zipé ou dézipé)*/
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis, CONFIGFILE);
+        if(chapitreChoisis%10)
+                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, chapitreChoisis%10, CONFIGFILE);
+            else
+                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, CONFIGFILE);
         if(!checkFileExist(temp))
             fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, chapitreChoisis);
     }
     else
     {
-
         for(i = 0; mangaDB.chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE; i++)
         {
             if(mangaDB.chapitres[i]%10)
