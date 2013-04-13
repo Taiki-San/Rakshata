@@ -321,7 +321,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
             {
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
-                SDL_FlushEvent(SDL_WINDOWEVENT);
 
                 //We restart the window
                 SDL_DestroyTexture(bandeauControle);
@@ -334,6 +333,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen)
                 nameWindow(window, 0);
                 renderer = setupRendererSafe(window);
                 bandeauControle = loadControlBar(mangaDB->favoris);
+                SDL_FlushEvent(SDL_WINDOWEVENT);
+
             }
             else
                 updateWindowSize(largeurValide, buffer);
