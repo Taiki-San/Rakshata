@@ -391,20 +391,28 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
 
                 /*Définis la position du texte en fonction de sa colonne*/
-                if(j < mangaColonne[0])
+                if(nombreManga > 9)
                 {
-                    position.x = BORDURELATSELECTION;
-                    position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * (j % mangaColonne[0]));
+                    if(j < mangaColonne[0])
+                    {
+                        position.x = BORDURELATSELECTION;
+                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * (j % mangaColonne[0]));
+                    }
+                    else if(j < mangaColonne[1])
+                    {
+                        position.x = BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA);
+                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[0]) % mangaColonne[1]));
+                    }
+                    else if(j < mangaColonne[2])
+                    {
+                        position.x = BORDURELATSELECTION + (2 * (BORDURELATSELECTION + LONGUEURMANGA));
+                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[1]) % mangaColonne[2]));
+                    }
                 }
-                else if(j < mangaColonne[1])
+                else
                 {
-                    position.x = BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA);
-                    position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[0]) % mangaColonne[1]));
-                }
-                else if(j < mangaColonne[2])
-                {
-                    position.x = BORDURELATSELECTION + (2 * (BORDURELATSELECTION + LONGUEURMANGA));
-                    position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[1]) % mangaColonne[2]));
+                    position.x = BORDURELATSELECTION + ((j % 3) * (BORDURELATSELECTION + LONGUEURMANGA));
+                    position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * (j/3));
                 }
                 position.h = texte->h;
                 position.w = texte->w;
