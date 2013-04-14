@@ -111,7 +111,7 @@
 
 /*Langue*/
 #define NOMBRE_LANGUE 4
-#define LANGUE_PAR_DEFAUT 1
+#define LANGUE_PAR_DEFAUT 2
 #define LARGEUR_LANGUE 800
 #define HAUTEUR_LANGUE 325
 #define HAUTEUR_MENU_LANGUE 15
@@ -456,7 +456,7 @@
 #define SIZE_TRAD_ID_6 2
 #define SIZE_TRAD_ID_7 2
 #define SIZE_TRAD_ID_8 1
-#define SIZE_TRAD_ID_9 2
+#define SIZE_TRAD_ID_9 5
 #define SIZE_TRAD_ID_10 2
 #define SIZE_TRAD_ID_11 16
 #define SIZE_TRAD_ID_12 4

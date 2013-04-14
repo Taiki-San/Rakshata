@@ -14,6 +14,7 @@
 
 void welcome()
 {
+    char localization[SIZE_TRAD_ID_9][100];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
@@ -22,7 +23,9 @@ void welcome()
     updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
     SDL_RenderClear(renderer);
 
-	texte = TTF_Write(renderer, police, "Soyez le bienvenue dans Rakshata", couleurTexte);
+    loadTrad(localization, 9);
+
+	texte = TTF_Write(renderer, police, localization[0], couleurTexte);
 	if(texte != NULL)
 	{
 		position.h = texte->h;
@@ -33,7 +36,7 @@ void welcome()
 		SDL_DestroyTexture(texte);
 	}
 
-	texte = TTF_Write(renderer, police, "Le logiciel va vous demander d'entrer une adresse email et un mot de passe", couleurTexte);
+	texte = TTF_Write(renderer, police, localization[1], couleurTexte);
 	if(texte != NULL)
 	{
 		position.h = texte->h;
@@ -44,7 +47,7 @@ void welcome()
 		SDL_DestroyTexture(texte);
 	}
 
-	texte = TTF_Write(renderer, police, "afin de pouvoir vous identifier et utiliser toute la puissance du logiciel.", couleurTexte);
+	texte = TTF_Write(renderer, police, localization[2], couleurTexte);
 	if(texte != NULL)
 	{
 		position.h = texte->h;
@@ -55,7 +58,7 @@ void welcome()
 		SDL_DestroyTexture(texte);
 	}
 
-	texte = TTF_Write(renderer, police, "Ces donnees ne seront JAMAIS transmises a quiconque sans votre accord.", couleurTexte);
+	texte = TTF_Write(renderer, police, localization[3], couleurTexte);
 	if(texte != NULL)
 	{
 		position.h = texte->h;
@@ -66,7 +69,7 @@ void welcome()
 		SDL_DestroyTexture(texte);
 	}
 
-	texte = TTF_Write(renderer, police, "Merci encore d'utiliser Rakshata!  - Taiki, le developpeur", couleurTexte);
+	texte = TTF_Write(renderer, police, localization[4], couleurTexte);
 	if(texte != NULL)
 	{
 		position.h = texte->h;
@@ -203,7 +206,6 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
         sprintf(texte[0], "Chargement - Loading");
 
     texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
-
     if(texteAffiche == NULL)
         return;
 

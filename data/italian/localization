@@ -1,175 +1,171 @@
 1
-Pagina mancante&
-Questo capitolo sembra corrotto&
-Se non hai modificato il manga&
-controlla manualmente&
-Riporta il problema a Taiki&
-Premi Enter per tornare alla selezione dei capitoli.&]
+Page missing or unusable&
+This chapter seems corrupted&
+If you haven't modified the database&
+manually, please report the issue&
+to the repository manager.&
+Press Enter to go back to the chapter selection.&]
 2
-Inizializzazione del download&
-modulo attualmente in progresso.&
-Aspetta una attimo (può impiegare&
-più tempo se hai un lento accesso&
-accesso a Internet o molte repository)&]
+Initialization of the download&
+module currently in progress.&
+Please wait (it may take some&
+time if you have a low Internet&
+access or a lot of repo)&]
 3
-Scegli un menu&
-Aggiungi una repository&
-Elimina una repository&
-Elimina manga da un database&
-Riavvia il manga database&
-Cambia lingua&]
+Settings&
+Add a repo&
+Delete a repo&
+Delete mangas from database&
+Refresh the manga database&
+Change language&
+Back&]
 4
-Confermi l'eliminazione della repo di&
-Enter per confermare, Esc to respingere&]
+Do you confirm the deletion of the repo of&
+Enter to confirm, Escape to cancel&]
 5
-Caricamento in corso&]
+Reload in progress&]
 6
-Apertura in corso&]
+Launch in progress&]
 7
-Repo sconosciuta&
-Premi Enter&]
+Unknown repo&
+Press Enter&]
 8
-Caricamento&]
+Loading&]
 9
-Azione vietata durante il download&
-Premi Enter&]
+Welcome to Rakshata&
+Rakshata will ask for your email adress and a password in order 
+to identify you and to enable the usage of whole power of Rakshata&
+Those data will NEVER be shared with anyone without your explicit agreement.&
+Thank you very much for using my software :) - Taiki, lead developper&]
 10
-Del per cancellare - Un altro tasto per confermare&]
+Press Del to cancel - Any other key to confirm&]
 11
-Pagina precedente&
-Pagina sucessiva&
+Previous page&
+Next page&
 Download&
-Elimina tutti&
-capitoli&
-Nascondi i manga:&
-In corso&
-Sospeso&
-Fatto&
+Cancel all&
+chapter&
+Display mangas:&
+In progress&
+Suspended&
+Done&
+Favorite&
 Shonen&
 Shojo&
 Seinen&
-Pagina&
-di&
+Hentai (-16/18)&
+Page&
+on&]
 12
-Scaricando un aggiornamento, prego aspettare.&
-Si prega di chiudere le altre finestre di Rakshata.&
+Downloading an update, please wait a little bit.&
+Please shut others Rakshata's windows.&
 File&
-di&]
+on&]
 13
-Puoi cambiare qui la lingua di Rakshata&
-Seleziona la tua lingua (altre prossimamente)&
+You can change here Rakshata's language&
 FranÁais&
 English&
 Italiano&
 Deutsch&
-Se vuoi tradurre Rakshata,&
-notificalo a Taiki =).&]
+If you want to translate Rakshata, please notify us on our website.&]
 14
-Inizializzazione in corso&
-Inserici l'URL della repo&
-Confermi?&
-Esc per cancellare, enter per confermare&]
+Initialization in progress&
+Please type the repo's URL&
+Do you confirm?&
+Esc to cancel, Enter to confirm&]
 15
-Quale repo vuoi eliminare?&]
+Which repo do you want to delete?&]
 16
-Ritorna al menu principale per applicare le modifiche&
-Click sulla finestra per chiuderlo&
-Rilevato un errore:&
-capitoli corrotti&
-Contatta il responsabile del database e/o Taiki&
-con il "log" file che è nella cartella di Rakshata&]
+Return to the main menu to apply the changes&
+Click in the window to close it&
+Error detected:&
+chapter(s) corrupted&
+Please contact the maintainer and/or Taiki&
+and attach "log" file located in Rakshata's folder&]
 17
-Menu principale&
-Scegli la sezione cliccandoci =)&
-Lettura&
-Scarica più mangas&
-Mostra i controlli&
-Gestione delle Repository e del database manga&]
+Main menu&
+Reader&
+Download more mangas&
+Help&
+Settings&]
 18
-Manga disponibili&
-Scegli il progetto cliccandolo =)&
-al download&]
+Availables manga at the reading&
+Availables manga at the download&]
 19
-Quale capitolo vuoi&
-leggere?&
-aggiungere?&
-eliminare?&
-Pi˘ vecchio:?&
-Pi˘ nuovo:?&
-Progetto&
-di&
-» la prima volta che leggi questo manga&
-Ultimo capitolo letto&
-Capitolo&
-Tutti&
-Nessun nuovo capitolo da scaricare, prova pi˘ tardi ;)&
-(clicca per tornare al men˙)&]
+Which chapter do you wish to&
+read?&
+add?&
+delete?&
+Oldest:&
+Newest:&
+Project&
+by the&
+First time read this manga&
+Last chapter read&
+Chapter&
+All&
+No new chapter to download, retry later ;)&
+(click to go back to the menu)&]
 20
-Inizializzazione&
-Peso:&
-Mb&
-Velocit‡:&
-Kb/s&
-Chiusura&]
+Initialization&
+Size:&
+MB&
+Speed:&
+kB/s&
+Closing, please wait&
+Analysing&]
 21
-Capitoli&
-Pagina&
-Per tornare&
-al menu, premi "Esc"&
-Per chiudere questa&
-finestra, ritorna.&
-F per uscire dallo schermo intero&
-Q per uscire Rakshata&
-Nuovi capitoli&
-sono disponibili,&
-vuoi&
-scaricarli?&
-(Y) Si | (N) No&
-Menu&
-principale&
-Selezione&
-manga&
-Aggiungi ai&
-preferiti&
-Cancellazione&]
+Chapter&
+Page&
+To come back to&
+the menu, press Esc&
+To close this&
+window, click.&
+F to quit the fullscreen&
+Q to quit Rakshata&
+New chapters&
+are availables,&
+do you want&
+to get them?&
+(Y) Yes | (N) No&]
 22
-Scaricando&
-il capitolo&
-di&
-della lista&
-Donwload in corso, aspetta&
-Installazione in corso, attendi&]
+Downloading&
+chapter&
+by the&
+of the list&
+Download in progress, please wait&
+Installation in progress, please wait&]
 23
-Nessun manga disponibile, scaricane altri ;)&
-Ritorna o clicca per tornare al menu =)&]
+No manga available here, grab some ;)&
+Return or click to go back to the menu =)&]
 24
-Nessun accesso a internet :(&
-Premi per tornare al menu&]
+No internet access :(&
+Click to go back to the menu&]
 25
-Il lettore manga e fumetti&
-Download del modulo&]
+Your manga and comic reader&
+Download module&]
 26
-Ciao, scrivi il tuo indirizzo e-mail&
+Hello, please write your email adress&
 Email:&
-Non sar‡ trasmesso a nessuno e&
-sar‡ usato solo per autenticarti&
-Scrivi una password&
-Scrivi la tua password&
+It won't be transmitted to anyone and&
+will only be used to authentify yourself&
+[Registration] - Please write a password&
+[Login] - Please write your password&
 Password:&
-Questo account ti autenticher‡ sui servizi di&
-The Restator, non verr‡ inviato niente a nessuno.&
-/!\ ERRORE: Indirizzo email incorretto /!\&
-/!\ ERRORE: Password incorretta /!\&
-Prova ancora e/o contatta Taiki&
-Premi per provare ancora con un nuovo indirizzo e mail&
-/!\ ERRORE FATALE /!\&
-/!\ Controlla se puoi accedere al sito di The Restator /!\&
-/!\ Se si, prova ancora, e poi contatta Taiki /!\&]
+This account will authentify yourself on Rakshata's&
+services, nothing will ever be sent to anyone&
+/!\ ERROR: Email adress rejected /!\&
+/!\ ERROR: Password rejected /!\&
+Please try again and/or contact Taiki&
+Click to try again with a new email adress&
+/!\ FATAL ERROR /!\&
+/!\ Check if you can access to Rakshata's website /!\&
+/!\ If yes, try again, then contact Taiki /!\&]
 27
-/!\ ERRORE: Impossibile connettersi al server. /!\&
-Devi connetterti al server almeno una volta&
-su ogni computer per leggere il database. Controlla&
-se puoi accedere al sito di The Restator.&]
+/!\ ERROR: Can't connect to the server. /!\&
+You need to connect to the server at least one time&
+on each new computer to read the manga database. Please&
+check if you can access to Rakshata's website.&]
 28
-Scrivi la password del tho account&
+Please write your account's password&
 Password:&]
