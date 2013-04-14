@@ -27,6 +27,7 @@ static void downloader(char *adresse);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
 static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *buffer_dl);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
+static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
 
 /*Controle: activation = 0: DL simple
@@ -236,18 +237,10 @@ static void downloader(char *adresse)
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
         define_user_agent(curl);
 
-        mkdirR("data");
-        char certificate_name[50];
         if(adresse[8] == 'r') //RSP
         {
-            snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand())%8096);
-            FILE *cert = fopenR(certificate_name, "wb");
-            if(cert != NULL)
-            {
-                fputs("-----BEGIN CERTIFICATE-----\nMIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\nVQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\nYXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\ndGEuY29tMSEwHwYJKoZIhvcNAQkBFhJ0YWlraUByYWtzaGF0YS5jb20wHhcNMTMw\nMjA5MTAzODQ5WhcNMTQwMjA5MTAzODQ5WjCBjzELMAkGA1UEBhMCRlIxCzAJBgNV\nBAgMAkZSMQ4wDAYDVQQHDAVQYXJpczENMAsGA1UECgwETWF2eTEWMBQGA1UECwwN\nSGF1dC1EZS1TZWluZTEZMBcGA1UEAwwQcnNwLnJha3NoYXRhLmNvbTEhMB8GCSqG\nSIb3DQEJARYSdGFpa2lAcmFrc2hhdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC\nAQ8AMIIBCgKCAQEAuSNt4VcENmWpGZ4FEnK7f3Fmdeby++Zw3n1dv73EUuz1Tjg2\nGTqo6HdClyD/KQMOdeZirwFSUm1MPrQUVbZOzTcy0ypZhK5P7RMn1FvgoFT3PwJ1\nwDh2UavrHhqm1te5xwqkDTs56ewxivvynvWne3laNwzgY/XV43TEmwrNpgbu8Zby\nuft6wJ3/NgoAqzgMMBkCCc9oWaTPcqroKH33P6bEyshIIdjNlgNchrXY71OEYsqB\nQsKv82VpefebJm0pKXdysQHCQOzVDLWGoKowGMdWfTuCapOHTB3OVE3O34GKHpcU\nx5GDCIpmFn7Ix6F4/LCFptmg4m1f7MqvqkARxwIDAQABo1AwTjAdBgNVHQ4EFgQU\nwEzOMozaBG5bY8Ahn99LUlS+ItYwHwYDVR0jBBgwFoAUwEzOMozaBG5bY8Ahn99L\nUlS+ItYwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAQO6givlna7kT\n/28IkrySq1UD8HPQrAGwBMQI7bol0H9mLAJoIEfdMkAIRVtmqqCPOiTRHmPOsrPB\ncZbv1X9vPQOPR6zA7OaEuux+0SsdUihLeoFwf7IsU5eeI2wu1WuEbtxC7WBDYSaF\npYFf3xwB2tFkZGm2fbCacfVT80dk43X6JJlnLNp9jEraRDXYRW5UaJbDqF0BZBhD\n7TSvKtDISFYrPxc0g01zUQBoQL9uDxC+T6f7PCtDuiEa+gmVExOaGKU3jP9hYVlf\nn2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\nhg0fHpfL7w==\n-----END CERTIFICATE-----\n", cert);
-                fclose(cert);
-                curl_easy_setopt(curl, CURLOPT_CAINFO, certificate_name);
-            }
+            curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
+            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
         }
         else
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -257,9 +250,6 @@ static void downloader(char *adresse)
         CURRENT_FILE_SIZE = 0;
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_UI);
         res = curl_easy_perform(curl);
-
-        if(adresse[8] == 'r') //RSP
-            remove(certificate_name);
 
         if(res != CURLE_OK) //Si problème
         {
@@ -301,7 +291,6 @@ int download_disk(char* adresse, char *file_name, int SSL_enabled)
 
 static int internal_download_easy(char* adresse, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled)
 {
-    char certificate_name[50];
     FILE* output = NULL;
     CURL *curl = NULL;
     CURLcode res;
@@ -318,14 +307,8 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
         {
             if(adresse[8] == 'r') //RSP
             {
-                snprintf(certificate_name, 50, "data/%d.crt", (rand()*rand())%8096);
-                FILE *cert = fopenR(certificate_name, "wb");
-                if(cert != NULL)
-                {
-                    fputs("-----BEGIN CERTIFICATE-----\nMIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\nVQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\nYXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\ndGEuY29tMSEwHwYJKoZIhvcNAQkBFhJ0YWlraUByYWtzaGF0YS5jb20wHhcNMTMw\nMjA5MTAzODQ5WhcNMTQwMjA5MTAzODQ5WjCBjzELMAkGA1UEBhMCRlIxCzAJBgNV\nBAgMAkZSMQ4wDAYDVQQHDAVQYXJpczENMAsGA1UECgwETWF2eTEWMBQGA1UECwwN\nSGF1dC1EZS1TZWluZTEZMBcGA1UEAwwQcnNwLnJha3NoYXRhLmNvbTEhMB8GCSqG\nSIb3DQEJARYSdGFpa2lAcmFrc2hhdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC\nAQ8AMIIBCgKCAQEAuSNt4VcENmWpGZ4FEnK7f3Fmdeby++Zw3n1dv73EUuz1Tjg2\nGTqo6HdClyD/KQMOdeZirwFSUm1MPrQUVbZOzTcy0ypZhK5P7RMn1FvgoFT3PwJ1\nwDh2UavrHhqm1te5xwqkDTs56ewxivvynvWne3laNwzgY/XV43TEmwrNpgbu8Zby\nuft6wJ3/NgoAqzgMMBkCCc9oWaTPcqroKH33P6bEyshIIdjNlgNchrXY71OEYsqB\nQsKv82VpefebJm0pKXdysQHCQOzVDLWGoKowGMdWfTuCapOHTB3OVE3O34GKHpcU\nx5GDCIpmFn7Ix6F4/LCFptmg4m1f7MqvqkARxwIDAQABo1AwTjAdBgNVHQ4EFgQU\nwEzOMozaBG5bY8Ahn99LUlS+ItYwHwYDVR0jBBgwFoAUwEzOMozaBG5bY8Ahn99L\nUlS+ItYwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAQO6givlna7kT\n/28IkrySq1UD8HPQrAGwBMQI7bol0H9mLAJoIEfdMkAIRVtmqqCPOiTRHmPOsrPB\ncZbv1X9vPQOPR6zA7OaEuux+0SsdUihLeoFwf7IsU5eeI2wu1WuEbtxC7WBDYSaF\npYFf3xwB2tFkZGm2fbCacfVT80dk43X6JJlnLNp9jEraRDXYRW5UaJbDqF0BZBhD\n7TSvKtDISFYrPxc0g01zUQBoQL9uDxC+T6f7PCtDuiEa+gmVExOaGKU3jP9hYVlf\nn2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\nhg0fHpfL7w==\n-----END CERTIFICATE-----\n", cert);
-                    fclose(cert);
-                    curl_easy_setopt(curl, CURLOPT_CAINFO, certificate_name);
-                }
+                curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
+                curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
             }
             else
                 curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -357,9 +340,6 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
 
         if(output != NULL && printToAFile)
             fclose(output);
-
-        if(SSL_enabled && adresse[8] == 'r')
-            removeR(certificate_name);
 
         if(res != CURLE_OK) //Si problème
         {
@@ -459,27 +439,54 @@ static void define_user_agent(CURL *curl)
 #endif
 }
 
-/*static CURLcode sslctxfun(CURL * curl, void * sslctx, void * parm)
+static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 {
-    sslctxparm * p = (sslctxparm *) parm;
-    SSL_CTX * ctx = (SSL_CTX *) sslctx ;
+  X509_STORE * store;
+  X509 * cert=NULL;
+  BIO * bio;
+  char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+MIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\n\
+VQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\n\
+YXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\n\
+dGEuY29tMSEwHwYJKoZIhvcNAQkBFhJ0YWlraUByYWtzaGF0YS5jb20wHhcNMTMw\n\
+MjA5MTAzODQ5WhcNMTQwMjA5MTAzODQ5WjCBjzELMAkGA1UEBhMCRlIxCzAJBgNV\n\
+BAgMAkZSMQ4wDAYDVQQHDAVQYXJpczENMAsGA1UECgwETWF2eTEWMBQGA1UECwwN\n\
+SGF1dC1EZS1TZWluZTEZMBcGA1UEAwwQcnNwLnJha3NoYXRhLmNvbTEhMB8GCSqG\n\
+SIb3DQEJARYSdGFpa2lAcmFrc2hhdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC\n\
+AQ8AMIIBCgKCAQEAuSNt4VcENmWpGZ4FEnK7f3Fmdeby++Zw3n1dv73EUuz1Tjg2\n\
+GTqo6HdClyD/KQMOdeZirwFSUm1MPrQUVbZOzTcy0ypZhK5P7RMn1FvgoFT3PwJ1\n\
+wDh2UavrHhqm1te5xwqkDTs56ewxivvynvWne3laNwzgY/XV43TEmwrNpgbu8Zby\n\
+uft6wJ3/NgoAqzgMMBkCCc9oWaTPcqroKH33P6bEyshIIdjNlgNchrXY71OEYsqB\n\
+QsKv82VpefebJm0pKXdysQHCQOzVDLWGoKowGMdWfTuCapOHTB3OVE3O34GKHpcU\n\
+x5GDCIpmFn7Ix6F4/LCFptmg4m1f7MqvqkARxwIDAQABo1AwTjAdBgNVHQ4EFgQU\n\
+wEzOMozaBG5bY8Ahn99LUlS+ItYwHwYDVR0jBBgwFoAUwEzOMozaBG5bY8Ahn99L\n\
+UlS+ItYwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAQO6givlna7kT\n\
+/28IkrySq1UD8HPQrAGwBMQI7bol0H9mLAJoIEfdMkAIRVtmqqCPOiTRHmPOsrPB\n\
+cZbv1X9vPQOPR6zA7OaEuux+0SsdUihLeoFwf7IsU5eeI2wu1WuEbtxC7WBDYSaF\n\
+pYFf3xwB2tFkZGm2fbCacfVT80dk43X6JJlnLNp9jEraRDXYRW5UaJbDqF0BZBhD\n\
+7TSvKtDISFYrPxc0g01zUQBoQL9uDxC+T6f7PCtDuiEa+gmVExOaGKU3jP9hYVlf\n\
+n2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\n\
+hg0fHpfL7w==\n\
+-----END CERTIFICATE-----\n";
+  /* get a BIO */
+  bio = BIO_new_mem_buf(pem_cert, -1);
+  /* use it to read the PEM formatted certificate from memory into an X509
+   * structure that SSL can use
+   */
+  PEM_read_bio_X509(bio, &cert, 0, NULL);
+  if (cert == NULL)
+    return CURLE_SSL_CERTPROBLEM;
 
-    if (!SSL_CTX_use_certificate(ctx,p->usercert) || !SSL_CTX_use_PrivateKey(ctx,p->pkey) || !SSL_CTX_check_private_key(ctx))
-    {
-        logR("Something went wrong while setuping SSL envt\n");
+  /* get a pointer to the X509 certificate store (which may be empty!) */
+  store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
+
+  /* add our certificate to this store */
+  if (X509_STORE_add_cert(store, cert)==0)
         return CURLE_SSL_CERTPROBLEM;
-    }
 
-    SSL_CTX_set_quiet_shutdown(ctx, 1);
-    SSL_CTX_set_cipher_list(ctx,"RC4-MD5");
-    SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
-
-    X509_STORE_add_cert(SSL_CTX_get_cert_store(ctx), sk_X509_value(p->ca, sk_X509_num(p->ca)-1));
-    SSL_CTX_set_verify_depth(ctx,2);
-    SSL_CTX_set_verify(ctx,SSL_VERIFY_PEER,ZERO_NULL);
-    SSL_CTX_set_cert_verify_callback(ctx, ssl_app_verify_callback, parm);
-    return CURLE_OK ;
-}*/
+  /* all set to go */
+  return CURLE_OK ;
+}
 
 int checkDLInProgress() //Mutex should be set
 {
