@@ -32,13 +32,13 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
         loadLangueProfile();
 
     buffer = malloc(ustrlen(REPERTOIREEXECUTION) + 20 + ustrlen(LANGUAGE_PATH[langue - 1]));
-    sprintf(buffer, "%s/data/%s/localization", REPERTOIREEXECUTION, LANGUAGE_PATH[langue - 1]);
+    snprintf(buffer, ustrlen(REPERTOIREEXECUTION)+20+ustrlen(LANGUAGE_PATH[langue - 1]), "%s/data/%s/localization", REPERTOIREEXECUTION, LANGUAGE_PATH[langue - 1]);
     fichierTrad = fopen(buffer, "r");
 
     if(fichierTrad == NULL)
     {
         char temp[TRAD_LENGTH];
-        sprintf(temp, "Translation is missing: %d\n", langue);
+        snprintf(temp, TRAD_LENGTH, "Translation is missing: %d\n", langue);
         logR(temp);
         exit(0);
     }
@@ -52,7 +52,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
         if(i == EOF)
         {
             char temp[TRAD_LENGTH];
-            sprintf(temp, "Translation corrupted: %d\n", IDTrad);
+            snprintf(temp, TRAD_LENGTH, "Translation corrupted: %d\n", IDTrad);
             logR(temp);
             if(fail == 0)
             {
@@ -104,7 +104,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
     if(i < antiBufferOverflow[IDTrad-1])
     {
         while(i < antiBufferOverflow[IDTrad-1])
-            sprintf(trad[i++], "(null)");
+            snprintf(trad[i++], TRAD_LENGTH, "(null)");
     }
     fclose(fichierTrad);
 }
@@ -170,7 +170,7 @@ int tradAvailable()
         logR(temp);
         exit(0);
     }
-    sprintf(temp, "data/%s/localization", LANGUAGE_PATH[langue-1]);
+    snprintf(temp, 256, "data/%s/localization", LANGUAGE_PATH[langue-1]);
     test = fopenR(temp, "r");
 
 	free(temp);

@@ -187,7 +187,7 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     TTF_Font *police = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
-	char texte[SIZE_TRAD_ID_8][100];
+	char texte[SIZE_TRAD_ID_8][TRAD_LENGTH];
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
@@ -203,7 +203,7 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     if(tradAvailable())
         loadTrad(texte, 8);
     else
-        sprintf(texte[0], "Chargement - Loading");
+        snprintf(texte[0], TRAD_LENGTH, "Chargement - Loading");
 
     texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
     if(texteAffiche == NULL)
@@ -444,10 +444,10 @@ void nameWindow(SDL_Window* windows, const int value)
     crashTemp(windowsName, 128);
 
     if(value <= 1) //Si on affiche le nom de la fenetre standard ou sans nombre d'installe
-        sprintf(windowsName, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
+        snprintf(windowsName, 128, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
 
     else
-        sprintf(windowsName, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
+        snprintf(windowsName, 128, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
 
     SDL_SetWindowTitle(windows, windowsName);
 }

@@ -223,7 +223,7 @@ int loadEmailProfile()
     {
 		int i = 0;
         char flag[10];
-        sprintf(flag, "<%c>", SETTINGS_EMAIL_FLAG);
+        snprintf(flag, 10, "<%c>", SETTINGS_EMAIL_FLAG);
         if((i = positionnementApresChar(prefs, flag)))
         {
             sscanfs(&(prefs[i]), "%s", COMPTE_PRINCIPAL_MAIL, 100);
@@ -246,7 +246,7 @@ int loadLangueProfile()
     if(prefs != NULL)
     {
         char flag[10];
-        sprintf(flag, "<%c>", SETTINGS_LANGUE_FLAG);
+        snprintf(flag, 10, "<%c>", SETTINGS_LANGUE_FLAG);
         if((i = positionnementApresChar(prefs, flag)))
         {
             sscanfs(prefs+i, "%d", &langue);
@@ -268,7 +268,7 @@ int loadLangueProfile()
         langue = 3;
     else
         langue = LANGUE_PAR_DEFAUT;
-    sprintf(temp, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+    snprintf(temp, 100, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
     AESEncrypt(SETTINGS_PASSWORD, temp, SETTINGS_FILE, INPUT_IN_MEMORY);
     return 1;
 }
@@ -281,7 +281,7 @@ char* loadLargePrefs(char flag)
 		int i;
 		size_t bufferSize = 0;
 		char flag_db[10];
-		sprintf(flag_db, "<%c>", flag);
+		snprintf(flag_db, 10, "<%c>", flag);
 		if((i = positionnementApresChar(prefs, flag_db)) && *(prefs+i) != '<' && *(prefs+i+1) != '/')
 		{
 			prefs += i;

@@ -378,7 +378,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             if(TRI_mangaToDisplay(sectionChoisis, limitationLettre, mangaDB[i], button_selected))
             {
                 crashTemp(temp, TAILLE_BUFFER);
-                sprintf(temp, "%s", mangaDB[i].mangaName);
+                snprintf(temp, TAILLE_BUFFER, "%s", mangaDB[i].mangaName);
 
                 if((sectionChoisis == SECTION_CHOISIS_LECTURE && checkChapitreUnread(mangaDB[i]) == 1)
                         || (sectionChoisis == SECTION_DL && checkChapitreUnread(mangaDB[i]) == -1))
@@ -453,7 +453,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         if(pageTotale != 1) //Affichage du nombre de page
         {
             crashTemp(temp, TAILLE_BUFFER);
-            sprintf(temp, "%s %d %s %d", texte_Trad[14], pageSelection, texte_Trad[15], pageTotale);
+            snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", texte_Trad[14], pageSelection, texte_Trad[15], pageTotale);
 
             position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE; //Page précédente
             texte = TTF_Write(renderer, police, texte_Trad[0], couleurTexte);
@@ -488,11 +488,10 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
             TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
-            crashTemp(temp, TAILLE_BUFFER);
             if(nombreChapitre < 2)
-                sprintf(temp, "%d %s", nombreChapitre, texte_Trad[4]);
+                snprintf(temp, TAILLE_BUFFER, "%d %s", nombreChapitre, texte_Trad[4]);
             else
-                sprintf(temp, "%d %ss", nombreChapitre, texte_Trad[4]);
+                snprintf(temp, TAILLE_BUFFER, "%d %ss", nombreChapitre, texte_Trad[4]);
             texte = TTF_Write(renderer, police, temp, couleurTexte);
             position.x = WINDOW_SIZE_W / 2;
             position.h = texte->h;
@@ -642,9 +641,9 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
     SDL_Texture *numero = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
-    char buffer[5] = {0};
+    char buffer[10] = {0};
 
-    sprintf(buffer, "%d", choix);
+    snprintf(buffer, 10, "%d", choix);
     numero = TTF_Write(renderer, police, buffer, couleur);
 
     applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);

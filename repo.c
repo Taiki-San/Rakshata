@@ -40,7 +40,6 @@ int ajoutRepo()
     SDL_RenderPresent(renderer);
     if(!checkNetworkState(CONNEXION_DOWN))
     {
-        crashTemp(temp, TAILLE_BUFFER);
         /*Lecture du fichier*/
         while(!continuer)
         {
@@ -86,13 +85,13 @@ int ajoutRepo()
             {
                 char bufferDL[1000];
                 if(!strcmp(teams.type, TYPE_DEPOT_1))
-                    sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-1", teams.URL_depot);
+                    snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-1", teams.URL_depot);
 
                 else if(!strcmp(teams.type, TYPE_DEPOT_2))
-                    sprintf(temp, "http://%s/rakshata-repo-1", teams.URL_depot);
+                    snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-1", teams.URL_depot);
 
                 else if(!strcmp(teams.type, TYPE_DEPOT_4))
-                    sprintf(temp, "http://goo.gl/%s", teams.URL_depot);
+                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
 
                 crashTemp(bufferDL, 1000);
                 download_mem(temp, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
@@ -129,7 +128,7 @@ int ajoutRepo()
 
                     /*On affiche les infos*/
                     changeTo(teams.teamLong, '_', ' ');
-                    sprintf(temp, "Team: %s", teams.teamLong);
+                    snprintf(temp, TAILLE_BUFFER, "Team: %s", teams.teamLong);
                     changeTo(teams.teamLong, ' ', '_');
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
@@ -140,7 +139,7 @@ int ajoutRepo()
                     SDL_DestroyTextureS(texte);
                     crashTemp(temp, TAILLE_BUFFER);
 
-                    sprintf(temp, "Site: %s", teams.site);
+                    snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
                     position.y = HAUTEUR_TEAM_AJOUT_REPO;
@@ -153,17 +152,17 @@ int ajoutRepo()
                     if(waitEnter(renderer) == 1)
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
-                        repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
+                        repoNew = ralloc((repo!=NULL?strlen(repo):0)+500);
                         repoBak = repo;
                         if(repoBak != NULL && *repoBak)
                         {
                             int i = strlen(repoBak);
                             repoBak[i++] = '\n';
                             repoBak[i] = 0;
-                            sprintf(repoNew, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                         }
                         else
-                            sprintf(repoNew, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
                         updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
 
                         if(repoBak)
@@ -265,7 +264,7 @@ int deleteRepo()
             char temp[LONGUEUR_NOM_MANGA_MAX+100];
             repoNew = ralloc((repo!=NULL?strlen(repo):0) +500);
 
-            sprintf(temp, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX+100, "manga/%s", mangaDB[teamChoisis-1].team->teamLong);
             removeFolder(temp); //Suppresion du dossier de la team
 
             repoNew[j++] = '<';

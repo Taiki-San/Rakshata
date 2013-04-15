@@ -37,7 +37,7 @@ void removeR(char *path)
 {
 #ifdef USE_FULL_PATH
 	char *temp = ralloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
+    snprintf(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
     remove(temp);
 	free(temp);
 #else
@@ -52,11 +52,11 @@ void renameR(char *initialName, char *newName)
 	char *temp2 = malloc(strlen(newName) + strlen(REPERTOIREEXECUTION) + 2);
 
     if(initialName[1] != ':')
-        sprintf(temp, "%s/%s", REPERTOIREEXECUTION, initialName);
+        snprintf(temp, strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, initialName);
     else
         strcpy(temp, initialName);
     if(newName[1] != ':')
-        sprintf(temp2, "%s/%s", REPERTOIREEXECUTION, newName);
+        snprintf(temp2, strlen(newName) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, newName);
     else
         strcpy(temp, newName);
     rename(temp, temp2);
@@ -71,7 +71,7 @@ void mkdirR(char *path)
 {
 #ifdef USE_FULL_PATH
     char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
+    snprintf(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
 #else
     char *temp = path;
 #endif
@@ -365,7 +365,7 @@ void removeFolder(char *path)
     char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 100);
     char *buffer = NULL;
 
-    sprintf(name, "%s/%s", REPERTOIREEXECUTION, path);
+    snprintf(name, strlen(REPERTOIREEXECUTION) + strlen(path) + 100, "%s/%s", REPERTOIREEXECUTION, path);
 
     /* On ouvre le dossier. */
     directory = opendir(name);
@@ -482,12 +482,11 @@ void ouvrirSite(TEAMS_DATA* teams)
     #ifdef _WIN32
         ShellExecute(NULL, "open", teams->site, NULL, NULL, SW_SHOWNOACTIVATE);
     #else
-        char superTemp[200];
-        crashTemp(superTemp, 200);
+        char superTemp[500];
         #ifdef __APPLE__
-            sprintf(superTemp, "open %s", teams->site);
+            snprintf(superTemp, 500, "open %s", teams->site);
         #else
-            sprintf(superTemp, "firefox %s", teams->site);
+            snprintf(superTemp, 500, "firefox %s", teams->site);
         #endif
         system(superTemp);
     #endif
@@ -496,28 +495,24 @@ void ouvrirSite(TEAMS_DATA* teams)
 int lancementExternalBinary(char cheminDAcces[100])
 {
     char superTemp[400];
-
 #ifdef _WIN32
     int i = 0, j = 0;
 	char temp[250];
 
 	crashTemp(temp, 250);
-	crashTemp(superTemp, 400);
-
     for(i = 0; i < 250 && REPERTOIREEXECUTION[i] != 0; i++)
     {
         if(REPERTOIREEXECUTION[i] == '\\')
             temp[j++] = '\\';
         temp[j++] = REPERTOIREEXECUTION[i];
     }
-    sprintf(superTemp, "\"%s\\\\%s\"", temp, cheminDAcces);
+    snprintf(superTemp, 400, "\"%s/%s\"", temp, cheminDAcces);
     ShellExecute(NULL, "open", superTemp, NULL, NULL, SW_SHOWDEFAULT);
  #else
-	crashTemp(superTemp, 400);
     #ifdef __APPLE__
-        sprintf(superTemp, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);
+        snprintf(superTemp, 400, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);
     #else
-        sprintf(superTemp, "\"%s/%s\" &", REPERTOIREEXECUTION, cheminDAcces);
+        snprintf(superTemp, 400, "\"%s/%s\" &", REPERTOIREEXECUTION, cheminDAcces);
     #endif
     system(superTemp);
 #endif
@@ -534,7 +529,7 @@ int checkPID(int PID)
     if(!PID)
         return 1;
     #ifdef __APPLE__
-    sprintf(temp, "ps %d", PID);
+    snprintf(temp, TAILLE_BUFFER, "ps %d", PID);
     test = popen(temp, "r");
     if(test != NULL)
     {
@@ -547,7 +542,7 @@ int checkPID(int PID)
             return 1;
     }
     #else
-	sprintf(temp, "proc/%d/cwd", PID);
+	snprintf(temp, TAILLE_BUFFER, "proc/%d/cwd", PID);
     test = fopenR(temp, "r");
     if(test != NULL) //Si le PID existe
     {

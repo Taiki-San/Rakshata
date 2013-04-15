@@ -38,7 +38,7 @@ int ecranAccueil()
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 
-    sprintf(temp, "data/%s/acceuil.png", LANGUAGE_PATH[langue - 1]); //Traduction
+    snprintf(temp, TAILLE_BUFFER, "data/%s/acceuil.png", LANGUAGE_PATH[langue - 1]); //Traduction
     acceuil = IMG_LoadTexture(renderer, temp);
 
     if(acceuil == NULL)
@@ -66,7 +66,7 @@ int showControls()
 
     SDL_RenderClear(renderer);
 
-    sprintf(temp, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
+    snprintf(temp, TAILLE_BUFFER, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
     controls = IMG_LoadTexture(renderer, temp);
     SDL_RenderCopy(renderer, controls, NULL, NULL);
     SDL_DestroyTextureS(controls);
@@ -119,9 +119,9 @@ int showControls()
                         char superTemp[200];
                         crashTemp(superTemp, 200);
                         #ifdef __APPLE__
-                        sprintf(superTemp, "open http://www.rakshata.com/?page_id=31");
+                        snprintf(superTemp, 200, "open http://www.rakshata.com/?page_id=31");
                         #else
-                        sprintf(superTemp, "/etc/alternatives/x-www-browser %s", "http://www.rakshata.com/?page_id=31");
+                        snprintf(superTemp, 200, "/etc/alternatives/x-www-browser %s", "http://www.rakshata.com/?page_id=31");
                         #endif
                         system(superTemp);
                     }

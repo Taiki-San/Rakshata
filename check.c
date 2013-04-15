@@ -21,41 +21,41 @@ int check_evt()
     for(i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
 
     /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
-    sprintf(nomsATest[0], "data/font.ttf");
-    sprintf(nomsATest[1], "data/icone.png");
-    sprintf(nomsATest[2], "data/french/acceuil.png");
-    sprintf(nomsATest[3], "data/french/controls.png");
-    sprintf(nomsATest[4], "data/french/localization");
-    sprintf(nomsATest[5], "data/english/acceuil.png");
-    sprintf(nomsATest[6], "data/english/controls.png");
-    sprintf(nomsATest[7], "data/english/localization");
-    sprintf(nomsATest[8], "data/italian/acceuil.png");
-    sprintf(nomsATest[9], "data/italian/controls.png");
-    sprintf(nomsATest[10], "data/italian/localization");
-    sprintf(nomsATest[11], "data/german/acceuil.png");
-    sprintf(nomsATest[12], "data/german/controls.png");
-    sprintf(nomsATest[13], "data/german/localization");
-    sprintf(nomsATest[14], ICONE_DELETE);
-    sprintf(nomsATest[15], ICONE_FAVORITED);
-    sprintf(nomsATest[16], ICONE_FAVORIS_MENU);
-    sprintf(nomsATest[17], ICONE_NOT_FAVORITED);
-    sprintf(nomsATest[18], ICONE_FULLSCREEN);
-    sprintf(nomsATest[19], ICONE_MAIN_MENU);
-    sprintf(nomsATest[20], ICONE_MAIN_MENU_BIG);
-    sprintf(nomsATest[21], ICONE_PREVIOUS_CHAPTER);
-    sprintf(nomsATest[22], ICONE_PREVIOUS_PAGE);
-    sprintf(nomsATest[23], ICONE_NEXT_CHAPTER);
-    sprintf(nomsATest[24], ICONE_NEXT_PAGE);
-    sprintf(nomsATest[25], ICONE_LOCK);
-    sprintf(nomsATest[26], ICONE_UNLOCK);
+    snprintf(nomsATest[0], LONGUEUR_NOMS_DATA, "data/font.ttf");
+    snprintf(nomsATest[1], LONGUEUR_NOMS_DATA, "data/icone.png");
+    snprintf(nomsATest[2], LONGUEUR_NOMS_DATA, "data/french/acceuil.png");
+    snprintf(nomsATest[3], LONGUEUR_NOMS_DATA, "data/french/controls.png");
+    snprintf(nomsATest[4], LONGUEUR_NOMS_DATA, "data/french/localization");
+    snprintf(nomsATest[5], LONGUEUR_NOMS_DATA, "data/english/acceuil.png");
+    snprintf(nomsATest[6], LONGUEUR_NOMS_DATA, "data/english/controls.png");
+    snprintf(nomsATest[7], LONGUEUR_NOMS_DATA, "data/english/localization");
+    snprintf(nomsATest[8], LONGUEUR_NOMS_DATA, "data/italian/acceuil.png");
+    snprintf(nomsATest[9], LONGUEUR_NOMS_DATA, "data/italian/controls.png");
+    snprintf(nomsATest[10], LONGUEUR_NOMS_DATA,  "data/italian/localization");
+    snprintf(nomsATest[11], LONGUEUR_NOMS_DATA, "data/german/acceuil.png");
+    snprintf(nomsATest[12], LONGUEUR_NOMS_DATA, "data/german/controls.png");
+    snprintf(nomsATest[13], LONGUEUR_NOMS_DATA, "data/german/localization");
+    snprintf(nomsATest[14], LONGUEUR_NOMS_DATA, ICONE_DELETE);
+    snprintf(nomsATest[15], LONGUEUR_NOMS_DATA, ICONE_FAVORITED);
+    snprintf(nomsATest[16], LONGUEUR_NOMS_DATA, ICONE_FAVORIS_MENU);
+    snprintf(nomsATest[17], LONGUEUR_NOMS_DATA, ICONE_NOT_FAVORITED);
+    snprintf(nomsATest[18], LONGUEUR_NOMS_DATA, ICONE_FULLSCREEN);
+    snprintf(nomsATest[19], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU);
+    snprintf(nomsATest[20], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU_BIG);
+    snprintf(nomsATest[21], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_CHAPTER);
+    snprintf(nomsATest[22], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_PAGE);
+    snprintf(nomsATest[23], LONGUEUR_NOMS_DATA, ICONE_NEXT_CHAPTER);
+    snprintf(nomsATest[24], LONGUEUR_NOMS_DATA, ICONE_NEXT_PAGE);
+    snprintf(nomsATest[25], LONGUEUR_NOMS_DATA, ICONE_LOCK);
+    snprintf(nomsATest[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
 #ifdef DEV_VERSION
-    sprintf(nomsATest[27], ICONE_SWITCH_CHAPITRE);
-    sprintf(nomsATest[28], ICONE_SWITCH_TOME);
-    sprintf(nomsATest[29], "data/acceuil.png");
-    sprintf(nomsATest[30], SECURE_DATABASE);
+    snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
+    snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
+    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 #else
-    sprintf(nomsATest[27], "data/acceuil.png");
-    sprintf(nomsATest[28], SECURE_DATABASE);
+    snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 #endif
 
     /*On test l'existance de tous les fichiers*/
@@ -315,7 +315,7 @@ void networkAndVersionTest()
 			size_t size;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
-            sprintf(temp, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
+            snprintf(temp, TAILLE_BUFFER, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
             download_disk(temp, "data/update", 0);
 
 			test = fopenR("data/update", "r");
@@ -349,7 +349,7 @@ void networkAndVersionTest()
             {
                 quit_thread(0);
             }
-			sprintf(temp, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+			snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
             crashTemp(bufferDL, 5);
 			download_mem(temp, bufferDL, 5, 1);
@@ -440,15 +440,15 @@ int checkRestoreAvailable()
     if(restore != NULL)
     {
         int chapitre = 0;
-        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*2 + 50], team[LONGUEUR_NOM_MANGA_MAX];
+        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*5+50], team[LONGUEUR_NOM_MANGA_MAX];
         fscanfs(restore, "%s %d", manga, LONGUEUR_NOM_MANGA_MAX, &chapitre);
         fclose(restore);
 
         teamOfProject(manga, team);
         if(chapitre%10)
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
         else
-            sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
         return checkFileExist(temp);
     }
     return 0;
@@ -530,10 +530,10 @@ int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
 int isItNew(MANGAS_DATA mangasDB)
 {
 	/*Vérifie si le manga est nouveau ou pas (dossiers à créer)*/
-    char buffer[2*LONGUEUR_NOM_MANGA_MAX+100];
+    char buffer[5*LONGUEUR_NOM_MANGA_MAX+100];
 
     changeTo(mangasDB.mangaName, ' ', '_');
-	sprintf(buffer, "manga/%s/%s/Chapitre_%d/%s", mangasDB.team->teamLong, mangasDB.mangaName, mangasDB.lastChapter, CONFIGFILE);
+	snprintf(buffer, 5*LONGUEUR_NOM_MANGA_MAX+100, "manga/%s/%s/Chapitre_%d/%s", mangasDB.team->teamLong, mangasDB.mangaName, mangasDB.lastChapter, CONFIGFILE);
     changeTo(mangasDB.mangaName, '_', ' ');
 	if(!checkFileExist(buffer))
         return 1;
@@ -543,11 +543,11 @@ int isItNew(MANGAS_DATA mangasDB)
 int checkChapitreUnread(MANGAS_DATA mangasDB)
 {
     int i = 0;
-    char temp[200];
+    char temp[5*LONGUEUR_NOM_MANGA_MAX+100];
 	FILE* configDat = NULL;
 
     changeTo(mangasDB.mangaName, ' ', '_');
-    sprintf(temp, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
+    snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX+100, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
     changeTo(mangasDB.mangaName, '_', ' ');
 
     configDat = fopenR(temp, "r");
@@ -566,11 +566,11 @@ int checkChapitreUnread(MANGAS_DATA mangasDB)
 
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
 {
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
+    char temp[LONGUEUR_NOM_MANGA_MAX*5+100];
     if(chapitreChoisis%10)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10, chapitreChoisis%10);
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10, chapitreChoisis%10);
     else
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10);
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10);
     if(checkFileExist(temp))
         return 1;
     return 0;

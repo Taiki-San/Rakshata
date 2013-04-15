@@ -75,7 +75,7 @@ int getMasterKey(unsigned char *input)
 #endif
     generateFingerPrint(fingerPrint);
 
-    sprintf((char *) buffer, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(date, 100);
 
@@ -674,7 +674,7 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    sprintf(URL, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
+    snprintf(URL, 300, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
 
     crashTemp(buffer_output, 500);
     download_mem(URL, buffer_output, 500, 1);
@@ -691,7 +691,7 @@ int check_login(char adresseEmail[100])
     else if(!strcmp(buffer_output, "account_exist"))
         return 1;
 
-    sprintf(buffer_output, "%s\n", buffer_output);
+    snprintf(buffer_output, 500, "%s\n", buffer_output);
     logR(buffer_output);
     return 2;
 }
@@ -724,12 +724,12 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    sprintf(URL, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
+    snprintf(URL, 300, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
     download_mem(URL, buffer_output, 500, 1);
 
     minToMaj(buffer_output);
-    sprintf(URL, "%s-access_granted", hash2);
+    snprintf(URL, 300, "%s-access_granted", hash2);
     sha256_legacy(URL, hash2);
 
     if(!strcmp(buffer_output, hash2)) //access granted
@@ -788,7 +788,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
         logR(temp);
         exit(1);
     }
-    sprintf(path, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    snprintf(path, strlen(REPERTOIREEXECUTION) + 100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
     hFile = CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
     free(path);
     GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupére pas le dernier argument pour faire chier celui qui essaierai de comprendre
@@ -803,22 +803,22 @@ int createSecurePasswordDB(unsigned char *key_sent)
 #else
     struct stat structure_time;
 
-    char *temp = malloc(strlen(REPERTOIREEXECUTION) + 100);
-    if(temp == NULL)
+    char *temp2 = malloc(strlen(REPERTOIREEXECUTION) + 100);
+    if(temp2 == NULL)
         exit(1);
 
-    sprintf(temp, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    snprintf(temp2, strlen(REPERTOIREEXECUTION) + 100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
-    if(!stat(temp, &structure_time))
+    if(!stat(temp2, &structure_time))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
     else
     {
         logR("Failed at get data from secure.enc\n");
         exit(1);
     }
-    free(temp);
+    free(temp2);
 #endif
-    sprintf(temp, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    snprintf(temp, strlen(REPERTOIREEXECUTION) + 100, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
     unsigned char key[2][SHA256_DIGEST_LENGTH+1];
     crashTemp(key[0], SHA256_DIGEST_LENGTH+1);
@@ -827,7 +827,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
     crashTemp(fingerPrint, HASH_LENGTH);
     crashTemp(temp, 240);
     encryption_output = ralloc((strlen(REPERTOIREEXECUTION) + 32));
-    sprintf(encryption_output, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    snprintf(encryption_output, strlen(REPERTOIREEXECUTION) + 32, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
 
     if(key_sent == NULL)
     {
@@ -866,7 +866,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
             exit(1);
         }
 
-        sprintf(buffer, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+        snprintf(buffer, strlen(REPERTOIREEXECUTION)+100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
         applyWindowsPathCrap(buffer);
 
         hFile = CreateFileA(buffer, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
@@ -955,14 +955,14 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             }
             else
             {
-                sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+                snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
                 logR(temp);
                 return 1;
             }
         }
         else
         {
-            sprintf(temp, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+            snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
             logR(temp);
             return 1;
         }
@@ -997,7 +997,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     int i = 0, j = 0;
     char temp[400];
     char buffer_dl[500];
-    sprintf(temp, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+    snprintf(temp, 400, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);

@@ -68,7 +68,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
 
     GetComputerName((char *)buf_name, &dwCompNameLen);
     GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
-    sprintf((char *)buffer_fingerprint, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
+    snprintf((char *)buffer_fingerprint, 5000, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
             (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
 #else
 	#ifdef __APPLE__
@@ -76,10 +76,10 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
         unsigned char buffer_fingerprint[5000];
 		char command_line[4][100];
 
-        sprintf((char *) command_line[0], "system_profiler SPHardwareDataType | grep 'Serial Number'");
-        sprintf((char *) command_line[1], "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
-        sprintf((char *) command_line[2], "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
-        sprintf((char *) command_line[3], "system_profiler SPHardwareDataType | grep 'SMC Version'");
+        snprintf((char *) command_line[0], 100, "system_profiler SPHardwareDataType | grep 'Serial Number'");
+        snprintf((char *) command_line[1], 100, "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
+        snprintf((char *) command_line[2], 100, "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
+        snprintf((char *) command_line[3], 100, "system_profiler SPHardwareDataType | grep 'SMC Version'");
 
         FILE *system_output = NULL;
         for(j = 0; j < 4; j++)
@@ -119,7 +119,7 @@ void get_file_date(const char *filename, char *date)
 
     FileTimeToSystemTime(&ftEdit, &ftTime);
 
-    sprintf(date, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+    snprintf(date, 100, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
     struct stat buf;
     if(!stat(input_parsed, &buf))
@@ -132,7 +132,7 @@ void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char temp[LONGUEUR_NOM_MANGA_MAX+10];
-    sprintf(temp, "manga/%s", teamLong);
+    snprintf(temp, LONGUEUR_NOM_MANGA_MAX+10, "manga/%s", teamLong);
     removeFolder(temp);
 }
 
@@ -140,9 +140,9 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 {
     char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
     if(chapitreChoisis%10)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
     else
-        sprintf(temp, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
+        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
     removeFolder(temp);
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
@@ -201,7 +201,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         exit(-1);
     }
     unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    sprintf((char *) numChapitreChar, "%d", numeroChapitre/10);
+    snprintf((char *) numChapitreChar, 10, "%d", numeroChapitre/10);
     pbkdf2(temp, numChapitreChar, hash);
     crashTemp(temp, 200);
 
@@ -320,7 +320,7 @@ void getPasswordArchive(char *fileName, char password[300])
         free(fileNameWithoutDirectory);
         return;
     }
-    sprintf(URL, "https://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
+    snprintf(URL, 50+strlen(MAIN_SERVER_URL[0])+strlen(COMPTE_PRINCIPAL_MAIL)+strlen(fileNameWithoutDirectory)+strlen(hash), "https://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
 
     free(fileNameWithoutDirectory);
 
@@ -356,7 +356,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
     if(!checkNetworkState(CONNEXION_OK))
         return;
 
-    sprintf(temp, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
+    snprintf(temp, 350, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
 
     crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM);
     download_mem(temp, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM, 0);

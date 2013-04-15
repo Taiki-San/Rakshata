@@ -115,7 +115,7 @@ void checkUpdate()
             if(action[i][0] == 'D') //Depreciate
             {
                 char buffer[TAILLE_BUFFER+5];
-                sprintf(buffer, "%s.old", files[i]);
+                snprintf(buffer, TAILLE_BUFFER+5, "%s.old", files[i]);
                 rename(files[i], buffer);
             }
             else if(action[i][0] == 'R' || action[i][0] == 'U') //Remove ou Update

@@ -95,10 +95,10 @@ void versionRak(char *output)
     unite = CURRENTVERSION - (CURRENTVERSION / 10 * 10);
 
     if(unite)
-        sprintf(output, "%d.%d.%d", centaine, dizaine, unite);
+        snprintf(output, 10, "%d.%d.%d", centaine, dizaine, unite);
 
     else
-        sprintf(output, "%d.%d", centaine, dizaine);
+        snprintf(output, 10, "%d.%d", centaine, dizaine);
 }
 
 void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4)
@@ -299,7 +299,7 @@ int defineMaxTextureSize(int sizeIssue)
     maxSize = sizeIssue;
 #ifdef DEV_BUILD
     char temp[100];
-    sprintf(temp, "Max size: %d\n", maxSize);
+    snprintf(temp, 100, "Max size: %d\n", maxSize);
     logR(temp);
 #endif
     return sizeIssue;

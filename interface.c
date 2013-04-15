@@ -22,7 +22,7 @@ void updateSectionMessage(char messageVersion[5])
     int i = 0, j = 0;
     char URL[200], bufferDL[500], bufferMessage[550];
 
-    sprintf(URL, "https://rsp.%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
+    snprintf(URL, 200, "https://rsp.%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
 
     crashTemp(bufferDL, 500);
     download_mem(URL, bufferDL, 500, 1);
@@ -32,7 +32,7 @@ void updateSectionMessage(char messageVersion[5])
     if(!bufferDL[i] || (*messageVersion != '0' && bufferDL[i] == ' ' && i > 0))
         return;
 
-    sprintf(bufferMessage, "<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
+    snprintf(bufferMessage, 550, "<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
     for(j = strlen(bufferMessage), i = 0; i < 520 && bufferDL[i] != 0; bufferMessage[j++] = bufferDL[i++])
     {
         if(bufferDL[i] == '\r') //I assume the first char isn't a \r

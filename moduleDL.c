@@ -150,17 +150,17 @@ int telechargement()
                 if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                 {
                     if(todoList[0]->chapitre%10)
-                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
+                        snprintf(superTemp, 400, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
                     else
-                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
+                        snprintf(superTemp, 400, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
                 }
 
                 else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
                 {
                     if(todoList[0]->chapitre%10)
-                        sprintf(superTemp, "http://%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
+                        snprintf(superTemp, 400, "http://%s/%s/%s_Chapitre_%d.%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10, todoList[0]->chapitre%10);
                     else
-                        sprintf(superTemp, "http://%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
+                        snprintf(superTemp, 400, "http://%s/%s/%s_Chapitre_%d.zip", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->datas->mangaNameShort, todoList[0]->chapitre/10);
                 }
 
                 else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3)) //DL Payant
@@ -169,7 +169,7 @@ int telechargement()
                         break;
 
                     else if((i = getPassword(MOT_DE_PASSE_COMPTE, 1, 1)) == 1)
-                        sprintf(superTemp, "https://rsp.%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], CURRENTVERSION, todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
+                        snprintf(superTemp, 400, "https://rsp.%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], CURRENTVERSION, todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName, todoList[0]->chapitre, COMPTE_PRINCIPAL_MAIL, MOT_DE_PASSE_COMPTE);
 
                     else if(i == PALIER_QUIT)
                     {
@@ -185,7 +185,7 @@ int telechargement()
 
                 else
                 {
-                    sprintf(superTemp, "URL non gérée: %s\n", todoList[0]->datas->team->type);
+                    snprintf(superTemp, 400, "URL non gérée: %s\n", todoList[0]->datas->team->type);
                     logR(superTemp);
                     break;
                 }
@@ -225,9 +225,9 @@ int telechargement()
                 /*On teste si le chapitre est déjà installé*/
                 crashTemp(temp, 200);
                 if(todoList[0]->chapitre%10)
-                    sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, todoList[0]->chapitre/10, todoList[0]->chapitre%10, CONFIGFILE);
+                    snprintf(temp, 200, "manga/%s/%s/Chapitre_%d.%d/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, todoList[0]->chapitre/10, todoList[0]->chapitre%10, CONFIGFILE);
                 else
-                    sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, todoList[0]->chapitre/10, CONFIGFILE);
+                    snprintf(temp, 200, "manga/%s/%s/Chapitre_%d/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, todoList[0]->chapitre/10, CONFIGFILE);
                 if(!checkFileExist(temp))
                 {
                     glados = CODE_RETOUR_OK;
@@ -244,7 +244,7 @@ int telechargement()
                     {
                         if(struc->buf == NULL)
                         {
-                            sprintf(superTemp, "Erreur dans le telechargement d'un chapitre: Team: %s\n", todoList[0]->datas->team->teamLong);
+                            snprintf(superTemp, 400, "Erreur dans le telechargement d'un chapitre: Team: %s\n", todoList[0]->datas->team->teamLong);
                             logR(superTemp);
                         }
                         else
@@ -274,21 +274,21 @@ int telechargement()
                 else if(glados == CODE_RETOUR_INTERNAL_FAIL)
                 {
                     glados = CODE_RETOUR_OK;
-                    sprintf(temp, "Echec telechargement: %s - %d\n", todoList[0]->datas->mangaName, todoList[0]->chapitre);
+                    snprintf(temp, 200, "Echec telechargement: %s - %d\n", todoList[0]->datas->mangaName, todoList[0]->chapitre);
                     logR(temp);
                     error++;
                 }
 
-                sprintf(temp, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
+                snprintf(temp, 200, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
                 if(todoList[0]->datas->pageInfos && !checkFileExist(temp)) //k peut avoir a être > 1
                 {
-                    sprintf(temp, "manga/%s/%s/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, CONFIGFILE);
+                    snprintf(temp, 200, "manga/%s/%s/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName, CONFIGFILE);
                     if(!checkFileExist(temp))
                     {
                         crashTemp(temp, TAILLE_BUFFER);
-                        sprintf(temp, "manga/%s", todoList[0]->datas->team->teamLong);
+                        snprintf(temp, 200, "manga/%s", todoList[0]->datas->team->teamLong);
                         mkdirR(temp);
-                        sprintf(temp, "manga/%s/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
+                        snprintf(temp, 200, "manga/%s/%s", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
                         mkdirR(temp);
                     }
 
@@ -296,25 +296,25 @@ int telechargement()
                     /*Génération de l'URL*/
                     if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_1))
                     {
-                        sprintf(superTemp, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
+                        snprintf(superTemp, 400, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
                     }
                     else if (!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2))
                     {
-                        sprintf(superTemp, "http://%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
+                        snprintf(superTemp, 400, "http://%s/%s/infos.png", todoList[0]->datas->team->URL_depot, todoList[0]->datas->mangaName);
                     }
                     else if(!strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_3))
                     {
-                        sprintf(superTemp, "https://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
+                        snprintf(superTemp, 400, "https://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
                     }
                     else
                     {
-                        sprintf(superTemp, "URL non gérée: %s\n", todoList[0]->datas->team->type);
+                        snprintf(superTemp, 400, "URL non gérée: %s\n", todoList[0]->datas->team->type);
                         logR(superTemp);
                         continue;
                     }
 
                     crashTemp(temp, TAILLE_BUFFER);
-                    sprintf(temp, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
+                    snprintf(temp, 200, "manga/%s/%s/infos.png", todoList[0]->datas->team->teamLong, todoList[0]->datas->mangaName);
                     download_disk(superTemp, temp, strcmp(todoList[0]->datas->team->type, TYPE_DEPOT_2)?1:0);
                 }
 
@@ -471,19 +471,19 @@ void* installation(void* datas)
     length = valeurs->buf->length;
 
     if(chapitre%10)
-        sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
     else
-        sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
     ressources = fopenR(temp, "r");
     if(ressources == NULL)
     {
         /*Si le manga existe déjà*/
-        sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
         ressources = fopenR(temp, "r");
         if(ressources == NULL)
         {
             /*Si le dossier du manga n'existe pas*/
-            sprintf(temp, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
             #ifdef _WIN32
                 mkdir(temp);
             #else
@@ -519,15 +519,14 @@ void* installation(void* datas)
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
         if(!erreurs)
         {
-            crashTemp(temp, TAILLE_BUFFER);
             if(chapitre%10)
-                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
             else
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
             ressources = fopenR(temp, "r");
         }
 
-        sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
         if(erreurs != -1 && checkFileExist(temp) && ressources != NULL)
         {
             fclose(ressources);
@@ -557,7 +556,7 @@ void* installation(void* datas)
         {
             fclose(ressources);
             /*Création du config.dat du nouveau manga*/
-            sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
             ressources = fopenR(temp, "w+");
             fprintf(ressources, "%d %d", chapitre, chapitre);
             fclose(ressources);
@@ -567,12 +566,12 @@ void* installation(void* datas)
         {
             if(ressources != NULL)
                 fclose(ressources);
-            sprintf(temp, "Archive Corrompue: %s - %d\n", mangaDB.mangaName, chapitre);
+            snprintf(temp, TAILLE_BUFFER, "Archive Corrompue: %s - %d\n", mangaDB.mangaName, chapitre);
             logR(temp);
             if(chapitre%10)
-                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
             else
-                sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
             removeFolder(temp);
             erreurs = 1;
         }
@@ -610,9 +609,9 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
 		nombreChapitre = 1;
         /*On test l'existance du fichier (zipé ou dézipé)*/
         if(chapitreChoisis%10)
-                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, chapitreChoisis%10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, chapitreChoisis%10, CONFIGFILE);
             else
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitreChoisis/10, CONFIGFILE);
         if(!checkFileExist(temp))
             fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, chapitreChoisis);
     }
@@ -621,9 +620,9 @@ int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
         for(i = 0; mangaDB.chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE; i++)
         {
             if(mangaDB.chapitres[i]%10)
-                sprintf(temp, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
             else
-                sprintf(temp, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
             if(!checkFileExist(temp))
             {
                 fprintf(fichier, "%s %s %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitres[i]);
@@ -698,8 +697,7 @@ void DLmanager()
     }
     else if (error > 0 && output != -1)
     {
-        crashTemp(temp, TAILLE_BUFFER);
-        sprintf(temp, "%s %d %s", texteTrad[2], error, texteTrad[3]);
+        snprintf(temp, TAILLE_BUFFER, "%s %d %s", texteTrad[2], error, texteTrad[3]);
 
         texte = TTF_Write(rendererDLCurrent, police, temp, couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;

@@ -81,18 +81,18 @@ int libcurlErrorCode(CURLcode code)
     {
         case CURLE_FAILED_INIT :
         {
-            sprintf(log_message, "Initialization failed\n");
+            snprintf(log_message, 100, "Initialization failed\n");
             break;
         }
 
         case CURLE_URL_MALFORMAT:
         {
-            sprintf(log_message, "URL is malformated\n");
+            snprintf(log_message, 100, "URL is malformated\n");
             break;
         }
         case CURLE_COULDNT_RESOLVE_PROXY:
         {
-            sprintf(log_message, "Failed at resolve the proxy\n");
+            snprintf(log_message, 100, "Failed at resolve the proxy\n");
             break;
         }
         case CURLE_COULDNT_RESOLVE_HOST:
@@ -103,19 +103,19 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_PARTIAL_FILE:
         {
-            sprintf(log_message, "Partial file\n");
+            snprintf(log_message, 100, "Partial file\n");
             ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
         {
-            sprintf(log_message, "Everything is screwed up...\n");
+            snprintf(log_message, 100, "Everything is screwed up...\n");
             ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
         case CURLE_OPERATION_TIMEDOUT:
         {
-            sprintf(log_message, "Request timed out\n");
+            snprintf(log_message, 100, "Request timed out\n");
             ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
@@ -126,7 +126,7 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_SSL_CACERT_BADFILE:
         {
-            sprintf(log_message, "SSL error\n");
+            snprintf(log_message, 100, "SSL error\n");
             ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
             break;
         }
@@ -138,7 +138,7 @@ int libcurlErrorCode(CURLcode code)
 
         default:
         {
-            sprintf(log_message, "Unknown libcURL error: %d", code);
+            snprintf(log_message, 100, "Unknown libcURL error: %d", code);
             break;
         }
     }

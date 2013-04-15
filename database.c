@@ -30,7 +30,7 @@ MANGAS_DATA* miseEnCache(int mode)
     }
 	free(repoBak);
 
-	char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 2 + 100];
+	char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 5 + 100];
 	mangaDB += sscanfs(mangaDB,"%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
 	for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
 
@@ -68,7 +68,7 @@ MANGAS_DATA* miseEnCache(int mode)
 			if(!mangas[numeroManga].genre) //Si pas à jour, c'est par défaut un shonen
 				mangas[numeroManga].genre = 1;
 
-			sprintf(temp, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
+			snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
 			if(checkFileExist(temp) || mode == LOAD_DATABASE_ALL)
 			{
                 ustrcpy(mangas[numeroManga].team->IDTeam, ID[numeroTeam]);
@@ -99,7 +99,7 @@ MANGAS_DATA* miseEnCache(int mode)
 				while((c = *(mangaDB++)) != '#' && c != EOF);
 				if(c == '#')
 					mangaDB--;
-				sprintf(temp, "https://rsp.%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamLong[numeroTeam]);
+				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://rsp.%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamLong[numeroTeam]);
 				crashTemp(bufferOutput, 100);
 				download_mem(temp, bufferOutput, 100, 1);
 			}
@@ -151,13 +151,13 @@ void get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 {
 	char temp[500];
 	if(!strcmp(teams->type, TYPE_DEPOT_1))
-		sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
+		snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_2))
-		sprintf(temp, "http://%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
+		snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URL_depot, VERSION_REPO);
 
 	else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-		sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot); //HTTPS_DISABLED
+		snprintf(temp, 500, "https://rsp.%s/ressource.php?editor=%s&request=repo", MAIN_SERVER_URL[0], teams->URL_depot); //HTTPS_DISABLED
 
 	else
 	{
@@ -184,7 +184,7 @@ void update_repo()
     for(i = 0; i < 1000; URLRepoConnus[i++][0] = 0);
 
     repoBak = repo;
-    sprintf(repo_new, "<%c>\n", SETTINGS_REPODB_FLAG);
+    snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
     positionDansBuffer = strlen(repo_new);
 
 	Load_KillSwitch(killswitch);
@@ -212,7 +212,7 @@ void update_repo()
 		if(strlen(bufferDL) < 5 || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(infosTeam.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request")|| !strcmp(bufferDL, "editor_not_found")
                                                                                                                     || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
         {
-			sprintf(bufferDL, "%s %s %s %s %s %s", infosTeam.IDTeam, infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site);
+			snprintf(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, "%s %s %s %s %s %s", infosTeam.IDTeam, infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site);
 			for(i = 0; positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE && bufferDL[i]; repo_new[positionDansBuffer++] = bufferDL[i++]);
 		}
 
@@ -244,7 +244,7 @@ void update_repo()
 		}
 	}
 	free(repoBak);
-	sprintf(&repo_new[positionDansBuffer], "\n</%c>\n", SETTINGS_REPODB_FLAG);
+	snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "\n</%c>\n", SETTINGS_REPODB_FLAG);
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
 }
 
@@ -255,13 +255,13 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
     do
 	{
 	    if(!strcmp(teams->type, TYPE_DEPOT_1))
-            sprintf(temp, "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            sprintf(temp, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(temp, 500, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            sprintf(temp, "https://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
+            snprintf(temp, 500, "https://rsp.%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
 
         else
         {
@@ -293,7 +293,7 @@ void update_mangas()
         logR(temp);
         return;
     }
-    sprintf(manga_new, "<%c>\n", SETTINGS_MANGADB_FLAG);
+    snprintf(manga_new, 10, "<%c>\n", SETTINGS_MANGADB_FLAG);
     positionDansBuffer = strlen(manga_new);
 
     if(repo == NULL)
@@ -351,7 +351,7 @@ void update_mangas()
             for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\r' && bufferDL[positionBuffer] != '\n'; positionBuffer++);
             for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
 
-            sprintf(manga_new_tmp, "%s %s\n", buffer_char[0], buffer_char[1]);
+            snprintf(manga_new_tmp, length, "%s %s\n", buffer_char[0], buffer_char[1]);
 
             while(length > positionBuffer && bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#')
             {
@@ -379,7 +379,7 @@ void update_mangas()
             free(manga_new_tmp);
 		}
 	}
-	sprintf(&manga_new[strlen(manga_new)], "</%c>\n", SETTINGS_MANGADB_FLAG);
+	snprintf(&manga_new[strlen(manga_new)], strlen(manga_new)+10, "</%c>\n", SETTINGS_MANGADB_FLAG);
 	free(repoBak);
 	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
 }
@@ -507,19 +507,19 @@ int deleteManga()
 
 int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 {
-	char temp[3*LONGUEUR_NOM_MANGA_MAX];
+	char temp[5*LONGUEUR_NOM_MANGA_MAX];
 	/*si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
     if(mangaDB.chapitres == NULL)
         getUpdatedChapterList(&mangaDB); //ne modifie pas la structure originale
 
 	if(mangaDB.chapitres != NULL && mangaDB.chapitres[1] != VALEUR_FIN_STRUCTURE_CHAPITRE)
 	{
-		sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+		snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
 
         if(chapitreDelete%10)
-            sprintf(temp, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
+            snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
         else
-            sprintf(temp, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
+            snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
 		removeFolder(temp);
 
 		int length = 0;
@@ -527,7 +527,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 
 		if(mangaDB.chapitres[0] == chapitreDelete || mangaDB.chapitres[length-1] == chapitreDelete)
 		{
-		    sprintf(temp, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
+		    snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
 
             int i = 0;
             FILE* config = fopenR(temp, "r");
@@ -554,7 +554,7 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 
 	else
 	{
-		sprintf(temp, "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
+		snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
 		removeFolder(temp);
 		return 1;
 	}
@@ -564,10 +564,10 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre)
 {
 	int i = 0, j = 0;
-	char temp[TAILLE_BUFFER];
+	char temp[5*LONGUEUR_NOM_MANGA_MAX];
 	FILE* fichier = NULL;
 
-	sprintf(temp, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
+	snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
 	fichier = fopenR(temp, "r");
     if(fichier == NULL)
         i = j = dernierChapitre;
