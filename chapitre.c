@@ -55,7 +55,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     int first = -1, end = -1, fBack, eBack, nbElem = 0;
     char temp[TAILLE_BUFFER*5];
 
-    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
+    snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
     if(temp == NULL)
         return 0;

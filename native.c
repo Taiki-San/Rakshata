@@ -12,10 +12,13 @@
 #include <stdarg.h>
 #include "main.h"
 
+//#define USE_FULL_PATH
+
 /**Fonction de base modifiés**/
 
 FILE* fopenR(void *_path, char *right)
 {
+#ifdef USE_FULL_PATH
     unsigned char *path = _path;
     unsigned char *temp = ralloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2));
 	FILE* output = NULL;
@@ -25,18 +28,26 @@ FILE* fopenR(void *_path, char *right)
     output = fopen((char *) temp, right);
     free(temp);
     return output;
+#else
+    return fopen(_path, right);
+#endif
 }
 
 void removeR(char *path)
 {
+#ifdef USE_FULL_PATH
 	char *temp = ralloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
     sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
     remove(temp);
 	free(temp);
+#else
+    remove(path);
+#endif
 }
 
 void renameR(char *initialName, char *newName)
 {
+#ifdef USE_FULL_PATH
 	char *temp = malloc(strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2); //+1 pour le / et +1 pour \0
 	char *temp2 = malloc(strlen(newName) + strlen(REPERTOIREEXECUTION) + 2);
 
@@ -51,18 +62,29 @@ void renameR(char *initialName, char *newName)
     rename(temp, temp2);
 	free(temp);
 	free(temp2);
+#else
+    rename(initialName, newName);
+#endif
 }
 
 void mkdirR(char *path)
 {
+#ifdef USE_FULL_PATH
     char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
     sprintf(temp, "%s/%s", REPERTOIREEXECUTION, path);
+#else
+    char *temp = path;
+#endif
+
 #ifdef _WIN32
     mkdir(temp);
 #else
     mkdir(temp, PERMISSIONS);
 #endif
+
+#ifdef USE_FULL_PATH
     free(temp);
+#endif
 }
 
 void chdirR()
