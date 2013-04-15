@@ -6,7 +6,7 @@ manually, please report the issue&
 to the repository manager.&
 Press Enter to go back to the chapter selection.&]
 2
-Initialization of the download&
+Initialisation of the download&
 module currently in progress.&
 Please wait (it may take some&
 time if you have a low Internet&
@@ -33,10 +33,10 @@ Press Enter&]
 Loading&]
 9
 Welcome to Rakshata&
-Rakshata will ask for your email adress and a password in order 
+Rakshata will ask for your email address and a password in order&
 to identify you and to enable the usage of whole power of Rakshata&
 Those data will NEVER be shared with anyone without your explicit agreement.&
-Thank you very much for using my software :) - Taiki, lead developper&]
+Thank you very much for using my software :) - Taiki, lead developer&]
 10
 Press Del to cancel - Any other key to confirm&]
 11
@@ -69,7 +69,7 @@ Italiano&
 Deutsch&
 If you want to translate Rakshata, please notify us on our website.&]
 14
-Initialization in progress&
+Initialisation in progress&
 Please type the repo's URL&
 Do you confirm?&
 Esc to cancel, Enter to confirm&]
@@ -89,8 +89,8 @@ Download more mangas&
 Help&
 Settings&]
 18
-Availables manga at the reading&
-Availables manga at the download&]
+Available manga at the reading&
+Available manga at the download&]
 19
 Which chapter do you wish to&
 read?&
@@ -124,7 +124,7 @@ window, click.&
 F to quit the fullscreen&
 Q to quit Rakshata&
 New chapters&
-are availables,&
+are available,&
 do you want&
 to get them?&
 (Y) Yes | (N) No&]
@@ -145,16 +145,16 @@ Click to go back to the menu&]
 Your manga and comic reader&
 Download module&]
 26
-Hello, please write your email adress&
+Hello, please write your email address&
 Email:&
 It won't be transmitted to anyone and&
-will only be used to authentify yourself&
+will only be used to log yourself in&
 [Registration] - Please write a password&
 [Login] - Please write your password&
 Password:&
-This account will authentify yourself on Rakshata's&
+This account will log yourself in on Rakshata's&
 services, nothing will ever be sent to anyone&
-/!\ ERROR: Email adress rejected /!\&
+/!\ ERROR: Email address rejected /!\&
 /!\ ERROR: Password rejected /!\&
 Please try again and/or contact Taiki&
 Click to try again with a new email adress&
