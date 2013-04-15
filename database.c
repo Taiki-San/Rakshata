@@ -132,7 +132,8 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
     {
         if(mangasDB[pos].chapitres != NULL && *mangasDB[pos].chapitres != VALEUR_FIN_STRUCTURE_CHAPITRE)
             free(mangasDB[pos].chapitres);
-        free(mangasDB[pos].team);
+        if(mangasDB[pos].team != NULL)
+            free(mangasDB[pos].team);
     }
     free(mangasDB);
 }

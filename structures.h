@@ -40,6 +40,15 @@ typedef struct dataMangas
 
 } MANGAS_DATA;
 
+typedef struct data_lecture_tome
+{
+    char nomPages[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE];
+    int nombrePageTotale;
+    int pageCourante;
+    int chapitreDeLaPage[NOMBRE_PAGE_MAX];
+    int decimaleDeLaPage[NOMBRE_PAGE_MAX];
+} DATA_LECTURE;
+
 typedef struct output_download_with_size
 {
     char *buf;

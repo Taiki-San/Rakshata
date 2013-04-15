@@ -653,3 +653,22 @@ int checkFileValide(FILE* file)
     return 1;
 }
 
+bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
+{
+    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350];
+    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
+    if(chapitre%10)
+    {
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
+        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+    }
+    else
+    {
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
+        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+    }
+    if(checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag))
+        return true;
+    return false;
+}
+

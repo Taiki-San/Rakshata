@@ -53,6 +53,7 @@ int checkButtonPressed(int button_selected[8]);
 int checkWindowEventValid(int EventWindowEvent);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
+bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -130,8 +131,9 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
-int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, int *fullscreen);
-int configFileLoader(char* input, int *nombrePage, char output[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE]);
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fullscreen);
+int configFileLoader(MANGAS_DATA *mangaDB, bool isAChapter, int chapitre_tome, DATA_LECTURE* dataReader);
+int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NOM_PAGE], int max_len);
 SDL_Texture* loadControlBar(int favState);
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB);
 void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);

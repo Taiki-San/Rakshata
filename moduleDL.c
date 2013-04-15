@@ -596,45 +596,6 @@ void* installation(void* datas)
     quit_thread(0);
 }
 
-int interditWhileDL() ///A DEGAGER DE LA LOCALIZATION
-{
-    /*Initialisateurs graphique*/
-	char texte[SIZE_TRAD_ID_9][100];
-	SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    SDL_RenderClear(renderer);
-
-    loadTrad(texte, 9);
-
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
-    position.x = WINDOW_SIZE_W_DL / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H_DL / 2 - texteAffiche->h;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-
-    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-
-    position.x = WINDOW_SIZE_W_DL / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H_DL / 2 + texteAffiche->h;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-
-    SDL_RenderPresent(renderer);
-    TTF_CloseFont(police);
-
-    SDL_RenderClear(renderer);
-    return waitEnter(renderer);
-}
-
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis)
 {
     FILE* fichier = NULL;

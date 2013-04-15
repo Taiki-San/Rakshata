@@ -279,7 +279,7 @@
     #define TOLERANCE_CLIC_PAGE 10
 
     /*Limites buffers*/
-    #define NOMBRE_PAGE_MAX 500
+    #define NOMBRE_PAGE_MAX 1000
     #define LONGUEUR_NOM_PAGE 100
 
     /*Tailles*/

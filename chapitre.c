@@ -53,7 +53,7 @@ int refreshChaptersList(MANGAS_DATA *mangaDB)
 int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
     int first = -1, end = -1, fBack, eBack, nbElem = 0;
-    char temp[TAILLE_BUFFER*5], temp_path_flag[TAILLE_BUFFER*5];
+    char temp[TAILLE_BUFFER*5];
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
@@ -69,17 +69,7 @@ int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
     {
-        if(mangaDB->chapitres[nbElem]%10)
-        {
-            snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10, CONFIGFILE);
-            snprintf(temp_path_flag, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, mangaDB->chapitres[nbElem]%10);
-        }
-        else
-        {
-            snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10, CONFIGFILE);
-            snprintf(temp_path_flag, TAILLE_BUFFER*5, "manga/%s/%s/Chapitre_%d/installing", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[nbElem]/10);
-        }
-        if(!checkFileExist(temp) || checkFileExist(temp_path_flag))
+        if(!checkChapterReadable(*mangaDB, mangaDB->chapitres[nbElem]))
             mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
     }
 
@@ -161,8 +151,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     {
         if(mode == 2)
             return mangaDB->firstChapter*10;
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->lastChapter, CONFIGFILE);
-        if(checkFileExist(temp))
+        else if(checkChapterReadable(*mangaDB, mangaDB->lastChapter))
             return mangaDB->lastChapter*10;
         else
         {
@@ -217,7 +206,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
                 snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10, CONFIGFILE);
             else
                 snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, CONFIGFILE);
-            file = fopenR(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
+            file = fopen(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
 
             if((file != NULL && mode != 2) || (file == NULL && mode == 2))
             {

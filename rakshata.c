@@ -48,15 +48,12 @@ SDL_Renderer *rendererDL = NULL;
 		int main()
 	#endif
 #endif
-
 {
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
-    {
         lancementModuleDL();
-    }
 
     checkUpdate();
     createNewThread(mainRakshata, NULL);

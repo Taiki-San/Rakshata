@@ -184,7 +184,7 @@ int mainLecture()
 
                             lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 
-                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, &fullscreen);
+                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, true, &fullscreen);
 
                             if(retourLecteur != 0)
                             {
@@ -295,7 +295,7 @@ int mainChoixDL()
             lancementModuleDL();
         }
         else if(checkLancementUpdate())
-            removeR(INSTALL_DATABASE);
+            remove(INSTALL_DATABASE);
 
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
     }

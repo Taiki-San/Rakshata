@@ -11,6 +11,7 @@
 ******************************************************************************************************/
 
 #include "main.h"
+#include <locale.h> //Pour définir la langue
 
 int affichageMenuGestion()
 {
@@ -259,7 +260,14 @@ int loadLangueProfile()
     }
     mkdirR("data");
     char temp[100];
-    langue = LANGUE_PAR_DEFAUT;
+
+    char *langue_char = setlocale(LC_ALL, "");
+    if(!strcmp(langue_char, "French_France.1252") || !strcmp(langue_char, "French_Belgium.1252") || !strcmp(langue_char, "French_Canada.1252") || !strcmp(langue_char, "French_Luxembourg.1252") || !strcmp(langue_char, "French_Principality of Monaco.1252") || !strcmp(langue_char, "French_Switzerland.1252"))
+        langue = 1;
+    else if(!strcmp(langue_char, "German_Austria.1252") || !strcmp(langue_char, "German_Liechtenstein.1252") || !strcmp(langue_char, "German_Luxembourg.1252") || !strcmp(langue_char, "German_Switzerland.1252") || !strcmp(langue_char, "German_Germany.1252"))
+        langue = 3;
+    else
+        langue = LANGUE_PAR_DEFAUT;
     sprintf(temp, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
     AESEncrypt(SETTINGS_PASSWORD, temp, SETTINGS_FILE, INPUT_IN_MEMORY);
     return 1;

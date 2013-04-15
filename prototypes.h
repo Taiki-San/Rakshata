@@ -56,6 +56,9 @@
 		#endif
 	#endif
     #include <windows.h>
+    #define bool BOOL
+    #define true TRUE
+    #define false FALSE
 #else
     #include <pthread.h>
     #include <utime.h>
@@ -77,5 +80,7 @@
 	#include <SDL2/SDL_sysvideo.h>
 	#include <SDL2_Image/SDL_image.h>
 	#include <SDL_TTF/SDL_ttf.h>
+	#include <openssl/bio.h>
+	#include <openssl/ossl_typ.h>
 	#define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
 #endif

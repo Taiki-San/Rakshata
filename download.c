@@ -19,7 +19,7 @@ static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static unsigned long POSITION_DANS_BUFFER;
 static size_t size_buffer;
-static volatile int status = STATUS_DOWNLOADING; //Status du DL: en cours, terminé...
+static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
 static int errCode;
 static void *internalBuffer;
 
@@ -490,6 +490,8 @@ hg0fHpfL7w==\n\
 
 int checkDLInProgress() //Mutex should be set
 {
-    return status == STATUS_DOWNLOADING;
+    if(status == STATUS_DOWNLOADING)
+        return 1;
+    return 0;
 }
 

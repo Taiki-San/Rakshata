@@ -282,7 +282,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if(configFileLoader(pathToConfigFile, &nombreFichierDansConfigFile, nomPage) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
+        if(loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile, nomPage, NOMBRE_PAGE_MAX) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
 #ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
