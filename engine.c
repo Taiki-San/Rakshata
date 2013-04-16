@@ -546,7 +546,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                     }
                 }while((mangaChoisis <= -10 && sectionChoisis == SECTION_CHOISIS_LECTURE));
 
-                analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage);
+                analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage, nombreManga<=9);
                 if(refreshMultipage && changementDePage)
                 {
                     for(i = 0, nombreManga = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++)
@@ -898,7 +898,7 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 	return 1;
 }
 
-void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage)
+void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne)
 {
     int i = 0;
     if(sectionChoisis == SECTION_DL && *mangaChoisis == -1) //WTF???
@@ -935,27 +935,41 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
 
     else if(*mangaChoisis > 0 && !manuel) //Clic sur un mangas
     {
-
-        if(*mangaChoisis / 100 == 0) //Premiére colonne
+        if(*mangaChoisis / 100 == 0) //Première colonne
         {
             if (mangaColonne[0] < *mangaChoisis % 100)
                 *mangaChoisis = 0;
             if (mangaColonne[0] >= *mangaChoisis % 100)
-                *mangaChoisis = *mangaChoisis + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            {
+                if(modeLigne)
+                    *mangaChoisis = (*mangaChoisis%100-1)*3+1;
+                else
+                    *mangaChoisis = *mangaChoisis + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            }
         }
-        else if(*mangaChoisis / 100 == 1) //Deuxiéme colonne
+        else if(*mangaChoisis / 100 == 1) //Deuxième colonne
         {
             if(mangaColonne[1] - mangaColonne[0] < (*mangaChoisis % 100) - 1)
                 *mangaChoisis = 0;
             if(mangaColonne[1] - mangaColonne[0] >= (*mangaChoisis % 100) - 1)
-                *mangaChoisis = (mangaColonne[0] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            {
+                if(modeLigne)
+                    *mangaChoisis = (*mangaChoisis%100-1)*3+*mangaChoisis / 100+1;
+                else
+                    *mangaChoisis = (mangaColonne[0] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            }
         }
-        else if(*mangaChoisis / 100 == 2) //Troisiéme colonne
+        else if(*mangaChoisis / 100 == 2) //Troisième colonne
         {
             if (mangaColonne[2] - mangaColonne[1] < (*mangaChoisis % 100) - 1)
                 *mangaChoisis = 0;
             if (mangaColonne[2] - mangaColonne[1] >= (*mangaChoisis % 100) - 1)
-                *mangaChoisis = (mangaColonne[1] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            {
+                if(modeLigne)
+                    *mangaChoisis = (*mangaChoisis%100-1)*3+*mangaChoisis/100+1;
+                else
+                    *mangaChoisis = (mangaColonne[1] + (*mangaChoisis % 100)) + (*pageSelection - 1) * MANGAPARPAGE_TRI;
+            }
         }
 
         //Maintenant, on va vérifier que la requête pointe bien sur quelque chose de valide en cas de limitation
