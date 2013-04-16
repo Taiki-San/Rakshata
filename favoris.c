@@ -68,11 +68,15 @@ void updateFavorites()
         }
     }
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
-    MUTEX_LOCK;
-    alreadyRefreshed = 1;
-    if(!favorisToDL)
-        favorisToDL = -1;
-    MUTEX_UNLOCK;
+    if(favorisToDL)
+    {
+        while(1)
+        {
+            favorisToDL = -1;
+            if(favorisToDL == -1) //Un petit truc au cas où
+                break;
+        }
+    }
 }
 
 void getNewFavs()

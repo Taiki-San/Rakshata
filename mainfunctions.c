@@ -219,16 +219,7 @@ int mainChoixDL()
     MUTEX_LOCK;
     if(NETWORK_ACCESS < CONNEXION_DOWN)
     {
-        if(alreadyRefreshed == 1)
-        {
-            alreadyRefreshed = 0;
-            MUTEX_UNLOCK;
-        }
-        else
-        {
-            MUTEX_UNLOCK;
-            updateDataBase();
-        }
+        updateDataBase();
         MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
 
         /*C/C du choix de manga pour le lecteur.*/
