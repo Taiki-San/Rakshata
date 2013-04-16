@@ -151,7 +151,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
     {
         if(mode == 2)
             return mangaDB->firstChapter*10;
-        else if(checkChapterReadable(*mangaDB, mangaDB->lastChapter))
+        else if(checkChapterReadable(*mangaDB, mangaDB->lastChapter*10))
             return mangaDB->lastChapter*10;
         else
         {
