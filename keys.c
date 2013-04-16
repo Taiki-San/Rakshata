@@ -343,7 +343,7 @@ int logon()
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
-        if(waitClavier(renderer, 50, beginingOfEmailAdress, 109, 1, adresseEmail) == PALIER_QUIT)
+        if(waitClavier(renderer, adresseEmail, 1, 1, 50, beginingOfEmailAdress, 109) != 0) // Si l'utilisateur n'a pas mis son email, on quitte
             return PALIER_QUIT;
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
@@ -399,9 +399,9 @@ int logon()
                 SDL_RenderPresent(renderer);
                 do
 				{
-					if((i = waitClavier(renderer, 50, beginingOfEmailAdress, 109, ((login==0)?1:0), password)) == PALIER_QUIT)
+					if((i = waitClavier(renderer, password, ((login==0)?1:0), 1, 50, beginingOfEmailAdress, 109)) == PALIER_QUIT)
 						return PALIER_QUIT;
-					else if (i == PALIER_MENU) //Echap
+					else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
 					{
 						TTF_CloseFont(police);
 						retry = 1;
@@ -541,7 +541,7 @@ extern int WINDOW_SIZE_W_DL;
 
 int getPassword(char password[100], int dlUI, int salt)
 {
-    int xPassword = 0, resized = 0;
+    int xPassword = 0, resized = 0, ret_value = 0;
     char trad[SIZE_TRAD_ID_26][100];
     SDL_Texture *ligne = NULL;
     SDL_Rect position;
@@ -617,10 +617,10 @@ int getPassword(char password[100], int dlUI, int salt)
 
     while(1)
     {
-        if(waitClavier(currentRenderer, 50, xPassword, 105, 0, password) == PALIER_QUIT)
+        if((ret_value = waitClavier(currentRenderer, password, 0, 1, 50, xPassword, 105)) == PALIER_QUIT)
             return PALIER_QUIT;
 
-        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+        else if(ret_value == 0 && checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
             if(salt)
                 passToLoginData(password);

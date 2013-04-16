@@ -70,7 +70,7 @@ int waitEnter(SDL_Renderer* rendererVar)
     return i;
 }
 
-int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int startFromY, int showTyped, char *retour)
+int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, bool allowedToQuitWithEscape, int startFromX, int startFromY)
 {
     int i = 0, epaisseur = 0;
     char affiche[LONGUEUR_URL + 10];
@@ -98,7 +98,7 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
         char temp[300];
         snprintf(temp, 300, "Failed at open the font file: %s\n", TTF_GetError());
         logR(temp);
-        return -2;
+        return PALIER_CHAPTER;
     }
 
     for(i = 0; i < nombreMax;)
@@ -130,27 +130,27 @@ int waitClavier(SDL_Renderer *rendererVar, int nombreMax, int startFromX, int st
                             retour[i--] = 0;
                             if(i >= 0)
                                 retour[i] = 0;
-                            else
+                            else if(allowedToQuitWithEscape)
                             {
                                 TTF_CloseFont(police);
-                                return -2;
+                                return PALIER_CHAPTER;
                             }
                         }
-                        else
+                        else if(allowedToQuitWithEscape)
                         {
                             TTF_CloseFont(police);
-                            return -2;
+                            return PALIER_CHAPTER;
                         }
                         break;
 
                     case SDLK_ESCAPE:
                         TTF_CloseFont(police);
-                        return -3;
+                        return PALIER_MENU;
                         break;
 
                     case SDLK_DELETE:
                         TTF_CloseFont(police);
-                        return -2;
+                        return PALIER_CHAPTER;
                         break;
 
                     default:

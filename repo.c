@@ -62,8 +62,13 @@ int ajoutRepo()
 
             crashTemp(teams.URL_depot, LONGUEUR_URL);
             /*On attend l'URL*/
-            continuer = waitClavier(renderer, LONGUEUR_URL, 0, 0, 1, teams.URL_depot);
+            continuer = waitClavier(renderer, teams.URL_depot, 1, 1, LONGUEUR_URL, 0, 0);
             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+
+            if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER)
+                continue;
+            else if(continuer == PALIER_QUIT)
+                return PALIER_QUIT;
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(teams.URL_depot))
