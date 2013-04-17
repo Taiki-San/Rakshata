@@ -374,9 +374,9 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
                 if(chapitreChoisis > 0 && chapitreChoisis < CODE_CLIC_LIEN_CHAPITRE)
                     chapitreChoisis = chapitreDB[chapitreChoisis-1].pageInfos;
 
-                else if (chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE && mode != 2)
+                else if ((chapitreChoisis == -11 || chapitreChoisis > CODE_CLIC_LIEN_CHAPITRE) && mode != 2)
                 {
-                    if(chapitreChoisis == CODE_BOUTON_1_CHAPITRE) //Premier chapitre
+                    if(chapitreChoisis == -11 || chapitreChoisis == CODE_BOUTON_1_CHAPITRE) //Premier chapitre
                         chapitreChoisis = mangaDB->chapitres[0];
 
                     else if(chapitreChoisis == CODE_BOUTON_2_CHAPITRE)

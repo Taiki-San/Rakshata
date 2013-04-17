@@ -544,7 +544,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                         else
                             mangaChoisis = 0;
                     }
-                }while((mangaChoisis <= -10 && sectionChoisis == SECTION_CHOISIS_LECTURE));
+                }while((mangaChoisis <= -10 && (sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_CHOISIS_TEAM)));
 
                 analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage, nombreManga<=9);
                 if(refreshMultipage && changementDePage)
@@ -901,13 +901,8 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne)
 {
     int i = 0;
-    if(sectionChoisis == SECTION_DL && *mangaChoisis == -1) //WTF???
-    {
-        *mangaChoisis = PALIER_MENU;
-        logR("SPOTTED!!!");
-    }
 
-    else if(*mangaChoisis == -6 || *mangaChoisis == -7) //Boutons pages suivant/précédente
+    if(*mangaChoisis == -6 || *mangaChoisis == -7) //Boutons pages suivant/précédente
     {
         if(pageTotale != 1)
         {
