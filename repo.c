@@ -60,12 +60,12 @@ int ajoutRepo()
             SDL_DestroyTextureS(texte);
             SDL_RenderPresent(renderer);
 
-            crashTemp(teams.URL_depot, LONGUEUR_URL);
             /*On attend l'URL*/
+            crashTemp(teams.URL_depot, LONGUEUR_URL);
             continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 1, 0, 0);
             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
-            if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER)
+            if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
                 continue;
             else if(continuer == PALIER_QUIT)
                 return PALIER_QUIT;

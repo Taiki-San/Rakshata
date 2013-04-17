@@ -297,6 +297,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
                 //We restart the window
+                MUTEX_LOCK;
                 SDL_DestroyTexture(bandeauControle);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
@@ -308,6 +309,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                 renderer = setupRendererSafe(window);
                 bandeauControle = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
+                MUTEX_UNLOCK;
 
             }
             else
@@ -534,7 +536,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                         }
                         else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
                             refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
-
                     }
                 }
                 pageCharge = 1;
