@@ -343,7 +343,7 @@ int logon()
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
-        if(waitClavier(renderer, adresseEmail, 1, 1, 50, beginingOfEmailAdress, 109) != 0) // Si l'utilisateur n'a pas mis son email, on quitte
+        if(waitClavier(renderer, adresseEmail, 60, 1, 50, beginingOfEmailAdress, 109) != 0) // Si l'utilisateur n'a pas mis son email, on quitte
             return PALIER_QUIT;
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
@@ -399,7 +399,7 @@ int logon()
                 SDL_RenderPresent(renderer);
                 do
 				{
-					if((i = waitClavier(renderer, password, ((login==0)?1:0), 1, 50, beginingOfEmailAdress, 109)) == PALIER_QUIT)
+					if((i = waitClavier(renderer, password, 50, ((login==0)?1:0), 1, beginingOfEmailAdress, 109)) == PALIER_QUIT)
 						return PALIER_QUIT;
 					else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
 					{
@@ -617,7 +617,7 @@ int getPassword(char password[100], int dlUI, int salt)
 
     while(1)
     {
-        if((ret_value = waitClavier(currentRenderer, password, 0, 1, 50, xPassword, 105)) == PALIER_QUIT)
+        if((ret_value = waitClavier(currentRenderer, password, 50, 0, 1, xPassword, 105)) == PALIER_QUIT)
             return PALIER_QUIT;
 
         else if(ret_value == 0 && checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
