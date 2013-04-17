@@ -507,6 +507,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                             internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                             NChapitre = 0;
                         }
+                        else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
+                            refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
                     }
                 }
                 if (changementPage == -1)
@@ -530,6 +532,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                             internal_deleteChapitre(*mangaDB, *chapitreChoisis);
                             OChapitre = 0;
                         }
+                        else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
+                            refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, &nouveauChapitreATelecharger, explication, UIAlert, pageAccesDirect, UI_PageAccesDirect);
+
                     }
                 }
                 pageCharge = 1;
