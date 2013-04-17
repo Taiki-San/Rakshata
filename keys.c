@@ -9,6 +9,7 @@
 **         Licence propriétaire, code source confidentiel, distribution formellement interdite       **
 **                                                                                                   **
 ******************************************************************************************************/
+
 #include "crypto/crypto.h"
 #include "main.h"
 
@@ -102,7 +103,7 @@ int getMasterKey(unsigned char *input)
         }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && output_char[j] >= ' '  && output_char[j] < 255; j++); //On regarde si c'est bien une clée
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
@@ -343,8 +344,11 @@ int logon()
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
-        if(waitClavier(renderer, adresseEmail, 60, 1, 50, beginingOfEmailAdress, 109) != 0) // Si l'utilisateur n'a pas mis son email, on quitte
-            return PALIER_QUIT;
+        do
+        {
+            if((i = waitClavier(renderer, adresseEmail, 60, 1, 50, beginingOfEmailAdress, 109)) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
+                return PALIER_QUIT;
+        }while(i == PALIER_CHAPTER);
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
