@@ -69,11 +69,7 @@ int getMasterKey(unsigned char *input)
     }
     fclose(bdd);
 
-#ifdef _WIN32
-    get_file_date("data\\secure.enc", (char *) date);
-#else
 	get_file_date(SECURE_DATABASE, (char *) date);
-#endif
     generateFingerPrint(fingerPrint);
 
     snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
@@ -103,7 +99,7 @@ int getMasterKey(unsigned char *input)
         }
         output_char[SHA256_DIGEST_LENGTH] = 0;
 
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
+        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
@@ -841,16 +837,18 @@ int createSecurePasswordDB(unsigned char *key_sent)
             if(key[0][i] < ' ')
                 key[0][i] += ' ';
         }
+        key[0][SHA256_DIGEST_LENGTH] = 0;
         _AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY, 1);
     }
     else
     {
-        ustrcpy(key[0], key_sent);
         for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
         {
             if(key[0][i] < ' ')
                 key[0][i] += ' ';
         }
+        key[0][SHA256_DIGEST_LENGTH] = 0;
+        ustrcpy(key[0], key_sent);
         _AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL, 1);
         crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
     }
@@ -1020,12 +1018,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     for(i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
     for(i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
     internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, tmp);
-    for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-    {
-        if(tmp[i] < ' ')
-            tmp[i] += ' ';
-        key[i] = tmp[i];
-    }
+    memcpy(key, tmp, SHA256_DIGEST_LENGTH);
     return;
 }
 

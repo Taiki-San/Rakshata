@@ -140,8 +140,10 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
 
 void updateDataBase()
 {
-    if(!checkNetworkState(CONNEXION_DOWN) || alreadyRefreshed == 0)
+    MUTEX_LOCK;
+    if(NETWORK_ACCESS != CONNEXION_DOWN && alreadyRefreshed == 0)
 	{
+        MUTEX_UNLOCK;
 	    update_repo();
         update_mangas();
         MUTEX_LOCK;
@@ -150,7 +152,6 @@ void updateDataBase()
 	}
 	else
 	{
-	    MUTEX_LOCK;
         alreadyRefreshed = 0;
         MUTEX_UNLOCK;
 	}

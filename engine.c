@@ -191,7 +191,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
             }
         }
 
-        if(SDL_GetTicks() - time_since_refresh > 100)
+        if(SDL_GetTicks() - time_since_refresh > 200)
         {
             if(favorisToDL == 0) //Refresh en cours
             {

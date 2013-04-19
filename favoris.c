@@ -60,15 +60,16 @@ void updateFavorites()
             snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].lastChapter, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                MUTEX_LOCK;
-                favorisToDL = 1;
-                MUTEX_UNLOCK;
+                do
+                {
+                    favorisToDL = 1;
+                } while(!favorisToDL);
                 break;
             }
         }
     }
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
-    if(favorisToDL)
+    if(!favorisToDL)
     {
         while(1)
         {

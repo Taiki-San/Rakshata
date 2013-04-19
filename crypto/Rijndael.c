@@ -1236,7 +1236,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             else
             {
 				size_t sizeOfFile = 0;
-                output = fopen((char *) path_output, "r"); //C'était fopenR mais vu qu'on utilise fopen un tout petit peu plus loin...
+                output = fopen((char *) path_output, "rb"); //C'était fopenR mais vu qu'on utilise fopen un tout petit peu plus loin...
                 fseek(output, 0, SEEK_END);
                 sizeOfFile = ftell(output);
                 if(sizeOfFile)

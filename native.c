@@ -110,9 +110,12 @@ char* mergeS(char* input1, char* input2)
 {
     char *output = NULL;
     output = ralloc(strlen(input1) + strlen(input2)+10);
-    memcpy(output, input1, strlen(input1));
-    memcpy(output+strlen(output), input2, strlen(input2));
-    free(input1);
+    if(output != NULL)
+    {
+        memcpy(output, input1, strlen(input1));
+        memcpy(output+strlen(output), input2, strlen(input2));
+        free(input1);
+    }
     return output;
 }
 
