@@ -19,7 +19,7 @@ int getMasterKey(unsigned char *input)
 {
     /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
     int nombreCle, i, j, fileInvalid;
-    unsigned char date[100], fingerPrint[SHA256_DIGEST_LENGTH], buffer[240], buffer_Load[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+    unsigned char date[100], fingerPrint[SHA256_DIGEST_LENGTH+1], buffer[240], buffer_Load[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
     size_t size;
 	FILE* bdd = NULL;
     *input = 0;
@@ -70,10 +70,8 @@ int getMasterKey(unsigned char *input)
     fclose(bdd);
 
 	get_file_date(SECURE_DATABASE, (char *) date);
-    generateFingerPrint(fingerPrint);
-
+	generateFingerPrint(fingerPrint);
     snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
-
     crashTemp(date, 100);
 
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -751,7 +749,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
 int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
-    unsigned char fingerPrint[HASH_LENGTH];
+    unsigned char fingerPrint[SHA256_DIGEST_LENGTH+1];
     char password[100], date[200], temp[240], *encryption_output = NULL;
     FILE* bdd = NULL;
 
@@ -772,7 +770,6 @@ int createSecurePasswordDB(unsigned char *key_sent)
     }
     fclose(bdd);
 
-    crashTemp(fingerPrint, sizeof(fingerPrint));
     generateFingerPrint(fingerPrint);
 
 #ifdef _WIN32 //On cherche l'heure de la derniére modif

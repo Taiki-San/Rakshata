@@ -59,7 +59,7 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
     MUTEX_UNLOCK_DECRYPT;
 }
 
-void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
+void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
 {
 #ifdef _WIN32
     unsigned char buffer_fingerprint[5000], buf_name[1024];
@@ -101,6 +101,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH])
 #endif
     memset(output, 0, SHA256_DIGEST_LENGTH);
     sha256(buffer_fingerprint, output);
+    output[SHA256_DIGEST_LENGTH] = 0;
 }
 
 void get_file_date(const char *filename, char *date)
