@@ -98,6 +98,7 @@ int erreurReseau();
 int showError();
 int rienALire();
 int affichageRepoIconnue();
+int UI_Alert(char* titre, char* contenu);
 
 /**Favoris.c**/
 int checkIfFaved(MANGAS_DATA* mangaDB, char *favs);

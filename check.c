@@ -96,7 +96,7 @@ int check_evt()
 
         if(!checkNetworkState(CONNEXION_OK))
         {
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Accès internet manquant", "Un accès Internet est nécessaire pour récupérer\nles fichiers nécessaires au bon fonctionnement\nde Rakshata, veuillez relancer Rakshata avec un\naccès Internet. Néanmoins, il est possible que\ncette erreur apparaisse car nos serveurs sont\nhors-ligne. Auquel cas, attendez que\nwww.rakshata.com soit de nouveau accessible.", NULL);
+            UI_Alert("Acces internet manquant", "Un acces Internet est necessaire pour recuperer les fichiers necessaires au bon fonctionnement de Rakshata, veuillez relancer Rakshata avec un acces Internet. Neanmoins, il est possible que cette erreur apparaisse car nos serveurs sont hors-ligne. Auquel cas, attendez que www.rakshata.com soit de nouveau accessible.");
             SDL_DestroyRenderer(renderer);
             SDL_DestroyWindow(window);
             renderer = NULL;
