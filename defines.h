@@ -80,7 +80,7 @@
 
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
-#define VERSION_REPO 1
+#define VERSION_REPO 2
 #define VERSION_MANGA 2
 
 /*Réseau*/

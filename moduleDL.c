@@ -140,11 +140,14 @@ int telechargement()
             if(todoList[0]->datas != NULL)
             {
                 /*Ouverture du site de la team*/
-                for(i = 0; i < nbrMaxElem && historiqueTeam[i][0] && strcmp(todoList[0]->datas->team->teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
-                if(i < nbrMaxElem && historiqueTeam[i][0] == 0) //Si pas déjà installé
+                if(todoList[0]->datas->team->openSite)
                 {
-                    ustrcpy(historiqueTeam[i], todoList[0]->datas->team->teamCourt);
-                    ouvrirSite(todoList[0]->datas->team);
+                    for(i = 0; i < nbrMaxElem && historiqueTeam[i][0] && strcmp(todoList[0]->datas->team->teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
+                    if(i < nbrMaxElem && historiqueTeam[i][0] == 0) //Si pas déjà installé
+                    {
+                        ustrcpy(historiqueTeam[i], todoList[0]->datas->team->teamCourt);
+                        ouvrirSite(todoList[0]->datas->team);
+                    }
                 }
 
                 /*Génération de l'URL*/

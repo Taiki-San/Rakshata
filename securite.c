@@ -375,14 +375,19 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
     }
 }
 
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], char ID_To_Test[LONGUEUR_ID_TEAM])
+int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check)
 {
     int i = 0;
+    char pre_hash_check[LONGUEUR_TYPE_TEAM+LONGUEUR_URL+1], hash_check[2*SHA256_DIGEST_LENGTH+1];
     if(!checkNetworkState(CONNEXION_OK))
         return 0;
 
-    for(; strcmp(killswitch_string[i], ID_To_Test) && i < NUMBER_MAX_TEAM_KILLSWITCHE && killswitch_string[i][0]; i++);
-    if(i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(killswitch_string[i], ID_To_Test))
+    crashTemp(hash_check, 2*SHA256_DIGEST_LENGTH+1);
+    snprintf(pre_hash_check, LONGUEUR_TYPE_TEAM+LONGUEUR_URL, "%s%s", team_to_check.URL_depot, team_to_check.type);
+    sha256_legacy(pre_hash_check, hash_check);
+
+    for(; strcmp(killswitch_string[i], hash_check) && i < NUMBER_MAX_TEAM_KILLSWITCHE && killswitch_string[i][0]; i++);
+    if(i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(killswitch_string[i], hash_check))
         return 1;
     return 0;
 }

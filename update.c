@@ -190,22 +190,30 @@ void checkUpdate()
 
 void checkJustUpdated()
 {
-    if(checkFileExist("up_db.exe"))
-    {
-        SDL_Event event;
-        while(1)
-        {
-            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-                break;
-            SDL_PollEvent(&event);
-            SDL_Delay(50);
-        }
-
-        updateDataBase();
-        removeR("up_db.exe");
-    }
     if(checkFileExist("Rakshata.exe.old"))
     {
+        char repo_new[SIZE_BUFFER_UPDATE_DATABASE];
+        char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
+        TEAMS_DATA infosTeam;
+
+        if(repo == NULL)
+            return;
+
+        repoBak = repo;
+        snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
+        int positionDansBuffer = strlen(repo_new);
+
+        while(*repo != 0 && *repo != '<' && *(repo+1) != '/' && *(repo+2) != SETTINGS_REPODB_FLAG && *(repo+3) != '>' && *(repo+4) != 0 && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+        {
+            char ID[LONGUEUR_ID_TEAM];
+            repo += sscanfs(repo, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, infosTeam.teamLong, LONGUEUR_NOM_MANGA_MAX, infosTeam.teamCourt, LONGUEUR_COURT, infosTeam.type, LONGUEUR_ID_TEAM, infosTeam.URL_depot, LONGUEUR_URL, infosTeam.site, LONGUEUR_SITE);
+            for(; *repo == '\r' || *repo == '\n'; repo++);
+            snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "%s %s %s %s %s 1\n", infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site);
+            positionDansBuffer = strlen(repo_new);
+        }
+        free(repoBak);
+        snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "</%c>\n", SETTINGS_REPODB_FLAG);
+        updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
         remove("Rakshata.exe.old");
         remove("data/update");
     }

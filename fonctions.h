@@ -60,7 +60,8 @@ MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangasDB, size_t length);
 void updateDataBase();
-void get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
+int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
+bool checkValidationRepo(char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], int isPaid);
 void update_repo();
 int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
 void update_mangas();
@@ -216,7 +217,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page);
 void getPasswordArchive(char *fileName, char password[300]);
 void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM]);
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], char ID_To_Test[LONGUEUR_ID_TEAM]);
+int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check);
 
 /**Selection.c**/
 int section();

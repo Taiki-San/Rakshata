@@ -12,12 +12,12 @@
 
 typedef struct infos_Team
 {
-    char IDTeam[LONGUEUR_ID_TEAM];
     char teamLong[LONGUEUR_NOM_MANGA_MAX];
     char teamCourt[LONGUEUR_COURT];
     char type[LONGUEUR_TYPE_TEAM];
     char URL_depot[LONGUEUR_URL];
     char site[LONGUEUR_SITE];
+    int openSite;
 } TEAMS_DATA;
 
 typedef struct dataMangas

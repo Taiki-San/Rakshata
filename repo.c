@@ -104,7 +104,7 @@ int ajoutRepo()
 
                 if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt
                 {
-                    sscanfs(bufferDL, "%s %s %s %s %s %s", teams.IDTeam, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+                    sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
 
                     /*Redimension de la fenêtre*/
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
@@ -164,10 +164,10 @@ int ajoutRepo()
                             int i = strlen(repoBak);
                             repoBak[i++] = '\n';
                             repoBak[i] = 0;
-                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
                         }
                         else
-                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s %s %s %s %s %s\n<%c>\n", SETTINGS_REPODB_FLAG, teams.IDTeam, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, SETTINGS_REPODB_FLAG);
+                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
                         updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
 
                         if(repoBak)
@@ -218,8 +218,8 @@ int deleteRepo()
 
     for(nombreTeam = 0; repo != NULL && *repo != 0 && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++)
     {
-        repo += sscanfs(repo, "%s %s %s %s %s %s", mangaDB[nombreTeam].team->IDTeam, LONGUEUR_ID_TEAM, mangaDB[nombreTeam].team->teamLong, LONGUEUR_NOM_MANGA_MAX, mangaDB[nombreTeam].team->teamCourt, LONGUEUR_COURT, mangaDB[nombreTeam].team->type, BUFFER_MAX, mangaDB[nombreTeam].team->URL_depot, LONGUEUR_URL, mangaDB[nombreTeam].team->site, LONGUEUR_SITE);
-        for(;*repo == '\n'; repo++);
+        repo += sscanfs(repo, "%s %s %s %s %s %d", mangaDB[nombreTeam].team->teamLong, LONGUEUR_NOM_MANGA_MAX, mangaDB[nombreTeam].team->teamCourt, LONGUEUR_COURT, mangaDB[nombreTeam].team->type, BUFFER_MAX, mangaDB[nombreTeam].team->URL_depot, LONGUEUR_URL, mangaDB[nombreTeam].team->site, LONGUEUR_SITE, &mangaDB[nombreTeam].team->openSite);
+        for(;*repo == '\n' || *repo == '\r'; repo++);
         ustrcpy(mangaDB[nombreTeam].mangaName, mangaDB[nombreTeam].team->teamLong);
     }
     repo = repoBak;
