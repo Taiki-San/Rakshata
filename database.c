@@ -180,7 +180,6 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
             logR(temp2);
             return -1;
         }
-        crashTemp(buffer_repo, SIZE_BUFFER_UPDATE_DATABASE);
         download_mem(temp, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_repo[0] == '<' || buffer_repo[1] == '<' || buffer_repo[2] == '<'));
@@ -238,9 +237,7 @@ void update_repo()
                 URLRepoConnus[i+1][0] = 0;
         }
 
-		crashTemp(bufferDL, SIZE_BUFFER_UPDATE_DATABASE);
 		legacy = get_update_repo(bufferDL, &infosTeam);
-
 		if(legacy == -1 || !checkValidationRepo(bufferDL, !strcmp(infosTeam.type, TYPE_DEPOT_3)))
         {
 			snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE, "%s %s %s %s %s %d\n", infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site, infosTeam.openSite);
@@ -288,7 +285,6 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             logR(temp2);
             return 0;
         }
-        crashTemp(buffer_manga, SIZE_BUFFER_UPDATE_DATABASE);
         download_mem(temp, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
@@ -321,7 +317,7 @@ void update_mangas()
 	{
 		repo += sscanfs(repo, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_ID_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
 		for(; *repo == '\r' || *repo == '\n'; repo++);
-		bufferDL[0] = 0;
+
 		get_update_mangas(bufferDL, &teams);
 		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") || !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
 		{

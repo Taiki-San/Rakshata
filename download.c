@@ -357,8 +357,10 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
     char *input = ptr;
     TMP_DL *buffer_dl = buffer_dl_void;
     for(; i < size*nmemb && buffer_dl->current_pos < buffer_dl->length; buffer_dl->buf[(buffer_dl->current_pos)++] = input[i++]);
-    if(buffer_dl->current_pos == buffer_dl->length)
+    if(buffer_dl->current_pos >= buffer_dl->length)
         buffer_dl->buf[buffer_dl->current_pos-1] = 0;
+    else
+        buffer_dl->buf[buffer_dl->current_pos] = 0;
     return i;
 }
 
