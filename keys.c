@@ -55,9 +55,6 @@ int getMasterKey(unsigned char *input)
             fileInvalid = 0;
     } while(fileInvalid);
 
-    void *output = NULL;
-    unsigned char *output_char = NULL;
-
     for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
         for(j=0; j<SHA256_DIGEST_LENGTH; buffer_Load[i][j++] = 0);
 
@@ -69,20 +66,21 @@ int getMasterKey(unsigned char *input)
     }
     fclose(bdd);
 
-	get_file_date(SECURE_DATABASE, (char *) date);
-	generateFingerPrint(fingerPrint);
-    snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
-    crashTemp(date, 100);
-
+	unsigned char output_char[SHA256_DIGEST_LENGTH];
+    unsigned long rk[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
+
+    get_file_date(SECURE_DATABASE, (char *) date);
+	snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    crashTemp(date, 100);
+    generateFingerPrint(fingerPrint);
+
     pbkdf2(buffer, fingerPrint, hash);
+    crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
     crashTemp(buffer, 240);
 
-	output = malloc(size + 1);
-	output_char = output;
-
-    unsigned long rk[RKLENGTH(KEYBITS)];
     int nrounds = rijndaelSetupDecrypt(rk, hash, KEYBITS);
+    crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
@@ -95,9 +93,13 @@ int getMasterKey(unsigned char *input)
             rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
             memcpy(&output_char[j*16] , plaintext, 16);
         }
-        output_char[SHA256_DIGEST_LENGTH] = 0;
-
+        for(j=0; j < 16; j++)
+        {
+            output_char[j+16] ^= buffer_Load[i][j]; //XOR block 2 by encrypted block 1
+            output_char[j] ^= output_char[j+16]; //XOR block 1 by plaintext block 2
+        }
         for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
+
         if(j == SHA256_DIGEST_LENGTH) //C'est la clée
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
@@ -105,20 +107,17 @@ int getMasterKey(unsigned char *input)
                 input[i] = output_char[i];
                 output_char[i] = 0;
             }
-            free(output);
             break;
         }
     }
-    crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     if(!input[0]) //Pas de clée trouvée
     {
-        unsigned char key[HASH_LENGTH];
-        free(output);
+        unsigned char key[SHA256_DIGEST_LENGTH];
         recoverPassFromServ(key);
         memcpy(input, key, SHA256_DIGEST_LENGTH);
+        crashTemp(key, SHA256_DIGEST_LENGTH);
         createSecurePasswordDB(input);
-        crashTemp(key, HASH_LENGTH);
     }
     return 0;
 }
@@ -750,7 +749,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
     unsigned char fingerPrint[SHA256_DIGEST_LENGTH+1];
-    char password[100], date[200], temp[240], *encryption_output = NULL;
+    char password[100], date[200], temp[300];
     FILE* bdd = NULL;
 
     if(key_sent == NULL)
@@ -761,33 +760,23 @@ int createSecurePasswordDB(unsigned char *key_sent)
         bdd = fopenR(SECURE_DATABASE, "w+");
     }
     else
-        bdd = fopenR(SECURE_DATABASE, "a+");
+        bdd = fopenR(SECURE_DATABASE, "r+");
 
     if(bdd == NULL)
     {
-        logR("Echec de création de la BDD sécurisé: création de fichier impossible\n");
-        return -1;
+        logR("Write error");
+        return 1;
     }
     fclose(bdd);
 
     generateFingerPrint(fingerPrint);
-
 #ifdef _WIN32 //On cherche l'heure de la derniére modif
     HANDLE hFile;
     FILETIME ftLastEdit;
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
     SYSTEMTIME ftTime;
-    char *path = malloc(strlen(REPERTOIREEXECUTION) + 100);
-    if(path == NULL)
-    {
-        snprintf(temp, 240, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
-        logR(temp);
-        exit(1);
-    }
-    snprintf(path, strlen(REPERTOIREEXECUTION) + 100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-    hFile = CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-    free(path);
+    hFile = CreateFileA(SECURE_DATABASE, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
     GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupére pas le dernier argument pour faire chier celui qui essaierai de comprendre
 
     dwLowDateTime = ftLastEdit.dwLowDateTime;
@@ -799,99 +788,84 @@ int createSecurePasswordDB(unsigned char *key_sent)
     snprintf(date, 200, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
     struct stat structure_time;
-
-    char *temp2 = malloc(strlen(REPERTOIREEXECUTION) + 100);
-    if(temp2 == NULL)
-        exit(1);
-
-    snprintf(temp2, strlen(REPERTOIREEXECUTION) + 100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-
-    if(!stat(temp2, &structure_time))
-        strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
+    if(!stat(SECURE_DATABASE, &structure_time))
+        strftime(date, 200, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
     else
     {
-        logR("Failed at get data from secure.enc\n");
-        exit(1);
+        logR("Read error\n");
+        return 1;
     }
-    free(temp2);
 #endif
-    snprintf(temp, strlen(REPERTOIREEXECUTION) + 100, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    snprintf(temp, 300, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
-    unsigned char key[2][SHA256_DIGEST_LENGTH+1];
-    crashTemp(key[0], SHA256_DIGEST_LENGTH+1);
-    crashTemp(key[1], SHA256_DIGEST_LENGTH+1);
-    pbkdf2((unsigned char *)temp, fingerPrint, key[1]);
-    crashTemp(fingerPrint, HASH_LENGTH);
-    crashTemp(temp, 240);
-    encryption_output = ralloc((strlen(REPERTOIREEXECUTION) + 32));
-    snprintf(encryption_output, strlen(REPERTOIREEXECUTION) + 32, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
+    unsigned char key[SHA256_DIGEST_LENGTH+1];
+    key[SHA256_DIGEST_LENGTH] = 0;
+
+    pbkdf2((unsigned char *)temp, fingerPrint, key);
+    crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
+    crashTemp(temp, 300);
+
+    unsigned long rk[RKLENGTH(KEYBITS)];
+    int nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
+
+    crashTemp(key, SHA256_DIGEST_LENGTH);
 
     if(key_sent == NULL)
     {
-        createNewMK(password, key[0]);
+        createNewMK(password, key);
         for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-        {
-            if(key[0][i] < ' ')
-                key[0][i] += ' ';
-        }
-        key[0][SHA256_DIGEST_LENGTH] = 0;
-        _AESEncrypt(key[1], key[0], encryption_output, INPUT_IN_MEMORY, 1);
+            if(key[i] <= ' ') { key[i] += ' '; }
     }
     else
     {
         for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-        {
-            if(key[0][i] < ' ')
-                key[0][i] += ' ';
-        }
-        key[0][SHA256_DIGEST_LENGTH] = 0;
-        ustrcpy(key[0], key_sent);
-        _AESEncrypt(key[1], key[0], encryption_output, OUTPUT_IN_HDD_BUT_INCREMENTAL, 1);
-        crashTemp(key[0], 2*SHA256_DIGEST_LENGTH+1);
+            if(key_sent[i] <= ' ') { key_sent[i] += ' '; }
+        usstrcpy(key, SHA256_DIGEST_LENGTH, key_sent);
     }
-    free(encryption_output);
 
-    for(i=0; i < SHA256_DIGEST_LENGTH+1; i++) { key[0][i] = key[1][i] = 0; }
+    bdd = fopen(SECURE_DATABASE, "ab+");
+    if(bdd != NULL)
+    {
+        unsigned char ciphertext[16];
+
+        for(i=0; i<16; i++)
+            key[i] ^= key[i+16]; //XOR block 1 by plaintext block 2
+
+        rijndaelEncrypt(rk, nrounds, key, ciphertext);
+        fwrite(ciphertext, 16, 1, bdd);
+        crashTemp(key, 16);
+
+        for(i=0; i<16; i++)
+            key[i+16] ^= ciphertext[i]; //XOR block 2 by encrypted block 1
+
+        rijndaelEncrypt(rk, nrounds, &key[16], ciphertext);
+        crashTemp(&key[16], 16);
+        fwrite(ciphertext, 16, 1, bdd);
+        fclose(bdd);
+    }
 
 	get_file_date(SECURE_DATABASE, temp);
     if(strcmp(temp, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
-        char *buffer = malloc(strlen(REPERTOIREEXECUTION) + 100);
-        if(buffer == NULL)
-        {
-            snprintf(temp, 240, "Failed at allocate memory for : %d bytes\n", strlen(REPERTOIREEXECUTION) + 100);
-            logR(temp);
-            exit(1);
-        }
-
-        snprintf(buffer, strlen(REPERTOIREEXECUTION)+100, "%s/%s", REPERTOIREEXECUTION, SECURE_DATABASE);
-        applyWindowsPathCrap(buffer);
-
-        hFile = CreateFileA(buffer, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+        hFile = CreateFileA(SECURE_DATABASE, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
         ftLastEdit.dwLowDateTime = dwLowDateTime;
         ftLastEdit.dwHighDateTime = dwHighDateTime;
         SetFileTime(hFile, NULL, NULL, &ftLastEdit); //On applique les modifs
         CloseHandle(hFile); //Fermeture
 
-        free(buffer);
-        crashTemp(temp, 140);
-		get_file_date(SECURE_DATABASE, temp);
-
+        get_file_date(SECURE_DATABASE, temp);
         if(strcmp(temp, date))
         {
-            logR("Unexpected time comportement, please leave this programm away from your Delorean.\n");
+            logR("Read error");
             removeR(SECURE_DATABASE);
-            exit(1);
+            return 1;
         }
 #else
-
         struct utimbuf ut;
-
         ut.actime = structure_time.st_atime;
         ut.modtime = structure_time.st_mtime;
         utime(SECURE_DATABASE,&ut);
-
 #endif
     }
     return 0;
@@ -941,17 +915,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             crashTemp(buffer_dl, 500);
             download_mem(temp, buffer_dl, 500, 1);
             if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
-            {
-                int i;
-                unsigned char key_2[SHA256_DIGEST_LENGTH];
-                internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key_2);
-                for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-                {
-                    if(key_2[i] < ' ')
-                        key_2[i] += ' ';
-                }
-                memcpy(key, key_2, SHA256_DIGEST_LENGTH);
-            }
+                internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key);
             else
             {
                 snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);

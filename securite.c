@@ -199,6 +199,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     {
         logR("Huge fail: database corrupted\n");
         free(configEnc);
+        free(path);
         exit(-1);
     }
     unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -210,8 +211,8 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
     if(i == 0 || configEnc[i] != ' ')
     {
-        free(configEnc);
         logR("Huge fail: database corrupted\n");
+        free(configEnc);
         free(path);
         return NULL;
     }
@@ -227,8 +228,8 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         if(((length2 - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length2 - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length2-1] == ' ');
         else
         {
-            free(configEnc);
             logR("Huge fail: database corrupted\n");
+            free(configEnc);
             free(path);
             return NULL;
         }
@@ -258,10 +259,10 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
 
     test = fopenR(path, "rb");
+    fread(buf_in, 1, size, test);
     i = 0;
     do
     {
-        fread(buf_in, 1, size, test);
         decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
         surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
         if(surface_page == NULL)
