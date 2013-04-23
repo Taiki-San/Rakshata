@@ -88,24 +88,57 @@ int ajoutRepo()
 
             if(!continuer)
             {
+                int versionRepo = VERSION_REPO;
                 char bufferDL[1000];
-                if(!strcmp(teams.type, TYPE_DEPOT_1))
-                    snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-1", teams.URL_depot);
 
-                else if(!strcmp(teams.type, TYPE_DEPOT_2))
-                    snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-1", teams.URL_depot);
-
-                else if(!strcmp(teams.type, TYPE_DEPOT_4))
-                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
-
-                crashTemp(bufferDL, 1000);
-                download_mem(temp, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
-                for(erreur = 5; erreur > 0 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur--);
-
-                if(!erreur && bufferDL[5]) //Si on pointe sur un vrai dépôt
+                if(strcmp(teams.type, TYPE_DEPOT_4))
                 {
-                    sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
+                    do
+                    {
+                        if(!strcmp(teams.type, TYPE_DEPOT_1))
+                            snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
+                        else if(!strcmp(teams.type, TYPE_DEPOT_2))
+                            snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
 
+                        download_mem(temp, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
+                        for(erreur = 0; erreur < 5 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
+                        versionRepo--;
+                    } while((erreur != 5 || !bufferDL[5]) && versionRepo > 0);
+                    if(erreur == 5)
+                    {
+                        if(versionRepo == 1)
+                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
+                        else
+                        {
+                            char ID[LONGUEUR_ID_TEAM];
+                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+                            teams.openSite = 1;
+                        }
+                    }
+                }
+
+                else
+                {
+                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
+                    download_mem(temp, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
+                    for(erreur = 0; erreur < 5 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
+                    if(erreur == 5 && bufferDL[5])
+                    {
+                        int posBuf;
+                        for(posBuf = strlen(bufferDL); bufferDL[posBuf] == '#' || bufferDL[posBuf] == '\n' || bufferDL[posBuf] == '\r'; bufferDL[posBuf--] = 0);
+                        if(bufferDL[posBuf] >= '0' && bufferDL[posBuf] <= '9') //Ca fini par un chiffe, c'est la v2
+                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
+                        else
+                        {
+                            char ID[LONGUEUR_ID_TEAM];
+                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+                            teams.openSite = 1;
+                        }
+                    }
+                }
+
+                if(erreur == 5 && bufferDL[5]) //Si on pointe sur un vrai dépôt
+                {
                     /*Redimension de la fenêtre*/
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
@@ -281,7 +314,7 @@ int deleteRepo()
             {
                 for(; repo!=NULL && *repo && *repo != '\n'; repoNew[j++] = *repo++);
                 for(; repo!=NULL && *repo && *repo == '\n'; repo++);
-                sscanfs(repo, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, temp, LONGUEUR_NOM_MANGA_MAX);
+                sscanfs(repo, "%s", temp, LONGUEUR_NOM_MANGA_MAX);
                 if(!strcmp(temp, mangaDB[teamChoisis-1].team->teamLong))
                     for(; repo!=NULL && *repo && *repo != '\n'; repo++);
                 else
