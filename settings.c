@@ -68,7 +68,12 @@ int menuGestion()
                 /*Supprimer un dépot*/
                 menu = deleteRepo();
                 if(menu == 1)
+                {
+                    MUTEX_LOCK;
+                    alreadyRefreshed = 0;
+                    MUTEX_UNLOCK;
                     raffraichissmenent();
+                }
                 break;
 
             case 3:
