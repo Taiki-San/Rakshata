@@ -144,7 +144,7 @@ char *loadPrefFile()
 
 void addToPref(char flag, char *stringToAdd)
 {
-    int i, j, length;
+    int i, length;
     char setFlag[10], *prefs = NULL, *newPrefs = NULL;
     snprintf(setFlag, 10, "<%c>", flag);
 
@@ -155,18 +155,14 @@ void addToPref(char flag, char *stringToAdd)
             removeFromPref(flag);
 
         i = strlen(prefs);
-        length = i + strlen(stringToAdd);
-        newPrefs = malloc(length+5);
-        crashTemp(newPrefs, length+5);
-        if(prefs == NULL)
+        length = i + strlen(stringToAdd)+2;
+        newPrefs = calloc(1, length+5);
+        if(newPrefs == NULL)
             return;
 
-        ustrcpy(newPrefs, prefs);
-        free(prefs);
-        prefs = newPrefs;
-        for(j = 0; i < length && stringToAdd[j]; newPrefs[i++] = stringToAdd[j++]);
-        newPrefs[i] = 0;
+        snprintf(newPrefs, length, "%s\n%s", prefs, stringToAdd);
         AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+        free(newPrefs);
         free(prefs);
     }
     else
