@@ -49,12 +49,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Mavy"
             VALUE "FileDescription", "Rakshata is a manga and comic reader"
-            VALUE "FileVersion", "1.1.1.0"
+            VALUE "FileVersion", "1.2.0.0"
             VALUE "InternalName", "Rakshata"
             VALUE "LegalCopyright", "Copyright 2011-2013 Taiki"
             VALUE "OriginalFilename", "Rakshata.exe"
             VALUE "ProductName", "Rakshata"
-            VALUE "ProductVersion", "1.1.1.0"
+            VALUE "ProductVersion", "1.2.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -72,7 +72,7 @@ END
 
 1 TEXTINCLUDE
 BEGIN
-    "resource.h\0"
+    "\0"
 END
 
 2 TEXTINCLUDE
