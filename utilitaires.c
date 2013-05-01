@@ -53,7 +53,7 @@ int sortMangasToDownload(const void *a, const void *b)
     else if(ptsA < ptsB)
         return 1;
     else
-        return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
+		return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
 }
 
 int sortNumbers(const void *a, const void *b)
@@ -320,4 +320,3 @@ int isPNG(void *input)
         return 1;
     return 0;
 }
-

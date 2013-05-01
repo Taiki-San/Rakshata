@@ -49,6 +49,10 @@ SDL_Renderer *rendererDL = NULL;
 	#endif
 #endif
 {
+#ifdef __INTEL_COMPILER
+	download_disk("http://www.pebkac.fr/", "test.log", 0);
+#endif
+
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 

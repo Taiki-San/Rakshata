@@ -285,7 +285,7 @@ int sscanfs(char *char_input, const char *format, ...)
                     if(!number)
                         break;
 
-                    while(*char_input < '0' || *char_input > '9')
+                    while(*char_input && (*char_input < '0' || *char_input > '9'))
                     {
                         if(*char_input == '-')
                         {

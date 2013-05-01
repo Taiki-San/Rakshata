@@ -33,6 +33,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     for(i = 0; i < nombreElements; i++) //Affichage
     {
         texture = TTF_Write(renderer, police, texte[i], couleurTexte);
+        if(texture == NULL)
+            continue;
         if(i % 2 == 0) //Colonne de gauche
             position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
         else
