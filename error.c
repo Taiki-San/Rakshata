@@ -75,7 +75,7 @@ void connexionNeededToAllowANewComputer()
 
 int libcurlErrorCode(CURLcode code)
 {
-    int ret_value = -1;
+    int ret_value = CODE_RETOUR_DL_CLOSE;
     char log_message[100];
     switch(code)
     {
@@ -98,36 +98,36 @@ int libcurlErrorCode(CURLcode code)
         case CURLE_COULDNT_RESOLVE_HOST:
         case CURLE_COULDNT_CONNECT:
         {
-            return CODE_FAILED_AT_RESOLVE_INTERNAL;
+            return CODE_FAILED_AT_RESOLVE;
             break;
         }
         case CURLE_PARTIAL_FILE:
         {
             snprintf(log_message, 100, "Partial file\n");
-            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
         {
             snprintf(log_message, 100, "Everything is screwed up...\n");
-            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_OPERATION_TIMEDOUT:
         {
             snprintf(log_message, 100, "Request timed out\n");
-            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_ABORTED_BY_CALLBACK:
         {
-            return CODE_RETOUR_DL_CLOSE_INTERNAL;
+            return CODE_RETOUR_DL_CLOSE;
             break;
         }
         case CURLE_SSL_CACERT_BADFILE:
         {
             snprintf(log_message, 100, "SSL error\n");
-            ret_value = CODE_RETOUR_INTERNAL_FAIL_INTERNAL;
+            ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_SSL_CACERT:

@@ -17,15 +17,12 @@ extern int WINDOW_SIZE_W_DL;
 
 static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
-static unsigned long POSITION_DANS_BUFFER;
-static size_t size_buffer;
 static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
 static int errCode;
-static void *internalBuffer;
 
-static void downloader(char *adresse);
+static void downloader(TMP_DL *output);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *buffer_dl);
+static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, TMP_DL *output);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
@@ -36,17 +33,16 @@ static void define_user_agent(CURL *curl);
 	    repertoire[0] = 0: DL dans un buffer
 	    repertoire[0] != 0: DL dans un fichier*/
 
-OUT_DL *download_UI(char *adresse)
+int download_UI(TMP_DL *output)
 {
     int pourcent = 0, last_refresh = 0;
     char temp[TAILLE_BUFFER];
     SDL_Rect position;
 
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return (OUT_DL*) CODE_RETOUR_DL_CLOSE_INTERNAL;
+        return CODE_RETOUR_DL_CLOSE;
 
-    FILE_EXPECTED_SIZE = size_buffer = errCode = 0;
-    internalBuffer = NULL;
+    FILE_EXPECTED_SIZE = errCode = 0;
 
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
@@ -60,12 +56,12 @@ OUT_DL *download_UI(char *adresse)
         }
 
         if(checkNetworkState(CONNEXION_DOWN))
-            return (OUT_DL*) CODE_RETOUR_DL_CLOSE_INTERNAL;
+            return CODE_RETOUR_DL_CLOSE;
 
     }
     status = STATUS_DOWNLOADING;
 
-    createNewThread(downloader, adresse);
+    createNewThread(downloader, output);
 
     double last_file_size = 0, download_speed = 0;
     char texte[SIZE_TRAD_ID_20][100];
@@ -181,30 +177,26 @@ OUT_DL *download_UI(char *adresse)
 
     if(status == STATUS_FORCE_CLOSE) //Fermeture demandée ou erreur
     {
-        free(internalBuffer);
         status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
         MUTEX_UNLOCK;
-        return (OUT_DL*) 1;
+        return CODE_RETOUR_DL_CLOSE;
     }
     else if(errCode != 0)
     {
         status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
         MUTEX_UNLOCK;
-        return (OUT_DL*) (errCode*-1);
+        return errCode;
     }
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
-    OUT_DL* outStruct = malloc(sizeof(OUT_DL));
-    outStruct->buf = internalBuffer;
-    outStruct->length = POSITION_DANS_BUFFER;
     MUTEX_UNLOCK;
-    return outStruct;
+    return 0;
 }
 
-static void downloader(char *adresse)
+static void downloader(TMP_DL *output)
 {
     CURL *curl = NULL;
     CURLcode res; //Get return from download
-    FILE_EXPECTED_SIZE = 0;
+    CURRENT_FILE_SIZE = FILE_EXPECTED_SIZE = 0;
 
 #ifdef DEV_VERSION
     int proxy = 0;
@@ -232,12 +224,12 @@ static void downloader(char *adresse)
         if(proxy)
             curl_easy_setopt(curl, CURLOPT_PROXY, IPProxy); //Proxy
 #endif
-        curl_easy_setopt(curl, CURLOPT_URL, adresse); //URL
+        curl_easy_setopt(curl, CURLOPT_URL, output->URL); //URL
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
         define_user_agent(curl);
 
-        if(adresse[8] == 'r') //RSP
+        if(output->URL[8] == 'r') //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
@@ -247,7 +239,7 @@ static void downloader(char *adresse)
 
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
         curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, downloadData);
-        CURRENT_FILE_SIZE = 0;
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_UI);
         res = curl_easy_perform(curl);
 
@@ -276,7 +268,7 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
 int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return CODE_RETOUR_DL_CLOSE_INTERNAL;
+        return CODE_RETOUR_DL_CLOSE;
 
     return internal_download_easy(adresse, 0, buffer_out, buffer_length, SSL_enabled);
 }
@@ -284,7 +276,7 @@ int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_
 int download_disk(char* adresse, char *file_name, int SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return CODE_RETOUR_DL_CLOSE_INTERNAL;
+        return CODE_RETOUR_DL_CLOSE;
 
     return internal_download_easy(adresse, 1, file_name, 0, SSL_enabled);
 }
@@ -381,49 +373,46 @@ static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded,
     return 0;
 }
 
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *useless)
+static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, TMP_DL *output)
 {
-    int i = 0;
     char *input = ptr;
-    char *output;
-
-    if(internalBuffer == NULL || (size_buffer < FILE_EXPECTED_SIZE && size * nmemb >= size_buffer - POSITION_DANS_BUFFER))
+    if(output->buf == NULL || output->length != FILE_EXPECTED_SIZE || size * nmemb >= output->length - output->current_pos)
     {
-        if(internalBuffer == NULL)
+        if(output->buf == NULL)
         {
-            POSITION_DANS_BUFFER = 0;
+            output->current_pos = 0;
             if(!FILE_EXPECTED_SIZE)
-                size_buffer = 30*1024*1024;
+                output->length = 30*1024*1024;
             else
-                size_buffer = 2*FILE_EXPECTED_SIZE; //100% de marge
-            internalBuffer = ralloc(size_buffer);
-            if(internalBuffer == NULL)
+                output->length = 2*FILE_EXPECTED_SIZE; //100% de marge
+            output->buf = ralloc(output->length);
+            if(output->buf == NULL)
                 return -1;
-            else
-                output = internalBuffer;
         }
         else //Buffer trop petit, on l'agrandit
         {
-            size_buffer = 2*FILE_EXPECTED_SIZE;
-            void *internalBufferTmp = realloc(internalBuffer, 2*FILE_EXPECTED_SIZE);
+            output->length = 2*FILE_EXPECTED_SIZE;
+            void *internalBufferTmp = realloc(output->buf, output->length);
             if(internalBufferTmp == NULL)
                 return -1;
-            output = internalBuffer = internalBufferTmp;
+            output->buf = internalBufferTmp;
         }
     }
-    else if(internalBuffer != NULL)
-        output = internalBuffer;
 
     if(size * nmemb == 0) //Rien à écrire
         return 0;
 
-    else if(size * nmemb < size_buffer - POSITION_DANS_BUFFER || size_buffer == -1)
-        for(; i++ < size*nmemb && POSITION_DANS_BUFFER < size_buffer; output[POSITION_DANS_BUFFER++] = *(input++));
+    else if(size * nmemb < output->length - output->current_pos)
+    {
+        memcpy(&output->buf[output->current_pos], input, size*nmemb);
+        output->current_pos += size*nmemb;
+    }
 
     else //Tronque
     {
-        for(i = 0; POSITION_DANS_BUFFER < size_buffer; output[POSITION_DANS_BUFFER++] = input[i++]);
-        output[POSITION_DANS_BUFFER-1] = 0;
+        int i;
+        for(i = 0; output->current_pos < output->length; output->buf[output->current_pos++] = input[i++]);
+        output->buf[output->current_pos-1] = 0;
     }
     return size*nmemb;
 }
@@ -443,10 +432,11 @@ static void define_user_agent(CURL *curl)
 
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 {
-  X509_STORE * store;
-  X509 * cert=NULL;
-  BIO * bio;
-  char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+#ifdef SSL_ENABLE
+	X509_STORE * store;
+	X509 * cert=NULL;
+	BIO * bio;
+	char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
 MIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\n\
 VQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\n\
 YXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\n\
@@ -485,6 +475,7 @@ hg0fHpfL7w==\n\
   /* add our certificate to this store */
   if (X509_STORE_add_cert(store, cert)==0)
         return CURLE_SSL_CERTPROBLEM;
+#endif
 
   /* all set to go */
   return CURLE_OK ;

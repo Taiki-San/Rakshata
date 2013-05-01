@@ -49,14 +49,9 @@ typedef struct data_lecture_tome
     int decimaleDeLaPage[NOMBRE_PAGE_MAX];
 } DATA_LECTURE;
 
-typedef struct output_download_with_size
-{
-    char *buf;
-    size_t length;
-} OUT_DL;
-
 typedef struct download_data_struct
 {
+    char *URL;
     char *buf;
     size_t length;
     size_t current_pos;
@@ -70,10 +65,10 @@ typedef struct data_loaded_from_download_list
 
 typedef struct data_pour_installation
 {
-    MANGAS_DATA mangaDB;
     int chapitre;
-    OUT_DL *buf;
-
+    size_t length;
+    void *downloadedData;
+    MANGAS_DATA *mangaDB;
 } DATA_INSTALL;
 
 typedef struct
