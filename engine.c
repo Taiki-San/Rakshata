@@ -786,7 +786,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                 else
                     for(i = 0; (((hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i) > event.button.y || (hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i + LARGEUR_MOYENNE_MANGA_PETIT) < event.button.y) && i < NOMBRE_MANGA_MAX); i++);
 
-                if(i != NOMBRE_MANGA_MAX && tailleTexte[i * NBRCOLONNES_TRI] != 0 && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
+                if(i < NOMBRE_MANGA_MAX && tailleTexte[i * NBRCOLONNES_TRI] != 0 && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
                 {
                     /*Nombre Colonne*/
                     for(buffer = 0; ((BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer) > event.button.x || (BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer + LONGUEURMANGA) < event.button.x) && buffer < NBRCOLONNES_TRI-1; buffer++);

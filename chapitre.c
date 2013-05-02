@@ -182,8 +182,6 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
         MANGAS_DATA *chapitreDB = calloc(nombreMaxChapitre+2, sizeof(MANGAS_DATA));
         for(i = 0; i < nombreMaxChapitre; chapitreDB[i++].mangaName[0] = 0);
 
-        nombreMaxChapitre--;
-
         /************************************************************
         ** Génére le noms des chapitre en vérifiant leur existance **
         **              Si on télécharge, on met tout              **
@@ -199,8 +197,8 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
         if(dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE) //Ordre croissant
             i = 0;
         else
-            i = nombreMaxChapitre;
-        while((i <= nombreMaxChapitre && dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE) || (i >= 0 && dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE))
+            i = nombreMaxChapitre-1;
+        while((i < nombreMaxChapitre && dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE) || (i >= 0 && dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE))
         {
             if(mangaDB->chapitres[i] % 10)
                 snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10, CONFIGFILE);
@@ -232,7 +230,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             return PALIER_MENU;
         }
 
-        if(nombreChapitre <= nombreMaxChapitre)
+        if(nombreChapitre < nombreMaxChapitre)
             chapitreDB[nombreChapitre].mangaName[0] = chapitreDB[nombreChapitre].pageInfos = 0;
 
         /*On calcule la taille de la fenêtre*/
@@ -364,7 +362,7 @@ int chapitre(MANGAS_DATA *mangaDB, int mode)
             {
                 do
                 {
-                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, mangaDB->chapitres[nombreMaxChapitre]/10, hauteur_chapitre);
+                    chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, nombreMaxChapitre, hauteur_chapitre);
                     if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                         ouvrirSite(mangaDB->team);
                 }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team
