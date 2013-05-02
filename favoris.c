@@ -15,7 +15,7 @@
 int checkIfFaved(MANGAS_DATA* mangaDB, char *favs)
 {
     char *favsBak = NULL;
-    char mangaLong[LONGUEUR_NOM_MANGA_MAX], teamLong[LONGUEUR_NOM_MANGA_MAX];
+	char mangaLong[LONGUEUR_NOM_MANGA_MAX] = {0}, teamLong[LONGUEUR_NOM_MANGA_MAX] = {0};
 
     if(favs == NULL)
         favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG);

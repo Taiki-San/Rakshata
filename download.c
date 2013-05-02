@@ -81,12 +81,15 @@ int download_UI(TMP_DL *output)
     pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
 
     applyBackground(rendererDL, 0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL);
-    position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-    position.y = HAUTEUR_POURCENTAGE;
-    position.h = pourcentAffiche->h;
-    position.w = pourcentAffiche->w;
-    SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
-    SDL_DestroyTextureS(pourcentAffiche);
+    if(pourcentAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
+        position.y = HAUTEUR_POURCENTAGE;
+        position.h = pourcentAffiche->h;
+        position.w = pourcentAffiche->w;
+        SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
+        SDL_DestroyTextureS(pourcentAffiche);
+    }
     SDL_RenderPresent(rendererDL);
 
     position.x = BORDURE_POURCENTAGE;

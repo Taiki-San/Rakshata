@@ -26,7 +26,6 @@ int telechargement()
     int i = 0, mangaTotal, pourcentage, glados = CODE_RETOUR_OK, posToDo;
     char historiqueTeam[1000][LONGUEUR_COURT];
     char trad[SIZE_TRAD_ID_22][100];
-    FILE *fichier = NULL;
     DATA_LOADED **todoList = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
     SDL_Event event;
@@ -134,12 +133,13 @@ int telechargement()
 
     if(glados != CODE_RETOUR_OK)
     {
-        fichier = fopenR(INSTALL_DATABASE, "a+");
-        if(fichier != NULL)
+		FILE *import = NULL;
+        import = fopenR(INSTALL_DATABASE, "a+");
+        if(import != NULL)
         {
             for(i = posToDo-1; i < mangaTotal; i++) //PosToDo a déjà été incrémenté par le for précédent
-                fprintf(fichier, "%s %s %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->chapitre);
-            fclose(fichier);
+                fprintf(import, "%s %s %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->chapitre);
+            fclose(import);
         }
     }
 

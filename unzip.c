@@ -14,7 +14,7 @@
 #include "unzip/miniunzip.h"
 #include "unzip/unz_memory.c"
 
-volatile int INSTALL_DONE;
+int INSTALL_DONE;
 int CURRENT_TOKEN;
 
 int unzip(char *path, char *output)

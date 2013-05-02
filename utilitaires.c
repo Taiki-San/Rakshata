@@ -156,7 +156,7 @@ int positionnementApresChar(char* input, char *stringToFind)
 
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
 {
-    char temp[LONGUEUR_NOM_MANGA_MAX], buffer[LONGUEUR_COURT];
+	char temp[LONGUEUR_NOM_MANGA_MAX] = {0}, buffer[LONGUEUR_COURT] = {0};
     char* manga = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak;
     mangaBak = manga;
 
