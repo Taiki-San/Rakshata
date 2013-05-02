@@ -32,8 +32,13 @@ int plusOuMoins(int compare1, int compare2, int tolerance)
 int sortMangasToDownload(const void *a, const void *b)
 {
     int ptsA = 0, ptsB = 0;
-    const DATA_LOADED *struc1 = *(DATA_LOADED**)a;
-    const DATA_LOADED *struc2 = *(DATA_LOADED**)b;
+    const DATA_LOADED *struc1 = *(DATA_LOADED**) a;
+    const DATA_LOADED *struc2 = *(DATA_LOADED**) b;
+
+    if(struc1 == NULL)
+        return 1;
+    else if(struc2 == NULL)
+        return -1;
 
     if(struc1->datas == struc2->datas) //Si même manga, ils pointent vers la même structure, pas besoin de compter les points
         return struc1->chapitre - struc2->chapitre;

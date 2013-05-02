@@ -12,6 +12,8 @@
 
 #include "main.h"
 
+#define SSL_ENABLE
+
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
@@ -22,7 +24,7 @@ static int errCode;
 
 static void downloader(TMP_DL *output);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, TMP_DL *output);
+static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
@@ -373,8 +375,9 @@ static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded,
     return 0;
 }
 
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, TMP_DL *output)
+static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void)
 {
+    TMP_DL *output = output_void;
     char *input = ptr;
     if(output->buf == NULL || output->length != FILE_EXPECTED_SIZE || size * nmemb >= output->length - output->current_pos)
     {

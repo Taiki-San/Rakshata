@@ -73,7 +73,7 @@ void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
-OUT_DL *download_UI(char *adresse);
+int download_UI(TMP_DL *output);
 int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled);
 int download_disk(char* adresse, char *file_name, int SSL_enabled);
 int checkDLInProgress();
@@ -158,15 +158,21 @@ int showControls();
 
 /**ModuleDL.c**/
 int telechargement();
-#ifdef _WIN32
-DWORD WINAPI installation(LPVOID datas);
-#else
-void* installation(void* datas);
-#endif
+void installation(DATA_INSTALL* datas);
 int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
 void updateWindowSizeDL(int w, int h);
+
+/**ModuleDL2_tool.c**/
+char* MDL_craftDownloadURL(DATA_LOADED data);
+void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH]);
+DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal);
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded);
+bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char historiqueTeam[1000][LONGUEUR_COURT]);
+bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
+void grabInfoPNG(MANGAS_DATA mangaToCheck);
 
 /**Native.c**/
 FILE* fopenR(void *_path, char *right);
@@ -269,6 +275,7 @@ int positionnementApresChar(char* input, char *stringToFind);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char output[]);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
+#define isNbr(caract) (caract >= '0' && caract <= '9')?1:0
 void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);

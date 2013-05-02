@@ -35,7 +35,7 @@ MANGAS_DATA* miseEnCache(int mode)
 	mangaDB += sscanfs(mangaDB,"%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
 	for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
 
-    for(numeroManga = 0; *mangaDB != 0 && numeroManga <= NOMBRE_MANGA_MAX; numeroManga++)
+    for(numeroManga = 0; *mangaDB != 0 && numeroManga < NOMBRE_MANGA_MAX; numeroManga++)
 	{
 		if(*mangaDB == '#')
 		{
