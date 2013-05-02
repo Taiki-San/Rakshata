@@ -307,36 +307,22 @@ void networkAndVersionTest()
         MUTEX_LOCK;
         NETWORK_ACCESS = CONNEXION_OK;
         MUTEX_UNLOCK;
-        if(bufferDL[0] == '1' && !checkFileExist("update/update") && !checkFileExist("update/apply")) //Update needed
+        if(bufferDL[0] == '1' && !checkFileExist("update/update")) //Update needed
         {
-			int j = 0, k = 0;
-			char *buffer = NULL;
             FILE* test = NULL;
-			size_t size;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
             snprintf(temp, TAILLE_BUFFER, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
             download_disk(temp, "data/update", 0);
 
 			test = fopenR("data/update", "r");
-            fseek(test, 0, SEEK_END);
-            size = ftell(test);
-            rewind(test);
-
-            buffer = malloc(size*2);
-
-            while((k=fgetc(test)) != EOF)
+			if(test)
             {
-                if(k == '\n')
-                    buffer[j++] = '\r';
-                buffer[j++] = k;
+                for(i = 0; i < 5 && fgetc(test) != '<'; i++);
+                fclose(test);
+                if(i != 5)
+                    removeR("data/update");
             }
-            fclose(test);
-            test = fopenR("data/update", "w+");
-            for(k=0; k < j; fputc(buffer[k++], test));
-            fclose(test);
-            free(buffer);
-
         }
 
         checkSectionMessageUpdate();
@@ -344,11 +330,10 @@ void networkAndVersionTest()
         //Nouveau killswitch
         if(loadEmailProfile())
 		{
-			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i >= 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
-			if(i == 0 && COMPTE_PRINCIPAL_MAIL[i] != '@')
-            {
+			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
+			if(!i)
                 quit_thread(0);
-            }
+
 			snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
             crashTemp(bufferDL, 5);
