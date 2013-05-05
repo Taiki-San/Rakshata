@@ -12,7 +12,9 @@
 
 #include "main.h"
 
-#define SSL_ENABLE
+#ifndef __INTEL_COMPILER
+	#define SSL_ENABLE
+#endif
 
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
