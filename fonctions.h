@@ -159,7 +159,7 @@ int showControls();
 /**ModuleDL.c**/
 int telechargement();
 void installation(DATA_INSTALL* datas);
-int ecritureDansImport(MANGAS_DATA mangaDB, int chapitreChoisis);
+int ecritureDansImport(MANGAS_DATA mangaDB, bool isAChapter, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
 void updateWindowSizeDL(int w, int h);

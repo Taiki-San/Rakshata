@@ -135,12 +135,12 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
         }
         else if(i == '\n')
         {
-            if(nombreEspace == 2 && !dernierEspace)
+            if(nombreEspace == 3 && !dernierEspace)
                 (*nombreMangaTotal)++;
             nombreEspace = 0;
 			dernierEspace = 1;
         }
-		else if(nombreEspace == 2 && !isNbr(i))
+		else if(nombreEspace == 3 && !isNbr(i))
 			nombreEspace++; //Devrais invalider la ligne
         else
             dernierEspace = 0;
@@ -149,7 +149,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
     if(*nombreMangaTotal)
     {
 		int c, j, posPtr = 0, chapitreTmp, posCatalogue = 0;
-		char ligne[2*LONGUEUR_COURT + 20], teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT];
+		char ligne[2*LONGUEUR_COURT + 20], teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT], type[2];
 
 		//Create the new structure, then copy old data
         DATA_LOADED **newBufferTodo = (DATA_LOADED**) calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
@@ -175,7 +175,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 			ligne[j] = 0;
 
 			//Sanity checks
-			for(c = nombreEspace = 0, dernierEspace = 1; ligne[c] && nombreEspace != 3 && (nombreEspace != 2 || isNbr(ligne[c])); c++)
+			for(c = nombreEspace = 0, dernierEspace = 1; ligne[c] && nombreEspace != 4 && (nombreEspace != 3 || isNbr(ligne[c])); c++)
 			{
 				if(ligne[c] == ' ')
 				{
@@ -183,18 +183,22 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 						nombreEspace++;
 					dernierEspace = 1;
 				}
+				else if(nombreEspace == 2 && (ligne[c] != 'C' || ligne[c] != 'T') && ligne[c+1] != ' ')
+					nombreEspace = 4; //Invalidation
+
 				else
 					dernierEspace = 0;
 			}
-			if(nombreEspace != 2 || ligne[c])
+			if(nombreEspace != 3 || ligne[c])
 				continue;
 
 			//Allocate memory, then fill it
             newBufferTodo[posPtr] = (DATA_LOADED*) calloc(1, sizeof(DATA_LOADED));
 
-            sscanfs(ligne, "%s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, &chapitreTmp);
+            sscanfs(ligne, "%s %s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
 			if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
+				newBufferTodo[posPtr]->typeChapter = (type[0] == 'C');
                 newBufferTodo[posPtr]->chapitre = chapitreTmp;
                 newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
             }
@@ -203,6 +207,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 for(posCatalogue = 0; posCatalogue < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)); posCatalogue++);
                 if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt))
                 {
+					newBufferTodo[posPtr]->typeChapter = (type[0] == 'C');
                     newBufferTodo[posPtr]->chapitre = chapitreTmp;
                     newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
                 }

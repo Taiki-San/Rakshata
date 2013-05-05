@@ -102,7 +102,7 @@ void getNewFavs()
                     if(import != NULL)
                     {
                         WEGOTSOMETHING = 1;
-                        fprintf(import, "%s %s %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, j*10);
+                        fprintf(import, "%s %s C %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, j*10);
                         fclose(import);
                         import = NULL;
                     }

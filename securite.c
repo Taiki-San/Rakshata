@@ -152,25 +152,22 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 {
     int i = 0, nombreEspace = 0;
     unsigned char *configEnc = malloc(((HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10) * sizeof(unsigned char)); //+1 pour \n, +10 pour le nombre en tête et le \n qui suis
-    char *path, *root, key[SHA256_DIGEST_LENGTH];
+    char *path, key[SHA256_DIGEST_LENGTH];
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
 
-	size_t size = 0, length = strlen(REPERTOIREEXECUTION) + strlen(teamLong) + strlen(mangas) + strlen(nomPage) + 30;
+	size_t size = 0, length = strlen(REPERTOIREEXECUTION) + strlen(teamLong) + strlen(mangas) + 60;
 
 	path = malloc(length);
-	root = malloc(length);
 	if(numeroChapitre % 10)
-        snprintf(root, length, "manga/%s/%s/Chapitre_%d.%d", teamLong, mangas, numeroChapitre/10, numeroChapitre%10);
+        snprintf(path, length, "manga/%s/%s/Chapitre_%d.%d/config.enc", teamLong, mangas, numeroChapitre/10, numeroChapitre%10);
 	else
-        snprintf(root, length, "manga/%s/%s/Chapitre_%d", teamLong, mangas, numeroChapitre/10);
+        snprintf(path, length, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre/10);
 
-    snprintf(path, length, "%s/%s", root, nomPage);
-    test = fopenR(path, "r");
+    test = fopenR(nomPage, "r");
     if(test == NULL) //Si on trouve pas la page
     {
         free(configEnc);
-        free(path);
         return NULL;
     }
 
@@ -181,15 +178,12 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         size += CRYPTO_BUFFER_SIZE;
     fclose(test);
 
-    snprintf(path, length, "%s/config.enc", root);
     test = fopenR(path, "r");
 
     if(test == NULL) //Si on trouve pas config.enc
     {
-        snprintf(path, length, "%s/%s", root, nomPage);
         free(configEnc);
-        surface_page = IMG_Load(path);
-        free(path);
+        surface_page = IMG_Load(nomPage);
         return surface_page;
     }
     fclose(test);
@@ -208,16 +202,15 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     crashTemp(temp, 200);
 
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
+    free(path);
     for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
     if(i == 0 || configEnc[i] != ' ')
     {
         logR("Huge fail: database corrupted\n");
         free(configEnc);
-        free(path);
         return NULL;
     }
     crashTemp(hash, SHA256_DIGEST_LENGTH);
-    snprintf(path, length, "%s/%s", root, nomPage);
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
     for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
@@ -230,7 +223,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         {
             logR("Huge fail: database corrupted\n");
             free(configEnc);
-            free(path);
             return NULL;
         }
     }
@@ -248,7 +240,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     {
         crashTemp(key, SHA256_DIGEST_LENGTH);
         free(configEnc);
-        free(path);
         logR("Huge fail: database corrupted\n");
         return NULL;
     }
@@ -258,17 +249,16 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     void *buf_page = ralloc(size + 0xff);
     void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
 
-    test = fopenR(path, "rb");
+    test = fopenR(nomPage, "rb");
     fread(buf_in, 1, size, test);
+    fclose(test);
+
     i = 0;
     do
     {
         decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
         surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
-        if(surface_page == NULL)
-            rewind(test);
     }while(i++ < 64 && surface_page == NULL && (isPNG(buf_page) || isJPEG(buf_page)));
-    fclose(test);
 
 #ifdef DEV_VERSION
     if(surface_page == NULL)
@@ -280,7 +270,6 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
 #endif
     crashTemp(key, SHA256_DIGEST_LENGTH);
     free(buf_page);
-    free(path);
     return surface_page;
 }
 

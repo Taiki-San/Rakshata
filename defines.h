@@ -280,7 +280,7 @@
 
     /*Limites buffers*/
     #define NOMBRE_PAGE_MAX 1000
-    #define LONGUEUR_NOM_PAGE 100
+    #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*3+200
 
     /*Tailles*/
     #define BORDURE_LAT_LECTURE 20

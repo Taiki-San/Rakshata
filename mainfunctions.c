@@ -272,7 +272,7 @@ int mainChoixDL()
                     {
                         /*Confirmation */
                         SDL_RenderClear(renderer);
-                        continuer = ecritureDansImport(mangaDB[mangaChoisis], chapitreChoisis);
+                        continuer = ecritureDansImport(mangaDB[mangaChoisis], 1, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }

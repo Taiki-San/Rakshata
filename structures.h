@@ -22,22 +22,28 @@ typedef struct infos_Team
 
 typedef struct dataMangas
 {
+    //Infos générales
     char mangaName[LONGUEUR_NOM_MANGA_MAX];
     char mangaNameShort[LONGUEUR_COURT];
-    int firstChapter;
-    int lastChapter;
-    int *chapitres;
-    int firstTome;
-    int lastTome;
+    TEAMS_DATA *team;
+
     int status;
     int genre;
     int pageInfos;
-    int favoris;
+
+    //Chapitres
+    int firstChapter;
+    int lastChapter;
     int chapitreSpeciauxDisponibles;
+    int *chapitres;
 
-    /*Team*/
-    TEAMS_DATA *team;
+    //Tomes
+    int firstTome;
+    int lastTome;
+    int nombreTomes;
+    int **tomes;
 
+    int favoris;
 } MANGAS_DATA;
 
 typedef struct data_lecture_tome
@@ -59,6 +65,7 @@ typedef struct download_data_struct
 
 typedef struct data_loaded_from_download_list
 {
+	bool typeChapter; //Si 0, alors tome
     int chapitre;
     MANGAS_DATA* datas;
 } DATA_LOADED;
