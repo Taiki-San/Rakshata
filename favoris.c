@@ -12,27 +12,38 @@
 
 #include "main.h"
 
-int checkIfFaved(MANGAS_DATA* mangaDB, char *favs)
+bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
 {
-    char *favsBak = NULL;
+    bool generateOwnCache = false;
+    char *favsBak = NULL, *internalCache = NULL;
 	char mangaLong[LONGUEUR_NOM_MANGA_MAX] = {0}, teamLong[LONGUEUR_NOM_MANGA_MAX] = {0};
 
     if(favs == NULL)
-        favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG);
+    {
+        favs = &internalCache;
+        generateOwnCache = true;
+    }
 
-    if(favs == NULL || mangaDB == NULL)
+    if(*favs == NULL)
+    {
+        *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG);
+    }
+
+    if(*favs == NULL || mangaDB == NULL)
         return 0;
 
-    favsBak = favs;
-    while(favs != NULL && *favs && (strcmp(mangaDB->team->teamLong, teamLong) || strcmp(mangaDB->mangaName, mangaLong)))
+    favsBak = *favs;
+    while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->teamLong, teamLong) || strcmp(mangaDB->mangaName, mangaLong)))
     {
-        favs += sscanfs(favs, "%s %s", teamLong, LONGUEUR_NOM_MANGA_MAX, mangaLong, LONGUEUR_NOM_MANGA_MAX);
-        for(; favs != NULL && *favs && (*favs == '\n' || *favs == '\r'); favs++);
+        favsBak += sscanfs(favsBak, "%s %s", teamLong, LONGUEUR_NOM_MANGA_MAX, mangaLong, LONGUEUR_NOM_MANGA_MAX);
+        for(; favsBak != NULL && *favsBak && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
     }
-    free(favsBak);
+    if(generateOwnCache)
+        free(internalCache);
+
     if(!strcmp(mangaDB->team->teamLong, teamLong) && !strcmp(mangaDB->mangaName, mangaLong))
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
 
 void updateFavorites()
