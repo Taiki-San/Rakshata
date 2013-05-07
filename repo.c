@@ -285,7 +285,7 @@ int deleteRepo()
     SDL_DestroyTextureS(texteAffiche);
 
     curPage = 1;
-    teamChoisis = displayMangas(mangaDB, SECTION_CHOISIS_TEAM, 0, BORDURE_SUP_SELEC_MANGA);
+    teamChoisis = displayMangas(mangaDB, CONTEXTE_SUPPRESSION, 0, BORDURE_SUP_SELEC_MANGA);
 
     if(teamChoisis >= 1 && mangaDB[teamChoisis-1].mangaName[0] != 0)
     {

@@ -12,73 +12,7 @@
 
 #include "main.h"
 
-int section()
-{
-    /*Initialisation*/
-	char texteTrad[SIZE_TRAD_ID_17][LONGUEURTEXTE], *sectionMessage = NULL;
-    SDL_Texture *texte;
-    TTF_Font *police = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-
-    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
-        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
-
-    SDL_RenderClear(renderer);
-
-    /*Affichage du texte*/
-    loadTrad(texteTrad, 17);
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-    position.y = BORDURE_SUP_MENU;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
-    TTF_CloseFont(police);
-
-    if((sectionMessage = loadLargePrefs(SETTINGS_MESSAGE_SECTION_FLAG)) != NULL)
-    {
-        if(strlen(sectionMessage) != 0 && strlen(sectionMessage) < 512)
-        {
-            int i, j, k;
-            char message[5][100];
-            for(i = 0; sectionMessage[i] != ' ' && sectionMessage[i]; i++);
-            for(j = 0; sectionMessage[i] && j < 5; j++)
-            {
-                for(k = 0; sectionMessage[i] && sectionMessage[i] != '\n' && k < 100; message[j][k++] = sectionMessage[i++]);
-                if(sectionMessage[i] == '\n')
-                    i++;
-                message[j][k] = 0;
-            }
-
-            police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-            position.y = WINDOW_SIZE_H;
-            for(j--; j >= 0; j--)
-            {
-                texte = TTF_Write(renderer, police, message[j], couleurTexte);
-                if(texte != NULL)
-                {
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y -= texte->h; //Gère les sauts de ligne
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
-                }
-                else
-                    position.y -= 36; //Gère les sauts de ligne
-            }
-            TTF_CloseFont(police);
-        }
-        free(sectionMessage);
-    }
-    return displayMenu(&(texteTrad[1]), NOMBRESECTION, BORDURE_SUP_SECTION);
-}
-
-int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
+int controleurManga(MANGAS_DATA* mangas_db, int contexte, int nombreChapitre)
 {
     /*Initilisation*/
     int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
@@ -92,7 +26,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 
     if(nombreMangaElligible > 0)
     {
-        if(sectionChoisis == SECTION_CHOISIS_LECTURE)
+        if(contexte == CONTEXTE_LECTURE)
             hauteurDonnes = BORDURE_SUP_SELEC_MANGA_LECTURE;
         else
             hauteurDonnes = BORDURE_SUP_SELEC_MANGA;
@@ -113,7 +47,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
         SDL_RenderClear(renderer);
 
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-        if(sectionChoisis == SECTION_DL)
+        if(contexte == CONTEXTE_DL)
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
         else
             texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
@@ -128,7 +62,7 @@ int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre)
 
         /*Définition de l'affichage*/
         for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, '_', ' '));
-        mangaChoisis = displayMangas(mangas_db, sectionChoisis, nombreChapitre, hauteurDonnes);
+        mangaChoisis = displayMangas(mangas_db, contexte, nombreChapitre, hauteurDonnes);
         for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, ' ', '_'));
     }
     else
@@ -200,5 +134,30 @@ int checkProjet(MANGAS_DATA mangaDB)
         return waitEnter(renderer);
     }
     return 1;
+}
+
+int controleurChapTome(MANGAS_DATA* mangaDB, int contexte)
+{
+    int sectionSent = 0;
+    if(mangaDB == NULL)
+        return PALIER_CHAPTER;
+
+    if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        sectionSent = SECTION_CHOISIS_MIX;
+        return chapitre(mangaDB, contexte);
+    }
+    else if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        sectionSent = SECTION_CHAPITRE_ONLY;
+        return chapitre(mangaDB, contexte);
+    }
+    else if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        sectionSent = SECTION_TOME_ONLY;
+    }
+    if(sectionSent != 0)
+        sectionSent = 0;
+    return PALIER_CHAPTER;
 }
 

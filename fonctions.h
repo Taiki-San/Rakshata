@@ -33,6 +33,10 @@ int refreshChaptersList(MANGAS_DATA *mangaDB);
 int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 int getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int chapitre(MANGAS_DATA *mangaDB, int mode);
+void displayIconeChapOrTome(int chapitreOuTome);
+void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, char texteTrad[][TRAD_LENGTH], int nombreChapitre, int dernierLu);
+int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte);
+MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int mode, char* stringAll, char* stringGeneric, int *nombreChapitres);
 
 /**check.c**/
 int check_evt();
@@ -100,9 +104,10 @@ int showError();
 int rienALire();
 int affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
+int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre, char trad[2][TRAD_LENGTH]);
 
 /**Favoris.c**/
-int checkIfFaved(MANGAS_DATA* mangaDB, char *favs);
+int checkIfFaved(MANGAS_DATA* mangaDB, char **favs);
 void updateFavorites();
 void getNewFavs();
 
@@ -154,6 +159,7 @@ void mainDL();
 
 /**Menu.c**/
 int ecranAccueil();
+int section();
 int showControls();
 
 /**ModuleDL.c**/
@@ -226,9 +232,9 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check);
 
 /**Selection.c**/
-int section();
-int manga(int sectionChoisis, MANGAS_DATA* mangas_db, int nombreChapitre);
+int controleurManga(MANGAS_DATA* mangas_db, int contexte, int nombreChapitre);
 int checkProjet(MANGAS_DATA mangaDB);
+int controleurChapTome(MANGAS_DATA* mangaDB, int contexte);
 
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting

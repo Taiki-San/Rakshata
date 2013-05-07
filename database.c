@@ -18,6 +18,7 @@ MANGAS_DATA* miseEnCache(int mode)
 	char teamLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], type[NOMBRE_MANGA_MAX][LONGUEUR_TYPE_TEAM], URL[NOMBRE_MANGA_MAX][LONGUEUR_URL], site[NOMBRE_MANGA_MAX][LONGUEUR_SITE];
     char *repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	char *mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak = NULL;
+	char *cacheFavs = NULL;
 
     MANGAS_DATA *mangas = allocateDatabase(NOMBRE_MANGA_MAX);
 
@@ -70,7 +71,9 @@ MANGAS_DATA* miseEnCache(int mode)
 				mangas[numeroManga].genre = 1;
 
 			snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
-			if(checkFileExist(temp) || mode == LOAD_DATABASE_ALL)
+			if((checkFileExist(temp) || mode == LOAD_DATABASE_ALL)  && mangas[numeroManga].firstChapter <= mangas[numeroManga].lastChapter
+                                                                    && mangas[numeroManga].firstTome <= mangas[numeroManga].lastTome
+                                                                    && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE))
 			{
                 ustrcpy(mangas[numeroManga].team->teamLong, teamLong[numeroTeam]);
                 ustrcpy(mangas[numeroManga].team->teamCourt, teamCourt[numeroTeam]);
@@ -78,14 +81,14 @@ MANGAS_DATA* miseEnCache(int mode)
                 ustrcpy(mangas[numeroManga].team->URL_depot, URL[numeroTeam]);
                 ustrcpy(mangas[numeroManga].team->site, site[numeroTeam]);
                 mangas[numeroManga].team->openSite = openSite[numeroTeam];
-                mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], NULL);
+                mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], &cacheFavs);
 				nombreMangaDansDepot++;
 			}
 			else
 			{
 				memset(mangas[numeroManga].mangaName, 0, LONGUEUR_NOM_MANGA_MAX);
 				memset(mangas[numeroManga].mangaNameShort, 0, LONGUEUR_COURT);
-				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
+				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].firstTome = mangas[numeroManga].lastTome = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
                 numeroManga--;
 			}
 
@@ -440,33 +443,33 @@ extern int curPage; //Too lazy to use an argument
 int deleteManga()
 {
 	/*Cette fonction va pomper comme un porc dans le module de selection de manga du lecteur*/
-	int continuer = -1, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1, pageManga = 1, pageChapitre = 1;
+	int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1, pageManga = 1, pageChapitre = 1;
 	char temp[2*LONGUEUR_NOM_MANGA_MAX + 0x80];
 
 	/*C/C du choix de manga pour le lecteur.*/
 	MANGAS_DATA *mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
 
-	while((continuer > -2 && continuer < 1)|| continuer == 2 ||continuer == 4)
+	while(continuer > PALIER_MENU)
 	{
 		noMoreChapter = 1;
 		/*Appel des selectionneurs*/
 		curPage = pageManga;
-		mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangas, 0);
+		mangaChoisis = controleurManga(mangas, CONTEXTE_LECTURE, 0);
         pageManga = curPage;
 
-		if(mangaChoisis <= -2)
+		if(mangaChoisis <= PALIER_CHAPTER)
 			continuer = mangaChoisis;
-		if(mangaChoisis > -1)
+		else
 		{
-			chapitreChoisis = -1;
+			chapitreChoisis = PALIER_DEFAULT;
 			continuer = 0;
-			while(chapitreChoisis > -2 && !continuer && noMoreChapter)
+			while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT && noMoreChapter)
 			{
 			    curPage = pageChapitre;
-				chapitreChoisis = chapitre(&mangas[mangaChoisis], 3);
+				chapitreChoisis = controleurChapTome(&mangas[mangaChoisis], CONTEXTE_SUPPRESSION);
 				pageChapitre = curPage;
 
-				if (chapitreChoisis <= -2)
+				if (chapitreChoisis <= PALIER_CHAPTER)
 					continuer = chapitreChoisis;
 
 				else if (chapitreChoisis >= VALEUR_FIN_STRUCTURE_CHAPITRE)

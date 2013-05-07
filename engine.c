@@ -266,8 +266,8 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI] = {0, 0, 0}, mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
     int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
-    int button_selected[8], chapitreTomeDisponible = 0;
-    char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][100];
+    int button_selected[8], iconeChapitre1Tome2 = 0;
+    char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
@@ -294,15 +294,13 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         SDL_DestroyTextureS(texte);
     }
 
-    if(sectionChoisis == SECTION_CHOISIS_CHAPITRE || sectionChoisis == SECTION_CHOISIS_TOME || sectionChoisis == SECTION_CHAPITRE_ONLY) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
+    if(sectionChoisis == SECTION_CHOISIS_MIX || sectionChoisis == SECTION_TOME_ONLY || sectionChoisis == SECTION_CHAPITRE_ONLY) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
     {
-        modeChapitre = 2;
-        if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
-            chapitreTomeDisponible = 1;
-        else if(sectionChoisis == SECTION_CHOISIS_TOME)
-            chapitreTomeDisponible = -1;
+        modeChapitre = 2; //Icone affiché
+        if(sectionChoisis == SECTION_CHOISIS_MIX)
+            iconeChapitre1Tome2 = 1; //Tomes
         else
-            modeChapitre = 1; //L'icône est-elle affichée
+            modeChapitre = 1; //L'icône n'est pas affichée
 
         chapitreMax = nombreChapitre; //On récupére le chapitre max
         nombreChapitre = 0;
@@ -383,11 +381,11 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 crashTemp(temp, TAILLE_BUFFER);
                 snprintf(temp, TAILLE_BUFFER, "%s", mangaDB[i].mangaName);
 
-                if((sectionChoisis == SECTION_CHOISIS_LECTURE && checkChapitreUnread(mangaDB[i]) == 1)
-                        || (sectionChoisis == SECTION_DL && checkChapitreUnread(mangaDB[i]) == -1))
+                if((sectionChoisis == CONTEXTE_LECTURE && checkChapitreUnread(mangaDB[i]) == 1)
+                        || (sectionChoisis == CONTEXTE_DL && checkChapitreUnread(mangaDB[i]) == -1))
                     texte = TTF_Write(renderer, police, temp, couleurUnread);
 
-                else if(sectionChoisis == SECTION_DL && mangaDB[i].mangaName[0] && isItNew(mangaDB[i])) //Si pas encore DL, en rouge
+                else if(sectionChoisis == CONTEXTE_DL && mangaDB[i].mangaName[0] && isItNew(mangaDB[i])) //Si pas encore DL, en rouge
                         texte = TTF_Write(renderer, police, temp, couleurNew);
 
                 else
@@ -425,19 +423,19 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                 SDL_RenderPresent(renderer);
             }
         }
-        if(sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_DL)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
+        if(sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_DL)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
             generateChoicePanel(texte_Trad, button_selected);
         else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
         {
             chapterDisplayed = chapitreMax;
 
             //On affiche le bouton de switch
-            if(chapitreTomeDisponible)
+            if(iconeChapitre1Tome2)
             {
                 char tempPath[450];
-                if(chapitreTomeDisponible == 1) //On affiche les chapitres, montrer le bouton 'Tome'
+                if(iconeChapitre1Tome2 == 1) //On affiche les chapitres, montrer le bouton 'Tome'
                     snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_TOME);
-                else if(chapitreTomeDisponible == -1) //On affiche les tomes, montrer le bouton 'Chapitre'
+                else if(iconeChapitre1Tome2 == 2) //On affiche les tomes, montrer le bouton 'Chapitre'
                     snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_CHAPITRE);
 
                 texte = IMG_LoadTexture(renderer, tempPath);
@@ -485,7 +483,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
         }
 
-        if(sectionChoisis == SECTION_DL) //On affiche, si on dl, les boutons de DL/Annulation
+        if(sectionChoisis == CONTEXTE_DL) //On affiche, si on dl, les boutons de DL/Annulation
         {
             SDL_RenderPresent(renderer);
             position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
@@ -528,7 +526,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             chapterDisplayed > 0) //Retourne au menu principal si 0 chapitres
 #endif
             {
-                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != SECTION_CHOISIS_TEAM)
+                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != CONTEXTE_SUPPRESSION)
                     manuel = 0;
                 else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
                     manuel = chapterDisplayed;
@@ -542,12 +540,12 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
                         mangaChoisis = PALIER_CHAPTER;
                     else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z') //A-1 = backspace
                     {
-                        if(sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_DL)
+                        if(sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_DL)
                             break;
                         else
                             mangaChoisis = 0;
                     }
-                }while((mangaChoisis <= -10 && (sectionChoisis == SECTION_CHOISIS_LECTURE || sectionChoisis == SECTION_CHOISIS_TEAM)));
+                }while((mangaChoisis <= -10 && (sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_SUPPRESSION)));
 
                 analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage, nombreManga<=9);
                 if(refreshMultipage && changementDePage)
@@ -586,7 +584,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         }
     }
 
-    if(mangaChoisis > 0 && sectionChoisis != SECTION_CHOISIS_TEAM && sectionChoisis != SECTION_CHOISIS_CHAPITRE)
+    if(mangaChoisis > 0 && sectionChoisis != CONTEXTE_SUPPRESSION && sectionChoisis != SECTION_CHOISIS_CHAPITRE)
         return mangaChoisis - 1;
 
     return mangaChoisis;
@@ -674,7 +672,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
 
     for(nombreManga = 0; tailleTexte[nombreManga] != 0; nombreManga++);
 
-    if(*manuel == -1) //SECTION_CHOISIS_TEAM
+    if(*manuel == -1) //CONTEXTE_SUPPRESSION
     {
         *manuel = 0;
         modeTeam = 1;
@@ -725,7 +723,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                             *manuel = 1;
                         }
                         else
-                            mangaChoisis = -11; //Télécharger
+                            mangaChoisis = CODE_BOUTON_CHAPITRE_DL; //Télécharger
                         break;
 
                     case SDLK_ESCAPE:
@@ -814,9 +812,9 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                 if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && !modeChapitre) //Check si clique sur bouton de DL
                 {
                     if(event.button.x > WINDOW_SIZE_W*2/3)
-                        mangaChoisis = -10; //Annuler
+                        mangaChoisis = CODE_BOUTON_CHAPITRE_ANNULER; //Annuler
                     else if(event.button.x < WINDOW_SIZE_W/3)
-                        mangaChoisis = -11; //Télécharger
+                        mangaChoisis = CODE_BOUTON_CHAPITRE_DL; //Télécharger
                 }
 
 
@@ -889,7 +887,7 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 	if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
 		return 1;
 
-	if(sectionChoisis == SECTION_CHOISIS_TEAM)
+	if(sectionChoisis == CONTEXTE_SUPPRESSION)
 		return 1;
 
 	if(!letterLimitationEnforced(limitationLettre, mangaDB.mangaName[0]))
@@ -1070,7 +1068,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
         {
             for(i = 0, *limitationLettre = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++) //On va vérifier si des mangas répondent au critére
             {
-                if((sectionChoisis == SECTION_CHOISIS_TEAM && mangaDB[i].mangaName[0] == *mangaChoisis * -1) || (sectionChoisis != SECTION_CHOISIS_TEAM && mangaDB[i].mangaName[0] == *mangaChoisis * -1))
+                if((sectionChoisis == CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1) || (sectionChoisis != CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1))
                     *limitationLettre += 1; //Si pas de manga répond au critére, limitationlettre pas modifié donc pas d'impact
             }
             if(*limitationLettre > 1) //Oui

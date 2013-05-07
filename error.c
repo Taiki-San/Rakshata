@@ -317,3 +317,54 @@ int UI_Alert(char* titre, char* contenu)
     return ret_value;
 }
 
+int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre, char trad[2][TRAD_LENGTH])
+{
+    if((nombreChapitre == 0 && contexte == CONTEXTE_LECTURE) || (nombreChapitre == 1 && contexte == CONTEXTE_SUPPRESSION))
+    {
+        char temp[TAILLE_BUFFER];
+        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
+        removeFolder(temp);
+        return PALIER_MENU;
+    }
+    else if(nombreChapitre == 1 && contexte == CONTEXTE_DL)
+    {
+        int ret_value;
+        SDL_Texture *texte = NULL;
+        SDL_Rect position;
+        SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+        TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+
+        texte = TTF_Write(renderer, police, trad[0], couleurTexte);
+        if(texte != NULL)
+        {
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+            position.y = WINDOW_SIZE_H / 2 - texte->h;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
+
+        texte = TTF_Write(renderer, police, trad[1], couleurTexte);
+        if(texte != NULL)
+        {
+            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+            position.y = WINDOW_SIZE_H / 2 + texte->h;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
+        SDL_RenderPresent(renderer);
+        TTF_CloseFont(police);
+
+        ret_value = waitEnter(renderer);
+        if(ret_value > PALIER_CHAPTER)
+            return PALIER_CHAPTER;
+        else
+            return ret_value;
+    }
+    return PALIER_DEFAULT;
+}
+

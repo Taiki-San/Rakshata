@@ -119,7 +119,7 @@ int mainLecture()
         if(!restoringState)
         {
             curPage = pageManga;
-            mangaChoisis = manga(SECTION_CHOISIS_LECTURE, mangaDB, 0);
+            mangaChoisis = controleurManga(mangaDB, CONTEXTE_LECTURE, 0);
             pageManga = curPage;
         }
         if(mangaChoisis <= -2)
@@ -155,7 +155,7 @@ int mainLecture()
                     if(!restoringState)
                     {
                         curPage = pageChapitre;
-                        chapitreChoisis = chapitre(&mangaDB[mangaChoisis], 1);
+                        chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], CONTEXTE_LECTURE);
                         pageChapitre = curPage;
                     }
                     if (chapitreChoisis <= PALIER_CHAPTER)
@@ -217,7 +217,7 @@ int mainChoixDL()
     initialisationAffichage();
 
     MUTEX_LOCK;
-    if(NETWORK_ACCESS < CONNEXION_DOWN)
+    if(NETWORK_ACCESS != CONNEXION_DOWN)
     {
         MUTEX_UNLOCK;
         updateDataBase();
@@ -230,12 +230,12 @@ int mainChoixDL()
 
             /*Appel des selectionneurs*/
             curPage = pageManga;
-            mangaChoisis = manga(SECTION_DL, mangaDB, nombreChapitre);
+            mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre);
             pageManga = curPage;
 
-            if(mangaChoisis == -11) //Télécharger
+            if(mangaChoisis == CODE_BOUTON_CHAPITRE_DL) //Télécharger
                 continuer = PALIER_CHAPTER;
-            else if(mangaChoisis == -10) //Annuler
+            else if(mangaChoisis == CODE_BOUTON_CHAPITRE_ANNULER) //Annuler
             {
                 if(nombreChapitre > 0)
                 {
@@ -258,7 +258,7 @@ int mainChoixDL()
                 while(chapitreChoisis > PALIER_CHAPTER && !continuer)
                 {
                     curPage = pageChapitre;
-                    chapitreChoisis = chapitre(&mangaDB[mangaChoisis], 2);
+                    chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], CONTEXTE_DL);
                     pageChapitre = curPage;
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
@@ -280,7 +280,7 @@ int mainChoixDL()
             }
         }
 
-        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == -11 /*Confirmation n°°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
+        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == CODE_BOUTON_CHAPITRE_DL /*Confirmation n°°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
             SDL_RenderClear(renderer);
             affichageLancement();
