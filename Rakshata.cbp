@@ -35,6 +35,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-DCURL_STATICLIB" />
+			<Add option="-D__GCC__" />
 			<Add directory="data\lib\include" />
 			<Add directory="data\lib\include\curl" />
 		</Compiler>

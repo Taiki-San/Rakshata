@@ -22,20 +22,14 @@
 	#pragma comment(lib, "libfreetype.lib")
 	#pragma comment(lib, "SDL2_ttf.lib")
 	#pragma comment(lib, "libcurl.lib")
-	//#pragma comment(lib, "libeay32.lib") //SSL
-	//#pragma comment(lib, "ssleay32.lib") //SSL
+	#pragma comment(lib, "libeay32.lib") //SSL
+	#pragma comment(lib, "ssleay32.lib") //SSL
 	#pragma comment(lib, "Wldap32.lib")
 	#pragma comment(lib, "ws2_32.lib")
 	#pragma comment(lib, "winmm.lib")
-	#pragma comment(lib, "Gdi32.lib")
-	#pragma comment(lib, "user32.lib")
-	#pragma comment(lib, "dxguid.lib")
 	#pragma comment(lib, "libzip.a")
-	#pragma comment(lib, "Ole32.lib")
 	#pragma comment(lib, "Imm32.lib")
-	#pragma comment(lib, "Uuid.lib")
 	#pragma comment(lib, "Version.lib")
-	#pragma comment(lib, "OleAut32.lib")
 #else
 	#include <dirent.h>
 #endif

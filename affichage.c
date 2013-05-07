@@ -452,4 +452,3 @@ void nameWindow(SDL_Window* windows, const int value)
     SDL_SetWindowTitle(windows, windowsName);
 }
 
-

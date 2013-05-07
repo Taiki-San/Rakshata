@@ -33,6 +33,13 @@ SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
 
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
+{
+    SDL_Event event;
+    SDL_PollEvent(&event);
+    return fwrite(ptr, size, nmemb, input);
+}
+
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
@@ -42,7 +49,11 @@ SDL_Renderer *rendererDL = NULL;
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
     MUTEX_VAR mutex_decrypt;
-	int main()
+	#ifdef __GCC__
+		int main()
+	#else
+		int WinMainCRTStartup()
+	#endif
 #endif
 {
 #ifdef __INTEL_COMPILER
@@ -62,7 +73,6 @@ SDL_Renderer *rendererDL = NULL;
 		curl_easy_cleanup(curl);
 	}
 #endif
-
     if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
