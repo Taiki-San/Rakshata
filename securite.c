@@ -151,7 +151,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
 {
     int i = 0, nombreEspace = 0;
-    unsigned char *configEnc = malloc(((HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10) * sizeof(unsigned char)); //+1 pour \n, +10 pour le nombre en tête et le \n qui suis
+    unsigned char *configEnc = calloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10), sizeof(unsigned char)); //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
     char *path, key[SHA256_DIGEST_LENGTH];
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
@@ -254,6 +254,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     fclose(test);
 
     i = 0;
+    surface_page = NULL;
     do
     {
         decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
