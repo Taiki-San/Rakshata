@@ -27,7 +27,7 @@ int ecranAccueil()
     acceuil = IMG_LoadTexture(renderer, "data/acceuil.png");
     if(acceuil == NULL)
     {
-        removeR("data/accueil.png");
+        remove("data/accueil.png");
         logR("Failed at load main page");
         return PALIER_QUIT;
     }

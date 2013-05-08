@@ -317,25 +317,22 @@ int UI_Alert(char* titre, char* contenu)
     return ret_value;
 }
 
-int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre, char trad[2][TRAD_LENGTH])
+int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
-    if((nombreChapitre == 0 && contexte == CONTEXTE_LECTURE) || (nombreChapitre == 1 && contexte == CONTEXTE_SUPPRESSION))
-    {
-        char temp[TAILLE_BUFFER];
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
-        removeFolder(temp);
-        return PALIER_MENU;
-    }
-    else if(nombreChapitre == 1 && contexte == CONTEXTE_DL)
+    if(contexte == CONTEXTE_DL)
     {
         int ret_value;
+        char buffer[3*TRAD_LENGTH];
         SDL_Texture *texte = NULL;
         SDL_Rect position;
         SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
         TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-        texte = TTF_Write(renderer, police, trad[0], couleurTexte);
+        SDL_RenderClear(renderer);
+        snprintf(buffer, 3*TRAD_LENGTH, "%s %s %s", trad[15], trad[0], trad[16]);
+
+        texte = TTF_Write(renderer, police, buffer, couleurTexte);
         if(texte != NULL)
         {
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
@@ -346,7 +343,7 @@ int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre,
             SDL_DestroyTextureS(texte);
         }
 
-        texte = TTF_Write(renderer, police, trad[1], couleurTexte);
+        texte = TTF_Write(renderer, police, trad[17], couleurTexte);
         if(texte != NULL)
         {
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
@@ -362,9 +359,8 @@ int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre,
         ret_value = waitEnter(renderer);
         if(ret_value > PALIER_CHAPTER)
             return PALIER_CHAPTER;
-        else
-            return ret_value;
+        return ret_value;
     }
-    return PALIER_DEFAULT;
+    return PALIER_MENU;
 }
 

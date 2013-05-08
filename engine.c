@@ -265,7 +265,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI] = {0, 0, 0}, mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
-    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, chapitreMax = 0, nombreManga = 0, refreshMultipage = 0, chapterDisplayed = 0, backgroundH = 0;
+    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, nombreManga = 0, refreshMultipage = 0, backgroundH = 0;
     int button_selected[8], iconeChapitre1Tome2 = 0;
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
@@ -301,10 +301,6 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             iconeChapitre1Tome2 = 1; //Tomes
         else
             modeChapitre = 1; //L'icône n'est pas affichée
-
-        chapitreMax = nombreChapitre; //On récupére le chapitre max
-        nombreChapitre = 0;
-
         sectionChoisis = SECTION_CHOISIS_CHAPITRE;
     }
 
@@ -427,8 +423,6 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             generateChoicePanel(texte_Trad, button_selected);
         else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
         {
-            chapterDisplayed = chapitreMax;
-
             //On affiche le bouton de switch
             if(iconeChapitre1Tome2)
             {
@@ -521,15 +515,15 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         {
             if(sectionChoisis != SECTION_CHOISIS_CHAPITRE ||
 #ifdef CHAPTER_AUTO_SELECTED
-            chapterDisplayed > 1)
+            nombreChapitre > 1)
 #else
-            chapterDisplayed > 0) //Retourne au menu principal si 0 chapitres
+            nombreChapitre > 0) //Retourne au menu principal si 0 chapitres
 #endif
             {
                 if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != CONTEXTE_SUPPRESSION)
                     manuel = 0;
                 else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
-                    manuel = chapterDisplayed;
+                    manuel = nombreChapitre;
                 else
                     manuel = -1;
                 //Manuel => si le nombre a été entré a la main
@@ -561,8 +555,8 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             }
 
 #ifdef CHAPTER_AUTO_SELECTED
-            else if(chapterDisplayed == 1)
-                mangaChoisis = chapterDisplayed;
+            else if(nombreChapitre == 1)
+                mangaChoisis = nombreChapitre;
 #endif
             else
                 mangaChoisis = PALIER_CHAPTER;

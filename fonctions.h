@@ -29,14 +29,13 @@ void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
 
 /**Chapitre.c**/
-int refreshChaptersList(MANGAS_DATA *mangaDB);
-int checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
-int getUpdatedChapterList(MANGAS_DATA *mangaDB);
-int chapitre(MANGAS_DATA *mangaDB, int mode);
-void displayIconeChapOrTome(int chapitreOuTome);
-void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, char texteTrad[][TRAD_LENGTH], int nombreChapitre, int dernierLu);
+void refreshChaptersList(MANGAS_DATA *mangaDB);
+void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
+void getUpdatedChapterList(MANGAS_DATA *mangaDB);
+int askForChapter(MANGAS_DATA *mangaDB, int mode);
+void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte);
-MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int mode, char* stringAll, char* stringGeneric, int *nombreChapitres);
+MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int mode, char* stringAll, char* stringGeneric);
 
 /**check.c**/
 int check_evt();
@@ -58,6 +57,11 @@ int checkWindowEventValid(int EventWindowEvent);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
+
+/**CTCommon.c**/
+int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contexte);
+void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
+void displayIconeChapOrTome(int chapitreOuTome);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -104,7 +108,7 @@ int showError();
 int rienALire();
 int affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
-int errorEmptyChapterList(MANGAS_DATA mangaDB, int contexte, int nombreChapitre, char trad[2][TRAD_LENGTH]);
+int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 
 /**Favoris.c**/
 int checkIfFaved(MANGAS_DATA* mangaDB, char **favs);
@@ -252,6 +256,12 @@ void setPrefs(MANGAS_DATA* mangaDB);
 int sha256(unsigned char* input, void* output);
 int sha256_legacy(char input[], char output[HASH_LENGTH]);
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
+
+/**Tome.c**/
+int askForTome(MANGAS_DATA *mangaDB, int contexte);
+void displayTemplateTome(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
+int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
+MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 
 /**Translation.c**/
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);

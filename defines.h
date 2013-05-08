@@ -272,6 +272,9 @@
 #define CODE_BOUTON_CHAPITRE_ANNULER -10
 #define CODE_BOUTON_CHAPITRE_DL -11
 
+/*Tome*/
+#define MAX_TOME_NAME_LENGTH LONGUEUR_NOM_MANGA_MAX
+
 /**Lecteur**/
 
     /*Mouvements*/
@@ -464,7 +467,7 @@
 #define SIZE_TRAD_ID_16 6
 #define SIZE_TRAD_ID_17 5
 #define SIZE_TRAD_ID_18 2
-#define SIZE_TRAD_ID_19 14
+#define SIZE_TRAD_ID_19 18
 #define SIZE_TRAD_ID_20 7
 #define SIZE_TRAD_ID_21 13
 #define SIZE_TRAD_ID_22 6

@@ -20,7 +20,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
     int i = 0, check4change = 0, changementPage = 0, restoreState = 0, finDuChapitre = 0, new_chapitre = 0;
     int buffer = 0, largeurValide = 0, pageTropGrande = 0, tempsDebutExplication = 0, nouveauChapitreATelecharger = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0, encrypted = 0;
-    int deplacementEnCours = 0, length, curPosIntoStruct = 0;
+    int deplacementEnCours = 0, curPosIntoStruct = 0;
     int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][LONGUEURTEXTE];
     FILE* testExistance = NULL;
@@ -41,9 +41,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
 
     loadTrad(texteTrad, 21);
     restoreState = checkRestore();
-    length = getUpdatedChapterList(mangaDB);
+    getUpdatedChapterList(mangaDB);
 
-    if(((*chapitreChoisis == mangaDB->chapitres[length-1] && isAChapter == true) || (*chapitreChoisis == mangaDB->lastTome && isAChapter == false)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
+    if(((*chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1] && isAChapter == true) || (*chapitreChoisis == mangaDB->lastTome && isAChapter == false)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[8], 5);
@@ -71,7 +71,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
     }
 
     /*Si chapitre manquant*/
-    while(isAChapter && !checkChapterReadable(*mangaDB, *chapitreChoisis) && curPosIntoStruct < length)
+    while(isAChapter && !checkChapterReadable(*mangaDB, *chapitreChoisis) && curPosIntoStruct < mangaDB->nombreChapitre)
         *chapitreChoisis = mangaDB->chapitres[curPosIntoStruct++];
 
     if(configFileLoader(mangaDB, isAChapter, *chapitreChoisis, &dataReader))
@@ -582,15 +582,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                         {
                             case CLIC_SUR_BANDEAU_PREV_CHAPTER:
                             {
-                                length = getUpdatedChapterList(mangaDB);
+                                getUpdatedChapterList(mangaDB);
                                 if(*chapitreChoisis > mangaDB->chapitres[0])
                                 {
-                                    for(i = 0; i < length && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    for(i = 0; i < mangaDB->nombreChapitre && mangaDB->chapitres[i] != *chapitreChoisis; i++);
                                     if(i > 0)
                                         *chapitreChoisis = mangaDB->chapitres[i-1];
                                     else
                                     {
-                                        for(i = length; i >= 0 && mangaDB->chapitres[i] > *chapitreChoisis; i--);
+                                        for(i = mangaDB->nombreChapitre; i >= 0 && mangaDB->chapitres[i] > *chapitreChoisis; i--);
                                         *chapitreChoisis = mangaDB->chapitres[i];
                                     }
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -632,15 +632,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
 
                             case CLIC_SUR_BANDEAU_NEXT_CHAPTER:
                             {
-                                length = getUpdatedChapterList(mangaDB);
-                                if(*chapitreChoisis < mangaDB->chapitres[length-1])
+                                getUpdatedChapterList(mangaDB);
+                                if(*chapitreChoisis < mangaDB->chapitres[mangaDB->nombreChapitre-1])
                                 {
-                                    for(i = 0; i < length && mangaDB->chapitres[i] != *chapitreChoisis; i++);
-                                    if(i < length-1)
+                                    for(i = 0; i < mangaDB->nombreChapitre && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    if(i < mangaDB->nombreChapitre-1)
                                         *chapitreChoisis = mangaDB->chapitres[i+1];
                                     else
                                     {
-                                        for(i = 0; i < length-1 && mangaDB->chapitres[i] < *chapitreChoisis; i++);
+                                        for(i = 0; i < mangaDB->nombreChapitre-1 && mangaDB->chapitres[i] < *chapitreChoisis; i++);
                                         *chapitreChoisis = mangaDB->chapitres[i];
                                     }
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
@@ -675,19 +675,19 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                             {
                                 if(unlocked)
                                 {
-                                    length = getUpdatedChapterList(mangaDB);
+                                    getUpdatedChapterList(mangaDB);
                                     cleanMemory(chapitre, chapitre_texture, OChapitre, NChapitre, infoSurface, bandeauControle, police);
                                     internal_deleteChapitre(*mangaDB, *chapitreChoisis);
-                                    for(i = 0; i < length-1 && mangaDB->chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[i] != *chapitreChoisis; i++);
-                                    length = getUpdatedChapterList(mangaDB);
+                                    for(i = 0; i < mangaDB->nombreChapitre-1 && mangaDB->chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[i] != *chapitreChoisis; i++);
+                                    getUpdatedChapterList(mangaDB);
 
-                                    if(length == 0)
+                                    if(mangaDB->nombreChapitre == 0)
                                     {
                                         *chapitreChoisis = PALIER_CHAPTER;
                                         return PALIER_CHAPTER;
                                     }
-                                    else if(i+1 >= length)
-                                        *chapitreChoisis = mangaDB->chapitres[length-1];
+                                    else if(i+1 >= mangaDB->nombreChapitre)
+                                        *chapitreChoisis = mangaDB->chapitres[mangaDB->nombreChapitre-1];
                                     else
                                         *chapitreChoisis = mangaDB->chapitres[i+1];
                                     return 0;

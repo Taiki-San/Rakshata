@@ -142,19 +142,18 @@ int controleurChapTome(MANGAS_DATA* mangaDB, int contexte)
     if(mangaDB == NULL)
         return PALIER_CHAPTER;
 
+    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        sectionSent = SECTION_CHOISIS_MIX;
-        return chapitre(mangaDB, contexte);
+        return askForChapter(mangaDB, contexte);
     }
     else if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        sectionSent = SECTION_CHAPITRE_ONLY;
-        return chapitre(mangaDB, contexte);
+        return askForChapter(mangaDB, contexte);
     }
     else if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        sectionSent = SECTION_TOME_ONLY;
+        return askForTome(mangaDB, contexte);
     }
     if(sectionSent != 0)
         sectionSent = 0;

@@ -103,7 +103,7 @@ void mainRakshata()
 extern int curPage; //Too lazy to use an argument
 int mainLecture()
 {
-    int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur, length=0;
+    int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur;
     int restoringState = 0, fullscreen = 0, pageManga = 1, pageChapitre = 1;
 
     if(checkRestore())
@@ -146,9 +146,7 @@ int mainLecture()
 
             else if(retourLecteur == 1)
             {
-                if(!restoringState)
-                    length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
-                chapitreChoisis = -1;
+                chapitreChoisis = PALIER_DEFAULT;
                 pageChapitre = 1;
                 do
                 {
@@ -158,6 +156,11 @@ int mainLecture()
                         chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], CONTEXTE_LECTURE);
                         pageChapitre = curPage;
                     }
+                    else
+                    {
+                        getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                    }
+
                     if (chapitreChoisis <= PALIER_CHAPTER)
                         continuer = chapitreChoisis;
                     else
@@ -176,7 +179,7 @@ int mainLecture()
                                 fclose(test);
 
                                 for(mangaChoisis = 0; strcmp(temp, mangaDB[mangaChoisis].mangaName) != 0; mangaChoisis++);
-                                length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                                getUpdatedChapterList(&mangaDB[mangaChoisis]);
 
                                 restoringState = 0;
                             }
@@ -199,10 +202,10 @@ int mainLecture()
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else
-                            length = getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                            getUpdatedChapterList(&mangaDB[mangaChoisis]);
                     }
                 }while(chapitreChoisis > PALIER_CHAPTER && (continuer > PALIER_MENU || (continuer == PALIER_CHAPTER && mangaDB[mangaChoisis].chapitres[1] == VALEUR_FIN_STRUCTURE_CHAPITRE))
-                       && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[length-1]));
+                       && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[mangaDB->nombreChapitre-1]));
             }
         }
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
