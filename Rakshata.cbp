@@ -9,7 +9,7 @@
 			<Target title="Debug">
 				<Option platforms="Windows;" />
 				<Option output="Rakshata" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -19,7 +19,7 @@
 			</Target>
 			<Target title="Release">
 				<Option output="Rakshata - Release" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -36,38 +36,41 @@
 			<Add option="-Wall" />
 			<Add option="-DCURL_STATICLIB" />
 			<Add option="-D__GCC__" />
-			<Add directory="data\lib\include" />
-			<Add directory="data\lib\include\curl" />
+			<Add directory="data/lib/include" />
+			<Add directory="data/lib/include/curl" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc" />
 			<Add option="-static" />
 			<Add library="mingw32" />
-			<Add library="data\lib\libSDL_image.a" />
-			<Add library="data\lib\libjpeg.a" />
-			<Add library="data\lib\libpng.a" />
-			<Add library="data\lib\libSDL.a" />
-			<Add library="data\lib\libSDL_ttf.a" />
-			<Add library="data\lib\libfreetype.a" />
-			<Add library="data\lib\libcurl.a" />
-			<Add library="data\lib\librtmp.a" />
-			<Add library="data\lib\libidn.a" />
-			<Add library="data\lib\libssl.a" />
-			<Add library="data\lib\libssh2.a" />
-			<Add library="data\lib\libcrypto.a" />
+			<Add library="libSDL_image.a" />
+			<Add library="libjpeg.a" />
+			<Add library="libSDL.a" />
+			<Add library="libSDL_ttf.a" />
+			<Add library="libfreetype.a" />
+			<Add library="libcurl.a" />
+			<Add library="librtmp.a" />
+			<Add library="libidn.a" />
+			<Add library="libssl.a" />
+			<Add library="libssh2.a" />
+			<Add library="libcrypto.a" />
+			<Add library="libzip.a" />
 			<Add library="wldap32" />
 			<Add library="ws2_32" />
 			<Add library="winmm" />
 			<Add library="data\lib\Gdi32.Lib" />
 			<Add library="user32" />
 			<Add library="dxguid" />
-			<Add library="data\lib\libzip.a" />
 			<Add library="data\lib\Ole32.Lib" />
 			<Add library="data\lib\Imm32.Lib" />
 			<Add library="data\lib\Uuid.Lib" />
 			<Add library="data\lib\Version.Lib" />
 			<Add library="data\lib\OleAut32.Lib" />
+			<Add directory="data/lib" />
 		</Linker>
+		<Unit filename="CTCommon.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="affichage.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -77,18 +80,18 @@
 		<Unit filename="check.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\Rijndael.c">
+		<Unit filename="crypto/Rijndael.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\Rijndael.h" />
-		<Unit filename="crypto\Serpent.c">
+		<Unit filename="crypto/Rijndael.h" />
+		<Unit filename="crypto/Serpent.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\Serpent.h" />
-		<Unit filename="crypto\Twofish.c">
+		<Unit filename="crypto/Serpent.h" />
+		<Unit filename="crypto/Twofish.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="crypto\crypto.h" />
+		<Unit filename="crypto/crypto.h" />
 		<Unit filename="database.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -161,30 +164,33 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures.h" />
+		<Unit filename="tome.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="translation.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="unzip.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="unzip\crypt.h" />
-		<Unit filename="unzip\ioapi.c">
+		<Unit filename="unzip/crypt.h" />
+		<Unit filename="unzip/ioapi.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="unzip\ioapi.h" />
-		<Unit filename="unzip\iowin32.c">
+		<Unit filename="unzip/ioapi.h" />
+		<Unit filename="unzip/iowin32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="unzip\miniunz.c">
+		<Unit filename="unzip/miniunz.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="unzip\miniunzip.h" />
-		<Unit filename="unzip\unzip.h" />
-		<Unit filename="unzip\unzip_mz.c">
+		<Unit filename="unzip/miniunzip.h" />
+		<Unit filename="unzip/unzip.h" />
+		<Unit filename="unzip/unzip_mz.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="unzip\zlib\zconf.h" />
-		<Unit filename="unzip\zlib\zlib.h" />
+		<Unit filename="unzip/zlib/zconf.h" />
+		<Unit filename="unzip/zlib/zlib.h" />
 		<Unit filename="update.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -209,7 +215,7 @@
 			<envvars />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="1" date_declarations="1" update_manifest="97" do_auto_increment="0" ask_to_increment="0" language="C" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="1" do_auto_increment="0" ask_to_increment="0" language="C" svn="0" svn_directory="" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>
