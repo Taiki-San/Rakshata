@@ -92,7 +92,10 @@ Préférences&]
 Mangas disponibles à la lecture&
 Mangas disponibles au téléchargement&]
 19
-Quel chapitre souhaitez vous &
+chapitre&
+tome&
+Quel&
+souhaitez vous&
 lire?&
 ajouter?&
 supprimer?&
@@ -101,10 +104,11 @@ Plus recent:&
 Projet&
 par&
 Première lecture du manga&
-Dernier chapitre lu:&
-Chapitre&
+Dernier&
+lu:&
 Tout&
-Aucun nouveau chapitre à télécharger, réessayez&
+Aucun nouveau&
+à télécharger, réessayez&
 plus tard ;) (cliquez pour revenir au menu)&]
 20
 Initialisation&
