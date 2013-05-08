@@ -20,6 +20,12 @@ typedef struct infos_Team
     int openSite;
 } TEAMS_DATA;
 
+typedef struct tome_metadata
+{
+    int ID;
+    char name[MAX_TOME_NAME_LENGTH];
+}META_TOME;
+
 typedef struct dataMangas
 {
     //Infos générales
@@ -35,13 +41,14 @@ typedef struct dataMangas
     int firstChapter;
     int lastChapter;
     int chapitreSpeciauxDisponibles;
+    int nombreChapitre;
     int *chapitres;
 
     //Tomes
     int firstTome;
     int lastTome;
     int nombreTomes;
-    int **tomes;
+    META_TOME *tomes;
 
     int favoris;
 } MANGAS_DATA;
