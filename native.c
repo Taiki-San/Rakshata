@@ -199,8 +199,9 @@ void fscanfs(FILE* stream, const char *format, ...)
 
                     if(!number)
                         break;
-                    while((j = fgetc(stream)) != EOF && (j < '0' ||  j > '9'))
+                    for(j = 0; (j < '0' ||  j > '9') && j != EOF;)
                     {
+                        j = fgetc(stream);
                         if(j == '-')
                         {
                             if((j = fgetc(stream)) != EOF && j >= '0' && j <= '9')
