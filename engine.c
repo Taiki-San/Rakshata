@@ -383,9 +383,10 @@ int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int ha
                     int length = strlen(mangaDB[i].mangaName), lettreToRemove, widthDrawn = texte->w;
                     char temp[LONGUEUR_NOM_MANGA_MAX];
                     usstrcpy(temp, LONGUEUR_NOM_MANGA_MAX, mangaDB[i].mangaName);
-                    for(lettreToRemove = 0; lettreToRemove < length && widthDrawn - lettreToRemove*(widthDrawn/length) >= longueurElement + 10; lettreToRemove++);
+                    for(lettreToRemove = 0; lettreToRemove < length && widthDrawn - lettreToRemove*(widthDrawn/length) >= longueurElement; lettreToRemove++);
                     for(; lettreToRemove-- > 0; temp[--length] = 0);
                     for(; length > 0 && temp[length-1] == ' '; temp[--length] = 0);
+                    snprintf(temp, LONGUEUR_NOM_MANGA_MAX, "%s...", temp);
                     SDL_DestroyTextureS(texte);
                     texte = TTF_Write(renderer, police, temp, getEngineColor(couleurUnread, couleurNew, couleurTexte, contexte, mangaDB[i]));
                 }
