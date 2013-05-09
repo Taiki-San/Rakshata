@@ -124,11 +124,7 @@ void *ralloc(size_t length)
 {
     void* memory_allocated = malloc(length);
     if(memory_allocated == NULL)
-    {
-        char temp[100];
-        snprintf(temp, 100, "Failed at allocate memory for : %d bytes\n", length);
-        logR(temp);
-    }
+        memoryError(length);
     else
         crashTemp(memory_allocated, length);
     return memory_allocated;
@@ -393,9 +389,7 @@ void removeFolder(char *path)
         buffer = malloc(strlen(path) + strlen(entry->d_name) + 0x10);
         if(buffer == NULL)
         {
-            char temp[256];
-            snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", strlen(path) + strlen(entry->d_name) + 0x10);
-            logR(temp);
+            memoryError(strlen(path) + strlen(entry->d_name) + 0x10);
             continue;
         }
         snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);

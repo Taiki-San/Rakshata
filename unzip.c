@@ -114,7 +114,9 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             free(zipOutput);
         if(password)
             free(password);
+#ifdef DEV_VERSION
         logR("Failed at allocate memory\n");
+#endif
         return 1;
     }
 

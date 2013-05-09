@@ -109,6 +109,7 @@ int rienALire();
 int affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
 int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
+void memoryError(size_t size);
 
 /**Favoris.c**/
 int checkIfFaved(MANGAS_DATA* mangaDB, char **favs);

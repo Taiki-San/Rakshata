@@ -165,10 +165,8 @@ int tradAvailable()
 
 	if(temp == NULL)
     {
-        char temp[256];
-        snprintf(temp, 256, "Failed at allocate memory for : %d bytes\n", 50 + strlen(LANGUAGE_PATH[langue-1]));
-        logR(temp);
-        exit(0);
+        memoryError(50 + strlen(LANGUAGE_PATH[langue-1]));
+        return 0;
     }
     snprintf(temp, 256, "data/%s/localization", LANGUAGE_PATH[langue-1]);
     test = fopenR(temp, "r");

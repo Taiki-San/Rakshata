@@ -364,3 +364,9 @@ int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
     return PALIER_MENU;
 }
 
+void memoryError(size_t size)
+{
+    char temp[0x100];
+    snprintf(temp, 0x100, "Failed at allocate memory for : %d bytes\n", size);
+    logR(temp);
+}
