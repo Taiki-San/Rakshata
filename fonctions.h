@@ -88,15 +88,16 @@ int checkDLInProgress();
 
 /**Engine.c**/
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
-int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage);
+int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int hauteurAffichage);
 void generateChoicePanel(char trad[13][100], int enable[6]);
 void showNumero(TTF_Font *police, int choix, int hauteurNum);
-int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel);
-int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6]);
-void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne);
+int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel);
+int TRI_mangaToDisplay(int contexte, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6]);
+void analysisOutputSelectionTricolonne(int contexte, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne);
 int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
 int buttonLimitationEnforced(int button_selected[8], int statusMangasToTest, int genreMangasToTest, int favorite);
 void button_available(MANGAS_DATA* mangaDB, int button[8]);
+SDL_Color getEngineColor(SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte, int contexte, MANGAS_DATA mangaDB);
 void loadMultiPage(int nombreManga, int *pageTotale, int *pageSelection);
 
 /**Error.c**/
@@ -259,6 +260,8 @@ int sha256_legacy(char input[], char output[HASH_LENGTH]);
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
 
 /**Tome.c**/
+void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
+void refreshTomeList(MANGAS_DATA *mangaDB);
 int askForTome(MANGAS_DATA *mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
@@ -284,6 +287,7 @@ int plusOuMoins(int compare1, int compare2, int tolerance);
 int sortMangasToDownload(const void *a, const void *b);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
+int sortTomes(const void *a, const void *b);
 void applyWindowsPathCrap(void *input);
 void versionRak(char *output);
 void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4);
@@ -297,7 +301,7 @@ void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);
+void restrictEvent();
 int defineMaxTextureSize(int sizeIssue);
 int isJPEG(void *input);
 int isPNG(void *input);
-void restrictEvent();

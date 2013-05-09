@@ -169,7 +169,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
         {
             do
             {
-                chapitreChoisis = displayMangas(chapitreDB, SECTION_CHAPITRE_ONLY, mangaDB->nombreChapitre, mangaDB->nombreChapitre>MANGAPARPAGE_TRI?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
+                chapitreChoisis = displayMangas(chapitreDB, CONTEXTE_CHAPITRE, mangaDB->nombreChapitre, mangaDB->nombreChapitre>MANGAPARPAGE_TRI?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
                 if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                     ouvrirSite(mangaDB->team);
             }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team
@@ -276,7 +276,8 @@ MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
         else
             i--;
     }
-    chapitreDB[chapitreCourant].mangaName[0] = chapitreDB[chapitreCourant].pageInfos = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    chapitreDB[chapitreCourant].mangaName[0] = 0;
+    chapitreDB[chapitreCourant].pageInfos = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     if((chapitreCourant == 1 && contexte != CONTEXTE_LECTURE) || (chapitreCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre
     {

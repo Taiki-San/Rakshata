@@ -77,6 +77,13 @@ int sortMangas(const void *a, const void *b)
     return strcmp(struc1->mangaName, struc2->mangaName);
 }
 
+int sortTomes(const void *a, const void *b)
+{
+    const META_TOME *struc1 = a;
+    const META_TOME *struc2 = b;
+    return struc1->ID - struc2->ID;
+}
+
 void applyWindowsPathCrap(void *input)
 {
     #ifdef _WIN32
@@ -325,3 +332,4 @@ int isPNG(void *input)
         return 1;
     return 0;
 }
+

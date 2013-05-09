@@ -23,7 +23,7 @@ typedef struct infos_Team
 typedef struct tome_metadata
 {
     int ID;
-    char name[MAX_TOME_NAME_LENGTH];
+    unsigned char name[MAX_TOME_NAME_LENGTH];
 }META_TOME;
 
 typedef struct dataMangas

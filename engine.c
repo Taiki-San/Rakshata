@@ -261,12 +261,12 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     return ret_value;
 }
 
-int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, int hauteurAffichage)
+int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int hauteurAffichage)
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, mangaParColonne = 0, excedent = 0, i = 0, mangaColonne[NBRCOLONNES_TRI] = {0, 0, 0}, mangaChoisis = 0, changementDePage = 0, limitationLettre = 0;
-    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, modeChapitre = 0, nombreManga = 0, refreshMultipage = 0, backgroundH = 0;
-    int button_selected[8], iconeChapitre1Tome2 = 0;
+    int j = 0, tailleTexte[NOMBRE_MANGA_MAX] = {0}, manuel = 0, nombreManga = 0, refreshMultipage = 0, backgroundH = 0;
+    int button_selected[8];
     char temp[TAILLE_BUFFER] = {0}, texte_Trad[SIZE_TRAD_ID_11][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -294,20 +294,10 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         SDL_DestroyTextureS(texte);
     }
 
-    if(sectionChoisis == SECTION_CHOISIS_MIX || sectionChoisis == SECTION_TOME_ONLY || sectionChoisis == SECTION_CHAPITRE_ONLY) //Si c'est l'afficheur de chapitre qui appel, on réagira aux clics sur le lien
-    {
-        modeChapitre = 2; //Icone affiché
-        if(sectionChoisis == SECTION_CHOISIS_MIX)
-            iconeChapitre1Tome2 = 1; //Tomes
-        else
-            modeChapitre = 1; //L'icône n'est pas affichée
-        sectionChoisis = SECTION_CHOISIS_CHAPITRE;
-    }
-
     /*Multi-Page*/
     loadMultiPage(nombreManga, &pageTotale, &pageSelection);
 
-    if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
+    if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
     {
         //On change la taille du fond pour pas écraser les boutons inférieurs
         backgroundH = WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
@@ -360,90 +350,82 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         ***                                                                 ***
         ***      Commence par positionner i au premier manga à afficher     ***
         ***                                                                 ***
-        *** Ensuite, affiche un maximum de 30 mangas obéissant aux critéres ***
+        *** Ensuite, affiche un maximum de 30 mangas obéissant aux critères ***
         ***                                                                 ***
         **********************************************************************/
 
+        int bordureLaterale, longueurElement;
+        if(contexte == CONTEXTE_TOME)
+        {
+            bordureLaterale = BORDURELATSELECTION_XL;
+            longueurElement = LONGUEURMANGA_XL;
+        }
+        else
+        {
+            bordureLaterale = BORDURELATSELECTION;
+            longueurElement = LONGUEURMANGA;
+        }
+
         for(i = j = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0] && (j <= (pageSelection-1) * MANGAPARPAGE_TRI || !j); i++) //Si la liste a été restreinte
         {
-            if(sectionChoisis == SECTION_CHOISIS_CHAPITRE || (letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris)))
+            if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME || (letterLimitationEnforced(limitationLettre, mangaDB[i].mangaName[0]) && buttonLimitationEnforced(button_selected, mangaDB[i].status, mangaDB[i].genre, mangaDB[i].favoris)))
                 j++;
         }
 
         for(i--, j = 0; j < MANGAPARPAGE_TRI && mangaDB[i].mangaName[0]; i++)
         {
-            if(TRI_mangaToDisplay(sectionChoisis, limitationLettre, mangaDB[i], button_selected))
+            if(TRI_mangaToDisplay(contexte, limitationLettre, mangaDB[i], button_selected))
             {
-                crashTemp(temp, TAILLE_BUFFER);
-                snprintf(temp, TAILLE_BUFFER, "%s", mangaDB[i].mangaName);
+                texte = TTF_Write(renderer, police, mangaDB[i].mangaName, getEngineColor(couleurUnread, couleurNew, couleurTexte, contexte, mangaDB[i]));
 
-                if((sectionChoisis == CONTEXTE_LECTURE && checkChapitreUnread(mangaDB[i]) == 1)
-                        || (sectionChoisis == CONTEXTE_DL && checkChapitreUnread(mangaDB[i]) == -1))
-                    texte = TTF_Write(renderer, police, temp, couleurUnread);
+                if(texte->w >= longueurElement + 10 && contexte == CONTEXTE_TOME)
+                {
+                    int length = strlen(mangaDB[i].mangaName), lettreToRemove, widthDrawn = texte->w;
+                    char temp[LONGUEUR_NOM_MANGA_MAX];
+                    usstrcpy(temp, LONGUEUR_NOM_MANGA_MAX, mangaDB[i].mangaName);
+                    for(lettreToRemove = 0; lettreToRemove < length && widthDrawn - lettreToRemove*(widthDrawn/length) >= longueurElement + 10; lettreToRemove++);
+                    for(; lettreToRemove-- > 0; temp[--length] = 0);
+                    for(; length > 0 && temp[length-1] == ' '; temp[--length] = 0);
+                    SDL_DestroyTextureS(texte);
+                    texte = TTF_Write(renderer, police, temp, getEngineColor(couleurUnread, couleurNew, couleurTexte, contexte, mangaDB[i]));
+                }
 
-                else if(sectionChoisis == CONTEXTE_DL && mangaDB[i].mangaName[0] && isItNew(mangaDB[i])) //Si pas encore DL, en rouge
-                        texte = TTF_Write(renderer, police, temp, couleurNew);
 
-                else
-                    texte = TTF_Write(renderer, police, temp, couleurTexte);
+                position.h = texte->h;
+                position.w = texte->w < longueurElement ? texte->w : longueurElement;
 
                 /*Définis la position du texte en fonction de sa colonne*/
                 if(nombreManga > 9)
                 {
                     if(j < mangaColonne[0])
                     {
-                        position.x = BORDURELATSELECTION;
-                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * (j % mangaColonne[0]));
+                        position.x = bordureLaterale;
+                        position.y = hauteurAffichage + ((position.h + MINIINTERLIGNE) * (j % mangaColonne[0]));
                     }
                     else if(j < mangaColonne[1])
                     {
-                        position.x = BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA);
-                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[0]) % mangaColonne[1]));
+                        position.x = bordureLaterale + (bordureLaterale + longueurElement);
+                        position.y = hauteurAffichage + ((position.h + MINIINTERLIGNE) * ((j - mangaColonne[0]) % mangaColonne[1]));
                     }
                     else if(j < mangaColonne[2])
                     {
-                        position.x = BORDURELATSELECTION + (2 * (BORDURELATSELECTION + LONGUEURMANGA));
-                        position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * ((j - mangaColonne[1]) % mangaColonne[2]));
+                        position.x = bordureLaterale + (2 * (bordureLaterale + longueurElement));
+                        position.y = hauteurAffichage + ((position.h + MINIINTERLIGNE) * ((j - mangaColonne[1]) % mangaColonne[2]));
                     }
                 }
                 else
                 {
-                    position.x = BORDURELATSELECTION + ((j % 3) * (BORDURELATSELECTION + LONGUEURMANGA));
-                    position.y = hauteurAffichage + ((texte->h + MINIINTERLIGNE) * (j/3));
+                    position.x = bordureLaterale + ((j % 3) * (bordureLaterale + longueurElement));
+                    position.y = hauteurAffichage + ((position.h + MINIINTERLIGNE) * (j/3));
                 }
-                position.h = texte->h;
-                position.w = texte->w;
                 SDL_RenderCopy(renderer, texte, NULL, &position);
-                tailleTexte[j++] = texte->w;
+                tailleTexte[j++] = position.w;
                 SDL_DestroyTextureS(texte);
                 SDL_RenderPresent(renderer);
             }
         }
-        if(sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_DL)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
+        if(contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_DL)// && i >= NBRCOLONNES_TRI) //Si on écrit pas les chapitres, on affiche le panel de sélection. si moins de 3 mangas, on affiche pas le bandeau
             generateChoicePanel(texte_Trad, button_selected);
-        else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
-        {
-            //On affiche le bouton de switch
-            if(iconeChapitre1Tome2)
-            {
-                char tempPath[450];
-                if(iconeChapitre1Tome2 == 1) //On affiche les chapitres, montrer le bouton 'Tome'
-                    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_TOME);
-                else if(iconeChapitre1Tome2 == 2) //On affiche les tomes, montrer le bouton 'Chapitre'
-                    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_CHAPITRE);
-
-                texte = IMG_LoadTexture(renderer, tempPath);
-                if(texte != NULL)
-                {
-                    position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texte->w;
-                    position.y = POSITION_ICONE_MENUS;
-                    position.w = TAILLE_ICONE_MENUS;
-                    position.h = TAILLE_ICONE_MENUS;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
-                }
-            }
-        }
 
         if(pageTotale != 1) //Affichage du nombre de page
         {
@@ -477,7 +459,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
         }
 
-        if(sectionChoisis == CONTEXTE_DL) //On affiche, si on dl, les boutons de DL/Annulation
+        if(contexte == CONTEXTE_DL) //On affiche, si on dl, les boutons de DL/Annulation
         {
             SDL_RenderPresent(renderer);
             position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
@@ -513,35 +495,35 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         SDL_RenderPresent(renderer);
         while(!mangaChoisis)
         {
-            if(sectionChoisis != SECTION_CHOISIS_CHAPITRE ||
+            if(contexte != CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME ||
 #ifdef CHAPTER_AUTO_SELECTED
             nombreChapitre > 1)
 #else
             nombreChapitre > 0) //Retourne au menu principal si 0 chapitres
 #endif
             {
-                if(sectionChoisis != SECTION_CHOISIS_CHAPITRE && sectionChoisis != CONTEXTE_SUPPRESSION)
-                    manuel = 0;
-                else if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
+                if(contexte == CONTEXTE_CHAPITRE) //Seuls les chapitre ont besoins de l'accès par numéro
                     manuel = nombreChapitre;
-                else
+                else if(contexte == CONTEXTE_SUPPRESSION)
                     manuel = -1;
+                else
+                    manuel = 0;
                 //Manuel => si le nombre a été entré a la main
                 do
                 {
-                    mangaChoisis = mangaSelection(modeChapitre, tailleTexte, hauteurAffichage, &manuel);
+                    mangaChoisis = mangaSelection(contexte, tailleTexte, hauteurAffichage, &manuel);
                     if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
                         mangaChoisis = PALIER_CHAPTER;
                     else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z') //A-1 = backspace
                     {
-                        if(sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_DL)
+                        if(contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_DL)
                             break;
                         else
                             mangaChoisis = 0;
                     }
-                }while((mangaChoisis <= -10 && (sectionChoisis == CONTEXTE_LECTURE || sectionChoisis == CONTEXTE_SUPPRESSION)));
+                }while((mangaChoisis <= -10 && (contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_SUPPRESSION)));
 
-                analysisOutputSelectionTricolonne(sectionChoisis, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage, nombreManga<=9);
+                analysisOutputSelectionTricolonne(contexte, &mangaChoisis, mangaDB, mangaColonne, button_selected, &changementDePage, &pageSelection, pageTotale, manuel, &limitationLettre, &refreshMultipage, nombreManga<=9);
                 if(refreshMultipage && changementDePage)
                 {
                     for(i = 0, nombreManga = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++)
@@ -578,7 +560,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int sectionChoisis, int nombreChapitre, 
         }
     }
 
-    if(mangaChoisis > 0 && sectionChoisis != CONTEXTE_SUPPRESSION && sectionChoisis != SECTION_CHOISIS_CHAPITRE)
+    if(mangaChoisis > 0 && contexte != CONTEXTE_SUPPRESSION && contexte != CONTEXTE_CHAPITRE && contexte != CONTEXTE_TOME)
         return mangaChoisis - 1;
 
     return mangaChoisis;
@@ -656,22 +638,23 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
     SDL_RenderPresent(renderer);
 }
 
-int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
+int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
 {
     /*Initialisations*/
     int i = 0, nombreManga = 0, mangaChoisis = 0, choix = 0, buffer = 0, hauteurBandeau = 0, chapitreMax = 0, bandeauControle = 0, modeTeam = 0;
     SDL_Event event;
     TTF_Font *police = NULL;
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    if(contexte == CONTEXTE_CHAPITRE)
+        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     for(nombreManga = 0; tailleTexte[nombreManga] != 0; nombreManga++);
 
-    if(*manuel == -1) //CONTEXTE_SUPPRESSION
+    if(contexte == CONTEXTE_SUPPRESSION)
     {
         *manuel = 0;
         modeTeam = 1;
     }
-    if(modeChapitre)
+    else if(contexte == CONTEXTE_CHAPITRE)
     {
         chapitreMax = *manuel;
         *manuel = 0;
@@ -680,7 +663,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
     /*On vois quelle est la forme de la fenetre*/
     while(mangaChoisis == 0)
     {
-        if(modeChapitre)
+        if(contexte == CONTEXTE_CHAPITRE)
             showNumero(police, choix, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
         SDL_WaitEvent(&event);
@@ -698,7 +681,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_BACKSPACE:
-                        if(modeChapitre)
+                        if(contexte == CONTEXTE_CHAPITRE)
                         {
                             if(choix != 0)
                                 choix = choix / 10;
@@ -711,7 +694,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
 
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
-                        if(choix != 0 && modeChapitre)
+                        if(choix != 0 && contexte == CONTEXTE_CHAPITRE)
                         {
                             mangaChoisis = choix*10;
                             *manuel = 1;
@@ -744,10 +727,10 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
 
             case SDL_TEXTINPUT:
             {
-                if(modeChapitre)
+                if(contexte == CONTEXTE_CHAPITRE)
                 {
                     buffer = nombreEntree(event);
-                    if((((buffer + choix * 10) <= nombreManga && !modeChapitre) || ((buffer + choix * 10) <= chapitreMax && modeChapitre)) && buffer != -1)
+                    if((((buffer + choix * 10) <= nombreManga && contexte != CONTEXTE_CHAPITRE) || ((buffer + choix * 10) <= chapitreMax && contexte == CONTEXTE_CHAPITRE)) && buffer != -1)
                         choix = choix * 10 + buffer;
                 }
                 else
@@ -803,7 +786,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                 /*Clic sur les boutons de DL*/
                 hauteurBandeau = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
-                if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && !modeChapitre) //Check si clique sur bouton de DL
+                if(event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS && contexte == CONTEXTE_DL) //Check si clique sur bouton de DL
                 {
                     if(event.button.x > WINDOW_SIZE_W*2/3)
                         mangaChoisis = CODE_BOUTON_CHAPITRE_ANNULER; //Annuler
@@ -812,7 +795,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                 }
 
 
-                if(!modeChapitre) //Sinon, clic sur bandeau de contrôle
+                if(contexte != CONTEXTE_CHAPITRE && contexte != CONTEXTE_TOME) //Sinon, clic sur bandeau de contrôle
                 {
                     if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
                        event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
@@ -851,7 +834,7 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
                         else
                             mangaChoisis = CODE_BOUTON_2_CHAPITRE; //Bouton central, dernier chapitre choisis
                     }
-                    else if(modeChapitre == 2 /*icone dispo*/ && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
+                    else if(contexte == CONTEXTE_TOME /*icone dispo*/ && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
                             && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
                     {
                         //Switch sur l'autre
@@ -872,16 +855,17 @@ int mangaSelection(int modeChapitre, int tailleTexte[MANGAPARPAGE_TRI], int haut
             }
         }
     }
-    TTF_CloseFont(police);
+    if(police != NULL)
+        TTF_CloseFont(police);
     return mangaChoisis;
 }
 
-int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6])
+int TRI_mangaToDisplay(int contexte, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6])
 {
-	if(sectionChoisis == SECTION_CHOISIS_CHAPITRE)
+	if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
 		return 1;
 
-	if(sectionChoisis == CONTEXTE_SUPPRESSION)
+	if(contexte == CONTEXTE_SUPPRESSION)
 		return 1;
 
 	if(!letterLimitationEnforced(limitationLettre, mangaDB.mangaName[0]))
@@ -893,7 +877,7 @@ int TRI_mangaToDisplay(int sectionChoisis, int limitationLettre, MANGAS_DATA man
 	return 1;
 }
 
-void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne)
+void analysisOutputSelectionTricolonne(int contexte, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne)
 {
     int i = 0;
 
@@ -987,7 +971,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
 
     else if(*mangaChoisis > 0 && manuel == 1) //Entré le numéro d'un mangas
     {
-        if(sectionChoisis != SECTION_CHOISIS_CHAPITRE)
+        if(contexte != CONTEXTE_CHAPITRE)
             *mangaChoisis = *mangaChoisis + MANGAPARPAGE_TRI * (*pageSelection - 1);
         else
             *mangaChoisis = *mangaChoisis * -1 + PALIER_QUIT; //Pour pouvoir contourner les code de retour
@@ -1062,7 +1046,7 @@ void analysisOutputSelectionTricolonne(int sectionChoisis, int *mangaChoisis, MA
         {
             for(i = 0, *limitationLettre = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++) //On va vérifier si des mangas répondent au critére
             {
-                if((sectionChoisis == CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1) || (sectionChoisis != CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1))
+                if((contexte == CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1) || (contexte != CONTEXTE_SUPPRESSION && mangaDB[i].mangaName[0] == *mangaChoisis * -1))
                     *limitationLettre += 1; //Si pas de manga répond au critére, limitationlettre pas modifié donc pas d'impact
             }
             if(*limitationLettre > 1) //Oui
@@ -1143,6 +1127,18 @@ void button_available(MANGAS_DATA* mangaDB, int button[8])
             }
         }
     }
+}
+
+SDL_Color getEngineColor(SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte, int contexte, MANGAS_DATA mangaDB)
+{
+    if((contexte == CONTEXTE_LECTURE && checkChapitreUnread(mangaDB) == 1)
+            || (contexte == CONTEXTE_DL && checkChapitreUnread(mangaDB) == -1))
+        return couleurUnread;
+
+    else if(contexte == CONTEXTE_DL && mangaDB.mangaName[0] && isItNew(mangaDB)) //Si pas encore DL, en rouge
+        return couleurNew;
+
+    return couleurTexte;
 }
 
 void loadMultiPage(int nombreManga, int *pageTotale, int *pageSelection)
