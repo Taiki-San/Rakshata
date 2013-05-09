@@ -614,14 +614,20 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
     TTF_CloseFont(police);
 }
 
-void showNumero(TTF_Font *police, int choix, int hauteurNum)
+void showNumero(TTF_Font *police, int choix, int virgule, int hauteurNum)
 {
     SDL_Texture *numero = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
     char buffer[10] = {0};
 
-    snprintf(buffer, 10, "%d", choix);
+    if(!virgule)
+        snprintf(buffer, 10, "%d", choix/10);
+    else if(virgule == 1)
+        snprintf(buffer, 10, "%d.", choix/10);
+    else
+        snprintf(buffer, 10, "%d.%d", choix/10, choix%10);
+
     numero = TTF_Write(renderer, police, buffer, couleur);
 
     applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
@@ -642,6 +648,7 @@ void showNumero(TTF_Font *police, int choix, int hauteurNum)
 int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
 {
     /*Initialisations*/
+    int virgule = 0;
     int i = 0, nombreManga = 0, mangaChoisis = 0, choix = 0, buffer = 0, hauteurBandeau = 0, chapitreMax = 0, bandeauControle = 0, modeTeam = 0;
     SDL_Event event;
     TTF_Font *police = NULL;
@@ -665,7 +672,7 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
     while(mangaChoisis == 0)
     {
         if(contexte == CONTEXTE_CHAPITRE)
-            showNumero(police, choix, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
+            showNumero(police, choix, virgule, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
         SDL_WaitEvent(&event);
         if(!haveInputFocus(&event, window))
@@ -682,22 +689,39 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_BACKSPACE:
+                    {
                         if(contexte == CONTEXTE_CHAPITRE)
                         {
-                            if(choix != 0)
-                                choix = choix / 10;
+                            if(virgule > 1)
+                            {
+                                choix /= 10;
+                                choix *= 10;
+                                virgule--;
+                            }
+                            else if(virgule == 1)
+                            {
+                                virgule--;
+                            }
+                            else if(choix >= 10)
+                            {
+                                int decimale = choix % 10;
+                                choix /= 10;
+                                choix -= choix%10;
+                                choix += decimale;
+                            }
                             else
                                 mangaChoisis = PALIER_CHAPTER;
                         }
                         else
                             mangaChoisis = ('A' - 1) * -1; //Le return doit être géré plus loin, lorsque le code saura si une lettre est pressé
                         break;
+                    }
 
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
                         if(choix != 0 && contexte == CONTEXTE_CHAPITRE)
                         {
-                            mangaChoisis = choix*10;
+                            mangaChoisis = choix;
                             *manuel = 1;
                         }
                         else
@@ -730,9 +754,25 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
             {
                 if(contexte == CONTEXTE_CHAPITRE)
                 {
-                    buffer = nombreEntree(event);
-                    if((((buffer + choix * 10) <= nombreManga && contexte != CONTEXTE_CHAPITRE) || ((buffer + choix * 10) <= chapitreMax && contexte == CONTEXTE_CHAPITRE)) && buffer != -1)
-                        choix = choix * 10 + buffer;
+                    if((event.text.text[0] == '.' || event.text.text[0] == ',') && !virgule)
+                        virgule = 1;
+                    else
+                    {
+                        buffer = nombreEntree(event);
+                        if(buffer != -1 && virgule < 2)
+                        {
+                            if(virgule && buffer + choix <= chapitreMax)
+                            {
+                                virgule++;
+                                choix += buffer;
+                            }
+                            else if(!virgule && (buffer + choix) * 10 <= chapitreMax)
+                                choix = (buffer + choix) * 10;
+
+                            else
+                                choix = chapitreMax;
+                        }
+                    }
                 }
                 else
                 {
