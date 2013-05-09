@@ -15,7 +15,7 @@
 extern int unlocked;
 static int pageWaaaayyyyTooBig;
 
-int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fullscreen)
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen)
 {
     int i = 0, check4change = 0, changementPage = 0, restoreState = 0, finDuChapitre = 0, new_chapitre = 0;
     int buffer = 0, largeurValide = 0, pageTropGrande = 0, tempsDebutExplication = 0, nouveauChapitreATelecharger = 0, noRefresh = 0, ctrlPressed = 0;
@@ -43,7 +43,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
     restoreState = checkRestore();
     getUpdatedChapterList(mangaDB);
 
-    if(((*chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1] && isAChapter == true) || (*chapitreChoisis == mangaDB->lastTome && isAChapter == false)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
+    if(((*chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1] && !isTome) || (*chapitreChoisis == mangaDB->lastTome && isTome)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[8], 5);
@@ -71,10 +71,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
     }
 
     /*Si chapitre manquant*/
-    while(isAChapter && !checkChapterReadable(*mangaDB, *chapitreChoisis) && curPosIntoStruct < mangaDB->nombreChapitre)
+    while(!isTome && !checkChapterReadable(*mangaDB, *chapitreChoisis) && curPosIntoStruct < mangaDB->nombreChapitre)
         *chapitreChoisis = mangaDB->chapitres[curPosIntoStruct++];
 
-    if(configFileLoader(mangaDB, isAChapter, *chapitreChoisis, &dataReader))
+    if(configFileLoader(mangaDB, isTome, *chapitreChoisis, &dataReader))
     {
         snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Chapitre non-existant: Team: %s - Manga: %s - Chapitre: %d\n", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
         logR(temp);
@@ -998,13 +998,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
                                     {
                                         if((dataReader.chapitreDeLaPage[dataReader.pageCourante]+1)*10 == new_chapitre)
                                         {
-                                            fprintf(updateControler, "%s %s %c %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, isAChapter?'C':'T' ,new_chapitre);
+                                            fprintf(updateControler, "%s %s %c %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, isTome?'T':'C' ,new_chapitre);
                                         }
                                         else
                                         {
                                             int i = (dataReader.chapitreDeLaPage[dataReader.pageCourante]+1)*10;
                                             for(; i <= new_chapitre; i+= 10)
-                                                fprintf(updateControler, "%s %s %c %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, isAChapter?'C':'T', i);
+                                                fprintf(updateControler, "%s %s %c %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, isTome?'T':'C', i);
                                         }
                                         fclose(updateControler);
                                         if(checkLancementUpdate())
@@ -1075,7 +1075,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fu
 
 /** Loaders **/
 
-int configFileLoader(MANGAS_DATA *mangaDB, bool isAChapter, int chapitre_tome, DATA_LECTURE* dataReader)
+int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, ret_value;
     for(i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinintialisation
@@ -1112,7 +1112,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isAChapter, int chapitre_tome, D
                 snprintf(dataReader->nomPages[prevPos], LONGUEUR_NOM_PAGE, "%s/%s", input_path, nomPagesTmp[i++]);
             }
         }
-    } while(!isAChapter);
+    } while(isTome);
     dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
     return ret_value;
 }

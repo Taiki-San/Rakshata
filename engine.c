@@ -297,7 +297,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int ha
     /*Multi-Page*/
     loadMultiPage(nombreManga, &pageTotale, &pageSelection);
 
-    if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
+    if(contexte == CONTEXTE_CHAPITRE)
     {
         //On change la taille du fond pour pas écraser les boutons inférieurs
         backgroundH = WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
@@ -496,7 +496,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int ha
         SDL_RenderPresent(renderer);
         while(!mangaChoisis)
         {
-            if(contexte != CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME ||
+            if(contexte != CONTEXTE_CHAPITRE ||
 #ifdef CHAPTER_AUTO_SELECTED
             nombreChapitre > 1)
 #else
@@ -875,7 +875,7 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
                         else
                             mangaChoisis = CODE_BOUTON_2_CHAPITRE; //Bouton central, dernier chapitre choisis
                     }
-                    else if(contexte == CONTEXTE_TOME /*icone dispo*/ && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
+                    else if((contexte == CONTEXTE_TOME || contexte == CONTEXTE_CHAPITRE) && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
                             && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
                     {
                         //Switch sur l'autre
@@ -1015,7 +1015,7 @@ void analysisOutputSelectionTricolonne(int contexte, int *mangaChoisis, MANGAS_D
         if(contexte != CONTEXTE_CHAPITRE)
             *mangaChoisis = *mangaChoisis + MANGAPARPAGE_TRI * (*pageSelection - 1);
         else
-            *mangaChoisis = *mangaChoisis * -1 + PALIER_QUIT; //Pour pouvoir contourner les code de retour
+            *mangaChoisis = *mangaChoisis * -1 + CODE_CHAPITRE_FREE; //Pour pouvoir contourner les code de retour
     }
 
     else if(*mangaChoisis > 0 && manuel == 2) //Bandeau de contrôle

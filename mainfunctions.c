@@ -146,6 +146,7 @@ int mainLecture()
 
             else if(retourLecteur == 1)
             {
+                bool isTome;
                 chapitreChoisis = PALIER_DEFAULT;
                 pageChapitre = 1;
                 do
@@ -153,7 +154,7 @@ int mainLecture()
                     if(!restoringState)
                     {
                         curPage = pageChapitre;
-                        chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], CONTEXTE_LECTURE);
+                        chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_LECTURE);
                         pageChapitre = curPage;
                     }
                     else
@@ -187,7 +188,7 @@ int mainLecture()
 
                             lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
 
-                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, true, &fullscreen);
+                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, isTome, &fullscreen);
 
                             if(retourLecteur != 0)
                             {
@@ -255,13 +256,14 @@ int mainChoixDL()
                 continuer = PALIER_MENU;
             else if(mangaChoisis > PALIER_DEFAULT)
             {
+                bool isTome;
                 chapitreChoisis = PALIER_DEFAULT;
                 continuer = 0;
                 pageChapitre = 1;
                 while(chapitreChoisis > PALIER_CHAPTER && !continuer)
                 {
                     curPage = pageChapitre;
-                    chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], CONTEXTE_DL);
+                    chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
                     pageChapitre = curPage;
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
@@ -275,7 +277,7 @@ int mainChoixDL()
                     {
                         /*Confirmation */
                         SDL_RenderClear(renderer);
-                        continuer = ecritureDansImport(mangaDB[mangaChoisis], 1, chapitreChoisis);
+                        continuer = ecritureDansImport(mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }

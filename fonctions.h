@@ -33,7 +33,7 @@ void refreshChaptersList(MANGAS_DATA *mangaDB);
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int askForChapter(MANGAS_DATA *mangaDB, int mode);
-void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
+void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, int nombreElements, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte);
 MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int mode, char* stringAll, char* stringGeneric);
 
@@ -60,8 +60,9 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 
 /**CTCommon.c**/
 int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contexte);
-void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
-void displayIconeChapOrTome(int chapitreOuTome);
+void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, int nombreElements, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
+void displayIconeChapOrTome(bool isTome);
+int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -90,7 +91,7 @@ int checkDLInProgress();
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
 int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int hauteurAffichage);
 void generateChoicePanel(char trad[13][100], int enable[6]);
-void showNumero(TTF_Font *police, int choix, int hauteurNum);
+void showNumero(TTF_Font *police, int choix, int virgule, int hauteurNum);
 int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel);
 int TRI_mangaToDisplay(int contexte, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6]);
 void analysisOutputSelectionTricolonne(int contexte, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne);
@@ -109,7 +110,7 @@ int showError();
 int rienALire();
 int affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
-int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
+int errorEmptyCTList(int contexte, int isTome, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 void memoryError(size_t size);
 
 /**Favoris.c**/
@@ -144,8 +145,8 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
-int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isAChapter, int *fullscreen);
-int configFileLoader(MANGAS_DATA *mangaDB, bool isAChapter, int chapitre_tome, DATA_LECTURE* dataReader);
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen);
+int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NOM_PAGE], int max_len);
 SDL_Texture* loadControlBar(int favState);
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB);
@@ -171,7 +172,7 @@ int showControls();
 /**ModuleDL.c**/
 int telechargement();
 void installation(DATA_INSTALL* datas);
-int ecritureDansImport(MANGAS_DATA mangaDB, bool isAChapter, int chapitreChoisis);
+int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
 void updateWindowSizeDL(int w, int h);
@@ -240,7 +241,7 @@ int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR
 /**Selection.c**/
 int controleurManga(MANGAS_DATA* mangas_db, int contexte, int nombreChapitre);
 int checkProjet(MANGAS_DATA mangaDB);
-int controleurChapTome(MANGAS_DATA* mangaDB, int contexte);
+int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting
@@ -262,8 +263,9 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 /**Tome.c**/
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void refreshTomeList(MANGAS_DATA *mangaDB);
+void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 int askForTome(MANGAS_DATA *mangaDB, int contexte);
-void displayTemplateTome(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
+void displayTemplateTome(MANGAS_DATA *mangaDB, int nombreElements, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
 MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 

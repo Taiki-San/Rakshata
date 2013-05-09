@@ -323,7 +323,7 @@ void installation(DATA_INSTALL* datas)
     quit_thread(0);
 }
 
-int ecritureDansImport(MANGAS_DATA mangaDB, bool isAChapter, int chapitreChoisis)
+int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
 {
     FILE* fichier = NULL;
     char temp[TAILLE_BUFFER];
@@ -333,7 +333,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isAChapter, int chapitreChoisis
     fichier = fopenR(INSTALL_DATABASE, "a+");
 
     if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
-		for(i = 0; mangaDB.chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[i] != chapitreChoisis; i++);
+		for(i = 0; mangaDB.chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[i] < chapitreChoisis; i++);
 
     else
         i = 0;
@@ -343,12 +343,12 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isAChapter, int chapitreChoisis
         do
         {
             if(mangaDB.chapitres[i]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, isAChapter?"Chapitre":"Tome", mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, isTome?"Tome":"Chapitre", mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
             else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, isAChapter?"Chapitre":"Tome", mangaDB.chapitres[i]/10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, isTome?"Tome":"Chapitre", mangaDB.chapitres[i]/10, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                fprintf(fichier, "%s %s %c %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, isAChapter?'C':'T', mangaDB.chapitres[i]);
+                fprintf(fichier, "%s %s %c %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, isTome?'T':'C', mangaDB.chapitres[i]);
                 nombreChapitre++;
             }
             i++;

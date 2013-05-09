@@ -271,6 +271,7 @@
 #define VALEUR_FIN_STRUCTURE_CHAPITRE -1
 #define CODE_BOUTON_CHAPITRE_ANNULER -10
 #define CODE_BOUTON_CHAPITRE_DL -11
+#define CODE_CHAPITRE_FREE -20 //Tout ce qui est avant ne doit pas avoir d'usage particulier
 
 /*Tome*/
 #define MAX_TOME_NAME_LENGTH 31
@@ -335,11 +336,7 @@
 #endif
 
 /*Check environnement*/
-#ifdef DEV_VERSION
-    #define NOMBRE_DE_FICHIER_A_CHECKER 31
-#else
-    #define NOMBRE_DE_FICHIER_A_CHECKER 29
-#endif
+#define NOMBRE_DE_FICHIER_A_CHECKER 31
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

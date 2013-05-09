@@ -31,7 +31,7 @@ int check_evt()
     snprintf(nomsATest[7], LONGUEUR_NOMS_DATA, "data/english/localization");
     snprintf(nomsATest[8], LONGUEUR_NOMS_DATA, "data/italian/acceuil.png");
     snprintf(nomsATest[9], LONGUEUR_NOMS_DATA, "data/italian/controls.png");
-    snprintf(nomsATest[10], LONGUEUR_NOMS_DATA,  "data/italian/localization");
+    snprintf(nomsATest[10], LONGUEUR_NOMS_DATA, "data/italian/localization");
     snprintf(nomsATest[11], LONGUEUR_NOMS_DATA, "data/german/acceuil.png");
     snprintf(nomsATest[12], LONGUEUR_NOMS_DATA, "data/german/controls.png");
     snprintf(nomsATest[13], LONGUEUR_NOMS_DATA, "data/german/localization");
@@ -48,15 +48,10 @@ int check_evt()
     snprintf(nomsATest[24], LONGUEUR_NOMS_DATA, ICONE_NEXT_PAGE);
     snprintf(nomsATest[25], LONGUEUR_NOMS_DATA, ICONE_LOCK);
     snprintf(nomsATest[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
-#ifdef DEV_VERSION
     snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
     snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
     snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, "data/acceuil.png");
     snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
-#else
-    snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
-#endif
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)

@@ -461,12 +461,13 @@ int deleteManga()
 			continuer = mangaChoisis;
 		else
 		{
+		    bool isTome;
 			chapitreChoisis = PALIER_DEFAULT;
 			continuer = 0;
 			while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT && noMoreChapter)
 			{
 			    curPage = pageChapitre;
-				chapitreChoisis = controleurChapTome(&mangas[mangaChoisis], CONTEXTE_SUPPRESSION);
+				chapitreChoisis = controleurChapTome(&mangas[mangaChoisis], &isTome, CONTEXTE_SUPPRESSION);
 				pageChapitre = curPage;
 
 				if (chapitreChoisis <= PALIER_CHAPTER)

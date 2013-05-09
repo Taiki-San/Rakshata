@@ -136,43 +136,26 @@ int checkProjet(MANGAS_DATA mangaDB)
     return 1;
 }
 
-int controleurChapTome(MANGAS_DATA* mangaDB, int contexte)
+int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int sectionSent = 0;
     if(mangaDB == NULL)
         return PALIER_CHAPTER;
 
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        /*char tempPath[450];
-        if(iconeChapitre1Tome2 == 1) //On affiche les chapitres, montrer le bouton 'Tome'
-            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_TOME);
-        else if(iconeChapitre1Tome2 == 2) //On affiche les tomes, montrer le bouton 'Chapitre'
-            snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_CHAPITRE);
-
-        texte = IMG_LoadTexture(renderer, tempPath);
-        if(texte != NULL)
-        {
-            position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texte->w;
-            position.y = POSITION_ICONE_MENUS;
-            position.w = TAILLE_ICONE_MENUS;
-            position.h = TAILLE_ICONE_MENUS;
-            SDL_RenderCopy(renderer, texte, NULL, &position);
-            SDL_DestroyTextureS(texte);
-        }*/
-        return askForTome(mangaDB, contexte);
+        return askForCT(mangaDB, isTome, contexte);
     }
     else if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
+        *isTome = false;
         return askForChapter(mangaDB, contexte);
     }
     else if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
+        *isTome = true;
         return askForTome(mangaDB, contexte);
     }
-    if(sectionSent != 0)
-        sectionSent = 0;
     return PALIER_CHAPTER;
 }
 

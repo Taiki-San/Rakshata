@@ -317,7 +317,7 @@ int UI_Alert(char* titre, char* contenu)
     return ret_value;
 }
 
-int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
+int errorEmptyCTList(int contexte, int isTome, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     if(contexte == CONTEXTE_DL)
     {
@@ -330,7 +330,7 @@ int errorEmptyChapterList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
         TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
         SDL_RenderClear(renderer);
-        snprintf(buffer, 3*TRAD_LENGTH, "%s %s %s", trad[15], trad[0], trad[16]);
+        snprintf(buffer, 3*TRAD_LENGTH, "%s %s %s", trad[15], trad[isTome], trad[16]);
 
         texte = TTF_Write(renderer, police, buffer, couleurTexte);
         if(texte != NULL)

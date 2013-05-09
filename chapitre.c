@@ -131,7 +131,7 @@ void getUpdatedChapterList(MANGAS_DATA *mangaDB)
 int askForChapter(MANGAS_DATA *mangaDB, int contexte)
 {
     /*Initialisations*/
-    int buffer = 0, i = 0, chapitreChoisis = 0, dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    int i = 0, chapitreChoisis = 0, dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE, chapitreMax;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
     loadTrad(texteTrad, 19);
 
@@ -145,7 +145,6 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
         if(contexte == CONTEXTE_DL)
         {
             refreshChaptersList(mangaDB);
-            snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
             if(checkFileExist(temp))
                 dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE; //Si un manga est déjà installé, on le met dans le sens décroissant
         }
@@ -159,17 +158,18 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
 
         //Generate chapter list
         MANGAS_DATA *chapitreDB = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
-
         if(chapitreDB == NULL) //Erreur de mémoire ou liste vide
-            return errorEmptyChapterList(contexte, texteTrad);
+            return errorEmptyCTList(contexte, 0, texteTrad);
 
-        displayTemplateChapitre(mangaDB, contexte, texteTrad, dernierLu);
+        chapitreMax = dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE ? chapitreDB[(contexte != CONTEXTE_LECTURE)].pageInfos : chapitreDB[chapitreDB[0].nombreChapitre-1].pageInfos;
+
+        displayTemplateChapitre(mangaDB, chapitreDB[0].nombreChapitre, contexte, texteTrad, dernierLu);
         chapitreChoisis = PALIER_QUIT-1;
         while(chapitreChoisis == PALIER_QUIT-1)
         {
             do
             {
-                chapitreChoisis = displayMangas(chapitreDB, CONTEXTE_CHAPITRE, mangaDB->nombreChapitre, mangaDB->nombreChapitre>MANGAPARPAGE_TRI?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
+                chapitreChoisis = displayMangas(chapitreDB, CONTEXTE_CHAPITRE, chapitreMax, chapitreDB[0].nombreChapitre>MANGAPARPAGE_TRI?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
                 if(chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
                     ouvrirSite(mangaDB->team);
             }while((chapitreChoisis == CODE_CLIC_LIEN_CHAPITRE) //On reste dans la boucle si on clic sur le site de la team
@@ -190,28 +190,27 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
                 else if(chapitreChoisis == CODE_BOUTON_2_CHAPITRE)
                     chapitreChoisis = dernierLu; //Dernier lu
 
-                else
+                else if(chapitreChoisis == CODE_BOUTON_3_CHAPITRE)
                     chapitreChoisis = mangaDB->chapitres[mangaDB->nombreChapitre-1]; //Dernier chapitre
+
+                else
+                    chapitreChoisis = PALIER_QUIT-1;
             }
 
-            else if(chapitreChoisis < PALIER_QUIT) //Numéro entré manuellement
-                chapitreChoisis = chapitreChoisis * -1 + PALIER_QUIT;
+            else if(chapitreChoisis < CODE_CHAPITRE_FREE) //Numéro entré manuellement
+                chapitreChoisis = (chapitreChoisis  - CODE_CHAPITRE_FREE) * -1;
         }
         free(chapitreDB);
     }
     else
-    {
-        buffer = showError();
-        if(buffer > PALIER_MENU) // Si pas de demande spéciale
-            buffer = PALIER_MENU;
-        return buffer;
-    }
+        chapitreChoisis = PALIER_CHAPTER;
+
     return chapitreChoisis;
 }
 
-void displayTemplateChapitre(MANGAS_DATA* mangaDB, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu)
+void displayTemplateChapitre(MANGAS_DATA* mangaDB, int nombreElements, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu)
 {
-    displayTemplateChapitreTome(mangaDB, contexte, 0, texteTrad, dernierLu);
+    displayTemplateChapitreTome(mangaDB, contexte, 0, nombreElements, texteTrad, dernierLu);
 }
 
 int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte)
@@ -278,6 +277,7 @@ MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
     }
     chapitreDB[chapitreCourant].mangaName[0] = 0;
     chapitreDB[chapitreCourant].pageInfos = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    chapitreDB[0].nombreChapitre = chapitreCourant;
 
     if((chapitreCourant == 1 && contexte != CONTEXTE_LECTURE) || (chapitreCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre
     {
