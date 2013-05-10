@@ -34,16 +34,20 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     DATA_LECTURE dataReader;
 
     pageWaaaayyyyTooBig = dataReader.pageCourante = 0;
-    for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
+
+    if(!isTome)
+        for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
+    else
+        for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < *chapitreChoisis; curPosIntoStruct++);
+
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
 
     loadTrad(texteTrad, 21);
     restoreState = checkRestore();
-    getUpdatedChapterList(mangaDB);
 
-    if(((*chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1] && !isTome) || (*chapitreChoisis == mangaDB->lastTome && isTome)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
+    if(((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID)) && (new_chapitre = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[8], 5);
@@ -51,10 +55,11 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
     if(restoreState)
     {
+        char type[2] = {0, 0};
         testExistance = fopenR("data/laststate.dat", "r");
-        fscanfs(testExistance, "%s %d %d", temp, LONGUEUR_NOM_MANGA_MAX, &i, &(dataReader.pageCourante)); //Récupére la page
+        fscanfs(testExistance, "%s %s %d %d", temp, LONGUEUR_NOM_MANGA_MAX, type, 2, &i, &(dataReader.pageCourante)); //Récupére la page
         fclose(testExistance);
-        removeR("data/laststate.dat");
+        //removeR("data/laststate.dat");
 
         /**Création de la fenêtre d'infos**/
         explication = createUIAlert(explication, &texteTrad[2], 4);
@@ -71,8 +76,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     }
 
     /*Si chapitre manquant*/
-    while(!isTome && !checkChapterReadable(*mangaDB, *chapitreChoisis) && curPosIntoStruct < mangaDB->nombreChapitre)
-        *chapitreChoisis = mangaDB->chapitres[curPosIntoStruct++];
+    while(curPosIntoStruct < isTome?mangaDB->nombreTomes:mangaDB->nombreChapitre && !checkReadable(*mangaDB, isTome, isTome?(void*) &(mangaDB->tomes[curPosIntoStruct++]): (void*)chapitreChoisis))
+        *chapitreChoisis = isTome?mangaDB->tomes[curPosIntoStruct++].ID:mangaDB->chapitres[curPosIntoStruct++];
 
     if(configFileLoader(mangaDB, isTome, *chapitreChoisis, &dataReader))
     {
@@ -92,7 +97,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     }
     else
     {
-        lastChapitreLu(mangaDB, *chapitreChoisis); //On écrit le dernier chapitre lu
+        lastChapitreLu(mangaDB, isTome, *chapitreChoisis); //On écrit le dernier chapitre lu
         encrypted = checkChapterEncrypted(*mangaDB, *chapitreChoisis);
     }
 
@@ -1078,6 +1083,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, ret_value;
+    char name[LONGUEUR_NOM_PAGE];
+    FILE* config = NULL;
     for(i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinintialisation
     {
         dataReader->nomPages[i][0] = 0;
@@ -1085,25 +1092,35 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
     }
     dataReader->nombrePageTotale = 0;
 
+    if(isTome)
+    {
+        snprintf(name, LONGUEUR_NOM_PAGE, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome, CONFIGFILETOME);
+        config = fopen(name, "r");
+        if(config == NULL)
+            return 1;
+        name[0] = 0;
+        fscanfs(config, "%s", name, 200);
+    }
+    else
+    {
+        if(chapitre_tome%10)
+            snprintf(name, 100, "Chapitre_%d.%d", chapitre_tome/10, chapitre_tome%10);
+        else
+            snprintf(name, 100, "Chapitre_%d", chapitre_tome/10);
+    }
+
     do
     {
-        char input_path[LONGUEUR_NOM_PAGE], nomPagesTmp[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE];
-        for(i = 0; i < NOMBRE_PAGE_MAX; nomPagesTmp[i++][0] = 0);
+        char input_path[LONGUEUR_NOM_PAGE], nomPagesTmp[NOMBRE_PAGE_MAX+1][LONGUEUR_NOM_PAGE];
 
-        if(chapitre_tome%10)
-            snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome/10, chapitre_tome%10, CONFIGFILE);
-        else
-            snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome/10, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name, CONFIGFILE);
 
         ret_value = loadChapterConfigDat(input_path, &nombrePages, nomPagesTmp, NOMBRE_PAGE_MAX-prevPos);
         dataReader->nombrePageTotale += nombrePages+1;
         if(!ret_value)
         {
             i = 0;
-            if(chapitre_tome%10)
-                snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome/10, chapitre_tome%10);
-            else
-                snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome/10);
+            snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name);
 
             for(; prevPos < dataReader->nombrePageTotale; prevPos++) //Réinintialisation
             {
@@ -1111,6 +1128,16 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
                 dataReader->decimaleDeLaPage[prevPos] = chapitre_tome%10;
                 snprintf(dataReader->nomPages[prevPos], LONGUEUR_NOM_PAGE, "%s/%s", input_path, nomPagesTmp[i++]);
             }
+        }
+        if(isTome)
+        {
+            if(fgetc(config) == EOF)
+            {
+                fclose(config);
+                break;
+            }
+            fseek(config, -1, SEEK_CUR);
+            fscanfs(config, "%s", name, 200);
         }
     } while(isTome);
     dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
@@ -1124,7 +1151,7 @@ int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NO
 	if(file_input == NULL)
         return 1;
 
-    for(i = 0; i < max_len; output[i++][0] = 0); //Réinintialisation
+    //for(i = 0; i < max_len; output[i++][0] = 0); //Réinintialisation
 
     fscanfs(file_input, "%d", nombrePage);
     if(*nombrePage > max_len)
@@ -1147,6 +1174,7 @@ int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NO
                 fscanfs(file_input, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
             changeTo(output[i], '&', ' ');
         }
+        output[i][0] = 0;
         i--;
     }
 
@@ -1154,6 +1182,7 @@ int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NO
     {
         for(i = 0; i <= *nombrePage; i++)
             snprintf(output[i], LONGUEUR_NOM_PAGE, "%d.jpg", i);
+        output[i][0] = 0;
     }
     fclose(file_input);
     for(i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
