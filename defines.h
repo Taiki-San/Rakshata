@@ -80,6 +80,7 @@
 
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
+#define CONFIGFILETOME "config.tome.dat"
 #define VERSION_REPO 2
 #define VERSION_MANGA 2
 
@@ -287,7 +288,7 @@
 
     /*Limites buffers*/
     #define NOMBRE_PAGE_MAX 1000
-    #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*3+200
+    #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*3+200+100
 
     /*Tailles*/
     #define BORDURE_LAT_LECTURE 20

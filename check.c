@@ -420,15 +420,21 @@ int checkRestoreAvailable()
     if(restore != NULL)
     {
         int chapitre = 0;
-        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*5+50], team[LONGUEUR_NOM_MANGA_MAX];
-        fscanfs(restore, "%s %d", manga, LONGUEUR_NOM_MANGA_MAX, &chapitre);
+        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*5+50], team[LONGUEUR_NOM_MANGA_MAX], type[2] = {0, 0};
+        fscanfs(restore, "%s %s %d", manga, LONGUEUR_NOM_MANGA_MAX, type, 2, &chapitre);
         fclose(restore);
 
         teamOfProject(manga, team);
-        if(chapitre%10)
-            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
+        if(type[0] == 'C')
+        {
+            if(chapitre%10)
+                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
+            else
+                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
+        }
         else
-            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
+            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Tome_%d/%s", team, manga, chapitre, CONFIGFILETOME);
+
         return checkFileExist(temp);
     }
     return 0;
@@ -633,8 +639,22 @@ int checkFileValide(FILE* file)
     return 1;
 }
 
-bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
+bool checkPathEscape(char *string, int length)
 {
+    int i;
+    for(i = 0; i < length && string[i] != 0; i++)
+    {
+        if(string[i] == '.' && (string[i+1] == '/' || string[i+1] == '\\'))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr)
+{
+    int chapitre = *chapitre_ptr;
     char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350];
     char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
     if(chapitre%10)
@@ -650,5 +670,55 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
     if(checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag))
         return true;
     return false;
+}
+
+bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome)
+{
+    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
+    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, metaTome->ID, CONFIGFILETOME);
+    FILE* config = fopen(pathConfigFile, "r");
+    register FILE* fileCheck = NULL;
+
+    if(config == NULL)
+        return false;
+
+    while(fgetc(config) != EOF)
+    {
+        fseek(config, -1, SEEK_CUR);
+        fscanfs(config, "%s", name, 200);
+
+        if(!checkPathEscape(name, 200))
+        {
+            fclose(config);
+            return false;
+        }
+
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
+        fileCheck = fopen(pathConfigFile, "r");
+        if(fileCheck == NULL)
+        {
+            fclose(config);
+            return false;
+        }
+        fclose(fileCheck);
+
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
+        fileCheck = fopen(pathConfigFile, "r");
+        if(fileCheck!= NULL)
+        {
+            fclose(config);
+            return false;
+        }
+        fclose(fileCheck);
+    }
+    fclose(config);
+    return true;
+}
+
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
+{
+    if(isTome)
+        return checkTomeReadable(mangaDB, data);
+    return checkChapterReadable(mangaDB, data);
 }
 

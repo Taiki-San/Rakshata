@@ -16,8 +16,9 @@ int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contex
 {
     if(min == max && contexte != CONTEXTE_DL) //Si une seul chapitre, on le séléctionne automatiquement
     {
-        if(checkChapterReadable(*mangaDB, max*10))
-            return max*10;
+        max *= 10;
+        if(checkChapterReadable(*mangaDB, &max))
+            return max;
     }
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }
@@ -193,7 +194,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
                     return PALIER_MENU;
             }
         }
-        else
+        if(!*isTome)
         {
             if(contexte == CONTEXTE_DL)
                 refreshChaptersList(mangaDB);

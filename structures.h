@@ -55,7 +55,7 @@ typedef struct dataMangas
 
 typedef struct data_lecture_tome
 {
-    char nomPages[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE];
+    char nomPages[NOMBRE_PAGE_MAX+1][LONGUEUR_NOM_PAGE];
     int nombrePageTotale;
     int pageCourante;
     int chapitreDeLaPage[NOMBRE_PAGE_MAX];

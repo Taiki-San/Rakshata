@@ -81,6 +81,12 @@ int sortTomes(const void *a, const void *b)
 {
     const META_TOME *struc1 = a;
     const META_TOME *struc2 = b;
+
+    if(struc1->ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        return 1;
+    else if(struc2->ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        return -1;
+
     return struc1->ID - struc2->ID;
 }
 

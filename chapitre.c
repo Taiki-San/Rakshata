@@ -73,7 +73,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreChapitre; nbElem++)
     {
-        if(!checkChapterReadable(*mangaDB, mangaDB->chapitres[nbElem]))
+        if(!checkChapterReadable(*mangaDB, &mangaDB->chapitres[nbElem]))
             mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
     }
 

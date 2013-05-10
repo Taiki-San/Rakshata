@@ -297,6 +297,7 @@ SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr)
     }while(renderer_ptr == NULL || !renderer_ptr->magic); //En cas de mauvais timing
 
     SDL_SetRenderDrawColor(renderer_ptr, palette.fond.r, palette.fond.g, palette.fond.b, 255);
+    renderer_ptr->window = window_ptr;
     return renderer_ptr;
 }
 

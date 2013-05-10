@@ -62,9 +62,8 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
 void refreshTomeList(MANGAS_DATA *mangaDB)
 {
     if(mangaDB->tomes != NULL)
-    {
         free(mangaDB->tomes);
-    }
+
     /*On commence par énumérer les chapitres spéciaux*/
     char temp[TAILLE_BUFFER];
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/tomeDB", mangaDB->team->teamLong, mangaDB->mangaName);
@@ -94,83 +93,37 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
 
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
-    if(mangaDB != NULL)
-        return;
+    int nbElem = 0;
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
+    FILE* config = NULL;
 
-    int first = -1, end = -1, fBack, eBack, nbElem = 0;
-    char temp[TAILLE_BUFFER*5];
-
-    snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-    FILE* file = fopenR(temp, "r");
-    if(temp == NULL)
+    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
+    if((config = fopen(temp, "r")) != NULL)
     {
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-    fscanfs(file, "%d %d", &fBack, &eBack);
-    if(fgetc(file) != EOF)
-    {
-        fseek(file, -1, SEEK_CUR);
-        fscanfs(file, "%d", dernierLu);
-    }
-    fclose(file);
-
-    for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreChapitre; nbElem++)
-    {
-        if(!checkChapterReadable(*mangaDB, mangaDB->chapitres[nbElem]))
-            mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        *dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        fscanfs(config, "%d", dernierLu);
+        fclose(config);
     }
 
-    qsort(mangaDB->chapitres, nbElem, sizeof(int), sortNumbers);
-    for(; nbElem > 0 && mangaDB->chapitres[nbElem-1] == VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem--);
-
-    if(nbElem == 0)
+    for(nbElem = 0; mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreTomes; nbElem++)
     {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-        removeFolder(temp);
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-
-    first = mangaDB->chapitres[0];
-    end = mangaDB->chapitres[nbElem-1];
-
-    if(first > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        *dernierLu = mangaDB->chapitres[0];
-
-    else if(end < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        *dernierLu = mangaDB->chapitres[nbElem-1];
-
-    if((first != fBack || end != eBack) && first <= end)
-    {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-        file = fopenR(temp, "w+");
-        if(temp != NULL)
+        if(!checkTomeReadable(*mangaDB, &mangaDB->tomes[nbElem]))
         {
-            fprintf(file, "%d %d", first, end);
-            if(*dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                fprintf(file, " %d", *dernierLu);
-            fclose(file);
+            mangaDB->tomes[nbElem].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
+            mangaDB->tomes[nbElem].name[0] = 0;
         }
     }
-    else if(first > end)
-    {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-        removeFolder(temp);
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-    mangaDB->nombreChapitre = nbElem;
+
+    qsort(mangaDB->tomes, nbElem, sizeof(META_TOME), sortTomes);
+    for(; nbElem > 0 && mangaDB->tomes[nbElem-1].ID == VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem--);
+    mangaDB->nombreTomes = nbElem;
 }
 
 void getUpdatedTomeList(MANGAS_DATA *mangaDB)
 {
-    //int i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    int i = VALEUR_FIN_STRUCTURE_CHAPITRE;
     refreshTomeList(mangaDB);
-    //checkTomeValable(mangaDB, &i);
+    checkTomeValable(mangaDB, &i);
 }
 
 int askForTome(MANGAS_DATA *mangaDB, int contexte)
@@ -280,7 +233,7 @@ MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
         i = mangaDB.nombreTomes-1;
     while((i < mangaDB.nombreTomes && ordreCroissant) || (i >= 0 && !ordreCroissant))
     {
-        snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.tomes[i].ID, CONFIGFILE);
+        snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.tomes[i].ID, CONFIGFILETOME);
 
         file = fopen(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
         if((file != NULL && contexte != CONTEXTE_DL) || (file == NULL && contexte == CONTEXTE_DL))

@@ -172,22 +172,29 @@ int mainLecture()
                         {
                             if(restoringState == 1)
                             {
-                                char temp[LONGUEUR_NOM_MANGA_MAX];
+                                char temp[LONGUEUR_NOM_MANGA_MAX], type[2] = {0, 0};
                                 FILE* test = NULL;
 
                                 test = fopenR("data/laststate.dat", "r");
-                                fscanfs(test, "%s %d", temp, LONGUEUR_NOM_MANGA_MAX, &chapitreChoisis);
+                                fscanfs(test, "%s %s %d", temp, LONGUEUR_NOM_MANGA_MAX, type, 2, &chapitreChoisis);
                                 fclose(test);
 
                                 for(mangaChoisis = 0; strcmp(temp, mangaDB[mangaChoisis].mangaName) != 0; mangaChoisis++);
-                                getUpdatedChapterList(&mangaDB[mangaChoisis]);
-
+                                if(type[0] == 'T')
+                                {
+                                    isTome = true;
+                                    getUpdatedTomeList(&mangaDB[mangaChoisis]);
+                                }
+                                else
+                                {
+                                    isTome = false;
+                                    getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                                }
                                 restoringState = 0;
                             }
+
                             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
-                            lastChapitreLu(&mangaDB[mangaChoisis], chapitreChoisis); //On écrit le dernier chapitre lu
-
+                            lastChapitreLu(&mangaDB[mangaChoisis], isTome, chapitreChoisis); //On écrit le dernier chapitre lu
                             retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, isTome, &fullscreen);
 
                             if(retourLecteur != 0)

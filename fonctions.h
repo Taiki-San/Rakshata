@@ -56,7 +56,10 @@ int checkButtonPressed(int button_selected[8]);
 int checkWindowEventValid(int EventWindowEvent);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
-bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
+bool checkPathEscape(char *string, int length);
+bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr);
+bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome);
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 
 /**CTCommon.c**/
 int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contexte);
@@ -78,7 +81,7 @@ int checkUpdateSpecChapter(MANGAS_DATA mangas);
 void get_update_spec_chapter(MANGAS_DATA mangas);
 int deleteManga();
 int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
-void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre);
+void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
@@ -264,6 +267,7 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void refreshTomeList(MANGAS_DATA *mangaDB);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
+void getUpdatedTomeList(MANGAS_DATA *mangaDB);
 int askForTome(MANGAS_DATA *mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA *mangaDB, int nombreElements, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);

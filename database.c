@@ -73,7 +73,9 @@ MANGAS_DATA* miseEnCache(int mode)
 			snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
 			if((checkFileExist(temp) || mode == LOAD_DATABASE_ALL)  && mangas[numeroManga].firstChapter <= mangas[numeroManga].lastChapter
                                                                     && mangas[numeroManga].firstTome <= mangas[numeroManga].lastTome
-                                                                    && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE))
+                                                                    && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                                                                    && checkPathEscape(mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX)
+                                                                    && checkPathEscape(teamLong[numeroTeam], LONGUEUR_NOM_MANGA_MAX))
 			{
                 ustrcpy(mangas[numeroManga].team->teamLong, teamLong[numeroTeam]);
                 ustrcpy(mangas[numeroManga].team->teamCourt, teamCourt[numeroTeam]);
@@ -573,24 +575,36 @@ int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 	return 0;
 }
 
-void lastChapitreLu(MANGAS_DATA* mangasDB, int dernierChapitre)
+void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
 {
 	int i = 0, j = 0;
 	char temp[5*LONGUEUR_NOM_MANGA_MAX];
 	FILE* fichier = NULL;
 
-	snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
-	fichier = fopenR(temp, "r");
-    if(fichier == NULL)
-        i = j = dernierChapitre;
-    else
-	{
-	    fscanfs(fichier, "%d %d", &i, &j);
+    if(isTome)
+        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILETOME);
+	else
+        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
+	if(isTome)
+    {
+        fichier = fopenR(temp, "w+");
+        fprintf(fichier, "%d", dernierChapitre);
         fclose(fichier);
-	}
-	fichier = fopenR(temp, "w+");
-	fprintf(fichier, "%d %d %d", i, j, dernierChapitre);
-	fclose(fichier);
+    }
+    else
+    {
+        fichier = fopenR(temp, "r");
+        if(fichier == NULL)
+            i = j = dernierChapitre;
+        else
+        {
+            fscanfs(fichier, "%d %d", &i, &j);
+            fclose(fichier);
+        }
+        fichier = fopenR(temp, "w+");
+        fprintf(fichier, "%d %d %d", i, j, dernierChapitre);
+        fclose(fichier);
+    }
 }
 
 int databaseVersion(char* mangaDB)
