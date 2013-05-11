@@ -187,7 +187,7 @@ void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, i
 DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal);
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
 void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded);
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char historiqueTeam[1000][LONGUEUR_COURT]);
+bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 

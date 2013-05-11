@@ -198,7 +198,8 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
             sscanfs(ligne, "%s %s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
 			if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
-				newBufferTodo[posPtr]->typeChapter = (type[0] == 'C');
+                #warning "Mettre le # du tome ici au lieu de 0"
+				newBufferTodo[posPtr]->partOfTome = (type[0] == 'C')?VALEUR_FIN_STRUCTURE_CHAPITRE:0;
                 newBufferTodo[posPtr]->chapitre = chapitreTmp;
                 newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
             }
@@ -207,7 +208,8 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 for(posCatalogue = 0; posCatalogue < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)); posCatalogue++);
                 if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt))
                 {
-					newBufferTodo[posPtr]->typeChapter = (type[0] == 'C');
+					#warning "Mettre le # du tome ici au lieu de 0"
+                    newBufferTodo[posPtr]->partOfTome = (type[0] == 'C')?VALEUR_FIN_STRUCTURE_CHAPITRE:0;
                     newBufferTodo[posPtr]->chapitre = chapitreTmp;
                     newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
                 }
@@ -258,15 +260,22 @@ void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded)
     createNewThread(installation, data_instal);
 }
 
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char historiqueTeam[1000][LONGUEUR_COURT])
+bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 {
     int i;
     if(teamToCheck.openSite)
     {
-        for(i = 0; i < 1000 && historiqueTeam[i][0] && strcmp(teamToCheck.teamCourt, historiqueTeam[i]) != 0 && historiqueTeam[i][0] != 0; i++);
-        if(i < 1000 && historiqueTeam[i][0] == 0) //Si pas déjà installé
+        for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
+        if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
         {
-            ustrcpy(historiqueTeam[i++], teamToCheck.teamCourt);
+            void *ptr = realloc(*historiqueTeam, (i+1)*sizeof(char*));
+            if(ptr != NULL) //Si ptr == NULL, *historiqueTeam n'a pas été modifié
+            {
+                *historiqueTeam = ptr;
+                *historiqueTeam[i] = malloc(LONGUEUR_COURT);
+                ustrcpy(historiqueTeam[i], teamToCheck.teamCourt);
+                *historiqueTeam[i+1] = NULL;
+            }
             return true;
         }
     }

@@ -24,7 +24,7 @@ int INSTANCE_RUNNING = 0;
 int telechargement()
 {
     int i = 0, mangaTotal, pourcentage, glados = CODE_RETOUR_OK, posToDo;
-    char historiqueTeam[1000][LONGUEUR_COURT];
+    char **historiqueTeam = NULL;
     char trad[SIZE_TRAD_ID_22][100];
     DATA_LOADED **todoList = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
@@ -61,7 +61,9 @@ int telechargement()
     mangaTotal = 0;
 	todoList = MDL_loadDataFromImport(mangaDB, &mangaTotal);
 
-    for(i = 0; i < mangaTotal+1 && i < 1000; historiqueTeam[i++][0] = 0);
+    historiqueTeam = malloc(sizeof(char*));
+    historiqueTeam[0] = NULL;
+
     loadTrad(trad, 22);
 
     for(posToDo = 0; posToDo < mangaTotal && glados != CODE_RETOUR_DL_CLOSE; posToDo++) //On démarre à 1 car sinon, le premier pourcentage serait de 0
@@ -71,7 +73,7 @@ int telechargement()
         /*Extraction du chapitre*/
         if(todoList[posToDo]->datas != NULL)
         {
-            if(checkIfWebsiteAlreadyOpened(*todoList[posToDo]->datas->team, historiqueTeam))
+            if(checkIfWebsiteAlreadyOpened(*todoList[posToDo]->datas->team, &historiqueTeam))
             {
                 ouvrirSite(todoList[0]->datas->team); //Ouverture du site de la team
             }
@@ -131,6 +133,9 @@ int telechargement()
         }
     }
 
+    for(i = 0; historiqueTeam[i] != NULL; free(historiqueTeam[i++]));
+    free(historiqueTeam);
+
     if(glados != CODE_RETOUR_OK)
     {
 		FILE *import = NULL;
@@ -143,7 +148,7 @@ int telechargement()
                 {
                     if(todoList[i]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
                     {
-                        int j
+                        int j;
                         fprintf(import, "%s %s T %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->partOfTome);
                         for(j = i+1; j < mangaTotal; j++)
                         {
