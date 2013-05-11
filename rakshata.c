@@ -21,7 +21,6 @@ volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 int HAUTEUR = 730;
 volatile int favorisToDL = -1;
-volatile int alreadyRefreshed = 0;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/test/success.html"};

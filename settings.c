@@ -45,6 +45,7 @@ int affichageMenuGestion()
     return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);
 }
 
+extern int alreadyRefreshed;
 int menuGestion()
 {
     int menu = 0;
@@ -69,9 +70,7 @@ int menuGestion()
                 menu = deleteRepo();
                 if(menu == 1)
                 {
-                    MUTEX_LOCK;
-                    alreadyRefreshed = 0;
-                    MUTEX_UNLOCK;
+                    alreadyRefreshed = -5*60000;
                     raffraichissmenent();
                 }
                 break;

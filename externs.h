@@ -19,7 +19,6 @@ extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;
 extern int HAUTEUR;
 extern volatile int favorisToDL;
-extern volatile int alreadyRefreshed;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];
 extern char MAIN_SERVER_URL[2][100];
