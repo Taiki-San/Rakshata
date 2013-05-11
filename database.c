@@ -484,7 +484,7 @@ int deleteManga()
 						else
 						{
 							chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-							if(internal_deleteChapitre(mangas[mangaChoisis], chapitreChoisis))
+							if(internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis))
 							{
 								noMoreChapter = 0;
 								freeMangaData(mangas, NOMBRE_MANGA_MAX);
@@ -515,7 +515,25 @@ int deleteManga()
 	return continuer;
 }
 
-int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
+int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
+{
+    if(isTome)
+        return internalDeleteTome(mangaDB, selection);
+    return internalDeleteChapitre(mangaDB, selection);
+}
+
+int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete)
+{
+    if(mangaDB.tomes == NULL)
+        getUpdatedTomeList(&mangaDB);
+
+    char temp[500];
+    snprintf(temp, 500, "manga/%s/%s/Tome_%d/", mangaDB.team->teamLong, mangaDB.mangaName, tomeDelete);
+    removeFolder(temp);
+    return 0;
+}
+
+int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 {
 	char temp[5*LONGUEUR_NOM_MANGA_MAX];
 	/*si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/

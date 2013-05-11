@@ -478,41 +478,6 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
     return 0;
 }
 
-int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
-{
-    int i = 0, j = 0, chapitre_new = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], teamCourt[LONGUEUR_COURT];
-
-    MUTEX_LOCK;
-    if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
-    {
-        MUTEX_UNLOCK;
-        return 0;
-    }
-    MUTEX_UNLOCK;
-
-    setupBufferDL(bufferDL, 100, 100, 10, 1);
-    int version = get_update_mangas(bufferDL, mangasDB.team);
-
-    if(bufferDL[i]) //On a DL quelque chose
-        i += sscanfs(&bufferDL[i], "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
-    else
-        return 0;
-    if(version == 2)
-        while(bufferDL[i++] != '\n');
-
-    if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
-        return 0;
-
-    while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
-        i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
-    if(chapitre_new > chapitre)
-    {
-        return chapitre_new * 10;
-    }
-    return 0;
-}
-
 int isItNew(MANGAS_DATA mangasDB)
 {
 	/*Vérifie si le manga est nouveau ou pas (dossiers à créer)*/
@@ -704,7 +669,7 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome)
 
         snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
         fileCheck = fopen(pathConfigFile, "r");
-        if(fileCheck!= NULL)
+        if(fileCheck != NULL)
         {
             fclose(config);
             return false;

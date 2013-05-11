@@ -69,7 +69,7 @@
 #include <string.h>
 
 #ifndef NOUNCRYPT
-//        #define NOUNCRYPT
+        #define NOUNCRYPT //Break things and my own crypto is more powerfull
 #endif
 
 #include "zlib/zlib.h"
@@ -188,7 +188,7 @@ typedef struct
 
 #    ifndef NOUNCRYPT
     unsigned long keys[3];     /* keys defining the pseudo-random sequence */
-    const unsigned long* pcrc_32_tab;
+    const z_crc_t FAR* pcrc_32_tab;
 #    endif
 } unz64_s;
 

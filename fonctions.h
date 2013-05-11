@@ -46,7 +46,6 @@ void checkHostNonModifie();
 int checkRestore();
 int checkRestoreAvailable();
 int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker);
-int checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre);
 int isItNew(MANGAS_DATA mangasDB); //Remplacer par checkNewManga
 int checkChapitreUnread(MANGAS_DATA mangasDB);
 int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis);
@@ -80,7 +79,9 @@ void update_mangas();
 int checkUpdateSpecChapter(MANGAS_DATA mangas);
 void get_update_spec_chapter(MANGAS_DATA mangas);
 int deleteManga();
-int internal_deleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
+int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
+int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
+int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
 void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
@@ -150,16 +151,18 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 /**Lecteur.c**/
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen);
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
-int loadChapterConfigDat(char* input, int *nombrePage, char output[][LONGUEUR_NOM_PAGE], int max_len);
+char ** loadChapterConfigDat(char* input, int *nombrePage);
 SDL_Texture* loadControlBar(int favState);
 int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB);
-void cleanMemory(SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void freeCurrentPage(SDL_Texture *texture);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
+void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre);
+void addtoDownloadListFromReader(MANGAS_DATA *mangaDB, DATA_LECTURE dataReader, bool isTome, void* new_data);
 
 /**Mainfunctions.c**/
 void mainRakshata();
@@ -236,7 +239,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void killswitchEnabled(char nomTeamCourt[5]);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
-SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page);
+SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
 void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM]);
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check);

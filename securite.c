@@ -148,7 +148,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 
-SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MANGA_MAX], char mangas[LONGUEUR_NOM_MANGA_MAX], int numeroChapitre, char nomPage[LONGUEUR_NOM_PAGE], int page)
+SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
     int i = 0, nombreEspace = 0;
     unsigned char *configEnc = calloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10), sizeof(unsigned char)); //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
@@ -156,17 +156,16 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
     FILE* test= NULL;
 
-	size_t size = 0, length = strlen(REPERTOIREEXECUTION) + strlen(teamLong) + strlen(mangas) + 60;
+	size_t size = 0, length = strlen(pathRoot) + 60;
 
 	path = malloc(length);
-	if(numeroChapitre % 10)
-        snprintf(path, length, "manga/%s/%s/Chapitre_%d.%d/config.enc", teamLong, mangas, numeroChapitre/10, numeroChapitre%10);
-	else
-        snprintf(path, length, "manga/%s/%s/Chapitre_%d/config.enc", teamLong, mangas, numeroChapitre/10);
+	if(path != NULL)
+        snprintf(path, length, "%s/config.enc", pathRoot);
 
-    test = fopenR(nomPage, "r");
+    test = fopen(pathPage, "r");
     if(test == NULL) //Si on trouve pas la page
     {
+        free(path); //Free un ptr NULL n'a pas d'impact
         free(configEnc);
         return NULL;
     }
@@ -178,13 +177,11 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         size += CRYPTO_BUFFER_SIZE;
     fclose(test);
 
-    test = fopenR(path, "r");
-
+    test = fopen(path, "r");
     if(test == NULL) //Si on trouve pas config.enc
     {
         free(configEnc);
-        surface_page = IMG_Load(nomPage);
-        return surface_page;
+        return IMG_Load(pathRoot);
     }
     fclose(test);
 
@@ -196,6 +193,7 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
         free(path);
         exit(-1);
     }
+
     unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     snprintf((char *) numChapitreChar, 10, "%d", numeroChapitre/10);
     pbkdf2(temp, numChapitreChar, hash);
@@ -249,12 +247,12 @@ SDL_Surface *IMG_LoadS(SDL_Surface *surface_page, char teamLong[LONGUEUR_NOM_MAN
     void *buf_page = ralloc(size + 0xff);
     void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
 
-    test = fopenR(nomPage, "rb");
+    test = fopenR(pathPage, "rb");
     fread(buf_in, 1, size, test);
     fclose(test);
 
     i = 0;
-    surface_page = NULL;
+    SDL_Surface *surface_page = NULL;
     do
     {
         decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));

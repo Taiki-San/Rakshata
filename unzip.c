@@ -258,7 +258,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
           Pour ça, on va classer les clées avec la longueur des clées
           il est un peu 3h du mat donc je vais pas m'attarder*/
         int nombreFichierDansConfigFile = 0;
-        char nomPage[NOMBRE_PAGE_MAX][LONGUEUR_NOM_PAGE];
+        char **nomPage = NULL;
         unsigned char temp[256], temp2[256];
 
 		unsigned char *hugeBuffer = NULL;
@@ -284,12 +284,17 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
 
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if(loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile, nomPage, NOMBRE_PAGE_MAX) || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
+        if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
         {
 #ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
 #endif
             for(i = 0; filename_inzip[i][0]; remove(filename_inzip[i++])); //On fais le ménage
+            if(nomPage != NULL)
+            {
+                for(i = 0; nomPage[i]; free(nomPage[i++]));
+                free(nomPage);
+            }
             ret_value = -1;
             goto quit;
         }
@@ -337,6 +342,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
                 crashTemp(temp, 256);
             }
         }
+        free(nomPage);
         hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 15 ) * sizeof(unsigned char)); //+1 pour \n, +15 pour le nombre en tête et le \n qui suis
         if(hugeBuffer== NULL)
         {

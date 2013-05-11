@@ -55,11 +55,13 @@ typedef struct dataMangas
 
 typedef struct data_lecture_tome
 {
-    char nomPages[NOMBRE_PAGE_MAX+1][LONGUEUR_NOM_PAGE];
     int nombrePageTotale;
     int pageCourante;
-    int chapitreDeLaPage[NOMBRE_PAGE_MAX];
-    int decimaleDeLaPage[NOMBRE_PAGE_MAX];
+    char **nomPages;
+
+    int *pathNumber; //Correspondance entre nomPage et path
+    char **path;
+    int chapitreOuID;
 } DATA_LECTURE;
 
 typedef struct download_data_struct

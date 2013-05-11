@@ -287,8 +287,8 @@
     #define TOLERANCE_CLIC_PAGE 10
 
     /*Limites buffers*/
-    #define NOMBRE_PAGE_MAX 1000
-    #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*3+200+100
+    #define NOMBRE_PAGE_MAX 500
+    #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*2+300
 
     /*Tailles*/
     #define BORDURE_LAT_LECTURE 20
@@ -467,7 +467,7 @@
 #define SIZE_TRAD_ID_18 2
 #define SIZE_TRAD_ID_19 18
 #define SIZE_TRAD_ID_20 7
-#define SIZE_TRAD_ID_21 13
+#define SIZE_TRAD_ID_21 14
 #define SIZE_TRAD_ID_22 6
 #define SIZE_TRAD_ID_23 2
 #define SIZE_TRAD_ID_24 2
