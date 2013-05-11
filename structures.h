@@ -24,6 +24,8 @@ typedef struct tome_metadata
 {
     int ID;
     unsigned char name[MAX_TOME_NAME_LENGTH];
+    unsigned char description1[TOME_DESCRIPTION_LENGTH];
+    unsigned char description2[TOME_DESCRIPTION_LENGTH];
 }META_TOME;
 
 typedef struct dataMangas
@@ -40,7 +42,7 @@ typedef struct dataMangas
     //Chapitres
     int firstChapter;
     int lastChapter;
-    int chapitreSpeciauxDisponibles;
+    int nombrechapitreSpeciaux;
     int nombreChapitre;
     int *chapitres;
 
@@ -74,8 +76,8 @@ typedef struct download_data_struct
 
 typedef struct data_loaded_from_download_list
 {
-	bool typeChapter; //Si 0, alors tome
-    int chapitre;
+	int chapitre;
+    int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
     MANGAS_DATA* datas;
 } DATA_LOADED;
 

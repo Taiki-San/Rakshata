@@ -19,15 +19,12 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
         free(mangaDB->chapitres);
     }
     /*On commence par énumérer les chapitres spéciaux*/
-    int nbElem = 0, i;
+    int nbElem, i;
     char temp[TAILLE_BUFFER];
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/chapDB", mangaDB->team->teamLong, mangaDB->mangaName);
     FILE* chapSpeciaux = fopenR(temp, "r");
-    if(chapSpeciaux != NULL)
-    {
-        fscanfs(chapSpeciaux, "%d", &nbElem);
-    }
-    nbElem += mangaDB->lastChapter - mangaDB->firstChapter + 1;
+
+    nbElem = mangaDB->nombrechapitreSpeciaux + mangaDB->lastChapter - mangaDB->firstChapter + 1;
     mangaDB->chapitres = ralloc((nbElem+5)*sizeof(int));
     for(i = 0; i < nbElem+5; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
 
@@ -46,7 +43,7 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
         }
         fclose(chapSpeciaux);
     }
-    qsort(mangaDB->chapitres, i-1, sizeof(int), sortNumbers);
+    qsort(mangaDB->chapitres, i, sizeof(int), sortNumbers);
     mangaDB->nombreChapitre = i;
 }
 
@@ -215,7 +212,7 @@ void displayTemplateChapitre(MANGAS_DATA* mangaDB, int nombreElements, int conte
 
 int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte)
 {
-    return autoSelectionChapitreTome(mangaDB, mangaDB->firstChapter, mangaDB->lastChapter, contexte);
+    return autoSelectionChapitreTome(mangaDB, 0, mangaDB->firstChapter, mangaDB->lastChapter, contexte);
 }
 
 MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)

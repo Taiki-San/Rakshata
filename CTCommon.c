@@ -12,13 +12,22 @@
 
 #include "main.h"
 
-int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contexte)
+int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int max, int contexte)
 {
     if(min == max && contexte != CONTEXTE_DL) //Si une seul chapitre, on le séléctionne automatiquement
     {
-        max *= 10;
-        if(checkChapterReadable(*mangaDB, &max))
-            return max;
+        if(isTome)
+        {
+            if(checkTomeReadable(*mangaDB, &mangaDB->tomes[0]))
+                return min;
+        }
+
+        else
+        {
+            min *= 10;
+            if(checkChapterReadable(*mangaDB, &min))
+                return min;
+        }
     }
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }

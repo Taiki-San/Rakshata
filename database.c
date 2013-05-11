@@ -52,7 +52,7 @@ MANGAS_DATA* miseEnCache(int mode)
 		else
 		{
             int cat = 0;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].chapitreSpeciauxDisponibles);
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].nombrechapitreSpeciaux);
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
             if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
@@ -93,12 +93,6 @@ MANGAS_DATA* miseEnCache(int mode)
 				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].firstTome = mangas[numeroManga].lastTome = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
                 numeroManga--;
 			}
-
-			if(mode == LOAD_DATABASE_ALL && mangas[numeroManga].chapitreSpeciauxDisponibles && checkUpdateSpecChapter(mangas[numeroManga]))
-            {
-                get_update_spec_chapter(mangas[numeroManga]);
-            }
-
 			if(nombreMangaDansDepot >= NOMBRE_MANGA_MAX_PAR_DEPOT)
 			{
 				char bufferOutput[100];
@@ -187,7 +181,7 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
 	return defaultVersion+1;
 }
 
-bool checkValidationRepo(char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], int isPaid)
+bool checkValidationRepo(char *bufferDL, int isPaid)
 {
     if(strlen(bufferDL) < 5 || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<')
         return 0;
@@ -201,13 +195,22 @@ bool checkValidationRepo(char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], int isPaid)
 void update_repo()
 {
 	int i = 0, positionDansBuffer = 0, legacy;
-	char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], repo_new[SIZE_BUFFER_UPDATE_DATABASE+10], killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
+	char *bufferDL, *repo_new, killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
     char URLRepoConnus[1000][LONGUEUR_URL];
 	char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA infosTeam, newInfos;
 
-	if(repo == NULL)
+    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+    repo_new = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+
+	if(repo == NULL || bufferDL == NULL || repo_new == NULL)
+    {
+        if(bufferDL != NULL)
+            free(bufferDL);
+        if(repo_new != NULL)
+            free(repo_new);
         return;
+    }
 
     URLRepoConnus[0][0] = 0;
 
@@ -259,9 +262,11 @@ void update_repo()
 		}
 		positionDansBuffer = strlen(repo_new);
 	}
-	free(repoBak);
 	snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer+10, "</%c>\n", SETTINGS_REPODB_FLAG);
 	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
+	free(bufferDL);
+	free(repoBak);
+	free(repo_new);
 }
 
 int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
@@ -286,6 +291,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             logR(temp2);
             return 0;
         }
+        buffer_manga[0] = 0;
         download_mem(temp, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
@@ -294,27 +300,33 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
 
 void update_mangas()
 {
-	int i = 0, positionDansBuffer = 0;
-	char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], *manga_new;
+	int i = 0;
+	char *bufferDL, *manga_new;
     char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA teams;
 
     repoBak = repo;
     manga_new = ralloc(10);
-    if(manga_new == NULL)
+    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+
+    if(manga_new == NULL || bufferDL == NULL)
     {
+        if(manga_new != NULL)
+            free(manga_new);
+        if(bufferDL != NULL)
+            free(bufferDL);
+
         char temp[100];
         snprintf(temp, 100, "Failed at allocate 10 bytes\n");
         logR(temp);
         return;
     }
     snprintf(manga_new, 10, "<%c>\n", SETTINGS_MANGADB_FLAG);
-    positionDansBuffer = strlen(manga_new);
 
     if(repo == NULL)
         return;
 
-	while(*repo != 0 && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+	while(*repo != 0)
 	{
 		repo += sscanfs(repo, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_ID_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
 		for(; *repo == '\r' || *repo == '\n'; repo++);
@@ -342,10 +354,20 @@ void update_mangas()
 		}
 		else
 		{
-		    size_t length = (strlen(bufferDL) + 50) *3; //Pour avoir plein de marge
-		    char *manga_new_tmp = ralloc(length);
-		    if(manga_new_tmp == NULL)
+		    size_t length, nombreLigne = 0, curPos = 0;
+		    for(length = 0; length < SIZE_BUFFER_UPDATE_DATABASE && bufferDL[length] && bufferDL[length] != '#'; length++)
             {
+                if(bufferDL[length] == '\n')
+                    nombreLigne++;
+            }
+            length = (length+50) *2; //Pour le legacy, on peut avoir à imprimer plus de données
+		    char *manga_new_tmp = ralloc((length+50) *2), **mangaName = calloc(nombreLigne+1, sizeof(char*));
+		    if(manga_new_tmp == NULL || mangaName == NULL)
+            {
+                if(manga_new_tmp != NULL)
+                    free(manga_new_tmp);
+                if(mangaName != NULL)
+                    free(mangaName);
                 char temp[100];
                 snprintf(temp, 100, "Failed at allocate %d bytes\n", strlen(bufferDL)+50);
                 logR(temp);
@@ -363,27 +385,89 @@ void update_mangas()
 
             while(length > positionBuffer && bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#')
             {
+                mangaName[curPos] = calloc(1, LONGUEUR_NOM_MANGA_MAX);
                 if(version == 0) //Legacy
                 {
-                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d", buffer_char[0], LONGUEUR_NOM_MANGA_MAX, buffer_char[1], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3]);
+                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3]);
                     for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-                    snprintf(manga_new_tmp, length*2, "%s%s %s %d %d -1 -1 %d %d 0\n", manga_new_tmp, buffer_char[0], buffer_char[1], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3]);
+                    if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
+                        snprintf(manga_new_tmp, length*2, "%s%s %s %d %d -1 -1 %d %d 0\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3]);
+                    else
+                        {
+                            crashTemp(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX);
+                            curPos--;
+                        }
                 }
                 else if(version == 1)
                 {
-                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d %d %d %d", buffer_char[0], LONGUEUR_NOM_MANGA_MAX, buffer_char[1], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3], &buffer_int[4], &buffer_int[5], &buffer_int[6]);
+                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3], &buffer_int[4], &buffer_int[5], &buffer_int[6]);
                     for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-                    snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, buffer_char[0], buffer_char[1], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
+                    if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
+                        snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
+                    else
+                    {
+                        free(mangaName[curPos]);
+                        mangaName[curPos] = NULL;
+                        curPos--;
+                    }
                 }
+                if(curPos < nombreLigne)
+                    curPos++;
             }
             size_t curLength = strlen(manga_new_tmp);
             if(curLength < length)
                 manga_new_tmp[curLength++] = '#';
             if(curLength < length)
                 manga_new_tmp[curLength++] = '\n';
-
             if(curLength > 2)
                 manga_new = mergeS(manga_new, manga_new_tmp);
+
+            if(version == 1)
+            {
+                while(bufferDL[positionBuffer] == '#' && bufferDL[positionBuffer+1])
+                {
+                    buffer_char[0][0] = 0;
+                    for(positionBuffer++; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
+                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s", buffer_char[0], LONGUEUR_NOM_MANGA_MAX);
+                    for(; bufferDL[positionBuffer] == ' '; positionBuffer++);
+
+                    if(buffer_char[0][0] && (bufferDL[positionBuffer] == 'T' || bufferDL[positionBuffer] == 'C'))
+                    {
+                        for(i = 0; i < curPos && strcmp(buffer_char[0], mangaName[i]); i++);
+                        if(!strcmp(buffer_char[0], mangaName[i]))
+                        {
+                            int j;
+                            char path[500];
+                            FILE* out = NULL;
+                            snprintf(path, 500, "manga/%s/%s/", teams.teamLong, mangaName[i]);
+                            if(!checkDirExist(path))
+                                createPath(path);
+                            snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], bufferDL[positionBuffer]=='T'?"tomeDB":"chapDB");
+
+                            for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\n' && bufferDL[positionBuffer] != '\r'; positionBuffer++);
+                            for(; bufferDL[positionBuffer] == '\n' || bufferDL[positionBuffer] == '\r'; positionBuffer++);
+                            for(i = 0; bufferDL[positionBuffer+i] && bufferDL[positionBuffer+i] != '#' && positionBuffer+i < SIZE_BUFFER_UPDATE_DATABASE; i++);
+                            for(j = i-1; j > 0 && (bufferDL[positionBuffer+j] == '\n' || bufferDL[positionBuffer+j] == '\r'); j--);
+
+                            out = fopen(path, "w+");
+                            if(out != NULL)
+                            {
+                                fwrite(&bufferDL[positionBuffer], j+1, 1, out);
+                                fclose(out);
+                            }
+                            positionBuffer += i;
+                        }
+                        else
+                            for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#'; positionBuffer++);
+                    }
+                    else
+                        for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#'; positionBuffer++);
+                }
+            }
+
+            for(; nombreLigne > 0; free(mangaName[nombreLigne--]));
+            free(mangaName[0]);
+            free(mangaName);
             free(manga_new_tmp);
 		}
 	}
@@ -391,50 +475,7 @@ void update_mangas()
 	free(repoBak);
 	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
 	free(manga_new);
-}
-
-int checkUpdateSpecChapter(MANGAS_DATA mangas)
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*4];
-    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
-    if(checkFileExist(temp))
-    {
-        FILE* dbenc = fopenR(temp, "r");
-        if(dbenc != NULL)
-        {
-            int nombreChapSpeciaux = 0;
-            fscanfs(dbenc, "%d", &nombreChapSpeciaux);
-            if(nombreChapSpeciaux == mangas.chapitreSpeciauxDisponibles)
-            {
-                return 0;
-            }
-        }
-    }
-    return 1;
-}
-
-void get_update_spec_chapter(MANGAS_DATA mangas)
-{
-    char temp[512];
-    if(!strcmp(mangas.team->type, TYPE_DEPOT_1))
-        snprintf(temp, 512, "https://dl.dropboxusercontent.com/u/%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
-
-    else if(!strcmp(mangas.team->type, TYPE_DEPOT_2))
-        snprintf(temp, 512, "http://%s/%s/spec_chapter", mangas.team->URL_depot, mangas.mangaName);
-
-    else if(!strcmp(mangas.team->type, TYPE_DEPOT_3)) //Payant
-        snprintf(temp, 512, "https://rsp.%s/ressource.php?editor=%s&request=chap&project=%s&user=%s&version=1", MAIN_SERVER_URL[0], mangas.team->URL_depot, mangas.mangaName, COMPTE_PRINCIPAL_MAIL);
-
-    else
-    {
-        char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
-        snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(spec chap): %s", mangas.team->type);
-        logR(temp2);
-        return;
-    }
-    char output[LONGUEUR_NOM_MANGA_MAX*4];
-    snprintf(output, LONGUEUR_NOM_MANGA_MAX*4, "manga/%s/%s/chapDB", mangas.team->teamLong, mangas.mangaName);
-    download_disk(temp, output, strcmp(mangas.team->type, TYPE_DEPOT_2)?1:0);
+	free(bufferDL);
 }
 
 extern int curPage; //Too lazy to use an argument

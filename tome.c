@@ -24,23 +24,24 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
     lines = calloc(nombreMaxElems+1, sizeof(META_TOME));
 
     int ligneCourante = 0, i;
-    char ligne[100];
+    char ligne[15+MAX_TOME_NAME_LENGTH+2*TOME_DESCRIPTION_LENGTH];
     pos = 0;
     while(ligneCourante < nombreMaxElems && pos < size)
     {
-        for(i = 0; i < 99 && buffer[pos] != '\n' && pos < size; ligne[i++] = buffer[pos++]); //Charge la première ligne
-        ligne[i] = 0; //i < 100
+        for(i = 0; i < 14+MAX_TOME_NAME_LENGTH+2*TOME_DESCRIPTION_LENGTH && buffer[pos] != '\n' && buffer[pos] != '\r' && pos < size; ligne[i++] = buffer[pos++]); //Charge la première ligne
+        ligne[i] = 0; //i <= longueur-1
 
         if(buffer[pos] != '\n') //Finis la ligne
-            while(pos < size && buffer[pos++] != '\n');
-        while(pos < size && buffer[++pos] == '\n');
+            while(pos < size && buffer[++pos] != '\n');
+        for(pos++; pos < size && (buffer[pos] == '\n' || buffer[pos] == '\r') ; pos++);
 
         for(i = 0; i < 10 && isNbr(ligne[i]); i++);
         if(ligne[i] == ' ' && i > 0 && i < 10) //Données saines
         {
-            sscanfs(ligne, "%d", &lines[ligneCourante].ID);
-            while(ligne[++i] == ' ');
-            memccpy(lines[ligneCourante].name, &ligne[i], 0, MAX_TOME_NAME_LENGTH-1);
+            sscanfs(ligne, "%d %s %s %s", &lines[ligneCourante].ID, lines[ligneCourante].name, MAX_TOME_NAME_LENGTH, lines[ligneCourante].description1, TOME_DESCRIPTION_LENGTH, lines[ligneCourante].description2, TOME_DESCRIPTION_LENGTH);
+            changeTo((char*) lines[ligneCourante].name, '_', ' ');
+            changeTo((char*) lines[ligneCourante].description1, '_', ' ');
+            changeTo((char*) lines[ligneCourante].description2, '_', ' ');
             ligneCourante++;
         }
     }
@@ -195,7 +196,9 @@ void displayTemplateTome(MANGAS_DATA* mangaDB, int nombreElements, int contexte,
 
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte)
 {
-    return autoSelectionChapitreTome(mangaDB, mangaDB->firstTome, mangaDB->lastTome, contexte);
+    if(mangaDB->tomes == NULL)
+        return VALEUR_FIN_STRUCTURE_CHAPITRE;
+    return autoSelectionChapitreTome(mangaDB, 1, mangaDB->tomes[0].ID, mangaDB->tomes[mangaDB->nombreTomes-1].ID, contexte);
 }
 
 MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)

@@ -103,22 +103,31 @@ void getNewFavs()
     {
         if(mangaDB[i].favoris)
         {
+            refreshChaptersList(&mangaDB[i]);
+            if(mangaDB[i].chapitres == NULL)
+                continue;
+
             char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
-            for(j = mangaDB[i].firstChapter; j <= mangaDB[i].lastChapter; j++)
+            for(j = 0; mangaDB[i].chapitres[j] != VALEUR_FIN_STRUCTURE_CHAPITRE; j++)
             {
-                snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, j, CONFIGFILE);
+                if(mangaDB[i].chapitres[j]%10)
+                    snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].chapitres[j]/10, mangaDB[i].chapitres[j]%10, CONFIGFILE);
+                else
+                    snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].chapitres[j]/10, CONFIGFILE);
                 if(!checkFileExist(temp))
                 {
                     import = fopenR(INSTALL_DATABASE, "a+");
                     if(import != NULL)
                     {
                         WEGOTSOMETHING = 1;
-                        fprintf(import, "%s %s C %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, j*10);
+                        fprintf(import, "%s %s C %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, mangaDB[i].chapitres[j]);
                         fclose(import);
                         import = NULL;
                     }
                 }
             }
+            free(mangaDB[i].chapitres);
+            mangaDB[i].chapitres = NULL;
         }
     }
     if(WEGOTSOMETHING && checkLancementUpdate())

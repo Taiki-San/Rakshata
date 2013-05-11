@@ -201,17 +201,17 @@ void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR
     }
 }
 
-void createPath(char output[])
+void createPath(char *output)
 {
     int longueur_output = 0, i = 0;
-    char folder[200];
+    char folder[500];
     while(output[longueur_output])
     {
-        for(; output[longueur_output] && output[longueur_output] != '/' && output[longueur_output] != '\\' && i < 200; folder[i++] = output[longueur_output++]);
+        for(; output[longueur_output] && output[longueur_output] != '/' && output[longueur_output] != '\\' && i < 500; folder[i++] = output[longueur_output++]);
         folder[i] = 0;
-        mkdirR(folder);
         if(output[longueur_output]) //On est pas au bout du path
         {
+            mkdirR(folder);
             folder[i++] = '/'; //On ajoute un / au path Ã  construire
 			longueur_output++;
 #ifdef _WIN32

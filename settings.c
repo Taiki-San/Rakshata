@@ -162,7 +162,10 @@ void addToPref(char flag, char *stringToAdd)
         length = i + strlen(stringToAdd)+2;
         newPrefs = calloc(1, length+5);
         if(newPrefs == NULL)
+        {
+            free(prefs);
             return;
+        }
 
         snprintf(newPrefs, length, "%s\n%s", prefs, stringToAdd);
         AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
@@ -177,9 +180,9 @@ void removeFromPref(char flag)
 {
     int i = 0, length = 0;
     char *newPrefs = NULL;
-	char *prefs = NULL;
+	char *prefs = NULL, *prefsBak;
 
-    prefs = loadPrefFile();
+    prefsBak = prefs = loadPrefFile();
     if(prefs == NULL)
     {
         removeR(SETTINGS_FILE);
@@ -208,6 +211,8 @@ void removeFromPref(char flag)
     }
     newPrefs[i] = 0;
     AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+    free(newPrefs);
+    free(prefsBak);
 }
 
 void updatePrefs(char flag, char *stringToAdd)

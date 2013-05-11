@@ -1702,7 +1702,7 @@ void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
 void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
 {
     int i = 0, j = 0, chapitre_new = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX], bufferDL[SIZE_BUFFER_UPDATE_DATABASE], teamCourt[LONGUEUR_COURT];
+    char temp[LONGUEUR_NOM_MANGA_MAX], *bufferDL, teamCourt[LONGUEUR_COURT];
 
     MUTEX_LOCK;
     if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
@@ -1712,25 +1712,36 @@ void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     }
     MUTEX_UNLOCK;
 
-    setupBufferDL(bufferDL, 100, 100, 10, 1);
+    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+    if(bufferDL == NULL)
+        return NULL;
+
     int version = get_update_mangas(bufferDL, mangasDB.team);
 
     if(bufferDL[i]) //On a DL quelque chose
         i += sscanfs(&bufferDL[i], "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
     else
+    {
+        free(bufferDL);
         return NULL;
+    }
     if(version == 2)
         while(bufferDL[i++] != '\n');
 
     if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
+    {
+        free(bufferDL);
         return NULL;
+    }
 
     while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
         i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
+
+    free(bufferDL);
     if(chapitre_new > chapitre)
     {
         chapitre_new *= 10;
-        chapitre_new = &chapitre_new; //Trigger a warning because a lot of code remain to do there
+#warning "Support tomes there =["
         return NULL;
     }
     return NULL;

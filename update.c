@@ -192,13 +192,18 @@ void checkJustUpdated()
 {
     if(checkFileExist("Rakshata.exe.old"))
     {
-        char repo_new[SIZE_BUFFER_UPDATE_DATABASE];
+        char *repo_new = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
         char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
         TEAMS_DATA infosTeam;
 
-        if(repo == NULL)
+        if(repo == NULL || repo_new == NULL)
+        {
+            if(repo != NULL)
+                free(repo);
+            if(repo_new == NULL)
+                free(repo_new);
             return;
-
+        }
         repoBak = repo;
         snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
         int positionDansBuffer = strlen(repo_new);
@@ -214,6 +219,7 @@ void checkJustUpdated()
         free(repoBak);
         snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "</%c>\n", SETTINGS_REPODB_FLAG);
         updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
+        free(repo_new);
         remove("Rakshata.exe.old");
         remove("data/update");
     }

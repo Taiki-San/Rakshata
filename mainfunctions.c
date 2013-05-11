@@ -252,7 +252,7 @@ int mainChoixDL()
                 {
                     continuer = -1;
                     nombreChapitre = 0;
-                    removeR(INSTALL_DATABASE);
+                    remove(INSTALL_DATABASE);
                 }
                 else
                     continuer = PALIER_CHAPTER;

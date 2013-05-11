@@ -138,7 +138,23 @@ int telechargement()
         if(import != NULL)
         {
             for(i = posToDo-1; i < mangaTotal; i++) //PosToDo a déjà été incrémenté par le for précédent
-                fprintf(import, "%s %s C %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->chapitre);
+            {
+                if(todoList[i]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                {
+                    if(todoList[i]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                    {
+                        int j
+                        fprintf(import, "%s %s T %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->partOfTome);
+                        for(j = i+1; j < mangaTotal; j++)
+                        {
+                            if(todoList[j]->partOfTome == todoList[i]->partOfTome && todoList[j]->datas == todoList[i]->datas)
+                                todoList[j]->chapitre = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        }
+                    }
+                }
+                else
+                    fprintf(import, "%s %s C %d\n", todoList[i]->datas->team->teamCourt, todoList[i]->datas->mangaNameShort, todoList[i]->chapitre);
+            }
             fclose(import);
         }
     }

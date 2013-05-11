@@ -61,7 +61,7 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 
 /**CTCommon.c**/
-int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, int min, int max, int contexte);
+int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int max, int contexte);
 void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, int nombreElements, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
@@ -72,12 +72,10 @@ MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangasDB, size_t length);
 void updateDataBase();
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
-bool checkValidationRepo(char bufferDL[SIZE_BUFFER_UPDATE_DATABASE], int isPaid);
+bool checkValidationRepo(char *bufferDL, int isPaid);
 void update_repo();
 int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
 void update_mangas();
-int checkUpdateSpecChapter(MANGAS_DATA mangas);
-void get_update_spec_chapter(MANGAS_DATA mangas);
 int deleteManga();
 int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
@@ -303,7 +301,7 @@ void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4);
 int positionnementApres(FILE* stream, char *stringToFind);
 int positionnementApresChar(char* input, char *stringToFind);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
-void createPath(char output[]);
+void createPath(char *output);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) (caract >= '0' && caract <= '9')?1:0
 void hexToDec(const char *input, unsigned char *output);
