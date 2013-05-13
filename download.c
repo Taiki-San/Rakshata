@@ -255,7 +255,8 @@ static void downloader(TMP_DL *output)
             MUTEX_LOCK;
             errCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
 #ifdef DEV_VERSION
-            logR(output->URL);
+            if(errCode != CODE_RETOUR_DL_CLOSE)
+                logR(output->URL);
 #endif // DEV_VERSION
             MUTEX_UNLOCK;
         }
