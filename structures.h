@@ -77,15 +77,18 @@ typedef struct download_data_struct
 typedef struct data_loaded_from_download_list
 {
 	int chapitre;
+	bool subFolder;
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
     MANGAS_DATA* datas;
 } DATA_LOADED;
 
 typedef struct data_pour_installation
 {
-    int chapitre;
-    size_t length;
     void *downloadedData;
+    bool subFolder;
+    int chapitre;
+    int tome;
+    size_t length;
     MANGAS_DATA *mangaDB;
 } DATA_INSTALL;
 

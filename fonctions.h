@@ -183,6 +183,7 @@ void updateWindowSizeDL(int w, int h);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);
+char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH]);
 DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal);
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
@@ -190,6 +191,7 @@ void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
+DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
 
 /**Native.c**/
 FILE* fopenR(void *_path, char *right);
@@ -273,6 +275,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA *mangaDB, int nombreElements, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
 MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
+void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
 
 /**Translation.c**/
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);

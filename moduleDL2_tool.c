@@ -19,29 +19,25 @@ char* MDL_craftDownloadURL(DATA_LOADED data)
 {
     int length;
     char *output = NULL;
-    if (!strcmp(data.datas->team->type, TYPE_DEPOT_1))
+    if (!strcmp(data.datas->team->type, TYPE_DEPOT_1) || !strcmp(data.datas->team->type, TYPE_DEPOT_2))
     {
-        length = 60 + 15 + strlen(data.datas->team->URL_depot) + strlen(data.datas->mangaName) + strlen(data.datas->mangaNameShort); //Core URL + numbers + elements
-        output = malloc(length);
+        output = internalCraftBaseURL(*data.datas->team, &length);
         if(output != NULL)
         {
-            if(data.chapitre%10)
-                snprintf(output, length, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.%d.zip", data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10, data.chapitre%10);
+            if(data.partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE || data.subFolder == false)
+            {
+                if(data.chapitre%10)
+                    snprintf(output, length, "%s/%s/%s_Chapitre_%d.%d.zip", output, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10, data.chapitre%10);
+                else
+                    snprintf(output, length, "%s/%s/%s_Chapitre_%d.zip", output, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10);
+            }
             else
-                snprintf(output, length, "https://dl.dropboxusercontent.com/u/%s/%s/%s_Chapitre_%d.zip", data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10);
-        }
-    }
-
-    else if (!strcmp(data.datas->team->type, TYPE_DEPOT_2))
-    {
-        length = 30 + 15 + strlen(data.datas->team->URL_depot) + strlen(data.datas->mangaName) + strlen(data.datas->mangaNameShort); //Core URL + numbers + elements
-        output = malloc(length);
-        if(output != NULL)
-        {
-            if(data.chapitre%10)
-                snprintf(output, length, "http://%s/%s/%s_Chapitre_%d.%d.zip", data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10, data.chapitre%10);
-            else
-                snprintf(output, length, "http://%s/%s/%s_Chapitre_%d.zip", data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10);
+            {
+                if(data.chapitre%10)
+                    snprintf(output, length, "%s/%s/Tome_%d/%s_Chapitre_%d.%d.zip", output, data.datas->mangaName, data.partOfTome, data.datas->mangaNameShort, data.chapitre/10, data.chapitre%10);
+                else
+                    snprintf(output, length, "%s/%s/Tome_%d/%s_Chapitre_%d.zip", output, data.datas->mangaName, data.partOfTome, data.datas->mangaNameShort, data.chapitre/10);
+            }
         }
     }
 
@@ -72,6 +68,28 @@ char* MDL_craftDownloadURL(DATA_LOADED data)
         snprintf(errorMessage, 400, "URL non gérée: %s\n", data.datas->team->type);
         logR(errorMessage);
     }
+    return output;
+}
+
+char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
+{
+    char *output = NULL;
+    if (!strcmp(teamData.type, TYPE_DEPOT_1))
+    {
+        *length = 60 + 15 + strlen(teamData.URL_depot) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        output = malloc(*length);
+        if(output != NULL)
+            snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URL_depot);
+    }
+
+    else if (!strcmp(teamData.type, TYPE_DEPOT_2))
+    {
+        *length = 200 + strlen(teamData.URL_depot) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        output = malloc(*length);
+        if(output != NULL)
+            snprintf(output, *length, "http://%s", teamData.URL_depot);
+    }
+
     return output;
 }
 
@@ -152,7 +170,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 		char ligne[2*LONGUEUR_COURT + 20], teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT], type[2];
 
 		//Create the new structure, then copy old data
-        DATA_LOADED **newBufferTodo = (DATA_LOADED**) calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
+        DATA_LOADED **newBufferTodo = calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
 
 		if(oldDownloadList != NULL)
 		{
@@ -196,25 +214,56 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
             newBufferTodo[posPtr] = (DATA_LOADED*) calloc(1, sizeof(DATA_LOADED));
 
             sscanfs(ligne, "%s %s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
-			if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
+            newBufferTodo[posPtr]->chapitre = chapitreTmp;
+            newBufferTodo[posPtr]->subFolder = false;
+
+            if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
-                #warning "Mettre le # du tome ici au lieu de 0"
-				newBufferTodo[posPtr]->partOfTome = (type[0] == 'C')?VALEUR_FIN_STRUCTURE_CHAPITRE:0;
-                newBufferTodo[posPtr]->chapitre = chapitreTmp;
-                newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
+				newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
             }
             else
             {
                 for(posCatalogue = 0; posCatalogue < NOMBRE_MANGA_MAX && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)); posCatalogue++);
                 if(posCatalogue < NOMBRE_MANGA_MAX && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt))
                 {
-					#warning "Mettre le # du tome ici au lieu de 0"
-                    newBufferTodo[posPtr]->partOfTome = (type[0] == 'C')?VALEUR_FIN_STRUCTURE_CHAPITRE:0;
-                    newBufferTodo[posPtr]->chapitre = chapitreTmp;
                     newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
                 }
             }
-            posPtr++;
+
+            if(type[0] == 'C')
+            {
+                newBufferTodo[posPtr++]->partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+            }
+            else
+            {
+                int length = 0;
+                DATA_LOADED **tomeData = getTomeDetails(*newBufferTodo[posPtr], &length);
+                free(newBufferTodo[posPtr]);
+
+                if(tomeData == NULL)
+                {
+                    newBufferTodo[posPtr++] = NULL;
+                }
+                else
+                {
+                    void ** ptrBak = realloc(newBufferTodo, (*nombreMangaTotal+length) * sizeof(DATA_LOADED*));
+                    if(ptrBak != NULL)
+                    {
+                        newBufferTodo = (DATA_LOADED **) ptrBak;
+                        for(c = 0; c < length; c++)
+                        {
+                            newBufferTodo[*nombreMangaTotal + c] = NULL;
+                            newBufferTodo[posPtr++] = tomeData[c];
+                        }
+                        *nombreMangaTotal += length;
+                    }
+                    else
+                    {
+                        newBufferTodo[posPtr++] = NULL;
+                    }
+                    free(tomeData);
+                }
+            }
         }
         if(posPtr > 1 && oldDownloadListLength < posPtr)
             qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
@@ -252,9 +301,11 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 
 void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded)
 {
-    DATA_INSTALL* data_instal = (DATA_INSTALL*) malloc(sizeof(DATA_INSTALL)); //Pour survivre à la fin de la fonction
+    DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL)); //Pour survivre à la fin de la fonction
     data_instal->mangaDB = datas.datas;
     data_instal->chapitre = datas.chapitre;
+    data_instal->tome = datas.partOfTome;
+    data_instal->subFolder = datas.subFolder;
     data_instal->downloadedData = dataDownloaded.buf;
     data_instal->length = dataDownloaded.current_pos; //Data Written
     createNewThread(installation, data_instal);
@@ -268,13 +319,13 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
         for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
         if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
         {
-            void *ptr = realloc(*historiqueTeam, (i+1)*sizeof(char*));
+            void *ptr = realloc(*historiqueTeam, (i+2)*sizeof(char*));
             if(ptr != NULL) //Si ptr == NULL, *historiqueTeam n'a pas été modifié
             {
                 *historiqueTeam = ptr;
-                *historiqueTeam[i] = malloc(LONGUEUR_COURT);
-                ustrcpy(historiqueTeam[i], teamToCheck.teamCourt);
-                *historiqueTeam[i+1] = NULL;
+                (*historiqueTeam)[i] = malloc(LONGUEUR_COURT);
+                ustrcpy((*historiqueTeam)[i], teamToCheck.teamCourt);
+                (*historiqueTeam)[i+1] = NULL;
             }
             return true;
         }
@@ -337,5 +388,143 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
     }
     else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
         removeR(path);
+}
+
+DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
+{
+    int length = strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100;
+    char *URL = NULL, *bufferDL = NULL, *bufferPath = NULL;
+    DATA_LOADED** output = NULL;
+    FILE *inCache = NULL;
+
+    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+    if(bufferDL == NULL)
+    {
+        free(URL);
+        return NULL;
+    }
+
+    bufferPath = malloc(length);
+    if(bufferPath != NULL)
+    {
+        snprintf(bufferPath, length, "manga/%s/%s/Tome_%d/%s.tmp", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
+        inCache = fopen(bufferPath, "r");
+        free(bufferPath);
+    }
+
+    if(inCache)
+    {
+        fseek(inCache, 0, SEEK_END);
+        length = ftell(inCache);
+        if(length >= SIZE_BUFFER_UPDATE_DATABASE)
+            length = SIZE_BUFFER_UPDATE_DATABASE-1;
+        rewind(inCache);
+        fread(bufferDL, 1, length, inCache);
+        fclose(inCache);
+    }
+    else
+    {
+        ///Craft URL
+        if (!strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_1) || !strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2))
+        {
+            URL = internalCraftBaseURL(*tomeDatas.datas->team, &length);
+            if(URL != NULL)
+                snprintf(URL, length, "%s/%s/Tome_%d.dat", URL, tomeDatas.datas->mangaName, tomeDatas.chapitre);
+        }
+        else if (!strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_3))
+        {
+            length = 100 + 15 + strlen(tomeDatas.datas->team->URL_depot) + strlen(tomeDatas.datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
+            URL = malloc(length);
+            if(URL != NULL)
+                snprintf(URL, length, "https://rsp.%s/getTomeData.php?ver=%d&target=%s&project=%s&tome=%d&mail=%s", MAIN_SERVER_URL[0], CURRENTVERSION, tomeDatas.datas->team->URL_depot, tomeDatas.datas->mangaName, tomeDatas.chapitre, COMPTE_PRINCIPAL_MAIL);
+        }
+
+        if(URL == NULL)
+        {
+            free(bufferDL);
+            return NULL;
+        }
+    }
+
+    if(inCache || download_mem(URL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, (strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2) != 0)) == CODE_RETOUR_OK)
+    {
+        int i, nombreEspace, posBuf, posStartNbrTmp;
+        char temp[100], basePath[100];
+
+        snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas.chapitre);
+
+        bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
+        for(i = 0; i < 5 && bufferDL[i] && bufferDL[i] != '<'; i++); //On vérifie qu'on est pas tombé sur un 404
+        if(bufferDL[i] && bufferDL[i] != '<')
+        {
+            for(posBuf = nombreEspace = 0; bufferDL[posBuf] && posBuf < SIZE_BUFFER_UPDATE_DATABASE; bufferDL[posBuf++] == ' '?nombreEspace++:0); //We count spaces in the file, there won't be more elements, but maybe less (invalid data)
+
+            output = calloc(nombreEspace+2, sizeof(DATA_LOADED*));
+            if(output == NULL)
+            {
+                if(inCache != NULL)
+                    fclose(inCache);
+                if(URL != NULL)
+                    free(URL);
+                free(bufferDL);
+                return NULL;
+            }
+
+            for(posBuf = *outLength = 0; bufferDL[posBuf] && posBuf < SIZE_BUFFER_UPDATE_DATABASE && *outLength <= nombreEspace;)
+            {
+                for(; bufferDL[posBuf] == ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
+                posBuf += sscanfs(&bufferDL[posBuf], "%s", temp, 100);
+                for(; bufferDL[posBuf] && bufferDL[posBuf] != ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
+
+                //on place posStart juste avant le # du chapitre
+                if(!strncmp(temp, "Chapitre_", 9))
+                    posStartNbrTmp = 9;
+                else if(!strncmp(temp, basePath, strlen(basePath)))
+                    posStartNbrTmp = strlen(basePath);
+                else
+                    posStartNbrTmp = 0;
+
+                if(posStartNbrTmp)
+                {
+                    for(i = 0; i < 9 && isNbr(temp[posStartNbrTmp+i]); i++);
+                    if(temp[posStartNbrTmp+i] == 0 || temp[posStartNbrTmp+i] == '.') //La fin de la chaine n'est consitué que de nombres
+                    {
+                        int chapitre = 0;
+
+                        if(i == 9) //Si nombre > 99'999'999, on tronque
+                            temp[posStartNbrTmp+10] = 0;
+
+                        sscanfs(&temp[posStartNbrTmp], "%d", &chapitre);
+                        chapitre *= 10;
+
+                        if(temp[posStartNbrTmp+i] == '.' && isNbr(temp[posStartNbrTmp+i+1]))
+                        {
+                            chapitre += (int) temp[posStartNbrTmp+i+1] - '0';
+                        }
+
+                        output[*outLength] = malloc(sizeof(DATA_LOADED));
+                        if(output[*outLength] != NULL)
+                        {
+                            output[*outLength]->chapitre = chapitre;
+                            output[*outLength]->datas = tomeDatas.datas;
+                            output[*outLength]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
+                            if(posStartNbrTmp == 9)
+                                output[*outLength]->subFolder = false;
+                            else
+                                output[*outLength]->subFolder = true;
+                            (*outLength)++;
+                        }
+                    }
+                }
+            }
+            printTomeDatas(*tomeDatas.datas, bufferDL, tomeDatas.chapitre);
+        }
+    }
+    if(inCache != NULL)
+        fclose(inCache);
+    if(URL != NULL)
+        free(URL);
+    free(bufferDL);
+    return output;
 }
 

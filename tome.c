@@ -268,3 +268,31 @@ MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
     return tomeDB;
 }
 
+void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome)
+{
+    size_t length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 100;
+    char *bufferPath = malloc(length);
+    FILE* out = NULL;
+    if(bufferPath != NULL)
+    {
+        //I create the path to the file
+        snprintf(bufferPath, length, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB.team->teamLong, mangaDB.mangaName, tome, CONFIGFILETOME);
+        out = fopen(bufferPath, "w+");
+        if(out == NULL)
+        {
+            createPath(bufferPath); //If I can't create the file, I try to create its path, then retry
+            out = fopen(bufferPath, "w+");
+            if(out == NULL)
+                return;
+        }
+        if(fwrite(bufferDL, strlen(bufferDL)-1, 1, out) != 1) //Write data then check if everything went fine
+        {
+            logR("Failed at write tome infos");
+#ifdef DEV_VERSION
+            logR(bufferDL);
+#endif
+        }
+        fclose(out); //Close and free stuffs
+        free(bufferPath);
+    }
+}
