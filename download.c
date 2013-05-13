@@ -298,58 +298,61 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
     CURLcode res;
 
     curl = curl_easy_init();
-    if(curl != NULL)
+    if(curl == NULL)
     {
-        curl_easy_setopt(curl, CURLOPT_URL, adresse);
-        define_user_agent(curl);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
-        if(SSL_enabled)
-        {
-            if(adresse[8] == 'r') //RSP
-            {
-                curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
-                curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
-            }
-            else
-                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-        }
+        logR("Memory error");
+        return CODE_RETOUR_INTERNAL_FAIL;
+    }
 
-        if(printToAFile)
+    curl_easy_setopt(curl, CURLOPT_URL, adresse);
+    define_user_agent(curl);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
+    if(SSL_enabled)
+    {
+        if(adresse[8] == 'r') //RSP
         {
-            output = fopenR(buffer_out, "wb");
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
+            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
         }
         else
-        {
-            TMP_DL outputData;
-            outputData.buf = buffer_out;
-            outputData.length = buffer_length;
-            outputData.current_pos = 0;
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
-        }
-
-        SDL_Event event;
-        SDL_PollEvent(&event);
-
-		res = curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-
-        SDL_PollEvent(&event);
-
-        if(output != NULL && printToAFile)
-            fclose(output);
-
-        if(res != CURLE_OK) //Si problème
-        {
-            int codeErreur = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
-            return codeErreur;
-        }
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     }
-    return 1;
+
+    if(printToAFile)
+    {
+        output = fopenR(buffer_out, "wb");
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+    }
+    else
+    {
+        TMP_DL outputData;
+        outputData.buf = buffer_out;
+        outputData.length = buffer_length;
+        outputData.current_pos = 0;
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
+    }
+
+    SDL_Event event;
+    SDL_PollEvent(&event);
+
+    res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    SDL_PollEvent(&event);
+
+    if(output != NULL && printToAFile)
+        fclose(output);
+
+    if(res != CURLE_OK) //Si problème
+    {
+        int codeErreur = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+        return codeErreur;
+    }
+    return CODE_RETOUR_OK;
 }
 
 /**Parsing functions**/
