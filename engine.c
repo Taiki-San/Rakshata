@@ -512,7 +512,7 @@ int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int ha
                 //Manuel => si le nombre a été entré a la main
                 do
                 {
-                    mangaChoisis = mangaSelection(contexte, tailleTexte, hauteurAffichage, &manuel);
+                    mangaChoisis = mangaSelection(contexte, tailleTexte, hauteurAffichage, bordureLaterale, longueurElement, &manuel);
                     if (mangaChoisis *-1 == 'A' - 1 && limitationLettre == 0)
                         mangaChoisis = PALIER_CHAPTER;
                     else if(mangaChoisis *-1 >= 'A' - 1 && mangaChoisis *-1<= 'Z') //A-1 = backspace
@@ -645,7 +645,7 @@ void showNumero(TTF_Font *police, int choix, int virgule, int hauteurNum)
     SDL_RenderPresent(renderer);
 }
 
-int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel)
+int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int bordureLaterale, int largeurMaxManga, int *manuel)
 {
     /*Initialisations*/
     int virgule = 0;
@@ -796,16 +796,16 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
                     break;
                 }
 
+                //Définition de la ligne cliquée
                 if(event.button.y > hauteurChapitre && event.button.y < hauteurChapitre + LARGEUR_MOYENNE_MANGA_PETIT)
                     i = 0;
-
                 else
                     for(i = 0; (((hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i) > event.button.y || (hauteurChapitre + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * i + LARGEUR_MOYENNE_MANGA_PETIT) < event.button.y) && i < NOMBRE_MANGA_MAX); i++);
 
-                if(i < NOMBRE_MANGA_MAX && tailleTexte[i * NBRCOLONNES_TRI] != 0 && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
+                if(i < MANGAPARPAGE_TRI/NBRCOLONNES_TRI && tailleTexte[i * NBRCOLONNES_TRI] != 0 && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
                 {
                     /*Nombre Colonne*/
-                    for(buffer = 0; ((BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer) > event.button.x || (BORDURELATSELECTION + (BORDURELATSELECTION + LONGUEURMANGA) * buffer + LONGUEURMANGA) < event.button.x) && buffer < NBRCOLONNES_TRI-1; buffer++);
+                    for(buffer = 0; ((bordureLaterale + (bordureLaterale + largeurMaxManga) * buffer) > event.button.x || (bordureLaterale + (bordureLaterale + largeurMaxManga) * buffer + largeurMaxManga) < event.button.x) && buffer < NBRCOLONNES_TRI-1; buffer++);
                     mangaChoisis = buffer * 100 + (i + 1);
                 }
                 /*Si appuis sur un bouton pour changer de page*/

@@ -94,7 +94,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
 int displayMangas(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, int hauteurAffichage);
 void generateChoicePanel(char trad[13][100], int enable[6]);
 void showNumero(TTF_Font *police, int choix, int virgule, int hauteurNum);
-int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int *manuel);
+int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurChapitre, int bordureLaterale, int largeurMaxManga, int *manuel);
 int TRI_mangaToDisplay(int contexte, int limitationLettre, MANGAS_DATA mangaDB, int button_selected[6]);
 void analysisOutputSelectionTricolonne(int contexte, int *mangaChoisis, MANGAS_DATA* mangaDB, int mangaColonne[3], int button_selected[6], int *changementDePage, int *pageSelection, int pageTotale, int manuel, int *limitationLettre, int *refreshMultiPage, bool modeLigne);
 int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
