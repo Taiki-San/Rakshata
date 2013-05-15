@@ -71,7 +71,7 @@ int telechargement()
         pourcentage = (posToDo+1) * 100 / mangaTotal;
 
         /*Extraction du chapitre*/
-        if(todoList[posToDo]->datas != NULL)
+        if(todoList[posToDo] != NULL && todoList[posToDo]->datas != NULL)
         {
             if(checkIfWebsiteAlreadyOpened(*todoList[posToDo]->datas->team, &historiqueTeam))
             {
@@ -297,7 +297,6 @@ void installation(DATA_INSTALL* datas)
         {
             if(haveToPutTomeAsReadable)
             {
-                #warning Test needed
                 char pathWithTemp[600], pathWithoutTemp[600];
                 snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
                 snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);

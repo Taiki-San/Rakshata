@@ -337,15 +337,32 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck)
 {
     char configFile[512], installingFile[512];
-    if(dataToCheck.chapitre%10)
+    if(dataToCheck.subFolder)
     {
-        snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
-        snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
+        if(dataToCheck.chapitre%10)
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
+        }
+        else
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10);
+        }
     }
+
     else
     {
-        snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, CONFIGFILE);
-        snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10);
+        if(dataToCheck.chapitre%10)
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
+        }
+        else
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10);
+        }
     }
     return checkFileExist(configFile) || checkFileExist(installingFile);
 }
