@@ -85,6 +85,7 @@ int menuGestion()
 
             case 4:
                 /*Raffraîchissement de la BDD*/
+                alreadyRefreshed = -5*60000;
                 raffraichissmenent();
                 break;
 
@@ -189,7 +190,7 @@ void removeFromPref(char flag)
         return;
     }
     length = strlen(prefs);
-    newPrefs = ralloc(length);
+    newPrefs = calloc(length, sizeof(char));
     if(newPrefs == NULL)
     {
         free(prefs);
