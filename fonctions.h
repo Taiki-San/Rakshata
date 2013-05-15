@@ -187,7 +187,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH]);
 DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal);
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
-void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded);
+void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded, bool isTomeAndLastElem);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);

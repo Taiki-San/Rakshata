@@ -299,13 +299,14 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
     return NULL;
 }
 
-void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded)
+void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded, bool isTomeAndLastElem)
 {
     DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL)); //Pour survivre à la fin de la fonction
     data_instal->mangaDB = datas.datas;
     data_instal->chapitre = datas.chapitre;
     data_instal->tome = datas.partOfTome;
     data_instal->subFolder = datas.subFolder;
+    data_instal->isLastElemOfTome = isTomeAndLastElem;
     data_instal->downloadedData = dataDownloaded.buf;
     data_instal->length = dataDownloaded.current_pos; //Data Written
     createNewThread(installation, data_instal);

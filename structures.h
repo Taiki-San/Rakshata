@@ -88,6 +88,7 @@ typedef struct data_pour_installation
     bool subFolder;
     int chapitre;
     int tome;
+    bool isLastElemOfTome;
     size_t length;
     MANGAS_DATA *mangaDB;
 } DATA_INSTALL;

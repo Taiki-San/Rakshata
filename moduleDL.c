@@ -109,8 +109,15 @@ int telechargement()
                     else // Archive pas corrompue, installation
                     {
                         status += 1; //On signale le lancement d'une installation
+                        i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        if(todoList[posToDo]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                        {
+                            for(i = posToDo+1; i < mangaTotal && todoList[i] != NULL && todoList[i]->datas == todoList[posToDo]->datas && todoList[i]->partOfTome != todoList[posToDo]->partOfTome ; i++);
+                            if(i >= mangaTotal || todoList[i] == NULL || todoList[i]->datas != todoList[posToDo]->datas)
+                                i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        }
                         nameWindow(windowDL, status);
-                        startInstallation(*todoList[posToDo], dataDL);
+                        startInstallation(*todoList[posToDo], dataDL, i != VALEUR_FIN_STRUCTURE_CHAPITRE);
                     }
                 }
 
@@ -218,7 +225,7 @@ int telechargement()
 
 void installation(DATA_INSTALL* datas)
 {
-    bool subFolder;
+    bool subFolder, haveToPutTomeAsReadable;
     int extremes[2], erreurs = 0, dernierLu = -1, chapitre, tome;
     char temp[600], basePath[500];
     FILE* ressources = NULL;
@@ -228,6 +235,8 @@ void installation(DATA_INSTALL* datas)
     chapitre = datas->chapitre;
     tome = datas->tome;
     subFolder = datas->subFolder;
+    haveToPutTomeAsReadable = datas->isLastElemOfTome;
+
     if(datas->downloadedData == NULL) //return;
     {
         status--; //On signale la fin de l'installation
@@ -280,50 +289,60 @@ void installation(DATA_INSTALL* datas)
         if(ressources != NULL)
             fclose(ressources);
 
-        erreurs = miniunzip (datas->downloadedData, temp_path_install, "", datas->length, chapitre);
+        erreurs = miniunzip (datas->downloadedData, basePath, "", datas->length, chapitre);
         removeR(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
         if(!erreurs)
         {
+            if(haveToPutTomeAsReadable)
+            {
+                #warning Test needed
+                char pathWithTemp[600], pathWithoutTemp[600];
+                snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
+                snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
+                rename(pathWithTemp, pathWithoutTemp);
+            }
             snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
             ressources = fopenR(temp, "r");
         }
         snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
 
-        if(!subFolder && erreurs != -1 && checkFileExist(temp) && ressources != NULL)
+        if(!subFolder && erreurs != -1 && ressources != NULL)
         {
-            fclose(ressources);
-            ressources = fopenR(temp, "r+");
-            fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
-            if(fgetc(ressources) != EOF)
-                fscanfs(ressources, "%d", &dernierLu);
+            if(checkFileExist(temp))
+            {
+                fclose(ressources);
+                ressources = fopenR(temp, "r+");
+                fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
+                if(fgetc(ressources) != EOF)
+                    fscanfs(ressources, "%d", &dernierLu);
+                else
+                    dernierLu = -1;
+                fclose(ressources);
+                ressources = fopenR(temp, "w+");
+                if(extremes[0] > chapitre)
+                    fprintf(ressources, "%d %d", chapitre, extremes[1]);
+
+                else if(extremes[1] < chapitre)
+                    fprintf(ressources, "%d %d", extremes[0], chapitre);
+
+                else
+                    fprintf(ressources, "%d %d", extremes[0], extremes[1]);
+                if(dernierLu != -1)
+                    fprintf(ressources, " %d", dernierLu);
+
+                fclose(ressources);
+            }
             else
-                dernierLu = -1;
-            fclose(ressources);
-            ressources = fopenR(temp, "w+");
-            if(extremes[0] > chapitre)
-                fprintf(ressources, "%d %d", chapitre, extremes[1]);
-
-            else if(extremes[1] < chapitre)
-                fprintf(ressources, "%d %d", extremes[0], chapitre);
-
-            else
-                fprintf(ressources, "%d %d", extremes[0], extremes[1]);
-            if(dernierLu != -1)
-                fprintf(ressources, " %d", dernierLu);
-
-            fclose(ressources);
-        }
-
-        else if(!subFolder && erreurs != -1 && !checkFileExist(temp) && ressources != NULL)
-        {
-            fclose(ressources);
-            /*Création du config.dat du nouveau manga*/
-            snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-            ressources = fopenR(temp, "w+");
-            fprintf(ressources, "%d %d", chapitre, chapitre);
-            fclose(ressources);
+            {
+                fclose(ressources);
+                /*Création du config.dat du nouveau manga*/
+                snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
+                ressources = fopenR(temp, "w+");
+                fprintf(ressources, "%d %d", chapitre, chapitre);
+                fclose(ressources);
+            }
         }
 
         else if(!subFolder)//Archive corrompue
@@ -340,7 +359,7 @@ void installation(DATA_INSTALL* datas)
         fclose(ressources);
 
     if(erreurs)
-        error++; //On note si le chapitre a posé un probléme
+        error++; //On note si le chapitre a posé un problème
 
     free(datas->downloadedData);
     free(datas);
