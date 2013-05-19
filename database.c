@@ -51,8 +51,8 @@ MANGAS_DATA* miseEnCache(int mode)
 		}
 		else
 		{
-            int cat = 0;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &mangas[numeroManga].lastTome, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].nombrechapitreSpeciaux);
+            int cat = 0, deprecited;
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &deprecited, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].nombrechapitreSpeciaux);
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
             if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
@@ -72,7 +72,6 @@ MANGAS_DATA* miseEnCache(int mode)
 
 			snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
 			if((checkFileExist(temp) || mode == LOAD_DATABASE_ALL)  && mangas[numeroManga].firstChapter <= mangas[numeroManga].lastChapter
-                                                                    && mangas[numeroManga].firstTome <= mangas[numeroManga].lastTome
                                                                     && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
                                                                     && checkPathEscape(mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX)
                                                                     && checkPathEscape(teamLong[numeroTeam], LONGUEUR_NOM_MANGA_MAX))
@@ -90,7 +89,7 @@ MANGAS_DATA* miseEnCache(int mode)
 			{
 				memset(mangas[numeroManga].mangaName, 0, LONGUEUR_NOM_MANGA_MAX);
 				memset(mangas[numeroManga].mangaNameShort, 0, LONGUEUR_COURT);
-				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].firstTome = mangas[numeroManga].lastTome = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
+				mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].firstTome = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
                 numeroManga--;
 			}
 			if(nombreMangaDansDepot >= NOMBRE_MANGA_MAX_PAR_DEPOT)
