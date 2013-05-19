@@ -276,6 +276,7 @@ void displayTemplateTome(MANGAS_DATA *mangaDB, int nombreElements, int contexte,
 int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
 MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
+int extractNumFromConfigTome(char *input, int ID);
 
 /**Translation.c**/
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);

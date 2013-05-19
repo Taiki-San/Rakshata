@@ -48,7 +48,6 @@ typedef struct dataMangas
 
     //Tomes
     int firstTome;
-    int lastTome;
     int nombreTomes;
     META_TOME *tomes;
 
@@ -62,8 +61,9 @@ typedef struct data_lecture_tome
     char **nomPages;
 
     int *pathNumber; //Correspondance entre nomPage et path
+    int *chapitreTomeCPT; //Pour la crypto
     char **path;
-    int chapitreOuID;
+    int IDDisp;
 } DATA_LECTURE;
 
 typedef struct download_data_struct

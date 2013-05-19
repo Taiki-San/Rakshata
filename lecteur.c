@@ -34,7 +34,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     SDL_Event event;
     DATA_LECTURE dataReader;
 
-    pageWaaaayyyyTooBig = dataReader.pageCourante = 0;
+    dataReader.pageCourante = 0;
     dataReader.nomPages = dataReader.path = NULL;
     dataReader.pathNumber = NULL;
 
@@ -196,7 +196,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     OChapitre = NULL;
                 }
 
-                OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], *chapitreChoisis, dataReader.pageCourante-1);
+                OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCourante-1);
                 if(OChapitre == NULL)
                 {
                     internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
@@ -210,7 +210,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 freeCurrentPage(chapitre_texture);
                 chapitre = NULL;
             }
-            chapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], *chapitreChoisis, dataReader.pageCourante);
+            chapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCourante);
             if(chapitre == NULL)
             {
                 internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
@@ -334,10 +334,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             else
             {
-                if(dataReader.chapitreOuID%10)
-                    snprintf(infos, 300, "%s - %s - Manga: %s - %s: %d.%d - %s: %d / %d - %s", texteTrad[7], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.chapitreOuID/10, dataReader.chapitreOuID%10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1, texteTrad[8]);
+                if(dataReader.IDDisp%10)
+                    snprintf(infos, 300, "%s - %s - Manga: %s - %s: %d.%d - %s: %d / %d - %s", texteTrad[7], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.IDDisp/10, dataReader.IDDisp%10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1, texteTrad[8]);
                 else
-                    snprintf(infos, 300, "%s - %s - Manga: %s - %s: %d - %s: %d / %d - %s", texteTrad[7], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.chapitreOuID/10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1, texteTrad[8]);
+                    snprintf(infos, 300, "%s - %s - Manga: %s - %s: %d - %s: %d / %d - %s", texteTrad[7], mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.IDDisp/10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1, texteTrad[8]);
             }
         }
 
@@ -348,10 +348,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             else
             {
-                if(dataReader.chapitreOuID%10)
-                    snprintf(infos, 300, "%s - Manga: %s - %s: %d.%d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.chapitreOuID/10, dataReader.chapitreOuID%10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1);
+                if(dataReader.IDDisp%10)
+                    snprintf(infos, 300, "%s - Manga: %s - %s: %d.%d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.IDDisp/10, dataReader.IDDisp%10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1);
                 else
-                    snprintf(infos, 300, "%s - Manga: %s - %s: %d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.chapitreOuID/10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1);
+                    snprintf(infos, 300, "%s - Manga: %s - %s: %d - %s: %d / %d", mangaDB->team->teamCourt, mangaDB->mangaName, texteTrad[0], dataReader.IDDisp/10, texteTrad[2], dataReader.pageCourante + 1, dataReader.nombrePageTotale + 1);
             }
         }
 
@@ -413,6 +413,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             pageWaaaayyyyTooBig = sizeMax;
             chapitre_texture = (SDL_Texture*) texture;
         }
+        else
+            pageWaaaayyyyTooBig = 0;
 
         /*Calcul position page*/
         if(!pageTropGrande && !finDuChapitre)
@@ -490,7 +492,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         NChapitre = NULL;
                     else
                     {
-                        NChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], *chapitreChoisis, dataReader.pageCourante+1);
+                        NChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.pageCourante+1);
                         if(NChapitre == NULL)
                         {
                             internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
@@ -507,7 +509,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                     else
                     {
-                        OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], *chapitreChoisis, dataReader.pageCourante-1);
+                        OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCourante-1);
                         if(OChapitre == NULL)
                         {
                             internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
@@ -1089,14 +1091,18 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         {
             dataReader->nombrePageTotale += nombrePages;
             dataReader->pathNumber = realloc(dataReader->pathNumber, (dataReader->nombrePageTotale+1) * sizeof(int));
-
             dataReader->nomPages = realloc(dataReader->nomPages, (dataReader->nombrePageTotale+1) * sizeof(char*));
+            dataReader->chapitreTomeCPT = realloc(dataReader->chapitreTomeCPT, (++nombreTours) * sizeof(int));
 
-            dataReader->path = realloc(dataReader->path, (++nombreTours) * sizeof(char*));
+            dataReader->path = realloc(dataReader->path, nombreTours * sizeof(char*));
             dataReader->path[nombreTours-2] = malloc(LONGUEUR_NOM_PAGE);
             dataReader->path[nombreTours-1] = NULL;
 
             snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name);
+            if(isTome)
+                dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, chapitre_tome);
+            else
+                dataReader->chapitreTomeCPT[posID] = chapitre_tome;
 
             for(i = 0; prevPos < dataReader->nombrePageTotale; prevPos++) //Réinintialisation
             {
@@ -1121,8 +1127,9 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         }
     } while(isTome && posID < LONGUEUR_NOM_PAGE);
 
-    dataReader->chapitreOuID = chapitre_tome;
+    dataReader->IDDisp = chapitre_tome;
     dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
     dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
     return 0;
 }
@@ -1384,6 +1391,8 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *ch
         TTF_CloseFont(police);
     if(dataReader.pathNumber != NULL)
         free(dataReader.pathNumber);
+    if(dataReader.chapitreTomeCPT != NULL)
+        free(dataReader.chapitreTomeCPT);
     if(dataReader.nomPages != NULL)
     {
         int i;
@@ -1396,7 +1405,6 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *ch
         for(i = 0; dataReader.path[i] != NULL; free(dataReader.path[i++]));
         free(dataReader.path);
     }
-
 }
 
 void freeCurrentPage(SDL_Texture *texture)
@@ -1759,13 +1767,13 @@ void addtoDownloadListFromReader(MANGAS_DATA *mangaDB, DATA_LECTURE dataReader, 
 	    if(!isTome)
         {
             int* chapitre = new_data;
-            for(curPosIntoStruct = 0; chapitre[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitre[curPosIntoStruct] < dataReader.chapitreOuID; curPosIntoStruct++);
+            for(curPosIntoStruct = 0; chapitre[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitre[curPosIntoStruct] < dataReader.IDDisp; curPosIntoStruct++);
             for(curPosIntoStruct++; chapitre[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s C %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, chapitre[curPosIntoStruct++]));
         }
         else
         {
             META_TOME *tomes = new_data;
-            for(curPosIntoStruct = 0; tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomes[curPosIntoStruct].ID < dataReader.chapitreOuID; curPosIntoStruct++);
+            for(curPosIntoStruct = 0; tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomes[curPosIntoStruct].ID < dataReader.IDDisp; curPosIntoStruct++);
             for(curPosIntoStruct++; tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s T %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, tomes[curPosIntoStruct++].ID));
         }
 		fclose(updateControler);

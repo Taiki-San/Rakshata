@@ -296,3 +296,22 @@ void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome)
         free(bufferPath);
     }
 }
+
+int extractNumFromConfigTome(char *input, int ID)
+{
+    int output = VALEUR_FIN_STRUCTURE_CHAPITRE, posDebut = 0;
+    char basePath[100];
+    snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
+    if(!strncmp(input, "Chapitre_", 9))
+        posDebut = 9;
+    else if(!strncmp(input, basePath, strlen(basePath)))
+        posDebut = strlen(basePath);
+    if(posDebut)
+    {
+        int i = sscanfs(&input[posDebut], "%d", &output);
+        output *= 10;
+        if(input[posDebut+i] == '.' && isNbr(input[posDebut+i+1]))
+            output += (int) input[posDebut+i+1] - '0';
+    }
+    return output;
+}
