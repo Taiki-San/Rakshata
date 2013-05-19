@@ -289,7 +289,7 @@ void installation(DATA_INSTALL* datas)
         if(ressources != NULL)
             fclose(ressources);
 
-        erreurs = miniunzip (datas->downloadedData, basePath, "", datas->length, chapitre);
+        erreurs = miniunzip (datas->downloadedData, basePath, "", datas->length, chapitre/10);
         removeR(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/

@@ -366,7 +366,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         else
         {
             uint8_t hash[SHA256_DIGEST_LENGTH], chapter[15];
-            sprintf((char *)chapter, "%d", type/10);
+            snprintf((char *)chapter, 15, "%d", type);
 
             pbkdf2((uint8_t *) temp, chapter, hash);
 
