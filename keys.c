@@ -189,9 +189,12 @@ int earlyInit()
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else
-	srand(time(NULL)+rand()); //Initialisation de l'aléatoire
+    int randomPtr = open("/dev/random", O_RDONLY);
+    int seed;
+    read(randomData, &seed, sizeo(int));
+    close(randomData);
+	srand(time(NULL)+seed); //Initialisation de l'aléatoire
 #endif
-
 
     char *temp;
     if((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL)
