@@ -36,7 +36,7 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         for(pos++; pos < size && (buffer[pos] == '\n' || buffer[pos] == '\r') ; pos++);
 
         for(i = 0; i < 10 && isNbr(ligne[i]); i++);
-        if(ligne[i] == ' ' && i > 0 && i < 10) //Données saines
+        if((ligne[i] == ' ' || !ligne[i]) && i > 0 && i < 10) //Données saines
         {
             sscanfs(ligne, "%d %s %s %s", &lines[ligneCourante].ID, lines[ligneCourante].name, MAX_TOME_NAME_LENGTH, lines[ligneCourante].description1, TOME_DESCRIPTION_LENGTH, lines[ligneCourante].description2, TOME_DESCRIPTION_LENGTH);
             changeTo((char*) lines[ligneCourante].name, '_', ' ');
@@ -285,7 +285,7 @@ void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome)
             if(out == NULL)
                 return;
         }
-        if(fwrite(bufferDL, strlen(bufferDL)-1, 1, out) != 1) //Write data then check if everything went fine
+        if(fwrite(bufferDL, strlen(bufferDL), 1, out) != 1) //Write data then check if everything went fine
         {
             logR("Failed at write tome infos");
 #ifdef DEV_VERSION
@@ -315,3 +315,4 @@ int extractNumFromConfigTome(char *input, int ID)
     }
     return output;
 }
+
