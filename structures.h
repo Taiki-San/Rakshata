@@ -58,12 +58,14 @@ typedef struct data_lecture_tome
 {
     int nombrePageTotale;
     int pageCourante;
-    char **nomPages;
+    int *pageCouranteDuChapitre;
 
     int *pathNumber; //Correspondance entre nomPage et path
-    int *chapitreTomeCPT; //Pour la crypto
+    char **nomPages;
     char **path;
-    int IDDisp;
+
+    int IDDisplayed;
+    int *chapitreTomeCPT; //Pour la crypto
 } DATA_LECTURE;
 
 typedef struct download_data_struct
