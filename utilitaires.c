@@ -47,6 +47,10 @@ int sortMangasToDownload(const void *a, const void *b)
         {
             if(struc1->partOfTome != struc2->partOfTome)
                 return struc1->partOfTome - struc2->partOfTome;
+            else if(struc1->subFolder && !struc2->subFolder)
+                return 1;
+            else if(!struc1->subFolder && struc2->subFolder)
+                return -1;
             return 0; //Si dans un tome, on ne change pas l'ordre
         }
 

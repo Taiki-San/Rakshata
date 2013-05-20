@@ -230,7 +230,15 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 }
             }
 
-            if(type[0] == 'C')
+            //On va checker les doublons (NB: algo pas parfait, le caser après le tri serait pertinant mais il faudrait alors nettoyer le tome
+            for(i = posPtr-1; i >= 0 && (newBufferTodo[posPtr]->datas != newBufferTodo[i]->datas || newBufferTodo[posPtr]->chapitre != (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome)); i--);
+            if(i >= 0 && posPtr != i && newBufferTodo[posPtr]->datas == newBufferTodo[i]->datas && newBufferTodo[posPtr]->chapitre == (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome))
+            {
+                (*nombreMangaTotal)--;
+                free(newBufferTodo[posPtr]);
+                newBufferTodo[posPtr] = NULL;
+            }
+            else if(type[0] == 'C')
             {
                 newBufferTodo[posPtr++]->partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
@@ -240,16 +248,17 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 DATA_LOADED **tomeData = getTomeDetails(*newBufferTodo[posPtr], &length);
                 free(newBufferTodo[posPtr]);
 
+                (*nombreMangaTotal)--; //Le slot prévu pour le tome ne sera pas utilisé
                 if(tomeData == NULL)
                 {
                     newBufferTodo[posPtr++] = NULL;
                 }
                 else
                 {
-                    void ** ptrBak = realloc(newBufferTodo, (*nombreMangaTotal+length) * sizeof(DATA_LOADED*));
+                    DATA_LOADED** ptrBak = realloc(newBufferTodo, (*nombreMangaTotal+length) * sizeof(DATA_LOADED*));
                     if(ptrBak != NULL)
                     {
-                        newBufferTodo = (DATA_LOADED **) ptrBak;
+                        newBufferTodo = ptrBak;
                         for(c = 0; c < length; c++)
                         {
                             newBufferTodo[*nombreMangaTotal + c] = NULL;
@@ -268,29 +277,32 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
         if(posPtr > 1 && oldDownloadListLength < posPtr)
             qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
 
-        //On dégage les collisions proprement
-        int ptr1 = 0, ptr2 = oldDownloadListLength;
-        j = 0;
-		while(ptr1 != oldDownloadListLength && ptr2 != *nombreMangaTotal)
-		{
-		    c = sortMangasToDownload(&newBufferTodo[ptr1], &newBufferTodo[ptr2]);
-		    if(!c) //Collision
+        //On dégage les collisions proprement si on fusionne deux listes
+        if(oldDownloadListLength)
+        {
+            int ptr1 = 0, ptr2 = oldDownloadListLength;
+            j = 0;
+            while(ptr1 != oldDownloadListLength && ptr2 != *nombreMangaTotal)
             {
-                free(newBufferTodo[ptr2]);
-                newBufferTodo[ptr2] = NULL;
-                ptr2++;
-                j++;
+                c = sortMangasToDownload(&newBufferTodo[ptr1], &newBufferTodo[ptr2]);
+                if(!c) //Collision
+                {
+                    free(newBufferTodo[ptr2]);
+                    newBufferTodo[ptr2] = NULL;
+                    ptr2++;
+                    j++;
+                }
+                else if(c > 0) // le ptr2 serait classé en premier, il doit donc être incrémenté pour avancer dans la structure
+                    ptr2++;
+                else
+                    ptr1++;
             }
-            else if(c > 0) // le ptr2 serait classé en premier, il doit donc être incrémenté pour avancer dans la structure
-                ptr2++;
-            else
-                ptr1++;
-		}
-		if(j) //On cosolide après avoir dégagé les doublons
-		{
-			qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
-			*nombreMangaTotal -= j;
-		}
+            if(j) //On cosolide après avoir dégagé les doublons
+            {
+                qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
+                *nombreMangaTotal -= j;
+            }
+        }
 
         fclose(import);
         removeR(INSTALL_DATABASE);
