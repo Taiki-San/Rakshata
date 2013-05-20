@@ -191,8 +191,8 @@ int earlyInit()
 #else
     int randomPtr = open("/dev/random", O_RDONLY);
     int seed;
-    read(randomData, &seed, sizeo(int));
-    close(randomData);
+    read(randomPtr, &seed, sizeo(int));
+    close(randomPtr);
 	srand(time(NULL)+seed); //Initialisation de l'aléatoire
 #endif
 

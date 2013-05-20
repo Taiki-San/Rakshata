@@ -671,10 +671,10 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome)
         fileCheck = fopen(pathConfigFile, "r");
         if(fileCheck != NULL)
         {
+            fclose(fileCheck);
             fclose(config);
             return false;
         }
-        fclose(fileCheck);
     }
     fclose(config);
     return true;

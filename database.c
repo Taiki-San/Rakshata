@@ -14,7 +14,7 @@
 
 MANGAS_DATA* miseEnCache(int mode)
 {
-	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0, openSite[NOMBRE_MANGA_MAX];
+	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0, openSite[NOMBRE_MANGA_MAX] = {0};
 	char teamLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], type[NOMBRE_MANGA_MAX][LONGUEUR_TYPE_TEAM], URL[NOMBRE_MANGA_MAX][LONGUEUR_URL], site[NOMBRE_MANGA_MAX][LONGUEUR_SITE];
     char *repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	char *mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak = NULL;
@@ -137,7 +137,7 @@ void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
     free(mangasDB);
 }
 
-double alreadyRefreshed = -5*60000;
+int alreadyRefreshed = -5*60000;
 void updateDataBase()
 {
     MUTEX_LOCK;

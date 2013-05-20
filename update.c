@@ -200,7 +200,7 @@ void checkJustUpdated()
         {
             if(repo != NULL)
                 free(repo);
-            if(repo_new == NULL)
+            if(repo_new != NULL)
                 free(repo_new);
             return;
         }

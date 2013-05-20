@@ -340,15 +340,10 @@ void ustrcpy(void* output, const void* input)
 void SDL_FreeSurfaceS(SDL_Surface *surface)
 {
     if(surface != NULL && ((surface->w > 0 && surface->w <= 2*RESOLUTION[0]) || (surface->h > 0 && surface->h <= 2*RESOLUTION[1]))) //Si une des dimensions est normale
-    {
         SDL_FreeSurface(surface);
-        surface = NULL;
-    }
+
     else if(surface != NULL)
-    {
-        surface = NULL;
         logR("Invalid surface rejected\n");
-    }
 }
 
 void SDL_DestroyTextureS(SDL_Texture *texture)
@@ -562,14 +557,10 @@ int checkPID(int PID)
 
 int checkFileExist(char *filename)
 {
-    FILE* FileToTest = NULL;
-    if(filename[1] == ':' || filename[0] == '/')
-        FileToTest = fopen(filename, "r");
-    else
-        FileToTest = fopenR(filename, "r");
-    if(FileToTest != NULL)
+    register FILE* fileToTest = fopen(filename, "r");
+    if(fileToTest != NULL)
     {
-        fclose(FileToTest);
+        fclose(fileToTest);
         return 1;
     }
     return 0;

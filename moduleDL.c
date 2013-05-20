@@ -75,7 +75,7 @@ int telechargement()
         {
             if(checkIfWebsiteAlreadyOpened(*todoList[posToDo]->datas->team, &historiqueTeam))
             {
-                ouvrirSite(todoList[0]->datas->team); //Ouverture du site de la team
+                ouvrirSite(todoList[posToDo]->datas->team); //Ouverture du site de la team
             }
 
             MDL_displayDownloadDataMain1(rendererDL, *todoList[posToDo], pourcentage, trad); //Affichage du DL
@@ -112,9 +112,10 @@ int telechargement()
                         i = VALEUR_FIN_STRUCTURE_CHAPITRE;
                         if(todoList[posToDo]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
                         {
-                            for(i = posToDo+1; i < mangaTotal && todoList[i] != NULL && todoList[i]->datas == todoList[posToDo]->datas && todoList[i]->partOfTome != todoList[posToDo]->partOfTome ; i++);
-                            if(i >= mangaTotal || todoList[i] == NULL || todoList[i]->datas != todoList[posToDo]->datas)
+                            if(posToDo+1 < mangaTotal && todoList[posToDo+1] != NULL && todoList[posToDo+1]->datas == todoList[posToDo]->datas && todoList[posToDo+1]->partOfTome == todoList[posToDo]->partOfTome)
                                 i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                            else
+                                i = VALEUR_FIN_STRUCTURE_CHAPITRE+1; //Validation
                         }
                         nameWindow(windowDL, status);
                         startInstallation(*todoList[posToDo], dataDL, i != VALEUR_FIN_STRUCTURE_CHAPITRE);
@@ -298,9 +299,15 @@ void installation(DATA_INSTALL* datas)
             if(haveToPutTomeAsReadable)
             {
                 char pathWithTemp[600], pathWithoutTemp[600];
+                META_TOME dataCheckValidity;
+
                 snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
                 snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
+                dataCheckValidity.ID = tome;
+
                 rename(pathWithTemp, pathWithoutTemp);
+                if(!checkTomeReadable(*mangaDB, &dataCheckValidity))
+                    remove(pathWithoutTemp);
             }
             snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
             ressources = fopenR(temp, "r");
@@ -383,10 +390,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
     if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
         if(isTome)
-        {
-            if(mangaDB.tomes != NULL && mangaDB.nombreTomes >= chapitreChoisis && mangaDB.tomes[chapitreChoisis].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                elemChoisisSanitized = chapitreChoisis;
-        }
+            for(elemChoisisSanitized = 0; mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID < chapitreChoisis; elemChoisisSanitized++);
         else
             for(elemChoisisSanitized = 0; mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[elemChoisisSanitized] < chapitreChoisis; elemChoisisSanitized++);
     }
