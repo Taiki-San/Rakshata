@@ -151,56 +151,61 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
     int i = 0, nombreEspace = 0;
-    unsigned char *configEnc = calloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10), sizeof(unsigned char)); //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
-    char *path, key[SHA256_DIGEST_LENGTH];
-    unsigned char hash[SHA256_DIGEST_LENGTH], temp[200];
+    unsigned char *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
+    char *path;
+    unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
+    size_t size, sizeDBPass;
     FILE* test= NULL;
 
-	size_t size = 0, length = strlen(pathRoot) + 60;
-
-	path = malloc(length);
+	path = malloc(strlen(pathRoot) + 60);
 	if(path != NULL)
-        snprintf(path, length, "%s/config.enc", pathRoot);
+        snprintf(path, strlen(pathRoot) + 60, "%s/config.enc", pathRoot);
+    else
+        return NULL;
 
     test = fopen(pathPage, "r");
     if(test == NULL) //Si on trouve pas la page
     {
-        free(path); //Free un ptr NULL n'a pas d'impact
-        free(configEnc);
+        free(path);
         return NULL;
     }
 
     fseek(test, 0, SEEK_END);
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
+    fclose(test);
 
     if(size%CRYPTO_BUFFER_SIZE*2) //Si chunks de 16o
         size += CRYPTO_BUFFER_SIZE;
-    fclose(test);
 
     test = fopen(path, "r");
     if(test == NULL) //Si on trouve pas config.enc
     {
-        free(configEnc);
-        return IMG_Load(pathRoot);
+        free(path);
+        return IMG_Load(pathPage);
     }
+    fseek(test, 0, SEEK_END);
+    sizeDBPass = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
     fclose(test);
 
-    crashTemp(temp, 200);
-    if(getMasterKey(temp))
+    if(getMasterKey(key))
     {
         logR("Huge fail: database corrupted\n");
-        free(configEnc);
         free(path);
         exit(-1);
     }
+    key[SHA256_DIGEST_LENGTH] = 0;
 
     unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     snprintf((char *) numChapitreChar, 10, "%d", numeroChapitre/10);
-    pbkdf2(temp, numChapitreChar, hash);
-    crashTemp(temp, 200);
+    pbkdf2(key, numChapitreChar, hash);
 
+    crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate
+    key[SHA256_DIGEST_LENGTH] = rand() % 0xff;
+
+    configEnc = calloc(1, sizeDBPass);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
     free(path);
+
     for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
     if(i == 0 || configEnc[i] != ' ')
     {
@@ -234,14 +239,14 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
         if(!configEnc[i+SHA256_DIGEST_LENGTH] || configEnc[i+SHA256_DIGEST_LENGTH] == ' ')
             i += SHA256_DIGEST_LENGTH;
     }
-    if(nombreEspace != SHA256_DIGEST_LENGTH || (configEnc[i] && configEnc[i] != ' '))//Ouate is this? > || configEnc[i-nombreEspace-1] != ' ') //On vérifie que le parsage est complet
+    if(nombreEspace != SHA256_DIGEST_LENGTH || (configEnc[i] && configEnc[i] != ' ')) //On vérifie que le parsage est complet
     {
         crashTemp(key, SHA256_DIGEST_LENGTH);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
         return NULL;
     }
-    for(i = 0; i < (HASH_LENGTH+1)*NOMBRE_PAGE_MAX + 10 && configEnc[i]; configEnc[i++] = 0); //On écrase le cache
+    for(i = 0; i < sizeDBPass; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
 
     void *buf_page = ralloc(size + 0xff);
@@ -268,6 +273,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     }
 #endif
     crashTemp(key, SHA256_DIGEST_LENGTH);
+    free(buf_in);
     free(buf_page);
     return surface_page;
 }
