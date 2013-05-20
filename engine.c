@@ -795,6 +795,11 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
                     mangaChoisis = PALIER_MENU;
                     break;
                 }
+                else if((contexte == CONTEXTE_TOME || contexte == CONTEXTE_CHAPITRE) && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
+                    && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
+                {
+                    mangaChoisis = CODE_ICONE_SWITCH; //Switch sur l'autre
+                }
 
                 //Définition de la ligne cliquée
                 if(event.button.y > hauteurChapitre && event.button.y < hauteurChapitre + LARGEUR_MOYENNE_MANGA_PETIT)
@@ -874,12 +879,6 @@ int mangaSelection(int contexte, int tailleTexte[MANGAPARPAGE_TRI], int hauteurC
                             mangaChoisis = CODE_BOUTON_3_CHAPITRE;
                         else
                             mangaChoisis = CODE_BOUTON_2_CHAPITRE; //Bouton central, dernier chapitre choisis
-                    }
-                    else if((contexte == CONTEXTE_TOME || contexte == CONTEXTE_CHAPITRE) && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS
-                            && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
-                    {
-                        //Switch sur l'autre
-                        mangaChoisis = CODE_ICONE_SWITCH;
                     }
                 }
                 break;
