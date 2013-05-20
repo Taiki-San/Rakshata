@@ -415,7 +415,6 @@ void getResolution()
     SDL_GetCurrentDisplayMode(0, &data);
     RESOLUTION[0] = data.w;
     RESOLUTION[1] = data.h;
-    HAUTEUR_MAX = RESOLUTION[1];
 }
 
 void restartEcran()

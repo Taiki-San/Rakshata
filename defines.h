@@ -14,8 +14,6 @@
 
 /*Général*/
 #define LARGEUR 800 //Largeur par défaut
-#define HAUTEUR_INTERDIT_WHILE_DL 400
-#define HAUTEUR_MAX_LEGALE 1000
 #define LARGEUR_MAX 1260
 #define BARRE_DES_TACHES_WINDOWS 75
 #define PERMISSIONS 0755
@@ -439,7 +437,6 @@
 /*Hash algorithms*/
 #define SHA256_BLOCK_LENGTH	64
 #define SHA256_DIGEST_LENGTH 32
-#define HASH_LENGTH 65
 #define PBKDF2_OUTPUT_LENGTH 32
 
 /*Login*/

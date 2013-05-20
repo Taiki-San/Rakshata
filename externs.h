@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-extern int HAUTEUR_MAX; //Hauteur maxiamle (généralement écran)
 extern int RESOLUTION[2]; //Résolution
 extern int WINDOW_SIZE_H;
 extern int WINDOW_SIZE_W;

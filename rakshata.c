@@ -12,7 +12,6 @@
 
 #include "main.h"
 
-int HAUTEUR_MAX = HAUTEUR_MAX_LEGALE; //Hauteur maxiamle (généralement écran)
 int RESOLUTION[2]; //Résolution
 int WINDOW_SIZE_H = 0;
 int WINDOW_SIZE_W = 0;
