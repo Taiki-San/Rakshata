@@ -65,6 +65,7 @@ int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int ma
 void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, int nombreElements, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu);
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
+void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -134,7 +135,7 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 
 /**Keys.c**/
 int getMasterKey(unsigned char *input);
-void generateKey(unsigned char output[HASH_LENGTH]);
+void generateKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 int earlyInit();
 int get_compte_infos();
 int logon();
@@ -151,7 +152,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 SDL_Texture* loadControlBar(int favState);
-int changementDePage(int direction, int *changementPage, int *finDuChapitre, int *pageEnCoursDeLecture, int pageTotal, int *chapitreChoisis, MANGAS_DATA *mangaDB);
+void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
+int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
+int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface* UIAlert, SDL_Surface* UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void freeCurrentPage(SDL_Texture *texture);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, int *nouveauChapitreATelecharger, SDL_Surface *explication, SDL_Surface *UIAlert, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
@@ -263,7 +266,7 @@ void setPrefs(MANGAS_DATA* mangaDB);
 
 /**SHA256.c**/
 int sha256(unsigned char* input, void* output);
-int sha256_legacy(char input[], char output[HASH_LENGTH]);
+int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
 
 /**Tome.c**/
