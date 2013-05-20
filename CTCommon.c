@@ -175,7 +175,7 @@ void displayIconeChapOrTome(bool isTome)
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int outChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE-1, dernierLu, nbElement;
+    int outChoisis = PALIER_QUIT-2, dernierLu, nbElement;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
     MANGAS_DATA *data = NULL;
     loadTrad(texteTrad, 19);
@@ -188,7 +188,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
     if((dernierLu = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
         return dernierLu;
 
-    while(outChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE-1)
+    while(outChoisis == PALIER_QUIT-2)
     {
         dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
         if(*isTome)
@@ -248,7 +248,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 
             else if(outChoisis == CODE_ICONE_SWITCH)
             {
-                outChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE-1;
+                outChoisis = PALIER_QUIT-2;
                 *isTome = !*isTome;
             }
 
