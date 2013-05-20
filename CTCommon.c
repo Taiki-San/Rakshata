@@ -280,3 +280,10 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
     return outChoisis;
 }
 
+void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
+{
+    if(isTome)
+        getUpdatedTomeList(mangaDB);
+    else
+        getUpdatedChapterList(mangaDB);
+}
