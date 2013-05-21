@@ -146,7 +146,7 @@ int mainLecture()
 
             else if(retourLecteur == 1)
             {
-                bool isTome;
+                bool isTome = false;
                 chapitreChoisis = PALIER_DEFAULT;
                 pageChapitre = 1;
                 do
@@ -210,7 +210,7 @@ int mainLecture()
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
                         else
-                            getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                            getUpdatedCTList(&mangaDB[mangaChoisis], isTome);
                     }
                 }while(chapitreChoisis > PALIER_CHAPTER && (continuer > PALIER_MENU || (continuer == PALIER_CHAPTER && mangaDB[mangaChoisis].chapitres[1] == VALEUR_FIN_STRUCTURE_CHAPITRE))
                        && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[mangaDB->nombreChapitre-1]));

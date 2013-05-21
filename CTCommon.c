@@ -18,7 +18,7 @@ int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int ma
     {
         if(isTome)
         {
-            if(checkTomeReadable(*mangaDB, &mangaDB->tomes[0]))
+            if(checkTomeReadable(*mangaDB, mangaDB->tomes[0].ID))
                 return min;
         }
 
@@ -175,7 +175,7 @@ void displayIconeChapOrTome(bool isTome)
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int outChoisis = PALIER_QUIT-2, dernierLu, nbElement;
+    int outChoisis = PALIER_QUIT-2, dernierLu, nbElement, noChoice = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
     MANGAS_DATA *data = NULL;
     loadTrad(texteTrad, 19);
@@ -184,7 +184,6 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
     if(!checkFileExist(temp) && contexte != CONTEXTE_DL)
         return PALIER_MENU;
 
-    *isTome = false;
     if((dernierLu = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
         return dernierLu;
 
@@ -224,7 +223,16 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
             data = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
 
         if(data == NULL) //Erreur de mémoire ou liste vide
-            return errorEmptyCTList(contexte, *isTome, texteTrad);
+        {
+            if(noChoice)
+                return errorEmptyCTList(contexte, *isTome, texteTrad);
+            else
+            {
+                noChoice++;
+                *isTome = !*isTome; //On inverse le tome
+                continue;
+            }
+        }
 
         if(*isTome)
             nbElement = data[0].nombreTomes;
@@ -232,7 +240,9 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
             nbElement = (dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE ? data[(contexte != CONTEXTE_LECTURE)].pageInfos : data[data[0].nombreChapitre-1].pageInfos);
 
         displayTemplateChapitreTome(mangaDB, contexte, *isTome, *isTome?data[0].nombreTomes:data[0].nombreChapitre, texteTrad, dernierLu);
-        displayIconeChapOrTome(*isTome);
+        if(!noChoice)
+            displayIconeChapOrTome(*isTome);
+
 
         outChoisis = PALIER_QUIT-1;
         while(outChoisis == PALIER_QUIT-1)
@@ -248,8 +258,11 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 
             else if(outChoisis == CODE_ICONE_SWITCH)
             {
-                outChoisis = PALIER_QUIT-2;
-                *isTome = !*isTome;
+                if(!noChoice)
+                {
+                    outChoisis = PALIER_QUIT-2;
+                    *isTome = !*isTome;
+                }
             }
 
             else if(!*isTome)

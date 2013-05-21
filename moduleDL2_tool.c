@@ -548,6 +548,31 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
                 }
             }
             printTomeDatas(*tomeDatas.datas, bufferDL, tomeDatas.chapitre);
+
+            /*On va vérifier si le tome est pas déjà lisible*/
+            char *bufferPathTmp = calloc(1, strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100);
+            bufferPath = calloc(1, strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100);
+            if(bufferPathTmp != NULL && bufferPath != NULL)
+            {
+                snprintf(bufferPath, length, "manga/%s/%s/Tome_%d/%s", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
+                snprintf(bufferPathTmp, length, "manga/%s/%s/Tome_%d/%s.tmp", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
+                rename(bufferPathTmp, bufferPath);
+                if(checkTomeReadable(*tomeDatas.datas, tomeDatas.chapitre)) //Si déjà lisible, on le dégage de la liste
+                {
+                    for((*outLength)--; *outLength >= 0; free(output[(*outLength)--]));
+                    free(output);
+                    output = NULL;
+                    *outLength = 0;
+                }
+                else
+                    rename(bufferPath, bufferPathTmp);
+                free(bufferPathTmp);
+                free(bufferPath);
+            }
+            else if(bufferPathTmp != NULL)
+                free(bufferPathTmp);
+            else if(bufferPath != NULL)
+                free(bufferPath);
         }
     }
     if(inCache != NULL)

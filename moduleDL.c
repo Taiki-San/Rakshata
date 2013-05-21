@@ -299,14 +299,12 @@ void installation(DATA_INSTALL* datas)
             if(haveToPutTomeAsReadable)
             {
                 char pathWithTemp[600], pathWithoutTemp[600];
-                META_TOME dataCheckValidity;
 
                 snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
                 snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-                dataCheckValidity.ID = tome;
 
                 rename(pathWithTemp, pathWithoutTemp);
-                if(!checkTomeReadable(*mangaDB, &dataCheckValidity))
+                if(!checkTomeReadable(*mangaDB, tome))
                     remove(pathWithoutTemp);
             }
             snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
@@ -417,7 +415,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
     {
         do
         {
-            if(!checkTomeReadable(mangaDB, &mangaDB.tomes[elemChoisisSanitized]))
+            if(!checkTomeReadable(mangaDB, mangaDB.tomes[elemChoisisSanitized].ID))
             {
                 fprintf(fichier, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomes[elemChoisisSanitized].ID);
                 nombreChapitre++;

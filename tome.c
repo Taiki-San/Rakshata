@@ -16,11 +16,13 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
 {
     int pos, nombreMaxElems = 0;
     META_TOME *lines = NULL;
-    for(pos = 0; pos < size; pos++)
+    for(pos = 0; pos < size && buffer[pos]; pos++)
     {
         if(buffer[pos] == '\n')
             nombreMaxElems++;
     }
+    if(buffer[pos-1] != '\n' || buffer[pos] != '\r')
+        nombreMaxElems++;
     lines = calloc(nombreMaxElems+1, sizeof(META_TOME));
 
     int ligneCourante = 0, i;
@@ -108,7 +110,7 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     for(nbElem = 0; mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreTomes; nbElem++)
     {
-        if(!checkTomeReadable(*mangaDB, &mangaDB->tomes[nbElem]))
+        if(!checkTomeReadable(*mangaDB, mangaDB->tomes[nbElem].ID))
         {
             mangaDB->tomes[nbElem].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
             mangaDB->tomes[nbElem].name[0] = 0;

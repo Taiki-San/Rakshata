@@ -42,7 +42,7 @@ typedef struct dataMangas
     //Chapitres
     int firstChapter;
     int lastChapter;
-    int nombrechapitreSpeciaux;
+    int nombreChapitreSpeciaux;
     int nombreChapitre;
     int *chapitres;
 

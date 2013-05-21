@@ -53,7 +53,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     loadTrad(texteTrad, 21);
     restoreState = checkRestore();
 
-    if(((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID)) && (newContent = checkPasNouveauChapitreDansDepot(*mangaDB, *chapitreChoisis/10)))
+    if(((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID)) && (newContent = checkPasNouveauChapitreDansDepot(mangaDB, isTome, *chapitreChoisis)))
     {
         nouveauChapitreATelecharger = 1;
         UIAlert = createUIAlert(UIAlert, &texteTrad[9], 5);
@@ -853,7 +853,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             else
                             {
                                 FREE_CONTEXT;
-                                return -2;
+                                return PALIER_CHAPTER;
                             }
                             break;
                         }
@@ -1704,7 +1704,7 @@ void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
 
 /** Others **/
 
-void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
+void *checkPasNouveauChapitreDansDepot(MANGAS_DATA* mangasDB, bool isTome, int chapitre)
 {
     int i = 0, j = 0, chapitre_new = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX], *bufferDL, teamCourt[LONGUEUR_COURT];
@@ -1721,7 +1721,7 @@ void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     if(bufferDL == NULL)
         return NULL;
 
-    int version = get_update_mangas(bufferDL, mangasDB.team);
+    int version = get_update_mangas(bufferDL, mangasDB->team);
 
     if(bufferDL[i]) //On a DL quelque chose
         i += sscanfs(&bufferDL[i], "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT);
@@ -1733,21 +1733,77 @@ void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre)
     if(version == 2)
         while(bufferDL[i++] != '\n');
 
-    if(strcmp(temp, mangasDB.team->teamLong) || strcmp(teamCourt, mangasDB.team->teamCourt)) //Fichier ne correspond pas
+    if(strcmp(temp, mangasDB->team->teamLong) || strcmp(teamCourt, mangasDB->team->teamCourt)) //Fichier ne correspond pas
     {
         free(bufferDL);
         return NULL;
     }
 
-    while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB.mangaName, temp))
-        i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
-
-    free(bufferDL);
-    if(chapitre_new > chapitre)
+    if(!isTome)
     {
-        chapitre_new *= 10;
-#warning "Support tomes there =["
-        return NULL;
+        while(bufferDL[i] && bufferDL[i] != '#' && strcmp(mangasDB->mangaName, temp))
+            i += sscanfs(&bufferDL[i], "%s %s %d %d\n", temp, LONGUEUR_NOM_MANGA_MAX, teamCourt, LONGUEUR_COURT, &j, &chapitre_new);
+        if(!strcmp(mangasDB->mangaName, temp))
+        {
+            mangasDB->firstChapter = j;
+            mangasDB->lastChapter = chapitre_new;
+        }
+    }
+
+    if(isTome || mangasDB->nombreChapitreSpeciaux)
+    {
+        if(!i) i = 1;
+        for(; bufferDL[i] && (bufferDL[i] != '#' || bufferDL[i - 1] != '\n'); i++); //On cherche la fin du bloc
+        if(bufferDL[i] == '#' && bufferDL[i - 1] == '\n')
+        {
+            char type[2];
+            for(i++; bufferDL[i] == '\n' || bufferDL[i] == '\r'; i++);
+            while(bufferDL[i])
+            {
+                j = sscanfs(&bufferDL[i], "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, type, 2);
+                if(strcmp(mangasDB->mangaName, temp) || type[0] != (isTome?'T':'C'))
+                {
+                    for(; bufferDL[i] && (bufferDL[i] != '#' || bufferDL[i - 1] != '\n'); i++); //On saute le bloc
+                    for(i++; bufferDL[i] == '\n' || bufferDL[i] == '\r'; i++);
+                }
+                else
+                {
+                    for(i += j; bufferDL[i] == '\n' || bufferDL[i] == '\r'; i++); //On se positionne à la fin
+                    for(j = 0; bufferDL[i+j] && (bufferDL[i+j] != '#' || bufferDL[i+j-1] != '\n'); j++);
+                    if(j)
+                    {
+                        char path[500];
+                        snprintf(path, 500, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILETOME);
+                        FILE *database = fopen(path, "w+");
+                        if(database != NULL)
+                        {
+                            fwrite(&bufferDL[i], 1, j, database);
+                            fclose(database);
+                        }
+                    }
+                    free(bufferDL);
+                    getUpdatedCTList(mangasDB, isTome);
+                    if(isTome && mangasDB->tomes != NULL && mangasDB->tomes[mangasDB->nombreTomes-1].ID > chapitre)
+                    {
+                        return mangasDB->tomes;
+                    }
+                    else if(!isTome && mangasDB->chapitres != NULL && mangasDB->chapitres[mangasDB->nombreChapitre-1] > chapitre)
+                    {
+                        return mangasDB->chapitres;
+                    }
+                    else
+                        return NULL;
+                }
+            }
+        }
+        free(bufferDL);
+    }
+    else
+    {
+        free(bufferDL);
+        getUpdatedChapterList(mangasDB);
+        if(mangasDB->chapitres != NULL && mangasDB->chapitres[mangasDB->nombreChapitre-1] > chapitre)
+            return mangasDB->chapitres;
     }
     return NULL;
 }

@@ -637,10 +637,10 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr)
     return false;
 }
 
-bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome)
+bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
     char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
-    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, metaTome->ID, CONFIGFILETOME);
+    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
     FILE* config = fopen(pathConfigFile, "r");
     register FILE* fileCheck = NULL;
 
@@ -683,7 +683,10 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome)
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
 {
     if(isTome)
-        return checkTomeReadable(mangaDB, data);
+    {
+        META_TOME *tome = data;
+        return checkTomeReadable(mangaDB, tome->ID);
+    }
     return checkChapterReadable(mangaDB, data);
 }
 

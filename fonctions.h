@@ -57,7 +57,7 @@ int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
 bool checkPathEscape(char *string, int length);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr);
-bool checkTomeReadable(MANGAS_DATA mangaDB, META_TOME *metaTome);
+bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 
 /**CTCommon.c**/
@@ -162,7 +162,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
-void *checkPasNouveauChapitreDansDepot(MANGAS_DATA mangasDB, int chapitre);
+void *checkPasNouveauChapitreDansDepot(MANGAS_DATA* mangasDB, bool isTome, int chapitre);
 void addtoDownloadListFromReader(MANGAS_DATA *mangaDB, DATA_LECTURE dataReader, bool isTome, void* new_data);
 
 /**Mainfunctions.c**/

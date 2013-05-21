@@ -52,7 +52,7 @@ MANGAS_DATA* miseEnCache(int mode)
 		else
 		{
             int cat = 0, deprecited;
-			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &deprecited, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].nombrechapitreSpeciaux);
+			mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX, mangas[numeroManga].mangaNameShort, LONGUEUR_COURT, &mangas[numeroManga].firstChapter, &mangas[numeroManga].lastChapter, &mangas[numeroManga].firstTome, &deprecited, &cat, &mangas[numeroManga].pageInfos, &mangas[numeroManga].nombreChapitreSpeciaux);
             for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 
             if(mangas[numeroManga].firstChapter > mangas[numeroManga].lastChapter)
