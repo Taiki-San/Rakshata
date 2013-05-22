@@ -205,9 +205,9 @@ int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte)
 
 MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
 {
+    bool outCheck;
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
-    register FILE* file = NULL; //Make that stuff faster
 
     //On capitalise la première lettre
     if(strlen(stringGeneric) >= TRAD_LENGTH)
@@ -240,19 +240,15 @@ MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
     {
         snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.tomes[i].ID, CONFIGFILETOME);
 
-        file = fopen(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
-        if((file != NULL && contexte != CONTEXTE_DL) || (file == NULL && contexte == CONTEXTE_DL))
+        outCheck = (access(temp, F_OK) != -1);
+        if((outCheck && contexte != CONTEXTE_DL) || (!outCheck && contexte == CONTEXTE_DL))
         {
-            if(contexte != CONTEXTE_DL)
-                fclose(file);
             tomeDB[tomeCourant].pageInfos = mangaDB.tomes[i].ID;
             if(mangaDB.tomes[i].name[0] != 0) //Si on a un nom custom
                 usstrcpy(tomeDB[tomeCourant++].mangaName, LONGUEUR_NOM_MANGA_MAX, mangaDB.tomes[i].name);
             else
                 snprintf(tomeDB[tomeCourant++].mangaName, LONGUEUR_NOM_MANGA_MAX, "%s %d", stringGenericUsable, mangaDB.tomes[i].ID);
         }
-        else if(contexte == CONTEXTE_DL)
-            fclose(file);
         if(ordreCroissant)
             i++;
         else

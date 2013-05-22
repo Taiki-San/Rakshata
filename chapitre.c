@@ -15,9 +15,8 @@
 void refreshChaptersList(MANGAS_DATA *mangaDB)
 {
     if(mangaDB->chapitres != NULL)
-    {
         free(mangaDB->chapitres);
-    }
+
     /*On commence par énumérer les chapitres spéciaux*/
     int nbElem, i;
     char temp[TAILLE_BUFFER];
@@ -217,9 +216,9 @@ int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte)
 
 MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
 {
+    bool outCheck;
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
-    register FILE* file = NULL; //Make that stuff faster
 
     if(strlen(stringGeneric) >= TRAD_LENGTH)
         stringGeneric[TRAD_LENGTH-1] = 0;
@@ -254,19 +253,15 @@ MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
         else
             snprintf(temp, 500, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
 
-        file = fopen(temp, "r"); //On utilise pas checkFileExist() car file est dans les registres et plus rapide
-        if((file != NULL && contexte != CONTEXTE_DL) || (file == NULL && contexte == CONTEXTE_DL))
+        outCheck = (access(temp, F_OK) != -1);
+        if((outCheck && contexte != CONTEXTE_DL) || (!outCheck && contexte == CONTEXTE_DL))
         {
-            if(contexte != CONTEXTE_DL)
-                fclose(file);
             chapitreDB[chapitreCourant].pageInfos = mangaDB.chapitres[i];
             if(mangaDB.chapitres[i]%10)
                 snprintf(chapitreDB[chapitreCourant++].mangaName, LONGUEUR_NOM_MANGA_MAX, "%s %d.%d", stringGenericUsable, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10);
             else
                 snprintf(chapitreDB[chapitreCourant++].mangaName, LONGUEUR_NOM_MANGA_MAX, "%s %d", stringGenericUsable, mangaDB.chapitres[i]/10);
         }
-        else if(contexte == CONTEXTE_DL)
-            fclose(file);
         if(ordreCroissant)
             i++;
         else

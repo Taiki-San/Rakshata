@@ -555,15 +555,11 @@ int checkPID(int PID)
     return 0;
 }
 
-int checkFileExist(char *filename)
+bool checkFileExist(char *filename)
 {
-    register FILE* fileToTest = fopen(filename, "r");
-    if(fileToTest != NULL)
-    {
-        fclose(fileToTest);
-        return 1;
-    }
-    return 0;
+    if( access(filename, F_OK) == -1)
+        return 0;
+    return 1;
 }
 
 int checkDirExist(char *dirname)

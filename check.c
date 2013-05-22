@@ -642,7 +642,6 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
     char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
     snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
     FILE* config = fopen(pathConfigFile, "r");
-    register FILE* fileCheck = NULL;
 
     if(config == NULL)
         return false;
@@ -659,19 +658,15 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
         }
 
         snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
-        fileCheck = fopen(pathConfigFile, "r");
-        if(fileCheck == NULL)
+        if(access(pathConfigFile, F_OK) == -1)
         {
             fclose(config);
             return false;
         }
-        fclose(fileCheck);
 
         snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
-        fileCheck = fopen(pathConfigFile, "r");
-        if(fileCheck != NULL)
+        if(access(pathConfigFile, F_OK) == -1)
         {
-            fclose(fileCheck);
             fclose(config);
             return false;
         }
