@@ -253,7 +253,7 @@ MANGAS_DATA *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
         else
             snprintf(temp, 500, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
 
-        outCheck = (access(temp, F_OK) != -1);
+        outCheck = checkFileExist(temp);
         if((outCheck && contexte != CONTEXTE_DL) || (!outCheck && contexte == CONTEXTE_DL))
         {
             chapitreDB[chapitreCourant].pageInfos = mangaDB.chapitres[i];

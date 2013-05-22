@@ -58,12 +58,15 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     //On affiche pas le même titre en fonction de la section
     snprintf(temp, TAILLE_BUFFER, "%s %s %s %s", texteTrad[2], texteTrad[isTome], texteTrad[3], texteTrad[(contexte == CONTEXTE_LECTURE)?4:((contexte == CONTEXTE_DL)?5:6)]);
     texte = TTF_Write(renderer, police, temp, couleurTexte);
-    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-    position.y = BORDURE_SUP_TITRE_CHAPITRE;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
+    if(texte != NULL)
+    {
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+        position.y = BORDURE_SUP_TITRE_CHAPITRE;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
 
     /*Affichage des infos sur la team*/
     changeTo(mangaDB->mangaName, '_', ' ');
@@ -80,15 +83,21 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     texte = TTF_Write(renderer, police, temp, couleurTexte);
-    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-    position.y = BORDURE_SUP_INFOS_TEAM_CHAPITRE;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
+    if(texte != NULL)
+    {
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+        position.y = BORDURE_SUP_INFOS_TEAM_CHAPITRE;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
 
     if(isTome)
+    {
+        TTF_CloseFont(police);
         return;
+    }
 
     /*Bottom*/
 
@@ -113,41 +122,36 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
             SDL_DestroyTextureS(texte);
         }
     }
-    if(isTome)
-    {
-        snprintf(temp, TAILLE_BUFFER, "%s %s", texteTrad[7], mangaDB->tomes[0].name);
-    }
-    else
-    {
-        if(mangaDB->chapitres[0]%10)
-            snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[7], mangaDB->chapitres[0]/10, mangaDB->chapitres[0]%10);
-        else
-            snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[7], mangaDB->chapitres[0]/10);
-    }
-    texte = TTF_Write(renderer, police, temp, couleurTexte);
-    position.x = BORDURE_BOUTON_LECTEUR;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
 
-    if(isTome)
-    {
-        snprintf(temp, TAILLE_BUFFER, "%s %s", texteTrad[8], mangaDB->tomes[mangaDB->nombreTomes-1].name);
-    }
+    if(mangaDB->chapitres[0]%10)
+        snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[7], mangaDB->chapitres[0]/10, mangaDB->chapitres[0]%10);
     else
-    {
-        if(mangaDB->chapitres[mangaDB->nombreChapitre-1]%10)
-            snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10, mangaDB->chapitres[mangaDB->nombreChapitre-1]%10);
-        else
-            snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10);
-    }
+        snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[7], mangaDB->chapitres[0]/10);
+
     texte = TTF_Write(renderer, police, temp, couleurTexte);
-    position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
+    if(texte != NULL)
+    {
+        position.x = BORDURE_BOUTON_LECTEUR;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
+
+    if(mangaDB->chapitres[mangaDB->nombreChapitre-1]%10)
+        snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10, mangaDB->chapitres[mangaDB->nombreChapitre-1]%10);
+    else
+        snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10);
+
+    texte = TTF_Write(renderer, police, temp, couleurTexte);
+    if(texte != NULL)
+    {
+        position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 }
@@ -263,6 +267,8 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
                     outChoisis = PALIER_QUIT-2;
                     *isTome = !*isTome;
                 }
+                else
+                    outChoisis = PALIER_QUIT-1;
             }
 
             else if(!*isTome)
@@ -300,3 +306,4 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
     else
         getUpdatedChapterList(mangaDB);
 }
+

@@ -145,15 +145,14 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
     if(checkFileExist(temp) || contexte == CONTEXTE_DL)
     {
         /*Initialize internal chapter list*/
+        refreshTomeList(mangaDB);
         if(contexte == CONTEXTE_DL)
         {
-            refreshTomeList(mangaDB);
             if(checkFileExist(temp))
                 dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE; //Si un manga est déjà installé, on le met dans le sens décroissant
         }
         else
         {
-            refreshTomeList(mangaDB);
             checkTomeValable(mangaDB, &dernierLu);
             if(mangaDB->nombreTomes == PALIER_MENU)
                 return PALIER_MENU;
@@ -243,7 +242,7 @@ MANGAS_DATA *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
     {
         snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.tomes[i].ID, CONFIGFILETOME);
 
-        outCheck = (access(temp, F_OK) != -1);
+        outCheck = checkFileExist(temp);
         if((outCheck && contexte != CONTEXTE_DL) || (!outCheck && contexte == CONTEXTE_DL))
         {
             tomeDB[tomeCourant].pageInfos = mangaDB.tomes[i].ID;
@@ -293,7 +292,7 @@ void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome)
             logR(bufferDL);
 #endif
         }
-        fclose(out); //Close and free stuffs
+        fclose(out);
         free(bufferPath);
     }
 }
@@ -302,15 +301,19 @@ int extractNumFromConfigTome(char *input, int ID)
 {
     int output = VALEUR_FIN_STRUCTURE_CHAPITRE, posDebut = 0;
     char basePath[100];
+
     snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
+
     if(!strncmp(input, "Chapitre_", 9))
         posDebut = 9;
     else if(!strncmp(input, basePath, strlen(basePath)))
         posDebut = strlen(basePath);
+
     if(posDebut)
     {
         int i = sscanfs(&input[posDebut], "%d", &output);
         output *= 10;
+
         if(input[posDebut+i] == '.' && isNbr(input[posDebut+i+1]))
             output += (int) input[posDebut+i+1] - '0';
     }

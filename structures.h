@@ -68,14 +68,6 @@ typedef struct data_lecture_tome
     int *chapitreTomeCPT; //Pour la crypto
 } DATA_LECTURE;
 
-typedef struct download_data_struct
-{
-    char *URL;
-    char *buf;
-    size_t length;
-    size_t current_pos;
-} TMP_DL;
-
 typedef struct data_loaded_from_download_list
 {
 	int chapitre;
@@ -83,6 +75,14 @@ typedef struct data_loaded_from_download_list
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
     MANGAS_DATA* datas;
 } DATA_LOADED;
+
+typedef struct download_data_struct
+{
+    char *URL;
+    char *buf;
+    size_t length;
+    size_t current_pos;
+} TMP_DL;
 
 typedef struct data_pour_installation
 {

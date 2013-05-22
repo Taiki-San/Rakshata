@@ -217,7 +217,7 @@ int createNewThread(void *function, void *arg);
 void ouvrirSite(TEAMS_DATA* teams);
 int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);
-bool checkFileExist(char *filename);
+#define checkFileExist(filename) (access(filename, F_OK) != -1)
 int checkDirExist(char *dirname);
 
 /**PBKDF2.c**/

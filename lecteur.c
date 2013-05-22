@@ -1009,14 +1009,14 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         if(config == NULL)
             return 1;
         name[0] = 0;
-        fscanfs(config, "%s", name, 200);
+        fscanfs(config, "%s", name, LONGUEUR_NOM_PAGE);
     }
     else
     {
         if(chapitre_tome%10)
-            snprintf(name, 100, "Chapitre_%d.%d", chapitre_tome/10, chapitre_tome%10);
+            snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", chapitre_tome/10, chapitre_tome%10);
         else
-            snprintf(name, 100, "Chapitre_%d", chapitre_tome/10);
+            snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", chapitre_tome/10);
     }
 
     do
@@ -1064,14 +1064,17 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
                 break;
             }
             fseek(config, -1, SEEK_CUR);
-            fscanfs(config, "%s", name, 200);
+            fscanfs(config, "%s", name, LONGUEUR_NOM_PAGE);
         }
     } while(isTome && posID < LONGUEUR_NOM_PAGE);
 
-    dataReader->IDDisplayed = chapitre_tome;
-    dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
-    dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
+    if(dataReader->pathNumber != NULL)
+    {
+        dataReader->IDDisplayed = chapitre_tome;
+        dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
+        dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
+    }
     return 0;
 }
 

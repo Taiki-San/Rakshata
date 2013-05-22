@@ -553,13 +553,6 @@ int checkPID(int PID)
     return 0;
 }
 
-bool checkFileExist(char *filename)
-{
-    if( access(filename, F_OK) == -1)
-        return 0;
-    return 1;
-}
-
 int checkDirExist(char *dirname)
 {
     DIR *directory = NULL;

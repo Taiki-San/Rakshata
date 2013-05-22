@@ -658,14 +658,14 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
         }
 
         snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
-        if(access(pathConfigFile, F_OK) == -1)
+        if(!checkFileExist(pathConfigFile))
         {
             fclose(config);
             return false;
         }
 
         snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
-        if(access(pathConfigFile, F_OK) == -1)
+        if(checkFileExist(pathConfigFile))
         {
             fclose(config);
             return false;

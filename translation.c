@@ -101,11 +101,9 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
         }
         trad[i][j] = 0;
     }
-    if(i < antiBufferOverflow[IDTrad-1])
-    {
-        while(i < antiBufferOverflow[IDTrad-1])
-            snprintf(trad[i++], TRAD_LENGTH, "(null)");
-    }
+    while(i < antiBufferOverflow[IDTrad-1])
+        snprintf(trad[i++], TRAD_LENGTH, "(null)");
+
     fclose(fichierTrad);
 }
 

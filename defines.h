@@ -215,6 +215,9 @@
 #define BORDURE_INF_NUMEROTATION_TRI 70
 #define HAUTEUR_BOUTONS_DL 575
 #define NOMBRE_LETTRE_MAX 20
+
+/*Engine*/
+#define MAX_LENGTH_TO_DISPLAY 50
 #define CODE_ENGINE_BOUTON_PREV_PAGE -7
 #define CODE_ENGINE_BOUTON_NEXT_PAGE -6
 
@@ -270,7 +273,6 @@
     #define TOLERANCE_CLIC_PAGE 10
 
     /*Limites buffers*/
-    #define NOMBRE_PAGE_MAX 500
     #define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*2+300
 
     /*Tailles*/

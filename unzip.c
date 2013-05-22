@@ -14,6 +14,8 @@
 #include "unzip/miniunzip.h"
 #include "unzip/unz_memory.c"
 
+#define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
+
 int INSTALL_DONE;
 int CURRENT_TOKEN;
 
