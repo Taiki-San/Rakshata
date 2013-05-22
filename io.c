@@ -12,10 +12,10 @@
 
 #include "main.h"
 
-int nombreEntree(SDL_Event event)
+int nombreEntree(char input)
 {
-    if(event.text.text[0] >= '0' && event.text.text[0] <= '9')
-        return event.text.text[0] - '0';
+    if(isNbr(input))
+        return input - '0';
     return -1;
 }
 

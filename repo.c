@@ -158,7 +158,7 @@ int ajoutRepo()
                     crashTemp(temp, TAILLE_BUFFER);
                     texte = TTF_Write(renderer, police, texteTrad[3], couleurTexte);
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = BORDURE_SUP_MENU + texte->h + MINIINTERLIGNE;
+                    position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE;
                     position.h = texte->h;
                     position.w = texte->w;
                     SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -266,9 +266,9 @@ int deleteRepo()
 
     /*On va changer la taille de la fenetre en pompant l'algorithme de la selection de manga*/
     if(nombreTeam <= MANGAPARPAGE_TRI)
-        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (nombreTeam / NBRCOLONNES_TRI + 1) + 50;
+        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (nombreTeam / NBRCOLONNES_TRI + 1) + 50;
     else
-        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
+        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + 1) + 50;
 
     if(WINDOW_SIZE_H != i)
         updateWindowSize(LARGEUR, i);

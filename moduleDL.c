@@ -494,7 +494,7 @@ void DLmanager()
 
         texte = TTF_Write(rendererDLCurrent, police, temp, couleurTexte);
         position.x = WINDOW_SIZE_W_DL / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - MINIINTERLIGNE;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT - texte->h - INTERLIGNE;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);
@@ -510,7 +510,7 @@ void DLmanager()
 
         texte = TTF_Write(rendererDLCurrent, police, texteTrad[5], couleurTexte);
         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + MINIINTERLIGNE;
+        position.y = HAUTEUR_TEXTE_TELECHARGEMENT + texte->h + INTERLIGNE;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(rendererDLCurrent, texte, NULL, &position);

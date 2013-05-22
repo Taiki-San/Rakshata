@@ -37,11 +37,11 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     int screenSize;
     /*On calcule la taille de la fenêtre*/
     if(nombreElements <= MANGAPARPAGE_TRI && !isTome)
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI + 1) + 50;
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI + 1) + 50;
     else if(nombreElements <= MANGAPARPAGE_TRI && isTome)
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI) + 50;
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI) + 50;
     else
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + MINIINTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + (isTome?0:1)) + 50;
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + (isTome?0:1)) + 50;
 
     if(screenSize != WINDOW_SIZE_H)
         updateWindowSize(LARGEUR, screenSize);

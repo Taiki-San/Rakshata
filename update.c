@@ -90,7 +90,7 @@ void checkUpdate()
         SDL_DestroyTextureS(infosAvancement);
         infosAvancement = TTF_Write(renderer, police, trad[1], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-        position.y = 20 + infosAvancement->h + MINIINTERLIGNE;
+        position.y = 20 + infosAvancement->h + INTERLIGNE;
         SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
         SDL_DestroyTextureS(infosAvancement);
         TTF_CloseFont(police);

@@ -954,7 +954,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 case SDL_TEXTINPUT:
                 {
-                    if(checkIfNumber(event.text.text[0]))
+                    if(isNbr(event.text.text[0]))
                     {
                         pageAccesDirect *= 10;
                         pageAccesDirect += event.text.text[0] - '0';

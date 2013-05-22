@@ -126,12 +126,11 @@ void updateSectionMessage(char messageVersion[5]);
 void checkSectionMessageUpdate();
 
 /**IO.c**/
-int nombreEntree(SDL_Event event);
+int nombreEntree(char input);
 int waitEnter(SDL_Renderer* rendererVar);
 int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, bool allowedToQuitWithEscape, int startFromX, int startFromY);
 int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 #define getLetterPushed(event) (event.text.text[0] >= 'A' && event.text.text[0] <= 'z')?event.text.text[0]:0
-#define checkIfNumber(c) (c >= '0' && c <= '9')?1:0
 
 /**Keys.c**/
 int getMasterKey(unsigned char *input);
@@ -310,7 +309,7 @@ int positionnementApresChar(char* input, char *stringToFind);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char *output);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
-#define isNbr(caract) (caract >= '0' && caract <= '9')?1:0
+#define isNbr(caract) (caract >= '0' && caract <= '9')
 void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);

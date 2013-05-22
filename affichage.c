@@ -112,8 +112,8 @@ void initialisationAffichage()
             position.w = texte->w;
             SDL_RenderCopy(renderer, texte, NULL, &position);
             if(i == 1) //Saut de ligne
-                position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
-            position.y += (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+                position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
         }
     }
     SDL_RenderPresent(renderer);

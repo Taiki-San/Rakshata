@@ -169,7 +169,7 @@ int erreurReseau()
     {
         texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
         position.h = texteAAfficher->h;
         position.w = texteAAfficher->w;
         SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
@@ -194,14 +194,14 @@ int showError()
 
     restartEcran();
 
-    position.y = WINDOW_SIZE_H / 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (MINIINTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
+    position.y = WINDOW_SIZE_H / 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
 
     /*Remplissage des variables*/
     loadTrad(texte, 1);
 
     for(i = 0; i < SIZE_TRAD_ID_1; i++)
     {
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + MINIINTERLIGNE);
+        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
         texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
         position.h = texteAAfficher->h;
