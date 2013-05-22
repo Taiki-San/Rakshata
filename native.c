@@ -122,11 +122,9 @@ char* mergeS(char* input1, char* input2)
 
 void *ralloc(size_t length)
 {
-    void* memory_allocated = malloc(length);
+    void* memory_allocated = calloc(1, length);
     if(memory_allocated == NULL)
         memoryError(length);
-    else
-        crashTemp(memory_allocated, length);
     return memory_allocated;
 }
 

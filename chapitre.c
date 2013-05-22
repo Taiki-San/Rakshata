@@ -24,7 +24,7 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
     FILE* chapSpeciaux = fopenR(temp, "r");
 
     nbElem = mangaDB->nombreChapitreSpeciaux + mangaDB->lastChapter - mangaDB->firstChapter + 1;
-    mangaDB->chapitres = ralloc((nbElem+5)*sizeof(int));
+    mangaDB->chapitres = calloc(nbElem+5, sizeof(int));
     for(i = 0; i < nbElem+5; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
 
     for(i = 0; i <= mangaDB->lastChapter-mangaDB->firstChapter && i < nbElem; i++)

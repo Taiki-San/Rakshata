@@ -90,7 +90,10 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
         }
         fclose(tomeDB);
         if(buffer != NULL)
+        {
             tomeDBParser(mangaDB, buffer, size);
+            free(buffer);
+        }
     }
 }
 
