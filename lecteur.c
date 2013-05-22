@@ -42,9 +42,29 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     dataReader.pathNumber = NULL;
 
     if(!isTome)
+    {
+        if(mangaDB->chapitres == NULL)
+        {
+            getUpdatedChapterList(mangaDB);
+            if(mangaDB == NULL)
+            {
+                return PALIER_CHAPTER;
+            }
+        }
         for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
+    }
     else
+    {
+        if(mangaDB->tomes== NULL)
+        {
+            getUpdatedTomeList(mangaDB);
+            if(mangaDB == NULL)
+            {
+                return PALIER_CHAPTER;
+            }
+        }
         for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < *chapitreChoisis; curPosIntoStruct++);
+    }
 
 
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
@@ -206,15 +226,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 if(OChapitre == NULL)
                 {
                     internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                    OChapitre = 0;
+                    OChapitre = NULL;
                 }
             }
 
             if(chapitre != NULL)
             {
-                SDL_FreeSurface(chapitre);
                 freeCurrentPage(chapitre_texture);
-                chapitre = NULL;
+                SDL_FreeSurface(chapitre);
             }
             chapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante]);
             if(chapitre == NULL)
@@ -663,8 +682,11 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             anciennePositionY = event.button.y;
                             SDL_FlushEvent(SDL_MOUSEMOTION);
                             SDL_WaitEvent(&event);
-                            if(!haveInputFocus(&event, window) && event.window.event != SDL_WINDOWEVENT_LEAVE)
-                                continue;
+                            if(!haveInputFocus(&event, window) || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE)
+                            {
+                                deplacementEnCours = 0;
+                                break;
+                            }
                             switch(event.type)
                             {
                                 case SDL_MOUSEMOTION:
@@ -742,35 +764,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                     {
                                         SDL_RenderPresent(renderer);
                                         SDL_FlushEvent(SDL_WINDOWEVENT);
-                                    }
-                                    else if(/*event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || */event.window.event == SDL_WINDOWEVENT_LEAVE)
-                                    {
-                                        deplacementEnCours = 0;
-                                        if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
-                                        {
-                                            //Clic détécté: on cherche de quel côté
-                                            if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
-                                            {
-                                                check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                                if (check4change == -1) //changement de chapitre
-                                                {
-                                                    FREE_CONTEXT;
-                                                    return 0;
-                                                }
-                                            }
-
-                                            else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
-                                            {
-                                                check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                                if (check4change == -1)
-                                                {
-                                                    FREE_CONTEXT;
-                                                    return 0;
-                                                }
-                                            }
-                                        }
-                                        else
-                                            pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
                                     }
                                     break;
                                 }
@@ -896,7 +889,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 }
 
                                 dataReader.pageCourante = pageAccesDirect;
-                                pageAccesDirect = 0;
+                                finDuChapitre = pageAccesDirect = 0;
                                 SDL_FreeSurfaceS(UI_PageAccesDirect);
                                 UI_PageAccesDirect = NULL;
                             }
