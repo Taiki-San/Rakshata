@@ -162,14 +162,14 @@ int erreurReseau()
     loadTrad(texte, 24);
 
     /*On prend un point de départ*/
-    position.y = WINDOW_SIZE_H / 2 - 50;
+    position.y = WINDOW_SIZE_H / 2 - LARGEUR_MOYENNE_MANGA_GROS - INTERLIGNE/2;
 
     /*On lance la boucle d'affichage*/
     for(i = 0; i < 2; i++)
     {
         texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
         position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+        position.y += LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE;
         position.h = texteAAfficher->h;
         position.w = texteAAfficher->w;
         SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
@@ -370,3 +370,4 @@ void memoryError(size_t size)
     snprintf(temp, 0x100, "Failed at allocate memory for : %d bytes\n", size);
     logR(temp);
 }
+

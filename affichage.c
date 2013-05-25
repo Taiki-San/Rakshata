@@ -121,7 +121,7 @@ void initialisationAffichage()
     TTF_CloseFont(police);
 }
 
-void raffraichissmenent()
+void raffraichissmenent(bool forced)
 {
     /*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
@@ -149,7 +149,7 @@ void raffraichissmenent()
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 
-    updateDataBase();
+    updateDataBase(forced);
 }
 
 void affichageLancement()
@@ -340,14 +340,8 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     if(surfText != NULL)
     {
         texture = SDL_CreateTextureFromSurface(render, surfText);
-#ifdef DEV_BUILD
-        if(texture == NULL)
-            logR((char*) SDL_GetError());
-#endif
         SDL_FreeSurfaceS(surfText);
     }
-    else
-        texture = NULL;
     return texture;
 }
 

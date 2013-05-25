@@ -32,16 +32,16 @@ int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int ma
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }
 
-void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, int nombreElements, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH], int dernierLu)
+void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, DATA_ENGINE data, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     int screenSize;
     /*On calcule la taille de la fenêtre*/
-    if(nombreElements <= MANGAPARPAGE_TRI && !isTome)
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI + 1) + 50;
-    else if(nombreElements <= MANGAPARPAGE_TRI && isTome)
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreElements-1) / NBRCOLONNES_TRI) + 50;
+    if(data.nombreElementTotal <= ENGINE_ELEMENT_PAR_PAGE && !isTome)
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((data.nombreElementTotal-1) / ENGINE_NOMBRE_COLONNE + 1) + 50;
+    else if(data.nombreElementTotal <= ENGINE_ELEMENT_PAR_PAGE && isTome)
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((data.nombreElementTotal-1) / ENGINE_NOMBRE_COLONNE) + 50;
     else
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI + (isTome?0:1)) + 50;
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE + (isTome?0:1)) + 50;
 
     if(screenSize != WINDOW_SIZE_H)
         updateWindowSize(LARGEUR, screenSize);
@@ -107,10 +107,12 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     if(contexte != CONTEXTE_DL)
     {
         crashTemp(temp, TAILLE_BUFFER);
-        if(dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        if(data.dernierChapitreLu == VALEUR_FIN_STRUCTURE_CHAPITRE)
            snprintf(temp, TAILLE_BUFFER, "%s", texteTrad[11]);
+        else if(data.dernierChapitreLu%10)
+            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d.%d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.dernierChapitreLu/10, data.dernierChapitreLu%10);
         else
-            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d", texteTrad[12], texteTrad[isTome], texteTrad[13], dernierLu/10);
+            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.dernierChapitreLu/10);
 
         texte = TTF_Write(renderer, police, temp, couleurTexte);
         if(texte != NULL)
@@ -123,34 +125,40 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
         }
     }
 
-    if(mangaDB->chapitres[0]%10)
-        snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[7], mangaDB->chapitres[0]/10, mangaDB->chapitres[0]%10);
-    else
-        snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[7], mangaDB->chapitres[0]/10);
-
-    texte = TTF_Write(renderer, police, temp, couleurTexte);
-    if(texte != NULL)
+    if(data.chapitrePlusAncien != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        position.x = BORDURE_BOUTON_LECTEUR;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
+        if(data.chapitrePlusAncien%10)
+            snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[7], data.chapitrePlusAncien/10, data.chapitrePlusAncien%10);
+        else
+            snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[7], data.chapitrePlusAncien/10);
+
+        texte = TTF_Write(renderer, police, temp, couleurTexte);
+        if(texte != NULL)
+        {
+            position.x = BORDURE_BOUTON_LECTEUR;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
     }
 
-    if(mangaDB->chapitres[mangaDB->nombreChapitre-1]%10)
-        snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10, mangaDB->chapitres[mangaDB->nombreChapitre-1]%10);
-    else
-        snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[8], mangaDB->chapitres[mangaDB->nombreChapitre-1]/10);
-
-    texte = TTF_Write(renderer, police, temp, couleurTexte);
-    if(texte != NULL)
+    if(data.chapitrePlusRecent != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
+        if(data.chapitrePlusRecent%10)
+            snprintf(temp, TAILLE_BUFFER, "%s %d.%d", texteTrad[8], data.chapitrePlusRecent / 10, data.chapitrePlusRecent % 10);
+        else
+            snprintf(temp, TAILLE_BUFFER, "%s %d", texteTrad[8], data.chapitrePlusRecent / 10);
+
+        texte = TTF_Write(renderer, police, temp, couleurTexte);
+        if(texte != NULL)
+        {
+            position.x = WINDOW_SIZE_W - texte->w - BORDURE_BOUTON_LECTEUR;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
     }
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
@@ -179,52 +187,47 @@ void displayIconeChapOrTome(bool isTome)
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int outChoisis = PALIER_QUIT-2, dernierLu, nbElement, noChoice = 0;
+    int outChoisis, dernierLu, dernierLuTome, dernierLuChapitre, noChoice = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
-    MANGAS_DATA *data = NULL;
+    DATA_ENGINE *data = NULL;
     loadTrad(texteTrad, 19);
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     if(!checkFileExist(temp) && contexte != CONTEXTE_DL)
         return PALIER_MENU;
 
-    if((dernierLu = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        return dernierLu;
+    if((dernierLuChapitre = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+        return dernierLuChapitre;
 
-    while(outChoisis == PALIER_QUIT-2)
+    refreshTomeList(mangaDB);
+    refreshChaptersList(mangaDB);
+    if(contexte != CONTEXTE_DL)
     {
-        dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        if(*isTome)
-        {
-            if(contexte == CONTEXTE_DL)
-                refreshTomeList(mangaDB);
-            else
-            {
-                refreshTomeList(mangaDB);
-                checkTomeValable(mangaDB, &dernierLu);
-                if(mangaDB->nombreTomes == PALIER_MENU)
-                    return PALIER_MENU;
-            }
-        }
-        if(!*isTome)
-        {
-            if(contexte == CONTEXTE_DL)
-                refreshChaptersList(mangaDB);
-            else
-            {
-                refreshChaptersList(mangaDB);
-                checkChapitreValable(mangaDB, &dernierLu);
-                if(mangaDB->nombreChapitre == 0)
-                    return PALIER_MENU;
-            }
-        }
+        checkTomeValable(mangaDB, &dernierLuTome);
+        checkChapitreValable(mangaDB, &dernierLuChapitre);
+        if(mangaDB->nombreTomes == 0 && mangaDB->nombreChapitre == 0)
+            return PALIER_MENU;
+    }
+
+    do
+    {
         if(contexte == CONTEXTE_DL && checkFileExist(temp))
             dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE; //Si un manga est déjà installé, on le met dans le sens décroissant)
+        else
+            dernierLu = 0;
 
         if(*isTome)
+        {
             data = generateTomeList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
+            if(dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                dernierLu = dernierLuTome;
+        }
         else
+        {
             data = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
+            if(dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                dernierLu = dernierLuChapitre;
+        }
 
         if(data == NULL) //Erreur de mémoire ou liste vide
         {
@@ -237,65 +240,26 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
                 continue;
             }
         }
-
-        if(*isTome)
-            nbElement = data[0].nombreTomes;
         else
-            nbElement = (dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE ? data[(contexte != CONTEXTE_LECTURE)].pageInfos : data[data[0].nombreChapitre-1].pageInfos);
+            data[0].dernierChapitreLu = dernierLu;
 
-        displayTemplateChapitreTome(mangaDB, contexte, *isTome, *isTome?data[0].nombreTomes:data[0].nombreChapitre, texteTrad, dernierLu);
+        displayTemplateChapitreTome(mangaDB, contexte, *isTome, data[0], texteTrad);
         if(!noChoice)
-            displayIconeChapOrTome(*isTome);
-
-
-        outChoisis = PALIER_QUIT-1;
-        while(outChoisis == PALIER_QUIT-1)
         {
-            outChoisis = displayMangas(data, *isTome?CONTEXTE_TOME:CONTEXTE_CHAPITRE, nbElement, ((*isTome?data[0].nombreTomes:data[0].nombreChapitre)+(contexte != CONTEXTE_LECTURE))>MANGAPARPAGE_TRI?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
-            if(outChoisis == CODE_CLIC_LIEN_CHAPITRE) //Site team
-            {
-                ouvrirSite(mangaDB->team);
-                outChoisis = PALIER_QUIT-1;
-            }
-            else if(outChoisis > VALEUR_FIN_STRUCTURE_CHAPITRE && outChoisis < CODE_CLIC_LIEN_CHAPITRE)
-                outChoisis = data[outChoisis-1].pageInfos; //Contient le n° du chapitre
-
-            else if(outChoisis == CODE_ICONE_SWITCH)
-            {
-                if(!noChoice)
-                {
-                    outChoisis = PALIER_QUIT-2;
-                    *isTome = !*isTome;
-                }
-                else
-                    outChoisis = PALIER_QUIT-1;
-            }
-
-            else if(!*isTome)
-            {
-                if(outChoisis == CODE_BOUTON_CHAPITRE_DL)
-                    outChoisis = mangaDB->chapitres[0];
-
-                else if (outChoisis > CODE_CLIC_LIEN_CHAPITRE && contexte != CONTEXTE_DL)
-                {
-                    if(outChoisis == CODE_BOUTON_1_CHAPITRE) //Premier chapitre
-                        outChoisis = mangaDB->chapitres[0];
-
-                    else if(outChoisis == CODE_BOUTON_2_CHAPITRE)
-                        outChoisis = dernierLu; //Dernier lu
-
-                    else
-                        outChoisis = mangaDB->chapitres[mangaDB->nombreChapitre-1]; //Dernier chapitre
-                }
-
-                else if(outChoisis < CODE_CHAPITRE_FREE) //Numéro entré manuellement
-                    outChoisis = (outChoisis - CODE_CHAPITRE_FREE) * -1;
-            }
-            else if (outChoisis < PALIER_QUIT || outChoisis >= CODE_CLIC_LIEN_CHAPITRE)
-                outChoisis = PALIER_QUIT-1;
+            displayIconeChapOrTome(*isTome);
+            data[0].switchAvailable = true;
         }
+
+        outChoisis = engineCore(data, *isTome?CONTEXTE_TOME:CONTEXTE_CHAPITRE, data[0].nombreElementTotal>ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_CHAPITRE_FULL : BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
+
+        if(outChoisis == ENGINE_RETVALUE_SWITCH)
+        {
+            if(!noChoice)
+                *isTome = !*isTome;
+        }
+
         free(data);
-    }
+    }while (outChoisis == ENGINE_RETVALUE_SWITCH);
     return outChoisis;
 }
 

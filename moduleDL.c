@@ -75,7 +75,7 @@ int telechargement()
         {
             if(checkIfWebsiteAlreadyOpened(*todoList[posToDo]->datas->team, &historiqueTeam))
             {
-                ouvrirSite(todoList[posToDo]->datas->team); //Ouverture du site de la team
+                ouvrirSiteTeam(todoList[posToDo]->datas->team); //Ouverture du site de la team
             }
 
             MDL_displayDownloadDataMain1(rendererDL, *todoList[posToDo], pourcentage, trad); //Affichage du DL

@@ -57,7 +57,7 @@ void updateFavorites()
     if(favs != NULL)
         free(favs);
 
-    updateDataBase();
+    updateDataBase(false);
     MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
     if(mangaDB == NULL)
         return;

@@ -388,11 +388,10 @@ void removeFolder(char *path)
         }
         snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);
 
-        if(checkFileExist(buffer))
-            removeR(buffer); //On est sur un fichier, on le supprime.
-
-        else
+        if(checkDirExist(buffer))
             removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+        else
+            removeR(buffer); //On est sur un fichier, on le supprime.
         free(buffer);
     }
     closedir(directory);
@@ -469,18 +468,23 @@ int createNewThread(void *function, void *arg)
 	return 1;
 }
 
-void ouvrirSite(TEAMS_DATA* teams)
+void ouvrirSite(char *URL)
 {
     #ifdef _WIN32
-        ShellExecute(NULL, "open", teams->site, NULL, NULL, SW_SHOWNOACTIVATE);
+        ShellExecute(NULL, "open", URL, NULL, NULL, SW_SHOWNOACTIVATE);
     #else
-        char superTemp[500];
-        #ifdef __APPLE__
-            snprintf(superTemp, 500, "open %s", teams->site);
-        #else
-            snprintf(superTemp, 500, "firefox %s", teams->site);
-        #endif
-        system(superTemp);
+        char *bufferCMD;
+        bufferCMD = malloc(strlen(URL) + 20);
+        if(bufferCMD != NULL)
+        {
+            #ifdef __APPLE__
+                snprintf(bufferCMD, strlen(URL) + 20, "open %s", teams->site);
+            #else
+                snprintf(bufferCMD, strlen(URL) + 20, "firefox %s", teams->site);
+            #endif
+            system(bufferCMD);
+            free(bufferCMD);
+        }
     #endif
 }
 

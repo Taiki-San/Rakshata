@@ -12,36 +12,29 @@
 
 #include "main.h"
 
-int controleurManga(MANGAS_DATA* mangas_db, int contexte, int nombreChapitre)
+int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre)
 {
     /*Initilisation*/
-    int mangaChoisis = 0, i = 0, nombreMangaElligible = 0, hauteurDonnes = 0;
+    int mangaChoisis, windowH, nombreManga, i;
 	char texteTrad[SIZE_TRAD_ID_18][TRAD_LENGTH];
 	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
+    DATA_ENGINE *data;
 
-    for(nombreMangaElligible = 0; mangas_db != NULL && nombreMangaElligible < NOMBRE_MANGA_MAX && mangas_db[nombreMangaElligible].mangaName[0]; nombreMangaElligible++); //Enumération
+    for(nombreManga = 0; mangaDB != NULL && nombreManga < NOMBRE_MANGA_MAX && mangaDB[nombreManga].mangaName[0]; nombreManga++); //Enumération
 
-    if(nombreMangaElligible > 0)
+    if(nombreManga > 0)
     {
-        if(contexte == CONTEXTE_LECTURE)
-            hauteurDonnes = BORDURE_SUP_SELEC_MANGA_LECTURE;
-        else
-            hauteurDonnes = BORDURE_SUP_SELEC_MANGA;
-
-        if(nombreMangaElligible <= 3)
-            i = BORDURE_SUP_SELEC_MANGA + LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
-
-        else if(nombreMangaElligible <= MANGAPARPAGE_TRI)
-            i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreMangaElligible / NBRCOLONNES_TRI)+1) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
+        if(nombreManga <= ENGINE_ELEMENT_PAR_PAGE)
+            windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreManga / ENGINE_NOMBRE_COLONNE)+1) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
         else
-            i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (MANGAPARPAGE_TRI / NBRCOLONNES_TRI) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
+            windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
-        if(WINDOW_SIZE_H != i) //Empêche de redimensionner si unicolonne
-            updateWindowSize(LARGEUR, i);
+        if(WINDOW_SIZE_H != windowH) //Empêche de redimensionner si unicolonne
+            updateWindowSize(LARGEUR, windowH);
 
         loadTrad(texteTrad, 18);
         SDL_RenderClear(renderer);
@@ -51,28 +44,50 @@ int controleurManga(MANGAS_DATA* mangas_db, int contexte, int nombreChapitre)
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
         else
             texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-        position.y = BORDURE_SUP_TITRE_MANGA;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
-
+        if(texte != NULL)
+        {
+            position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+            position.y = BORDURE_SUP_TITRE_MANGA;
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
+        TTF_CloseFont(police);
         SDL_RenderPresent(renderer);
 
-        /*Définition de l'affichage*/
-        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, '_', ' '));
-        mangaChoisis = displayMangas(mangas_db, contexte, nombreChapitre, hauteurDonnes);
-        for(i = 0; i < NOMBRE_MANGA_MAX && mangas_db[i].mangaName[0]; changeTo(mangas_db[i++].mangaName, ' ', '_'));
+        data = calloc(nombreManga, sizeof(DATA_ENGINE));
+        if(data == NULL)
+            return PALIER_MENU;
+
+        data[0].nombreElementTotal = nombreManga;
+
+        if(contexte == CONTEXTE_DL)
+        {
+            data[0].nombreChapitreDejaSelect = nombreChapitre;
+        }
+
+        for(i = 0; i < nombreManga; i++)
+        {
+            usstrcpy(data[i].stringToDisplay, MAX_LENGTH_TO_DISPLAY, mangaDB[i].mangaName);
+            data[i].data = &mangaDB[i];
+            changeTo(data[i].stringToDisplay, '_', ' ');
+            data[i].ID = i;
+        }
+        do
+        {
+            mangaChoisis = engineCore(data, contexte, contexte == CONTEXTE_LECTURE ? BORDURE_SUP_SELEC_MANGA_LECTURE : BORDURE_SUP_SELEC_MANGA);
+        }while((mangaChoisis == ENGINE_RETVALUE_DL_START || mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) && contexte != CONTEXTE_DL);
+
+        free(data);
     }
     else
     {
         mangaChoisis = rienALire();
-        if(mangaChoisis > -2)
-            mangaChoisis = -2;
+        if(mangaChoisis > PALIER_CHAPTER)
+            mangaChoisis = PALIER_CHAPTER;
     }
 
-    TTF_CloseFont(police);
     return mangaChoisis;
 }
 

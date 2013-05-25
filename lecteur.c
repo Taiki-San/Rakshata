@@ -558,7 +558,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         if((!pageAccesDirect && infoSurface != NULL && event.button.x >= WINDOW_SIZE_W/2 - infoSurface->w/2 && event.button.x <= WINDOW_SIZE_W/2 + infoSurface->w/2) //Si pas de page affiché
                             || (pageAccesDirect && ((WINDOW_SIZE_W < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
                                                 || (WINDOW_SIZE_W >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
-                        ouvrirSite(mangaDB->team); //Ouverture du site de la team
+                        ouvrirSiteTeam(mangaDB->team); //Ouverture du site de la team
                     }
 
                     else if(clicOnButton(event.button.x, event.button.y, positionBandeauControle.x))
@@ -820,37 +820,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             break;
                         }
 
-                        case SDLK_ESCAPE:
-                        {
-                            FREE_CONTEXT;
-                            return -3;
-                            break;
-                        }
-
-                        case SDLK_DELETE:
-                        case SDLK_BACKSPACE:
-                        {
-                            if(pageAccesDirect != 0)
-                            {
-                                pageAccesDirect /= 10;
-                                SDL_FreeSurfaceS(UI_PageAccesDirect);
-                                UI_PageAccesDirect = NULL;
-                                if(pageAccesDirect)
-                                {
-                                    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s: %d", texteTrad[2], pageAccesDirect); //Page: xx
-                                    TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
-                                    UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
-                                    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-                                }
-                            }
-                            else
-                            {
-                                FREE_CONTEXT;
-                                return PALIER_CHAPTER;
-                            }
-                            break;
-                        }
-
                         case SDLK_RETURN:
                         case SDLK_KP_ENTER:
                         {
@@ -966,8 +935,46 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 case SDL_KEYUP:
                 {
-                    if(event.key.keysym.sym == SDLK_RCTRL || event.key.keysym.sym == SDLK_LCTRL)
-                        ctrlPressed = 0;
+                    switch(event.key.keysym.sym)
+                    {
+                        case SDLK_RCTRL:
+                        case SDLK_LCTRL:
+                        {
+                            ctrlPressed = 0;
+                            break;
+                        }
+
+                        case SDLK_ESCAPE:
+                        {
+                            FREE_CONTEXT;
+                            return -3;
+                            break;
+                        }
+
+                        case SDLK_DELETE:
+                        case SDLK_BACKSPACE:
+                        {
+                            if(pageAccesDirect != 0)
+                            {
+                                pageAccesDirect /= 10;
+                                SDL_FreeSurfaceS(UI_PageAccesDirect);
+                                UI_PageAccesDirect = NULL;
+                                if(pageAccesDirect)
+                                {
+                                    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s: %d", texteTrad[2], pageAccesDirect); //Page: xx
+                                    TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
+                                    UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
+                                    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
+                                }
+                            }
+                            else
+                            {
+                                FREE_CONTEXT;
+                                return PALIER_CHAPTER;
+                            }
+                            break;
+                        }
+                    }
                     break;
                 }
 

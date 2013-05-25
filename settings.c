@@ -45,7 +45,6 @@ int affichageMenuGestion()
     return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);
 }
 
-extern int alreadyRefreshed;
 int menuGestion()
 {
     int menu = 0;
@@ -62,17 +61,14 @@ int menuGestion()
                 /*Ajouter un dépot*/
                 menu = ajoutRepo();
                 if(menu == 1)
-                    raffraichissmenent();
+                    raffraichissmenent(true);
                 break;
 
             case 2:
                 /*Supprimer un dépot*/
                 menu = deleteRepo();
                 if(menu == 1)
-                {
-                    alreadyRefreshed = -5*60000;
-                    raffraichissmenent();
-                }
+                    raffraichissmenent(true);
                 break;
 
             case 3:
@@ -84,9 +80,8 @@ int menuGestion()
                 break;
 
             case 4:
-                /*Raffraîchissement de la BDD*/
-                alreadyRefreshed = -5*60000;
-                raffraichissmenent();
+                /*Raffraichissement de la BDD*/
+                raffraichissmenent(true);
                 break;
 
             case 5:

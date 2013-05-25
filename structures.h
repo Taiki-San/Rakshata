@@ -95,6 +95,32 @@ typedef struct data_pour_installation
     MANGAS_DATA *mangaDB;
 } DATA_INSTALL;
 
+typedef struct data_provided_to_engine
+{
+    char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
+    int nombreElementTotal; //Nombre total, seulement dans le premier élement de la structure
+    int ID;
+
+    /*Variable pour CONTEXTE_LECTURE*/
+    MANGAS_DATA *data;
+
+    /*Variable pour CONTEXTE_DL*/
+    int nombreChapitreDejaSelect;
+
+    /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
+    bool switchAvailable;
+    char* website;
+
+    /*Variable pour CONTEXTE_CHAPITRE*/
+	int chapitrePlusAncien;
+	int dernierChapitreLu;
+	int chapitrePlusRecent;
+
+    /*Variable pour CONTEXTE_TOME*/
+    char *description1; //Ligne de description 1
+    char *description2; //Ligne de description 2
+} DATA_ENGINE;
+
 typedef struct
 {
     int r;

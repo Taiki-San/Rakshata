@@ -231,7 +231,7 @@ int mainChoixDL()
     if(NETWORK_ACCESS != CONNEXION_DOWN)
     {
         MUTEX_UNLOCK;
-        updateDataBase();
+        updateDataBase(false);
         MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
 
         /*C/C du choix de manga pour le lecteur.*/
@@ -244,9 +244,9 @@ int mainChoixDL()
             mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre);
             pageManga = curPage;
 
-            if(mangaChoisis == CODE_BOUTON_CHAPITRE_DL) //Télécharger
+            if(mangaChoisis == ENGINE_RETVALUE_DL_START) //Télécharger
                 continuer = PALIER_CHAPTER;
-            else if(mangaChoisis == CODE_BOUTON_CHAPITRE_ANNULER) //Annuler
+            else if(mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) //Annuler
             {
                 if(nombreChapitre > 0)
                 {
@@ -292,7 +292,7 @@ int mainChoixDL()
             }
         }
 
-        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == CODE_BOUTON_CHAPITRE_DL /*Confirmation n°°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
+        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == ENGINE_RETVALUE_DL_START /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
             SDL_RenderClear(renderer);
             affichageLancement();
