@@ -93,6 +93,27 @@ void chdirR()
 	chdir(REPERTOIREEXECUTION);
 }
 
+void resetOriginalCHDir(int argc, char* argv)
+{
+    if(argc >= 2 && argv != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
+    {
+        size_t length = strlen(argv)+1;
+        char* path = malloc(length+1);
+        if(path != NULL)
+        {
+            usstrcpy(path, length, argv);
+            length--;
+            do
+            {
+                for(; length > 0 && path[length] != '/' && path[length] != '\\'; path[length--] = 0);
+            }while(length > 0 && !checkFileExist(path));
+            chdir(path);
+            getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
+            free(path);
+        }
+    }
+}
+
 int strend(char *recepter, size_t length, const char *sender)
 {
     int i = 0;
@@ -327,7 +348,9 @@ size_t ustrlen(void *input)
 
 void usstrcpy(void* output, size_t length, const void* input)
 {
-    memccpy(output, input, 0, length);
+    char *output_char = output;
+    strncpy(output, input, length);
+    output_char[length-1] = 0;
 }
 
 void ustrcpy(void* output, const void* input)
