@@ -357,3 +357,30 @@ int isPNG(void *input)
     return 0;
 }
 
+void addToRegistry()
+{
+#ifdef _WIN32
+    if(checkDirExist("data"))
+        return;
+
+    HKEY hkey;
+    char *desc="Fichier d'ajout automatique de depot Rakshata";         // file type description
+    char *bin= calloc(1, strlen(REPERTOIREEXECUTION) + 100);
+
+    RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\Classes\\.rak",0,0,0,KEY_ALL_ACCESS ,0,&hkey,0);// 1: Create subkey for extension -> HKEY_CLASSES_ROOT\.002
+    RegSetValueEx(hkey,"",0,REG_SZ,(BYTE *)desc,strlen(desc)); // default vlaue is description of file extension
+    RegCloseKey(hkey);
+
+    snprintf(bin, strlen(REPERTOIREEXECUTION) + 100, "%s\\Rakshata.exe %%1", REPERTOIREEXECUTION);
+    RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.rak\\shell\\Ajouter a Rakshata\\command\\", 0, 0, 0, KEY_ALL_ACCESS, 0, &hkey, 0); // 2: Create Subkeys for action ( "Open with my program" )
+    RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
+    RegCloseKey(hkey);
+
+    snprintf(bin, strlen(REPERTOIREEXECUTION) + 100, "%s\\Rakshata.exe,1", REPERTOIREEXECUTION);
+    RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.rak\\DefaultIcon\\", 0, 0, 0, KEY_ALL_ACCESS, 0, &hkey, 0); // 2: Create Subkeys for action ( "Open with my program" )
+    RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
+    RegCloseKey(hkey);
+    free(bin);
+#endif
+}
+

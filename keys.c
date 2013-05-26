@@ -161,6 +161,7 @@ int earlyInit(int argc, char *argv[])
     crashTemp(passwordGB, 100);
     loadPalette();
     resetOriginalCHDir(argc, argv[0]);
+    addToRegistry();
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

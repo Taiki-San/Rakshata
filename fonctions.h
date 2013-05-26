@@ -335,3 +335,4 @@ void restrictEvent();
 int defineMaxTextureSize(int sizeIssue);
 int isJPEG(void *input);
 int isPNG(void *input);
+void addToRegistry();
