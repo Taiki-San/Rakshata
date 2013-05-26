@@ -334,8 +334,10 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     SDL_Surface *surfText = NULL;
     SDL_Texture *texture = NULL;
 
-    if(font != NULL && text != NULL)
-        surfText = TTF_RenderText_Blended(font, text, fg);
+    if(font == NULL || text == NULL)
+        return NULL;
+
+    surfText = TTF_RenderText_Blended(font, text, fg);
 
     if(surfText != NULL)
     {
@@ -389,17 +391,12 @@ void updateWindowSize(int w, int h)
         #else
             pthread_mutex_unlock(&mutexRS);
         #endif
-        if(WINDOW_SIZE_H > h || WINDOW_SIZE_W > w)
-            SDL_RenderPresent(renderer);
 
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;
     }
-    else
-    {
-        SDL_RenderClear(renderer);
-        SDL_RenderPresent(renderer);
-    }
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 void getResolution()
