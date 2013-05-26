@@ -149,7 +149,7 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
 }
 
 extern int unlocked;
-int earlyInit()
+int earlyInit(int argc, char *argv[])
 {
 #ifdef _WIN32
     mutex = CreateSemaphore (NULL, 1, 1, NULL);

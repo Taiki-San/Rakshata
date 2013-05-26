@@ -42,16 +42,12 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;
-    int rakshata()
+    int rakshata(int argc, char *argv[])
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
     MUTEX_VAR mutex_decrypt;
-	#ifdef __GCC__
-		int main()
-	#else
-		int WinMainCRTStartup()
-	#endif
+	int main (int argc, char *argv[])
 #endif
 {
 #ifdef __INTEL_COMPILER
@@ -71,7 +67,7 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
 		curl_easy_cleanup(curl);
 	}
 #endif
-    if(!earlyInit()) //On regroupe tout dans une fonction pour vider main
+    if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
     if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
@@ -120,8 +116,12 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
         MUTEX_LOCK;
     }
     MUTEX_UNLOCK;
+
     TTF_Quit();
     SDL_Quit();
+    MUTEX_DESTROY(mutex_decrypt);
+    MUTEX_DESTROY(mutexRS);
+    MUTEX_DESTROY(mutex);
     return 0;
 }
 

@@ -15,10 +15,10 @@
 #include <string.h>
 #ifdef __INTEL_COMPILER
 	#include <dirent.msvc.h>
+	#include <io.h>
+	#define F_OK 1
 	#pragma comment(lib, "SDL.lib")
-	#pragma comment(lib, "libjpeg.lib")
-	#pragma comment(lib, "libpng.lib")
-	#pragma comment(lib, "libSDL_image.a")
+	#pragma comment(lib, "libSDL_image.lib")
 	#pragma comment(lib, "libfreetype.lib")
 	#pragma comment(lib, "SDL2_ttf.lib")
 	#pragma comment(lib, "libcurl.lib")
@@ -53,6 +53,13 @@
     #define bool BOOL
     #define true TRUE
     #define false FALSE
+
+    #define MUTEX_VAR HANDLE
+    #define MUTEX_LOCK for(; WaitForSingleObject(mutex, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_UNLOCK ReleaseSemaphore (mutex, 1, NULL)
+    #define MUTEX_LOCK_DECRYPT for(; WaitForSingleObject(mutex_decrypt, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_UNLOCK_DECRYPT ReleaseSemaphore (mutex_decrypt, 1, NULL)
+    #define MUTEX_DESTROY(a) CloseHandle(a);
 #else
     #include <pthread.h>
     #include <utime.h>
@@ -60,6 +67,13 @@
 	#include <sys/types.h>
 	#include <sys/file.h>
 	#include <sys/wait.h>
+
+    #define MUTEX_VAR pthread_mutex_t
+    #define MUTEX_LOCK pthread_mutex_lock(&mutex)
+    #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)
+    #define MUTEX_LOCK_DECRYPT pthread_mutex_lock(&mutex_decrypt)
+    #define MUTEX_UNLOCK_DECRYPT pthread_mutex_unlock(&mutex_decrypt)
+    #define MUTEX_DESTROY(a) pthread_mutex_destroy(a)
 #endif
 
 #ifndef __APPLE__

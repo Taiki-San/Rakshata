@@ -148,7 +148,7 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 /**Keys.c**/
 int getMasterKey(unsigned char *input);
 void generateKey(unsigned char output[SHA256_DIGEST_LENGTH]);
-int earlyInit();
+int earlyInit(int argc, char *argv[]);
 int get_compte_infos();
 int logon();
 int check_login(char adresseEmail[100]);
