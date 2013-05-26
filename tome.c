@@ -41,10 +41,7 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         if((ligne[i] == ' ' || !ligne[i]) && i > 0 && i < 10) //Données saines
         {
             sscanfs(ligne, "%d %s %s %s", &lines[ligneCourante].ID, lines[ligneCourante].name, MAX_TOME_NAME_LENGTH, lines[ligneCourante].description1, TOME_DESCRIPTION_LENGTH, lines[ligneCourante].description2, TOME_DESCRIPTION_LENGTH);
-            changeTo((char*) lines[ligneCourante].name, '_', ' ');
-            changeTo((char*) lines[ligneCourante].description1, '_', ' ');
-            changeTo((char*) lines[ligneCourante].description2, '_', ' ');
-            ligneCourante++;
+            escapeTomeLineElement(&lines[ligneCourante++]);
         }
     }
     if(ligneCourante == nombreMaxElems) //Aucun element invalide
@@ -60,6 +57,25 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
 
     mangaDB->tomes[ligneCourante].name[0] = 0;
     mangaDB->tomes[ligneCourante].ID = VALEUR_FIN_STRUCTURE_CHAPITRE; //Un flag final, au cas où
+}
+
+void escapeTomeLineElement(META_TOME *ligne)
+{
+    ///Si l'élement ne contient que _, je l'ignore
+    if(ligne->name[0] == '_' && ligne->name[1] == 0)
+        ligne->name[0] = 0;
+    else
+        changeTo((char*) ligne->name, '_', ' ');
+
+    if(ligne->description1[0] == '_' && ligne->description1[1] == 0)
+        ligne->description1[0] = 0;
+    else
+        changeTo((char*) ligne->description1, '_', ' ');
+
+    if(ligne->description2[0] == '_' && ligne->description2[1] == 0)
+        ligne->description2[0] = 0;
+    else
+        changeTo((char*) ligne->description2, '_', ' ');
 }
 
 void refreshTomeList(MANGAS_DATA *mangaDB)
