@@ -300,9 +300,6 @@ int affichageRepoIconnue()
 int UI_Alert(char* titre, char* contenu)
 {
     int ret_value = 0;
-#ifdef _WIN32
-    ret_value = MessageBox(0, contenu, titre, MB_ICONERROR);
-#else
     SDL_MessageBoxData alerte;
     SDL_MessageBoxButtonData bouton;
     alerte.flags = SDL_MESSAGEBOX_ERROR;
@@ -316,7 +313,6 @@ int UI_Alert(char* titre, char* contenu)
     alerte.window = window;
     alerte.colorScheme = NULL;
     SDL_ShowMessageBox(&alerte, &ret_value);
-#endif
     return ret_value;
 }
 
