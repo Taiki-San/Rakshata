@@ -59,7 +59,7 @@ int menuGestion()
 
             case 1:
                 /*Ajouter un dépot*/
-                menu = ajoutRepo();
+                menu = ajoutRepo(false);
                 if(menu == 1)
                     raffraichissmenent(true);
                 break;
@@ -144,7 +144,7 @@ char *loadPrefFile()
 
 void addToPref(char flag, char *stringToAdd)
 {
-    int i, length;
+    int i, j, length;
     char setFlag[10], *prefs = NULL, *newPrefs = NULL;
     snprintf(setFlag, 10, "<%c>", flag);
 
@@ -164,6 +164,15 @@ void addToPref(char flag, char *stringToAdd)
         }
 
         snprintf(newPrefs, length, "%s\n%s", prefs, stringToAdd);
+
+        for(i = j = 2; i < length && newPrefs[j] != 0; i++, j++)
+        {
+            if(newPrefs[i-2] == '>' && newPrefs[i-1] == '\n' && newPrefs[j] == '\n')
+                for(; newPrefs[j] == '\n'; j++);
+            if(i != j)
+                newPrefs[i] = newPrefs[j];
+        }
+        newPrefs[i] = 0;
         AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
         free(newPrefs);
         free(prefs);
@@ -185,7 +194,7 @@ void removeFromPref(char flag)
         return;
     }
     length = strlen(prefs);
-    newPrefs = calloc(length, sizeof(char));
+    newPrefs = calloc(length+1, sizeof(char));
     if(newPrefs == NULL)
     {
         free(prefs);
@@ -243,6 +252,10 @@ int loadEmailProfile()
 int loadLangueProfile()
 {
     int i = 0;
+
+    if(langue != 0)
+        return 0;
+
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {

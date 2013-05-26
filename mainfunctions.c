@@ -12,12 +12,11 @@
 
 #include "main.h"
 
-extern int INSTANCE_RUNNING;
-
+bool addRepoByFileInProgress;
 void mainRakshata()
 {
-    int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0/*, newLangue = 0*/;
-    /*newLangue = */loadLangueProfile();
+    int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0;
+    loadLangueProfile();
 
     #ifdef _WIN32
         for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
@@ -45,15 +44,21 @@ void mainRakshata()
     {
         quit_thread(0);
     }
-    restoringState = checkRestore();
-    continuer = ecranAccueil();
 
-    if(restoringState)
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+    if(addRepoByFileInProgress)
+    {
+        if(ajoutRepo(true) == 1)
+            raffraichissmenent(true);
+        continuer = PALIER_QUIT;
+    }
+    else
+    {
+        restoringState = checkRestore();
+        continuer = ecranAccueil();
 
-    /* C'est chiant et pas necessaire pour le moment mais on le garde sous le coude
-    if(newLangue && continuer != PALIER_QUIT)
-        continuer = changementLangue();*/
+        if(restoringState)
+            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+    }
 
     while(continuer > PALIER_QUIT)
     {
@@ -93,6 +98,7 @@ void mainRakshata()
                 break;
         }
     }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     renderer = NULL;
@@ -311,6 +317,7 @@ int mainChoixDL()
     return continuer;
 }
 
+extern int INSTANCE_RUNNING;
 void mainDL()
 {
     if(!INSTANCE_RUNNING && checkLancementUpdate())

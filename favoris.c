@@ -46,10 +46,11 @@ bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
     return false;
 }
 
+extern bool addRepoByFileInProgress;
 void updateFavorites()
 {
     char *favs = NULL;
-    if(!checkFileExist(INSTALL_DATABASE) && (favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) != NULL)
+    if(!checkFileExist(INSTALL_DATABASE) && (favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) != NULL && !addRepoByFileInProgress)
         favorisToDL = 0;
     else
         return;

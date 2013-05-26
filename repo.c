@@ -12,7 +12,51 @@
 
 #include "main.h"
 
-int ajoutRepo()
+bool addRepoByFileInProgress;
+static char URL[LONGUEUR_URL];
+
+int checkAjoutRepoParFichier(char *argv)
+{
+    addRepoByFileInProgress = false;
+    if(argv != NULL)
+    {
+        FILE *input = fopen(argv, "r");
+        if(input != NULL)
+        {
+            int version = 0;
+            char verification[50] = {0};
+            verification[0] = URL[0] = 0;
+            fscanfs(input, "%s %d %s", verification, 50, &version, URL, LONGUEUR_URL);
+            fclose(input);
+
+            if(!strcmp(verification, "Repository_for_Rakshata") && version <= CURRENTVERSION)
+            {
+                addRepoByFileInProgress = true;
+            }
+            else if(version > CURRENTVERSION)
+            {
+                loadLangueProfile();
+                if(langue == 1) //Francais
+                    UI_Alert("Ajout automatise de depot: echec!", "Le depot que vous tentez d'ajouter n'est pas supporte par cette version de Rakshata, veuillez effectuer une mise a jour en telechargant une version plus recente sur http://www.rakshata.com/");
+                else
+                    UI_Alert("Automated addition of repository: failure!", "The repository you're trying to install isn't supported by this version of Rakshata: please perform an update by getting a newer build from our website: http://www.rakshata.com/");
+                return 0;
+            }
+            else
+            {
+                loadLangueProfile();
+                if(langue == 1) //Francais
+                    UI_Alert("Ajout automatise de depot: echec!", "Fichier invalide: veuillez contacter l'administrateur du site depuis lequel vous l'avez telecharge");
+                else
+                    UI_Alert("Automated addition of repository: failure!", "Invalid file: please contact the administrator of the website from which you downloaded the file.");
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+int ajoutRepo(bool ajoutParFichier)
 {
     int continuer = 0, erreur = 0, somethingAdded = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
@@ -22,53 +66,72 @@ int ajoutRepo()
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TEAMS_DATA teams;
 
-	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
+	if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
     SDL_RenderClear(renderer);
 
     loadTrad(texteTrad, 14);
 
-    texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
-    SDL_RenderPresent(renderer);
-    if(!checkNetworkState(CONNEXION_DOWN))
+    if(!ajoutParFichier)
     {
-        /*Lecture du fichier*/
-        while(!continuer)
+        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
+        if(texte != NULL)
         {
-            TTF_CloseFont(police);
-            police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-
-            if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
-                updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
-            SDL_RenderClear(renderer);
-
-            /*On affiche l'écran de sélection*/
-            texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
             position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-            position.y = HAUTEUR_MENU_AJOUT_REPO;
+            position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
             position.h = texte->h;
             position.w = texte->w;
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTextureS(texte);
-            SDL_RenderPresent(renderer);
+        }
+        TTF_CloseFont(police);
+    }
+    else
+    {
+        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+    }
+    SDL_RenderPresent(renderer);
+    if(!checkNetworkState(CONNEXION_DOWN))
+    {
+        /*Lecture du fichier*/
+        do
+        {
+            if(!ajoutParFichier)
+            {
+                police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+                SDL_RenderClear(renderer);
 
-            /*On attend l'URL*/
-            crashTemp(teams.URL_depot, LONGUEUR_URL);
-            continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 1, 0, 0);
-            chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+                /*On affiche l'écran de sélection*/
+                texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
+                if(texte != NULL)
+                {
+                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                    position.y = HAUTEUR_MENU_AJOUT_REPO;
+                    position.h = texte->h;
+                    position.w = texte->w;
+                    SDL_RenderCopy(renderer, texte, NULL, &position);
+                    SDL_DestroyTextureS(texte);
+                }
+                SDL_RenderPresent(renderer);
+                TTF_CloseFont(police);
 
-            if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
-                continue;
-            else if(continuer == PALIER_QUIT)
-                return PALIER_QUIT;
+                /*On attend l'URL*/
+                crashTemp(teams.URL_depot, LONGUEUR_URL);
+                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 1, 0, 0);
+                chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+
+                if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
+                    continue;
+                else if(continuer == PALIER_QUIT)
+                    return PALIER_QUIT;
+            }
+            else
+            {
+                if(URL[0] == 0)
+                    return 0;
+                usstrcpy(teams.URL_depot, LONGUEUR_URL, URL);
+            }
 
             /*Si que des chiffres, DB, sinon, O*/
             switch(defineTypeRepo(teams.URL_depot))
@@ -144,48 +207,57 @@ int ajoutRepo()
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
 
                     SDL_RenderClear(renderer);
-                    TTF_CloseFont(police);
                     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
                     texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = BORDURE_SUP_MENU;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
+                    if(texte != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.y = BORDURE_SUP_MENU;
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+                    }
 
-                    crashTemp(temp, TAILLE_BUFFER);
                     texte = TTF_Write(renderer, police, texteTrad[3], couleurTexte);
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
+                    if(texte != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE;
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+                    }
 
                     /*On affiche les infos*/
-                    changeTo(teams.teamLong, '_', ' ');
                     snprintf(temp, TAILLE_BUFFER, "Team: %s", teams.teamLong);
-                    changeTo(teams.teamLong, ' ', '_');
+                    changeTo(temp, '_', ' ');
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = HAUTEUR_ID_AJOUT_REPO;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
-                    crashTemp(temp, TAILLE_BUFFER);
+                    if(texte != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.y = HAUTEUR_ID_AJOUT_REPO;
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+                    }
 
                     snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
                     texte = TTF_Write(renderer, police, temp, couleurTexte);
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = HAUTEUR_TEAM_AJOUT_REPO;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
+                    if(texte != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+                        position.y = HAUTEUR_TEAM_AJOUT_REPO;
+                        position.h = texte->h;
+                        position.w = texte->w;
+                        SDL_RenderCopy(renderer, texte, NULL, &position);
+                        SDL_DestroyTextureS(texte);
+                    }
                     SDL_RenderPresent(renderer);
+                    TTF_CloseFont(police);
 
                     if(waitEnter(renderer) == 1)
                     {
@@ -193,12 +265,7 @@ int ajoutRepo()
                         repoNew = ralloc((repo!=NULL?strlen(repo):0)+500);
                         repoBak = repo;
                         if(repoBak != NULL && *repoBak)
-                        {
-                            int i = strlen(repoBak);
-                            repoBak[i++] = '\n';
-                            repoBak[i] = 0;
                             snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
-                        }
                         else
                             snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
                         updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
@@ -217,9 +284,8 @@ int ajoutRepo()
                         continuer = -1;
                 }
             }
-        }
+        }while(!continuer && !ajoutParFichier);
     }
-    TTF_CloseFont(police);
     if(continuer >= PALIER_MENU)
         continuer = somethingAdded;
     return continuer;
@@ -368,11 +434,11 @@ int defineTypeRepo(char *URL)
     int i = 0;
     if(strlen(URL) == 8) //SI DB, seulement 8 chiffres
     {
-        for(i = 7; i >= 0 && URL[i] <= '9' && URL[i] >= '0'; i--);
-        if(i < 0) //Si que des chiffres
+        while(i < 8 && isNbr(URL[i++]));
+        if(i == 8) //Si que des chiffres
             return 1; //DB
     }
-    if(strlen(URL) == 5) //GOO.GL
+    else if(strlen(URL) == 5) //GOO.GL
         return 3;
     return 2; //O
 }

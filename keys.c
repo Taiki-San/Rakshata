@@ -156,21 +156,23 @@ int earlyInit(int argc, char *argv[])
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
     mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
 #endif
-
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
-
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 100);
     loadPalette();
+    resetOriginalCHDir(argc, argv[0]);
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
     {
         char temp[400];
-        snprintf(temp, 400, "Failed at launch the SDL: %s", SDL_GetError());
+        snprintf(temp, 400, "Failed at initialize SDL: %s", SDL_GetError());
         logR(temp);
         return 0;
     }
+
+    if(!checkAjoutRepoParFichier(argv[1]))
+        return 0;
 
     createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
@@ -178,7 +180,7 @@ int earlyInit(int argc, char *argv[])
     {
         SDL_Quit();
         char temp[400];
-        snprintf(temp, 400, "Failed at launch the SDL_TTF: %s", TTF_GetError());
+        snprintf(temp, 400, "Failed at initialize SDL_TTF: %s", TTF_GetError());
         logR(temp);
         return 0;
     }
@@ -189,9 +191,8 @@ int earlyInit(int argc, char *argv[])
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else
-    int randomPtr = open("/dev/random", O_RDONLY);
-    int seed;
-    read(randomPtr, &seed, sizeo(int));
+    int randomPtr = open("/dev/random", O_RDONLY), seed;
+    read(randomPtr, &seed, sizeof(int));
     close(randomPtr);
 	srand(time(NULL)+seed); //Initialisation de l'aléatoire
 #endif

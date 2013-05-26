@@ -214,6 +214,7 @@ void removeR(char *path);
 void renameR(char *initialName, char *newName);
 void mkdirR(char *path);
 void chdirR();
+void resetOriginalCHDir(int argc, char* argv);
 int strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
@@ -240,7 +241,8 @@ int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const 
 void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
 
 /**Repo.c**/
-int ajoutRepo();
+int checkAjoutRepoParFichier(char *argv);
+int ajoutRepo(bool ajoutParFichier);
 int deleteRepo();
 int defineTypeRepo(char *URL);
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX]);

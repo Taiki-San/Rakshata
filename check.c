@@ -290,7 +290,7 @@ void networkAndVersionTest()
         if(download_mem(MAIN_SERVER_URL[1], bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
         MUTEX_LOCK;
-        if(hostNotReached == 2 && bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
+        if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
@@ -307,7 +307,7 @@ void networkAndVersionTest()
             FILE* test = NULL;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
-            snprintf(temp, TAILLE_BUFFER, "http://www.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
+            snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
             download_disk(temp, "data/update", 0);
 
 			test = fopenR("data/update", "r");
@@ -327,7 +327,10 @@ void networkAndVersionTest()
 		{
 			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
 			if(!i)
+            {
+                removeR(SECURE_DATABASE);
                 quit_thread(0);
+            }
 
 			snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
@@ -340,9 +343,10 @@ void networkAndVersionTest()
             }
 
 			/*A partir d'ici, le compte est killswitche*/
-			logR("Ugh, you did wrong things =/");
+			removeR(SECURE_DATABASE);
 			removeFolder("manga");
 			removeFolder("data");
+			logR("Ugh, you did wrong things =/");
 			exit(0);
 		}
 		else
