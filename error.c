@@ -17,9 +17,12 @@ void logR(char *error)
     FILE* logFile = fopenR("log", "a+");
     if(logFile != NULL)
     {
-        fputs(error, logFile);
-        if(error[strlen(error)-1] != '\n')
-            fputc('\n', logFile);
+        if(error != NULL)
+        {
+            fputs(error, logFile);
+            if(error[strlen(error)-1] != '\n')
+                fputc('\n', logFile);
+        }
         fclose(logFile);
     }
 }
