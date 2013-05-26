@@ -303,11 +303,13 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
 void update_mangas()
 {
 	int i = 0;
-	char *bufferDL, *manga_new;
+	char *bufferDL, *manga_new, path[500];
     char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
+    char *mangas = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangasBak = NULL;
 	TEAMS_DATA teams;
 
     repoBak = repo;
+    mangasBak = mangas;
     manga_new = ralloc(10);
     bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
 
@@ -318,9 +320,7 @@ void update_mangas()
         if(bufferDL != NULL)
             free(bufferDL);
 
-        char temp[100];
-        snprintf(temp, 100, "Failed at allocate 10 bytes\n");
-        logR(temp);
+        logR("Failed at allocate 10 bytes\n");
         return;
     }
     snprintf(manga_new, 10, "<%c>\n", SETTINGS_MANGADB_FLAG);
@@ -336,10 +336,8 @@ void update_mangas()
 		get_update_mangas(bufferDL, &teams);
 		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") || !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
 		{
-		    char *mangas = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangasBak = NULL;
 		    if(mangas != NULL)
 		    {
-		        mangasBak = mangas;
 		        mangas += positionnementApresChar(mangas, teams.teamLong);
 		        if(mangas >= mangasBak)
                 {
@@ -348,10 +346,8 @@ void update_mangas()
                     if(mangas[i] == '#')
                         mangas[i+1] = 0;
                     manga_new = mergeS(manga_new, mangas);
-                    free(mangasBak);
                 }
-                else
-                    free(mangasBak);
+                mangas = mangasBak;
 		    }
 		}
 		else
@@ -393,19 +389,31 @@ void update_mangas()
                     positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3]);
                     for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
                     if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
+                    {
                         snprintf(manga_new_tmp, length*2, "%s%s %s %d %d -1 -1 %d %d 0\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3]);
+                    }
                     else
-                        {
-                            crashTemp(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX);
-                            curPos--;
-                        }
+                    {
+                        free(mangaName[curPos]);
+                        mangaName[curPos] = NULL;
+                        curPos--;
+                    }
                 }
                 else if(version == 1)
                 {
                     positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3], &buffer_int[4], &buffer_int[5], &buffer_int[6]);
                     for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
                     if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
+                    {
                         snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
+
+                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], CHAPITRE_INDEX);
+                        if(checkFileExist(path))
+                            remove(path);
+                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], TOME_INDEX);
+                        if(checkFileExist(path))
+                            remove(path);
+                    }
                     else
                     {
                         free(mangaName[curPos]);
@@ -439,12 +447,11 @@ void update_mangas()
                         if(!strcmp(buffer_char[0], mangaName[i]))
                         {
                             int j;
-                            char path[500];
                             FILE* out = NULL;
                             snprintf(path, 500, "manga/%s/%s/", teams.teamLong, mangaName[i]);
                             if(!checkDirExist(path))
                                 createPath(path);
-                            snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], bufferDL[positionBuffer]=='T'?"tomeDB":"chapDB");
+                            snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], bufferDL[positionBuffer]=='T'?TOME_INDEX:CHAPITRE_INDEX);
 
                             for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\n' && bufferDL[positionBuffer] != '\r'; positionBuffer++);
                             for(; bufferDL[positionBuffer] == '\n' || bufferDL[positionBuffer] == '\r'; positionBuffer++);
@@ -475,6 +482,7 @@ void update_mangas()
 	}
 	snprintf(&manga_new[strlen(manga_new)], strlen(manga_new)+10, "</%c>\n", SETTINGS_MANGADB_FLAG);
 	free(repoBak);
+	free(mangas);
 	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
 	free(manga_new);
 	free(bufferDL);

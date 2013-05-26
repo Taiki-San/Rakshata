@@ -44,6 +44,8 @@
 #define MANGA_DATABASE "data/mangas"
 #define INSTALL_DATABASE "data/import.dat"
 #define FONT_USED_BY_DEFAULT "data/font.ttf"
+#define TOME_INDEX "tomeDB"
+#define CHAPITRE_INDEX "chapDB"
 
 #define ICONE_DELETE "data/icon/d.png"
 #define ICONE_FAVORITED "data/icon/f.png"

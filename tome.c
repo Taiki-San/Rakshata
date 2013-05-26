@@ -85,7 +85,7 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
 
     /*On commence par énumérer les chapitres spéciaux*/
     char temp[TAILLE_BUFFER];
-    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/tomeDB", mangaDB->team->teamLong, mangaDB->mangaName);
+    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, TOME_INDEX);
     FILE* tomeDB = fopenR(temp, "r");
     if(tomeDB != NULL)
     {
