@@ -121,20 +121,23 @@ MANGAS_DATA* allocateDatabase(size_t length)
     return database;
 }
 
-void freeMangaData(MANGAS_DATA* mangasDB, size_t length)
+void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
 {
-    if(mangasDB == NULL)
+    if(mangaDB == NULL)
         return;
 
     size_t pos = 0;
     for(; pos < length; pos++)
     {
-        if(mangasDB[pos].chapitres != NULL && *mangasDB[pos].chapitres != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            free(mangasDB[pos].chapitres);
-        if(mangasDB[pos].team != NULL)
-            free(mangasDB[pos].team);
+        if(mangaDB[pos].chapitres != NULL)
+            free(mangaDB[pos].chapitres);
+        if(mangaDB[pos].team != NULL)
+            free(mangaDB[pos].team);
+        if(mangaDB[pos].tomes != NULL)
+            free(mangaDB[pos].tomes);
+
     }
-    free(mangasDB);
+    free(mangaDB);
 }
 
 int alreadyRefreshed = -5*60000;
