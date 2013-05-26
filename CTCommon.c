@@ -36,16 +36,15 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 {
     int screenSize;
     /*On calcule la taille de la fenêtre*/
-    if(data.nombreElementTotal <= ENGINE_ELEMENT_PAR_PAGE && !isTome)
+    if(data.nombreElementTotal <= ENGINE_ELEMENT_PAR_PAGE)
         screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((data.nombreElementTotal-1) / ENGINE_NOMBRE_COLONNE + 1) + 50;
-    else if(data.nombreElementTotal <= ENGINE_ELEMENT_PAR_PAGE && isTome)
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((data.nombreElementTotal-1) / ENGINE_NOMBRE_COLONNE) + 50;
     else
-        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE + (isTome?0:1)) + 50;
+        screenSize = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE + 1) + 50;
 
     if(screenSize != WINDOW_SIZE_H)
         updateWindowSize(LARGEUR, screenSize);
-    SDL_RenderClear(renderer);
+    else
+        SDL_RenderClear(renderer);
 
     char temp[TAILLE_BUFFER];
     SDL_Texture *texte = NULL;

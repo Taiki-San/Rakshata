@@ -117,6 +117,7 @@ typedef struct data_provided_to_engine
 	int chapitrePlusRecent;
 
     /*Variable pour CONTEXTE_TOME*/
+    int currentTomeInfoDisplayed; //Précise si (et quel) tome est affiché
     char *description1; //Ligne de description 1
     char *description2; //Ligne de description 2
 } DATA_ENGINE;

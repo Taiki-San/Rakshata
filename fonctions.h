@@ -70,7 +70,7 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
-void freeMangaData(MANGAS_DATA* mangasDB, size_t length);
+void freeMangaData(MANGAS_DATA* mangaDB, size_t length);
 void updateDataBase(bool forced);
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
 bool checkValidationRepo(char *bufferDL, int isPaid);
@@ -100,6 +100,8 @@ int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
 int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB);
 bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettre, int button_selected[8]);
 
+int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem);
+
 void loadMultiPage(int nombreManga, int *pageSelection, int *pageTotale);
 void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);
 void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale);
@@ -112,6 +114,9 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8]);
 void button_available(DATA_ENGINE* input, int button[8]);
 void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localization[SIZE_TRAD_ID_11][TRAD_LENGTH]);
 void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum);
+
+void engineDisplayTomeInfos(DATA_ENGINE input);
+void enfineEraseDisplayedTomeInfos();
 
 /**Error.c**/
 void logR(char *error);
@@ -279,6 +284,7 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 
 /**Tome.c**/
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
+void escapeTomeLineElement(META_TOME *ligne);
 void refreshTomeList(MANGAS_DATA *mangaDB);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);

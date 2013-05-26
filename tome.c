@@ -184,7 +184,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
         displayTemplateTome(mangaDB, tomeDB[0], contexte, texteTrad);
         do
         {
-            tomeChoisis = engineCore(tomeDB, CONTEXTE_TOME, tomeDB[0].nombreElementTotal > ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_CHAPITRE_FULL : BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
+            tomeChoisis = engineCore(tomeDB, CONTEXTE_TOME, tomeDB[0].nombreElementTotal > ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_TOME_FULL : BORDURE_SUP_SELEC_TOME_PARTIAL);
         }while(tomeChoisis == ENGINE_RETVALUE_SWITCH);
         free(tomeDB);
     }
@@ -267,6 +267,7 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
     }
     tomeDB[0].nombreElementTotal = tomeCourant;
     tomeDB[0].website = mangaDB.team->site;
+    tomeDB[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     if((tomeCourant == 1 && contexte != CONTEXTE_LECTURE) || (tomeCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre
     {

@@ -599,7 +599,6 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
             case SDL_MOUSEBUTTONUP:
             {
-                int ligne, colonne = 0;
                 if(event.button.x > POSITION_ICONE_MENUS && event.button.x < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS && event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS)
                 {
                     elementChoisis = PALIER_MENU; //Clic sur icône du menu principal
@@ -613,18 +612,12 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 }
 
                 //Définition de la ligne cliquée
-                for(ligne = 0; ligne < ENGINE_NOMBRE_LIGNE && (event.button.y < hauteurChapitre + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) || event.button.y > hauteurChapitre + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) + LARGEUR_MOYENNE_MANGA_PETIT); ligne++);
 
-                if(ligne < ENGINE_NOMBRE_LIGNE && event.button.y >= hauteurChapitre) //Si on choisis un chapitre
+                if((elementChoisis = engineDefineElementClicked(event.button.x, event.button.y, tailleTexte, hauteurChapitre, nombreManga)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 {
-                    /*Nombre Colonne*/
-                    for(colonne = 0; colonne < ENGINE_NOMBRE_COLONNE && ligne*ENGINE_NOMBRE_COLONNE + colonne < nombreManga && (event.button.x < tailleTexte[colonne][ligne][0] || event.button.x > tailleTexte[colonne][ligne][0] + tailleTexte[colonne][ligne][1]); colonne++);
-                    if(colonne < ENGINE_NOMBRE_COLONNE && nombreManga > ligne * ENGINE_NOMBRE_COLONNE + colonne)
-                    {
-                        elementChoisis = colonne * 100 + ligne;
-                        *outputType = ENGINE_OUTPUT_CLIC;
-                    }
+                    *outputType = ENGINE_OUTPUT_CLIC; //Si clic sur element
                 }
+
                 /*Si appuis sur un bouton pour changer de page*/
                 else if(event.button.y >= HAUTEUR_BOUTONS_CHANGEMENT_PAGE && event.button.y <= HAUTEUR_BOUTONS_CHANGEMENT_PAGE + LARGEUR_MOYENNE_MANGA_PETIT)
                 {
@@ -705,6 +698,23 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
                             *outputType = ENGINE_OUTPUT_BOUTON_CHAPITRE;
                         }
+                    }
+                }
+                break;
+            }
+
+            case SDL_MOUSEMOTION:
+            {
+                if(contexte == CONTEXTE_TOME)
+                {
+                    int output = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                    if(event.motion.y >= hauteurChapitre)
+                        output = engineDefineElementClicked(event.motion.x, event.motion.y, tailleTexte, hauteurChapitre, nombreManga);
+
+                    if(output != VALEUR_FIN_STRUCTURE_CHAPITRE || input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                    {
+                        elementChoisis = output;
+                        *outputType = ENGINE_OUTPUT_MOUSE_ABOVE_TOME;
                     }
                 }
                 break;
@@ -911,6 +921,45 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 *elementChoisis = output;
             break;
         }
+
+        case ENGINE_OUTPUT_MOUSE_ABOVE_TOME:
+        {
+            int elemClicked;
+
+            if(output != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                if(contexte != CONTEXTE_TOME || output > 209)
+                    break;
+
+                if(modeLigne)
+                {
+                    elemClicked = output % 100 * ENGINE_NOMBRE_COLONNE + output / 100;
+                }
+                else
+                {
+                    int nbElemColonne[3];
+                    engineLoadCurrentPage(input[0].nombreElementTotal, *pageCourante, nbElemColonne);
+                    if(output/100 == 0)
+                        elemClicked = output % 100;
+                    else
+                        elemClicked = nbElemColonne[output / 100 - 1] + output % 100;
+                }
+                elemClicked += (*pageCourante-1) * ENGINE_ELEMENT_PAR_PAGE;
+
+                if(elemClicked < input[0].nombreElementTotal)
+                {
+                    engineDisplayTomeInfos(input[elemClicked]);
+                    input[0].currentTomeInfoDisplayed = elemClicked;
+                }
+            }
+            else if (input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                enfineEraseDisplayedTomeInfos();
+                SDL_RenderPresent(renderer);
+                input[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
+            }
+            break;
+        }
     }
     return ret_value;
 }
@@ -957,6 +1006,25 @@ bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettr
 		return false;
 
 	return true;
+}
+
+/* Stuffs */
+
+int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem)
+{
+    int ligne, colonne = 0;
+    for(ligne = 0; ligne < ENGINE_NOMBRE_LIGNE && (y < hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) || y > hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) + LARGEUR_MOYENNE_MANGA_PETIT); ligne++);
+
+    if(ligne < ENGINE_NOMBRE_LIGNE && y >= hauteurDebut) //Si on choisis un chapitre
+    {
+        /*Nombre Colonne*/
+        for(colonne = 0; colonne < ENGINE_NOMBRE_COLONNE && ligne*ENGINE_NOMBRE_COLONNE + colonne < nombreMaxElem && (x < tailleTexte[colonne][ligne][0] || x > tailleTexte[colonne][ligne][0] + tailleTexte[colonne][ligne][1]); colonne++);
+        if(colonne < ENGINE_NOMBRE_COLONNE && nombreMaxElem > ligne * ENGINE_NOMBRE_COLONNE + colonne)
+        {
+            return colonne * 100 + ligne;
+        }
+    }
+    return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }
 
 /*Multi Page*/
@@ -1013,7 +1081,7 @@ void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3])
 void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale)
 {
     char temp[TAILLE_BUFFER];
-    SDL_Texture *texte = NULL;
+    SDL_Texture *texte;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
@@ -1255,3 +1323,46 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     SDL_RenderPresent(renderer);
 }
 
+/*CONTEXTE_TOME ONLY*/
+
+void engineDisplayTomeInfos(DATA_ENGINE input)
+{
+    SDL_Texture *texte;
+    SDL_Rect position;
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+
+    enfineEraseDisplayedTomeInfos();
+
+    texte = TTF_Write(renderer, police, input.description1, couleur);
+    if(texte != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y = WINDOW_SIZE_H - HAUTEUR_PREMIERE_LIGNE_INFOS_TOME;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
+    TTF_CloseFont(police);
+
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    texte = TTF_Write(renderer, police, input.description2, couleur);
+    if(texte != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
+        position.y += position.h - 8;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
+    TTF_CloseFont(police);
+    SDL_RenderPresent(renderer);
+    return;
+}
+
+void enfineEraseDisplayedTomeInfos()
+{
+    applyBackground(renderer, 0, renderer->window->h - HAUTEUR_INFOS_TOMES, renderer->window->w, HAUTEUR_INFOS_TOMES);
+}
