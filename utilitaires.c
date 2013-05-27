@@ -364,6 +364,38 @@ void addToRegistry()
         return;
 
     HKEY hkey;
+
+    if( RegOpenKey(HKEY_CURRENT_USER,"Software\\Classes\\.rak",&hkey) == ERROR_SUCCESS)
+    {
+        RegCloseKey(hkey);
+        return;
+    }
+
+    int ret_value;
+    char localization[SIZE_TRAD_ID_29][TRAD_LENGTH];
+    SDL_MessageBoxData alerte;
+    SDL_MessageBoxButtonData bouton[2];
+    loadTrad(localization, 29);
+
+    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton[0].buttonid = 1; //Valeur retournée
+    bouton[0].text = localization[2]; //ajouter
+    bouton[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+    bouton[1].buttonid = 0;
+    bouton[1].text = localization[3]; //refuser
+
+    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
+    alerte.title = localization[0];
+    alerte.message = localization[1];
+    alerte.numbuttons = 2;
+    alerte.buttons = bouton;
+    alerte.window = window;
+    alerte.colorScheme = NULL;
+    SDL_ShowMessageBox(&alerte, &ret_value);
+
+    if(ret_value != 1)
+        return;
+
     char *desc="Fichier d'ajout automatique de depot Rakshata";         // file type description
     char *bin= calloc(1, strlen(REPERTOIREEXECUTION) + 100);
 
@@ -373,11 +405,6 @@ void addToRegistry()
 
     snprintf(bin, strlen(REPERTOIREEXECUTION) + 100, "%s\\Rakshata.exe %%1", REPERTOIREEXECUTION);
     RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.rak\\shell\\Ajouter a Rakshata\\command\\", 0, 0, 0, KEY_ALL_ACCESS, 0, &hkey, 0); // 2: Create Subkeys for action ( "Open with my program" )
-    RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
-    RegCloseKey(hkey);
-
-    snprintf(bin, strlen(REPERTOIREEXECUTION) + 100, "%s\\Rakshata.exe,1", REPERTOIREEXECUTION);
-    RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.rak\\DefaultIcon\\", 0, 0, 0, KEY_ALL_ACCESS, 0, &hkey, 0); // 2: Create Subkeys for action ( "Open with my program" )
     RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
     RegCloseKey(hkey);
     free(bin);

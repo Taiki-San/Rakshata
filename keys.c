@@ -161,7 +161,6 @@ int earlyInit(int argc, char *argv[])
     crashTemp(passwordGB, 100);
     loadPalette();
     resetOriginalCHDir(argc, argv[0]);
-    addToRegistry();
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
@@ -172,6 +171,7 @@ int earlyInit(int argc, char *argv[])
         return 0;
     }
 
+    loadLangueProfile();
     if(!checkAjoutRepoParFichier(argv[1]))
         return 0;
 
@@ -186,6 +186,7 @@ int earlyInit(int argc, char *argv[])
         return 0;
     }
 
+    addToRegistry();
     restrictEvent();
     getResolution();
 
