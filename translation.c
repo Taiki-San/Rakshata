@@ -110,7 +110,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
 int changementLangue()
 {
     int j = 0;
-    char menus[SIZE_TRAD_ID_13][LONGUEURTEXTE];
+    char menus[SIZE_TRAD_ID_13][TRAD_LENGTH];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};

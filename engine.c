@@ -1161,7 +1161,7 @@ SDL_Color getEngineColor(DATA_ENGINE input, int contexte, SDL_Color couleurUnrea
 
 /*CONTEXTE_LECTURE & DL*/
 
-void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8])
+void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
 {
     /*Génére le pannel inférieur*/
     int i = 0;

@@ -151,7 +151,7 @@ void getUpdatedTomeList(MANGAS_DATA *mangaDB)
 int askForTome(MANGAS_DATA *mangaDB, int contexte)
 {
     int buffer = 0, i = 0, tomeChoisis = 0, dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][LONGUEURTEXTE];
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH];
     loadTrad(texteTrad, 19);
 
     if((i = autoSelectionTome(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)

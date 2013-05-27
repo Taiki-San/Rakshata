@@ -19,7 +19,7 @@ void chargement(SDL_Renderer* rendererVar, int h, int w);
 void loadPalette();
 void loadIcon(SDL_Window *window_ptr);
 SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
-SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine);
+SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][TRAD_LENGTH], int numberLine);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
 int getWindowSize(int w1h2);
@@ -109,7 +109,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
 void displayBigMainMenuIcon();
 SDL_Color getEngineColor(DATA_ENGINE mangaDB, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte);
 
-void generateChoicePanel(char trad[SIZE_TRAD_ID_11][100], int enable[8]);
+void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
 
 void button_available(DATA_ENGINE* input, int button[8]);
 void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localization[SIZE_TRAD_ID_11][TRAD_LENGTH]);

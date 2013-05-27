@@ -111,7 +111,7 @@ int checkProjet(MANGAS_DATA mangaDB)
     if(test != NULL)
     {
         /*Affichage consigne*/
-        char texte[SIZE_TRAD_ID_10][100];
+        char texte[SIZE_TRAD_ID_10][TRAD_LENGTH];
         loadTrad(texte, 10);
 
         fclose(test);

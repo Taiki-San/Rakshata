@@ -431,8 +431,8 @@
 #define SIZE_WINDOWS_AUTHENTIFICATION 250
 
 /*Trad*/
-#define TRAD_LENGTH 100
-#define NOMBRE_TRAD_ID_MAX 29
+#define TRAD_LENGTH 150
+#define NOMBRE_TRAD_ID_MAX 30
 #define SIZE_TRAD_ID_1 6
 #define SIZE_TRAD_ID_2 5
 #define SIZE_TRAD_ID_3 7
@@ -461,4 +461,4 @@
 #define SIZE_TRAD_ID_26 16
 #define SIZE_TRAD_ID_27 4
 #define SIZE_TRAD_ID_28 2
-#define SIZE_TRAD_ID_29 2
+#define SIZE_TRAD_ID_29 4

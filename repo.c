@@ -35,7 +35,6 @@ int checkAjoutRepoParFichier(char *argv)
             }
             else if(version > CURRENTVERSION)
             {
-                loadLangueProfile();
                 if(langue == 1) //Francais
                     UI_Alert("Ajout automatise de depot: echec!", "Le depot que vous tentez d'ajouter n'est pas supporte par cette version de Rakshata, veuillez effectuer une mise a jour en telechargant une version plus recente sur http://www.rakshata.com/");
                 else
@@ -44,7 +43,6 @@ int checkAjoutRepoParFichier(char *argv)
             }
             else
             {
-                loadLangueProfile();
                 if(langue == 1) //Francais
                     UI_Alert("Ajout automatise de depot: echec!", "Fichier invalide: veuillez contacter l'administrateur du site depuis lequel vous l'avez telecharge");
                 else
@@ -59,7 +57,7 @@ int checkAjoutRepoParFichier(char *argv)
 int ajoutRepo(bool ajoutParFichier)
 {
     int continuer = 0, erreur = 0, somethingAdded = 0;
-    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][LONGUEURTEXTE];
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][TRAD_LENGTH];
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
@@ -295,7 +293,7 @@ extern int curPage; //Too lazy to use an argument
 int deleteRepo()
 {
     int i = 0, teamChoisis = 0, nombreTeam = 0, confirme = 0;
-    char texteTrad[SIZE_TRAD_ID_15][LONGUEURTEXTE];
+    char texteTrad[SIZE_TRAD_ID_15][TRAD_LENGTH];
 
     DATA_ENGINE* data = NULL;
 
@@ -446,7 +444,7 @@ int defineTypeRepo(char *URL)
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
 {
     int confirme = 0;
-	char texte[SIZE_TRAD_ID_4][100];
+	char texte[SIZE_TRAD_ID_4][TRAD_LENGTH];
     /*Initialisateurs graphique*/
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;

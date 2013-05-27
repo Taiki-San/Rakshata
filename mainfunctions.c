@@ -16,7 +16,6 @@ bool addRepoByFileInProgress;
 void mainRakshata()
 {
     int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0;
-    loadLangueProfile();
 
     #ifdef _WIN32
         for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
@@ -323,7 +322,6 @@ void mainDL()
     if(!INSTANCE_RUNNING && checkLancementUpdate())
     {
         INSTANCE_RUNNING = 1;
-        loadLangueProfile();
 
         if(loadEmailProfile())
             DLmanager();

@@ -68,7 +68,7 @@ int download_UI(TMP_DL *output)
     createNewThread(downloader, output);
 
     double last_file_size = 0, download_speed = 0;
-    char texte[SIZE_TRAD_ID_20][100];
+    char texte[SIZE_TRAD_ID_20][TRAD_LENGTH];
 
     SDL_Texture *pourcentAffiche = NULL;
     TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);

@@ -262,7 +262,7 @@ int get_compte_infos()
 int logon()
 {
     int beginingOfEmailAdress = 0, resized = 0, retry = 0;
-    char trad[SIZE_TRAD_ID_26][100], adresseEmail[100];
+    char trad[SIZE_TRAD_ID_26][TRAD_LENGTH], adresseEmail[100];
     SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
@@ -545,7 +545,7 @@ extern int WINDOW_SIZE_W_DL;
 int getPassword(char password[100], int dlUI, int salt)
 {
     int xPassword = 0, resized = 0, ret_value = 0;
-    char trad[SIZE_TRAD_ID_26][100];
+    char trad[SIZE_TRAD_ID_26][TRAD_LENGTH];
     SDL_Texture *ligne = NULL;
     SDL_Rect position;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};

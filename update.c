@@ -32,7 +32,7 @@ void checkUpdate()
         ***********************************************************************************/
 
 		int i, j, ligne = 0;
-        char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][100], temp[TAILLE_BUFFER], URL[500];
+        char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][TRAD_LENGTH], temp[TAILLE_BUFFER], URL[500];
 
 
 		SDL_Texture *infosAvancement = NULL;

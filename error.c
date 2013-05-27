@@ -29,7 +29,7 @@ void logR(char *error)
 
 void connexionNeededToAllowANewComputer()
 {
-    char trad[SIZE_TRAD_ID_27][100];
+    char trad[SIZE_TRAD_ID_27][TRAD_LENGTH];
     SDL_Texture *ligne = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
@@ -152,7 +152,7 @@ int libcurlErrorCode(CURLcode code)
 int erreurReseau()
 {
     int i = 0;
-    char texte[SIZE_TRAD_ID_24][100];
+    char texte[SIZE_TRAD_ID_24][TRAD_LENGTH];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
@@ -187,7 +187,7 @@ int erreurReseau()
 int showError()
 {
     int i = 0;
-    char texte[SIZE_TRAD_ID_1][100];
+    char texte[SIZE_TRAD_ID_1][TRAD_LENGTH];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
@@ -224,7 +224,7 @@ int rienALire()
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    char texte[SIZE_TRAD_ID_23][100];
+    char texte[SIZE_TRAD_ID_23][TRAD_LENGTH];
 
     SDL_RenderClear(renderer);
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -257,7 +257,7 @@ int rienALire()
 int affichageRepoIconnue()
 {
     /*Initialisateurs graphique*/
-    char texte[SIZE_TRAD_ID_7][100];
+    char texte[SIZE_TRAD_ID_7][TRAD_LENGTH];
 	SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;

@@ -25,7 +25,7 @@ int telechargement()
 {
     int i = 0, mangaTotal, pourcentage, glados = CODE_RETOUR_OK, posToDo;
     char **historiqueTeam = NULL;
-    char trad[SIZE_TRAD_ID_22][100];
+    char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
     DATA_LOADED **todoList = NULL;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
     SDL_Event event;
@@ -429,7 +429,7 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
 
 void DLmanager()
 {
-    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][LONGUEURTEXTE];
+    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_16][TRAD_LENGTH];
 	SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};

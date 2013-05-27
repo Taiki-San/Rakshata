@@ -14,7 +14,7 @@
 
 void welcome()
 {
-    char localization[SIZE_TRAD_ID_9][100];
+    char localization[SIZE_TRAD_ID_9][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
@@ -88,7 +88,7 @@ void welcome()
 void initialisationAffichage()
 {
     int i = 0;
-    char texteAAfficher[SIZE_TRAD_ID_2][100];
+    char texteAAfficher[SIZE_TRAD_ID_2][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
@@ -128,7 +128,7 @@ void raffraichissmenent(bool forced)
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    char texte[SIZE_TRAD_ID_5][100]; // Il faut forcement un tableau en 2D
+    char texte[SIZE_TRAD_ID_5][TRAD_LENGTH]; // Il faut forcement un tableau en 2D
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 5);
@@ -159,7 +159,7 @@ void affichageLancement()
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    char texte[SIZE_TRAD_ID_6][100]; // Il faut forcement un tableau en 2D
+    char texte[SIZE_TRAD_ID_6][TRAD_LENGTH]; // Il faut forcement un tableau en 2D
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 6);
@@ -301,7 +301,7 @@ SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr)
     return renderer_ptr;
 }
 
-SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][100], int numberLine)
+SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][TRAD_LENGTH], int numberLine)
 {
     int hauteurUIAlert = 0, i = 0;
     SDL_Surface *bufferWrite = NULL;
@@ -419,7 +419,7 @@ void restartEcran()
 
 void nameWindow(SDL_Window* windows, const int value)
 {
-    char windowsName[128], trad[SIZE_TRAD_ID_25][100], versionOfSoftware[6];
+    char windowsName[128], trad[SIZE_TRAD_ID_25][TRAD_LENGTH], versionOfSoftware[6];
 
     if(!tradAvailable() || value < 0)
     {

@@ -57,7 +57,7 @@ int ecranAccueil()
 int section()
 {
     /*Initialisation*/
-	char texteTrad[SIZE_TRAD_ID_17][LONGUEURTEXTE], *sectionMessage = NULL;
+	char texteTrad[SIZE_TRAD_ID_17][TRAD_LENGTH], *sectionMessage = NULL;
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
