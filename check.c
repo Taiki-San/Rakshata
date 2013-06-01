@@ -419,8 +419,7 @@ int checkRestore()
 
 int checkRestoreAvailable()
 {
-    FILE* restore = NULL;
-    restore = fopenR("data/laststate.dat", "r");
+    FILE* restore = fopenR("data/laststate.dat", "r");
     if(restore != NULL)
     {
         int chapitre = 0;

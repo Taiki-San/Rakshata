@@ -488,12 +488,8 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
 
     confirme = waitEnter(renderer);
 
-    if(confirme == 1)
-        /*Confirmé*/
+    if(confirme == 1) //Confirmé
         return 1;
-    else if (confirme == -3)
-        return 0;
-
     else if(confirme == PALIER_QUIT)
         return PALIER_QUIT;
 

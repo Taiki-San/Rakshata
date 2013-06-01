@@ -15,7 +15,7 @@
 bool addRepoByFileInProgress;
 void mainRakshata()
 {
-    int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis = 0;
+    int continuer, restoringState = 0, sectionChoisis;
 
     #ifdef _WIN32
         for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
@@ -41,10 +41,10 @@ void mainRakshata()
 
     if(check_evt() == PALIER_QUIT) //Check envt
     {
-        quit_thread(0);
+        continuer = PALIER_QUIT;
     }
 
-    if(addRepoByFileInProgress)
+    else if(addRepoByFileInProgress)
     {
         if(ajoutRepo(true) == 1)
             raffraichissmenent(true);
@@ -61,8 +61,6 @@ void mainRakshata()
 
     while(continuer > PALIER_QUIT)
     {
-        continuer = PALIER_DEFAULT;
-
         if(!restoringState)
             sectionChoisis = section();
         else
@@ -73,10 +71,6 @@ void mainRakshata()
 
         switch(sectionChoisis)
         {
-            case PALIER_QUIT:
-                continuer = sectionChoisis;
-                break;
-
             case 1:
                 continuer = mainLecture();
                 break;
@@ -94,6 +88,7 @@ void mainRakshata()
                 break;
 
             default:
+                continuer = sectionChoisis;
                 break;
         }
     }
@@ -127,9 +122,9 @@ int mainLecture()
             mangaChoisis = controleurManga(mangaDB, CONTEXTE_LECTURE, 0);
             pageManga = curPage;
         }
-        if(mangaChoisis <= -2)
+        if(mangaChoisis <= PALIER_CHAPTER)
         {
-            if(mangaChoisis == -2)
+            if(mangaChoisis == PALIER_CHAPTER)
                 continuer = PALIER_MENU;
 
             else

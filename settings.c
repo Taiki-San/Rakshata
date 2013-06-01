@@ -48,7 +48,7 @@ int affichageMenuGestion()
 int menuGestion()
 {
     int menu = 0;
-    while(menu > -3)
+    while(menu > PALIER_MENU)
     {
         menu = affichageMenuGestion();
         switch(menu)
@@ -58,30 +58,23 @@ int menuGestion()
                 break;
 
             case 1:
-                /*Ajouter un dépot*/
-                menu = ajoutRepo(false);
+                menu = ajoutRepo(false); //Ajouter un dépot
                 if(menu == 1)
                     raffraichissmenent(true);
                 break;
 
             case 2:
-                /*Supprimer un dépot*/
-                menu = deleteRepo();
+                menu = deleteRepo(); //Supprimer un dépot
                 if(menu == 1)
                     raffraichissmenent(true);
                 break;
 
             case 3:
-                /*Supprimer des mangas*/
-                menu = deleteManga();
-
-                if(menu == -5)
-                    menu = -2;
+                menu = deleteManga(); //Supprimer des mangas
                 break;
 
             case 4:
-                /*Raffraichissement de la BDD*/
-                raffraichissmenent(true);
+                raffraichissmenent(true); //Raffraichissement de la BDD
                 break;
 
             case 5:

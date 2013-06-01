@@ -161,12 +161,12 @@ int showControls()
                         break;
 
                     case SDLK_ESCAPE:
-                        retour = -3;
+                        retour = PALIER_MENU;
                         break;
 
                     case SDLK_DELETE:
                     case SDLK_BACKSPACE:
-                        retour = -2;
+                        retour = PALIER_CHAPTER;
                         break;
 
                     default: //If other one

@@ -116,8 +116,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         SDL_FreeSurface(NChapitre);
         SDL_DestroyTextureS(infoSurface);
         SDL_DestroyTextureS(bandeauControle);
-        if(i > -3)
-            return -2;
+        if(i > PALIER_MENU)
+            return PALIER_CHAPTER;
         else
             return i;
     }
@@ -148,8 +148,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
-                if(i > -3)
-                    return -2;
+                if(i > PALIER_MENU)
+                    return PALIER_CHAPTER;
                 else
                     return i;
             }
@@ -189,8 +189,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
-                if(i > -3)
-                    return -2;
+                if(i > PALIER_MENU)
+                    return PALIER_CHAPTER;
                 else
                     return i;
             }
@@ -256,8 +256,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             SDL_DestroyTextureS(infoSurface);
             SDL_DestroyTextureS(bandeauControle);
             i = showError();
-            if(i > -3)
-                return -2;
+            if(i > PALIER_MENU)
+                return PALIER_CHAPTER;
             else
                 return i;
         }
@@ -781,7 +781,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         {
                             FREE_CONTEXT;
                             screenshotSpoted(mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
-                            return -4;
+                            return PALIER_QUIT;
                         }
 
                         case SDLK_DOWN:
@@ -947,7 +947,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         case SDLK_ESCAPE:
                         {
                             FREE_CONTEXT;
-                            return -3;
+                            return PALIER_MENU;
                             break;
                         }
 

@@ -558,9 +558,9 @@ int deleteManga()
 			}
 		}
 
-		if(continuer == -2 && chapitreChoisis == -2)
+		if(continuer == PALIER_CHAPTER && chapitreChoisis == PALIER_CHAPTER)
 		{
-			continuer = chapitreChoisis = -1;
+			continuer = chapitreChoisis = PALIER_DEFAULT;
 		}
 	}
 	freeMangaData(mangas, NOMBRE_MANGA_MAX);
