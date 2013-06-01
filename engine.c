@@ -521,7 +521,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                             elementChoisis = choix;
                             *outputType = ENGINE_OUTPUT_TYPED_CHAPITRE;
                         }
-                        else
+                        else if(contexte == CONTEXTE_DL)
                             *outputType = ENGINE_OUTPUT_DL_START;
                         break;
                     }
@@ -561,10 +561,9 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 if(letter >= 'a' && letter <= 'z')
                     letter += 'A' - 'a'; //On passe en maj
 
-                if(input[0].switchAvailable == true)
+                if(input[0].switchAvailable == true && ((contexte == CONTEXTE_TOME && (letter == 'C' || letter == 'S')) || (contexte == CONTEXTE_CHAPITRE && (letter == 'T' || letter == 'S'))))
                 {
-                    if((contexte == CONTEXTE_TOME && (letter == 'C' || letter == 'S')) || (contexte == CONTEXTE_CHAPITRE && (letter == 'T' || letter == 'S')))
-                        *outputType = ENGINE_OUTPUT_SWITCH;
+                    *outputType = ENGINE_OUTPUT_SWITCH;
                     break;
                 }
                 else if(contexte == CONTEXTE_CHAPITRE)
