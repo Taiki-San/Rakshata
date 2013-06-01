@@ -127,12 +127,7 @@ the menu, press Esc&
 To close this&
 window, click.&
 F to quit the fullscreen&
-Q to quit Rakshata&
-New chapters&
-are available,&
-do you want&
-to get them?&
-(Y) Yes | (N) No&]
+Q to quit Rakshata&]
 22
 Downloading&
 chapter&
@@ -179,3 +174,15 @@ Use the file extension?&
 Do you want Rakshata to be opened when you click on a .rak file (which would allow an automatic repository addition)?&
 Accept&
 Refuse&]
+30
+Rakshata detected&
+new&
+new&
+available&
+available&
+chapter&
+volume&
+to download&
+Do you want to initiate the download?&
+Download&
+No&]

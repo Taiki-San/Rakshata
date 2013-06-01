@@ -15,12 +15,12 @@
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
 {
     int i = 0, j = 0, k = 0, fail = 0;
-    int antiBufferOverflow[NOMBRE_TRAD_ID_MAX] = {SIZE_TRAD_ID_1, SIZE_TRAD_ID_2, SIZE_TRAD_ID_3, SIZE_TRAD_ID_4, SIZE_TRAD_ID_5,
+    int antiBufferOverflow[NOMBRE_TRAD_ID_MAX+1] = {SIZE_TRAD_ID_1, SIZE_TRAD_ID_2, SIZE_TRAD_ID_3, SIZE_TRAD_ID_4, SIZE_TRAD_ID_5,
                                   SIZE_TRAD_ID_6, SIZE_TRAD_ID_7, SIZE_TRAD_ID_8, SIZE_TRAD_ID_9, SIZE_TRAD_ID_10,
                                   SIZE_TRAD_ID_11, SIZE_TRAD_ID_12, SIZE_TRAD_ID_13, SIZE_TRAD_ID_14, SIZE_TRAD_ID_15,
                                   SIZE_TRAD_ID_16, SIZE_TRAD_ID_17, SIZE_TRAD_ID_18, SIZE_TRAD_ID_19, SIZE_TRAD_ID_20,
                                   SIZE_TRAD_ID_21, SIZE_TRAD_ID_22, SIZE_TRAD_ID_23, SIZE_TRAD_ID_24, SIZE_TRAD_ID_25,
-                                  SIZE_TRAD_ID_26, SIZE_TRAD_ID_27, SIZE_TRAD_ID_28, SIZE_TRAD_ID_29};
+                                  SIZE_TRAD_ID_26, SIZE_TRAD_ID_27, SIZE_TRAD_ID_28, SIZE_TRAD_ID_29, SIZE_TRAD_ID_30};
 
     char numeroID[3] = {0, 0, 0}, *buffer = NULL;
     FILE* fichierTrad = NULL;

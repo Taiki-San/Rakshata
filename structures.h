@@ -122,6 +122,13 @@ typedef struct data_provided_to_engine
     char *description2; //Ligne de description 2
 } DATA_ENGINE;
 
+typedef struct data_thread_check_new_CT
+{
+    MANGAS_DATA mangaDB;
+    bool isTome;
+    int CT;
+} DATA_CK_LECTEUR;
+
 typedef struct
 {
     int r;

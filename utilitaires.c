@@ -399,7 +399,7 @@ void addToRegistry()
     char *desc="Fichier d'ajout automatique de depot Rakshata";         // file type description
     char *bin= calloc(1, strlen(REPERTOIREEXECUTION) + 100);
 
-    RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\Classes\\.rak",0,0,0,KEY_ALL_ACCESS ,0,&hkey,0);// 1: Create subkey for extension -> HKEY_CLASSES_ROOT\.002
+    RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\Classes\\.rak",0,0,0,KEY_ALL_ACCESS ,0,&hkey,0);// 1: Create subkey for extension
     RegSetValueEx(hkey,"",0,REG_SZ,(BYTE *)desc,strlen(desc)); // default vlaue is description of file extension
     RegCloseKey(hkey);
 

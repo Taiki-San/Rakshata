@@ -127,12 +127,7 @@ menu, faites echap&
 Pour fermer cette&
 fenetre, enter.&
 F pour quitter le plein écran&
-Q pour quitter Rakshata&
-De nouveaux chapitres&
-sont disponibles,&
-voulez-vous les&
-télécharger?&
-(Y) Oui | (N) Non&]
+Q pour quitter Rakshata&]
 22
 Téléchargement de&
 chapitre&
@@ -163,7 +158,7 @@ de Rakshata, rien ne sera transmis à quiconque.&
 /!\ ERREUR: Mot de passe rejeté /!\&
 Veuillez réessayer et/ou contacter Taiki&
 Cliquez pour entrer une nouvelle adresse e-mail&
-/!\ ERREURE CRITIQUE /!\&
+/!\ ERREUR CRITIQUE /!\&
 /!\ Vérifiez que vous pouvez accéder au site de Rakshata /!\&
 /!\ Si oui, réessayez puis contactez Taiki /!\&]
 27
@@ -179,3 +174,15 @@ Utiliser l'extension?&
 Voulez vous que Rakshata soit ouvert lorsque vous cliquez sur un fichier .rak (permettant l'ajout automatique de depot)?&
 Accepter&
 Refuser&]
+30
+Rakshata a detecte&
+nouveau&
+nouveaux&
+disponible&
+disponibles&
+chapitre&
+tome&
+a telecharger&
+Voulez-vous lancer le telechargement?&
+Telecharger&
+Non&]
