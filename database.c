@@ -197,8 +197,8 @@ bool checkValidationRepo(char *bufferDL, int isPaid)
 void update_repo()
 {
 	int i = 0, positionDansBuffer = 0, legacy;
-	char *bufferDL, *repo_new, killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM];
-    char URLRepoConnus[1000][LONGUEUR_URL];
+	char *bufferDL, *repo_new, killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
+    char URLRepoConnus[1000][LONGUEUR_URL], nomCourtRepoConnus[1000][LONGUEUR_COURT];
 	char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
 	TEAMS_DATA infosTeam, newInfos;
 
@@ -214,7 +214,7 @@ void update_repo()
         return;
     }
 
-    URLRepoConnus[0][0] = 0;
+    nomCourtRepoConnus[0][0] = URLRepoConnus[0][0] = 0;
 
     repoBak = repo;
     snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
@@ -233,14 +233,15 @@ void update_repo()
 		}
 
 		//Vérification si repo déjà raffraichie
-		for(i = 0; i < 1000 && URLRepoConnus[i][0] && strcmp(URLRepoConnus[i], infosTeam.URL_depot); i++);
-		if(URLRepoConnus[i][0] && i < 1000) //Il y a une corrélation (ces conditions sont plus rapides que strcmp)
+		for(i = 0; i < 1000 && URLRepoConnus[i][0] && strcmp(URLRepoConnus[i], infosTeam.URL_depot) && strcmp(nomCourtRepoConnus[i], infosTeam.teamCourt); i++);
+		if((URLRepoConnus[i][0]) && i < 1000) //Il y a une corrélation (ces conditions sont plus rapides que strcmp)
             continue;
         else if(i < 1000)
         {
             strcpy(URLRepoConnus[i], infosTeam.URL_depot); //Ajout aux URL connues
+            strcpy(nomCourtRepoConnus[i], infosTeam.teamCourt); //Ajout aux URL connues
             if(i < 1000-1)
-                URLRepoConnus[i+1][0] = 0;
+                nomCourtRepoConnus[i+1][0] = URLRepoConnus[i+1][0] = 0;
         }
 
 		legacy = get_update_repo(bufferDL, &infosTeam);

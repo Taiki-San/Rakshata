@@ -156,7 +156,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
         if(chapitreDB == NULL) //Erreur de mémoire ou liste vide
             return errorEmptyCTList(contexte, 0, texteTrad);
         else
-            chapitreDB[0].dernierChapitreLu = dernierLu;
+            chapitreDB[0].IDDernierElemLu = dernierLu;
 
         displayTemplateChapitre(mangaDB, chapitreDB[0], contexte, texteTrad);
 

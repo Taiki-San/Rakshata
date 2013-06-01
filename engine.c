@@ -373,7 +373,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             if(!engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                 continue;
 
-            texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], contexte, couleurUnread, couleurNew, couleurTexte));
+            texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurTexte));
             if(texte->w >= longueurElement + 10)
             {
                 int length = strlen(input[i].stringToDisplay), lettreToRemove, widthDrawn = texte->w;
@@ -384,7 +384,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
                 for(; length > 0 && temp[length-1] == ' '; temp[--length] = 0);
                 snprintf(temp, LONGUEUR_NOM_MANGA_MAX, "%s...", temp);
                 SDL_DestroyTextureS(texte);
-                texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], contexte, couleurUnread, couleurNew, couleurTexte));
+                texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurTexte));
             }
 
             position.h = texte->h;
@@ -901,7 +901,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 }
                 case ENGINE_OUTPUT_BOUTON_CHAPITRE_2:
                 {
-                    *elementChoisis = input[0].dernierChapitreLu;
+                    *elementChoisis = input[0].IDDernierElemLu;
                     break;
                 }
                 case ENGINE_OUTPUT_BOUTON_CHAPITRE_3:
@@ -1146,13 +1146,16 @@ void displayBigMainMenuIcon()
     }
 }
 
-SDL_Color getEngineColor(DATA_ENGINE input, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte)
+SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte)
 {
     if((contexte == CONTEXTE_LECTURE && checkChapitreUnread(*input.data) == 1)
             || (contexte == CONTEXTE_DL && checkChapitreUnread(*input.data) == -1))
         return couleurUnread;
 
     else if(contexte == CONTEXTE_DL && input.data->mangaName[0] && isItNew(*input.data)) //Si pas encore DL, en rouge
+        return couleurNew;
+
+    else if((contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && input.ID == input0.IDDernierElemLu)
         return couleurNew;
 
     return couleurTexte;

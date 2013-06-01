@@ -339,21 +339,21 @@ void getPasswordArchive(char *fileName, char password[300])
     crashTemp(MK, SHA256_DIGEST_LENGTH);
 }
 
-void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM])
+void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
     int i, j, k;
-    char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM], temp[350];
+    char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1], temp[350];
 
 	for(i = 0; i < NUMBER_MAX_TEAM_KILLSWITCHE; i++)
-        for(j=0; j < LONGUEUR_ID_TEAM; killswitch_string[i][j++] = 0);
+        for(j=0; j < 2*SHA256_DIGEST_LENGTH+1; killswitch_string[i][j++] = 0);
 
     if(!checkNetworkState(CONNEXION_OK))
         return;
 
     snprintf(temp, 350, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
 
-    crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM);
-    download_mem(temp, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * LONGUEUR_ID_TEAM, 0);
+    crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1);
+    download_mem(temp, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 0);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;
@@ -368,11 +368,11 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEU
     }
 }
 
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check)
+int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check)
 {
     int i = 0;
     char pre_hash_check[LONGUEUR_TYPE_TEAM+LONGUEUR_URL+1], hash_check[2*SHA256_DIGEST_LENGTH+1];
-    if(!checkNetworkState(CONNEXION_OK))
+    if(!checkNetworkState(CONNEXION_OK) || killswitch_string[0][0] == 0)
         return 0;
 
     crashTemp(hash_check, 2*SHA256_DIGEST_LENGTH+1);

@@ -106,12 +106,12 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     if(contexte != CONTEXTE_DL)
     {
         crashTemp(temp, TAILLE_BUFFER);
-        if(data.dernierChapitreLu == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        if(data.IDDernierElemLu == VALEUR_FIN_STRUCTURE_CHAPITRE)
            snprintf(temp, TAILLE_BUFFER, "%s", texteTrad[11]);
-        else if(data.dernierChapitreLu%10)
-            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d.%d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.dernierChapitreLu/10, data.dernierChapitreLu%10);
+        else if(data.IDDernierElemLu%10)
+            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d.%d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.IDDernierElemLu/10, data.IDDernierElemLu%10);
         else
-            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.dernierChapitreLu/10);
+            snprintf(temp, TAILLE_BUFFER, "%s %s %s %d", texteTrad[12], texteTrad[isTome], texteTrad[13], data.IDDernierElemLu/10);
 
         texte = TTF_Write(renderer, police, temp, couleurTexte);
         if(texte != NULL)
@@ -240,7 +240,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
             }
         }
         else
-            data[0].dernierChapitreLu = dernierLu;
+            data[0].IDDernierElemLu = dernierLu;
 
         displayTemplateChapitreTome(mangaDB, contexte, *isTome, data[0], texteTrad);
         if(!noChoice)

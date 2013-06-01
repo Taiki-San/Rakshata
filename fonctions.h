@@ -107,7 +107,7 @@ void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);
 void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale);
 
 void displayBigMainMenuIcon();
-SDL_Color getEngineColor(DATA_ENGINE mangaDB, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte);
+SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte);
 
 void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
 
@@ -259,8 +259,8 @@ void killswitchEnabled(char nomTeamCourt[5]);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
 SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
-void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM]);
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][LONGUEUR_ID_TEAM], TEAMS_DATA team_to_check);
+void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
+int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check);
 
 /**Selection.c**/
 int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre);

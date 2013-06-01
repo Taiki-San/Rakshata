@@ -109,11 +109,11 @@ typedef struct data_provided_to_engine
 
     /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
     bool switchAvailable;
+    int IDDernierElemLu;
     char* website;
 
     /*Variable pour CONTEXTE_CHAPITRE*/
 	int chapitrePlusAncien;
-	int dernierChapitreLu;
 	int chapitrePlusRecent;
 
     /*Variable pour CONTEXTE_TOME*/
