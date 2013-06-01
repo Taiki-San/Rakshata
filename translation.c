@@ -45,7 +45,13 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
 
     free(buffer);
 
-    fscanfs(fichierTrad, "%d", &i);
+    if(IDTrad == 1)
+    {
+        for(i = fgetc(fichierTrad); i != '1' && i != EOF; i = fgetc(fichierTrad));
+        if(i != EOF)
+            i = 1;
+    }
+
     while(i != IDTrad)
     {
         for(i = fgetc(fichierTrad); i != ']' && i != EOF; i = fgetc(fichierTrad));
@@ -69,17 +75,12 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
         numeroID[0] = i;
         numeroID[1] = 0;
 
-        if((i = fgetc(fichierTrad)) >= '0' && i <= '9' && i != EOF)
+        if(IDTrad >= 10 && (i = fgetc(fichierTrad)) >= '0' && i <= '9' && i != EOF)
             numeroID[1] = i;
-        else if (i != EOF)
-            fseek(fichierTrad, -1, SEEK_CUR);
         i = charToInt(numeroID);
     }
 
-    if(IDTrad == 1)
-        fseek(fichierTrad, -1, SEEK_CUR);
-
-    for(i = 0; fgetc(fichierTrad) != ']' && i < antiBufferOverflow[IDTrad -1] ; i++)
+    for(i = 0; (j = fgetc(fichierTrad)) != ']' && j != EOF && i < antiBufferOverflow[IDTrad -1] ; i++)
     {
         for(j = 0; j < TRAD_LENGTH; trad[i][j++] = 0);
 #ifndef _WIN32
