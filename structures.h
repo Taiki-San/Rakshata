@@ -54,20 +54,6 @@ typedef struct dataMangas
     int favoris;
 } MANGAS_DATA;
 
-typedef struct data_lecture_tome
-{
-    int nombrePageTotale;
-    int pageCourante;
-    int *pageCouranteDuChapitre;
-
-    int *pathNumber; //Correspondance entre nomPage et path
-    char **nomPages;
-    char **path;
-
-    int IDDisplayed;
-    int *chapitreTomeCPT; //Pour la crypto
-} DATA_LECTURE;
-
 typedef struct data_loaded_from_download_list
 {
 	int chapitre;
@@ -121,13 +107,6 @@ typedef struct data_provided_to_engine
     char *description1; //Ligne de description 1
     char *description2; //Ligne de description 2
 } DATA_ENGINE;
-
-typedef struct data_thread_check_new_CT
-{
-    MANGAS_DATA mangaDB;
-    bool isTome;
-    int CT;
-} DATA_CK_LECTEUR;
 
 typedef struct
 {

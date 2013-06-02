@@ -620,12 +620,12 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 /*Si appuis sur un bouton pour changer de page*/
                 else if(event.button.y >= HAUTEUR_BOUTONS_CHANGEMENT_PAGE && event.button.y <= HAUTEUR_BOUTONS_CHANGEMENT_PAGE + LARGEUR_MOYENNE_MANGA_PETIT)
                 {
-                    if(event.button.x > BORDURE_LAT_LECTURE && event.button.x < BORDURE_LAT_LECTURE + LONGUEUR_PRECENDENT) //Précédent
+                    if(event.button.x > MARGE_LATERALE_BOUTONS_MULTI_PAGE && event.button.x < MARGE_LATERALE_BOUTONS_MULTI_PAGE + LONGUEUR_PRECENDENT) //Précédent
                     {
                         *outputType = ENGINE_OUTPUT_PREV_PAGE;
                     }
 
-                    else if(event.button.x > WINDOW_SIZE_W - BORDURE_LAT_LECTURE - LONGUEUR_SUIVANT && event.button.x < WINDOW_SIZE_W - BORDURE_LAT_LECTURE) //Suivant
+                    else if(event.button.x > WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE - LONGUEUR_SUIVANT && event.button.x < WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE) //Suivant
                     {
                         *outputType = ENGINE_OUTPUT_NEXT_PAGE;
                     }
@@ -1106,7 +1106,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     texte = TTF_Write(renderer, police, localization[0], couleurTexte);
     if(texte != NULL)
     {
-        position.x = BORDURE_LAT_LECTURE;
+        position.x = MARGE_LATERALE_BOUTONS_MULTI_PAGE;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -1116,7 +1116,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     texte = TTF_Write(renderer, police, localization[1], couleurTexte); //Page suivante
     if(texte != NULL)
     {
-        position.x = WINDOW_SIZE_W - BORDURE_LAT_LECTURE - texte->w;
+        position.x = WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE - texte->w;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);

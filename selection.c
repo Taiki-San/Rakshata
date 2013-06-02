@@ -125,10 +125,10 @@ int checkProjet(MANGAS_DATA mangaDB)
             return 1;
         }
         position.x = 0;
-        position.y = BORDURE_HOR_LECTURE;
+        position.y = HAUTEUR_INFOSPNG;
         position.w = image->w;
 
-        position.h = renderer->window->h - BORDURE_HOR_LECTURE;
+        position.h = renderer->window->h - HAUTEUR_INFOSPNG;
         if(position.h > image->h)
             position.h = image->h;
 
@@ -138,7 +138,7 @@ int checkProjet(MANGAS_DATA mangaDB)
 
 		image = TTF_Write(renderer, police, texte[0], couleur);
         position.x = LARGEUR / 2 - image->w / 2;
-        position.y = BORDURE_HOR_LECTURE / 2 - image->h / 2;
+        position.y = HAUTEUR_INFOSPNG / 2 - image->h / 2;
         position.h = image->h;
         position.w = image->w;
         SDL_RenderCopy(renderer, image, NULL, &position);

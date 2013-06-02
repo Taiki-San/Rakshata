@@ -11,13 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
-
-//Macro pour libérer plus facilement la mémoire
-#define FREE_CONTEXT cleanMemory(dataReader, chapitre, chapitre_texture, OChapitre, NChapitre, UI_PageAccesDirect, infoSurface, bandeauControle, police)
-#define REFRESH_SCREEN refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, explication, pageAccesDirect, UI_PageAccesDirect)
-
-extern int unlocked;
-static int pageWaaaayyyyTooBig;
+#include "lecteur.h"
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen)
 {
@@ -458,13 +452,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         {
             if(!noRefresh)
             {
-                REFRESH_SCREEN;
+                REFRESH_SCREEN();
             }
 
             else if(changementEtat)
             {
                 /*Bug bizarre*/
-                REFRESH_SCREEN;
+                REFRESH_SCREEN();
                 changementEtat = 0;
             }
             else
@@ -485,7 +479,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             NChapitre = 0;
                         }
                         else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
-                            REFRESH_SCREEN;
+                            REFRESH_SCREEN();
                     }
                 }
                 else if (changementPage == -1)
@@ -502,7 +496,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             OChapitre = 0;
                         }
                         else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
-                            REFRESH_SCREEN;
+                            REFRESH_SCREEN();
                     }
                 }
                 pageCharge = 1;
@@ -521,7 +515,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     testExistance = fopenR("data/laststate.dat", "w+");
                     fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
                     fclose(testExistance);
-                    FREE_CONTEXT;
+                    FREE_CONTEXT();
                     return PALIER_QUIT;
                     break;
                 }
@@ -566,7 +560,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             {
                                 if(changementDeChapitre(mangaDB, isTome, curPosIntoStruct-1, chapitreChoisis))
                                 {
-                                    FREE_CONTEXT;
+                                    FREE_CONTEXT();
                                     return 0;
                                 }
                                 else if(finDuChapitre != 1)
@@ -582,7 +576,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                 if (check4change == -1)
                                 {
-                                    FREE_CONTEXT;
+                                    FREE_CONTEXT();
                                     return 0;
                                 }
                                 break;
@@ -593,7 +587,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                 if (check4change == -1)
                                 {
-                                    FREE_CONTEXT;
+                                    FREE_CONTEXT();
                                     return 0;
                                 }
                                 break;
@@ -603,7 +597,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             {
                                 if(changementDeChapitre(mangaDB, isTome, curPosIntoStruct+1, chapitreChoisis))
                                 {
-                                    FREE_CONTEXT;
+                                    FREE_CONTEXT();
                                     return 0;
                                 }
                                 else if(finDuChapitre != 1)
@@ -633,7 +627,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 if(unlocked)
                                 {
                                     getUpdatedChapterList(mangaDB);
-                                    FREE_CONTEXT;
+                                    FREE_CONTEXT();
                                     internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
                                     for(i = 0; i < mangaDB->nombreChapitre-1 && mangaDB->chapitres[i] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[i] != *chapitreChoisis; i++);
                                     getUpdatedChapterList(mangaDB);
@@ -654,7 +648,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                             case CLIC_SUR_BANDEAU_MAINMENU:
                             {
-                                FREE_CONTEXT;
+                                FREE_CONTEXT();
                                 return PALIER_MENU;
                                 break;
                             }
@@ -717,7 +711,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                         /*Si un déplacement vers le base*/
                                         slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
-                                    REFRESH_SCREEN;
+                                    REFRESH_SCREEN();
 
                                     break;
                                 }
@@ -735,7 +729,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                             if (check4change == -1) //changement de chapitre
                                             {
-                                                FREE_CONTEXT;
+                                                FREE_CONTEXT();
                                                 return 0;
                                             }
                                         }
@@ -745,7 +739,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                             if (check4change == -1)
                                             {
-                                                FREE_CONTEXT;
+                                                FREE_CONTEXT();
                                                 return 0;
                                             }
                                         }
@@ -776,7 +770,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     {
                         case SDLK_PRINTSCREEN:
                         {
-                            FREE_CONTEXT;
+                            FREE_CONTEXT();
                             screenshotSpoted(mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
                             return PALIER_QUIT;
                         }
@@ -800,7 +794,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                             if (check4change == -1)
                             {
-                                FREE_CONTEXT;
+                                FREE_CONTEXT();
                                 return 0;
                             }
                             break;
@@ -811,7 +805,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                             if (check4change == -1)
                             {
-                                FREE_CONTEXT;
+                                FREE_CONTEXT();
                                 return 0;
                             }
                             break;
@@ -881,7 +875,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
                             fclose(testExistance);
 
-                            FREE_CONTEXT;
+                            FREE_CONTEXT();
 
                             return PALIER_QUIT;
                             break;
@@ -928,7 +922,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         case SDLK_ESCAPE:
                         {
-                            FREE_CONTEXT;
+                            FREE_CONTEXT();
                             return PALIER_MENU;
                             break;
                         }
@@ -951,7 +945,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             }
                             else
                             {
-                                FREE_CONTEXT;
+                                FREE_CONTEXT();
                                 return PALIER_CHAPTER;
                             }
                             break;

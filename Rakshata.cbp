@@ -122,6 +122,7 @@
 		<Unit filename="lecteur.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lecteur.h" />
 		<Unit filename="main.h" />
 		<Unit filename="mainfunctions.c">
 			<Option compilerVar="CC" />
