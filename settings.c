@@ -59,7 +59,7 @@ int menuGestion()
 
             case 1:
                 menu = ajoutRepo(false); //Ajouter un dépot
-                if(menu == 1)
+                if(menu > 0)
                     raffraichissmenent(true);
                 break;
 

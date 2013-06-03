@@ -46,7 +46,7 @@ void mainRakshata()
 
     else if(addRepoByFileInProgress)
     {
-        if(ajoutRepo(true) == 1)
+        if(ajoutRepo(true) > 0)
             raffraichissmenent(true);
         continuer = PALIER_QUIT;
     }

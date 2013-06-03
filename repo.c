@@ -13,50 +13,104 @@
 #include "main.h"
 
 bool addRepoByFileInProgress;
-static char URL[LONGUEUR_URL];
+
+typedef struct AUTO_ADD_REPO {
+    char type[LONGUEUR_TYPE_TEAM];
+    char URL[LONGUEUR_URL];
+} AUTO_ADD_REPO;
+
+AUTO_ADD_REPO *addRepoData = NULL;
 
 int checkAjoutRepoParFichier(char *argv)
 {
     addRepoByFileInProgress = false;
-    if(argv != NULL)
-    {
-        FILE *input = fopen(argv, "r");
-        if(input != NULL)
-        {
-            int version = 0;
-            char verification[50] = {0};
-            verification[0] = URL[0] = 0;
-            fscanfs(input, "%s %d %s", verification, 50, &version, URL, LONGUEUR_URL);
-            fclose(input);
+    if(argv == NULL)
+        return 0;
 
-            if(!strcmp(verification, "Repository_for_Rakshata") && version <= CURRENTVERSION)
+    int version = 0;
+    size_t size;
+    char verification[50] = {0}, *bufferRead = NULL;
+    FILE *input = fopen(argv, "r");
+    if(input == NULL)
+        return 0;
+
+    fseek(input, 0, SEEK_END);
+    size = ftell(input);
+    rewind(input);
+    bufferRead = calloc(size+1, sizeof(char));
+    if(bufferRead != NULL)
+    {
+        fscanfs(input, "%s %d\n", verification, 50, &version);
+        size -= ftell(input);
+        fread(bufferRead, size, sizeof(char), input);
+    }
+    fclose(input);
+
+    if(bufferRead == NULL)
+        return 0;
+
+    else if(version > CURRENTVERSION)
+    {
+        if(langue == 1) //Francais
+            UI_Alert("Ajout automatise de depot: echec!", "Le depot que vous tentez d'ajouter n'est pas supporte par cette version de Rakshata, veuillez effectuer une mise a jour en telechargant une version plus recente sur http://www.rakshata.com/");
+        else
+            UI_Alert("Automated addition of repository: failure!", "The repository you're trying to install isn't supported by this version of Rakshata: please perform an update by getting a newer build from our website: http://www.rakshata.com/");
+        free(bufferRead);
+        return 0;
+    }
+    else if(strcmp(verification, "Repository_for_Rakshata"))
+    {
+        if(langue == 1) //Francais
+            UI_Alert("Ajout automatise de depot: echec!", "Fichier invalide: veuillez contacter l'administrateur du site depuis lequel vous l'avez telecharge");
+        else
+            UI_Alert("Automated addition of repository: failure!", "Invalid file: please contact the administrator of the website from which you downloaded the file.");
+        free(bufferRead);
+        return 0;
+    }
+
+    size_t position, nombreRetourLigne, ligneCourante;
+    for(position = nombreRetourLigne = 1; position < size && bufferRead[position]; position++)
+    {
+        if(bufferRead[position] == '\n')
+            nombreRetourLigne++;
+    }
+
+    addRepoData = calloc(nombreRetourLigne+1, sizeof(AUTO_ADD_REPO));
+    if(addRepoData != NULL)
+    {
+        position = ligneCourante = 0;
+        while(position < size && ligneCourante < nombreRetourLigne && bufferRead[position])
+        {
+            position += sscanfs(&bufferRead[position], "%s %s", addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM, addRepoData[ligneCourante].URL, LONGUEUR_URL);
+            for(; position < size && bufferRead[position++] != '\n';);
+            for(; position < size && (bufferRead[position] == '\n' || bufferRead[position] == '\r'); position++);
+            if(addRepoData[ligneCourante].URL[0])
             {
-                addRepoByFileInProgress = true;
-            }
-            else if(version > CURRENTVERSION)
-            {
-                if(langue == 1) //Francais
-                    UI_Alert("Ajout automatise de depot: echec!", "Le depot que vous tentez d'ajouter n'est pas supporte par cette version de Rakshata, veuillez effectuer une mise a jour en telechargant une version plus recente sur http://www.rakshata.com/");
+                int typeExpected = defineTypeRepo(addRepoData[ligneCourante].URL);
+                if((typeExpected == 1 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_1)) //Dropbox
+                   || (typeExpected == 2 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_2)) //Other
+                   || (typeExpected == 3 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_4))) //Goo.gl
+                {
+                    ligneCourante++;
+                    addRepoByFileInProgress = true;
+                }
                 else
-                    UI_Alert("Automated addition of repository: failure!", "The repository you're trying to install isn't supported by this version of Rakshata: please perform an update by getting a newer build from our website: http://www.rakshata.com/");
-                return 0;
+                {
+                    crashTemp(addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM);
+                    crashTemp(addRepoData[ligneCourante].URL, LONGUEUR_URL);
+                }
             }
             else
-            {
-                if(langue == 1) //Francais
-                    UI_Alert("Ajout automatise de depot: echec!", "Fichier invalide: veuillez contacter l'administrateur du site depuis lequel vous l'avez telecharge");
-                else
-                    UI_Alert("Automated addition of repository: failure!", "Invalid file: please contact the administrator of the website from which you downloaded the file.");
-                return 0;
-            }
+                crashTemp(addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM);
         }
     }
-    return 1;
+    free(bufferRead);
+    return addRepoByFileInProgress;
 }
 
 int ajoutRepo(bool ajoutParFichier)
 {
-    int continuer = 0, erreur = 0, somethingAdded = 0;
+    int continuer = 0, erreur = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][TRAD_LENGTH];
     SDL_Texture *texte;
     TTF_Font *police = NULL;
@@ -87,13 +141,15 @@ int ajoutRepo(bool ajoutParFichier)
     }
     else
     {
+        if(addRepoData == NULL)
+            return 0;
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     }
     SDL_RenderPresent(renderer);
     if(!checkNetworkState(CONNEXION_DOWN))
     {
         /*Lecture du fichier*/
-        do
+        while(!continuer && (!ajoutParFichier || addRepoData[somethingAdded + ajoutFichierDecalageRefuse].type[0]))
         {
             if(!ajoutParFichier)
             {
@@ -123,29 +179,30 @@ int ajoutRepo(bool ajoutParFichier)
                     continue;
                 else if(continuer == PALIER_QUIT)
                     return PALIER_QUIT;
+
+                /*Si que des chiffres, DB, sinon, O*/
+                switch(defineTypeRepo(teams.URL_depot))
+                {
+                    case 1:
+                        ustrcpy(teams.type, TYPE_DEPOT_1); //Dropbox
+                        break;
+
+                    case 2:
+                        ustrcpy(teams.type, TYPE_DEPOT_2); //Other
+                        break;
+
+                    case 3: //Goo.gl
+                        ustrcpy(teams.type, TYPE_DEPOT_4);
+                        break;
+                }
             }
             else
             {
-                if(URL[0] == 0)
-                    return 0;
-                usstrcpy(teams.URL_depot, LONGUEUR_URL, URL);
+                if(continuer < PALIER_MENU)
+                    break;
+                usstrcpy(teams.URL_depot, LONGUEUR_URL, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].URL);
+                usstrcpy(teams.type, LONGUEUR_TYPE_TEAM, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].type);
             }
-
-            /*Si que des chiffres, DB, sinon, O*/
-            switch(defineTypeRepo(teams.URL_depot))
-            {
-                case 1:
-                    ustrcpy(teams.type, TYPE_DEPOT_1); //Dropbox
-                    break;
-
-                case 2:
-                    ustrcpy(teams.type, TYPE_DEPOT_2); //Other
-                    break;
-
-                case 3: //Goo.gl
-                    ustrcpy(teams.type, TYPE_DEPOT_4);
-                    break;
-                }
 
             if(!continuer)
             {
@@ -257,7 +314,7 @@ int ajoutRepo(bool ajoutParFichier)
                     SDL_RenderPresent(renderer);
                     TTF_CloseFont(police);
 
-                    if(waitEnter(renderer) == 1)
+                    if((continuer = waitEnter(renderer)) == 1)
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
                         repoNew = ralloc((repo!=NULL?strlen(repo):0)+500);
@@ -271,21 +328,37 @@ int ajoutRepo(bool ajoutParFichier)
                         if(repoBak)
                             free(repoBak);
                         free(repoNew);
-                        somethingAdded = continuer = 1;
+
+                        somethingAdded++;
+                        if(ajoutParFichier)
+                            continuer = 0;
                     }
+                    else if(ajoutParFichier && continuer >= PALIER_MENU)
+                        continuer = 0;
                 }
 
-                else
+                else if(!ajoutParFichier)
                 {
                     continuer = affichageRepoIconnue();
                     if(continuer >= PALIER_MENU)
                         continuer = -1;
                 }
+                else
+                    ajoutFichierDecalageRefuse++;
             }
-        }while(!continuer && !ajoutParFichier);
+        }
     }
+
+
+    if(ajoutParFichier)
+    {
+        free(addRepoData);
+    }
+
     if(continuer >= PALIER_MENU)
         continuer = somethingAdded;
+    else if(ajoutParFichier && somethingAdded)
+        return somethingAdded;
     return continuer;
 }
 
