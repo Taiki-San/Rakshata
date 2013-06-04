@@ -25,7 +25,7 @@ int checkAjoutRepoParFichier(char *argv)
 {
     addRepoByFileInProgress = false;
     if(argv == NULL)
-        return 0;
+        return 1;
 
     int version = 0;
     size_t size;
