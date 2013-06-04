@@ -1298,10 +1298,12 @@ int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome
         {
             ret_value = -1;
         }
-        else //On met le menu en rouge
+        else if(!*finDuChapitre) //On met le menu en rouge
         {
             *finDuChapitre = 1;
         }
+        else
+            ret_value = 1; //Ne raffraichis pas la page
     }
     else
     {
@@ -1315,10 +1317,12 @@ int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome
         {
             ret_value = -1;
         }
-        else //On met le menu en rouge
+        else if(!*finDuChapitre) //On met le menu en rouge
         {
             *finDuChapitre = 1;
         }
+        else
+            ret_value = 1;
     }
     return ret_value;
 }
