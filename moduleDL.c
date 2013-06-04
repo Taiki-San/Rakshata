@@ -93,33 +93,43 @@ int telechargement()
                 }
                 else
                 {
-                    dataDL.buf = NULL;
-                    glados = download_UI(&dataDL);
-                    free(dataDL.URL);
+                    do
+                    {
+                        dataDL.buf = NULL;
+                        glados = download_UI(&dataDL);
+                        free(dataDL.URL);
 
-                    if(dataDL.buf == NULL || dataDL.length < 50 || dataDL.buf[0] != 'P' || dataDL.buf[1] != 'K' || glados != CODE_RETOUR_OK)
-                    {
-                        if(dataDL.buf != NULL)
+                        if(dataDL.buf == NULL || dataDL.length < 50 || ((dataDL.buf[0] != 'P' || dataDL.buf[1] != 'K') && strncmp(dataDL.buf, "http://", 7) && strncmp(dataDL.buf, "https://", 8)) || glados != CODE_RETOUR_OK)
                         {
-                            if(!strcmp(todoList[posToDo]->datas->team->type, TYPE_DEPOT_3) && dataDL.length < 50)
-                                logR(dataDL.buf);
-                            free(dataDL.buf);
+                            if(dataDL.buf != NULL)
+                            {
+                                if(!strcmp(todoList[posToDo]->datas->team->type, TYPE_DEPOT_3) && dataDL.length < 50)
+                                    logR(dataDL.buf);
+                                free(dataDL.buf);
+                            }
                         }
-                    }
-                    else // Archive pas corrompue, installation
-                    {
-                        status += 1; //On signale le lancement d'une installation
-                        i = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                        if(todoList[posToDo]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                        else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
                         {
-                            if(posToDo+1 < mangaTotal && todoList[posToDo+1] != NULL && todoList[posToDo+1]->datas == todoList[posToDo]->datas && todoList[posToDo+1]->partOfTome == todoList[posToDo]->partOfTome)
-                                i = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                            else
-                                i = VALEUR_FIN_STRUCTURE_CHAPITRE+1; //Validation
+                            free(dataDL.URL);
+                            dataDL.URL = dataDL.buf;
+                            dataDL.buf = NULL;
+                            continue;
                         }
-                        nameWindow(windowDL, status);
-                        startInstallation(*todoList[posToDo], dataDL, i != VALEUR_FIN_STRUCTURE_CHAPITRE);
-                    }
+                        else // Archive pas corrompue, installation
+                        {
+                            status += 1; //On signale le lancement d'une installation
+                            i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                            if(todoList[posToDo]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                            {
+                                if(posToDo+1 < mangaTotal && todoList[posToDo+1] != NULL && todoList[posToDo+1]->datas == todoList[posToDo]->datas && todoList[posToDo+1]->partOfTome == todoList[posToDo]->partOfTome)
+                                    i = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                                else
+                                    i = VALEUR_FIN_STRUCTURE_CHAPITRE+1; //Validation
+                            }
+                            nameWindow(windowDL, status);
+                            startInstallation(*todoList[posToDo], dataDL, i != VALEUR_FIN_STRUCTURE_CHAPITRE);
+                        }
+                    }while(0);
                 }
 
                 if(glados == CODE_RETOUR_INTERNAL_FAIL)
