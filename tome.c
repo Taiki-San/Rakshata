@@ -154,7 +154,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH];
     loadTrad(texteTrad, 19);
 
-    if((i = autoSelectionTome(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if((i = autoSelectionChapitreTome(mangaDB, 1, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
         return i;
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
@@ -201,13 +201,6 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
 void displayTemplateTome(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     displayTemplateChapitreTome(mangaDB, contexte, 1, data, texteTrad);
-}
-
-int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte)
-{
-    if(mangaDB->tomes == NULL)
-        return VALEUR_FIN_STRUCTURE_CHAPITRE;
-    return autoSelectionChapitreTome(mangaDB, 1, mangaDB->tomes[0].ID, mangaDB->tomes[mangaDB->nombreTomes-1].ID, contexte);
 }
 
 DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)

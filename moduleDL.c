@@ -110,9 +110,7 @@ int telechargement()
                         }
                         else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
                         {
-                            free(dataDL.URL);
                             dataDL.URL = dataDL.buf;
-                            dataDL.buf = NULL;
                             continue;
                         }
                         else // Archive pas corrompue, installation

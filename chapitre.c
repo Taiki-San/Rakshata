@@ -69,7 +69,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreChapitre; nbElem++)
     {
-        if(!checkChapterReadable(*mangaDB, &mangaDB->chapitres[nbElem]))
+        if(!checkChapterReadable(*mangaDB, mangaDB->chapitres[nbElem]))
             mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
     }
 
@@ -131,7 +131,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH];
     loadTrad(texteTrad, 19);
 
-    if((i = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if((i = autoSelectionChapitreTome(mangaDB, 0, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
         return i;
 
     snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
@@ -178,11 +178,6 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     displayTemplateChapitreTome(mangaDB, contexte, 0, data, texteTrad);
-}
-
-int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte)
-{
-    return autoSelectionChapitreTome(mangaDB, 0, mangaDB->firstChapter, mangaDB->lastChapter, contexte);
 }
 
 DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)

@@ -212,8 +212,7 @@ int mainLecture()
                         else
                             getUpdatedCTList(&mangaDB[mangaChoisis], isTome);
                     }
-                }while(chapitreChoisis > PALIER_CHAPTER && (continuer > PALIER_MENU || (continuer == PALIER_CHAPTER && mangaDB[mangaChoisis].chapitres[1] == VALEUR_FIN_STRUCTURE_CHAPITRE))
-                       && (restoringState || mangaDB[mangaChoisis].chapitres[0] != mangaDB[mangaChoisis].chapitres[mangaDB->nombreChapitre-1]));
+                }while(continuer >= PALIER_CHAPTER && chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis != autoSelectionChapitreTome(&mangaDB[mangaChoisis], isTome, CONTEXTE_LECTURE));
             }
         }
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);

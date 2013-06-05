@@ -620,9 +620,8 @@ bool checkPathEscape(char *string, int length)
     return true;
 }
 
-bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr)
+bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
 {
-    int chapitre = *chapitre_ptr;
     char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350];
     char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
     if(chapitre%10)
@@ -685,6 +684,6 @@ bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
         META_TOME *tome = data;
         return checkTomeReadable(mangaDB, tome->ID);
     }
-    return checkChapterReadable(mangaDB, data);
+    return checkChapterReadable(mangaDB, *(int *) data);
 }
 

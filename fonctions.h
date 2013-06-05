@@ -34,7 +34,6 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int askForChapter(MANGAS_DATA *mangaDB, int mode);
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-int autoSelectionChapitre(MANGAS_DATA *mangaDB, int contexte);
 DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 
 /**check.c**/
@@ -56,12 +55,12 @@ int checkWindowEventValid(int EventWindowEvent);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
 bool checkPathEscape(char *string, int length);
-bool checkChapterReadable(MANGAS_DATA mangaDB, int *chapitre_ptr);
+bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 
 /**CTCommon.c**/
-int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int max, int contexte);
+int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int contexte);
 void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, DATA_ENGINE data, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
@@ -94,7 +93,7 @@ int checkDLInProgress();
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
 int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage);
 int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurChapitre, int *outputType);
-int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne);
+int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne);
 
 int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
 int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB);
@@ -278,7 +277,6 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);
 int askForTome(MANGAS_DATA *mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-int autoSelectionTome(MANGAS_DATA *mangaDB, int contexte);
 DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
 int extractNumFromConfigTome(char *input, int ID);

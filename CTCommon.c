@@ -12,21 +12,26 @@
 
 #include "main.h"
 
-int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int min, int max, int contexte)
+int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int contexte)
 {
-    if(min == max && contexte != CONTEXTE_DL) //Si une seul chapitre, on le séléctionne automatiquement
+    if(contexte != CONTEXTE_DL) //Si une seul chapitre, on le séléctionne automatiquement
     {
         if(isTome)
         {
-            if(checkTomeReadable(*mangaDB, mangaDB->tomes[0].ID))
-                return min;
+            if(mangaDB->tomes == NULL)
+                getUpdatedCTList(mangaDB, isTome);
+
+            if(mangaDB->tomes != NULL && mangaDB->tomes[0].ID == mangaDB->tomes[mangaDB->nombreTomes-1].ID && checkTomeReadable(*mangaDB, mangaDB->tomes[0].ID))
+                return mangaDB->tomes[0].ID;
         }
 
         else
         {
-            min *= 10;
-            if(checkChapterReadable(*mangaDB, &min))
-                return min;
+            if(mangaDB->chapitres == NULL)
+                getUpdatedCTList(mangaDB, isTome);
+
+            if(mangaDB->chapitres != NULL && mangaDB->chapitres[0] == mangaDB->chapitres[mangaDB->nombreChapitre-1] && checkChapterReadable(*mangaDB, mangaDB->chapitres[0]))
+                return mangaDB->chapitres[0];
         }
     }
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -195,7 +200,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
     if(!checkFileExist(temp) && contexte != CONTEXTE_DL)
         return PALIER_MENU;
 
-    if((dernierLuChapitre = autoSelectionChapitre(mangaDB, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if((dernierLuChapitre = autoSelectionChapitreTome(mangaDB, *isTome, contexte)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
         return dernierLuChapitre;
 
     refreshTomeList(mangaDB);

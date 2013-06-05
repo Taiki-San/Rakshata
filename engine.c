@@ -265,7 +265,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, i = 0, elementParColonne[ENGINE_NOMBRE_COLONNE], elementChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE, limitationLettre = 0;
-    int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], nombreElement, posTab, nombreElementAffiche, reprintScreen = 0;
+    int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], nombreElement, posTab, nombreElementAffiche, nombreTotalElementAffiche, reprintScreen = 0;
     int button_selected[8];
     char localization[SIZE_TRAD_ID_11][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
@@ -305,30 +305,30 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             int posFirstElement = 0;
             if(reprintScreen)
             {
-                for(i = nombreElementAffiche = 0; i < input[0].nombreElementTotal; i++) //Si la liste a été restreinte
+                for(i = nombreTotalElementAffiche = 0; i < input[0].nombreElementTotal; i++) //Si la liste a été restreinte
                 {
                     if(engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                     {
                         if(!posFirstElement) posFirstElement = i;
-                        nombreElementAffiche++;
+                        nombreTotalElementAffiche++;
                     }
                 }
             }
             else
-                nombreElementAffiche = nombreElement;
+                nombreTotalElementAffiche = nombreElement;
 
-            if(nombreElementAffiche == 1) //AutoSelection
+            if(nombreTotalElementAffiche == 1) //AutoSelection
             {
                 elementChoisis = input[posFirstElement].ID;
                 break;
             }
         }
         else
-            nombreElementAffiche = nombreElement;
+            nombreTotalElementAffiche = nombreElement;
 
-        loadMultiPage(nombreElementAffiche, &pageSelection, &pageTotale);
+        loadMultiPage(nombreTotalElementAffiche, &pageSelection, &pageTotale);
         applyBackground(renderer, 0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE, WINDOW_SIZE_W, contexte != CONTEXTE_CHAPITRE ? WINDOW_SIZE_H : WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
-        engineLoadCurrentPage(nombreElementAffiche, pageSelection, elementParColonne);
+        engineLoadCurrentPage(nombreTotalElementAffiche, pageSelection, elementParColonne);
         engineDisplayPageControls(localization, pageSelection, pageTotale);
 
         if(contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_DL)
@@ -364,7 +364,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
 
         for(i = nombreElementAffiche = 0; i < nombreElement && nombreElementAffiche < (pageSelection-1) * ENGINE_ELEMENT_PAR_PAGE; i++) //Si la liste a été restreinte
         {
-            if(contexte != CONTEXTE_LECTURE || contexte != CONTEXTE_DL || engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
+            if((contexte != CONTEXTE_LECTURE && contexte != CONTEXTE_DL) || engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                 nombreElementAffiche++;
         }
 
@@ -396,7 +396,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
                 position.x = 0;
 
             /*Définis la position du texte en fonction de sa colonne*/
-            if(nombreElement <= 9)
+            if(nombreTotalElementAffiche <= 9)
             {
                 position.x += bordureLaterale + ((nombreElementAffiche % ENGINE_NOMBRE_COLONNE) * (bordureLaterale + longueurElement));
                 position.y = hauteurAffichage + ((position.h + INTERLIGNE) * (nombreElementAffiche / ENGINE_NOMBRE_COLONNE));
@@ -429,14 +429,11 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             SDL_RenderPresent(renderer);
         }
 
-        if(contexte != CONTEXTE_LECTURE && contexte != CONTEXTE_DL)
-            nombreElementAffiche = nombreElement;
-
         do
         {
             int output, outputType = ENGINE_OUTPUT_DEFAULT;
             output = engineSelection(contexte, input, tailleTexte, hauteurAffichage, &outputType);
-            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreElementAffiche<=9);
+            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
     }
 
@@ -733,7 +730,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
     return elementChoisis;
 }
 
-int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
+int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
 {
     int ret_value = 0; //Besoin de refresh
     switch(outputType)
@@ -751,12 +748,10 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             }
             else
             {
-                int nbElemColonne[3];
-                engineLoadCurrentPage(input[0].nombreElementTotal, *pageCourante, nbElemColonne);
                 if(output/100 == 0)
                     posClicked = output % 100;
                 else
-                    posClicked = nbElemColonne[output / 100 - 1] + output % 100;
+                    posClicked = elementParColonne[output / 100 - 1] + output % 100;
             }
 
             posClicked += (*pageCourante-1) * ENGINE_ELEMENT_PAR_PAGE;
