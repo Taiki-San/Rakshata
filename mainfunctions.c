@@ -105,6 +105,7 @@ int mainLecture()
 {
     int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur;
     int restoringState = 0, fullscreen = 0, pageManga = 1, pageChapitre = 1;
+    bool retry;
 
     if(checkRestore())
         restoringState = 1;
@@ -151,15 +152,12 @@ int mainLecture()
                 pageChapitre = 1;
                 do
                 {
+                    retry = false; //Si on doit relancer la boucle
                     if(!restoringState)
                     {
                         curPage = pageChapitre;
                         chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_LECTURE);
                         pageChapitre = curPage;
-                    }
-                    else
-                    {
-                        getUpdatedChapterList(&mangaDB[mangaChoisis]);
                     }
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
@@ -209,10 +207,13 @@ int mainLecture()
                         pageChapitre = 1;
                         if(retourLecteur < PALIER_CHAPTER)
                             continuer = retourLecteur;
-                        else
+                        else if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis != autoSelectionChapitreTome(&mangaDB[mangaChoisis], isTome, CONTEXTE_LECTURE))
+                        {
                             getUpdatedCTList(&mangaDB[mangaChoisis], isTome);
+                            retry = true;
+                        }
                     }
-                }while(continuer >= PALIER_CHAPTER && chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis != autoSelectionChapitreTome(&mangaDB[mangaChoisis], isTome, CONTEXTE_LECTURE));
+                }while(retry);//continuer >= PALIER_CHAPTER && chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis != autoSelectionChapitreTome(&mangaDB[mangaChoisis], isTome, CONTEXTE_LECTURE));
             }
         }
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
@@ -264,9 +265,9 @@ int mainChoixDL()
             {
                 bool isTome;
                 chapitreChoisis = PALIER_DEFAULT;
-                continuer = 0;
+                continuer = PALIER_DEFAULT;
                 pageChapitre = 1;
-                while(chapitreChoisis > PALIER_CHAPTER && !continuer)
+                while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
                     curPage = pageChapitre;
                     chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
