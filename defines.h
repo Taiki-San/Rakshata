@@ -413,7 +413,7 @@
 #define SIZE_TRAD_ID_23 2
 #define SIZE_TRAD_ID_24 2
 #define SIZE_TRAD_ID_25 2
-#define SIZE_TRAD_ID_26 16
+#define SIZE_TRAD_ID_26 20
 #define SIZE_TRAD_ID_27 4
 #define SIZE_TRAD_ID_28 2
 #define SIZE_TRAD_ID_29 4

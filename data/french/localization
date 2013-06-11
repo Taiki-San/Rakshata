@@ -154,13 +154,17 @@ servira uniquement d'authentification&
 Mot de passe:&
 Ce compte servira à vous authentifier sur les services&
 de Rakshata, rien ne sera transmis à quiconque.&
-/!\ ERREUR: Adresse email rejetée /!\&
-/!\ ERREUR: Mot de passe rejeté /!\&
-Veuillez réessayer et/ou contacter Taiki&
-Cliquez pour entrer une nouvelle adresse e-mail&
-/!\ ERREUR CRITIQUE /!\&
-/!\ Vérifiez que vous pouvez accéder au site de Rakshata /!\&
-/!\ Si oui, réessayez puis contactez Taiki /!\&]
+ERREUR: Adresse email rejetée&
+Votre adresse email n'est pas valide.&
+Dans le cas où vous ne le compreniez pas, n'hésitez&
+pas à nous contacter à l'adresse contact@rakshata.com&
+ERREUR: Mot de passe rejeté&
+Votre mot de passe n'est pas valide.&
+Dans le cas où vous l'avez oublié,&
+veuillez contacter contact@rakshata.com avec votre compte mail.&
+ERREUR CRITIQUE&
+Vérifiez que vous pouvez accéder au site de Rakshata&
+Si oui, réessayez puis contactez-nous à contact@rakshata.com&]
 27
 /!\ Erreur: connexion au serveur impossible. /!\&
 Une connexion est nécessaire au moins une fois sur chaque&

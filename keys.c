@@ -416,34 +416,9 @@ int logon()
                 {
                     case 0: //Rejected
                     {
-                        SDL_RenderClear(renderer);
-                        ligne = TTF_Write(renderer, police, trad[10], couleur); //Message d'erreur
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y = 60;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        ligne = TTF_Write(renderer, police, trad[11], couleur); //Explications
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y += 110;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        ligne = TTF_Write(renderer, police, trad[12], couleur); //Explications
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y += 30;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        SDL_RenderPresent(renderer);
-                        TTF_CloseFont(police);
-                        if(waitEnter(renderer) == PALIER_QUIT)
+                        char contenuUIError[3*TRAD_LENGTH+1];
+                        snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
+                        if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
                             return PALIER_QUIT;
                         retry = 1;
                         break;
@@ -464,33 +439,9 @@ int logon()
                     }
                     default: //Else -> erreure critique, me contacter/check de la connexion/du site
                     {
-                        SDL_RenderClear(renderer);
-                        ligne = TTF_Write(renderer, police, trad[13], couleur); //Message d'erreur
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y = 60;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        ligne = TTF_Write(renderer, police, trad[14], couleur); //Explications
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y += 80;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        ligne = TTF_Write(renderer, police, trad[15], couleur); //Explications
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y += 40;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-
-                        SDL_RenderPresent(renderer);
-                        waitEnter(renderer);
+                        char contenuUIError[3*TRAD_LENGTH+1];
+                        snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
+                        UI_Alert(trad[13], contenuUIError);
                         return PALIER_QUIT;
                         break;
                     }
@@ -498,34 +449,21 @@ int logon()
                 break;
             }
 
-            default: //Erreur
+            case 2: //Email invalide
             {
-                ligne = TTF_Write(renderer, police, trad[9], couleur); //Message d'erreur
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y = 60;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
+                char contenuUIError[3*TRAD_LENGTH+1];
+                snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[10], trad[11], trad[12]);
+                if(UI_Alert(trad[9], contenuUIError) == -1) //Error/Quit
+                    return PALIER_QUIT;
+                retry = 1;
+                break;
+            }
 
-                ligne = TTF_Write(renderer, police, trad[11], couleur); //Explications
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y += 110;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                ligne = TTF_Write(renderer, police, trad[12], couleur); //Explications
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y += 30;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                SDL_RenderPresent(renderer);
-                if(waitEnter(renderer) == PALIER_QUIT)
+            default: //Error, en principe, login == 3
+            {
+                char contenuUIError[2*TRAD_LENGTH+1];
+                snprintf(contenuUIError, 2*TRAD_LENGTH+1, "%s\n%s", trad[18], trad[19]);
+                if(UI_Alert(trad[17], contenuUIError) == -1) //Error/Quit
                     return PALIER_QUIT;
                 retry = 1;
                 break;
@@ -635,6 +573,13 @@ int getPassword(char password[100], int dlUI, int salt)
             }
             return 1;
         }
+        else if(ret_value == 0)
+        {
+            char contenuUIError[3*TRAD_LENGTH+1];
+            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
+            if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
+                return PALIER_QUIT;
+        }
     }
 }
 
@@ -694,9 +639,11 @@ int check_login(char adresseEmail[100])
     else if(!strcmp(buffer_output, "account_exist"))
         return 1;
 
+#ifdef DEV_VERSION
     snprintf(buffer_output, 500, "%s\n", buffer_output);
     logR(buffer_output);
-    return 2;
+#endif
+    return 3;
 }
 
 int checkPass(char adresseEmail[100], char password[100], int login)

@@ -154,13 +154,17 @@ will only be used to log yourself in&
 Password:&
 This account will log yourself in on Rakshata's&
 services, nothing will ever be sent to anyone&
-/!\ ERROR: Email address rejected /!\&
-/!\ ERROR: Password rejected /!\&
-Please try again and/or contact Taiki&
-Click to try again with a new email adress&
-/!\ FATAL ERROR /!\&
-/!\ Check if you can access to Rakshata's website /!\&
-/!\ If yes, try again, then contact Taiki /!\&]
+ERROR: Email address rejected&
+Your email adress is not valid.&
+In the case you don't understand why, feel free to contact&
+us at the following adress: contact@rakshata.com&
+ERROR: password rejected&
+Your password is not valid&
+In the case you forgot it,&
+please contact us at contact@rakshata.com with your email adress.&
+FATAL ERROR&
+Check if you can access to Rakshata's website&
+If yes, try again, then contact Taiki&]
 27
 /!\ ERROR: Can't connect to the server. /!\&
 You need to connect to the server at least one time&
