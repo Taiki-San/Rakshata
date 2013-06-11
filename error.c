@@ -306,9 +306,9 @@ int UI_Alert(char* titre, char* contenu)
     alerte.title = titre;
     alerte.message = contenu;
     alerte.numbuttons = 1;
-    bouton.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT|SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
     bouton.buttonid = 1; //Valeur retournée
-    bouton.text = "OK";
+    bouton.text = "Ok";
     alerte.buttons = &bouton;
     alerte.window = window;
     alerte.colorScheme = NULL;
