@@ -13,6 +13,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <SDL.h>
+#include <SDL_sysrender.h> //Header précis pour la structure SDL_Texture, permet de la dereferencer
+#include <SDL_sysvideo.h> //Header précis pour la structure SDL_Windows, permet de la dereferencer
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <curl/curl.h>
+#include <sys/stat.h>
+
 #ifdef __INTEL_COMPILER
 	#include <dirent.msvc.h>
 	#include <io.h>
@@ -33,10 +42,6 @@
 #else
 	#include <dirent.h>
 #endif
-#include <time.h>
-#include <curl/curl.h>
-#include <sys/stat.h>
-
 
 #ifdef _WIN32
 	#ifdef __MINGW32__
@@ -63,6 +68,7 @@
 #else
     #include <pthread.h>
     #include <utime.h>
+    #include <unistd.h>
 
 	#include <sys/types.h>
 	#include <sys/file.h>
@@ -73,22 +79,13 @@
     #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)
     #define MUTEX_LOCK_DECRYPT pthread_mutex_lock(&mutex_decrypt)
     #define MUTEX_UNLOCK_DECRYPT pthread_mutex_unlock(&mutex_decrypt)
-    #define MUTEX_DESTROY(a) pthread_mutex_destroy(a)
-#endif
+    #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
 
-#ifndef __APPLE__
-	#include <SDL.h>
-	#include <SDL_sysrender.h> //Header précis pour la structure SDL_Texture, permet de la dereferencer
-	#include <SDL_sysvideo.h> //Header précis pour la structure SDL_Windows, permet de la dereferencer
-    #include <SDL_image.h>
-    #include <SDL_ttf.h>
-#else
-	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_sysrender.h>
-	#include <SDL2/SDL_sysvideo.h>
-	#include <SDL2_Image/SDL_image.h>
-	#include <SDL_TTF/SDL_ttf.h>
-	#include <openssl/bio.h>
-	#include <openssl/ossl_typ.h>
-	#define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
+    #ifdef __APPLE__
+        #include <openssl/bio.h>
+        #include <openssl/pem.h>
+        #include <openssl/x509.h>
+        #include <openssl/ssl.h>
+        #define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
+    #endif
 #endif

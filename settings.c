@@ -96,7 +96,7 @@ char *loadPrefFile()
 {
     size_t filesize;
     char *output = NULL;
-    FILE* pref = fopenR(SETTINGS_FILE, "r");
+    FILE* pref = fopen(SETTINGS_FILE, "r");
     if(pref == NULL)
     {
 #ifdef DEV_VERSION

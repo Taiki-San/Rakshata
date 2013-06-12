@@ -16,7 +16,7 @@
 #include "unzip.h"
 #define MAXFILENAME (256)
 
-int do_extract_onefile(unzFile uf, const char* filename, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password, unsigned char* pageOutputCrypted);
+int do_extract_onefile(unzFile uf, char* filename, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password, unsigned char* pageOutputCrypted);
 int do_extract(unzFile uf, char* input, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password);
 int do_extract_currentfile(unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password, char* pageOutputCrypted);
 void change_file_date(const char *filename, uLong dosdate, tm_unz tmu_date);

@@ -18,8 +18,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     int i = 0, check4change = 0, changementPage = 0, restoreState = 0, finDuChapitre = 0;
     int buffer = 0, largeurValide = 0, pageTropGrande = 0, tempsDebutExplication = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
-    int deplacementEnCours = 0, curPosIntoStruct = 0;
-    int pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
+    int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
     FILE* testExistance = NULL;
     SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
@@ -30,10 +29,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
     DATA_LECTURE dataReader;
-
-    dataReader.pageCourante = 0;
-    dataReader.nomPages = dataReader.path = NULL;
-    dataReader.pathNumber = NULL;
 
     if(!isTome)
     {
@@ -666,8 +661,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                     if(!clicOnButton(event.button.x, event.button.y, positionBandeauControle.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTropGrande
                     {
-                        deplacementEnCours = 1;
-                        while(deplacementEnCours) //On déplace la page en laissant cliqué
+                        while(1) //On déplace la page en laissant cliqué
                         {
                             anciennePositionX = event.button.x;
                             anciennePositionY = event.button.y;
@@ -675,7 +669,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             SDL_WaitEvent(&event);
                             if(!haveInputFocus(&event, window) || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE)
                             {
-                                deplacementEnCours = 0;
                                 break;
                             }
                             switch(event.type)
@@ -719,7 +712,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 case SDL_MOUSEBUTTONUP:
                                 {
                                     /*Si on a pas bougé la souris, on change de page*/
-                                    deplacementEnCours = 0;
                                     if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
                                     {
                                         //Clic détécté: on cherche de quel côté
@@ -984,6 +976,10 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
     char name[LONGUEUR_NOM_PAGE];
     FILE* config = NULL;
     dataReader->nombrePageTotale = 1;
+    
+    dataReader->pageCourante = 0;
+    dataReader->nomPages = dataReader->path = NULL;
+    dataReader->pathNumber = dataReader->pageCouranteDuChapitre = dataReader->chapitreTomeCPT = NULL;
 
     if(isTome)
     {

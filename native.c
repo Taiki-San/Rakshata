@@ -13,13 +13,13 @@
 #include <stdarg.h>
 #include "main.h"
 
-//#define USE_FULL_PATH
+#define USE_FULL_PATH
 
 /**Fonction de base modifiés**/
+#ifdef USE_FULL_PATH
 
 FILE* fopenR(void *_path, char *right)
 {
-#ifdef USE_FULL_PATH
     unsigned char *path = _path;
     unsigned char *temp = ralloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2));
 	FILE* output = NULL;
@@ -29,26 +29,18 @@ FILE* fopenR(void *_path, char *right)
     output = fopen((char *) temp, right);
     free(temp);
     return output;
-#else
-    return fopen(_path, right);
-#endif
 }
 
 void removeR(char *path)
 {
-#ifdef USE_FULL_PATH
 	char *temp = ralloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
     snprintf(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
     remove(temp);
 	free(temp);
-#else
-    remove(path);
-#endif
 }
 
 void renameR(char *initialName, char *newName)
 {
-#ifdef USE_FULL_PATH
 	char *temp = malloc(strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2); //+1 pour le / et +1 pour \0
 	char *temp2 = malloc(strlen(newName) + strlen(REPERTOIREEXECUTION) + 2);
 
@@ -63,10 +55,12 @@ void renameR(char *initialName, char *newName)
     rename(temp, temp2);
 	free(temp);
 	free(temp2);
-#else
-    rename(initialName, newName);
-#endif
 }
+#else
+    #define fopenR(a, b) fopen(a, b)
+    #define removeR(a) remove(a)
+    #define renameR(a, b) rename(a, b)
+#endif
 
 void mkdirR(char *path)
 {
@@ -95,6 +89,9 @@ void chdirR()
 
 void resetOriginalCHDir(int argc, char* argv)
 {
+#ifndef _WIN32
+    return;
+#endif
     if(argc >= 2 && argv != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
     {
         size_t length = strlen(argv)+1;
@@ -504,9 +501,9 @@ void ouvrirSite(char *URL)
         if(bufferCMD != NULL)
         {
             #ifdef __APPLE__
-                snprintf(bufferCMD, strlen(URL) + 20, "open %s", teams->site);
+                snprintf(bufferCMD, strlen(URL) + 20, "open %s", URL);
             #else
-                snprintf(bufferCMD, strlen(URL) + 20, "firefox %s", teams->site);
+                snprintf(bufferCMD, strlen(URL) + 20, "firefox %s", URL);
             #endif
             system(bufferCMD);
             free(bufferCMD);

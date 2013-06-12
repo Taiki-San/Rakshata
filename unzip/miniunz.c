@@ -439,7 +439,7 @@ int do_extract(uf, input, output_path, opt_extract_without_path,opt_overwrite,pa
 
 int do_extract_onefile(uf,filename,output_path,opt_extract_without_path,opt_overwrite,password,passwordPageCrypted)
     unzFile uf;
-    const char* filename;
+    char* filename;
     char* output_path;
     int opt_extract_without_path;
     int opt_overwrite;
