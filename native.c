@@ -376,6 +376,9 @@ void SDL_DestroyTextureS(SDL_Texture *texture)
 int rmdir (const char *filename);
 void removeFolder(char *path)
 {
+#ifdef DEV_VERSION
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Suppression detectee", path, window);
+#endif
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
