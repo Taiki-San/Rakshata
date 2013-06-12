@@ -503,3 +503,22 @@ int checkDLInProgress() //Mutex should be set
     return 0;
 }
 
+#ifdef __INTEL_COMPILER
+void testDL()
+{
+    FILE* output = NULL;
+	CURL *curl = NULL;
+	CURLcode res;
+	curl = curl_easy_init();
+	if(curl != NULL)
+	{
+		curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/");
+		output = fopenR("shit.txt", "wb");
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+		res = curl_easy_perform(curl);
+		fclose(output);
+		curl_easy_cleanup(curl);
+	}
+}
+#endif

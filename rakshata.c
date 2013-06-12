@@ -31,13 +31,6 @@ SDL_Window* windowDL = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Renderer *rendererDL = NULL;
 
-size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
-{
-    SDL_Event event;
-    SDL_PollEvent(&event);
-    return fwrite(ptr, size, nmemb, input);
-}
-
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
@@ -47,25 +40,14 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
     MUTEX_VAR mutex_decrypt;
-	int main (int argc, char *argv[])
+    #ifdef main
+        #undef main
+    #endif
+    int main (int argc, char *argv[])
 #endif
 {
 #ifdef __INTEL_COMPILER
-	FILE* output = NULL;
-	CURL *curl = NULL;
-	CURLcode res;
-
-	curl = curl_easy_init();
-	if(curl != NULL)
-	{
-		curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/");
-		output = fopenR("shit.txt", "wb");
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-		res = curl_easy_perform(curl);
-		fclose(output);
-		curl_easy_cleanup(curl);
-	}
+	testDL();
 #endif
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
