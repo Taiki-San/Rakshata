@@ -178,6 +178,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                         ret_value = 0;
                     else if(favorisToDL == 2)
                         favorisToDL--;
+                    break;
                 }
 
                 case SDL_WINDOWEVENT:
@@ -261,6 +262,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     return ret_value;
 }
 
+// #define AUTO_SELECT_ENGINE
+
 int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
 {
     /*Initialisation*/
@@ -316,12 +319,13 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             }
             else
                 nombreTotalElementAffiche = nombreElement;
-
+#ifdef AUTO_SELECT_ENGINE
             if(nombreTotalElementAffiche == 1) //AutoSelection
             {
                 elementChoisis = input[posFirstElement].ID;
                 break;
             }
+#endif
         }
         else
             nombreTotalElementAffiche = nombreElement;
@@ -1039,7 +1043,7 @@ void loadMultiPage(int nombreManga, int *pageSelection, int *pageTotale)
     }
 }
 
-void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3])
+void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[ENGINE_NOMBRE_COLONNE])
 {
     if(pageCourante * ENGINE_ELEMENT_PAR_PAGE <= nombreElement) //Page complète
     {
@@ -1051,15 +1055,15 @@ void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3])
     {
         int i;
         int elementParColonne = nombreElement % ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE;
-        int excedent = nombreElement % ENGINE_ELEMENT_PAR_PAGE % ENGINE_NOMBRE_COLONNE;
+        int excedent = (nombreElement % ENGINE_ELEMENT_PAR_PAGE) % ENGINE_NOMBRE_COLONNE;
 
         for(i = 0; i < ENGINE_NOMBRE_COLONNE; i++)
             out[i] = elementParColonne * (i + 1);
 
         if(excedent != 0)
         {
-            for(i = 0; i < excedent; i++) //On impacte l'excedent
-                out[i] = out[i] + (i + 1);
+            for(i = 0; i < excedent && i < ENGINE_NOMBRE_COLONNE; i++) //On impacte l'excedent
+                out[i] += (i + 1);
 
             if(!out[1] && !out[2])
                 out[1] = out[2] = out[0];
@@ -1341,6 +1345,8 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
         SDL_RenderCopy(renderer, texte, NULL, &position);
         SDL_DestroyTextureS(texte);
     }
+    else
+        position.y = 0;
     TTF_CloseFont(police);
 
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
@@ -1348,7 +1354,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     if(texte != NULL)
     {
         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-        position.y += position.h - 8;
+        position.y += texte->h - 8;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);

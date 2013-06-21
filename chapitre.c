@@ -53,7 +53,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     snprintf(temp, TAILLE_BUFFER*5, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     FILE* file = fopenR(temp, "r");
-    if(temp == NULL)
+    if(file == NULL)
     {
         mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
         mangaDB->nombreChapitre = 0;

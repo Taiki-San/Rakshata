@@ -87,28 +87,49 @@ void chdirR()
 	chdir(REPERTOIREEXECUTION);
 }
 
-void resetOriginalCHDir(int argc, char* argv)
+void resetOriginalCHDir(int *argc, char** argv)
 {
-#ifndef _WIN32
-    return;
-#endif
-    if(argc >= 2 && argv != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
+    size_t length = strlen(argv[0])+1;
+#ifdef __APPLE__
+    if(argv[0] != NULL) {
+        
+        int i;
+        char *newPath = malloc(length+20);
+        if(newPath != NULL)
+        {
+            for(i = length -1; i > 0 && argv[0][i] != '/'; argv[0][i--] = 0);
+            snprintf(newPath, length+19, "%s../..", argv[0]);
+            chdir(newPath);
+            free(newPath);
+        }
+        (*argc) -= 2;
+        if(*argc > 1)
+        {
+            argv[1] = argv[3];
+        }
+        else
+            argv[1] = NULL;
+    }
+    else
+        argc = 0;
+#else
+    if(*argc >= 2 && argv[0] != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
     {
-        size_t length = strlen(argv)+1;
         char* path = malloc(length+1);
         if(path != NULL)
         {
-            usstrcpy(path, length, argv);
+            usstrcpy(path, length, argv[0]);
             length--;
             do
             {
                 for(; length > 0 && path[length] != '/' && path[length] != '\\'; path[length--] = 0);
             }while(length > 0 && !checkFileExist(path));
             chdir(path);
-            getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
             free(path);
         }
     }
+#endif
+    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 }
 
 int strend(char *recepter, size_t length, const char *sender)

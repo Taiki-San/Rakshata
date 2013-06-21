@@ -115,12 +115,11 @@ char *loadPrefFile()
 #endif
         return NULL;
     }
-    output = malloc(filesize+10);
+    output = calloc(filesize+10, sizeof(char));
     if(output == NULL)
     {
         return NULL;
     }
-    crashTemp(output, filesize+10);
     AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
     if(output[0] != '<' && output[1] != '<' && output[2] != '<' && output[3] != '<')
@@ -282,8 +281,9 @@ int loadLangueProfile()
 
 char* loadLargePrefs(char flag)
 {
-	char *prefs = loadPrefFile();
-	if(prefs != NULL)
+    char *prefs, *basePtr;
+    basePtr = prefs = loadPrefFile();
+    if(prefs != NULL)
 	{
 		int i;
 		size_t bufferSize = 0;
@@ -298,10 +298,12 @@ char* loadLargePrefs(char flag)
 			{
 				memccpy(databaseRAW, prefs, 0, bufferSize);
 				databaseRAW[bufferSize] = 0;
+                free(basePtr);
 				return databaseRAW;
 
 			}
 		}
+        free(basePtr);
 	}
 	if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
     {

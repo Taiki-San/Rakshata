@@ -191,7 +191,7 @@ void displayIconeChapOrTome(bool isTome)
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int outChoisis, dernierLu, dernierLuTome, dernierLuChapitre, noChoice = 0;
+    int outChoisis, dernierLu, dernierLuTome = VALEUR_FIN_STRUCTURE_CHAPITRE, dernierLuChapitre = VALEUR_FIN_STRUCTURE_CHAPITRE, noChoice = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH];
     DATA_ENGINE *data = NULL;
     loadTrad(texteTrad, 19);

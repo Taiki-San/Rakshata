@@ -35,7 +35,6 @@ SDL_Renderer *rendererDL = NULL;
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
     MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;
-    int rakshata(int argc, char *argv[])
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
@@ -43,12 +42,13 @@ SDL_Renderer *rendererDL = NULL;
     #ifdef main
         #undef main
     #endif
-    int main (int argc, char *argv[])
 #endif
+int main(int argc, char *argv[])
 {
 #ifdef __INTEL_COMPILER
 	testDL();
 #endif
+    
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 

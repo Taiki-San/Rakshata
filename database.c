@@ -14,27 +14,43 @@
 
 MANGAS_DATA* miseEnCache(int mode)
 {
-	int c = 0, nombreTeam = 0, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0, openSite[NOMBRE_MANGA_MAX] = {0};
-	char teamLong[NOMBRE_MANGA_MAX][LONGUEUR_NOM_MANGA_MAX], teamCourt[NOMBRE_MANGA_MAX][LONGUEUR_COURT], type[NOMBRE_MANGA_MAX][LONGUEUR_TYPE_TEAM], URL[NOMBRE_MANGA_MAX][LONGUEUR_URL], site[NOMBRE_MANGA_MAX][LONGUEUR_SITE];
-    char *repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
-	char *mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak = NULL;
-	char *cacheFavs = NULL;
-
+    void *buf;
+	int c = 0, nombreTeam, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0;
+    char *repoDB, *repoBak, *mangaDB, *mangaBak, *cacheFavs = NULL;
+    TEAMS_DATA **teamList = NULL;
     MANGAS_DATA *mangas = allocateDatabase(NOMBRE_MANGA_MAX);
+    
+    repoBak = repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
+    mangaBak = mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG);
 
 	if(repoDB == NULL || mangaDB == NULL)
 		return NULL;
 
-	for(; *repoDB != 0 && nombreTeam < NOMBRE_MANGA_MAX; nombreTeam++) //Tant qu'on a pas fini de lire le fichier de base de données
+	for(nombreTeam = 0; *repoDB != 0;) //Tant qu'on a pas fini de lire le fichier de base de données
     {
-        repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", teamLong[nombreTeam], LONGUEUR_NOM_MANGA_MAX, teamCourt[nombreTeam], LONGUEUR_COURT, type[nombreTeam], LONGUEUR_TYPE_TEAM, URL[nombreTeam], LONGUEUR_URL, site[nombreTeam], LONGUEUR_SITE, &openSite[nombreTeam]);
-        for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
+        buf = realloc(teamList, (nombreTeam+2) * sizeof(TEAMS_DATA*));
+        if(buf != NULL)
+        {
+            teamList = buf;
+            teamList[nombreTeam] = (TEAMS_DATA*) calloc(1, sizeof(TEAMS_DATA));
+            teamList[nombreTeam+1] = NULL;
+            
+            if(teamList[nombreTeam] != NULL)
+            {
+                repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", teamList[nombreTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX, teamList[nombreTeam]->teamCourt, LONGUEUR_COURT, teamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, teamList[nombreTeam]->URL_depot, LONGUEUR_URL, teamList[nombreTeam]->site, LONGUEUR_SITE, &teamList[nombreTeam]->openSite);
+                for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
+                nombreTeam++;
+            }
+        }
     }
 	free(repoBak);
+    
+    if(nombreTeam == 0) //We have to free memory
+        goto quit;
 
 	char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 5 + 100];
 	mangaDB += sscanfs(mangaDB,"%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
-	for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
+	for(numeroTeam = 0; numeroTeam < nombreTeam && teamList[nombreTeam] != NULL && (strcmp(teamList[nombreTeam]->teamLong, teamLongBuff) || strcmp(teamList[nombreTeam]->teamCourt, teamsCourtBuff)); numeroTeam++);
 
     for(numeroManga = 0; *mangaDB != 0 && numeroManga < NOMBRE_MANGA_MAX; numeroManga++)
 	{
@@ -42,13 +58,22 @@ MANGAS_DATA* miseEnCache(int mode)
 		{
 		    mangaDB++;
 		    for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
-			mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
-			for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
+            if(*mangaDB)
+            {
+                mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
+                for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
+            
+                for(numeroTeam = 0; numeroTeam < nombreTeam && teamList[numeroTeam] != NULL && (strcmp(teamList[numeroTeam]->teamLong, teamLongBuff) || strcmp(teamList[numeroTeam]->teamCourt, teamsCourtBuff)); numeroTeam++);
 
-			for(numeroTeam = 0; numeroTeam < nombreTeam && (strcmp(teamLong[numeroTeam], teamLongBuff) || strcmp(teamCourt[numeroTeam], teamsCourtBuff)); numeroTeam++);
-			nombreMangaDansDepot = 1;
+                if(teamList[numeroTeam] == NULL)
+                {
+                    for(; *mangaDB || *mangaDB != '#'; mangaDB++); //On saute la team courante
+                    continue;
+                }
+                nombreMangaDansDepot = 1;
+            }
             numeroManga--;
-		}
+        }
 		else
 		{
             int cat = 0, deprecited;
@@ -70,18 +95,15 @@ MANGAS_DATA* miseEnCache(int mode)
 			if(!mangas[numeroManga].genre) //Si pas à jour, c'est par défaut un shonen
 				mangas[numeroManga].genre = 1;
 
-			snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamLong[numeroTeam], mangas[numeroManga].mangaName, CONFIGFILE);
-			if((checkFileExist(temp) || mode == LOAD_DATABASE_ALL)  && mangas[numeroManga].firstChapter <= mangas[numeroManga].lastChapter
-                                                                    && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                                                                    && checkPathEscape(mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX)
-                                                                    && checkPathEscape(teamLong[numeroTeam], LONGUEUR_NOM_MANGA_MAX))
+            if(mode != LOAD_DATABASE_ALL)
+                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", teamList[numeroTeam]->teamLong, mangas[numeroManga].mangaName, CONFIGFILE);
+			
+            if((mode == LOAD_DATABASE_ALL || checkFileExist(temp)) && mangas[numeroManga].firstChapter <= mangas[numeroManga].lastChapter
+                                                                   && (mangas[numeroManga].firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE || mangas[numeroManga].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                                                                   && checkPathEscape(mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX)
+                                                                   && checkPathEscape(teamList[numeroTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX))
 			{
-                ustrcpy(mangas[numeroManga].team->teamLong, teamLong[numeroTeam]);
-                ustrcpy(mangas[numeroManga].team->teamCourt, teamCourt[numeroTeam]);
-                ustrcpy(mangas[numeroManga].team->type, type[numeroTeam]);
-                ustrcpy(mangas[numeroManga].team->URL_depot, URL[numeroTeam]);
-                ustrcpy(mangas[numeroManga].team->site, site[numeroTeam]);
-                mangas[numeroManga].team->openSite = openSite[numeroTeam];
+                memcpy(mangas[numeroManga].team, teamList[numeroTeam], sizeof(TEAMS_DATA));
                 mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], &cacheFavs);
 				nombreMangaDansDepot++;
 			}
@@ -98,13 +120,18 @@ MANGAS_DATA* miseEnCache(int mode)
 				while((c = *(mangaDB++)) != '#' && c != EOF);
 				if(c == '#')
 					mangaDB--;
-				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://rsp.%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamLong[numeroTeam]);
+				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://rsp.%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamList[nombreTeam]->teamLong);
 				crashTemp(bufferOutput, 100);
 				download_mem(temp, bufferOutput, 100, 1);
 			}
 		}
 	}
+    
+quit:
 	free(mangaBak);
+    
+    for(numeroTeam = 0; numeroTeam < nombreTeam; free(teamList[numeroTeam++])); //Free a NULL pointer is harmless
+    free(teamList);
 
 	qsort(mangas, numeroManga, sizeof(MANGAS_DATA), sortMangas);
 	mangas[numeroManga].mangaName[0] = 0;
@@ -116,7 +143,7 @@ MANGAS_DATA* allocateDatabase(size_t length)
     size_t pos;
     MANGAS_DATA* database = calloc(length, sizeof(MANGAS_DATA));
     for(pos = 0; pos < length; pos++)
-        database[pos].team = ralloc(sizeof(TEAMS_DATA));
+        database[pos].team = calloc(1, sizeof(TEAMS_DATA));
 
     return database;
 }
@@ -368,7 +395,7 @@ void update_mangas()
                 if(mangaName != NULL)
                     free(mangaName);
                 char temp[100];
-                snprintf(temp, 100, "Failed at allocate %d bytes\n", strlen(bufferDL)+50);
+                snprintf(temp, 100, "Failed at allocate %ld bytes\n", strlen(bufferDL)+50);
                 logR(temp);
                 return;
             }

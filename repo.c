@@ -393,11 +393,10 @@ int deleteRepo()
 
     if(!nombreTeam) //Si toujours la valeur par défaut, on reset les teams
     {
-        free(repoBak);
+        if(repoBak != NULL)
+            free(repoBak);
         removeFromPref(SETTINGS_REPODB_FLAG);
         removeFromPref(SETTINGS_MANGADB_FLAG);
-        if(repo != NULL)
-            free(repo);
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         updateDataBase(true);

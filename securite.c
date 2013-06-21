@@ -216,7 +216,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
-    for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
+    for(i = 0; i < length2 && configEnc[i] != ' '; configEnc[i++] = 0); //On saute le nombre de page
     if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
@@ -225,6 +225,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
         else
         {
             logR("Huge fail: database corrupted\n");
+            for(i = 0; i < sizeDBPass; configEnc[i++] = 0);
             free(configEnc);
             return NULL;
         }
@@ -242,6 +243,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     if(nombreEspace != SHA256_DIGEST_LENGTH || (configEnc[i] && configEnc[i] != ' ')) //On vérifie que le parsage est complet
     {
         crashTemp(key, SHA256_DIGEST_LENGTH);
+        for(i = 0; i < sizeDBPass; configEnc[i++] = 0);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
         return NULL;
@@ -326,7 +328,7 @@ void getPasswordArchive(char *fileName, char password[300])
     free(URL);
 
     /*Analyse du buffer*/
-    if(!strcmp(bufferDL, "not_allowed") || !strcmp(bufferDL, "rejected") || strlen(bufferDL) > sizeof(password))
+    if(!strcmp(bufferDL, "not_allowed") || !strcmp(bufferDL, "rejected") || strlen(bufferDL) >= 300)
     {
         logR("Failed at get password, cancel the installation\n");
         return;

@@ -156,11 +156,11 @@ int earlyInit(int argc, char *argv[])
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
     mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
 #endif
-    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
+
+    resetOriginalCHDir(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 100);
     loadPalette();
-    resetOriginalCHDir(argc, argv[0]);
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

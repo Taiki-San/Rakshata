@@ -62,7 +62,8 @@ int check_evt()
                 cantwrite = 1;
             else
 #ifdef __APPLE__
-                if(i != 1) //Pas besoin d'icone sur OSX
+                if(i == 1) //Pas besoin d'icone sur OSX
+                    continue;
 #endif
                 fichiersADL[j] = i;
             j++;
@@ -163,7 +164,7 @@ int check_evt()
 
                     buffer = ralloc(size*2);
 
-                    while((k=fgetc(test)) != EOF && j < size)
+                    while((k=fgetc(test)) != EOF && j < size*2)
                     {
                         if(k == '\n')
                             buffer[j++] = '\r';

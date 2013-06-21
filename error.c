@@ -366,7 +366,7 @@ int errorEmptyCTList(int contexte, int isTome, char trad[SIZE_TRAD_ID_19][TRAD_L
 void memoryError(size_t size)
 {
     char temp[0x100];
-    snprintf(temp, 0x100, "Failed at allocate memory for : %d bytes\n", size);
+    snprintf(temp, 0x100, "Failed at allocate memory for : %ld bytes\n", size);
     logR(temp);
 }
 

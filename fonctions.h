@@ -199,7 +199,7 @@ void removeR(char *path);
 void renameR(char *initialName, char *newName);
 void mkdirR(char *path);
 void chdirR();
-void resetOriginalCHDir(int argc, char* argv);
+void resetOriginalCHDir(int *argc, char** argv);
 int strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
