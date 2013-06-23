@@ -59,6 +59,7 @@
     #define true TRUE
     #define false FALSE
 
+    #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE
     #define MUTEX_LOCK for(; WaitForSingleObject(mutex, 50) == WAIT_TIMEOUT; SDL_Delay(50))
     #define MUTEX_UNLOCK ReleaseSemaphore (mutex, 1, NULL)
@@ -74,6 +75,7 @@
 	#include <sys/file.h>
 	#include <sys/wait.h>
 
+    #define THREAD_TYPE pthread_t
     #define MUTEX_VAR pthread_mutex_t
     #define MUTEX_LOCK pthread_mutex_lock(&mutex)
     #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)

@@ -92,7 +92,7 @@ void resetOriginalCHDir(int *argc, char** argv)
     size_t length = strlen(argv[0])+1;
 #ifdef __APPLE__
     if(argv[0] != NULL) {
-        
+
         int i;
         char *newPath = malloc(length+20);
         if(newPath != NULL)
@@ -446,70 +446,6 @@ void removeFolder(char *path)
     logR(temp2);
 #endif
     free(name);
-}
-
-#ifdef _WIN32
-typedef struct _UNICODE_STRING {
-  USHORT Length;
-  USHORT MaximumLength;
-  PWSTR  Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
-
-typedef struct _OBJECT_ATTRIBUTES {
-  ULONG Length;
-  HANDLE RootDirectory;
-  PUNICODE_STRING ObjectName;
-  ULONG Attributes;
-  PVOID SecurityDescriptor;
-  PVOID SecurityQualityOfService;
-} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
-
-typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
-FUNC ZwCreateThreadEx;
-
-#ifdef DEV_VERSION
-    #define SECURE_THREADS 0x0
-#else
-    #define SECURE_THREADS 0x4
-#endif
-
-#endif
-
-int createNewThread(void *function, void *arg)
-{
-#ifdef _WIN32
-    if(ZwCreateThreadEx == NULL)
-    {
-        ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
-        if(ZwCreateThreadEx == NULL)
-        {
-#ifdef DEV_VERSION
-            logR("Failed at export primitives");
-#endif
-            CreateThread(NULL, 0, function, arg, 0, NULL);
-        }
-    }
-    if(ZwCreateThreadEx != NULL)
-    {
-        HANDLE hThread=0;
-        ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);
-    }
-
-#else
-    pthread_t thread;
-
-    if (pthread_create(&thread, NULL, function, arg))
-    {
-#ifdef DEV_VERSION
-        logR("Failed at create thread\n");
-#endif
-        exit(EXIT_FAILURE);
-    }
-#endif
-    MUTEX_LOCK;
-    THREAD_COUNT++;
-    MUTEX_UNLOCK;
-	return 1;
 }
 
 void ouvrirSite(char *URL)
