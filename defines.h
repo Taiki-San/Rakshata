@@ -331,13 +331,8 @@
 #define HAUTEUR_CONSIGNES_CONFIRMATION_SUPPRESSION 200
 #define HAUTEUR_LISTE 100
 
-/*Module update*/
-#define HAUTEUR_MESSAGE_INITIALISATION 25
-#define HAUTEUR_TEXTE_TELECHARGEMENT 105
-#define HAUTEUR_POURCENTAGE 180
-#define BORDURE_POURCENTAGE 140
+/*Initialisation module de selection de DL*/
 #define HAUTEUR_AFFICHAGE_INITIALISATION 75
-#define HAUTEUR_FENETRE_DL 250
 
 /*Mise à jour*/
 #define HAUTEUR_MAJ 250
@@ -388,33 +383,33 @@
 /*Trad*/
 #define TRAD_LENGTH 150
 #define NOMBRE_TRAD_ID_MAX 30
-#define SIZE_TRAD_ID_1 6
-#define SIZE_TRAD_ID_2 5
-#define SIZE_TRAD_ID_3 7
-#define SIZE_TRAD_ID_4 2
-#define SIZE_TRAD_ID_5 1
-#define SIZE_TRAD_ID_6 2
-#define SIZE_TRAD_ID_7 2
-#define SIZE_TRAD_ID_8 1
-#define SIZE_TRAD_ID_9 5
-#define SIZE_TRAD_ID_10 2
-#define SIZE_TRAD_ID_11 16
-#define SIZE_TRAD_ID_12 4
-#define SIZE_TRAD_ID_13 6
-#define SIZE_TRAD_ID_14 4
-#define SIZE_TRAD_ID_15 1
-#define SIZE_TRAD_ID_16 6
-#define SIZE_TRAD_ID_17 5
-#define SIZE_TRAD_ID_18 2
-#define SIZE_TRAD_ID_19 18
-#define SIZE_TRAD_ID_20 7
-#define SIZE_TRAD_ID_21 10
-#define SIZE_TRAD_ID_22 6
-#define SIZE_TRAD_ID_23 2
-#define SIZE_TRAD_ID_24 2
-#define SIZE_TRAD_ID_25 2
-#define SIZE_TRAD_ID_26 20
-#define SIZE_TRAD_ID_27 4
-#define SIZE_TRAD_ID_28 2
-#define SIZE_TRAD_ID_29 4
-#define SIZE_TRAD_ID_30 11
+#define SIZE_TRAD_ID_1 6    //Erreur page illisible
+#define SIZE_TRAD_ID_2 5    //Initialisation du module de séléction de téléchargement
+#define SIZE_TRAD_ID_3 7    //Préférences
+#define SIZE_TRAD_ID_4 2    //Confirmation suppression de dépôt (fonction indé)
+#define SIZE_TRAD_ID_5 1    //Raffraichissement en cours
+#define SIZE_TRAD_ID_6 2    //Lancement du module de DL
+#define SIZE_TRAD_ID_7 2    //Dépôt inconnu
+#define SIZE_TRAD_ID_8 1    //Chargement
+#define SIZE_TRAD_ID_9 5    //Welcome
+#define SIZE_TRAD_ID_10 2   //Header infos.png
+#define SIZE_TRAD_ID_11 16  //Engine
+#define SIZE_TRAD_ID_12 4   //Module de mise à jour
+#define SIZE_TRAD_ID_13 6   //Changement langue
+#define SIZE_TRAD_ID_14 4   //Ajout de dépôt
+#define SIZE_TRAD_ID_15 1   //Suppression de dépôt
+#define SIZE_TRAD_ID_16 6   //Affichage final erreur du module de DL
+#define SIZE_TRAD_ID_17 5   //Menu principal
+#define SIZE_TRAD_ID_18 2   //Selection de manga
+#define SIZE_TRAD_ID_19 18  //Selection chapitre/tome
+#define SIZE_TRAD_ID_20 7   //Partie DL du module de DL
+#define SIZE_TRAD_ID_21 10  //Lecteur
+#define SIZE_TRAD_ID_22 6   //Module de DL
+#define SIZE_TRAD_ID_23 2   //Aucun manga disponible
+#define SIZE_TRAD_ID_24 2   //Erreur connexion internet
+#define SIZE_TRAD_ID_25 2   //Nom fenêtre
+#define SIZE_TRAD_ID_26 20  //Authentification
+#define SIZE_TRAD_ID_27 4   //Impossible de récupérer la MK
+#define SIZE_TRAD_ID_28 2   //Obtention du mot de passe
+#define SIZE_TRAD_ID_29 4   //Patch du registre
+#define SIZE_TRAD_ID_30 11  //Nouveaux éléments détéctés à DL dans le lecteur
