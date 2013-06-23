@@ -54,33 +54,6 @@ typedef struct dataMangas
     int favoris;
 } MANGAS_DATA;
 
-typedef struct data_loaded_from_download_list
-{
-	int chapitre;
-	bool subFolder;
-    int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
-    MANGAS_DATA* datas;
-} DATA_LOADED;
-
-typedef struct download_data_struct
-{
-    char *URL;
-    char *buf;
-    size_t length;
-    size_t current_pos;
-} TMP_DL;
-
-typedef struct data_pour_installation
-{
-    void *downloadedData;
-    bool subFolder;
-    int chapitre;
-    int tome;
-    bool isLastElemOfTome;
-    size_t length;
-    MANGAS_DATA *mangaDB;
-} DATA_INSTALL;
-
 typedef struct data_provided_to_engine
 {
     char stringToDisplay[MAX_LENGTH_TO_DISPLAY];

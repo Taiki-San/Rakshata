@@ -84,7 +84,6 @@ void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
-int download_UI(TMP_DL *output);
 int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled);
 int download_disk(char* adresse, char *file_name, int SSL_enabled);
 int checkDLInProgress();
@@ -174,24 +173,9 @@ int section();
 int showControls();
 
 /**ModuleDL.c**/
-int telechargement();
-void installation(DATA_INSTALL* datas);
-int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis);
 void DLmanager();
 void lancementModuleDL();
-void updateWindowSizeDL(int w, int h);
-
-/**ModuleDL2_tool.c**/
-char* MDL_craftDownloadURL(DATA_LOADED data);
-char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
-void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH]);
-DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal);
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
-void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded, bool isTomeAndLastElem);
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
-bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
-void grabInfoPNG(MANGAS_DATA mangaToCheck);
-DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
+int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis);
 
 /**Native.c**/
 FILE* fopenR(void *_path, char *right);
@@ -213,7 +197,6 @@ void SDL_FreeSurfaceS(SDL_Surface *surface);
 void SDL_DestroyTextureS(SDL_Texture *texture);
 
 void removeFolder(char *path);
-int createNewThread(void *function, void *arg);
 #define ouvrirSiteTeam(structTeam) ouvrirSite(structTeam->site)
 void ouvrirSite(char *URL);
 int lancementExternalBinary(char cheminDAcces[100]);
@@ -269,6 +252,11 @@ int sha256(unsigned char* input, void* output);
 int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
 void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
 
+/**Thread.c**/
+void createNewThread(void *function, void *arg);
+THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
+bool isThreadStillRunning(THREAD_TYPE hThread);
+
 /**Tome.c**/
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void escapeTomeLineElement(META_TOME *ligne);
@@ -298,7 +286,6 @@ void checkJustUpdated();
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, int toFind, int toPut);
 int plusOuMoins(int compare1, int compare2, int tolerance);
-int sortMangasToDownload(const void *a, const void *b);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);

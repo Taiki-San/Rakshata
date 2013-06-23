@@ -16,9 +16,6 @@
 
 #define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
 
-int INSTALL_DONE;
-int CURRENT_TOKEN;
-
 int unzip(char *path, char *output)
 {
 #ifdef _WIN32
@@ -88,7 +85,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     int i = 0, j = 0;
     int opt_do_extract_withoutpath = 0; //Extraire en crashant le path
 	int opt_overwrite = 1; /*Overwrite*/
-	int opt_encrypted = 0, ret_value=0, mytoken = CURRENT_TOKEN++;
+	int opt_encrypted = 0, ret_value=0;
    	char *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
     char *pathToConfigFile = NULL;
 
@@ -146,9 +143,6 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     memcpy(zipOutput, outputZip, strlen(outputZip)+1);
     if(passwordZip != NULL)
         memcpy(password, passwordZip, strlen(passwordZip)+1);
-
-    while(mytoken != INSTALL_DONE) //Tant qu'une décompression est en cours, on va pas changer le cwd
-        SDL_Delay(50);
 
     if(!size)
     {
@@ -368,7 +362,11 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         else
         {
             uint8_t hash[SHA256_DIGEST_LENGTH], chapter[15];
+#ifndef __APPLE__
+            snprintf((char *)chapter, 15, "%d", type);
+#else
             snprintf((char *)chapter, 15, "%ld", type);
+#endif
 
             pbkdf2((uint8_t *) temp, chapter, hash);
 
@@ -398,8 +396,6 @@ quit:
         free(zipOutput);
     if(password != NULL)
         free(password);
-
-    INSTALL_DONE++;
     return ret_value;
 }
 

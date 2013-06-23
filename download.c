@@ -11,13 +11,11 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "moduleDL.h"
 
 #ifndef __INTEL_COMPILER
 	#define SSL_ENABLE
 #endif
-
-extern int WINDOW_SIZE_H_DL;
-extern int WINDOW_SIZE_W_DL;
 
 static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
@@ -31,80 +29,37 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
 
-/*Controle: activation = 0: DL simple
-	    activation = 1: DL verbose
-
-	    repertoire[0] = 0: DL dans un buffer
-	    repertoire[0] != 0: DL dans un fichier*/
-
 int download_UI(TMP_DL *output)
 {
+    THREAD_TYPE threadData;
     int pourcent = 0, last_refresh = 0;
-    char temp[TAILLE_BUFFER];
-    SDL_Rect position;
-
-    if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return CODE_RETOUR_DL_CLOSE;
-
-    FILE_EXPECTED_SIZE = errCode = 0;
-
-    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-    {
-        SDL_Event event;
-        while(1)
-        {
-            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-                break;
-            SDL_PollEvent(&event);
-            SDL_Delay(50);
-        }
-
-        if(checkNetworkState(CONNEXION_DOWN))
-            return CODE_RETOUR_DL_CLOSE;
-
-    }
-    status = STATUS_DOWNLOADING;
-
-    createNewThread(downloader, output);
-
+    char temp[500], texte[SIZE_TRAD_ID_20][TRAD_LENGTH];
     double last_file_size = 0, download_speed = 0;
-    char texte[SIZE_TRAD_ID_20][TRAD_LENGTH];
-
+    SDL_Rect position;
     SDL_Texture *pourcentAffiche = NULL;
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    SDL_Event event;
 
-    if(WINDOW_SIZE_H_DL != HAUTEUR_FENETRE_DL)
-        updateWindowSizeDL(LARGEUR, HAUTEUR_FENETRE_DL);
-
-    /*Remplissage des variables*/
+    position.y = WINDOW_SIZE_H_DL - HAUTEUR_POURCENTAGE;
+    FILE_EXPECTED_SIZE = errCode = 0;
+    status = STATUS_DOWNLOADING;
     loadTrad(texte, 20);
-    pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
 
-    applyBackground(rendererDL, 0, HAUTEUR_POURCENTAGE, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL);
-    position.y = HAUTEUR_POURCENTAGE;
+    threadData = createNewThreadRetValue(downloader, output);
+    pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
     if(pourcentAffiche != NULL)
     {
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
         position.h = pourcentAffiche->h;
         position.w = pourcentAffiche->w;
+        applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, position.h);
         SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
         SDL_DestroyTextureS(pourcentAffiche);
     }
     SDL_RenderPresent(rendererDL);
 
-    position.x = BORDURE_POURCENTAGE;
-
     while(1)
     {
-        MUTEX_LOCK;
-        if(status != STATUS_DOWNLOADING)
-        {
-            MUTEX_UNLOCK;
-            break;
-        }
-        MUTEX_UNLOCK;
         if(FILE_EXPECTED_SIZE > 0)
         {
             if(SDL_GetTicks() - last_refresh >= 500)
@@ -119,10 +74,11 @@ int download_UI(TMP_DL *output)
                     pourcent = CURRENT_FILE_SIZE * 100 / FILE_EXPECTED_SIZE;
 
                 /*Code d'affichage du pourcentage*/
-                snprintf(temp, TAILLE_BUFFER, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
+                snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
                 pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
 
                 applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
+                position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
                 position.w = pourcentAffiche->w;
                 SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
@@ -133,70 +89,52 @@ int download_UI(TMP_DL *output)
                 last_refresh = SDL_GetTicks();
             }
 
-            SDL_WaitEventTimeout(&event, 100);
+            SDL_Delay(100);
 
-            if((event.type == SDL_QUIT || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)) && haveInputFocus(&event, windowDL))
+            if(*output->quit)
             {
                 pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
-                position.y = WINDOW_SIZE_H_DL / 2 - pourcentAffiche->h / 2;
                 position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
                 position.w = pourcentAffiche->w;
 
-                SDL_RenderClear(rendererDL);
+                applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                 SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
                 SDL_DestroyTextureS(pourcentAffiche);
                 SDL_RenderPresent(rendererDL);
-                MUTEX_LOCK;
                 status = STATUS_FORCE_CLOSE;
-                MUTEX_UNLOCK;
+                TTF_CloseFont(police);
                 break;
             }
         }
         else
             SDL_Delay(25);
+
+        if(!isThreadStillRunning(threadData))
+            break;
     }
-    if(status == STATUS_END)
+    if(*output->quit)
     {
-        applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H);
+        while(isThreadStillRunning(threadData))
+            SDL_Delay(250);
+    }
+    else
+    {
+        applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
         pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-        position.y = HAUTEUR_POURCENTAGE;
         position.h = pourcentAffiche->h;
         position.w = pourcentAffiche->w;
         SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
         SDL_DestroyTextureS(pourcentAffiche);
         SDL_RenderPresent(rendererDL);
         TTF_CloseFont(police);
-        MUTEX_LOCK;
-    }
-
-    else
-    {
-        MUTEX_LOCK;
-        while(status == STATUS_FORCE_CLOSE)
-        {
-            MUTEX_UNLOCK;
-            SDL_Delay(250);
-            MUTEX_LOCK;
-        }
-    }
-
-    if(status == STATUS_FORCE_CLOSE) //Fermeture demandée ou erreur
-    {
-        status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
-        MUTEX_UNLOCK;
-        return CODE_RETOUR_DL_CLOSE;
-    }
-    else if(errCode != 0)
-    {
-        status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
-        MUTEX_UNLOCK;
-        return errCode;
     }
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
-    MUTEX_UNLOCK;
-    return 0;
+#ifdef _WIN32
+    CloseHandle(threadData);
+#endif // _WIN32
+    return errCode;
 }
 
 static void downloader(TMP_DL *output)
@@ -263,7 +201,6 @@ static void downloader(TMP_DL *output)
         curl_easy_cleanup(curl);
     }
     MUTEX_LOCK;
-    status = STATUS_END;
     THREAD_COUNT--;
     MUTEX_UNLOCK;
 #ifdef _WIN32

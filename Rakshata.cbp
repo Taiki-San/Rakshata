@@ -133,6 +133,10 @@
 		<Unit filename="moduleDL.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="moduleDL.h" />
+		<Unit filename="moduleDL2.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="moduleDL2_tool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -165,6 +169,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures.h" />
+		<Unit filename="thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="tome.c">
 			<Option compilerVar="CC" />
 		</Unit>

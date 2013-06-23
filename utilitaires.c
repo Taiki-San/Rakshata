@@ -29,56 +29,6 @@ int plusOuMoins(int compare1, int compare2, int tolerance)
     return 0;
 }
 
-int sortMangasToDownload(const void *a, const void *b)
-{
-    int ptsA = 0, ptsB = 0;
-    const DATA_LOADED *struc1 = *(DATA_LOADED**) a;
-    const DATA_LOADED *struc2 = *(DATA_LOADED**) b;
-
-    //Pas de données
-    if(struc1 == NULL)
-        return 1;
-    else if(struc2 == NULL)
-        return -1;
-
-    if(struc1->datas == struc2->datas) //Si même manga, ils pointent vers la même structure, pas besoin de compter les points
-    {
-        if(struc1->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && struc2->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        {
-            if(struc1->partOfTome != struc2->partOfTome)
-                return struc1->partOfTome - struc2->partOfTome;
-            else if(struc1->subFolder && !struc2->subFolder)
-                return 1;
-            else if(!struc1->subFolder && struc2->subFolder)
-                return -1;
-            return 0; //Si dans un tome, on ne change pas l'ordre
-        }
-
-        if(struc1->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
-            return 1;
-        else if(struc2->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
-            return -1;
-        return struc1->chapitre - struc2->chapitre;
-    }
-
-    //Projets différents, on les classe
-    if(struc1->datas->favoris)
-        ptsA = 2;
-    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_3))
-        ptsA += 1;
-
-    if(struc2->datas->favoris)
-        ptsB = 2;
-    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_3))
-        ptsB += 1;
-
-    if(ptsA > ptsB)
-        return -1;
-    else if(ptsA < ptsB)
-        return 1;
-    return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
-}
-
 int sortNumbers(const void *a, const void *b)
 {
     if(*(int*)a == VALEUR_FIN_STRUCTURE_CHAPITRE)
@@ -92,7 +42,7 @@ int sortMangas(const void *a, const void *b)
 {
     const MANGAS_DATA *struc1 = a;
     const MANGAS_DATA *struc2 = b;
-    
+
     if(struc1->mangaName[0] == 0)
         return 1;
     else if(struc2->mangaName[0] == 0)

@@ -11,9 +11,9 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "moduleDL.h"
 
-extern int WINDOW_SIZE_H_DL;
-extern int WINDOW_SIZE_W_DL;
+/*Loaders divers*/
 
 char* MDL_craftDownloadURL(DATA_LOADED data)
 {
@@ -131,11 +131,6 @@ void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, i
 
     TTF_CloseFont(police_big);
     TTF_CloseFont(police);
-}
-
-DATA_LOADED ** MDL_loadDataFromImport(MANGAS_DATA* mangaDB, int *nombreMangaTotal)
-{
-	return MDL_updateDownloadList(mangaDB, nombreMangaTotal, NULL);
 }
 
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
@@ -305,119 +300,11 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
         }
 
         fclose(import);
-        removeR(INSTALL_DATABASE);
+        #warning "suppression desactivee"
+        //removeR(INSTALL_DATABASE);
 		return newBufferTodo;
     }
     return NULL;
-}
-
-void startInstallation(DATA_LOADED datas, TMP_DL dataDownloaded, bool isTomeAndLastElem)
-{
-    DATA_INSTALL* data_instal = malloc(sizeof(DATA_INSTALL)); //Pour survivre à la fin de la fonction
-    data_instal->mangaDB = datas.datas;
-    data_instal->chapitre = datas.chapitre;
-    data_instal->tome = datas.partOfTome;
-    data_instal->subFolder = datas.subFolder;
-    data_instal->isLastElemOfTome = isTomeAndLastElem;
-    data_instal->downloadedData = dataDownloaded.buf;
-    data_instal->length = dataDownloaded.current_pos; //Data Written
-    createNewThread(installation, data_instal);
-}
-
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
-{
-    int i;
-    if(teamToCheck.openSite)
-    {
-        for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
-        if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
-        {
-            void *ptr = realloc(*historiqueTeam, (i+2)*sizeof(char*));
-            if(ptr != NULL) //Si ptr == NULL, *historiqueTeam n'a pas été modifié
-            {
-                *historiqueTeam = ptr;
-                (*historiqueTeam)[i] = malloc(LONGUEUR_COURT);
-                ustrcpy((*historiqueTeam)[i], teamToCheck.teamCourt);
-                (*historiqueTeam)[i+1] = NULL;
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
-bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck)
-{
-    char configFile[512], installingFile[512];
-    if(dataToCheck.subFolder)
-    {
-        if(dataToCheck.chapitre%10)
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
-        }
-        else
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10);
-        }
-    }
-
-    else
-    {
-        if(dataToCheck.chapitre%10)
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
-        }
-        else
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10);
-        }
-    }
-    return checkFileExist(configFile) || checkFileExist(installingFile);
-}
-
-void grabInfoPNG(MANGAS_DATA mangaToCheck)
-{
-    char path[300], URL[400];
-
-    snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-    if(mangaToCheck.pageInfos && !checkFileExist(path)) //k peut avoir a être > 1
-    {
-        snprintf(path, 300, "manga/%s/%s/", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-        if(!checkDirExist(path))
-        {
-            snprintf(path, 300, "manga/%s", mangaToCheck.team->teamLong);
-            mkdirR(path);
-            snprintf(path, 300, "manga/%s/%s", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-            mkdirR(path);
-        }
-        /*Génération de l'URL*/
-        if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_1))
-        {
-            snprintf(URL, 400, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
-        }
-        else if (!strcmp(mangaToCheck.team->type, TYPE_DEPOT_2))
-        {
-            snprintf(URL, 400, "http://%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
-        }
-        else if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_3))
-        {
-            snprintf(URL, 400, "https://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-        }
-        else
-        {
-            snprintf(URL, 400, "URL non gérée: %s\n", mangaToCheck.team->type);
-            logR(URL);
-            return;
-        }
-        snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-        download_disk(URL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?1:0);
-    }
-    else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
-        removeR(path);
 }
 
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
@@ -581,5 +468,223 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
         free(URL);
     free(bufferDL);
     return output;
+}
+
+int sortMangasToDownload(const void *a, const void *b)
+{
+    int ptsA = 0, ptsB = 0;
+    const DATA_LOADED *struc1 = *(DATA_LOADED**) a;
+    const DATA_LOADED *struc2 = *(DATA_LOADED**) b;
+
+    //Pas de données
+    if(struc1 == NULL)
+        return 1;
+    else if(struc2 == NULL)
+        return -1;
+
+    if(struc1->datas == struc2->datas) //Si même manga, ils pointent vers la même structure, pas besoin de compter les points
+    {
+        if(struc1->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && struc2->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+        {
+            if(struc1->partOfTome != struc2->partOfTome)
+                return struc1->partOfTome - struc2->partOfTome;
+            else if(struc1->subFolder && !struc2->subFolder)
+                return 1;
+            else if(!struc1->subFolder && struc2->subFolder)
+                return -1;
+            return 0; //Si dans un tome, on ne change pas l'ordre
+        }
+
+        if(struc1->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+            return 1;
+        else if(struc2->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+            return -1;
+        return struc1->chapitre - struc2->chapitre;
+    }
+
+    //Projets différents, on les classe
+    if(struc1->datas->favoris)
+        ptsA = 2;
+    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_3))
+        ptsA += 1;
+
+    if(struc2->datas->favoris)
+        ptsB = 2;
+    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_3))
+        ptsB += 1;
+
+    if(ptsA > ptsB)
+        return -1;
+    else if(ptsA < ptsB)
+        return 1;
+    return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
+}
+
+void MDLParseFile(DATA_LOADED **todoList, int *status, int nombreTotal, bool errorPrinted)
+{
+    int currentPosition;
+    FILE *import = fopenR(INSTALL_DATABASE, "a+");
+    if(import != NULL)
+    {
+        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++) //currentPosition a déjà été incrémenté par le for précédent
+        {
+            if(todoList[currentPosition] == NULL || status[currentPosition] == MDL_CODE_INSTALL_OVER || (!errorPrinted && status[currentPosition] <= MDL_CODE_ERROR_DL))
+                continue;
+            else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                {
+                    int j;
+                    fprintf(import, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
+                    for(j = currentPosition+1; j < nombreTotal; j++)
+                    {
+                        if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
+                        {
+                            todoList[j]->chapitre = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        }
+                    }
+                }
+            }
+            else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                fprintf(import, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
+            }
+        }
+        fclose(import);
+    }
+}
+
+/*Divers*/
+
+bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
+{
+    int i;
+    if(teamToCheck.openSite)
+    {
+        for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
+        if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
+        {
+            void *ptr = realloc(*historiqueTeam, (i+2)*sizeof(char*));
+            if(ptr != NULL) //Si ptr == NULL, *historiqueTeam n'a pas été modifié
+            {
+                *historiqueTeam = ptr;
+                (*historiqueTeam)[i] = malloc(LONGUEUR_COURT);
+                ustrcpy((*historiqueTeam)[i], teamToCheck.teamCourt);
+                (*historiqueTeam)[i+1] = NULL;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck)
+{
+    char configFile[512], installingFile[512];
+    if(dataToCheck.subFolder)
+    {
+        if(dataToCheck.chapitre%10)
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
+        }
+        else
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10);
+        }
+    }
+
+    else
+    {
+        if(dataToCheck.chapitre%10)
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
+        }
+        else
+        {
+            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, CONFIGFILE);
+            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10);
+        }
+    }
+    return checkFileExist(configFile) || checkFileExist(installingFile);
+}
+
+void grabInfoPNG(MANGAS_DATA mangaToCheck)
+{
+    char path[300], URL[400];
+
+    snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
+    if(mangaToCheck.pageInfos && !checkFileExist(path)) //k peut avoir a être > 1
+    {
+        snprintf(path, 300, "manga/%s/%s/", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
+        if(!checkDirExist(path))
+        {
+            snprintf(path, 300, "manga/%s", mangaToCheck.team->teamLong);
+            mkdirR(path);
+            snprintf(path, 300, "manga/%s/%s", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
+            mkdirR(path);
+        }
+        /*Génération de l'URL*/
+        if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_1))
+        {
+            snprintf(URL, 400, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
+        }
+        else if (!strcmp(mangaToCheck.team->type, TYPE_DEPOT_2))
+        {
+            snprintf(URL, 400, "http://%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
+        }
+        else if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_3))
+        {
+            snprintf(URL, 400, "https://%s/getinfopng.php?owner=%s&manga=%s", MAIN_SERVER_URL[0], mangaToCheck.team->teamLong, mangaToCheck.mangaName);
+        }
+        else
+        {
+            snprintf(URL, 400, "URL non gérée: %s\n", mangaToCheck.team->type);
+            logR(URL);
+            return;
+        }
+        snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
+        download_disk(URL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?1:0);
+    }
+    else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
+        removeR(path);
+}
+
+/*UI*/
+
+SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
+{
+    switch(status)
+    {
+        case MDL_CODE_DEFAULT:
+        case MDL_CODE_DL_OVER:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_WAIT);
+            break;
+        }
+        case MDL_CODE_DL:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_DL);
+            break;
+        }
+        case MDL_CODE_INSTALL:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_INSTALL);
+            break;
+        }
+        case MDL_CODE_INSTALL_OVER:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_OVER);
+            break;
+        }
+        default:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR);
+            break;
+        }
+    }
+    return NULL;
 }
 
