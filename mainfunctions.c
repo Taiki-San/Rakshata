@@ -267,8 +267,10 @@ int mainChoixDL()
                 chapitreChoisis = PALIER_DEFAULT;
                 continuer = PALIER_DEFAULT;
                 pageChapitre = 1;
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
+#endif
                     curPage = pageChapitre;
                     chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
                     pageChapitre = curPage;
@@ -288,7 +290,9 @@ int mainChoixDL()
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 }
+#endif
             }
         }
 

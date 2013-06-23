@@ -13,7 +13,6 @@
 #include "main.h"
 
 int unlocked = 0;
-int curPage; //Too lazy to use an argument
 
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 {
@@ -263,6 +262,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 }
 
 // #define AUTO_SELECT_ENGINE
+int curPage; //Too lazy to use an argument
 
 int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
 {
@@ -278,7 +278,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
 
     if(input == NULL)
         return PALIER_MENU;
-#ifdef CHAPTER_AUTO_SELECTED
+#ifdef AUTO_SELECT_ENGINE
     else if(contexte == CONTEXTE_CHAPITRE && input[0].nombreElementTotal == 1)
     {
         return input[0].ID;
@@ -297,7 +297,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
     }
     displayBigMainMenuIcon();
 
-    while(elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    while(elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && reprintScreen != VALEUR_FIN_STRUCTURE_CHAPITRE) //Forcer le quit
     {
         int bordureLaterale, longueurElement;
 
@@ -440,6 +440,9 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
     }
+
+    if(curPage != pageSelection)
+        curPage = pageSelection;
 
     TTF_CloseFont(police);
     return elementChoisis;
@@ -778,6 +781,12 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             if(posClicked < input[0].nombreElementTotal)
             {
                 *elementChoisis = input[posClicked].ID;
+
+                //dans le cas du bouton tout, l'output est de VALEUR_FIN_STRUCTURE_CHAPITRE
+                //ça pose quelques problèmes pour quitter les boucles, on va donc légerement le forcer
+                //j'espère que ça ne va pas créer de bugs dans des cas particuliers
+                if(output == 0 && *elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE)
+                    ret_value = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
             break;
         }
