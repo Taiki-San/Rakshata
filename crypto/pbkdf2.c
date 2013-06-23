@@ -19,7 +19,7 @@
 
 #define MAX(a,b)    ((a>b)?a:b)
 
-#include "main.h"
+#include "../main.h"
 
 static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t i, uint8_t *buffer, uint8_t *u)
 {
