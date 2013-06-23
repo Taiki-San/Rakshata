@@ -202,7 +202,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate
     key[SHA256_DIGEST_LENGTH] = rand() % 0xff;
 
-    configEnc = calloc(1, sizeDBPass);
+    configEnc = calloc(1, sizeDBPass+SHA256_DIGEST_LENGTH);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
     free(path);
 
@@ -216,7 +216,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     int length2 = ustrlen(configEnc)-1; //pour le \0
-    for(i = 0; i < length2 && configEnc[i] != ' '; configEnc[i++] = 0); //On saute le nombre de page
+    for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
     if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
