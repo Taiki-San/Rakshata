@@ -25,7 +25,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
 
 void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffer_out, size_t length)
 {
-    MUTEX_LOCK_DECRYPT;
+    MUTEX_LOCK(mutex_decrypt);
     int posIV, i, j = 0, k;
     size_t pos_buffer;
     unsigned char *password = _password;
@@ -56,7 +56,7 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
         posIV = 0;
     }
-    MUTEX_UNLOCK_DECRYPT;
+    MUTEX_UNLOCK(mutex_decrypt);
 }
 
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])

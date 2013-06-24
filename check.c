@@ -269,9 +269,9 @@ void networkAndVersionTest()
     char temp[TAILLE_BUFFER], bufferDL[100];
 	crashTemp(bufferDL, 100);
 
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
 
     /*Chargement de l'URL*/
     snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
@@ -290,19 +290,19 @@ void networkAndVersionTest()
         crashTemp(bufferDL, 100);
         if(download_mem(MAIN_SERVER_URL[1], bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
-        MUTEX_LOCK;
+        MUTEX_LOCK(mutex);
         if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
     }
 
     else
     {
-        MUTEX_LOCK;
+        MUTEX_LOCK(mutex);
         NETWORK_ACCESS = CONNEXION_OK;
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         if(bufferDL[0] == '1' && !checkFileExist("update/update")) //Update needed
         {
             FILE* test = NULL;
@@ -358,13 +358,13 @@ void networkAndVersionTest()
 
 int checkNetworkState(int state)
 {
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS == state)
     {
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         return 1;
     }
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
     return 0;
 }
 
@@ -400,9 +400,9 @@ void checkHostNonModifie()
                 {
                     fclose(host);
                     logR("Violation détecté: redirection dans host\n");
-                    MUTEX_LOCK;
+                    MUTEX_LOCK(mutex);
                     NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
-                    MUTEX_UNLOCK;
+                    MUTEX_UNLOCK(mutex);
                     break; //On quitte la boucle en while
                 }
             }

@@ -60,11 +60,7 @@ void checkUpdate()
         /*Initialisation écran*/
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
-#ifdef _WIN32
-        for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
-#else
-        pthread_mutex_lock(&mutexRS);
-#endif
+        MUTEX_LOCK(mutexRS);
 
         window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
         WINDOW_SIZE_W = window->w;
@@ -72,11 +68,8 @@ void checkUpdate()
         loadIcon(window);
         renderer = setupRendererSafe(window);
 
-#ifdef _WIN32
-        ReleaseSemaphore(mutexRS, 1, NULL);
-#else
-        pthread_mutex_unlock(&mutexRS);
-#endif
+        MUTEX_UNLOCK(mutexRS);
+
         SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
         SDL_RenderClear(renderer);
 

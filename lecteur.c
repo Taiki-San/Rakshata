@@ -290,7 +290,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
                 //We restart the window
-                MUTEX_LOCK;
+                MUTEX_LOCK(mutex);
                 SDL_DestroyTexture(bandeauControle);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
@@ -302,7 +302,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 renderer = setupRendererSafe(window);
                 bandeauControle = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
-                MUTEX_UNLOCK;
+                MUTEX_UNLOCK(mutex);
 
             }
             else
@@ -976,7 +976,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
     char name[LONGUEUR_NOM_PAGE];
     FILE* config = NULL;
     dataReader->nombrePageTotale = 1;
-    
+
     dataReader->pageCourante = 0;
     dataReader->nomPages = dataReader->path = NULL;
     dataReader->pathNumber = dataReader->pageCouranteDuChapitre = dataReader->chapitreTomeCPT = NULL;
@@ -1660,13 +1660,13 @@ void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
 
 void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT)
 {
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
     {
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         return;
     }
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
 
 
     DATA_CK_LECTEUR * argument = malloc(sizeof(DATA_CK_LECTEUR));

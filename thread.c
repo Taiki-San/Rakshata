@@ -71,9 +71,9 @@ void createNewThread(void *function, void *arg)
         exit(EXIT_FAILURE);
     }
 #endif
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     THREAD_COUNT++;
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
 }
 
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
@@ -105,9 +105,9 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
         exit(EXIT_FAILURE);
     }
 #endif
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     THREAD_COUNT++;
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
     return threadID;
 }
 

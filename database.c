@@ -170,16 +170,16 @@ void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
 int alreadyRefreshed = -5*60000;
 void updateDataBase(bool forced)
 {
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS != CONNEXION_DOWN && (SDL_GetTicks() - alreadyRefreshed > 5*60*1000 || forced))
 	{
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
 	    update_repo();
         update_mangas();
         alreadyRefreshed = SDL_GetTicks();
 	}
     else
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
 }
 
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)

@@ -22,6 +22,9 @@ static double CURRENT_FILE_SIZE;
 static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
 static int errCode;
 
+extern volatile bool quit;
+extern MUTEX_VAR mutexDispIcons;
+
 static void downloader(TMP_DL *output);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
 static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void);
@@ -74,6 +77,7 @@ int download_UI(TMP_DL *output)
                     pourcent = CURRENT_FILE_SIZE * 100 / FILE_EXPECTED_SIZE;
 
                 /*Code d'affichage du pourcentage*/
+                MUTEX_LOCK(mutexDispIcons);
                 snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
                 pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
 
@@ -85,14 +89,16 @@ int download_UI(TMP_DL *output)
                 SDL_DestroyTextureS(pourcentAffiche);
 
                 SDL_RenderPresent(rendererDL);
+                MUTEX_UNLOCK(mutexDispIcons);
 
                 last_refresh = SDL_GetTicks();
             }
 
             SDL_Delay(100);
 
-            if(*output->quit)
+            if(quit)
             {
+                MUTEX_LOCK(mutexDispIcons);
                 pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
                 position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
@@ -102,6 +108,7 @@ int download_UI(TMP_DL *output)
                 SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
                 SDL_DestroyTextureS(pourcentAffiche);
                 SDL_RenderPresent(rendererDL);
+                MUTEX_UNLOCK(mutexDispIcons);
                 status = STATUS_FORCE_CLOSE;
                 TTF_CloseFont(police);
                 break;
@@ -113,13 +120,14 @@ int download_UI(TMP_DL *output)
         if(!isThreadStillRunning(threadData))
             break;
     }
-    if(*output->quit)
+    if(quit)
     {
         while(isThreadStillRunning(threadData))
             SDL_Delay(250);
     }
     else
     {
+        MUTEX_LOCK(mutexDispIcons);
         applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
         pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
@@ -128,6 +136,7 @@ int download_UI(TMP_DL *output)
         SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
         SDL_DestroyTextureS(pourcentAffiche);
         SDL_RenderPresent(rendererDL);
+        MUTEX_UNLOCK(mutexDispIcons);
         TTF_CloseFont(police);
     }
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
@@ -190,19 +199,19 @@ static void downloader(TMP_DL *output)
 
         if(res != CURLE_OK) //Si problème
         {
-            MUTEX_LOCK;
+            MUTEX_LOCK(mutex);
             errCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
 #ifdef DEV_VERSION
             if(errCode != CODE_RETOUR_DL_CLOSE)
                 logR(output->URL);
 #endif // DEV_VERSION
-            MUTEX_UNLOCK;
+            MUTEX_UNLOCK(mutex);
         }
         curl_easy_cleanup(curl);
     }
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     THREAD_COUNT--;
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
 #ifdef _WIN32
     ExitThread(0);
 #else

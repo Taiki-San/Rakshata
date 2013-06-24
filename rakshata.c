@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 #ifdef __INTEL_COMPILER
 	testDL();
 #endif
-    
+
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
@@ -60,27 +60,19 @@ int main(int argc, char *argv[])
 
     SDL_Event event;
     int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     while(THREAD_COUNT)
     {
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         event.type = 0;
         SDL_WaitEventTimeout(&event, 250);
         if(event.type != 0 && (event.type != SDL_WINDOWEVENT || event.window.event != SDL_WINDOWEVENT_RESIZED))
         {
             if(event.type == SDL_WINDOWEVENT)
             {
-                #ifdef _WIN32
-                    for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
-                #else
-                    pthread_mutex_lock(&mutexRS);
-                #endif
+                MUTEX_LOCK(mutexRS);
                 SDL_PushEvent(&event);
-                #ifdef _WIN32
-                    ReleaseSemaphore(mutexRS, 1, NULL);
-                #else
-                    pthread_mutex_unlock(&mutexRS);
-                #endif
+                MUTEX_UNLOCK(mutexRS);
             }
             else
                 SDL_PushEvent(&event);
@@ -95,9 +87,9 @@ int main(int argc, char *argv[])
             if(compteur > 10) //Si il s'accroche vraiment =<
                 break;
         }
-        MUTEX_LOCK;
+        MUTEX_LOCK(mutex);
     }
-    MUTEX_UNLOCK;
+    MUTEX_UNLOCK(mutex);
 
     TTF_Quit();
     SDL_Quit();

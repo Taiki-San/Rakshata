@@ -24,17 +24,17 @@
 /*Thread*/
 #ifdef _WIN32
     #define quit_thread(a) do{ \
-                            MUTEX_LOCK;\
+                            MUTEX_LOCK(mutex);\
                             THREAD_COUNT--;\
-                            MUTEX_UNLOCK;\
+                            MUTEX_UNLOCK(mutex);\
                             ExitThread(a);\
                             }while(0)
 
 #else
     #define quit_thread(a) do{ \
-                            MUTEX_LOCK;\
+                            MUTEX_LOCK(mutex);\
                             THREAD_COUNT--;\
-                            MUTEX_UNLOCK;\
+                            MUTEX_UNLOCK(mutex);\
                             pthread_exit(a);\
                             }while(0)
 #endif

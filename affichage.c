@@ -376,21 +376,13 @@ void updateWindowSize(int w, int h)
 
         chargement(renderer, h, w);
 
-        #ifdef _WIN32
-            for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
-        #else
-            pthread_mutex_lock(&mutexRS);
-        #endif
+        MUTEX_LOCK(mutexRS);
 
         SDL_FlushEvent(SDL_WINDOWEVENT); //Evite de trimbaler des variables corrompues
         SDL_SetWindowSize(window, w, h);
         SDL_FlushEvent(SDL_WINDOWEVENT);
 
-        #ifdef _WIN32
-            ReleaseSemaphore(mutexRS, 1, NULL);
-        #else
-            pthread_mutex_unlock(&mutexRS);
-        #endif
+        MUTEX_UNLOCK(mutexRS);
 
         WINDOW_SIZE_H = window->h;
         WINDOW_SIZE_W = window->w;

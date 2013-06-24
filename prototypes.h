@@ -61,10 +61,8 @@
 
     #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE
-    #define MUTEX_LOCK for(; WaitForSingleObject(mutex, 50) == WAIT_TIMEOUT; SDL_Delay(50))
-    #define MUTEX_UNLOCK ReleaseSemaphore (mutex, 1, NULL)
-    #define MUTEX_LOCK_DECRYPT for(; WaitForSingleObject(mutex_decrypt, 50) == WAIT_TIMEOUT; SDL_Delay(50))
-    #define MUTEX_UNLOCK_DECRYPT ReleaseSemaphore (mutex_decrypt, 1, NULL)
+    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_UNLOCK(a) ReleaseSemaphore (a, 1, NULL)
     #define MUTEX_DESTROY(a) CloseHandle(a);
 #else
     #include <pthread.h>
@@ -77,10 +75,8 @@
 
     #define THREAD_TYPE pthread_t
     #define MUTEX_VAR pthread_mutex_t
-    #define MUTEX_LOCK pthread_mutex_lock(&mutex)
-    #define MUTEX_UNLOCK pthread_mutex_unlock(&mutex)
-    #define MUTEX_LOCK_DECRYPT pthread_mutex_lock(&mutex_decrypt)
-    #define MUTEX_UNLOCK_DECRYPT pthread_mutex_unlock(&mutex_decrypt)
+    #define MUTEX_LOCK(a) pthread_mutex_lock(&a)
+    #define MUTEX_UNLOCK(a) pthread_mutex_unlock(&a))
     #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
 
     #ifdef __APPLE__

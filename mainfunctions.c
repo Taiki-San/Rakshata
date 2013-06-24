@@ -17,22 +17,14 @@ void mainRakshata()
 {
     int continuer, restoringState = 0, sectionChoisis;
 
-    #ifdef _WIN32
-        for(; WaitForSingleObject(mutexRS, 50) == WAIT_TIMEOUT; SDL_Delay(50));
-    #else
-        pthread_mutex_lock(&mutexRS);
-    #endif
+    MUTEX_LOCK(mutexRS);
 
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
     loadIcon(window);
     nameWindow(window, 0);
     renderer = setupRendererSafe(window);
 
-    #ifdef _WIN32
-        ReleaseSemaphore(mutexRS, 1, NULL);
-    #else
-        pthread_mutex_unlock(&mutexRS);
-    #endif
+    MUTEX_UNLOCK(mutexRS);
 
     WINDOW_SIZE_W = window->w;
     HAUTEUR = WINDOW_SIZE_H = window->h;
@@ -227,10 +219,10 @@ int mainChoixDL()
     mkdirR("manga");
     initialisationAffichage();
 
-    MUTEX_LOCK;
+    MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS != CONNEXION_DOWN)
     {
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         updateDataBase(false);
         MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
 
@@ -309,7 +301,7 @@ int mainChoixDL()
     }
     else
     {
-        MUTEX_UNLOCK;
+        MUTEX_UNLOCK(mutex);
         continuer = erreurReseau();
     }
     return continuer;
