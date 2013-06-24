@@ -92,6 +92,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="crypto/crypto.h" />
+		<Unit filename="crypto/pbkdf2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crypto/sha256.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="database.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -143,9 +149,6 @@
 		<Unit filename="native.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="pbkdf2.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="prototypes.h" />
 		<Unit filename="rakshata.c">
 			<Option compilerVar="CC" />
@@ -163,9 +166,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="settings.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="sha256.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures.h" />
