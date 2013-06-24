@@ -129,10 +129,13 @@ void mainDLProcessing(DATA_LOADED *** todoList)
     if(dataPos < nbElemTotal)
         MDLStartHandler(dataPos, *todoList, &historiqueTeam);
 
-    while(!quit)
+    while(1)
     {
         if(status[dataPos] != MDL_CODE_DL)
         {
+            if(quit)
+                break;
+
             for(dataPos = 0; dataPos < nbElemTotal && status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
             if(dataPos < nbElemTotal)
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
@@ -142,6 +145,8 @@ void mainDLProcessing(DATA_LOADED *** todoList)
     }
     for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
     free(historiqueTeam);
+
+    while(status[dataPos])
     quit_thread(0);
 }
 
