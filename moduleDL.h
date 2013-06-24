@@ -58,7 +58,6 @@ typedef struct data_loaded_from_download_list
 
 typedef struct download_data_struct
 {
-    bool *quit;
     char *URL;
     char *buf;
     size_t length;
@@ -114,7 +113,7 @@ void MDLTelechargement(DATA_MOD_DL* input);
 void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data);
 int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
 void MDLUpdateIcons(bool ignoreCache);
-void MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn);
+bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);

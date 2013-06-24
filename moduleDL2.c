@@ -14,15 +14,20 @@
 #include "moduleDL.h"
 
 int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
-static bool quit;
+volatile bool quit;
 static int pageCourante;
 static int nbElemTotal;
 static int *status; //Le status des différents elements
 static int *statusCache;
+#ifndef _WIN32
+    MUTEX_VAR mutexDispIcons = PTHREAD_MUTEX_INITIALIZER;
+#else
+    MUTEX_VAR mutexDispIcons;
+#endif
 
 void mainMDL()
 {
-    bool quit = false, jobUnfinished = false, error = false;
+    bool jobUnfinished = false, error = false;
     int i = 0;
     int nombreElementDrawn;
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
@@ -33,7 +38,12 @@ void mainMDL()
 
     /*Initialisation*/
 
+#ifdef _WIN32
+    mutexDispIcons = CreateSemaphore (NULL, 1, 1, NULL);
+#endif // _WIN32
+
     loadTrad(trad, 22);
+    quit = false;
     nbElemTotal = pageCourante = 0;
     *todoList = MDL_loadDataFromImport(mangaDB, &nbElemTotal);
     status = calloc(nbElemTotal+1, sizeof(int));
@@ -60,7 +70,12 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        MDLEventsHandling(*todoList, nombreElementDrawn);
+        if(MDLEventsHandling(*todoList, nombreElementDrawn))
+        {
+            nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
+            MDLUpdateIcons(true);
+        }
+
         if(checkFileExist(INSTALL_DATABASE) && INSTANCE_RUNNING == -1)
         {
             DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &nbElemTotal, *todoList);
@@ -71,7 +86,11 @@ void mainMDL()
 
     /*Attente de la fin du thread de traitement*/
     while(isThreadStillRunning(threadData))
+    {
+        if(SDL_PollEvent(&event))
+            haveInputFocus(&event, windowDL); //Renvoyer l'evenement si nécessaire
         SDL_Delay(100);
+    }
 
     for(i = 0; i < nbElemTotal; i++)
     {
@@ -90,10 +109,11 @@ void mainMDL()
     }
 
     /*On libère la mémoire*/
-    for(i = 0; i < nbElemTotal; free(*todoList[i++]));
+    for(i = 0; i < nbElemTotal; free((*todoList)[i++]));
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
     free(*todoList);
     free(todoList);
+    MUTEX_DESTROY(mutexDispIcons);
 
 #ifdef _WIN32
     CloseHandle (threadData);
@@ -175,7 +195,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 
         if(*argument.currentState == MDL_CODE_DL_OVER) //On lance l'installation
         {
-            //#warning "probablement pas thread safe, a ameliorer avec des mutex"
             for(; i < nbElemTotal && status[i] != MDL_CODE_INSTALL; i++);
             if(i == nbElemTotal) //Aucune installation en cours
             {
@@ -205,7 +224,6 @@ void MDLTelechargement(DATA_MOD_DL* input)
     /**Téléchargement**/
     TMP_DL dataDL;
     dataDL.URL = MDL_craftDownloadURL(*input->todoList);
-    dataDL.quit = &quit;
 
     if(dataDL.URL == NULL)
     {
@@ -232,7 +250,10 @@ void MDLTelechargement(DATA_MOD_DL* input)
             {
                 if(dataDL.buf != NULL)
                     free(dataDL.buf);
-                *input->currentState = MDL_CODE_ERROR_DL;
+                if(ret_value != CODE_RETOUR_DL_CLOSE)
+                    *input->currentState = MDL_CODE_ERROR_DL;
+                else
+                    *input->currentState = MDL_CODE_DEFAULT;
             }
             else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
             {
@@ -418,7 +439,8 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
 
-    SDL_RenderClear(rendererDL);
+    MUTEX_LOCK(mutexDispIcons);
+    applyBackground(rendererDL, 0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
 
     if(police == NULL)
     {
@@ -426,7 +448,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         return -1;
     }
 
-    for(nbrElementDisp = 0; nbrElementDisp < MDL_NOMBRE_ELEMENT_COLONNE * MDL_NOMBRE_COLONNE && curseurDebut < nbElemTotal; nbrElementDisp++)
+    for(nbrElementDisp = 0; nbrElementDisp < MDL_NOMBRE_ELEMENT_COLONNE * MDL_NOMBRE_COLONNE && curseurDebut+nbrElementDisp < nbElemTotal; nbrElementDisp++)
     {
         if(todoList[curseurDebut+nbrElementDisp] == NULL || todoList[curseurDebut+nbrElementDisp]->datas == NULL)
             continue;
@@ -445,21 +467,23 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             position.w = texture->w;
             position.h = texture->h;
             SDL_RenderCopy(rendererDL, texture, NULL, &position);
-            SDL_DestroyTextureS(texture);
+            SDL_DestroyTexture(texture);
         }
     }
-    SDL_RenderPresent(rendererDL);
+    //SDL_RenderPresent(rendererDL); //Erase icons, shouldn't print
+    MUTEX_UNLOCK(mutexDispIcons);
     TTF_CloseFont(police);
     return nbrElementDisp;
 }
 
 void MDLUpdateIcons(bool ignoreCache)
 {
-#warning "not thread safe"
-    int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE;
+    int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE;
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     position.h = position.w = MDL_ICON_SIZE;
+
+    MUTEX_LOCK(mutexDispIcons);
 
     for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
@@ -473,16 +497,18 @@ void MDLUpdateIcons(bool ignoreCache)
             if(texture != NULL)
             {
                 SDL_RenderCopy(rendererDL, texture, NULL, &position);
-                SDL_DestroyTextureS(texture);
+                SDL_DestroyTexture(texture);
             }
             statusCache[posDebutPage + posDansPage] = status[posDebutPage + posDansPage];
         }
     }
     SDL_RenderPresent(rendererDL);
+    MUTEX_UNLOCK(mutexDispIcons);
 }
 
-void MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
+bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
 {
+    bool refreshNeeded = false;
     unsigned int time = SDL_GetTicks();
     SDL_Event event;
 
@@ -490,17 +516,51 @@ void MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
     while(1)
     {
         if(SDL_GetTicks() - time > 1500)
-            return;
-        else if(SDL_PollEvent(&event))
+            return false;
+        else if(SDL_PollEvent(&event) && haveInputFocus(&event, windowDL))
             break;
-            SDL_Delay(100);
+        SDL_Delay(100);
     }
 
     switch(event.type)
     {
         case SDL_QUIT:
+        {
             quit = true;
             break;
+        }
+
+        case SDL_KEYDOWN:
+        {
+            switch(event.key.keysym.sym)
+            {
+                case SDLK_RIGHT:
+                {
+                    if((pageCourante + 1) * MDL_NOMBRE_ELEMENT_COLONNE < nbElemTotal)
+                    {
+                        pageCourante++;
+                        refreshNeeded = true;
+                    }
+                    break;
+                }
+                case SDLK_LEFT:
+                {
+                    if(pageCourante > 0)
+                    {
+                        pageCourante--;
+                        refreshNeeded = true;
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+
+        case SDL_WINDOWEVENT:
+            break;
     }
+    return refreshNeeded;
 }
 
