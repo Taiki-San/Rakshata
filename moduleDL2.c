@@ -17,8 +17,8 @@ int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
 volatile bool quit;
 static int pageCourante;
 static int nbElemTotal;
-static int *status; //Le status des différents elements
-static int *statusCache;
+static int **status; //Le status des différents elements
+static int **statusCache;
 #ifndef _WIN32
     MUTEX_VAR mutexDispIcons = PTHREAD_MUTEX_INITIALIZER;
 #else
@@ -27,7 +27,7 @@ static int *statusCache;
 
 void mainMDL()
 {
-    bool jobUnfinished = false, error = false;
+    bool jobUnfinished = false, error = false, printError = false;;
     int i = 0;
     int nombreElementDrawn;
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
@@ -46,9 +46,18 @@ void mainMDL()
     quit = false;
     nbElemTotal = pageCourante = 0;
     *todoList = MDL_loadDataFromImport(mangaDB, &nbElemTotal);
-    status = calloc(nbElemTotal+1, sizeof(int));
-    statusCache = calloc(nbElemTotal+1, sizeof(int));
+    status = calloc(nbElemTotal+1, sizeof(int*));
+    statusCache = calloc(nbElemTotal+1, sizeof(int*));
 
+    if(status == NULL || statusCache == NULL)
+        return;
+
+    for(i = 0; i < nbElemTotal; i++)
+    {
+        status[i] = malloc(sizeof(int));
+        statusCache[i] = malloc(sizeof(int));
+        *statusCache[i] = *status[i] = MDL_CODE_DEFAULT;
+    }
     /*Checks réseau*/
 
     while(1)
@@ -62,8 +71,8 @@ void mainMDL()
     if(checkNetworkState(CONNEXION_DOWN))
         return;
 
-    /*Corps de la fonction (externalisé?)*/
-
+    MDLDispDownloadHeader(NULL);
+    MDLDispInstallHeader(NULL);
     nombreElementDrawn = MDLDrawUI(*todoList, trad); //Initial draw
     MDLUpdateIcons(true);
     threadData = createNewThreadRetValue(mainDLProcessing, todoList);
@@ -76,11 +85,45 @@ void mainMDL()
             MDLUpdateIcons(true);
         }
 
-        if(checkFileExist(INSTALL_DATABASE) && INSTANCE_RUNNING == -1)
+        else if(checkFileExist(INSTALL_DATABASE) && INSTANCE_RUNNING == -1)
         {
-            DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &nbElemTotal, *todoList);
+            int newNbElemTotal = nbElemTotal;
+            DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &newNbElemTotal, status, *todoList);
             if(ptr != NULL)
-                *todoList = ptr;
+            {
+                int ** ptr2 = realloc(status, newNbElemTotal*sizeof(int*));
+                int ** ptr3 = realloc(statusCache, newNbElemTotal*sizeof(int*));
+                if(ptr2 == NULL || ptr3 == NULL)
+                {
+                    for(i = newNbElemTotal-1; i > nbElemTotal; free((*todoList)[i--]));
+                    free(*ptr);
+                    free(ptr);
+                    free(ptr2);
+                    free(ptr3);
+                }
+                else
+                {
+                    for(nbElemTotal++; nbElemTotal < newNbElemTotal; nbElemTotal++)
+                    {
+                        ptr2[nbElemTotal] = malloc(sizeof(int*));
+                        if(ptr2[nbElemTotal] != NULL)
+                            *ptr2[nbElemTotal] = MDL_CODE_DEFAULT;
+
+                        ptr3[nbElemTotal] = malloc(sizeof(int*));
+                        if(ptr3[nbElemTotal] != NULL)
+                            *ptr3[nbElemTotal] = MDL_CODE_DEFAULT;
+                    }
+                    status = ptr2;
+                    statusCache = ptr3;
+                    *todoList = ptr;
+                    nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
+                    MDLUpdateIcons(true);
+                }
+            }
+        }
+        else if(!isThreadStillRunning(threadData))
+        {
+            printError = MDLDispError(trad);
         }
     }
 
@@ -94,16 +137,16 @@ void mainMDL()
 
     for(i = 0; i < nbElemTotal; i++)
     {
-        if (status[i] == MDL_CODE_DEFAULT)
+        if (*status[i] == MDL_CODE_DEFAULT)
             jobUnfinished = true;
-        else if(status[i] < MDL_CODE_DEFAULT) //Error
+        else if(*status[i] < MDL_CODE_DEFAULT) //Error
             error = true;
     }
 
     /*Si interrompu, on enregistre ce qui reste à faire*/
     if(jobUnfinished)
     {
-        bool printError = error;
+        printError = error;
         /*Checker si il y a eu des erreurs et proposer de réessayer/reporter/annuler*/
 		MDLParseFile(*todoList, status, nbElemTotal, printError);
     }
@@ -120,6 +163,8 @@ void mainMDL()
 #endif // _WIN32
 }
 
+/*Processing*/
+
 void mainDLProcessing(DATA_LOADED *** todoList)
 {
     int dataPos = 0;
@@ -127,26 +172,33 @@ void mainDLProcessing(DATA_LOADED *** todoList)
     historiqueTeam[0] = NULL;
 
     if(dataPos < nbElemTotal)
+    {
         MDLStartHandler(dataPos, *todoList, &historiqueTeam);
+        MDLDispDownloadHeader((*todoList)[dataPos]);
+    }
 
     while(1)
     {
-        if(status[dataPos] != MDL_CODE_DL)
+        if(*status[dataPos] != MDL_CODE_DL)
         {
             if(quit)
                 break;
 
-            for(dataPos = 0; dataPos < nbElemTotal && status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
+            for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
             if(dataPos < nbElemTotal)
+            {
+                MDLDispDownloadHeader((*todoList)[dataPos]);
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
+            }
             else
+            {
+                MDLDispDownloadHeader(NULL);
                 break;
+            }
         }
     }
     for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
     free(historiqueTeam);
-
-    while(status[dataPos])
     quit_thread(0);
 }
 
@@ -158,9 +210,9 @@ void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historique
         memoryError(sizeof(MDL_HANDLER_ARG));
         return;
     }
-    status[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
+    *status[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
     argument->todoList = todoList[posElement];
-    argument->currentState = &status[posElement];
+    argument->currentState = status[posElement];
     argument->isTomeAndLastElem = false;
     argument->historiqueTeam = historiqueTeam;
     if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
@@ -200,13 +252,18 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 
         if(*argument.currentState == MDL_CODE_DL_OVER) //On lance l'installation
         {
-            for(; i < nbElemTotal && status[i] != MDL_CODE_INSTALL; i++);
+            for(; i < nbElemTotal && *status[i] != MDL_CODE_INSTALL; i++);
             if(i == nbElemTotal) //Aucune installation en cours
             {
                 *input.currentState = MDL_CODE_INSTALL;
                 MDLUpdateIcons(false);
             }
-            //Si une installation est en cours, MDLInstallation attendra qu'elle soit terminée
+            else
+            {
+                while(*input.currentState != MDL_CODE_INSTALL)
+                    SDL_Delay(250);
+            }
+            MDLDispInstallHeader(input.todoList);
             MDLInstallation(input, argument);
         }
     }
@@ -215,9 +272,11 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         *input.currentState = MDL_CODE_INSTALL_OVER;
     }
 
-    for(i = 0; i < nbElemTotal && status[i] != MDL_CODE_DL_OVER; i++);
+    for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_DL_OVER; i++);
     if(i != nbElemTotal) //une installation a été trouvée
-        status[i] = MDL_CODE_INSTALL;
+        *status[i] = MDL_CODE_INSTALL;
+    else
+        MDLDispInstallHeader(NULL);
     MDLUpdateIcons(false);
     quit_thread(0);
 }
@@ -257,8 +316,11 @@ void MDLTelechargement(DATA_MOD_DL* input)
                     free(dataDL.buf);
                 if(ret_value != CODE_RETOUR_DL_CLOSE)
                     *input->currentState = MDL_CODE_ERROR_DL;
-                else
+                else //Quit
+                {
                     *input->currentState = MDL_CODE_DEFAULT;
+                    MDLDispDownloadHeader(NULL);
+                }
             }
             else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
             {
@@ -347,13 +409,6 @@ void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data)
         if(ressources != NULL)
             fclose(ressources);
 
-        while(1)
-        {
-            if(*data.currentState == MDL_CODE_INSTALL)
-                break;
-            SDL_Delay(100);
-        }
-
         erreurs = miniunzip (data.buf, basePath, "", data.length, chapitre/10);
         removeR(temp_path_install);
 
@@ -435,6 +490,8 @@ void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data)
     return;
 }
 
+/*UI*/
+
 int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 {
     int curseurDebut = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, nbrElementDisp;
@@ -492,25 +549,76 @@ void MDLUpdateIcons(bool ignoreCache)
 
     for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
-        if(status[posDebutPage + posDansPage] != statusCache[posDebutPage + posDansPage] || ignoreCache)
+        if(*status[posDebutPage + posDansPage] != *statusCache[posDebutPage + posDansPage] || ignoreCache)
         {
             position.x = MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
             position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
             SDL_RenderFillRect(rendererDL, &position);
 
-            texture = getIconTexture(rendererDL, status[posDebutPage + posDansPage]);
+            texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
             if(texture != NULL)
             {
                 SDL_RenderCopy(rendererDL, texture, NULL, &position);
                 SDL_DestroyTexture(texture);
             }
-            statusCache[posDebutPage + posDansPage] = status[posDebutPage + posDansPage];
+            *statusCache[posDebutPage + posDansPage] = *status[posDebutPage + posDansPage];
         }
     }
     SDL_RenderPresent(rendererDL);
     MUTEX_UNLOCK(mutexDispIcons);
 }
 
+void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
+{
+    char texte[500], trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
+    SDL_Texture *texture = NULL;
+    SDL_Rect position;
+    SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
+    TTF_Font *police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+    loadTrad(trad, 22);
+
+    MUTEX_LOCK(mutexDispIcons);
+    if(isInstall)
+        applyBackground(rendererDL, 0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
+    else
+        applyBackground(rendererDL, 0, HAUTEUR_TEXTE_TELECHARGEMENT, WINDOW_SIZE_W_DL, HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT);
+
+    if(police == NULL)
+    {
+        logR("Failed at initialize font");
+        return;
+    }
+
+    if(todoList == NULL)
+        usstrcpy(texte, TRAD_LENGTH, trad[5+isInstall]);
+    else
+    {
+        snprintf(texte, 500, "%s %s %s %d %s %s", trad[isInstall], todoList->datas->mangaName, todoList->subFolder?trad[4]:trad[3], (todoList->subFolder?todoList->partOfTome:todoList->chapitre) / 10, trad[2], todoList->datas->team->teamLong);
+        changeTo(texte, '_', ' ');
+    }
+    texture = TTF_Write(rendererDL, police, texte, couleurFont);
+    if(texture != NULL)
+    {
+        position.x = WINDOW_SIZE_W_DL / 2 - texture->w / 2;
+        if(isInstall)
+            position.y = HAUTEUR_TEXTE_INSTALLATION;
+        else
+            position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
+        position.h = texture->h;
+        position.w = texture->w;
+        SDL_RenderCopy(rendererDL, texture, NULL, &position);
+        SDL_DestroyTexture(texture);
+        SDL_RenderPresent(rendererDL);
+    }
+    MUTEX_UNLOCK(mutexDispIcons);
+}
+
+bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
+{
+    return true;
+}
+
+/*Event*/
 bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
 {
     bool refreshNeeded = false;
@@ -568,4 +676,40 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
     }
     return refreshNeeded;
 }
+
+/*Final processing*/
+void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted)
+{
+    int currentPosition;
+    FILE *import = fopenR(INSTALL_DATABASE, "a+");
+    if(import != NULL)
+    {
+        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++) //currentPosition a déjà été incrémenté par le for précédent
+        {
+            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || (!errorPrinted && *status[currentPosition] <= MDL_CODE_ERROR_DL))
+                continue;
+            else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                {
+                    int j;
+                    fprintf(import, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
+                    for(j = currentPosition+1; j < nombreTotal; j++)
+                    {
+                        if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
+                        {
+                            todoList[j]->chapitre = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        }
+                    }
+                }
+            }
+            else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            {
+                fprintf(import, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
+            }
+        }
+        fclose(import);
+    }
+}
+
 

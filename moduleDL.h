@@ -10,25 +10,25 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#define HAUTEUR_MESSAGE_INITIALISATION 25
-#define HAUTEUR_TEXTE_TELECHARGEMENT 105
-#define HAUTEUR_POURCENTAGE 50
-//#define BORDURE_POURCENTAGE 140
-#define HAUTEUR_FENETRE_DL 500
+#define HAUTEUR_FENETRE_DL 470
 
 /*Specs Font*/
 #define MDL_SIZE_FONT_USED POLICE_MOYEN
 #define MDL_LARGEUR_FONT 36             //On doit l'utiliser dans une fonction n'écrivant pas de texte, il faut donc utiliser une constante pour des raisons de cohérence
 
 /*Micro-engine*/
-#define MDL_NOMBRE_ELEMENT_COLONNE 7
+#define MDL_NOMBRE_ELEMENT_COLONNE 6
 #define MDL_NOMBRE_COLONNE 2
-#define MDL_HAUTEUR_DEBUT_CATALOGUE 100
+#define MDL_HAUTEUR_DEBUT_CATALOGUE 110
 #define MDL_BORDURE_CATALOGUE 30
 #define MDL_ESPACE_INTERCOLONNE (400-MDL_BORDURE_CATALOGUE)
 #define MDL_INTERLIGNE 50
 #define MDL_ICON_SIZE 40
 #define MDL_ICON_POS 350
+
+/*Header*/
+#define HAUTEUR_TEXTE_TELECHARGEMENT 15
+#define HAUTEUR_TEXTE_INSTALLATION 55
 
 /*Codes*/
 #define MDL_CODE_INTERNAL_ERROR -4
@@ -47,6 +47,9 @@
 #define MDL_ICON_INSTALL "data/icon/i.png"
 #define MDL_ICON_WAIT "data/icon/w.png"
 #define MDL_ICON_OVER "data/icon/o.png"
+
+/*Divers*/
+#define HAUTEUR_POURCENTAGE WINDOW_SIZE_H_DL - 50
 
 typedef struct data_loaded_from_download_list
 {
@@ -113,17 +116,20 @@ void MDLTelechargement(DATA_MOD_DL* input);
 void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data);
 int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
 void MDLUpdateIcons(bool ignoreCache);
+#define MDLDispDownloadHeader(a) MDLDispHeader(0, a)
+#define MDLDispInstallHeader(a) MDLDispHeader(1, a)
+void MDLDispHeader(bool isInstall, DATA_LOADED *todoList);
+bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
 bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn);
+void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
-void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH]);
-#define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+#define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL, NULL)
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, int **status, DATA_LOADED ** oldDownloadList);
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
 int sortMangasToDownload(const void *a, const void *b);
-void MDLParseFile(DATA_LOADED **todoList, int *status, int nombreTotal, bool errorPrinted);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);

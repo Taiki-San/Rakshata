@@ -43,7 +43,7 @@ int download_UI(TMP_DL *output)
     TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
-    position.y = WINDOW_SIZE_H_DL - HAUTEUR_POURCENTAGE;
+    position.y = HAUTEUR_POURCENTAGE;
     FILE_EXPECTED_SIZE = errCode = 0;
     status = STATUS_DOWNLOADING;
     loadTrad(texte, 20);

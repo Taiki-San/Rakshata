@@ -93,47 +93,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     return output;
 }
 
-void MDL_displayDownloadDataMain1(SDL_Renderer *rendererVar, DATA_LOADED data, int pourcentageTotal, char localization[5][TRAD_LENGTH])
-{
-    int length = 4*TRAD_LENGTH + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 100;
-    char message[4*TRAD_LENGTH + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 100];
-    SDL_Texture *texte;
-    SDL_Rect position;
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN), *police_big = TTF_OpenFont(FONTUSED, POLICE_GROS);
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-
-    //Define text to display
-    changeTo(data.datas->mangaName, '_', ' ');
-    if(data.chapitre%10)
-        snprintf(message, length, "%s %s %s %d.%d %s %s (%d%% %s)", localization[0], data.datas->mangaName, localization[1], data.chapitre/10, data.chapitre%10, localization[2], data.datas->team->teamCourt, pourcentageTotal, localization[3]);
-    else
-        snprintf(message, length, "%s %s %s %d %s %s (%d%% %s)", localization[0], data.datas->mangaName, localization[1], data.chapitre/10, localization[2], data.datas->team->teamCourt, pourcentageTotal, localization[3]);
-    changeTo(data.datas->mangaName, ' ', '_');
-
-    //On remplis la fenêtre
-    SDL_RenderClear(rendererVar);
-    texte = TTF_Write(rendererVar, police_big, localization[4], couleurTexte);
-    position.x = rendererVar->window->w / 2 - texte->w / 2;
-    position.y = HAUTEUR_MESSAGE_INITIALISATION;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(rendererVar, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
-
-    texte = TTF_Write(rendererVar, police, message, couleurTexte);
-    position.x = rendererVar->window->w / 2 - texte->w / 2;
-    position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(rendererVar, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
-    SDL_RenderPresent(rendererVar);
-
-    TTF_CloseFont(police_big);
-    TTF_CloseFont(police);
-}
-
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, int **status, DATA_LOADED ** oldDownloadList)
 {
     int oldDownloadListLength = *nombreMangaTotal, nombreEspace = 0, dernierEspace = 1, i;
 
@@ -225,7 +185,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 }
             }
 
-            //On va checker les doublons (NB: algo pas parfait, le caser après le tri serait pertinant mais il faudrait alors nettoyer le tome
+            //On va checker les doublons (NB: algo pas parfait, le caser après le tri serait pertinent mais il faudrait alors nettoyer le tome
             for(i = posPtr-1; i >= 0 && (newBufferTodo[posPtr]->datas != newBufferTodo[i]->datas || newBufferTodo[posPtr]->chapitre != (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome)); i--);
             if(i >= 0 && posPtr != i && newBufferTodo[posPtr]->datas == newBufferTodo[i]->datas && newBufferTodo[posPtr]->chapitre == (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome))
             {
@@ -270,7 +230,14 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
             }
         }
         if(posPtr > 1 && oldDownloadListLength < posPtr)
+        {
+            if(status != NULL)
+            {
+                //On rajoute dans le pool les trucs pas encore DL en en laissant un de marge de un elem au cas où
+                for(; oldDownloadListLength > 1 && *status[oldDownloadListLength-2] == MDL_CODE_DEFAULT; oldDownloadListLength--);
+            }
             qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
+        }
 
         //On dégage les collisions proprement si on fusionne deux listes
         if(oldDownloadListLength)
@@ -518,40 +485,6 @@ int sortMangasToDownload(const void *a, const void *b)
     else if(ptsA < ptsB)
         return 1;
     return strcmp(struc1->datas->mangaName, struc2->datas->mangaName);
-}
-
-void MDLParseFile(DATA_LOADED **todoList, int *status, int nombreTotal, bool errorPrinted)
-{
-    int currentPosition;
-    FILE *import = fopenR(INSTALL_DATABASE, "a+");
-    if(import != NULL)
-    {
-        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++) //currentPosition a déjà été incrémenté par le for précédent
-        {
-            if(todoList[currentPosition] == NULL || status[currentPosition] == MDL_CODE_INSTALL_OVER || (!errorPrinted && status[currentPosition] <= MDL_CODE_ERROR_DL))
-                continue;
-            else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            {
-                if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                {
-                    int j;
-                    fprintf(import, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
-                    for(j = currentPosition+1; j < nombreTotal; j++)
-                    {
-                        if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
-                        {
-                            todoList[j]->chapitre = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                        }
-                    }
-                }
-            }
-            else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            {
-                fprintf(import, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
-            }
-        }
-        fclose(import);
-    }
 }
 
 /*Divers*/

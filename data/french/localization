@@ -75,13 +75,6 @@ Confirmez vous l'ajout de ce dépôt?&
 Appuyer sur Echap pour annuler, sur Enter pour confirmer&]
 15
 Choisissez le dépôt à supprimer.&]
-16
-Retournez au menu principal pour prendre en compte les modifications&
-Cliquez dans la fenêtre pour la fermer&
-Des erreurs ont étés détectés:&
-chapitre(s) corrompu(s)&
-Veuillez contacter le gestionnaire et/ou Taiki&
-Avec le fichier "log" qui est dans le dossier de Rakshata&]
 17
 Menu Principal&
 Lecture&
@@ -133,7 +126,9 @@ Téléchargement de&
 Installation de&
 par&
 chapitre&
-tome&]
+tome&
+Aucun téléchargement en cours&
+Aucune installation en cours&]
 23
 Aucun manga disponible ici, téléchargez-en vite! ;)&
 Enter ou cliquez pour revenir au menu&]
