@@ -267,8 +267,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
         }
 
         fclose(import);
-        #warning "suppression desactivee"
-        //removeR(INSTALL_DATABASE);
+        removeR(INSTALL_DATABASE);
 		return newBufferTodo;
     }
     return NULL;
@@ -585,6 +584,70 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
         removeR(path);
 }
 
+int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
+{
+    FILE* fichier = NULL;
+    char temp[TAILLE_BUFFER];
+    int elemChoisisSanitized = VALEUR_FIN_STRUCTURE_CHAPITRE, nombreChapitre = 0;
+
+    /*On ouvre le fichier d'import*/
+    fichier = fopenR(INSTALL_DATABASE, "a+");
+
+    if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        if(isTome)
+            for(elemChoisisSanitized = 0; mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID < chapitreChoisis; elemChoisisSanitized++);
+        else
+            for(elemChoisisSanitized = 0; mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[elemChoisisSanitized] < chapitreChoisis; elemChoisisSanitized++);
+    }
+    else
+        elemChoisisSanitized = 0;
+
+    if(!isTome && mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        do
+        {
+            if(mangaDB.chapitres[elemChoisisSanitized]%10)
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[elemChoisisSanitized]/10, mangaDB.chapitres[elemChoisisSanitized]%10, CONFIGFILE);
+            else
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[elemChoisisSanitized]/10, CONFIGFILE);
+            if(!checkFileExist(temp))
+            {
+                fprintf(fichier, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitres[elemChoisisSanitized]);
+                nombreChapitre++;
+            }
+            elemChoisisSanitized++;
+        } while(chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE);
+    }
+    else if(isTome && elemChoisisSanitized != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        do
+        {
+            if(!checkTomeReadable(mangaDB, mangaDB.tomes[elemChoisisSanitized].ID))
+            {
+                fprintf(fichier, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomes[elemChoisisSanitized].ID);
+                nombreChapitre++;
+            }
+            elemChoisisSanitized++;
+        }while (chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE);
+    }
+    fclose(fichier);
+	return nombreChapitre;
+}
+
+void lancementModuleDL()
+{
+    SDL_Event event;
+    createNewThread(MDLLauncher, NULL);
+    while(1)
+    {
+        if(windowDL != NULL)
+            break;
+        SDL_PollEvent(&event);
+        SDL_Delay(100);
+    }
+}
+
 /*UI*/
 
 SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
@@ -619,5 +682,31 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
         }
     }
     return NULL;
+}
+
+void updateWindowSizeDL(int w, int h)
+{
+    if(WINDOW_SIZE_H_DL != h || WINDOW_SIZE_W_DL != w)
+    {
+        WINDOW_SIZE_H_DL = h; //Pour repositionner chargement
+        WINDOW_SIZE_W_DL = w;
+
+        chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+
+        SDL_SetWindowSize(windowDL, w, h);
+
+        if(WINDOW_SIZE_H_DL > h || WINDOW_SIZE_W_DL > w)
+        {
+            SDL_RenderClear(rendererDL);
+            SDL_RenderPresent(rendererDL);
+        }
+        WINDOW_SIZE_H_DL = windowDL->h;
+        WINDOW_SIZE_W_DL = windowDL->w;
+    }
+    else
+    {
+        SDL_RenderClear(rendererDL);
+        SDL_RenderPresent(rendererDL);
+    }
 }
 

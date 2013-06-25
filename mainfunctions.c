@@ -307,20 +307,4 @@ int mainChoixDL()
     return continuer;
 }
 
-extern int INSTANCE_RUNNING;
-void mainDL()
-{
-    if(!INSTANCE_RUNNING && checkLancementUpdate())
-    {
-        INSTANCE_RUNNING = 1;
-
-        if(loadEmailProfile())
-            DLmanager();
-    }
-    else
-    {
-        INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
-    }
-    quit_thread(0);
-}
 

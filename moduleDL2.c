@@ -15,8 +15,8 @@
 
 int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
 volatile bool quit;
-static int pageCourante;
-static int nbElemTotal;
+int pageCourante;
+int nbElemTotal;
 static int **status; //Le status des différents elements
 static int **statusCache;
 #ifndef _WIN32
@@ -161,6 +161,64 @@ void mainMDL()
 #ifdef _WIN32
     CloseHandle (threadData);
 #endif // _WIN32
+}
+
+void MDLLauncher()
+{
+    /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
+    d'une réservation à deux endroits en parallèle, qui cause des crashs*/
+
+    if(INSTANCE_RUNNING || !checkLancementUpdate())
+    {
+        INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
+        quit_thread(0);
+    }
+
+    if(!loadEmailProfile())
+        quit_thread(0);
+
+    INSTANCE_RUNNING = 1;
+
+#ifdef _WIN32
+    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDL2");
+    if (WaitForSingleObject (hSem, 0) == WAIT_TIMEOUT)
+    {
+        logR("Fail: instance already running\n");
+        CloseHandle (hSem);
+        return;
+    }
+#else
+    FILE *fileBlocker = fopenR("data/download", "w+");
+    fprintf(fileBlocker, "%d", getpid());
+    fclose(fileBlocker);
+#endif
+
+    SDL_FlushEvent(SDL_WINDOWEVENT);
+    windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
+    SDL_FlushEvent(SDL_WINDOWEVENT);
+
+    loadIcon(windowDL);
+    nameWindow(windowDL, 1);
+
+    SDL_FlushEvent(SDL_WINDOWEVENT);
+    rendererDL = setupRendererSafe(windowDL);
+    SDL_FlushEvent(SDL_WINDOWEVENT);
+
+    WINDOW_SIZE_W_DL = LARGEUR;
+    WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
+
+    chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+    mainMDL();
+
+    INSTANCE_RUNNING = 0;
+
+#ifdef _WIN32
+    ReleaseSemaphore (hSem, 1, NULL);
+    CloseHandle (hSem);
+#else
+    removeR("data/download");
+#endif
+    quit_thread(0);
 }
 
 /*Processing*/
@@ -616,65 +674,6 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 {
     return true;
-}
-
-/*Event*/
-bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn)
-{
-    bool refreshNeeded = false;
-    unsigned int time = SDL_GetTicks();
-    SDL_Event event;
-
-    event.type = 0; //Detect if an event was actually sent, check against time is unsure
-    while(1)
-    {
-        if(SDL_GetTicks() - time > 1500)
-            return false;
-        else if(SDL_PollEvent(&event) && haveInputFocus(&event, windowDL))
-            break;
-        SDL_Delay(100);
-    }
-
-    switch(event.type)
-    {
-        case SDL_QUIT:
-        {
-            quit = true;
-            break;
-        }
-
-        case SDL_KEYDOWN:
-        {
-            switch(event.key.keysym.sym)
-            {
-                case SDLK_RIGHT:
-                {
-                    if((pageCourante + 1) * MDL_NOMBRE_ELEMENT_COLONNE < nbElemTotal)
-                    {
-                        pageCourante++;
-                        refreshNeeded = true;
-                    }
-                    break;
-                }
-                case SDLK_LEFT:
-                {
-                    if(pageCourante > 0)
-                    {
-                        pageCourante--;
-                        refreshNeeded = true;
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-            break;
-        }
-
-        case SDL_WINDOWEVENT:
-            break;
-    }
-    return refreshNeeded;
 }
 
 /*Final processing*/

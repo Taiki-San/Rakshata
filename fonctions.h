@@ -165,17 +165,15 @@ char ** loadChapterConfigDat(char* input, int *nombrePage);
 void mainRakshata();
 int mainLecture();
 int mainChoixDL();
-void mainDL();
 
 /**Menu.c**/
 int ecranAccueil();
 int section();
 int showControls();
 
-/**ModuleDL.c**/
-void DLmanager();
-void lancementModuleDL();
+/**ModuleDL2_tool.c**/
 int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis);
+void lancementModuleDL();
 
 /**Native.c**/
 FILE* fopenR(void *_path, char *right);

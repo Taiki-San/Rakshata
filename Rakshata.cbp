@@ -136,11 +136,11 @@
 		<Unit filename="menu.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="moduleDL.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="moduleDL.h" />
 		<Unit filename="moduleDL2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="moduleDL2_events.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="moduleDL2_tool.c">

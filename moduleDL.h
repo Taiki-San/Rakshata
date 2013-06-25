@@ -102,13 +102,9 @@ extern int CURRENT_TOKEN;
 /**Download.c**/
 int download_UI(TMP_DL *output);
 
-/**ModuleDL.c**/
-int telechargement();
-void installation(DATA_INSTALL* datas);
-void updateWindowSizeDL(int w, int h);
-
 /**ModuleDL2.c**/
 void mainMDL();
+void MDLLauncher();
 void mainDLProcessing(DATA_LOADED *** todoList);
 void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historiqueTeam);
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
@@ -134,6 +130,7 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status);
+void updateWindowSizeDL(int w, int h);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
