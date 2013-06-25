@@ -18,7 +18,7 @@ volatile bool quit;
 int pageCourante;
 int nbElemTotal;
 static int **status; //Le status des différents elements
-static int **statusCache;
+int **statusCache;
 #ifndef _WIN32
     MUTEX_VAR mutexDispIcons = PTHREAD_MUTEX_INITIALIZER;
 #else
@@ -58,8 +58,8 @@ void mainMDL()
         statusCache[i] = malloc(sizeof(int));
         *statusCache[i] = *status[i] = MDL_CODE_DEFAULT;
     }
-    /*Checks réseau*/
 
+    /*Checks réseau*/
     while(1)
     {
         if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
@@ -79,7 +79,7 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        if(MDLEventsHandling(*todoList, nombreElementDrawn))
+        if(MDLEventsHandling(&(*todoList)[pageCourante*MDL_NOMBRE_ELEMENT_COLONNE], nombreElementDrawn))
         {
             nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
             MDLUpdateIcons(true);
@@ -673,6 +673,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
 
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 {
+    #warning "some todo there"
     return true;
 }
 
@@ -710,5 +711,4 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool er
         fclose(import);
     }
 }
-
 

@@ -242,6 +242,7 @@
 #define ENGINE_OUTPUT_BOUTON_CHAPITRE 11
 #define ENGINE_OUTPUT_TYPED_CHAPITRE 12
 #define ENGINE_OUTPUT_MOUSE_ABOVE_TOME 13
+#define ENGINE_OUTPUT_MOUSE_DL_RIGHT_CLICK 14
 #define ENGINE_OUTPUT_BOUTON_CHAPITRE_1 1
 #define ENGINE_OUTPUT_BOUTON_CHAPITRE_2 2
 #define ENGINE_OUTPUT_BOUTON_CHAPITRE_3 3
@@ -398,7 +399,7 @@
 #define SIZE_TRAD_ID_13 6   //Changement langue
 #define SIZE_TRAD_ID_14 4   //Ajout de dépôt
 #define SIZE_TRAD_ID_15 1   //Suppression de dépôt
-#define SIZE_TRAD_ID_16 0   ///     NON UTILISE
+#define SIZE_TRAD_ID_16 6   //Pop-up dans le module de DL
 #define SIZE_TRAD_ID_17 5   //Menu principal
 #define SIZE_TRAD_ID_18 2   //Selection de manga
 #define SIZE_TRAD_ID_19 18  //Selection chapitre/tome

@@ -132,5 +132,11 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck);
 SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status);
 void updateWindowSizeDL(int w, int h);
 
+/**Module2_event.h**/
+bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn);
+bool MDLisClicOnAValidX(int x, bool twoColumns);
+bool MDLisClicOnAValidY(int y, int nombreElement);
+void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne);
+
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

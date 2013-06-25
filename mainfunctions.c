@@ -44,11 +44,11 @@ void mainRakshata()
     }
     else
     {
-        restoringState = checkRestore();
-        continuer = ecranAccueil();
-
-        if(restoringState)
+        if(!(restoringState = checkRestore()))
+        {
+            continuer = ecranAccueil();
             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
+        }
     }
 
     while(continuer > PALIER_QUIT)
@@ -205,7 +205,7 @@ int mainLecture()
                             retry = true;
                         }
                     }
-                }while(retry);//continuer >= PALIER_CHAPTER && chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE && chapitreChoisis != autoSelectionChapitreTome(&mangaDB[mangaChoisis], isTome, CONTEXTE_LECTURE));
+                }while(retry);
             }
         }
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
