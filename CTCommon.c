@@ -254,7 +254,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
             data[0].switchAvailable = true;
         }
 
-        outChoisis = engineCore(data, *isTome?CONTEXTE_TOME:CONTEXTE_CHAPITRE, data[0].nombreElementTotal>ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_CHAPITRE_FULL : BORDURE_SUP_SELEC_CHAPITRE_PARTIAL);
+        outChoisis = engineCore(data, *isTome?CONTEXTE_TOME:CONTEXTE_CHAPITRE, data[0].nombreElementTotal>ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_CHAPITRE_FULL : BORDURE_SUP_SELEC_CHAPITRE_PARTIAL, NULL);
 
         if(outChoisis == ENGINE_RETVALUE_SWITCH)
         {

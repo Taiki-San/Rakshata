@@ -90,7 +90,7 @@ int checkDLInProgress();
 
 /**Engine.c**/
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc);
-int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage);
+int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *selectMangaDLRightClick);
 int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurChapitre, int *outputType);
 int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne);
 
@@ -229,7 +229,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA25
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check);
 
 /**Selection.c**/
-int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre);
+int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick);
 int checkProjet(MANGAS_DATA mangaDB);
 int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 

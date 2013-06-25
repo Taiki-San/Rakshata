@@ -529,7 +529,7 @@ int deleteManga()
 		noMoreChapter = 1;
 		/*Appel des selectionneurs*/
 		curPage = pageManga;
-		mangaChoisis = controleurManga(mangas, CONTEXTE_LECTURE, 0);
+		mangaChoisis = controleurManga(mangas, CONTEXTE_LECTURE, 0, NULL);
         pageManga = curPage;
 
 		if(mangaChoisis <= PALIER_CHAPTER)

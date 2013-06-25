@@ -46,6 +46,9 @@ void mainMDL()
     quit = false;
     nbElemTotal = pageCourante = 0;
     *todoList = MDL_loadDataFromImport(mangaDB, &nbElemTotal);
+    if(nbElemTotal == 0)
+        return;
+
     status = calloc(nbElemTotal+1, sizeof(int*));
     statusCache = calloc(nbElemTotal+1, sizeof(int*));
 

@@ -443,7 +443,7 @@ int deleteRepo()
     SDL_DestroyTextureS(texteAffiche);
 
     curPage = 1;
-    teamChoisis = engineCore(data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA);
+    teamChoisis = engineCore(data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
 
     if(teamChoisis > PALIER_CHAPTER && teamChoisis < nombreTeam)
     {

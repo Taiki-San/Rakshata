@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre)
+int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick)
 {
     /*Initilisation*/
     int mangaChoisis, windowH, nombreManga, i;
@@ -75,7 +75,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre)
         }
         do
         {
-            mangaChoisis = engineCore(data, contexte, contexte == CONTEXTE_LECTURE ? BORDURE_SUP_SELEC_MANGA_LECTURE : BORDURE_SUP_SELEC_MANGA);
+            mangaChoisis = engineCore(data, contexte, contexte == CONTEXTE_LECTURE ? BORDURE_SUP_SELEC_MANGA_LECTURE : BORDURE_SUP_SELEC_MANGA, selectMangaDLRightClick);
         }while((mangaChoisis == ENGINE_RETVALUE_DL_START || mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) && contexte != CONTEXTE_DL);
 
         free(data);

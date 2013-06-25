@@ -112,7 +112,7 @@ int mainLecture()
         if(!restoringState)
         {
             curPage = pageManga;
-            mangaChoisis = controleurManga(mangaDB, CONTEXTE_LECTURE, 0);
+            mangaChoisis = controleurManga(mangaDB, CONTEXTE_LECTURE, 0, NULL);
             pageManga = curPage;
         }
         if(mangaChoisis <= PALIER_CHAPTER)
@@ -215,6 +215,7 @@ int mainLecture()
 
 int mainChoixDL()
 {
+    bool autoSelect = false;
     int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1, pageChapitre = 1;
     mkdirR("manga");
     initialisationAffichage();
@@ -233,7 +234,7 @@ int mainChoixDL()
 
             /*Appel des selectionneurs*/
             curPage = pageManga;
-            mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre);
+            mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre, &autoSelect);
             pageManga = curPage;
 
             if(mangaChoisis == ENGINE_RETVALUE_DL_START) //Télécharger
@@ -263,9 +264,18 @@ int mainChoixDL()
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
 #endif
-                    curPage = pageChapitre;
-                    chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
-                    pageChapitre = curPage;
+                    if(autoSelect)
+                    {
+                        chapitreChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                        autoSelect = isTome = false;
+                        refreshChaptersList(&mangaDB[mangaChoisis]);
+                    }
+                    else
+                    {
+                        curPage = pageChapitre;
+                        chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
+                        pageChapitre = curPage;
+                    }
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
                     {

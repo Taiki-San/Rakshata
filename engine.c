@@ -264,7 +264,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 // #define AUTO_SELECT_ENGINE
 int curPage; //Too lazy to use an argument
 
-int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
+int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *selectMangaDLRightClick)
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, i = 0, elementParColonne[ENGINE_NOMBRE_COLONNE], elementChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE, limitationLettre = 0;
@@ -433,12 +433,21 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage)
             SDL_RenderPresent(renderer);
         }
 
+        int output, outputType;
         do
         {
-            int output, outputType = ENGINE_OUTPUT_DEFAULT;
+            outputType = ENGINE_OUTPUT_DEFAULT;
             output = engineSelection(contexte, input, tailleTexte, hauteurAffichage, &outputType);
             reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
+
+        if(selectMangaDLRightClick != NULL)
+        {
+            if(outputType == ENGINE_OUTPUT_MOUSE_DL_RIGHT_CLICK)
+                *selectMangaDLRightClick = true;
+            else
+                *selectMangaDLRightClick = false;
+        }
     }
 
     if(curPage != pageSelection)
@@ -618,7 +627,10 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
                 if((elementChoisis = engineDefineElementClicked(event.button.x, event.button.y, tailleTexte, hauteurChapitre, nombreManga)) != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 {
-                    *outputType = ENGINE_OUTPUT_CLIC; //Si clic sur element
+                    if(event.button.button == SDL_BUTTON_RIGHT && contexte == CONTEXTE_DL)
+                        *outputType = ENGINE_OUTPUT_MOUSE_DL_RIGHT_CLICK; //Si clic sur element
+                    else
+                        *outputType = ENGINE_OUTPUT_CLIC; //Si clic sur element
                 }
 
                 /*Si appuis sur un bouton pour changer de page*/
@@ -743,6 +755,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
     switch(outputType)
     {
         case ENGINE_OUTPUT_CLIC:
+        case ENGINE_OUTPUT_MOUSE_DL_RIGHT_CLICK:
         {
             int posClicked;
 
