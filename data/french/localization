@@ -81,7 +81,23 @@ Confirmez vous vouloir ouvrir&
 par&
 dans le lecteur?&
 Confirmer&
-Annuler&]
+Annuler&
+Telechargement&
+Installation&
+en cours&
+en attente&
+L'installation du&
+Le telechargement du&
+chapitre&
+tome&
+est en cours,&
+est en attente,&
+veuillez patienter quelques instants...&
+Erreur&
+Une erreur s'est produite lors&
+du téléchargement.\nIl est probable qu'elle ait été causé par un problème sur le dépôt.\nTentez de contacter le gestionnaire.&
+de l'installation.\nSi le problème n'existe que sur un seul chapitre/tome, contactez le gestionnaire du dépôt.\nSinon, contactez-nous à contact@rakshata.com.&
+Une erreur interne s'est produite.\nSi elle se reproduit réglièrement, contactez nous à contact@rakshata.com\nN'oubliez pas d'inclure la démarche pour reproduire le problème.&]
 17
 Menu Principal&
 Lecture&
@@ -135,7 +151,17 @@ par&
 chapitre&
 tome&
 Aucun téléchargement en cours&
-Aucune installation en cours&]
+Aucune installation en cours&
+Erreurs détéctés lors du processus&
+Des erreurs ont étés détéctés lors du téléchargement et/ou de l'installation\nVoulez vous replacer ces éléments dans la liste de téléchargement?&
+Ils seront traités au prochain lancement du module de téléchargement.&
+Non&
+Détails&
+Oui&
+Erreur&
+lors du téléchargement:&
+lors de l'installation:&
+interne:&]
 23
 Aucun manga disponible ici, téléchargez-en vite! ;)&
 Enter ou cliquez pour revenir au menu&]

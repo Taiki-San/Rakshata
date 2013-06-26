@@ -134,6 +134,31 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
 
     switch(valIcon)
     {
+        case MDL_CODE_DL:
+        {
+            char titre[2*TRAD_LENGTH+5], contenu[500];
+            snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[6], trad[8]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[11], trad[todoList->subFolder?13:12], trad[14], trad[16]);
+            UI_Alert(titre, contenu);
+            break;
+        }
+        case MDL_CODE_DL_OVER:
+        {
+            char titre[2*TRAD_LENGTH+5], contenu[500];
+            snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[7], trad[9]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[todoList->subFolder?13:12], trad[15], trad[16]);
+            UI_Alert(titre, contenu);
+            break;
+        }
+        case MDL_CODE_INSTALL:
+        {
+            char titre[2*TRAD_LENGTH+5], contenu[500];
+            snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[7], trad[8]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[todoList->subFolder?13:12], trad[14], trad[16]);
+            UI_Alert(titre, contenu);
+            break;
+        }
+
         case MDL_CODE_INSTALL_OVER:
         {
             //This is hacky: we will kill the other thread by sending SDL_QUIT
@@ -172,8 +197,8 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
                     SDL_PushEvent(&event);
                     while(window != NULL)
                     {
-                        SDL_Delay(150);
                         SDL_SetMouseFocus(window);
+                        SDL_Delay(150);
                     }
                 }
                 FILE* inject = fopenR("data/laststate.dat", "w+");
@@ -193,9 +218,20 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
             }
             break;
         }
-        case MDL_CODE_DL:
+
+        case MDL_CODE_ERROR_DL:
+        case MDL_CODE_ERROR_INSTALL:
         {
-            UI_Alert("Leave me", "Please, could you leave me and let me do my work? Thanks...");
+            char contenu[2*TRAD_LENGTH+2];
+            snprintf(contenu, 0x400, "%s %s", trad[18], trad[valIcon == MDL_CODE_ERROR_DL ? 19: 20]);
+            unescapeLineReturn(contenu);
+            UI_Alert(trad[17], contenu);
+            break;
+        }
+        case MDL_CODE_INTERNAL_ERROR:
+        {
+            unescapeLineReturn(trad[21]);
+            UI_Alert(trad[17], trad[21]);
             break;
         }
     }

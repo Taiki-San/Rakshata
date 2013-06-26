@@ -259,6 +259,23 @@ void minToMaj(char* input)
     }
 }
 
+void unescapeLineReturn(char *input)
+{
+    int i, j;
+    for(i = j = 0; input[i] != 0; i++)
+    {
+        if(input[i] != '\\' || input[i+1] != 'n')
+            input[j++] = input[i];
+        else
+        {
+            input[j++] = '\n';
+            input[j] = 0;
+            i++; //On saute le n rémanent
+        }
+    }
+    input[j] = 0;
+}
+
 void restrictEvent()
 {
     SDL_EventState(SDL_SYSWMEVENT, SDL_DISABLE);

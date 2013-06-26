@@ -382,7 +382,7 @@
 #define SIZE_WINDOWS_AUTHENTIFICATION 250
 
 /*Trad*/
-#define TRAD_LENGTH 150
+#define TRAD_LENGTH 200
 #define NOMBRE_TRAD_ID_MAX 30
 #define SIZE_TRAD_ID_1 6    //Erreur page illisible
 #define SIZE_TRAD_ID_2 5    //Initialisation du module de sélection de téléchargement
@@ -399,13 +399,13 @@
 #define SIZE_TRAD_ID_13 6   //Changement langue
 #define SIZE_TRAD_ID_14 4   //Ajout de dépôt
 #define SIZE_TRAD_ID_15 1   //Suppression de dépôt
-#define SIZE_TRAD_ID_16 6   //Pop-up dans le module de DL
+#define SIZE_TRAD_ID_16 22  //Pop-up dans le module de DL
 #define SIZE_TRAD_ID_17 5   //Menu principal
 #define SIZE_TRAD_ID_18 2   //Selection de manga
 #define SIZE_TRAD_ID_19 18  //Selection chapitre/tome
 #define SIZE_TRAD_ID_20 7   //Partie DL du module de DL
 #define SIZE_TRAD_ID_21 10  //Lecteur
-#define SIZE_TRAD_ID_22 8   //Module de DL
+#define SIZE_TRAD_ID_22 17  //Module de DL
 #define SIZE_TRAD_ID_23 2   //Aucun manga disponible
 #define SIZE_TRAD_ID_24 2   //Erreur connexion internet
 #define SIZE_TRAD_ID_25 2   //Nom fenêtre

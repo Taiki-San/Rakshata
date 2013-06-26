@@ -300,6 +300,7 @@ void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);
+void unescapeLineReturn(char *input);
 void restrictEvent();
 int defineMaxTextureSize(int sizeIssue);
 int isJPEG(void *input);

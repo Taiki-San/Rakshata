@@ -27,7 +27,7 @@ int **statusCache;
 
 void mainMDL()
 {
-    bool jobUnfinished = false, error = false, printError = false;;
+    bool jobUnfinished = false, error = false, printError = false , printErrorAsked = false;
     int i = 0;
     int nombreElementDrawn;
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
@@ -127,6 +127,7 @@ void mainMDL()
         else if(!isThreadStillRunning(threadData))
         {
             printError = MDLDispError(trad);
+            printErrorAsked = true;
         }
     }
 
@@ -138,27 +139,37 @@ void mainMDL()
         SDL_Delay(100);
     }
 
-    for(i = 0; i < nbElemTotal; i++)
+    for(i = 0; i < nbElemTotal && (!jobUnfinished || !error); i++) //Si on a déjà trouvé les deux, pas la peine de continuer
     {
         if (*status[i] == MDL_CODE_DEFAULT)
             jobUnfinished = true;
         else if(*status[i] < MDL_CODE_DEFAULT) //Error
+        {
             error = true;
+            jobUnfinished = true;
+        }
     }
 
     /*Si interrompu, on enregistre ce qui reste à faire*/
     if(jobUnfinished)
     {
-        printError = error;
-        /*Checker si il y a eu des erreurs et proposer de réessayer/reporter/annuler*/
+        if(error && !printErrorAsked)
+            printError = MDLDispError(trad);
 		MDLParseFile(*todoList, status, nbElemTotal, printError);
     }
-
     /*On libère la mémoire*/
-    for(i = 0; i < nbElemTotal; free((*todoList)[i++]));
+    for(i = 0; i < nbElemTotal; i++)
+    {
+        free((*todoList)[i]);
+        free(status[i]);
+        free(statusCache[i]);
+    }
+
     freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
     free(*todoList);
     free(todoList);
+    free(statusCache);
+    free(status);
     MUTEX_DESTROY(mutexDispIcons);
 
 #ifdef _WIN32
@@ -188,7 +199,7 @@ void MDLLauncher()
     {
         logR("Fail: instance already running\n");
         CloseHandle (hSem);
-        return;
+        quit_thread(0);
     }
 #else
     FILE *fileBlocker = fopenR("data/download", "w+");
@@ -593,7 +604,28 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             SDL_DestroyTexture(texture);
         }
     }
-    //SDL_RenderPresent(rendererDL); //Erase icons, shouldn't print
+
+    if(nbrElementDisp > 0)
+    {
+        SDL_Surface *surface = SDL_CreateRGBSurface(0,2, (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE,32,0,0,0,0); //Barre séparatrice
+        if(surface != NULL)
+        {
+            SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 95, 95, 95));
+            texture = SDL_CreateTextureFromSurface(rendererDL, surface);
+
+            if(texture != NULL)
+            {
+                position.x = MDL_ICON_POS + MDL_ICON_SIZE + (LARGEUR / 2 - MDL_ICON_POS - MDL_ICON_SIZE) / 3;
+                position.y = MDL_HAUTEUR_DEBUT_CATALOGUE;
+                position.h = texture->h;
+                position.w = texture->w;
+                SDL_RenderCopy(rendererDL, texture, NULL, &position);
+                SDL_DestroyTexture(texture);
+            }
+            SDL_FreeSurface(surface);
+        }
+    }
+
     MUTEX_UNLOCK(mutexDispIcons);
     TTF_CloseFont(police);
     return nbrElementDisp;
@@ -676,8 +708,67 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
 
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 {
-    #warning "some todo there"
-    return true;
+    int ret_value = 0, nbErreurDL = -1, nbErreurInst, nbErreurIntern;
+    bool printDetails = false;
+    char contenu[5*TRAD_LENGTH + 100];
+    SDL_MessageBoxData alerte;
+    SDL_MessageBoxButtonData bouton[3];
+
+    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
+    alerte.title = trad[7];
+    alerte.message = contenu;
+    alerte.numbuttons = 3;
+    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton[0].buttonid = 2; //Valeur retournée
+    bouton[0].text = trad[12];
+    bouton[1].flags = 0;
+    bouton[1].buttonid = 1; //Valeur retournée
+    bouton[1].text = trad[11];
+    bouton[2].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+    bouton[2].buttonid = 0; //Valeur retournée
+    bouton[2].text = trad[10];
+    alerte.buttons = bouton;
+    alerte.window = windowDL;
+    alerte.colorScheme = NULL;
+
+    do
+    {
+        if(printDetails) //Nous allons assumer que contenu contient déjà l'alerte normale, sachant qu'elle doit être affichée pour
+        {
+            if(nbErreurDL == -1)
+            {
+                int i;
+                nbErreurDL = nbErreurInst = nbErreurIntern = 0;
+                for(i = 0; i < nbElemTotal; i++)
+                {
+                    if(*status[i] == MDL_CODE_ERROR_DL)
+                        nbErreurDL++;
+                    else if(*status[i] == MDL_CODE_ERROR_INSTALL)
+                        nbErreurInst++;
+                    else if(*status[i] == MDL_CODE_INTERNAL_ERROR)
+                        nbErreurIntern++;
+                }
+                if(nbErreurDL != 0)
+                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurDL>1?"s ":" ", trad[14], nbErreurDL);
+
+                if(nbErreurInst != 0)
+                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurInst>1?"s ":" ", trad[15], nbErreurInst);
+
+                if(nbErreurIntern != 0)
+                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurIntern>1?"s ":" ", trad[16], nbErreurIntern);
+            }
+        }
+        else
+        {
+            snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s", trad[8], trad[9]);
+            unescapeLineReturn(contenu);
+        }
+
+        SDL_ShowMessageBox(&alerte, &ret_value);
+        if(ret_value == 1)
+            printDetails = !printDetails;
+    }while(ret_value != 0 && ret_value != 2);
+    return ret_value == 2;
 }
 
 /*Final processing*/
