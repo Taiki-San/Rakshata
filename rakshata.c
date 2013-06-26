@@ -78,14 +78,15 @@ int main(int argc, char *argv[])
                 SDL_PushEvent(&event);
         }        SDL_Delay(250);
 
-        if(window == NULL && windowDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 10000)
+        if(window == NULL && windowDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 500)
         {
-            event.type = SDL_QUIT; //Si un thread refuse de quitter
-            SDL_PushEvent(&event);
             timeSinceLastCheck = SDL_GetTicks();
             compteur++;
             if(compteur > 10) //Si il s'accroche vraiment =<
+            {
+                MUTEX_LOCK(mutex);
                 break;
+            }
         }
         MUTEX_LOCK(mutex);
     }

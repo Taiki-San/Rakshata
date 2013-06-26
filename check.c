@@ -552,23 +552,6 @@ int checkButtonPressed(int button_selected[8])
     return 0;
 }
 
-int checkWindowEventValid(int EventWindowEvent)
-{
-    switch(EventWindowEvent)
-    {
-        case SDL_WINDOWEVENT_SHOWN:
-        case SDL_WINDOWEVENT_EXPOSED:
-        case SDL_WINDOWEVENT_MOVED:
-        case SDL_WINDOWEVENT_RESIZED:
-        case SDL_WINDOWEVENT_RESTORED:
-        case SDL_WINDOWEVENT_ENTER:
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-            return 1;
-            break;
-    }
-    return 0;
-}
-
 int checkNameFileZip(char fileToTest[256])
 {
     if( fileToTest[0] == '_' &&

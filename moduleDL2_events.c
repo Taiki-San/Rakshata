@@ -12,7 +12,6 @@
 
 #include "main.h"
 #include "moduleDL.h"
-#include <SDL_mouse_c.h> //SDL_SetMouseFocus only referenced there
 
 extern volatile bool quit;
 extern int pageCourante;
@@ -36,12 +35,6 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
 
     switch(event.type)
     {
-        case SDL_QUIT:
-        {
-            quit = true;
-            break;
-        }
-
         case SDL_KEYDOWN:
         {
             switch(event.key.keysym.sym)
@@ -92,7 +85,13 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
         }
 
         case SDL_WINDOWEVENT:
+        {
+            if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                quit = true;
+            else
+                SDL_RenderPresent(rendererDL);
             break;
+        }
     }
     return refreshNeeded;
 }
@@ -110,15 +109,15 @@ bool MDLisClicOnAValidX(int x, bool twoColumns)
 
 bool MDLisClicOnAValidY(int y, int nombreElement)
 {
-    y -= MDL_HAUTEUR_DEBUT_CATALOGUE;
+    y -= MDL_HAUTEUR_DEBUT_CATALOGUE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
 
     if(y < 0) //Trop haut
         return -1;
 
-    if(y % (MDL_ICON_POS + MDL_INTERLIGNE) > MDL_ICON_SIZE) //Sous l'icone
+    if(y % MDL_INTERLIGNE > MDL_ICON_SIZE) //Sous l'icone
         return -1;
 
-    int ligne = y / (MDL_ICON_POS + MDL_INTERLIGNE);
+    int ligne = y / MDL_INTERLIGNE;
 
     if(ligne >= MDL_NOMBRE_ELEMENT_COLONNE || ligne >= nombreElement) //Sous les icones
         return -1;
@@ -161,7 +160,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
 
         case MDL_CODE_INSTALL_OVER:
         {
-            //This is hacky: we will kill the other thread by sending SDL_QUIT
+            //This is hacky: we will kill the other thread by sending an appropriate event
             //Then, we'll restart it after created a laststate.dat file
             //First, we'll ask for confirmation
 
@@ -192,14 +191,11 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
                 if(window != NULL)
                 {
                     SDL_Event event;
-                    event.type = SDL_QUIT;
-                    SDL_SetMouseFocus(window);
+                    event.type = SDL_WINDOWEVENT_CLOSE;
+                    event.window.windowID = window->id;
                     SDL_PushEvent(&event);
                     while(window != NULL)
-                    {
-                        SDL_SetMouseFocus(window);
                         SDL_Delay(150);
-                    }
                 }
                 FILE* inject = fopenR("data/laststate.dat", "w+");
                 if(inject != NULL)

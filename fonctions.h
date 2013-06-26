@@ -51,7 +51,6 @@ int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis);
 int checkFirstLineButtonPressed(int button_selected[8]);
 int checkSecondLineButtonPressed(int button_selected[8]);
 int checkButtonPressed(int button_selected[8]);
-int checkWindowEventValid(int EventWindowEvent);
 int checkNameFileZip(char fileToTest[256]);
 int checkFileValide(FILE* file);
 bool checkPathEscape(char *string, int length);

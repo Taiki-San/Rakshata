@@ -73,10 +73,6 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         {
             switch(event.type)
             {
-                case SDL_QUIT:
-                    ret_value = PALIER_QUIT;
-                    break;
-
                 case SDL_KEYDOWN: //If a keyboard letter is pushed
                 {
 					switch(event.key.keysym.sym)
@@ -481,13 +477,6 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
         switch(event.type)
         {
-            case SDL_QUIT:
-            {
-                elementChoisis = PALIER_QUIT;
-                *outputType = ENGINE_OUTPUT_QUIT;
-                break;
-            }
-
             case SDL_KEYDOWN:
             {
                 switch(event.key.keysym.sym)
@@ -741,6 +730,11 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 {
                     SDL_RenderPresent(renderer);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                {
+                    elementChoisis = PALIER_QUIT;
+                    *outputType = ENGINE_OUTPUT_QUIT;
                 }
                 break;
             }

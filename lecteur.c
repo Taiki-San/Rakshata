@@ -504,18 +504,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             switch(event.type)
             {
-				case SDL_QUIT:
-                {
-                    /*Si on quitte, on enregistre le point d'arret*/
-                    testExistance = fopenR("data/laststate.dat", "w+");
-                    fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
-                    fclose(testExistance);
-                    FREE_CONTEXT();
-                    return PALIER_QUIT;
-                    break;
-                }
-
-                case SDL_MOUSEWHEEL:
+				case SDL_MOUSEWHEEL:
                 {
                     if(event.wheel.y < 0) //Mouvement de roulette bas
                     {
@@ -948,10 +937,22 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 case SDL_WINDOWEVENT:
                 {
-                    SDL_RenderPresent(renderer);
-                    noRefresh = 1;
-                    if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-                        noRefresh=0;
+                    if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                    {
+                        /*Si on quitte, on enregistre le point d'arret*/
+                        testExistance = fopenR("data/laststate.dat", "w+");
+                        fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
+                        fclose(testExistance);
+                        FREE_CONTEXT();
+                        return PALIER_QUIT;
+                    }
+                    else
+                    {
+                        SDL_RenderPresent(renderer);
+                        noRefresh = 1;
+                        if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                            noRefresh = 0;
+                    }
                     break;
                 }
 

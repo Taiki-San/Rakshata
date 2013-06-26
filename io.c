@@ -31,10 +31,6 @@ int waitEnter(SDL_Renderer* rendererVar)
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                i = PALIER_QUIT;
-                break;
-
             case SDL_KEYDOWN: //If a keyboard letter is pushed
             {
                 switch(event.key.keysym.sym)
@@ -56,13 +52,20 @@ int waitEnter(SDL_Renderer* rendererVar)
             }
 
             case SDL_MOUSEBUTTONUP:
+            {
                 i = 1;
                 break;
+            }
 
             case SDL_WINDOWEVENT:
             {
-                SDL_RenderPresent(rendererVar);
-                SDL_FlushEvent(SDL_WINDOWEVENT);
+                if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                    i = PALIER_QUIT;
+                else
+                {
+                    SDL_RenderPresent(rendererVar);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
                 break;
             }
         }
@@ -109,12 +112,6 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                SDL_DestroyTextureS(numero);
-                TTF_CloseFont(police);
-                return PALIER_QUIT;
-                break;
-
             case SDL_KEYDOWN:
             {
                 switch(event.key.keysym.sym)
@@ -172,6 +169,12 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                 {
                     SDL_RenderPresent(rendererVar);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                {
+                    SDL_DestroyTextureS(numero);
+                    TTF_CloseFont(police);
+                    return PALIER_QUIT;
                 }
                 break;
             }
@@ -250,18 +253,9 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
     {
         switch(event->type)
         {
-            case SDL_QUIT:
             case SDL_WINDOWEVENT:
             {
-                if(event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE)
-                {
-                    if(event->window.windowID != windows->id)
-                        state = 0;
-                    else
-                        event->type = SDL_QUIT;
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
-                else if(event->type == SDL_QUIT && windows != SDL_GetMouseFocus())
+                if(event->window.windowID != windows->id)
                     state = 0;
                 break;
             }

@@ -147,10 +147,6 @@ int showControls()
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                retour = PALIER_QUIT;
-                break;
-
             case SDL_KEYDOWN: //If a keyboard letter is pushed
             {
                 switch(event.key.keysym.sym)
@@ -203,6 +199,10 @@ int showControls()
                 {
                     SDL_RenderPresent(renderer);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
+                }
+                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                {
+                    retour = PALIER_QUIT;
                 }
                 break;
             }
