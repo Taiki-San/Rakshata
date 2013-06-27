@@ -296,8 +296,6 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
                 break;
             }
         }
-        if(!state)
-            SDL_PushEvent(event);
     }
     return state;
 }

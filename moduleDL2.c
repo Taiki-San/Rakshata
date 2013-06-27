@@ -67,7 +67,8 @@ void mainMDL()
     {
         if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             break;
-        SDL_PollEvent(&event);
+        if(SDL_PollEvent(&event))
+            SDL_PushEvent(&event);
         SDL_Delay(50);
     }
 
@@ -94,8 +95,8 @@ void mainMDL()
             DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &newNbElemTotal, status, *todoList);
             if(ptr != NULL)
             {
-                int ** ptr2 = realloc(status, newNbElemTotal*sizeof(int*));
-                int ** ptr3 = realloc(statusCache, newNbElemTotal*sizeof(int*));
+                int ** ptr2 = realloc(status, (newNbElemTotal+1)*sizeof(int*));
+                int ** ptr3 = realloc(statusCache, (newNbElemTotal+1)*sizeof(int*));
                 if(ptr2 == NULL || ptr3 == NULL)
                 {
                     for(i = newNbElemTotal-1; i > nbElemTotal; free((*todoList)[i--]));
@@ -106,13 +107,13 @@ void mainMDL()
                 }
                 else
                 {
-                    for(nbElemTotal++; nbElemTotal < newNbElemTotal; nbElemTotal++)
+                    for(; nbElemTotal < newNbElemTotal; nbElemTotal++)
                     {
-                        ptr2[nbElemTotal] = malloc(sizeof(int*));
+                        ptr2[nbElemTotal] = malloc(sizeof(int));
                         if(ptr2[nbElemTotal] != NULL)
                             *ptr2[nbElemTotal] = MDL_CODE_DEFAULT;
 
-                        ptr3[nbElemTotal] = malloc(sizeof(int*));
+                        ptr3[nbElemTotal] = malloc(sizeof(int));
                         if(ptr3[nbElemTotal] != NULL)
                             *ptr3[nbElemTotal] = MDL_CODE_DEFAULT;
                     }
@@ -124,9 +125,13 @@ void mainMDL()
                 }
             }
         }
-        else if(!isThreadStillRunning(threadData))
+        else if(!printErrorAsked && !isThreadStillRunning(threadData))
         {
-            printError = MDLDispError(trad);
+            for(i = 0; i < nbElemTotal && *status[i] >= MDL_CODE_DEFAULT; i++);
+            if(i != nbElemTotal)
+            {
+                printError = MDLDispError(trad);
+            }
             printErrorAsked = true;
         }
     }
@@ -579,6 +584,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     if(police == NULL)
     {
         logR("Failed at initialize font");
+        MUTEX_UNLOCK(mutexDispIcons);
         return -1;
     }
 
@@ -633,7 +639,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 
 void MDLUpdateIcons(bool ignoreCache)
 {
-    int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE;
+    int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, currentStatus;
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     position.h = position.w = MDL_ICON_SIZE;
@@ -642,7 +648,8 @@ void MDLUpdateIcons(bool ignoreCache)
 
     for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
-        if(*status[posDebutPage + posDansPage] != *statusCache[posDebutPage + posDansPage] || ignoreCache)
+        currentStatus = *status[posDebutPage + posDansPage];
+        if(currentStatus != *statusCache[posDebutPage + posDansPage] || ignoreCache)
         {
             position.x = MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
             position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
@@ -654,7 +661,7 @@ void MDLUpdateIcons(bool ignoreCache)
                 SDL_RenderCopy(rendererDL, texture, NULL, &position);
                 SDL_DestroyTexture(texture);
             }
-            *statusCache[posDebutPage + posDansPage] = *status[posDebutPage + posDansPage];
+            *statusCache[posDebutPage + posDansPage] = currentStatus;
         }
     }
     SDL_RenderPresent(rendererDL);
@@ -679,6 +686,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     if(police == NULL)
     {
         logR("Failed at initialize font");
+        MUTEX_UNLOCK(mutexDispIcons);
         return;
     }
 

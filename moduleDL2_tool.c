@@ -643,7 +643,8 @@ void lancementModuleDL()
     {
         if(windowDL != NULL)
             break;
-        SDL_PollEvent(&event);
+        if(SDL_PollEvent(&event))
+            SDL_PushEvent(&event);
         SDL_Delay(100);
     }
 }
@@ -686,6 +687,7 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
 
 void updateWindowSizeDL(int w, int h)
 {
+    MUTEX_LOCK(mutexDispIcons);
     if(WINDOW_SIZE_H_DL != h || WINDOW_SIZE_W_DL != w)
     {
         WINDOW_SIZE_H_DL = h; //Pour repositionner chargement
@@ -708,5 +710,6 @@ void updateWindowSizeDL(int w, int h)
         SDL_RenderClear(rendererDL);
         SDL_RenderPresent(rendererDL);
     }
+    MUTEX_UNLOCK(mutexDispIcons);
 }
 

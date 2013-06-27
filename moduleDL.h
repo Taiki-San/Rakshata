@@ -95,8 +95,7 @@ typedef struct argument_to_MDL_handler
 
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
-extern int INSTALL_DONE;
-extern int CURRENT_TOKEN;
+extern MUTEX_VAR mutexDispIcons;
 
 /**Download.c**/
 int download_UI(TMP_DL *output);

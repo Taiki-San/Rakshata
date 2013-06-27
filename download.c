@@ -23,7 +23,6 @@ static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
 static int errCode;
 
 extern volatile bool quit;
-extern MUTEX_VAR mutexDispIcons;
 
 static void downloader(TMP_DL *output);
 static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
@@ -49,6 +48,8 @@ int download_UI(TMP_DL *output)
     loadTrad(texte, 20);
 
     threadData = createNewThreadRetValue(downloader, output);
+
+    MUTEX_LOCK(mutexDispIcons);
     pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
     if(pourcentAffiche != NULL)
     {
@@ -60,6 +61,7 @@ int download_UI(TMP_DL *output)
         SDL_DestroyTextureS(pourcentAffiche);
     }
     SDL_RenderPresent(rendererDL);
+    MUTEX_UNLOCK(mutexDispIcons);
 
     while(1)
     {
@@ -81,14 +83,16 @@ int download_UI(TMP_DL *output)
                 snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
                 pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
 
-                applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
-                position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-                position.h = pourcentAffiche->h;
-                position.w = pourcentAffiche->w;
-                SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
-                SDL_DestroyTextureS(pourcentAffiche);
-
-                SDL_RenderPresent(rendererDL);
+                if(pourcentAffiche != NULL)
+                {
+                    applyBackground(rendererDL, 0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
+                    position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
+                    position.h = pourcentAffiche->h;
+                    position.w = pourcentAffiche->w;
+                    SDL_RenderCopy(rendererDL, pourcentAffiche, NULL, &position);
+                    SDL_DestroyTextureS(pourcentAffiche);
+                    SDL_RenderPresent(rendererDL);
+                }
                 MUTEX_UNLOCK(mutexDispIcons);
 
                 last_refresh = SDL_GetTicks();
@@ -284,12 +288,14 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
     }
 
     SDL_Event event;
-    SDL_PollEvent(&event);
+    if(SDL_PollEvent(&event))
+        SDL_PushEvent(&event);
 
     res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
-    SDL_PollEvent(&event);
+    if(SDL_PollEvent(&event))
+        SDL_PushEvent(&event);
 
     if(output != NULL && printToAFile)
         fclose(output);
@@ -319,7 +325,8 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
 {
     SDL_Event event;
-    SDL_PollEvent(&event);
+    if(SDL_PollEvent(&event))
+        SDL_PushEvent(&event);
     return fwrite(ptr, size, nmemb, input);
 }
 

@@ -73,7 +73,7 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
                 if(ligne == -1)
                     break;
 
-                if(event.button.x > MDL_ESPACE_INTERCOLONNE) //Si seconde colonne
+                if(event.button.x > LARGEUR/2) //Si seconde colonne
                 {
                     ligne += MDL_NOMBRE_ELEMENT_COLONNE;
                     if(ligne >= nbElemDrawn) //Pas > car ligne est égal à 0 pour la première colonne (cf MDLisClicOnAValidY)
@@ -88,8 +88,6 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
         {
             if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                 quit = true;
-            else
-                SDL_RenderPresent(rendererDL);
             break;
         }
     }
@@ -191,11 +189,22 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
                 if(window != NULL)
                 {
                     SDL_Event event;
-                    event.type = SDL_WINDOWEVENT_CLOSE;
+                    event.type = SDL_WINDOWEVENT;
+                    event.window.event = SDL_WINDOWEVENT_CLOSE;
                     event.window.windowID = window->id;
                     SDL_PushEvent(&event);
-                    while(window != NULL)
-                        SDL_Delay(150);
+                    while(1)
+                    {
+                        SDL_Delay(250);
+                        if(window != NULL)
+                        {
+                            SDL_FlushEvent(SDL_WINDOWEVENT);
+                            SDL_PushEvent(&event);
+                        }
+                        else
+                            break;
+                    }
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
                 FILE* inject = fopenR("data/laststate.dat", "w+");
                 if(inject != NULL)
