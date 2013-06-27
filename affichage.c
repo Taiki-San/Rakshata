@@ -331,11 +331,13 @@ SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][TRAD_LENGTH],
 
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg)
 {
-    SDL_Surface *surfText = NULL;
-    SDL_Texture *texture = NULL;
+    SDL_Surface *surfText;
+    SDL_Texture *texture;
 
     if(font == NULL || text == NULL)
+    {
         return NULL;
+    }
 
     surfText = TTF_RenderText_Blended(font, text, fg);
 
@@ -344,6 +346,8 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
         texture = SDL_CreateTextureFromSurface(render, surfText);
         SDL_FreeSurfaceS(surfText);
     }
+    else
+        texture = NULL;
     return texture;
 }
 
