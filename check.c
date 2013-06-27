@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "moduleDL.h" //To get MDL's icons name
 
 int check_evt()
 {
@@ -50,8 +51,13 @@ int check_evt()
     snprintf(nomsATest[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
     snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
     snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
-    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR);
+    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
+    snprintf(nomsATest[31], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
+    snprintf(nomsATest[32], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
+    snprintf(nomsATest[33], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
+    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -86,7 +92,8 @@ int check_evt()
         {
             if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
                 break;
-            SDL_PollEvent(&event);
+            if(SDL_PollEvent(&event))
+                SDL_PushEvent(&event);
             SDL_Delay(50);
         }
 
