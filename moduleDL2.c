@@ -17,7 +17,7 @@ int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
 volatile bool quit;
 int pageCourante;
 int nbElemTotal;
-static int **status; //Le status des différents elements
+int **status; //Le status des différents elements
 int **statusCache;
 #ifndef _WIN32
     MUTEX_VAR mutexDispIcons = PTHREAD_MUTEX_INITIALIZER;
@@ -83,7 +83,7 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        if(MDLEventsHandling(&(*todoList)[pageCourante*MDL_NOMBRE_ELEMENT_COLONNE], nombreElementDrawn))
+        if(MDLEventsHandling(todoList, nombreElementDrawn))
         {
             nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
             MDLUpdateIcons(true);
@@ -576,9 +576,10 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+    TTF_Font *police = NULL;
 
     MUTEX_LOCK(mutexDispIcons);
+    police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
     applyBackground(rendererDL, 0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
 
     if(police == NULL)
@@ -632,8 +633,8 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         }
     }
 
-    MUTEX_UNLOCK(mutexDispIcons);
     TTF_CloseFont(police);
+    MUTEX_UNLOCK(mutexDispIcons);
     return nbrElementDisp;
 }
 
@@ -674,10 +675,12 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+    TTF_Font *police = NULL;
     loadTrad(trad, 22);
 
     MUTEX_LOCK(mutexDispIcons);
+    police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
+
     if(isInstall)
         applyBackground(rendererDL, 0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
     else
@@ -711,6 +714,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         SDL_DestroyTexture(texture);
         SDL_RenderPresent(rendererDL);
     }
+    TTF_CloseFont(police);
     MUTEX_UNLOCK(mutexDispIcons);
 }
 
@@ -782,7 +786,7 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 /*Final processing*/
 void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted)
 {
-    int currentPosition;
+    int currentPosition, printSomething = 0;
     FILE *import = fopenR(INSTALL_DATABASE, "a+");
     if(import != NULL)
     {
@@ -796,6 +800,7 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool er
                 {
                     int j;
                     fprintf(import, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
+                    printSomething++;
                     for(j = currentPosition+1; j < nombreTotal; j++)
                     {
                         if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
@@ -808,9 +813,12 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool er
             else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
                 fprintf(import, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
+                printSomething++;
             }
         }
         fclose(import);
+        if(!printSomething)
+            removeR(INSTALL_DATABASE);
     }
 }
 

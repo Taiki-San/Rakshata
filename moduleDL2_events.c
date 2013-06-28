@@ -16,9 +16,10 @@
 extern volatile bool quit;
 extern int pageCourante;
 extern int nbElemTotal;
+extern int **status;
 extern int **statusCache;
 
-bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
+bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn)
 {
     bool refreshNeeded = false;
     unsigned int time = SDL_GetTicks();
@@ -79,7 +80,9 @@ bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn)
                     if(ligne >= nbElemDrawn) //Pas > car ligne est égal à 0 pour la première colonne (cf MDLisClicOnAValidY)
                         break;
                 }
-                MDLDealWithClicsOnIcons(todoList[ligne], ligne);
+                MDLDealWithClicsOnIcons(todoList, ligne, (ligne == 0 || *status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne-1] != MDL_CODE_DEFAULT), pageCourante*MDL_NOMBRE_ELEMENT_COLONNE+ligne+1 >= nbElemTotal || *status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne+1] != MDL_CODE_DEFAULT);
+                if(*status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne] == MDL_CODE_DEFAULT)
+                    refreshNeeded = true;
             }
             break;
         }
@@ -123,7 +126,7 @@ bool MDLisClicOnAValidY(int y, int nombreElement)
     return ligne;
 }
 
-void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
+void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL)
 {
     int valIcon = *statusCache[ligne]; //Caching
     char trad[SIZE_TRAD_ID_16][TRAD_LENGTH];
@@ -135,7 +138,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
         {
             char titre[2*TRAD_LENGTH+5], contenu[500];
             snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[6], trad[8]);
-            snprintf(contenu, 500, "%s %s %s %s", trad[11], trad[todoList->subFolder?13:12], trad[14], trad[16]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[11], trad[(*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder?13:12], trad[14], trad[16]);
             UI_Alert(titre, contenu);
             break;
         }
@@ -143,7 +146,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
         {
             char titre[2*TRAD_LENGTH+5], contenu[500];
             snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[7], trad[9]);
-            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[todoList->subFolder?13:12], trad[15], trad[16]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[(*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder?13:12], trad[15], trad[16]);
             UI_Alert(titre, contenu);
             break;
         }
@@ -151,8 +154,112 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
         {
             char titre[2*TRAD_LENGTH+5], contenu[500];
             snprintf(titre, 2*TRAD_LENGTH+5, "%s %s", trad[7], trad[8]);
-            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[todoList->subFolder?13:12], trad[14], trad[16]);
+            snprintf(contenu, 500, "%s %s %s %s", trad[10], trad[(*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder?13:12], trad[14], trad[16]);
             UI_Alert(titre, contenu);
+            break;
+        }
+        case MDL_CODE_DEFAULT:
+        {
+            void *buffer;
+            int ret_value = 0, pos = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne, i;
+            char contenu[500];
+            SDL_MessageBoxData alerte;
+            SDL_MessageBoxButtonData bouton[5];
+
+            snprintf(contenu, 500, trad[23], trad[(*todoList)[pos]->subFolder?13:12]);
+            unescapeLineReturn(contenu);
+            alerte.flags = SDL_MESSAGEBOX_WARNING;
+            alerte.title = trad[0];
+            alerte.message = contenu;
+            alerte.numbuttons = 1 + !isFirstNonDL*2 + !isLastNonDL*2;
+            for(i = 0; i < alerte.numbuttons; i++)
+            {
+                bouton[i].flags = 0;
+                bouton[i].buttonid = i + isFirstNonDL*2 +1; //Valeur retournée
+                bouton[i].text = trad[24 + i + isFirstNonDL*2];
+            }
+
+            alerte.buttons = bouton;
+            alerte.window = windowDL;
+            alerte.colorScheme = NULL;
+            SDL_ShowMessageBox(&alerte, &ret_value);
+            MUTEX_LOCK(mutexDispIcons);
+
+            if(*status[pos] == MDL_CODE_DEFAULT)
+            {
+                switch(ret_value)
+                {
+                    case 1: //premier
+                    {
+                        for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_DEFAULT; i++);
+                        if(pos != i)
+                        {
+                            buffer = (*todoList)[pos];
+                            memmove(&(*todoList)[i+1], &(*todoList)[i], (pos-i)*sizeof(DATA_LOADED*));
+                            (*todoList)[i] = buffer;
+                            buffer = status[pos];
+                            memmove(&status[i+1], &status[i], (pos-i)*sizeof(int*));
+                            status[i] = buffer;
+                            buffer = statusCache[pos];
+                            memmove(&statusCache[i+1], &statusCache[i], (pos-i)*sizeof(int*));
+                            statusCache[i] = buffer;
+                        }
+                        break;
+                    }
+                    case 2: //+1
+                    case 4: //-1
+                    {
+                        if(pos > 0 && *status[pos-1] == MDL_CODE_DEFAULT)
+                        {
+                            buffer = (*todoList)[pos+ret_value-3];
+                            (*todoList)[pos+ret_value-3] = (*todoList)[pos];
+                            (*todoList)[pos] = buffer;
+                            buffer = status[pos+ret_value-3];
+                            status[pos+ret_value-3] = status[pos];
+                            status[pos] = buffer;
+                            buffer = statusCache[pos+ret_value-3];
+                            statusCache[pos+ret_value-3] = statusCache[pos];
+                            statusCache[pos] = buffer;
+                        }
+                        break;
+                    }
+                    case 3: //delete
+                    {
+                        if(*status[pos] == MDL_CODE_DEFAULT)
+                        {
+                            free((*todoList)[pos]);
+                            free(status[pos]);
+                            free(statusCache[pos]);
+                            if(pos < nbElemTotal)
+                            {
+                                memmove(&(*todoList)[pos], &(*todoList)[pos+1], (nbElemTotal-ligne-1)*sizeof(DATA_LOADED*));
+                                memmove(&status[pos], &status[pos+1], (nbElemTotal-ligne-1)*sizeof(int*));
+                                memmove(&statusCache[pos], &statusCache[pos+1], (nbElemTotal-ligne-1)*sizeof(int*));
+                            }
+                            nbElemTotal--;
+                        }
+                        break;
+                    }
+                    case 5: //dernier
+                    {
+                        for(i = nbElemTotal-1; i >= 0 && *status[i] != MDL_CODE_DEFAULT; i--);
+                        if(pos != i)
+                        {
+                            buffer = (*todoList)[pos];
+                            memmove(&(*todoList)[pos], &(*todoList)[pos+1], (i-pos)*sizeof(DATA_LOADED*));
+                            (*todoList)[i] = buffer;
+                            buffer = status[pos];
+                            memmove(&status[pos], &status[pos+1], (i-pos)*sizeof(int*));
+                            status[i] = buffer;
+                            buffer = statusCache[pos];
+                            memmove(&statusCache[pos], &statusCache[pos+1], (i-pos)*sizeof(int*));
+                            statusCache[i] = buffer;
+                        }
+                        break;
+                    }
+                }
+            }
+            MUTEX_UNLOCK(mutexDispIcons);
             break;
         }
 
@@ -164,10 +271,11 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
 
             int ret_value = 0;
             char contenu[500];
-
-            snprintf(contenu, 500, "%s %s %s %s %s", trad[1], todoList->datas->mangaName, trad[2], todoList->datas->team->teamLong, trad[3]);
             SDL_MessageBoxData alerte;
             SDL_MessageBoxButtonData bouton[2];
+
+            snprintf(contenu, 500, "%s %s %s %s %s", trad[1], (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->mangaName, trad[2], (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->team->teamLong, trad[3]);
+            changeTo(contenu, '_', ' ');
             alerte.flags = SDL_MESSAGEBOX_INFORMATION;
             alerte.title = trad[0];
             alerte.message = contenu;
@@ -209,10 +317,10 @@ void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne)
                 FILE* inject = fopenR("data/laststate.dat", "w+");
                 if(inject != NULL)
                 {
-                    if(todoList->subFolder)
-                        fprintf(inject, "%s T %d", todoList->datas->mangaName, todoList->partOfTome);
+                    if((*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder)
+                        fprintf(inject, "%s T %d", (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->mangaName, (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->partOfTome);
                     else
-                        fprintf(inject, "%s C %d", todoList->datas->mangaName, todoList->chapitre);
+                        fprintf(inject, "%s C %d", (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->mangaName, (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->chapitre);
                     fclose(inject);
                     createNewThread(mainRakshata, NULL);
                 }

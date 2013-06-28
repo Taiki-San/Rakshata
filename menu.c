@@ -73,12 +73,15 @@ int section()
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-    position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-    position.y = BORDURE_SUP_MENU;
-    position.h = texte->h;
-    position.w = texte->w;
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
+    if(texte != NULL)
+    {
+        position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
+        position.y = BORDURE_SUP_MENU;
+        position.h = texte->h;
+        position.w = texte->w;
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
     TTF_CloseFont(police);
 
     if((sectionMessage = loadLargePrefs(SETTINGS_MESSAGE_SECTION_FLAG)) != NULL)

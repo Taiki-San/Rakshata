@@ -399,7 +399,7 @@
 #define SIZE_TRAD_ID_13 6   //Changement langue
 #define SIZE_TRAD_ID_14 4   //Ajout de dépôt
 #define SIZE_TRAD_ID_15 1   //Suppression de dépôt
-#define SIZE_TRAD_ID_16 22  //Pop-up dans le module de DL
+#define SIZE_TRAD_ID_16 29  //Pop-up dans le module de DL
 #define SIZE_TRAD_ID_17 5   //Menu principal
 #define SIZE_TRAD_ID_18 2   //Selection de manga
 #define SIZE_TRAD_ID_19 18  //Selection chapitre/tome

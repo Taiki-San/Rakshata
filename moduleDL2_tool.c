@@ -461,10 +461,10 @@ int sortMangasToDownload(const void *a, const void *b)
             return 0; //Si dans un tome, on ne change pas l'ordre
         }
 
-        if(struc1->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
-            return 1;
-        else if(struc2->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        if(struc1->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
             return -1;
+        else if(struc2->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            return 1;
         return struc1->chapitre - struc2->chapitre;
     }
 
@@ -683,33 +683,5 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
         }
     }
     return NULL;
-}
-
-void updateWindowSizeDL(int w, int h)
-{
-    MUTEX_LOCK(mutexDispIcons);
-    if(WINDOW_SIZE_H_DL != h || WINDOW_SIZE_W_DL != w)
-    {
-        WINDOW_SIZE_H_DL = h; //Pour repositionner chargement
-        WINDOW_SIZE_W_DL = w;
-
-        chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
-
-        SDL_SetWindowSize(windowDL, w, h);
-
-        if(WINDOW_SIZE_H_DL > h || WINDOW_SIZE_W_DL > w)
-        {
-            SDL_RenderClear(rendererDL);
-            SDL_RenderPresent(rendererDL);
-        }
-        WINDOW_SIZE_H_DL = windowDL->h;
-        WINDOW_SIZE_W_DL = windowDL->w;
-    }
-    else
-    {
-        SDL_RenderClear(rendererDL);
-        SDL_RenderPresent(rendererDL);
-    }
-    MUTEX_UNLOCK(mutexDispIcons);
 }
 

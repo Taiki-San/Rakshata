@@ -39,7 +39,7 @@ int download_UI(TMP_DL *output)
     double last_file_size = 0, download_speed = 0;
     SDL_Rect position;
     SDL_Texture *pourcentAffiche = NULL;
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    TTF_Font *police = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
     position.y = HAUTEUR_POURCENTAGE;
@@ -50,6 +50,7 @@ int download_UI(TMP_DL *output)
     threadData = createNewThreadRetValue(downloader, output);
 
     MUTEX_LOCK(mutexDispIcons);
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
     pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
     if(pourcentAffiche != NULL)
     {

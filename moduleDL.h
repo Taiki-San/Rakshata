@@ -114,7 +114,6 @@ void MDLUpdateIcons(bool ignoreCache);
 #define MDLDispInstallHeader(a) MDLDispHeader(1, a)
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList);
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
-bool MDLEventsHandling(DATA_LOADED **todoList, int nombreElementDrawn);
 void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted);
 
 /**ModuleDL2_tool.c**/
@@ -128,13 +127,12 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status);
-void updateWindowSizeDL(int w, int h);
 
 /**Module2_event.h**/
-bool MDLEventsHandling(DATA_LOADED **todoList, int nbElemDrawn);
+bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn);
 bool MDLisClicOnAValidX(int x, bool twoColumns);
 bool MDLisClicOnAValidY(int y, int nombreElement);
-void MDLDealWithClicsOnIcons(DATA_LOADED *todoList, int ligne);
+void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
