@@ -183,6 +183,12 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 {
                     newBufferTodo[posPtr]->datas = &mangaDB[posCatalogue];
                 }
+                else //Couldn't find the project, discard it
+                {
+                    free(newBufferTodo[posPtr]);
+                    newBufferTodo[posPtr] = NULL;
+                    continue;
+                }
             }
 
             //On va checker les doublons (NB: algo pas parfait, le caser après le tri serait pertinent mais il faudrait alors nettoyer le tome
