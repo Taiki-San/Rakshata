@@ -72,6 +72,8 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
             data[i].data = &mangaDB[i];
             changeTo(data[i].stringToDisplay, '_', ' ');
             data[i].ID = i;
+            if(contexte == CONTEXTE_DL)
+                data[i].anythingToDownload = mangaDB[i].contentDownloadable;
         }
         do
         {

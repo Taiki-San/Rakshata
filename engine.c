@@ -270,7 +270,8 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b}, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b};
+    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
+    SDL_Color couleurNothingToRead = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b }, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b};
 
     if(input == NULL)
         return PALIER_MENU;
@@ -373,7 +374,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             if(!engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                 continue;
 
-            texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurTexte));
+            texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
             if(texte->w >= longueurElement + 10)
             {
                 int length = strlen(input[i].stringToDisplay), lettreToRemove, widthDrawn = texte->w;
@@ -384,7 +385,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
                 for(; length > 0 && temp[length-1] == ' '; temp[--length] = 0);
                 snprintf(temp, LONGUEUR_NOM_MANGA_MAX, "%s...", temp);
                 SDL_DestroyTextureS(texte);
-                texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurTexte));
+                texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
             }
 
             position.h = texte->h;
@@ -1160,8 +1161,10 @@ void displayBigMainMenuIcon()
     }
 }
 
-SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte)
+SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte)
 {
+    if(contexte == CONTEXTE_DL && !input.anythingToDownload)
+        return couleurNothingToRead;
     if((contexte == CONTEXTE_LECTURE && checkChapitreUnread(*input.data) == 1)
             || (contexte == CONTEXTE_DL && checkChapitreUnread(*input.data) == -1))
         return couleurUnread;

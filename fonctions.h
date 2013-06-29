@@ -64,6 +64,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
+bool isAnythingToDownload(MANGAS_DATA *mangaDB);
 
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
@@ -104,7 +105,7 @@ void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);
 void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale);
 
 void displayBigMainMenuIcon();
-SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurTexte);
+SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte);
 
 void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
 

@@ -51,6 +51,9 @@ typedef struct dataMangas
     int nombreTomes;
     META_TOME *tomes;
 
+    //Module DL
+    bool contentDownloadable;
+
     int favoris;
 } MANGAS_DATA;
 
@@ -65,6 +68,7 @@ typedef struct data_provided_to_engine
 
     /*Variable pour CONTEXTE_DL*/
     int nombreChapitreDejaSelect;
+    bool anythingToDownload;
 
     /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
     bool switchAvailable;

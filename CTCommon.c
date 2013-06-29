@@ -241,6 +241,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
             {
                 noChoice++;
                 *isTome = !*isTome; //On inverse le tome
+                outChoisis = ENGINE_RETVALUE_SWITCH;
                 continue;
             }
         }
@@ -273,5 +274,27 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
         getUpdatedTomeList(mangaDB);
     else
         getUpdatedChapterList(mangaDB);
+}
+
+bool isAnythingToDownload(MANGAS_DATA *mangaDB)
+{
+    int prevSize, uselessVar;
+    if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        refreshChaptersList(mangaDB);
+        prevSize = mangaDB->nombreChapitre;
+        checkChapitreValable(mangaDB, &uselessVar);
+        if(prevSize != mangaDB->nombreChapitre)
+            return true;
+    }
+    if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    {
+        refreshTomeList(mangaDB);
+        prevSize = mangaDB->nombreTomes;
+        checkTomeValable(mangaDB, &uselessVar);
+        if(prevSize != mangaDB->nombreTomes)
+            return true;
+    }
+    return false;
 }
 

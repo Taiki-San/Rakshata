@@ -105,6 +105,8 @@ MANGAS_DATA* miseEnCache(int mode)
 			{
                 memcpy(mangas[numeroManga].team, teamList[numeroTeam], sizeof(TEAMS_DATA));
                 mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], &cacheFavs);
+                if(mode == LOAD_DATABASE_ALL)
+                    mangas[numeroManga].contentDownloadable = isAnythingToDownload(&mangas[numeroManga]);
 				nombreMangaDansDepot++;
 			}
 			else
