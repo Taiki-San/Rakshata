@@ -136,7 +136,7 @@ void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
     sha256(randomChar, output);
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
-        if(output[i] <= ' '  || output[i] >= 255)
+        if(output[i] <= ' '  || output[i] == 255)
         {
             int j;
             do {
