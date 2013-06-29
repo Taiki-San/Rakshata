@@ -165,6 +165,7 @@ void mainMDL()
     /*On libère la mémoire*/
     for(i = 0; i < nbElemTotal; i++)
     {
+        free((*todoList)[i]->listChapitreOfTome);
         free((*todoList)[i]);
         free(status[i]);
         free(statusCache[i]);
@@ -290,19 +291,16 @@ void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historique
     *status[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
     argument->todoList = todoList[posElement];
     argument->currentState = status[posElement];
-    argument->isTomeAndLastElem = false;
     argument->historiqueTeam = historiqueTeam;
-    if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
-    {
-        if(posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome)
-            argument->isTomeAndLastElem = true; //Validation
-    }
+    if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
+        argument->isTomeAndLastElem = true;
+    else
+        argument->isTomeAndLastElem = false;
     createNewThread(MDLHandleProcess, argument);
 }
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 {
-    int i = 0;
     MDL_HANDLER_ARG input;
     memcpy(&input, inputVolatile, sizeof(MDL_HANDLER_ARG));
     free(inputVolatile);
@@ -314,39 +312,105 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         quit_thread(0);
     }
 
-    if(!checkChapterAlreadyInstalled(*input.todoList))
+    void **listDL;
+    size_t *listSizeDL;
+    DATA_LOADED todoListTmp;
+    DATA_MOD_DL argument;
+    bool subFolder = input.todoList->subFolder;
+    int i, nombreElement = subFolder ? input.todoList->chapitre : 1;
+
+    argument.todoList = &todoListTmp;
+    todoListTmp.datas = input.todoList->datas;
+    listDL = calloc(nombreElement, sizeof(void*));
+    listSizeDL = calloc(nombreElement, sizeof(size_t*));
+
+    if(listDL == NULL || listSizeDL == NULL)
     {
-        if(checkIfWebsiteAlreadyOpened(*input.todoList->datas->team, input.historiqueTeam))
-        {
-            ouvrirSiteTeam(input.todoList->datas->team); //Ouverture du site de la team
+        free(listDL);
+        free(listSizeDL);
+        *input.currentState = MDL_CODE_INTERNAL_ERROR;
+        MDLUpdateIcons(false);
+        quit_thread(0);
+    }
+
+    *input.currentState = MDL_CODE_DL;
+    MDLUpdateIcons(false);
+
+    for(i = 1; i <= nombreElement; i++)
+    {
+        if(!subFolder) {
+            todoListTmp.chapitre = input.todoList->chapitre;
+            todoListTmp.subFolder = false;
+            todoListTmp.partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        }
+        else {
+            todoListTmp.chapitre = input.todoList->listChapitreOfTome[i-1];
+            todoListTmp.subFolder = true;
+            todoListTmp.partOfTome = input.todoList->partOfTome;
         }
 
-        DATA_MOD_DL argument;
-        argument.currentState = input.currentState;
-        argument.todoList = input.todoList;
-        MDLUpdateIcons(false);
-        MDLTelechargement(&argument);
-
-        if(*argument.currentState == MDL_CODE_DL_OVER) //On lance l'installation
+        if(!checkChapterAlreadyInstalled(todoListTmp))
         {
-            for(; i < nbElemTotal && *status[i] != MDL_CODE_INSTALL; i++);
-            if(i == nbElemTotal) //Aucune installation en cours
-            {
-                *input.currentState = MDL_CODE_INSTALL;
-                MDLUpdateIcons(false);
+            if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
+                ouvrirSiteTeam(todoListTmp.datas->team); //Ouverture du site de la team
             }
-            else
-            {
-                while(*input.currentState != MDL_CODE_INSTALL)
-                    SDL_Delay(250);
+            argument.buf = NULL;
+            argument.length = 0;
+
+            if(MDLTelechargement(&argument)) {
+                if(i == nombreElement)
+                    *input.currentState = MDL_CODE_ERROR_DL;
             }
-            MDLDispInstallHeader(input.todoList);
-            MDLInstallation(input, argument);
+            else if(quit) {
+                *input.currentState = MDL_CODE_DEFAULT;
+                MDLDispDownloadHeader(NULL);
+            }
+            else {
+                listDL[i-1] = argument.buf;
+                listSizeDL[i-1] = argument.length;
+                if(i == nombreElement)
+                    *input.currentState = MDL_CODE_DL_OVER;
+            }
+        }
+        else if(i == nombreElement) {
+            *input.currentState = MDL_CODE_INSTALL_OVER;
         }
     }
-    else
+    MDLUpdateIcons(false);
+
+    if(*input.currentState == MDL_CODE_DL_OVER) //On lance l'installation
     {
-        *input.currentState = MDL_CODE_INSTALL_OVER;
+        int error = 0;
+        for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_INSTALL; i++);
+        if(i == nbElemTotal) //Aucune installation en cours
+        {
+            *input.currentState = MDL_CODE_INSTALL;
+            MDLUpdateIcons(false);
+        }
+        else
+        {
+            while(*input.currentState != MDL_CODE_INSTALL)
+                SDL_Delay(250);
+        }
+        MDLDispInstallHeader(input.todoList);
+
+        for(i = 0; i < nombreElement; i++)
+        {
+            if(listDL[i] == NULL)
+            {
+                error++;
+                continue;
+            }
+
+            if(MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
+                subFolder ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
+                input.todoList->partOfTome, subFolder, input.isTomeAndLastElem && i == nombreElement-1))
+                error++;
+        }
+        if(error)
+            *input.currentState = MDL_CODE_ERROR_INSTALL;
+        else
+            *input.currentState = MDL_CODE_INSTALL_OVER;
     }
 
     for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_DL_OVER; i++);
@@ -358,8 +422,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     quit_thread(0);
 }
 
-void MDLTelechargement(DATA_MOD_DL* input)
+bool MDLTelechargement(DATA_MOD_DL* input)
 {
+    bool output = false;
     int ret_value = CODE_RETOUR_OK;
 
     /**Téléchargement**/
@@ -385,19 +450,15 @@ void MDLTelechargement(DATA_MOD_DL* input)
                 logR(dataDL.buf);
                 if(dataDL.buf != NULL)
                     free(dataDL.buf);
-                *input->currentState = MDL_CODE_ERROR_DL;
+                output = true;
             }
             else if(ret_value != CODE_RETOUR_OK || dataDL.buf == NULL || dataDL.length < 50 || ((dataDL.buf[0] != 'P' || dataDL.buf[1] != 'K') && strncmp(dataDL.buf, "http://", 7) && strncmp(dataDL.buf, "https://", 8)))
             {
                 if(dataDL.buf != NULL)
                     free(dataDL.buf);
                 if(ret_value != CODE_RETOUR_DL_CLOSE)
-                    *input->currentState = MDL_CODE_ERROR_DL;
-                else //Quit
-                {
-                    *input->currentState = MDL_CODE_DEFAULT;
-                    MDLDispDownloadHeader(NULL);
-                }
+                    output = true;
+                //Le close est géré plus tard
             }
             else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
             {
@@ -407,7 +468,6 @@ void MDLTelechargement(DATA_MOD_DL* input)
             }
             else // Archive pas corrompue, installation
             {
-                *input->currentState = MDL_CODE_DL_OVER;
                 input->buf = dataDL.buf;
                 input->length = dataDL.current_pos;
             }
@@ -416,29 +476,22 @@ void MDLTelechargement(DATA_MOD_DL* input)
 
     if(ret_value == CODE_RETOUR_INTERNAL_FAIL)
     {
-        *input->currentState = MDL_CODE_ERROR_DL;
+        output = true;
     }
     //On ne raffraichis pas l'écran car on va avoir à le faire un peu plus tard
-    return;
+    return output;
 }
 
-void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data)
+bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
-    bool subFolder, haveToPutTomeAsReadable;
-    int extremes[2], erreurs = 0, dernierLu = -1, chapitre, tome;
+    int extremes[2], erreurs = 0, dernierLu = -1;
     char temp[600], basePath[500];
     FILE* ressources = NULL;
 
     /*Récupération des valeurs envoyés*/
-    MANGAS_DATA *mangaDB = input.todoList->datas;
-    chapitre = input.todoList->chapitre;
-    tome = input.todoList->partOfTome;
-    subFolder = input.todoList->subFolder;
-    haveToPutTomeAsReadable = input.isTomeAndLastElem;
 
-    if(data.buf == NULL) //return;
-    {
-        return;
+    if(buf == NULL) {
+        return true;
     }
 
     if(subFolder == true)
@@ -486,7 +539,7 @@ void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data)
         if(ressources != NULL)
             fclose(ressources);
 
-        erreurs = miniunzip (data.buf, basePath, "", data.length, chapitre/10);
+        erreurs = miniunzip (buf, basePath, "", sizeBuf, chapitre/10);
         removeR(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
@@ -558,13 +611,10 @@ void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data)
     else
         fclose(ressources);
 
+    free(buf);
     if(erreurs)
-        *data.currentState = MDL_CODE_ERROR_INSTALL;
-    else
-        *data.currentState = MDL_CODE_INSTALL_OVER;
-
-    free(data.buf);
-    return;
+        return true;
+    return false;
 }
 
 /*UI*/
@@ -594,10 +644,15 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         if(todoList[curseurDebut+nbrElementDisp] == NULL || todoList[curseurDebut+nbrElementDisp]->datas == NULL)
             continue;
 
-        if(todoList[curseurDebut+nbrElementDisp]->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        if(todoList[curseurDebut+nbrElementDisp]->subFolder == false)
             snprintf(texte, 200, "%s %s %d", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, trad[3], todoList[curseurDebut+nbrElementDisp]->chapitre / 10);
         else
-            snprintf(texte, 200, "%s %s %d", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, trad[4], todoList[curseurDebut+nbrElementDisp]->partOfTome);
+        {
+            if(todoList[curseurDebut+nbrElementDisp]->tomeName == NULL)
+                snprintf(texte, 200, "%s %s %d", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, trad[4], todoList[curseurDebut+nbrElementDisp]->partOfTome);
+            else
+                snprintf(texte, 200, "%s: %s", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, todoList[curseurDebut+nbrElementDisp]->tomeName);
+        }
         changeTo(texte, '_', ' ');
 
         texture = TTF_Write(rendererDL, police, texte, couleurFont);

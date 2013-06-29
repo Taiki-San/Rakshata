@@ -108,7 +108,7 @@ bool MDLisClicOnAValidX(int x, bool twoColumns)
     return false;
 }
 
-bool MDLisClicOnAValidY(int y, int nombreElement)
+int MDLisClicOnAValidY(int y, int nombreElement)
 {
     y -= MDL_HAUTEUR_DEBUT_CATALOGUE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
 

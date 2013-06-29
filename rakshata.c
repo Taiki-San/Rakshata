@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 #ifdef __INTEL_COMPILER
 	testDL();
 #endif
-
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 

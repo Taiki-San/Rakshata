@@ -650,16 +650,16 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                     if(!clicOnButton(event.button.x, event.button.y, positionBandeauControle.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTropGrande
                     {
-                        while(1) //On déplace la page en laissant cliqué
+                        bool runTheBoucle = true;
+                        while(runTheBoucle) //On déplace la page en laissant cliqué
                         {
                             anciennePositionX = event.button.x;
                             anciennePositionY = event.button.y;
                             SDL_FlushEvent(SDL_MOUSEMOTION);
                             SDL_WaitEvent(&event);
-                            if(!haveInputFocus(&event, window) || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE)
-                            {
-                                break;
-                            }
+                            if(!haveInputFocus(&event, window) && event.type == SDL_WINDOWEVENT && (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE))
+                                runTheBoucle = false;
+
                             switch(event.type)
                             {
                                 case SDL_MOUSEMOTION:
@@ -694,7 +694,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                         slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
                                     REFRESH_SCREEN();
-
                                     break;
                                 }
 
@@ -727,6 +726,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                     }
                                     else
                                         pasDeMouvementLorsDuClicX = pasDeMouvementLorsDuClicY = 0;
+                                    runTheBoucle = false;
                                     break;
                                 }
 

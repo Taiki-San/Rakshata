@@ -53,6 +53,8 @@
 typedef struct data_loaded_from_download_list
 {
 	int chapitre;
+	int *listChapitreOfTome;
+	unsigned char *tomeName;
 	bool subFolder;
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
     MANGAS_DATA* datas;
@@ -79,7 +81,6 @@ typedef struct data_pour_installation
 
 typedef struct main_data_module_DL
 {
-    int* currentState;
     DATA_LOADED* todoList;
     void* buf;
     size_t length;
@@ -106,8 +107,8 @@ void MDLLauncher();
 void mainDLProcessing(DATA_LOADED *** todoList);
 void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historiqueTeam);
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
-void MDLTelechargement(DATA_MOD_DL* input);
-void MDLInstallation(MDL_HANDLER_ARG input, DATA_MOD_DL data);
+bool MDLTelechargement(DATA_MOD_DL* input);
+bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
 int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
 void MDLUpdateIcons(bool ignoreCache);
 #define MDLDispDownloadHeader(a) MDLDispHeader(0, a)
@@ -131,7 +132,7 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status);
 /**Module2_event.h**/
 bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn);
 bool MDLisClicOnAValidX(int x, bool twoColumns);
-bool MDLisClicOnAValidY(int y, int nombreElement);
+int MDLisClicOnAValidY(int y, int nombreElement);
 void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
 
 /**Native.c**/

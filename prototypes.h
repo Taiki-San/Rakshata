@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -55,9 +56,6 @@
 		#endif
 	#endif
     #include <windows.h>
-    #define bool BOOL
-    #define true TRUE
-    #define false FALSE
 
     #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE

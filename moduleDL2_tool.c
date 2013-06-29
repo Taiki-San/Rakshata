@@ -337,7 +337,7 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
 
     if(inCache || download_mem(URL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, (strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2) != 0)) == CODE_RETOUR_OK)
     {
-        int i, nombreEspace, posBuf, posStartNbrTmp;
+        int i, nombreEspace, posBuf, posStartNbrTmp, posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
         char temp[100], basePath[100];
 
         snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas.chapitre);
@@ -391,17 +391,53 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
                             chapitre += (int) temp[posStartNbrTmp+i+1] - '0';
                         }
 
-                        output[*outLength] = malloc(sizeof(DATA_LOADED));
-                        if(output[*outLength] != NULL)
+                        if(posStartNbrTmp == 9)
                         {
-                            output[*outLength]->chapitre = chapitre;
-                            output[*outLength]->datas = tomeDatas.datas;
-                            output[*outLength]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
-                            if(posStartNbrTmp == 9)
+                            output[*outLength] = malloc(sizeof(DATA_LOADED));
+                            if(output[*outLength] != NULL)
+                            {
+                                output[*outLength]->listChapitreOfTome = NULL;
+                                output[*outLength]->datas = tomeDatas.datas;
+                                output[*outLength]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
                                 output[*outLength]->subFolder = false;
-                            else
-                                output[*outLength]->subFolder = true;
-                            (*outLength)++;
+                                output[*outLength]->chapitre = chapitre;
+                                (*outLength)++;
+                            }
+                        }
+                        else
+                        {
+                            if(posElemsTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+                            {
+                                posElemsTome = (*outLength)++;
+                                output[posElemsTome] = calloc(1, sizeof(DATA_LOADED));
+                                if(output[posElemsTome] == NULL)
+                                {
+                                    posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                                    continue;
+                                }
+                                output[posElemsTome]->datas = tomeDatas.datas;
+                                output[posElemsTome]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
+                                output[posElemsTome]->subFolder = true;
+
+                                if(tomeDatas.datas != NULL && tomeDatas.datas->tomes == NULL) {
+                                    refreshTomeList(tomeDatas.datas);
+                                }
+                                if(tomeDatas.datas != NULL && tomeDatas.datas->tomes != NULL)
+                                {
+                                    for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomes[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomes[i].ID != tomeDatas.chapitre; i++);
+                                    if(tomeDatas.datas->tomes[i].ID == tomeDatas.chapitre)
+                                    {
+                                        output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
+                                    }
+                                }
+                            }
+                            output[posElemsTome]->chapitre++; //Update the number of chapter
+                            void *buf = realloc(output[posElemsTome]->listChapitreOfTome, output[posElemsTome]->chapitre*sizeof(int));
+                            if(buf != NULL)
+                            {
+                                output[posElemsTome]->listChapitreOfTome = buf;
+                                output[posElemsTome]->listChapitreOfTome[output[posElemsTome]->chapitre-1] = chapitre;
+                            }
                         }
                     }
                 }
@@ -464,7 +500,7 @@ int sortMangasToDownload(const void *a, const void *b)
                 return 1;
             else if(!struc1->subFolder && struc2->subFolder)
                 return -1;
-            return 0; //Si dans un tome, on ne change pas l'ordre
+            return struc1->chapitre - struc2->chapitre;
         }
 
         if(struc1->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
