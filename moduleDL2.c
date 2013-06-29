@@ -396,21 +396,20 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 
         for(i = 0; i < nombreElement; i++)
         {
-            if(listDL[i] == NULL)
-            {
+            if(listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
+                                    subFolder ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
+                                    input.todoList->partOfTome, subFolder, input.isTomeAndLastElem && i == nombreElement-1)) {
                 error++;
-                continue;
             }
-
-            if(MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
-                subFolder ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
-                input.todoList->partOfTome, subFolder, input.isTomeAndLastElem && i == nombreElement-1))
-                error++;
+            free(listDL[i]); //Free un ptr null ne pose pas de problèmes
         }
         if(error)
             *input.currentState = MDL_CODE_ERROR_INSTALL;
         else
             *input.currentState = MDL_CODE_INSTALL_OVER;
+    }
+    else {
+        for(i = 0; i < nombreElement; free(listDL[i++]));
     }
 
     for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_DL_OVER; i++);
@@ -419,6 +418,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     else
         MDLDispInstallHeader(NULL);
     MDLUpdateIcons(false);
+    free(listSizeDL);
+    free(listDL);
     quit_thread(0);
 }
 
@@ -489,10 +490,6 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
     FILE* ressources = NULL;
 
     /*Récupération des valeurs envoyés*/
-
-    if(buf == NULL) {
-        return true;
-    }
 
     if(subFolder == true)
     {
@@ -611,7 +608,6 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
     else
         fclose(ressources);
 
-    free(buf);
     if(erreurs)
         return true;
     return false;
