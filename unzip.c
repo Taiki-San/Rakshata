@@ -314,7 +314,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
                 MajToMin(filename_inzip[i]);
                 ustrcpy(filename_inzip[j], filename_inzip[i]);
                 crashTemp(filename_inzip[i], 256);
-                usstrcpy(pass[j], SHA256_DIGEST_LENGTH, pass[i]);
+                memcpy(pass[j], pass[i], SHA256_DIGEST_LENGTH);
                 crashTemp(pass[i], SHA256_DIGEST_LENGTH);
                 i--;
             }
@@ -339,17 +339,16 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             }
         }
         free(nomPage);
-        hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 15 ) * sizeof(unsigned char)); //+1 pour \n, +15 pour le nombre en tête et le \n qui suis
-        if(hugeBuffer== NULL)
+        hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1)*(nombreFichiers+1) + 15) * sizeof(unsigned char));
+        if(hugeBuffer == NULL)
         {
 #ifdef DEV_VERSION
             logR("Failed at allocate memory to buffer\n");
 #endif
-            exit(-1);
+            quit_thread(0); //Libérer la mémoire serait pas mal
         }
         sprintf((char *) hugeBuffer, "%d", nombreFichiers);
-        j = ustrlen(hugeBuffer)-1;
-        for(i=0; i <= nombreFichiers; i++) //Write config.enc
+        for(i=0, j=ustrlen(hugeBuffer)-1; i <= nombreFichiers; i++) //Write config.enc
         {
             int k = 0;
             hugeBuffer[j++] = ' ';
@@ -374,7 +373,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             snprintf(pathToConfigFile, strlen(path) + 50, "%s/config.enc", path);
             _AESEncrypt(hash, hugeBuffer, pathToConfigFile, INPUT_IN_MEMORY, 1);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
-            crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*NOMBRE_PAGE_MAX + 10); //On écrase pour que ça soit plus chiant Ã  lire
+            crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*(nombreFichiers+1) + 15); //On écrase pour que ça soit plus chiant Ã  lire
         }
         free(hugeBuffer);
     }
