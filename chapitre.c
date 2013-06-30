@@ -154,7 +154,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
         //Generate chapter list
         DATA_ENGINE *chapitreDB = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
         if(chapitreDB == NULL) //Erreur de mémoire ou liste vide
-            return errorEmptyCTList(contexte, 0, texteTrad);
+            return errorEmptyCTList(contexte, texteTrad);
         else
             chapitreDB[0].IDDernierElemLu = dernierLu;
 

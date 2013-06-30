@@ -28,7 +28,7 @@ Reload in progress&]
 Launch in progress&]
 7
 Unknown repo&
-Press Enter&]
+No repository could be found with those data,\nyou should check if you didn't made any mistake while copying it.&]
 8
 Loading&]
 9
@@ -76,12 +76,35 @@ Esc to cancel, Enter to confirm&]
 15
 Which repo do you want to delete?&]
 16
-Return to the main menu to apply the changes&
-Click in the window to close it&
-Error detected:&
-chapter(s) corrupted&
-Please contact the maintainer and/or Taiki&
-and attach "log" file located in Rakshata's folder&]
+Confirmation&
+Do you confirm you want to open&
+by&
+in the reader?&
+Confirm&
+Cancel&
+Download&
+Installation&
+in progress&
+pending&
+The installation of&
+The download of&
+chapter&
+volume&
+is in progress,&
+is pending,&
+please wait for a few seconds...&
+Error&
+An error occurred during&
+the download.\nIt's probable it was caused by an issue on the repository.\nYou should try to contact the manager.&
+the instllation.\nIf the problem only exist on one chapter/volume, contact the manager of the repository.\nOtherwise, contact us at contact@rakshata.com&
+An internal error occurred!\nIf it happens often, please contact us at contact@rakshata.com\nDon't forget to include the way to reproduce the issue.&
+Waiting&
+This %s is pending download,\ndo you wish to change its priority or to delete it?\nClose this window to abort any change&
+First&
+Increase&
+Delete&
+Decrease&
+Last&]
 17
 Main menu&
 Reader&
@@ -107,9 +130,8 @@ First time read this manga&
 Last&
 read:&
 All&
-No new&
-to download, try again later :)&
-(click to go back to the menu)&]
+Nothing to download&
+Nothing new to download, try again later ;)&]
 20
 Initialization&
 Size:&
@@ -122,22 +144,37 @@ Analysing&]
 Chapter&
 Tome&
 Page&
-To come back to&
-the menu, press Esc&
-To close this&
-window, click.&
+Restoration over&
+You just restored the state of Rakshata at its closing.\nIf you wish to go back to the main menu, press Escape or use the button at the bottom.&
+Don't show again&
+Ok&
 F to quit the fullscreen&
 Q to quit Rakshata&]
 22
-Downloading&
+Download of&
+Installation of&
+by&
 chapter&
-by the&
-of the list&
-Download in progress, please wait&
-Installation in progress, please wait&]
+volume&
+No pending download&
+No pending installation&
+Errors detected during the process&
+Errors were detected during the download and/or the installation.\nDo you wish to retry to download those elements next time?&
+They will be handled at the next launch of the download module.&
+No&
+Details&
+Yes&
+Error&
+during the download:&
+during the installation:&
+Internal error:&
+Internal errors:&]
 23
-No manga available here, grab some ;)&
-Return or click to go back to the menu =)&]
+No comic available&
+It seems you didn't downloaded anything yep.\nWhy don't grab something?\nYou also can add a repository. :)&
+Add a repo&
+Download&
+Ok&]
 24
 No internet access :(&
 Click to go back to the menu&]

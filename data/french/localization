@@ -27,8 +27,8 @@ Raffraichissement en cours&]
 6
 Lancement en cours&]
 7
-Dépôt inconnu.&
-Appuyez sur enter&]
+Depot inconnu&
+Aucun depot n'a pu etre trouve, essayez de verifier\nque vous n'avez pas fait d'erreur dans la recopie.&]
 8
 Chargement&]
 9
@@ -95,11 +95,11 @@ est en attente,&
 veuillez patienter quelques instants...&
 Erreur&
 Une erreur s'est produite lors&
-du téléchargement.\nIl est probable qu'elle ait été causé par un problème sur le dépôt.\nTentez de contacter le gestionnaire.&
-de l'installation.\nSi le problème n'existe que sur un seul chapitre/tome, contactez le gestionnaire du dépôt.\nSinon, contactez-nous à contact@rakshata.com.&
-Une erreur interne s'est produite.\nSi elle se reproduit réglièrement, contactez nous à contact@rakshata.com\nN'oubliez pas d'inclure la démarche pour reproduire le problème.&
+du telechargement.\nIl est probable qu'elle ait ete causee par un probleme sur le depot.\nTentez de contacter le gestionnaire.&
+de l'installation.\nSi le probleme n'existe que sur un seul chapitre/tome, contactez le gestionnaire du depot.\nSinon, contactez-nous a contact@rakshata.com.&
+Une erreur interne s'est produite.\nSi elle se reproduit reglierement, contactez nous à contact@rakshata.com\nN'oubliez pas d'inclure la démarche pour reproduire le probleme.&
 En attente&
-Ce %s est en attente de téléchargement,\nsouhaitez vous en changer la priorité ou le supprimer?\Fermer cette fenêtre pour annuler&
+Ce %s est en attente de telechargement,\nsouhaitez vous en changer la priorite ou le supprimer?\nFermer cette fenetre pour annuler&
 Premier&
 Remonter&
 Supprimer&
@@ -130,9 +130,8 @@ Première lecture du manga&
 Dernier&
 lu:&
 Tout&
-Aucun nouveau&
-à télécharger, réessayez&
-plus tard ;) (cliquez pour revenir au menu)&]
+Rien à télécharger&
+Rien de nouveau à télécharger, réessayez plus tard ;)&]
 20
 Initialisation du téléchargement&
 Taille:&
@@ -145,10 +144,10 @@ Téléchargement terminé&]
 Chapitre&
 Tome&
 Page&
-Pour revenir au&
-menu, faites echap&
-Pour fermer cette&
-fenetre, enter.&
+Restauration terminee&
+Vous venez de restaurer l'etat de Rakshata du moment de sa fermeture.\nSi vous souhaitez revenir au menu, appuyer sur echap ou utilisez le bouton en bas.&
+Ne plus afficher&
+Ok&
 F pour quitter le plein écran&
 Q pour quitter Rakshata&]
 22
@@ -159,22 +158,26 @@ chapitre&
 tome&
 Aucun téléchargement en cours&
 Aucune installation en cours&
-Erreurs détéctés lors du processus&
-Des erreurs ont étés détéctés lors du téléchargement et/ou de l'installation\nVoulez vous replacer ces éléments dans la liste de téléchargement?&
-Ils seront traités au prochain lancement du module de téléchargement.&
+Erreurs detectes lors du processus&
+Des erreurs ont etes detectes lors du telechargement et/ou de l'installation.\nVoulez vous replacer ces elements dans la liste de telechargement?&
+Ils seront traites au prochain lancement du module de telechargement.&
 Non&
 Détails&
 Oui&
 Erreur&
 lors du téléchargement:&
 lors de l'installation:&
-interne:&]
+Erreur interne:&
+Erreurs interne:&]
 23
-Aucun manga disponible ici, téléchargez-en vite! ;)&
-Enter ou cliquez pour revenir au menu&]
+Aucun manga disponible&
+Il semblerait que vous n'avez pas encore telechargé quoi que ce soit.\nPourquoi ne pas aller recuperer quelque chose?\nVous pouvez aussi ajouter un depot. :)&
+Ajouter&
+Télécharger&
+Ok&]
 24
 Absence de connexion internet&
-Cliquez pour revenir au menu&]
+Aucune connexion internet detectee.\nVous risquez d'en avoir besoin pour telecharger quelque chose.;)\nReessayez lorsque vous vous serez connectes&]
 25
 Votre lecteur de mangas et de BD&
 Module de telechargement&]
@@ -192,18 +195,17 @@ ERREUR: Adresse email rejetée&
 Votre adresse email n'est pas valide.&
 Dans le cas où vous ne le compreniez pas, n'hésitez&
 pas à nous contacter à l'adresse contact@rakshata.com&
-ERREUR: Mot de passe rejeté&
+ERREUR: Mot de passe rejete&
 Votre mot de passe n'est pas valide.&
-Dans le cas où vous l'avez oublié,&
-veuillez contacter contact@rakshata.com avec votre compte mail.&
+Dans le cas où vous l'avez oublie, veuillez&
+contacter contact@rakshata.com avec votre compte e-mail.&
 ERREUR CRITIQUE&
-Vérifiez que vous pouvez accéder au site de Rakshata&
-Si oui, réessayez puis contactez-nous à contact@rakshata.com&]
+Verifiez que vous pouvez acceder au site de Rakshata&
+Si oui, reessayez puis contactez-nous à contact@rakshata.com&]
 27
-/!\ Erreur: connexion au serveur impossible. /!\&
-Une connexion est nécessaire au moins une fois sur chaque&
-nouvel ordinateur pour lire la base de données. Veuillez&
-vérifier que vous pouvez accéder au site de Rakshata.&]
+Connexion au serveur impossible&
+/!\ Erreur: connexion au serveur impossible. /!\\nUne connexion est necessaire au moins une fois sur chaque&
+nouvel ordinateur pour lire la base de donnees. Veuillez\nverifier que vous pouvez acceder au site de Rakshata.&]
 28
 Veuillez entrer le mot de passe de votre compte&
 Mot de Passe:&]

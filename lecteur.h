@@ -12,7 +12,7 @@
 
 //Macro pour libérer plus facilement la mémoire
 #define FREE_CONTEXT() cleanMemory(dataReader, chapitre, chapitre_texture, OChapitre, NChapitre, UI_PageAccesDirect, infoSurface, bandeauControle, police)
-#define REFRESH_SCREEN() refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, &restoreState, &tempsDebutExplication, explication, pageAccesDirect, UI_PageAccesDirect)
+#define REFRESH_SCREEN() refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, pageAccesDirect, UI_PageAccesDirect)
 
 extern int unlocked;
 static int pageWaaaayyyyTooBig;
@@ -50,9 +50,10 @@ int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome
 int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface* UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void freeCurrentPage(SDL_Texture *texture);
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, SDL_Surface *explication, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
+void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK);
 
 /** Event Management **/
 

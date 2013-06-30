@@ -19,7 +19,6 @@ void chargement(SDL_Renderer* rendererVar, int h, int w);
 void loadPalette();
 void loadIcon(SDL_Window *window_ptr);
 SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
-SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][TRAD_LENGTH], int numberLine);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
 int getWindowSize(int w1h2);
@@ -42,7 +41,7 @@ int checkLancementUpdate();
 void networkAndVersionTest();
 int checkNetworkState(int state);
 void checkHostNonModifie();
-int checkRestore();
+bool checkRestore();
 int checkRestoreAvailable();
 int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker);
 int isItNew(MANGAS_DATA mangasDB); //Remplacer par checkNewManga
@@ -123,9 +122,9 @@ int libcurlErrorCode(CURLcode code);
 int erreurReseau();
 int showError();
 int rienALire();
-int affichageRepoIconnue();
+void affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
-int errorEmptyCTList(int contexte, int isTome, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
+int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 void memoryError(size_t size);
 
 /**Favoris.c**/

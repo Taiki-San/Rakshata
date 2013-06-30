@@ -301,34 +301,6 @@ SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr)
     return renderer_ptr;
 }
 
-SDL_Surface* createUIAlert(SDL_Surface* alertSurface, char texte[][TRAD_LENGTH], int numberLine)
-{
-    int hauteurUIAlert = 0, i = 0;
-    SDL_Surface *bufferWrite = NULL;
-    SDL_Rect positionSurUIAlert;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-    hauteurUIAlert = BORDURE_SUP_UIALERT + numberLine * EPAISSEUR_LIGNE_MOYENNE + BORDURE_SUP_UIALERT; //Définition de la taille de la fenêtre
-    alertSurface = SDL_CreateRGBSurface(0, LARGEUR_UIALERT, hauteurUIAlert, 32, 0, 0, 0, 0);
-    SDL_FillRect(alertSurface, NULL, SDL_MapRGB(alertSurface->format, palette.fond.r, palette.fond.g, palette.fond.b)); //We change background color
-
-    positionSurUIAlert.y = BORDURE_SUP_UIALERT;
-    for(i = 0; texte[i] && i < numberLine; i++)
-    {
-        bufferWrite = TTF_RenderText_Blended(police, texte[i], couleurTexte);
-        positionSurUIAlert.x = alertSurface->w / 2 - bufferWrite->w / 2;
-        SDL_BlitSurface(bufferWrite, NULL, alertSurface, &positionSurUIAlert);
-        positionSurUIAlert.y += bufferWrite->h;
-        SDL_FreeSurfaceS(bufferWrite);
-    }
-    TTF_CloseFont(police);
-    return alertSurface;
-}
-
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg)
 {
     SDL_Surface *surfText;

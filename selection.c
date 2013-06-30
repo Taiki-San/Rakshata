@@ -82,11 +82,8 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 
         free(data);
     }
-    else
-    {
+    else {
         mangaChoisis = rienALire();
-        if(mangaChoisis > PALIER_CHAPTER)
-            mangaChoisis = PALIER_CHAPTER;
     }
 
     return mangaChoisis;

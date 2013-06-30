@@ -179,7 +179,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
 
         //Si liste vide
         if(tomeDB == NULL) //Erreur de mémoire ou liste vide
-            return errorEmptyCTList(contexte, 1, texteTrad);
+            return errorEmptyCTList(contexte, texteTrad);
 
         displayTemplateTome(mangaDB, tomeDB[0], contexte, texteTrad);
         do

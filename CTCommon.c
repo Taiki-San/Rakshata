@@ -236,7 +236,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
         if(data == NULL) //Erreur de mémoire ou liste vide
         {
             if(noChoice)
-                return errorEmptyCTList(contexte, *isTome, texteTrad);
+                return errorEmptyCTList(contexte, texteTrad);
             else
             {
                 noChoice++;

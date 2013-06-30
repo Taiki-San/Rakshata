@@ -29,51 +29,11 @@ void logR(char *error)
 
 void connexionNeededToAllowANewComputer()
 {
-    char trad[SIZE_TRAD_ID_27][TRAD_LENGTH];
-    SDL_Texture *ligne = NULL;
-    TTF_Font *police = NULL;
-    SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-
+    char trad[SIZE_TRAD_ID_27][TRAD_LENGTH], buffer[2*TRAD_LENGTH+2];
     loadTrad(trad, 27);
-    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
-
-    SDL_RenderClear(renderer);
-    ligne = TTF_Write(renderer, police, trad[0], couleur); //Message d'erreur
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-    position.y = 50;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
-
-    ligne = TTF_Write(renderer, police, trad[1], couleur); //Explications
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-    position.y += 60;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
-
-    ligne = TTF_Write(renderer, police, trad[2], couleur); //Explications
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-    position.y += 40;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
-
-    ligne = TTF_Write(renderer, police, trad[3], couleur); //Explications
-    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-    position.y += 40;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(renderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
-
-    TTF_CloseFont(police);
-
-    waitEnter(renderer);
+    snprintf(buffer, 2*TRAD_LENGTH+2, "%s\n%s", trad[1], trad[2]);
+    unescapeLineReturn(buffer);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, trad[0], buffer, NULL);
 }
 
 int libcurlErrorCode(CURLcode code)
@@ -151,37 +111,15 @@ int libcurlErrorCode(CURLcode code)
 
 int erreurReseau()
 {
-    int i = 0;
-    char texte[SIZE_TRAD_ID_24][TRAD_LENGTH];
-    SDL_Texture *texteAAfficher = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    SDL_RenderClear(renderer);
+    char trad[SIZE_TRAD_ID_24][TRAD_LENGTH];
 
     /*Chargement de la traduction*/
-    loadTrad(texte, 24);
+    loadTrad(trad, 24);
 
-    /*On prend un point de départ*/
-    position.y = WINDOW_SIZE_H / 2 - LARGEUR_MOYENNE_MANGA_GROS - INTERLIGNE/2;
-
-    /*On lance la boucle d'affichage*/
-    for(i = 0; i < 2; i++)
-    {
-        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.y += LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE;
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
-    }
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
-
-    return waitEnter(renderer);
+    unescapeLineReturn(trad[1]);
+    if(UI_Alert(trad[0], trad[1]) == -1)
+        return PALIER_QUIT;
+    return PALIER_MENU;
 }
 
 int showError()
@@ -220,81 +158,55 @@ int showError()
 
 int rienALire()
 {
-    SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    char texte[SIZE_TRAD_ID_23][TRAD_LENGTH];
+    int ret_value = 0, output;
+    char trad[SIZE_TRAD_ID_23][TRAD_LENGTH];
+	SDL_MessageBoxData alerte;
+    SDL_MessageBoxButtonData bouton[3];
+	loadTrad(trad, 23);
+	unescapeLineReturn(trad[1]);
 
-    SDL_RenderClear(renderer);
-	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-	loadTrad(texte, 23);
+    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
+    alerte.title = trad[0];
+    alerte.message = trad[1];
+    alerte.numbuttons = 3;
+    alerte.buttons = bouton;
+    alerte.window = window;
+    alerte.colorScheme = NULL;
 
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
+    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT|SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton[0].buttonid = 3;
+    bouton[0].text = trad[4];
 
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 - texteAffiche->h;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    bouton[1].flags = 0;
+    bouton[1].buttonid = 2;
+    bouton[1].text = trad[3];
 
-    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
+    bouton[2].flags = 0;
+    bouton[2].buttonid = 1;
+    bouton[2].text = trad[2];
+    SDL_ShowMessageBox(&alerte, &ret_value);
 
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = WINDOW_SIZE_H / 2 + texteAffiche->h;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
-    SDL_RenderPresent(renderer);
+    /*On va appeler les fonctions correspondantes, ça serait plus propre de redescendre
+    jusqu'à mainRakshata() mais je ne vois pas de moyen de le faire sans rendre le code infame*/
 
-    TTF_CloseFont(police);
-
-    return waitEnter(renderer);
-}
-
-int affichageRepoIconnue()
-{
-    /*Initialisateurs graphique*/
-    char texte[SIZE_TRAD_ID_7][TRAD_LENGTH];
-	SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-
-    SDL_RenderClear(renderer);
-
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-	loadTrad(texte, 7);
-
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-
-    if(texteAffiche != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2 - texteAffiche->h / 2 * 3;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-
-        texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = WINDOW_SIZE_H / 2;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-        SDL_RenderPresent(renderer);
+    if(ret_value == 1) {        //Ajouter un dépôt
+        output = ajoutRepo(false);
+    }
+    else if(ret_value == 2){    //Télécharger manga
+        output = mainChoixDL();
     }
     else
-        return 1;
-    TTF_CloseFont(police);
+        output = 0;
+    return output != PALIER_QUIT ? PALIER_MENU : PALIER_QUIT;
+}
 
-    return waitEnter(renderer);
+void affichageRepoIconnue()
+{
+    /*Initialisateurs graphique*/
+    char trad[SIZE_TRAD_ID_7][TRAD_LENGTH];
+    loadTrad(trad, 7);
+    unescapeLineReturn(trad[1]);
+    UI_Alert(trad[0], trad[1]);
 }
 
 int UI_Alert(char* titre, char* contenu)
@@ -316,50 +228,10 @@ int UI_Alert(char* titre, char* contenu)
     return ret_value;
 }
 
-int errorEmptyCTList(int contexte, int isTome, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
+int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     if(contexte == CONTEXTE_DL)
-    {
-        int ret_value;
-        char buffer[3*TRAD_LENGTH];
-        SDL_Texture *texte = NULL;
-        SDL_Rect position;
-        SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-        TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-        SDL_RenderClear(renderer);
-        snprintf(buffer, 3*TRAD_LENGTH, "%s %s %s", trad[15], trad[isTome], trad[16]);
-
-        texte = TTF_Write(renderer, police, buffer, couleurTexte);
-        if(texte != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-            position.y = WINDOW_SIZE_H / 2 - texte->h;
-            position.h = texte->h;
-            position.w = texte->w;
-            SDL_RenderCopy(renderer, texte, NULL, &position);
-            SDL_DestroyTextureS(texte);
-        }
-
-        texte = TTF_Write(renderer, police, trad[17], couleurTexte);
-        if(texte != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-            position.y = WINDOW_SIZE_H / 2 + texte->h;
-            position.h = texte->h;
-            position.w = texte->w;
-            SDL_RenderCopy(renderer, texte, NULL, &position);
-            SDL_DestroyTextureS(texte);
-        }
-        SDL_RenderPresent(renderer);
-        TTF_CloseFont(police);
-
-        ret_value = waitEnter(renderer);
-        if(ret_value > PALIER_CHAPTER)
-            return PALIER_CHAPTER;
-        return ret_value;
-    }
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, trad[15], trad[16], window);
     return PALIER_MENU;
 }
 

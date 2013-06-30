@@ -339,9 +339,8 @@ int ajoutRepo(bool ajoutParFichier)
 
                 else if(!ajoutParFichier)
                 {
-                    continuer = affichageRepoIconnue();
-                    if(continuer >= PALIER_MENU)
-                        continuer = -1;
+                    affichageRepoIconnue();
+                    continuer = 0;
                 }
                 else
                     ajoutFichierDecalageRefuse++;

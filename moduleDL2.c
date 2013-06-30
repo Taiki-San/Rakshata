@@ -818,7 +818,7 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
                     snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurInst>1?"s ":" ", trad[15], nbErreurInst);
 
                 if(nbErreurIntern != 0)
-                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurIntern>1?"s ":" ", trad[16], nbErreurIntern);
+                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s %d", contenu, trad[16 + (nbErreurIntern>1)], nbErreurIntern);
             }
         }
         else

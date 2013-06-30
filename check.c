@@ -99,7 +99,7 @@ int check_evt()
 
         if(!checkNetworkState(CONNEXION_OK))
         {
-            UI_Alert("Acces internet manquant", "Un acces Internet est necessaire pour recuperer les fichiers necessaires au bon fonctionnement de Rakshata, veuillez relancer Rakshata avec un acces Internet. Neanmoins, il est possible que cette erreur apparaisse car nos serveurs sont hors-ligne. Auquel cas, attendez que www.rakshata.com soit de nouveau accessible.");
+            UI_Alert("Acces internet manquant", "Un acces Internet est necessaire pour recuperer les fichiers necessaires au\nbon fonctionnement de Rakshata, veuillez relancer Rakshata avec un acces Internet.\nNeanmoins, il est possible que cette erreur apparaisse car nos serveurs sont hors-ligne.\nAuquel cas, attendez que www.rakshata.com soit de nouveau accessible.");
             SDL_DestroyRenderer(renderer);
             SDL_DestroyWindow(window);
             renderer = NULL;
@@ -417,12 +417,12 @@ void checkHostNonModifie()
     }
 }
 
-int checkRestore()
+bool checkRestore()
 {
     if(checkRestoreAvailable())
-        return 1;
+        return true;
     removeR("data/laststate.dat");
-    return 0;
+    return false;
 }
 
 int checkRestoreAvailable()

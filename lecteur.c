@@ -15,14 +15,13 @@
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen)
 {
-    int i = 0, check4change = 0, changementPage = 0, restoreState = 0, finDuChapitre = 0;
-    int buffer = 0, largeurValide = 0, pageTropGrande = 0, tempsDebutExplication = 0, noRefresh = 0, ctrlPressed = 0;
+    int i, check4change = 0, changementPage = 0, finDuChapitre = 0;
+    int buffer = 0, largeurValide = 0, pageTropGrande = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
     int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
     FILE* testExistance = NULL;
-    SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL;
-    SDL_Surface *explication = NULL, *UI_PageAccesDirect = NULL;
+    SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL, *bandeauControle = NULL;
     TTF_Font *police = NULL;
     SDL_Rect positionInfos, positionPage, positionBandeauControle, positionSlide;
@@ -55,19 +54,19 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < *chapitreChoisis; curPosIntoStruct++);
     }
 
-
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-
     loadTrad(texteTrad, 21);
-    restoreState = checkRestore();
 
     if((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID))
     {
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis);
+        i = 1;
     }
+    else
+        i = 0;
 
-    if(restoreState)
+    if(checkRestore())
     {
         char type[2] = {0, 0};
         testExistance = fopenR("data/laststate.dat", "r");
@@ -76,7 +75,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         removeR("data/laststate.dat");
 
         /**Création de la fenêtre d'infos**/
-        explication = createUIAlert(explication, &texteTrad[3], 4);
+        if(i)
+            afficherMessageRestauration(texteTrad[3], texteTrad[4], texteTrad[5], texteTrad[6]);
     }
 
     positionPage.x = BORDURE_LAT_LECTURE;
@@ -521,14 +521,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 case SDL_MOUSEBUTTONUP:
                 {
-                    if(restoreState)
-                    {
-                        restoreState = 0;
-                        SDL_FreeSurfaceS(explication);
-                        tempsDebutExplication = 0;
-                    }
-
-                    else if (event.button.y >= 10 && event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
+                    if (event.button.y >= 10 && event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
                     {
                         if((!pageAccesDirect && infoSurface != NULL && event.button.x >= WINDOW_SIZE_W/2 - infoSurface->w/2 && event.button.x <= WINDOW_SIZE_W/2 + infoSurface->w/2) //Si pas de page affiché
                             || (pageAccesDirect && ((WINDOW_SIZE_W < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
@@ -643,8 +636,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 case SDL_MOUSEBUTTONDOWN:
                 {
-                    if(restoreState)
-                        break;
                     pasDeMouvementLorsDuClicX = event.button.x;
                     pasDeMouvementLorsDuClicY = event.button.y;
 
@@ -795,14 +786,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         case SDLK_RETURN:
                         case SDLK_KP_ENTER:
                         {
-                            if(restoreState)
-                            {
-                                restoreState = 0;
-                                SDL_FreeSurfaceS(explication);
-                                explication = NULL;
-                                tempsDebutExplication = 0;
-                            }
-                            else if (pageAccesDirect <= dataReader.nombrePageTotale+1 && pageAccesDirect > 0 && (dataReader.pageCourante+1) != pageAccesDirect)
+                            if (pageAccesDirect <= dataReader.nombrePageTotale+1 && pageAccesDirect > 0 && (dataReader.pageCourante+1) != pageAccesDirect)
                             {
                                 pageAccesDirect--;
                                 if(dataReader.pageCourante > pageAccesDirect)
@@ -1395,7 +1379,7 @@ void freeCurrentPage(SDL_Texture *texture)
         SDL_DestroyTextureS(texture);
 }
 
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int *restoreState, int *tempsDebutExplication, SDL_Surface *explication, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
     SDL_Texture *texture = NULL;
     SDL_RenderClear(renderer);
@@ -1468,31 +1452,6 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
 
     else //Sinon, on affiche normalement
         SDL_RenderCopy(renderer, infoSurface, NULL, &positionInfos);
-
-    if(*tempsDebutExplication == 0)
-        *tempsDebutExplication = SDL_GetTicks();
-
-    if(*restoreState)
-    {
-        if(SDL_GetTicks() - *tempsDebutExplication < 3000)
-        {
-            SDL_Rect positionExplication;
-            positionExplication.x = WINDOW_SIZE_W / 2 - explication->w / 2;
-            positionExplication.y = WINDOW_SIZE_H / 2 - explication->h / 2;
-            positionExplication.h = explication->h;
-            positionExplication.w = explication->w;
-
-            texture = SDL_CreateTextureFromSurface(renderer, explication);
-            SDL_RenderCopy(renderer, texture, NULL, &positionExplication);
-            SDL_DestroyTexture(texture);
-        }
-        else
-        {
-            SDL_FreeSurfaceS(explication);
-            *restoreState = 0;
-            *tempsDebutExplication = 0;
-        }
-    }
     SDL_RenderPresent(renderer);
 }
 
@@ -1599,6 +1558,37 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
             else if(positionPage->x == 0)
                 *noRefresh = 1;
         }
+    }
+}
+
+void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK)
+{
+    int ret_value = 0;
+    if(checkFileExist("data/nopopup"))
+        return;
+    SDL_MessageBoxData alerte;
+    SDL_MessageBoxButtonData bouton[2];
+    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
+    alerte.title = title;
+    unescapeLineReturn(content);
+    alerte.message = content;
+    alerte.numbuttons = 2;
+    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+    bouton[0].buttonid = 1; //Valeur retournée
+    bouton[0].text = OK;
+    bouton[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+    bouton[1].buttonid = 0; //Valeur retournée
+    bouton[1].text = noMoreDisplay;
+    alerte.buttons = bouton;
+    alerte.window = window;
+    alerte.colorScheme = NULL;
+    SDL_ShowMessageBox(&alerte, &ret_value);
+    if(ret_value == 0)
+    {
+        FILE * filePtr = fopen("data/nopopup", "w+");
+        if(filePtr != NULL)
+            fclose(filePtr);
+        return;
     }
 }
 

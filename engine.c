@@ -785,8 +785,14 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 else
                     break;
             }
+            if(contexte == CONTEXTE_DL && !input[posClicked].data->contentDownloadable)
+            {
+                char trad[SIZE_TRAD_ID_19][TRAD_LENGTH];
+                loadTrad(trad, 19);
+                errorEmptyCTList(contexte, trad);
+            }
 
-            if(posClicked < input[0].nombreElementTotal)
+            else if(posClicked < input[0].nombreElementTotal)
             {
                 *elementChoisis = input[posClicked].ID;
 
