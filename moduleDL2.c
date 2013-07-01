@@ -228,8 +228,8 @@ void MDLLauncher()
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
-    mainMDL();
 
+    mainMDL();
     INSTANCE_RUNNING = 0;
 
 #ifdef _WIN32
@@ -479,7 +479,6 @@ bool MDLTelechargement(DATA_MOD_DL* input)
     {
         output = true;
     }
-    //On ne raffraichis pas l'écran car on va avoir à le faire un peu plus tard
     return output;
 }
 
