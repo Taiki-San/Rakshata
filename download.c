@@ -224,26 +224,26 @@ static void downloader(TMP_DL *output)
 #endif
 }
 
-static int internal_download_easy(char* adresse, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled);
+static int internal_download_easy(char* adresse, char* POST, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled);
 static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_dl_void);
 
-int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled)
+int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
         return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, 0, buffer_out, buffer_length, SSL_enabled);
+    return internal_download_easy(adresse, POST, 0, buffer_out, buffer_length, SSL_enabled);
 }
 
-int download_disk(char* adresse, char *file_name, int SSL_enabled)
+int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
         return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, 1, file_name, 0, SSL_enabled);
+    return internal_download_easy(adresse, POST, 1, file_name, 0, SSL_enabled);
 }
 
-static int internal_download_easy(char* adresse, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled)
+static int internal_download_easy(char* adresse, char* POST, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled)
 {
     FILE* output = NULL;
     CURL *curl = NULL;
@@ -257,6 +257,8 @@ static int internal_download_easy(char* adresse, int printToAFile, char *buffer_
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, adresse);
+    if(POST != NULL)
+         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, POST);
     define_user_agent(curl);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);

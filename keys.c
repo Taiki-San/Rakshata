@@ -589,7 +589,7 @@ void passToLoginData(char password[100])
     char temp[100], serverTime[300];
     snprintf(temp, 100, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
     crashTemp(serverTime, 300);
-    download_mem(temp, serverTime, 300, 1);
+    download_mem(temp, NULL, serverTime, 300, 1);
 
     for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
     {
@@ -625,7 +625,7 @@ int check_login(char adresseEmail[100])
     snprintf(URL, 300, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
 
     crashTemp(buffer_output, 500);
-    download_mem(URL, buffer_output, 500, 1);
+    download_mem(URL, NULL, buffer_output, 500, 1);
 
     for(i = strlen(buffer_output); i > 0; i--)
     {
@@ -676,7 +676,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
 
     snprintf(URL, 300, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
-    download_mem(URL, buffer_output, 500, 1);
+    download_mem(URL, NULL, buffer_output, 500, 1);
 
     minToMaj(buffer_output);
     snprintf(URL, 300, "%s-access_granted", hash2);
@@ -835,7 +835,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     snprintf(temp, 1024, "https://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
     crashTemp(buffer_dl, 500);
-    download_mem(temp, buffer_dl, 500, 1);
+    download_mem(temp, NULL, buffer_dl, 500, 1);
 
     crashTemp(temp, 1024);
     sscanfs(buffer_dl, "%s", temp, 100);
@@ -866,7 +866,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             snprintf(temp, 1024, "https://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
             crashTemp(buffer_dl, 500);
-            download_mem(temp, buffer_dl, 500, 1);
+            download_mem(temp, NULL, buffer_dl, 500, 1);
             if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
                 internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key);
             else
@@ -918,7 +918,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);
 
-    download_mem(temp, buffer_dl, 500, 1);
+    download_mem(temp, NULL, buffer_dl, 500, 1);
 
     crashTemp(temp, 400);
 

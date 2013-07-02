@@ -937,7 +937,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
         case ENGINE_OUTPUT_TYPED_CHAPITRE:
         {
             int chapitreCourant; //On vérifie que le chapitre existe
-            for(chapitreCourant = 0; chapitreCourant < input[0].nombreElementTotal && output < input[chapitreCourant].ID; chapitreCourant++);
+            for(chapitreCourant = 0; chapitreCourant < input[0].nombreElementTotal && output != input[chapitreCourant].ID; chapitreCourant++);
             if(output == input[chapitreCourant].ID)
                 *elementChoisis = output;
             break;

@@ -139,7 +139,7 @@ void checkUpdate()
 #endif
                     crashTemp(temp, TAILLE_BUFFER);
                     ustrcpy(temp, files[i]);
-                    download_disk(URL, temp, 0);
+                    download_disk(URL, NULL, temp, 0);
 
                     if(action[i][0] == 'P')
                     {

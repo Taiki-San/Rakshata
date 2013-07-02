@@ -143,6 +143,9 @@
 		<Unit filename="moduleDL2_events.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="moduleDL2_paid.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="moduleDL2_tool.c">
 			<Option compilerVar="CC" />
 		</Unit>

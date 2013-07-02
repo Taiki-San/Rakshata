@@ -132,18 +132,20 @@ void resetOriginalCHDir(int *argc, char** argv)
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
 }
 
-int strend(char *recepter, size_t length, const char *sender)
+void strend(char *recepter, size_t length, const char *sender)
 {
-    int i = 0;
     if(recepter && sender)
     {
+        int i = 0;
         for(; *recepter; i++, recepter++);
         for(; *sender && length > i; i++, recepter++, sender++)
             *recepter = *sender;
-        if(length <= i)
-            return 1;
+
+        if(length < i)
+            *recepter = 0;
+        else
+            *(recepter-1) = 0;
     }
-    return 0;
 }
 
 char* mergeS(char* input1, char* input2)

@@ -25,7 +25,7 @@ void updateSectionMessage(char messageVersion[5])
     snprintf(URL, 200, "https://rsp.%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
 
     crashTemp(bufferDL, 500);
-    download_mem(URL, bufferDL, 500, 1);
+    download_mem(URL, NULL, bufferDL, 500, 1);
 
     for(i = 0; bufferDL[i] == messageVersion[i] && i < 5 && bufferDL[i] != ' ' && bufferDL[i]; i++);
 

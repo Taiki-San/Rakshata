@@ -79,6 +79,7 @@ void mainMDL()
     MDLDispInstallHeader(NULL);
     nombreElementDrawn = MDLDrawUI(*todoList, trad); //Initial draw
     MDLUpdateIcons(true);
+    MDLPHandle(*todoList, nbElemTotal);
     threadData = createNewThreadRetValue(mainDLProcessing, todoList);
 
     while(!quit) //Corps de la fonction
@@ -92,7 +93,7 @@ void mainMDL()
         else if(checkFileExist(INSTALL_DATABASE) && INSTANCE_RUNNING == -1)
         {
             int newNbElemTotal = nbElemTotal;
-            DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &newNbElemTotal, status, *todoList);
+            DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &newNbElemTotal, *todoList);
             if(ptr != NULL)
             {
                 int ** ptr2 = realloc(status, (newNbElemTotal+1)*sizeof(int*));
@@ -547,8 +548,8 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 
                 snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
                 snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-
                 rename(pathWithTemp, pathWithoutTemp);
+
                 if(!checkTomeReadable(*mangaDB, tome))
                     remove(pathWithoutTemp);
             }

@@ -323,7 +323,7 @@ void getPasswordArchive(char *fileName, char password[300])
     /*On prépare le buffer de téléchargement*/
     char bufferDL[1000];
     crashTemp(bufferDL, 1000);
-    download_mem(URL, bufferDL, 1000, 1); //Téléchargement
+    download_mem(URL, NULL, bufferDL, 1000, 1); //Téléchargement
 
     free(URL);
 
@@ -355,7 +355,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA25
     snprintf(temp, 350, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
 
     crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1);
-    download_mem(temp, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 0);
+    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 0);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;

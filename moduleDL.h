@@ -120,10 +120,13 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool er
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
-#define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL, NULL)
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, int **status, DATA_LOADED ** oldDownloadList);
+#define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal);
+bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
 int sortMangasToDownload(const void *a, const void *b);
+
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
@@ -134,6 +137,14 @@ bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn);
 bool MDLisClicOnAValidX(int x, bool twoColumns);
 int MDLisClicOnAValidY(int y, int nombreElement);
 void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
+
+/**Module2_paid.h**/
+void MDLPHandle(DATA_LOADED ** data, int length);
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
+bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length);
+int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
+void MDLPDispCheckingIfPaid();
+void MDLPEraseDispChecking();
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

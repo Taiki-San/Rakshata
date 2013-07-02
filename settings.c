@@ -315,7 +315,7 @@ char* loadLargePrefs(char flag)
             snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, REPO_DATABASE);
 
         crashTemp(buffer, 65000);
-        download_mem(temp, buffer, 65000, 0);
+        download_mem(temp, NULL, buffer, 65000, 0);
         snprintf(buffer2, 65100, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
         addToPref(flag, buffer2);
 	}

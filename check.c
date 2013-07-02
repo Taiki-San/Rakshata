@@ -119,7 +119,7 @@ int check_evt()
         if(cantwrite) //Si police absente
         {
             snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[0]);
-            download_disk(temp, nomsATest[0], 0);
+            download_disk(temp, NULL, nomsATest[0], 0);
             j--;
         }
 
@@ -156,7 +156,7 @@ int check_evt()
                 SDL_RenderPresent(renderer);
 
                 snprintf(temp, 200, "http://www.%s/Recover/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, nomsATest[fichiersADL[i]]);
-                download_disk(temp, nomsATest[fichiersADL[i]], 0);
+                download_disk(temp, NULL, nomsATest[fichiersADL[i]], 0);
 
                 if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
                 {
@@ -283,7 +283,7 @@ void networkAndVersionTest()
     /*Chargement de l'URL*/
     snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update.php?version=%d&os=%s", MAIN_SERVER_URL[0], CURRENTVERSION, BUILD);
 
-    if(download_mem(temp, bufferDL, 100, 1) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(temp, NULL, bufferDL, 100, 1) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
@@ -295,7 +295,7 @@ void networkAndVersionTest()
         checkHostNonModifie();
 #endif
         crashTemp(bufferDL, 100);
-        if(download_mem(MAIN_SERVER_URL[1], bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
+        if(download_mem(MAIN_SERVER_URL[1], NULL, bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
         MUTEX_LOCK(mutex);
         if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
@@ -316,7 +316,7 @@ void networkAndVersionTest()
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
             snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/update/%s/%d", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION);
-            download_disk(temp, "data/update", 0);
+            download_disk(temp, NULL, "data/update", 0);
 
 			test = fopenR("data/update", "r");
 			if(test)
@@ -343,7 +343,7 @@ void networkAndVersionTest()
 			snprintf(temp, TAILLE_BUFFER, "https://rsp.%s/checkAccountValid.php?mail=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
             crashTemp(bufferDL, 5);
-			download_mem(temp, bufferDL, 5, 1);
+			download_mem(temp, NULL, bufferDL, 5, 1);
 			if(bufferDL[0] == 0 || bufferDL[0] == '1') //Compte valide
             {
                 updateFavorites();

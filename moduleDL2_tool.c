@@ -93,7 +93,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     return output;
 }
 
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, int **status, DATA_LOADED ** oldDownloadList)
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
 {
     int oldDownloadListLength = *nombreMangaTotal, nombreEspace = 0, dernierEspace = 1, i;
 
@@ -191,15 +191,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 }
             }
 
-            //On va checker les doublons (NB: algo pas parfait, le caser après le tri serait pertinent mais il faudrait alors nettoyer le tome
-            for(i = posPtr-1; i >= 0 && (newBufferTodo[posPtr]->datas != newBufferTodo[i]->datas || newBufferTodo[posPtr]->chapitre != (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome)); i--);
-            if(i >= 0 && posPtr != i && newBufferTodo[posPtr]->datas == newBufferTodo[i]->datas && newBufferTodo[posPtr]->chapitre == (type[0] == 'C' ? newBufferTodo[i]->chapitre : newBufferTodo[i]->partOfTome))
-            {
-                (*nombreMangaTotal)--;
-                free(newBufferTodo[posPtr]);
-                newBufferTodo[posPtr] = NULL;
-            }
-            else if(type[0] == 'C')
+            if(type[0] == 'C')
             {
                 newBufferTodo[posPtr++]->partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
@@ -235,48 +227,97 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 }
             }
         }
-        if(posPtr > 1 && oldDownloadListLength < posPtr)
+        if(posPtr > 1 && (oldDownloadListLength == 0 || oldDownloadListLength < posPtr))
         {
-            if(status != NULL)
-            {
-                //On rajoute dans le pool les trucs pas encore DL en en laissant un de marge de un elem au cas où
-                for(; oldDownloadListLength > 1 && *status[oldDownloadListLength-2] == MDL_CODE_DEFAULT; oldDownloadListLength--);
-            }
             qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
+            DATA_LOADED **noDuplicate = MDLGetRidOfDuplicates(newBufferTodo, oldDownloadListLength, nombreMangaTotal);
+            if(noDuplicate != newBufferTodo)
+                newBufferTodo = noDuplicate;
         }
-
-        //On dégage les collisions proprement si on fusionne deux listes
-        if(oldDownloadListLength)
-        {
-            int ptr1 = 0, ptr2 = oldDownloadListLength;
-            j = 0;
-            while(ptr1 != oldDownloadListLength && ptr2 != *nombreMangaTotal)
-            {
-                c = sortMangasToDownload(&newBufferTodo[ptr1], &newBufferTodo[ptr2]);
-                if(!c) //Collision
-                {
-                    free(newBufferTodo[ptr2]);
-                    newBufferTodo[ptr2] = NULL;
-                    ptr2++;
-                    j++;
-                }
-                else if(c > 0) // le ptr2 serait classé en premier, il doit donc être incrémenté pour avancer dans la structure
-                    ptr2++;
-                else
-                    ptr1++;
-            }
-            if(j) //On cosolide après avoir dégagé les doublons
-            {
-                qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
-                *nombreMangaTotal -= j;
-            }
-        }
-
         fclose(import);
         removeR(INSTALL_DATABASE);
 		return newBufferTodo;
     }
     return NULL;
+}
+
+DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal)
+{
+    int curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = *nombreMangaTotal;
+    for(; curPos < originalSize; curPos++)
+    {
+        if(currentList[curPos] == NULL)
+            continue;
+
+        for(research = curPos+1; research < originalSize; research++)
+        {
+            if(currentList[research] == NULL)
+                continue;
+
+            else if(currentList[research]->datas != currentList[curPos]->datas)
+                break;
+
+            else if(MDLCheckDuplicate(currentList[research], currentList[curPos]))
+            {
+                if(curPos >= beginingNewData && currentList[research]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                {
+                    if(currentList[curPos]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                        free(currentList[curPos]->listChapitreOfTome);
+                    free(currentList[curPos]);
+                    currentList[curPos] = NULL;
+                    currentSize--;
+                }
+                else
+                {
+                    if(currentList[research]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                        free(currentList[research]->listChapitreOfTome);
+                    free(currentList[research]);
+                    currentList[research] = NULL;
+                    currentSize--;
+                }
+            }
+        }
+    }
+    if(currentSize != originalSize) //Duplicats trouvés
+    {
+        DATA_LOADED ** output = calloc(currentSize, sizeof(DATA_LOADED*));
+        if(output != NULL)
+        {
+            *nombreMangaTotal = currentSize;
+            for(curPos = research = 0; curPos < currentSize && research < originalSize; curPos++)
+            {
+                for(; research < originalSize && currentList[research] == NULL; research++);
+                output[curPos] = currentList[research++];
+            }
+            free(currentList);
+            return output;
+        }
+    }
+    return currentList;
+}
+
+bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2)
+{
+    if(struc1 == NULL || struc2 == NULL)
+        return false;
+
+/**  Pas nécessaire car cette fonction ne sera appelé que si cette
+    condition est vraie. Toutefois, si elle avait à être appelée dans
+    un nouveau contexte, il pourrait être nécessaire de la réinjecter.
+
+    if(struc1->datas != struc2->datas)
+        return false    **/
+
+    if(struc1->subFolder != struc2->subFolder)
+        return false;
+
+    if(struc1->subFolder == true && struc1->partOfTome == struc2->partOfTome)
+        return true;
+
+    if(struc1->subFolder == false && struc1->chapitre == struc2->chapitre)
+        return true;
+
+    return false;
 }
 
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
@@ -335,7 +376,7 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
         }
     }
 
-    if(inCache || download_mem(URL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, (strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2) != 0)) == CODE_RETOUR_OK)
+    if(inCache || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, (strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2) != 0)) == CODE_RETOUR_OK)
     {
         int i, nombreEspace, posBuf, posStartNbrTmp, posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
         char temp[100], basePath[100];
@@ -398,8 +439,8 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
                             {
                                 output[*outLength]->listChapitreOfTome = NULL;
                                 output[*outLength]->datas = tomeDatas.datas;
-                                output[*outLength]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
-                                output[*outLength]->subFolder = false;
+                                output[*outLength]->partOfTome = tomeDatas.chapitre;
+                                output[*outLength]->subFolder = false;  //Si le fichier est dans le repertoire du tome
                                 output[*outLength]->chapitre = chapitre;
                                 (*outLength)++;
                             }
@@ -427,7 +468,10 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
                                     for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomes[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomes[i].ID != tomeDatas.chapitre; i++);
                                     if(tomeDatas.datas->tomes[i].ID == tomeDatas.chapitre)
                                     {
-                                        output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
+                                        if(tomeDatas.datas->tomes[i].name[0] != 0)
+                                            output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
+                                        else
+                                            output[posElemsTome]->tomeName = NULL;
                                     }
                                 }
                             }
@@ -620,7 +664,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
             return;
         }
         snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-        download_disk(URL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?1:0);
+        download_disk(URL, NULL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?1:0);
     }
     else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
         removeR(path);

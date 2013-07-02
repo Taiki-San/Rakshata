@@ -193,11 +193,11 @@ Ce compte servira à vous authentifier sur les services&
 de Rakshata, rien ne sera transmis à quiconque.&
 ERREUR: Adresse email rejetée&
 Votre adresse email n'est pas valide.&
-Dans le cas où vous ne le compreniez pas, n'hésitez&
+Dans le cas ou vous ne le compreniez pas, n'hésitez&
 pas à nous contacter à l'adresse contact@rakshata.com&
 ERREUR: Mot de passe rejete&
 Votre mot de passe n'est pas valide.&
-Dans le cas où vous l'avez oublie, veuillez&
+Dans le cas ou vous l'avez oublie, veuillez&
 contacter contact@rakshata.com avec votre compte e-mail.&
 ERREUR CRITIQUE&
 Verifiez que vous pouvez acceder au site de Rakshata&
@@ -225,4 +225,6 @@ tome&
 a telecharger&
 Voulez-vous lancer le telechargement?&
 Telecharger&
-Non&]
+Non&
+31
+Vérification des éléments payants&]

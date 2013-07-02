@@ -83,8 +83,8 @@ void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
-int download_mem(char* adresse, char *buffer_out, size_t buffer_length, int SSL_enabled);
-int download_disk(char* adresse, char *file_name, int SSL_enabled);
+int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled);
+int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 int checkDLInProgress();
 
 /**Engine.c**/
@@ -181,7 +181,7 @@ void renameR(char *initialName, char *newName);
 void mkdirR(char *path);
 void chdirR();
 void resetOriginalCHDir(int *argc, char** argv);
-int strend(char *recepter, size_t length, const char *sender);
+void strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
 int charToInt(char *input);

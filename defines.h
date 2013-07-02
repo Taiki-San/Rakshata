@@ -359,7 +359,7 @@
 #define LONGUEUR_SITE 100
 #define LONGUEUR_TYPE_TEAM 5
 #define LONGUEUR_URL 300
-#define SIZE_BUFFER_UPDATE_DATABASE 20*1024*1024
+#define SIZE_BUFFER_UPDATE_DATABASE (20*1024*1024)
 #define NUMBER_MAX_TEAM_KILLSWITCHE 200
 #define LOAD_DATABASE_INSTALLED 1
 #define LOAD_DATABASE_ALL 2
@@ -383,7 +383,7 @@
 
 /*Trad*/
 #define TRAD_LENGTH 200
-#define NOMBRE_TRAD_ID_MAX 30
+#define NOMBRE_TRAD_ID_MAX 31
 #define SIZE_TRAD_ID_1 6    //Erreur page illisible
 #define SIZE_TRAD_ID_2 5    //Initialisation du module de sélection de téléchargement
 #define SIZE_TRAD_ID_3 7    //Préférences
@@ -414,3 +414,4 @@
 #define SIZE_TRAD_ID_28 2   //Obtention du mot de passe
 #define SIZE_TRAD_ID_29 4   //Patch du registre
 #define SIZE_TRAD_ID_30 11  //Nouveaux éléments détéctés à DL dans le lecteur
+#define SIZE_TRAD_ID_31 2   //Interraction pour le DL de chapitre payants
