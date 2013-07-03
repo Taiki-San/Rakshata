@@ -578,7 +578,7 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
     crashTemp(serverTime, 300);
     download_mem(temp, NULL, serverTime, 300, 1);
 
-    for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la derniére donnée
+    for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la dernière donnée
     {
         if(serverTime[i] == '\r' || serverTime[i] == '\n')
             serverTime[i] = 0;
@@ -586,6 +586,7 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
     ustrcpy(temp, passwordIn);
     for(j = strlen(temp), i++; j < 100 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
     temp[j<99 ? j : 99] = 0;
+    passwordSalted[2*SHA256_DIGEST_LENGTH] = 0;
     sha256_legacy(temp, passwordSalted);
     MajToMin(passwordSalted);
 }
@@ -595,7 +596,7 @@ int check_login(char adresseEmail[100])
     int i = 0;
     char URL[300], buffer_output[500];
 
-    /*On vérifie la validité de la chaÃ“ne*/
+    /*On vérifie la validité de la chaîne*/
     for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
     if(i == 100) //on a pas de @
         return 2;
@@ -635,7 +636,7 @@ int check_login(char adresseEmail[100])
 int checkPass(char adresseEmail[100], char password[100], int login)
 {
     int i = 0;
-    char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1];
+    char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1], hash3[2*SHA256_DIGEST_LENGTH+1];
 
     /*On vérifie la validité de la chaîne*/
     for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
@@ -666,17 +667,10 @@ int checkPass(char adresseEmail[100], char password[100], int login)
 
     minToMaj(buffer_output);
     snprintf(URL, 300, "%s-access_granted", hash2);
-    sha256_legacy(URL, hash2);
+    sha256_legacy(URL, hash3);
 
-    if(!strcmp(buffer_output, hash2)) //access granted
+    if(!strcmp(buffer_output, hash3)) //access granted
     {
-        crashTemp(hash1, 2*SHA256_DIGEST_LENGTH+1);
-        crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
-
-        sha256_legacy(password, hash1);
-        MajToMin(hash1);
-        sha256_legacy(hash1, hash2); //On hash deux fois
-        MajToMin(hash2);
         usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, hash2);
         return 1;
     }

@@ -165,7 +165,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 
     MUTEX_LOCK(mutexRS);
 
-    windowAuth = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+    windowAuth = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_INPUT_FOCUS);
     loadIcon(windowAuth);
     nameWindow(windowAuth, 1);
     rendererAuth = setupRendererSafe(windowAuth);
@@ -349,6 +349,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
 
     if(police != NULL)
     {
+        SDL_RenderClear(renderVar);
         char buffer[TRAD_LENGTH+10];
         position.y = 20;
 
@@ -385,13 +386,15 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
             SDL_DestroyTexture(texture);
         }
 
-        position.y = (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2;
+        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
+        position.y = 20+3*MDL_INTERLIGNE + (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2;
 
         texture = TTF_Write(renderVar, police, trad[4], couleur);
         if(texture != NULL)
         {
             position.h = texture->h;
             position.w = texture->w;
+            position.y -= position.h / 2;
             position.x = renderVar->window->w / 4 - position.w / 2;
             SDL_RenderCopy(renderVar, texture, NULL, &position);
             SDL_DestroyTexture(texture);
@@ -458,5 +461,6 @@ int MDLPWaitEvent(SDL_Renderer * renderVar)
 void MDLPEraseDispChecking()
 {
     applyBackground(rendererDL, 0, HAUTEUR_POURCENTAGE-1, rendererDL->window->w, rendererDL->window->h - HAUTEUR_POURCENTAGE);
+    SDL_RenderPresent(rendererDL);
 }
 

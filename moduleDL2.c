@@ -250,12 +250,6 @@ void mainDLProcessing(DATA_LOADED *** todoList)
     char **historiqueTeam = malloc(sizeof(char*));
     historiqueTeam[0] = NULL;
 
-    if(dataPos < nbElemTotal)
-    {
-        MDLStartHandler(dataPos, *todoList, &historiqueTeam);
-        MDLDispDownloadHeader((*todoList)[dataPos]);
-    }
-
     while(1)
     {
         if(*status[dataPos] != MDL_CODE_DL)
@@ -271,8 +265,15 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             }
             else
             {
-                MDLDispDownloadHeader(NULL);
-                break;
+                for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_WAITING_LOGIN && *status[dataPos] != MDL_CODE_WAITING_PAY; dataPos++);
+                if(dataPos < nbElemTotal) {
+                    SDL_Delay(400);
+                }
+                else
+                {
+                    MDLDispDownloadHeader(NULL);
+                    break;
+                }
             }
         }
     }
@@ -538,7 +539,10 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
         //Création du répertoire de destination
         mkdirR(basePath);
         if(!checkDirExist(basePath))
+        {
             createPath(basePath);
+            mkdirR(basePath);
+        }
 
         //On crée un message pour ne pas lire un chapitre en cours d'installe
         char temp_path_install[600];

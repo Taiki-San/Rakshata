@@ -104,6 +104,8 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         return PALIER_CHAPTER;
     }
 
+    int eventWindow = 0;
+
     for(i = 0; i < nombreMax;)
     {
         SDL_WaitEvent(&event);
@@ -114,6 +116,9 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         {
             case SDL_KEYDOWN:
             {
+                char temp[100];
+                snprintf(temp, 100, "%d", eventWindow);
+                logR(temp);
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_RETURN: //If return
@@ -165,16 +170,17 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
 
             case SDL_WINDOWEVENT:
             {
-                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                    SDL_RenderPresent(rendererVar);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
-                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                 {
                     SDL_DestroyTextureS(numero);
                     TTF_CloseFont(police);
                     return PALIER_QUIT;
+                }
+                else
+                {
+                    eventWindow++;
+                    SDL_RenderPresent(rendererVar);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
                 break;
             }
@@ -297,6 +303,8 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
             }
         }
     }
+    if(!state)
+        SDL_PushEvent(event);
     return state;
 }
 
