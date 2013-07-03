@@ -104,8 +104,6 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         return PALIER_CHAPTER;
     }
 
-    int eventWindow = 0;
-
     for(i = 0; i < nombreMax;)
     {
         SDL_WaitEvent(&event);
@@ -116,17 +114,17 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         {
             case SDL_KEYDOWN:
             {
-                char temp[100];
-                snprintf(temp, 100, "%d", eventWindow);
-                logR(temp);
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_RETURN: //If return
                     case SDLK_KP_ENTER:
+                    {
                         i = nombreMax; //quit the loop
                         break;
+                    }
 
                     case SDLK_BACKSPACE:
+                    {
                         if(i >= 0)
                         {
                             retour[i--] = 0;
@@ -144,16 +142,21 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                             return PALIER_CHAPTER;
                         }
                         break;
+                    }
 
                     case SDLK_ESCAPE:
+                    {
                         TTF_CloseFont(police);
                         return PALIER_MENU;
                         break;
+                    }
 
                     case SDLK_DELETE:
+                    {
                         TTF_CloseFont(police);
                         return PALIER_CHAPTER;
                         break;
+                    }
 
                     default:
                         break;
@@ -178,7 +181,6 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                 }
                 else
                 {
-                    eventWindow++;
                     SDL_RenderPresent(rendererVar);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
