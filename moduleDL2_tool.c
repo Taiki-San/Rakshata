@@ -13,6 +13,8 @@
 #include "main.h"
 #include "moduleDL.h"
 
+extern char password[100];
+
 /*Loaders divers*/
 
 char* MDL_craftDownloadURL(DATA_LOADED data)
@@ -43,23 +45,13 @@ char* MDL_craftDownloadURL(DATA_LOADED data)
 
     else if (!strcmp(data.datas->team->type, TYPE_DEPOT_3)) //DL Payant
     {
-        int i;
-        char password[100];
-        if((i = getPassword(password, 1, 1)) == 1)
-        {
-            length = 100 + 15 + strlen(data.datas->team->URL_depot) + strlen(data.datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements + password
-            output = malloc(length);
-            if(output != NULL)
-            {
-                snprintf(output, length, "https://rsp.%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], CURRENTVERSION, data.datas->team->URL_depot, data.datas->mangaName, data.chapitre, COMPTE_PRINCIPAL_MAIL, password);
-            }
+        char passwordInternal[2*SHA256_DIGEST_LENGTH+1];
+        passToLoginData(password, passwordInternal);
+        length = 100 + 15 + strlen(data.datas->team->URL_depot) + strlen(data.datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements + password
+        output = malloc(length);
+        if(output != NULL) {
+            snprintf(output, length, "https://rsp.%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], CURRENTVERSION, data.datas->team->URL_depot, data.datas->mangaName, data.chapitre, COMPTE_PRINCIPAL_MAIL, password);
         }
-
-        else if(i == PALIER_QUIT)
-        {
-            return (void *) CODE_RETOUR_DL_CLOSE;
-        }
-        chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
     }
 
     else

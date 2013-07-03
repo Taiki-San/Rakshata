@@ -13,7 +13,7 @@
 #include "crypto/crypto.h"
 #include "main.h"
 
-static char passwordGB[100];
+static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
 
 int getMasterKey(unsigned char *input)
 {
@@ -159,7 +159,7 @@ int earlyInit(int argc, char *argv[])
 
     resetOriginalCHDir(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-    crashTemp(passwordGB, 100);
+    crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
     loadPalette();
 
     /*Launching SDL & SDL_TTF*/
@@ -480,36 +480,25 @@ int logon()
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
-int getPassword(char password[100], int dlUI, int salt)
+int getPassword(SDL_Renderer *currentRenderer, char password[100])
 {
-    int xPassword = 0, resized = 0, ret_value = 0;
+    int xPassword = 0, resized = 0, ret_value = 0, w = currentRenderer->window->w;
     char trad[SIZE_TRAD_ID_26][TRAD_LENGTH];
     SDL_Texture *ligne = NULL;
     SDL_Rect position;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
-    SDL_Renderer *currentRenderer = NULL;
 
     if(passwordGB[0] != 0)
     {
         ustrcpy(password, passwordGB);
-        if(dlUI)
-            passToLoginData(password);
         return 1;
     }
 
-    if(dlUI)
+    if(currentRenderer == renderer && WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION)
     {
-        currentRenderer = rendererDL;
-    }
-    else
-    {
-        if(!salt && WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION)
-        {
-            resized = WINDOW_SIZE_H;
-            updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
-        }
-        currentRenderer = renderer;
+        resized = WINDOW_SIZE_H;
+        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
     }
 
     loadTrad(trad, 26);
@@ -518,7 +507,7 @@ int getPassword(char password[100], int dlUI, int salt)
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
+    position.x = w / 2 - ligne->w / 2;
     position.y = 20;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -538,7 +527,7 @@ int getPassword(char password[100], int dlUI, int salt)
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
-    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
+    position.x = w / 2 - ligne->w / 2;
     position.y += 85;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -546,7 +535,7 @@ int getPassword(char password[100], int dlUI, int salt)
     SDL_DestroyTextureS(ligne);
 
     ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
-    position.x = (dlUI?WINDOW_SIZE_W_DL:WINDOW_SIZE_W) / 2 - ligne->w / 2;
+    position.x = w / 2 - ligne->w / 2;
     position.y += 30;
     position.h = ligne->h;
     position.w = ligne->w;
@@ -563,9 +552,7 @@ int getPassword(char password[100], int dlUI, int salt)
 
         else if(ret_value == 0 && checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
-            if(salt)
-                passToLoginData(password);
-
+            usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
             if(resized)
             {
                 updateWindowSize(LARGEUR, resized);
@@ -583,7 +570,7 @@ int getPassword(char password[100], int dlUI, int salt)
     }
 }
 
-void passToLoginData(char password[100])
+void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1])
 {
     int i = 0, j = 0;
     char temp[100], serverTime[300];
@@ -596,12 +583,11 @@ void passToLoginData(char password[100])
         if(serverTime[i] == '\r' || serverTime[i] == '\n')
             serverTime[i] = 0;
     }
-    ustrcpy(temp, password);
+    ustrcpy(temp, passwordIn);
     for(j = strlen(temp), i++; j < 100 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
     temp[j<99 ? j : 99] = 0;
-    crashTemp(password, 100);
-    sha256_legacy(temp, password);
-    MajToMin(password);
+    sha256_legacy(temp, passwordSalted);
+    MajToMin(passwordSalted);
 }
 
 int check_login(char adresseEmail[100])
@@ -691,7 +677,6 @@ int checkPass(char adresseEmail[100], char password[100], int login)
         MajToMin(hash1);
         sha256_legacy(hash1, hash2); //On hash deux fois
         MajToMin(hash2);
-        usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, hash2);
         usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, hash2);
         return 1;
     }
@@ -707,7 +692,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     if(key_sent == NULL)
     {
-        int ret_value = getPassword(password, 0, 0);
+        int ret_value = getPassword(renderer, password);
         if(ret_value < 0)
             return ret_value;
         bdd = fopenR(SECURE_DATABASE, "w+");

@@ -219,7 +219,7 @@ void MDLLauncher()
     SDL_FlushEvent(SDL_WINDOWEVENT);
 
     loadIcon(windowDL);
-    nameWindow(windowDL, 1);
+    nameWindow(windowDL, 2);
 
     SDL_FlushEvent(SDL_WINDOWEVENT);
     rendererDL = setupRendererSafe(windowDL);
@@ -413,11 +413,22 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         for(i = 0; i < nombreElement; free(listDL[i++]));
     }
 
-    for(i = 0; i < nbElemTotal && *status[i] != MDL_CODE_DL_OVER; i++);
+    int nombreInstalled = 0, installFound = VALEUR_FIN_STRUCTURE_CHAPITRE;
+
+    for(i = 0; i < nbElemTotal; i++)
+    {
+        if(installFound == VALEUR_FIN_STRUCTURE_CHAPITRE && *status[i] == MDL_CODE_DL_OVER)
+            installFound = i;
+        else if(*status[i] <= MDL_CODE_FIRST_ERROR || *status[i] == MDL_CODE_INSTALL_OVER)
+            nombreInstalled++;
+    }
+
     if(i != nbElemTotal) //une installation a été trouvée
         *status[i] = MDL_CODE_INSTALL;
     else
         MDLDispInstallHeader(NULL);
+
+    nameWindow(windowDL, (nombreInstalled*100/nbElemTotal)+2);
     MDLUpdateIcons(false);
     free(listSizeDL);
     free(listDL);

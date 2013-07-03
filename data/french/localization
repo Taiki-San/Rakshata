@@ -180,7 +180,8 @@ Absence de connexion internet&
 Aucune connexion internet detectee.\nVous risquez d'en avoir besoin pour telecharger quelque chose.;)\nReessayez lorsque vous vous serez connectes&]
 25
 Votre lecteur de mangas et de BD&
-Module de telechargement&]
+Module de telechargement&
+Module d'authentification&]
 26
 Bonjour, veuillez entrer votre adresse email&
 E-mail:&
@@ -227,4 +228,11 @@ Voulez-vous lancer le telechargement?&
 Telecharger&
 Non&
 31
-Vérification des éléments payants&]
+Vérification des éléments payants&
+Vous avez séléctionnés pour %d.%d euros de contenus&
+Voulez-vous être redirigé sur la page de paiement?&
+Dans le cas contraire, leur téléchargement sera annulé.&
+Oui&
+Non&
+Cliquez dans la fenêtre quand le paiement sera terminé :)
+(vous pouvez quand même fermer cette fenêtre)&]

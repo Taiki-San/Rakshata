@@ -19,7 +19,7 @@ void mainRakshata()
 
     MUTEX_LOCK(mutexRS);
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL);
     loadIcon(window);
     nameWindow(window, 0);
     renderer = setupRendererSafe(window);

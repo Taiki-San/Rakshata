@@ -402,11 +402,13 @@ void nameWindow(SDL_Window* windows, const int value)
     loadTrad(trad, 25);
     crashTemp(windowsName, 128);
 
-    if(value <= 1) //Si on affiche le nom de la fenetre standard ou sans nombre d'installe
-        snprintf(windowsName, 128, "%s - %s - v%s", PROJECT_NAME, trad[value], versionOfSoftware); //Windows name
+    if(value == 0)
+        snprintf(windowsName, 128, "%s - %s - v%s", PROJECT_NAME, trad[0], versionOfSoftware); //Windows name
 
+    else if(value == 1)
+        snprintf(windowsName, 128, "%s - %s - v%s", PROJECT_NAME, trad[2], versionOfSoftware); //Windows name
     else
-        snprintf(windowsName, 128, "%s - %s - v%s - (%d)", PROJECT_NAME, trad[1], versionOfSoftware, value - 1); //Windows name
+        snprintf(windowsName, 128, "[%d%%] %s - %s - v%s", value - 2, PROJECT_NAME, trad[1], versionOfSoftware); //Windows name
 
     SDL_SetWindowTitle(windows, windowsName);
 }

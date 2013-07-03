@@ -13,6 +13,10 @@
 #include "main.h"
 #include "moduleDL.h"
 
+extern volatile bool quit;
+extern int **status;
+char password[100];
+
 void MDLPHandle(DATA_LOADED ** data, int length)
 {
     int *index = NULL;
@@ -35,17 +39,73 @@ void MDLPHandle(DATA_LOADED ** data, int length)
             bufferOut = calloc(sizeIndex*2+10, sizeof(char)); //sizeIndex * 2 pour les espaces suivants les 0/1
             if(bufferOut != NULL)
             {
+                /*Interrogration du serveur*/
                 bufferOutBak = bufferOut;
                 snprintf(URL, 200, "https://rsp.%s/checkPaid.php", MAIN_SERVER_URL[0]);
                 if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, 1) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
-                    int prix = 0;
+                    int prix = 0, pos = 0;
                     sscanfs(bufferOut, "%d",&prix);
                     if(prix != 0)
                     {
-                        for(; *bufferOut && *bufferOut != '\n'; bufferOut++);
-                        for(; *bufferOut == '\n' || *bufferOut == '\r'; bufferOut++);
-                        #warning "ajouter dans un tableau si paye (1) ou non (2)"
+                        int posStatusLocal = 0;
+                        int ** statusLocal = calloc(sizeIndex+1, sizeof(int*));
+                        if(statusLocal != NULL)
+                        {
+                            bool somethingToPay = false, needLogin = false;
+
+                            /*Chargement du fichier*/
+                            for(; *bufferOut && *bufferOut != '\n'; bufferOut++);
+                            for(; *bufferOut == '\n' || *bufferOut == '\r'; bufferOut++);
+
+                            while(pos < sizeIndex && *bufferOut)
+                            {
+                                for(; *bufferOut && !isNbr(*bufferOut); bufferOut++);
+                                if(*bufferOut - '0' <= MDLP_HIGHEST_CODE)
+                                {
+                                    /*Sachant que la liste peut être réorganisée, on va copier les adresses
+                                    des données dont on a besoin dans un tableau qui sera envoyé au thread*/
+
+                                    switch(*bufferOut - '0')
+                                    {
+                                        case MDLP_CODE_ERROR:
+                                        {
+                                            *status[index[pos]] = MDL_CODE_INTERNAL_ERROR;
+                                            break;
+                                        }
+                                        case MDLP_CODE_PAID:
+                                        {
+                                            *status[index[pos]] = MDL_CODE_WAITING_LOGIN;
+                                            statusLocal[posStatusLocal++] = status[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+                                            needLogin = true;
+                                            break;
+                                        }
+                                        case MDLP_CODE_TO_PAY:
+                                        {
+                                            *status[index[pos]] = MDL_CODE_WAITING_PAY;
+                                            statusLocal[posStatusLocal++] = status[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+                                            needLogin = somethingToPay = true;
+                                            break;
+                                        }
+                                    }
+                                    pos++;
+                                }
+                            }
+                            if(needLogin)
+                            {
+                                DATA_PAY * arg = malloc(sizeof(DATA_PAY));
+                                if(arg != NULL)
+                                {
+                                    arg->prix = prix;
+                                    arg->somethingToPay = somethingToPay;
+                                    arg->sizeStatusLocal = posStatusLocal;
+                                    arg->statusLocal = statusLocal;
+                                    createNewThread(MDLPHandlePayProcedure, arg);
+                                }
+                                else
+                                    free(statusLocal);
+                            }
+                        }
                     }
                 }
                 free(bufferOutBak);
@@ -94,6 +154,109 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
     return output;
 }
 
+void MDLPHandlePayProcedure(DATA_PAY * arg)
+{
+    bool toPay = arg->somethingToPay, cancel = false;
+    int prix = arg->prix, sizeStatusLocal = arg->sizeStatusLocal, **statusLocal = arg->statusLocal;
+    free(arg);
+
+    SDL_Window * windowAuth = NULL;
+    SDL_Renderer *rendererAuth = NULL;
+
+    MUTEX_LOCK(mutexRS);
+
+    windowAuth = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+    loadIcon(windowAuth);
+    nameWindow(windowAuth, 1);
+    rendererAuth = setupRendererSafe(windowAuth);
+
+    MUTEX_UNLOCK(mutexRS);
+
+    if(getPassword(rendererAuth, password) == 1)
+    {
+        int i = 0;
+        for(; i < sizeStatusLocal; i++)
+        {
+            if(*statusLocal[i] == MDL_CODE_WAITING_LOGIN)
+                *statusLocal[i] = MDL_CODE_DEFAULT;
+        }
+        MDLUpdateIcons(false);
+
+        if(toPay)
+        {
+            int out = 0;
+            MDLPDispAskToPay(rendererAuth, prix);
+            out = MDLPWaitEvent(rendererAuth);
+            if(out == 1)   //Nop
+            {
+                for(i = 0; i < sizeStatusLocal; i++)
+                {
+                    if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
+                        *statusLocal[i] = MDL_CODE_UNPAID;
+                }
+                cancel = true;
+            }
+            else
+            {
+                char URLStore[300];
+                snprintf(URLStore, 300, "http://store.rakshata.com/mail=%s", COMPTE_PRINCIPAL_MAIL);
+                ouvrirSite(URLStore);
+            }
+        }
+    }
+    else
+        cancel = true;
+
+    MUTEX_LOCK(mutexRS);
+
+    SDL_DestroyRenderer(rendererAuth);
+    SDL_DestroyWindow(windowAuth);
+
+    MUTEX_UNLOCK(mutexRS);
+
+    if(!cancel && toPay)
+    {
+        if(waitForGetPaid() == true)
+        {
+            int i;
+            for(i = 0; i < sizeStatusLocal; i++)
+            {
+                if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
+                    *statusLocal[i] = MDL_CODE_DEFAULT;
+            }
+            //vérifier que le thread de DL tourne encore et si non, le relancer
+        }
+    }
+
+    free(statusLocal);
+
+    if(cancel)
+        MDLPDestroyCache();
+
+    quit_thread(0);
+}
+
+bool waitForGetPaid()
+{
+    do
+    {
+        SDL_Delay(500);
+    } while(!MDLPCheckIfPaid() && quit == false);
+
+    if(quit == false)
+        return true;
+    return false;
+}
+
+void MDLPDestroyCache()
+{
+    char output[100], URL[0x100], POST[120];
+
+    snprintf(URL, 0x100, "https://rsp.%s/cancelOrder.php", MAIN_SERVER_URL[0]);
+    snprintf(POST, 120, "mail=%s", COMPTE_PRINCIPAL_MAIL);
+    download_mem(URL, POST, output, 100, 1);
+}
+
 /** Checks **/
 
 bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length)
@@ -122,6 +285,19 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length)
         output[posDansOut] = VALEUR_FIN_STRUCTURE_CHAPITRE;
     }
     return output;
+}
+
+bool MDLPCheckIfPaid()
+{
+    char URL[300], POST[120], output[50];
+    snprintf(URL, 300, "https://rsp.%s/checkOrder.php", MAIN_SERVER_URL[0]);
+    snprintf(POST, 120, "mail=%s", COMPTE_PRINCIPAL_MAIL);
+    if(download_mem(URL, POST, output, 50, 1) == CODE_RETOUR_OK)
+    {
+        if(output[0] == '1')
+            return true;
+    }
+    return false;
 }
 
 /** UI **/
@@ -153,7 +329,130 @@ void MDLPDispCheckingIfPaid()
         }
         TTF_CloseFont(police);
     }
+
+    SDL_RenderPresent(rendererDL);
     MUTEX_UNLOCK(mutexDispIcons);
+}
+
+void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
+{
+    char trad[SIZE_TRAD_ID_31][TRAD_LENGTH];
+    SDL_Texture *texture = NULL;
+    SDL_Rect position;
+    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    TTF_Font *police = NULL;
+
+    loadTrad(trad, 31);
+
+    MUTEX_LOCK(mutexDispIcons);
+    police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+
+    if(police != NULL)
+    {
+        char buffer[TRAD_LENGTH+10];
+        position.y = 20;
+
+        snprintf(buffer, TRAD_LENGTH+10, trad[1], prix/100, prix%100);
+        texture = TTF_Write(renderVar, police, buffer, couleur);
+        if(texture != NULL)
+        {
+            position.h = texture->h;
+            position.w = texture->w;
+            position.x = renderVar->window->w / 2 - position.w / 2;
+            SDL_RenderCopy(renderVar, texture, NULL, &position);
+            SDL_DestroyTexture(texture);
+        }
+
+        position.y += MDL_INTERLIGNE;
+        texture = TTF_Write(renderVar, police, trad[2], couleur);
+        if(texture != NULL)
+        {
+            position.h = texture->h;
+            position.w = texture->w;
+            position.x = renderVar->window->w / 2 - position.w / 2;
+            SDL_RenderCopy(renderVar, texture, NULL, &position);
+            SDL_DestroyTexture(texture);
+        }
+
+        position.y += MDL_INTERLIGNE;
+        texture = TTF_Write(renderVar, police, trad[3], couleur);
+        if(texture != NULL)
+        {
+            position.h = texture->h;
+            position.w = texture->w;
+            position.x = renderVar->window->w / 2 - position.w / 2;
+            SDL_RenderCopy(renderVar, texture, NULL, &position);
+            SDL_DestroyTexture(texture);
+        }
+
+        position.y = (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2;
+
+        texture = TTF_Write(renderVar, police, trad[4], couleur);
+        if(texture != NULL)
+        {
+            position.h = texture->h;
+            position.w = texture->w;
+            position.x = renderVar->window->w / 4 - position.w / 2;
+            SDL_RenderCopy(renderVar, texture, NULL, &position);
+            SDL_DestroyTexture(texture);
+        }
+
+        texture = TTF_Write(renderVar, police, trad[5], couleur);
+        if(texture != NULL)
+        {
+            position.h = texture->h;
+            position.w = texture->w;
+            position.x = renderVar->window->w / 2 + renderVar->window->w / 4 - position.w / 2;
+            SDL_RenderCopy(renderVar, texture, NULL, &position);
+            SDL_DestroyTexture(texture);
+        }
+        TTF_CloseFont(police);
+    }
+    SDL_RenderPresent(renderVar);
+    MUTEX_UNLOCK(mutexDispIcons);
+}
+
+int MDLPWaitEvent(SDL_Renderer * renderVar)
+{
+    SDL_Event event;
+    while(1)
+    {
+        SDL_WaitEvent(&event);
+        if(haveInputFocus(&event, renderVar->window))
+        {
+            switch(event.type)
+            {
+                case SDL_WINDOWEVENT:
+                {
+                    if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                        return 1; //Nop
+                    else
+                        SDL_RenderPresent(renderVar);
+                    break;
+                }
+                case SDL_KEYDOWN:
+                {
+                    if(event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_ESCAPE)
+                        return 1;   //Nop
+                    else if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
+                        return 2;   //Eyup
+                    break;
+                }
+                case SDL_MOUSEBUTTONUP:
+                {
+                    if(event.button.y >= 20+3*MDL_INTERLIGNE)
+                    {
+                        if(event.button.x > renderVar->window->w / 2)
+                            return 1;   //Nop
+                        else
+                            return 2;   //Eyup
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return 1; //Shouldn't happen
 }
 
 void MDLPEraseDispChecking()

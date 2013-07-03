@@ -408,10 +408,10 @@
 #define SIZE_TRAD_ID_22 18  //Module de DL
 #define SIZE_TRAD_ID_23 5   //Aucun manga disponible
 #define SIZE_TRAD_ID_24 2   //Erreur connexion internet
-#define SIZE_TRAD_ID_25 2   //Nom fenêtre
+#define SIZE_TRAD_ID_25 3   //Nom fenêtre
 #define SIZE_TRAD_ID_26 20  //Authentification
 #define SIZE_TRAD_ID_27 3   //Impossible de récupérer la MK
 #define SIZE_TRAD_ID_28 2   //Obtention du mot de passe
 #define SIZE_TRAD_ID_29 4   //Patch du registre
 #define SIZE_TRAD_ID_30 11  //Nouveaux éléments détéctés à DL dans le lecteur
-#define SIZE_TRAD_ID_31 2   //Interraction pour le DL de chapitre payants
+#define SIZE_TRAD_ID_31 8   //Interactions pour le DL de chapitre payants

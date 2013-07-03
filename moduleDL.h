@@ -31,14 +31,23 @@
 #define HAUTEUR_TEXTE_INSTALLATION 55
 
 /*Codes*/
+#define MDL_CODE_UNPAID -4
 #define MDL_CODE_INTERNAL_ERROR -3
 #define MDL_CODE_ERROR_INSTALL -2
 #define MDL_CODE_ERROR_DL -1
 #define MDL_CODE_DEFAULT 0
-#define MDL_CODE_DL 1
-#define MDL_CODE_DL_OVER 2
-#define MDL_CODE_INSTALL 3
-#define MDL_CODE_INSTALL_OVER 4
+#define MDL_CODE_WAITING_PAY 1
+#define MDL_CODE_WAITING_LOGIN 2
+#define MDL_CODE_DL 3
+#define MDL_CODE_DL_OVER 4
+#define MDL_CODE_INSTALL 5
+#define MDL_CODE_INSTALL_OVER 6
+#define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
+
+#define MDLP_CODE_ERROR 0  //En cas de données insuffisante, calloc met directement error aux manquants
+#define MDLP_CODE_PAID 1
+#define MDLP_CODE_TO_PAY 2
+#define MDLP_HIGHEST_CODE 2
 
 /*Icones*/
 #define MDL_ICON_ERROR "data/icon/e.png"
@@ -59,6 +68,14 @@ typedef struct data_loaded_from_download_list
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
     MANGAS_DATA* datas;
 } DATA_LOADED;
+
+typedef struct data_sent_to_pay_thread
+{
+    int prix;
+    int sizeStatusLocal;
+    int ** statusLocal;
+    bool somethingToPay;
+} DATA_PAY;
 
 typedef struct download_data_struct
 {
@@ -141,9 +158,17 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
 /**Module2_paid.h**/
 void MDLPHandle(DATA_LOADED ** data, int length);
 char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
+void MDLPHandlePayProcedure(DATA_PAY * arg);
+bool waitForGetPaid();
+void MDLPDestroyCache();
+
 bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length);
 int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
+bool MDLPCheckIfPaid();
+
 void MDLPDispCheckingIfPaid();
+void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix);
+int MDLPWaitEvent(SDL_Renderer * renderVar);
 void MDLPEraseDispChecking();
 
 /**Native.c**/
