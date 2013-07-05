@@ -123,6 +123,7 @@ void mainMDL()
                     *todoList = ptr;
                     nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
                     MDLUpdateIcons(true);
+                    MDLPHandle(*todoList, nbElemTotal);
                 }
             }
         }

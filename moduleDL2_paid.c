@@ -128,7 +128,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
     output = malloc(length * sizeof(char));
     if(output != NULL)
     {
-        snprintf(output, length-1, "ver=1&mail=%s", COMPTE_PRINCIPAL_MAIL);
+        snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
         for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
             snprintf(buffer, 500, "&editor%d=%s&proj%d=%s&isTome%d=%d&ID%d=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
@@ -199,7 +199,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
             else
             {
                 char URLStore[300];
-                snprintf(URLStore, 300, "http://store.rakshata.com/mail=%s", COMPTE_PRINCIPAL_MAIL);
+                snprintf(URLStore, 300, "http://store.rakshata.com/?mail=%s", COMPTE_PRINCIPAL_MAIL);
                 ouvrirSite(URLStore);
             }
         }
@@ -264,7 +264,7 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length)
     int i;
     for(i = 0; i < length; i++)
     {
-        if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3))
+        if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3) && *status[i] == MDL_CODE_DEFAULT)
             return true;
     }
     return false;
@@ -279,7 +279,7 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length)
         int i, posDansOut;
         for(i = posDansOut = 0; i < length; i++)
         {
-            if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3))
+            if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3) && *status[i] == MDL_CODE_DEFAULT)
                 output[posDansOut++] = i;
         }
         output[posDansOut] = VALEUR_FIN_STRUCTURE_CHAPITRE;

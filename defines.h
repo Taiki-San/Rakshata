@@ -414,4 +414,4 @@
 #define SIZE_TRAD_ID_28 2   //Obtention du mot de passe
 #define SIZE_TRAD_ID_29 4   //Patch du registre
 #define SIZE_TRAD_ID_30 11  //Nouveaux éléments détéctés à DL dans le lecteur
-#define SIZE_TRAD_ID_31 8   //Interactions pour le DL de chapitre payants
+#define SIZE_TRAD_ID_31 6   //Interactions pour le DL de chapitre payants

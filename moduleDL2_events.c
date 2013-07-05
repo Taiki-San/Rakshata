@@ -348,5 +348,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             break;
         }
     }
+
+    SDL_FlushEvent(SDL_MOUSEBUTTONUP);
 }
 
