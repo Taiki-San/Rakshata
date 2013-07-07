@@ -104,7 +104,13 @@ Premier&
 Remonter&
 Supprimer&
 Descendre&
-Dernier&]
+Dernier&
+Attente de connexion&
+Attente de connexion a votre compte pour initialiser le telechargement.\nVeuillez vous connecter dans la fenetre dediee.&
+Attente du paiement&
+Attente du paiement de votre commande.\nSi vous avez deja paye, mais que le telechargement ne se lance pas, essayez de redemarrer Rakshata.\nVous pouvez aussi nous contacter.&
+Absence de paiement&
+Le %s n'a pas été paye et n'a donc pas pu etre telecharge.&]
 17
 Menu Principal&
 Lecture&
@@ -171,9 +177,9 @@ Erreur interne:&
 Erreurs interne:&]
 23
 Aucun manga disponible&
-Il semblerait que vous n'avez pas encore telechargé quoi que ce soit.\nPourquoi ne pas aller recuperer quelque chose?\nVous pouvez aussi ajouter un depot. :)&
+Il semblerait que vous n'avez pas encore telecharge quoi que ce soit.\nPourquoi ne pas aller recuperer quelque chose?\nVous pouvez aussi ajouter un depot. :)&
 Ajouter&
-Télécharger&
+Telecharger&
 Ok&]
 24
 Absence de connexion internet&

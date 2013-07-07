@@ -55,6 +55,7 @@
 #define MDL_ICON_INSTALL "data/icon/i.png"
 #define MDL_ICON_WAIT "data/icon/w.png"
 #define MDL_ICON_OVER "data/icon/o.png"
+#define MDL_ICON_TO_PAY "data/icon/p.png"
 
 /*Divers*/
 #define HAUTEUR_POURCENTAGE WINDOW_SIZE_H_DL - 50

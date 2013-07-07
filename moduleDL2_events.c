@@ -262,7 +262,6 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             MUTEX_UNLOCK(mutexDispIcons);
             break;
         }
-
         case MDL_CODE_INSTALL_OVER:
         {
             //This is hacky: we will kill the other thread by sending an appropriate event
@@ -331,7 +330,6 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             }
             break;
         }
-
         case MDL_CODE_ERROR_DL:
         case MDL_CODE_ERROR_INSTALL:
         {
@@ -345,6 +343,25 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
         {
             unescapeLineReturn(trad[21]);
             UI_Alert(trad[17], trad[21]);
+            break;
+        }
+        case MDL_CODE_WAITING_LOGIN:
+        {
+            unescapeLineReturn(trad[30]);
+            UI_Alert(trad[29], trad[30]);
+            break;
+        }
+        case MDL_CODE_WAITING_PAY:
+        {
+            unescapeLineReturn(trad[32]);
+            UI_Alert(trad[31], trad[32]);
+            break;
+        }
+        case MDL_CODE_UNPAID:
+        {
+            char buffer[2*TRAD_LENGTH];
+            snprintf(buffer, 2*TRAD_LENGTH, trad[34], trad[(*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder?13:12]);
+            UI_Alert(trad[33], buffer);
             break;
         }
     }

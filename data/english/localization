@@ -104,7 +104,13 @@ First&
 Increase&
 Delete&
 Decrease&
-Last&]
+Last&
+Waiting for login&
+Waiting you to login to your account in order to initialize  the download.\nPlease login in the dedicated window.&
+Waiting the payment&
+Waiting the payement of your order.\nIf you already paid it, but the download didn't started, try to restart Rakshata.\nYou also can contact us.&
+No payment&
+The %s hasn't been paid and therefore couldn't be downloaded.&]
 17
 Main menu&
 Reader&

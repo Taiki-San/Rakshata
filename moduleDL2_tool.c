@@ -735,6 +735,7 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
     {
         case MDL_CODE_DEFAULT:
         case MDL_CODE_DL_OVER:
+        case MDL_CODE_WAITING_LOGIN:
         {
             return IMG_LoadTexture(rendererVar, MDL_ICON_WAIT);
             break;
@@ -750,6 +751,11 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
             break;
         }
         case MDL_CODE_INSTALL_OVER:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_TO_PAY);
+            break;
+        }
+        case MDL_CODE_WAITING_PAY:
         {
             return IMG_LoadTexture(rendererVar, MDL_ICON_OVER);
             break;
