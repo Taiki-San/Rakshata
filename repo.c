@@ -329,6 +329,7 @@ int ajoutRepo(bool ajoutParFichier)
                             free(repoBak);
                         free(repoNew);
 
+                        resetUpdateDBCache();
                         somethingAdded++;
                         if(ajoutParFichier)
                             continuer = 0;

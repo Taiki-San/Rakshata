@@ -59,7 +59,7 @@
 
     #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE
-    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; SDL_Delay(50))
+    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; SDL_Delay(rand() % 100))
     #define MUTEX_UNLOCK(a) ReleaseSemaphore (a, 1, NULL)
     #define MUTEX_DESTROY(a) CloseHandle(a);
 #else

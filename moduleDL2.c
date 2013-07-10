@@ -247,7 +247,7 @@ void MDLLauncher()
 
 void mainDLProcessing(DATA_LOADED *** todoList)
 {
-    int dataPos = 0;
+    volatile int dataPos = 0;
     char **historiqueTeam = malloc(sizeof(char*));
     historiqueTeam[0] = NULL;
 
@@ -259,7 +259,7 @@ void mainDLProcessing(DATA_LOADED *** todoList)
                 break;
 
             for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
-            if(dataPos < nbElemTotal)
+            if(dataPos < nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
             {
                 MDLDispDownloadHeader((*todoList)[dataPos]);
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
@@ -365,8 +365,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
                     *input.currentState = MDL_CODE_ERROR_DL;
             }
             else if(quit) {
-                *input.currentState = MDL_CODE_DEFAULT;
                 MDLDispDownloadHeader(NULL);
+                *input.currentState = MDL_CODE_DEFAULT;
             }
             else {
                 listDL[i-1] = argument.buf;
@@ -379,7 +379,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
             *input.currentState = MDL_CODE_INSTALL_OVER;
         }
     }
-    MDLUpdateIcons(false);
 
     if(*input.currentState == MDL_CODE_DL_OVER) //On lance l'installation
     {
@@ -392,6 +391,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         }
         else
         {
+            MDLUpdateIcons(false);
             while(*input.currentState != MDL_CODE_INSTALL)
                 SDL_Delay(250);
         }
@@ -520,20 +520,16 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
     }
 
     snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
-    ressources = fopenR(temp, "r");
-    if(ressources == NULL)
+    if(!checkFileExist(temp))
     {
         /*Si le manga existe déjà*/
         snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-        ressources = fopenR(temp, "r");
-        if(ressources == NULL)
+        if(!checkFileExist(temp))
         {
             /*Si le dossier du manga n'existe pas*/
             snprintf(temp, 500, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
             mkdirR(temp);
         }
-        else
-            fclose(ressources);
 
         /**Décompression dans le repertoire de destination**/
 
@@ -556,29 +552,29 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
         removeR(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
-        if(!erreurs)
+        if(!erreurs && haveToPutTomeAsReadable)
         {
-            if(haveToPutTomeAsReadable)
-            {
-                char pathWithTemp[600], pathWithoutTemp[600];
+            char pathWithTemp[600], pathWithoutTemp[600];
 
-                snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-                snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-                rename(pathWithTemp, pathWithoutTemp);
+            snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
+            snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
+            rename(pathWithTemp, pathWithoutTemp);
 
-                if(!checkTomeReadable(*mangaDB, tome))
-                    remove(pathWithoutTemp);
-            }
-            snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
-            ressources = fopenR(temp, "r");
+            if(!checkTomeReadable(*mangaDB, tome))
+                remove(pathWithoutTemp);
         }
-        snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-
-        if(!subFolder && erreurs != -1 && ressources != NULL)
+        if(!subFolder)
         {
-            if(checkFileExist(temp))
+            snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
+            if(erreurs)
             {
-                fclose(ressources);
+                snprintf(temp, 500, "Archive Corrompue: %s - %d\n", mangaDB->mangaName, chapitre);
+                logR(temp);
+                removeFolder(basePath);
+            }
+            else if(checkFileExist(temp))
+            {
+                snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
                 ressources = fopenR(temp, "r+");
                 fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
                 if(fgetc(ressources) != EOF)
@@ -602,7 +598,6 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
             }
             else
             {
-                fclose(ressources);
                 /*Création du config.dat du nouveau manga*/
                 snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
                 ressources = fopenR(temp, "w+");
@@ -610,23 +605,9 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
                 fclose(ressources);
             }
         }
-
-        else if(!subFolder)//Archive corrompue
-        {
-            if(ressources != NULL)
-                fclose(ressources);
-            snprintf(temp, 500, "Archive Corrompue: %s - %d\n", mangaDB->mangaName, chapitre);
-            logR(temp);
-            removeFolder(basePath);
-            erreurs = 1;
-        }
     }
-    else
-        fclose(ressources);
 
-    if(erreurs)
-        return true;
-    return false;
+    return erreurs != 0;    //0 ou 1
 }
 
 /*UI*/
@@ -733,7 +714,7 @@ void MDLUpdateIcons(bool ignoreCache)
         }
     }
     SDL_RenderPresent(rendererDL);
-    MUTEX_UNLOCK(mutexDispIcons);
+    ReleaseSemaphore (mutexDispIcons, 1, NULL);
 }
 
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
@@ -743,9 +724,10 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     SDL_Rect position;
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
-    loadTrad(trad, 22);
 
     MUTEX_LOCK(mutexDispIcons);
+
+    loadTrad(trad, 22);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
 
     if(isInstall)

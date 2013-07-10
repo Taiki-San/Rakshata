@@ -75,8 +75,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         removeR("data/laststate.dat");
 
         /**Création de la fenêtre d'infos**/
-        if(i)
+        if(i && !checkFileExist("data/externalLaunch"))
             afficherMessageRestauration(texteTrad[3], texteTrad[4], texteTrad[5], texteTrad[6]);
+        else
+            remove("data/externalLaunch");
     }
 
     positionPage.x = BORDURE_LAT_LECTURE;

@@ -131,7 +131,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
         snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
         for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
-            snprintf(buffer, 500, "&editor%d=%s&proj%d=%s&isTome%d=%d&ID%d=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
+            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
                                                                                 compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE,
                                                                                 compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? data[index[pos]]->partOfTome : data[index[pos]]->chapitre);
             if(data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)

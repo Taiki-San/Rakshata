@@ -39,49 +39,32 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_
 
 int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret)
 {
-    int         rc = 0;
     uint32_t    l,r;
     uint32_t    i;
     uint8_t     *tmpbuff=NULL; /* Intermediate memspace for F */
     uint8_t     *outbuff=NULL; /* Results of F iteration */
     uint8_t     *out;
 
-#if 0
-    if((dklen / prf_hlen) > 0xffffffff){
-        rc = EINVAL;
-        goto end;
-    }
-#endif
-
-    if( !(tmpbuff = calloc(MAX(saltlen,prf_hlen)+4,sizeof(uint8_t))) ||
-            !(outbuff = calloc(prf_hlen,sizeof(uint8_t)))){
-        rc = ENOMEM;
-        goto end;
-    }
-
-    l = dklen / prf_hlen;
-    r = dklen % prf_hlen;
+    if( (tmpbuff = calloc(MAX(saltlen,prf_hlen)+4,sizeof(uint8_t))) && (outbuff = calloc(prf_hlen,sizeof(uint8_t))))
+    {
+        l = dklen / prf_hlen;
+        r = dklen % prf_hlen;
 
 
-    for(i=0; i<l; i++){
-        out = dk_ret + (i * prf_hlen);
-        F(prf_hlen,pw,pwlen,salt,saltlen,count,i+1,tmpbuff,out);
+        for(i=0; i<l; i++){
+            out = dk_ret + (i * prf_hlen);
+            F(prf_hlen,pw,pwlen,salt,saltlen,count,i+1,tmpbuff,out);
+        }
+
+        if(r){
+            F(prf_hlen,pw,pwlen,salt,saltlen,count,l+1,tmpbuff,outbuff);
+            out = dk_ret + (l * prf_hlen);
+            memcpy(out,outbuff,r);
+        }
     }
 
-    if(r){
-        F(prf_hlen,pw,pwlen,salt,saltlen,count,l+1,tmpbuff,outbuff);
-        out = dk_ret + (l * prf_hlen);
-        memcpy(out,outbuff,r);
-    }
-
-end:
-    if(tmpbuff) free(tmpbuff);
-    if(outbuff) free(outbuff);
-
-    if(rc){
-        //errno = rc;
-        return -1;
-    }
+    free(tmpbuff);
+    free(outbuff);
     return 0;
 }
 

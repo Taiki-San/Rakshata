@@ -321,6 +321,11 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     else
                         fprintf(inject, "%s C %d", (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->mangaName, (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->chapitre);
                     fclose(inject);
+
+                    inject = fopen("data/externalLaunch", "w+");
+                    if(inject != NULL)
+                        fclose(inject);
+
                     createNewThread(mainRakshata, NULL);
                 }
                 else

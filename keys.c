@@ -161,6 +161,7 @@ int earlyInit(int argc, char *argv[])
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
     loadPalette();
+    resetUpdateDBCache();
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
@@ -354,123 +355,128 @@ int logon()
 
         login = check_login(adresseEmail);
 
-        SDL_RenderClear(renderer);
-        switch(login)
+        do
         {
-            case 0: //New account
-            case 1: //Account exist
+            retry = 0;
+            SDL_RenderClear(renderer);
+            switch(login)
             {
-                char password[100];
-                crashTemp(password, 100);
-                /**Leurs codes sont assez proches donc on les regroupes**/
-                ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y = 20;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                ligne = TTF_Write(renderer, police, trad[6], couleur);
-                position.y = 100;
-                position.x = 50;
-                beginingOfEmailAdress = position.x + ligne->w + 25;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                TTF_CloseFont(police);
-                police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
-
-                ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y += 85;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
-                position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                position.y += 30;
-                position.h = ligne->h;
-                position.w = ligne->w;
-                SDL_RenderCopy(renderer, ligne, NULL, &position);
-                SDL_DestroyTextureS(ligne);
-
-                SDL_RenderPresent(renderer);
-                do
-				{
-					if((i = waitClavier(renderer, password, 50, ((login==0)?1:0), 1, beginingOfEmailAdress, 109)) == PALIER_QUIT)
-						return PALIER_QUIT;
-					else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
-					{
-						TTF_CloseFont(police);
-						retry = 1;
-						break;
-					}
-				}while(!password[0]);
-				chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-                switch(checkPass(adresseEmail, password, login))
+                case 0: //New account
+                case 1: //Account exist
                 {
-                    case 0: //Rejected
+                    char password[100];
+                    crashTemp(password, 100);
+                    /**Leurs codes sont assez proches donc on les regroupes**/
+                    ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
+                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                    position.y = 20;
+                    position.h = ligne->h;
+                    position.w = ligne->w;
+                    SDL_RenderCopy(renderer, ligne, NULL, &position);
+                    SDL_DestroyTextureS(ligne);
+
+                    ligne = TTF_Write(renderer, police, trad[6], couleur);
+                    position.y = 100;
+                    position.x = 50;
+                    beginingOfEmailAdress = position.x + ligne->w + 25;
+                    position.h = ligne->h;
+                    position.w = ligne->w;
+                    SDL_RenderCopy(renderer, ligne, NULL, &position);
+                    SDL_DestroyTextureS(ligne);
+
+                    TTF_CloseFont(police);
+                    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+
+                    ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
+                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                    position.y += 85;
+                    position.h = ligne->h;
+                    position.w = ligne->w;
+                    SDL_RenderCopy(renderer, ligne, NULL, &position);
+                    SDL_DestroyTextureS(ligne);
+
+                    ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
+                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                    position.y += 30;
+                    position.h = ligne->h;
+                    position.w = ligne->w;
+                    SDL_RenderCopy(renderer, ligne, NULL, &position);
+                    SDL_DestroyTextureS(ligne);
+
+                    SDL_RenderPresent(renderer);
+                    do
                     {
-                        char contenuUIError[3*TRAD_LENGTH+1];
-                        snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
-                        if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
+                        if((i = waitClavier(renderer, password, 50, ((login==0)?1:0), 1, beginingOfEmailAdress, 109)) == PALIER_QUIT)
                             return PALIER_QUIT;
-                        retry = 1;
-                        break;
-                    }
-                    case 1: //Accepted
-                    {
-                        char temp[200];
-                        TTF_CloseFont(police);
+                        else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
+                        {
+                            TTF_CloseFont(police);
+                            retry = 1;
+                            break;
+                        }
+                    }while(!password[0]);
+                    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
-                        for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100 && adresseEmail[beginingOfEmailAdress]; beginingOfEmailAdress++)
-                            COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
-
-                        removeFromPref(SETTINGS_EMAIL_FLAG);
-                        snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
-                        addToPref(SETTINGS_EMAIL_FLAG, temp);
-                        removeR(SECURE_DATABASE);
-                        break;
-                    }
-                    default: //Else -> erreure critique, me contacter/check de la connexion/du site
+                    switch(checkPass(adresseEmail, password, login))
                     {
-                        char contenuUIError[3*TRAD_LENGTH+1];
-                        snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
-                        UI_Alert(trad[13], contenuUIError);
-                        return PALIER_QUIT;
-                        break;
+                        case 0: //Rejected
+                        {
+                            char contenuUIError[3*TRAD_LENGTH+1];
+                            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
+                            if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
+                                return PALIER_QUIT;
+                            retry = 2;
+                            break;
+                        }
+                        case 1: //Accepted
+                        {
+                            char temp[200];
+                            TTF_CloseFont(police);
+
+                            for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100 && adresseEmail[beginingOfEmailAdress]; beginingOfEmailAdress++)
+                                COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
+
+                            removeFromPref(SETTINGS_EMAIL_FLAG);
+                            snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
+                            addToPref(SETTINGS_EMAIL_FLAG, temp);
+                            removeR(SECURE_DATABASE);
+                            usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
+                            break;
+                        }
+                        default: //Else -> erreure critique, me contacter/check de la connexion/du site
+                        {
+                            char contenuUIError[3*TRAD_LENGTH+1];
+                            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
+                            UI_Alert(trad[13], contenuUIError);
+                            return PALIER_QUIT;
+                            break;
+                        }
                     }
+                    break;
                 }
-                break;
-            }
 
-            case 2: //Email invalide
-            {
-                char contenuUIError[3*TRAD_LENGTH+1];
-                snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[10], trad[11], trad[12]);
-                if(UI_Alert(trad[9], contenuUIError) == -1) //Error/Quit
-                    return PALIER_QUIT;
-                retry = 1;
-                break;
-            }
+                case 2: //Email invalide
+                {
+                    char contenuUIError[3*TRAD_LENGTH+1];
+                    snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[10], trad[11], trad[12]);
+                    if(UI_Alert(trad[9], contenuUIError) == -1) //Error/Quit
+                        return PALIER_QUIT;
+                    retry = 1;
+                    break;
+                }
 
-            default: //Error, en principe, login == 3
-            {
-                char contenuUIError[2*TRAD_LENGTH+1];
-                snprintf(contenuUIError, 2*TRAD_LENGTH+1, "%s\n%s", trad[18], trad[19]);
-                if(UI_Alert(trad[17], contenuUIError) == -1) //Error/Quit
-                    return PALIER_QUIT;
-                retry = 1;
-                break;
+                default: //Error, en principe, login == 3
+                {
+                    char contenuUIError[2*TRAD_LENGTH+1];
+                    snprintf(contenuUIError, 2*TRAD_LENGTH+1, "%s\n%s", trad[18], trad[19]);
+                    if(UI_Alert(trad[17], contenuUIError) == -1) //Error/Quit
+                        return PALIER_QUIT;
+                    retry = 1;
+                    break;
+                }
             }
-        }
-    }
-    while (retry);
+        }while(retry == 2);
+    } while (retry == 1);
 
     if(resized)
         restartEcran();

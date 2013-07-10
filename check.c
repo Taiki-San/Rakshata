@@ -56,8 +56,9 @@ int check_evt()
     snprintf(nomsATest[31], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
     snprintf(nomsATest[32], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
     snprintf(nomsATest[33], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
-    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
+    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -130,7 +131,7 @@ int check_evt()
             if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
             {
                 SDL_RenderClear(renderer);
-                snprintf(temp, 200, "Environement corrompu, veuillez patienter (%d/%d fichiers restaures).", i, j);
+                snprintf(temp, 200, "Environement incomplet, veuillez patienter (%d/%d fichiers restaures).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
                 if(message != NULL)
                 {
@@ -142,7 +143,7 @@ int check_evt()
                     SDL_DestroyTextureS(message);
                 }
 
-                snprintf(temp, 200, "Environment corrupted, please wait (%d/%d files restored).", i, j);
+                snprintf(temp, 200, "Incomplete environment, please wait (%d/%d files restored).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
                 if(message != NULL)
                 {

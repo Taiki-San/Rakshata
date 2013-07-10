@@ -182,11 +182,12 @@ Add a repo&
 Download&
 Ok&]
 24
-No internet access :(&
-Click to go back to the menu&]
+No Internet access&
+No Internet access detected.\nYou'll quite probably need one in order to download something. ;)\nTry again when you'll be connected&]
 25
 Your manga and comic reader&
-Download module&]
+Download module&
+Login module&]
 26
 Hello, please write your email address&
 Email:&
@@ -209,10 +210,9 @@ FATAL ERROR&
 Check if you can access to Rakshata's website&
 If yes, try again, then contact Taiki&]
 27
-/!\ ERROR: Can't connect to the server. /!\&
-You need to connect to the server at least one time&
-on each new computer to read the manga database. Please&
-check if you can access to Rakshata's website.&]
+Server unavailable&
+/!\ Error: server unavailable. /!\\nA connexion is needed at least one time on each\n&
+new computer in order to access the database.\nPlease check if you can access Rakshata's website&]
 28
 Please write your account's password&
 Password:&]

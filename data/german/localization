@@ -1,57 +1,59 @@
 1
 Seite fehlt&
-Dieses Kapitel ist beschädigt&
+Dieses Kapitel ist beschÎ´digt&
 Wenn sie die Manga Datenbank&
-nicht manuel verändert haben&
+nicht manuel verÎ´ndert haben&
 Melden sie den Fehler an Taiki&
-Drücken sie die Eingabe Taste und gehen sie zurück zur Kapitel Auswahl.&]
+DrÏŒcken sie die Eingabe Taste und gehen sie zurÏŒck zur Kapitel Auswahl.&]
 2
 Initialisierung des Download&
 Moduls im Gange.&
-Bitte warten sie einen Moment (das könnte etwas&
+Bitte warten sie einen Moment (das kÏ†nnte etwas&
 mehr Zeit in Anspruch nehmen, wenn sie einen langsamen&
-Internet Zugang haben oder viele Repos öffnen)&]
+Internet Zugang haben oder viele Repos Ï†ffnen)&]
 3
-Bitte wählen sie ein Menu&
-Eine Quelle hinzufügen&
-Eine Quelle löschen&
-Mangas aus der Datenbank löschen&
+Bitte wÎ´hlen sie ein Menu&
+Eine Quelle hinzufÏŒgen&
+Eine Quelle lÏ†schen&
+Mangas aus der Datenbank lÏ†schen&
 Die Manga Datenbank aktualisieren&
-Sprache ändern
+Sprache Î´ndern
 Zuruck&]
 4
-Bestätigen sie die Löschung der Quelle von&
-Eingabe Taste drücken um zu bestätigen, Escape zum Abbrechen&]
+BestÎ´tigen sie die LÏ†schung der Quelle von&
+Eingabe Taste drÏŒcken um zu bestÎ´tigen, Escape zum Abbrechen&]
 5
 Aktualisierung im Gange&]
 6
 Start im Gange&]
 7
-Unbekannter Fehler&
-Drücken sie die Eingabetaste&]
+Unbekannte Quelle&
+Keine Quelle mit diesen Daten wurde gefunden,\nbitte ÏŒberprÏŒfen Sie, ob Fehler beim Kopieren aufgetreten sind.&]
 8
-Lade Daten&]
+Laden&]
 9
-Welcome to Rakshata&
-Rakshata will ask for your email adress and a password in order 
-to identify you and to enable the usage of whole power of Rakshata&
-Those data will NEVER be shared with anyone without your explicit agreement.&
-Thank you very much for using my software :) - Taiki, lead developper&]
+Willkommen zu Rakshata&
+Rakshata benÏ†tigt Ihre Mail Adresse und ein Passwort
+um Sie zu identifizieren und um den vollen Umfang an Funktionen freizuschalten&
+Diese Daten werden sie ohne Ihre eindeutige Zustimmung weitergegeben.&
+Ich bedanke mich fÏŒr das Benutzen meiner Software :) - Taiki, fÏŒhrender Entwickler&]
 10
-Entfernen drücken zum Abbrechen - Alle andere Tasten zum Fortfahren&]
+Entfernen drÏŒcken zum Abbrechen - Alle andere Tasten zum Fortfahren&]
 11
 Vorherige Seite&
-Nächste Seite&
+NÎ´chste Seite&
 Download&
 Alles abbrechen&
 Kapitel&
-Mangas verstecken:&
+Mangas anzeigen:&
 In Arbeit&
 Gesperrt&
 Fertig&
+Favorisieren&
 Shonen&
 Shojo&
 Seinen&
+Hentai (-16/18)&
 Seite&
 auf&]
 12
@@ -60,118 +62,181 @@ Bitte alle Rakshata Fenster schliessen&
 Datei&
 auf&]
 13
-Hier kann die Sprache des Rakshata geändert werden&
-Wählen sie ihre Sprache (mehr Sprachen werden hinzugefügt werden)&
-Français&
+Hier kann die Sprache des Rakshata geÎ´ndert werden&
+FranÎ·ais&
 English&
 Italiano&
 Deutsch&
-Wenn sie den Rakshata übersetzen wollen,&
-benachrichtigen sie Taiki =).&]
+Wenn sie den Rakshata ÏŒbersetzen wollen,&benachrichtigen Sie uns auf der Website.&]
 14
 Initialisierung im Gange&
 Bitte gebe die URL der Repo an&
-Bestätigen?&
-Escape drücken um abzubrechen, Eingabetaste um zu bestätigen&]
+BestÎ´tigen?&
+Escape drÏŒcken um abzubrechen, Eingabetaste um zu bestÎ´tigen&]
 15
-Welche Repo wollen sie löschen?&]
+Welche Repo wollen sie lÏ†schen?&]
 16
-Zum Hauptmenu zurückkehren um die Änderungen zu speichern&
-Drücken sie in das Fenster um es zu schließen&
-Fehler gefunden:&
-Kapitel beschädigt&
-Bitte kontaktieren sie das Besitzer und/oder Taiki&
-mit der "log" Datei, die sich im Rakshata Ordner befindet&]
+BestÎ´tigung&
+Wollen Sie das Î¦ffnen bestÎ´tigen&
+von&
+im Reader?&
+BestÎ´tigen&
+Abbrechen&
+Download&
+Installation&
+im Gange&
+anstehend&
+Die Installation von&
+Der Download von&
+Kapitel&
+Volumen&
+ist im Gange ,&
+steht an,&
+bitte warten Sie einige Sekunden...&
+Fehler&
+Ein Fehler trat auf wÎ´hrend&
+des Downloda.\nEs ist wahrscheinlich, dass es durch ein Problem von der Quelle verursacht wurde.\nBitte kontaktieren Sie den Admin.&
+der Installation.\nWenn das Problem nur bei einem Kapitel/Volumen besteht, kontaktieren Sie den Admin der Quelle.\nAnsonsten kontaktieren Sie uns unter contact@rakshata.com&
+Ein interner Fehler trat auf!\nFalls dies Ï†fters passiert, konaktieren Sie uns bitte unter contact@rakshata.com\nVergessen Sie bitte den Hergang des Fehlers nicht.&
+Warten&
+%s steht zum Download an,\nwollen Sie die PrioritÎ´t Î´ndern oder es lÏ†schen?\nSchlieÎ¯en Sie dieses Fenster zum Abbrechen&
+Erster&
+VergrÏ†Î¯ern&
+LÏ†schen&
+Verkleinern&
+Letzter&
+Auf Login warten&
+Auf Login warten fÏŒr den Start des Downloads.\nBitte loggen Sie sich im entsprechenden Fenster ein.&
+Auf Bezahlung warten&
+Auf die Bezahlung Ihrer Bestellung warten.\nWenn Sie bereits bezahlt haben, der Download aber nicht startet, starten Sie Rakshata neu.\nOder kontaktieren Sie uns.&
+Keine Bezahlungen&
+%s wurde nicht bezahlt und kann deswegen nicht herunter geladen werden.&]
 17
 Hauptmenu&
-Wählen sie eine Sektion darauf klicken =)&
 Reader&
 Mehr Mangas downloaden&
-Steuerelemente anzeigen&
-Repository und Manga Datenbank Verwaltung&]
+Hilfe&
+Einstellungen&]
 18
-Verfügbare Mangas&
-Wählen sie das das Projekt aus, indem sie darauf klicken, =)&
-Zum download&]
+VerfÏŒgbare Mangas&
+VerfÏŒgbare Mangas als Download&
 19
-Welches Kapitel wollen sie&
+Kapitel&
+Volumen&
+Welches&
+wollen Sie&
 lesen?&
-hinzufügen?&
-löschen?&
-Ältestes:&
+hinzufÏŒgen?&
+lÏ†schen?&
+Î”ltestes:&
 Neustes&
 Projekt&
 vom&
-Das erste mal, dass sie diesen Manga lesen&
-Zuletzt gelesenes Kapitel&
-Kapitel&
+Das erste mal, dass Sie diesen Manga lesen&
+Zuletzt&
+gelesen:&
 Alle&
-Keine neuen Kapitel verfügbar, später noch einmal&
-versuchen (drücken sie um zum Menü zurückzukommen)&]
+Nichts zum Downloaden&
+Keine neuen Kapitel verfÏŒgbar, spÎ´ter noch einmal versuchen&]
 20
 Initialisierung&
-Größe:&
-Mb&
+GrÏ†Î¯e:&
+MB&
 Geschwindigkeit:&
-Kb/s&
-Schliessung&]
+KB/s&
+SchlieÎ¯en, bitte warten&]
+Analysieren&
 21
 Kapitel&
+Volumen&
 Seite&
-Um in das Menu zurückzukommen&
-drücken sie "Esc"&
-Um dieses Fenster zu schließen&
-die Eingabetaste.&
+Wiederherstellung komplett&
+Rakshata wurde zum Punkt des letzten SchlieÎ¯ens wiederhergstellt.\nWenn Sie zum Hauptmenu wollen, drÏŒcken sie Esc oder drÏŒcken Sie den Button am Ende der Seite.&
+Nicht mehr anzeigen&
+Ok&
 F um den Vollbildmodus zu beenden&
 Q um den Rakshata zu beenden&
-Neue Kapitel&
-sind verfügbar,&
-herunterladen?&
-(Y) Ja | (N) Nein&
-Hauptmenü&
-Manga&
-Auswahl&
-Zu Favoriten&
-hinzufügen&
-Löschung&]
 22
-Downloading&
+Download von&
+Installation von&
+von&
 Kapitel&
-am&
-der Lsite&
-Donwload im Gange, bitte warten&
-Installation im Gange, bitte warten&]
+Volumen&
+Keine wartenden Downloads&
+Keine wartenden Installationen&]
+Fehler traten wÎ´hrend des Prozesses auf&
+Es traten Fehler wÎ´rend des Download auf und/oder bei der Installation.\nWollen Sie den Download das nÎ´chste mal erneut versuchen?&
+Dieser wird beim nÎ´chsten Start des Download Moduls gestartet.&
+Nein&
+Details&
+Ja&
+Fehler&
+WÎ´hrend des Downloads:&
+WÎ´hrend der Installation:&
+Interner Fehler:&
+Interne Fehler:&]
 23
-Hier sind keine Mangas verfügbar, lade welche herunter ;)&
-Eingabetaste oder Maus drücken, um in das Menu zurück zukommen =)&]
+Keine Comics verfÏŒgbar&
+Sie haben noch nichts hinzugefÏŒgt.\nWarum laden Sie sich nicht etwas runter?\nSie kÏ†nnen auch eine Quelle hinzufÏŒgen. :)&]
+Quelle hinzufÏŒgen&
+Download&
+Ok&]
 24
-Keine Internetverbindung :(&
-drücken um ins Menü zurückzukommen&]
+Keine Internet-Verbindung&
+Keine Internet-Verbindung erkannt.\nSie benÏ†tigen wahrscheinlich eine, um einen Download durchzufÏŒhren. ;)\nVersuchen Sie es erneut, wenn eine Verbindung besteht.&]
 25
-Der Manga und Comics Reader&
-Download Modul&]
+Ihr Manga und Comic Reader&
+Download Modul&
+Login Modul&]
 26
 Bitte Mail-Adresse angeben&
 E-Mail:&
 Die Adresse wird an niemanden weitergegeben&
 und wird nur zur Authentifikation verwendet&
-Bitte ein Passwort angeben&
-Bitte das Passwort eingeben&
+[Resgistrierung] - Bitte ein Passwort angeben&
+[Login] - Bitte das Passwort eingeben&
 Passwort:&
 Dieser Account dient zur Authentifikation bei den Rakshata&
 Diensten, es wird niemals etwas versendet&
-/!\ ERROR: E-Mail Adresse abgelehnt /!\&
-/!\ ERROR: Passwort abgelehnt /!\&
-Bitte erneut versuchen und/oder Taiki kontaktieren&
-Hier drücken um es mit einer neuen Mail Adresse erneut zu probieren&
-/!\ Schwerwiegender Fehler /!\&
-/!\ Bitte prüfen, ob der Zugriff auf die Rakshata Website funktioniert /!\&
-/!\ Wenn ja, erneut versuchen, dann Taiki kontaktieren /!\&]
+ERROR: E-Mail Adresse abgelehnt&
+E-Mail Adresse ungÏŒltig&
+Falls Sie nicht wissen warum, kontaktieren Sie&
+uns unter folgender Adresse: contact@rakshata.com&
+ERROR: Password falsch&
+UngÏŒltiges Password&
+Falls Sie es vergessen haben,&
+kontaktieren Sie uns unter contact@rakshata.com mit Ihrer E-Mail Adresse.&
+Schwerwiegender Fehler&
+Î¬berprÏŒfen Sie, ob Rakshata's Website erreichbar ist&
+Wenn ja, probieren Sie es erneut und kontaktieren dann Taiki&]
 27
-/!\ Fehler: Verbindung zum Server fehlgeschlagen. /!\&
-Es muss mindestens einmal eine Verbindung zum Sever auf jedem neuen&
-Computer hergestellt werden, um die Manga Datenbank auszulesen.&
-Bitte prüfen, ob der Zugriff auf die Rakshata Website funktioniert.&]
+Server nicht erreichbar&
+/!\ Fehler: Server nicht erreichbar. /!\\nEine Verbindung wird mindestens ein mal auf jedem\n&
+neuen Computer benÏ†tigt, um die Datenbank abzurufen.\nBitte ÏŒberprÏŒfen Sie, ob Rakshata's Website erreichbar ist&]
 28
 Bitte Account Passwort eingeben&
 Passwort:&]
+29
+Dateiendung benutzen?&
+Wollen Sie, dass Rakshata automatisch beim Î¦ffnen einer .rak Datei benutzt wird? (was ein automatischen HinzufÏŒgen einer Quelle bringt)?&
+Akzeptieren&
+Ablehnen&]
+30
+Rakshata gefunden&
+neu&
+neu&
+verfÏŒgbar&
+verfÏŒgbar&
+Kapitel&
+Volumen&
+herunterzuladen&
+Wollen Sie den Download starten?&
+Download&
+Ja&]
+31
+Suche bezahlte Inhalte&
+Sie haben Inhalte fÏŒr %d.%d Euro ausgewÎ´hlt&
+Wollen Sie zur Bezahlung weitergeleitet werden&
+Falls nicht, wird der Download abgebrochen.&
+Ja&
+Nein&]

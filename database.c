@@ -169,7 +169,7 @@ void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
     free(mangaDB);
 }
 
-int alreadyRefreshed = -5*60000;
+int alreadyRefreshed;
 void updateDataBase(bool forced)
 {
     MUTEX_LOCK(mutex);
@@ -182,6 +182,11 @@ void updateDataBase(bool forced)
 	}
     else
         MUTEX_UNLOCK(mutex);
+}
+
+void resetUpdateDBCache()
+{
+    alreadyRefreshed = -5*60000;
 }
 
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)

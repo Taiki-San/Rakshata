@@ -212,7 +212,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
             getPasswordArchive(zipFileName, password);
             if(!password[0])
             {
-                ret_value = -1;
+                ret_value = 1;
                 goto quit;
             }
         }
@@ -291,7 +291,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
                 for(i = 0; nomPage[i]; free(nomPage[i++]));
                 free(nomPage);
             }
-            ret_value = -1;
+            ret_value = 1;
             goto quit;
         }
 

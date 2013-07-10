@@ -70,6 +70,7 @@ MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangaDB, size_t length);
 void updateDataBase(bool forced);
+void resetUpdateDBCache();
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
 bool checkValidationRepo(char *bufferDL, int isPaid);
 void update_repo();

@@ -750,12 +750,12 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
             return IMG_LoadTexture(rendererVar, MDL_ICON_INSTALL);
             break;
         }
-        case MDL_CODE_INSTALL_OVER:
+        case MDL_CODE_WAITING_PAY:
         {
             return IMG_LoadTexture(rendererVar, MDL_ICON_TO_PAY);
             break;
         }
-        case MDL_CODE_WAITING_PAY:
+        case MDL_CODE_INSTALL_OVER:
         {
             return IMG_LoadTexture(rendererVar, MDL_ICON_OVER);
             break;
