@@ -34,10 +34,10 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         texture = TTF_Write(renderer, police, texte[i], couleurTexte);
         if(texture == NULL)
             continue;
-        if(i % 2 == 0) //Colonne de gauche
-            position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
-        else
+        if(i & 1) //Colonne de droite (i impaire)
             position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texture->w / 2;
+        else
+            position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
         position.y = hauteurBloc + ((texture->h + sizeInterligne) * (i / 2 + 1));
         position.h = texture->h;
         position.w = texture->w;
