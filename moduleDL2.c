@@ -437,6 +437,30 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     quit_thread(0);
 }
 
+/**
+*   Outputs possible du RSP
+*   checkCompteExist()
+*   	invalid_data        internal_error      account_not_found
+*   	several_results   	bad_login_infos
+*
+*   getEditorDatas()
+*   	invalid_data       	internal_error
+*   	editor_not_found   	too_much_results
+*
+*   RSP-1.php
+*   	invalid_request   	token_invalid
+*   	project_not_found  	chapter_not_found
+*
+*   RSP-2.php
+*   	invalid_request    	token_invalid
+*   	internal_error   	invalid_account
+*   	to_pay
+*
+*   RSP-3.php
+*   	token_invalid      	invalid_request
+*   	file_not_found
+*/
+
 bool MDLTelechargement(DATA_MOD_DL* input)
 {
     bool output = false;
@@ -462,9 +486,20 @@ bool MDLTelechargement(DATA_MOD_DL* input)
             if(dataDL.length < 50 && dataDL.buf != NULL && !strcmp(input->todoList->datas->team->type, TYPE_DEPOT_3))
             {
                 /*Output du RSP, à gérer*/
+#ifdef DEV_VERSION
                 logR(dataDL.buf);
+#endif
                 if(dataDL.buf != NULL)
+                {
+                    if(!strcmp(dataDL.buf, "invalid_data") || !strcmp(dataDL.buf, "internal_error") ||
+                       !strcmp(dataDL.buf, "bad_login_infos") || !strcmp(dataDL.buf, "token_invalid"))
+                    {
+                        free(dataDL.buf);
+                        dataDL.URL = MDL_craftDownloadURL(*input->todoList);
+                        continue;
+                    }
                     free(dataDL.buf);
+                }
                 output = true;
             }
             else if(ret_value != CODE_RETOUR_OK || dataDL.buf == NULL || dataDL.length < 50 || ((dataDL.buf[0] != 'P' || dataDL.buf[1] != 'K') && strncmp(dataDL.buf, "http://", 7) && strncmp(dataDL.buf, "https://", 8)))
