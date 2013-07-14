@@ -22,7 +22,7 @@ int HAUTEUR = 730;
 volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
-char MAIN_SERVER_URL[2][100] = {"rakshata.com", "http://www.apple.com/library/test/success.html"};
+char MAIN_SERVER_URL[2][100] = {"rsp.rakshata.com", "http://www.apple.com/library/test/success.html"};
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
 PALETTE_GLOBALE palette;
@@ -43,6 +43,7 @@ SDL_Renderer *rendererDL = NULL;
         #undef main
     #endif
 #endif
+#include "crypto/crypto.h"
 int main(int argc, char *argv[])
 {
 #ifdef __INTEL_COMPILER

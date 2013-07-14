@@ -125,21 +125,21 @@ void checkUpdate()
 
                     crashTemp(URL, 500);
 #ifdef DEV_VERSION
-                    snprintf(URL, 500, "http://www.%s/update/dev/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://%s/update/dev/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
 #else
     #ifdef _WIN32
-                    snprintf(URL, 500, "http://www.%s/update/win32/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://%s/update/win32/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
     #else
         #ifdef __APPLE__
-                    snprintf(URL, 500, "http://www.%s/update/OSX/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://%s/update/OSX/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
         #else
-                    snprintf(URL, 500, "http://www.%s/update/linux/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://%s/update/linux/files/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, files[i]);
         #endif
     #endif
 #endif
                     crashTemp(temp, TAILLE_BUFFER);
                     ustrcpy(temp, files[i]);
-                    download_disk(URL, NULL, temp, 0);
+                    download_disk(URL, NULL, temp, 1);
 
                     if(action[i][0] == 'P')
                     {

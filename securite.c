@@ -316,7 +316,7 @@ void getPasswordArchive(char *fileName, char password[300])
         free(fileNameWithoutDirectory);
         return;
     }
-    snprintf(URL, 50+strlen(MAIN_SERVER_URL[0])+strlen(COMPTE_PRINCIPAL_MAIL)+strlen(fileNameWithoutDirectory)+strlen(hash), "https://rsp.%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
+    snprintf(URL, 50+strlen(MAIN_SERVER_URL[0])+strlen(COMPTE_PRINCIPAL_MAIL)+strlen(fileNameWithoutDirectory)+strlen(hash), "https://%s/get_archive_name.php?account=%s&file=%s&hash=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
 
     free(fileNameWithoutDirectory);
 
@@ -352,10 +352,10 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA25
     if(!checkNetworkState(CONNEXION_OK))
         return;
 
-    snprintf(temp, 350, "http://www.%s/System/killswitch", MAIN_SERVER_URL[0]);
+    snprintf(temp, 350, "https://%s/killswitch", MAIN_SERVER_URL[0]);
 
     crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1);
-    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 0);
+    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 1);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;

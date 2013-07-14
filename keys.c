@@ -580,7 +580,7 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
 {
     int i = 0, j = 0;
     char temp[100], serverTime[300];
-    snprintf(temp, 100, "https://rsp.%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
+    snprintf(temp, 100, "https://%s/time.php", MAIN_SERVER_URL[0]); //On salte avec l'heure du serveur
     crashTemp(serverTime, 300);
     download_mem(temp, NULL, serverTime, 300, 1);
 
@@ -615,7 +615,7 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    snprintf(URL, 300, "https://rsp.%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
+    snprintf(URL, 300, "https://%s/login.php?request=1&mail=%s", MAIN_SERVER_URL[0], adresseEmail); //Constitution de l'URL
 
     crashTemp(buffer_output, 500);
     download_mem(URL, NULL, buffer_output, 500, 1);
@@ -667,7 +667,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    snprintf(URL, 300, "https://rsp.%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
+    snprintf(URL, 300, "https://%s/login.php?request=%d&mail=%s&pass=%s", MAIN_SERVER_URL[0], 2+login, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
     download_mem(URL, NULL, buffer_output, 500, 1);
 
@@ -817,7 +817,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     MajToMin(randomKeyHex);
     randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
-    snprintf(temp, 1024, "https://rsp.%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+    snprintf(temp, 1024, "https://%s/newMK.php?account=%s&key=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
     crashTemp(buffer_dl, 500);
     download_mem(temp, NULL, buffer_dl, 500, 1);
@@ -848,7 +848,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
             randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 
-            snprintf(temp, 1024, "https://rsp.%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+            snprintf(temp, 1024, "https://%s/confirmMK.php?account=%s&key=%s", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
             crashTemp(buffer_dl, 500);
             download_mem(temp, NULL, buffer_dl, 500, 1);
@@ -898,7 +898,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     int i = 0, j = 0;
     char temp[400];
     char buffer_dl[500];
-    snprintf(temp, 400, "https://rsp.%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
+    snprintf(temp, 400, "https://%s/recoverMK.php?account=%s&ver=1", MAIN_SERVER_URL[0], COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);
