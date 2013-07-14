@@ -300,8 +300,6 @@ int logon()
     {
 		int i = 0, login = 0;
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
-
-        retry = 0;
         crashTemp(adresseEmail, 100);
 
         SDL_RenderClear(renderer);

@@ -74,7 +74,7 @@
     #define THREAD_TYPE pthread_t
     #define MUTEX_VAR pthread_mutex_t
     #define MUTEX_LOCK(a) pthread_mutex_lock(&a)
-    #define MUTEX_UNLOCK(a) pthread_mutex_unlock(&a))
+    #define MUTEX_UNLOCK(a) pthread_mutex_unlock(&a)
     #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
 
     #ifdef __APPLE__

@@ -31,7 +31,7 @@ void mainMDL()
     int i = 0;
     int nombreElementDrawn;
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
-    DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED ***));
+    DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
     THREAD_TYPE threadData;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
     SDL_Event event;
@@ -285,21 +285,28 @@ void mainDLProcessing(DATA_LOADED *** todoList)
 
 void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historiqueTeam)
 {
-    MDL_HANDLER_ARG* argument = malloc(sizeof(MDL_HANDLER_ARG));
-    if(argument == NULL)
+    if(todoList[posElement] != NULL)
     {
-        memoryError(sizeof(MDL_HANDLER_ARG));
-        return;
+        MDL_HANDLER_ARG* argument = malloc(sizeof(MDL_HANDLER_ARG));
+        if(argument == NULL)
+        {
+            memoryError(sizeof(MDL_HANDLER_ARG));
+            return;
+        }
+        *status[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
+        argument->todoList = todoList[posElement];
+        argument->currentState = status[posElement];
+        argument->historiqueTeam = historiqueTeam;
+        if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
+            argument->isTomeAndLastElem = true;
+        else
+            argument->isTomeAndLastElem = false;
+        createNewThread(MDLHandleProcess, argument);
     }
-    *status[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
-    argument->todoList = todoList[posElement];
-    argument->currentState = status[posElement];
-    argument->historiqueTeam = historiqueTeam;
-    if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
-        argument->isTomeAndLastElem = true;
     else
-        argument->isTomeAndLastElem = false;
-    createNewThread(MDLHandleProcess, argument);
+    {
+        *status[posElement] = MDL_CODE_INTERNAL_ERROR;
+    }
 }
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
@@ -325,7 +332,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     argument.todoList = &todoListTmp;
     todoListTmp.datas = input.todoList->datas;
     listDL = calloc(nombreElement, sizeof(void*));
-    listSizeDL = calloc(nombreElement, sizeof(size_t*));
+    listSizeDL = calloc(nombreElement, sizeof(size_t));
 
     if(listDL == NULL || listSizeDL == NULL)
     {
@@ -341,6 +348,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 
     for(i = 1; i <= nombreElement; i++)
     {
+        todoListTmp.listChapitreOfTome = NULL;
+        todoListTmp.tomeName = NULL;
         if(!subFolder) {
             todoListTmp.chapitre = input.todoList->chapitre;
             todoListTmp.subFolder = false;
@@ -641,7 +650,6 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
             }
         }
     }
-
     return erreurs != 0;    //0 ou 1
 }
 
@@ -749,7 +757,7 @@ void MDLUpdateIcons(bool ignoreCache)
         }
     }
     SDL_RenderPresent(rendererDL);
-    ReleaseSemaphore (mutexDispIcons, 1, NULL);
+    MUTEX_UNLOCK(mutexDispIcons);
 }
 
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)

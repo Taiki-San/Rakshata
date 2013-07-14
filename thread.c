@@ -13,30 +13,31 @@
 #include "main.h"
 
 #ifdef _WIN32
-typedef struct _UNICODE_STRING {
-  USHORT Length;
-  USHORT MaximumLength;
-  PWSTR  Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
+    typedef struct _UNICODE_STRING {
+      USHORT Length;
+      USHORT MaximumLength;
+      PWSTR  Buffer;
+    } UNICODE_STRING, *PUNICODE_STRING;
 
-typedef struct _OBJECT_ATTRIBUTES {
-  ULONG Length;
-  HANDLE RootDirectory;
-  PUNICODE_STRING ObjectName;
-  ULONG Attributes;
-  PVOID SecurityDescriptor;
-  PVOID SecurityQualityOfService;
-} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+    typedef struct _OBJECT_ATTRIBUTES {
+      ULONG Length;
+      HANDLE RootDirectory;
+      PUNICODE_STRING ObjectName;
+      ULONG Attributes;
+      PVOID SecurityDescriptor;
+      PVOID SecurityQualityOfService;
+    } OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
 
-typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
-FUNC ZwCreateThreadEx;
+    typedef int(__stdcall *FUNC)(HANDLE* hThread,int DesiredAccess,OBJECT_ATTRIBUTES* ObjectAttributes, HANDLE ProcessHandle,void* lpStartAddress,void* lpParameter,unsigned long CreateSuspended_Flags,unsigned long StackZeroBits,unsigned long SizeOfStackCommit,unsigned long SizeOfStackReserve,void* lpBytesBuffer);
+    FUNC ZwCreateThreadEx;
 
-#ifdef DEV_VERSION
-    #define SECURE_THREADS 0x0
+    #ifdef DEV_VERSION
+        #define SECURE_THREADS 0x0
+    #else
+        #define SECURE_THREADS 0x4
+    #endif
 #else
-    #define SECURE_THREADS 0x4
-#endif
-
+    #include <errno.h>
 #endif
 
 void createNewThread(void *function, void *arg)

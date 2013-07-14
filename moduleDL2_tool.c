@@ -246,7 +246,7 @@ DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNew
             if(currentList[research] == NULL)
                 continue;
 
-            else if(currentList[research]->datas != currentList[curPos]->datas)
+            else if(currentList[curPos] == NULL || currentList[research]->datas != currentList[curPos]->datas)
                 break;
 
             else if(MDLCheckDuplicate(currentList[research], currentList[curPos]))

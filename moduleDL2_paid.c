@@ -105,6 +105,8 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                 else
                                     free(statusLocal);
                             }
+                            else
+                                free(statusLocal);
                         }
                     }
                 }

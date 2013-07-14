@@ -49,6 +49,8 @@ void mainRakshata()
             continuer = ecranAccueil();
             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         }
+        else
+            continuer = PALIER_DEFAULT;
     }
 
     while(continuer > PALIER_QUIT)
@@ -216,7 +218,10 @@ int mainLecture()
 int mainChoixDL()
 {
     bool autoSelect = false;
-    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1, pageChapitre = 1;
+    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1;
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
+    int pageChapitre = 1;
+#endif
     mkdirR("manga");
     initialisationAffichage();
 
@@ -257,10 +262,10 @@ int mainChoixDL()
             else if(mangaChoisis > PALIER_DEFAULT)
             {
                 bool isTome;
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 chapitreChoisis = PALIER_DEFAULT;
                 continuer = PALIER_DEFAULT;
                 pageChapitre = 1;
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
 #endif
@@ -272,9 +277,13 @@ int mainChoixDL()
                     }
                     else
                     {
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                         curPage = pageChapitre;
+#endif
                         chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                         pageChapitre = curPage;
+#endif
                     }
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
