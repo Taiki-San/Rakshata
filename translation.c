@@ -129,20 +129,26 @@ int changementLangue()
 
     /*On lance la boucle d'affichage*/
     texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
-    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-    position.y = HAUTEUR_MENU_LANGUE;
-    position.h = texteAAfficher->h;
-    position.w = texteAAfficher->w;
-    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-    SDL_DestroyTextureS(texteAAfficher);
+    if(texteAAfficher != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+        position.y = HAUTEUR_MENU_LANGUE;
+        position.h = texteAAfficher->h;
+        position.w = texteAAfficher->w;
+        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+        SDL_DestroyTextureS(texteAAfficher);
+    }
 
     texteAAfficher = TTF_Write(renderer, police, menus[NOMBRE_LANGUE+1], couleurTexte);
-    position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-    position.y = WINDOW_SIZE_H - texteAAfficher->h;
-    position.h = texteAAfficher->h;
-    position.w = texteAAfficher->w;
-    SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-    SDL_DestroyTextureS(texteAAfficher);
+    if(texteAAfficher != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
+        position.y = WINDOW_SIZE_H - texteAAfficher->h;
+        position.h = texteAAfficher->h;
+        position.w = texteAAfficher->w;
+        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+        SDL_DestroyTextureS(texteAAfficher);
+    }
     TTF_CloseFont(police);
 
     j = displayMenu(&(menus[1]), NOMBRE_LANGUE, HAUTEUR_TEXTE_LANGUE);

@@ -73,7 +73,7 @@ int waitEnter(SDL_Renderer* rendererVar)
     return i;
 }
 
-int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, bool allowedToQuitWithEscape, int startFromX, int startFromY)
+int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, int startFromX, int startFromY)
 {
     int i = 0, epaisseur = 0;
     char affiche[LONGUEUR_URL + 10];
@@ -130,13 +130,13 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                             retour[i--] = 0;
                             if(i >= 0)
                                 retour[i] = 0;
-                            else if(allowedToQuitWithEscape)
+                            else
                             {
                                 TTF_CloseFont(police);
                                 return PALIER_CHAPTER;
                             }
                         }
-                        else if(allowedToQuitWithEscape)
+                        else
                         {
                             TTF_CloseFont(police);
                             return PALIER_CHAPTER;
@@ -192,62 +192,37 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                 break;
         }
 
-        if(!startFromX && i < nombreMax)
-        {
-            if(showTyped)
-                snprintf(affiche, LONGUEUR_URL + 10, "-> %s <-", retour);
-            else
-            {
-                int nmbr = 0;
-                char temp[100];
-                for(; nmbr < i; temp[nmbr++] = '*');
-                temp[nmbr] = 0;
-                snprintf(affiche, LONGUEUR_URL + 10, "%s", temp);
-            }
+        if(i >= nombreMax)
+            break;
 
-            numero = TTF_Write(rendererVar, police, affiche, couleurTexte);
+        if(showTyped)
+            snprintf(affiche, LONGUEUR_URL + 10, "%s%s%s", (startFromX ? "-> " : ""), retour, (startFromX ? " <-" : ""));
+
+        else {
+            int nbr;
+            for(nbr = 0; nbr < i && nbr < LONGUEUR_URL+10-1; affiche[nbr++] = '*'); //+10-1 pour le \0 final
+            affiche[nbr] = 0;
         }
-        else if(i < nombreMax)
-        {
-            if(showTyped)
-                numero = TTF_Write(rendererVar, police, retour, couleurTexte);
-            else
-            {
-                int nmbr = 0;
-                char temp[100];
-                for(; nmbr < i && nmbr < 100; temp[nmbr++] = '*');
-                temp[nmbr] = 0;
-                numero = TTF_Write(rendererVar, police, temp, couleurTexte);
-            }
-        }
+
+        numero = TTF_Write(rendererVar, police, affiche, couleurTexte);
+        if(numero == NULL)
+            continue;
+
         if(startFromY)
             position.y = startFromY;
         else
             position.y = WINDOW_SIZE_H / 2;
-        applyBackground(rendererVar, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
 
         if(!startFromX)
-        {
-            if(numero != NULL)
-            {
-                position.x = WINDOW_SIZE_W / 2 - numero->w / 2;
-                position.y = WINDOW_SIZE_H / 2;
-            }
-        }
+            position.x = WINDOW_SIZE_W / 2 - numero->w / 2;
         else
-        {
             position.x = startFromX;
-            position.y = startFromY;
-        }
 
-        if(numero != NULL && numero->w && numero->h) //Si il y a quelquechose d'écrit
-        {
-            position.h = numero->h;
-            position.w = numero->w;
-            SDL_RenderCopy(rendererVar, numero, NULL, &position);
-            SDL_DestroyTextureS(numero);
-
-        }
+        applyBackground(rendererVar, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
+        position.h = numero->h;
+        position.w = numero->w;
+        SDL_RenderCopy(rendererVar, numero, NULL, &position);
+        SDL_DestroyTextureS(numero);
         SDL_RenderPresent(rendererVar);
     }
     TTF_CloseFont(police);

@@ -206,15 +206,15 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
         snprintf(texte[0], TRAD_LENGTH, "Chargement - Loading");
 
     texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
-    if(texteAffiche == NULL)
-        return;
-
-    position.x = w / 2 - texteAffiche->w / 2;
-    position.y = h / 2 - texteAffiche->h / 2;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = w / 2 - texteAffiche->w / 2;
+        position.y = h / 2 - texteAffiche->h / 2;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
     TTF_CloseFont(police);
     SDL_RenderPresent(rendererVar);
 }
@@ -307,19 +307,14 @@ SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, 
     SDL_Texture *texture;
 
     if(font == NULL || text == NULL)
-    {
         return NULL;
-    }
 
     surfText = TTF_RenderText_Blended(font, text, fg);
+    if(surfText == NULL)
+        return NULL;
 
-    if(surfText != NULL)
-    {
-        texture = SDL_CreateTextureFromSurface(render, surfText);
-        SDL_FreeSurfaceS(surfText);
-    }
-    else
-        texture = NULL;
+    texture = SDL_CreateTextureFromSurface(render, surfText);
+    SDL_FreeSurfaceS(surfText);
     return texture;
 }
 

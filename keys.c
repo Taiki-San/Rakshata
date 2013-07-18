@@ -299,57 +299,72 @@ int logon()
     do
     {
 		int i = 0, login = 0;
-        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
         crashTemp(adresseEmail, 100);
 
         SDL_RenderClear(renderer);
+        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
-        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-        position.y = 20;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(renderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
+        if(ligne != NULL)
+        {
+            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+            position.y = 20;
+            position.h = ligne->h;
+            position.w = ligne->w;
+            SDL_RenderCopy(renderer, ligne, NULL, &position);
+            SDL_DestroyTextureS(ligne);
+        }
+        else
+            position.x = 170;
 
         ligne = TTF_Write(renderer, police, trad[1], couleur);
         position.y = 100;
-        beginingOfEmailAdress = position.x + ligne->w + 25;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(renderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
+        if(ligne != NULL)
+        {
+            position.h = ligne->h;
+            position.w = ligne->w;
+            beginingOfEmailAdress = position.x + position.w + 25;
+            SDL_RenderCopy(renderer, ligne, NULL, &position);
+            SDL_DestroyTextureS(ligne);
+        }
+        else
+            beginingOfEmailAdress = 75;
 
         TTF_CloseFont(police);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
         ligne = TTF_Write(renderer, police, trad[2], couleur); //Disclamer
-        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
         position.y += 85;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(renderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
+        if(ligne != NULL)
+        {
+            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+            position.h = ligne->h;
+            position.w = ligne->w;
+            SDL_RenderCopy(renderer, ligne, NULL, &position);
+            SDL_DestroyTextureS(ligne);
+        }
 
         ligne = TTF_Write(renderer, police, trad[3], couleur); //Disclamer
-        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
         position.y += 30;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(renderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
+        if(ligne != NULL)
+        {
+            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+            position.h = ligne->h;
+            position.w = ligne->w;
+            SDL_RenderCopy(renderer, ligne, NULL, &position);
+            SDL_DestroyTextureS(ligne);
+        }
 
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
         do
         {
-            if((i = waitClavier(renderer, adresseEmail, 60, 1, 50, beginingOfEmailAdress, 109)) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
+            if((i = waitClavier(renderer, adresseEmail, 60, 50, beginingOfEmailAdress, 109)) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
                 return PALIER_QUIT;
         }while(i == PALIER_CHAPTER);
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         login = check_login(adresseEmail);
 
@@ -365,54 +380,72 @@ int logon()
                     char password[100];
                     crashTemp(password, 100);
                     /**Leurs codes sont assez proches donc on les regroupes**/
+                    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
                     ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                    position.y = 20;
-                    position.h = ligne->h;
-                    position.w = ligne->w;
-                    SDL_RenderCopy(renderer, ligne, NULL, &position);
-                    SDL_DestroyTextureS(ligne);
+                    if(ligne != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                        position.y = 20;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+                    }
 
                     ligne = TTF_Write(renderer, police, trad[6], couleur);
-                    position.y = 100;
-                    position.x = 50;
-                    beginingOfEmailAdress = position.x + ligne->w + 25;
-                    position.h = ligne->h;
-                    position.w = ligne->w;
-                    SDL_RenderCopy(renderer, ligne, NULL, &position);
-                    SDL_DestroyTextureS(ligne);
+                    if(ligne != NULL)
+                    {
+                        position.x = 50;
+                        position.y = 100;
+                        beginingOfEmailAdress = position.x + ligne->w + 25;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+                    }
 
                     TTF_CloseFont(police);
                     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
                     ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
-                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                     position.y += 85;
-                    position.h = ligne->h;
-                    position.w = ligne->w;
-                    SDL_RenderCopy(renderer, ligne, NULL, &position);
-                    SDL_DestroyTextureS(ligne);
+                    if(ligne != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+                    }
 
                     ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
-                    position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
                     position.y += 30;
-                    position.h = ligne->h;
-                    position.w = ligne->w;
-                    SDL_RenderCopy(renderer, ligne, NULL, &position);
-                    SDL_DestroyTextureS(ligne);
+                    if(ligne != NULL)
+                    {
+                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
+                        position.h = ligne->h;
+                        position.w = ligne->w;
+                        SDL_RenderCopy(renderer, ligne, NULL, &position);
+                        SDL_DestroyTextureS(ligne);
+                    }
+                    TTF_CloseFont(police);
 
                     SDL_RenderPresent(renderer);
                     do
                     {
-                        if((i = waitClavier(renderer, password, 50, ((login==0)?1:0), 1, beginingOfEmailAdress, 109)) == PALIER_QUIT)
+                        if((i = waitClavier(renderer, password, 50, !login, beginingOfEmailAdress, 109)) == PALIER_QUIT)
                             return PALIER_QUIT;
                         else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
                         {
-                            TTF_CloseFont(police);
+                            password[0] = 0;
                             retry = 1;
                             break;
                         }
                     }while(!password[0]);
+
+                    if(!password[0])
+                        break;
+
                     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
                     switch(checkPass(adresseEmail, password, login))
@@ -429,7 +462,6 @@ int logon()
                         case 1: //Accepted
                         {
                             char temp[200];
-                            TTF_CloseFont(police);
 
                             for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100 && adresseEmail[beginingOfEmailAdress]; beginingOfEmailAdress++)
                                 COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
@@ -439,6 +471,7 @@ int logon()
                             addToPref(SETTINGS_EMAIL_FLAG, temp);
                             removeR(SECURE_DATABASE);
                             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
+                            retry = 0;
                             break;
                         }
                         default: //Else -> erreure critique, me contacter/check de la connexion/du site
@@ -511,47 +544,60 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-    position.x = w / 2 - ligne->w / 2;
-    position.y = 20;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
+    if(ligne != NULL)
+    {
+        position.x = w / 2 - ligne->w / 2;
+        position.y = 20;
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
+    }
 
     ligne = TTF_Write(currentRenderer, police, trad[6], couleur);
-    position.y = 100;
-    position.x = 50;
-    xPassword = position.x + ligne->w + 25;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
+    if(ligne != NULL)
+    {
+        position.y = 100;
+        position.x = 50;
+        xPassword = position.x + ligne->w + 25;
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
+    }
+    else
+        xPassword = 50 + LARGEUR_MOYENNE_MANGA_GROS + 25;
 
     TTF_CloseFont(police);
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
-    position.x = w / 2 - ligne->w / 2;
-    position.y += 85;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
+    if(ligne != NULL)
+    {
+        position.x = w / 2 - ligne->w / 2;
+        position.y += 85;
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
+    }
 
     ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
-    position.x = w / 2 - ligne->w / 2;
-    position.y += 30;
-    position.h = ligne->h;
-    position.w = ligne->w;
-    SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-    SDL_DestroyTextureS(ligne);
+    if(ligne != NULL)
+    {
+        position.x = w / 2 - ligne->w / 2;
+        position.y += 30;
+        position.h = ligne->h;
+        position.w = ligne->w;
+        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
+        SDL_DestroyTextureS(ligne);
+    }
     TTF_CloseFont(police);
-
     SDL_RenderPresent(currentRenderer);
 
     while(1)
     {
-        if((ret_value = waitClavier(currentRenderer, password, 50, 0, 1, xPassword, 105)) == PALIER_QUIT)
+        if((ret_value = waitClavier(currentRenderer, password, 50, 0, xPassword, 105)) == PALIER_QUIT)
             return PALIER_QUIT;
 
         else if(ret_value == 0 && checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
@@ -672,6 +718,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     minToMaj(buffer_output);
     snprintf(URL, 300, "%s-access_granted", hash2);
     sha256_legacy(URL, hash3);
+    hash3[2*SHA256_DIGEST_LENGTH] = 0;
 
     if(!strcmp(buffer_output, hash3)) //access granted
     {

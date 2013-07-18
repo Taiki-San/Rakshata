@@ -75,17 +75,25 @@ void checkUpdate()
 
         loadTrad(trad, 12); //Chargement du texte puis écriture
         infosAvancement = TTF_Write(renderer, police, trad[0], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-        position.y = 20;
-        position.h = infosAvancement->h;
-        position.w = infosAvancement->w;
-        SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-        SDL_DestroyTextureS(infosAvancement);
+        if(infosAvancement != NULL)
+        {
+            position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
+            position.y = 20;
+            position.h = infosAvancement->h;
+            position.w = infosAvancement->w;
+            SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
+            SDL_DestroyTextureS(infosAvancement);
+        }
         infosAvancement = TTF_Write(renderer, police, trad[1], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-        position.y = 20 + infosAvancement->h + INTERLIGNE;
-        SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-        SDL_DestroyTextureS(infosAvancement);
+        if(infosAvancement != NULL)
+        {
+            position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
+            position.y = 20 + infosAvancement->h + INTERLIGNE;
+            position.h = infosAvancement->h;
+            position.w = infosAvancement->w;
+            SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
+            SDL_DestroyTextureS(infosAvancement);
+        }
         TTF_CloseFont(police);
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
@@ -96,12 +104,15 @@ void checkUpdate()
             applyBackground(renderer, 0, 150, WINDOW_SIZE_W, 100);
             snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
             infosAvancement = TTF_Write(renderer, police, temp, couleurTexte);
-            position.h = infosAvancement->h;
-            position.w = infosAvancement->w;
-            position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-            position.y = 200;
-            SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-            SDL_DestroyTextureS(infosAvancement);
+            if(infosAvancement != NULL)
+            {
+                position.h = infosAvancement->h;
+                position.w = infosAvancement->w;
+                position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
+                position.y = 200;
+                SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
+                SDL_DestroyTextureS(infosAvancement);
+            }
             SDL_RenderPresent(renderer);
 
             /*Application du playload*/

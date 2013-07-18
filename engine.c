@@ -211,13 +211,16 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                         texture = TTF_Write(renderer, police, "\\", couleurTexte);
                         break;
                 }
-                position.x = 25 - texture->w / 2;
-                position.y = 25 - texture->h / 2;
-                position.h = texture->h;
-                position.w = texture->w;
-                applyBackground(renderer, 5, 5, 50, 50);
-                SDL_RenderCopy(renderer, texture, NULL, &position);
-                SDL_DestroyTextureS(texture);
+                if(texture != NULL)
+                {
+                    position.x = 25 - texture->w / 2;
+                    position.y = 25 - texture->h / 2;
+                    position.h = texture->h;
+                    position.w = texture->w;
+                    applyBackground(renderer, 5, 5, 50, 50);
+                    SDL_RenderCopy(renderer, texture, NULL, &position);
+                    SDL_DestroyTextureS(texture);
+                }
                 SDL_RenderPresent(renderer);
                 time_since_refresh = SDL_GetTicks();
             }
@@ -375,7 +378,10 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
                 continue;
 
             texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
-            if(texte->w >= longueurElement + 10)
+
+            if(texte == NULL)
+                continue;
+            else if(texte->w >= longueurElement + 10)
             {
                 int length = strlen(input[i].stringToDisplay), lettreToRemove, widthDrawn = texte->w;
                 char temp[LONGUEUR_NOM_MANGA_MAX];
@@ -386,8 +392,9 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
                 snprintf(temp, LONGUEUR_NOM_MANGA_MAX, "%s...", temp);
                 SDL_DestroyTextureS(texte);
                 texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
+                if(texte == NULL)
+                    continue;
             }
-
             position.h = texte->h;
             position.w = texte->w < longueurElement ? texte->w : longueurElement;
 
@@ -1202,13 +1209,16 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
     applyBackground(renderer, 0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
 
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
-    position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
-    position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
-    position.h = texte->h;
-    position.w = texte->w;
+    if(texte != NULL)
+    {
+        position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
+        position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
+        position.h = texte->h;
+        position.w = texte->w;
 
-    SDL_RenderCopy(renderer, texte, NULL, &position);
-    SDL_DestroyTextureS(texte);
+        SDL_RenderCopy(renderer, texte, NULL, &position);
+        SDL_DestroyTextureS(texte);
+    }
 
     for(i = 0; i < 8; i++)
     {
@@ -1225,10 +1235,13 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
         }
         else
             position.x += LARGEUR_COLONNE_BOUTON_RESTRICTION;
-        position.h = texte->h;
-        position.w = texte->w;
-        SDL_RenderCopy(renderer, texte, NULL, &position);
-        SDL_DestroyTextureS(texte);
+        if(texte != NULL)
+        {
+            position.h = texte->h;
+            position.w = texte->w;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTextureS(texte);
+        }
     }
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);

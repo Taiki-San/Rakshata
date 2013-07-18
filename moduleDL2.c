@@ -261,6 +261,9 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
             if(dataPos < nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
             {
+#ifdef __APPLE__
+                SDL_Delay(250);
+#endif
                 MDLDispDownloadHeader((*todoList)[dataPos]);
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
             }

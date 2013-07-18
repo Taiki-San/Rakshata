@@ -34,12 +34,15 @@ int affichageMenuGestion()
     loadTrad(menus, 3);
 
     texteAffiche = TTF_Write(renderer, police, menus[0], couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = HAUTEUR_TEXTE;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = HAUTEUR_TEXTE;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
     TTF_CloseFont(police);
 
     return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);

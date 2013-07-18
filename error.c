@@ -144,11 +144,14 @@ int showError()
     {
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
         texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-        position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
+        if(texteAAfficher != NULL)
+        {
+            position.x = (WINDOW_SIZE_W / 2) - (texteAAfficher->w / 2);
+            position.h = texteAAfficher->h;
+            position.w = texteAAfficher->w;
+            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
+            SDL_DestroyTextureS(texteAAfficher);
+        }
     }
 
     TTF_CloseFont(police);

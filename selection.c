@@ -136,15 +136,19 @@ int checkProjet(MANGAS_DATA mangaDB)
         SDL_DestroyTextureS(image);
 
 		image = TTF_Write(renderer, police, texte[0], couleur);
-        position.x = LARGEUR / 2 - image->w / 2;
-        position.y = HAUTEUR_INFOSPNG / 2 - image->h / 2;
-        position.h = image->h;
-        position.w = image->w;
-        SDL_RenderCopy(renderer, image, NULL, &position);
-        SDL_DestroyTextureS(image);
-        TTF_CloseFont(police);
-
-        return waitEnter(renderer);
+		if(image != NULL)
+        {
+            position.x = LARGEUR / 2 - image->w / 2;
+            position.y = HAUTEUR_INFOSPNG / 2 - image->h / 2;
+            position.h = image->h;
+            position.w = image->w;
+            SDL_RenderCopy(renderer, image, NULL, &position);
+            SDL_DestroyTextureS(image);
+            TTF_CloseFont(police);
+            return waitEnter(renderer);
+        }
+        else
+            TTF_CloseFont(police);
     }
     return 1;
 }

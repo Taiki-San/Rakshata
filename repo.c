@@ -172,7 +172,7 @@ int ajoutRepo(bool ajoutParFichier)
 
                 /*On attend l'URL*/
                 crashTemp(teams.URL_depot, LONGUEUR_URL);
-                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 1, 0, 0);
+                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 0, 0);
                 chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
                 if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
@@ -435,12 +435,15 @@ int deleteRepo()
     loadTrad(texteTrad, 15);
 
     texteAffiche = TTF_Write(renderer, police, texteTrad[0], couleur);
-    position.y = HAUTEUR_TEXTE;
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.y = HAUTEUR_TEXTE;
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
 
     curPage = 1;
     teamChoisis = engineCore(data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
@@ -530,30 +533,39 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     loadTrad(texte, 4);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = HAUTEUR_MENU_CONFIRMATION_SUPPRESSION;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = HAUTEUR_MENU_CONFIRMATION_SUPPRESSION;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
 
     texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = HAUTEUR_CONSIGNES_CONFIRMATION_SUPPRESSION;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = HAUTEUR_CONSIGNES_CONFIRMATION_SUPPRESSION;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
 
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     texteAffiche = TTF_Write(renderer, police, team, couleur);
-    position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-    position.y = HAUTEUR_TEAM_CONFIRMATION_SUPPRESSION;
-    position.h = texteAffiche->h;
-    position.w = texteAffiche->w;
-    SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-    SDL_DestroyTextureS(texteAffiche);
+    if(texteAffiche != NULL)
+    {
+        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
+        position.y = HAUTEUR_TEAM_CONFIRMATION_SUPPRESSION;
+        position.h = texteAffiche->h;
+        position.w = texteAffiche->w;
+        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
+        SDL_DestroyTextureS(texteAffiche);
+    }
 
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);

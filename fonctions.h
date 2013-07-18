@@ -140,7 +140,7 @@ void checkSectionMessageUpdate();
 /**IO.c**/
 int nombreEntree(char input);
 int waitEnter(SDL_Renderer* rendererVar);
-int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, bool allowedToQuitWithEscape, int startFromX, int startFromY);
+int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, int startFromX, int startFromY);
 int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 
 /**Keys.c**/
