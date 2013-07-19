@@ -196,7 +196,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
             break;
 
         if(showTyped)
-            snprintf(affiche, LONGUEUR_URL + 10, "%s%s%s", (startFromX ? "-> " : ""), retour, (startFromX ? " <-" : ""));
+            snprintf(affiche, LONGUEUR_URL + 10, "%s%s%s", (startFromX ? "" : "-> "), retour, (startFromX ? "" : " <-"));
 
         else {
             int nbr;
