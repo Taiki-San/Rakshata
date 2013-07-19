@@ -262,7 +262,13 @@
 
                         /* Type declarations */
 
-#define OF(args)  args
+#ifndef OF /* function prototypes */
+#  ifdef STDC
+#    define OF(args)  args
+#  else
+#    define OF(args)  ()
+#  endif
+#endif
 
 #ifndef Z_ARG /* function prototypes for stdarg */
 #  if defined(STDC) || defined(Z_HAVE_STDARG_H)
@@ -323,11 +329,8 @@
 #    include <windows.h>
      /* No need for _export, use ZLIB.DEF instead. */
      /* For complete Windows compatibility, use WINAPI, not __stdcall. */
-#    ifdef WIN32
-#      define ZEXPORTVA WINAPIV
-#    else
-#      define ZEXPORTVA FAR CDECL
-#    endif
+#    define ZEXPORT
+#    define ZEXPORTVA
 #  endif
 #endif
 
@@ -343,10 +346,14 @@
 #  endif
 #endif
 
-#ifndef ZEXTERN
-#  define ZEXTERN extern
+#ifdef ZEXTERN
+#undef ZEXTERN
 #endif
+#define ZEXTERN
+
+#ifndef ZEXPORT
 #  define ZEXPORT
+#endif
 #ifndef ZEXPORTVA
 #  define ZEXPORTVA
 #endif
@@ -358,8 +365,8 @@
 #if !defined(__MACTYPES__)
 typedef unsigned char  Byte;  /* 8 bits */
 #endif
-#define uInt unsigned int  /* 16 bits or more */
-#define uLong unsigned long /* 32 bits or more */
+typedef unsigned int   uInt;  /* 16 bits or more */
+typedef unsigned long  uLong; /* 32 bits or more */
 
 #ifdef SMALL_MEDIUM
    /* Borland C/C++ and some old MSC versions ignore FAR inside typedef */

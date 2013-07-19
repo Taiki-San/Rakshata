@@ -44,7 +44,6 @@
 			<Add option="-static" />
 			<Add library="mingw32" />
 			<Add library="libSDL_image.a" />
-			<Add library="libjpeg.a" />
 			<Add library="libSDL.a" />
 			<Add library="libSDL_ttf.a" />
 			<Add library="libfreetype.a" />
