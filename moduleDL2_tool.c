@@ -760,9 +760,24 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
             return IMG_LoadTexture(rendererVar, MDL_ICON_OVER);
             break;
         }
+        case MDL_CODE_ERROR_DL:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_DOWNLOAD);
+            break;
+        }
+        case MDL_CODE_ERROR_INSTALL:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_INSTALL);
+            break;
+        }
+        case MDL_CODE_INTERNAL_ERROR:
+        {
+            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_GENERAL);
+            break;
+        }
         default:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR);
+            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_DEFAULT);
             break;
         }
     }

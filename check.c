@@ -51,14 +51,17 @@ int check_evt()
     snprintf(nomsATest[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
     snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
     snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
-    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR);
-    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
-    snprintf(nomsATest[31], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
-    snprintf(nomsATest[32], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
-    snprintf(nomsATest[33], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
-    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
-    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DEFAULT);
+    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_GENERAL);
+    snprintf(nomsATest[31], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DOWNLOAD);
+    snprintf(nomsATest[32], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_INSTALL);
+    snprintf(nomsATest[33], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
+    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
+    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
+    snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
+    snprintf(nomsATest[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
+    snprintf(nomsATest[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -131,7 +134,7 @@ int check_evt()
             if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
             {
                 SDL_RenderClear(renderer);
-                snprintf(temp, 200, "Environement incomplet, veuillez patienter (%d/%d fichiers restaures).", i, j);
+                snprintf(temp, 200, "Environnement incomplet, veuillez patienter (%d/%d fichiers restaures).", i, j);
                 message = TTF_Write(renderer, police, temp, couleur);
                 if(message != NULL)
                 {

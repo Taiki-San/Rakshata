@@ -50,7 +50,10 @@
 #define MDLP_HIGHEST_CODE 2
 
 /*Icones*/
-#define MDL_ICON_ERROR "data/icon/e.png"
+#define MDL_ICON_ERROR_DEFAULT "data/icon/e.png"
+#define MDL_ICON_ERROR_GENERAL "data/icon/eg.png"
+#define MDL_ICON_ERROR_DOWNLOAD "data/icon/ed.png"
+#define MDL_ICON_ERROR_INSTALL "data/icon/ei.png"
 #define MDL_ICON_DL "data/icon/dl.png"
 #define MDL_ICON_INSTALL "data/icon/i.png"
 #define MDL_ICON_WAIT "data/icon/w.png"
