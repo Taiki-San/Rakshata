@@ -80,6 +80,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         else
             remove("data/externalLaunch");
     }
+    else
+        dataReader.pageCourante = 0;
 
     positionPage.x = BORDURE_LAT_LECTURE;
     positionSlide.x = positionSlide.y = 0;
@@ -502,7 +504,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             SDL_WaitEvent(&event);
             if(!haveInputFocus(&event, window))
+            {
                 noRefresh = 1;
+                continue;
+            }
 
             switch(event.type)
             {
@@ -756,10 +761,22 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             break;
                         }
 
+                        case SDLK_PAGEDOWN:
+                        {
+                            slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
+                            break;
+                        }
+
                         case SDLK_UP:
                         {
                             slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
                             SDL_Delay(10);
+                            break;
+                        }
+
+                        case SDLK_PAGEUP:
+                        {
+                            slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
 
@@ -964,7 +981,6 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
     FILE* config = NULL;
     dataReader->nombrePageTotale = 1;
 
-    dataReader->pageCourante = 0;
     dataReader->nomPages = dataReader->path = NULL;
     dataReader->pathNumber = dataReader->pageCouranteDuChapitre = dataReader->chapitreTomeCPT = NULL;
 
@@ -1041,6 +1057,8 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
         dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
     }
+    if(dataReader->pageCourante > dataReader->nombrePageTotale)
+        dataReader->pageCourante = dataReader->nombrePageTotale;
     return 0;
 }
 
@@ -1474,9 +1492,10 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
         {
             positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
         }
-        else if(positionPage->h == chapitre->h - positionSlide->y)
-            *noRefresh = 1;
-
+        else
+        {
+            positionPage->h = positionSlide->h = (chapitre->h < WINDOW_SIZE_H) ? chapitre->h : WINDOW_SIZE_H;
+        }
     }
 
     else if(pageTropGrande)
@@ -1521,7 +1540,7 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
         {
             positionSlide->y += move;
         }
-        else if (positionSlide->y > 0)
+        else
         {
             positionSlide->y = chapitre->h - (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE);
         }
