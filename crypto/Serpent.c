@@ -21,12 +21,8 @@
 //
 ///////////////////////////////////////////////
 
-#ifdef _WIN32
-	#include <stdlib.h>
-#else
-	#define _lrotr(x, n)        ((((unsigned long)(x)) >> ((int) ((n) & 31))) | (((unsigned long)(x)) << ((int) ((-(n)) & 31))))
-	#define _lrotl(x, n)        ((((unsigned long)(x)) << ((int) ((n) & 31))) | (((unsigned long)(x)) >> ((int) ((-(n)) & 31))))
-#endif
+#define _lrotr(x, n)        ((((unsigned long)(x)) >> ((int) ((n) & 31))) | (((unsigned long)(x)) << ((int) ((-(n)) & 31))))
+#define _lrotl(x, n)        ((((unsigned long)(x)) << ((int) ((n) & 31))) | (((unsigned long)(x)) >> ((int) ((-(n)) & 31))))
 typedef unsigned long DWORD;
 
 #  define rotr(x,n) _lrotr(x,n)
@@ -515,6 +511,7 @@ void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
     DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
 
     if(key_len > 256)
+
         return;
 
     i = 0; lk = (key_len + 31) / 32;
@@ -534,8 +531,7 @@ void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
         while(i < 8)
             l_key[i++] = 0;
 
-        i = key_len / 32;
-        lk = 1 << key_len % 32;
+        i = key_len / 32; lk = 1 << key_len % 32;
 
         l_key[i] = (l_key[i] & (lk - 1)) | lk;
     }

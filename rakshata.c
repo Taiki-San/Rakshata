@@ -43,7 +43,6 @@ SDL_Renderer *rendererDL = NULL;
         #undef main
     #endif
 #endif
-#include "crypto/crypto.h"
 int main(int argc, char *argv[])
 {
 #ifdef __INTEL_COMPILER
