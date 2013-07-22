@@ -545,7 +545,7 @@ int deleteManga()
 		{
 		    bool isTome;
 			chapitreChoisis = PALIER_DEFAULT;
-			continuer = 0;
+			continuer = PALIER_DEFAULT;
 			while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT && noMoreChapter)
 			{
 			    curPage = pageChapitre;
