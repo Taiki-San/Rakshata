@@ -556,9 +556,9 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
     }
 
     ligne = TTF_Write(currentRenderer, police, trad[6], couleur);
+    position.y = 100;
     if(ligne != NULL)
     {
-        position.y = 100;
         position.x = 50;
         xPassword = position.x + ligne->w + 25;
         position.h = ligne->h;
@@ -573,10 +573,10 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
+    position.y += 85;
     if(ligne != NULL)
     {
         position.x = w / 2 - ligne->w / 2;
-        position.y += 85;
         position.h = ligne->h;
         position.w = ligne->w;
         SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
@@ -584,10 +584,10 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
     }
 
     ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
+    position.y += 30;
     if(ligne != NULL)
     {
         position.x = w / 2 - ligne->w / 2;
-        position.y += 30;
         position.h = ligne->h;
         position.w = ligne->w;
         SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
