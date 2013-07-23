@@ -17,6 +17,8 @@
 	#define SSL_ENABLE
 #endif
 
+static CURLSH* cacheDNS;
+
 static double FILE_EXPECTED_SIZE;
 static double CURRENT_FILE_SIZE;
 static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
@@ -30,6 +32,24 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
+
+void initializeDNSCache()
+{
+    cacheDNS = curl_share_init();
+    if(cacheDNS != NULL)
+        curl_share_setopt(cacheDNS, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
+}
+
+void useDNSCache(CURL* curl)
+{
+    curl_easy_setopt(curl, CURLOPT_SHARE, cacheDNS);
+}
+
+void releaseDNSCache()
+{
+    if(cacheDNS != NULL)
+        curl_share_cleanup(cacheDNS);
+}
 
 int download_UI(TMP_DL *output)
 {
@@ -203,6 +223,7 @@ static void downloader(TMP_DL *output)
         curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, downloadData);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_UI);
+        useDNSCache(curl);
         res = curl_easy_perform(curl);
 
         if(res != CURLE_OK) //Si problème
@@ -266,6 +287,7 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
+    useDNSCache(curl);
     if(SSL_enabled)
     {
         if(adresse[8] == 'r') //RSP

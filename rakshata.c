@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 
     TTF_Quit();
     SDL_Quit();
+    releaseDNSCache();
     MUTEX_DESTROY(mutex_decrypt);
     MUTEX_DESTROY(mutexRS);
     MUTEX_DESTROY(mutex);

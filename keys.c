@@ -162,6 +162,7 @@ int earlyInit(int argc, char *argv[])
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
     loadPalette();
     resetUpdateDBCache();
+    initializeDNSCache();
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

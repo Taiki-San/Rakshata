@@ -84,6 +84,8 @@ void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/
+void initializeDNSCache();
+void releaseDNSCache();
 int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled);
 int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 int checkDLInProgress();
