@@ -515,9 +515,6 @@ int logon()
     return 0;
 }
 
-extern int WINDOW_SIZE_H_DL;
-extern int WINDOW_SIZE_W_DL;
-
 int getPassword(SDL_Renderer *currentRenderer, char password[100])
 {
     int xPassword = 0, resized = 0, ret_value = 0, w = currentRenderer->window->w;

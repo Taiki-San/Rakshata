@@ -314,7 +314,7 @@ void MDLPDispCheckingIfPaid()
 
     loadTrad(trad, 31);
 
-    MUTEX_LOCK(mutexDispIcons);
+    MUTEX_LOCK(mutexTUI);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
@@ -326,14 +326,14 @@ void MDLPDispCheckingIfPaid()
             position.w = texture->w;
             position.x = rendererDL->window->w / 2 - position.w / 2;
             position.y = HAUTEUR_POURCENTAGE;
-            SDL_RenderCopy(rendererDL, texture, NULL, &position);
+            MDLTUICopy(texture, NULL, &position);
             SDL_DestroyTexture(texture);
         }
         TTF_CloseFont(police);
     }
 
-    SDL_RenderPresent(rendererDL);
-    MUTEX_UNLOCK(mutexDispIcons);
+    MDLTUIRefresh();
+    MUTEX_UNLOCK(mutexTUI);
 }
 
 void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
@@ -346,7 +346,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
 
     loadTrad(trad, 31);
 
-    MUTEX_LOCK(mutexDispIcons);
+    MUTEX_LOCK(mutexTUI);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
@@ -414,7 +414,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
         TTF_CloseFont(police);
     }
     SDL_RenderPresent(renderVar);
-    MUTEX_UNLOCK(mutexDispIcons);
+    MUTEX_UNLOCK(mutexTUI);
 }
 
 int MDLPWaitEvent(SDL_Renderer * renderVar)
@@ -462,7 +462,7 @@ int MDLPWaitEvent(SDL_Renderer * renderVar)
 
 void MDLPEraseDispChecking()
 {
-    applyBackground(rendererDL, 0, HAUTEUR_POURCENTAGE-1, rendererDL->window->w, rendererDL->window->h - HAUTEUR_POURCENTAGE);
-    SDL_RenderPresent(rendererDL);
+    MDLTUIBackground(0, HAUTEUR_POURCENTAGE-1, rendererDL->window->w, rendererDL->window->h - HAUTEUR_POURCENTAGE);
+    MDLTUIRefresh();
 }
 

@@ -20,9 +20,9 @@ int nbElemTotal;
 int **status; //Le status des différents elements
 int **statusCache;
 #ifndef _WIN32
-    MUTEX_VAR mutexDispIcons = PTHREAD_MUTEX_INITIALIZER;
+    MUTEX_VAR mutexTUI = PTHREAD_MUTEX_INITIALIZER;
 #else
-    MUTEX_VAR mutexDispIcons;
+    MUTEX_VAR mutexTUI;
 #endif
 
 void mainMDL()
@@ -39,7 +39,7 @@ void mainMDL()
     /*Initialisation*/
 
 #ifdef _WIN32
-    mutexDispIcons = CreateSemaphore (NULL, 1, 1, NULL);
+    mutexTUI = CreateSemaphore (NULL, 1, 1, NULL);
 #endif // _WIN32
 
     loadTrad(trad, 22);
@@ -142,7 +142,7 @@ void mainMDL()
     while(isThreadStillRunning(threadData))
     {
         if(SDL_PollEvent(&event))
-            haveInputFocus(&event, windowDL); //Renvoyer l'evenement si nécessaire
+            haveInputFocus(&event, rendererDL->window); //Renvoyer l'evenement si nécessaire
         SDL_Delay(100);
     }
 
@@ -178,7 +178,7 @@ void mainMDL()
     free(todoList);
     free(statusCache);
     free(status);
-    MUTEX_DESTROY(mutexDispIcons);
+    MUTEX_DESTROY(mutexTUI);
 
 #ifdef _WIN32
     CloseHandle (threadData);
@@ -215,24 +215,12 @@ void MDLLauncher()
     fclose(fileBlocker);
 #endif
 
-    SDL_FlushEvent(SDL_WINDOWEVENT);
-    windowDL = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
-    SDL_FlushEvent(SDL_WINDOWEVENT);
-
-    loadIcon(windowDL);
-    nameWindow(windowDL, 2);
-
-    SDL_FlushEvent(SDL_WINDOWEVENT);
-    rendererDL = setupRendererSafe(windowDL);
-    SDL_FlushEvent(SDL_WINDOWEVENT);
-
-    WINDOW_SIZE_W_DL = LARGEUR;
-    WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
-
-    chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+    createNewThread(MDLUIThread, NULL);
 
     mainMDL();
+
     INSTANCE_RUNNING = 0;
+    MDLTUIQuit();
 
 #ifdef _WIN32
     ReleaseSemaphore (hSem, 1, NULL);
@@ -442,7 +430,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     else
         MDLDispInstallHeader(NULL);
 
-    nameWindow(windowDL, (nombreInstalled*100/nbElemTotal)+2);
+    nameWindow(rendererDL->window, (nombreInstalled*100/nbElemTotal)+2);
     MDLUpdateIcons(false);
     free(listSizeDL);
     free(listDL);
@@ -667,14 +655,14 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    MUTEX_LOCK(mutexDispIcons);
+    MUTEX_LOCK(mutexTUI);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
-    applyBackground(rendererDL, 0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
+    MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
 
     if(police == NULL)
     {
         logR("Failed at initialize font");
-        MUTEX_UNLOCK(mutexDispIcons);
+        MUTEX_UNLOCK(mutexTUI);
         return -1;
     }
 
@@ -701,7 +689,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (nbrElementDisp % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE;
             position.w = texture->w;
             position.h = texture->h;
-            SDL_RenderCopy(rendererDL, texture, NULL, &position);
+            MDLTUICopy(texture, NULL, &position);
             SDL_DestroyTexture(texture);
         }
     }
@@ -720,7 +708,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
                 position.y = MDL_HAUTEUR_DEBUT_CATALOGUE;
                 position.h = texture->h;
                 position.w = texture->w;
-                SDL_RenderCopy(rendererDL, texture, NULL, &position);
+                MDLTUICopy(texture, NULL, &position);
                 SDL_DestroyTexture(texture);
             }
             SDL_FreeSurface(surface);
@@ -728,7 +716,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     }
 
     TTF_CloseFont(police);
-    MUTEX_UNLOCK(mutexDispIcons);
+    MUTEX_UNLOCK(mutexTUI);
     return nbrElementDisp;
 }
 
@@ -739,7 +727,7 @@ void MDLUpdateIcons(bool ignoreCache)
     SDL_Rect position;
     position.h = position.w = MDL_ICON_SIZE;
 
-    MUTEX_LOCK(mutexDispIcons);
+    MUTEX_LOCK(mutexTUI);
 
     for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
@@ -748,20 +736,19 @@ void MDLUpdateIcons(bool ignoreCache)
         {
             position.x = MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
             position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
-#warning "crash sous OSX"
-            SDL_RenderFillRect(rendererDL, &position);
+            MDLTUIBackgroundPreCrafted(&position);
 
             texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
             if(texture != NULL)
             {
-                SDL_RenderCopy(rendererDL, texture, NULL, &position);
+                MDLTUICopy(texture, NULL, &position);
                 SDL_DestroyTexture(texture);
             }
             *statusCache[posDebutPage + posDansPage] = currentStatus;
         }
     }
-    SDL_RenderPresent(rendererDL);
-    MUTEX_UNLOCK(mutexDispIcons);
+    MDLTUIRefresh();
+    MUTEX_UNLOCK(mutexTUI);
 }
 
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
@@ -772,20 +759,19 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    MUTEX_LOCK(mutexDispIcons);
+    MUTEX_LOCK(mutexTUI);
 
     loadTrad(trad, 22);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
-#warning "crash sous OSX"
     if(isInstall)
-        applyBackground(rendererDL, 0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
+        MDLTUIBackground(0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
     else
-        applyBackground(rendererDL, 0, HAUTEUR_TEXTE_TELECHARGEMENT, WINDOW_SIZE_W_DL, HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT);
+        MDLTUIBackground(0, HAUTEUR_TEXTE_TELECHARGEMENT, WINDOW_SIZE_W_DL, HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT);
 
     if(police == NULL)
     {
         logR("Failed at initialize font");
-        MUTEX_UNLOCK(mutexDispIcons);
+        MUTEX_UNLOCK(mutexTUI);
         return;
     }
 
@@ -806,12 +792,12 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
             position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
         position.h = texture->h;
         position.w = texture->w;
-        SDL_RenderCopy(rendererDL, texture, NULL, &position);
+        MDLTUICopy(texture, NULL, &position);
         SDL_DestroyTexture(texture);
-        SDL_RenderPresent(rendererDL);
+        MDLTUIRefresh();
     }
     TTF_CloseFont(police);
-    MUTEX_UNLOCK(mutexDispIcons);
+    MUTEX_UNLOCK(mutexTUI);
 }
 
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
@@ -836,7 +822,7 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     bouton[2].buttonid = 0; //Valeur retournée
     bouton[2].text = trad[10];
     alerte.buttons = bouton;
-    alerte.window = windowDL;
+    alerte.window = rendererDL->window;
     alerte.colorScheme = NULL;
 
     do

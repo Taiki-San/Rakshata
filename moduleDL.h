@@ -117,7 +117,8 @@ typedef struct argument_to_MDL_handler
 
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
-extern MUTEX_VAR mutexDispIcons;
+extern MUTEX_VAR mutexTUI;
+extern SDL_Renderer *rendererDL;
 
 /**Download.c**/
 int download_UI(TMP_DL *output);
@@ -174,6 +175,14 @@ void MDLPDispCheckingIfPaid();
 void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix);
 int MDLPWaitEvent(SDL_Renderer * renderVar);
 void MDLPEraseDispChecking();
+
+/**Module2_UI.c**/
+void MDLUIThread();
+void MDLTUIQuit();
+void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2);
+void MDLTUIBackground(int x, int y, int h, int w);
+void MDLTUIBackgroundPreCrafted(SDL_Rect * pos);
+void MDLTUIRefresh();
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

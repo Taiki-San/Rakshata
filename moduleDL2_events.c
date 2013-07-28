@@ -29,7 +29,7 @@ bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn)
     {
         if(SDL_GetTicks() - time > 1500)
             return false;
-        else if(SDL_PollEvent(&event) && haveInputFocus(&event, windowDL))
+        else if(SDL_PollEvent(&event) && haveInputFocus(&event, rendererDL->window))
             break;
         SDL_Delay(100);
     }
@@ -180,10 +180,10 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             }
 
             alerte.buttons = bouton;
-            alerte.window = windowDL;
+            alerte.window = rendererDL->window;
             alerte.colorScheme = NULL;
             SDL_ShowMessageBox(&alerte, &ret_value);
-            MUTEX_LOCK(mutexDispIcons);
+            MUTEX_LOCK(mutexTUI);
 
             if(*status[pos] == MDL_CODE_DEFAULT)
             {
@@ -259,7 +259,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     }
                 }
             }
-            MUTEX_UNLOCK(mutexDispIcons);
+            MUTEX_UNLOCK(mutexTUI);
             break;
         }
         case MDL_CODE_INSTALL_OVER:
@@ -287,7 +287,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             bouton[1].text = trad[5];
 
             alerte.buttons = bouton;
-            alerte.window = windowDL;
+            alerte.window = rendererDL->window;
             alerte.colorScheme = NULL;
             SDL_ShowMessageBox(&alerte, &ret_value);
             if(ret_value == 1)

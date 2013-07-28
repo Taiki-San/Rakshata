@@ -719,7 +719,7 @@ void lancementModuleDL()
     createNewThread(MDLLauncher, NULL);
     while(1)
     {
-        if(windowDL != NULL)
+        if(rendererDL != NULL)
             break;
         if(SDL_PollEvent(&event))
             SDL_PushEvent(&event);

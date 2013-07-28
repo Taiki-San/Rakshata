@@ -232,52 +232,49 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
 int haveInputFocus(SDL_Event *event, SDL_Window *windows)
 {
     int state = 1;
-    if(windowDL != NULL)
+    switch(event->type)
     {
-        switch(event->type)
+        case SDL_WINDOWEVENT:
         {
-            case SDL_WINDOWEVENT:
-            {
-                if(event->window.windowID != windows->id)
-                    state = 0;
-                break;
-            }
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-            {
-                if(event->key.windowID != windows->id)
-                    state = 0;
-                break;
-            }
+            if(event->window.windowID != windows->id)
+                state = 0;
+            break;
+        }
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+        {
+            if(event->key.windowID != windows->id)
+                state = 0;
+            break;
+        }
 
-            case SDL_MOUSEMOTION:
-            {
-                if(event->motion.windowID != windows->id)
-                    state = 0;
-                break;
-            }
+        case SDL_MOUSEMOTION:
+        {
+            if(event->motion.windowID != windows->id)
+                state = 0;
+            break;
+        }
 
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-            {
-                if(event->button.windowID != windows->id)
-                    state = 0;
-                break;
-            }
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+        {
+            if(event->button.windowID != windows->id)
+                state = 0;
+            break;
+        }
 
-            case SDL_MOUSEWHEEL:
-            {
-                if(event->wheel.windowID != windows->id)
-                    state = 0;
-                break;
-            }
+        case SDL_MOUSEWHEEL:
+        {
+            if(event->wheel.windowID != windows->id)
+                state = 0;
+            break;
+        }
 
-            case SDL_TEXTINPUT:
-            {
-                if(event->text.windowID != windows->id)
-                    state = 0;
-                break;
-            }
+        case SDL_TEXTINPUT:
+        {
+            if(event->text.windowID != windows->id)
+                state = 0;
+            break;
         }
     }
     if(!state)
