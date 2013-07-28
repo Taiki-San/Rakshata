@@ -14,6 +14,7 @@
 
 /*Général*/
 #define LARGEUR 800 //Largeur par défaut
+#define HAUTEUR 730
 #define LARGEUR_MAX 1260
 #define BARRE_DES_TACHES_WINDOWS 75
 #define PERMISSIONS 0755

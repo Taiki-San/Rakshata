@@ -440,10 +440,10 @@ void update_mangas()
                     {
                         snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
 
-                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], CHAPITRE_INDEX);
+                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[curPos], CHAPITRE_INDEX);
                         if(checkFileExist(path))
                             remove(path);
-                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], TOME_INDEX);
+                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[curPos], TOME_INDEX);
                         if(checkFileExist(path))
                             remove(path);
                     }

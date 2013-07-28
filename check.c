@@ -254,15 +254,9 @@ int checkLancementUpdate()
         {
             int i = 0;
             rewind(test);
-            if(test != NULL)
-            {
-                fscanfs(test, "%d", &i);
-                fclose(test);
-                if(checkPID(i))
-                    return 1;
-            }
-            else
-                return 1;
+            fscanfs(test, "%d", &i);
+            fclose(test);
+            return checkPID(i);
         }
         else
             fclose(test);

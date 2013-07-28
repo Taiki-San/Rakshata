@@ -355,8 +355,8 @@ void updateWindowSize(int w, int h)
 
         MUTEX_UNLOCK(mutexRS);
 
-        WINDOW_SIZE_H = window->h;
-        WINDOW_SIZE_W = window->w;
+        WINDOW_SIZE_H = getH(renderer);
+        WINDOW_SIZE_W = getW(renderer);
     }
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);

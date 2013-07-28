@@ -748,6 +748,7 @@ void MDLUpdateIcons(bool ignoreCache)
         {
             position.x = MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
             position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
+#warning "crash sous OSX"
             SDL_RenderFillRect(rendererDL, &position);
 
             texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
@@ -775,7 +776,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
 
     loadTrad(trad, 22);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
-
+#warning "crash sous OSX"
     if(isInstall)
         applyBackground(rendererDL, 0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
     else

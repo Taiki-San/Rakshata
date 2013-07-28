@@ -16,7 +16,6 @@ extern int WINDOW_SIZE_W;
 extern int langue; //Langue
 extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;
-extern int HAUTEUR;
 extern volatile int favorisToDL;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];

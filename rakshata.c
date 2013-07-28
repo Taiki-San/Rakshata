@@ -18,7 +18,6 @@ int WINDOW_SIZE_W = 0;
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
-int HAUTEUR = 730;
 volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;

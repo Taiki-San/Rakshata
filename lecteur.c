@@ -323,8 +323,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
-                WINDOW_SIZE_W = RESOLUTION[0] = window->w;
-                WINDOW_SIZE_H = RESOLUTION[1] = window->h;
+                WINDOW_SIZE_W = RESOLUTION[0] = getW(renderer);
+                WINDOW_SIZE_H = RESOLUTION[1] = getH(renderer);
             }
 
             pageTropGrande = largeurValide > WINDOW_SIZE_W;

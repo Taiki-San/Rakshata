@@ -500,7 +500,7 @@ int lancementExternalBinary(char cheminDAcces[100])
 int checkPID(int PID)
 {
 #ifndef _WIN32
-    int i = 0;
+    
     char temp[TAILLE_BUFFER];
     FILE *test = NULL;
 
@@ -511,20 +511,17 @@ int checkPID(int PID)
     test = popen(temp, "r");
     if(test != NULL)
     {
-        while(fgetc(test) != '\n');
-        for(i = 0; i < 10 && fgetc(test) != EOF; i++);
+        while(fgetc(test) != '\n' && fgetc(test) != EOF);
+        bool out = fgetc(test) == EOF;
         fclose(test);
-        if(i == 10) //Si le PID existe
-            return 0;
-        else
-            return 1;
+        return out;
     }
     #else
 	snprintf(temp, TAILLE_BUFFER, "proc/%d/cwd", PID);
     test = fopenR(temp, "r");
     if(test != NULL) //Si le PID existe
     {
-		int j;
+		int i, j;
         crashTemp(temp, TAILLE_BUFFER);
         for(j = 0; (i = fgetc(test)) != EOF && j < TAILLE_BUFFER; j++)
             temp[j] = i;

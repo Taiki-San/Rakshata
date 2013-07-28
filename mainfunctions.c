@@ -26,8 +26,8 @@ void mainRakshata()
 
     MUTEX_UNLOCK(mutexRS);
 
-    WINDOW_SIZE_W = window->w;
-    HAUTEUR = WINDOW_SIZE_H = window->h;
+    WINDOW_SIZE_W = LARGEUR;
+    WINDOW_SIZE_H = HAUTEUR;
 
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
