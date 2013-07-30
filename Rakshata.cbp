@@ -139,6 +139,9 @@
 		<Unit filename="moduleDL2.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="moduleDL2_UI.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="moduleDL2_events.c">
 			<Option compilerVar="CC" />
 		</Unit>

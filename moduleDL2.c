@@ -146,6 +146,8 @@ void mainMDL()
         SDL_Delay(100);
     }
 
+    MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranqillement
+
     for(i = 0; i < nbElemTotal && (!jobUnfinished || !error); i++) //Si on a déjà trouvé les deux, pas la peine de continuer
     {
         if (*status[i] == MDL_CODE_DEFAULT)
@@ -215,7 +217,10 @@ void MDLLauncher()
     fclose(fileBlocker);
 #endif
 
-    createNewThread(MDLUIThread, NULL);
+    rendererDL = NULL;
+    startMDLUIThread();
+    while(rendererDL == NULL)
+        SDL_Delay(100);
 
     mainMDL();
 
@@ -655,14 +660,12 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    MUTEX_LOCK(mutexTUI);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
     MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
 
     if(police == NULL)
     {
         logR("Failed at initialize font");
-        MUTEX_UNLOCK(mutexTUI);
         return -1;
     }
 
@@ -716,7 +719,6 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     }
 
     TTF_CloseFont(police);
-    MUTEX_UNLOCK(mutexTUI);
     return nbrElementDisp;
 }
 
@@ -727,9 +729,8 @@ void MDLUpdateIcons(bool ignoreCache)
     SDL_Rect position;
     position.h = position.w = MDL_ICON_SIZE;
 
-    MUTEX_LOCK(mutexTUI);
-
-    for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
+    /*RendererDL != NULL au cas où la fenêtre ai été fermée et que Rakshata soit en train de quitter*/
+    for(posDansPage = 0; rendererDL != NULL && posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
         currentStatus = *status[posDebutPage + posDansPage];
         if(currentStatus != *statusCache[posDebutPage + posDansPage] || ignoreCache)
@@ -748,7 +749,6 @@ void MDLUpdateIcons(bool ignoreCache)
         }
     }
     MDLTUIRefresh();
-    MUTEX_UNLOCK(mutexTUI);
 }
 
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
@@ -758,8 +758,6 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     SDL_Rect position;
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
-
-    MUTEX_LOCK(mutexTUI);
 
     loadTrad(trad, 22);
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
@@ -771,7 +769,6 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     if(police == NULL)
     {
         logR("Failed at initialize font");
-        MUTEX_UNLOCK(mutexTUI);
         return;
     }
 
@@ -797,7 +794,6 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         MDLTUIRefresh();
     }
     TTF_CloseFont(police);
-    MUTEX_UNLOCK(mutexTUI);
 }
 
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
