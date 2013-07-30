@@ -177,7 +177,7 @@ int MDLPWaitEvent(SDL_Renderer * renderVar);
 void MDLPEraseDispChecking();
 
 /**Module2_UI.c**/
-void MDLUIThread();
+void startMDLUIThread();
 void MDLTUIQuit();
 void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2);
 void MDLTUIBackground(int x, int y, int h, int w);

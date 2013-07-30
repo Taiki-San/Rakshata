@@ -122,7 +122,7 @@ MANGAS_DATA* miseEnCache(int mode)
 				while((c = *(mangaDB++)) != '#' && c != EOF);
 				if(c == '#')
 					mangaDB--;
-				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://%s/overuse.php?team=%s", MAIN_SERVER_URL[0], teamList[nombreTeam]->teamLong);
+				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://%s/overuse.php?team=%s", SERVEUR_URL, teamList[nombreTeam]->teamLong);
 				crashTemp(bufferOutput, 100);
 				download_mem(temp, NULL, bufferOutput, 100, 1);
 			}
@@ -202,7 +202,7 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
             snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {
@@ -319,7 +319,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             snprintf(temp, 500, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", MAIN_SERVER_URL[0], teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
+            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);//HTTPS_DISABLED
 
         else
         {

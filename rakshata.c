@@ -21,7 +21,6 @@ int THREAD_COUNT = 0;
 volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
 char FONTUSED[300] = FONT_USED_BY_DEFAULT;
-char MAIN_SERVER_URL[2][100] = {"rsp.rakshata.com", "http://www.apple.com/library/test/success.html"};
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
 PALETTE_GLOBALE palette;

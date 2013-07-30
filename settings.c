@@ -314,9 +314,9 @@ char* loadLargePrefs(char flag)
         removeFromPref(flag);
         char temp[200], buffer[65000], buffer2[65100];
         if(flag == SETTINGS_MANGADB_FLAG)
-            snprintf(temp, 200, "https://%s/rec/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, MANGA_DATABASE);
+            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, MANGA_DATABASE);
         else
-            snprintf(temp, 200, "https://%s/rec/%d/%s", MAIN_SERVER_URL[0], CURRENTVERSION, REPO_DATABASE);
+            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, REPO_DATABASE);
 
         crashTemp(buffer, 65000);
         download_mem(temp, NULL, buffer, 65000, 1);

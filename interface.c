@@ -22,7 +22,7 @@ void updateSectionMessage(char messageVersion[5])
     int i = 0, j = 0;
     char URL[200], bufferDL[500], bufferMessage[550];
 
-    snprintf(URL, 200, "https://%s/message.php?OS=%s&version=%d&messageVersion=%s", MAIN_SERVER_URL[0], BUILD, CURRENTVERSION, messageVersion);
+    snprintf(URL, 200, "https://%s/message.php?OS=%s&version=%d&messageVersion=%s", SERVEUR_URL, BUILD, CURRENTVERSION, messageVersion);
 
     crashTemp(bufferDL, 500);
     download_mem(URL, NULL, bufferDL, 500, 1);

@@ -19,7 +19,6 @@ extern int THREAD_COUNT;
 extern volatile int favorisToDL;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];
-extern char MAIN_SERVER_URL[2][100];
 extern char LANGUAGE_PATH[NOMBRE_LANGUE][50];
 extern char COMPTE_PRINCIPAL_MAIL[100];
 extern PALETTE_GLOBALE palette;

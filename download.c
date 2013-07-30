@@ -69,7 +69,6 @@ int download_UI(TMP_DL *output)
 
     threadData = createNewThreadRetValue(downloader, output);
 
-    MUTEX_LOCK(mutexTUI);
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
     pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
     if(pourcentAffiche != NULL)
@@ -82,7 +81,6 @@ int download_UI(TMP_DL *output)
         SDL_DestroyTextureS(pourcentAffiche);
     }
     MDLTUIRefresh();
-    MUTEX_UNLOCK(mutexTUI);
 
     while(1)
     {
@@ -100,7 +98,6 @@ int download_UI(TMP_DL *output)
                     pourcent = CURRENT_FILE_SIZE * 100 / FILE_EXPECTED_SIZE;
 
                 /*Code d'affichage du pourcentage*/
-                MUTEX_LOCK(mutexTUI);
                 snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
                 pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
 
@@ -114,8 +111,6 @@ int download_UI(TMP_DL *output)
                     SDL_DestroyTextureS(pourcentAffiche);
                     MDLTUIRefresh();
                 }
-                MUTEX_UNLOCK(mutexTUI);
-
                 last_refresh = SDL_GetTicks();
             }
 
@@ -123,7 +118,6 @@ int download_UI(TMP_DL *output)
 
             if(quit)
             {
-                MUTEX_LOCK(mutexTUI);
                 pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
                 position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
@@ -133,7 +127,6 @@ int download_UI(TMP_DL *output)
                 MDLTUICopy(pourcentAffiche, NULL, &position);
                 SDL_DestroyTextureS(pourcentAffiche);
                 MDLTUIRefresh();
-                MUTEX_UNLOCK(mutexTUI);
                 status = STATUS_FORCE_CLOSE;
                 TTF_CloseFont(police);
                 break;
@@ -152,7 +145,6 @@ int download_UI(TMP_DL *output)
     }
     else
     {
-        MUTEX_LOCK(mutexTUI);
         MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
         pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
         if(pourcentAffiche != NULL)
@@ -164,7 +156,6 @@ int download_UI(TMP_DL *output)
             SDL_DestroyTextureS(pourcentAffiche);
             MDLTUIRefresh();
         }
-        MUTEX_UNLOCK(mutexTUI);
         TTF_CloseFont(police);
     }
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
