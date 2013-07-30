@@ -27,12 +27,12 @@ void getResolution();
 void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
 #ifdef _WIN32
-    #define getH(a) a->window->h
     #define getW(a) a->window->w
+    #define getH(a) a->window->h
 #else
-    #define getH(a) a->viewport.h
     #define getW(a) a->viewport.w
-#endif // _WIN32
+    #define getH(a) a->viewport.h
+#endif
 
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);

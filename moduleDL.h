@@ -182,6 +182,7 @@ void MDLTUIQuit();
 void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2);
 void MDLTUIBackground(int x, int y, int h, int w);
 void MDLTUIBackgroundPreCrafted(SDL_Rect * pos);
+SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur);
 void MDLTUIRefresh();
 
 /**Native.c**/

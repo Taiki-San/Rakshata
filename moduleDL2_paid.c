@@ -318,7 +318,7 @@ void MDLPDispCheckingIfPaid()
 
     if(police != NULL)
     {
-        texture = TTF_Write(rendererDL, police, trad[0], couleur);
+        texture = MDLTUITTFWrite(police, trad[0], couleur);
         if(texture != NULL)
         {
             position.h = texture->h;

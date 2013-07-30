@@ -685,7 +685,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         }
         changeTo(texte, '_', ' ');
 
-        texture = TTF_Write(rendererDL, police, texte, couleurFont);
+        texture = MDLTUITTFWrite(police, texte, couleurFont);
         if(texture != NULL)
         {
             position.x = MDL_BORDURE_CATALOGUE + (nbrElementDisp / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
@@ -779,7 +779,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         snprintf(texte, 500, "%s %s %s %d %s %s", trad[isInstall], todoList->datas->mangaName, todoList->subFolder?trad[4]:trad[3], (todoList->subFolder?todoList->partOfTome:todoList->chapitre) / 10, trad[2], todoList->datas->team->teamLong);
         changeTo(texte, '_', ' ');
     }
-    texture = TTF_Write(rendererDL, police, texte, couleurFont);
+    texture = MDLTUITTFWrite(police, texte, couleurFont);
     if(texture != NULL)
     {
         position.x = WINDOW_SIZE_W_DL / 2 - texture->w / 2;
