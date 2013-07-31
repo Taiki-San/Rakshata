@@ -155,6 +155,7 @@ int earlyInit(int argc, char *argv[])
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
     mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
+    mutexMTUI = CreateSemaphore(NULL, 1, 1, NULL);
 #endif
 
     resetOriginalCHDir(&argc, argv);

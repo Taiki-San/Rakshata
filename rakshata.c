@@ -31,12 +31,14 @@ extern SDL_Renderer *rendererDL;
 
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
-    MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;
-    MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;
+    MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;  //Resize
+    MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;    //One encryption algo imple. isn't thread-safe
+    MUTEX_VAR mutexMTUI = PTHREAD_MUTEX_INITIALIZER;        //Prevent accessing the GUI in twwo different threads at the same time
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
     MUTEX_VAR mutex_decrypt;
+    MUTEX_VAR mutexMTUI;
     #ifdef main
         #undef main
     #endif
@@ -93,6 +95,7 @@ int main(int argc, char *argv[])
     SDL_Quit();
     releaseDNSCache();
     MUTEX_DESTROY(mutex_decrypt);
+    MUTEX_DESTROY(mutexMTUI);
     MUTEX_DESTROY(mutexRS);
     MUTEX_DESTROY(mutex);
     return 0;

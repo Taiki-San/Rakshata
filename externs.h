@@ -24,6 +24,8 @@ extern char COMPTE_PRINCIPAL_MAIL[100];
 extern PALETTE_GLOBALE palette;
 extern SDL_Window* window;
 extern SDL_Renderer *renderer;
+
 extern MUTEX_VAR mutex;
 extern MUTEX_VAR mutexRS;
 extern MUTEX_VAR mutex_decrypt;
+extern MUTEX_VAR mutexMTUI;

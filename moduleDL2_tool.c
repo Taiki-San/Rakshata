@@ -737,47 +737,47 @@ SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
         case MDL_CODE_DL_OVER:
         case MDL_CODE_WAITING_LOGIN:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_WAIT);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_WAIT);
             break;
         }
         case MDL_CODE_DL:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_DL);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_DL);
             break;
         }
         case MDL_CODE_INSTALL:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_INSTALL);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_INSTALL);
             break;
         }
         case MDL_CODE_WAITING_PAY:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_TO_PAY);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_TO_PAY);
             break;
         }
         case MDL_CODE_INSTALL_OVER:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_OVER);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_OVER);
             break;
         }
         case MDL_CODE_ERROR_DL:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_DOWNLOAD);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_DOWNLOAD);
             break;
         }
         case MDL_CODE_ERROR_INSTALL:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_INSTALL);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_INSTALL);
             break;
         }
         case MDL_CODE_INTERNAL_ERROR:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_GENERAL);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_GENERAL);
             break;
         }
         default:
         {
-            return IMG_LoadTexture(rendererVar, MDL_ICON_ERROR_DEFAULT);
+            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_DEFAULT);
             break;
         }
     }

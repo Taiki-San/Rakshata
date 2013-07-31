@@ -326,7 +326,7 @@ void MDLPDispCheckingIfPaid()
             position.x = rendererDL->window->w / 2 - position.w / 2;
             position.y = HAUTEUR_POURCENTAGE;
             MDLTUICopy(texture, NULL, &position);
-            SDL_DestroyTexture(texture);
+            MDLTUIDestroyTexture(texture);
         }
         TTF_CloseFont(police);
     }

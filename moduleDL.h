@@ -117,7 +117,6 @@ typedef struct argument_to_MDL_handler
 
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
-extern MUTEX_VAR mutexTUI;
 extern SDL_Renderer *rendererDL;
 
 /**Download.c**/
@@ -182,8 +181,11 @@ void MDLTUIQuit();
 void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2);
 void MDLTUIBackground(int x, int y, int h, int w);
 void MDLTUIBackgroundPreCrafted(SDL_Rect * pos);
-SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur);
 void MDLTUIRefresh();
+SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur);
+void MDLTUIDestroyTexture(SDL_Texture * texture);
+SDL_Texture * MDLTUICreateTextureFromSurface(SDL_Surface * surface);
+SDL_Texture * MDLTUILoadIMG(SDL_Renderer * rendererVar, char* filename);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

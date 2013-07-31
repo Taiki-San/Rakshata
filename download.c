@@ -70,7 +70,7 @@ int download_UI(TMP_DL *output)
     threadData = createNewThreadRetValue(downloader, output);
 
     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-    pourcentAffiche = TTF_Write(rendererDL, police, texte[0], couleur);
+    pourcentAffiche = MDLTUITTFWrite(police, texte[0], couleur);
     if(pourcentAffiche != NULL)
     {
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
@@ -78,7 +78,7 @@ int download_UI(TMP_DL *output)
         position.w = pourcentAffiche->w;
         MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, position.h);
         MDLTUICopy(pourcentAffiche, NULL, &position);
-        SDL_DestroyTextureS(pourcentAffiche);
+        MDLTUIDestroyTexture(pourcentAffiche);
     }
     MDLTUIRefresh();
 
@@ -99,7 +99,7 @@ int download_UI(TMP_DL *output)
 
                 /*Code d'affichage du pourcentage*/
                 snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
-                pourcentAffiche = TTF_Write(rendererDL, police, temp, couleur);
+                pourcentAffiche = MDLTUITTFWrite(police, temp, couleur);
 
                 if(pourcentAffiche != NULL)
                 {
@@ -108,7 +108,7 @@ int download_UI(TMP_DL *output)
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
                     MDLTUICopy(pourcentAffiche, NULL, &position);
-                    SDL_DestroyTextureS(pourcentAffiche);
+                    MDLTUIDestroyTexture(pourcentAffiche);
                     MDLTUIRefresh();
                 }
                 last_refresh = SDL_GetTicks();
@@ -118,14 +118,14 @@ int download_UI(TMP_DL *output)
 
             if(quit)
             {
-                pourcentAffiche = TTF_Write(rendererDL, police, texte[5], couleur);
+                pourcentAffiche = MDLTUITTFWrite(police, texte[5], couleur);
                 position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
                 position.w = pourcentAffiche->w;
 
                 MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                 MDLTUICopy(pourcentAffiche, NULL, &position);
-                SDL_DestroyTextureS(pourcentAffiche);
+                MDLTUIDestroyTexture(pourcentAffiche);
                 MDLTUIRefresh();
                 status = STATUS_FORCE_CLOSE;
                 TTF_CloseFont(police);
@@ -146,14 +146,14 @@ int download_UI(TMP_DL *output)
     else
     {
         MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
-        pourcentAffiche = TTF_Write(rendererDL, police, texte[6], couleur);
+        pourcentAffiche = MDLTUITTFWrite(police, texte[6], couleur);
         if(pourcentAffiche != NULL)
         {
             position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
             position.h = pourcentAffiche->h;
             position.w = pourcentAffiche->w;
             MDLTUICopy(pourcentAffiche, NULL, &position);
-            SDL_DestroyTextureS(pourcentAffiche);
+            MDLTUIDestroyTexture(pourcentAffiche);
             MDLTUIRefresh();
         }
         TTF_CloseFont(police);

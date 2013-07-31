@@ -183,7 +183,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             alerte.window = rendererDL->window;
             alerte.colorScheme = NULL;
             SDL_ShowMessageBox(&alerte, &ret_value);
-            MUTEX_LOCK(mutexTUI);
+            MUTEX_LOCK(mutexMTUI);
 
             if(*status[pos] == MDL_CODE_DEFAULT)
             {
@@ -259,7 +259,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     }
                 }
             }
-            MUTEX_UNLOCK(mutexTUI);
+            MUTEX_UNLOCK(mutexMTUI);
             break;
         }
         case MDL_CODE_INSTALL_OVER:

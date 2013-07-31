@@ -31,6 +31,9 @@ pthread_cond_t condResumeExecution = PTHREAD_COND_INITIALIZER;
 #define MDL_TUI_PRINT_BACKGROUND 3
 #define MDL_TUI_REFRESH 4
 #define MDL_TUI_TTFWRITE 5
+#define MDL_TUI_DESTTXT 6
+#define MDL_TUI_CTFS 7
+#define MDL_TUI_LOADIMG 8
 
 void MDLUIThread()
 {
@@ -67,11 +70,6 @@ void MDLUIThread()
                 }
                 case MDL_TUI_COPYTEXTURE:
                 {
-                    /**
-                    *       Arg1: SDL_Texture *
-                    *       Arg2: SDL_Rect *
-                    *       Arg3: SDL_Rect *
-                    **/
                     SDL_RenderCopy(rendererDL, (SDL_Texture *) arg1, (SDL_Rect *) arg2, (SDL_Rect *) arg3);
                     SDL_RenderPresent(rendererDL);
                     arg1 = arg2 = arg3 = 0;
@@ -79,9 +77,7 @@ void MDLUIThread()
                 }
                 case MDL_TUI_PRINT_BACKGROUND:
                 {
-                    /**     Arg1: SDL_Rect *       **/
                     SDL_RenderFillRect(rendererDL, (SDL_Rect *) arg1);
-                    SDL_RenderClear(rendererDL);
                     break;
                 }
 
@@ -93,6 +89,21 @@ void MDLUIThread()
                 case MDL_TUI_TTFWRITE:
                 {
                     arg4 = TTF_Write(rendererDL, (TTF_Font*) arg1, (char*) arg2, *(SDL_Color *) arg3);
+                    break;
+                }
+                case MDL_TUI_DESTTXT:
+                {
+                    SDL_DestroyTexture((SDL_Texture *) arg1);
+                    break;
+                }
+                case MDL_TUI_CTFS:
+                {
+                    arg2 = SDL_CreateTextureFromSurface(rendererDL, (SDL_Surface *) arg1);
+                    break;
+                }
+                case MDL_TUI_LOADIMG:
+                {
+                    arg2 = IMG_LoadTexture(rendererDL, (char*) arg1);
                     break;
                 }
             }
@@ -141,7 +152,7 @@ void MDLTUIQuit()
     if(rendererDL == NULL)
         return;
 
-    MUTEX_LOCK(mutexTUI);
+    MUTEX_LOCK(mutexMTUI);
 #ifdef _WIN32
     SDL_Window * window = rendererDL->window;
     SDL_DestroyRenderer(rendererDL);
@@ -154,12 +165,12 @@ void MDLTUIQuit()
     pthread_cond_destroy(&condResumeExecution);
     pthread_mutex_destroy(&mutexStartUIThread);
 #endif
-    MUTEX_UNLOCK(mutexTUI);
+    MUTEX_UNLOCK(mutexMTUI);
 }
 
 void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2)
 {
-    MUTEX_LOCK(mutexTUI);
+    MUTEX_LOCK(mutexMTUI);
 #ifdef _WIN32
     SDL_RenderCopy(rendererDL, texture, pos1, pos2);
 #else
@@ -170,7 +181,7 @@ void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2)
 
     pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
 #endif // _WIN32
-    MUTEX_UNLOCK(mutexTUI);
+    MUTEX_UNLOCK(mutexMTUI);
 }
 
 void MDLTUIBackground(int x, int y, int w, int h)
@@ -185,7 +196,7 @@ void MDLTUIBackground(int x, int y, int w, int h)
 
 void MDLTUIBackgroundPreCrafted(SDL_Rect * pos)
 {
-    MUTEX_LOCK(mutexTUI);
+    MUTEX_LOCK(mutexMTUI);
 #ifdef _WIN32
     SDL_RenderFillRect(rendererDL, pos);
 #else
@@ -195,35 +206,77 @@ void MDLTUIBackgroundPreCrafted(SDL_Rect * pos)
     pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
     arg1 = NULL;
 #endif // _WIN32
-    MUTEX_UNLOCK(mutexTUI);
-}
-SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur)
-{
-    MUTEX_LOCK(mutexTUI);
-#ifdef _WIN32
-    arg3 = TTF_Write(rendererDL, police, texte, couleur);
-#else
-    flag = MDL_TUI_TTFWRITE;
-    arg1 = police;
-    arg2 = texte;
-    arg3 = &couleur;
-    
-    pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
-    arg3 = NULL;
-#endif // _WIN32
-    MUTEX_UNLOCK(mutexTUI);
-    return arg4;
+    MUTEX_UNLOCK(mutexMTUI);
 }
 
 void MDLTUIRefresh()
 {
-    MUTEX_LOCK(mutexTUI);
+    MUTEX_LOCK(mutexMTUI);
 #ifdef _WIN32
     SDL_RenderPresent(rendererDL);
 #else
     flag = MDL_TUI_REFRESH;
     pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
 #endif // _WIN32
-    MUTEX_UNLOCK(mutexTUI);
+    MUTEX_UNLOCK(mutexMTUI);
+}
+
+SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur)
+{
+    MUTEX_LOCK(mutexMTUI);
+#ifdef _WIN32
+    void * arg4 = TTF_Write(rendererDL, police, texte, couleur);
+#else
+    flag = MDL_TUI_TTFWRITE;
+    arg1 = police;
+    arg2 = texte;
+    arg3 = &couleur;
+
+    pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+    arg3 = NULL;
+#endif
+    MUTEX_UNLOCK(mutexMTUI);
+    return arg4;
+}
+
+void MDLTUIDestroyTexture(SDL_Texture * texture)
+{
+    MUTEX_LOCK(mutexMTUI);
+#ifdef _WIN32
+    SDL_DestroyTexture(texture);
+#else
+    flag = MDL_TUI_DESTTXT;
+    arg1 = texture;
+    pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+#endif
+    MUTEX_UNLOCK(mutexMTUI);
+}
+
+SDL_Texture * MDLTUICreateTextureFromSurface(SDL_Surface * surface)
+{
+    MUTEX_LOCK(mutexMTUI);
+#ifdef _WIN32
+    void * arg2 = SDL_CreateTextureFromSurface(rendererDL, surface);
+#else
+    flag = MDL_TUI_CTFS;
+    arg1 = surface;
+    pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+#endif
+    MUTEX_UNLOCK(mutexMTUI);
+    return arg2;
+}
+
+SDL_Texture * MDLTUILoadIMG(SDL_Renderer * rendererVar, char* filename)
+{
+    MUTEX_LOCK(mutexMTUI);
+#ifdef _WIN32
+    void * arg2 = IMG_LoadTexture(rendererVar, filename);
+#else
+    flag = MDL_TUI_LOADIMG;
+    arg1 = filename;
+    pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+#endif
+    MUTEX_UNLOCK(mutexMTUI);
+    return arg2;
 }
 

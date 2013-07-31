@@ -19,11 +19,6 @@ int pageCourante;
 int nbElemTotal;
 int **status; //Le status des différents elements
 int **statusCache;
-#ifndef _WIN32
-    MUTEX_VAR mutexTUI = PTHREAD_MUTEX_INITIALIZER;
-#else
-    MUTEX_VAR mutexTUI;
-#endif
 
 void mainMDL()
 {
@@ -37,11 +32,6 @@ void mainMDL()
     SDL_Event event;
 
     /*Initialisation*/
-
-#ifdef _WIN32
-    mutexTUI = CreateSemaphore (NULL, 1, 1, NULL);
-#endif // _WIN32
-
     loadTrad(trad, 22);
     quit = false;
     nbElemTotal = pageCourante = 0;
@@ -180,7 +170,6 @@ void mainMDL()
     free(todoList);
     free(statusCache);
     free(status);
-    MUTEX_DESTROY(mutexTUI);
 
 #ifdef _WIN32
     CloseHandle (threadData);
@@ -693,7 +682,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             position.w = texture->w;
             position.h = texture->h;
             MDLTUICopy(texture, NULL, &position);
-            SDL_DestroyTexture(texture);
+            MDLTUIDestroyTexture(texture);
         }
     }
 
@@ -703,7 +692,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         if(surface != NULL)
         {
             SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 95, 95, 95));
-            texture = SDL_CreateTextureFromSurface(rendererDL, surface);
+            texture = MDLTUICreateTextureFromSurface(surface);
 
             if(texture != NULL)
             {
@@ -712,7 +701,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
                 position.h = texture->h;
                 position.w = texture->w;
                 MDLTUICopy(texture, NULL, &position);
-                SDL_DestroyTexture(texture);
+                MDLTUIDestroyTexture(texture);
             }
             SDL_FreeSurface(surface);
         }
@@ -743,7 +732,7 @@ void MDLUpdateIcons(bool ignoreCache)
             if(texture != NULL)
             {
                 MDLTUICopy(texture, NULL, &position);
-                SDL_DestroyTexture(texture);
+                MDLTUIDestroyTexture(texture);
             }
             *statusCache[posDebutPage + posDansPage] = currentStatus;
         }
@@ -790,7 +779,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         position.h = texture->h;
         position.w = texture->w;
         MDLTUICopy(texture, NULL, &position);
-        SDL_DestroyTexture(texture);
+        MDLTUIDestroyTexture(texture);
         MDLTUIRefresh();
     }
     TTF_CloseFont(police);
