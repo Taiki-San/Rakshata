@@ -29,7 +29,8 @@ void MDLPHandle(DATA_LOADED ** data, int length)
     if(index != NULL)
     {
         int sizeIndex;
-        char * POSTRequest = MDLPCraftPOSTRequest(data, index);
+        unsigned int randomID;
+        char * POSTRequest = MDLPCraftPOSTRequest(data, index, &randomID);
 
         if(POSTRequest != NULL)
         {
@@ -100,6 +101,7 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                     arg->somethingToPay = somethingToPay;
                                     arg->sizeStatusLocal = posStatusLocal;
                                     arg->statusLocal = statusLocal;
+                                    arg->factureID = randomID;
                                     createNewThread(MDLPHandlePayProcedure, arg);
                                 }
                                 else
@@ -121,16 +123,21 @@ void MDLPHandle(DATA_LOADED ** data, int length)
     return;
 }
 
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factureID)
 {
     int pos, length = strlen(COMPTE_PRINCIPAL_MAIL) + 50, compteur;
     char *output = NULL, buffer[500];
     void *buf;
 
+    do
+    {
+        *factureID = ~rand() | rand();
+    }while(*factureID == 0);
+
     output = malloc(length * sizeof(char));
     if(output != NULL)
     {
-        snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
+        snprintf(output, length-1, "ver=%d&mail=%s&id=%d", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL, *factureID);
         for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
             snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
@@ -160,6 +167,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 {
     bool toPay = arg->somethingToPay, cancel = false;
     int prix = arg->prix, sizeStatusLocal = arg->sizeStatusLocal, **statusLocal = arg->statusLocal;
+    unsigned int factureID = arg->factureID;
     free(arg);
 
     SDL_Window * windowAuth = NULL;
@@ -201,7 +209,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
             else
             {
                 char URLStore[300];
-                snprintf(URLStore, 300, "http://store.rakshata.com/?mail=%s", COMPTE_PRINCIPAL_MAIL);
+                snprintf(URLStore, 300, "http://store.rakshata.com/?mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
                 ouvrirSite(URLStore);
             }
         }
@@ -218,7 +226,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 
     if(!cancel && toPay)
     {
-        if(waitForGetPaid() == true)
+        if(waitForGetPaid(factureID) == true)
         {
             int i;
             for(i = 0; i < sizeStatusLocal; i++)
@@ -233,29 +241,29 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     free(statusLocal);
 
     if(cancel)
-        MDLPDestroyCache();
+        MDLPDestroyCache(factureID);
 
     quit_thread(0);
 }
 
-bool waitForGetPaid()
+bool waitForGetPaid(unsigned int factureID)
 {
     do
     {
         SDL_Delay(500);
-    } while(!MDLPCheckIfPaid() && quit == false);
+    } while(!MDLPCheckIfPaid(factureID) && quit == false);
 
     if(quit == false)
         return true;
     return false;
 }
 
-void MDLPDestroyCache()
+void MDLPDestroyCache(unsigned int factureID)
 {
     char output[100], URL[0x100], POST[120];
 
     snprintf(URL, 0x100, "https://%s/cancelOrder.php", SERVEUR_URL);
-    snprintf(POST, 120, "mail=%s", COMPTE_PRINCIPAL_MAIL);
+    snprintf(POST, 120, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
     download_mem(URL, POST, output, 100, 1);
 }
 
@@ -289,11 +297,11 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length)
     return output;
 }
 
-bool MDLPCheckIfPaid()
+bool MDLPCheckIfPaid(unsigned int factureID)
 {
-    char URL[300], POST[120], output[50];
+    char URL[300], POST[150], output[50];
     snprintf(URL, 300, "https://%s/checkOrder.php", SERVEUR_URL);
-    snprintf(POST, 120, "mail=%s", COMPTE_PRINCIPAL_MAIL);
+    snprintf(POST, 150, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
     if(download_mem(URL, POST, output, 50, 1) == CODE_RETOUR_OK)
     {
         if(output[0] == '1')

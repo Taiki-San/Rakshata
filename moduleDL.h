@@ -77,6 +77,7 @@ typedef struct data_sent_to_pay_thread
 {
     int prix;
     int sizeStatusLocal;
+    unsigned int factureID;
     int ** statusLocal;
     bool somethingToPay;
 } DATA_PAY;
@@ -161,14 +162,14 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
 
 /**Module2_paid.h**/
 void MDLPHandle(DATA_LOADED ** data, int length);
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factureID);
 void MDLPHandlePayProcedure(DATA_PAY * arg);
-bool waitForGetPaid();
-void MDLPDestroyCache();
+bool waitForGetPaid(unsigned int factureID);
+void MDLPDestroyCache(unsigned int factureID);
 
 bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length);
 int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
-bool MDLPCheckIfPaid();
+bool MDLPCheckIfPaid(unsigned int factureID);
 
 void MDLPDispCheckingIfPaid();
 void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix);
