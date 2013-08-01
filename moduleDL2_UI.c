@@ -65,7 +65,7 @@ void MDLUIThread()
             {
                 case MDL_TUI_QUIT:
                 {
-                    quit = false;
+                    quit = true;
                     break;
                 }
                 case MDL_TUI_COPYTEXTURE:
@@ -109,14 +109,20 @@ void MDLUIThread()
             }
             flag = 0;
         }
-        else
-            SDL_Delay(rand() % 100);
 
         MUTEX_UNLOCK(mutexStartUIThread);
         pthread_cond_signal(&condResumeExecution);
-
-        while(!pthread_mutex_trylock(&mutexStartUIThread))   //On attend le lock
-            MUTEX_UNLOCK(mutexStartUIThread);
+        
+        if(!quit)
+        {
+            while(!pthread_mutex_trylock(&mutexStartUIThread))   //On attend le lock
+            {
+                MUTEX_UNLOCK(mutexStartUIThread);
+                SDL_Delay(25);
+                if(flag != 0)
+                    break;
+            }
+        }
     }
     SDL_DestroyRenderer(rendererDL);
     SDL_DestroyWindow(window);
