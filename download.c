@@ -31,6 +31,7 @@ static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded,
 static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
+static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm);
 static void define_user_agent(CURL *curl);
 
 void initializeDNSCache()
@@ -205,7 +206,7 @@ static void downloader(TMP_DL *output)
         if(output->URL[8] == 'r') //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
-            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
+            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
         }
         else
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -417,13 +418,9 @@ static void define_user_agent(CURL *curl)
 #endif
 }
 
-static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
+BIO * getBIORSPCertificate()
 {
-#ifdef SSL_ENABLE
-	X509_STORE * store;
-	X509 * cert=NULL;
-	BIO * bio;
-	char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+    char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
 MIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\n\
 VQQGEwJGUjELMAkGA1UECAwCRlIxDjAMBgNVBAcMBVBhcmlzMQ0wCwYDVQQKDARN\n\
 YXZ5MRYwFAYDVQQLDA1IYXV0LURlLVNlaW5lMRkwFwYDVQQDDBByc3AucmFrc2hh\n\
@@ -448,19 +445,105 @@ n2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\n\
 hg0fHpfL7w==\n\
 -----END CERTIFICATE-----\n";
   /* get a BIO */
-  bio = BIO_new_mem_buf(pem_cert, -1);
-  /* use it to read the PEM formatted certificate from memory into an X509
-   * structure that SSL can use
-   */
-  PEM_read_bio_X509(bio, &cert, 0, NULL);
-  if (cert == NULL)
+  return BIO_new_mem_buf(pem_cert, -1);
+}
+
+BIO * getBIORepoCertificate()
+{
+    char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+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\n\
+4R8CFg==\n\
+-----END CERTIFICATE-----";
+    return BIO_new_mem_buf(pem_cert, -1);
+}
+
+static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
+{
+#ifdef SSL_ENABLE
+	X509_STORE * store;
+	X509 * cert=NULL;
+	BIO * bio;
+
+    bio = getBIORSPCertificate();
+    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    if (cert == NULL)
     return CURLE_SSL_CERTPROBLEM;
 
-  /* get a pointer to the X509 certificate store (which may be empty!) */
-  store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
+    /* get a pointer to the X509 certificate store (which may be empty!) */
+    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
 
-  /* add our certificate to this store */
-  if (X509_STORE_add_cert(store, cert)==0)
+    /* add our certificate to this store */
+    if (X509_STORE_add_cert(store, cert)==0)
+        return CURLE_SSL_CERTPROBLEM;
+#endif
+
+  /* all set to go */
+  return CURLE_OK ;
+}
+
+static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
+{
+    #ifdef SSL_ENABLE
+	X509_STORE * store;
+	X509 * cert=NULL;
+	BIO * bio;
+
+    bio = getBIORSPCertificate();
+    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    if (cert == NULL)
+        return CURLE_SSL_CERTPROBLEM;
+
+    /* get a pointer to the X509 certificate store (which may be empty!) */
+    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
+
+    /* add our certificate to this store */
+    if (X509_STORE_add_cert(store, cert)==0)
+        return CURLE_SSL_CERTPROBLEM;
+
+    ///On ajoute le second certificat
+    bio = getBIORepoCertificate();
+    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    if (cert == NULL)
+        return CURLE_SSL_CERTPROBLEM;
+
+    /* get a pointer to the X509 certificate store (which may be empty!) */
+    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
+
+    /* add our certificate to this store */
+    if (X509_STORE_add_cert(store, cert)==0)
         return CURLE_SSL_CERTPROBLEM;
 #endif
 
