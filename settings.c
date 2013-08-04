@@ -15,7 +15,6 @@
 
 int affichageMenuGestion()
 {
-    int i = 0, j = 0;
     char menus[SIZE_TRAD_ID_3][TRAD_LENGTH];
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;

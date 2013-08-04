@@ -27,10 +27,10 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     SDL_Event event;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font* police = NULL;
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     MUTEX_UNIX_LOCK;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     for(i = 0; i < nombreElements; i++) //Affichage
     {
         texture = TTF_Write(renderer, police, texte[i], couleurTexte);
@@ -997,7 +997,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             }
             else if (input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
-                enfineEraseDisplayedTomeInfos();
+                enfineEraseDisplayedTomeInfos(renderer);
                 SDL_RenderPresent(renderer);
                 input[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
@@ -1392,7 +1392,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    enfineEraseDisplayedTomeInfos();
+    enfineEraseDisplayedTomeInfos(renderer);
 
     MUTEX_UNIX_LOCK;
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -1426,9 +1426,9 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     MUTEX_UNIX_UNLOCK;
 }
 
-void enfineEraseDisplayedTomeInfos()
+void enfineEraseDisplayedTomeInfos(SDL_Renderer * renderer)
 {
     MUTEX_UNIX_LOCK;
-    applyBackground(renderer, 0, renderer->window->h - HAUTEUR_INFOS_TOMES, renderer->window->w, HAUTEUR_INFOS_TOMES);
+    applyBackground(renderer, 0, getH(renderer) - HAUTEUR_INFOS_TOMES, getW(renderer), HAUTEUR_INFOS_TOMES);
     MUTEX_UNIX_UNLOCK;
 }

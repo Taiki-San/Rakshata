@@ -100,7 +100,6 @@ int checkProjet(MANGAS_DATA mangaDB)
     SDL_Rect position;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
-    FILE* test = NULL;
 
     snprintf(path, TAILLE_BUFFER, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);    //Path du infos.png
 

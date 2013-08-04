@@ -118,7 +118,6 @@ typedef struct argument_to_MDL_handler
 
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
-extern SDL_Renderer *rendererDL;
 
 /**Download.c**/
 int download_UI(TMP_DL *output);

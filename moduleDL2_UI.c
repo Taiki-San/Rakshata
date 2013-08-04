@@ -126,6 +126,7 @@ void MDLUIThread()
     }
     SDL_DestroyRenderer(rendererDL);
     SDL_DestroyWindow(window);
+    rendererDL = NULL;
     quit_thread(0);
 }
 #endif

@@ -123,7 +123,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
 void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum);
 
 void engineDisplayTomeInfos(DATA_ENGINE input);
-void enfineEraseDisplayedTomeInfos();
+void enfineEraseDisplayedTomeInfos(SDL_Renderer * renderer);
 
 /**Error.c**/
 void logR(char *error);
