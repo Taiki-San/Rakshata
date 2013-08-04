@@ -118,14 +118,15 @@ int ajoutRepo(bool ajoutParFichier)
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TEAMS_DATA teams;
 
-	if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
-        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
-    SDL_RenderClear(renderer);
+	loadTrad(texteTrad, 14);
 
-    loadTrad(texteTrad, 14);
+    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
+        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
 
     if(!ajoutParFichier)
     {
+        MUTEX_UNIX_LOCK;
+        SDL_RenderClear(renderer);
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
         texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
         if(texte != NULL)
@@ -138,6 +139,8 @@ int ajoutRepo(bool ajoutParFichier)
             SDL_DestroyTextureS(texte);
         }
         TTF_CloseFont(police);
+        SDL_RenderPresent(renderer);
+        MUTEX_UNIX_UNLOCK;
     }
     else
     {
@@ -145,7 +148,6 @@ int ajoutRepo(bool ajoutParFichier)
             return 0;
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     }
-    SDL_RenderPresent(renderer);
     if(!checkNetworkState(CONNEXION_DOWN))
     {
         /*Lecture du fichier*/
@@ -153,6 +155,7 @@ int ajoutRepo(bool ajoutParFichier)
         {
             if(!ajoutParFichier)
             {
+                MUTEX_UNIX_LOCK;
                 police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
                 SDL_RenderClear(renderer);
 
@@ -169,6 +172,7 @@ int ajoutRepo(bool ajoutParFichier)
                 }
                 SDL_RenderPresent(renderer);
                 TTF_CloseFont(police);
+                MUTEX_UNIX_UNLOCK;
 
                 /*On attend l'URL*/
                 crashTemp(teams.URL_depot, LONGUEUR_URL);
@@ -261,6 +265,7 @@ int ajoutRepo(bool ajoutParFichier)
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
                         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
 
+                    MUTEX_UNIX_LOCK;
                     SDL_RenderClear(renderer);
                     police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
@@ -313,6 +318,7 @@ int ajoutRepo(bool ajoutParFichier)
                     }
                     SDL_RenderPresent(renderer);
                     TTF_CloseFont(police);
+                    MUTEX_UNIX_UNLOCK;
 
                     if((continuer = waitEnter(renderer)) == 1)
                     {
@@ -365,12 +371,12 @@ int ajoutRepo(bool ajoutParFichier)
 extern int curPage; //Too lazy to use an argument
 int deleteRepo()
 {
-    int i = 0, teamChoisis = 0, nombreTeam = 0, confirme = 0;
+    int i = 0, windowH, teamChoisis = 0, nombreTeam = 0, confirme = 0;
+    char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak;
     char texteTrad[SIZE_TRAD_ID_15][TRAD_LENGTH];
-
     DATA_ENGINE* data = NULL;
+    loadTrad(texteTrad, 15);
 
-    char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
     repoBak = repo;
 
     /*Initialisateurs graphique*/
@@ -378,7 +384,6 @@ int deleteRepo()
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     /*On commence par compter le nombre de temps*/
     while(*repo)
@@ -424,15 +429,16 @@ int deleteRepo()
 
     /*On va changer la taille de la fenetre en pompant l'algorithme de la selection de manga*/
     if(nombreTeam <= ENGINE_ELEMENT_PAR_PAGE)
-        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (nombreTeam / ENGINE_NOMBRE_COLONNE + 1) + 50;
+        windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreTeam / ENGINE_NOMBRE_COLONNE)+1) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
     else
-        i = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE + 1) + 50;
+        windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
-    if(WINDOW_SIZE_H != i)
-        updateWindowSize(LARGEUR, i);
+    if(WINDOW_SIZE_H != windowH)
+        updateWindowSize(LARGEUR, windowH);
+
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
-
-    loadTrad(texteTrad, 15);
 
     texteAffiche = TTF_Write(renderer, police, texteTrad[0], couleur);
     if(texteAffiche != NULL)
@@ -444,6 +450,7 @@ int deleteRepo()
         SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
         SDL_DestroyTextureS(texteAffiche);
     }
+    MUTEX_UNIX_UNLOCK;
 
     curPage = 1;
     teamChoisis = engineCore(data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
@@ -452,11 +459,8 @@ int deleteRepo()
     {
         if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
             updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
-        SDL_RenderClear(renderer);
 
-        confirme = confirmationRepo(data[teamChoisis].stringToDisplay);
-
-        if(confirme == 1)
+        if((confirme = confirmationRepo(data[teamChoisis].stringToDisplay)) == 1)
         {
             int j = 0;
             char *repoNew = NULL;
@@ -511,7 +515,7 @@ int defineTypeRepo(char *URL)
         if(i == 8) //Si que des chiffres
             return 1; //DB
     }
-    else if(strlen(URL) == 5) //GOO.GL
+    else if(strlen(URL) == 5 || strlen(URL) == 6) //GOO.GL
         return 3;
     return 2; //O
 }
@@ -532,6 +536,8 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     /*Remplissage des variables*/
     loadTrad(texte, 4);
 
+    MUTEX_UNIX_LOCK;
+    SDL_RenderClear(renderer);
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
     if(texteAffiche != NULL)
     {
@@ -569,14 +575,12 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
 
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
 
     confirme = waitEnter(renderer);
 
-    if(confirme == 1) //Confirmé
-        return 1;
-    else if(confirme == PALIER_QUIT)
-        return PALIER_QUIT;
-
+    if(confirme == 1 || confirme == PALIER_QUIT) //Confirmé
+        return confirme;
     return 0;
 }
 

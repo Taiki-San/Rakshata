@@ -85,6 +85,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
 
     for(i = 0; i < nombreMax; retour[i++] = 0);
 
+    MUTEX_UNIX_LOCK;
     if(nombreMax < 30)
     {
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
@@ -95,6 +96,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
         epaisseur = LARGEUR_MOYENNE_MANGA_PETIT + 10;
     }
+    MUTEX_UNIX_UNLOCK;
 
     if(police == NULL)
     {
@@ -204,6 +206,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
             affiche[nbr] = 0;
         }
 
+        MUTEX_UNIX_LOCK;
         numero = TTF_Write(rendererVar, police, affiche, couleurTexte);
         if(numero == NULL)
             continue;
@@ -224,6 +227,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         SDL_RenderCopy(rendererVar, numero, NULL, &position);
         SDL_DestroyTextureS(numero);
         SDL_RenderPresent(rendererVar);
+        MUTEX_UNIX_UNLOCK;
     }
     TTF_CloseFont(police);
     return 0;

@@ -118,16 +118,16 @@ int changementLangue()
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    loadTrad(menus, 13);
 
     /*On change la taille de l'écran*/
     if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
         updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
+
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
-    loadTrad(menus, 13);
-
-    /*On lance la boucle d'affichage*/
     texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
     if(texteAAfficher != NULL)
     {
@@ -150,8 +150,9 @@ int changementLangue()
         SDL_DestroyTextureS(texteAAfficher);
     }
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
 
-    j = displayMenu(&(menus[1]), NOMBRE_LANGUE, HAUTEUR_TEXTE_LANGUE);
+    j = displayMenu(&(menus[1]), NOMBRE_LANGUE, HAUTEUR_TEXTE_LANGUE, false);
     if(j > 0)
     {
         langue = j;

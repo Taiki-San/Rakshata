@@ -127,6 +127,8 @@ int check_evt()
             j--;
         }
 
+        MUTEX_UNIX_LOCK;
+
         police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
         for(i = 0; i <= j; i++)
@@ -195,6 +197,7 @@ int check_evt()
             }
         }
         TTF_CloseFont(police);
+        MUTEX_UNIX_UNLOCK;
         nameWindow(window, 0);
     }
     if(get_compte_infos() == PALIER_QUIT)

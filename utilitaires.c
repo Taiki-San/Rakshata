@@ -296,6 +296,7 @@ void restrictEvent()
 static int maxSize = 0;
 int defineMaxTextureSize(int sizeIssue)
 {
+    /*Appelé dans un context ou mutexTUI est verrouillé*/
     if(maxSize)
         return maxSize;
     SDL_Texture *texture = NULL;

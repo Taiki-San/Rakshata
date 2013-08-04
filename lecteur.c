@@ -28,6 +28,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
     DATA_LECTURE dataReader;
+    loadTrad(texteTrad, 21);
 
     if(!isTome)
     {
@@ -53,10 +54,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         }
         for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < *chapitreChoisis; curPosIntoStruct++);
     }
-
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-    loadTrad(texteTrad, 21);
 
     if((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID))
     {
@@ -103,11 +100,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         logR(temp);
 
         i = showError();
-        SDL_FreeSurface(chapitre);
-        SDL_FreeSurface(OChapitre);
-        SDL_FreeSurface(NChapitre);
-        SDL_DestroyTextureS(infoSurface);
-        SDL_DestroyTextureS(bandeauControle);
         if(i > PALIER_MENU)
             return PALIER_CHAPTER;
         else
@@ -117,7 +109,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         lastChapitreLu(mangaDB, isTome, *chapitreChoisis); //On écrit le dernier chapitre lu
 
     changementPage = 2;
+
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
     bandeauControle = loadControlBar(mangaDB->favoris);
+    MUTEX_UNIX_UNLOCK;
 
     while(1)
     {
@@ -132,6 +129,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 logR(temp);
 
                 i = showError();
+
+                MUTEX_UNIX_LOCK;
                 SDL_FreeSurface(chapitre);
                 freeCurrentPage(chapitre_texture);
                 if(dataReader.pageCourante > 0)
@@ -140,11 +139,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
+                MUTEX_UNIX_UNLOCK;
                 if(i > PALIER_MENU)
                     return PALIER_CHAPTER;
                 else
                     return i;
             }
+
+            MUTEX_UNIX_LOCK;
 
             if(dataReader.pageCourante > 1)
             {
@@ -162,6 +164,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             SDL_BlitSurface(NChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(NChapitre);
             NChapitre = NULL;
+
+            MUTEX_UNIX_UNLOCK;
         }
 
         //Page précédente
@@ -173,6 +177,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 logR(temp);
 
                 i = showError();
+
+                MUTEX_UNIX_LOCK;
                 SDL_FreeSurface(chapitre);
                 freeCurrentPage(chapitre_texture);
                 if(dataReader.pageCourante > 0)
@@ -181,11 +187,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     SDL_FreeSurface(NChapitre);
                 SDL_DestroyTextureS(infoSurface);
                 SDL_DestroyTextureS(bandeauControle);
+                MUTEX_UNIX_UNLOCK;
                 if(i > PALIER_MENU)
                     return PALIER_CHAPTER;
                 else
                     return i;
             }
+
+            MUTEX_UNIX_LOCK;
 
             if(dataReader.pageCourante + 1 < dataReader.nombrePageTotale) //On viens de changer de page, on veut savoir si on était â€¡ la derniére
             {
@@ -202,6 +211,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
             SDL_FreeSurface(OChapitre);
             OChapitre = NULL;
+
+            MUTEX_UNIX_UNLOCK;
         }
 
         else if(dataReader.pageCourante >= 0 && dataReader.pageCourante <= dataReader.nombrePageTotale && !finDuChapitre && !changementEtat) //Premier chargement
@@ -218,16 +229,18 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 if(OChapitre == NULL)
                 {
                     internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                    OChapitre = NULL;
                 }
             }
 
             if(chapitre != NULL)
             {
+                MUTEX_UNIX_LOCK;
                 freeCurrentPage(chapitre_texture);
                 SDL_FreeSurface(chapitre);
+                MUTEX_UNIX_UNLOCK;
             }
             chapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante]);
+
             if(chapitre == NULL)
             {
                 internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
@@ -241,12 +254,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Page non-existant: %s\n", dataReader.nomPages[dataReader.pageCourante]);
             logR(temp);
 
+            MUTEX_UNIX_LOCK;
             if(dataReader.pageCourante > 0)
                 SDL_FreeSurface(OChapitre);
             if(dataReader.pageCourante < dataReader.nombrePageTotale)
                 SDL_FreeSurface(NChapitre);
             SDL_DestroyTextureS(infoSurface);
             SDL_DestroyTextureS(bandeauControle);
+            MUTEX_UNIX_UNLOCK;
             i = showError();
             if(i > PALIER_MENU)
                 return PALIER_CHAPTER;
@@ -261,8 +276,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             buffer = RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS;
 
         /*Initialisation des différentes surfaces*/
-        SDL_DestroyTextureS(infoSurface);
-
         if(!*fullscreen)
         {
             /*Si grosse page*/
@@ -289,6 +302,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             if(changementEtat)
             {
+                MUTEX_UNIX_LOCK;
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 SDL_SetWindowFullscreen(window, SDL_FALSE);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
@@ -307,7 +321,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 bandeauControle = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 MUTEX_UNLOCK(mutex);
-
+                MUTEX_UNIX_UNLOCK;
             }
             else
                 updateWindowSize(largeurValide, buffer);
@@ -337,6 +351,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
         generateMessageInfoLecteur(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, 300);
 
+        MUTEX_UNIX_LOCK;
+        SDL_DestroyTextureS(infoSurface);
+
         if(finDuChapitre == 0)
             infoSurface = TTF_Write(renderer, police, infos, couleurTexte);
         else
@@ -348,6 +365,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
+        MUTEX_UNIX_UNLOCK;
 
         /*On prépare les coordonnées des surfaces*/
         if(infoSurface != NULL)
@@ -361,9 +379,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         positionBandeauControle.x = (WINDOW_SIZE_W / 2) - (bandeauControle->w / 2);
 
         /*Création de la texture de la page*/
+        MUTEX_UNIX_LOCK;
         chapitre_texture = SDL_CreateTextureFromSurface(renderer, chapitre);
+        MUTEX_UNIX_UNLOCK;
         if(chapitre_texture == NULL)
         {
+            MUTEX_UNIX_LOCK;
             int sizeMax = defineMaxTextureSize(chapitre->h), i;
             int nombreMiniTexture = chapitre->h/sizeMax + (chapitre->h%sizeMax?1:0);
             SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
@@ -391,6 +412,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             }
             pageWaaaayyyyTooBig = sizeMax;
             chapitre_texture = (SDL_Texture*) texture;
+            MUTEX_UNIX_UNLOCK;
         }
         else
             pageWaaaayyyyTooBig = 0;
@@ -444,8 +466,11 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
         check4change = 1;
         noRefresh = 0;
+
+        MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
+        MUTEX_UNIX_UNLOCK;
 
         do
         {
@@ -595,8 +620,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             case CLIC_SUR_BANDEAU_FAVORITE:
                             {
                                 setPrefs(mangaDB);
+                                MUTEX_UNIX_LOCK;
                                 SDL_DestroyTextureS(bandeauControle);
                                 bandeauControle = loadControlBar(mangaDB->favoris);
+                                MUTEX_UNIX_UNLOCK;
                                 break;
                             }
 
@@ -951,7 +978,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     }
                     else
                     {
+                        MUTEX_UNIX_LOCK;
                         SDL_RenderPresent(renderer);
+                        MUTEX_UNIX_UNLOCK;
                         noRefresh = 1;
                         if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                             noRefresh = 0;
@@ -961,7 +990,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
 				default:
 				{
-					//SDL_FlushEvent(event.type);
 					noRefresh = 1;
 					break;
                 }
@@ -1127,6 +1155,7 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
     return output;
 }
 
+/** MUTEX_UNIX_LOCK pas nécessaire car locké avant **/
 SDL_Texture* loadControlBar(int favState)
 {
     SDL_Surface *bandeauControleSurface = NULL;
@@ -1347,6 +1376,7 @@ int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToT
 
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
 {
+    MUTEX_UNIX_LOCK;
     if(OChapitre != NULL && OChapitre->w > 0)
         SDL_FreeSurface(OChapitre);
     if(chapitre != NULL && chapitre->w > 0)
@@ -1384,6 +1414,7 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *ch
         for(i = 0; dataReader.path[i] != NULL; free(dataReader.path[i++]));
         free(dataReader.path);
     }
+    MUTEX_UNIX_UNLOCK;
 }
 
 void freeCurrentPage(SDL_Texture *texture)
@@ -1402,6 +1433,7 @@ void freeCurrentPage(SDL_Texture *texture)
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
     SDL_Texture *texture = NULL;
+    MUTEX_UNIX_LOCK;
     SDL_RenderClear(renderer);
     if(pageWaaaayyyyTooBig)
     {
@@ -1473,6 +1505,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
     else //Sinon, on affiche normalement
         SDL_RenderCopy(renderer, infoSurface, NULL, &positionInfos);
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
 }
 
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)

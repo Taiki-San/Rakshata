@@ -75,7 +75,8 @@ int main(int argc, char *argv[])
             }
             else
                 SDL_PushEvent(&event);
-        }        SDL_Delay(250);
+        }
+        SDL_Delay(250);
 
         if(renderer == NULL && rendererDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 500)
         {

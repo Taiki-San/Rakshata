@@ -194,7 +194,9 @@ int mainLecture()
                                 if(fullscreen != 0)
                                 {
                                     fullscreen = 0;
+                                    MUTEX_UNIX_LOCK;
                                     SDL_SetWindowFullscreen(window, SDL_FALSE);
+                                    MUTEX_UNIX_UNLOCK;
                                 }
                             }
                         }
@@ -296,7 +298,9 @@ int mainChoixDL()
                     else
                     {
                         /*Confirmation */
+                        MUTEX_UNIX_LOCK;
                         SDL_RenderClear(renderer);
+                        MUTEX_UNIX_UNLOCK;
                         continuer = ecritureDansImport(mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
@@ -309,7 +313,9 @@ int mainChoixDL()
 
         if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == ENGINE_RETVALUE_DL_START /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
+            MUTEX_UNIX_LOCK;
             SDL_RenderClear(renderer);
+            MUTEX_UNIX_UNLOCK;
             affichageLancement();
             lancementModuleDL();
         }

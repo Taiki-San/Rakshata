@@ -18,8 +18,11 @@ void welcome()
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN-2);
+    TTF_Font *police = NULL;
 
+    MUTEX_UNIX_LOCK;
+
+    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN-2);
     updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
     SDL_RenderClear(renderer);
 
@@ -82,6 +85,9 @@ void welcome()
 
     TTF_CloseFont(police);
 	SDL_RenderPresent(renderer);
+
+	MUTEX_UNIX_UNLOCK;
+
 	waitEnter(renderer);
 }
 
@@ -94,16 +100,17 @@ void initialisationAffichage()
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    SDL_RenderClear(renderer);
-
     loadTrad(texteAAfficher, 2);
+
+    MUTEX_UNIX_LOCK;
+
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    SDL_RenderClear(renderer);
 
     position.y = HAUTEUR_AFFICHAGE_INITIALISATION;
 
     for(i = 0; i < SIZE_TRAD_ID_2; i++)
     {
-        SDL_DestroyTextureS(texte);
         texte = TTF_Write(renderer, police, texteAAfficher[i], couleurTexte);
         if(texte != NULL)
         {
@@ -111,14 +118,17 @@ void initialisationAffichage()
             position.h = texte->h;
             position.w = texte->w;
             SDL_RenderCopy(renderer, texte, NULL, &position);
-            if(i == 1) //Saut de ligne
-                position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
-            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+            SDL_DestroyTextureS(texte);
         }
+
+        if(i == 1) //Saut de ligne
+            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+        position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+
     }
     SDL_RenderPresent(renderer);
-    SDL_DestroyTextureS(texte);
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
 }
 
 void raffraichissmenent(bool forced)
@@ -129,6 +139,8 @@ void raffraichissmenent(bool forced)
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     char texte[SIZE_TRAD_ID_5][TRAD_LENGTH]; // Il faut forcement un tableau en 2D
+
+    MUTEX_UNIX_LOCK;
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 5);
@@ -149,6 +161,8 @@ void raffraichissmenent(bool forced)
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
 
+    MUTEX_UNIX_UNLOCK;
+
     updateDataBase(forced);
 }
 
@@ -160,6 +174,8 @@ void affichageLancement()
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     char texte[SIZE_TRAD_ID_6][TRAD_LENGTH]; // Il faut forcement un tableau en 2D
+
+    MUTEX_UNIX_LOCK;
 
 	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 6);
@@ -177,6 +193,8 @@ void affichageLancement()
     }
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
+
+    MUTEX_UNIX_UNLOCK;
 }
 
 void chargement(SDL_Renderer* rendererVar, int h, int w)
@@ -186,37 +204,40 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     SDL_Rect position;
     TTF_Font *police = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-
 	char texte[SIZE_TRAD_ID_8][TRAD_LENGTH];
+
+	if(tradAvailable())
+        loadTrad(texte, 8);
+    else
+        snprintf(texte[0], TRAD_LENGTH, "Chargement - Loading");
+
+	MUTEX_UNIX_LOCK;
 
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     SDL_RenderClear(rendererVar);
 
-    if(police == NULL)
+    if(police != NULL)
+    {
+        texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
+        if(texteAffiche != NULL)
+        {
+            position.x = w / 2 - texteAffiche->w / 2;
+            position.y = h / 2 - texteAffiche->h / 2;
+            position.h = texteAffiche->h;
+            position.w = texteAffiche->w;
+            SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
+            SDL_DestroyTextureS(texteAffiche);
+        }
+        TTF_CloseFont(police);
+        SDL_RenderPresent(rendererVar);
+    }
+    else
     {
         SDL_RenderFillRect(rendererVar, NULL);
         SDL_RenderPresent(rendererVar);
-        return;
     }
-
-    if(tradAvailable())
-        loadTrad(texte, 8);
-    else
-        snprintf(texte[0], TRAD_LENGTH, "Chargement - Loading");
-
-    texteAffiche = TTF_Write(rendererVar, police, texte[0], couleur);
-    if(texteAffiche != NULL)
-    {
-        position.x = w / 2 - texteAffiche->w / 2;
-        position.y = h / 2 - texteAffiche->h / 2;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(rendererVar, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-    }
-    TTF_CloseFont(police);
-    SDL_RenderPresent(rendererVar);
+    MUTEX_UNIX_UNLOCK;
 }
 
 void loadPalette()

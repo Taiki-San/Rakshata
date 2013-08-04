@@ -303,6 +303,7 @@ int logon()
 		int i = 0, login = 0;
         crashTemp(adresseEmail, 100);
 
+        MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
@@ -360,6 +361,8 @@ int logon()
         TTF_CloseFont(police);
 
         SDL_RenderPresent(renderer);
+        MUTEX_UNIX_UNLOCK;
+
         do
         {
             if((i = waitClavier(renderer, adresseEmail, 60, 50, beginingOfEmailAdress, 109)) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
@@ -368,12 +371,14 @@ int logon()
 
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
-        login = check_login(adresseEmail);
+        MUTEX_UNIX_LOCK;
+        SDL_RenderClear(renderer);
+        MUTEX_UNIX_UNLOCK;
 
+        login = check_login(adresseEmail);
         do
         {
             retry = 0;
-            SDL_RenderClear(renderer);
             switch(login)
             {
                 case 0: //New account
@@ -382,6 +387,7 @@ int logon()
                     char password[100];
                     crashTemp(password, 100);
                     /**Leurs codes sont assez proches donc on les regroupes**/
+                    MUTEX_UNIX_LOCK;
                     police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
                     ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
                     if(ligne != NULL)
@@ -433,6 +439,7 @@ int logon()
                     TTF_CloseFont(police);
 
                     SDL_RenderPresent(renderer);
+                    MUTEX_UNIX_UNLOCK;
                     do
                     {
                         if((i = waitClavier(renderer, password, 50, !login, beginingOfEmailAdress, 109)) == PALIER_QUIT)
@@ -539,8 +546,8 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
 
     loadTrad(trad, 26);
 
+    MUTEX_UNIX_LOCK;
     SDL_RenderClear(currentRenderer);
-
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
     if(ligne != NULL)
@@ -593,6 +600,7 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
     }
     TTF_CloseFont(police);
     SDL_RenderPresent(currentRenderer);
+    MUTEX_UNIX_UNLOCK;
 
     while(1)
     {

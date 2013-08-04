@@ -14,7 +14,7 @@
 
 int unlocked = 0;
 
-int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
+int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, bool disIcons)
 {
     if(nombreElements <= 1)
         return PALIER_QUIT;
@@ -26,9 +26,11 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
     SDL_Rect position;
     SDL_Event event;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font* police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_Font* police = NULL;
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     for(i = 0; i < nombreElements; i++) //Affichage
     {
         texture = TTF_Write(renderer, police, texte[i], couleurTexte);
@@ -62,8 +64,9 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
         SDL_RenderCopy(renderer, texture, NULL, &position);
         SDL_DestroyTextureS(texture);
     }
-
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
+
     TTF_SetFontStyle(police, TTF_STYLE_BOLD);
     while(!ret_value || ret_value > nombreElements)
     {
@@ -119,8 +122,10 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                        event.button.y > sizeFavsDispo[2] && event.button.y < sizeFavsDispo[2]+sizeFavsDispo[3] && favorisToDL == 2)
                     {
                         getNewFavs();
+                        MUTEX_UNIX_LOCK;
                         applyBackground(renderer, sizeFavsDispo[0], sizeFavsDispo[2], sizeFavsDispo[1], sizeFavsDispo[3]);
                         SDL_RenderPresent(renderer);
+                        MUTEX_UNIX_UNLOCK;
                         favorisToDL = -2; //On fait tout disparaitre
                     }
 
@@ -137,6 +142,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                         else
                             snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_LOCK);
 
+                        MUTEX_UNIX_LOCK;
                         texture = IMG_LoadTexture(renderer, tempPath);
                         if(texture != NULL)
                         {
@@ -148,6 +154,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                             SDL_RenderCopy(renderer, texture, NULL, &position);
                             SDL_DestroyTextureS(texture);
                         }
+                        MUTEX_UNIX_UNLOCK;
                     }
 
                     //Définis la hauteur du clic par rapport à notre liste
@@ -180,8 +187,10 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                 {
                     if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                         ret_value = PALIER_QUIT;
+#ifdef _WIN32
                     else
                         SDL_RenderPresent(renderer);
+#endif
                     break;
                 }
 
@@ -192,6 +201,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
 
         if(SDL_GetTicks() - time_since_refresh > 200)
         {
+            MUTEX_UNIX_LOCK;
             if(favorisToDL == 0) //Refresh en cours
             {
                 posRoundFav++;
@@ -250,6 +260,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc)
                 }
                 favorisToDL++;
             }
+            MUTEX_UNIX_UNLOCK;
         }
     }
 
@@ -285,6 +296,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
     }
 #endif
 
+    MUTEX_UNIX_LOCK;
     police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     loadTrad(localization, 11);
@@ -438,12 +450,14 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
         }
 
         int output, outputType;
+        MUTEX_UNIX_UNLOCK;
         do
         {
             outputType = ENGINE_OUTPUT_DEFAULT;
             output = engineSelection(contexte, input, tailleTexte, hauteurAffichage, &outputType);
             reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
+        MUTEX_UNIX_LOCK;
 
         if(selectMangaDLRightClick != NULL)
         {
@@ -458,6 +472,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
         curPage = pageSelection;
 
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
     return elementChoisis;
 }
 
@@ -1116,6 +1131,8 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     if(pageTotale == 1)
         return;
 
+    MUTEX_UNIX_LOCK;
+
     TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
 
     position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
@@ -1152,6 +1169,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
         SDL_DestroyTextureS(texte);
     }
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
 }
 
 /*UI*/
@@ -1338,6 +1356,8 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     SDL_Texture *numero = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
+
+    MUTEX_UNIX_LOCK;
     TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
 
     if(!virgule)
@@ -1360,6 +1380,7 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     }
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
 }
 
 /*CONTEXTE_TOME ONLY*/
@@ -1369,10 +1390,12 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     SDL_Texture *texte;
     SDL_Rect position;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_Font *police = NULL;
 
     enfineEraseDisplayedTomeInfos();
 
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     texte = TTF_Write(renderer, police, input.description1, couleur);
     if(texte != NULL)
     {
@@ -1400,10 +1423,12 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     }
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
-    return;
+    MUTEX_UNIX_UNLOCK;
 }
 
 void enfineEraseDisplayedTomeInfos()
 {
+    MUTEX_UNIX_LOCK;
     applyBackground(renderer, 0, renderer->window->h - HAUTEUR_INFOS_TOMES, renderer->window->w, HAUTEUR_INFOS_TOMES);
+    MUTEX_UNIX_UNLOCK;
 }

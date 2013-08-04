@@ -36,9 +36,11 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
             updateWindowSize(LARGEUR, windowH);
 
         loadTrad(texteTrad, 18);
-        SDL_RenderClear(renderer);
 
+        MUTEX_UNIX_LOCK;
+        SDL_RenderClear(renderer);
         police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+
         if(contexte == CONTEXTE_DL)
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
         else
@@ -54,6 +56,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
         }
         TTF_CloseFont(police);
         SDL_RenderPresent(renderer);
+        MUTEX_UNIX_UNLOCK;
 
         data = calloc(nombreManga, sizeof(DATA_ENGINE));
         if(data == NULL)
@@ -91,66 +94,63 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 
 int checkProjet(MANGAS_DATA mangaDB)
 {
-    char temp[TAILLE_BUFFER];
+    int ret_value = 1;
+    char path[TAILLE_BUFFER];
     SDL_Texture *image = NULL;
     SDL_Rect position;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
     FILE* test = NULL;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+    snprintf(path, TAILLE_BUFFER, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);    //Path du infos.png
 
-    /*Chargement arborescence*/;
-    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);
-    test = fopenR(temp, "r");
-
-    SDL_RenderClear(renderer);
-
-    if(test != NULL)
+    if(checkFileExist(path))
     {
-        /*Affichage consigne*/
-        char texte[SIZE_TRAD_ID_10][TRAD_LENGTH];
-        loadTrad(texte, 10);
-
-        fclose(test);
-
         restartEcran();
 
-        image = IMG_LoadTexture(renderer, temp);
-        if(image == NULL)
+        MUTEX_UNIX_LOCK;
+
+        image = IMG_LoadTexture(renderer, path);
+        if(image != NULL)
         {
-            removeR(temp);
-            return 1;
-        }
-        position.x = 0;
-        position.y = HAUTEUR_INFOSPNG;
-        position.w = image->w;
+            char texte[SIZE_TRAD_ID_10][TRAD_LENGTH];
+            loadTrad(texte, 10);
 
-        position.h = renderer->window->h - HAUTEUR_INFOSPNG;
-        if(position.h > image->h)
-            position.h = image->h;
-
-        SDL_RenderCopy(renderer, image, NULL, &position);
-        SDL_RenderPresent(renderer);
-        SDL_DestroyTextureS(image);
-
-		image = TTF_Write(renderer, police, texte[0], couleur);
-		if(image != NULL)
-        {
-            position.x = LARGEUR / 2 - image->w / 2;
-            position.y = HAUTEUR_INFOSPNG / 2 - image->h / 2;
-            position.h = image->h;
+            position.x = 0;
+            position.y = HAUTEUR_INFOSPNG;
             position.w = image->w;
+            position.h = renderer->window->h - HAUTEUR_INFOSPNG;
+
+            if(position.h > image->h)
+                position.h = image->h;
+
+            SDL_RenderClear(renderer);
             SDL_RenderCopy(renderer, image, NULL, &position);
+            SDL_RenderPresent(renderer);
             SDL_DestroyTextureS(image);
+
+            police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+            TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+
+            image = TTF_Write(renderer, police, texte[0], couleur);
+            if(image != NULL)
+            {
+                position.x = LARGEUR / 2 - image->w / 2;
+                position.y = HAUTEUR_INFOSPNG / 2 - image->h / 2;
+                position.h = image->h;
+                position.w = image->w;
+                SDL_RenderCopy(renderer, image, NULL, &position);
+                SDL_DestroyTextureS(image);
+                ret_value = waitEnter(renderer);
+            }
             TTF_CloseFont(police);
-            return waitEnter(renderer);
         }
-        else
-            TTF_CloseFont(police);
+        else    //Si image corrompue, on la vire
+            removeR(path);
+
+        MUTEX_UNIX_UNLOCK;
     }
-    return 1;
+    return ret_value;
 }
 
 int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte)

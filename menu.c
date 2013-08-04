@@ -35,6 +35,7 @@ int ecranAccueil()
     if(WINDOW_SIZE_H != acceuil->h)
         updateWindowSize(acceuil->w, acceuil->h);
 
+    MUTEX_UNIX_LOCK;
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
 
@@ -49,8 +50,9 @@ int ecranAccueil()
     }
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
-
     SDL_RenderPresent(renderer); //Refresh screen
+    MUTEX_UNIX_UNLOCK;
+
     return waitEnter(renderer);
 }
 
@@ -66,10 +68,12 @@ int section()
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);
 
-    SDL_RenderClear(renderer);
-
     /*Affichage du texte*/
     loadTrad(texteTrad, 17);
+
+    MUTEX_UNIX_LOCK;
+
+    SDL_RenderClear(renderer);
     police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
@@ -120,7 +124,8 @@ int section()
         }
         free(sectionMessage);
     }
-    return displayMenu(&(texteTrad[1]), NOMBRESECTION, BORDURE_SUP_SECTION);
+    MUTEX_UNIX_UNLOCK;
+    return displayMenu(&(texteTrad[1]), NOMBRESECTION, BORDURE_SUP_SECTION, true);
 }
 
 int showControls()
@@ -133,14 +138,16 @@ int showControls()
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AIDE)
         updateWindowSize(LARGEUR_FENETRE_AIDE, HAUTEUR_FENETRE_AIDE);
 
-    SDL_RenderClear(renderer);
-
     snprintf(temp, TAILLE_BUFFER, "data/%s/controls.png", LANGUAGE_PATH[langue - 1]);
+
+    MUTEX_UNIX_LOCK;
+    SDL_RenderClear(renderer);
     controls = IMG_LoadTexture(renderer, temp);
     SDL_RenderCopy(renderer, controls, NULL, NULL);
     SDL_DestroyTextureS(controls);
 
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
 
     while(!retour)
     {
@@ -177,20 +184,7 @@ int showControls()
             case SDL_MOUSEBUTTONUP:
             {
                 if(event.button.x > WINDOW_SIZE_W / 2 && event.button.y > WINDOW_SIZE_H / 2)
-                    #ifdef _WIN32
-                    ShellExecute(NULL, "open", "http://www.rakshata.com/?page_id=31", NULL, NULL, SW_SHOWDEFAULT);
-                    #else
-                    {
-                        char superTemp[200];
-                        crashTemp(superTemp, 200);
-                        #ifdef __APPLE__
-                        snprintf(superTemp, 200, "open http://www.rakshata.com/?page_id=31");
-                        #else
-                        snprintf(superTemp, 200, "/etc/alternatives/x-www-browser %s", "http://www.rakshata.com/?page_id=31");
-                        #endif
-                        system(superTemp);
-                    }
-                    #endif
+                    ouvrirSite("http://www.rakshata.com/help");
                 else
                    retour = 1;
                 break;
@@ -200,7 +194,9 @@ int showControls()
             {
                 if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
                 {
+                    MUTEX_UNIX_LOCK;
                     SDL_RenderPresent(renderer);
+                    MUTEX_UNIX_UNLOCK;
                     SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
                 else if(event.window.event == SDL_WINDOWEVENT_CLOSE)

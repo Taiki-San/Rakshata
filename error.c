@@ -38,6 +38,7 @@ void connexionNeededToAllowANewComputer()
 
 int libcurlErrorCode(CURLcode code)
 {
+    bool noLog = false;
     int ret_value = CODE_RETOUR_DL_CLOSE;
     char log_message[100];
     switch(code)
@@ -61,7 +62,8 @@ int libcurlErrorCode(CURLcode code)
         case CURLE_COULDNT_RESOLVE_HOST:
         case CURLE_COULDNT_CONNECT:
         {
-            return CODE_FAILED_AT_RESOLVE;
+            ret_value = CODE_FAILED_AT_RESOLVE;
+            noLog = true;
             break;
         }
         case CURLE_PARTIAL_FILE:
@@ -84,7 +86,8 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_ABORTED_BY_CALLBACK:
         {
-            return CODE_RETOUR_DL_CLOSE;
+            ret_value = CODE_RETOUR_DL_CLOSE;
+            noLog = true;
             break;
         }
         case CURLE_SSL_CACERT_BADFILE:
@@ -95,7 +98,7 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_SSL_CACERT:
         {
-            return ret_value;
+            noLog = true;
             break;
         }
 
@@ -105,7 +108,8 @@ int libcurlErrorCode(CURLcode code)
             break;
         }
     }
-    logR(log_message);
+    if(!noLog)
+        logR(log_message);
     return ret_value;
 }
 
@@ -131,15 +135,14 @@ int showError()
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-
-    restartEcran();
-
-    position.y = WINDOW_SIZE_H / 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
-
     /*Remplissage des variables*/
     loadTrad(texte, 1);
+    position.y = WINDOW_SIZE_H / 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50;
 
+    MUTEX_UNIX_LOCK;
+
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    restartEcran();
     for(i = 0; i < SIZE_TRAD_ID_1; i++)
     {
         position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
@@ -156,6 +159,7 @@ int showError()
 
     TTF_CloseFont(police);
     SDL_RenderPresent(renderer);
+    MUTEX_UNIX_UNLOCK;
     return waitEnter(renderer);
 }
 

@@ -199,7 +199,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     snprintf((char *) numChapitreChar, 10, "%d", numeroChapitre/10);
     pbkdf2(key, numChapitreChar, hash);
 
-    crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate
+    //crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate >_> << nécéssaire?
     key[SHA256_DIGEST_LENGTH] = rand() % 0xff;
 
     configEnc = calloc(1, sizeDBPass+SHA256_DIGEST_LENGTH);

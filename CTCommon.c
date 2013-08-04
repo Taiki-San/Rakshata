@@ -51,16 +51,18 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     else
         SDL_RenderClear(renderer);
 
-    char temp[TAILLE_BUFFER];
+    char temp[4*TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    TTF_Font *police = NULL;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
     /*Header*/
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
 
     //On affiche pas le même titre en fonction de la section
-    snprintf(temp, TAILLE_BUFFER, "%s %s %s %s", texteTrad[2], texteTrad[isTome], texteTrad[3], texteTrad[(contexte == CONTEXTE_LECTURE)?4:((contexte == CONTEXTE_DL)?5:6)]);
+    snprintf(temp, 4*TRAD_LENGTH, "%s %s %s %s", texteTrad[2], texteTrad[isTome], texteTrad[3], texteTrad[(contexte == CONTEXTE_LECTURE)?4:((contexte == CONTEXTE_DL)?5:6)]);
     texte = TTF_Write(renderer, police, temp, couleurTexte);
     if(texte != NULL)
     {
@@ -76,7 +78,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     changeTo(mangaDB->mangaName, '_', ' ');
     changeTo(mangaDB->team->teamLong, '_', ' ');
 
-    snprintf(temp, TAILLE_BUFFER, "%s '%s' %s '%s'", texteTrad[9], mangaDB->mangaName, texteTrad[10], mangaDB->team->teamLong);
+    snprintf(temp, 4*TRAD_LENGTH, "%s '%s' %s '%s'", texteTrad[9], mangaDB->mangaName, texteTrad[10], mangaDB->team->teamLong);
 
     changeTo(mangaDB->mangaName, ' ', '_');
     changeTo(mangaDB->team->teamLong, ' ', '_');
@@ -100,6 +102,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     if(isTome)
     {
         TTF_CloseFont(police);
+        MUTEX_UNIX_UNLOCK;
         return;
     }
 
@@ -166,6 +169,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     }
     SDL_RenderPresent(renderer);
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
 }
 
 void displayIconeChapOrTome(bool isTome)
@@ -175,6 +179,8 @@ void displayIconeChapOrTome(bool isTome)
         snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_CHAPITRE);
     else
         snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_SWITCH_TOME);
+
+    MUTEX_UNIX_LOCK;
     SDL_Texture* icone = IMG_LoadTexture(renderer, tempPath);
     if(icone != NULL)
     {
@@ -187,6 +193,7 @@ void displayIconeChapOrTome(bool isTome)
         SDL_RenderCopy(renderer, icone, NULL, &position);
         SDL_DestroyTextureS(icone);
     }
+    MUTEX_UNIX_UNLOCK;
 }
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)

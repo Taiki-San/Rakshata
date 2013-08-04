@@ -21,17 +21,14 @@ int affichageMenuGestion()
     SDL_Rect position;
     TTF_Font *police;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    loadTrad(menus, 3);
 
     if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)
         updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
+
+    MUTEX_UNIX_LOCK;
+    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
-
-    for(i = 0; i < SIZE_TRAD_ID_3; i++)
-        for(j = 0; j < LONGUEURTEXTE; menus[i][j++] = 0);
-
-    /*Remplissage des variables*/
-    loadTrad(menus, 3);
 
     texteAffiche = TTF_Write(renderer, police, menus[0], couleur);
     if(texteAffiche != NULL)
@@ -44,8 +41,9 @@ int affichageMenuGestion()
         SDL_DestroyTextureS(texteAffiche);
     }
     TTF_CloseFont(police);
+    MUTEX_UNIX_UNLOCK;
 
-    return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX);
+    return displayMenu(&(menus[1]) , NOMBRE_MENU_GESTION, HAUTEUR_CHOIX, false);
 }
 
 int menuGestion()
