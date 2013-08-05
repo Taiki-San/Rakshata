@@ -24,6 +24,7 @@ void checkUpdate()
         ***    On peut soit supprimer, soit ajouter, soit mettre à jour des fichiers:   ***
         ***                                                                             ***
         ***     -R: Remove                                                              ***
+        ***     -F: Remove a folder                                                     ***
         ***     -A: Add                                                                 ***
         ***     -P: Parse, si fichier texte, on rétabli les retours à la ligne          ***
         ***     -U: Update, met à jour le fichier                                       ***
@@ -124,6 +125,9 @@ void checkUpdate()
             }
             else if(action[i][0] == 'R' || action[i][0] == 'U') //Remove ou Update
                 remove(files[i]);
+
+            else if(action[i][0] == 'F')
+                removeFolder(files[i]);
 
             else if(action[i][0] == 'A' || action[i][0] == 'P' || action[i][0] == 'U') //Add ou Parse (comme add) ou Update
             {
