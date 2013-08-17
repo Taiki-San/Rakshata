@@ -74,7 +74,7 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        if(MDLEventsHandling(todoList, nombreElementDrawn))
+        if(MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
         {
             nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
             MDLUpdateIcons(true);
@@ -115,6 +115,10 @@ void mainMDL()
                     MDLUpdateIcons(true);
                     MDLPHandle(*todoList, nbElemTotal); //Si des trucs payants
                 }
+            }
+            if(!isThreadStillRunning(threadData))
+            {
+                threadData = createNewThreadRetValue(mainDLProcessing, todoList);
             }
         }
         else if(!printErrorAsked && !isThreadStillRunning(threadData))
@@ -243,9 +247,6 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
             if(dataPos < nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
             {
-#ifdef __APPLE__
-                SDL_Delay(250);
-#endif
                 MDLDispDownloadHeader((*todoList)[dataPos]);
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
             }
@@ -262,6 +263,8 @@ void mainDLProcessing(DATA_LOADED *** todoList)
                 }
             }
         }
+        else
+            SDL_Delay(100);
     }
     for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
     free(historiqueTeam);
@@ -605,12 +608,18 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
             {
                 snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
                 ressources = fopenR(temp, "r+");
-                fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
-                if(fgetc(ressources) != EOF)
-                    fscanfs(ressources, "%d", &dernierLu);
+                if(ressources != NULL)
+                {
+                    fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
+                    if(fgetc(ressources) != EOF)
+                        fscanfs(ressources, "%d", &dernierLu);
+                    else
+                        dernierLu = -1;
+                    fclose(ressources);
+                }
                 else
-                    dernierLu = -1;
-                fclose(ressources);
+                    extremes[0] = extremes[1] = chapitre;
+                
                 ressources = fopenR(temp, "w+");
                 if(extremes[0] > chapitre)
                     fprintf(ressources, "%d %d", chapitre, extremes[1]);

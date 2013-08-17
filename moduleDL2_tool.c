@@ -50,7 +50,7 @@ char* MDL_craftDownloadURL(DATA_LOADED data)
         length = 100 + 15 + strlen(data.datas->team->URL_depot) + strlen(data.datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements + password
         output = malloc(length);
         if(output != NULL) {
-            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&chapter=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URL_depot, data.datas->mangaName, data.chapitre, COMPTE_PRINCIPAL_MAIL, passwordInternal);
+            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&projectShort=%s&chapter=%d&isTome=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
         }
     }
 

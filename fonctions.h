@@ -26,7 +26,7 @@ void updateWindowSize(int w, int h);
 void getResolution();
 void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
-#ifdef _WIN32
+#ifdef _WIN32   //SDL is completly messed...
     #define getW(a) a->window->w
     #define getH(a) a->window->h
 #else

@@ -1894,6 +1894,7 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
     quit_thread(0);
 }
 
+extern int INSTANCE_RUNNING;
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome)
 {
     FILE* updateControler = fopenR(INSTALL_DATABASE, "a+");
@@ -1910,6 +1911,8 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 		fclose(updateControler);
 		if(checkLancementUpdate())
 			createNewThread(lancementModuleDL, NULL);
+        else
+            INSTANCE_RUNNING = -1;
 	}
 }
 
