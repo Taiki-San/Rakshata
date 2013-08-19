@@ -67,7 +67,7 @@ MANGAS_DATA* miseEnCache(int mode)
 
                 if(teamList[numeroTeam] == NULL)
                 {
-                    for(; *mangaDB || *mangaDB != '#'; mangaDB++); //On saute la team courante
+                    for(; *mangaDB && *mangaDB != '#'; mangaDB++); //On saute la team courante
                     continue;
                 }
                 nombreMangaDansDepot = 1;
@@ -211,6 +211,8 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
             logR(temp2);
             return -1;
         }
+
+        buffer_repo[0] = 0;
         download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
 	} while(defaultVersion > 0 && (buffer_repo[0] == '<' || buffer_repo[1] == '<' || buffer_repo[2] == '<'));
