@@ -516,39 +516,34 @@ static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
 {
-    #ifdef SSL_ENABLE
+#ifdef SSL_ENABLE
 	X509_STORE * store;
-	X509 * cert=NULL;
+	X509 * certRSP = NULL, *certDpt = NULL;
 	BIO * bio;
 
+    store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
+
     bio = getBIORSPCertificate();
-    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
-    if (cert == NULL)
-        return CURLE_SSL_CERTPROBLEM;
-
-    /* get a pointer to the X509 certificate store (which may be empty!) */
-    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
-
-    /* add our certificate to this store */
-    if (X509_STORE_add_cert(store, cert)==0)
+    PEM_read_bio_X509(bio, &certRSP, 0, NULL);          // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    BIO_free(bio);
+    if (certRSP == NULL)
         return CURLE_SSL_CERTPROBLEM;
 
     ///On ajoute le second certificat
     bio = getBIORepoCertificate();
-    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
-    if (cert == NULL)
+    PEM_read_bio_X509(bio, &certDpt, 0, NULL);
+    BIO_free(bio);
+    if (certDpt == NULL)
         return CURLE_SSL_CERTPROBLEM;
 
-    /* get a pointer to the X509 certificate store (which may be empty!) */
-    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
+    /* add our certificates to this store */
+    if (! X509_STORE_add_cert(store, certRSP))
+        return CURLE_SSL_CERTPROBLEM;
 
-    /* add our certificate to this store */
-    if (X509_STORE_add_cert(store, cert)==0)
+    if (! X509_STORE_add_cert(store, certDpt))
         return CURLE_SSL_CERTPROBLEM;
 #endif
-
-  /* all set to go */
-  return CURLE_OK ;
+    return CURLE_OK ;
 }
 
 int checkDLInProgress() //Mutex should be set
