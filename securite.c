@@ -129,7 +129,7 @@ void get_file_date(const char *filename, char *date)
     free(input_parsed);
 }
 
-void killswitchEnabled(char teamLong[LONGUEUR_NOM_MANGA_MAX])
+void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX])
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char temp[LONGUEUR_NOM_MANGA_MAX+10];

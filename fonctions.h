@@ -230,7 +230,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
 void decryptPage(void *_password, unsigned char *buffer_int, unsigned char *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
-void killswitchEnabled(char nomTeamCourt[5]);
+void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX]);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
 SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);

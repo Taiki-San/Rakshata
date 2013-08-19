@@ -262,7 +262,7 @@ void update_repo()
 		for(; *repo == '\r' || *repo == '\n'; repo++);
 		if(checkKillSwitch(killswitch, infosTeam))
 		{
-			killswitchEnabled(infosTeam.teamLong);
+			killswitchTriggered(infosTeam.teamLong);
 			continue;
 		}
 
