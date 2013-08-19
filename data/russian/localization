@@ -1,0 +1,242 @@
+1
+Stranitsa nedostupna&
+Glava povrezhdena&
+Esli vy ne redaktirovali bazu dannyh&
+vruchnuyu, uvedomite ob etom&
+upravlayuschemu repozitoriya.&
+Enter dlya vozvrata k vybory glavy.&]
+2
+Idet zapusk modul'a skachivania&
+Pozhaluista, podozhdite.&
+Eto mozhet zanyat neskol'ko&
+minut pri medlennom dostupe v&
+Internet ili mnogo repo&]
+3
+Nastroiki&
+Dobavit' repo&
+Udalit' repo&
+Udalit' mangu iz bazy dannyh&
+Obnovit' bazu dannyh mangi&
+Change language&
+Nazad&]
+4
+Deistvitel'no udalit' repozitorii&
+Enter = DA, Escape = HET&]
+5
+Idet perezagruzka&]
+6
+Idet zapusk&]
+7
+Neyzvestny repo&
+Ne nayden repozitory s etimy dannimy,\nprover'te na nalichiye oshibok.&]
+8
+Zagruzka&]
+9
+Dobro Pozhalovat' v Rakshata&
+Rakshata zaprosit vash Email i parol' dlya togo, chtoby&
+identifitsyrovat' vas i dat' vam polnye vozmozhnosti Rakshata&
+Oni ne budut peredany tretjim licam bez vashego pismennogo soglasija.&
+Klicknite, chtoby nachat', i spasibo za ispolzovanie Rakshata :) - Taiki, lead developer&]
+10
+Del = OTMEHA, Any Key = podtverdit'&]
+11
+Proshlaya Stranica&
+Sleduyushaya Stranica&
+Skachat'&
+Otmenit' vse&
+glava&
+Otobrazhat' manga:&
+V processe&
+Priostanovleno&
+Gotovo&
+Izbrannoe&
+Shonen&
+Shojo&
+Seinen&
+Hentai (-16/18)&
+Str.&
+na&]
+12
+Idet obnovlenie, pozhaluista podozhdite.&
+Zakrojte drugije okna Rakshata, pozhaluista.&
+Fail&
+na&]
+13
+You can change here Rakshata's language&
+Français&
+English&
+Italiano&
+Deutsch&
+Esly vy khotite perevesti Rakshata, posetite nash web-site.&]
+14
+Idet ustanovka&
+Vvedite URL repozitoriya&
+Vy deistvitelno hotite dobavit' etot repo?&
+Esc = HET, Enter = DA&]
+15
+Kakoj repo vy khotite udalit'?&]
+16
+Podtverdite&
+Vy dejstvitel'no khotite otkryt'&
+ot&
+dlya chtenija?&
+DA&
+HET&
+Skachivanije&
+Ustanovka&
+v processe&
+ozhidaetsya&
+Ustanovka&
+Skachivanije&
+glavy&
+toma&
+v processe,&
+ozhidaetsya,&
+pozhaluista, podozhdite...&
+Oshibka&
+Proizoshla oshibka vo vremya&
+skachivanija.\nVozmozhna problema y repo.\nPoprobujte svjazatca s repo manager'om.&
+ustanovki.\nJesli eta problema tolko na odnoi glave/tome, uvedomite repo manager.\nInache, uvedomite contact@rakshata.com&
+Oshibka Systemy!\nEcli eto proicxodit chasto, uvedomite contact@rakshata.com\nNe zabud'te opisat', kogda vy eto vydyte.&
+Ozhidanie&
+Etot %s ozhidaet skachivania,\nvy khotyte izmenit' prioritet ili udalit'?\nZakroite eto okno dlya otmeny&
+Pervy&
+Uvelichit'&
+Udalit'&
+Umenshit'&
+Posledny&
+Ozhidanie login&
+Ozhidanie login v vash account dlya skachivanya.\nPozhaluista vojdite v systemu.&
+Ozhidanie oplaty&
+Ozhidanie oplaty zakaza.\nJesli vy oplatili, poprobujte perezapustit' Rakshata.\nIli vy mozhete svyazat'sa s nami.&
+Net oplaty&
+%s ne byl oplachen i ne mozhet byt skachan.&]
+17
+Glavnoe menju&
+Chtenie&
+Skachat' esche&
+Spravka&
+Nastroiki&]
+18
+Manga, dostupnaya dlya chteniya&
+Manga, dostupnaya dlya skachivania&]
+19
+glava&
+tom&
+Kotoriy&
+vy khotite&
+prochest'?&
+dobavit'?&
+udalit'?&
+Stareyshy:&
+Noveyshy:&
+Project&
+ot&
+Pervy raz chital etu mangu:&
+Posledniy&
+prochtenny:&
+Vse&
+Nechego skachat'&
+Net novykh zakachek, poprobujte pozhe ;)&]
+20
+Initsyalizatsyya&
+Razmer:&
+MB&
+Skorost':&
+kB/s&
+Zakrytie, podozhdite&
+Analiz dannykh&]
+21
+Glava&
+Tom&
+Stranitca&
+Vosstanovlenie zaversheno&
+Vy vosstanovyly sostoyaniye Rakshata do zakrytyja.\nEsly vy khotite vyjty v menu, nazhmite ESC ili knopku snizu.&
+Bolshe ne pokazyvat'&
+Ok&
+F dlya normalnogo rezhima&
+Q - zakryt' Rakshata&]
+22
+Skachivanie&
+Ustanovka&
+ot&
+glava&
+tom&
+Net ozhidaemix skachivanyj&
+Net ozhidaemix ustanovok&
+Oshibki v processe&
+Byly obnaruzheny oshibki.\nKhotite poprobovat' skachat' zanovo?&
+Oni budut obrabotany na sleduyuschem zapuske modulja skachivanija.&
+HET&
+Info...&
+DA&
+Oshibka&
+vo vremya skachivaniya:&
+vo vremya ustanovki:&
+Vnutr. oshibka:&
+Vnutr. oshibki:&]
+23
+Nichego netu&
+Pohozhe vy esche nichego ne skachali.\nPochemy by ne skachat' chto-nibud'?\nVy takzhe mozhete dobavyt' repo. :)&
+dobavit' repo&
+Skachat'&
+Ok&]
+24
+Net dostupa v Inet&
+Net dostupa v internet.\nOn by ochen' pomog vam pri skachivaniyi. ;)\nPoprobujte snova posle podklyuchenija&]
+25
+Vasha chitalka komiksov i mangi&
+Skachat module&
+Login module&]
+26
+Privet, pozjalujsta ukazhite svoj email.&
+Email:&
+On ne budet peredan tretjim litsam i budet&
+ispolzovat'sa tol'ko dlya vhoda v systemu&
+[Registratsya] - Vvedite parol'&
+[Login] - Pozhalujsta vvedite parol'&
+Parol':&
+Etot akkount budet ispol'zovatsa tolko dlya servisov&
+Rakshata, i ne budet peredan kuda-libo&
+ERROR: Email-address otklonen&
+Vash email adress nekorrekten.&
+Esly vy ne ponimajete, pochemu, napishite nam po&
+etomu adresu: contact@rakshata.com&
+ERROR: password otklonen&
+Vash parol' nekorrekten.&
+Esli vy ego zabyly,&
+napishite nam na contact@rakshata.com, ukazav svoy email adress.&
+KRITICHESKAYA OSHIBKA&
+Prover'te, mozhete ly vy zajti na website Rakshata&
+Jesli da, svyazjites' s Taiki&]
+27
+Server nedostupen&
+/!\ Error: server nedostupen. /!\\nTrjebuetsa kak minimum odno sojedineniye na novom\n&
+kompjutere dlja dostupa k baze.\nProver'te, mozjete ly vy zajti na Rakshata's website&]
+28
+Vvedite parol' vashego akkounta&
+Parol':&]
+29
+Associirovat' rashirenije?&
+Khotite ly vy associjirovat .rak file s Rakshata (dlja avtomaticheskogo dobavlenija repo)?&
+Soglasit'sa&
+Otkazat'sa&]
+30
+Rakshata obnaruzhil&
+novuju&
+novyy&
+dostypnuju&
+dostupnuy&
+glavu&
+tom&
+dlja skachivanija&
+Khotite skachat'?&
+Skachat'&
+HET&]
+31
+Proverka platnykh elementov&
+Vy vybraly content na summu %d.%d euro&
+Khotite perejti k oplate?&
+Jesly net, to skachivanije budet otmeneno.&
+DA&
+HET&]
