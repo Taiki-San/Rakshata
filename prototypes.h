@@ -46,7 +46,7 @@
 
 #ifdef _WIN32
 	#ifdef __MINGW32__
-		#include <dir.h>
+		#include <io.h>
 	#else
 		#ifdef __INTEL_COMPILER
 			#define getcwd(a, b) _getcwd(a, b)

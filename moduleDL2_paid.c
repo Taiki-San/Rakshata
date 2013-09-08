@@ -234,7 +234,6 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
                 if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
                     *statusLocal[i] = MDL_CODE_DEFAULT;
             }
-            //vérifier que le thread de DL tourne encore et si non, le relancer
         }
     }
 
