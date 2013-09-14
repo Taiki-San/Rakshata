@@ -74,6 +74,7 @@ int check_evt()
 #ifdef __APPLE__
                 if(i == 1) //Pas besoin d'icone sur OSX
                     continue;
+                else
 #endif
                 fichiersADL[j] = i;
             j++;
