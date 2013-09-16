@@ -112,7 +112,7 @@ void MDLUIThread()
 
         MUTEX_UNLOCK(mutexStartUIThread);
         pthread_cond_signal(&condResumeExecution);
-        
+
         if(!quit)
         {
             while(!pthread_mutex_trylock(&mutexStartUIThread))   //On attend le lock

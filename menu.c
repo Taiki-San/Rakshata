@@ -50,7 +50,7 @@ int ecranAccueil()
     }
     SDL_RenderCopy(renderer, acceuil, &position, NULL);
     SDL_DestroyTextureS(acceuil);
-    SDL_RenderPresent(renderer); //Refresh screen
+    SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
 
     return waitEnter(renderer);
@@ -143,8 +143,11 @@ int showControls()
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(renderer);
     controls = IMG_LoadTexture(renderer, temp);
-    SDL_RenderCopy(renderer, controls, NULL, NULL);
-    SDL_DestroyTextureS(controls);
+    if(controls != NULL)
+    {
+        SDL_RenderCopy(renderer, controls, NULL, NULL);
+        SDL_DestroyTextureS(controls);
+    }
 
     SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
@@ -192,14 +195,7 @@ int showControls()
 
             case SDL_WINDOWEVENT:
             {
-                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                    MUTEX_UNIX_LOCK;
-                    SDL_RenderPresent(renderer);
-                    MUTEX_UNIX_UNLOCK;
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
-                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                 {
                     retour = PALIER_QUIT;
                 }

@@ -230,13 +230,8 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
             SDL_DestroyTextureS(texteAffiche);
         }
         TTF_CloseFont(police);
-        SDL_RenderPresent(rendererVar);
     }
-    else
-    {
-        SDL_RenderFillRect(rendererVar, NULL);
-        SDL_RenderPresent(rendererVar);
-    }
+    SDL_RenderPresent(rendererVar);
     MUTEX_UNIX_UNLOCK;
 }
 
@@ -400,6 +395,8 @@ void restartEcran()
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 }
+
+/* The purpose of this function is to bypass a bug on Windows if DirectX isn't available*/
 
 void nameWindow(SDL_Window* windows, const int value)
 {

@@ -304,6 +304,7 @@ int logon()
         crashTemp(adresseEmail, 100);
 
         MUTEX_UNIX_LOCK;
+
         SDL_RenderClear(renderer);
         police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
@@ -358,9 +359,8 @@ int logon()
             SDL_DestroyTextureS(ligne);
         }
 
-        TTF_CloseFont(police);
-
         SDL_RenderPresent(renderer);
+        TTF_CloseFont(police);
         MUTEX_UNIX_UNLOCK;
 
         do
@@ -436,9 +436,9 @@ int logon()
                         SDL_RenderCopy(renderer, ligne, NULL, &position);
                         SDL_DestroyTextureS(ligne);
                     }
-                    TTF_CloseFont(police);
 
                     SDL_RenderPresent(renderer);
+                    TTF_CloseFont(police);
                     MUTEX_UNIX_UNLOCK;
                     do
                     {

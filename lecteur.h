@@ -36,6 +36,7 @@ typedef struct data_thread_check_new_CT
     MANGAS_DATA mangaDB;
     bool isTome;
     int CT;
+    int * fullscreen;
 } DATA_CK_LECTEUR;
 
 /** Loader **/
@@ -62,7 +63,7 @@ void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
 
 /** New elements to download **/
 
-void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT);
+void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, int * fullscreen);
 void checkNewElementInRepo(DATA_CK_LECTEUR *input);
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome);
 

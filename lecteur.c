@@ -57,7 +57,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
     if((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID))
     {
-        startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis);
+        startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
         i = 1;
     }
     else
@@ -757,11 +757,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                                 case SDL_WINDOWEVENT:
                                 {
+#ifdef _WIN32
                                     if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
                                     {
                                         SDL_RenderPresent(renderer);
                                         SDL_FlushEvent(SDL_WINDOWEVENT);
                                     }
+#endif
                                     break;
                                 }
                             }
@@ -1703,7 +1705,7 @@ void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
 
 /** New elements to download **/
 
-void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT)
+void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, int * fullscreen)
 {
     MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
@@ -1720,6 +1722,7 @@ void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT)
         argument->mangaDB = mangaDB;
         argument->isTome = isTome;
         argument->CT = CT;
+        argument->fullscreen = fullscreen;
 
         createNewThread(checkNewElementInRepo, argument);
     }
@@ -1728,10 +1731,11 @@ void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT)
 void checkNewElementInRepo(DATA_CK_LECTEUR *input)
 {
     bool isTome = input->isTome, newStuffs = false;
-    int i = 0, j = 0, version, CT;
+    int i = 0, j = 0, version, CT, *fullscreen;
     char temp[LONGUEUR_NOM_MANGA_MAX], *bufferDL, teamCourt[LONGUEUR_COURT];
     MANGAS_DATA mangaDB = input->mangaDB;
     CT = input->CT;
+    fullscreen = input->fullscreen;
     mangaDB.chapitres = NULL;
     mangaDB.tomes = NULL;
 
@@ -1846,7 +1850,7 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
         newStuffs = true;
     }
 
-    if(!newStuffs)
+    if(!newStuffs || fullscreen == NULL || *fullscreen == 1)
         quit_thread(0);
 
     bool severalNewElems = false;

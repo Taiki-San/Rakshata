@@ -167,7 +167,9 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
             SDL_DestroyTextureS(texte);
         }
     }
+#ifndef WIN_OPENGL_BUGGED
     SDL_RenderPresent(renderer);
+#endif
     TTF_CloseFont(police);
     MUTEX_UNIX_UNLOCK;
 }

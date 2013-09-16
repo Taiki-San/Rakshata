@@ -102,6 +102,7 @@ void checkUpdate()
         {
             /*Téléchargement et affichage des informations*/
             crashTemp(temp, TAILLE_BUFFER);
+            refreshRendererIfBuggy(renderer);
             applyBackground(renderer, 0, 150, WINDOW_SIZE_W, 100);
             snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
             infosAvancement = TTF_Write(renderer, police, temp, couleurTexte);

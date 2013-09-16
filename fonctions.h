@@ -27,11 +27,14 @@ void getResolution();
 void restartEcran();
 void nameWindow(SDL_Window* windows, const int value);
 #ifdef _WIN32   //SDL is completly messed...
-    #define getW(a) a->window->w
-    #define getH(a) a->window->h
+    #define getW(a) a->viewport.w
+    #define getH(a) a->viewport.h
+    #define refreshRendererIfBuggy(var); //SDL_RenderPresent(var)
+    //#define WIN_OPENGL_BUGGED
 #else
     #define getW(a) a->viewport.w
     #define getH(a) a->viewport.h
+    #define refreshRendererIfBuggy(var);
 #endif
 
 /**Chapitre.c**/

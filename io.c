@@ -63,6 +63,7 @@ int waitEnter(SDL_Renderer* rendererVar)
                     i = PALIER_QUIT;
                 else
                 {
+                    refreshRendererIfBuggy(rendererVar);
                     SDL_RenderPresent(rendererVar);
                     SDL_FlushEvent(SDL_WINDOWEVENT);
                 }
@@ -181,11 +182,6 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                     TTF_CloseFont(police);
                     return PALIER_QUIT;
                 }
-                else
-                {
-                    SDL_RenderPresent(rendererVar);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
                 break;
             }
 
@@ -221,12 +217,14 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         else
             position.x = startFromX;
 
-        applyBackground(rendererVar, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
         position.h = numero->h;
         position.w = numero->w;
+
+        refreshRendererIfBuggy(rendererVar);
+        applyBackground(rendererVar, startFromX, position.y, WINDOW_SIZE_W, epaisseur);
         SDL_RenderCopy(rendererVar, numero, NULL, &position);
-        SDL_DestroyTextureS(numero);
         SDL_RenderPresent(rendererVar);
+        SDL_DestroyTextureS(numero);
         MUTEX_UNIX_UNLOCK;
     }
     TTF_CloseFont(police);

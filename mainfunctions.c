@@ -19,7 +19,8 @@ void mainRakshata()
 
     MUTEX_LOCK(mutexRS);
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, 0);
+
     loadIcon(window);
     nameWindow(window, 0);
     renderer = setupRendererSafe(window);
@@ -297,10 +298,7 @@ int mainChoixDL()
 
                     else
                     {
-                        /*Confirmation */
-                        MUTEX_UNIX_LOCK;
-                        SDL_RenderClear(renderer);
-                        MUTEX_UNIX_UNLOCK;
+                        chargement(renderer, getH(renderer), getW(renderer));
                         continuer = ecritureDansImport(mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;

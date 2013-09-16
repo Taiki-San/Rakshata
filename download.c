@@ -82,7 +82,6 @@ int download_UI(TMP_DL *output)
         MDLTUIDestroyTexture(pourcentAffiche);
     }
     MDLTUIRefresh();
-
     while(1)
     {
         if(FILE_EXPECTED_SIZE > 0)

@@ -123,6 +123,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                     {
                         getNewFavs();
                         MUTEX_UNIX_LOCK;
+                        refreshRendererIfBuggy(renderer);
                         applyBackground(renderer, sizeFavsDispo[0], sizeFavsDispo[2], sizeFavsDispo[1], sizeFavsDispo[3]);
                         SDL_RenderPresent(renderer);
                         MUTEX_UNIX_UNLOCK;
@@ -187,10 +188,6 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                 {
                     if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                         ret_value = PALIER_QUIT;
-#ifdef _WIN32
-                    else
-                        SDL_RenderPresent(renderer);
-#endif
                     break;
                 }
 
@@ -227,16 +224,18 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                     position.y = 25 - texture->h / 2;
                     position.h = texture->h;
                     position.w = texture->w;
+                    refreshRendererIfBuggy(renderer);
                     applyBackground(renderer, 5, 5, 50, 50);
                     SDL_RenderCopy(renderer, texture, NULL, &position);
+                    SDL_RenderPresent(renderer);
                     SDL_DestroyTextureS(texture);
                 }
-                SDL_RenderPresent(renderer);
                 time_since_refresh = SDL_GetTicks();
             }
 
             else if(favorisToDL == -1)
             {
+                refreshRendererIfBuggy(renderer);
                 applyBackground(renderer, 5, 5, 50, 50);
                 SDL_RenderPresent(renderer);
                 favorisToDL--;
@@ -244,20 +243,23 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
 
             else if(favorisToDL == 1) //Refresh done
             {
-                applyBackground(renderer, 5, 5, 50, 50);
-
                 snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_FAVORIS_MENU);
                 texture = IMG_LoadTexture(renderer, tempPath);
+
+                refreshRendererIfBuggy(renderer);
+                applyBackground(renderer, 5, 5, 50, 50);
+
                 if(texture != NULL)
                 {
                     sizeFavsDispo[0] = position.x = POSITION_ICONE_MENUS;
                     sizeFavsDispo[2] = position.y = POSITION_ICONE_MENUS;
                     sizeFavsDispo[1] = position.w = TAILLE_ICONE_MENUS;
                     sizeFavsDispo[3] = position.h = TAILLE_ICONE_MENUS;
+
                     SDL_RenderCopy(renderer, texture, NULL, &position);
                     SDL_DestroyTextureS(texture);
-                    SDL_RenderPresent(renderer);
                 }
+                SDL_RenderPresent(renderer);
                 favorisToDL++;
             }
             MUTEX_UNIX_UNLOCK;
@@ -446,8 +448,8 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             nombreElementAffiche++;
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTextureS(texte);
-            SDL_RenderPresent(renderer);
         }
+        SDL_RenderPresent(renderer);
 
         int output, outputType;
         MUTEX_UNIX_UNLOCK;
@@ -480,7 +482,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 {
     /*Initialisations*/
     int virgule = 0;
-    int nombreManga = 0, elementChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE, choix = 0, buffer = 0, chapitreMax = 0, bandeauControle = 0;
+    int nombreManga = 0, elementChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE, choix = VALEUR_FIN_STRUCTURE_CHAPITRE, buffer = 0, chapitreMax = 0, bandeauControle = 0;
     SDL_Event event;
 
     for(nombreManga = 0; nombreManga < ENGINE_ELEMENT_PAR_PAGE && tailleTexte[0][nombreManga] != 0; nombreManga++);
@@ -491,7 +493,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
     /*On vois quelle est la forme de la fenetre*/
     while(*outputType == ENGINE_OUTPUT_DEFAULT)
     {
-        if(contexte == CONTEXTE_CHAPITRE)
+        if(contexte == CONTEXTE_CHAPITRE && choix != VALEUR_FIN_STRUCTURE_CHAPITRE)
             engineDisplayCurrentTypedChapter(choix, virgule, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
 
         SDL_WaitEvent(&event);
@@ -530,6 +532,8 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                                 elementChoisis = PALIER_CHAPTER;
                                 *outputType = ENGINE_OUTPUT_QUIT;
                             }
+                            if(choix == 0)
+                                choix = VALEUR_FIN_STRUCTURE_CHAPITRE;
                         }
                         else
                         {
@@ -541,7 +545,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
                     {
-                        if(choix != 0 && contexte == CONTEXTE_CHAPITRE)
+                        if(choix != VALEUR_FIN_STRUCTURE_CHAPITRE && contexte == CONTEXTE_CHAPITRE)
                         {
                             elementChoisis = choix;
                             *outputType = ENGINE_OUTPUT_TYPED_CHAPITRE;
@@ -600,6 +604,9 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                         buffer = nombreEntree(letter);
                         if(buffer != -1 && virgule < 2)
                         {
+                            if(choix == VALEUR_FIN_STRUCTURE_CHAPITRE)
+                                choix = 0;
+
                             if(virgule && buffer + choix <= chapitreMax)
                             {
                                 virgule++;
@@ -749,16 +756,16 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
             case SDL_WINDOWEVENT:
             {
-                if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                    SDL_RenderPresent(renderer);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
-                else if(event.window.event == SDL_WINDOWEVENT_CLOSE)
+                if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                 {
                     elementChoisis = PALIER_QUIT;
                     *outputType = ENGINE_OUTPUT_QUIT;
                 }
+                /*else if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                    SDL_RenderPresent(renderer);
+                    SDL_FlushEvent(SDL_WINDOWEVENT);
+                }*/
                 break;
             }
         }
@@ -997,6 +1004,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             }
             else if (input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
+                refreshRendererIfBuggy(renderer);
                 enfineEraseDisplayedTomeInfos(renderer);
                 SDL_RenderPresent(renderer);
                 input[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -1261,7 +1269,9 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
             SDL_DestroyTextureS(texte);
         }
     }
+#ifndef WIN_OPENGL_BUGGED
     SDL_RenderPresent(renderer);
+#endif
     TTF_CloseFont(police);
 }
 
@@ -1370,16 +1380,19 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     numero = TTF_Write(renderer, police, buffer, couleur);
     if(numero != NULL)
     {
-        applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
         position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
         position.y = hauteurNum;// - (numero->h / 2);
         position.h = numero->h;
         position.w = numero->w;
+
+        refreshRendererIfBuggy(renderer);
+        applyBackground(renderer, 0, hauteurNum, LARGEUR, HAUTEUR_BORDURE_AFFICHAGE_NUMERO);
         SDL_RenderCopy(renderer, numero, NULL, &position);
+        SDL_RenderPresent(renderer);
+
         SDL_DestroyTextureS(numero);
     }
     TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
 }
 
@@ -1418,11 +1431,16 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
         position.y += texte->h - 8;
         position.h = texte->h;
         position.w = texte->w;
+
+        refreshRendererIfBuggy(renderer);
         SDL_RenderCopy(renderer, texte, NULL, &position);
+#ifndef WIN_OPENGL_BUGGED
+        SDL_RenderPresent(renderer);
+#endif
+
         SDL_DestroyTextureS(texte);
     }
     TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
 }
 

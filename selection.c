@@ -55,7 +55,9 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
             SDL_DestroyTextureS(texte);
         }
         TTF_CloseFont(police);
+#ifndef WIN_OPENGL_BUGGED
         SDL_RenderPresent(renderer);
+#endif
         MUTEX_UNIX_UNLOCK;
 
         data = calloc(nombreManga, sizeof(DATA_ENGINE));

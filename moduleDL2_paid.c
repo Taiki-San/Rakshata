@@ -416,8 +416,8 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
             SDL_DestroyTexture(texture);
         }
         TTF_CloseFont(police);
+        SDL_RenderPresent(renderVar);
     }
-    SDL_RenderPresent(renderVar);
 }
 
 int MDLPWaitEvent(SDL_Renderer * renderVar)
@@ -434,8 +434,6 @@ int MDLPWaitEvent(SDL_Renderer * renderVar)
                 {
                     if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                         return 1; //Nop
-                    else
-                        SDL_RenderPresent(renderVar);
                     break;
                 }
                 case SDL_KEYDOWN:
