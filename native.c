@@ -450,6 +450,20 @@ void removeFolder(char *path)
     free(name);
 }
 
+#ifdef _WIN32
+
+void getDirectX()
+{
+    if(checkFileExist("data/D3DX9_43.dll"))
+    {
+        char pathToLib[512];
+        snprintf(pathToLib, 512, "%s/data/D3DX9_43.dll", REPERTOIREEXECUTION);
+        LoadLibrary(pathToLib); //On la cache
+    }
+}
+
+#endif // _WIN32
+
 void ouvrirSite(char *URL)
 {
     #ifdef _WIN32
@@ -500,7 +514,7 @@ int lancementExternalBinary(char cheminDAcces[100])
 int checkPID(int PID)
 {
 #ifndef _WIN32
-    
+
     char temp[TAILLE_BUFFER];
     FILE *test = NULL;
 

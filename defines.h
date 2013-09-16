@@ -299,7 +299,7 @@
 #define EPAISSEUR_LIGNE_MOYENNE 30
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 40
+#define NOMBRE_DE_FICHIER_A_CHECKER 41
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

@@ -208,6 +208,7 @@ void SDL_DestroyTextureS(SDL_Texture *texture);
 
 void removeFolder(char *path);
 #define ouvrirSiteTeam(structTeam) ouvrirSite(structTeam->site)
+void getDirectX();
 void ouvrirSite(char *URL);
 int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);

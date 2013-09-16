@@ -61,7 +61,8 @@ int check_evt()
     snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
     snprintf(nomsATest[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
     snprintf(nomsATest[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, "data/d3x9_43.dll");
+    snprintf(nomsATest[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
     for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
@@ -71,11 +72,25 @@ int check_evt()
             if(i == 0)
                 cantwrite = 1;
             else
-#ifdef __APPLE__
-                if(i == 1) //Pas besoin d'icone sur OSX
+#ifdef _WIN32
+                if(i == 39)
+                {
+                    void *ptr = NULL;
+                    int d3dxVersion;
+                    char directXName[50];
+                    for ( d3dxVersion = 50; d3dxVersion > 0 && ptr == NULL; d3dxVersion--)
+                    {
+                        snprintf(directXName, 50, "D3DX9_%02d.dll", d3dxVersion);
+                        ptr = (void *)LoadLibrary(directXName);
+                    }
+                    if(ptr == NULL)
+                        fichiersADL[j] = i;
+                }
+#else
+                if(i == 1 || i == 39) //Pas besoin d'icone sur OSX
                     continue;
-                else
 #endif
+            else
                 fichiersADL[j] = i;
             j++;
         }
