@@ -134,6 +134,9 @@ void MDLUIThread()
 void startMDLUIThread()
 {
 #ifdef _WIN32
+
+    for(; isDirectXLoaded(); SDL_Delay(rand() % 50));
+
     SDL_FlushEvent(SDL_WINDOWEVENT);
     SDL_Window * window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, LARGEUR, HAUTEUR_FENETRE_DL, SDL_WINDOW_OPENGL);
     SDL_FlushEvent(SDL_WINDOWEVENT);

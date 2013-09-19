@@ -61,7 +61,7 @@ int check_evt()
     snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
     snprintf(nomsATest[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
     snprintf(nomsATest[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, "data/d3x9_43.dll");
+    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, "data/D3DX9_43.dll");
     snprintf(nomsATest[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
@@ -73,19 +73,8 @@ int check_evt()
                 cantwrite = 1;
             else
 #ifdef _WIN32
-                if(i == 39)
-                {
-                    void *ptr = NULL;
-                    int d3dxVersion;
-                    char directXName[50];
-                    for ( d3dxVersion = 50; d3dxVersion > 0 && ptr == NULL; d3dxVersion--)
-                    {
-                        snprintf(directXName, 50, "D3DX9_%02d.dll", d3dxVersion);
-                        ptr = (void *)LoadLibrary(directXName);
-                    }
-                    if(ptr == NULL)
-                        fichiersADL[j] = i;
-                }
+                if(i == 39 && isDirectXLoaded())
+                    fichiersADL[j] = i;
 #else
                 if(i == 1 || i == 39) //Pas besoin d'icone sur OSX
                     continue;
@@ -208,8 +197,22 @@ int check_evt()
                     free(buffer);
                 }
 
-                if(fichiersADL[i] == 1) //Si c'est l'icone
+                else if(fichiersADL[i] == 1) //Si c'est l'icone
                     loadIcon(window);
+#ifdef _WIN32
+                else if(fichiersADL[i] == 39)
+                {
+                    LoadLibrary("data/D3DX9_43.dll");
+                    if(renderer != NULL) //Reset renderer for main window
+                    {
+                        SDL_Window * window = renderer->window;
+                        SDL_DestroyRenderer(renderer);
+                        renderer = setupRendererSafe(window);
+                        chargement(renderer, getH(renderer), getW(renderer));
+                    }
+                }
+#endif
+
             }
         }
         TTF_CloseFont(police);

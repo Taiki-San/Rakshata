@@ -222,9 +222,8 @@ int mainChoixDL()
 {
     bool autoSelect = false;
     int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1;
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
-    int pageChapitre = 1;
-#endif
+    int pageChapitre = 1, previousMangaSelected = VALEUR_FIN_STRUCTURE_CHAPITRE;
+
     mkdirR("manga");
     initialisationAffichage();
 
@@ -265,13 +264,16 @@ int mainChoixDL()
             else if(mangaChoisis > PALIER_DEFAULT)
             {
                 bool isTome;
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 chapitreChoisis = PALIER_DEFAULT;
                 continuer = PALIER_DEFAULT;
-                pageChapitre = 1;
+                if(previousMangaSelected == VALEUR_FIN_STRUCTURE_CHAPITRE || mangaChoisis != previousMangaSelected)
+                {
+                    pageChapitre = 1;
+                    previousMangaSelected = mangaChoisis;
+                }
+
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
-#endif
                     if(autoSelect)
                     {
                         chapitreChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -280,13 +282,9 @@ int mainChoixDL()
                     }
                     else
                     {
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                         curPage = pageChapitre;
-#endif
                         chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                         pageChapitre = curPage;
-#endif
                     }
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
@@ -303,9 +301,7 @@ int mainChoixDL()
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }
-#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 }
-#endif
             }
         }
 

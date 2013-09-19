@@ -452,14 +452,36 @@ void removeFolder(char *path)
 
 #ifdef _WIN32
 
+static bool directXLoaded;
+
 void getDirectX()
 {
     if(checkFileExist("data/D3DX9_43.dll"))
     {
         char pathToLib[512];
         snprintf(pathToLib, 512, "%s/data/D3DX9_43.dll", REPERTOIREEXECUTION);
-        LoadLibrary(pathToLib); //On la cache
+        directXLoaded = (LoadLibrary(pathToLib) != NULL);
     }
+    else
+    {
+        int d3dxVersion;
+        char directXName[50];
+        for ( d3dxVersion = 50; d3dxVersion > 0; d3dxVersion--)
+        {
+            snprintf(directXName, 50, "D3DX9_%02d.dll", d3dxVersion);
+            if(LoadLibrary(directXName))
+            {
+                directXLoaded = true;
+                break;
+            }
+        }
+        if(!d3dxVersion)    directXLoaded = false;
+    }
+}
+
+bool isDirectXLoaded()
+{
+    return directXLoaded;
 }
 
 #endif // _WIN32
@@ -469,14 +491,17 @@ void ouvrirSite(char *URL)
     #ifdef _WIN32
         ShellExecute(NULL, "open", URL, NULL, NULL, SW_SHOWNOACTIVATE);
     #else
+        int i = 0;
+        for(; URL[i] && URL[i] != '"'; i++);
+        if(URL[i])  return; //Anti escape
         char *bufferCMD;
         bufferCMD = malloc(strlen(URL) + 20);
         if(bufferCMD != NULL)
         {
             #ifdef __APPLE__
-                snprintf(bufferCMD, strlen(URL) + 20, "open %s", URL);
+                snprintf(bufferCMD, strlen(URL) + 20, "open \"%s\" &", URL);
             #else
-                snprintf(bufferCMD, strlen(URL) + 20, "firefox %s", URL);
+                snprintf(bufferCMD, strlen(URL) + 20, "firefox \"%s\" &", URL);
             #endif
             system(bufferCMD);
             free(bufferCMD);
