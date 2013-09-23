@@ -400,9 +400,9 @@ void setPrefs(MANGAS_DATA* mangaDB)
         }
         else
             removeFromPref(SETTINGS_FAVORITE_FLAG);
-
-        free(favsNew);
+        
         mangaDB->favoris = mangaDB->favoris?0:1;
     }
+    free(favsNew);
 }
 

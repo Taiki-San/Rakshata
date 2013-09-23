@@ -164,7 +164,9 @@ int earlyInit(int argc, char *argv[])
     loadPalette();
     resetUpdateDBCache();
     initializeDNSCache();
+#ifdef _WIN32
     getDirectX();
+#endif
 
     /*Launching SDL & SDL_TTF*/
     if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure

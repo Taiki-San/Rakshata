@@ -1040,6 +1040,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
         {
+            /*Checker la realloc*/
             dataReader->nombrePageTotale += nombrePages;
             dataReader->pathNumber = realloc(dataReader->pathNumber, (dataReader->nombrePageTotale+1) * sizeof(int));
             dataReader->pageCouranteDuChapitre = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePageTotale+1) * sizeof(int));
