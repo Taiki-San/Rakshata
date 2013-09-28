@@ -17,7 +17,6 @@ int check_evt()
 {
     int i, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
     char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
-    FILE *test = NULL;
 
     for(i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
 
@@ -91,6 +90,7 @@ int check_evt()
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
         char temp[200];
+        FILE *test = NULL;
         SDL_Texture *message = NULL;
         SDL_Rect position;
         SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
@@ -121,6 +121,12 @@ int check_evt()
         mkdirR("data/german");
         mkdirR("data/italian");
         mkdirR("data/icon");
+
+        if(j > NOMBRE_DE_FICHIER_A_CHECKER - 5)     //Si suffisament de fichiers manquent, on assume nouvelle installe
+        {
+            test = fopenR("data/firstLaunchAddRegistry", "w+");
+            if(test != NULL)    fclose(test);
+        }
 
         /*On vas écrire un message annonçant qu'on va restaurer l'environnement
 		 On ne va pas utiliser les fichiers de trad car ils peuvent être corrompus*/
@@ -229,8 +235,8 @@ int check_evt()
         free(buf);
     }
 
-    test = fopenR(SECURE_DATABASE, "r");
-    if(test == NULL || (test != NULL && fgetc(test) == EOF))
+    FILE * test = fopenR(SECURE_DATABASE, "r");
+    if(test == NULL || fgetc(test) == EOF)
     {
         if(test != NULL)
             fclose(test);

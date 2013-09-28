@@ -619,7 +619,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
                 }
                 else
                     extremes[0] = extremes[1] = chapitre;
-                
+
                 ressources = fopenR(temp, "w+");
                 if(extremes[0] > chapitre)
                     fprintf(ressources, "%d %d", chapitre, extremes[1]);
@@ -657,6 +657,10 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Rect position;
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
+
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
 
     police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
     MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
@@ -716,6 +720,10 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         }
     }
 
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
+
     TTF_CloseFont(police);
     return nbrElementDisp;
 }
@@ -726,6 +734,10 @@ void MDLUpdateIcons(bool ignoreCache)
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     position.h = position.w = MDL_ICON_SIZE;
+
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
 
     /*RendererDL != NULL au cas où la fenêtre ai été fermée et que Rakshata soit en train de quitter*/
     for(posDansPage = 0; rendererDL != NULL && posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
@@ -787,6 +799,10 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
             position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
         position.h = texture->h;
         position.w = texture->w;
+#ifdef WIN_OPENGL_BUGGED
+        MDLTUIRefresh();
+#endif
+
         MDLTUICopy(texture, NULL, &position);
         MDLTUIDestroyTexture(texture);
         MDLTUIRefresh();

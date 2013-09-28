@@ -54,6 +54,7 @@ void MDLUIThread()
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+    SDL_RenderClear(rendererDL);
     MUTEX_LOCK(mutexStartUIThread);
 
     while(!quit)
@@ -152,6 +153,7 @@ void startMDLUIThread()
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
+    SDL_RenderClear(rendererDL);
 #else
     createNewThread(MDLUIThread, NULL);
 #endif // _WIN32

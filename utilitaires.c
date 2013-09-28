@@ -330,11 +330,13 @@ int isPNG(void *input)
     return 0;
 }
 
-void addToRegistry()
+void addToRegistry(bool firstStart)
 {
 #ifdef _WIN32
-    if(checkDirExist("data"))
+    if(!firstStart)
         return;
+    else
+        remove("data/firstLaunchAddRegistry");
 
     HKEY hkey;
 

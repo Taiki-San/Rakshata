@@ -14,6 +14,7 @@
 
 void welcome()
 {
+    int i;
     char localization[SIZE_TRAD_ID_9][TRAD_LENGTH];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
@@ -39,39 +40,20 @@ void welcome()
 		SDL_DestroyTexture(texte);
 	}
 
-	texte = TTF_Write(renderer, police, localization[1], couleurTexte);
-	if(texte != NULL)
+    for(i = 1; i < 4; i++)
 	{
-		position.h = texte->h;
-		position.w = texte->w;
-		position.y = 90;
-		position.x = WINDOW_SIZE_W/2 - position.w/2;
-		SDL_RenderCopy(renderer, texte, NULL, &position);
-		SDL_DestroyTexture(texte);
-	}
-
-	texte = TTF_Write(renderer, police, localization[2], couleurTexte);
-	if(texte != NULL)
-	{
-		position.h = texte->h;
-		position.w = texte->w;
-		position.y = 120;
-		position.x = WINDOW_SIZE_W/2 - position.w/2;
-		SDL_RenderCopy(renderer, texte, NULL, &position);
-		SDL_DestroyTexture(texte);
-	}
-
-	texte = TTF_Write(renderer, police, localization[3], couleurTexte);
-	if(texte != NULL)
-	{
-		position.h = texte->h;
-		position.w = texte->w;
-		position.y = 150;
-		position.x = WINDOW_SIZE_W/2 - position.w/2;
-		SDL_RenderCopy(renderer, texte, NULL, &position);
-		SDL_DestroyTexture(texte);
-	}
-
+        texte = TTF_Write(renderer, police, localization[i], couleurTexte);
+        if(texte != NULL)
+        {
+            position.h = texte->h;
+            position.w = texte->w;
+            position.y = 60 + i * 30;
+            position.x = WINDOW_SIZE_W/2 - position.w/2;
+            SDL_RenderCopy(renderer, texte, NULL, &position);
+            SDL_DestroyTexture(texte);
+        }
+    }
+    
 	texte = TTF_Write(renderer, police, localization[4], couleurTexte);
 	if(texte != NULL)
 	{

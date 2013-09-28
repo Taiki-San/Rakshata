@@ -53,6 +53,8 @@ int ecranAccueil()
     SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
 
+    addToRegistry(checkFileExist("data/firstLaunchAddRegistry"));
+
     return waitEnter(renderer);
 }
 

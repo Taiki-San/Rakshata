@@ -325,7 +325,13 @@ void MDLPDispCheckingIfPaid()
 
     if(police != NULL)
     {
+
         texture = MDLTUITTFWrite(police, trad[0], couleur);
+
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
+
         if(texture != NULL)
         {
             position.h = texture->h;
@@ -336,9 +342,9 @@ void MDLPDispCheckingIfPaid()
             MDLTUIDestroyTexture(texture);
         }
         TTF_CloseFont(police);
+        MDLTUIRefresh();
     }
 
-    MDLTUIRefresh();
 }
 
 void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
@@ -463,6 +469,9 @@ int MDLPWaitEvent(SDL_Renderer * renderVar)
 
 void MDLPEraseDispChecking()
 {
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
     MDLTUIBackground(0, HAUTEUR_POURCENTAGE-1, rendererDL->window->w, rendererDL->window->h - HAUTEUR_POURCENTAGE);
     MDLTUIRefresh();
 }

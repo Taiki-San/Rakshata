@@ -14,7 +14,7 @@
     #define DEV_VERSION
     #define PROJECT_NAME "[DEV_BUILD] Rakshata"
 #else
-    #define PROJECT_NAME "[RC] Rakshata"
+    #define PROJECT_NAME "Rakshata"
 #endif
 
 #define CURRENTVERSION 120

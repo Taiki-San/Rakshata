@@ -77,11 +77,14 @@ int download_UI(TMP_DL *output)
         position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
         position.h = pourcentAffiche->h;
         position.w = pourcentAffiche->w;
+#ifdef WIN_OPENGL_BUGGED
+        MDLTUIRefresh();
+#endif
         MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, position.h);
         MDLTUICopy(pourcentAffiche, NULL, &position);
+        MDLTUIRefresh();
         MDLTUIDestroyTexture(pourcentAffiche);
     }
-    MDLTUIRefresh();
     while(1)
     {
         if(FILE_EXPECTED_SIZE > 0)
@@ -103,13 +106,16 @@ int download_UI(TMP_DL *output)
 
                 if(pourcentAffiche != NULL)
                 {
-                    MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                     position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
-                    MDLTUICopy(pourcentAffiche, NULL, &position);
-                    MDLTUIDestroyTexture(pourcentAffiche);
+#ifdef WIN_OPENGL_BUGGED
                     MDLTUIRefresh();
+#endif
+                    MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
+                    MDLTUICopy(pourcentAffiche, NULL, &position);
+                    MDLTUIRefresh();
+                    MDLTUIDestroyTexture(pourcentAffiche);
                 }
                 last_refresh = SDL_GetTicks();
             }
@@ -122,11 +128,13 @@ int download_UI(TMP_DL *output)
                 position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
                 position.h = pourcentAffiche->h;
                 position.w = pourcentAffiche->w;
-
+#ifdef WIN_OPENGL_BUGGED
+                MDLTUIRefresh();
+#endif
                 MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                 MDLTUICopy(pourcentAffiche, NULL, &position);
-                MDLTUIDestroyTexture(pourcentAffiche);
                 MDLTUIRefresh();
+                MDLTUIDestroyTexture(pourcentAffiche);
                 status = STATUS_FORCE_CLOSE;
                 TTF_CloseFont(police);
                 break;
@@ -145,15 +153,17 @@ int download_UI(TMP_DL *output)
     }
     else
     {
-        MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
         pourcentAffiche = MDLTUITTFWrite(police, texte[6], couleur);
         if(pourcentAffiche != NULL)
         {
             position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
             position.h = pourcentAffiche->h;
             position.w = pourcentAffiche->w;
+#ifdef WIN_OPENGL_BUGGED
+            MDLTUIRefresh();
+#endif
+            MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
             MDLTUICopy(pourcentAffiche, NULL, &position);
-            MDLTUIDestroyTexture(pourcentAffiche);
             MDLTUIRefresh();
         }
         TTF_CloseFont(police);
