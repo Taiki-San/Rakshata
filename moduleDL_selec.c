@@ -11,8 +11,26 @@
 *********************************************************************************************/
 
 #include "main.h"
-#include "moduleDL2.h"
+#include "moduleDL.h"
 
+typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
+struct MDL_SELEC_CACHE_MANGA
+{
+    MANGAS_DATA * manga;
+    int * tome;
+    int * chapitre;
+    MDL_SELEC_CACHE_MANGA * nextManga;
+};
+
+typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE;
+struct MDL_SELEC_CACHE
+{
+    TEAMS_DATA * team;
+    MDL_SELEC_CACHE_MANGA * data;
+    MDL_SELEC_CACHE * nextTeam;
+};
+
+extern int curPage; //Too lazy to use an argument
 int mainChoixDL()
 {
     bool autoSelect = false;
@@ -121,4 +139,102 @@ int mainChoixDL()
     return continuer;
 }
 
+/*Cache des éléments sélectionnés pour les afficher dans l'interface*/
 
+/*Recoit les données et si pas déjà présente, les injecte dans le cache.
+Il sera possible soit de découper cette fonction en un test et un ajout si nécessaire*/
+
+void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInCache, bool isTome, int idElem)
+{
+    bool newDataset = false;
+
+    if(*cache == NULL)
+    {
+        *cache = calloc(1, sizeof(MDL_SELEC_CACHE));
+        if(*cache == NULL)   return;
+
+        newDataset = true;
+    }
+
+    MDL_SELEC_CACHE * internalCache = *cache;   //cache != NULL
+
+    if(!newDataset) //Si il y a déjà des trucs dans le cache, on vérifie que la team n'est pas déjà présente
+        for(; internalCache->team != mangaToPutInCache->team && internalCache->nextTeam != NULL; internalCache = internalCache->nextTeam);
+
+    if(newDataset || internalCache->team != mangaToPutInCache->team)   //Team non existante dans le cache
+    {
+        if(!newDataset)
+        {
+            MDL_SELEC_CACHE * newTeam = calloc(1, sizeof(MDL_SELEC_CACHE));
+            if(newTeam == NULL)
+            {
+                free(*cache);
+                *cache = NULL;
+                return;
+            }
+
+            internalCache->nextTeam = newTeam;  //Set the new structure as next element
+            internalCache = newTeam;            //Jump to that element, if newDataset, already the case
+        }
+
+        internalCache->team = mangaToPutInCache->team;
+        newDataset = true;
+    }
+
+    //now, internalCache contain the current team structure, let's check manga
+
+    //We initialize a new var because if we don't, casting will make the code ugly
+    MDL_SELEC_CACHE_MANGA * internalCacheM = internalCache->data;    //Get into the content of team's cache to find the manga, if newDataset, internalCache->data == NULL
+
+    if(!newDataset && internalCacheM != NULL)
+        for(; internalCacheM->manga != mangaToPutInCache && internalCacheM->nextManga != NULL;  internalCacheM = internalCacheM->nextManga);
+
+    if(newDataset || internalCacheM == NULL || internalCacheM->manga != mangaToPutInCache)   //Si ajout du manga dans le cache est requis
+    {
+        MDL_SELEC_CACHE_MANGA * newManga = calloc(1, sizeof(MDL_SELEC_CACHE_MANGA));
+        if(newManga == NULL)
+        {
+            #warning "En cas d'echec, il faut retirer l'élement vide du cache, ou juste quitter, au choix"
+            return;
+        }
+        if(newDataset || internalCacheM == NULL)
+            internalCache->data = newManga;
+        else
+            internalCacheM->nextManga = newManga;
+
+        internalCacheM = newManga;
+        internalCacheM->manga = mangaToPutInCache;
+        newDataset = true;
+    }
+
+    int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
+    int * newCache = realloc(input, (input != NULL ? *input : 1) + 1 );
+
+    //On ne recherche pas les doublons pour des raisons de performance
+
+    if(newCache == NULL)     return;
+
+    if(isTome)  internalCacheM->tome = newCache;
+    else        internalCacheM->chapitre = newCache;
+
+    *newCache = (input != NULL ? *input : 1) + 1;   //Set the new size
+    newCache[*newCache - 1] = idElem;               //Set the value in the last entry
+}
+
+MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA * mangaToGet)
+{
+    if(cache == NULL || mangaToGet == NULL)     return NULL;
+
+    /*On assume que il y a du contenu dans le cache cf initCacheSelectionMDL*/
+
+    for(; cache->team != mangaToGet->team && cache->nextTeam != NULL; cache = cache->nextTeam);
+
+    if(cache->team != mangaToGet->team || cache->data == NULL || cache->data )     return NULL;
+
+    MDL_SELEC_CACHE_MANGA * internalCache = cache->data;    //Get into the content of team's cache to find the manga, if newDataset, internalCache->data == NULL
+
+    for(; internalCache->manga != mangaToGet && internalCache->nextManga != NULL;  internalCache = internalCache->nextManga);
+
+    if(internalCache->manga != mangaToGet)   return NULL;
+    return internalCache;
+}
