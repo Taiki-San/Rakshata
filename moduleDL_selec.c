@@ -13,7 +13,6 @@
 #include "main.h"
 #include "moduleDL.h"
 
-typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
 struct MDL_SELEC_CACHE_MANGA
 {
     MANGAS_DATA * manga;
@@ -22,7 +21,6 @@ struct MDL_SELEC_CACHE_MANGA
     MDL_SELEC_CACHE_MANGA * nextManga;
 };
 
-typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE;
 struct MDL_SELEC_CACHE
 {
     TEAMS_DATA * team;
@@ -192,11 +190,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     if(newDataset || internalCacheM == NULL || internalCacheM->manga != mangaToPutInCache)   //Si ajout du manga dans le cache est requis
     {
         MDL_SELEC_CACHE_MANGA * newManga = calloc(1, sizeof(MDL_SELEC_CACHE_MANGA));
-        if(newManga == NULL)
-        {
-            #warning "En cas d'echec, il faut retirer l'élement vide du cache, ou juste quitter, au choix"
-            return;
-        }
+        if(newManga == NULL)    return;
         if(newDataset || internalCacheM == NULL)
             internalCache->data = newManga;
         else
@@ -237,4 +231,24 @@ MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA
 
     if(internalCache->manga != mangaToGet)   return NULL;
     return internalCache;
+}
+
+void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
+{
+    void * buffer;
+    /*NULL pointers can be freely freed*/
+    while(cache != NULL)
+    {
+        while(cache->data != NULL)
+        {
+            buffer = cache->data->nextManga;
+            free(cache->data->chapitre);
+            free(cache->data->manga);
+            free(cache->data);
+            cache->data = (MDL_SELEC_CACHE_MANGA *) buffer;
+        }
+        buffer = cache;
+        cache = cache->nextTeam;
+        free(buffer);
+    }
 }

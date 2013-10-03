@@ -116,6 +116,9 @@ typedef struct argument_to_MDL_handler
     DATA_LOADED* todoList;
 } MDL_HANDLER_ARG;
 
+typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE; //Version publique
+typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
+
 extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
@@ -186,6 +189,10 @@ SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur)
 void MDLTUIDestroyTexture(SDL_Texture * texture);
 SDL_Texture * MDLTUICreateTextureFromSurface(SDL_Surface * surface);
 SDL_Texture * MDLTUILoadIMG(SDL_Renderer * rendererVar, char* filename);
+
+/**ModuleDL_selec.c**/
+void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInCache, bool isTome, int idElem);
+MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA * mangaToGet);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
