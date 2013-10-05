@@ -238,21 +238,21 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
     {
         case SDL_WINDOWEVENT:
         {
-            if(event->window.windowID != windows->id)
+            if(event->window.windowID != windows->id && event->window.windowID != 0)
                 state = 0;
             break;
         }
         case SDL_KEYDOWN:
         case SDL_KEYUP:
         {
-            if(event->key.windowID != windows->id)
+            if(event->key.windowID != windows->id && event->key.windowID != 0)
                 state = 0;
             break;
         }
 
         case SDL_MOUSEMOTION:
         {
-            if(event->motion.windowID != windows->id)
+            if(event->motion.windowID != windows->id && event->motion.windowID != 0)
                 state = 0;
             break;
         }
@@ -260,21 +260,21 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows)
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         {
-            if(event->button.windowID != windows->id)
+            if(event->button.windowID != windows->id && event->button.windowID != 0)
                 state = 0;
             break;
         }
 
         case SDL_MOUSEWHEEL:
         {
-            if(event->wheel.windowID != windows->id)
+            if(event->wheel.windowID != windows->id && event->wheel.windowID != 0)
                 state = 0;
             break;
         }
 
         case SDL_TEXTINPUT:
         {
-            if(event->text.windowID != windows->id)
+            if(event->text.windowID != windows->id && event->text.windowID != 0)
                 state = 0;
             break;
         }
