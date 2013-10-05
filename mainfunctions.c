@@ -271,9 +271,10 @@ int mainChoixDL()
                     pageChapitre = 1;
                     previousMangaSelected = mangaChoisis;
                 }
-
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
+#endif
                     if(autoSelect)
                     {
                         chapitreChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -301,7 +302,9 @@ int mainChoixDL()
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }
+#ifdef DLLIST_GO_BACK_TO_LIST_AFTER_SELECTION
                 }
+#endif
             }
         }
 
