@@ -13,10 +13,6 @@
 #include "main.h"
 #include "moduleDL.h"
 
-#ifndef __INTEL_COMPILER
-	#define SSL_ENABLE
-#endif
-
 static CURLSH* cacheDNS;
 
 static double FILE_EXPECTED_SIZE;
@@ -501,7 +497,6 @@ we75HTdXs+KQKP7/iyBTWWjo7jBJWbHvOzjDjZMtiNkxyC5TBWO2X+QeM/K6u3j6\n\
 
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 {
-#ifdef SSL_ENABLE
 	X509_STORE * store;
 	X509 * cert=NULL;
 	BIO * bio;
@@ -517,15 +512,12 @@ static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
     /* add our certificate to this store */
     if (X509_STORE_add_cert(store, cert)==0)
         return CURLE_SSL_CERTPROBLEM;
-#endif
-
   /* all set to go */
   return CURLE_OK ;
 }
 
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
 {
-#ifdef SSL_ENABLE
 	X509_STORE * store;
 	X509 * certRSP = NULL, *certDpt = NULL;
 	BIO * bio;
@@ -551,7 +543,6 @@ static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * p
 
     if (! X509_STORE_add_cert(store, certDpt))
         return CURLE_SSL_CERTPROBLEM;
-#endif
     return CURLE_OK ;
 }
 
@@ -562,22 +553,3 @@ int checkDLInProgress() //Mutex should be set
     return 0;
 }
 
-#ifdef __INTEL_COMPILER
-void testDL()
-{
-    FILE* output = NULL;
-	CURL *curl = NULL;
-	CURLcode res;
-	curl = curl_easy_init();
-	if(curl != NULL)
-	{
-		curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/");
-		output = fopenR("shit.txt", "wb");
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-		res = curl_easy_perform(curl);
-		fclose(output);
-		curl_easy_cleanup(curl);
-	}
-}
-#endif

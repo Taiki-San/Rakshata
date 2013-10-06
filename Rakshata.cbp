@@ -151,6 +151,9 @@
 		<Unit filename="moduleDL2_tool.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="moduleDL_selec.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="native.c">
 			<Option compilerVar="CC" />
 		</Unit>

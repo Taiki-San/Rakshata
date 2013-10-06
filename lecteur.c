@@ -682,7 +682,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             anciennePositionY = event.button.y;
                             SDL_FlushEvent(SDL_MOUSEMOTION);
                             SDL_WaitEvent(&event);
-                            if(!haveInputFocus(&event, window) && event.type == SDL_WINDOWEVENT && (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE))
+                            if(!haveInputFocus(&event, window))
+                                continue;
+                            else if(event.type == SDL_WINDOWEVENT && (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_LEAVE))
                                 runTheBoucle = false;
 
                             switch(event.type)
