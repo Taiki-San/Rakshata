@@ -138,18 +138,6 @@ int mainChoixDL()
 }
 #if 1
 
-void testCache()
-{
-    MDL_SELEC_CACHE * cache;
-    MANGAS_DATA * mangaDB = miseEnCache(LOAD_DATABASE_ALL);
-
-    initCacheSelectionMDL(&cache, &mangaDB[6], 1, 5);
-    initCacheSelectionMDL(&cache, mangaDB, 0, 10);
-    initCacheSelectionMDL(&cache, mangaDB, 0, 15);
-    freeMDLSelecCache(cache);
-
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
-}
 /*Cache des éléments sélectionnés pour les afficher dans l'interface*/
 
 /*Recoit les données et si pas déjà présente, les injecte dans le cache.
