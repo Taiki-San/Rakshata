@@ -48,13 +48,12 @@
 	#ifdef __MINGW32__
 		#include <io.h>
 	#else
-		#ifdef __INTEL_COMPILER
-			#define getcwd(a, b) _getcwd(a, b)
-			#define mkdir(a) _mkdir(a)
-			#define chdir(a) _chdir(a)
-			#define snprintf(a, b, ...) _snprintf_s(a, b, _TRUNCATE, ##__VA_ARGS__)
-		#endif
+        #define getcwd(a, b) _getcwd(a, b)
+        #define mkdir(a) _mkdir(a)
+        #define chdir(a) _chdir(a)
+        #define snprintf(a, b, ...) _snprintf_s(a, b, _TRUNCATE, ##__VA_ARGS__)
 	#endif
+
     #include <windows.h>
 
     #define THREAD_TYPE HANDLE
