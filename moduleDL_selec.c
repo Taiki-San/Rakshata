@@ -136,7 +136,20 @@ int mainChoixDL()
     }
     return continuer;
 }
+#if 1
 
+void testCache()
+{
+    MDL_SELEC_CACHE * cache;
+    MANGAS_DATA * mangaDB = miseEnCache(LOAD_DATABASE_ALL);
+
+    initCacheSelectionMDL(&cache, &mangaDB[6], 1, 5);
+    initCacheSelectionMDL(&cache, mangaDB, 0, 10);
+    initCacheSelectionMDL(&cache, mangaDB, 0, 15);
+    freeMDLSelecCache(cache);
+
+    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+}
 /*Cache des éléments sélectionnés pour les afficher dans l'interface*/
 
 /*Recoit les données et si pas déjà présente, les injecte dans le cache.
@@ -164,19 +177,14 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
         if(!newDataset)
         {
             MDL_SELEC_CACHE * newTeam = calloc(1, sizeof(MDL_SELEC_CACHE));
-            if(newTeam == NULL)
-            {
-                free(*cache);
-                *cache = NULL;
-                return;
-            }
+            if(newTeam == NULL)     return;
 
             internalCache->nextTeam = newTeam;  //Set the new structure as next element
             internalCache = newTeam;            //Jump to that element, if newDataset, already the case
+            newDataset = true;
         }
 
         internalCache->team = mangaToPutInCache->team;
-        newDataset = true;
     }
 
     //now, internalCache contain the current team structure, let's check manga
@@ -202,7 +210,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     }
 
     int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
-    int * newCache = realloc(input, (input != NULL ? *input : 1) + 1 );
+    int * newCache = realloc(input, ((input != NULL ? *input : 1) + 1) * sizeof(int));
 
     //On ne recherche pas les doublons pour des raisons de performance
 
@@ -242,6 +250,7 @@ void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
         while(cache->data != NULL)
         {
             buffer = cache->data->nextManga;
+            free(cache->data->tome);
             free(cache->data->chapitre);
             free(cache->data->manga);
             free(cache->data);
@@ -252,3 +261,4 @@ void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
         free(buffer);
     }
 }
+#endif

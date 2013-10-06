@@ -193,6 +193,7 @@ SDL_Texture * MDLTUILoadIMG(SDL_Renderer * rendererVar, char* filename);
 /**ModuleDL_selec.c**/
 void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInCache, bool isTome, int idElem);
 MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA * mangaToGet);
+void freeMDLSelecCache(MDL_SELEC_CACHE * cache);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

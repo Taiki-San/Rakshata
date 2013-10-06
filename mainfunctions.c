@@ -16,6 +16,7 @@ bool addRepoByFileInProgress;
 void mainRakshata()
 {
     int continuer, restoringState = 0, sectionChoisis;
+    testCache();
 
     MUTEX_LOCK(mutexRS);
 
