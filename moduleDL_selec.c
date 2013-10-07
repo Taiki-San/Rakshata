@@ -12,21 +12,7 @@
 
 #include "main.h"
 #include "moduleDL.h"
-
-struct MDL_SELEC_CACHE_MANGA
-{
-    MANGAS_DATA * manga;
-    int * tome;
-    int * chapitre;
-    MDL_SELEC_CACHE_MANGA * nextManga;
-};
-
-struct MDL_SELEC_CACHE
-{
-    TEAMS_DATA * team;
-    MDL_SELEC_CACHE_MANGA * data;
-    MDL_SELEC_CACHE * nextTeam;
-};
+#include "MDLCache.h"
 
 extern int curPage; //Too lazy to use an argument
 int mainChoixDL()
@@ -44,6 +30,8 @@ int mainChoixDL()
         MUTEX_UNLOCK(mutex);
         updateDataBase(false);
         MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
+        MDL_SELEC_CACHE_MANGA * cache = NULL;
+        MDLSetCacheStruct(&cache);
 
         /*C/C du choix de manga pour le lecteur.*/
         while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
@@ -107,7 +95,7 @@ int mainChoixDL()
 
                     else
                     {
-                        chargement(renderer, getH(renderer), getW(renderer));
+                        //chargement(renderer, getH(renderer), getW(renderer));
                         continuer = ecritureDansImport(mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
@@ -127,6 +115,8 @@ int mainChoixDL()
         else if(checkLancementUpdate())
             remove(INSTALL_DATABASE);
 
+        MDLFlushCachedCache();
+        freeMDLSelecCache(cache);
         freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
     }
     else
@@ -137,6 +127,34 @@ int mainChoixDL()
     return continuer;
 }
 #if 1
+
+/*Permet d'envoyer la variable de cache au coeur du système sans ajouter trop d'arguments*/
+bool isCacheStrucCached = false;
+MDL_SELEC_CACHE ** activeCache;
+
+bool MDLSetCacheStruct(MDL_SELEC_CACHE ** cache)
+{
+    if(!isCacheStrucCached)
+    {
+        activeCache = cache;
+        isCacheStrucCached = true;
+        return true;
+    }
+    return false;
+}
+
+MDL_SELEC_CACHE ** MDLGetCacheStruct()
+{
+    if(isCacheStrucCached)
+        return activeCache;
+    return NULL;
+}
+
+void MDLFlushCachedCache()
+{
+    activeCache = NULL;
+    isCacheStrucCached = false;
+}
 
 /*Cache des éléments sélectionnés pour les afficher dans l'interface*/
 

@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "MDLCache.h"
 
 void refreshChaptersList(MANGAS_DATA *mangaDB)
 {

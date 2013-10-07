@@ -37,6 +37,14 @@
         #define SECURE_THREADS 0x4
     #endif
 #else
+
+    struct thread_info /* Used as argument to thread_start() */
+    {
+        pthread_t thread_id;        /* ID returned by pthread_create() */
+        int       thread_num;       /* Application-defined thread # */
+        char     *argv_string;      /* From command-line argument */
+    };
+
     #include <errno.h>
 #endif
 

@@ -103,12 +103,3 @@ typedef struct
 } PALETTE_GLOBALE;
 
 typedef unsigned char uint8_t;
-
-#ifndef _WIN32
-    struct thread_info {        /* Used as argument to thread_start() */
-        pthread_t thread_id;        /* ID returned by pthread_create() */
-        int       thread_num;       /* Application-defined thread # */
-        char     *argv_string;      /* From command-line argument */
-    };
-
-#endif

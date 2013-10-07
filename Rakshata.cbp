@@ -70,6 +70,7 @@
 		<Unit filename="CTCommon.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="MDLCache.h" />
 		<Unit filename="affichage.c">
 			<Option compilerVar="CC" />
 		</Unit>
