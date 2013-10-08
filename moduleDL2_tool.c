@@ -12,6 +12,7 @@
 
 #include "main.h"
 #include "moduleDL.h"
+#include "MDLCache.h"
 
 extern char password[100];
 
@@ -662,11 +663,12 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
         removeR(path);
 }
 
-int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
+int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 {
     FILE* fichier = NULL;
     char temp[TAILLE_BUFFER];
     int elemChoisisSanitized = VALEUR_FIN_STRUCTURE_CHAPITRE, nombreChapitre = 0;
+    MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
 
     /*On ouvre le fichier d'import*/
     fichier = fopenR(INSTALL_DATABASE, "a+");
@@ -674,40 +676,56 @@ int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis)
     if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
         if(isTome)
-            for(elemChoisisSanitized = 0; mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID < chapitreChoisis; elemChoisisSanitized++);
+            for(elemChoisisSanitized = 0; mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID < chapitreChoisis; elemChoisisSanitized++);
         else
-            for(elemChoisisSanitized = 0; mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[elemChoisisSanitized] < chapitreChoisis; elemChoisisSanitized++);
+            for(elemChoisisSanitized = 0; mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[elemChoisisSanitized] < chapitreChoisis; elemChoisisSanitized++);
+
+        initCacheSelectionMDL(cache, mangaDB, isTome, chapitreChoisis); //On ajoute un seul élément
     }
     else
+    {
         elemChoisisSanitized = 0;
 
-    if(!isTome && mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE)
+        if(cache != NULL)
+        {
+            MDL_SELEC_CACHE_MANGA * cacheManga = getStructCacheManga(*cache, mangaDB);
+            if(cacheManga != NULL)
+            {
+                if(isTome)
+                    cacheManga->allTomeCached = true;
+                else
+                    cacheManga->allChapterCached = true;
+            }
+        }
+    }
+
+    if(!isTome && mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
         do
         {
-            if(mangaDB.chapitres[elemChoisisSanitized]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[elemChoisisSanitized]/10, mangaDB.chapitres[elemChoisisSanitized]%10, CONFIGFILE);
+            if(mangaDB->chapitres[elemChoisisSanitized]%10)
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[elemChoisisSanitized]/10, mangaDB->chapitres[elemChoisisSanitized]%10, CONFIGFILE);
             else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[elemChoisisSanitized]/10, CONFIGFILE);
+                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[elemChoisisSanitized]/10, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                fprintf(fichier, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitres[elemChoisisSanitized]);
+                fprintf(fichier, "%s %s C %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, mangaDB->chapitres[elemChoisisSanitized]);
                 nombreChapitre++;
             }
             elemChoisisSanitized++;
-        } while(chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE);
+        } while(chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE);
     }
-    else if(isTome && elemChoisisSanitized != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    else if(isTome && elemChoisisSanitized != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
         do
         {
-            if(!checkTomeReadable(mangaDB, mangaDB.tomes[elemChoisisSanitized].ID))
+            if(!checkTomeReadable(*mangaDB, mangaDB->tomes[elemChoisisSanitized].ID))
             {
-                fprintf(fichier, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomes[elemChoisisSanitized].ID);
+                fprintf(fichier, "%s %s T %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, mangaDB->tomes[elemChoisisSanitized].ID);
                 nombreChapitre++;
             }
             elemChoisisSanitized++;
-        }while (chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE);
+        }while (chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE);
     }
     fclose(fichier);
 	return nombreChapitre;

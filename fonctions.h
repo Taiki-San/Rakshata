@@ -178,7 +178,7 @@ int section();
 int showControls();
 
 /**ModuleDL2_tool.c**/
-int ecritureDansImport(MANGAS_DATA mangaDB, bool isTome, int chapitreChoisis);
+int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
 void lancementModuleDL();
 
 /**Native.c**/

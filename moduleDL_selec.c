@@ -96,7 +96,7 @@ int mainChoixDL()
                     else
                     {
                         //chargement(renderer, getH(renderer), getW(renderer));
-                        continuer = ecritureDansImport(mangaDB[mangaChoisis], isTome, chapitreChoisis);
+                        continuer = ecritureDansImport(&mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
                         continuer = -1;
                     }
@@ -205,6 +205,10 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     {
         MDL_SELEC_CACHE_MANGA * newManga = calloc(1, sizeof(MDL_SELEC_CACHE_MANGA));
         if(newManga == NULL)    return;
+
+        newManga->allTomeCached = (mangaToPutInCache->firstTome == VALEUR_FIN_STRUCTURE_CHAPITRE);          //Si rien de dispo dans les tomes
+        newManga->allChapterCached = (mangaToPutInCache->firstChapter == VALEUR_FIN_STRUCTURE_CHAPITRE);
+
         if(newDataset || internalCacheM == NULL)
             internalCache->data = newManga;
         else
@@ -246,6 +250,7 @@ MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA
     if(internalCache->manga != mangaToGet)   return NULL;
     return internalCache;
 }
+
 
 void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
 {

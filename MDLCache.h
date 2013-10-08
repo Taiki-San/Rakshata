@@ -10,16 +10,18 @@
 **                                                                                          **
 *********************************************************************************************/
 
-typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE; //Version publique
+typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
 struct MDL_SELEC_CACHE_MANGA
 {
     MANGAS_DATA * manga;
+    bool allTomeCached;     //On ne prend en compte que les élements non téléchargés
     int * tome;
+    bool allChapterCached;
     int * chapitre;
     MDL_SELEC_CACHE_MANGA * nextManga;
 };
 
-typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
+typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE; //Version publique
 struct MDL_SELEC_CACHE
 {
     TEAMS_DATA * team;
