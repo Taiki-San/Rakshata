@@ -386,3 +386,44 @@ void addToRegistry(bool firstStart)
 #endif
 }
 
+void mergeSortMerge(int * tab, int *tmp, size_t length)
+{
+    int pos1 = 0, pos2 = length / 2, posTmp = 0;
+
+    while(pos1 < length / 2 && pos2 < length)
+        tmp[posTmp++] = (tab[pos1] < tab[pos2]) ? tab[pos1++] : tab[pos2++];
+
+    while(pos1 < length / 2)    tmp[posTmp++] = tab[pos1++];
+    while(pos2 < length)    tmp[posTmp++] = tab[pos2++];
+
+    for(pos1 = 0; pos1 < length; pos1++)    tab[pos1] = tmp[pos1];
+}
+
+void mergeSortInternal(int *tab, int *tmp, size_t length)
+{
+    if(length < 2)
+        return;
+    else if(length == 2)
+    {
+        if(tab[0] > tab[1])
+            swapValues(tab[0], tab[1]);
+    }
+    else
+    {
+        mergeSortInternal(tab, tmp, length / 2);
+        mergeSortInternal(&tab[length/2], &tmp[length/2], length - (length / 2));
+        mergeSortMerge(tab, tmp, length);
+    }
+}
+
+/*Tri par fusion maison*/
+void mergeSort(int * tab, size_t length)
+{
+    int * tmp = malloc(length * sizeof(int));
+
+    if(tmp == NULL) return;
+
+    mergeSortInternal(tab, tmp, length);
+
+    free(tmp);
+}
