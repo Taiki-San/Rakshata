@@ -153,7 +153,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
         }
 
         //Generate chapter list
-        DATA_ENGINE *chapitreDB = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
+        DATA_ENGINE *chapitreDB = generateChapterList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
         if(chapitreDB == NULL) //Erreur de mémoire ou liste vide
             return errorEmptyCTList(contexte, texteTrad);
         else
@@ -181,10 +181,11 @@ void displayTemplateChapitre(MANGAS_DATA* mangaDB, DATA_ENGINE data, int context
     displayTemplateChapitreTome(mangaDB, contexte, 0, data, texteTrad);
 }
 
-DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
+DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
 {
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
+    MDL_SELEC_CACHE_MANGA * cacheMDL;
 
     if(strlen(stringGeneric) >= TRAD_LENGTH)
         stringGeneric[TRAD_LENGTH-1] = 0;
@@ -194,7 +195,7 @@ DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
 
     /*On prépare maintenant la structure*/
     int chapitreCourant = 0;
-    DATA_ENGINE *chapitreDB = calloc(mangaDB.nombreChapitre+2, sizeof(DATA_ENGINE));
+    DATA_ENGINE *chapitreDB = calloc(mangaDB->nombreChapitre+2, sizeof(DATA_ENGINE));
     chapitreDB[0].chapitrePlusAncien = chapitreDB[0].chapitrePlusRecent = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     if(contexte != CONTEXTE_LECTURE)
@@ -202,46 +203,55 @@ DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int c
         chapitreDB[chapitreCourant].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
         usstrcpy(chapitreDB[chapitreCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, stringAll);
         chapitreCourant++;
+
+        if(contexte == CONTEXTE_DL)
+        {
+            MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
+            cacheMDL = getStructCacheManga((cache != NULL ? *cache : NULL), mangaDB);
+        }
     }
 
     if(ordreCroissant)
         i = 0;
     else
-        i = mangaDB.nombreChapitre-1;
-    while((i < mangaDB.nombreChapitre && ordreCroissant) || (i >= 0 && !ordreCroissant))
+        i = mangaDB->nombreChapitre-1;
+    while((i < mangaDB->nombreChapitre && ordreCroissant) || (i >= 0 && !ordreCroissant))
     {
-        if(mangaDB.chapitres[i] % 10)
-            snprintf(temp, 500, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10, CONFIGFILE);
+        if(mangaDB->chapitres[i] % 10)
+            snprintf(temp, 500, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10, CONFIGFILE);
         else
-            snprintf(temp, 500, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.chapitres[i]/10, CONFIGFILE);
+            snprintf(temp, 500, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[i]/10, CONFIGFILE);
 
         if((contexte != CONTEXTE_DL && checkFileExist(temp)) || (contexte == CONTEXTE_DL && !checkFileExist(temp)))
         {
-            chapitreDB[chapitreCourant].ID = mangaDB.chapitres[i];
-            if(mangaDB.chapitres[i]%10)
-                snprintf(chapitreDB[chapitreCourant++].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d.%d", stringGenericUsable, mangaDB.chapitres[i]/10, mangaDB.chapitres[i]%10);
+            chapitreDB[chapitreCourant].ID = mangaDB->chapitres[i];
+            if(mangaDB->chapitres[i]%10)
+                snprintf(chapitreDB[chapitreCourant++].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d.%d", stringGenericUsable, mangaDB->chapitres[i]/10, mangaDB->chapitres[i]%10);
             else
-                snprintf(chapitreDB[chapitreCourant++].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d", stringGenericUsable, mangaDB.chapitres[i]/10);
+                snprintf(chapitreDB[chapitreCourant++].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d", stringGenericUsable, mangaDB->chapitres[i]/10);
 
             if(ordreCroissant)
             {
                 if(chapitreDB[0].chapitrePlusAncien == VALEUR_FIN_STRUCTURE_CHAPITRE)
-                    chapitreDB[0].chapitrePlusAncien = mangaDB.chapitres[i];
-                chapitreDB[0].chapitrePlusRecent = mangaDB.chapitres[i];
+                    chapitreDB[0].chapitrePlusAncien = mangaDB->chapitres[i];
+                chapitreDB[0].chapitrePlusRecent = mangaDB->chapitres[i];
             }
             else
             {
                 if(chapitreDB[0].chapitrePlusRecent == VALEUR_FIN_STRUCTURE_CHAPITRE)
-                    chapitreDB[0].chapitrePlusRecent = mangaDB.chapitres[i];
-                chapitreDB[0].chapitrePlusAncien = mangaDB.chapitres[i];
+                    chapitreDB[0].chapitrePlusRecent = mangaDB->chapitres[i];
+                chapitreDB[0].chapitrePlusAncien = mangaDB->chapitres[i];
             }
+
+            if(contexte == CONTEXTE_DL && checkIfElemCached(cacheMDL, false, chapitreDB[chapitreCourant].ID))
+                chapitreDB[chapitreCourant].isFullySelected = true;
         }
         if(ordreCroissant)
             i++;
         else
             i--;
     }
-    chapitreDB[0].website = mangaDB.team->site; //On copie juste le pointeur pour économiser de la taille
+    chapitreDB[0].website = mangaDB->team->site; //On copie juste le pointeur pour économiser de la taille
     chapitreDB[0].nombreElementTotal = chapitreCourant;
 
     if((chapitreCourant == 1 && contexte != CONTEXTE_LECTURE) || (chapitreCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre

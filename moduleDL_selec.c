@@ -244,7 +244,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     }
 
     int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
-    int * newCache = realloc(input, ((input != NULL ? *input : 1) + 1) * sizeof(int));
+    int * newCache = realloc(input, ((input != NULL ? *input : 0) + 2) * sizeof(int));
 
     //On ne recherche pas les doublons pour des raisons de performance
 
@@ -253,7 +253,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     if(isTome)  internalCacheM->tome = newCache;
     else        internalCacheM->chapitre = newCache;
 
-    *newCache = (input != NULL ? *input : 1) + 1;   //Set the new size
+    *newCache = (input != NULL ? *input : 0) + 1;   //Set the new size
     newCache[*newCache - 1] = idElem;               //Set the value in the last entry
 
     if(input != NULL)
@@ -326,6 +326,20 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
         return (curPos == mangaDB.nombreChapitre);
     }
     return true;
+}
+
+bool checkIfElemCached(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome, int element)
+{
+    if(cacheManga == NULL || (isTome && cacheManga->tome == NULL) || (!isTome && cacheManga->chapitre == NULL))
+        return false;
+
+    int * input = isTome ? cacheManga->tome : cacheManga->chapitre;
+    int posCache, size = *input;
+
+    #warning "Optimizations needed"
+
+    for(posCache = 1; posCache < size && input[posCache] != element; posCache++);
+    return (posCache < size);
 }
 
 void freeMDLSelecCache(MDL_SELEC_CACHE * cache)

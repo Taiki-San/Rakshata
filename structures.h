@@ -69,6 +69,7 @@ typedef struct data_provided_to_engine
     /*Variable pour CONTEXTE_DL*/
     int nombreChapitreDejaSelect;
     bool anythingToDownload;
+    bool isFullySelected;
 
     /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
     bool switchAvailable;

@@ -1450,3 +1450,4 @@ void enfineEraseDisplayedTomeInfos(SDL_Renderer * renderer)
     applyBackground(renderer, 0, getH(renderer) - HAUTEUR_INFOS_TOMES, getW(renderer), HAUTEUR_INFOS_TOMES);
     MUTEX_UNIX_UNLOCK;
 }
+

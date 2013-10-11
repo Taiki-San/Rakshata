@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "MDLCache.h"
 
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
 {
@@ -175,7 +176,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
         }
 
         //Generate chapter list
-        DATA_ENGINE *tomeDB = generateTomeList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
+        DATA_ENGINE *tomeDB = generateTomeList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
 
         //Si liste vide
         if(tomeDB == NULL) //Erreur de mémoire ou liste vide
@@ -203,9 +204,8 @@ void displayTemplateTome(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, c
     displayTemplateChapitreTome(mangaDB, contexte, 1, data, texteTrad);
 }
 
-DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
+DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
 {
-    bool outCheck;
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
 
@@ -217,7 +217,8 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
         stringGenericUsable[0] += 'A'-'a';
 
     /*On prépare maintenant la structure*/
-    DATA_ENGINE *tomeDB = calloc(mangaDB.nombreTomes+2, sizeof(DATA_ENGINE));
+    DATA_ENGINE *tomeDB = calloc(mangaDB->nombreTomes+2, sizeof(DATA_ENGINE));
+    MDL_SELEC_CACHE_MANGA * cacheMDL;
 
     /************************************************************
     ** Génére le noms des chapitre en vérifiant leur existance **
@@ -230,28 +231,36 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
         tomeDB[tomeCourant].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
         usstrcpy(tomeDB[tomeCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, stringAll);
         tomeCourant++;
+
+        if(contexte == CONTEXTE_DL)
+        {
+            MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
+            cacheMDL = getStructCacheManga((cache != NULL ? *cache : NULL), mangaDB);
+        }
     }
 
     if(ordreCroissant)
         i = 0;
     else
-        i = mangaDB.nombreTomes-1;
-    while((i < mangaDB.nombreTomes && ordreCroissant) || (i >= 0 && !ordreCroissant))
+        i = mangaDB->nombreTomes-1;
+    while((i < mangaDB->nombreTomes && ordreCroissant) || (i >= 0 && !ordreCroissant))
     {
-        snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, mangaDB.tomes[i].ID, CONFIGFILETOME);
+        snprintf(temp, 500, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->tomes[i].ID, CONFIGFILETOME);
 
-        outCheck = checkFileExist(temp);
-        if((outCheck && contexte != CONTEXTE_DL) || (!outCheck && contexte == CONTEXTE_DL))
+        if((contexte != CONTEXTE_DL && checkFileExist(temp)) || (contexte == CONTEXTE_DL && !checkFileExist(temp)))
         {
-            if(mangaDB.tomes[i].name[0] != 0) //Si on a un nom custom
-                usstrcpy(tomeDB[tomeCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, mangaDB.tomes[i].name);
+            if(mangaDB->tomes[i].name[0] != 0) //Si on a un nom custom
+                usstrcpy(tomeDB[tomeCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, mangaDB->tomes[i].name);
             else
-                snprintf(tomeDB[tomeCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d", stringGenericUsable, mangaDB.tomes[i].ID);
+                snprintf(tomeDB[tomeCourant].stringToDisplay, MAX_LENGTH_TO_DISPLAY, "%s %d", stringGenericUsable, mangaDB->tomes[i].ID);
 
-            tomeDB[tomeCourant].ID = mangaDB.tomes[i].ID;
-            tomeDB[tomeCourant].description1 = (char *) mangaDB.tomes[i].description1;
-            tomeDB[tomeCourant].description2 = (char *) mangaDB.tomes[i].description2;
+            tomeDB[tomeCourant].ID = mangaDB->tomes[i].ID;
+            tomeDB[tomeCourant].description1 = (char *) mangaDB->tomes[i].description1;
+            tomeDB[tomeCourant].description2 = (char *) mangaDB->tomes[i].description2;
             tomeCourant++;
+
+            if(contexte == CONTEXTE_DL && checkIfElemCached(cacheMDL, true, tomeDB[tomeCourant].ID))
+                tomeDB[tomeCourant].isFullySelected = true;
         }
         if(ordreCroissant)
             i++;
@@ -259,7 +268,7 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int cont
             i--;
     }
     tomeDB[0].nombreElementTotal = tomeCourant;
-    tomeDB[0].website = mangaDB.team->site;
+    tomeDB[0].website = mangaDB->team->site;
     tomeDB[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     if((tomeCourant == 1 && contexte != CONTEXTE_LECTURE) || (tomeCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre

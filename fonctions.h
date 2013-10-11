@@ -37,7 +37,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int askForChapter(MANGAS_DATA *mangaDB, int mode);
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-DATA_ENGINE *generateChapterList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
+DATA_ENGINE *generateChapterList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 
 /**check.c**/
 int check_evt();
@@ -269,9 +269,9 @@ void escapeTomeLineElement(META_TOME *ligne);
 void refreshTomeList(MANGAS_DATA *mangaDB);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);
-int askForTome(MANGAS_DATA *mangaDB, int contexte);
+int askForTome(MANGAS_DATA* mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-DATA_ENGINE *generateTomeList(MANGAS_DATA mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
+DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
 int extractNumFromConfigTome(char *input, int ID);
 

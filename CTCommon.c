@@ -231,13 +231,13 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 
         if(*isTome)
         {
-            data = generateTomeList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
+            data = generateTomeList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
             if(dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 dernierLu = dernierLuTome;
         }
         else
         {
-            data = generateChapterList(*mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
+            data = generateChapterList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[0]);
             if(dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 dernierLu = dernierLuChapitre;
         }
