@@ -254,7 +254,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     else        internalCacheM->chapitre = newCache;
 
     *newCache = (input != NULL ? *input : 0) + 1;   //Set the new size
-    newCache[*newCache - 1] = idElem;               //Set the value in the last entry
+    newCache[*newCache] = idElem;               //Set the value in the last entry
 
     if(input != NULL)
         mergeSort(&newCache[1], *newCache - 1);
@@ -320,10 +320,10 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
             for(; posCache < length && cacheManga->chapitre[posCache] < curElem; posCache++);
             if(posCache < length && cacheManga->chapitre[posCache] == curElem)  //Si dans le cache
                 continue;
-            else if(!checkTomeReadable(mangaDB, mangaDB.chapitres[curPos]))
+            else if(!checkChapterReadable(mangaDB, mangaDB.chapitres[curPos]))
                 break;
         }
-        return (curPos == mangaDB.nombreChapitre);
+        return (curPos != mangaDB.nombreChapitre);
     }
     return true;
 }
@@ -339,7 +339,7 @@ bool checkIfElemCached(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome, int elem
     #warning "Optimizations needed"
 
     for(posCache = 1; posCache < size && input[posCache] != element; posCache++);
-    return (posCache < size);
+    return (input[posCache] == element);
 }
 
 void freeMDLSelecCache(MDL_SELEC_CACHE * cache)

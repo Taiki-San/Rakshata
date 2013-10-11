@@ -1211,8 +1211,13 @@ SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SD
     else if(contexte == CONTEXTE_DL && input.data->mangaName[0] && isItNew(*input.data)) //Si pas encore DL, en rouge
         return couleurNew;
 
-    else if((contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && input.ID == input0.IDDernierElemLu)
-        return couleurNew;
+    else if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
+    {
+        if(input.isFullySelected)
+            return couleurNothingToRead;
+        if(input.ID == input.IDDernierElemLu)
+            return couleurNew;
+    }
 
     return couleurTexte;
 }

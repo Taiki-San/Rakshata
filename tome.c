@@ -257,10 +257,11 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int con
             tomeDB[tomeCourant].ID = mangaDB->tomes[i].ID;
             tomeDB[tomeCourant].description1 = (char *) mangaDB->tomes[i].description1;
             tomeDB[tomeCourant].description2 = (char *) mangaDB->tomes[i].description2;
-            tomeCourant++;
 
             if(contexte == CONTEXTE_DL && checkIfElemCached(cacheMDL, true, tomeDB[tomeCourant].ID))
                 tomeDB[tomeCourant].isFullySelected = true;
+
+            tomeCourant++;
         }
         if(ordreCroissant)
             i++;

@@ -243,8 +243,8 @@ DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int 
                 chapitreDB[0].chapitrePlusAncien = mangaDB->chapitres[i];
             }
 
-            if(contexte == CONTEXTE_DL && checkIfElemCached(cacheMDL, false, chapitreDB[chapitreCourant].ID))
-                chapitreDB[chapitreCourant].isFullySelected = true;
+            if(contexte == CONTEXTE_DL && checkIfElemCached(cacheMDL, false, chapitreDB[chapitreCourant-1].ID))
+                chapitreDB[chapitreCourant-1].isFullySelected = true;
         }
         if(ordreCroissant)
             i++;
