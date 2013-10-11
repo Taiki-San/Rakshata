@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
         lancementModuleDL();
 
     checkUpdate();
+
     createNewThread(mainRakshata, NULL);
 
     SDL_Event event;

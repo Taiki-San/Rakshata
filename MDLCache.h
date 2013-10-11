@@ -36,4 +36,5 @@ void MDLFlushCachedCache();
 
 void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInCache, bool isTome, int idElem);
 MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA * mangaToGet);
+bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome);
 void freeMDLSelecCache(MDL_SELEC_CACHE * cache);
