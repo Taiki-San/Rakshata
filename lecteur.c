@@ -937,8 +937,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         case SDLK_ESCAPE:
                         {
-                            FREE_CONTEXT();
-                            return PALIER_MENU;
+                            if(*fullscreen)     //Si on est en mode plein écran, on le quitte
+                            {
+                                applyFullscreen(fullscreen, &check4change, &changementEtat);
+                            }
+                            else
+                            {
+                                FREE_CONTEXT();
+                                return PALIER_MENU;
+                            }
                             break;
                         }
 
