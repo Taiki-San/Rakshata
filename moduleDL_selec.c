@@ -79,14 +79,12 @@ int mainChoixDL()
                         autoSelect = isTome = false;
                         refreshChaptersList(&mangaDB[mangaChoisis]);
                     }
-                    else if(checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[mangaChoisis]), isTome))
+                    else
                     {
                         curPage = pageChapitre;
                         chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
                         pageChapitre = curPage;
                     }
-                    else
-                        chapitreChoisis = PALIER_CHAPTER;
 
                     if (chapitreChoisis <= PALIER_CHAPTER)
                     {
@@ -100,7 +98,10 @@ int mainChoixDL()
                         //chargement(renderer, getH(renderer), getW(renderer));
                         continuer = ecritureDansImport(&mangaDB[mangaChoisis], isTome, chapitreChoisis);
                         nombreChapitre = nombreChapitre + continuer;
-                        continuer = PALIER_DEFAULT;
+                        if(checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[mangaChoisis]), isTome))
+                            continuer = PALIER_DEFAULT;
+                        else
+                            chapitreChoisis = PALIER_CHAPTER;
                     }
                 }
             }
@@ -240,7 +241,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
 
         internalCacheM = newManga;
         internalCacheM->manga = mangaToPutInCache;
-        newDataset = true;
+        //newDataset = true;    //Could be usefull later but for now, it's not used after that point
     }
 
     int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
@@ -363,3 +364,4 @@ void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
         free(buffer);
     }
 }
+

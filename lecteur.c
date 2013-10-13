@@ -1015,9 +1015,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
 {
-    int i, prevPos = 0, nombrePages = 0, posID = 0, nombreTours = 1;
+    int i, prevPos = 0, nombrePages = 0, posID = 0, nombreTours = 1, lengthBasePath, lengthFullPath;
     char name[LONGUEUR_NOM_PAGE];
     FILE* config = NULL;
+
+    void * intermediaryPtr;
+    bool allocError;
+
     dataReader->nombrePageTotale = 1;
 
     dataReader->nomPages = dataReader->path = NULL;
@@ -1045,37 +1049,91 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         char input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL;
 
         snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name, CONFIGFILE);
+        allocError = false;
 
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
         {
-            /*Checker la realloc*/
+            /*On réalloue la mémoire en utilisant un buffer intermédiaire*/
             dataReader->nombrePageTotale += nombrePages;
-            dataReader->pathNumber = realloc(dataReader->pathNumber, (dataReader->nombrePageTotale+1) * sizeof(int));
-            dataReader->pageCouranteDuChapitre = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePageTotale+1) * sizeof(int));
-            dataReader->nomPages = realloc(dataReader->nomPages, (dataReader->nombrePageTotale+1) * sizeof(char*));
-            dataReader->chapitreTomeCPT = realloc(dataReader->chapitreTomeCPT, (++nombreTours) * sizeof(int));
 
-            dataReader->path = realloc(dataReader->path, nombreTours * sizeof(char*));
-            dataReader->path[nombreTours-2] = malloc(LONGUEUR_NOM_PAGE);
-            dataReader->path[nombreTours-1] = NULL;
-
-            snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name);
-            if(isTome)
-                dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, chapitre_tome);
+            ///pathNumber
+            intermediaryPtr = realloc(dataReader->pathNumber, (dataReader->nombrePageTotale+1) * sizeof(int));
+            if(intermediaryPtr != NULL)
+                dataReader->pathNumber = intermediaryPtr;
             else
-                dataReader->chapitreTomeCPT[posID] = chapitre_tome;
+                allocError = true;
 
-            for(i = 0; prevPos < dataReader->nombrePageTotale; prevPos++) //Réinintialisation
+            ///pageCouranteDuChapitre
+            intermediaryPtr = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePageTotale+1) * sizeof(int));
+            if(intermediaryPtr != NULL)
+                dataReader->pageCouranteDuChapitre = intermediaryPtr;
+            else
+                allocError = true;
+
+            ///nomPages
+            intermediaryPtr = realloc(dataReader->nomPages, (dataReader->nombrePageTotale+1) * sizeof(char*));
+            if(intermediaryPtr != NULL)
+                dataReader->nomPages = intermediaryPtr;
+            else
+                allocError = true;
+
+            ///chapitreTomeCPT
+            intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (++nombreTours) * sizeof(int));
+            if(intermediaryPtr != NULL)
+                dataReader->chapitreTomeCPT = intermediaryPtr;
+            else
+                allocError = true;
+
+            ///path
+            intermediaryPtr = realloc(dataReader->path, nombreTours * sizeof(char*));
+            if(intermediaryPtr != NULL)
             {
-                dataReader->pathNumber[prevPos] = posID;
-                dataReader->pageCouranteDuChapitre[prevPos] = i;
-                dataReader->nomPages[prevPos] = malloc(LONGUEUR_NOM_PAGE);
-                snprintf(dataReader->nomPages[prevPos], LONGUEUR_NOM_PAGE, "%s/%s", dataReader->path[posID], nomPagesTmp[i++]);
+                dataReader->path = intermediaryPtr;
+                dataReader->path[nombreTours-2] = malloc(LONGUEUR_NOM_PAGE);
+                
+                if(dataReader->path[nombreTours-2] == NULL)
+                    allocError = true;
             }
-            posID++;
-            for(i = 0; nomPagesTmp[i] != NULL; free(nomPagesTmp[i++]));
-            free(nomPagesTmp);
+            else
+                allocError = true;
+
+            if(allocError)  //Si on a eu un problème en allouant de la mémoire
+            {
+                dataReader->nombrePageTotale -= nombrePages;
+                nombreTours--;
+            }
+            else
+            {
+                dataReader->path[nombreTours-1] = NULL;
+
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name);
+                if(isTome)
+                    dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, chapitre_tome);
+                else
+                    dataReader->chapitreTomeCPT[posID] = chapitre_tome;
+
+                lengthBasePath = strlen(dataReader->path[posID]);
+
+                for(i = 0; prevPos < dataReader->nombrePageTotale; prevPos++) //Réinintialisation
+                {
+                    lengthFullPath = lengthBasePath + strlen(nomPagesTmp[i]) + 0x10; // '/' + \0 + margin
+                    dataReader->nomPages[prevPos] = malloc(lengthFullPath);
+                    if(dataReader->nomPages[prevPos] != NULL)
+                    {
+                        snprintf(dataReader->nomPages[prevPos], lengthFullPath, "%s/%s", dataReader->path[posID], nomPagesTmp[i]);
+                        dataReader->pathNumber[prevPos] = posID;
+                        dataReader->pageCouranteDuChapitre[prevPos] = i++;
+                    }
+                    else    //Si problème d'allocation
+                    {
+                        prevPos--;
+                    }
+                }
+                posID++;
+                for(i = 0; nomPagesTmp[i] != NULL; free(nomPagesTmp[i++]));
+                free(nomPagesTmp);
+            }
         }
 
         if(isTome)
@@ -1090,7 +1148,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         }
     } while(isTome && posID < LONGUEUR_NOM_PAGE);
 
-    if(dataReader->pathNumber != NULL)
+    if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)
     {
         dataReader->IDDisplayed = chapitre_tome;
         dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
