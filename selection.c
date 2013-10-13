@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "MDLCache.h"
 
 int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick)
 {
@@ -19,6 +20,8 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 	char texteTrad[SIZE_TRAD_ID_18][TRAD_LENGTH];
 	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Texture *texte = NULL;
+    MDL_SELEC_CACHE_MANGA * currentMangaCache;
+    MDL_SELEC_CACHE * cache;
     SDL_Rect position;
     TTF_Font *police = NULL;
     DATA_ENGINE *data;
@@ -27,6 +30,14 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 
     if(nombreManga > 0)
     {
+        if(contexte == CONTEXTE_DL)
+        {
+            MDL_SELEC_CACHE ** cacheTmp = MDLGetCacheStruct();
+            if(cacheTmp != NULL)
+                cache = *cacheTmp;
+            else
+                cache = NULL;
+        }
         if(nombreManga <= ENGINE_ELEMENT_PAR_PAGE)
             windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * ((nombreManga / ENGINE_NOMBRE_COLONNE)+1) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
         else
@@ -78,7 +89,11 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
             changeTo(data[i].stringToDisplay, '_', ' ');
             data[i].ID = i;
             if(contexte == CONTEXTE_DL)
+            {
                 data[i].anythingToDownload = mangaDB[i].contentDownloadable;
+                currentMangaCache = getStructCacheManga(cache, &mangaDB[i]);
+                data[i].isFullySelected = (currentMangaCache != NULL && !checkIfNonCachedStuffs(currentMangaCache, false) && !checkIfNonCachedStuffs(currentMangaCache, true));
+            }
         }
         do
         {

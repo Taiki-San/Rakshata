@@ -244,7 +244,8 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     }
 
     int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
-    int * newCache = realloc(input, ((input != NULL ? *input : 0) + 2) * sizeof(int));
+    int size = input != NULL ? *input : 0;
+    int * newCache = realloc(input, (size + 2) * sizeof(int));
 
     //On ne recherche pas les doublons pour des raisons de performance
 
@@ -253,7 +254,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     if(isTome)  internalCacheM->tome = newCache;
     else        internalCacheM->chapitre = newCache;
 
-    *newCache = (input != NULL ? *input : 0) + 1;   //Set the new size
+    *newCache = size + 1;   //Set the new size
     newCache[*newCache] = idElem;               //Set the value in the last entry
 
     if(input != NULL)
@@ -286,7 +287,7 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
     if((isTome && cacheManga->allTomeCached) || (!isTome && cacheManga->allChapterCached))  //All read
         return false;
 
-    int curPos, curElem, posCache = 1, length;
+    int curPos, curElem, posCache = 0, length;
     MANGAS_DATA mangaDB = *cacheManga->manga;
 
     if(isTome)  //Si iSTome && !allTomeCached, il y a des tomes valides
@@ -299,8 +300,8 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
         {
             curElem = mangaDB.tomes[curPos].ID;
 
-            for(; posCache < length && cacheManga->tome[posCache] < curElem; posCache++);
-            if(posCache < length && cacheManga->tome[posCache] == curElem)  //Si dans le cache
+            for(; posCache < length && cacheManga->tome[posCache+1] < curElem; posCache++);
+            if(posCache < length && cacheManga->tome[posCache+1] == curElem)  //Si dans le cache
                 continue;
             else if(!checkTomeReadable(mangaDB, mangaDB.tomes[curPos].ID))
                 break;
@@ -317,8 +318,8 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
         {
             curElem = mangaDB.chapitres[curPos];
 
-            for(; posCache < length && cacheManga->chapitre[posCache] < curElem; posCache++);
-            if(posCache < length && cacheManga->chapitre[posCache] == curElem)  //Si dans le cache
+            for(; posCache < length && cacheManga->chapitre[posCache+1] < curElem; posCache++);
+            if(posCache < length && cacheManga->chapitre[posCache+1] == curElem)  //Si dans le cache
                 continue;
             else if(!checkChapterReadable(mangaDB, mangaDB.chapitres[curPos]))
                 break;

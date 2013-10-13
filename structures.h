@@ -68,7 +68,7 @@ typedef struct data_provided_to_engine
 
     /*Variable pour CONTEXTE_DL*/
     int nombreChapitreDejaSelect;
-    bool anythingToDownload;
+    bool anythingToDownload;            //Si rien de nouveau à télécharger
     bool isFullySelected;               //Is element in cache
 
     /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/

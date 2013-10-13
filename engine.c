@@ -283,11 +283,12 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
     int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], nombreElement, posTab, nombreElementAffiche, nombreTotalElementAffiche, reprintScreen = 0;
     int button_selected[8];
     char localization[SIZE_TRAD_ID_11][TRAD_LENGTH];
+    bool isClickable[ENGINE_ELEMENT_PAR_PAGE];
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
-    SDL_Color couleurNothingToRead = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b }, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b};
+    SDL_Color couleurNothingToRead = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b }, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b}, currentColor;
 
     if(input == NULL)
         return PALIER_MENU;
@@ -391,7 +392,13 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             if(!engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                 continue;
 
-            texte = TTF_Write(renderer, police, input[i].stringToDisplay, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
+            currentColor = getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte);
+            if((contexte == CONTEXTE_DL || contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && areSameColors(currentColor, couleurNothingToRead))
+                isClickable[nombreElementAffiche] = false;   //Si l'élement n'est pas lisible
+            else
+                isClickable[nombreElementAffiche] = true;
+
+            texte = TTF_Write(renderer, police, input[i].stringToDisplay, currentColor);
 
             if(texte == NULL)
                 continue;
@@ -405,7 +412,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
                 for(; length > 0 && temp[length-1] == ' '; temp[--length] = 0);
                 snprintf(temp, LONGUEUR_NOM_MANGA_MAX, "%s...", temp);
                 SDL_DestroyTextureS(texte);
-                texte = TTF_Write(renderer, police, temp, getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte));
+                texte = TTF_Write(renderer, police, temp, currentColor);
                 if(texte == NULL)
                     continue;
             }
@@ -451,13 +458,15 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
         }
         SDL_RenderPresent(renderer);
 
+        for(i = nombreElementAffiche; i < ENGINE_ELEMENT_PAR_PAGE; isClickable[i++] = false);   //On complète le tableau avec des valeurs 'non cliquable' pour éviter les données non initialisés
+
         int output, outputType;
         MUTEX_UNIX_UNLOCK;
         do
         {
             outputType = ENGINE_OUTPUT_DEFAULT;
             output = engineSelection(contexte, input, tailleTexte, hauteurAffichage, &outputType);
-            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
+            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, isClickable, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
         MUTEX_UNIX_LOCK;
 
@@ -773,7 +782,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
     return elementChoisis;
 }
 
-int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
+int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, bool isClickable[ENGINE_ELEMENT_PAR_PAGE], int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
 {
     int ret_value = 0; //Besoin de refresh
     switch(outputType)
@@ -797,6 +806,9 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 else
                     posClicked = elementParColonne[output / 100 - 1] + output % 100;
             }
+
+            if(!isClickable[posClicked])
+                break;
 
             posClicked += (*pageCourante-1) * ENGINE_ELEMENT_PAR_PAGE;
 
@@ -1204,6 +1216,10 @@ SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SD
 {
     if(contexte == CONTEXTE_DL && !input.anythingToDownload)
         return couleurNothingToRead;
+
+    if((contexte == CONTEXTE_DL || contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && input.isFullySelected)
+        return couleurNothingToRead;
+
     if((contexte == CONTEXTE_LECTURE && checkChapitreUnread(*input.data) == 1)
             || (contexte == CONTEXTE_DL && checkChapitreUnread(*input.data) == -1))
         return couleurUnread;
@@ -1213,8 +1229,6 @@ SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SD
 
     else if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
     {
-        if(input.isFullySelected)
-            return couleurNothingToRead;
         if(input.ID == input.IDDernierElemLu)
             return couleurNew;
     }
