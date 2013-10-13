@@ -17,6 +17,7 @@ void raffraichissmenent(bool forced);
 void affichageLancement();
 void chargement(SDL_Renderer* rendererVar, int h, int w);
 void loadPalette();
+bool areSameColors(SDL_Color a, SDL_Color b);
 void loadIcon(SDL_Window *window_ptr);
 SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);

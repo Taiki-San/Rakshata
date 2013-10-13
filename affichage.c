@@ -53,7 +53,7 @@ void welcome()
             SDL_DestroyTexture(texte);
         }
     }
-    
+
 	texte = TTF_Write(renderer, police, localization[4], couleurTexte);
 	if(texte != NULL)
 	{
@@ -265,6 +265,11 @@ void loadPalette()
         fclose(res);
     }
 #endif
+}
+
+bool areSameColors(SDL_Color a, SDL_Color b)
+{
+    return (a.a == b.a && a.b == b.b && a.g == b.g && a.r == b.r);
 }
 
 void loadIcon(SDL_Window *window_ptr)
