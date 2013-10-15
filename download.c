@@ -423,7 +423,7 @@ static void define_user_agent(CURL *curl)
 #endif
 }
 
-BIO * getBIORSPCertificate()
+BIO * getBIORSPOldCertificate()
 {
     char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
 MIID8zCCAtugAwIBAgIJANVV7/rlkKicMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD\n\
@@ -448,6 +448,44 @@ pYFf3xwB2tFkZGm2fbCacfVT80dk43X6JJlnLNp9jEraRDXYRW5UaJbDqF0BZBhD\n\
 7TSvKtDISFYrPxc0g01zUQBoQL9uDxC+T6f7PCtDuiEa+gmVExOaGKU3jP9hYVlf\n\
 n2BQGTwbOtrco2hsxCC0arV7XttBY2+6ORMW0ZkaY95Y7e5kp8lYJe1EzDBTeauS\n\
 hg0fHpfL7w==\n\
+-----END CERTIFICATE-----\n";
+  /* get a BIO */
+  return BIO_new_mem_buf(pem_cert, -1);
+}
+
+BIO * getBIORSPCertificate()
+{
+    char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+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\n\
 -----END CERTIFICATE-----\n";
   /* get a BIO */
   return BIO_new_mem_buf(pem_cert, -1);
@@ -498,46 +536,63 @@ we75HTdXs+KQKP7/iyBTWWjo7jBJWbHvOzjDjZMtiNkxyC5TBWO2X+QeM/K6u3j6\n\
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 {
 	X509_STORE * store;
-	X509 * cert=NULL;
+	X509 * certRSPOld = NULL, *certRSP = NULL;
 	BIO * bio;
 
-    bio = getBIORSPCertificate();
-    PEM_read_bio_X509(bio, &cert, 0, NULL);   // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
-    if (cert == NULL)
-    return CURLE_SSL_CERTPROBLEM;
+    store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
 
-    /* get a pointer to the X509 certificate store (which may be empty!) */
-    store=SSL_CTX_get_cert_store((SSL_CTX *)sslctx);
-
-    /* add our certificate to this store */
-    if (X509_STORE_add_cert(store, cert)==0)
+    bio = getBIORSPOldCertificate();                        ///Ancien certificat du RSP (<= 02/2014)
+    PEM_read_bio_X509(bio, &certRSPOld, 0, NULL);           // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    BIO_free(bio);
+    if (certRSPOld == NULL)
         return CURLE_SSL_CERTPROBLEM;
-  /* all set to go */
-  return CURLE_OK ;
+
+    bio = getBIORSPCertificate();                           ///Nouveau certificat du RSP (> 02/2014)
+    PEM_read_bio_X509(bio, &certRSP, 0, NULL);
+    BIO_free(bio);
+    if (certRSP == NULL)
+        return CURLE_SSL_CERTPROBLEM;
+
+    /* add our certificates to this store */
+    if (! X509_STORE_add_cert(store, certRSPOld))
+        return CURLE_SSL_CERTPROBLEM;
+
+    if (! X509_STORE_add_cert(store, certRSP))
+        return CURLE_SSL_CERTPROBLEM;
+
+    return CURLE_OK ;
 }
 
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
 {
 	X509_STORE * store;
-	X509 * certRSP = NULL, *certDpt = NULL;
+	X509 * certRSPOld = NULL, *certRSP = NULL, *certDpt = NULL;
 	BIO * bio;
 
     store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
 
-    bio = getBIORSPCertificate();
-    PEM_read_bio_X509(bio, &certRSP, 0, NULL);          // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    bio = getBIORSPOldCertificate();                        ///Ancien certificat du RSP (<= 02/2014)
+    PEM_read_bio_X509(bio, &certRSPOld, 0, NULL);           // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+    BIO_free(bio);
+    if (certRSPOld == NULL)
+        return CURLE_SSL_CERTPROBLEM;
+
+    bio = getBIORSPCertificate();                           ///Nouveau certificat du RSP (> 02/2014)
+    PEM_read_bio_X509(bio, &certRSP, 0, NULL);
     BIO_free(bio);
     if (certRSP == NULL)
         return CURLE_SSL_CERTPROBLEM;
 
-    ///On ajoute le second certificat
-    bio = getBIORepoCertificate();
+    bio = getBIORepoCertificate();                          ///On ajoute le certificat root des dépôts
     PEM_read_bio_X509(bio, &certDpt, 0, NULL);
     BIO_free(bio);
     if (certDpt == NULL)
         return CURLE_SSL_CERTPROBLEM;
 
     /* add our certificates to this store */
+    if (! X509_STORE_add_cert(store, certRSPOld))
+        return CURLE_SSL_CERTPROBLEM;
+
     if (! X509_STORE_add_cert(store, certRSP))
         return CURLE_SSL_CERTPROBLEM;
 
