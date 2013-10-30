@@ -377,8 +377,7 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
         snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas.chapitre);
 
         bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
-        for(i = 0; i < 5 && bufferDL[i] && bufferDL[i] != '<'; i++); //On vérifie qu'on est pas tombé sur un 404
-        if(bufferDL[i] && bufferDL[i] != '<')
+        if(isDownloadValid(bufferDL))
         {
             for(posBuf = nombreEspace = 0; bufferDL[posBuf] && posBuf < SIZE_BUFFER_UPDATE_DATABASE; bufferDL[posBuf++] == ' '?nombreEspace++:0); //We count spaces in the file, there won't be more elements, but maybe less (invalid data)
 
@@ -667,7 +666,7 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 {
     FILE* fichier = NULL;
     char temp[TAILLE_BUFFER];
-    int elemChoisisSanitized = VALEUR_FIN_STRUCTURE_CHAPITRE, nombreChapitre = 0;
+    int elemChoisisSanitized = 0, nombreChapitre = 0;
     MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
 
     /*On ouvre le fichier d'import*/
@@ -684,10 +683,9 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
     }
     else
     {
-        elemChoisisSanitized = 0;
-
         if(cache != NULL)
         {
+            initCacheSelectionMDL(cache, mangaDB, isTome, chapitreChoisis);
             MDL_SELEC_CACHE_MANGA * cacheManga = getStructCacheManga(*cache, mangaDB);
             if(cacheManga != NULL)
             {

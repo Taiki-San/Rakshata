@@ -215,13 +215,13 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
         buffer_repo[0] = 0;
         download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
-	} while(defaultVersion > 0 && (buffer_repo[0] == '<' || buffer_repo[1] == '<' || buffer_repo[2] == '<'));
+	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
 	return defaultVersion+1;
 }
 
 bool checkValidationRepo(char *bufferDL, int isPaid)
 {
-    if(strlen(bufferDL) < 5 || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<')
+    if(strlen(bufferDL) < 5 || !isDownloadValid(bufferDL))
         return 0;
 
     if(isPaid && (!strcmp(bufferDL, "invalid_request")|| !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))
@@ -333,7 +333,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
         buffer_manga[0] = 0;
         download_mem(temp, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
         defaultVersion--;
-	} while(defaultVersion > 0 && (buffer_manga[0] == '<' || buffer_manga[1] == '<' || buffer_manga[2] == '<'));
+	} while(defaultVersion > 0 && !isDownloadValid(buffer_manga));
     return defaultVersion+1;
 }
 

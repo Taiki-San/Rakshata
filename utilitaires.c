@@ -314,6 +314,13 @@ int defineMaxTextureSize(int sizeIssue)
     return sizeIssue;
 }
 
+bool isDownloadValid(char *input)
+{
+    int i = 0;
+    for(; input[i] && (input[i] <= ' ' || input[i] > '~') && i < 10; i++);
+    return (i < 10 && input[i] != '<' && input[i]);
+}
+
 int isJPEG(void *input)
 {
     unsigned char *_input = input;

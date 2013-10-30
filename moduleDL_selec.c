@@ -95,12 +95,8 @@ int mainChoixDL()
 
                     else
                     {
-                        //chargement(renderer, getH(renderer), getW(renderer));
-                        continuer = ecritureDansImport(&mangaDB[mangaChoisis], isTome, chapitreChoisis);
-                        nombreChapitre = nombreChapitre + continuer;
-                        if(checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[mangaChoisis]), isTome))
-                            continuer = PALIER_DEFAULT;
-                        else
+                        nombreChapitre = nombreChapitre + ecritureDansImport(&mangaDB[mangaChoisis], isTome, chapitreChoisis);
+                        if(!checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[mangaChoisis]), isTome))
                             chapitreChoisis = PALIER_CHAPTER;
                     }
                 }
@@ -244,6 +240,9 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
         //newDataset = true;    //Could be usefull later but for now, it's not used after that point
     }
 
+    if(idElem == VALEUR_FIN_STRUCTURE_CHAPITRE)
+        return;
+
     int * input = isTome ? internalCacheM->tome : internalCacheM->chapitre;
     int size = input != NULL ? *input : 0;
     int * newCache = realloc(input, (size + 2) * sizeof(int));
@@ -259,7 +258,7 @@ void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInC
     newCache[*newCache] = idElem;               //Set the value in the last entry
 
     if(input != NULL)
-        mergeSort(&newCache[1], *newCache - 1);
+        mergeSort(&newCache[1], *newCache);
 }
 
 MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA * mangaToGet)

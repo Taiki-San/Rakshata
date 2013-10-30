@@ -305,7 +305,7 @@ void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR
 void createPath(char *output);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) (caract >= '0' && caract <= '9')
-#define swapValues(a, b) a ^= b; b ^= a; a ^= b
+#define swapValues(a, b) do { a ^= b; b ^= a; a ^= b; } while(0)
 void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
@@ -313,6 +313,7 @@ void minToMaj(char* input);
 void unescapeLineReturn(char *input);
 void restrictEvent();
 int defineMaxTextureSize(int sizeIssue);
+bool isDownloadValid(char *input);
 int isJPEG(void *input);
 int isPNG(void *input);
 void addToRegistry(bool firstStart);

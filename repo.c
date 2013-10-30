@@ -223,9 +223,8 @@ int ajoutRepo(bool ajoutParFichier)
                             snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
 
                         download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
-                        for(erreur = 0; erreur < 5 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
                         versionRepo--;
-                    } while((erreur != 5 || !bufferDL[5]) && versionRepo > 0);
+                    } while(!isDownloadValid(bufferDL) && versionRepo > 0);
                     if(erreur == 5)
                     {
                         if(versionRepo == 1)
