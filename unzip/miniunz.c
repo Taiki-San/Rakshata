@@ -192,7 +192,7 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
     uInt size_buf;
 
     unz_file_info64 file_info;
-    //Si pas de fichier donné
+    //Si pas de fichier donn√©
     err = unzGetCurrentFileInfo64(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
 
     if (err!=UNZ_OK)
@@ -282,7 +282,7 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
             return UNZ_INTERNALERROR;
         }
 
-        if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la volée
+        if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la vol√©e
         {
             int posIV;
             unsigned char *buf_char = (unsigned char *) buf;
@@ -344,7 +344,7 @@ int do_extract_currentfile(uf,filename_inzip,output_path,popt_extract_without_pa
             free(buf_enc);
         }
 
-        else if (fout!=NULL) //DÈcompression normale
+        else if (fout!=NULL) //D√àcompression normale
         {
             do
             {

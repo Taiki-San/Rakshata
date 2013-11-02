@@ -6,7 +6,7 @@
 **   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ \_______ \  **
 **          \/      \/     \/     \/     \/     \/          \/               \/         \/  **
 **                                                                                          **
-**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriÃˆtaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -15,7 +15,7 @@
 int ecranAccueil()
 {
     /*En raison de la taille importante de la page d'acceuil (800kb),
-    elle est enregistré une seule fois et on lui colle dessus la trad*/
+    elle est enregistrÃˆ une seule fois et on lui colle dessus la trad*/
 
     SDL_Rect position;
     SDL_Texture *acceuil = NULL;
@@ -113,14 +113,14 @@ int section()
                 if(texte != NULL)
                 {
                     position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y -= texte->h; //Gère les sauts de ligne
+                    position.y -= texte->h; //GÃ‹re les sauts de ligne
                     position.h = texte->h;
                     position.w = texte->w;
                     SDL_RenderCopy(renderer, texte, NULL, &position);
                     SDL_DestroyTextureS(texte);
                 }
                 else
-                    position.y -= 36; //Gère les sauts de ligne
+                    position.y -= 36; //GÃ‹re les sauts de ligne
             }
             TTF_CloseFont(police);
         }

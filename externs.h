@@ -6,11 +6,11 @@
 **   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ \_______ \  **
 **          \/      \/     \/     \/     \/     \/          \/               \/         \/  **
 **                                                                                          **
-**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriÃˆtaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
-extern int RESOLUTION[2]; //Résolution
+extern int RESOLUTION[2]; //RÃˆsolution
 extern int WINDOW_SIZE_H;
 extern int WINDOW_SIZE_W;
 extern int langue; //Langue

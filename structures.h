@@ -6,7 +6,7 @@
 **   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ \_______ \  **
 **          \/      \/     \/     \/     \/     \/          \/               \/         \/  **
 **                                                                                          **
-**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriÃˆtaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -30,7 +30,7 @@ typedef struct tome_metadata
 
 typedef struct dataMangas
 {
-    //Infos générales
+    //Infos gÃˆnÃˆrales
     char mangaName[LONGUEUR_NOM_MANGA_MAX];
     char mangaNameShort[LONGUEUR_COURT];
     TEAMS_DATA *team;
@@ -60,7 +60,7 @@ typedef struct dataMangas
 typedef struct data_provided_to_engine
 {
     char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
-    int nombreElementTotal; //Nombre total, seulement dans le premier élement de la structure
+    int nombreElementTotal; //Nombre total, seulement dans le premier Ãˆlement de la structure
     int ID;
 
     /*Variable pour CONTEXTE_LECTURE*/
@@ -68,10 +68,10 @@ typedef struct data_provided_to_engine
 
     /*Variable pour CONTEXTE_DL*/
     int nombreChapitreDejaSelect;
-    bool anythingToDownload;            //Si rien de nouveau à télécharger
+    bool anythingToDownload;            //Si rien de nouveau â€¡ tÃˆlÃˆcharger
     bool isFullySelected;               //Is element in cache
 
-    /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
+    /*Variable commune â€¡ CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
     bool switchAvailable;
     int IDDernierElemLu;
     char* website;
@@ -81,7 +81,7 @@ typedef struct data_provided_to_engine
 	int chapitrePlusRecent;
 
     /*Variable pour CONTEXTE_TOME*/
-    int currentTomeInfoDisplayed; //Précise si (et quel) tome est affiché
+    int currentTomeInfoDisplayed; //PrÃˆcise si (et quel) tome est affichÃˆ
     char *description1; //Ligne de description 1
     char *description2; //Ligne de description 2
 } DATA_ENGINE;

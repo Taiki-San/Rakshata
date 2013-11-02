@@ -13,11 +13,11 @@
 //
 // * LGPL 3.0 <http://www.gnu.org/licenses/lgpl.html>
 //
-// Youíre free to copy, distribute and make commercial use
+// You√≠re free to copy, distribute and make commercial use
 // of this software under the following conditions:
 //
 // * You have to cite the author (and copyright owner): Eng. Cosimo Oliboni
-// * You have to provide a link to the authorís Homepage: <http://embeddedsw.net/>
+// * You have to provide a link to the author√≠s Homepage: <http://embeddedsw.net/>
 //
 ///////////////////////////////////////////////
 
