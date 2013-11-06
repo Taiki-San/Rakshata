@@ -6,7 +6,7 @@
 **   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ \_______ \  **
 **          \/      \/     \/     \/     \/     \/          \/               \/         \/  **
 **                                                                                          **
-**    Licence propriÈtaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propritaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 

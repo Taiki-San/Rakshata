@@ -479,7 +479,7 @@ void update_mangas()
                     if(buffer_char[0][0] && (bufferDL[positionBuffer] == 'T' || bufferDL[positionBuffer] == 'C'))
                     {
                         for(i = 0; i < curPos && strcmp(buffer_char[0], mangaName[i]); i++);
-                        if(!strcmp(buffer_char[0], mangaName[i]))
+                        if(i < curPos)  //Signifie que la comparaison est nulle
                         {
                             int j;
                             FILE* out = NULL;

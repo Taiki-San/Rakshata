@@ -6,7 +6,7 @@
 **   |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /   \_/  |___| /\ \_______ \  **
 **          \/      \/     \/     \/     \/     \/          \/               \/         \/  **
 **                                                                                          **
-**    Licence propriÈtaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -15,7 +15,7 @@
 int ecranAccueil()
 {
     /*En raison de la taille importante de la page d'acceuil (800kb),
-    elle est enregistrÈ une seule fois et on lui colle dessus la trad*/
+    elle est enregistré une seule fois et on lui colle dessus la trad*/
 
     SDL_Rect position;
     SDL_Texture *acceuil = NULL;
