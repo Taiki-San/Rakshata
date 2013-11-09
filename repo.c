@@ -110,7 +110,7 @@ int checkAjoutRepoParFichier(char *argv)
 
 int ajoutRepo(bool ajoutParFichier)
 {
-    int continuer = 0, erreur = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
+    int continuer = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][TRAD_LENGTH];
     SDL_Texture *texte;
     TTF_Font *police = NULL;
@@ -225,7 +225,8 @@ int ajoutRepo(bool ajoutParFichier)
                         download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
                         versionRepo--;
                     } while(!isDownloadValid(bufferDL) && versionRepo > 0);
-                    if(erreur == 5)
+                    
+                    if(isDownloadValid(bufferDL))
                     {
                         if(versionRepo == 1)
                             sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
@@ -242,8 +243,7 @@ int ajoutRepo(bool ajoutParFichier)
                 {
                     snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
                     download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
-                    for(erreur = 0; erreur < 5 && bufferDL[erreur] != '<' && bufferDL[erreur]; erreur++);
-                    if(erreur == 5 && bufferDL[5])
+                    if(isDownloadValid(bufferDL))
                     {
                         int posBuf;
                         for(posBuf = strlen(bufferDL); bufferDL[posBuf] == '#' || bufferDL[posBuf] == '\n' || bufferDL[posBuf] == '\r'; bufferDL[posBuf--] = 0);
@@ -258,7 +258,7 @@ int ajoutRepo(bool ajoutParFichier)
                     }
                 }
 
-                if(erreur == 5 && bufferDL[5]) //Si on pointe sur un vrai dépôt
+                if(isDownloadValid(bufferDL)) //Si on pointe sur un vrai dépôt
                 {
                     /*Redimension de la fenêtre*/
                     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
