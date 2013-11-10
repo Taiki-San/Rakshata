@@ -23,6 +23,7 @@ SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
 int getWindowSize(int w1h2);
+#define isRetina(window) (window->flags & SDL_WINDOW_ALLOW_HIGHDPI)
 void updateWindowSize(int w, int h);
 void getResolution();
 void restartEcran();

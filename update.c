@@ -63,7 +63,7 @@ void checkUpdate()
 
         MUTEX_LOCK(mutexRS);
 
-        window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+        window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
         WINDOW_SIZE_W = getW(renderer);
         WINDOW_SIZE_H = getH(renderer);
         loadIcon(window);

@@ -312,7 +312,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_DestroyTexture(bandeauControle);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
-                window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+                window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
                 WINDOW_SIZE_W = largeurValide;
                 WINDOW_SIZE_H = buffer;
                 loadIcon(window);
