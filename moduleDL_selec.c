@@ -339,7 +339,7 @@ bool checkIfElemCached(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome, int elem
 
     #warning "Optimizations needed"
 
-    for(posCache = 1; posCache < size && input[posCache] != element; posCache++);
+    for(posCache = 1; posCache <= size && input[posCache] != element; posCache++);
     return (posCache < size);
 }
 
@@ -354,7 +354,6 @@ void freeMDLSelecCache(MDL_SELEC_CACHE * cache)
             buffer = cache->data->nextManga;
             free(cache->data->tome);
             free(cache->data->chapitre);
-            free(cache->data->manga);
             free(cache->data);
             cache->data = (MDL_SELEC_CACHE_MANGA *) buffer;
         }

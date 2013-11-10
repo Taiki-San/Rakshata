@@ -428,7 +428,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         MDLDispInstallHeader(NULL);
 
     nameWindow(rendererDL->window, (nombreInstalled*100/nbElemTotal)+2);
-    MDLUpdateIcons(false);
+    if(!quit)
+        MDLUpdateIcons(false);
     free(listSizeDL);
     free(listDL);
     quit_thread(0);
