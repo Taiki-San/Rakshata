@@ -141,7 +141,7 @@ int showError()
 
     MUTEX_UNIX_LOCK;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     restartEcran();
     for(i = 0; i < SIZE_TRAD_ID_1; i++)
     {

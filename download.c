@@ -66,7 +66,7 @@ int download_UI(TMP_DL *output)
 
     threadData = createNewThreadRetValue(downloader, output);
 
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    police = OpenFont(rendererDL, FONTUSED, POLICE_MOYEN);
     pourcentAffiche = MDLTUITTFWrite(police, texte[0], couleur);
     if(pourcentAffiche != NULL)
     {

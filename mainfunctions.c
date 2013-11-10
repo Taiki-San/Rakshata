@@ -19,16 +19,21 @@ void mainRakshata()
 
     MUTEX_LOCK(mutexRS);
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_ALLOW_HIGHDPI);
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR,
+#ifdef RETINA_ENABLED
+                              SDL_WINDOW_ALLOW_HIGHDPI
+#endif
+                              );
+    
+    WINDOW_SIZE_W = window->w;
+    WINDOW_SIZE_H = window->h;
+    isRetina = checkIfRetina(window);
 
     loadIcon(window);
     nameWindow(window, 0);
     renderer = setupRendererSafe(window);
 
     MUTEX_UNLOCK(mutexRS);
-
-    WINDOW_SIZE_W = LARGEUR;
-    WINDOW_SIZE_H = HAUTEUR;
 
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 

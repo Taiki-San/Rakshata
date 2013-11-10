@@ -127,7 +127,7 @@ int ajoutRepo(bool ajoutParFichier)
     {
         MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
-        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        police = OpenFont(renderer, FONTUSED, POLICE_GROS);
         texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
         if(texte != NULL)
         {
@@ -156,7 +156,7 @@ int ajoutRepo(bool ajoutParFichier)
             if(!ajoutParFichier)
             {
                 MUTEX_UNIX_LOCK;
-                police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+                police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
                 SDL_RenderClear(renderer);
 
                 /*On affiche l'écran de sélection*/
@@ -266,7 +266,7 @@ int ajoutRepo(bool ajoutParFichier)
 
                     MUTEX_UNIX_LOCK;
                     SDL_RenderClear(renderer);
-                    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+                    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
 
                     texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
                     if(texte != NULL)
@@ -436,7 +436,7 @@ int deleteRepo()
         updateWindowSize(LARGEUR, windowH);
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
     texteAffiche = TTF_Write(renderer, police, texteTrad[0], couleur);
@@ -530,7 +530,7 @@ int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     police = NULL;
 
-	police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+	police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
 
     /*Remplissage des variables*/
     loadTrad(texte, 4);

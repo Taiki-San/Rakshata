@@ -59,8 +59,6 @@ void checkUpdate()
         remove("data/update"); //Evite des téléchargements en parallèle de l'update
 
         /*Initialisation écran*/
-        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
-
         MUTEX_LOCK(mutexRS);
 
         window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
@@ -70,6 +68,8 @@ void checkUpdate()
         renderer = setupRendererSafe(window);
 
         MUTEX_UNLOCK(mutexRS);
+        
+        police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
 
         SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
         SDL_RenderClear(renderer);
@@ -96,7 +96,7 @@ void checkUpdate()
             SDL_DestroyTextureS(infosAvancement);
         }
         TTF_CloseFont(police);
-        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        police = OpenFont(renderer, FONTUSED, POLICE_GROS);
 
         for(i = 0; files[i][0] != 0 && i < ligne; i++)
         {

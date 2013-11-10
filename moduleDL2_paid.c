@@ -176,6 +176,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     MUTEX_LOCK(mutexRS);
 
     windowAuth = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_ALLOW_HIGHDPI);
+    
     loadIcon(windowAuth);
     nameWindow(windowAuth, 1);
     rendererAuth = setupRendererSafe(windowAuth);
@@ -321,7 +322,7 @@ void MDLPDispCheckingIfPaid()
 
     loadTrad(trad, 31);
 
-    police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
     {
@@ -357,7 +358,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
 
     loadTrad(trad, 31);
 
-    police = TTF_OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
+    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
     {

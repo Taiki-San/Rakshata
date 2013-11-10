@@ -13,6 +13,7 @@
 extern int RESOLUTION[2]; //RÈsolution
 extern int WINDOW_SIZE_H;
 extern int WINDOW_SIZE_W;
+extern bool isRetina;
 extern int langue; //Langue
 extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;

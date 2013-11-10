@@ -22,16 +22,20 @@ void loadIcon(SDL_Window *window_ptr);
 SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
-int getWindowSize(int w1h2);
-#define isRetina(window) (window->flags & SDL_WINDOW_ALLOW_HIGHDPI)
+#define checkIfRetina(window) ((window->flags & SDL_WINDOW_ALLOW_HIGHDPI) != 0)
+#define getRetinaZoom() (isRetina + 1)
 void updateWindowSize(int w, int h);
 void getResolution();
 void restartEcran();
+TTF_Font * OpenFont(SDL_Renderer * renderer, char * fontName, int size);
 void nameWindow(SDL_Window* windows, const int value);
 #define refreshRendererIfBuggy(var) SDL_RenderPresent(var)
 #define WIN_OPENGL_BUGGED
 #define getW(a) a->viewport.w
 #define getH(a) a->viewport.h
+
+#define getPtRetinaW(a) a->window->w
+#define getPtRetinaH(a) a->window->h
 
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);

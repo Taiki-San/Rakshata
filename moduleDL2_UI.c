@@ -52,6 +52,7 @@ void MDLUIThread()
 
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
+    isRetina = checkIfRetina(window);
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
     SDL_RenderClear(rendererDL);
@@ -151,6 +152,7 @@ void startMDLUIThread()
 
     WINDOW_SIZE_W_DL = LARGEUR;
     WINDOW_SIZE_H_DL = HAUTEUR_FENETRE_DL;
+    isRetina = checkIfRetina(window);
 
     chargement(rendererDL, WINDOW_SIZE_H_DL, WINDOW_SIZE_W_DL);
     SDL_RenderClear(rendererDL);

@@ -140,7 +140,7 @@ int check_evt()
 
         MUTEX_UNIX_LOCK;
 
-        police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+        police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
 
         for(i = 0; i <= j; i++)
         {

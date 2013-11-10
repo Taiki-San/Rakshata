@@ -50,7 +50,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 
         MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
-        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+        police = OpenFont(renderer, FONTUSED, POLICE_GROS);
 
         if(contexte == CONTEXTE_DL)
             texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
@@ -145,7 +145,7 @@ int checkProjet(MANGAS_DATA mangaDB)
             SDL_RenderPresent(renderer);
             SDL_DestroyTextureS(image);
 
-            police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+            police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
             TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
             image = TTF_Write(renderer, police, texte[0], couleur);

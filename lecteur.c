@@ -111,7 +111,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     changementPage = 2;
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
     bandeauControle = loadControlBar(mangaDB->favoris);
     MUTEX_UNIX_UNLOCK;
@@ -313,8 +313,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
                 window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
-                WINDOW_SIZE_W = largeurValide;
-                WINDOW_SIZE_H = buffer;
+                
+                WINDOW_SIZE_W = window->w;
+                WINDOW_SIZE_H = window->h;
+                
                 loadIcon(window);
                 nameWindow(window, 0);
                 renderer = setupRendererSafe(window);
@@ -345,7 +347,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             /*Si grosse page*/
             TTF_CloseFont(police);
-            police = TTF_OpenFont(FONTUSED, POLICE_TOUT_PETIT);
+            police = OpenFont(renderer, FONTUSED, POLICE_TOUT_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
 
@@ -362,7 +364,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         if(*fullscreen) //On restaure la police
         {
             TTF_CloseFont(police);
-            police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+            police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
         MUTEX_UNIX_UNLOCK;

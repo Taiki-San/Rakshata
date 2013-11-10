@@ -20,7 +20,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
         return PALIER_QUIT;
 
     int i = 0, hauteurTexte = 0, ret_value = 0, time_since_refresh = 0, *longueur = calloc(nombreElements, sizeof(int));
-    int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0}, sizeInterligne = 20;
+    int posRoundFav = 0, sizeFavsDispo[4] = {0, 0, 0, 0}, sizeInterligne = 20 * getRetinaZoom();
     char tempPath[450];
     SDL_Texture *texture = NULL;
     SDL_Rect position;
@@ -29,24 +29,33 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     TTF_Font* police = NULL;
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
+    
+    hauteurBloc *= getRetinaZoom();
+    
     for(i = 0; i < nombreElements; i++) //Affichage
     {
         texture = TTF_Write(renderer, police, texte[i], couleurTexte);
-        if(texture == NULL)
-            continue;
-        if(i & 1) //Colonne de droite (i impaire)
-            position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texture->w / 2;
-        else
-            position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
-        position.y = hauteurBloc + ((texture->h + sizeInterligne) * (i / 2 + 1));
-        position.h = texture->h;
-        position.w = texture->w;
-        SDL_RenderCopy(renderer, texture, NULL, &position);
-        longueur[i] = texture->w / 2;
-        hauteurTexte = texture->h;
-        SDL_DestroyTextureS(texture);
+        if(texture != NULL)
+        {
+            
+            if(i & 1) //Colonne de droite (i impaire)
+                position.x = WINDOW_SIZE_W - WINDOW_SIZE_W / 4 - texture->w / 2;
+            else
+                position.x = WINDOW_SIZE_W / 4 - texture->w / 2;
+            position.y = hauteurBloc + ((texture->h + sizeInterligne) * (i / 2 + 1));
+            position.h = texture->h;
+            position.w = texture->w;
+        
+            longueur[i] = texture->w / 2;
+
+            if(!hauteurTexte)
+                hauteurTexte = texture->h;
+        
+            SDL_RenderCopy(renderer, texture, NULL, &position);
+            SDL_DestroyTextureS(texture);
+        }
     }
 
     if(unlocked)
@@ -59,8 +68,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     {
         position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
         position.y = POSITION_ICONE_MENUS;
-        position.w = TAILLE_ICONE_MENUS;
-        position.h = TAILLE_ICONE_MENUS;
+        position.w = TAILLE_ICONE_MENUS * getRetinaZoom();
+        position.h = TAILLE_ICONE_MENUS * getRetinaZoom();
         SDL_RenderCopy(renderer, texture, NULL, &position);
         SDL_DestroyTextureS(texture);
     }
@@ -118,6 +127,11 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
 
                 case SDL_MOUSEBUTTONUP:
                 {
+                    /*Les evenements sont gérés bizarrement quand on est en mode retina: il faut les multiplier par le zoom pour pouvoir faire des comparaisons efficaces*/
+                    
+                    event.button.x *= getRetinaZoom();
+                    event.button.y *= getRetinaZoom();
+                    
                     if(event.button.x > sizeFavsDispo[0] && event.button.x < sizeFavsDispo[0]+sizeFavsDispo[1] &&
                        event.button.y > sizeFavsDispo[2] && event.button.y < sizeFavsDispo[2]+sizeFavsDispo[3] && favorisToDL == 2)
                     {
@@ -130,8 +144,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                         favorisToDL = -2; //On fait tout disparaitre
                     }
 
-                    else if(event.button.x > WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x < WINDOW_SIZE_W-POSITION_ICONE_MENUS &&
-                       event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS)
+                    else if(event.button.x > WINDOW_SIZE_W - POSITION_ICONE_MENUS - (TAILLE_ICONE_MENUS * getRetinaZoom()) && event.button.x < WINDOW_SIZE_W-POSITION_ICONE_MENUS
+                            && event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS + (TAILLE_ICONE_MENUS * getRetinaZoom()))
                     {
                         if(unlocked == 1)
                             unlocked = 0;
@@ -149,8 +163,8 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                         {
                             position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
                             position.y = POSITION_ICONE_MENUS;
-                            position.w = TAILLE_ICONE_MENUS;
-                            position.h = TAILLE_ICONE_MENUS;
+                            position.w = TAILLE_ICONE_MENUS * getRetinaZoom();
+                            position.h = TAILLE_ICONE_MENUS * getRetinaZoom();
                             SDL_RenderFillRect(renderer, &position);
                             SDL_RenderCopy(renderer, texture, NULL, &position);
                             SDL_DestroyTextureS(texture);
@@ -300,7 +314,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
 #endif
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     loadTrad(localization, 11);
     nombreElement = input[0].nombreElementTotal;
@@ -1153,7 +1167,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
 
     MUTEX_UNIX_LOCK;
 
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
 
     position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
 
@@ -1248,7 +1262,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_actif.r, palette.police_actif.g, palette.police_actif.b}, couleurUnavailable = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b};
 
-    police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     applyBackground(renderer, 0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
@@ -1336,7 +1350,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     SDL_Rect position;
     SDL_Texture *texte = NULL;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
+    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
 
     position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
 
@@ -1387,7 +1401,7 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     SDL_Rect position;
 
     MUTEX_UNIX_LOCK;
-    TTF_Font *police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
 
     if(!virgule)
         snprintf(buffer, 10, "%d", choix/10);
@@ -1427,7 +1441,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     enfineEraseDisplayedTomeInfos(renderer);
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     texte = TTF_Write(renderer, police, input.description1, couleur);
     if(texte != NULL)
     {
@@ -1442,7 +1456,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
         position.y = 0;
     TTF_CloseFont(police);
 
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
     texte = TTF_Write(renderer, police, input.description2, couleur);
     if(texte != NULL)
     {

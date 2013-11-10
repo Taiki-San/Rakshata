@@ -15,6 +15,7 @@
 int RESOLUTION[2]; //Résolution
 int WINDOW_SIZE_H = 0;
 int WINDOW_SIZE_W = 0;
+bool isRetina = false;
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;

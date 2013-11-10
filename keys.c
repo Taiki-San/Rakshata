@@ -308,39 +308,39 @@ int logon()
         MUTEX_UNIX_LOCK;
 
         SDL_RenderClear(renderer);
-        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
+        police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
         if(ligne != NULL)
         {
             position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-            position.y = 20;
+            position.y = 20 * getRetinaZoom();
             position.h = ligne->h;
             position.w = ligne->w;
             SDL_RenderCopy(renderer, ligne, NULL, &position);
             SDL_DestroyTextureS(ligne);
         }
         else
-            position.x = 170;
+            position.x = 170 * getRetinaZoom();
 
         ligne = TTF_Write(renderer, police, trad[1], couleur);
-        position.y = 100;
+        position.y = 100 * getRetinaZoom();
         if(ligne != NULL)
         {
             position.h = ligne->h;
             position.w = ligne->w;
-            beginingOfEmailAdress = position.x + position.w + 25;
+            beginingOfEmailAdress = position.x + position.w + 25 * getRetinaZoom();
             SDL_RenderCopy(renderer, ligne, NULL, &position);
             SDL_DestroyTextureS(ligne);
         }
         else
-            beginingOfEmailAdress = 75;
+            beginingOfEmailAdress = 75 * getRetinaZoom();
 
         TTF_CloseFont(police);
-        police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+        police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
         ligne = TTF_Write(renderer, police, trad[2], couleur); //Disclamer
-        position.y += 85;
+        position.y += 85 * getRetinaZoom();
         if(ligne != NULL)
         {
             position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -351,7 +351,7 @@ int logon()
         }
 
         ligne = TTF_Write(renderer, police, trad[3], couleur); //Disclamer
-        position.y += 30;
+        position.y += 30 * getRetinaZoom();
         if(ligne != NULL)
         {
             position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -367,7 +367,7 @@ int logon()
 
         do
         {
-            if((i = waitClavier(renderer, adresseEmail, 60, 50, beginingOfEmailAdress, 109)) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
+            if((i = waitClavier(renderer, adresseEmail, 60, true, beginingOfEmailAdress, 109 * getRetinaZoom())) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
                 return PALIER_QUIT;
         }while(i == PALIER_CHAPTER);
 
@@ -390,12 +390,12 @@ int logon()
                     crashTemp(password, 100);
                     /**Leurs codes sont assez proches donc on les regroupes**/
                     MUTEX_UNIX_LOCK;
-                    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
+                    police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_GROS);
                     ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
                     if(ligne != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y = 20;
+                        position.y = 20 * getRetinaZoom();
                         position.h = ligne->h;
                         position.w = ligne->w;
                         SDL_RenderCopy(renderer, ligne, NULL, &position);
@@ -405,8 +405,8 @@ int logon()
                     ligne = TTF_Write(renderer, police, trad[6], couleur);
                     if(ligne != NULL)
                     {
-                        position.x = 50;
-                        position.y = 100;
+                        position.x = 50 * getRetinaZoom();
+                        position.y = 100 * getRetinaZoom();
                         beginingOfEmailAdress = position.x + ligne->w + 25;
                         position.h = ligne->h;
                         position.w = ligne->w;
@@ -415,10 +415,10 @@ int logon()
                     }
 
                     TTF_CloseFont(police);
-                    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+                    police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
                     ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
-                    position.y += 85;
+                    position.y += 85 * getRetinaZoom();
                     if(ligne != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -429,7 +429,7 @@ int logon()
                     }
 
                     ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
-                    position.y += 30;
+                    position.y += 30 * getRetinaZoom();
                     if(ligne != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
@@ -444,7 +444,7 @@ int logon()
                     MUTEX_UNIX_UNLOCK;
                     do
                     {
-                        if((i = waitClavier(renderer, password, 50, !login, beginingOfEmailAdress, 109)) == PALIER_QUIT)
+                        if((i = waitClavier(renderer, password, 50, !login, beginingOfEmailAdress, 109 * getRetinaZoom())) == PALIER_QUIT)
                             return PALIER_QUIT;
                         else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
                         {
@@ -550,7 +550,7 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
 
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(currentRenderer);
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(currentRenderer, FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
     if(ligne != NULL)
     {
@@ -577,7 +577,7 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
         xPassword = 50 + LARGEUR_MOYENNE_MANGA_GROS + 25;
 
     TTF_CloseFont(police);
-    police = TTF_OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+    police = OpenFont(currentRenderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
     position.y += 85;

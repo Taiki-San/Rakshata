@@ -26,7 +26,7 @@ int affichageMenuGestion()
         updateWindowSize(LARGEUR, HAUTEUR_SELECTION_REPO);
 
     MUTEX_UNIX_LOCK;
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
     texteAffiche = TTF_Write(renderer, police, menus[0], couleur);

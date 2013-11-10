@@ -23,7 +23,7 @@ void welcome()
 
     MUTEX_UNIX_LOCK;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_MOYEN-2);
+    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN-2);
     updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
     SDL_RenderClear(renderer);
 
@@ -47,7 +47,7 @@ void welcome()
         {
             position.h = texte->h;
             position.w = texte->w;
-            position.y = 60 + i * 30;
+            position.y = 60 + i * (30 * getRetinaZoom());
             position.x = WINDOW_SIZE_W/2 - position.w/2;
             SDL_RenderCopy(renderer, texte, NULL, &position);
             SDL_DestroyTexture(texte);
@@ -59,7 +59,7 @@ void welcome()
 	{
 		position.h = texte->h;
 		position.w = texte->w;
-		position.y = 200;
+		position.y = 200 * getRetinaZoom();
 		position.x = WINDOW_SIZE_W/2 - position.w/2;
 		SDL_RenderCopy(renderer, texte, NULL, &position);
 		SDL_DestroyTexture(texte);
@@ -86,10 +86,10 @@ void initialisationAffichage()
 
     MUTEX_UNIX_LOCK;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
-    position.y = HAUTEUR_AFFICHAGE_INITIALISATION;
+    position.y = HAUTEUR_AFFICHAGE_INITIALISATION * getRetinaZoom();
 
     for(i = 0; i < SIZE_TRAD_ID_2; i++)
     {
@@ -100,12 +100,15 @@ void initialisationAffichage()
             position.h = texte->h;
             position.w = texte->w;
             SDL_RenderCopy(renderer, texte, NULL, &position);
+
+            position.y += texte->h + INTERLIGNE * getRetinaZoom();
             SDL_DestroyTextureS(texte);
         }
-
+        else
+            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE) * getRetinaZoom();
+        
         if(i == 1) //Saut de ligne
-            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
-        position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE);
+            position.y += (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE) * getRetinaZoom();
 
     }
     SDL_RenderPresent(renderer);
@@ -124,7 +127,7 @@ void raffraichissmenent(bool forced)
 
     MUTEX_UNIX_LOCK;
 
-	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+	police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     loadTrad(texte, 5);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
@@ -159,7 +162,7 @@ void affichageLancement()
 
     MUTEX_UNIX_LOCK;
 
-	police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+	police = OpenFont(renderer, FONTUSED, POLICE_GROS);
     loadTrad(texte, 6);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
@@ -195,9 +198,15 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
 
 	MUTEX_UNIX_LOCK;
 
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(rendererVar, FONTUSED, POLICE_GROS);
 
     SDL_RenderClear(rendererVar);
+    
+    if(isRetina)
+    {
+        w *= 2;
+        h *= 2;
+    }
 
     if(police != NULL)
     {
@@ -331,16 +340,6 @@ void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h)
     SDL_RenderFillRect(renderVar, &positionBack);
 }
 
-int getWindowSize(int w1h2)
-{
-    int var = 0;
-    if(w1h2 == 1) //w
-        SDL_GetWindowSize(window, &var, 0);
-    else if(w1h2 == 2) //h
-        SDL_GetWindowSize(window, 0, &var);
-    return var;
-}
-
 void updateWindowSize(int w, int h)
 {
     if(WINDOW_SIZE_H != h || WINDOW_SIZE_W != w)
@@ -383,7 +382,13 @@ void restartEcran()
     SDL_RenderPresent(renderer);
 }
 
-/* The purpose of this function is to bypass a bug on Windows if DirectX isn't available*/
+TTF_Font * OpenFont(SDL_Renderer * renderer, char * fontName, int size)
+{
+    if(isRetina)
+        size *= 2;
+       
+    return TTF_OpenFont(fontName, size);
+}
 
 void nameWindow(SDL_Window* windows, const int value)
 {

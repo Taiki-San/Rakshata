@@ -89,13 +89,11 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
     MUTEX_UNIX_LOCK;
     if(nombreMax < 30)
     {
-        police = TTF_OpenFont(FONTUSED, POLICE_GROS);
-        epaisseur = LARGEUR_MOYENNE_MANGA_GROS + 10;
+        police = OpenFont(rendererVar, FONTUSED, POLICE_GROS);
     }
     else
     {
-        police = TTF_OpenFont(FONTUSED, POLICE_PETIT);
-        epaisseur = LARGEUR_MOYENNE_MANGA_PETIT + 10;
+        police = OpenFont(rendererVar, FONTUSED, POLICE_PETIT);
     }
     MUTEX_UNIX_UNLOCK;
 
@@ -162,7 +160,10 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                     }
 
                     default:
+                    {
+                        continue;
                         break;
+                    }
                 }
                 break;
             }
@@ -182,6 +183,7 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
                     TTF_CloseFont(police);
                     return PALIER_QUIT;
                 }
+                continue;
                 break;
             }
 
@@ -196,7 +198,8 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         if(showTyped)
             snprintf(affiche, LONGUEUR_URL + 10, "%s%s%s", (startFromX ? "" : "-> "), retour, (startFromX ? "" : " <-"));
 
-        else {
+        else
+        {
             int nbr;
             for(nbr = 0; nbr < i && nbr < LONGUEUR_URL+10-1; affiche[nbr++] = '*'); //+10-1 pour le \0 final
             affiche[nbr] = 0;
@@ -206,6 +209,8 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
         numero = TTF_Write(rendererVar, police, affiche, couleurTexte);
         if(numero == NULL)
             continue;
+        else if(epaisseur == 0)
+            epaisseur = numero->h + 10;
 
         if(startFromY)
             position.y = startFromY;

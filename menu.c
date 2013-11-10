@@ -76,13 +76,13 @@ int section()
     MUTEX_UNIX_LOCK;
 
     SDL_RenderClear(renderer);
-    police = TTF_OpenFont(FONTUSED, POLICE_GROS);
+    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
 
     texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
     if(texte != NULL)
     {
         position.x = (WINDOW_SIZE_W / 2) - (texte->w / 2);
-        position.y = BORDURE_SUP_MENU;
+        position.y = BORDURE_SUP_MENU * getRetinaZoom();
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -105,7 +105,7 @@ int section()
                 message[j][k] = 0;
             }
 
-            police = TTF_OpenFont(FONTUSED, POLICE_MOYEN);
+            police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
             position.y = WINDOW_SIZE_H;
             for(j--; j >= 0; j--)
             {
@@ -120,7 +120,7 @@ int section()
                     SDL_DestroyTextureS(texte);
                 }
                 else
-                    position.y -= 36; //GËre les sauts de ligne
+                    position.y -= 36 * getRetinaZoom(); //GËre les sauts de ligne
             }
             TTF_CloseFont(police);
         }

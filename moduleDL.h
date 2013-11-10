@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+extern SDL_Renderer * rendererDL;
+
 #define HAUTEUR_FENETRE_DL 470
 
 /*Specs Font*/
