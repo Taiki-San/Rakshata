@@ -64,6 +64,10 @@ void mainMDL()
 
     if(checkNetworkState(CONNEXION_DOWN))
         return;
+	
+#ifdef WIN_OPENGL_BUGGED
+	MDLTUIRefresh();
+#endif
 
     MDLDispDownloadHeader(NULL);
     MDLDispInstallHeader(NULL);
@@ -264,7 +268,7 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             }
         }
         else
-            SDL_Delay(100);
+            SDL_Delay(25);
     }
     for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
     free(historiqueTeam);
@@ -659,10 +663,6 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-#endif
-
     police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
     MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom(), WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE * getRetinaZoom());
 
@@ -687,8 +687,6 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
                 snprintf(texte, 200, "%s: %s", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, todoList[curseurDebut+nbrElementDisp]->tomeName);
         }
         changeTo(texte, '_', ' ');
-		
-#warning "Work to get done by there"
 
         texture = MDLTUITTFWrite(police, texte, couleurFont);
         if(texture != NULL)
@@ -701,10 +699,14 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             MDLTUIDestroyTexture(texture);
         }
     }
+	
+#ifdef WIN_OPENGL_BUGGED
+    MDLTUIRefresh();
+#endif
 
     if(nbrElementDisp > 0)
     {
-        SDL_Surface *surface = SDL_CreateRGBSurface(0,2, (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE * getRetinaZoom(),32,0,0,0,0); //Barre séparatrice
+        SDL_Surface *surface = SDL_CreateRGBSurface(0,2 * getRetinaZoom(), (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE * getRetinaZoom(),32,0,0,0,0); //Barre séparatrice
         if(surface != NULL)
         {
             SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 95, 95, 95));
@@ -725,6 +727,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 
 #ifdef WIN_OPENGL_BUGGED
     MDLTUIRefresh();
+    MDLTUIRefresh();
 #endif
 
     TTF_CloseFont(police);
@@ -736,11 +739,7 @@ void MDLUpdateIcons(bool ignoreCache)
     int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, currentStatus;
     SDL_Texture *texture = NULL;
     SDL_Rect position;
-    position.h = position.w = MDL_ICON_SIZE;
-
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-#endif
+    position.h = position.w = MDL_ICON_SIZE * getRetinaZoom();
 
     /*RendererDL != NULL au cas où la fenêtre ai été fermée et que Rakshata soit en train de quitter*/
     for(posDansPage = 0; rendererDL != NULL && posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
@@ -803,9 +802,8 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         position.h = texture->h;
         position.w = texture->w;
 #ifdef WIN_OPENGL_BUGGED
-        MDLTUIRefresh();
+		MDLTUIRefresh();
 #endif
-
         MDLTUICopy(texture, NULL, &position);
         MDLTUIDestroyTexture(texture);
         MDLTUIRefresh();

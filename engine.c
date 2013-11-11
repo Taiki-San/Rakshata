@@ -204,13 +204,12 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                         ret_value = PALIER_QUIT;
                     break;
                 }
-
-                default:
-                    break;
             }
         }
+		else
+			SDL_Delay(10);
 
-        if(SDL_GetTicks() - time_since_refresh > 200)
+        if(favorisToDL != -2 && SDL_GetTicks() - time_since_refresh > 200)
         {
             MUTEX_UNIX_LOCK;
             if(favorisToDL == 0) //Refresh en cours

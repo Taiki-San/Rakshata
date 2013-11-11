@@ -31,7 +31,7 @@ bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn)
             return false;
         else if(SDL_PollEvent(&event) && haveInputFocus(&event, rendererDL->window))
             break;
-        SDL_Delay(100);
+        SDL_Delay(25);
     }
 
     switch(event.type)
@@ -183,7 +183,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             alerte.window = rendererDL->window;
             alerte.colorScheme = NULL;
             SDL_ShowMessageBox(&alerte, &ret_value);
-            MUTEX_LOCK(mutexMTUI);
+            MUTEX_LOCK(mutexAskUIThreadWIP);
 
             if(*status[pos] == MDL_CODE_DEFAULT)
             {
@@ -259,7 +259,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     }
                 }
             }
-            MUTEX_UNLOCK(mutexMTUI);
+            MUTEX_UNLOCK(mutexAskUIThreadWIP);
             break;
         }
         case MDL_CODE_INSTALL_OVER:

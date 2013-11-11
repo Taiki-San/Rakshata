@@ -155,7 +155,7 @@ int earlyInit(int argc, char *argv[])
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
     mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
     mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
-    mutexMTUI = CreateSemaphore(NULL, 1, 1, NULL);
+    mutexUI = CreateSemaphore(NULL, 1, 1, NULL);
 #endif
 
     resetOriginalCHDir(&argc, argv);
@@ -176,7 +176,7 @@ int earlyInit(int argc, char *argv[])
         logR(temp);
         return 0;
     }
-
+	
     loadLangueProfile();
     if(!checkAjoutRepoParFichier(argv[1]))
         return 0;
@@ -194,6 +194,7 @@ int earlyInit(int argc, char *argv[])
 
     restrictEvent();
     getResolution();
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire

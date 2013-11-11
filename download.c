@@ -90,7 +90,7 @@ int download_UI(TMP_DL *output)
                 if(!download_speed)
                     download_speed = (CURRENT_FILE_SIZE - last_file_size) / 1024;
                 else
-                    download_speed = (download_speed*3 + (CURRENT_FILE_SIZE - last_file_size) / 1024) / 4;
+                    download_speed = (download_speed*2 + (CURRENT_FILE_SIZE - last_file_size) / 1024) / 3;
                 last_file_size = CURRENT_FILE_SIZE;
 
                 if(download_speed != 0)
@@ -106,17 +106,20 @@ int download_UI(TMP_DL *output)
                     position.h = pourcentAffiche->h;
                     position.w = pourcentAffiche->w;
 #ifdef WIN_OPENGL_BUGGED
-                    MDLTUIRefresh();
+					MDLTUIRefresh();
 #endif
                     MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                     MDLTUICopy(pourcentAffiche, NULL, &position);
                     MDLTUIRefresh();
+#ifdef WIN_OPENGL_BUGGED
+					MDLTUIRefresh();
+#endif
                     MDLTUIDestroyTexture(pourcentAffiche);
                 }
                 last_refresh = SDL_GetTicks();
             }
-
-            SDL_Delay(100);
+			else
+				SDL_Delay(50);
 
             if(quit)
             {
@@ -130,6 +133,9 @@ int download_UI(TMP_DL *output)
                 MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
                 MDLTUICopy(pourcentAffiche, NULL, &position);
                 MDLTUIRefresh();
+#ifdef WIN_OPENGL_BUGGED
+				MDLTUIRefresh();
+#endif
                 MDLTUIDestroyTexture(pourcentAffiche);
                 status = STATUS_FORCE_CLOSE;
                 TTF_CloseFont(police);

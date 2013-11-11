@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 extern SDL_Renderer * rendererDL;
+extern pthread_mutex_t mutexAskUIThreadWIP;
 
 #define HAUTEUR_FENETRE_DL 470
 
