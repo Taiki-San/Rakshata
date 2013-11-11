@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-void changeTo(char *string, int toFind, int toPut)
+void changeTo(char *string, char toFind, char toPut)
 {
     while(*string)
     {
@@ -90,15 +90,6 @@ void versionRak(char *output)
 
     else
         snprintf(output, 10, "%d.%d", centaine, dizaine);
-}
-
-void setupBufferDL(char *buffer, int size1, int size2, int size3, int size4)
-{
-    crashTemp(buffer, size1*size2*size3*size4);
-    buffer[1] = size1;
-    buffer[2] = size2;
-    buffer[3] = size3;
-    buffer[4] = size4;
 }
 
 int positionnementApres(FILE* stream, char *stringToFind)
@@ -198,7 +189,8 @@ void createPath(char *output)
 
 void hexToDec(const char *input, unsigned char *output)
 {
-    int i = 0, j = 0, c = 0, temp = 0;
+    int i = 0, j = 0;
+	char c = 0, temp = 0;
     for(; *input; i++)
     {
         for(j = 0; j < 2; j++)

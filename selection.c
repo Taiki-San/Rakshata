@@ -24,6 +24,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
     MDL_SELEC_CACHE * cache;
     SDL_Rect position;
     TTF_Font *police = NULL;
+	PREFS_ENGINE prefs;
     DATA_ENGINE *data;
 
     for(nombreManga = 0; mangaDB != NULL && nombreManga < NOMBRE_MANGA_MAX && mangaDB[nombreManga].mangaName[0]; nombreManga++); //Enumération
@@ -75,11 +76,11 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
         if(data == NULL)
             return PALIER_MENU;
 
-        data[0].nombreElementTotal = nombreManga;
+        prefs.nombreElementTotal = nombreManga;
 
         if(contexte == CONTEXTE_DL)
         {
-            data[0].nombreChapitreDejaSelect = nombreChapitre;
+            prefs.nombreChapitreDejaSelect = nombreChapitre;
         }
 
         for(i = 0; i < nombreManga; i++)
@@ -97,7 +98,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
         }
         do
         {
-            mangaChoisis = engineCore(data, contexte, contexte == CONTEXTE_LECTURE ? BORDURE_SUP_SELEC_MANGA_LECTURE : BORDURE_SUP_SELEC_MANGA, selectMangaDLRightClick);
+            mangaChoisis = engineCore(&prefs, contexte, data, contexte == CONTEXTE_LECTURE ? BORDURE_SUP_SELEC_MANGA_LECTURE : BORDURE_SUP_SELEC_MANGA, selectMangaDLRightClick);
         }while((mangaChoisis == ENGINE_RETVALUE_DL_START || mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) && contexte != CONTEXTE_DL);
 
         free(data);

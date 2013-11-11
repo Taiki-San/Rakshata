@@ -373,6 +373,7 @@ int deleteRepo()
     int i = 0, windowH, teamChoisis = 0, nombreTeam = 0, confirme = 0;
     char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak;
     char texteTrad[SIZE_TRAD_ID_15][TRAD_LENGTH];
+	PREFS_ENGINE prefs;
     DATA_ENGINE* data = NULL;
     loadTrad(texteTrad, 15);
 
@@ -414,7 +415,7 @@ int deleteRepo()
         return PALIER_MENU;
     }
 
-    data[0].nombreElementTotal = nombreTeam;
+    prefs.nombreElementTotal = nombreTeam;
 
     for(i = 0, repo = repoBak; repo != NULL && *repo != 0 && i < nombreTeam; i++)
     {
@@ -452,7 +453,7 @@ int deleteRepo()
     MUTEX_UNIX_UNLOCK;
 
     curPage = 1;
-    teamChoisis = engineCore(data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
+    teamChoisis = engineCore(&prefs, data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
 
     if(teamChoisis > PALIER_CHAPTER && teamChoisis < nombreTeam)
     {

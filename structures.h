@@ -60,31 +60,39 @@ typedef struct dataMangas
 typedef struct data_provided_to_engine
 {
     char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
-    int nombreElementTotal; //Nombre total, seulement dans le premier Èlement de la structure
     int ID;
 
     /*Variable pour CONTEXTE_LECTURE*/
     MANGAS_DATA *data;
 
     /*Variable pour CONTEXTE_DL*/
-    int nombreChapitreDejaSelect;
-    bool anythingToDownload;            //Si rien de nouveau ‡ tÈlÈcharger
+    bool anythingToDownload;            //Si rien de nouveau à télécharger
     bool isFullySelected;               //Is element in cache
 
-    /*Variable commune ‡ CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
-    bool switchAvailable;
-    int IDDernierElemLu;
-    char* website;
-
-    /*Variable pour CONTEXTE_CHAPITRE*/
-	int chapitrePlusAncien;
-	int chapitrePlusRecent;
-
     /*Variable pour CONTEXTE_TOME*/
-    int currentTomeInfoDisplayed; //PrÈcise si (et quel) tome est affichÈ
     char *description1; //Ligne de description 1
     char *description2; //Ligne de description 2
+	
 } DATA_ENGINE;
+
+typedef struct preferences_to_engine
+{
+	int nombreElementTotal;
+	
+	int nombreChapitreDejaSelect;	//CONTEXTE_DL
+	
+    /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
+    int IDDernierElemLu;
+    char* website;
+	bool switchAvailable;
+	
+	/*Variable pour CONTEXTE_CHAPITRE*/
+	int chapitrePlusAncien;
+	int chapitrePlusRecent;
+	
+	int currentTomeInfoDisplayed; //Précise si (et quel) tome est affiché
+	
+} PREFS_ENGINE;
 
 typedef struct
 {

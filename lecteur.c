@@ -387,29 +387,29 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         if(chapitre_texture == NULL)
         {
             MUTEX_UNIX_LOCK;
-            int sizeMax = defineMaxTextureSize(chapitre->h), i;
+            int sizeMax = defineMaxTextureSize(chapitre->h), j;
             int nombreMiniTexture = chapitre->h/sizeMax + (chapitre->h%sizeMax?1:0);
             SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
             SDL_Surface *chap_buf = NULL;
             SDL_Rect pos;
             pos.w = chapitre->w;
             pos.h = sizeMax;
-            for(pos.x = i = 0; i < nombreMiniTexture-1; i++)
+            for(pos.x = j = 0; j < nombreMiniTexture-1; j++)
             {
-                pos.y = i*sizeMax;
+                pos.y = j*sizeMax;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
                 SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, palette.fond.r, palette.fond.g, palette.fond.b));
                 SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
-                texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
+                texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
             }
-            if(sizeMax && i && chapitre->h%sizeMax)
+            if(sizeMax && j && chapitre->h%sizeMax)
             {
-                pos.y = i*sizeMax;
+                pos.y = j*sizeMax;
                 pos.h = chapitre->h%pos.y;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
                 SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
-                texture[i] = SDL_CreateTextureFromSurface(renderer, chap_buf);
+                texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
             }
             pageWaaaayyyyTooBig = sizeMax;

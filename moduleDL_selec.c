@@ -337,10 +337,8 @@ bool checkIfElemCached(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome, int elem
     int * input = isTome ? cacheManga->tome : cacheManga->chapitre;
     int posCache, size = *input;
 
-    #warning "Optimizations needed"
-
     for(posCache = 1; posCache <= size && input[posCache] != element; posCache++);
-    return (posCache < size);
+    return (posCache <= size);
 }
 
 void freeMDLSelecCache(MDL_SELEC_CACHE * cache)

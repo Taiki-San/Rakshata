@@ -356,10 +356,16 @@ void updateWindowSize(int w, int h)
         SDL_FlushEvent(SDL_WINDOWEVENT);
 
         MUTEX_UNLOCK(mutexRS);
+		
+		SDL_SetRenderDrawColor(renderer, palette.fond.r, palette.fond.g, palette.fond.b, 255);
 
         WINDOW_SIZE_H = getH(renderer);
         WINDOW_SIZE_W = getW(renderer);
     }
+#ifdef WIN_OPENGL_BUGGED
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+#endif
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 }

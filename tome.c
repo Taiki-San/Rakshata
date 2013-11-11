@@ -15,7 +15,7 @@
 
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
 {
-    int pos, nombreMaxElems = 0;
+    size_t pos, nombreMaxElems = 0;
     META_TOME *lines = NULL;
     for(pos = 0; pos < size && buffer[pos]; pos++)
     {
@@ -26,7 +26,8 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         nombreMaxElems++;
     lines = calloc(nombreMaxElems+1, sizeof(META_TOME));
 
-    int ligneCourante = 0, i;
+    size_t ligneCourante = 0;
+	int i;
     char ligne[15+MAX_TOME_NAME_LENGTH+2*TOME_DESCRIPTION_LENGTH];
     pos = 0;
     while(ligneCourante < nombreMaxElems && pos < size)
@@ -176,16 +177,17 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
         }
 
         //Generate chapter list
-        DATA_ENGINE *tomeDB = generateTomeList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1]);
+        PREFS_ENGINE prefs;
+		DATA_ENGINE *tomeDB = generateTomeList(mangaDB, (dernierLu == VALEUR_FIN_STRUCTURE_CHAPITRE), contexte, texteTrad[14], texteTrad[1], &prefs);
 
         //Si liste vide
         if(tomeDB == NULL) //Erreur de mémoire ou liste vide
             return errorEmptyCTList(contexte, texteTrad);
 
-        displayTemplateTome(mangaDB, tomeDB[0], contexte, texteTrad);
+        displayTemplateTome(mangaDB, prefs, contexte, texteTrad);
         do
         {
-            tomeChoisis = engineCore(tomeDB, CONTEXTE_TOME, tomeDB[0].nombreElementTotal > ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_TOME_FULL : BORDURE_SUP_SELEC_TOME_PARTIAL, NULL);
+            tomeChoisis = engineCore(&prefs, CONTEXTE_TOME, tomeDB, prefs.nombreElementTotal > ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_TOME_FULL : BORDURE_SUP_SELEC_TOME_PARTIAL, NULL);
         }while(tomeChoisis == ENGINE_RETVALUE_SWITCH);
         free(tomeDB);
     }
@@ -199,12 +201,12 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
     return tomeChoisis;
 }
 
-void displayTemplateTome(MANGAS_DATA* mangaDB, DATA_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH])
+void displayTemplateTome(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     displayTemplateChapitreTome(mangaDB, contexte, 1, data, texteTrad);
 }
 
-DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric)
+DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs)
 {
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
@@ -219,6 +221,9 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int con
     /*On prépare maintenant la structure*/
     DATA_ENGINE *tomeDB = calloc(mangaDB->nombreTomes+2, sizeof(DATA_ENGINE));
     MDL_SELEC_CACHE_MANGA * cacheMDL;
+	
+	if(tomeDB == NULL)
+		return NULL;
 
     /************************************************************
     ** Génére le noms des chapitre en vérifiant leur existance **
@@ -268,9 +273,9 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int con
         else
             i--;
     }
-    tomeDB[0].nombreElementTotal = tomeCourant;
-    tomeDB[0].website = mangaDB->team->site;
-    tomeDB[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
+    prefs->nombreElementTotal = tomeCourant;
+    prefs->website = mangaDB->team->site;
+    prefs->currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     if((tomeCourant == 1 && contexte != CONTEXTE_LECTURE) || (tomeCourant == 0 && contexte == CONTEXTE_LECTURE)) //Si il n'y a pas de chapitre
     {

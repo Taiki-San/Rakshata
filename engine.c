@@ -290,12 +290,13 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
 // #define AUTO_SELECT_ENGINE
 int curPage; //Too lazy to use an argument
 
-int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *selectMangaDLRightClick)
+int engineCore(PREFS_ENGINE * prefs, int contexte, DATA_ENGINE* input, int hauteurAffichageRaw, bool *selectMangaDLRightClick)
 {
     /*Initialisation*/
     int pageSelection = 0, pageTotale = 1, i = 0, elementParColonne[ENGINE_NOMBRE_COLONNE], elementChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE, limitationLettre = 0;
     int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], nombreElement, posTab, nombreElementAffiche, nombreTotalElementAffiche, reprintScreen = 0;
-    int button_selected[8];
+    int button_selected[8], tailleInterligne = INTERLIGNE * getRetinaZoom();
+    int hauteurAffichage = hauteurAffichageRaw * getRetinaZoom();
     char localization[SIZE_TRAD_ID_11][TRAD_LENGTH];
     bool isClickable[ENGINE_ELEMENT_PAR_PAGE];
     SDL_Texture *texte = NULL;
@@ -317,12 +318,12 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
     police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     loadTrad(localization, 11);
-    nombreElement = input[0].nombreElementTotal;
+    nombreElement = prefs->nombreElementTotal;
     pageSelection = curPage;
 
     if(contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_DL)
     {
-        button_available(input, button_selected);
+        button_available(*prefs, input, button_selected);
     }
     displayBigMainMenuIcon();
 
@@ -337,7 +338,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             int posFirstElement = 0;
             if(reprintScreen)
             {
-                for(i = nombreTotalElementAffiche = 0; i < input[0].nombreElementTotal; i++) //Si la liste a été restreinte
+                for(i = nombreTotalElementAffiche = 0; i < prefs->nombreElementTotal; i++) //Si la liste a été restreinte
                 {
                     if(engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                     {
@@ -360,7 +361,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             nombreTotalElementAffiche = nombreElement;
 
         loadMultiPage(nombreTotalElementAffiche, &pageSelection, &pageTotale);
-        applyBackground(renderer, 0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE, WINDOW_SIZE_W, contexte != CONTEXTE_CHAPITRE ? WINDOW_SIZE_H : WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
+        applyBackground(renderer, 0, HAUTEUR_BOUTONS_CHANGEMENT_PAGE * getRetinaZoom(), WINDOW_SIZE_W, contexte != CONTEXTE_CHAPITRE ? WINDOW_SIZE_H : WINDOW_SIZE_H - (HAUTEUR_BOUTONS_CHAPITRE + HAUTEUR_BOUTONS_CHANGEMENT_PAGE) * getRetinaZoom());
         engineLoadCurrentPage(nombreTotalElementAffiche, pageSelection, elementParColonne);
         engineDisplayPageControls(localization, pageSelection, pageTotale);
 
@@ -369,18 +370,18 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             generateChoicePanel(localization, button_selected);
             if(contexte == CONTEXTE_DL)
             {
-                engineDisplayDownloadButtons(input[0].nombreChapitreDejaSelect, localization);
+                engineDisplayDownloadButtons(prefs->nombreChapitreDejaSelect, localization);
             }
         }
         if(contexte == CONTEXTE_TOME)
         {
-            bordureLaterale = BORDURELATSELECTION_XL;
-            longueurElement = LONGUEURMANGA_XL;
+            bordureLaterale = BORDURELATSELECTION_XL * getRetinaZoom();
+            longueurElement = LONGUEURMANGA_XL * getRetinaZoom();
         }
         else
         {
-            bordureLaterale = BORDURELATSELECTION;
-            longueurElement = LONGUEURMANGA;
+            bordureLaterale = BORDURELATSELECTION * getRetinaZoom();
+            longueurElement = LONGUEURMANGA * getRetinaZoom();
         }
 
         for(i = 0; i < ENGINE_ELEMENT_PAR_PAGE; i++)
@@ -406,7 +407,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             if(!engineCheckIfToDisplay(contexte, input[i], limitationLettre, button_selected))
                 continue;
 
-            currentColor = getEngineColor(input[i], input[0], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte);
+            currentColor = getEngineColor(*prefs, input[i], contexte, couleurUnread, couleurNew, couleurNothingToRead, couleurTexte);
             if((contexte == CONTEXTE_DL || contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && areSameColors(currentColor, couleurNothingToRead))
                 isClickable[nombreElementAffiche] = false;   //Si l'élement n'est pas lisible
             else
@@ -416,7 +417,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
 
             if(texte == NULL)
                 continue;
-            else if(texte->w >= longueurElement + 10)
+            else if(texte->w >= longueurElement + 10 * getRetinaZoom())
             {
                 int length = strlen(input[i].stringToDisplay), lettreToRemove, widthDrawn = texte->w;
                 char temp[LONGUEUR_NOM_MANGA_MAX];
@@ -442,7 +443,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
             if(nombreTotalElementAffiche <= 9)
             {
                 position.x += bordureLaterale + ((nombreElementAffiche % ENGINE_NOMBRE_COLONNE) * (bordureLaterale + longueurElement));
-                position.y = hauteurAffichage + ((position.h + INTERLIGNE) * (nombreElementAffiche / ENGINE_NOMBRE_COLONNE));
+                position.y = hauteurAffichage + ((position.h + tailleInterligne) * (nombreElementAffiche / ENGINE_NOMBRE_COLONNE));
                 tailleTexte[nombreElementAffiche%ENGINE_NOMBRE_COLONNE][nombreElementAffiche/ENGINE_NOMBRE_COLONNE][0] = position.x;
                 tailleTexte[nombreElementAffiche%ENGINE_NOMBRE_COLONNE][nombreElementAffiche/ENGINE_NOMBRE_COLONNE][1] = position.w;
             }
@@ -455,13 +456,13 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
 
                 if(!posTab)
                 {
-                    position.y = hauteurAffichage + ((position.h + INTERLIGNE) * (nombreElementAffiche % elementParColonne[0]));
+                    position.y = hauteurAffichage + ((position.h + tailleInterligne) * (nombreElementAffiche % elementParColonne[0]));
                     tailleTexte[posTab][nombreElementAffiche][0] = position.x;
                     tailleTexte[posTab][nombreElementAffiche][1] = position.w;
                 }
                 else
                 {
-                    position.y = hauteurAffichage + ((position.h + INTERLIGNE) * ((nombreElementAffiche - elementParColonne[posTab-1]) % elementParColonne[posTab]));
+                    position.y = hauteurAffichage + ((position.h + tailleInterligne) * ((nombreElementAffiche - elementParColonne[posTab-1]) % elementParColonne[posTab]));
                     tailleTexte[posTab][nombreElementAffiche - elementParColonne[posTab-1]][0] = position.x;
                     tailleTexte[posTab][nombreElementAffiche - elementParColonne[posTab-1]][1] = position.w;
                 }
@@ -479,8 +480,8 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
         do
         {
             outputType = ENGINE_OUTPUT_DEFAULT;
-            output = engineSelection(contexte, input, tailleTexte, hauteurAffichage, &outputType);
-            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, input, isClickable, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
+            output = engineSelection(*prefs, contexte, input, tailleTexte, hauteurAffichageRaw, &outputType);
+            reprintScreen = engineAnalyseOutput(contexte, output, outputType, &elementChoisis, prefs, input, isClickable, elementParColonne, button_selected, &pageSelection, pageTotale, &limitationLettre, nombreTotalElementAffiche<=9);
         }while (!reprintScreen && elementChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE);
         MUTEX_UNIX_LOCK;
 
@@ -501,7 +502,7 @@ int engineCore(DATA_ENGINE* input, int contexte, int hauteurAffichage, bool *sel
     return elementChoisis;
 }
 
-int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurChapitre, int *outputType)
+int engineSelection(PREFS_ENGINE prefs, int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurChapitre, int *outputType)
 {
     /*Initialisations*/
     int virgule = 0;
@@ -511,13 +512,13 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
     for(nombreManga = 0; nombreManga < ENGINE_ELEMENT_PAR_PAGE && tailleTexte[0][nombreManga] != 0; nombreManga++);
 
     if(contexte == CONTEXTE_CHAPITRE)
-        chapitreMax = input[0].chapitrePlusRecent;
+        chapitreMax = prefs.chapitrePlusRecent;
 
     /*On vois quelle est la forme de la fenetre*/
     while(*outputType == ENGINE_OUTPUT_DEFAULT)
     {
         if(contexte == CONTEXTE_CHAPITRE && choix != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            engineDisplayCurrentTypedChapter(choix, virgule, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI);
+            engineDisplayCurrentTypedChapter(choix, virgule, WINDOW_SIZE_H - BORDURE_INF_NUMEROTATION_TRI * getRetinaZoom());
 
         SDL_WaitEvent(&event);
         if(!haveInputFocus(&event, window))
@@ -613,7 +614,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 if(letter >= 'a' && letter <= 'z')
                     letter += 'A' - 'a'; //On passe en maj
 
-                if(input[0].switchAvailable == true && ((contexte == CONTEXTE_TOME && (letter == 'C' || letter == 'S')) || (contexte == CONTEXTE_CHAPITRE && (letter == 'T' || letter == 'S'))))
+                if(prefs.switchAvailable == true && ((contexte == CONTEXTE_TOME && (letter == 'C' || letter == 'S')) || (contexte == CONTEXTE_CHAPITRE && (letter == 'T' || letter == 'S'))))
                 {
                     *outputType = ENGINE_OUTPUT_SWITCH;
                     break;
@@ -653,13 +654,16 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
             case SDL_MOUSEBUTTONUP:
             {
-                if(event.button.x > POSITION_ICONE_MENUS && event.button.x < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS && event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS+TAILLE_ICONE_MENUS)
+                /*Les evenements sont gérés bizarrement quand on est en mode retina: il faut les multiplier par le zoom pour pouvoir faire des comparaisons efficaces*/
+                
+                if(event.button.x > POSITION_ICONE_MENUS && event.button.x < POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS * getRetinaZoom()
+				   && event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS * getRetinaZoom())
                 {
                     elementChoisis = PALIER_MENU; //Clic sur icône du menu principal
                     *outputType = ENGINE_OUTPUT_QUIT;
                     break;
                 }
-                else if(input[0].switchAvailable == true && event.button.x >= WINDOW_SIZE_W - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= WINDOW_SIZE_W - POSITION_ICONE_MENUS && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
+                else if(prefs.switchAvailable == true && event.button.x >= getPtRetinaW(renderer) - POSITION_ICONE_MENUS - TAILLE_ICONE_MENUS && event.button.x <= getPtRetinaW(renderer) - POSITION_ICONE_MENUS && event.button.y >= POSITION_ICONE_MENUS && event.button.y <= POSITION_ICONE_MENUS + TAILLE_ICONE_MENUS)
                 {
                     *outputType = ENGINE_OUTPUT_SWITCH;
                     break;
@@ -683,7 +687,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                         *outputType = ENGINE_OUTPUT_PREV_PAGE;
                     }
 
-                    else if(event.button.x > WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE - LONGUEUR_SUIVANT && event.button.x < WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE) //Suivant
+                    else if(event.button.x > getPtRetinaW(renderer) - MARGE_LATERALE_BOUTONS_MULTI_PAGE - LONGUEUR_SUIVANT && event.button.x < getPtRetinaW(renderer) - MARGE_LATERALE_BOUTONS_MULTI_PAGE) //Suivant
                     {
                         *outputType = ENGINE_OUTPUT_NEXT_PAGE;
                     }
@@ -693,23 +697,23 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                 {
                     if(contexte == CONTEXTE_LECTURE || contexte == CONTEXTE_DL) //Sinon, clic sur bandeau de contrôle / boutons de DL
                     {
-                        int hauteurBandeau = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
+                        int hauteurBandeau = getPtRetinaH(renderer) - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
                         //Clic sur les boutons DL/Annuler
                         if(contexte == CONTEXTE_DL && event.button.y > hauteurBandeau && event.button.y < hauteurBandeau + LARGEUR_MOYENNE_MANGA_GROS)
                         {
-                            if(event.button.x > WINDOW_SIZE_W*2/3)
+                            if(event.button.x > getPtRetinaW(renderer)*2/3)
                             {
                                 *outputType = ENGINE_OUTPUT_DL_CANCEL; //Annuler
                             }
-                            else if(event.button.x < WINDOW_SIZE_W/3)
+                            else if(event.button.x < getPtRetinaW(renderer)/3)
                             {
                                 *outputType = ENGINE_OUTPUT_DL_START; //Télécharger
                             }
                         }
                         else //Bandeau de contrôle
                         {
-                            if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
-                               event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
+                            if(event.button.y > getPtRetinaH(renderer) - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE &&
+                               event.button.y < getPtRetinaH(renderer) - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                             {
                                 for(bandeauControle = 0; bandeauControle < 5 && (event.button.x < PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION || event.button.x > PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION + LARGEUR_MOYENNE_BOUTON_RESTRICTION); bandeauControle++);
                                 if(bandeauControle == 5)
@@ -718,8 +722,8 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                                     bandeauControle++;
                             }
 
-                            else if(event.button.y > WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 &&
-                                    event.button.y < WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
+                            else if(event.button.y > getPtRetinaH(renderer) - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 &&
+                                    event.button.y < getPtRetinaH(renderer) - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + LARGEUR_INTERLIGNE_BANDEAU_CONTROLE*2 + LARGEUR_MOYENNE_MANGA_MOYEN) //Ligne état d'avancement (En cours/Suspendus/Terminé)
                             {
                                 for(bandeauControle = 0; bandeauControle < 5 && (event.button.x < PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION || event.button.x > PREMIERE_COLONNE_BANDEAU_RESTRICTION + bandeauControle * LARGEUR_COLONNE_BOUTON_RESTRICTION + LARGEUR_MOYENNE_BOUTON_RESTRICTION); bandeauControle++);
                                 if(bandeauControle == 5)
@@ -739,12 +743,12 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
 
                     else if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) //Checks si clic sur zones cliquable pour le chapitre
                     {
-                        if(event.button.y >= BORDURE_SUP_INFOS_TEAM_CHAPITRE - 5 && event.button.y <= BORDURE_SUP_INFOS_TEAM_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5 && event.button.x > 50 && event.button.x < WINDOW_SIZE_W - 50)//Tolérance de 5 pxl
+                        if(event.button.y >= BORDURE_SUP_INFOS_TEAM_CHAPITRE - 5 && event.button.y <= BORDURE_SUP_INFOS_TEAM_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5 && event.button.x > 50 && event.button.x < getPtRetinaW(renderer) - 50)//Tolérance de 5 pxl
                         {
                             *outputType = ENGINE_OUTPUT_WEBSITE; //Clic sur nom team -> lien
                         }
 
-                        else if(contexte == CONTEXTE_CHAPITRE && event.button.y >= WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - 5 && event.button.y <= WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5)
+                        else if(contexte == CONTEXTE_CHAPITRE && event.button.y >= getPtRetinaH(renderer) - HAUTEUR_BOUTONS_CHAPITRE - 5 && event.button.y <= getPtRetinaH(renderer) - HAUTEUR_BOUTONS_CHAPITRE + LARGEUR_MOYENNE_MANGA_GROS + 5)
                         {
                             if(event.button.x < SEPARATION_COLONNE_1_CHAPITRE) //Premier chapitre
                                 elementChoisis = ENGINE_OUTPUT_BOUTON_CHAPITRE_1;
@@ -768,7 +772,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                     if(event.motion.y >= hauteurChapitre)
                         output = engineDefineElementClicked(event.motion.x, event.motion.y, tailleTexte, hauteurChapitre, nombreManga);
 
-                    if(output != VALEUR_FIN_STRUCTURE_CHAPITRE || input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
+                    if(output != VALEUR_FIN_STRUCTURE_CHAPITRE || prefs.currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
                     {
                         elementChoisis = output;
                         *outputType = ENGINE_OUTPUT_MOUSE_ABOVE_TOME;
@@ -784,11 +788,6 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
                     elementChoisis = PALIER_QUIT;
                     *outputType = ENGINE_OUTPUT_QUIT;
                 }
-                /*else if(event.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                    SDL_RenderPresent(renderer);
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }*/
                 break;
             }
         }
@@ -796,7 +795,7 @@ int engineSelection(int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOM
     return elementChoisis;
 }
 
-int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, DATA_ENGINE *input, bool isClickable[ENGINE_ELEMENT_PAR_PAGE], int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
+int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, PREFS_ENGINE * prefs, DATA_ENGINE *input, bool isClickable[ENGINE_ELEMENT_PAR_PAGE], int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne)
 {
     int ret_value = 0; //Besoin de refresh
     switch(outputType)
@@ -830,12 +829,12 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             {
                 int i, j;
                 /*On va faire la correspondance entre posClicked et l'input approprié*/
-                for(i = j = 0; i < input[0].nombreElementTotal && j <= posClicked; i++)
+                for(i = j = 0; i < prefs->nombreElementTotal && j <= posClicked; i++)
                 {
                     if(engineCheckIfToDisplay(contexte, input[i], *limitationLettre, button_selected))
                         j++;
                 }
-                if(i-1 < input[0].nombreElementTotal && engineCheckIfToDisplay(contexte, input[i-1], *limitationLettre, button_selected))
+                if(i-1 < prefs->nombreElementTotal && engineCheckIfToDisplay(contexte, input[i-1], *limitationLettre, button_selected))
                     posClicked = i-1;
                 else
                     break;
@@ -847,7 +846,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 errorEmptyCTList(contexte, trad);
             }
 
-            else if(posClicked < input[0].nombreElementTotal)
+            else if(posClicked < prefs->nombreElementTotal)
             {
                 *elementChoisis = input[posClicked].ID;
 
@@ -875,8 +874,8 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             else if(output >= 'A' && output <= 'Z')
             {
                 int i;
-                for(i = 0; i < input[0].nombreElementTotal && input[i].data->mangaName[0] < output; i++);
-                if(i < input[0].nombreElementTotal)
+                for(i = 0; i < prefs->nombreElementTotal && input[i].data->mangaName[0] < output; i++);
+                if(i < prefs->nombreElementTotal)
                     *limitationLettre = output;
                 ret_value = 1;
             }
@@ -905,9 +904,9 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
 
         case ENGINE_OUTPUT_WEBSITE:
         {
-            if((contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && input[0].website != NULL)
+            if((contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME) && prefs->website != NULL)
             {
-                ouvrirSite(input[0].website);
+                ouvrirSite(prefs->website);
             }
             break;
         }
@@ -953,8 +952,8 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 break;
 
             /*On va vérifier que ça laisse des trucs lisibles*/
-            for(i = 0; i < input[0].nombreElementTotal && input[i].data != NULL && !buttonLimitationEnforced(button_selected, *input[i].data); i++);
-            if(i == input[0].nombreElementTotal || input[i].data == NULL) //Annulation
+            for(i = 0; i < prefs->nombreElementTotal && input[i].data != NULL && !buttonLimitationEnforced(button_selected, *input[i].data); i++);
+            if(i == prefs->nombreElementTotal || input[i].data == NULL) //Annulation
             {
                 if(button_selected[firstLine+output] == 0)
                     button_selected[firstLine+output] = 1;
@@ -972,17 +971,17 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             {
                 case ENGINE_OUTPUT_BOUTON_CHAPITRE_1:
                 {
-                    *elementChoisis = input[0].chapitrePlusAncien;
+                    *elementChoisis = prefs->chapitrePlusAncien;
                     break;
                 }
                 case ENGINE_OUTPUT_BOUTON_CHAPITRE_2:
                 {
-                    *elementChoisis = input[0].IDDernierElemLu;
+                    *elementChoisis = prefs->IDDernierElemLu;
                     break;
                 }
                 case ENGINE_OUTPUT_BOUTON_CHAPITRE_3:
                 {
-                    *elementChoisis = input[0].chapitrePlusRecent;
+                    *elementChoisis = prefs->chapitrePlusRecent;
                     break;
                 }
             }
@@ -992,7 +991,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
         case ENGINE_OUTPUT_TYPED_CHAPITRE:
         {
             int chapitreCourant; //On vérifie que le chapitre existe
-            for(chapitreCourant = 0; chapitreCourant < input[0].nombreElementTotal && output != input[chapitreCourant].ID; chapitreCourant++);
+            for(chapitreCourant = 0; chapitreCourant < prefs->nombreElementTotal && output != input[chapitreCourant].ID; chapitreCourant++);
             if(output == input[chapitreCourant].ID)
                 *elementChoisis = output;
             break;
@@ -1014,7 +1013,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 else
                 {
                     int nbElemColonne[3];
-                    engineLoadCurrentPage(input[0].nombreElementTotal, *pageCourante, nbElemColonne);
+                    engineLoadCurrentPage(prefs->nombreElementTotal, *pageCourante, nbElemColonne);
                     if(output/100 == 0)
                         elemClicked = output % 100;
                     else
@@ -1022,18 +1021,18 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
                 }
                 elemClicked += (*pageCourante-1) * ENGINE_ELEMENT_PAR_PAGE;
 
-                if(elemClicked < input[0].nombreElementTotal)
+                if(elemClicked < prefs->nombreElementTotal)
                 {
                     engineDisplayTomeInfos(input[elemClicked]);
-                    input[0].currentTomeInfoDisplayed = elemClicked;
+                    prefs->currentTomeInfoDisplayed = elemClicked;
                 }
             }
-            else if (input[0].currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            else if (prefs->currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
                 refreshRendererIfBuggy(renderer);
                 enfineEraseDisplayedTomeInfos(renderer);
                 SDL_RenderPresent(renderer);
-                input[0].currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
+                prefs->currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
             break;
         }
@@ -1089,13 +1088,13 @@ bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettr
 
 int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem)
 {
-    int ligne, colonne = 0;
+    int ligne, colonne = 0, retinaDevider = getRetinaZoom();
     for(ligne = 0; ligne < ENGINE_NOMBRE_LIGNE && (y < hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) || y > hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) + LARGEUR_MOYENNE_MANGA_PETIT); ligne++);
 
     if(ligne < ENGINE_NOMBRE_LIGNE && y >= hauteurDebut) //Si on choisis un chapitre
     {
         /*Nombre Colonne*/
-        for(colonne = 0; colonne < ENGINE_NOMBRE_COLONNE && ligne*ENGINE_NOMBRE_COLONNE + colonne < nombreMaxElem && (x < tailleTexte[colonne][ligne][0] || x > tailleTexte[colonne][ligne][0] + tailleTexte[colonne][ligne][1]); colonne++);
+        for(colonne = 0; colonne < ENGINE_NOMBRE_COLONNE && ligne*ENGINE_NOMBRE_COLONNE + colonne < nombreMaxElem && (x < tailleTexte[colonne][ligne][0] / retinaDevider || x > tailleTexte[colonne][ligne][0] / retinaDevider + tailleTexte[colonne][ligne][1] / retinaDevider); colonne++);
         if(colonne < ENGINE_NOMBRE_COLONNE && nombreMaxElem > ligne * ENGINE_NOMBRE_COLONNE + colonne)
         {
             return colonne * 100 + ligne;
@@ -1169,7 +1168,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
 
     TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
 
-    position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE;
+    position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE * getRetinaZoom();
 
     snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", localization[14], pageSelection, localization[15], pageTotale);
     texte = TTF_Write(renderer, police, temp, couleurTexte); //Page X sur Y
@@ -1186,7 +1185,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     texte = TTF_Write(renderer, police, localization[0], couleurTexte);
     if(texte != NULL)
     {
-        position.x = MARGE_LATERALE_BOUTONS_MULTI_PAGE;
+        position.x = MARGE_LATERALE_BOUTONS_MULTI_PAGE * getRetinaZoom();
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -1196,7 +1195,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     texte = TTF_Write(renderer, police, localization[1], couleurTexte); //Page suivante
     if(texte != NULL)
     {
-        position.x = WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE - texte->w;
+        position.x = WINDOW_SIZE_W - MARGE_LATERALE_BOUTONS_MULTI_PAGE * getRetinaZoom() - texte->w;
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -1219,14 +1218,14 @@ void displayBigMainMenuIcon()
         SDL_Rect position;
         position.x = POSITION_ICONE_MENUS;
         position.y = POSITION_ICONE_MENUS;
-        position.h = TAILLE_ICONE_MENUS;
-        position.w = TAILLE_ICONE_MENUS;
+        position.h = TAILLE_ICONE_MENUS * getRetinaZoom();
+        position.w = TAILLE_ICONE_MENUS * getRetinaZoom();
         SDL_RenderCopy(renderer, icone, NULL, &position);
         SDL_DestroyTextureS(icone);
     }
 }
 
-SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte)
+SDL_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte)
 {
     if(contexte == CONTEXTE_DL && !input.anythingToDownload)
         return couleurNothingToRead;
@@ -1243,7 +1242,7 @@ SDL_Color getEngineColor(DATA_ENGINE input, DATA_ENGINE input0, int contexte, SD
 
     else if(contexte == CONTEXTE_CHAPITRE || contexte == CONTEXTE_TOME)
     {
-        if(input.ID == input.IDDernierElemLu)
+        if(input.ID == prefs.IDDernierElemLu)
             return couleurNew;
     }
 
@@ -1265,13 +1264,13 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
     police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
-    applyBackground(renderer, 0, WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE - 2, WINDOW_SIZE_W, WINDOW_SIZE_H - HAUTEUR_BOUTONS_CHAPITRE - HAUTEUR_BOUTONS_CHANGEMENT_PAGE);
+    applyBackground(renderer, 0, WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + 2) * getRetinaZoom(), WINDOW_SIZE_W, WINDOW_SIZE_H - (HAUTEUR_BOUTONS_CHAPITRE + HAUTEUR_BOUTONS_CHANGEMENT_PAGE) * getRetinaZoom());
 
-	position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE;
+	position.y = WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE) * getRetinaZoom();
     texte = TTF_Write(renderer, police, trad[5], couleurTexte);
     if(texte != NULL)
     {
-        position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
+        position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION * getRetinaZoom();
         position.h = texte->h;
         position.w = texte->w;
 
@@ -1289,11 +1288,11 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
             texte = TTF_Write(renderer, police, trad[6+i], couleurTexte);
         if(i % 4 == 0)
         {
-            position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION;
-            position.y += LARGEUR_INTERLIGNE_BANDEAU_CONTROLE;
+            position.x = PREMIERE_COLONNE_BANDEAU_RESTRICTION * getRetinaZoom();
+            position.y += LARGEUR_INTERLIGNE_BANDEAU_CONTROLE * getRetinaZoom();
         }
         else
-            position.x += LARGEUR_COLONNE_BOUTON_RESTRICTION;
+            position.x += LARGEUR_COLONNE_BOUTON_RESTRICTION * getRetinaZoom();
         if(texte != NULL)
         {
             position.h = texte->h;
@@ -1311,9 +1310,9 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
 
 /*CONTEXTE_LECTURE ONLY*/
 
-void button_available(DATA_ENGINE* input, int button[8])
+void button_available(PREFS_ENGINE prefs, DATA_ENGINE* input, int button[8])
 {
-    int i, casTeste, nombreTour = input[0].nombreElementTotal;
+    int i, casTeste, nombreTour = prefs.nombreElementTotal;
     for(casTeste = 0; casTeste < 8; casTeste++)
     {
         if(casTeste == 3)
@@ -1352,7 +1351,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
 
-    position.y = WINDOW_SIZE_H - LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA + 10;
+    position.y = WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - 10) * getRetinaZoom();
 
     if(nombreChapitreDejaSelect < 2)
         snprintf(temp, TAILLE_BUFFER, "%d %s", nombreChapitreDejaSelect, localization[4]);
@@ -1372,7 +1371,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     texte = TTF_Write(renderer, police, localization[2], couleurNew);
     if(texte)
     {
-        position.x = 50;
+        position.x = 50 * getRetinaZoom();
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -1382,7 +1381,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     texte = TTF_Write(renderer, police, localization[3], couleurTexte);
     if(texte != NULL)
     {
-        position.x = WINDOW_SIZE_W - texte->w - 50;
+        position.x = WINDOW_SIZE_W - texte->w - 50 * getRetinaZoom();
         position.h = texte->h;
         position.w = texte->w;
         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -1414,7 +1413,7 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     if(numero != NULL)
     {
         position.x = (WINDOW_SIZE_W / 2) - (numero->w / 2);
-        position.y = hauteurNum;// - (numero->h / 2);
+        position.y = hauteurNum;
         position.h = numero->h;
         position.w = numero->w;
 

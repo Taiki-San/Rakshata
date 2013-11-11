@@ -177,8 +177,8 @@ int check_evt()
 
                 if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
                 {
-                    int k = 0, j = 0; //On parse
-					char *buffer = NULL;
+                    size_t k = 0; //On parse
+					char *buffer = NULL, c;
 					size_t size;
 
                     test = fopenR(nomsATest[fichiersADL[i]], "r");
@@ -188,16 +188,16 @@ int check_evt()
 
                     buffer = ralloc(size*2);
 
-                    while((k=fgetc(test)) != EOF && j < size*2)
+                    while((c = fgetc(test)) != EOF && k < size*2)
                     {
-                        if(k == '\n')
-                            buffer[j++] = '\r';
-                        buffer[j++] = k;
+                        if(c == '\n')
+                            buffer[k++] = '\r';
+                        buffer[k++] = c;
                     }
                     fclose(test);
 
                     test = fopenR(nomsATest[fichiersADL[i]], "w+");
-                    fwrite(buffer, j, 1, test);
+                    fwrite(buffer, k, 1, test);
                     fclose(test);
 
                     free(buffer);

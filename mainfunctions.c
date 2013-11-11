@@ -22,6 +22,8 @@ void mainRakshata()
     window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR,
 #ifdef RETINA_ENABLED
                               SDL_WINDOW_ALLOW_HIGHDPI
+#else
+							0x0
 #endif
                               );
     
