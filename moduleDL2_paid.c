@@ -338,7 +338,7 @@ void MDLPDispCheckingIfPaid()
             position.h = texture->h;
             position.w = texture->w;
             position.x = rendererDL->window->w / 2 - position.w / 2;
-            position.y = HAUTEUR_POURCENTAGE;
+            position.y = HAUTEUR_POURCENTAGE * getRetinaZoom();
             MDLTUICopy(texture, NULL, &position);
             MDLTUIDestroyTexture(texture);
         }
@@ -364,7 +364,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
     {
         SDL_RenderClear(renderVar);
         char buffer[TRAD_LENGTH+10];
-        position.y = 20;
+        position.y = 20 * getRetinaZoom();
 
         snprintf(buffer, TRAD_LENGTH+10, trad[1], prix/100, prix%100);
         texture = TTF_Write(renderVar, police, buffer, couleur);
@@ -377,7 +377,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
             SDL_DestroyTexture(texture);
         }
 
-        position.y += MDL_INTERLIGNE;
+        position.y += MDL_INTERLIGNE * getRetinaZoom();
         texture = TTF_Write(renderVar, police, trad[2], couleur);
         if(texture != NULL)
         {
@@ -388,7 +388,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
             SDL_DestroyTexture(texture);
         }
 
-        position.y += MDL_INTERLIGNE;
+        position.y += MDL_INTERLIGNE * getRetinaZoom();
         texture = TTF_Write(renderVar, police, trad[3], couleur);
         if(texture != NULL)
         {
@@ -400,7 +400,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
         }
 
         TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
-        position.y = 20+3*MDL_INTERLIGNE + (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2;
+        position.y = (20+3*MDL_INTERLIGNE + (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2) * getRetinaZoom();
 
         texture = TTF_Write(renderVar, police, trad[4], couleur);
         if(texture != NULL)
@@ -473,7 +473,7 @@ void MDLPEraseDispChecking()
 #ifdef WIN_OPENGL_BUGGED
     MDLTUIRefresh();
 #endif
-    MDLTUIBackground(0, HAUTEUR_POURCENTAGE-1, rendererDL->window->w, rendererDL->window->h - HAUTEUR_POURCENTAGE);
+    MDLTUIBackground(0, (HAUTEUR_POURCENTAGE-1) * getRetinaZoom(), getW(rendererDL), getH(rendererDL) - HAUTEUR_POURCENTAGE * getRetinaZoom());
     MDLTUIRefresh();
 }
 

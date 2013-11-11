@@ -176,7 +176,7 @@ int ajoutRepo(bool ajoutParFichier)
 
                 /*On attend l'URL*/
                 crashTemp(teams.URL_depot, LONGUEUR_URL);
-                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, 1, 0, 0);
+                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, true, 0, 0);
                 chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
                 if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
@@ -272,7 +272,7 @@ int ajoutRepo(bool ajoutParFichier)
                     if(texte != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = BORDURE_SUP_MENU;
+                        position.y = BORDURE_SUP_MENU * getRetinaZoom();
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -283,7 +283,7 @@ int ajoutRepo(bool ajoutParFichier)
                     if(texte != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = BORDURE_SUP_MENU + texte->h + INTERLIGNE;
+                        position.y = (BORDURE_SUP_MENU + INTERLIGNE) * getRetinaZoom() + texte->h;
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -297,7 +297,7 @@ int ajoutRepo(bool ajoutParFichier)
                     if(texte != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = HAUTEUR_ID_AJOUT_REPO;
+                        position.y = HAUTEUR_ID_AJOUT_REPO * getRetinaZoom();
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);
@@ -309,7 +309,7 @@ int ajoutRepo(bool ajoutParFichier)
                     if(texte != NULL)
                     {
                         position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = HAUTEUR_TEAM_AJOUT_REPO;
+                        position.y = HAUTEUR_TEAM_AJOUT_REPO * getRetinaZoom();
                         position.h = texte->h;
                         position.w = texte->w;
                         SDL_RenderCopy(renderer, texte, NULL, &position);

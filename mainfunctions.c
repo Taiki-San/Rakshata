@@ -19,13 +19,7 @@ void mainRakshata()
 
     MUTEX_LOCK(mutexRS);
 
-    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR,
-#ifdef RETINA_ENABLED
-                              SDL_WINDOW_ALLOW_HIGHDPI
-#else
-							0x0
-#endif
-                              );
+    window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, HAUTEUR, SDL_WINDOW_ALLOW_HIGHDPI);
     
     WINDOW_SIZE_W = window->w;
     WINDOW_SIZE_H = window->h;

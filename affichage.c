@@ -201,12 +201,6 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
     police = OpenFont(rendererVar, FONTUSED, POLICE_GROS);
 
     SDL_RenderClear(rendererVar);
-    
-    if(isRetina)
-    {
-        w *= 2;
-        h *= 2;
-    }
 
     if(police != NULL)
     {
@@ -347,7 +341,7 @@ void updateWindowSize(int w, int h)
         WINDOW_SIZE_H = h; //Pour repositionner chargement
         WINDOW_SIZE_W = w;
 
-        chargement(renderer, h, w);
+        chargement(renderer, h * getRetinaZoom(), w * getRetinaZoom());
 
         MUTEX_LOCK(mutexRS);
 

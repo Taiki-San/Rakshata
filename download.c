@@ -59,7 +59,7 @@ int download_UI(TMP_DL *output)
     TTF_Font *police = NULL;
     SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
-    position.y = HAUTEUR_POURCENTAGE;
+    position.y = HAUTEUR_POURCENTAGE * getRetinaZoom();	//Le macro faire une différence qui fait que ça marche mais il faut être très prudent
     FILE_EXPECTED_SIZE = errCode = 0;
     status = STATUS_DOWNLOADING;
     loadTrad(texte, 20);

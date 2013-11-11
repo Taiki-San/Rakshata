@@ -19,8 +19,6 @@
 
 #define CURRENTVERSION 200
 
-#define RETINA_ENABLED
-
 #include "defines.h"
 #include "prototypes.h"
 #include "structures.h"

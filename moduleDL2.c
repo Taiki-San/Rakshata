@@ -664,7 +664,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 #endif
 
     police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
-    MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE, WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE);
+    MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom(), WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE * getRetinaZoom());
 
     if(police == NULL)
     {
@@ -687,12 +687,14 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
                 snprintf(texte, 200, "%s: %s", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, todoList[curseurDebut+nbrElementDisp]->tomeName);
         }
         changeTo(texte, '_', ' ');
+		
+#warning "Work to get done by there"
 
         texture = MDLTUITTFWrite(police, texte, couleurFont);
         if(texture != NULL)
         {
-            position.x = MDL_BORDURE_CATALOGUE + (nbrElementDisp / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
-            position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (nbrElementDisp % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE;
+            position.x = (MDL_BORDURE_CATALOGUE + (nbrElementDisp / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
+            position.y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (nbrElementDisp % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE) * getRetinaZoom();
             position.w = texture->w;
             position.h = texture->h;
             MDLTUICopy(texture, NULL, &position);
@@ -702,7 +704,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 
     if(nbrElementDisp > 0)
     {
-        SDL_Surface *surface = SDL_CreateRGBSurface(0,2, (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE,32,0,0,0,0); //Barre séparatrice
+        SDL_Surface *surface = SDL_CreateRGBSurface(0,2, (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE * getRetinaZoom(),32,0,0,0,0); //Barre séparatrice
         if(surface != NULL)
         {
             SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 95, 95, 95));
@@ -710,8 +712,8 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 
             if(texture != NULL)
             {
-                position.x = MDL_ICON_POS + MDL_ICON_SIZE + (LARGEUR / 2 - MDL_ICON_POS - MDL_ICON_SIZE) / 3;
-                position.y = MDL_HAUTEUR_DEBUT_CATALOGUE;
+                position.x = (MDL_ICON_POS + MDL_ICON_SIZE + (LARGEUR / 2 - MDL_ICON_POS - MDL_ICON_SIZE) / 3) * getRetinaZoom();
+                position.y = MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom();
                 position.h = texture->h;
                 position.w = texture->w;
                 MDLTUICopy(texture, NULL, &position);
@@ -746,8 +748,8 @@ void MDLUpdateIcons(bool ignoreCache)
         currentStatus = *status[posDebutPage + posDansPage];
         if(currentStatus != *statusCache[posDebutPage + posDansPage] || ignoreCache)
         {
-            position.x = MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE;
-            position.y = MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
+            position.x = (MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
+            position.y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2)) * getRetinaZoom();
             MDLTUIBackgroundPreCrafted(&position);
 
             texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
@@ -773,9 +775,9 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     loadTrad(trad, 22);
     police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
     if(isInstall)
-        MDLTUIBackground(0, HAUTEUR_TEXTE_INSTALLATION, WINDOW_SIZE_W_DL, MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION);
+        MDLTUIBackground(0, HAUTEUR_TEXTE_INSTALLATION * getRetinaZoom(), WINDOW_SIZE_W_DL, (MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION) * getRetinaZoom());
     else
-        MDLTUIBackground(0, HAUTEUR_TEXTE_TELECHARGEMENT, WINDOW_SIZE_W_DL, HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT);
+        MDLTUIBackground(0, HAUTEUR_TEXTE_TELECHARGEMENT * getRetinaZoom(), WINDOW_SIZE_W_DL, (HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT) * getRetinaZoom());
 
     if(police == NULL)
     {
@@ -795,9 +797,9 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     {
         position.x = WINDOW_SIZE_W_DL / 2 - texture->w / 2;
         if(isInstall)
-            position.y = HAUTEUR_TEXTE_INSTALLATION;
+            position.y = HAUTEUR_TEXTE_INSTALLATION * getRetinaZoom();
         else
-            position.y = HAUTEUR_TEXTE_TELECHARGEMENT;
+            position.y = HAUTEUR_TEXTE_TELECHARGEMENT * getRetinaZoom();
         position.h = texture->h;
         position.w = texture->w;
 #ifdef WIN_OPENGL_BUGGED
