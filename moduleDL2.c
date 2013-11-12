@@ -697,12 +697,11 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             position.h = texture->h;
             MDLTUICopy(texture, NULL, &position);
             MDLTUIDestroyTexture(texture);
+#ifdef WIN_OPENGL_BUGGED
+			MDLTUIRefresh();
+#endif
         }
     }
-	
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-#endif
 
     if(nbrElementDisp > 0)
     {

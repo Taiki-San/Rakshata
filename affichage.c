@@ -390,6 +390,14 @@ TTF_Font * OpenFont(SDL_Renderer * renderer, char * fontName, int size)
     return TTF_OpenFont(fontName, size);
 }
 
+void setRetinaSize(const SDL_Rect input, SDL_Rect * output)
+{
+	output->h = input.h * getRetinaZoom();
+	output->w = input.w * getRetinaZoom();
+	output->x = input.x * getRetinaZoom();
+	output->y = input.y * getRetinaZoom();
+}
+
 void nameWindow(SDL_Window* windows, const int value)
 {
     char windowsName[128], trad[SIZE_TRAD_ID_25][TRAD_LENGTH], versionOfSoftware[6];

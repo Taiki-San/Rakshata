@@ -314,8 +314,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_DestroyWindow(window);
                 window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
                 
-                WINDOW_SIZE_W = getW(renderer);
-                WINDOW_SIZE_H = getH(renderer);
+                getPtRetinaW(renderer) = getW(renderer);
+                getPtRetinaH(renderer) = getH(renderer);
                 
                 loadIcon(window);
                 nameWindow(window, 0);
@@ -345,14 +345,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 bandeauControle = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
-                WINDOW_SIZE_W = RESOLUTION[0] = getW(renderer);
-                WINDOW_SIZE_H = RESOLUTION[1] = getH(renderer);
+                getPtRetinaW(renderer) = RESOLUTION[0] = getW(renderer);
+                getPtRetinaH(renderer) = RESOLUTION[1] = getH(renderer);
                 
 				SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
             }
 
-            pageTropGrande = largeurValide > WINDOW_SIZE_W;
+            pageTropGrande = largeurValide > getPtRetinaW(renderer);
 
             /*Si grosse page*/
             TTF_CloseFont(police);
@@ -381,13 +381,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         /*On prépare les coordonnées des surfaces*/
         if(infoSurface != NULL)
         {
-            positionInfos.x = (WINDOW_SIZE_W / 2) - (infoSurface->w / 2);
-            positionInfos.y = (BORDURE_HOR_LECTURE / 2) - (infoSurface->h / 2);
+            positionInfos.x = (getPtRetinaW(renderer) / 2) - (infoSurface->w / (2 * getRetinaZoom()));
+            positionInfos.y = (BORDURE_HOR_LECTURE / 2) - (infoSurface->h / (2 * getRetinaZoom()));
             positionInfos.h = infoSurface->h;
             positionInfos.w = infoSurface->w;
         }
-        positionBandeauControle.y = (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR);
-        positionBandeauControle.x = (WINDOW_SIZE_W / 2) - (bandeauControle->w / 2);
+        positionBandeauControle.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
+        positionBandeauControle.x = (getPtRetinaW(renderer) / 2) - (bandeauControle->w / 2);
 
         /*Création de la texture de la page*/
         MUTEX_UNIX_LOCK;
@@ -431,15 +431,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         /*Calcul position page*/
         if(!pageTropGrande && !finDuChapitre)
         {
-            if(chapitre->w < WINDOW_SIZE_W - (2 * BORDURE_LAT_LECTURE))
+            if(chapitre->w < getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE))
                 positionPage.w = positionSlide.w = chapitre->w;
             else
-                positionPage.w = positionSlide.w = WINDOW_SIZE_W - (2 * BORDURE_LAT_LECTURE);
+                positionPage.w = positionSlide.w = getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE);
 
-            if(chapitre->h < WINDOW_SIZE_H)
+            if(chapitre->h < getPtRetinaH(renderer))
                 positionPage.h = positionSlide.h = chapitre->h;
             else
-                positionPage.h = positionSlide.h = WINDOW_SIZE_H;
+                positionPage.h = positionSlide.h = getPtRetinaH(renderer);
 
             positionPage.y = 0;
             if(!finDuChapitre)
@@ -448,20 +448,20 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 positionSlide.y = 0;
             }
             if(chapitre->w < LARGEUR - BORDURE_LAT_LECTURE * 2 || *fullscreen)
-                positionPage.x = WINDOW_SIZE_W / 2 - chapitre->w / 2;
+                positionPage.x = getPtRetinaW(renderer) / 2 - chapitre->w / 2;
             else if (!*fullscreen)
                 positionPage.x = BORDURE_LAT_LECTURE;
         }
 
         else if(!finDuChapitre)
         {
-            positionPage.w = positionSlide.w = chapitre->w  > WINDOW_SIZE_W - BORDURE_LAT_LECTURE ? WINDOW_SIZE_W - BORDURE_LAT_LECTURE : chapitre->w;
-            positionPage.h = positionSlide.h = chapitre->h  > WINDOW_SIZE_H - BORDURE_HOR_LECTURE ? WINDOW_SIZE_H - BORDURE_HOR_LECTURE : chapitre->h;
+            positionPage.w = positionSlide.w = chapitre->w  > getPtRetinaW(renderer) - BORDURE_LAT_LECTURE ? getPtRetinaW(renderer) - BORDURE_LAT_LECTURE : chapitre->w;
+            positionPage.h = positionSlide.h = chapitre->h  > getPtRetinaH(renderer) - BORDURE_HOR_LECTURE ? getPtRetinaH(renderer) - BORDURE_HOR_LECTURE : chapitre->h;
             positionPage.y = BORDURE_HOR_LECTURE;
 
             if(!finDuChapitre)
             {
-                positionSlide.x = chapitre->w - (WINDOW_SIZE_W - BORDURE_LAT_LECTURE);
+                positionSlide.x = chapitre->w - (getPtRetinaW(renderer) - BORDURE_LAT_LECTURE);
                 positionSlide.y = 0;
             }
             positionPage.x = 0;
@@ -470,8 +470,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         if(!changementEtat)
             pageCharge = 0;
 
-        if(*fullscreen && BORDURE_HOR_LECTURE + chapitre->h + BORDURE_CONTROLE_LECTEUR < WINDOW_SIZE_H)
-            positionPage.y = (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - chapitre->h) / 2 + BORDURE_HOR_LECTURE;
+        if(*fullscreen && BORDURE_HOR_LECTURE + chapitre->h + BORDURE_CONTROLE_LECTEUR < getPtRetinaH(renderer))
+            positionPage.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - chapitre->h) / 2 + BORDURE_HOR_LECTURE;
         else
             positionPage.y = BORDURE_HOR_LECTURE;
 
@@ -566,9 +566,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 {
                     if (event.button.y >= 10 && event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
                     {
-                        if((!pageAccesDirect && infoSurface != NULL && event.button.x >= WINDOW_SIZE_W/2 - infoSurface->w/2 && event.button.x <= WINDOW_SIZE_W/2 + infoSurface->w/2) //Si pas de page affiché
-                            || (pageAccesDirect && ((WINDOW_SIZE_W < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
-                                                || (WINDOW_SIZE_W >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
+                        if((!pageAccesDirect && infoSurface != NULL && event.button.x >= getPtRetinaW(renderer)/2 - infoSurface->w/2 && event.button.x <= getPtRetinaW(renderer)/2 + infoSurface->w/2) //Si pas de page affiché
+                            || (pageAccesDirect && ((getPtRetinaW(renderer) < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
+                                                || (getPtRetinaW(renderer) >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
                         ouvrirSiteTeam(mangaDB->team); //Ouverture du site de la team
                     }
 
@@ -738,10 +738,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 case SDL_MOUSEBUTTONUP:
                                 {
                                     /*Si on a pas bougé la souris, on change de page*/
-                                    if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR)
+                                    if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR)
                                     {
                                         //Clic détécté: on cherche de quel côté
-                                        if(pasDeMouvementLorsDuClicX > WINDOW_SIZE_W / 2 && pasDeMouvementLorsDuClicX < WINDOW_SIZE_W - (WINDOW_SIZE_W / 2 - chapitre->w / 2)) //coté droit -> page suivante
+                                        if(pasDeMouvementLorsDuClicX > getPtRetinaW(renderer) / 2 && pasDeMouvementLorsDuClicX < getPtRetinaW(renderer) - (getPtRetinaW(renderer) / 2 - chapitre->w / 2)) //coté droit -> page suivante
                                         {
                                             //Page Suivante
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
@@ -752,7 +752,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                             }
                                         }
 
-                                        else if (pasDeMouvementLorsDuClicX > (WINDOW_SIZE_W / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (WINDOW_SIZE_W / 2))//coté gauche -> page précédente
+                                        else if (pasDeMouvementLorsDuClicX > (getPtRetinaW(renderer) / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (getPtRetinaW(renderer) / 2))//coté gauche -> page précédente
                                         {
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                             if (check4change == -1)
@@ -1513,6 +1513,7 @@ void freeCurrentPage(SDL_Texture *texture)
 
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
+	SDL_Rect internalDst;
     SDL_Texture *texture = NULL;
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(renderer);
@@ -1532,40 +1533,47 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
             int j = 0;
             for(; j < i && texture_big[j]; page.y -= texture_big[j++]->h);
         }
-        for(; ecran.y < WINDOW_SIZE_H && i < nbMorceaux; i++)
+        for(; ecran.y < getPtRetinaH(renderer) && i < nbMorceaux; i++)
         {
-            SDL_RenderCopy(renderer, texture_big[i], &page, &ecran);
+			//setRetinaSize(page, &internalSrc);
+			setRetinaSize(ecran, &internalDst);
+            SDL_RenderCopy(renderer, texture_big[i], &page, &internalDst);
             ecran.y += page.h;
             page.y = 0;
-            if(WINDOW_SIZE_H > page.h + sizeMax)
+            if(getPtRetinaH(renderer) > page.h + sizeMax)
                 ecran.h = page.h = sizeMax;
             else
-                ecran.h = page.h = WINDOW_SIZE_H - page.h;
+                ecran.h = page.h = getPtRetinaH(renderer) - page.h;
         }
 
     }
     else
-        SDL_RenderCopy(renderer, chapitre, &positionSlide, &positionPage);
+	{
+		setRetinaSize(positionPage, &internalDst);
+		SDL_RenderCopy(renderer, chapitre, &positionSlide, &internalDst);
+	}
 
     positionBandeauControle.h = bandeauControle->h;
     positionBandeauControle.w = bandeauControle->w;
-    SDL_RenderCopy(renderer, bandeauControle, NULL, &positionBandeauControle);
+	
+	setRetinaSize(positionBandeauControle, &internalDst);
+    SDL_RenderCopy(renderer, bandeauControle, NULL, &internalDst);
     SDL_DestroyTexture(texture);
 
     if(pageAccesDirect && //Si l'utilisateur veut acceder à une page, on modifie deux trois trucs
-        infoSurface != NULL && infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= WINDOW_SIZE_W) //Assez de place
+        infoSurface != NULL && infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Assez de place
 
     {
         int distanceOptimalePossible = 0;
         SDL_Rect positionModifie;
 
-        if(infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= WINDOW_SIZE_W) //Distance optimale utilisable
-            distanceOptimalePossible = WINDOW_SIZE_W / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
+        if(infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Distance optimale utilisable
+            distanceOptimalePossible = getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
 
-        positionModifie.y = positionInfos.y;
-        positionModifie.x = distanceOptimalePossible + BORDURE_LAT_LECTURE;
-        positionModifie.h = infoSurface->h;
-        positionModifie.w = infoSurface->w;
+        positionModifie.y = positionInfos.y * getRetinaZoom();
+        positionModifie.x = (distanceOptimalePossible + BORDURE_LAT_LECTURE) * getRetinaZoom();
+        positionModifie.h = infoSurface->h * getRetinaZoom();
+        positionModifie.w = infoSurface->w * getRetinaZoom();
 
         SDL_RenderCopy(renderer, infoSurface, NULL, &positionModifie); //On affiche les infos, déplacés
 
@@ -1573,7 +1581,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
             positionModifie.x += infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE;
 
         else
-            positionModifie.x = WINDOW_SIZE_W - UI_pageAccesDirect->w - BORDURE_LAT_LECTURE; //On positionne en partant de la gauche
+            positionModifie.x = getPtRetinaW(renderer) - UI_pageAccesDirect->w - BORDURE_LAT_LECTURE; //On positionne en partant de la gauche
 
         positionModifie.h = UI_pageAccesDirect->h;
         positionModifie.w = UI_pageAccesDirect->w;
@@ -1584,7 +1592,14 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
     }
 
     else //Sinon, on affiche normalement
-        SDL_RenderCopy(renderer, infoSurface, NULL, &positionInfos);
+	{
+		internalDst.h = positionInfos.h;
+		internalDst.w = positionInfos.w;
+		internalDst.x = positionInfos.x * getRetinaZoom();
+		internalDst.y = positionInfos.y * getRetinaZoom();
+		
+		SDL_RenderCopy(renderer, infoSurface, NULL, &internalDst);
+	}
     SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
 }
@@ -1602,13 +1617,13 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
             positionSlide->y = 0;
         }
 
-        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y && chapitre->h - positionSlide->y <= WINDOW_SIZE_H)
+        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y && chapitre->h - positionSlide->y <= getPtRetinaH(renderer))
         {
             positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
         }
         else
         {
-            positionPage->h = positionSlide->h = (chapitre->h < WINDOW_SIZE_H) ? chapitre->h : WINDOW_SIZE_H;
+            positionPage->h = positionSlide->h = (chapitre->h < getPtRetinaH(renderer)) ? chapitre->h : getPtRetinaH(renderer);
         }
     }
 
@@ -1618,16 +1633,16 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
         {
             positionPage->x = 0;
             positionSlide->x -= move;
-            if(chapitre->w - positionSlide->x - positionPage->x < WINDOW_SIZE_W)
+            if(chapitre->w - positionSlide->x - positionPage->x < getPtRetinaW(renderer))
                 positionPage->w = positionSlide->w = chapitre->w - positionSlide->x - positionPage->x;
             else
-                positionPage->w = positionSlide->w = WINDOW_SIZE_W;
+                positionPage->w = positionSlide->w = getPtRetinaW(renderer);
         }
         else if (positionSlide->x != 0)
         {
             positionPage->x = BORDURE_LAT_LECTURE < positionSlide->x - move ? positionSlide->x - move : BORDURE_LAT_LECTURE;
             positionSlide->x = 0;
-            positionPage->w = positionSlide->w = WINDOW_SIZE_W - positionPage->x;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
         }
         else
         {
@@ -1640,7 +1655,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
                     positionPage->x = BORDURE_LAT_LECTURE;
                 else
                     positionPage->x += move;
-                positionPage->w = positionSlide->w = WINDOW_SIZE_W - positionPage->x;
+                positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
             }
         }
     }
@@ -1650,13 +1665,13 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
 {
     if(!ctrlPressed)
     {
-        if(positionSlide->y < chapitre->h - (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE) - move)
+        if(positionSlide->y < chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE) - move)
         {
             positionSlide->y += move;
         }
-        else if(chapitre->h > WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE)
+        else if(chapitre->h > getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE)
         {
-            positionSlide->y = chapitre->h - (WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE);
+            positionSlide->y = chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE);
         }
 
         if(chapitre->h - positionSlide->y < positionSlide->h && positionPage->h != chapitre->h - positionSlide->y)
@@ -1673,21 +1688,21 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
             positionPage->x -= move;
             if(positionPage->x <= 0)
                 positionSlide->x = positionPage->x = 0;
-            positionPage->w = positionSlide->w = WINDOW_SIZE_W - positionPage->x;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
         }
 
-        else if(positionSlide->x < chapitre->w - WINDOW_SIZE_W - move)
+        else if(positionSlide->x < chapitre->w - getPtRetinaW(renderer) - move)
         {
             positionSlide->x += move;
-            positionPage->w = positionSlide->w = WINDOW_SIZE_W;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer);
         }
         else
         {
-            if(positionSlide->w != WINDOW_SIZE_W - BORDURE_LAT_LECTURE)
+            if(positionSlide->w != getPtRetinaW(renderer) - BORDURE_LAT_LECTURE)
             {
                 positionSlide->x += move;
-                if(positionSlide->x > chapitre->w - WINDOW_SIZE_W + BORDURE_LAT_LECTURE)
-                    positionSlide->x = chapitre->w - WINDOW_SIZE_W + BORDURE_LAT_LECTURE;
+                if(positionSlide->x > chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE)
+                    positionSlide->x = chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE;
                 positionPage->w = positionSlide->w = chapitre->w - positionSlide->x;
             }
             else if(positionPage->x == 0)
@@ -1731,7 +1746,7 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
 
 int clicOnButton(const int x, const int y, const int positionBandeauX)
 {
-    if(y < WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR + 2 || y > WINDOW_SIZE_H - 2)
+    if(y < getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR + 2 || y > getPtRetinaH(renderer) - 2)
         return CLIC_SUR_BANDEAU_NONE; //Clic hors du bandeau
 
     if(x >= positionBandeauX + LARGE_BUTTONS_LECTEUR_PC && x <= positionBandeauX + LARGE_BUTTONS_LECTEUR_PC + BIGICONE_W)
@@ -1752,18 +1767,18 @@ int clicOnButton(const int x, const int y, const int positionBandeauX)
         int xCentral = x - positionBandeauX - (LARGEUR_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_W - MINIICONE_W);
         if(xCentral >= 0 && xCentral <= MINIICONE_W) //Colonne de gauche
         {
-            if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
+            if(y >= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
                 return CLIC_SUR_BANDEAU_FAVORITE;
 
-            else if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
+            else if(y >= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
                 return CLIC_SUR_BANDEAU_DELETE;
         }
         else if(xCentral >= MINIICONE_W + 2*BORDURE_BUTTON_W && xCentral <= 2 * (MINIICONE_W + BORDURE_BUTTON_W))
         {
-            if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
+            if(y >= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H - MINIICONE_H && y <= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 - BORDURE_BUTTON_H)
                 return CLIC_SUR_BANDEAU_FULLSCREEN;
 
-            else if(y >= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= WINDOW_SIZE_H - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
+            else if(y >= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H && y <= getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR / 2 + BORDURE_BUTTON_H + MINIICONE_H)
                 return CLIC_SUR_BANDEAU_MAINMENU;
         }
     }

@@ -19,8 +19,16 @@
 
 #define CURRENTVERSION 200
 
+#define WIN_OPENGL_BUGGED
+#ifdef WIN_OPENGL_BUGGED
+	#define refreshRendererIfBuggy(var) SDL_RenderPresent(var)
+#else
+	#define refreshRendererIfBuggy(var);
+#endif
+
 #include "defines.h"
 #include "prototypes.h"
 #include "structures.h"
 #include "externs.h"
 #include "fonctions.h"
+

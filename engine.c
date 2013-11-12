@@ -66,7 +66,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     texture = IMG_LoadTexture(renderer, tempPath);
     if(texture != NULL)
     {
-        position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
+		position.x = WINDOW_SIZE_W - (POSITION_ICONE_MENUS + texture->w) * getRetinaZoom();
         position.y = POSITION_ICONE_MENUS;
         position.w = TAILLE_ICONE_MENUS * getRetinaZoom();
         position.h = TAILLE_ICONE_MENUS * getRetinaZoom();
@@ -161,13 +161,16 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                         texture = IMG_LoadTexture(renderer, tempPath);
                         if(texture != NULL)
                         {
-                            position.x = WINDOW_SIZE_W - POSITION_ICONE_MENUS - texture->w;
+                            position.x = WINDOW_SIZE_W - (POSITION_ICONE_MENUS + texture->w) * getRetinaZoom();
                             position.y = POSITION_ICONE_MENUS;
                             position.w = TAILLE_ICONE_MENUS * getRetinaZoom();
                             position.h = TAILLE_ICONE_MENUS * getRetinaZoom();
-                            SDL_RenderFillRect(renderer, &position);
+							refreshRendererIfBuggy(renderer);
+							SDL_RenderFillRect(renderer, &position);
                             SDL_RenderCopy(renderer, texture, NULL, &position);
                             SDL_DestroyTextureS(texture);
+							SDL_RenderPresent(renderer);
+							//refreshRendererIfBuggy(renderer);
                         }
                         MUTEX_UNIX_UNLOCK;
                     }

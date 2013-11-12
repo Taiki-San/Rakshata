@@ -28,9 +28,8 @@ void updateWindowSize(int w, int h);
 void getResolution();
 void restartEcran();
 TTF_Font * OpenFont(SDL_Renderer * renderer, char * fontName, int size);
+void setRetinaSize(const SDL_Rect input, SDL_Rect * output);
 void nameWindow(SDL_Window* windows, const int value);
-#define refreshRendererIfBuggy(var) SDL_RenderPresent(var)
-#define WIN_OPENGL_BUGGED
 #define getW(a) a->viewport.w
 #define getH(a) a->viewport.h
 
