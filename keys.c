@@ -194,7 +194,7 @@ int earlyInit(int argc, char *argv[])
 
     restrictEvent();
     getResolution();
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
 
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
