@@ -314,9 +314,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_DestroyWindow(window);
                 window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
                 
-                getPtRetinaW(renderer) = getW(renderer);
-                getPtRetinaH(renderer) = getH(renderer);
-                
+                WINDOW_SIZE_W = getPtRetinaW(renderer);
+                WINDOW_SIZE_H = getPtRetinaH(renderer);
+				
                 loadIcon(window);
                 nameWindow(window, 0);
                 renderer = setupRendererSafe(window);
@@ -345,8 +345,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 bandeauControle = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
-                getPtRetinaW(renderer) = RESOLUTION[0] = getW(renderer);
-                getPtRetinaH(renderer) = RESOLUTION[1] = getH(renderer);
+                WINDOW_SIZE_W = RESOLUTION[0] = getPtRetinaW(renderer);
+                WINDOW_SIZE_H = RESOLUTION[1] = getPtRetinaH(renderer);
                 
 				SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
@@ -799,7 +799,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         case SDLK_DOWN:
                         {
                             slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+#ifdef _WIN32
                             SDL_Delay(10);
+#endif
                             break;
                         }
 
@@ -812,7 +814,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         case SDLK_UP:
                         {
                             slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+#ifdef _WIN32
                             SDL_Delay(10);
+#endif
                             break;
                         }
 
@@ -1111,6 +1115,17 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
 
             if(allocError)  //Si on a eu un problème en allouant de la mémoire
             {
+				if(dataReader->pathNumber == NULL || dataReader->pageCouranteDuChapitre == NULL || dataReader->nomPages == NULL || dataReader->chapitreTomeCPT == NULL || dataReader->path == NULL || dataReader->path[nombreTours-2] == NULL)
+				{
+					free(dataReader->pathNumber);				dataReader->pathNumber = NULL;
+					free(dataReader->pageCouranteDuChapitre);	dataReader->pageCouranteDuChapitre = NULL;
+					free(dataReader->nomPages);					dataReader->nomPages = NULL;
+					free(dataReader->chapitreTomeCPT);			dataReader->chapitreTomeCPT = NULL;
+					if(dataReader->path != NULL)
+						free(dataReader->path[nombreTours-2]);
+
+					free(dataReader->path);						dataReader->path = NULL;
+				}
                 dataReader->nombrePageTotale -= nombrePages;
                 nombreTours--;
             }
@@ -1435,6 +1450,7 @@ int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome
         else
             ret_value = 1;
     }
+	SDL_FlushEvent(SDL_KEYDOWN);
     return ret_value;
 }
 
