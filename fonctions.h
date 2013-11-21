@@ -321,4 +321,5 @@ int isJPEG(void *input);
 int isPNG(void *input);
 void addToRegistry(bool firstStart);
 void mergeSort(int * tab, size_t length);
+int removeDuplicate(int * array, int length);
 

@@ -426,3 +426,20 @@ void mergeSort(int * tab, size_t length)
 
     free(tmp);
 }
+
+///Unused so far
+
+int removeDuplicate(int * array, int length)
+{
+	
+	int i, j, newLength = 0;
+	
+	for(i = 0; i < length; i++)
+	{
+		for(j = 0; j < newLength && array[i] != array[j]; j++);
+		
+		if(j == newLength)
+			array[newLength++] = array[i];
+	}
+	return newLength;
+}
