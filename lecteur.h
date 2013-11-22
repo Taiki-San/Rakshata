@@ -15,7 +15,7 @@
 #define REFRESH_SCREEN() refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, pageAccesDirect, UI_PageAccesDirect)
 
 extern int unlocked;
-static int pageWaaaayyyyTooBig;
+extern int pageWaaaayyyyTooBig;
 
 typedef struct data_lecture_tome
 {
@@ -39,33 +39,34 @@ typedef struct data_thread_check_new_CT
     int * fullscreen;
 } DATA_CK_LECTEUR;
 
-/** Loader **/
-
-int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
-SDL_Texture* loadControlBar(int favState);
-void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
-
-/** Screen Management **/
-
-int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
-int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface* UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
-void freeCurrentPage(SDL_Texture *texture);
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
-void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
-void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
-void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK);
-
-/** Event Management **/
+/** lecteur_event.c **/
 
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat);
 
-/** New elements to download **/
+/** lecteur_check_newElems.c **/
 
 void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, int * fullscreen);
 void checkNewElementInRepo(DATA_CK_LECTEUR *input);
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome);
+
+/** lecteur_loading.c **/
+
+int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
+char ** loadChapterConfigDat(char* input, int *nombrePage);
+void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
+void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
+int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
+int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
+
+/**	lecteur_ui.c	**/
+SDL_Texture* loadControlBar(int favState);
+void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
+void freeCurrentPage(SDL_Texture *texture);
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
+void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK);
+
 
 /*Mouvements*/
 #define DEPLACEMENT 50
