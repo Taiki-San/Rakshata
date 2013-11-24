@@ -227,7 +227,6 @@ void freeCurrentPage(SDL_Texture *texture)
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
 	SDL_Rect internalDst;
-    SDL_Texture *texture = NULL;
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(renderer);
     if(pageWaaaayyyyTooBig)
@@ -237,7 +236,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         int sizeMax = pageWaaaayyyyTooBig, nbMorceaux = 0, i = positionSlide.y/sizeMax;
         for(; texture_big[nbMorceaux]; nbMorceaux++);
 		
-        /*On va blitter seulement la bonne partie, bonne chance*/
+		//On va blitter seulement la bonne partie, bonne chance
 		
         if((i+1)*sizeMax < positionSlide.y + positionSlide.h)
             ecran.h = page.h = (i+1)*sizeMax - positionSlide.y;
@@ -248,8 +247,8 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         }
         for(; ecran.y < getPtRetinaH(renderer) && i < nbMorceaux; i++)
         {
-			//setRetinaSize(page, &internalSrc);
 			setRetinaSize(ecran, &internalDst);
+			if(texture_big[i] != NULL)
             SDL_RenderCopy(renderer, texture_big[i], &page, &internalDst);
             ecran.y += page.h;
             page.y = 0;
@@ -260,18 +259,20 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         }
 		
     }
-    else
+    else if(chapitre != NULL)
 	{
 		setRetinaSize(positionPage, &internalDst);
 		SDL_RenderCopy(renderer, chapitre, &positionSlide, &internalDst);
 	}
 	
-    positionBandeauControle.h = bandeauControle->h;
-    positionBandeauControle.w = bandeauControle->w;
-	
-	setRetinaSize(positionBandeauControle, &internalDst);
-    SDL_RenderCopy(renderer, bandeauControle, NULL, &internalDst);
-    SDL_DestroyTexture(texture);
+    if(bandeauControle != NULL)
+	{
+		positionBandeauControle.h = bandeauControle->h;
+		positionBandeauControle.w = bandeauControle->w;
+		
+		setRetinaSize(positionBandeauControle, &internalDst);
+		SDL_RenderCopy(renderer, bandeauControle, NULL, &internalDst);
+	}
 	
     if(pageAccesDirect && //Si l'utilisateur veut acceder à une page, on modifie deux trois trucs
 	   infoSurface != NULL && infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Assez de place
@@ -279,6 +280,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
     {
         int distanceOptimalePossible = 0;
         SDL_Rect positionModifie;
+		SDL_Texture *texture = NULL;
 		
         if(infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Distance optimale utilisable
             distanceOptimalePossible = getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
@@ -304,7 +306,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         SDL_DestroyTexture(texture);
     }
 	
-    else //Sinon, on affiche normalement
+    else if(infoSurface != NULL) //Sinon, on affiche normalement
 	{
 		internalDst.h = positionInfos.h;
 		internalDst.w = positionInfos.w;

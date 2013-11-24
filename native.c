@@ -402,10 +402,13 @@ void removeFolder(char *path)
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
-    char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 100);
+    char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 2);
     char *buffer = NULL;
-
-    snprintf(name, strlen(REPERTOIREEXECUTION) + strlen(path) + 100, "%s/%s", REPERTOIREEXECUTION, path);
+	
+	if(name != NULL)
+		snprintf(name, strlen(REPERTOIREEXECUTION) + strlen(path) + 2, "%s/%s", REPERTOIREEXECUTION, path);
+	else
+		name = path;
 
     /* On ouvre le dossier. */
     directory = opendir(name);
@@ -417,6 +420,7 @@ void removeFolder(char *path)
         logR(temp);
 #endif
         removeR(name);
+		free(name);
         return;
     }
 
