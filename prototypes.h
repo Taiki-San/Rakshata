@@ -86,5 +86,9 @@
         #include <openssl/x509.h>
         #include <openssl/ssl.h>
         #define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
-    #endif
+
+		/* Objective C imports*/
+		@import Foundation;
+		@import AppKit;
+	#endif
 #endif

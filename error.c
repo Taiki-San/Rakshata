@@ -12,8 +12,15 @@
 
 #include "main.h"
 
+#ifdef __APPLE__
+	#include <AppKit/NSAlert.h>
+#endif
+
 void logR(char *error)
 {
+#ifdef __APPLE__
+	NSLog(@ "%s", error);
+#else
     FILE* logFile = fopenR("log", "a+");
     if(logFile != NULL)
     {
@@ -25,6 +32,7 @@ void logR(char *error)
         }
         fclose(logFile);
     }
+#endif
 }
 
 void connexionNeededToAllowANewComputer()
@@ -219,6 +227,16 @@ void affichageRepoIconnue()
 int UI_Alert(char* titre, char* contenu)
 {
     int ret_value = 0;
+#ifdef __APPLE__
+	NSAlert * alert = [NSAlert alertWithMessageText: [NSString stringWithFormat:@"%s", titre]
+									  defaultButton: @"Ok"
+									alternateButton: nil
+										otherButton: nil
+						  informativeTextWithFormat: @"%s", contenu];
+	[[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	[alert runModal];	//utiliser beginSheetModalForWindow
+#else
     SDL_MessageBoxData alerte;
     SDL_MessageBoxButtonData bouton;
     alerte.flags = SDL_MESSAGEBOX_ERROR;
@@ -232,6 +250,7 @@ int UI_Alert(char* titre, char* contenu)
     alerte.window = window;
     alerte.colorScheme = NULL;
     SDL_ShowMessageBox(&alerte, &ret_value);
+#endif
     return ret_value;
 }
 

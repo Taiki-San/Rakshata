@@ -32,7 +32,7 @@ void mainRakshata()
     MUTEX_UNLOCK(mutexRS);
 
     chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
+	
     if(check_evt() == PALIER_QUIT) //Check envt
     {
         continuer = PALIER_QUIT;
