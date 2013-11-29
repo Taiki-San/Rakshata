@@ -34,7 +34,7 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
 
     Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
-    Twofish_set_key((u4byte*) key, KEYBITS);
+    Twofish_set_key((DWORD*) key, KEYBITS);
 
     for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {
@@ -48,7 +48,7 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
         memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
 
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        Twofish_decrypt((u4byte*) ciphertext, (u4byte*) plaintext);
+        Twofish_decrypt((DWORD*) ciphertext, (DWORD*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);

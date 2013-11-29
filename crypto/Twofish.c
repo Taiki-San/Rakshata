@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-typedef unsigned long DWORD;
+typedef uint32_t DWORD;
 typedef unsigned char BYTE;
 
 #define _lrotr(x, n) ((((uint32_t)(x)) >> ((int) ((n) & 31))) | (((uint32_t)(x)) << ((int) ((32 - ((n) & 31))))))

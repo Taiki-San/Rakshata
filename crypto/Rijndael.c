@@ -1,9 +1,17 @@
-#define FULL_UNROLL
 
-#include "Rijndael.h"
+#ifndef uint32_t
+	#include <stdint.h>
+#endif
 
-typedef unsigned long u32;
+typedef uint32_t u32;
 typedef unsigned char u8;
+
+#define FULL_UNROLL
+#define KEYLENGTH(keybits) ((keybits)/8)
+#define RKLENGTH(keybits)  ((keybits)/8+28)
+#define NROUNDS(keybits)   ((keybits)/32+6)
+
+#define KEYBITS 256
 
 static const u32 Te0[256] =
 {
@@ -1211,7 +1219,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
     unsigned char *password = _password;
     unsigned char *path_input = _path_input;
     unsigned char *path_output = _path_output;
-    unsigned long rk[RKLENGTH(KEYBITS)];
+    RK_KEY rk[RKLENGTH(KEYBITS)];
     unsigned char key[KEYLENGTH(KEYBITS)];
     int i, j, inputMemory = 1, outputMemory = 1;
     int positionDansInput = 0, positionDansOutput = 0;
@@ -1296,7 +1304,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
 
 int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB)
 {
-    unsigned long rk[RKLENGTH(KEYBITS)];
+    RK_KEY rk[RKLENGTH(KEYBITS)];
     unsigned char key[KEYLENGTH(KEYBITS)];
     unsigned char *password = _password;
     unsigned char *path_input = _path_input;

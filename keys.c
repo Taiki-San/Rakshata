@@ -67,7 +67,7 @@ int getMasterKey(unsigned char *input)
     fclose(bdd);
 
 	unsigned char output_char[SHA256_DIGEST_LENGTH];
-    unsigned long rk[RKLENGTH(KEYBITS)];
+    RK_KEY rk[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
     get_file_date(SECURE_DATABASE, (char *) date);
@@ -798,7 +798,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
     crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
     crashTemp(temp, 300);
 
-    unsigned long rk[RKLENGTH(KEYBITS)];
+    RK_KEY rk[RKLENGTH(KEYBITS)];
     int nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
