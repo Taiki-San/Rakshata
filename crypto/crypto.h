@@ -16,6 +16,7 @@
 
 #define CRYPTO_BUFFER_SIZE 16
 typedef uint32_t DWORD;
+typedef uint32_t u4byte;
 typedef unsigned char BYTE;
 
 /*****************************************************
@@ -59,35 +60,16 @@ void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const DWORD *in_blk, DWORD *out_
 **                                                  **
 *****************************************************/
 
-#define Q_TABLES
-#define M_TABLE
-#define MK_TABLE
-#define ONE_STEP
+typedef struct
+{
+	u4byte l_key[40];
+	u4byte s_key[4];
+	u4byte mk_tab[4 * 256];
+	u4byte k_len;
+	
+} TwofishInstance;
 
-typedef struct {
-	DWORD	k_len;
-	DWORD	l_key[40];
-	DWORD	s_key[4];
-	
-#ifdef  Q_TABLES
-	DWORD	qt_gen;
-	BYTE	q_tab[2][256];
-#endif
-	
-#ifdef  M_TABLE
-	DWORD	mt_gen;
-	DWORD	m_tab[4][256];
-#endif
-	
-#ifdef  MK_TABLE
-#ifdef  ONE_STEP
-	DWORD	mk_tab[4][256];
-#else
-	BYTE	sb[4][256];
-#endif
-#endif
-} TWOFISH_DATA;
-
-void Twofish_set_key(TWOFISH_DATA *pTfd,const DWORD *in_key, const DWORD key_len);
-void Twofish_encrypt(const TWOFISH_DATA *pTfd,const DWORD *in_blk, DWORD *out_blk);
-void Twofish_decrypt(const TWOFISH_DATA *pTfd,const DWORD *in_blk, DWORD *out_blk);
+//Truecrypt don't use the return value, so I guess it's fine to discard it
+u4byte * TwofishSetKey(TwofishInstance *instance, const u4byte in_key[], const u4byte key_len);
+void TwofishEncrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[]);
+void TwofishDecrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[4]);

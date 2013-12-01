@@ -31,12 +31,12 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
     unsigned char *password = _password;
     unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
     SERPENT_STATIC_DATA pSer;
-	TWOFISH_DATA pTwoF;
+	TwofishInstance pTwoF;
+
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
-
-    Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
-    Twofish_set_key(&pTwoF, (DWORD*) key, KEYBITS);
-
+    TwofishSetKey(&pTwoF, (DWORD*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
+	Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
+    
     for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {
         rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
@@ -49,7 +49,7 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
         memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
 
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        Twofish_decrypt(&pTwoF, (DWORD*) ciphertext, (DWORD*) plaintext);
+        TwofishDecrypt(&pTwoF, (u4byte*) ciphertext, (u4byte*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
