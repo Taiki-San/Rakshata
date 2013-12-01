@@ -10,8 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto/crypto.h"
 #include "main.h"
+#include "crypto/crypto.h"
 
 static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
 
@@ -19,10 +19,13 @@ int getMasterKey(unsigned char *input)
 {
     /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
     int nombreCle, i, j, fileInvalid;
-    unsigned char date[100], fingerPrint[SHA256_DIGEST_LENGTH+1], buffer[240], buffer_Load[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+	char date[100];
+    unsigned char buffer[250 + (SHA256_DIGEST_LENGTH+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
     size_t size;
 	FILE* bdd = NULL;
+	
     *input = 0;
+	memset(bufferLoad, 0, sizeof(bufferLoad));
 
     if(COMPTE_PRINCIPAL_MAIL[0] == 0)
     {
@@ -55,31 +58,27 @@ int getMasterKey(unsigned char *input)
             fileInvalid = 0;
     } while(fileInvalid);
 
-    for(i=0; i<NOMBRE_CLE_MAX_ACCEPTE; i++)
-        for(j=0; j<SHA256_DIGEST_LENGTH; buffer_Load[i][j++] = 0);
-
     bdd = fopenR(SECURE_DATABASE, "rb");
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
-        for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; buffer_Load[nombreCle][j++] = i);
+        for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = i);
     }
     fclose(bdd);
 
 	unsigned char output_char[SHA256_DIGEST_LENGTH];
-    RK_KEY rk[RKLENGTH(KEYBITS)];
+    RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
-    get_file_date(SECURE_DATABASE, (char *) date);
-	snprintf((char *) buffer, 240, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+    get_file_date(SECURE_DATABASE, date);
+	snprintf((char *) buffer, 249, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
     crashTemp(date, 100);
-    generateFingerPrint(fingerPrint);
+    generateFingerPrint(&buffer[250]);	//Buffer < 250 contient la concatenation de la date et de l'email. buffer > 250 contient la fingerprint
 
-    pbkdf2(buffer, fingerPrint, hash);
-    crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
-    crashTemp(buffer, 240);
+    pbkdf2(buffer, &buffer[250], hash);
+    crashTemp(buffer, 250+SHA256_DIGEST_LENGTH+1);
 
-    int nrounds = rijndaelSetupDecrypt(rk, hash, KEYBITS);
+    int nrounds = rijndaelSetupDecrypt(rijndaelKey, hash, KEYBITS);
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
@@ -89,13 +88,13 @@ int getMasterKey(unsigned char *input)
         {
 			unsigned char plaintext[16];
             unsigned char ciphertext[16];
-			memcpy(ciphertext, buffer_Load[i] + j*16, 16);
-            rijndaelDecrypt(rk, nrounds, ciphertext, plaintext);
+			memcpy(ciphertext, bufferLoad[i] + j*16, 16);
+            rijndaelDecrypt(rijndaelKey, nrounds, ciphertext, plaintext);
             memcpy(&output_char[j*16] , plaintext, 16);
         }
         for(j=0; j < 16; j++)
         {
-            output_char[j+16] ^= buffer_Load[i][j]; //XOR block 2 by encrypted block 1
+            output_char[j+16] ^= bufferLoad[i][j]; //XOR block 2 by encrypted block 1
             output_char[j] ^= output_char[j+16]; //XOR block 1 by plaintext block 2
         }
         for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
@@ -122,7 +121,7 @@ int getMasterKey(unsigned char *input)
     return 0;
 }
 
-void generateKey(unsigned char output[SHA256_DIGEST_LENGTH])
+void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
 {
     int i = 0;
     unsigned char randomChar[128];
@@ -867,8 +866,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
 int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
 {
     char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
-    unsigned char outputRAW[SHA256_DIGEST_LENGTH+1];
-    generateKey(outputRAW);
+    rawData outputRAW[SHA256_DIGEST_LENGTH+1];
+
+    generateRandomKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     MajToMin(randomKeyHex);
     randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
@@ -896,7 +896,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             _AESDecrypt(passSeed, outputRAW, seed, EVERYTHING_IN_MEMORY, 1);
 
             //On a désormais le seed
-            generateKey(derivation);
+            generateRandomKey(derivation);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, strlen(password), 2048, PBKDF2_OUTPUT_LENGTH, passDer);
             _AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY, 1);

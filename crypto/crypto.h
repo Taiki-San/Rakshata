@@ -28,8 +28,8 @@ typedef DWORD RK_KEY;
 
 int rijndaelSetupEncrypt(RK_KEY *rk, const unsigned char *key, int keybits);
 int rijndaelSetupDecrypt(RK_KEY *rk, const unsigned char *key, int keybits);
-void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const unsigned char plaintext[16], unsigned char ciphertext[16]);
-void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const unsigned char ciphertext[16], unsigned char plaintext[16]);
+void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const rawData plaintext[16], rawData ciphertext[16]);
+void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16], rawData plaintext[16]);
 
 #define KEYLENGTH(keybits) ((keybits)/8)
 #define RKLENGTH(keybits)  ((keybits)/8+28)

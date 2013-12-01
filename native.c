@@ -62,23 +62,12 @@ void renameR(char *initialName, char *newName)
     #define renameR(a, b) rename(a, b)
 #endif
 
-void mkdirR(char *path)
+int mkdirR(char *path)
 {
-#ifdef USE_FULL_PATH
-    char *temp = malloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    snprintf(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
-#else
-    char *temp = path;
-#endif
-
 #ifdef _WIN32
-    mkdir(temp);
+    return mkdir(path);
 #else
-    mkdir(temp, PERMISSIONS);
-#endif
-
-#ifdef USE_FULL_PATH
-    free(temp);
+    return mkdir(path, PERMISSIONS);
 #endif
 }
 

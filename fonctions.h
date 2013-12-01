@@ -156,7 +156,7 @@ int haveInputFocus(SDL_Event *event, SDL_Window *windows);
 
 /**Keys.c**/
 int getMasterKey(unsigned char *input);
-void generateKey(unsigned char output[SHA256_DIGEST_LENGTH]);
+void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 int earlyInit(int argc, char *argv[]);
 int get_compte_infos();
 int logon();
@@ -190,7 +190,7 @@ void lancementModuleDL();
 FILE* fopenR(void *_path, char *right);
 void removeR(char *path);
 void renameR(char *initialName, char *newName);
-void mkdirR(char *path);
+int mkdirR(char *path);
 void chdirR();
 void resetOriginalCHDir(int *argc, char** argv);
 void strend(char *recepter, size_t length, const char *sender);

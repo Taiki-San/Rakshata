@@ -10,8 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto/crypto.h"
 #include "main.h"
+#include "crypto/crypto.h"
 
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
