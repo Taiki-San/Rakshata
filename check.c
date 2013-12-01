@@ -134,7 +134,7 @@ int check_evt()
         if(cantwrite) //Si police absente
         {
             snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[0]);
-            download_disk(temp, NULL, nomsATest[0], 1);
+            download_disk(temp, NULL, nomsATest[0], SSL_ON);
             j--;
         }
 
@@ -173,7 +173,7 @@ int check_evt()
                 SDL_RenderPresent(renderer);
 
                 snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[fichiersADL[i]]);
-                download_disk(temp, NULL, nomsATest[fichiersADL[i]], 1);
+                download_disk(temp, NULL, nomsATest[fichiersADL[i]], SSL_ON);
 
                 if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
                 {
@@ -342,7 +342,7 @@ void networkAndVersionTest()
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
             snprintf(temp, TAILLE_BUFFER, "https://%s/update/%s/%d", SERVEUR_URL, BUILD, CURRENTVERSION);
-            download_disk(temp, NULL, "data/update", 0);
+            download_disk(temp, NULL, "data/update", SSL_OFF);
 
 			test = fopenR("data/update", "r");
 			if(test)

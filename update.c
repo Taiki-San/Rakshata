@@ -155,7 +155,7 @@ void checkUpdate()
 #endif
                     crashTemp(temp, TAILLE_BUFFER);
                     ustrcpy(temp, files[i]);
-                    download_disk(URL, NULL, temp, 1);
+                    download_disk(URL, NULL, temp, SSL_ON);
 
                     if(action[i][0] == 'P')
                     {

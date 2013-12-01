@@ -656,7 +656,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
             return;
         }
         snprintf(path, 300, "manga/%s/%s/infos.png", mangaToCheck.team->teamLong, mangaToCheck.mangaName);
-        download_disk(URL, NULL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?1:0);
+        download_disk(URL, NULL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
     }
     else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
         removeR(path);
