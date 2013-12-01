@@ -167,6 +167,9 @@ int download_UI(TMP_DL *output)
             MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
             MDLTUICopy(pourcentAffiche, NULL, &position);
             MDLTUIRefresh();
+#ifdef WIN_OPENGL_BUGGED
+			MDLTUIRefresh();
+#endif
         }
         TTF_CloseFont(police);
     }

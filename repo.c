@@ -453,7 +453,7 @@ int deleteRepo()
     MUTEX_UNIX_UNLOCK;
 
     curPage = 1;
-    teamChoisis = engineCore(&prefs, data, CONTEXTE_SUPPRESSION, BORDURE_SUP_SELEC_MANGA, NULL);
+    teamChoisis = engineCore(&prefs, CONTEXTE_SUPPRESSION, data, BORDURE_SUP_SELEC_MANGA, NULL);
 
     if(teamChoisis > PALIER_CHAPTER && teamChoisis < nombreTeam)
     {
