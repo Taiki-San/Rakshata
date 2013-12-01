@@ -16,6 +16,7 @@
 
 #define CRYPTO_BUFFER_SIZE 16
 typedef uint32_t DWORD;
+typedef unsigned char BYTE;
 
 /*****************************************************
 **                                                  **
@@ -58,7 +59,35 @@ void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const DWORD *in_blk, DWORD *out_
 **                                                  **
 *****************************************************/
 
-DWORD Twofish_set_key(const DWORD *in_key, const DWORD key_len);
-void Twofish_encrypt(const DWORD *in_blk, DWORD *out_blk);
-void Twofish_decrypt(const DWORD *in_blk, DWORD *out_blk);
+#define Q_TABLES
+#define M_TABLE
+#define MK_TABLE
+#define ONE_STEP
 
+typedef struct {
+	DWORD	k_len;
+	DWORD	l_key[40];
+	DWORD	s_key[4];
+	
+#ifdef  Q_TABLES
+	DWORD	qt_gen;
+	BYTE	q_tab[2][256];
+#endif
+	
+#ifdef  M_TABLE
+	DWORD	mt_gen;
+	DWORD	m_tab[4][256];
+#endif
+	
+#ifdef  MK_TABLE
+#ifdef  ONE_STEP
+	DWORD	mk_tab[4][256];
+#else
+	BYTE	sb[4][256];
+#endif
+#endif
+} TWOFISH_DATA;
+
+void Twofish_set_key(TWOFISH_DATA *pTfd,const DWORD *in_key, const DWORD key_len);
+void Twofish_encrypt(const TWOFISH_DATA *pTfd,const DWORD *in_blk, DWORD *out_blk);
+void Twofish_decrypt(const TWOFISH_DATA *pTfd,const DWORD *in_blk, DWORD *out_blk);

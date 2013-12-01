@@ -10,6 +10,9 @@
 **                                                                                          **
 *********************************************************************************************/
 
+typedef unsigned char byte;
+typedef byte rawData;
+
 typedef struct infos_Team
 {
     char teamLong[LONGUEUR_NOM_MANGA_MAX];
@@ -111,4 +114,3 @@ typedef struct
     PALETTE_RGB police_indispo;     //Police pour menus indisponibles (gris)
 } PALETTE_GLOBALE;
 
-typedef unsigned char uint8_t;

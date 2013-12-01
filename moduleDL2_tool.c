@@ -369,7 +369,7 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
         }
     }
 
-    if(inCache || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, (strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2) != 0)) == CODE_RETOUR_OK)
+    if(inCache || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) == CODE_RETOUR_OK)
     {
         int i, nombreEspace, posBuf, posStartNbrTmp, posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
         char temp[100], basePath[100];

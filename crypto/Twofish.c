@@ -45,24 +45,24 @@ typedef struct {
 	DWORD	k_len;
 	DWORD	l_key[40];
 	DWORD	s_key[4];
-
-	#ifdef  Q_TABLES
+	
+#ifdef  Q_TABLES
 	DWORD	qt_gen;
 	BYTE	q_tab[2][256];
-	#endif
-
-	#ifdef  M_TABLE
+#endif
+	
+#ifdef  M_TABLE
 	DWORD	mt_gen;
 	DWORD	m_tab[4][256];
-	#endif
-
-	#ifdef  MK_TABLE
-	#ifdef  ONE_STEP
+#endif
+	
+#ifdef  MK_TABLE
+#ifdef  ONE_STEP
 	DWORD	mk_tab[4][256];
-	#else
+#else
 	BYTE	sb[4][256];
-	#endif
-	#endif
+#endif
+#endif
 } TWOFISH_DATA;
 
 #ifdef  BLOCK_SWAP

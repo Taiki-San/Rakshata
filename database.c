@@ -124,7 +124,7 @@ MANGAS_DATA* miseEnCache(int mode)
 					mangaDB--;
 				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://%s/overuse.php?team=%s", SERVEUR_URL, teamList[nombreTeam]->teamLong);
 				crashTemp(bufferOutput, 100);
-				download_mem(temp, NULL, bufferOutput, 100, 1);
+				download_mem(temp, NULL, bufferOutput, 100, SSL_ON);
 			}
 		}
 	}
@@ -213,7 +213,7 @@ int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
         }
 
         buffer_repo[0] = 0;
-        download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
+        download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
 	return defaultVersion+1;
@@ -331,7 +331,7 @@ int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams)
             return 0;
         }
         buffer_manga[0] = 0;
-        download_mem(temp, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?1:0);
+        download_mem(temp, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_manga));
     return defaultVersion+1;

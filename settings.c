@@ -316,7 +316,7 @@ char* loadLargePrefs(char flag)
             snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, REPO_DATABASE);
 
         crashTemp(buffer, 65000);
-        download_mem(temp, NULL, buffer, 65000, 1);
+        download_mem(temp, NULL, buffer, 65000, SSL_ON);
         snprintf(buffer2, 65100, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
         addToPref(flag, buffer2);
 	}

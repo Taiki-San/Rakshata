@@ -23,7 +23,7 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
-void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffer_out, size_t length)
+void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_t length)
 {
     MUTEX_LOCK(mutex_decrypt);
     int posIV, i, j = 0, k;
@@ -31,14 +31,15 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
     unsigned char *password = _password;
     unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
     SERPENT_STATIC_DATA pSer;
+	TWOFISH_DATA pTwoF;
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
 
     Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
-    Twofish_set_key((DWORD*) key, KEYBITS);
+    Twofish_set_key(&pTwoF, (DWORD*) key, KEYBITS);
 
     for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {
-        unsigned char ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
+        rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
         Serpent_decrypt(&pSer, (DWORD*) ciphertext, (DWORD*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
@@ -48,7 +49,7 @@ void decryptPage(void *_password, unsigned char *buffer_in, unsigned char *buffe
         memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
 
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        Twofish_decrypt((DWORD*) ciphertext, (DWORD*) plaintext);
+        Twofish_decrypt(&pTwoF, (DWORD*) ciphertext, (DWORD*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
@@ -151,7 +152,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
     int i = 0, nombreEspace = 0;
-    unsigned char *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
+    rawData *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
     char *path;
     unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
     size_t size, sizeDBPass;
@@ -202,7 +203,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     //crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate >_> << nécéssaire?
     key[SHA256_DIGEST_LENGTH] = rand() % 0xff;
 
-    configEnc = calloc(1, sizeDBPass+SHA256_DIGEST_LENGTH);
+    configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
     free(path);
 
@@ -251,20 +252,17 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     for(i = 0; i < sizeDBPass; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
 
-    void *buf_page = ralloc(size + 0xff);
+    rawData* buf_page = ralloc((size + 0xff) * sizeof(rawData));
     void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
 
     test = fopenR(pathPage, "rb");
     fread(buf_in, 1, size, test);
     fclose(test);
 
-    i = 0;
-    SDL_Surface *surface_page = NULL;
-    do
-    {
-        decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
-        surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
-    }while(i++ < 64 && surface_page == NULL && (isPNG(buf_page) || isJPEG(buf_page)));
+    decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
+	crashTemp(key, SHA256_DIGEST_LENGTH);
+	
+	SDL_Surface *surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
 
 #ifdef DEV_VERSION
     if(surface_page == NULL)
@@ -274,7 +272,6 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
         fclose(newFile);
     }
 #endif
-    crashTemp(key, SHA256_DIGEST_LENGTH);
     free(buf_in);
     free(buf_page);
     return surface_page;
@@ -323,7 +320,7 @@ void getPasswordArchive(char *fileName, char password[300])
     /*On prépare le buffer de téléchargement*/
     char bufferDL[1000];
     crashTemp(bufferDL, 1000);
-    download_mem(URL, NULL, bufferDL, 1000, 1); //Téléchargement
+    download_mem(URL, NULL, bufferDL, 1000, SSL_ON); //Téléchargement
 
     free(URL);
 
@@ -355,7 +352,7 @@ void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA25
     snprintf(temp, 350, "https://%s/killswitch", SERVEUR_URL);
 
     crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1);
-    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, 1);
+    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;

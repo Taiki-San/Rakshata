@@ -63,20 +63,6 @@ int sortTomes(const void *a, const void *b)
     return struc1->ID - struc2->ID;
 }
 
-void applyWindowsPathCrap(void *input)
-{
-    #ifdef _WIN32
-    int i = 0;
-    unsigned char *temp = input;
-
-    for(; temp[i] != '\0'; i++)
-    {
-        if(temp[i] == '/')
-            temp[i] = '\\';
-    }
-    #endif
-}
-
 void versionRak(char *output)
 {
     int centaine = 0, dizaine = 0, unite = 0;
@@ -315,16 +301,16 @@ bool isDownloadValid(char *input)
 
 int isJPEG(void *input)
 {
-    unsigned char *_input = input;
-    if(_input[0] == (unsigned char) '\xff' && _input[1] == (unsigned char) '\xd8')
+    rawData *_input = input;
+    if(_input[0] == (rawData) '\xff' && _input[1] == (rawData) '\xd8')
         return 1;
     return 0;
 }
 
 int isPNG(void *input)
 {
-    unsigned char *_input = input;
-    if(_input[0] == (unsigned char) '\x89' && _input[1] == (unsigned char) 'P' && _input[2] == (unsigned char) 'N' && _input[3] == (unsigned char) 'G')
+    rawData *_input = input;
+    if(_input[0] == (rawData) '\x89' && _input[1] == (rawData) 'P' && _input[2] == (rawData) 'N' && _input[3] == (rawData) 'G')
         return 1;
     return 0;
 }

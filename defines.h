@@ -350,6 +350,9 @@
 #define STATUS_END 0
 #define STATUS_DOWNLOADING 1
 
+#define SSL_OFF 0
+#define SSL_ON 1
+
 /*Database*/
 #define NOMBRE_MANGA_MAX 1000
 #define NOMBRE_MANGA_MAX_PAR_DEPOT 1000

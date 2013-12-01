@@ -43,7 +43,7 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                 /*Interrogration du serveur*/
                 bufferOutBak = bufferOut;
                 snprintf(URL, 200, "https://%s/checkPaid.php", SERVEUR_URL);
-                if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, 1) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
+                if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
                     int prix = 0, pos = 0;
                     sscanfs(bufferOut, "%d",&prix);
@@ -264,7 +264,7 @@ void MDLPDestroyCache(unsigned int factureID)
 
     snprintf(URL, 0x100, "https://%s/cancelOrder.php", SERVEUR_URL);
     snprintf(POST, 120, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-    download_mem(URL, POST, output, 100, 1);
+    download_mem(URL, POST, output, 100, SSL_ON);
 }
 
 /** Checks **/
@@ -302,7 +302,7 @@ bool MDLPCheckIfPaid(unsigned int factureID)
     char URL[300], POST[150], output[50];
     snprintf(URL, 300, "https://%s/checkOrder.php", SERVEUR_URL);
     snprintf(POST, 150, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-    if(download_mem(URL, POST, output, 50, 1) == CODE_RETOUR_OK)
+    if(download_mem(URL, POST, output, 50, SSL_ON) == CODE_RETOUR_OK)
     {
         if(output[0] == '1')
             return true;

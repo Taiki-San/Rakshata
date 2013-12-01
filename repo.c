@@ -222,7 +222,7 @@ int ajoutRepo(bool ajoutParFichier)
                         else if(!strcmp(teams.type, TYPE_DEPOT_2))
                             snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
 
-                        download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
+                        download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
                         versionRepo--;
                     } while(!isDownloadValid(bufferDL) && versionRepo > 0);
                     
@@ -242,7 +242,7 @@ int ajoutRepo(bool ajoutParFichier)
                 else
                 {
                     snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
-                    download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?1:0);
+                    download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
                     if(isDownloadValid(bufferDL))
                     {
                         int posBuf;

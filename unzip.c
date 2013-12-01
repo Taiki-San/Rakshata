@@ -16,17 +16,6 @@
 
 #define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
 
-int unzip(char *path, char *output)
-{
-#ifdef _WIN32
-    applyWindowsPathCrap(output);
-#endif
-
-    if(output[strlen(output)-1] != 0)
-        output[strlen(output)-1] = 0;
-    return miniunzip(path, output, "", 0, 0);
-}
-
 static int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
 {
     uLong i;

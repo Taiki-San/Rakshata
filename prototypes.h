@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include <time.h>
 #include <SDL.h>
 #include <SDL_sysrender.h> //Header précis pour la structure SDL_Texture, permet de la dereferencer
@@ -92,3 +93,4 @@
 		@import AppKit;
 	#endif
 #endif
+

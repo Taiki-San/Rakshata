@@ -231,7 +231,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
 int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB);
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
-void decryptPage(void *_password, unsigned char *buffer_int, unsigned char *buffer_out, size_t length);
+void decryptPage(void *_password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX]);
@@ -286,7 +286,6 @@ int changementLangue();
 int tradAvailable();
 
 /**Unzip.c**/
-int unzip(char *path, char *output);
 int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);
 
 /**Update.c**/
@@ -300,7 +299,6 @@ int plusOuMoins(int compare1, int compare2, int tolerance);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
-void applyWindowsPathCrap(void *input);
 void versionRak(char *output);
 int positionnementApres(FILE* stream, char *stringToFind);
 int positionnementApresChar(char* input, char *stringToFind);

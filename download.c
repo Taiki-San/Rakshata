@@ -291,7 +291,7 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
     useDNSCache(curl);
-    if(SSL_enabled)
+    if(SSL_enabled == SSL_ON)
     {
         if(adresse[8] == 'r') //RSP
         {

@@ -1217,8 +1217,8 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
 int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB)
 {
     unsigned char *password = _password;
-    unsigned char *path_input = _path_input;
-    unsigned char *path_output = _path_output;
+    rawData *path_input = _path_input;
+    rawData *path_output = _path_output;
     RK_KEY rk[RKLENGTH(KEYBITS)];
     unsigned char key[KEYLENGTH(KEYBITS)];
     int i, j, inputMemory = 1, outputMemory = 1;
@@ -1307,8 +1307,8 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
     RK_KEY rk[RKLENGTH(KEYBITS)];
     unsigned char key[KEYLENGTH(KEYBITS)];
     unsigned char *password = _password;
-    unsigned char *path_input = _path_input;
-    unsigned char *path_output = _path_output;
+    rawData *path_input = _path_input;
+    rawData *path_output = _path_output;
     int i, j, inputMemory = 1, outputMemory = 1;
     int positionDansInput = 0, positionDansOutput = 0;
     int nrounds, CBC_started = 0;

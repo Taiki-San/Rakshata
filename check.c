@@ -309,7 +309,7 @@ void networkAndVersionTest()
     /*Chargement de l'URL*/
     snprintf(temp, TAILLE_BUFFER, "https://%s/update.php?version=%d&os=%s", SERVEUR_URL, CURRENTVERSION, BUILD);
 
-    if(download_mem(temp, NULL, bufferDL, 100, 1) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(temp, NULL, bufferDL, 100, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
@@ -321,7 +321,7 @@ void networkAndVersionTest()
         checkHostNonModifie();
 #endif
         crashTemp(bufferDL, 100);
-        if(download_mem(BACKUP_INTERNET_CHECK, NULL, bufferDL, 100, 0) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
+        if(download_mem(BACKUP_INTERNET_CHECK, NULL, bufferDL, 100, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
         MUTEX_LOCK(mutex);
         if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
@@ -369,7 +369,7 @@ void networkAndVersionTest()
 			snprintf(temp, TAILLE_BUFFER, "https://%s/checkAccountValid.php?mail=%s", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL);
 
             crashTemp(bufferDL, 5);
-			download_mem(temp, NULL, bufferDL, 5, 1);
+			download_mem(temp, NULL, bufferDL, 5, SSL_ON);
 			if(bufferDL[0] == 0 || bufferDL[0] == '1') //Compte valide
             {
                 updateFavorites();
