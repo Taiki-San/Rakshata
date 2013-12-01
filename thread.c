@@ -53,14 +53,14 @@ void createNewThread(void *function, void *arg)
 #ifdef _WIN32
     if(ZwCreateThreadEx == NULL)
     {
-        ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
+        ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"), "ZwCreateThreadEx");
         if(ZwCreateThreadEx == NULL)
         {
 #ifdef DEV_VERSION
             logR("Failed at export primitives");
 #endif
-            CreateThread(NULL, 0, function, arg, 0, NULL);
-        }
+			return;
+		}
     }
     if(ZwCreateThreadEx != NULL)
     {
