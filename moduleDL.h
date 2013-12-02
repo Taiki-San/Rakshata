@@ -85,10 +85,16 @@ typedef struct data_sent_to_pay_thread
     bool somethingToPay;
 } DATA_PAY;
 
+typedef struct download_data_obfuscated
+{
+	char *data;
+	char *mask;
+} DATA_DL_OBFS;
+
 typedef struct download_data_struct
 {
     char *URL;
-    char *buf;
+    void *buf;
     size_t length;
     size_t current_pos;
 } TMP_DL;

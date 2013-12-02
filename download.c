@@ -349,8 +349,8 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
     char *input = ptr;
     TMP_DL *buffer_dl = buffer_dl_void;
     
-	for(; i < size * nmemb && buffer_dl->current_pos < buffer_dl->length - 1; buffer_dl->buf[(buffer_dl->current_pos)++] = input[i++]);
-	buffer_dl->buf[buffer_dl->current_pos] = 0;
+	for(; i < size * nmemb && buffer_dl->current_pos < buffer_dl->length - 1; ((char*)buffer_dl->buf)[(buffer_dl->current_pos)++] = input[i++]);
+	((char*)buffer_dl->buf)[buffer_dl->current_pos] = 0;
     
 	return i;
 }
@@ -375,47 +375,55 @@ static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded,
 
 static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void)
 {
-    TMP_DL *output = output_void;
+	int i;
+	TMP_DL *data = output_void;
+    DATA_DL_OBFS *output = data->buf;
     char *input = ptr;
-    if(output->buf == NULL || output->length != FILE_EXPECTED_SIZE || size * nmemb >= output->length - output->current_pos)
+    if(output->data == NULL || output->mask == NULL || data->length != FILE_EXPECTED_SIZE || size * nmemb >= data->length - data->current_pos)
     {
-        if(output->buf == NULL)
+        if(output->data == NULL || output->mask == NULL)
         {
-            output->current_pos = 0;
+            data->current_pos = 0;
             if(!FILE_EXPECTED_SIZE)
-                output->length = 30*1024*1024;
+                data->length = 30*1024*1024;
             else
-                output->length = 2*FILE_EXPECTED_SIZE; //100% de marge
-            output->buf = ralloc(output->length);
-            if(output->buf == NULL)
+                data->length = 3 * FILE_EXPECTED_SIZE / 2; //50% de marge
+            
+			output->data = ralloc(data->length);
+            if(output->data == NULL)
+                return -1;
+            
+			output->mask = ralloc(data->length);
+            if(output->mask == NULL)
                 return -1;
         }
         else //Buffer trop petit, on l'agrandit
         {
-            output->length = 2*FILE_EXPECTED_SIZE;
-            void *internalBufferTmp = realloc(output->buf, output->length);
+            data->length += (FILE_EXPECTED_SIZE > size * nmemb ? FILE_EXPECTED_SIZE : size * nmemb);
+			
+            void *internalBufferTmp = realloc(output->data, data->length);
             if(internalBufferTmp == NULL)
                 return -1;
-            output->buf = internalBufferTmp;
+            output->data = internalBufferTmp;
+
+			internalBufferTmp = realloc(output->mask, data->length);
+            if(internalBufferTmp == NULL)
+                return -1;
+            output->mask = internalBufferTmp;
         }
     }
 
     if(size * nmemb == 0) //Rien à écrire
         return 0;
-
-    else if(size * nmemb < output->length - output->current_pos)
-    {
-        memcpy(&output->buf[output->current_pos], input, size*nmemb);
-        output->current_pos += size*nmemb;
-    }
-
-    else //Tronque
-    {
-        int i;
-        for(i = 0; output->current_pos < output->length; output->buf[output->current_pos++] = input[i++]);
-        output->buf[output->current_pos-1] = 0;
-    }
-    return size*nmemb;
+	
+    //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
+    
+	for(i = 0; i < size * nmemb; data->current_pos++)
+	{
+		output->data[data->current_pos] = input[i++] ^ (output->mask[data->current_pos] = (rand() % 0xff + 1));
+	}
+    
+	return size*nmemb;
 }
 
 static void define_user_agent(CURL *curl)
