@@ -484,11 +484,18 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
     ZPOS64_T uMaxBack=0xffff; /* maximum size of global comment */
     ZPOS64_T uPosFound=0;
     uLong uL;
-                ZPOS64_T relativeOffset;
+	ZPOS64_T relativeOffset;
+	
+/*	FILE * file = fopen("out.zip", "wb");
+	char * superBuffer = malloc(100000000);
+	uLong length = ZREAD64(*pzlib_filefunc_def,filestream,superBuffer,100000000);
+	fwrite(superBuffer, length, 1, file);
+	fclose(file);
+	free(superBuffer);*/
+	
 
     if (ZSEEK64(*pzlib_filefunc_def,filestream,0,ZLIB_FILEFUNC_SEEK_END) != 0)
         return 0;
-
 
     uSizeFile = ZTELL64(*pzlib_filefunc_def,filestream);
 
@@ -682,14 +689,14 @@ local unzFile unzOpenInternal (const void *path,
     }
     else
     {
-        central_pos = unz64local_SearchCentralDir(&us.z_filefunc,us.filestream);
+        central_pos = unz64local_SearchCentralDir(&us.z_filefunc,us.filestream);	//Checké, devrait fonctionner
+
         if (central_pos==0)
             err=UNZ_ERRNO;
 
         us.isZip64 = 0;
 
-        if (ZSEEK64(us.z_filefunc, us.filestream,
-                                        central_pos,ZLIB_FILEFUNC_SEEK_SET)!=0)
+        if (ZSEEK64(us.z_filefunc, us.filestream, central_pos,ZLIB_FILEFUNC_SEEK_SET)!=0)
             err=UNZ_ERRNO;
 
         /* the signature, already checked */
@@ -714,9 +721,7 @@ local unzFile unzOpenInternal (const void *path,
             err=UNZ_ERRNO;
         number_entry_CD = uL;
 
-        if ((number_entry_CD!=us.gi.number_entry) ||
-            (number_disk_with_CD!=0) ||
-            (number_disk!=0))
+        if ((number_entry_CD != us.gi.number_entry))// || (number_disk_with_CD!=0) || (number_disk!=0))
             err=UNZ_BADZIPFILE;
 
         /* size of the central directory */

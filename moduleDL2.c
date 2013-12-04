@@ -466,7 +466,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 bool MDLTelechargement(DATA_MOD_DL* input)
 {
     bool output = false;
-    int ret_value = CODE_RETOUR_OK;
+    int ret_value = CODE_RETOUR_OK, i;
+	char firstTwentyBytesOfArchive[20];
 
     /**Téléchargement**/
     TMP_DL dataDL;
@@ -481,42 +482,64 @@ bool MDLTelechargement(DATA_MOD_DL* input)
     {
         do
         {
-            dataDL.buf = NULL;
+            dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
             ret_value = download_UI(&dataDL);
             free(dataDL.URL);
+			
+			for(i = 0; i < 19 && dataDL.buf != NULL && ((DATA_DL_OBFS *) dataDL.buf)->data != NULL && ((DATA_DL_OBFS *) dataDL.buf)->mask != NULL; i++)
+				firstTwentyBytesOfArchive[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
+			firstTwentyBytesOfArchive[i] = 0;
 
             if(dataDL.length < 50 && dataDL.buf != NULL && !strcmp(input->todoList->datas->team->type, TYPE_DEPOT_3))
             {
                 /*Output du RSP, à gérer*/
 #ifdef DEV_VERSION
-                logR(dataDL.buf);
+                logR(firstTwentyBytesOfArchive);
 #endif
                 if(dataDL.buf != NULL)
                 {
-                    if(!strcmp(dataDL.buf, "invalid_data") || !strcmp(dataDL.buf, "internal_error") ||
-                       !strcmp(dataDL.buf, "bad_login_infos") || !strcmp(dataDL.buf, "token_invalid"))
+                    if(!strcmp(firstTwentyBytesOfArchive, "invalid_data") || !strcmp(firstTwentyBytesOfArchive, "internal_error") ||
+                       !strcmp(firstTwentyBytesOfArchive, "bad_login_infos") || !strcmp(firstTwentyBytesOfArchive, "token_invalid"))
                     {
+                        free(((DATA_DL_OBFS *) dataDL.buf)->data);
+                        free(((DATA_DL_OBFS *) dataDL.buf)->mask);
                         free(dataDL.buf);
                         dataDL.URL = MDL_craftDownloadURL(*input->todoList);
                         continue;
                     }
-                    free(dataDL.buf);
+                    free(((DATA_DL_OBFS *) dataDL.buf)->data);
+					free(((DATA_DL_OBFS *) dataDL.buf)->mask);
+					free(dataDL.buf);
                 }
                 output = true;
             }
-            else if(ret_value != CODE_RETOUR_OK || dataDL.buf == NULL || dataDL.length < 50 || ((dataDL.buf[0] != 'P' || dataDL.buf[1] != 'K') && strncmp(dataDL.buf, "http://", 7) && strncmp(dataDL.buf, "https://", 8)))
+            else if(ret_value != CODE_RETOUR_OK || dataDL.buf == NULL || ((DATA_DL_OBFS *) dataDL.buf)->data == NULL || ((DATA_DL_OBFS *) dataDL.buf)->mask == NULL || dataDL.length < 50 || ((firstTwentyBytesOfArchive[0] != 'P' || firstTwentyBytesOfArchive[1] != 'K') && strncmp(firstTwentyBytesOfArchive, "http://", 7) && strncmp(firstTwentyBytesOfArchive, "https://", 8)))
             {
                 if(dataDL.buf != NULL)
-                    free(dataDL.buf);
+				{
+					free(((DATA_DL_OBFS *) dataDL.buf)->data);
+					free(((DATA_DL_OBFS *) dataDL.buf)->mask);
+					free(dataDL.buf);
+				}
                 if(ret_value != CODE_RETOUR_DL_CLOSE)
                     output = true;
                 //Le close est géré plus tard
             }
-            else if(!strncmp(dataDL.buf, "http://", 7) || !strncmp(dataDL.buf, "https://", 8))
+            else if(!strncmp(firstTwentyBytesOfArchive, "http://", 7) || !strncmp(firstTwentyBytesOfArchive, "https://", 8))
             {
                 //Redirection
-                dataDL.URL = dataDL.buf;
-                continue;
+				dataDL.URL = malloc(dataDL.length + 10);
+				if(dataDL.URL == NULL)
+				{
+					output = true;
+				}
+				else
+				{
+					for(i = 0; i < dataDL.length; i++)
+						dataDL.URL[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
+					dataDL.URL[i] = 0;
+					continue;
+				}
             }
             else // Archive pas corrompue, installation
             {

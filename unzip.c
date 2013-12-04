@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "moduleDL.h"
 #include "unzip/miniunzip.h"
 #include "unzip/unz_memory.c"
 
@@ -69,12 +70,13 @@ static int do_list(unzFile uf, int *encrypted, char filename_inzip[NOMBRE_PAGE_M
     return 0;
 }
 
-int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
+int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
 {
     int i = 0, j = 0;
     int opt_do_extract_withoutpath = 0; //Extraire en crashant le path
 	int opt_overwrite = 1; /*Overwrite*/
 	int opt_encrypted = 0, ret_value=0;
+	char *zipInput = NULL;
    	char *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
     char *pathToConfigFile = NULL;
 
@@ -90,7 +92,10 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     if(size) //Si extraction d'un chapitre
         opt_do_extract_withoutpath = 1;
     else
-        zipFileName = ralloc((strlen(inputZip)+1) *2); //Input
+	{
+		zipInput = inputData;
+		zipFileName = ralloc((strlen(zipInput)+1) *2); //Input
+	}
     zipOutput = ralloc((strlen(outputZip)+1) *2); //Output
     password = ralloc((strlen(passwordZip)+1) *2);
 
@@ -108,13 +113,13 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
         return 1;
     }
 
-    for(i = j = 0; !size && i < (strlen(inputZip)+1)*2; i++, j++)
+    for(i = j = 0; zipInput != NULL && i < (strlen(zipInput)+1)*2; i++, j++)
     {
-        if(i < (strlen(inputZip)+1)*2 && inputZip[i] != '\0')
-            zipFileName[i] = inputZip[i];
+        if(i < (strlen(zipInput)+1)*2 && zipInput[i] != '\0')
+            zipFileName[i] = zipInput[i];
         else
         {
-            if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(inputZip)+1)*2) //Si il manque .zip
+            if(zipFileName[i - 1] != 'p' && i + 5 < (strlen(zipInput)+1)*2) //Si il manque .zip
             {
                 zipFileName[i++] = '.';
                 zipFileName[i++] = 'z';
@@ -122,10 +127,10 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
                 zipFileName[i++] = 'p';
                 zipFileName[i++] = '\0';
             }
-            else if (i < (strlen(inputZip)+1)*2)
+            else if (i < (strlen(zipInput)+1)*2)
             {
                 zipFileName[i] = 0;
-                i = (strlen(inputZip)+1)*2;
+                i = (strlen(zipInput)+1)*2;
             }
         }
     }
@@ -158,7 +163,7 @@ int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, 
     else
     {
         path = ralloc(strlen(outputZip) + 3);
-        init_zmemfile(&fileops, inputZip, size);
+        init_zmemfile(&fileops, ((DATA_DL_OBFS*)inputData)->data, ((DATA_DL_OBFS*)inputData)->mask, size);
         uf = unzOpen2(NULL, &fileops);
     }
 

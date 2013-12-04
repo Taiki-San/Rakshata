@@ -286,7 +286,7 @@ int changementLangue();
 int tradAvailable();
 
 /**Unzip.c**/
-int miniunzip (char *inputZip, char *outputZip, char *passwordZip, size_t size, size_t type);
+int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);
 
 /**Update.c**/
 void checkUpdate();
