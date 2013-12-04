@@ -485,14 +485,6 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
     ZPOS64_T uPosFound=0;
     uLong uL;
 	ZPOS64_T relativeOffset;
-	
-/*	FILE * file = fopen("out.zip", "wb");
-	char * superBuffer = malloc(100000000);
-	uLong length = ZREAD64(*pzlib_filefunc_def,filestream,superBuffer,100000000);
-	fwrite(superBuffer, length, 1, file);
-	fclose(file);
-	free(superBuffer);*/
-	
 
     if (ZSEEK64(*pzlib_filefunc_def,filestream,0,ZLIB_FILEFUNC_SEEK_END) != 0)
         return 0;
@@ -721,7 +713,7 @@ local unzFile unzOpenInternal (const void *path,
             err=UNZ_ERRNO;
         number_entry_CD = uL;
 
-        if ((number_entry_CD != us.gi.number_entry))// || (number_disk_with_CD!=0) || (number_disk!=0))
+        if (number_entry_CD != us.gi.number_entry || number_disk_with_CD != 0 || number_disk != 0)
             err=UNZ_BADZIPFILE;
 
         /* size of the central directory */
@@ -740,8 +732,7 @@ local unzFile unzOpenInternal (const void *path,
             err=UNZ_ERRNO;
     }
 
-    if ((central_pos<us.offset_central_dir+us.size_central_dir) &&
-        (err==UNZ_OK))
+    if ((central_pos<us.offset_central_dir+us.size_central_dir) && err==UNZ_OK)
         err=UNZ_BADZIPFILE;
 
     if (err!=UNZ_OK)
@@ -1095,7 +1086,7 @@ local int unz64local_GetCurrentFileInfoInternal (unzFile file,
 
         if (lSeek!=0)
         {
-            if (ZSEEK64(s->z_filefunc, s->filestream,lSeek,ZLIB_FILEFUNC_SEEK_CUR)!=0)
+            if (ZSEEK64(s->z_filefunc, s->filestream,lSeek,ZLIB_FILEFUNC_SEEK_CUR) != 0)
                 err=UNZ_ERRNO;
         }
 
