@@ -377,8 +377,9 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
 {
 	int i;
 	TMP_DL *data = output_void;
-    DATA_DL_OBFS *output = data->buf;
+    DATA_DL_OBFS *output = data->buf; 
     char *input = ptr;
+	
     if(output->data == NULL || output->mask == NULL || data->length != FILE_EXPECTED_SIZE || size * nmemb >= data->length - data->current_pos)
     {
         if(output->data == NULL || output->mask == NULL)
@@ -399,7 +400,11 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
         }
         else //Buffer trop petit, on l'agrandit
         {
-            data->length += (FILE_EXPECTED_SIZE > size * nmemb ? FILE_EXPECTED_SIZE : size * nmemb);
+			if(data->length != FILE_EXPECTED_SIZE)
+				data->length = FILE_EXPECTED_SIZE;
+			
+			if(size * nmemb >= data->length - data->current_pos)
+				data->length += (FILE_EXPECTED_SIZE > size * nmemb ? FILE_EXPECTED_SIZE : size * nmemb);
 			
             void *internalBufferTmp = realloc(output->data, data->length);
             if(internalBufferTmp == NULL)
@@ -420,7 +425,7 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
     
 	for(i = 0; i < size * nmemb; data->current_pos++)
 	{
-		output->data[data->current_pos] = input[i++] ^ (output->mask[data->current_pos] = (rand() % 0xff + 1));
+		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (rand() % 0xff)));
 	}
     
 	return size*nmemb;
