@@ -59,6 +59,13 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
 int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
 int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
 
+/**	lecteur_tool.c	**/
+int reader_getPosIntoContentIndex(MANGAS_DATA * mangaDB, int currentSelection, bool isTome);
+bool reader_isLastElem(MANGAS_DATA * mangaDB, int currentSelection, bool isTome);
+void reader_saveStateForRestore(char * mangaName, int currentSelection, bool isTome, int currentPage);
+void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool * isTome, int * page, bool removeWhenDone);
+void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
+
 /**	lecteur_ui.c	**/
 SDL_Texture* loadControlBar(int favState);
 void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);

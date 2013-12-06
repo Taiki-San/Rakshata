@@ -22,7 +22,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
     int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
-    FILE* testExistance = NULL;
     SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL, *bandeauControle = NULL;
     TTF_Font *police = NULL;
@@ -32,58 +31,23 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     DATA_LECTURE dataReader;
     loadTrad(texteTrad, 21);
 
-    if(!isTome)
-    {
-        if(mangaDB->chapitres == NULL)
-        {
-            getUpdatedChapterList(mangaDB);
-            if(mangaDB == NULL)
-            {
-                return PALIER_CHAPTER;
-            }
-        }
-        for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < *chapitreChoisis; curPosIntoStruct++);
-    }
-    else
-    {
-        if(mangaDB->tomes== NULL)
-        {
-            getUpdatedTomeList(mangaDB);
-            if(mangaDB == NULL)
-            {
-                return PALIER_CHAPTER;
-            }
-        }
-        for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < *chapitreChoisis; curPosIntoStruct++);
-    }
-
-    if((!isTome && *chapitreChoisis == mangaDB->chapitres[mangaDB->nombreChapitre-1]) || (isTome && *chapitreChoisis == mangaDB->tomes[mangaDB->nombreTomes-1].ID))
-    {
+	curPosIntoStruct = reader_getPosIntoContentIndex(mangaDB, *chapitreChoisis, isTome);
+	if(curPosIntoStruct == -1)
+	{
+		logR("Error: failed at loading available content for the project");
+		return PALIER_CHAPTER;
+	}
+	
+	if(reader_isLastElem(mangaDB, *chapitreChoisis, isTome))
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
-        i = 1;
-    }
-    else
-        i = 0;
 
     if(checkRestore())
     {
-        char type[2] = {0, 0};
-        testExistance = fopenR("data/laststate.dat", "r");
-        fscanfs(testExistance, "%s %s %d %d", temp, LONGUEUR_NOM_MANGA_MAX, type, 2, &i, &(dataReader.pageCourante)); //Récupére la page
-        fclose(testExistance);
-        removeR("data/laststate.dat");
-
-        /**Création de la fenêtre d'infos**/
-        if(i && !checkFileExist("data/externalLaunch"))
-            afficherMessageRestauration(texteTrad[3], texteTrad[4], texteTrad[5], texteTrad[6]);
-        else
-            remove("data/externalLaunch");
+		reader_loadStateForRestore(NULL, NULL, NULL, &(dataReader.pageCourante), true);
+		reader_notifyUserRestore(texteTrad);
     }
     else
         dataReader.pageCourante = 0;
-
-    positionPage.x = BORDURE_LAT_LECTURE;
-    positionSlide.x = positionSlide.y = 0;
 
     snprintf(infos, 300, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
     if(!checkFileExist(infos) || *chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE)
@@ -903,14 +867,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         case SDLK_q:
                         {
                             /*Si on quitte, on enregistre le point d'arret*/
-                            testExistance = fopenR("data/laststate.dat", "w+");
-                            fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
-                            fclose(testExistance);
-
+							reader_saveStateForRestore(mangaDB->mangaName, *chapitreChoisis, isTome, dataReader.pageCourante);
                             FREE_CONTEXT();
-
                             return PALIER_QUIT;
-                            break;
                         }
 
                         case SDLK_f:
@@ -997,10 +956,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 {
                     if(event.window.event == SDL_WINDOWEVENT_CLOSE)
                     {
-                        /*Si on quitte, on enregistre le point d'arret*/
-                        testExistance = fopenR("data/laststate.dat", "w+");
-                        fprintf(testExistance, "%s %c %d %d", mangaDB->mangaName, isTome?'T':'C', *chapitreChoisis, dataReader.pageCourante);
-                        fclose(testExistance);
+						reader_saveStateForRestore(mangaDB->mangaName, *chapitreChoisis, isTome, dataReader.pageCourante);
                         FREE_CONTEXT();
                         return PALIER_QUIT;
                     }
