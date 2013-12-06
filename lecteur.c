@@ -49,13 +49,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     else
         dataReader.pageCourante = 0;
 
-    snprintf(infos, 300, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-    if(!checkFileExist(infos) || *chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE)
-    {
-        *chapitreChoisis = PALIER_CHAPTER;
-        return PALIER_CHAPTER;
-    }
-
     /*Si chapitre manquant*/
     while(curPosIntoStruct < (isTome?mangaDB->nombreTomes:mangaDB->nombreChapitre) && !checkReadable(*mangaDB, isTome, isTome? (void*) &(mangaDB->tomes[curPosIntoStruct]):chapitreChoisis))
         *chapitreChoisis = isTome?mangaDB->tomes[curPosIntoStruct++].ID:mangaDB->chapitres[curPosIntoStruct++];
