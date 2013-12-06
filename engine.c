@@ -29,7 +29,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     TTF_Font* police = NULL;
 
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     
     hauteurBloc *= getRetinaZoom();
@@ -317,7 +317,7 @@ int engineCore(PREFS_ENGINE * prefs, int contexte, DATA_ENGINE* input, int haute
 #endif
 
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
+    police = OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
     loadTrad(localization, 11);
     nombreElement = prefs->nombreElementTotal;
@@ -1168,7 +1168,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
 
     MUTEX_UNIX_LOCK;
 
-    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
+    TTF_Font *police = OpenFont(FONTUSED, POLICE_PETIT);
 
     position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE * getRetinaZoom();
 
@@ -1263,7 +1263,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
     SDL_Rect position;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_actif.r, palette.police_actif.g, palette.police_actif.b}, couleurUnavailable = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b};
 
-    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
+    police = OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     applyBackground(renderer, 0, WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - HAUTEUR_PREMIERE_LIGNE_BANDEAU_CONTROLE + 2) * getRetinaZoom(), WINDOW_SIZE_W, WINDOW_SIZE_H - (HAUTEUR_BOUTONS_CHAPITRE + HAUTEUR_BOUTONS_CHANGEMENT_PAGE) * getRetinaZoom());
@@ -1351,7 +1351,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     SDL_Rect position;
     SDL_Texture *texte = NULL;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
-    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
+    TTF_Font *police = OpenFont(FONTUSED, POLICE_PETIT);
 
     position.y = WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - 10) * getRetinaZoom();
 
@@ -1402,7 +1402,7 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
     SDL_Rect position;
 
     MUTEX_UNIX_LOCK;
-    TTF_Font *police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
+    TTF_Font *police = OpenFont(FONTUSED, POLICE_MOYEN);
 
     if(!virgule)
         snprintf(buffer, 10, "%d", choix/10);
@@ -1442,7 +1442,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     enfineEraseDisplayedTomeInfos(renderer);
 
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
     texte = TTF_Write(renderer, police, input.description1, couleur);
     if(texte != NULL)
     {
@@ -1457,7 +1457,7 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
         position.y = 0;
     TTF_CloseFont(police);
 
-    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
+    police = OpenFont(FONTUSED, POLICE_MOYEN);
     texte = TTF_Write(renderer, police, input.description2, couleur);
     if(texte != NULL)
     {

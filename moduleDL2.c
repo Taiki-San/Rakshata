@@ -686,7 +686,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
+    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
     MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom(), WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE * getRetinaZoom());
 
     if(police == NULL)
@@ -794,7 +794,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     TTF_Font *police = NULL;
 
     loadTrad(trad, 22);
-    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
+    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
     if(isInstall)
         MDLTUIBackground(0, HAUTEUR_TEXTE_INSTALLATION * getRetinaZoom(), WINDOW_SIZE_W_DL, (MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION) * getRetinaZoom());
     else

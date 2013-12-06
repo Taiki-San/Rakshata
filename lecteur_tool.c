@@ -21,8 +21,11 @@ int reader_getPosIntoContentIndex(MANGAS_DATA * mangaDB, int currentSelection, b
         if(mangaDB->chapitres == NULL)
         {
             getUpdatedChapterList(mangaDB);
-            if(mangaDB == NULL)
+            if(mangaDB->chapitres == NULL)
+			{
+				logR("Error: failed at loading available content for the project");
 				return -1;
+			}
         }
         for(curPosIntoStruct = 0; mangaDB->chapitres[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
     }
@@ -31,11 +34,25 @@ int reader_getPosIntoContentIndex(MANGAS_DATA * mangaDB, int currentSelection, b
         if(mangaDB->tomes== NULL)
         {
             getUpdatedTomeList(mangaDB);
-            if(mangaDB == NULL)
+            if(mangaDB->tomes == NULL)
+			{
+				logR("Error: failed at loading available content for the project");
 				return -1;
+			}
         }
         for(curPosIntoStruct = 0; mangaDB->tomes[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
     }
+	
+	//On vérifie que l'entrée est valide
+	if(!checkReadable(*mangaDB, isTome, isTome ? (void*) &(mangaDB->tomes[curPosIntoStruct]) : &currentSelection))
+	{
+		if(!reader_getNextReadableElement(*mangaDB, isTome, &curPosIntoStruct))
+		{
+			logR("Error: failed at finding an acceptable project");
+			return -1;
+		}
+	}
+	
 	return curPosIntoStruct;
 }
 

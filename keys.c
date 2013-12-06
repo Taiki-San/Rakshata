@@ -308,7 +308,7 @@ int logon()
         MUTEX_UNIX_LOCK;
 
         SDL_RenderClear(renderer);
-        police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_GROS);
+        police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
 
         ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
         if(ligne != NULL)
@@ -337,7 +337,7 @@ int logon()
             beginingOfEmailAdress = 75 * getRetinaZoom();
 
         TTF_CloseFont(police);
-        police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+        police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
         ligne = TTF_Write(renderer, police, trad[2], couleur); //Disclamer
         position.y += 85 * getRetinaZoom();
@@ -390,7 +390,7 @@ int logon()
                     crashTemp(password, 100);
                     /**Leurs codes sont assez proches donc on les regroupes**/
                     MUTEX_UNIX_LOCK;
-                    police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_GROS);
+                    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
                     ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
                     if(ligne != NULL)
                     {
@@ -415,7 +415,7 @@ int logon()
                     }
 
                     TTF_CloseFont(police);
-                    police = OpenFont(renderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+                    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
                     ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
                     position.y += 85 * getRetinaZoom();
@@ -550,7 +550,7 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
 
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(currentRenderer);
-    police = OpenFont(currentRenderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
     ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
     if(ligne != NULL)
     {
@@ -577,7 +577,7 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
         xPassword = 50 + LARGEUR_MOYENNE_MANGA_GROS + 25;
 
     TTF_CloseFont(police);
-    police = OpenFont(currentRenderer, FONT_USED_BY_DEFAULT, POLICE_MOYEN);
+    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
 
     ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
     position.y += 85;

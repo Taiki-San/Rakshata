@@ -322,7 +322,7 @@ void MDLPDispCheckingIfPaid()
 
     loadTrad(trad, 31);
 
-    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
+    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
     {
@@ -358,7 +358,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
 
     loadTrad(trad, 31);
 
-    police = OpenFont(rendererDL, FONTUSED, MDL_SIZE_FONT_USED);
+    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
 
     if(police != NULL)
     {

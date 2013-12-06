@@ -76,7 +76,7 @@ int section()
     MUTEX_UNIX_LOCK;
 
     SDL_RenderClear(renderer);
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
 
     texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
     if(texte != NULL)
@@ -105,7 +105,7 @@ int section()
                 message[j][k] = 0;
             }
 
-            police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
+            police = OpenFont(FONTUSED, POLICE_MOYEN);
             position.y = WINDOW_SIZE_H;
             for(j--; j >= 0; j--)
             {

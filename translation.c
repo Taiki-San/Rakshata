@@ -125,7 +125,7 @@ int changementLangue()
         updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
 
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
     texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);

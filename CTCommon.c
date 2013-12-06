@@ -59,7 +59,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 
     /*Header*/
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
 
     //On affiche pas le même titre en fonction de la section
     snprintf(temp, 4*TRAD_LENGTH, "%s %s %s %s", texteTrad[2], texteTrad[isTome], texteTrad[3], texteTrad[(contexte == CONTEXTE_LECTURE)?4:((contexte == CONTEXTE_DL)?5:6)]);
@@ -85,7 +85,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 
     TTF_CloseFont(police);
 
-    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
+    police = OpenFont(FONTUSED, POLICE_MOYEN);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
 
     texte = TTF_Write(renderer, police, temp, couleurTexte);

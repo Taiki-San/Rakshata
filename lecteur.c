@@ -17,7 +17,7 @@ int pageWaaaayyyyTooBig = 0;
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen)
 {
-    int i, check4change = 0, changementPage = 0, finDuChapitre = 0;
+    int i, check4change = 0, changementPage = 2, finDuChapitre = 0;	//changementPage == 2 pour passer tous les tests
     int buffer = 0, largeurValide = 0, pageTropGrande = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
     int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
@@ -31,12 +31,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     DATA_LECTURE dataReader;
     loadTrad(texteTrad, 21);
 
-	curPosIntoStruct = reader_getPosIntoContentIndex(mangaDB, *chapitreChoisis, isTome);
+	curPosIntoStruct = reader_getPosIntoContentIndex(mangaDB, *chapitreChoisis, isTome);	//Check the chapter can be read
 	if(curPosIntoStruct == -1)
-	{
-		logR("Error: failed at loading available content for the project");
 		return PALIER_CHAPTER;
-	}
 	
 	if(reader_isLastElem(mangaDB, *chapitreChoisis, isTome))
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
@@ -49,30 +46,18 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     else
         dataReader.pageCourante = 0;
 
-    /*Si chapitre manquant*/
-    while(curPosIntoStruct < (isTome?mangaDB->nombreTomes:mangaDB->nombreChapitre) && !checkReadable(*mangaDB, isTome, isTome? (void*) &(mangaDB->tomes[curPosIntoStruct]):chapitreChoisis))
-        *chapitreChoisis = isTome?mangaDB->tomes[curPosIntoStruct++].ID:mangaDB->chapitres[curPosIntoStruct++];
-
     if(configFileLoader(mangaDB, isTome, *chapitreChoisis, &dataReader))
     {
-        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Chapitre non-existant: Team: %s - Manga: %s - Chapitre: %d\n", mangaDB->team->teamLong, mangaDB->mangaName, *chapitreChoisis);
-        logR(temp);
-
         i = showError();
-        if(i > PALIER_MENU)
-            return PALIER_CHAPTER;
-        else
-            return i;
+		return i > PALIER_MENU ? PALIER_CHAPTER : i;
     }
     else
         lastChapitreLu(mangaDB, isTome, *chapitreChoisis); //On écrit le dernier chapitre lu
 
-    changementPage = 2;
-
     MUTEX_UNIX_LOCK;
-    police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
-    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-    bandeauControle = loadControlBar(mangaDB->favoris);
+		police = OpenFont(FONTUSED, POLICE_PETIT);
+		TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
+		bandeauControle = loadControlBar(mangaDB->favoris);
     MUTEX_UNIX_UNLOCK;
 
     while(1)
@@ -315,7 +300,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
             /*Si grosse page*/
             TTF_CloseFont(police);
-            police = OpenFont(renderer, FONTUSED, POLICE_TOUT_PETIT);
+            police = OpenFont(FONTUSED, POLICE_TOUT_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
 
@@ -332,7 +317,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         if(*fullscreen) //On restaure la police
         {
             TTF_CloseFont(police);
-            police = OpenFont(renderer, FONTUSED, POLICE_PETIT);
+            police = OpenFont(FONTUSED, POLICE_PETIT);
             TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
         }
         MUTEX_UNIX_UNLOCK;

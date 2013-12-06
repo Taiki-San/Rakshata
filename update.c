@@ -69,7 +69,7 @@ void checkUpdate()
 
         MUTEX_UNLOCK(mutexRS);
         
-        police = OpenFont(renderer, FONTUSED, POLICE_MOYEN);
+        police = OpenFont(FONTUSED, POLICE_MOYEN);
 
         SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
         SDL_RenderClear(renderer);
@@ -96,7 +96,7 @@ void checkUpdate()
             SDL_DestroyTextureS(infosAvancement);
         }
         TTF_CloseFont(police);
-        police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+        police = OpenFont(FONTUSED, POLICE_GROS);
 
         for(i = 0; files[i][0] != 0 && i < ligne; i++)
         {

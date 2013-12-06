@@ -89,11 +89,11 @@ int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int show
     MUTEX_UNIX_LOCK;
     if(nombreMax < 30)
     {
-        police = OpenFont(rendererVar, FONTUSED, POLICE_GROS);
+        police = OpenFont(FONTUSED, POLICE_GROS);
     }
     else
     {
-        police = OpenFont(rendererVar, FONTUSED, POLICE_PETIT);
+        police = OpenFont(FONTUSED, POLICE_PETIT);
     }
     MUTEX_UNIX_UNLOCK;
 

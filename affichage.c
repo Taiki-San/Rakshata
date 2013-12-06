@@ -23,7 +23,7 @@ void welcome()
 
     MUTEX_UNIX_LOCK;
 
-    police = OpenFont(renderer, FONTUSED, POLICE_MOYEN-2);
+    police = OpenFont(FONTUSED, POLICE_MOYEN-2);
     updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
     SDL_RenderClear(renderer);
 
@@ -86,7 +86,7 @@ void initialisationAffichage()
 
     MUTEX_UNIX_LOCK;
 
-    police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
     SDL_RenderClear(renderer);
 
     position.y = HAUTEUR_AFFICHAGE_INITIALISATION * getRetinaZoom();
@@ -127,7 +127,7 @@ void raffraichissmenent(bool forced)
 
     MUTEX_UNIX_LOCK;
 
-	police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+	police = OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 5);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
@@ -162,7 +162,7 @@ void affichageLancement()
 
     MUTEX_UNIX_LOCK;
 
-	police = OpenFont(renderer, FONTUSED, POLICE_GROS);
+	police = OpenFont(FONTUSED, POLICE_GROS);
     loadTrad(texte, 6);
 
     texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
@@ -198,7 +198,7 @@ void chargement(SDL_Renderer* rendererVar, int h, int w)
 
 	MUTEX_UNIX_LOCK;
 
-    police = OpenFont(rendererVar, FONTUSED, POLICE_GROS);
+    police = OpenFont(FONTUSED, POLICE_GROS);
 
     SDL_RenderClear(rendererVar);
 
@@ -382,10 +382,10 @@ void restartEcran()
     SDL_RenderPresent(renderer);
 }
 
-TTF_Font * OpenFont(SDL_Renderer * renderer, char * fontName, int size)
+TTF_Font * OpenFont(char * fontName, int size)
 {
     if(isRetina)
-        size *= 2;
+        size *= getRetinaZoom();
        
     return TTF_OpenFont(fontName, size);
 }

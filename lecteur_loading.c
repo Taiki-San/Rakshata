@@ -13,6 +13,21 @@
 #include "main.h"
 #include "lecteur.h"
 
+int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure)
+{
+	if(isTome)
+	{
+		for((*currentPosIntoStructure)++; *currentPosIntoStructure < mangaDB.nombreTomes &&
+						!checkReadable(mangaDB, isTome, &mangaDB.tomes[*currentPosIntoStructure]) ; (*currentPosIntoStructure)++);
+		
+		return *currentPosIntoStructure < mangaDB.nombreTomes;	//As-ton trouvé un tome?
+	}
+	
+	for((*currentPosIntoStructure)++; *currentPosIntoStructure < mangaDB.nombreChapitre &&
+				!checkReadable(mangaDB, isTome, &mangaDB.chapitres[*currentPosIntoStructure]) ; (*currentPosIntoStructure)++);
+
+	return *currentPosIntoStructure < mangaDB.nombreChapitre;	//As-ton trouvé un tome?
+}
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, nombreTours = 1, lengthBasePath, lengthFullPath;
@@ -32,7 +47,13 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
         snprintf(name, LONGUEUR_NOM_PAGE, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome, CONFIGFILETOME);
         config = fopen(name, "r");
         if(config == NULL)
-            return 1;
+		{
+			char log[LONGUEUR_NOM_PAGE+50];
+			snprintf(log, LONGUEUR_NOM_PAGE+50, "Error: Couldn't open volume data: %s", name);
+			logR(log);
+			return 1;
+		}
+
         name[0] = 0;
         fscanfs(config, "%s", name, LONGUEUR_NOM_PAGE);
     }
