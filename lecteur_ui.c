@@ -13,6 +13,15 @@
 #include "main.h"
 #include "lecteur.h"
 
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontSmall, SDL_Texture ** controlBar, bool isFavoris)
+{
+	MUTEX_UNIX_LOCK;
+		*fontSmall = OpenFont(FONTUSED, POLICE_PETIT);
+		TTF_SetFontStyle(*fontSmall, BANDEAU_INFOS_LECTEUR_STYLES);
+		*controlBar = loadControlBar(isFavoris);
+    MUTEX_UNIX_UNLOCK;
+}
+
 /** MUTEX_UNIX_LOCK pas nécessaire car locké avant **/
 SDL_Texture* loadControlBar(int favState)
 {
@@ -168,16 +177,16 @@ void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, ch
     changeTo(mangaDB.team->teamCourt, ' ', '_');
 }
 
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
 {
     MUTEX_UNIX_LOCK;
-    if(OChapitre != NULL && OChapitre->w > 0)
-        SDL_FreeSurface(OChapitre);
+    if(prevPage != NULL && prevPage->w > 0)
+        SDL_FreeSurface(prevPage);
     if(chapitre != NULL && chapitre->w > 0)
         SDL_FreeSurface(chapitre);
-    if(NChapitre != NULL && NChapitre->w > 0)
-        SDL_FreeSurface(NChapitre);
-    freeCurrentPage(chapitre_texture);
+    if(nextPage != NULL && nextPage->w > 0)
+        SDL_FreeSurface(nextPage);
+    freeCurrentPage(pageTexture);
 	
     SDL_FreeSurfaceS(UI_PageAccesDirect);
     SDL_DestroyTextureS(infoSurface);

@@ -13,6 +13,8 @@
 #include "main.h"
 #include "lecteur.h"
 
+/**	Set up the evnt	**/
+
 int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure)
 {
 	if(isTome)
@@ -28,6 +30,23 @@ int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *current
 
 	return *currentPosIntoStructure < mangaDB.nombreChapitre;	//As-ton trouvé un tome?
 }
+
+int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH])
+{
+	if(checkRestore())
+    {
+		int var;
+		
+		reader_loadStateForRestore(NULL, NULL, NULL, &var, true);
+		reader_notifyUserRestore(localization);
+
+		return var;
+    }
+	return 0;
+}
+
+/**	Load the reader data	**/
+
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, nombreTours = 1, lengthBasePath, lengthFullPath;
@@ -255,6 +274,73 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
         }
     }
     return output;
+}
+
+/**	Load pages	**/
+
+void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage)
+{
+	MUTEX_UNIX_LOCK;
+	
+	SDL_FreeSurfaceS(*prevPage);	//Il gère le cas où la surface
+	*prevPage = NULL;				//est nulle, pas de checks requis
+	
+	*prevPage = SDL_CreateRGBSurface(0, (*page)->w, (*page)->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(*prevPage, NULL, SDL_MapRGB((*prevPage)->format, palette.fond.r, palette.fond.g, palette.fond.b));
+	SDL_BlitSurface(*page, NULL, *prevPage, NULL);
+	
+	SDL_FreeSurfaceS(*page);
+	freeCurrentPage(*pageTexture);
+	*pageTexture = NULL;
+	
+	*page = SDL_CreateRGBSurface(0, (*nextPage)->w, (*nextPage)->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(*page, NULL, SDL_MapRGB((*page)->format, palette.fond.r, palette.fond.g, palette.fond.b));
+	SDL_BlitSurface(*nextPage, NULL, *page, NULL);
+	SDL_FreeSurfaceS(*nextPage);
+	*nextPage = NULL;
+	
+	MUTEX_UNIX_UNLOCK;
+}
+
+void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage)
+{
+	MUTEX_UNIX_LOCK;
+	
+	SDL_FreeSurfaceS(*prevPage);	//Il gère le cas où la surface
+	*nextPage = NULL;				//est nulle, pas de checks requis
+	
+	*nextPage = SDL_CreateRGBSurface(0, (*page)->w, (*page)->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(*nextPage, NULL, SDL_MapRGB((*nextPage)->format, palette.fond.r, palette.fond.g, palette.fond.b));
+	SDL_BlitSurface(*page, NULL, *nextPage, NULL);
+	
+	SDL_FreeSurfaceS(*page);
+	freeCurrentPage(*pageTexture);
+	*pageTexture = NULL;
+	
+	*page = SDL_CreateRGBSurface(0, (*prevPage)->w, (*prevPage)->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(*page, NULL, SDL_MapRGB((*page)->format, palette.fond.r, palette.fond.g, palette.fond.b));
+	SDL_BlitSurface(*prevPage, NULL, *page, NULL);
+	SDL_FreeSurfaceS(*prevPage);
+	*prevPage = NULL;
+	
+	MUTEX_UNIX_UNLOCK;
+}
+
+void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SDL_Surface ** page)
+{
+	if(dataReader.pageCourante > 0) //Si il faut charger la page n - 1
+	{
+		*prevPage = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
+	}
+	
+	*page = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante]);
+
+	if(*prevPage == NULL || *page == NULL)
+	{
+		SDL_FreeSurfaceS(*prevPage);
+		SDL_FreeSurfaceS(*page);
+		*prevPage = *page = NULL;
+	}
 }
 
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)

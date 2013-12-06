@@ -89,7 +89,7 @@ int deleteManga();
 int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
 int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
-void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
+void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**Donwload.c**/

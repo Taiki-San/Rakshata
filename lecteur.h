@@ -11,8 +11,8 @@
 *********************************************************************************************/
 
 //Macro pour libérer plus facilement la mémoire
-#define FREE_CONTEXT() cleanMemory(dataReader, chapitre, chapitre_texture, OChapitre, NChapitre, UI_PageAccesDirect, infoSurface, bandeauControle, police)
-#define REFRESH_SCREEN() refreshScreen(chapitre_texture, positionSlide, positionPage, positionBandeauControle, bandeauControle, infoSurface, positionInfos, pageAccesDirect, UI_PageAccesDirect)
+#define FREE_CONTEXT() cleanMemory(dataReader, page, pageTexture, prevPage, nextPage, UI_PageAccesDirect, infoSurface, controlBar, police)
+#define REFRESH_SCREEN() refreshScreen(pageTexture, positionSlide, positionPage, positionControlBar, controlBar, infoSurface, positionInfos, pageAccesDirect, UI_PageAccesDirect)
 
 extern int unlocked;
 extern int pageWaaaayyyyTooBig;
@@ -53,8 +53,14 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 /** lecteur_loading.c **/
 
 int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure);
+int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
+
+void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage);
+void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage);
+void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SDL_Surface ** page);
+
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh);
 int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
@@ -68,9 +74,10 @@ void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool *
 void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 
 /**	lecteur_ui.c	**/
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontSmall, SDL_Texture ** controlBar, bool isFavoris);
 SDL_Texture* loadControlBar(int favState);
 void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *chapitre_texture, SDL_Surface *OChapitre, SDL_Surface *NChapitre, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police);
 void freeCurrentPage(SDL_Texture *texture);
 void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK);

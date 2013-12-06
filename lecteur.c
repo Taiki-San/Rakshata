@@ -22,10 +22,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
     int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
-    SDL_Surface *chapitre = NULL, *OChapitre = NULL, *NChapitre = NULL, *UI_PageAccesDirect = NULL;
-    SDL_Texture *infoSurface = NULL, *chapitre_texture = NULL, *bandeauControle = NULL;
+    SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
+    SDL_Texture *infoSurface = NULL, *pageTexture = NULL, *controlBar = NULL;
     TTF_Font *police = NULL;
-    SDL_Rect positionInfos, positionPage, positionBandeauControle, positionSlide;
+    SDL_Rect positionInfos, positionPage, positionControlBar, positionSlide;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
     DATA_LECTURE dataReader;
@@ -33,188 +33,59 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
 	curPosIntoStruct = reader_getPosIntoContentIndex(mangaDB, *chapitreChoisis, isTome);	//Check the chapter can be read
 	if(curPosIntoStruct == -1)
+	{
 		return PALIER_CHAPTER;
-	
+	}
+
+	setLastChapitreLu(mangaDB, isTome, *chapitreChoisis);
 	if(reader_isLastElem(mangaDB, *chapitreChoisis, isTome))
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
 
-    if(checkRestore())
-    {
-		reader_loadStateForRestore(NULL, NULL, NULL, &(dataReader.pageCourante), true);
-		reader_notifyUserRestore(texteTrad);
-    }
-    else
-        dataReader.pageCourante = 0;
-
+	//On met la page courante par défaut
+	if(*chapitreChoisis == (isTome ? mangaDB->tomes[curPosIntoStruct].ID : mangaDB->chapitres[curPosIntoStruct]))
+	{
+		dataReader.pageCourante = reader_getCurrentPageIfRestore(texteTrad);
+	}
+	else	//Si on a eu à changer de chapitre à cause d'une corruption
+	{
+		dataReader.pageCourante = 0;
+	}
+	
     if(configFileLoader(mangaDB, isTome, *chapitreChoisis, &dataReader))
     {
         i = showError();
 		return i > PALIER_MENU ? PALIER_CHAPTER : i;
     }
-    else
-        lastChapitreLu(mangaDB, isTome, *chapitreChoisis); //On écrit le dernier chapitre lu
 
-    MUTEX_UNIX_LOCK;
-		police = OpenFont(FONTUSED, POLICE_PETIT);
-		TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-		bandeauControle = loadControlBar(mangaDB->favoris);
-    MUTEX_UNIX_UNLOCK;
+    reader_initializeFontsAndSomeElements(&police, &controlBar, mangaDB->favoris);
 
     while(1)
     {
-        /*Chargement image*/
-
-        //Page suivante
-        if(changementPage == 1 && dataReader.pageCourante <= dataReader.nombrePageTotale && !finDuChapitre && !changementEtat && NChapitre != NULL)
+        if(changementPage == 1 && !finDuChapitre && !changementEtat && nextPage != NULL)
         {
-            if(NChapitre == NULL)
-            {
-                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Page non-existant: %s\n", dataReader.nomPages[dataReader.pageCourante]);
-                logR(temp);
-
-                i = showError();
-
-                MUTEX_UNIX_LOCK;
-                SDL_FreeSurface(chapitre);
-                freeCurrentPage(chapitre_texture);
-                if(dataReader.pageCourante > 0)
-                    SDL_FreeSurface(OChapitre);
-                if(dataReader.pageCourante < dataReader.nombrePageTotale)
-                    SDL_FreeSurface(NChapitre);
-                SDL_DestroyTextureS(infoSurface);
-                SDL_DestroyTextureS(bandeauControle);
-                MUTEX_UNIX_UNLOCK;
-                if(i > PALIER_MENU)
-                    return PALIER_CHAPTER;
-                else
-                    return i;
-            }
-
-            MUTEX_UNIX_LOCK;
-
-            if(dataReader.pageCourante > 1)
-            {
-                SDL_FreeSurface(OChapitre);
-                OChapitre = NULL;
-            }
-
-            OChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0 , 0, 0);
-            SDL_FillRect(OChapitre, NULL, SDL_MapRGB(OChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
-            SDL_BlitSurface(chapitre, NULL, OChapitre, NULL);
-            SDL_FreeSurface(chapitre);
-            freeCurrentPage(chapitre_texture);
-            chapitre = SDL_CreateRGBSurface(0, NChapitre->w, NChapitre->h, 32, 0, 0 , 0, 0);
-            SDL_FillRect(chapitre, NULL, SDL_MapRGB(OChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
-            SDL_BlitSurface(NChapitre, NULL, chapitre, NULL);
-            SDL_FreeSurface(NChapitre);
-            NChapitre = NULL;
-
-            MUTEX_UNIX_UNLOCK;
+			reader_switchToNextPage(&prevPage, &page, &pageTexture, &nextPage);
         }
 
-        //Page précédente
-        else if(changementPage == -1 && dataReader.pageCourante >= 0 && !finDuChapitre && !changementEtat && OChapitre != NULL)
+        else if(changementPage == -1 && !finDuChapitre && !changementEtat && prevPage != NULL)
         {
-            if(OChapitre == NULL)
-            {
-                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Page non-existant: %s\n", dataReader.nomPages[dataReader.pageCourante]);
-                logR(temp);
-
-                i = showError();
-
-                MUTEX_UNIX_LOCK;
-                SDL_FreeSurface(chapitre);
-                freeCurrentPage(chapitre_texture);
-                if(dataReader.pageCourante > 0)
-                    SDL_FreeSurface(OChapitre);
-                if(dataReader.pageCourante < dataReader.nombrePageTotale)
-                    SDL_FreeSurface(NChapitre);
-                SDL_DestroyTextureS(infoSurface);
-                SDL_DestroyTextureS(bandeauControle);
-                MUTEX_UNIX_UNLOCK;
-                if(i > PALIER_MENU)
-                    return PALIER_CHAPTER;
-                else
-                    return i;
-            }
-
-            MUTEX_UNIX_LOCK;
-
-            if(dataReader.pageCourante + 1 < dataReader.nombrePageTotale) //On viens de changer de page, on veut savoir si on était â€¡ la derniére
-            {
-                SDL_FreeSurface(NChapitre);
-                NChapitre = NULL;
-            }
-            NChapitre = SDL_CreateRGBSurface(0, chapitre->w, chapitre->h, 32, 0, 0, 0, 0);
-            SDL_FillRect(NChapitre, NULL, SDL_MapRGB(NChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
-            SDL_BlitSurface(chapitre, NULL, NChapitre, NULL);
-            SDL_FreeSurface(chapitre);
-            freeCurrentPage(chapitre_texture);
-            chapitre = SDL_CreateRGBSurface(0, OChapitre->w, OChapitre->h, 32, 0, 0, 0, 0);
-            SDL_FillRect(chapitre, NULL, SDL_MapRGB(NChapitre->format, palette.fond.r, palette.fond.g, palette.fond.b));
-            SDL_BlitSurface(OChapitre, NULL, chapitre, NULL);
-            SDL_FreeSurface(OChapitre);
-            OChapitre = NULL;
-
-            MUTEX_UNIX_UNLOCK;
+            reader_switchToPrevPage(&prevPage, &page, &pageTexture, &nextPage);
         }
 
-        else if(dataReader.pageCourante >= 0 && dataReader.pageCourante <= dataReader.nombrePageTotale && !finDuChapitre && !changementEtat) //Premier chargement
+        else if(!finDuChapitre && !changementEtat) //Premier chargement
         {
-            if(dataReader.pageCourante > 0) //Si il faut charger la page n - 1
-            {
-                if(OChapitre != NULL)
-                {
-                    SDL_FreeSurface(OChapitre);
-                    OChapitre = NULL;
-                }
-
-                OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
-                if(OChapitre == NULL)
-                {
-                    internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                }
-            }
-
-            if(chapitre != NULL)
-            {
-                MUTEX_UNIX_LOCK;
-                freeCurrentPage(chapitre_texture);
-                SDL_FreeSurface(chapitre);
-                MUTEX_UNIX_UNLOCK;
-            }
-            chapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante]);
-
-            if(chapitre == NULL)
-            {
-                internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                chapitre = 0;
-            }
+            reader_loadInitialPage(dataReader, &prevPage, &page);
             changementPage = 1; //Mettra en cache la page n+1
         }
 
-        if(chapitre == NULL)
+        if(page == NULL)
         {
-            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "Page non-existant: %s\n", dataReader.nomPages[dataReader.pageCourante]);
-            logR(temp);
+			internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
+			i = showError();
+			return i > PALIER_MENU ? PALIER_CHAPTER : i;
+		}
 
-            MUTEX_UNIX_LOCK;
-            if(dataReader.pageCourante > 0)
-                SDL_FreeSurface(OChapitre);
-            if(dataReader.pageCourante < dataReader.nombrePageTotale)
-                SDL_FreeSurface(NChapitre);
-            SDL_DestroyTextureS(infoSurface);
-            SDL_DestroyTextureS(bandeauControle);
-            MUTEX_UNIX_UNLOCK;
-            i = showError();
-            if(i > PALIER_MENU)
-                return PALIER_CHAPTER;
-            else
-                return i;
-        }
-
-        largeurValide = chapitre->w + BORDURE_LAT_LECTURE * 2;
-        buffer = chapitre->h + BORDURE_HOR_LECTURE + BORDURE_CONTROLE_LECTEUR;
+        largeurValide = page->w + BORDURE_LAT_LECTURE * 2;
+        buffer = page->h + BORDURE_HOR_LECTURE + BORDURE_CONTROLE_LECTEUR;
 
         if(buffer > RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS)
             buffer = RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS;
@@ -253,7 +124,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                 //We restart the window
                 MUTEX_LOCK(mutex);
-                SDL_DestroyTexture(bandeauControle);
+                SDL_DestroyTexture(controlBar);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
                 window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
@@ -264,7 +135,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 loadIcon(window);
                 nameWindow(window, 0);
                 renderer = setupRendererSafe(window);
-                bandeauControle = loadControlBar(mangaDB->favoris);
+                controlBar = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
                 MUTEX_UNLOCK(mutex);
                 MUTEX_UNIX_UNLOCK;
@@ -278,7 +149,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             if(changementEtat)
             {
                 SDL_FlushEvent(SDL_WINDOWEVENT);
-				SDL_DestroyTexture(bandeauControle);
+				SDL_DestroyTexture(controlBar);
 				SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
                 window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, CREATE_WINDOW_FLAG|SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -286,7 +157,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 loadIcon(window);
                 nameWindow(window, 0);
                 renderer = setupRendererSafe(window);
-                bandeauControle = loadControlBar(mangaDB->favoris);
+                controlBar = loadControlBar(mangaDB->favoris);
                 SDL_FlushEvent(SDL_WINDOWEVENT);
 
                 WINDOW_SIZE_W = RESOLUTION[0] = getPtRetinaW(renderer);
@@ -330,43 +201,43 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
             positionInfos.h = infoSurface->h;
             positionInfos.w = infoSurface->w;
         }
-        positionBandeauControle.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
-        positionBandeauControle.x = (getPtRetinaW(renderer) / 2) - (bandeauControle->w / 2);
+        positionControlBar.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
+        positionControlBar.x = (getPtRetinaW(renderer) / 2) - (controlBar->w / 2);
 
         /*Création de la texture de la page*/
         MUTEX_UNIX_LOCK;
-        chapitre_texture = SDL_CreateTextureFromSurface(renderer, chapitre);
+        pageTexture = SDL_CreateTextureFromSurface(renderer, page);
         MUTEX_UNIX_UNLOCK;
-        if(chapitre_texture == NULL)
+        if(pageTexture == NULL)
         {
             MUTEX_UNIX_LOCK;
-            int sizeMax = defineMaxTextureSize(chapitre->h), j;
-            int nombreMiniTexture = chapitre->h/sizeMax + (chapitre->h%sizeMax?1:0);
+            int sizeMax = defineMaxTextureSize(page->h), j;
+            int nombreMiniTexture = page->h/sizeMax + (page->h%sizeMax?1:0);
             SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
             SDL_Surface *chap_buf = NULL;
             SDL_Rect pos;
-            pos.w = chapitre->w;
+            pos.w = page->w;
             pos.h = sizeMax;
             for(pos.x = j = 0; j < nombreMiniTexture-1; j++)
             {
                 pos.y = j*sizeMax;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
                 SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, palette.fond.r, palette.fond.g, palette.fond.b));
-                SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
+                SDL_BlitSurface(page, &pos, chap_buf, NULL);
                 texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
             }
-            if(sizeMax && j && chapitre->h%sizeMax)
+            if(sizeMax && j && page->h%sizeMax)
             {
                 pos.y = j*sizeMax;
-                pos.h = chapitre->h%pos.y;
+                pos.h = page->h%pos.y;
                 chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
-                SDL_BlitSurface(chapitre, &pos, chap_buf, NULL);
+                SDL_BlitSurface(page, &pos, chap_buf, NULL);
                 texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
                 SDL_FreeSurface(chap_buf);
             }
             pageWaaaayyyyTooBig = sizeMax;
-            chapitre_texture = (SDL_Texture*) texture;
+            pageTexture = (SDL_Texture*) texture;
             MUTEX_UNIX_UNLOCK;
         }
         else
@@ -375,47 +246,41 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
         /*Calcul position page*/
         if(!pageTropGrande && !finDuChapitre)
         {
-            if(chapitre->w < getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE))
-                positionPage.w = positionSlide.w = chapitre->w;
+            if(page->w < getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE))
+                positionPage.w = positionSlide.w = page->w;
             else
                 positionPage.w = positionSlide.w = getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE);
 
-            if(chapitre->h < getPtRetinaH(renderer))
-                positionPage.h = positionSlide.h = chapitre->h;
+            if(page->h < getPtRetinaH(renderer))
+                positionPage.h = positionSlide.h = page->h;
             else
                 positionPage.h = positionSlide.h = getPtRetinaH(renderer);
 
             positionPage.y = 0;
-            if(!finDuChapitre)
-            {
-                positionSlide.x = 0;
-                positionSlide.y = 0;
-            }
-            if(chapitre->w < LARGEUR - BORDURE_LAT_LECTURE * 2 || *fullscreen)
-                positionPage.x = getPtRetinaW(renderer) / 2 - chapitre->w / 2;
+			positionSlide.x = positionSlide.y = 0;
+
+            if(page->w < LARGEUR - BORDURE_LAT_LECTURE * 2 || *fullscreen)
+                positionPage.x = getPtRetinaW(renderer) / 2 - page->w / 2;
             else if (!*fullscreen)
                 positionPage.x = BORDURE_LAT_LECTURE;
         }
 
         else if(!finDuChapitre)
         {
-            positionPage.w = positionSlide.w = chapitre->w  > getPtRetinaW(renderer) - BORDURE_LAT_LECTURE ? getPtRetinaW(renderer) - BORDURE_LAT_LECTURE : chapitre->w;
-            positionPage.h = positionSlide.h = chapitre->h  > getPtRetinaH(renderer) - BORDURE_HOR_LECTURE ? getPtRetinaH(renderer) - BORDURE_HOR_LECTURE : chapitre->h;
+            positionPage.w = positionSlide.w = page->w  > getPtRetinaW(renderer) - BORDURE_LAT_LECTURE ? getPtRetinaW(renderer) - BORDURE_LAT_LECTURE : page->w;
+            positionPage.h = positionSlide.h = page->h  > getPtRetinaH(renderer) - BORDURE_HOR_LECTURE ? getPtRetinaH(renderer) - BORDURE_HOR_LECTURE : page->h;
             positionPage.y = BORDURE_HOR_LECTURE;
 
-            if(!finDuChapitre)
-            {
-                positionSlide.x = chapitre->w - (getPtRetinaW(renderer) - BORDURE_LAT_LECTURE);
-                positionSlide.y = 0;
-            }
+            positionSlide.x = page->w - (getPtRetinaW(renderer) - BORDURE_LAT_LECTURE);
+			positionSlide.y = 0;
             positionPage.x = 0;
         }
 
         if(!changementEtat)
             pageCharge = 0;
 
-        if(*fullscreen && BORDURE_HOR_LECTURE + chapitre->h + BORDURE_CONTROLE_LECTEUR < getPtRetinaH(renderer))
-            positionPage.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - chapitre->h) / 2 + BORDURE_HOR_LECTURE;
+        if(*fullscreen && BORDURE_HOR_LECTURE + page->h + BORDURE_CONTROLE_LECTEUR < getPtRetinaH(renderer))
+            positionPage.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - page->h) / 2 + BORDURE_HOR_LECTURE;
         else
             positionPage.y = BORDURE_HOR_LECTURE;
 
@@ -448,14 +313,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 if(changementPage == 1)
                 {
                     if(dataReader.pageCourante >= dataReader.nombrePageTotale)
-                        NChapitre = NULL;
+                        nextPage = NULL;
                     else
                     {
-                        NChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante + 1]);
-                        if(NChapitre == NULL)
+                        nextPage = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante + 1]);
+                        if(nextPage == NULL)
                         {
                             internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                            NChapitre = 0;
+                            nextPage = 0;
                         }
                         else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
                             REFRESH_SCREEN();
@@ -464,15 +329,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 else if (changementPage == -1)
                 {
                     if(dataReader.pageCourante <= 0)
-                        OChapitre = NULL;
+                        prevPage = NULL;
 
                     else
                     {
-                        OChapitre = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
-                        if(OChapitre == NULL)
+                        prevPage = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
+                        if(prevPage == NULL)
                         {
                             internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                            OChapitre = 0;
+                            prevPage = 0;
                         }
                         else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
                             REFRESH_SCREEN();
@@ -495,12 +360,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 {
                     if(event.wheel.y < 0) //Mouvement de roulette bas
                     {
-                        slideOneStepUp(chapitre, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
+                        slideOneStepUp(page, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
                     }
 
                     else if (event.wheel.y > 0) //Mouvement de roulette haut
                     {
-                        slideOneStepDown(chapitre, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
+                        slideOneStepDown(page, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
                     }
                     SDL_FlushEvent(SDL_MOUSEWHEEL);
                     break;
@@ -516,9 +381,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                         ouvrirSiteTeam(mangaDB->team); //Ouverture du site de la team
                     }
 
-                    else if(clicOnButton(event.button.x, event.button.y, positionBandeauControle.x))
+                    else if(clicOnButton(event.button.x, event.button.y, positionControlBar.x))
                     {
-                        switch(clicOnButton(event.button.x, event.button.y, positionBandeauControle.x))
+                        switch(clicOnButton(event.button.x, event.button.y, positionControlBar.x))
                         {
                             case CLIC_SUR_BANDEAU_PREV_CHAPTER:
                             {
@@ -576,8 +441,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                             {
                                 setPrefs(mangaDB);
                                 MUTEX_UNIX_LOCK;
-                                SDL_DestroyTextureS(bandeauControle);
-                                bandeauControle = loadControlBar(mangaDB->favoris);
+                                SDL_DestroyTextureS(controlBar);
+                                controlBar = loadControlBar(mangaDB->favoris);
                                 MUTEX_UNIX_UNLOCK;
                                 break;
                             }
@@ -628,7 +493,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                     pasDeMouvementLorsDuClicX = event.button.x;
                     pasDeMouvementLorsDuClicY = event.button.y;
 
-                    if(!clicOnButton(event.button.x, event.button.y, positionBandeauControle.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTropGrande
+                    if(!clicOnButton(event.button.x, event.button.y, positionControlBar.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTropGrande
                     {
                         bool runTheBoucle = true;
                         while(runTheBoucle) //On déplace la page en laissant cliqué
@@ -657,23 +522,23 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                     if(deplacementX > 0)
                                     {
                                         /*Si un déplacement vers le droite*/
-                                        slideOneStepUp(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepUp(page, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     else if (deplacementX < 0)
                                     {
                                         deplacementX *= -1;
-                                        slideOneStepDown(chapitre, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepDown(page, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     if(deplacementY > 0)
                                     {
                                         /*Si un déplacement vers le haut*/
-                                        slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
+                                        slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
                                     else if(deplacementY < 0)
                                     {
                                         deplacementY *= -1;
                                         /*Si un déplacement vers le base*/
-                                        slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
+                                        slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
                                     REFRESH_SCREEN();
                                     break;
@@ -685,7 +550,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                     if(plusOuMoins(pasDeMouvementLorsDuClicX, event.button.x, TOLERANCE_CLIC_PAGE) && plusOuMoins(pasDeMouvementLorsDuClicY, event.button.y, TOLERANCE_CLIC_PAGE) && pasDeMouvementLorsDuClicY < getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR)
                                     {
                                         //Clic détécté: on cherche de quel côté
-                                        if(pasDeMouvementLorsDuClicX > getPtRetinaW(renderer) / 2 && pasDeMouvementLorsDuClicX < getPtRetinaW(renderer) - (getPtRetinaW(renderer) / 2 - chapitre->w / 2)) //coté droit -> page suivante
+                                        if(pasDeMouvementLorsDuClicX > getPtRetinaW(renderer) / 2 && pasDeMouvementLorsDuClicX < getPtRetinaW(renderer) - (getPtRetinaW(renderer) / 2 - page->w / 2)) //coté droit -> page suivante
                                         {
                                             //Page Suivante
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
@@ -696,7 +561,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                             }
                                         }
 
-                                        else if (pasDeMouvementLorsDuClicX > (getPtRetinaW(renderer) / 2 - chapitre->w / 2) && pasDeMouvementLorsDuClicX < (getPtRetinaW(renderer) / 2))//coté gauche -> page précédente
+                                        else if (pasDeMouvementLorsDuClicX > (getPtRetinaW(renderer) / 2 - page->w / 2) && pasDeMouvementLorsDuClicX < (getPtRetinaW(renderer) / 2))//coté gauche -> page précédente
                                         {
                                             check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
                                             if (check4change == -1)
@@ -742,7 +607,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         case SDLK_DOWN:
                         {
-                            slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
                             SDL_Delay(10);
 #endif
@@ -751,13 +616,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         case SDLK_PAGEDOWN:
                         {
-                            slideOneStepUp(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
+                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
 
                         case SDLK_UP:
                         {
-                            slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
                             SDL_Delay(10);
 #endif
@@ -766,7 +631,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         case SDLK_PAGEUP:
                         {
-                            slideOneStepDown(chapitre, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
+                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
 
@@ -809,15 +674,15 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                     check4change = 0;
                                 }
 
-                                if(OChapitre != NULL) //On vide le cache
+                                if(prevPage != NULL) //On vide le cache
                                 {
-                                    SDL_FreeSurface(OChapitre);
-                                    OChapitre = NULL;
+                                    SDL_FreeSurface(prevPage);
+                                    prevPage = NULL;
                                 }
-                                if(NChapitre != NULL)
+                                if(nextPage != NULL)
                                 {
-                                    SDL_FreeSurface(NChapitre);
-                                    NChapitre = NULL;
+                                    SDL_FreeSurface(nextPage);
+                                    nextPage = NULL;
                                 }
 
                                 dataReader.pageCourante = pageAccesDirect;

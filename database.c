@@ -675,7 +675,7 @@ int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 	return 0;
 }
 
-void lastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
+void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
 {
 	int i = 0, j = 0;
 	char temp[5*LONGUEUR_NOM_MANGA_MAX];

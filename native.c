@@ -369,11 +369,8 @@ void ustrcpy(void* output, const void* input)
 
 void SDL_FreeSurfaceS(SDL_Surface *surface)
 {
-    if(surface != NULL && ((surface->w > 0 && surface->w <= 2*RESOLUTION[0]) || (surface->h > 0 && surface->h <= 2*RESOLUTION[1]))) //Si une des dimensions est normale
+    if(surface != NULL)
         SDL_FreeSurface(surface);
-
-    else if(surface != NULL)
-        logR("Invalid surface rejected\n");
 }
 
 void SDL_DestroyTextureS(SDL_Texture *texture)
