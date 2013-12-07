@@ -169,11 +169,13 @@ void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
     free(mangaDB);
 }
 
+#define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
+
 int alreadyRefreshed;
 void updateDataBase(bool forced)
 {
     MUTEX_LOCK(mutex);
-    if(NETWORK_ACCESS != CONNEXION_DOWN && (SDL_GetTicks() - alreadyRefreshed > 5*60*1000 || forced))
+    if(NETWORK_ACCESS != CONNEXION_DOWN && (SDL_GetTicks() - alreadyRefreshed > DB_CACHE_EXPIRENCY || forced))
 	{
         MUTEX_UNLOCK(mutex);
 	    update_repo();
@@ -186,7 +188,7 @@ void updateDataBase(bool forced)
 
 void resetUpdateDBCache()
 {
-    alreadyRefreshed = -5*60000;
+    alreadyRefreshed = -DB_CACHE_EXPIRENCY;
 }
 
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams)
