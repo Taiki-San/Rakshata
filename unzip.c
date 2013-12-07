@@ -342,7 +342,7 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
             quit_thread(0); //Libérer la mémoire serait pas mal
         }
         sprintf((char *) hugeBuffer, "%d", nombreFichiers);
-        for(i=0, j=ustrlen(hugeBuffer)-1; i <= nombreFichiers; i++) //Write config.enc
+        for(i=0, j=ustrlen(hugeBuffer); i <= nombreFichiers; i++) //Write config.enc
         {
             int k = 0;
             hugeBuffer[j++] = ' ';

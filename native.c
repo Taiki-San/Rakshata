@@ -352,7 +352,7 @@ size_t ustrlen(void *input)
 {
     unsigned char *copy = input;
     while(*(copy++));
-    return copy - (unsigned char *)input;
+    return (copy-1) - (unsigned char *)input;	//copy -1 pour la dernière itération
 }
 
 void usstrcpy(void* output, size_t length, const void* input)
@@ -364,7 +364,7 @@ void usstrcpy(void* output, size_t length, const void* input)
 
 void ustrcpy(void* output, const void* input)
 {
-    usstrcpy(output, ustrlen((void*)input), input);
+    usstrcpy(output, ustrlen((void*)input) + 1, input);
 }
 
 void SDL_FreeSurfaceS(SDL_Surface *surface)

@@ -335,7 +335,7 @@ void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SD
 	
 	*page = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante]], dataReader.nomPages[dataReader.pageCourante], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante]);
 
-	if(*prevPage == NULL || *page == NULL)
+	if((dataReader.pageCourante > 0 && *prevPage == NULL) || *page == NULL)
 	{
 		SDL_FreeSurfaceS(*prevPage);
 		SDL_FreeSurfaceS(*page);

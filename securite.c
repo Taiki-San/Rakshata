@@ -175,7 +175,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
     fclose(test);
 
-    if(size%CRYPTO_BUFFER_SIZE*2) //Si chunks de 16o
+    if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
         size += CRYPTO_BUFFER_SIZE;
 
     test = fopen(path, "r");
@@ -194,14 +194,12 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
         free(path);
         exit(-1);
     }
-    key[SHA256_DIGEST_LENGTH] = 0;
 
-    unsigned char numChapitreChar[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    snprintf((char *) numChapitreChar, 10, "%d", numeroChapitre/10);
-    pbkdf2(key, numChapitreChar, hash);
+	unsigned char numChapitreChar[10];
+    snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
+    internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 2048, PBKDF2_OUTPUT_LENGTH, hash);
 
-    //crashTemp(key, SHA256_DIGEST_LENGTH); //We obfuscate >_> << nécéssaire?
-    key[SHA256_DIGEST_LENGTH] = rand() % 0xff;
+    crashTemp(key, SHA256_DIGEST_LENGTH);
 
     configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
@@ -216,7 +214,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     }
     crashTemp(hash, SHA256_DIGEST_LENGTH);
 
-    int length2 = ustrlen(configEnc)-1; //pour le \0
+    int length2 = ustrlen(configEnc); //pour le \0
     for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
     if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
     {
