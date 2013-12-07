@@ -15,16 +15,17 @@
 
 int pageWaaaayyyyTooBig = 0;
 
-int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen)
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen)
 {
     int i, check4change = 0, changementPage = 2, finDuChapitre = 0;	//changementPage == 2 pour passer tous les tests
-    int buffer = 0, largeurValide = 0, pageTropGrande = 0, noRefresh = 0, ctrlPressed = 0;
-    int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0, pageCharge = 0, changementEtat = 0;
-    int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
+    int hauteurMax = 0, largeurMax = 0, noRefresh = 0, ctrlPressed = 0;
+    int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0;
+	int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
+    bool pageCharge = false, changementEtat = false, pageTropGrande;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoSurface = NULL, *pageTexture = NULL, *controlBar = NULL;
-    TTF_Font *police = NULL;
+    TTF_Font *fontNormal = NULL, *fontTiny = NULL;
     SDL_Rect positionInfos, positionPage, positionControlBar, positionSlide;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
@@ -57,7 +58,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 		return i > PALIER_MENU ? PALIER_CHAPTER : i;
     }
 
-    reader_initializeFontsAndSomeElements(&police, &controlBar, mangaDB->favoris);
+    reader_initializeFontsAndSomeElements(&fontNormal, &fontTiny, &controlBar, mangaDB->favoris);
 
     while(1)
     {
@@ -83,32 +84,34 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 			i = showError();
 			return i > PALIER_MENU ? PALIER_CHAPTER : i;
 		}
+		
+		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTropGrande);
+		reader_setScreenToSize(largeurMax, hauteurMax, fullscreen, changementEtat, &controlBar, mangaDB->favoris);
 
-        largeurValide = page->w + BORDURE_LAT_LECTURE * 2;
-        buffer = page->h + BORDURE_HOR_LECTURE + BORDURE_CONTROLE_LECTEUR;
+		//Set max dimensions
+        largeurMax = page->w + BORDURE_LAT_LECTURE * 2;
+        hauteurMax = page->h + BORDURE_HOR_LECTURE + BORDURE_CONTROLE_LECTEUR;
+        if(hauteurMax > RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS)
+            hauteurMax = RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS;
 
-        if(buffer > RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS)
-            buffer = RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS;
-
-        /*Initialisation des différentes surfaces*/
+        /*Initialisation des différentes surfaces
         if(!*fullscreen)
         {
-            /*Si grosse page*/
-            if(largeurValide > RESOLUTION[0] - 50)
+            if(largeurMax > RESOLUTION[0] - 50)
             {
-                largeurValide = RESOLUTION[0]-50;
+                largeurMax = RESOLUTION[0]-50;
                 pageTropGrande = 1;
             }
 
-            else if(largeurValide > LARGEUR_MAX)
+            else if(largeurMax > LARGEUR_MAX_LECTEUR)
             {
-                largeurValide = LARGEUR_MAX;
+                largeurMax = LARGEUR_MAX;
                 pageTropGrande = 1;
             }
 
-            else if(largeurValide < LARGEUR)
+            else if(largeurMax < LARGEUR)
             {
-                largeurValide = LARGEUR;
+                largeurMax = LARGEUR;
                 pageTropGrande = 0;
             }
 
@@ -127,7 +130,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_DestroyTexture(controlBar);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
-                window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurValide, buffer, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
+                window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurMax, hauteurMax, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
                 
                 WINDOW_SIZE_W = getPtRetinaW(renderer);
                 WINDOW_SIZE_H = getPtRetinaH(renderer);
@@ -141,7 +144,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 MUTEX_UNIX_UNLOCK;
             }
             else
-                updateWindowSize(largeurValide, buffer);
+                updateWindowSize(largeurMax, hauteurMax);
             SDL_RenderClear(renderer);
         }
         else
@@ -167,30 +170,16 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                 SDL_RenderPresent(renderer);
             }
 
-            pageTropGrande = largeurValide > getPtRetinaW(renderer);
-
-            /*Si grosse page*/
-            TTF_CloseFont(police);
-            police = OpenFont(FONTUSED, POLICE_TOUT_PETIT);
-            TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-        }
+            pageTropGrande = largeurMax > getPtRetinaW(renderer);
+        }*/
 
         generateMessageInfoLecteur(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, 300);
 
         MUTEX_UNIX_LOCK;
         SDL_DestroyTextureS(infoSurface);
 
-        if(finDuChapitre == 0)
-            infoSurface = TTF_Write(renderer, police, infos, couleurTexte);
-        else
-            infoSurface = TTF_Write(renderer, police, infos, couleurFinChapitre);
+        infoSurface = TTF_Write(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte);
 
-        if(*fullscreen) //On restaure la police
-        {
-            TTF_CloseFont(police);
-            police = OpenFont(FONTUSED, POLICE_PETIT);
-            TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
-        }
         MUTEX_UNIX_UNLOCK;
 
         /*On prépare les coordonnées des surfaces*/
@@ -736,9 +725,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
 
                         SDL_FreeSurfaceS(UI_PageAccesDirect);
                         snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s: %d", texteTrad[2], pageAccesDirect); //Page: xx
-                        TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
-                        UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
-                        TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
+                        TTF_SetFontStyle(fontNormal, TTF_STYLE_NORMAL);
+                        UI_PageAccesDirect = TTF_RenderText_Blended(fontNormal, temp, couleurTexte);
+                        TTF_SetFontStyle(fontNormal, BANDEAU_INFOS_LECTEUR_STYLES);
                     }
                     break;
                 }
@@ -779,9 +768,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullsc
                                 if(pageAccesDirect)
                                 {
                                     snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+350, "%s: %d", texteTrad[2], pageAccesDirect); //Page: xx
-                                    TTF_SetFontStyle(police, TTF_STYLE_NORMAL);
-                                    UI_PageAccesDirect = TTF_RenderText_Blended(police, temp, couleurTexte);
-                                    TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);
+                                    TTF_SetFontStyle(fontNormal, TTF_STYLE_NORMAL);
+                                    UI_PageAccesDirect = TTF_RenderText_Blended(fontNormal, temp, couleurTexte);
+                                    TTF_SetFontStyle(fontNormal, BANDEAU_INFOS_LECTEUR_STYLES);
                                 }
                             }
                             else

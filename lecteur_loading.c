@@ -306,7 +306,7 @@ void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_T
 {
 	MUTEX_UNIX_LOCK;
 	
-	SDL_FreeSurfaceS(*prevPage);	//Il gère le cas où la surface
+	SDL_FreeSurfaceS(*nextPage);	//Il gère le cas où la surface
 	*nextPage = NULL;				//est nulle, pas de checks requis
 	
 	*nextPage = SDL_CreateRGBSurface(0, (*page)->w, (*page)->h, 32, 0, 0, 0, 0);
@@ -343,111 +343,90 @@ void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SD
 	}
 }
 
-void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+/**	Load environnement data	**/
+void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, SDL_Surface page, bool * pageTropGrande)
 {
-    if(!ctrlPressed)
-    {
-        if(positionSlide->y > move)
-        {
-            positionSlide->y -= move;
-        }
-        else
-        {
-            positionSlide->y = 0;
-        }
-		
-        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y && chapitre->h - positionSlide->y <= getPtRetinaH(renderer))
-        {
-            positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
-        }
-        else
-        {
-            positionPage->h = positionSlide->h = (chapitre->h < getPtRetinaH(renderer)) ? chapitre->h : getPtRetinaH(renderer);
-        }
-    }
+	//Set max dimensions
+	*largeurMax = page.w + BORDURE_LAT_LECTURE * 2;
+	*hauteurMax = page.h + BORDURE_HOR_LECTURE + BORDURE_CONTROLE_LECTEUR;
 	
-    else if(pageTropGrande)
-    {
-        if(positionSlide->x >= move)
-        {
-            positionPage->x = 0;
-            positionSlide->x -= move;
-            if(chapitre->w - positionSlide->x - positionPage->x < getPtRetinaW(renderer))
-                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x - positionPage->x;
-            else
-                positionPage->w = positionSlide->w = getPtRetinaW(renderer);
-        }
-        else if (positionSlide->x != 0)
-        {
-            positionPage->x = BORDURE_LAT_LECTURE < positionSlide->x - move ? positionSlide->x - move : BORDURE_LAT_LECTURE;
-            positionSlide->x = 0;
-            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
-        }
-        else
-        {
-            if(positionPage->x == BORDURE_LAT_LECTURE)
-                *noRefresh = 1;
-            else
-            {
-                positionSlide->x = 0;
-                if(positionPage->x + move > BORDURE_LAT_LECTURE)
-                    positionPage->x = BORDURE_LAT_LECTURE;
-                else
-                    positionPage->x += move;
-                positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
-            }
-        }
-    }
+	if(*hauteurMax > RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS)
+		*hauteurMax = RESOLUTION[1] - BARRE_DES_TACHES_WINDOWS;
+	
+	/*Initialisation des différentes surfaces*/
+	if(!fullscreen)
+	{
+		*pageTropGrande = (*largeurMax > LARGEUR_MAX_LECTEUR);
+
+		if(*pageTropGrande)
+			*largeurMax = LARGEUR_MAX_LECTEUR;
+		
+		else if(*largeurMax < LARGEUR)
+			*largeurMax = LARGEUR;
+	}
+	else
+	{
+		*pageTropGrande = *largeurMax > getPtRetinaW(renderer);
+		
+		/*Si grosse page
+		TTF_CloseFont(police);
+		police = OpenFont(FONTUSED, POLICE_TOUT_PETIT);
+		TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);*/
+	}
 }
 
-void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, bool changementEtat, SDL_Texture ** controlBar, bool isFavoris)
 {
-    if(!ctrlPressed)
-    {
-        if(positionSlide->y < chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE) - move)
-        {
-            positionSlide->y += move;
-        }
-        else if(chapitre->h > getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE)
-        {
-            positionSlide->y = chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE);
-        }
+	if(!fullscreen && changementEtat)
+	{
+		MUTEX_UNIX_LOCK;
+		SDL_FlushEvent(SDL_WINDOWEVENT);
+		SDL_SetWindowFullscreen(window, SDL_FALSE);
+		SDL_FlushEvent(SDL_WINDOWEVENT);
 		
-        if(chapitre->h - positionSlide->y < positionSlide->h && positionPage->h != chapitre->h - positionSlide->y)
-        {
-            positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
-        }
-        else if (positionPage->h == chapitre->h - positionSlide->y)
-            *noRefresh = 1;
-    }
-    else if(pageTropGrande)
-    {
-        if(positionPage->x != 0)
-        {
-            positionPage->x -= move;
-            if(positionPage->x <= 0)
-                positionSlide->x = positionPage->x = 0;
-            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
-        }
+		//We restart the window
+		MUTEX_LOCK(mutex);
+		SDL_DestroyTexture(*controlBar);
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, largeurMax, hauteurMax, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
 		
-        else if(positionSlide->x < chapitre->w - getPtRetinaW(renderer) - move)
-        {
-            positionSlide->x += move;
-            positionPage->w = positionSlide->w = getPtRetinaW(renderer);
-        }
-        else
-        {
-            if(positionSlide->w != getPtRetinaW(renderer) - BORDURE_LAT_LECTURE)
-            {
-                positionSlide->x += move;
-                if(positionSlide->x > chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE)
-                    positionSlide->x = chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE;
-                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x;
-            }
-            else if(positionPage->x == 0)
-                *noRefresh = 1;
-        }
-    }
+		WINDOW_SIZE_W = getPtRetinaW(renderer);
+		WINDOW_SIZE_H = getPtRetinaH(renderer);
+		
+		loadIcon(window);
+		nameWindow(window, 0);
+		renderer = setupRendererSafe(window);
+		*controlBar = loadControlBar(isFavoris);
+		SDL_FlushEvent(SDL_WINDOWEVENT);
+		MUTEX_UNLOCK(mutex);
+		MUTEX_UNIX_UNLOCK;
+	}
+	else if(!fullscreen)
+	{
+		updateWindowSize(largeurMax, hauteurMax);
+		SDL_RenderClear(renderer);
+	}
+	else if(fullscreen && changementEtat)
+	{
+		SDL_FlushEvent(SDL_WINDOWEVENT);
+		SDL_DestroyTexture(*controlBar);
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		window = SDL_CreateWindow(PROJECT_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, CREATE_WINDOW_FLAG|SDL_WINDOW_FULLSCREEN_DESKTOP);
+		
+		loadIcon(window);
+		nameWindow(window, 0);
+		renderer = setupRendererSafe(window);
+		*controlBar = loadControlBar(isFavoris);
+		SDL_FlushEvent(SDL_WINDOWEVENT);
+		
+		WINDOW_SIZE_W = RESOLUTION[0] = getPtRetinaW(renderer);
+		WINDOW_SIZE_H = RESOLUTION[1] = getPtRetinaH(renderer);
+		
+		SDL_RenderClear(renderer);
+		SDL_RenderPresent(renderer);
+	}
 }
 
 int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure)

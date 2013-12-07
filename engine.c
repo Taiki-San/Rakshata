@@ -1166,8 +1166,6 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     if(pageTotale == 1)
         return;
 
-    MUTEX_UNIX_LOCK;
-
     TTF_Font *police = OpenFont(FONTUSED, POLICE_PETIT);
 
     position.y = HAUTEUR_BOUTONS_CHANGEMENT_PAGE * getRetinaZoom();
@@ -1204,7 +1202,6 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
         SDL_DestroyTextureS(texte);
     }
     TTF_CloseFont(police);
-    MUTEX_UNIX_UNLOCK;
 }
 
 /*UI*/

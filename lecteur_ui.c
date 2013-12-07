@@ -13,11 +13,15 @@
 #include "main.h"
 #include "lecteur.h"
 
-void reader_initializeFontsAndSomeElements(TTF_Font ** fontSmall, SDL_Texture ** controlBar, bool isFavoris)
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris)
 {
 	MUTEX_UNIX_LOCK;
-		*fontSmall = OpenFont(FONTUSED, POLICE_PETIT);
-		TTF_SetFontStyle(*fontSmall, BANDEAU_INFOS_LECTEUR_STYLES);
+		*fontNormal = OpenFont(FONTUSED, POLICE_PETIT);
+		TTF_SetFontStyle(*fontNormal, BANDEAU_INFOS_LECTEUR_STYLES);
+
+		*fontTiny = OpenFont(FONTUSED, POLICE_TOUT_PETIT);
+		TTF_SetFontStyle(*fontTiny, BANDEAU_INFOS_LECTEUR_STYLES);
+	
 		*controlBar = loadControlBar(isFavoris);
     MUTEX_UNIX_UNLOCK;
 }
@@ -177,7 +181,7 @@ void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, ch
     changeTo(mangaDB.team->teamCourt, ' ', '_');
 }
 
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *police)
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
 {
     MUTEX_UNIX_LOCK;
     if(prevPage != NULL && prevPage->w > 0)
@@ -192,8 +196,11 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pa
     SDL_DestroyTextureS(infoSurface);
     SDL_DestroyTextureS(bandeauControle);
 	
-    if(police != NULL)
-        TTF_CloseFont(police);
+    if(fontNormal != NULL)
+        TTF_CloseFont(fontNormal);
+	
+	if(fontTiny != NULL)
+		TTF_CloseFont(fontTiny);
 	
     if(dataReader.pathNumber != NULL)
         free(dataReader.pathNumber);
@@ -333,6 +340,7 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
     int ret_value = 0;
     if(checkFileExist("data/nopopup"))
         return;
+	
     SDL_MessageBoxData alerte;
     SDL_MessageBoxButtonData bouton[2];
     alerte.flags = SDL_MESSAGEBOX_INFORMATION;
@@ -349,7 +357,13 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
     alerte.buttons = bouton;
     alerte.window = window;
     alerte.colorScheme = NULL;
+
+	MUTEX_UNIX_LOCK;
+	
     SDL_ShowMessageBox(&alerte, &ret_value);
+	
+	MUTEX_UNIX_UNLOCK;
+	
     if(ret_value == 0)
     {
         FILE * filePtr = fopen("data/nopopup", "w+");

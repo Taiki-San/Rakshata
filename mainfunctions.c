@@ -99,9 +99,8 @@ void mainRakshata()
 extern int curPage; //Too lazy to use an argument
 int mainLecture()
 {
-    int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur;
-    int restoringState = 0, fullscreen = 0, pageManga = 1, pageChapitre = 1;
-    bool retry;
+    int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur, pageManga = 1, pageChapitre = 1;
+    bool retry, fullscreen, restoringState = 0;
 
     if(checkRestore())
         restoringState = 1;
@@ -149,6 +148,8 @@ int mainLecture()
                 do
                 {
                     retry = false; //Si on doit relancer la boucle
+					fullscreen = false;
+					
                     if(!restoringState)
                     {
                         curPage = pageChapitre;
@@ -195,7 +196,6 @@ int mainLecture()
                             {
                                 if(fullscreen != 0)
                                 {
-                                    fullscreen = 0;
                                     MUTEX_UNIX_LOCK;
                                     SDL_SetWindowFullscreen(window, SDL_FALSE);
                                     MUTEX_UNIX_UNLOCK;

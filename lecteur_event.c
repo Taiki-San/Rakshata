@@ -55,13 +55,117 @@ int clicOnButton(const int x, const int y, const int positionBandeauX)
     return CLIC_SUR_BANDEAU_NONE;
 }
 
-void applyFullscreen(int *var_fullscreen, int *checkChange, int *changementEtat)
+void applyFullscreen(bool *var_fullscreen, int *checkChange, bool *changementEtat)
 {
     getResolution();
-    if(*var_fullscreen == 1)
-        *var_fullscreen = 0;
-    else
-        *var_fullscreen = 1;
+	*var_fullscreen = !*var_fullscreen;
     *checkChange = 0;
-    *changementEtat = 1;
+    *changementEtat = true;
+}
+
+void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+{
+    if(!ctrlPressed)
+    {
+        if(positionSlide->y > move)
+        {
+            positionSlide->y -= move;
+        }
+        else
+        {
+            positionSlide->y = 0;
+        }
+		
+        if(chapitre->h - positionSlide->y > positionSlide->h && positionPage->h != chapitre->h - positionSlide->y && chapitre->h - positionSlide->y <= getPtRetinaH(renderer))
+        {
+            positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
+        }
+        else
+        {
+            positionPage->h = positionSlide->h = (chapitre->h < getPtRetinaH(renderer)) ? chapitre->h : getPtRetinaH(renderer);
+        }
+    }
+	
+    else if(pageTropGrande)
+    {
+        if(positionSlide->x >= move)
+        {
+            positionPage->x = 0;
+            positionSlide->x -= move;
+            if(chapitre->w - positionSlide->x - positionPage->x < getPtRetinaW(renderer))
+                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x - positionPage->x;
+            else
+                positionPage->w = positionSlide->w = getPtRetinaW(renderer);
+        }
+        else if (positionSlide->x != 0)
+        {
+            positionPage->x = BORDURE_LAT_LECTURE < positionSlide->x - move ? positionSlide->x - move : BORDURE_LAT_LECTURE;
+            positionSlide->x = 0;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
+        }
+        else
+        {
+            if(positionPage->x == BORDURE_LAT_LECTURE)
+                *noRefresh = 1;
+            else
+            {
+                positionSlide->x = 0;
+                if(positionPage->x + move > BORDURE_LAT_LECTURE)
+                    positionPage->x = BORDURE_LAT_LECTURE;
+                else
+                    positionPage->x += move;
+                positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
+            }
+        }
+    }
+}
+
+void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+{
+    if(!ctrlPressed)
+    {
+        if(positionSlide->y < chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE) - move)
+        {
+            positionSlide->y += move;
+        }
+        else if(chapitre->h > getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE)
+        {
+            positionSlide->y = chapitre->h - (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE);
+        }
+		
+        if(chapitre->h - positionSlide->y < positionSlide->h && positionPage->h != chapitre->h - positionSlide->y)
+        {
+            positionPage->h = positionSlide->h = chapitre->h - positionSlide->y;
+        }
+        else if (positionPage->h == chapitre->h - positionSlide->y)
+            *noRefresh = 1;
+    }
+    else if(pageTropGrande)
+    {
+        if(positionPage->x != 0)
+        {
+            positionPage->x -= move;
+            if(positionPage->x <= 0)
+                positionSlide->x = positionPage->x = 0;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer) - positionPage->x;
+        }
+		
+        else if(positionSlide->x < chapitre->w - getPtRetinaW(renderer) - move)
+        {
+            positionSlide->x += move;
+            positionPage->w = positionSlide->w = getPtRetinaW(renderer);
+        }
+        else
+        {
+            if(positionSlide->w != getPtRetinaW(renderer) - BORDURE_LAT_LECTURE)
+            {
+                positionSlide->x += move;
+                if(positionSlide->x > chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE)
+                    positionSlide->x = chapitre->w - getPtRetinaW(renderer) + BORDURE_LAT_LECTURE;
+                positionPage->w = positionSlide->w = chapitre->w - positionSlide->x;
+            }
+            else if(positionPage->x == 0)
+                *noRefresh = 1;
+        }
+    }
 }

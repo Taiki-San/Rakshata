@@ -169,7 +169,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
-int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, int *fullscreen);
+int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 
 /**Mainfunctions.c**/

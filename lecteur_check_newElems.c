@@ -13,7 +13,7 @@
 #include "main.h"
 #include "lecteur.h"
 
-void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, int * fullscreen)
+void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, bool * fullscreen)
 {
     MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS == CONNEXION_DOWN || NETWORK_ACCESS == CONNEXION_TEST_IN_PROGRESS || checkDLInProgress())
@@ -38,8 +38,8 @@ void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, int * 
 
 void checkNewElementInRepo(DATA_CK_LECTEUR *input)
 {
-    bool isTome = input->isTome, newStuffs = false;
-    int i = 0, j = 0, version, CT, *fullscreen;
+    bool isTome = input->isTome, newStuffs = false, *fullscreen;
+    int i = 0, j = 0, version, CT;
     char temp[LONGUEUR_NOM_MANGA_MAX], *bufferDL, teamCourt[LONGUEUR_COURT];
     MANGAS_DATA mangaDB = input->mangaDB;
     CT = input->CT;
@@ -198,7 +198,12 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
     alerte.buttons = bouton;
     alerte.window = window;
     alerte.colorScheme = NULL;
+	
+	MUTEX_UNIX_LOCK;
+	
     SDL_ShowMessageBox(&alerte, &ret_value);
+	
+	MUTEX_UNIX_UNLOCK;
 	
     if(ret_value == 1)
         addtoDownloadListFromReader(mangaDB, firstNewElem+1, isTome);
