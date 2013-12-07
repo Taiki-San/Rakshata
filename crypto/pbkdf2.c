@@ -24,7 +24,7 @@
 static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t i, uint8_t *buffer, uint8_t *u)
 {
     uint32_t k;
-    memcpy(buffer,salt,saltlen);
+    memcpy(buffer, salt, saltlen);
     sha256_salted(pw,pwlen,buffer,saltlen,buffer);
 
     memcpy(u,buffer,prf_hlen);
@@ -37,29 +37,33 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_
     }
 }
 
-int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t dklen, uint8_t *dk_ret)
+int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, uint32_t inputLength, const uint8_t *salt, uint32_t saltLength, uint32_t iteneration, uint32_t lengthOutput, uint8_t *output)
 {
     uint32_t    l,r;
     uint32_t    i;
-    uint8_t     *tmpbuff=NULL; /* Intermediate memspace for F */
-    uint8_t     *outbuff=NULL; /* Results of F iteration */
+    uint8_t     *tmpbuff = NULL; /* Intermediate memspace for F */
+    uint8_t     *outbuff = NULL; /* Results of F iteration */
     uint8_t     *out;
 
-    if( (tmpbuff = calloc(MAX(saltlen,prf_hlen)+4,sizeof(uint8_t))) && (outbuff = calloc(prf_hlen,sizeof(uint8_t))))
+	tmpbuff = calloc(MAX(saltLength, prf_hlen) + 4, sizeof(uint8_t));
+	outbuff = calloc(prf_hlen,sizeof(uint8_t));
+	
+    if(tmpbuff != NULL && outbuff != NULL)
     {
-        l = dklen / prf_hlen;
-        r = dklen % prf_hlen;
+        l = lengthOutput / prf_hlen;
+        r = lengthOutput % prf_hlen;
 
 
-        for(i=0; i<l; i++){
-            out = dk_ret + (i * prf_hlen);
-            F(prf_hlen,pw,pwlen,salt,saltlen,count,i+1,tmpbuff,out);
+        for(i=0; i<l; i++)
+		{
+            out = output + (i * prf_hlen);
+            F(prf_hlen, input, inputLength, salt, saltLength, iteneration, i+1, tmpbuff, out);
         }
 
         if(r){
-            F(prf_hlen,pw,pwlen,salt,saltlen,count,l+1,tmpbuff,outbuff);
-            out = dk_ret + (l * prf_hlen);
-            memcpy(out,outbuff,r);
+            F(prf_hlen, input, inputLength, salt, saltLength, iteneration, l+1, tmpbuff, outbuff);
+            out = lengthOutput + (l * prf_hlen);
+            memcpy(out, outbuff, r);
         }
     }
 
@@ -75,7 +79,5 @@ void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[])
     for(inputLength = 0; input[inputLength]; inputLength++);
     for(saltLength = 0; salt[saltLength]; saltLength++);
 
-    internal_pbkdf2(SHA256_DIGEST_LENGTH, input, inputLength,
-			 salt, saltLength, 2048, //Nombre d'itération
-			 PBKDF2_OUTPUT_LENGTH, output);
+    internal_pbkdf2(SHA256_DIGEST_LENGTH, input, inputLength, salt, saltLength, 2048, PBKDF2_OUTPUT_LENGTH, output);
 }
