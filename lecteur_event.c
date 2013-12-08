@@ -62,7 +62,7 @@ void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementE
     *changementEtat = *redrawScreen = true;
 }
 
-void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh)
+void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, bool *noRefresh)
 {
     if(!ctrlPressed)
     {
@@ -119,7 +119,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
     }
 }
 
-void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh)
+void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, bool *noRefresh)
 {
     if(!ctrlPressed)
     {

@@ -387,6 +387,31 @@ SDL_Texture * reader_getPageTexture(SDL_Surface *pageSurface, bool * pageTooBigT
 	return pageTexture;
 }
 
+SDL_Surface * reader_bufferisePages(DATA_LECTURE dataReader, bool bufNextPage)
+{
+	SDL_Surface *srfOut;
+	if(bufNextPage)
+	{
+		if(dataReader.pageCourante >= dataReader.nombrePageTotale)
+			srfOut = NULL;
+		else
+		{
+			srfOut = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante + 1]);
+		}
+	}
+	else
+	{
+		if(dataReader.pageCourante <= 0)
+			srfOut = NULL;
+		
+		else
+		{
+			srfOut = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
+		}
+	}
+	return srfOut;
+}
+
 void reader_initPagePosition(SDL_Surface * page, bool fullscreen, bool pageTooBigForScreen, SDL_Rect *positionPage, SDL_Rect *positionSlide)
 {
 	if(pageTooBigForScreen)

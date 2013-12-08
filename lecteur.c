@@ -16,9 +16,9 @@
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen)
 {
     int i, changementPage = READER_ETAT_DEFAULT;
-    int hauteurMax = 0, largeurMax = 0, noRefresh = 0, ctrlPressed = 0;
-	int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
-    bool pageCharge, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad, setTopInfosToWarning, redrawScreen;
+    int hauteurMax = 0, largeurMax = 0, ctrlPressed = 0;
+	int curPosIntoStruct = 0, pageAccesDirect = 0;
+    bool pageCharge, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad, setTopInfosToWarning, redrawScreen, noRefresh;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH], infos[300];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;
@@ -83,6 +83,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 				i = showError();
 				return i > PALIER_MENU ? PALIER_CHAPTER : i;
 			}
+			else
+				pageCharge = false;
 		}
 		
 		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTooBigForScreen);
@@ -95,12 +97,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		pageTexture = reader_getPageTexture(page, &pageTooBigToLoad);
 		reader_initPagePosition(page, *fullscreen, pageTooBigForScreen, &positionPage, &positionSlide);
 		
-        if(!changementEtat)
-            pageCharge = 0;
-
-        redrawScreen = false;
-        noRefresh = 0;
-		setTopInfosToWarning = false;
+        redrawScreen = noRefresh = setTopInfosToWarning = false;
 
         MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
@@ -110,62 +107,32 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
         while(!redrawScreen)
         {
             if(!noRefresh)
-            {
                 REFRESH_SCREEN();
-            }
 
-            else if(changementEtat)
-            {
-                /*Bug bizarre*/
-                REFRESH_SCREEN();
-                changementEtat = 0;
-            }
             else
-                noRefresh = 0;
+                noRefresh = false;
 
             if(!pageCharge) //Bufferisation
             {
-                if(changementPage == READER_ETAT_NEXTPAGE)
+				if(changementPage == READER_ETAT_NEXTPAGE)
                 {
-                    if(dataReader.pageCourante >= dataReader.nombrePageTotale)
-                        nextPage = NULL;
-                    else
-                    {
-                        nextPage = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.nomPages[dataReader.pageCourante + 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante + 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante + 1]);
-                        if(nextPage == NULL)
-                        {
-                            internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                            nextPage = 0;
-                        }
-                        else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
-                            REFRESH_SCREEN();
-                    }
+                    nextPage = reader_bufferisePages(dataReader, true);
                 }
                 else if (changementPage == READER_ETAT_PREVPAGE)
                 {
-                    if(dataReader.pageCourante <= 0)
-                        prevPage = NULL;
-
-                    else
-                    {
-                        prevPage = IMG_LoadS(dataReader.path[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.nomPages[dataReader.pageCourante - 1], dataReader.chapitreTomeCPT[dataReader.pathNumber[dataReader.pageCourante - 1]], dataReader.pageCouranteDuChapitre[dataReader.pageCourante - 1]);
-                        if(prevPage == NULL)
-                        {
-                            internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-                            prevPage = 0;
-                        }
-                        else //Refresh au cas où le pass ai été demandé. On pourrait, en cas de chute de perfs le temps pris par IMG_LoadS
-                            REFRESH_SCREEN();
-                    }
+                    prevPage = reader_bufferisePages(dataReader, false);
                 }
-                pageCharge = 1;
+#ifdef _WIN32
+				REFRESH_SCREEN();	//If the password was asked, the perf impact is too important on OSX
+#endif
+                pageCharge = true;
                 changementPage = READER_ETAT_DEFAULT;
             }
 
             SDL_WaitEvent(&event);
             if(!haveInputFocus(&event, window))
             {
-                noRefresh = 1;
+                noRefresh = true;
                 continue;
             }
 
@@ -331,8 +298,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                 case SDL_MOUSEBUTTONDOWN:
                 {
-                    pasDeMouvementLorsDuClicX = event.button.x;
-                    pasDeMouvementLorsDuClicY = event.button.y;
+                    int pasDeMouvementLorsDuClicX = event.button.x;
+                    int pasDeMouvementLorsDuClicY = event.button.y;
 
                     if(!clicOnButton(event.button.x, event.button.y, positionControlBar.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTooBigForScreen
                     {

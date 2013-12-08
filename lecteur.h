@@ -42,8 +42,8 @@ typedef struct data_thread_check_new_CT
 
 int clicOnButton(const int x, const int y, const int positionBandeauX);
 void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementEtat);
-void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh);
-void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh);
+void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, bool *noRefresh);
+void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, bool *noRefresh);
 
 /** lecteur_check_newElems.c **/
 
@@ -62,6 +62,7 @@ void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_T
 void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, bool pageTooBigToLoad, SDL_Surface ** nextPage);
 void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SDL_Surface ** page);
 SDL_Texture * reader_getPageTexture(SDL_Surface *pageSurface, bool * pageTooBigToLoad);
+SDL_Surface * reader_bufferisePages(DATA_LECTURE dataReader, bool bufNextPage);
 void reader_initPagePosition(SDL_Surface * page, bool fullscreen, bool pageTooBigForScreen, SDL_Rect *positionPage, SDL_Rect *positionSlide);
 
 void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, SDL_Surface page, bool * pageTooBigForScreen);
