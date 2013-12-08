@@ -58,7 +58,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		return i > PALIER_MENU ? PALIER_CHAPTER : i;
     }
 
-    reader_initializeFontsAndSomeElements(&fontNormal, &fontTiny, &controlBar, mangaDB->favoris);
+    reader_initializeFontsAndSomeElements(&fontNormal, &fontTiny, &controlBar, &positionControlBar, mangaDB->favoris);
 
     while(1)
     {
@@ -91,9 +91,6 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		char infos[300];	//regrouper generateMessageInfoLecteur(Char) permettrait de ce débarasser de cette variable au prit d'un nombre énorme d'arguments
         generateMessageInfoLecteurChar(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, sizeof(infos));
 		generateMessageInfoLecteur(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte, &infoTexture, &positionInfos);
-
-        positionControlBar.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
-        positionControlBar.x = (getPtRetinaW(renderer) / 2) - (controlBar->w / 2);
 
         /*Création de la texture de la page*/
         MUTEX_UNIX_LOCK;

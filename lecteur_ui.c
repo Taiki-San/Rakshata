@@ -13,7 +13,7 @@
 #include "main.h"
 #include "lecteur.h"
 
-void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris)
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, SDL_Rect *positionControlBar, bool isFavoris)
 {
 	MUTEX_UNIX_LOCK;
 		*fontNormal = OpenFont(FONTUSED, POLICE_PETIT);
@@ -23,6 +23,19 @@ void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** f
 		TTF_SetFontStyle(*fontTiny, BANDEAU_INFOS_LECTEUR_STYLES);
 	
 		*controlBar = loadControlBar(isFavoris);
+		if(*controlBar != NULL)
+		{
+			positionControlBar->y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
+			positionControlBar->x = (getPtRetinaW(renderer) / 2) - ((*controlBar)->w / 2);
+			positionControlBar->w = (*controlBar)->w;
+			positionControlBar->h = (*controlBar)->h;
+		}
+		else
+		{
+			positionControlBar->x = positionControlBar->y = positionControlBar->h = positionControlBar->w = 0;
+		}
+		
+	
     MUTEX_UNIX_UNLOCK;
 }
 
@@ -302,9 +315,6 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
 	
     if(bandeauControle != NULL)
 	{
-		positionBandeauControle.h = bandeauControle->h;
-		positionBandeauControle.w = bandeauControle->w;
-		
 		setRetinaSize(positionBandeauControle, &internalDst);
 		SDL_RenderCopy(renderer, bandeauControle, NULL, &internalDst);
 	}
@@ -354,7 +364,7 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
     MUTEX_UNIX_UNLOCK;
 }
 
-void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK)
+void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* okString)
 {
     int ret_value = 0;
     if(checkFileExist("data/nopopup"))
@@ -369,7 +379,7 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
     alerte.numbuttons = 2;
     bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
     bouton[0].buttonid = 1; //Valeur retournée
-    bouton[0].text = OK;
+    bouton[0].text = okString;
     bouton[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
     bouton[1].buttonid = 0; //Valeur retournée
     bouton[1].text = noMoreDisplay;
