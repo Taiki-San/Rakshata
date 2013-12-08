@@ -277,18 +277,22 @@ int defineMaxTextureSize(int sizeIssue)
     /*Appelé dans un context ou mutexTUI est verrouillé*/
     if(maxSize)
         return maxSize;
+	
     SDL_Texture *texture = NULL;
-    for(sizeIssue = 16384; texture == NULL && sizeIssue > 0; sizeIssue -= 10)
+    for(sizeIssue = MIN(16384, sizeIssue); texture == NULL && sizeIssue > 0; sizeIssue -= 10)
     {
         texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, sizeIssue, sizeIssue);
     }
+	
     SDL_DestroyTexture(texture);
     maxSize = sizeIssue;
+
 #ifdef DEV_BUILD
     char temp[100];
     snprintf(temp, 100, "Max size: %d\n", maxSize);
     logR(temp);
 #endif
+
     return sizeIssue;
 }
 

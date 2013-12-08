@@ -13,15 +13,13 @@
 #include "main.h"
 #include "lecteur.h"
 
-int pageWaaaayyyyTooBig = 0;
-
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen)
 {
     int i, check4change = 0, changementPage = 2, finDuChapitre = 0;	//changementPage == 2 pour passer tous les tests
     int hauteurMax = 0, largeurMax = 0, noRefresh = 0, ctrlPressed = 0;
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0;
 	int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
-    bool pageCharge = false, changementEtat = false, pageTropGrande;
+    bool pageCharge = false, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;
@@ -64,12 +62,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
     {
         if(changementPage == 1 && !finDuChapitre && !changementEtat && nextPage != NULL)
         {
-			reader_switchToNextPage(&prevPage, &page, &pageTexture, &nextPage);
+			reader_switchToNextPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
         }
 
         else if(changementPage == -1 && !finDuChapitre && !changementEtat && prevPage != NULL)
         {
-            reader_switchToPrevPage(&prevPage, &page, &pageTexture, &nextPage);
+            reader_switchToPrevPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
         }
 
         else if(!finDuChapitre && !changementEtat) //Premier chargement
@@ -85,7 +83,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 			return i > PALIER_MENU ? PALIER_CHAPTER : i;
 		}
 		
-		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTropGrande);
+		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTooBigForScreen);
 		reader_setScreenToSize(largeurMax, hauteurMax, *fullscreen, changementEtat, &controlBar, mangaDB->favoris);
 
 		char infos[300];	//regrouper generateMessageInfoLecteur(Char) permettrait de ce débarasser de cette variable au prit d'un nombre énorme d'arguments
@@ -93,84 +91,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		generateMessageInfoLecteur(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte, &infoTexture, &positionInfos);
 
         /*Création de la texture de la page*/
-        MUTEX_UNIX_LOCK;
-        pageTexture = SDL_CreateTextureFromSurface(renderer, page);
-        MUTEX_UNIX_UNLOCK;
-        if(pageTexture == NULL)
-        {
-            MUTEX_UNIX_LOCK;
-            int sizeMax = defineMaxTextureSize(page->h), j;
-            int nombreMiniTexture = page->h/sizeMax + (page->h%sizeMax?1:0);
-            SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
-            SDL_Surface *chap_buf = NULL;
-            SDL_Rect pos;
-            pos.w = page->w;
-            pos.h = sizeMax;
-            for(pos.x = j = 0; j < nombreMiniTexture-1; j++)
-            {
-                pos.y = j*sizeMax;
-                chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
-                SDL_SetColorKey(chap_buf, SDL_TRUE, SDL_MapRGB(chap_buf->format, palette.fond.r, palette.fond.g, palette.fond.b));
-                SDL_BlitSurface(page, &pos, chap_buf, NULL);
-                texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
-                SDL_FreeSurface(chap_buf);
-            }
-            if(sizeMax && j && page->h%sizeMax)
-            {
-                pos.y = j*sizeMax;
-                pos.h = page->h%pos.y;
-                chap_buf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
-                SDL_BlitSurface(page, &pos, chap_buf, NULL);
-                texture[j] = SDL_CreateTextureFromSurface(renderer, chap_buf);
-                SDL_FreeSurface(chap_buf);
-            }
-            pageWaaaayyyyTooBig = sizeMax;
-            pageTexture = (SDL_Texture*) texture;
-            MUTEX_UNIX_UNLOCK;
-        }
-        else
-            pageWaaaayyyyTooBig = 0;
+		pageTexture = reader_getPageTexture(page, &pageTooBigToLoad);
 
         /*Calcul position page*/
-        if(!pageTropGrande && !finDuChapitre)
-        {
-            if(page->w < getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE))
-                positionPage.w = positionSlide.w = page->w;
-            else
-                positionPage.w = positionSlide.w = getPtRetinaW(renderer) - (2 * BORDURE_LAT_LECTURE);
-
-            if(page->h < getPtRetinaH(renderer))
-                positionPage.h = positionSlide.h = page->h;
-            else
-                positionPage.h = positionSlide.h = getPtRetinaH(renderer);
-
-            positionPage.y = 0;
-			positionSlide.x = positionSlide.y = 0;
-
-            if(page->w < LARGEUR - BORDURE_LAT_LECTURE * 2 || *fullscreen)
-                positionPage.x = getPtRetinaW(renderer) / 2 - page->w / 2;
-            else if (!*fullscreen)
-                positionPage.x = BORDURE_LAT_LECTURE;
-        }
-
-        else if(!finDuChapitre)
-        {
-            positionPage.w = positionSlide.w = page->w  > getPtRetinaW(renderer) - BORDURE_LAT_LECTURE ? getPtRetinaW(renderer) - BORDURE_LAT_LECTURE : page->w;
-            positionPage.h = positionSlide.h = page->h  > getPtRetinaH(renderer) - BORDURE_HOR_LECTURE ? getPtRetinaH(renderer) - BORDURE_HOR_LECTURE : page->h;
-            positionPage.y = BORDURE_HOR_LECTURE;
-
-            positionSlide.x = page->w - (getPtRetinaW(renderer) - BORDURE_LAT_LECTURE);
-			positionSlide.y = 0;
-            positionPage.x = 0;
-        }
+		if(!finDuChapitre)
+			reader_initPagePosition(page, *fullscreen, pageTooBigForScreen, &positionPage, &positionSlide);
 
         if(!changementEtat)
             pageCharge = 0;
-
-        if(*fullscreen && BORDURE_HOR_LECTURE + page->h + BORDURE_CONTROLE_LECTEUR < getPtRetinaH(renderer))
-            positionPage.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - page->h) / 2 + BORDURE_HOR_LECTURE;
-        else
-            positionPage.y = BORDURE_HOR_LECTURE;
 
         check4change = 1;
         noRefresh = 0;
@@ -248,12 +176,12 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                 {
                     if(event.wheel.y < 0) //Mouvement de roulette bas
                     {
-                        slideOneStepUp(page, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
+                        slideOneStepUp(page, &positionSlide, &positionPage, ctrlPressed, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
                     }
 
                     else if (event.wheel.y > 0) //Mouvement de roulette haut
                     {
-                        slideOneStepDown(page, &positionSlide, &positionPage, ctrlPressed, pageTropGrande, DEPLACEMENT, &noRefresh);
+                        slideOneStepDown(page, &positionSlide, &positionPage, ctrlPressed, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
                     }
                     SDL_FlushEvent(SDL_MOUSEWHEEL);
                     break;
@@ -381,7 +309,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                     pasDeMouvementLorsDuClicX = event.button.x;
                     pasDeMouvementLorsDuClicY = event.button.y;
 
-                    if(!clicOnButton(event.button.x, event.button.y, positionControlBar.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTropGrande
+                    if(!clicOnButton(event.button.x, event.button.y, positionControlBar.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTooBigForScreen
                     {
                         bool runTheBoucle = true;
                         while(runTheBoucle) //On déplace la page en laissant cliqué
@@ -410,23 +338,23 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                                     if(deplacementX > 0)
                                     {
                                         /*Si un déplacement vers le droite*/
-                                        slideOneStepUp(page, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepUp(page, &positionSlide, &positionPage, 1, pageTooBigForScreen, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     else if (deplacementX < 0)
                                     {
                                         deplacementX *= -1;
-                                        slideOneStepDown(page, &positionSlide, &positionPage, 1, pageTropGrande, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
+                                        slideOneStepDown(page, &positionSlide, &positionPage, 1, pageTooBigForScreen, deplacementX * DEPLACEMENT_LATERAL_PAGE, &noRefresh);
                                     }
                                     if(deplacementY > 0)
                                     {
                                         /*Si un déplacement vers le haut*/
-                                        slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
+                                        slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
                                     else if(deplacementY < 0)
                                     {
                                         deplacementY *= -1;
                                         /*Si un déplacement vers le base*/
-                                        slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
+                                        slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, deplacementY * DEPLACEMENT_HORIZONTAL_PAGE, &noRefresh);
                                     }
                                     REFRESH_SCREEN();
                                     break;
@@ -495,7 +423,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                         case SDLK_DOWN:
                         {
-                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
                             SDL_Delay(10);
 #endif
@@ -504,13 +432,13 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                         case SDLK_PAGEDOWN:
                         {
-                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
+                            slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
 
                         case SDLK_UP:
                         {
-                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT, &noRefresh);
+                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
                             SDL_Delay(10);
 #endif
@@ -519,7 +447,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                         case SDLK_PAGEUP:
                         {
-                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTropGrande, DEPLACEMENT_BIG, &noRefresh);
+                            slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
 

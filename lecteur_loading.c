@@ -278,7 +278,7 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
 
 /**	Load pages	**/
 
-void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage)
+void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, bool pageTooBigToLoad, SDL_Surface ** nextPage)
 {
 	MUTEX_UNIX_LOCK;
 	
@@ -290,7 +290,7 @@ void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_T
 	SDL_BlitSurface(*page, NULL, *prevPage, NULL);
 	
 	SDL_FreeSurfaceS(*page);
-	freeCurrentPage(*pageTexture);
+	freeCurrentPage(*pageTexture, pageTooBigToLoad);
 	*pageTexture = NULL;
 	
 	*page = SDL_CreateRGBSurface(0, (*nextPage)->w, (*nextPage)->h, 32, 0, 0, 0, 0);
@@ -302,7 +302,7 @@ void reader_switchToNextPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_T
 	MUTEX_UNIX_UNLOCK;
 }
 
-void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, SDL_Surface ** nextPage)
+void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_Texture ** pageTexture, bool pageTooBigToLoad, SDL_Surface ** nextPage)
 {
 	MUTEX_UNIX_LOCK;
 	
@@ -314,7 +314,7 @@ void reader_switchToPrevPage(SDL_Surface ** prevPage, SDL_Surface ** page, SDL_T
 	SDL_BlitSurface(*page, NULL, *nextPage, NULL);
 	
 	SDL_FreeSurfaceS(*page);
-	freeCurrentPage(*pageTexture);
+	freeCurrentPage(*pageTexture, pageTooBigToLoad);
 	*pageTexture = NULL;
 	
 	*page = SDL_CreateRGBSurface(0, (*prevPage)->w, (*prevPage)->h, 32, 0, 0, 0, 0);
@@ -343,8 +343,83 @@ void reader_loadInitialPage(DATA_LECTURE dataReader, SDL_Surface ** prevPage, SD
 	}
 }
 
+SDL_Texture * reader_getPageTexture(SDL_Surface *pageSurface, bool * pageTooBigToLoad)
+{
+	MUTEX_UNIX_LOCK;
+	SDL_Texture *pageTexture = SDL_CreateTextureFromSurface(renderer, pageSurface);
+	MUTEX_UNIX_UNLOCK;
+	
+	if(pageTexture == NULL)
+	{
+		MUTEX_UNIX_LOCK;
+		int sizeMax = defineMaxTextureSize(pageSurface->h), nombreParties;
+		int nombreMiniTexture = pageSurface->h/sizeMax + (pageSurface->h%sizeMax?1:0);
+		SDL_Texture **texture = calloc(nombreMiniTexture+1, sizeof(SDL_Texture*));
+		SDL_Surface *pageBuf = NULL;
+		SDL_Rect pos;
+		pos.w = pageSurface->w;
+		pos.h = sizeMax;
+		for(pos.x = nombreParties = 0; nombreParties < nombreMiniTexture-1; nombreParties++)
+		{
+			pos.y = nombreParties * sizeMax;
+			pageBuf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
+			SDL_SetColorKey(pageBuf, SDL_TRUE, SDL_MapRGB(pageBuf->format, palette.fond.r, palette.fond.g, palette.fond.b));
+			SDL_BlitSurface(pageSurface, &pos, pageBuf, NULL);
+			texture[nombreParties] = SDL_CreateTextureFromSurface(renderer, pageBuf);
+			SDL_FreeSurface(pageBuf);
+		}
+		if(sizeMax && nombreParties && pageSurface->h % sizeMax)
+		{
+			pos.y = nombreParties * sizeMax;
+			pos.h = pageSurface->h % pos.y;
+			pageBuf = SDL_CreateRGBSurface(0, pos.w, pos.h, 32, 0, 0 , 0, 0);
+			SDL_BlitSurface(pageSurface, &pos, pageBuf, NULL);
+			texture[nombreParties] = SDL_CreateTextureFromSurface(renderer, pageBuf);
+			SDL_FreeSurface(pageBuf);
+		}
+		*pageTooBigToLoad = true;
+		pageTexture = (SDL_Texture*) texture;
+		MUTEX_UNIX_UNLOCK;
+	}
+	else
+		*pageTooBigToLoad = false;
+	
+	return pageTexture;
+}
+
+void reader_initPagePosition(SDL_Surface * page, bool fullscreen, bool pageTooBigForScreen, SDL_Rect *positionPage, SDL_Rect *positionSlide)
+{
+	if(pageTooBigForScreen)
+	{
+		positionPage->x = 0;
+		positionPage->y = BORDURE_HOR_LECTURE;
+
+		positionPage->w = positionSlide->w = getPtRetinaW(renderer) - BORDURE_LAT_LECTURE;
+		positionPage->h = positionSlide->h = getPtRetinaH(renderer) - BORDURE_HOR_LECTURE;
+		
+		positionSlide->x = page->w - positionSlide->w;
+		positionSlide->y = 0;
+	}
+	
+	else
+	{
+		positionPage->x = fullscreen ? getPtRetinaW(renderer) / 2 - page->w / 2 : BORDURE_LAT_LECTURE;
+		positionPage->y = BORDURE_HOR_LECTURE;
+
+		positionPage->w = positionSlide->w = page->w;
+		positionPage->h = positionSlide->h = page->h;
+		
+		positionSlide->x = positionSlide->y = 0;
+		
+	}
+	
+	//Si en fullscreen et que la page ne fait pas toute la hauteur, on la centre
+	if(fullscreen && page->h < getPtRetinaH(renderer) - BORDURE_HOR_LECTURE - BORDURE_CONTROLE_LECTEUR)
+		positionPage->y += (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR - BORDURE_HOR_LECTURE - page->h) / 2;
+}
+
 /**	Load environnement data	**/
-void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, SDL_Surface page, bool * pageTropGrande)
+void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, SDL_Surface page, bool * pageTooBigForScreen)
 {
 	//Set max dimensions
 	*largeurMax = page.w + BORDURE_LAT_LECTURE * 2;
@@ -356,9 +431,9 @@ void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, 
 	/*Initialisation des différentes surfaces*/
 	if(!fullscreen)
 	{
-		*pageTropGrande = (*largeurMax > LARGEUR_MAX_LECTEUR);
+		*pageTooBigForScreen = (*largeurMax > LARGEUR_MAX_LECTEUR);
 
-		if(*pageTropGrande)
+		if(*pageTooBigForScreen)
 			*largeurMax = LARGEUR_MAX_LECTEUR;
 		
 		else if(*largeurMax < LARGEUR)
@@ -366,7 +441,7 @@ void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, 
 	}
 	else
 	{
-		*pageTropGrande = *largeurMax > getPtRetinaW(renderer);
+		*pageTooBigForScreen = *largeurMax > getPtRetinaW(renderer);
 	}
 }
 

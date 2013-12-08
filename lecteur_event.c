@@ -63,7 +63,7 @@ void applyFullscreen(bool *var_fullscreen, int *checkChange, bool *changementEta
     *changementEtat = true;
 }
 
-void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh)
 {
     if(!ctrlPressed)
     {
@@ -86,7 +86,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
         }
     }
 	
-    else if(pageTropGrande)
+    else if(pageTooBigForScreen)
     {
         if(positionSlide->x >= move)
         {
@@ -120,7 +120,7 @@ void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *
     }
 }
 
-void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTropGrande, int move, int *noRefresh)
+void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh)
 {
     if(!ctrlPressed)
     {
@@ -140,7 +140,7 @@ void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *po
         else if (positionPage->h == chapitre->h - positionSlide->y)
             *noRefresh = 1;
     }
-    else if(pageTropGrande)
+    else if(pageTooBigForScreen)
     {
         if(positionPage->x != 0)
         {

@@ -213,7 +213,7 @@ void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char *
 	}
 }
 
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, bool pageTooBigToLoad, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
 {
     MUTEX_UNIX_LOCK;
     if(prevPage != NULL && prevPage->w > 0)
@@ -222,7 +222,7 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pa
         SDL_FreeSurface(chapitre);
     if(nextPage != NULL && nextPage->w > 0)
         SDL_FreeSurface(nextPage);
-    freeCurrentPage(pageTexture);
+    freeCurrentPage(pageTexture, pageTooBigToLoad);
 	
     SDL_FreeSurfaceS(UI_PageAccesDirect);
     SDL_DestroyTextureS(infoTexture);
@@ -259,29 +259,29 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pa
     MUTEX_UNIX_UNLOCK;
 }
 
-void freeCurrentPage(SDL_Texture *texture)
+void freeCurrentPage(SDL_Texture *texture, bool *pageTooBigToLoad)
 {
-    if(pageWaaaayyyyTooBig)
+    if(*pageTooBigToLoad)
     {
         int i = 0;
         SDL_Texture ** texture_big = (SDL_Texture **) texture;
         for(; texture_big[i]; SDL_DestroyTextureS(texture_big[i++]));
-        pageWaaaayyyyTooBig = 0;
+        pageTooBigToLoad = 0;
     }
     else
         SDL_DestroyTextureS(texture);
 }
 
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
+void refreshScreen(SDL_Texture *page, bool pageTooBigToLoad, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
 	SDL_Rect internalDst;
     MUTEX_UNIX_LOCK;
     SDL_RenderClear(renderer);
-    if(pageWaaaayyyyTooBig)
+    if(pageTooBigToLoad)
     {
-        SDL_Texture **texture_big = (SDL_Texture**) chapitre;
+        SDL_Texture **texture_big = (SDL_Texture**) page;
         SDL_Rect page = positionSlide, ecran = positionPage;
-        int sizeMax = pageWaaaayyyyTooBig, nbMorceaux = 0, i = positionSlide.y/sizeMax;
+        int sizeMax = texture_big[0]->h, nbMorceaux = 0, i = positionSlide.y/sizeMax;
         for(; texture_big[nbMorceaux]; nbMorceaux++);
 		
 		//On va blitter seulement la bonne partie, bonne chance
@@ -307,10 +307,10 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         }
 		
     }
-    else if(chapitre != NULL)
+    else if(page != NULL)
 	{
 		setRetinaSize(positionPage, &internalDst);
-		SDL_RenderCopy(renderer, chapitre, &positionSlide, &internalDst);
+		SDL_RenderCopy(renderer, page, &positionSlide, &internalDst);
 	}
 	
     if(bandeauControle != NULL)
