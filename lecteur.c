@@ -22,9 +22,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
     int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0;
 	int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
     bool pageCharge = false, changementEtat = false, pageTropGrande;
-    char temp[LONGUEUR_NOM_MANGA_MAX*5+350], infos[300], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
+    char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
-    SDL_Texture *infoSurface = NULL, *pageTexture = NULL, *controlBar = NULL;
+    SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;
     TTF_Font *fontNormal = NULL, *fontTiny = NULL;
     SDL_Rect positionInfos, positionPage, positionControlBar, positionSlide;
     SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
@@ -88,23 +88,10 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTropGrande);
 		reader_setScreenToSize(largeurMax, hauteurMax, *fullscreen, changementEtat, &controlBar, mangaDB->favoris);
 
-        generateMessageInfoLecteur(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, 300);
+		char infos[300];	//regrouper generateMessageInfoLecteur(Char) permettrait de ce débarasser de cette variable au prit d'un nombre énorme d'arguments
+        generateMessageInfoLecteurChar(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, sizeof(infos));
+		generateMessageInfoLecteur(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte, &infoTexture, &positionInfos);
 
-        MUTEX_UNIX_LOCK;
-        SDL_DestroyTextureS(infoSurface);
-
-        infoSurface = TTF_Write(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte);
-
-        MUTEX_UNIX_UNLOCK;
-
-        /*On prépare les coordonnées des surfaces*/
-        if(infoSurface != NULL)
-        {
-            positionInfos.x = (getPtRetinaW(renderer) / 2) - (infoSurface->w / (2 * getRetinaZoom()));
-            positionInfos.y = (BORDURE_HOR_LECTURE / 2) - (infoSurface->h / (2 * getRetinaZoom()));
-            positionInfos.h = infoSurface->h;
-            positionInfos.w = infoSurface->w;
-        }
         positionControlBar.y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
         positionControlBar.x = (getPtRetinaW(renderer) / 2) - (controlBar->w / 2);
 
@@ -279,9 +266,9 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                 {
                     if (event.button.y >= 10 && event.button.y <= BORDURE_HOR_LECTURE) //Clic sur zone d'ouverture de site de team
                     {
-                        if((!pageAccesDirect && infoSurface != NULL && event.button.x >= getPtRetinaW(renderer)/2 - infoSurface->w/2 && event.button.x <= getPtRetinaW(renderer)/2 + infoSurface->w/2) //Si pas de page affiché
-                            || (pageAccesDirect && ((getPtRetinaW(renderer) < (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoSurface->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
-                                                || (getPtRetinaW(renderer) >= (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoSurface->w)))) //Si pageAccesDirect affiché
+                        if((!pageAccesDirect && infoTexture != NULL && event.button.x >= getPtRetinaW(renderer)/2 - infoTexture->w/2 && event.button.x <= getPtRetinaW(renderer)/2 + infoTexture->w/2) //Si pas de page affiché
+                            || (pageAccesDirect && ((getPtRetinaW(renderer) < (infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= BORDURE_LAT_LECTURE && event.button.x <= BORDURE_LAT_LECTURE + infoTexture->w) //Si fenetre pas assez grande pour afficher pageAccesDirect
+                                                || (getPtRetinaW(renderer) >= (infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) && event.button.x >= getPtRetinaW(renderer) / 2 - (infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE && event.button.x <= getPtRetinaW(renderer) / 2 - (infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_PageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2 + BORDURE_LAT_LECTURE + infoTexture->w)))) //Si pageAccesDirect affiché
                         ouvrirSiteTeam(mangaDB->team); //Ouverture du site de la team
                     }
 

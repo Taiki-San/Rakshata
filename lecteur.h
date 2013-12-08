@@ -11,8 +11,8 @@
 *********************************************************************************************/
 
 //Macro pour libérer plus facilement la mémoire
-#define FREE_CONTEXT() cleanMemory(dataReader, page, pageTexture, prevPage, nextPage, UI_PageAccesDirect, infoSurface, controlBar, fontNormal, fontTiny)
-#define REFRESH_SCREEN() refreshScreen(pageTexture, positionSlide, positionPage, positionControlBar, controlBar, infoSurface, positionInfos, pageAccesDirect, UI_PageAccesDirect)
+#define FREE_CONTEXT() cleanMemory(dataReader, page, pageTexture, prevPage, nextPage, UI_PageAccesDirect, infoTexture, controlBar, fontNormal, fontTiny)
+#define REFRESH_SCREEN() refreshScreen(pageTexture, positionSlide, positionPage, positionControlBar, controlBar, infoTexture, positionInfos, pageAccesDirect, UI_PageAccesDirect)
 
 extern int unlocked;
 extern int pageWaaaayyyyTooBig;
@@ -79,10 +79,11 @@ void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 /**	lecteur_ui.c	**/
 void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris);
 SDL_Texture* loadControlBar(int favState);
-void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny);
+void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
+void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture, SDL_Rect *positionInfo);
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny);
 void freeCurrentPage(SDL_Texture *texture);
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* OK);
 
 

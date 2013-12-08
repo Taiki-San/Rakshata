@@ -134,7 +134,7 @@ SDL_Texture* loadControlBar(int favState)
     return bandeauControle;
 }
 
-void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut)
+void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut)
 {
     /*Affichage des infos*/
     changeTo(mangaDB.mangaName, '_', ' ');
@@ -181,7 +181,26 @@ void generateMessageInfoLecteur(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, ch
     changeTo(mangaDB.team->teamCourt, ' ', '_');
 }
 
-void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoSurface, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
+void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture, SDL_Rect * positionInfo)
+{
+	MUTEX_UNIX_LOCK;
+	
+		SDL_DestroyTextureS(*infoTexture);
+		*infoTexture = TTF_Write(renderer, font, text, color);
+	
+	MUTEX_UNIX_UNLOCK;
+	
+	/*On prépare les coordonnées des surfaces*/
+	if(infoTexture != NULL)
+	{
+		positionInfo->x = (getPtRetinaW(renderer) / 2) - ((*infoTexture)->w / (2 * getRetinaZoom()));
+		positionInfo->y = (BORDURE_HOR_LECTURE / 2) - ((*infoTexture)->h / (2 * getRetinaZoom()));
+		positionInfo->h = (*infoTexture)->h;
+		positionInfo->w = (*infoTexture)->w;
+	}
+}
+
+void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
 {
     MUTEX_UNIX_LOCK;
     if(prevPage != NULL && prevPage->w > 0)
@@ -193,7 +212,7 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pa
     freeCurrentPage(pageTexture);
 	
     SDL_FreeSurfaceS(UI_PageAccesDirect);
-    SDL_DestroyTextureS(infoSurface);
+    SDL_DestroyTextureS(infoTexture);
     SDL_DestroyTextureS(bandeauControle);
 	
     if(fontNormal != NULL)
@@ -240,7 +259,7 @@ void freeCurrentPage(SDL_Texture *texture)
         SDL_DestroyTextureS(texture);
 }
 
-void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoSurface, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
+void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect)
 {
 	SDL_Rect internalDst;
     MUTEX_UNIX_LOCK;
@@ -291,25 +310,25 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
 	}
 	
     if(pageAccesDirect && //Si l'utilisateur veut acceder à une page, on modifie deux trois trucs
-	   infoSurface != NULL && infoSurface->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Assez de place
+	   infoTexture != NULL && infoTexture->w + LECTEUR_DISTANCE_MINIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Assez de place
 		
     {
         int distanceOptimalePossible = 0;
         SDL_Rect positionModifie;
 		SDL_Texture *texture = NULL;
 		
-        if(infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Distance optimale utilisable
-            distanceOptimalePossible = getPtRetinaW(renderer) / 2 - (infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
+        if(infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE <= getPtRetinaW(renderer)) //Distance optimale utilisable
+            distanceOptimalePossible = getPtRetinaW(renderer) / 2 - (infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE + UI_pageAccesDirect->w + 2*BORDURE_LAT_LECTURE) / 2; //distanceOptimalePossible récupére le début de texte
 		
         positionModifie.y = positionInfos.y * getRetinaZoom();
         positionModifie.x = (distanceOptimalePossible + BORDURE_LAT_LECTURE) * getRetinaZoom();
-        positionModifie.h = infoSurface->h * getRetinaZoom();
-        positionModifie.w = infoSurface->w * getRetinaZoom();
+        positionModifie.h = infoTexture->h * getRetinaZoom();
+        positionModifie.w = infoTexture->w * getRetinaZoom();
 		
-        SDL_RenderCopy(renderer, infoSurface, NULL, &positionModifie); //On affiche les infos, déplacés
+        SDL_RenderCopy(renderer, infoTexture, NULL, &positionModifie); //On affiche les infos, déplacés
 		
         if(distanceOptimalePossible)
-            positionModifie.x += infoSurface->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE;
+            positionModifie.x += infoTexture->w + LECTEUR_DISTANCE_OPTIMALE_INFOS_ET_PAGEACCESDIRE;
 		
         else
             positionModifie.x = getPtRetinaW(renderer) - UI_pageAccesDirect->w - BORDURE_LAT_LECTURE; //On positionne en partant de la gauche
@@ -322,14 +341,14 @@ void refreshScreen(SDL_Texture *chapitre, SDL_Rect positionSlide, SDL_Rect posit
         SDL_DestroyTexture(texture);
     }
 	
-    else if(infoSurface != NULL) //Sinon, on affiche normalement
+    else if(infoTexture != NULL) //Sinon, on affiche normalement
 	{
 		internalDst.h = positionInfos.h;
 		internalDst.w = positionInfos.w;
 		internalDst.x = positionInfos.x * getRetinaZoom();
 		internalDst.y = positionInfos.y * getRetinaZoom();
 		
-		SDL_RenderCopy(renderer, infoSurface, NULL, &internalDst);
+		SDL_RenderCopy(renderer, infoTexture, NULL, &internalDst);
 	}
     SDL_RenderPresent(renderer);
     MUTEX_UNIX_UNLOCK;
