@@ -367,11 +367,6 @@ void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, 
 	else
 	{
 		*pageTropGrande = *largeurMax > getPtRetinaW(renderer);
-		
-		/*Si grosse page
-		TTF_CloseFont(police);
-		police = OpenFont(FONTUSED, POLICE_TOUT_PETIT);
-		TTF_SetFontStyle(police, BANDEAU_INFOS_LECTEUR_STYLES);*/
 	}
 }
 
