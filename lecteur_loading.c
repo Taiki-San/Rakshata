@@ -445,7 +445,7 @@ void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, 
 	}
 }
 
-void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, bool changementEtat, SDL_Texture ** controlBar, bool isFavoris)
+void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, bool changementEtat, SDL_Texture ** controlBar, SDL_Rect *positionControlBar, bool isFavoris)
 {
 	if(!fullscreen && changementEtat)
 	{
@@ -497,68 +497,69 @@ void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, boo
 		SDL_RenderClear(renderer);
 		SDL_RenderPresent(renderer);
 	}
+	
+	reader_initializePosControlBar(*controlBar, positionControlBar);
 }
 
-int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure)
+int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure)
 {
-    int ret_value = 0;
+    int ret_value;
 	
     if(goToNextPage) //Page suivante
     {
         if (dataReader->pageCourante < dataReader->nombrePageTotale) //Changement de page
         {
             dataReader->pageCourante += 1;
-            *changementPage = 1;
-            *finDuChapitre = 0;
+            *changementPage = READER_ETAT_NEXTPAGE;
+			ret_value = READER_CHANGEPAGE_SUCCESS;
         }
-        else if(changementDeChapitre(mangaDB, isTome, currentPosIntoStructure+1, chapitreChoisis)) //On envois l'ordre de quitter
+        else if(changeChapter(mangaDB, isTome, chapitreChoisis, currentPosIntoStructure, goToNextPage)) //On envois l'ordre de passer au chapitre suivant
         {
-            ret_value = -1;
+            ret_value = READER_CHANGEPAGE_NEXTCHAP;
         }
-        else if(!*finDuChapitre) //On met le menu en rouge
+        else //On met le menu en rouge
         {
-            *finDuChapitre = 1;
+            ret_value = READER_CHANGEPAGE_UPDATE_TOPBAR;
         }
-        else
-            ret_value = 1; //Ne raffraichis pas la page
     }
     else
     {
         if (dataReader->pageCourante > 0)
         {
             dataReader->pageCourante -= 1;
-            *changementPage = -1;
-            *finDuChapitre = 0;
+            *changementPage = READER_ETAT_PREVPAGE;
+			ret_value = READER_CHANGEPAGE_SUCCESS;
         }
-        else if(changementDeChapitre(mangaDB, isTome, currentPosIntoStructure-1, chapitreChoisis)) //On envois l'ordre de quitter
+        else if(changeChapter(mangaDB, isTome, chapitreChoisis, currentPosIntoStructure, goToNextPage))
         {
-            ret_value = -1;
-        }
-        else if(!*finDuChapitre) //On met le menu en rouge
-        {
-            *finDuChapitre = 1;
+            ret_value = READER_CHANGEPAGE_NEXTCHAP;
         }
         else
-            ret_value = 1;
+            ret_value = READER_CHANGEPAGE_UPDATE_TOPBAR;
     }
 	SDL_FlushEvent(SDL_KEYDOWN);
     return ret_value;
 }
 
-int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis)
+bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, int posIntoStruc, bool goToNextChap)
 {
-    if(posIntoStructToTest < 0)
-        return 0;
+	posIntoStruc += (goToNextChap ? 1 : -1);
 	
-    getUpdatedCTList(mangaDB, isTome);
-    if((isTome && mangaDB->tomes[posIntoStructToTest].ID != VALEUR_FIN_STRUCTURE_CHAPITRE) || (!isTome && mangaDB->chapitres[posIntoStructToTest] != VALEUR_FIN_STRUCTURE_CHAPITRE))
-    {
-        if(isTome)
-            *chapitreChoisis = mangaDB->tomes[posIntoStructToTest].ID;
+	if(changeChapterAllowed(mangaDB, isTome, posIntoStruc))
+	{
+		if(isTome)
+            *ptrToSelectedID = mangaDB->tomes[posIntoStruc].ID;
         else
-            *chapitreChoisis = mangaDB->chapitres[posIntoStructToTest];
-        return 1;
-    }
-    return 0;
+            *ptrToSelectedID = mangaDB->chapitres[posIntoStruc];
+		return true;
+	}
+	return false;
+}
+
+bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc)
+{
+    getUpdatedCTList(mangaDB, isTome);
+	
+	return (isTome && posIntoStruc < mangaDB->nombreTomes) || (!isTome && posIntoStruc < mangaDB->nombreChapitre);
 }
 

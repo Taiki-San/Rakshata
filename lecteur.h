@@ -41,7 +41,7 @@ typedef struct data_thread_check_new_CT
 /** lecteur_event.c **/
 
 int clicOnButton(const int x, const int y, const int positionBandeauX);
-void applyFullscreen(bool *var_fullscreen, int *checkChange, bool *changementEtat);
+void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementEtat);
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh);
 void slideOneStepUp(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh);
 
@@ -65,10 +65,11 @@ SDL_Texture * reader_getPageTexture(SDL_Surface *pageSurface, bool * pageTooBigT
 void reader_initPagePosition(SDL_Surface * page, bool fullscreen, bool pageTooBigForScreen, SDL_Rect *positionPage, SDL_Rect *positionSlide);
 
 void reader_setContextData(int * largeurMax, int * hauteurMax, bool fullscreen, SDL_Surface page, bool * pageTooBigForScreen);
-void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, bool changementEtat, SDL_Texture ** controlBar, bool isFavoris);
+void reader_setScreenToSize(int largeurMax, int hauteurMax, bool fullscreen, bool changementEtat, SDL_Texture ** controlBar, SDL_Rect *positionControlBar, bool isFavoris);
 
-int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool isTome, bool goToNextPage, int *changementPage, int *finDuChapitre, int *chapitreChoisis, int currentPosIntoStructure);
-int changementDeChapitre(MANGAS_DATA* mangaDB, bool isTome, int posIntoStructToTest, int *chapitreChoisis);
+int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure);
+bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, int posIntoStruc, bool goToNextChap);
+bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc);
 
 /**	lecteur_tool.c	**/
 int reader_getPosIntoContentIndex(MANGAS_DATA * mangaDB, int currentSelection, bool isTome);
@@ -78,12 +79,14 @@ void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool *
 void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 
 /**	lecteur_ui.c	**/
-void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, SDL_Rect *positionControlBar, bool isFavoris);
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris);
+void reader_initializePosControlBar(SDL_Texture *controlBar, SDL_Rect * positionControlBar);
 SDL_Texture* loadControlBar(int favState);
 void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
 void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture, SDL_Rect *positionInfo);
+void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture);
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, bool pageTooBigToLoad, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny);
-void freeCurrentPage(SDL_Texture *texture, bool *pageTooBigToLoad);
+void freeCurrentPage(SDL_Texture *texture, bool pageTooBigToLoad);
 void refreshScreen(SDL_Texture *page, bool pageTooBigToLoad, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);
 void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* okString);
 
@@ -128,6 +131,15 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
 #define CLIC_SUR_BANDEAU_FULLSCREEN 6
 #define CLIC_SUR_BANDEAU_DELETE 7
 #define CLIC_SUR_BANDEAU_MAINMENU 8
+
+/*Status*/
+#define READER_ETAT_DEFAULT 0
+#define READER_ETAT_PREVPAGE 1
+#define READER_ETAT_NEXTPAGE 2
+
+#define READER_CHANGEPAGE_SUCCESS		0
+#define READER_CHANGEPAGE_NEXTCHAP		1
+#define READER_CHANGEPAGE_UPDATE_TOPBAR	2
 
 /*Calibration*/
 #define LARGEUR_MAX_LECTEUR (RESOLUTION[0] * 80 / 100)

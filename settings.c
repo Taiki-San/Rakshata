@@ -323,7 +323,7 @@ char* loadLargePrefs(char flag)
     return NULL;
 }
 
-void setPrefs(MANGAS_DATA* mangaDB)
+void setFavorite(MANGAS_DATA* mangaDB)
 {
     int i = 1, length = 0, alreadyExist = 0, pos = 0, posBuf = 0, addOrRemove = mangaDB->favoris;
     char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsBak = NULL, *favsNew = NULL;

@@ -55,12 +55,11 @@ int clicOnButton(const int x, const int y, const int positionBandeauX)
     return CLIC_SUR_BANDEAU_NONE;
 }
 
-void applyFullscreen(bool *var_fullscreen, int *checkChange, bool *changementEtat)
+void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementEtat)
 {
     getResolution();
 	*var_fullscreen = !*var_fullscreen;
-    *checkChange = 0;
-    *changementEtat = true;
+    *changementEtat = *redrawScreen = true;
 }
 
 void slideOneStepDown(SDL_Surface *chapitre, SDL_Rect *positionSlide, SDL_Rect *positionPage, int ctrlPressed, int pageTooBigForScreen, int move, int *noRefresh)

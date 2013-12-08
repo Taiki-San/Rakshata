@@ -256,7 +256,7 @@ void updatePrefs(char flag, char *stringToAdd);
 int loadLangueProfile();
 int loadEmailProfile();
 char* loadLargePrefs(char flag);
-void setPrefs(MANGAS_DATA* mangaDB);
+void setFavorite(MANGAS_DATA* mangaDB);
 
 /**SHA256.c**/
 int sha256(unsigned char* input, void* output);

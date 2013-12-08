@@ -15,12 +15,11 @@
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen)
 {
-    int i, check4change = 0, changementPage = 2, finDuChapitre = 0;	//changementPage == 2 pour passer tous les tests
+    int i, changementPage = READER_ETAT_DEFAULT;
     int hauteurMax = 0, largeurMax = 0, noRefresh = 0, ctrlPressed = 0;
-    int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0;
 	int curPosIntoStruct = 0, pasDeMouvementLorsDuClicX = 0, pasDeMouvementLorsDuClicY = 0, pageAccesDirect = 0;
-    bool pageCharge = false, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad;
-    char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
+    bool pageCharge, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad, setTopInfosToWarning, redrawScreen;
+    char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH], infos[300];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;
     TTF_Font *fontNormal = NULL, *fontTiny = NULL;
@@ -56,59 +55,59 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		return i > PALIER_MENU ? PALIER_CHAPTER : i;
     }
 
-    reader_initializeFontsAndSomeElements(&fontNormal, &fontTiny, &controlBar, &positionControlBar, mangaDB->favoris);
+    reader_initializeFontsAndSomeElements(&fontNormal, &fontTiny, &controlBar, mangaDB->favoris);
 
     while(1)
     {
-        if(changementPage == 1 && !finDuChapitre && !changementEtat && nextPage != NULL)
+		if(!changementEtat)	//Switch to fullscreen
         {
-			reader_switchToNextPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
-        }
-
-        else if(changementPage == -1 && !finDuChapitre && !changementEtat && prevPage != NULL)
-        {
-            reader_switchToPrevPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
-        }
-
-        else if(!finDuChapitre && !changementEtat) //Premier chargement
-        {
-            reader_loadInitialPage(dataReader, &prevPage, &page);
-            changementPage = 1; //Mettra en cache la page n+1
-        }
-
-        if(page == NULL)
-        {
-			internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
-			i = showError();
-			return i > PALIER_MENU ? PALIER_CHAPTER : i;
+			if(changementPage == READER_ETAT_NEXTPAGE && nextPage != NULL)
+			{
+				reader_switchToNextPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
+			}
+			
+			else if(changementPage == READER_ETAT_PREVPAGE && prevPage != NULL)
+			{
+				reader_switchToPrevPage(&prevPage, &page, &pageTexture, pageTooBigToLoad, &nextPage);
+			}
+			
+			else if(changementPage == READER_ETAT_DEFAULT) //Premier chargement
+			{
+				reader_loadInitialPage(dataReader, &prevPage, &page);
+				changementPage = READER_ETAT_NEXTPAGE; //Mettra en cache la page n+1
+			}
+			
+			if(page == NULL)
+			{
+				internalDeleteCT(*mangaDB, isTome, *chapitreChoisis);
+				i = showError();
+				return i > PALIER_MENU ? PALIER_CHAPTER : i;
+			}
 		}
 		
 		reader_setContextData(&largeurMax, &hauteurMax, *fullscreen, *page, &pageTooBigForScreen);
-		reader_setScreenToSize(largeurMax, hauteurMax, *fullscreen, changementEtat, &controlBar, mangaDB->favoris);
+		reader_setScreenToSize(largeurMax, hauteurMax, *fullscreen, changementEtat, &controlBar, &positionControlBar, mangaDB->favoris);
 
-		char infos[300];	//regrouper generateMessageInfoLecteur(Char) permettrait de ce débarasser de cette variable au prit d'un nombre énorme d'arguments
-        generateMessageInfoLecteurChar(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, sizeof(infos));
-		generateMessageInfoLecteur(renderer, *fullscreen ? fontTiny : fontNormal, infos, finDuChapitre ? couleurFinChapitre : couleurTexte, &infoTexture, &positionInfos);
+		generateMessageInfoLecteurChar(*mangaDB, dataReader, texteTrad, isTome, *fullscreen, curPosIntoStruct, infos, sizeof(infos));
+		generateMessageInfoLecteur(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurTexte, &infoTexture, &positionInfos);
 
-        /*Création de la texture de la page*/
+        /*Phase finale de l'initialisation de la page*/
 		pageTexture = reader_getPageTexture(page, &pageTooBigToLoad);
-
-        /*Calcul position page*/
-		if(!finDuChapitre)
-			reader_initPagePosition(page, *fullscreen, pageTooBigForScreen, &positionPage, &positionSlide);
-
+		reader_initPagePosition(page, *fullscreen, pageTooBigForScreen, &positionPage, &positionSlide);
+		
         if(!changementEtat)
             pageCharge = 0;
 
-        check4change = 1;
+        redrawScreen = false;
         noRefresh = 0;
+		setTopInfosToWarning = false;
 
         MUTEX_UNIX_LOCK;
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
         MUTEX_UNIX_UNLOCK;
 
-        do
+        while(!redrawScreen)
         {
             if(!noRefresh)
             {
@@ -126,7 +125,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
             if(!pageCharge) //Bufferisation
             {
-                if(changementPage == 1)
+                if(changementPage == READER_ETAT_NEXTPAGE)
                 {
                     if(dataReader.pageCourante >= dataReader.nombrePageTotale)
                         nextPage = NULL;
@@ -142,7 +141,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                             REFRESH_SCREEN();
                     }
                 }
-                else if (changementPage == -1)
+                else if (changementPage == READER_ETAT_PREVPAGE)
                 {
                     if(dataReader.pageCourante <= 0)
                         prevPage = NULL;
@@ -160,7 +159,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                     }
                 }
                 pageCharge = 1;
-                changementPage = 0;
+                changementPage = READER_ETAT_DEFAULT;
             }
 
             SDL_WaitEvent(&event);
@@ -201,61 +200,87 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                     {
                         switch(clicOnButton(event.button.x, event.button.y, positionControlBar.x))
                         {
-                            case CLIC_SUR_BANDEAU_PREV_CHAPTER:
-                            {
-                                if(changementDeChapitre(mangaDB, isTome, curPosIntoStruct-1, chapitreChoisis))
-                                {
-                                    FREE_CONTEXT();
-                                    return 0;
-                                }
-                                else if(finDuChapitre != 1)
-                                {
-                                    check4change = 0;
-                                    finDuChapitre = 1;
-                                }
-                                break;
-                            }
-
                             case CLIC_SUR_BANDEAU_PREV_PAGE:
                             {
-                                check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                if (check4change == -1)
-                                {
-                                    FREE_CONTEXT();
-                                    return 0;
-                                }
+                                switch(changementDePage(mangaDB, &dataReader, false, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+								{
+									case READER_CHANGEPAGE_SUCCESS:
+									{
+										redrawScreen = true;
+										break;
+									}
+									case READER_CHANGEPAGE_NEXTCHAP:
+									{
+										FREE_CONTEXT();
+										return 0;
+									}
+									case READER_CHANGEPAGE_UPDATE_TOPBAR:
+									{
+										reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+										setTopInfosToWarning = true;
+										break;
+									}
+								}
                                 break;
                             }
 
                             case CLIC_SUR_BANDEAU_NEXT_PAGE:
                             {
-                                check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                if (check4change == -1)
-                                {
-                                    FREE_CONTEXT();
-                                    return 0;
-                                }
+                                switch(changementDePage(mangaDB, &dataReader, true, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+								{
+									case READER_CHANGEPAGE_SUCCESS:
+									{
+										redrawScreen = true;
+										break;
+									}
+									case READER_CHANGEPAGE_NEXTCHAP:
+									{
+										FREE_CONTEXT();
+										return 0;
+									}
+									case READER_CHANGEPAGE_UPDATE_TOPBAR:
+									{
+										reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+										setTopInfosToWarning = true;
+										break;
+									}
+								}
                                 break;
                             }
 
-                            case CLIC_SUR_BANDEAU_NEXT_CHAPTER:
+                            case CLIC_SUR_BANDEAU_PREV_CHAPTER:
                             {
-                                if(changementDeChapitre(mangaDB, isTome, curPosIntoStruct+1, chapitreChoisis))
+								if(changeChapter(mangaDB, isTome, chapitreChoisis, curPosIntoStruct, false))
                                 {
                                     FREE_CONTEXT();
                                     return 0;
                                 }
-                                else if(finDuChapitre != 1)
+                                else if(!setTopInfosToWarning)
                                 {
-                                    check4change = 0;
-                                    finDuChapitre = 1;
+									reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+									setTopInfosToWarning = true;
+                                }
+                                break;
+                            }
+								
+                            case CLIC_SUR_BANDEAU_NEXT_CHAPTER:
+                            {
+								if(changeChapter(mangaDB, isTome, chapitreChoisis, curPosIntoStruct, true))
+                                {
+                                    FREE_CONTEXT();
+                                    return 0;
+                                }
+                                else if(!setTopInfosToWarning)
+                                {
+									reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+									setTopInfosToWarning = true;
                                 }
                                 break;
                             }
 
                             case CLIC_SUR_BANDEAU_FAVORITE:
                             {
-                                setPrefs(mangaDB);
+                                setFavorite(mangaDB);
                                 MUTEX_UNIX_LOCK;
                                 SDL_DestroyTextureS(controlBar);
                                 controlBar = loadControlBar(mangaDB->favoris);
@@ -265,7 +290,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                             case CLIC_SUR_BANDEAU_FULLSCREEN:
                             {
-                                applyFullscreen(fullscreen, &check4change, &changementEtat);
+                                applyFullscreen(fullscreen, &redrawScreen, &changementEtat);
                                 break;
                             }
 
@@ -312,6 +337,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                     if(!clicOnButton(event.button.x, event.button.y, positionControlBar.x) && event.button.y > BORDURE_HOR_LECTURE) //Restrictible aux seuls grandes pages en ajoutant && pageTooBigForScreen
                     {
                         bool runTheBoucle = true;
+						int anciennePositionX = 0, anciennePositionY = 0, deplacementX = 0, deplacementY = 0;
+						
                         while(runTheBoucle) //On déplace la page en laissant cliqué
                         {
                             anciennePositionX = event.button.x;
@@ -368,23 +395,48 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                                         //Clic détécté: on cherche de quel côté
                                         if(pasDeMouvementLorsDuClicX > getPtRetinaW(renderer) / 2 && pasDeMouvementLorsDuClicX < getPtRetinaW(renderer) - (getPtRetinaW(renderer) / 2 - page->w / 2)) //coté droit -> page suivante
                                         {
-                                            //Page Suivante
-                                            check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                            if (check4change == -1) //changement de chapitre
-                                            {
-                                                FREE_CONTEXT();
-                                                return 0;
-                                            }
+                                            switch(changementDePage(mangaDB, &dataReader, true, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+											{
+												case READER_CHANGEPAGE_SUCCESS:
+												{
+													redrawScreen = true;
+													break;
+												}
+												case READER_CHANGEPAGE_NEXTCHAP:
+												{
+													FREE_CONTEXT();
+													return 0;
+												}
+												case READER_CHANGEPAGE_UPDATE_TOPBAR:
+												{
+													reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+													setTopInfosToWarning = true;
+													break;
+												}
+											}
                                         }
 
                                         else if (pasDeMouvementLorsDuClicX > (getPtRetinaW(renderer) / 2 - page->w / 2) && pasDeMouvementLorsDuClicX < (getPtRetinaW(renderer) / 2))//coté gauche -> page précédente
                                         {
-                                            check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                                            if (check4change == -1)
-                                            {
-                                                FREE_CONTEXT();
-                                                return 0;
-                                            }
+                                            switch(changementDePage(mangaDB, &dataReader, false, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+											{
+												case READER_CHANGEPAGE_SUCCESS:
+												{
+													redrawScreen = true;
+													break;
+												}
+												case READER_CHANGEPAGE_NEXTCHAP:
+												{
+													FREE_CONTEXT();
+													return 0;
+												}
+												case READER_CHANGEPAGE_UPDATE_TOPBAR:
+												{
+													reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+													setTopInfosToWarning = true;
+													break;
+												}
+											}
                                         }
                                     }
                                     else
@@ -450,61 +502,88 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                             slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT_BIG, &noRefresh);
                             break;
                         }
-
-                        case SDLK_RIGHT:
+							
+                        case SDLK_LEFT:
                         {
-                            check4change = changementDePage(mangaDB, &dataReader, isTome, 1, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                            if (check4change == -1)
-                            {
-                                FREE_CONTEXT();
-                                return 0;
-                            }
+                            switch(changementDePage(mangaDB, &dataReader, false, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+							{
+								case READER_CHANGEPAGE_SUCCESS:
+								{
+									redrawScreen = true;
+									break;
+								}
+								case READER_CHANGEPAGE_NEXTCHAP:
+								{
+									FREE_CONTEXT();
+									return 0;
+								}
+								case READER_CHANGEPAGE_UPDATE_TOPBAR:
+								{
+									reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+									setTopInfosToWarning = true;
+									break;
+								}
+							}
                             break;
                         }
 
-                        case SDLK_LEFT:
+                        case SDLK_RIGHT:
                         {
-                            check4change = changementDePage(mangaDB, &dataReader, isTome, 0, &changementPage, &finDuChapitre, chapitreChoisis, curPosIntoStruct);
-                            if (check4change == -1)
-                            {
-                                FREE_CONTEXT();
-                                return 0;
-                            }
+                            switch(changementDePage(mangaDB, &dataReader, true, &changementPage, isTome, chapitreChoisis, curPosIntoStruct))
+							{
+								case READER_CHANGEPAGE_SUCCESS:
+								{
+									redrawScreen = true;
+									break;
+								}
+								case READER_CHANGEPAGE_NEXTCHAP:
+								{
+									FREE_CONTEXT();
+									return 0;
+								}
+								case READER_CHANGEPAGE_UPDATE_TOPBAR:
+								{
+									reader_setMessageInfoColorToWarning(renderer, *fullscreen ? fontTiny : fontNormal, infos, couleurFinChapitre, &infoTexture);
+									setTopInfosToWarning = true;
+									break;
+								}
+							}
                             break;
                         }
 
                         case SDLK_RETURN:
                         case SDLK_KP_ENTER:
                         {
-                            if (pageAccesDirect <= dataReader.nombrePageTotale+1 && pageAccesDirect > 0 && (dataReader.pageCourante+1) != pageAccesDirect)
+                            if (pageAccesDirect > 0 && dataReader.pageCourante != pageAccesDirect-1 && pageAccesDirect-1 <= dataReader.nombrePageTotale)
                             {
-                                pageAccesDirect--;
-                                if(dataReader.pageCourante > pageAccesDirect)
-                                {
-                                    changementPage = -1;
-                                    check4change = 0;
-                                }
-                                else if (dataReader.pageCourante < pageAccesDirect)
-                                {
-                                    changementPage = 1;
-                                    check4change = 0;
-                                }
-
+								changementPage = READER_ETAT_DEFAULT;
+								redrawScreen = true;
+                                
                                 if(prevPage != NULL) //On vide le cache
                                 {
                                     SDL_FreeSurface(prevPage);
                                     prevPage = NULL;
                                 }
+								
+								freeCurrentPage(pageTexture, pageTooBigForScreen);
+								SDL_FreeSurfaceS(page);
+								pageTexture = NULL;
+								page = NULL;
+								
                                 if(nextPage != NULL)
                                 {
                                     SDL_FreeSurface(nextPage);
                                     nextPage = NULL;
                                 }
+								
+								if(UI_PageAccesDirect != NULL)
+								{
+									SDL_FreeSurfaceS(UI_PageAccesDirect);
+									UI_PageAccesDirect = NULL;
+								}
 
-                                dataReader.pageCourante = pageAccesDirect;
-                                finDuChapitre = pageAccesDirect = 0;
-                                SDL_FreeSurfaceS(UI_PageAccesDirect);
-                                UI_PageAccesDirect = NULL;
+                                dataReader.pageCourante = pageAccesDirect - 1;
+                                pageAccesDirect = 0;
                             }
                             else
                             {
@@ -533,7 +612,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                         case SDLK_f:
                         {
-                            applyFullscreen(fullscreen, &check4change, &changementEtat);
+                            applyFullscreen(fullscreen, &redrawScreen, &changementEtat);
                             break;
                         }
                     }
@@ -574,7 +653,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                         {
                             if(*fullscreen)     //Si on est en mode plein écran, on le quitte
                             {
-                                applyFullscreen(fullscreen, &check4change, &changementEtat);
+                                applyFullscreen(fullscreen, &redrawScreen, &changementEtat);
                             }
                             else
                             {
@@ -638,8 +717,8 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                 }
             }
 
-        } while(check4change);
+        }
     }
-    return 0;
+    return PALIER_QUIT;	//Shouldn't be reached
 }
 

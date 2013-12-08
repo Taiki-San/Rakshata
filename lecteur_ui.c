@@ -13,7 +13,7 @@
 #include "main.h"
 #include "lecteur.h"
 
-void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, SDL_Rect *positionControlBar, bool isFavoris)
+void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris)
 {
 	MUTEX_UNIX_LOCK;
 		*fontNormal = OpenFont(FONTUSED, POLICE_PETIT);
@@ -23,20 +23,23 @@ void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** f
 		TTF_SetFontStyle(*fontTiny, BANDEAU_INFOS_LECTEUR_STYLES);
 	
 		*controlBar = loadControlBar(isFavoris);
-		if(*controlBar != NULL)
-		{
-			positionControlBar->y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
-			positionControlBar->x = (getPtRetinaW(renderer) / 2) - ((*controlBar)->w / 2);
-			positionControlBar->w = (*controlBar)->w;
-			positionControlBar->h = (*controlBar)->h;
-		}
-		else
-		{
-			positionControlBar->x = positionControlBar->y = positionControlBar->h = positionControlBar->w = 0;
-		}
 		
-	
     MUTEX_UNIX_UNLOCK;
+}
+
+void reader_initializePosControlBar(SDL_Texture *controlBar, SDL_Rect * positionControlBar)
+{
+	if(controlBar != NULL)
+	{
+		positionControlBar->y = (getPtRetinaH(renderer) - BORDURE_CONTROLE_LECTEUR);
+		positionControlBar->x = (getPtRetinaW(renderer) / 2) - (controlBar->w / 2);
+		positionControlBar->w = controlBar->w;
+		positionControlBar->h = controlBar->h;
+	}
+	else
+	{
+		positionControlBar->x = positionControlBar->y = positionControlBar->h = positionControlBar->w = 0;
+	}
 }
 
 /** MUTEX_UNIX_LOCK pas nécessaire car locké avant **/
@@ -213,6 +216,12 @@ void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char *
 	}
 }
 
+void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture)
+{
+	SDL_DestroyTextureS(*infoTexture);
+	*infoTexture = TTF_Write(renderer, font, text, color);
+}
+
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, bool pageTooBigToLoad, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny)
 {
     MUTEX_UNIX_LOCK;
@@ -259,14 +268,13 @@ void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pa
     MUTEX_UNIX_UNLOCK;
 }
 
-void freeCurrentPage(SDL_Texture *texture, bool *pageTooBigToLoad)
+void freeCurrentPage(SDL_Texture *texture, bool pageTooBigToLoad)
 {
-    if(*pageTooBigToLoad)
+    if(pageTooBigToLoad)
     {
         int i = 0;
         SDL_Texture ** texture_big = (SDL_Texture **) texture;
         for(; texture_big[i]; SDL_DestroyTextureS(texture_big[i++]));
-        pageTooBigToLoad = 0;
     }
     else
         SDL_DestroyTextureS(texture);
