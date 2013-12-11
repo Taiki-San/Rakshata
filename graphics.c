@@ -166,7 +166,7 @@ void GUI_initializaMainThread()
 
 void GUI_processRequest(REQ * request)
 {
-	if(request->flags & ((currentMainThread & 0xFFFF0000) | GUI_MODE_BIG) ||		//Requête ne venant pas du thread principal mais voulant toucher à l'UI principale
+	if(request->flags & ((currentMainThread & GUI_THREAD_MASK) | GUI_MODE_BIG) ||		//Requête ne venant pas du thread principal mais voulant toucher à l'UI principale
 	   request->flags & (currentMainThread | GUI_MODE_SMALL))						//Requête du thread principal mais considérant son interface comme secondaire
 		return;
 	
