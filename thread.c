@@ -59,7 +59,7 @@ void createNewThread(void *function, void *arg)
 #ifdef DEV_VERSION
             logR("Failed at export primitives");
 #endif
-			return;
+			exit(EXIT_FAILURE);
 		}
     }
     if(ZwCreateThreadEx != NULL)
@@ -88,6 +88,7 @@ void createNewThread(void *function, void *arg)
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
 {
     THREAD_TYPE threadID;
+
 #ifdef _WIN32
     if(ZwCreateThreadEx == NULL)
     {
@@ -95,9 +96,9 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
         if(ZwCreateThreadEx == NULL)
         {
 #ifdef DEV_VERSION
-            logR("Failed at export primitives");
+			logR("Failed at create thread\n");
 #endif
-            CreateThread(NULL, 0, function, arg, 0, NULL);
+			exit(EXIT_FAILURE);
         }
     }
     if(ZwCreateThreadEx != NULL)
@@ -106,6 +107,7 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
     }
 
 #else
+
     if (pthread_create(&threadID, NULL, function, arg))
     {
 #ifdef DEV_VERSION
@@ -113,7 +115,9 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
 #endif
         exit(EXIT_FAILURE);
     }
+
 #endif
+
     MUTEX_LOCK(mutex);
     THREAD_COUNT++;
     MUTEX_UNLOCK(mutex);
@@ -128,3 +132,4 @@ bool isThreadStillRunning(THREAD_TYPE hThread)
     return pthread_kill(hThread, 0) != ESRCH;
 #endif // _WIN32
 }
+
