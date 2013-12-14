@@ -44,6 +44,7 @@ extern SDL_Renderer *rendererDL;
         #undef main
     #endif
 #endif
+
 int main(int argc, char *argv[])
 {
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main

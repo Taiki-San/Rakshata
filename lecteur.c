@@ -263,7 +263,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 
                             case CLIC_SUR_BANDEAU_DELETE:
                             {
-                                if(unlocked)
+                                if(getUnlock())
                                 {
                                     getUpdatedChapterList(mangaDB);
                                     FREE_CONTEXT();

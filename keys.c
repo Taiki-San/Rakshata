@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "main.h"
+#include "graphics.h"
 #include "crypto/crypto.h"
 
 static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
@@ -147,7 +148,6 @@ void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
     }
 }
 
-extern int unlocked;
 int earlyInit(int argc, char *argv[])
 {
 #ifdef _WIN32
@@ -157,6 +157,7 @@ int earlyInit(int argc, char *argv[])
     mutexUI = CreateSemaphore(NULL, 1, 1, NULL);
 #endif
 
+	GUI_startupMainGUIThread();
     resetOriginalCHDir(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
@@ -205,14 +206,10 @@ int earlyInit(int argc, char *argv[])
 #endif
 
     char *temp;
-    if((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL)
-        unlocked = 1;
-    else
-    {
-        free(temp);
-        unlocked = 0;
-    }
-    checkJustUpdated();
+	setUnlock((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL);
+	free(temp);
+    
+	checkJustUpdated();
 
     return 1;
 }

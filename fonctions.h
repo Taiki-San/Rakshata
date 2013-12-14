@@ -110,6 +110,8 @@ int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB);
 bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettre, int button_selected[8]);
 
 int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem);
+bool getUnlock();
+void setUnlock(bool var);
 
 void loadMultiPage(int nombreManga, int *pageSelection, int *pageTotale);
 void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);

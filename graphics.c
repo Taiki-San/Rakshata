@@ -91,6 +91,14 @@ bool isMainGUIThreadReady()
 	return (GUI_lockAccessSharedRessource != NULL);
 }
 
+void GUI_startupMainGUIThread()
+{
+	if(isMainGUIThreadReady())
+		return;
+	
+	createNewThread(GUI_mainThread, NULL);
+}
+
 /***************				PRIVATE API				***************/
 
 void GUI_mainThread()
@@ -210,7 +218,7 @@ void GUI_freeChain(REQ *chain)
 	}
 }
 
-/**		UI Utilities	**/
+/***************			    UI Utilities			***************/
 
 bool GUI_isWindowAvailable(uint32_t flag)
 {

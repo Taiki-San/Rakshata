@@ -12,8 +12,6 @@
 
 #include "main.h"
 
-int unlocked = 0;
-
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, bool disIcons)
 {
     if(nombreElements <= 1)
@@ -58,11 +56,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
         }
     }
 
-    if(unlocked)
-        snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_UNLOCK);
-    else
-        snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_LOCK);
-
+    snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, getUnlock() ? ICONE_UNLOCK : ICONE_LOCK);
     texture = IMG_LoadTexture(renderer, tempPath);
     if(texture != NULL)
     {
@@ -147,12 +141,9 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                     else if(event.button.x > WINDOW_SIZE_W - POSITION_ICONE_MENUS - (TAILLE_ICONE_MENUS * getRetinaZoom()) && event.button.x < WINDOW_SIZE_W-POSITION_ICONE_MENUS
                             && event.button.y > POSITION_ICONE_MENUS && event.button.y < POSITION_ICONE_MENUS + (TAILLE_ICONE_MENUS * getRetinaZoom()))
                     {
-                        if(unlocked == 1)
-                            unlocked = 0;
-                        else
-                            unlocked = 1;
+                        setUnlock(!getUnlock());
 
-                        if(unlocked)
+                        if(getUnlock())
                             snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_UNLOCK);
                         else
                             snprintf(tempPath, 450, "%s/%s", REPERTOIREEXECUTION, ICONE_LOCK);
@@ -170,7 +161,6 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
                             SDL_RenderCopy(renderer, texture, NULL, &position);
                             SDL_DestroyTextureS(texture);
 							SDL_RenderPresent(renderer);
-							//refreshRendererIfBuggy(renderer);
                         }
                         MUTEX_UNIX_UNLOCK;
                     }
@@ -1053,13 +1043,13 @@ int letterLimitationEnforced(int letter, char firstLetterOfTheManga)
 
 int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB)
 {
-    if(mangaDB.genre == GENRE_HENTAI && unlocked == 0) //Hentai alors que verrouillé
+    if(mangaDB.genre == GENRE_HENTAI && !getUnlock()) //Hentai alors que verrouillé
         return 0;
 
     if(!checkButtonPressed(button_selected)) //Si aucun bouton n'est pressé
         return 1;
 
-    if(button_selected[POS_BUTTON_STATUS_FAVORIS] == 1 && mangaDB.favoris && (mangaDB.genre != GENRE_HENTAI || unlocked))
+    if(button_selected[POS_BUTTON_STATUS_FAVORIS] == 1 && mangaDB.favoris && (mangaDB.genre != GENRE_HENTAI || getUnlock()))
         return 1; //Hentai favoris bloqués
 
     if((!checkFirstLineButtonPressed(button_selected) || button_selected[mangaDB.status - 1] == 1) //En cours/Suspendus/Terminé
@@ -1104,6 +1094,18 @@ int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLON
     }
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }
+
+int unlocked = 0;
+bool getUnlock()
+{
+	return unlocked;
+}
+
+void setUnlock(bool var)
+{
+	unlocked = var;
+}
+
 
 /*Multi Page*/
 
@@ -1323,7 +1325,7 @@ void button_available(PREFS_ENGINE prefs, DATA_ENGINE* input, int button[8])
             else
                 button[casTeste] = 0;
         }
-        else if(casTeste == 7 && unlocked == 0)
+        else if(casTeste == 7 && !getUnlock())
         {
             button[casTeste] = -1;
         }

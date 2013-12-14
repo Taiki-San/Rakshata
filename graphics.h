@@ -55,6 +55,7 @@ struct REQ
 /** Public prototypes	**/
 bool GUI_addPlan(GUI_FUNC * functionToCall, void* data, uint32_t flag, uint32_t repeat, bool *cancel, bool waitToBeDone);
 bool isMainGUIThreadReady();
+void GUI_startupMainGUIThread();
 
 /**	Private prototypes	**/
 void GUI_mainThread();				//Semi private, called during initialization
