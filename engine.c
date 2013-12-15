@@ -1095,7 +1095,7 @@ int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLON
     return VALEUR_FIN_STRUCTURE_CHAPITRE;
 }
 
-int unlocked = 0;
+bool unlocked = 0;
 bool getUnlock()
 {
 	return unlocked;
