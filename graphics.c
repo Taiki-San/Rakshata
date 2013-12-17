@@ -99,6 +99,11 @@ void GUI_startupMainGUIThread()
 	createNewThread(GUI_mainThread, NULL);
 }
 
+void GUI_quitMainGUIThread()
+{
+	GUI_addPlan(NULL, NULL, GUI_MAINTHREAD_QUIT, 0, NULL, 1);
+}
+
 /***************				PRIVATE API				***************/
 
 void GUI_mainThread()
@@ -137,6 +142,7 @@ void GUI_mainThread()
 			if(cache->flags & GUI_MAINTHREAD_QUIT)
 			{
 				quit = true;
+				GUI_unlockMutex(cache);
 				break;
 			}
 			
@@ -185,16 +191,16 @@ void GUI_processRequest(REQ * request)
 		return;
 	
 	request->functionName(request->dataToFunction, request->cancel);
+	GUI_unlockMutex(request);
 }
 
 void GUI_threadRepeatCall(REQ * request)
 {
+	//We copy data in local variable to make access quicker, no need to dereference the structure each time
 	GUI_FUNC * function = request->functionName;
 	void * data = request->dataToFunction;
 	uint32_t timer = request->repeat, lastTime = time(NULL);
 	bool * cancel = request->cancel;
-	
-	free(request);
 	
 	while(*cancel)
 	{
@@ -203,7 +209,10 @@ void GUI_threadRepeatCall(REQ * request)
 		
 		function(data, cancel);
 	}
-	
+
+	GUI_unlockMutex(request);
+	free(request);
+
 	quit_thread(0);
 }
 
@@ -241,4 +250,10 @@ bool GUI_isWindowAvailable(uint32_t flag)
 		}
 	}
 	return out;
+}
+
+void GUI_unlockMutex(REQ *request)
+{
+	if(request->lock != NULL)
+		MUTEX_UNLOCK(*(request->lock));
 }

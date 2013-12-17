@@ -56,6 +56,7 @@ struct REQ
 bool GUI_addPlan(GUI_FUNC * functionToCall, void* data, uint32_t flag, uint32_t repeat, bool *cancel, bool waitToBeDone);
 bool isMainGUIThreadReady();
 void GUI_startupMainGUIThread();
+void GUI_quitMainGUIThread();
 
 /**	Private prototypes	**/
 void GUI_mainThread();				//Semi private, called during initialization
@@ -65,3 +66,4 @@ void GUI_threadRepeatCall(REQ * request);
 void GUI_freeChain(REQ *chain);
 
 bool GUI_isWindowAvailable(uint32_t flag);
+void GUI_unlockMutex(REQ *request);
