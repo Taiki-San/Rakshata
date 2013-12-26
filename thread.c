@@ -133,3 +133,11 @@ bool isThreadStillRunning(THREAD_TYPE hThread)
 #endif // _WIN32
 }
 
+int getThreadCount()
+{
+	MUTEX_LOCK(mutex);
+		int ret_value = THREAD_COUNT;
+	MUTEX_UNLOCK(mutex);
+
+	return ret_value;
+}

@@ -67,3 +67,6 @@ void GUI_freeChain(REQ *chain);
 
 bool GUI_isWindowAvailable(uint32_t flag);
 void GUI_unlockMutex(REQ *request);
+
+/**		Objective-C Primitives	**/
+//#include "ObjC/WindowHandler.h"

@@ -175,7 +175,7 @@ void GUI_mainThread()
 
 void GUI_initializaMainThread()
 {
-	
+
 }
 
 void GUI_processRequest(REQ * request)

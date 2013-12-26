@@ -269,6 +269,7 @@ void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt,
 void createNewThread(void *function, void *arg);
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
 bool isThreadStillRunning(THREAD_TYPE hThread);
+int getThreadCount();
 
 /**Tome.c**/
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);

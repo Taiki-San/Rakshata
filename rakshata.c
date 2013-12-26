@@ -59,10 +59,8 @@ int main(int argc, char *argv[])
 
     SDL_Event event;
     int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
-    MUTEX_LOCK(mutex);
-    while(THREAD_COUNT)
+    while(getThreadCount())
     {
-        MUTEX_UNLOCK(mutex);
         event.type = 0;
         SDL_WaitEventTimeout(&event, 250);
         if(event.type != 0 && (event.type != SDL_WINDOWEVENT || event.window.event != SDL_WINDOWEVENT_RESIZED))
@@ -83,14 +81,9 @@ int main(int argc, char *argv[])
             timeSinceLastCheck = SDL_GetTicks();
             compteur++;
             if(compteur > 10) //Si il s'accroche vraiment =<
-            {
-                MUTEX_LOCK(mutex);
                 break;
-            }
         }
-        MUTEX_LOCK(mutex);
     }
-    MUTEX_UNLOCK(mutex);
 
     TTF_Quit();
     SDL_Quit();
