@@ -12,13 +12,12 @@
 {
 	int flag;
 }
-
 @end
+
 
 @interface RakAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
-
 - (void) validateWindowData : (NSRect) size;
 -(IBAction)showMessage: (id) sender;
 

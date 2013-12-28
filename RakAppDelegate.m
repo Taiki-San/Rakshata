@@ -12,6 +12,7 @@
 #define SIZE_MIN_WIDTH 500
 #define SIZE_MAX_WIDTH 1200
 
+#import "Series.h"
 #import "RakAppDelegate.h"
 
 @implementation RakAppDelegate
@@ -19,7 +20,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self validateWindowData:[[self window] frame]];
-	
+	[[Series alloc] initWithFrame:self.window.frame];
 	//[[self window] close];
 }
 
@@ -59,5 +60,9 @@
 {
 	NSLog(@"showMessage called :)");
 }
+
+@end
+
+@implementation NSViewCustom
 
 @end

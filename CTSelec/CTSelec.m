@@ -20,9 +20,15 @@
     if (self)
 	{
 		flag = GUI_THREAD_CT;	//On initialise les flags
-        // Initialization code here.
-    }
+
+		[self setItemPropertiesToDefault:self];
+	}
     return self;
+}
+
+- (void)setItemPropertiesToDefault:sender
+{
+    [sender setBackgroundColor:[NSColor whiteColor]];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

@@ -15,5 +15,8 @@
 #import <Cocoa/Cocoa.h>
 
 @interface Series : NSViewCustom
-
+- (void) logTest;
 @end
+
+#import "Footer Static/FooterSStatic.h"
+#import "Footer Drag/FooterSDrag.h"

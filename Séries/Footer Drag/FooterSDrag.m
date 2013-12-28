@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "FooterSDrag.h"
+#import "Series.h"
 
 @implementation FooterDrag
 

@@ -12,8 +12,9 @@
 
 #include "../../../../Sources/graphics.h"
 #import "../RakAppDelegate.h"
-#import <Cocoa/Cocoa.h>
 
 @interface CTSelec : NSViewCustom
+
+- (void)setItemPropertiesToDefault:sender;
 
 @end

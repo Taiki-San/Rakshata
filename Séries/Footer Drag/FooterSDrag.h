@@ -10,9 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "../Series.h"
-#import <Cocoa/Cocoa.h>
-
 @interface FooterDrag : Series
 
 @end
