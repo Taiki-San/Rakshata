@@ -7,10 +7,7 @@
 //
 
 #define SIZE_MIN_HEIGHT 300
-#define SIZE_MAX_HEIGHT 800
-
 #define SIZE_MIN_WIDTH 500
-#define SIZE_MAX_WIDTH 1200
 
 #import "Series.h"
 #import "RakAppDelegate.h"
@@ -20,8 +17,11 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self validateWindowData:[[self window] frame]];
-	[[Series alloc] initWithFrame:self.window.frame];
+	Series* tabSerie = [[Series alloc] init:self.window];
+	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
+	
 	//[[self window] close];
+	//[tabSerie release];
 }
 
 - (void) validateWindowData : (NSRect) size
@@ -33,32 +33,15 @@
 		size.size.height = SIZE_MIN_HEIGHT;
 		needUpdate = true;
 	}
-	
-	if(size.size.height > SIZE_MAX_HEIGHT)
-	{
-		size.size.height = SIZE_MAX_HEIGHT;
-		needUpdate = true;
-	}
-	
+
 	if(size.size.width < SIZE_MIN_WIDTH)
 	{
 		size.size.width = SIZE_MIN_WIDTH;
 		needUpdate = true;
 	}
-
-	if(size.size.width > SIZE_MAX_WIDTH)
-	{
-		size.size.width = SIZE_MAX_WIDTH;
-		needUpdate = true;
-	}
 	
 	if(needUpdate)
 		[[self window] setFrame:size display:NO];
-}
-
--(IBAction)showMessage: (id) sender
-{
-	NSLog(@"showMessage called :)");
 }
 
 @end

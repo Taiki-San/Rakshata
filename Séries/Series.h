@@ -15,7 +15,12 @@
 #import <Cocoa/Cocoa.h>
 
 @interface Series : NSViewCustom
+{
+	NSView* tabSerie;
+}
+- (id)init:(NSWindow*)window;
 - (void) logTest;
+
 @end
 
 #import "Footer Static/FooterSStatic.h"

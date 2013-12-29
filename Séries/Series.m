@@ -12,31 +12,41 @@
 
 #import "Series.h"
 
+#define PREFS_GETTABSERIEWIDTH 1
+
 @implementation Series
 
-- (id)initWithFrame:(NSRect)frame
+- (id)init:(NSWindow*)window
 {
-	frame.origin.x = frame.origin.y = 0;
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_SERIES;
-        // Initialization code here.
 		
-		NSView *superview = self.window.contentView;
-		NSRect frame2 = NSMakeRect(0, 0, 200, 100);
-		NSButton *button = [[NSButton alloc] initWithFrame:frame2];
-		[button setTitle:@"Click me!"];
+		NSView *superview = window.contentView;
+		NSRect frame = NSMakeRect(0, 0, (int) [Prefs getPref:PREFS_GETTABSERIEWIDTH], window.frame.size.height);
 		
-		[button setButtonType:NSMomentaryLightButton]; //Set what type button You want
-		[button setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
+		tabSerie = [[NSView alloc] initWithFrame:frame];
+		[superview addSubview:tabSerie];
 		
+		NSColorWell *background = [[NSColorWell alloc] initWithFrame:frame];
+		[background setColor:[NSColor redColor]];
+		[background setBordered:NO];
+
+		frame.origin.x = 25;			frame.origin.y = frame.size.height - 60;
+		frame.size.width = 65;			frame.size.height = 25;
 		
+		NSButton *button = [[NSButton alloc] initWithFrame:frame];
+
+		[button setTitle:@"Prefs"];
+		[button setButtonType:NSMomentaryLightButton];
+		[button setBezelStyle:NSRoundedBezelStyle];
+
 		[button setTarget:self];
 		[button setAction:@selector(logTest)];
-		[superview addSubview:button];
-		
-		//		[button release];
+		[tabSerie addSubview:background];
+		[tabSerie addSubview:button];
+		[button release];
 	}
     return self;
 }
@@ -44,10 +54,13 @@
 - (void) logTest
 {
 	NSLog(@"Coin!!!");
+	[self drawRect:self.frame];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+	[[NSColor whiteColor] setFill];
+	NSRectFill(dirtyRect);
 	[super drawRect:dirtyRect];
 	
     // Drawing code here.

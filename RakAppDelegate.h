@@ -19,6 +19,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 - (void) validateWindowData : (NSRect) size;
--(IBAction)showMessage: (id) sender;
 
 @end
+
+#import "Prefs.h"
