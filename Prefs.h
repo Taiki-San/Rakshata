@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#include "../../../Sources/graphics.h"
 
 @interface Prefs : NSObject
 
@@ -16,3 +17,11 @@
 + (void *) getPref : (int) request;
 
 @end
+
+/*Codes servant à identifier les requêtes*/
+#define PREFS_GET_TAB_SERIE_WIDTH 1
+
+/*Divers constantes utilisées un peu partout mais renvoyés par Prefs*/
+#define TAB_SERIE_INACTIVE_CT				200
+#define TAB_SERIE_INACTIVE_LECTEUR			200
+#define TAB_SERIE_INACTIVE_LECTEUR_REDUCED	50

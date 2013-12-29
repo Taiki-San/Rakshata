@@ -12,8 +12,6 @@
 
 #import "Series.h"
 
-#define PREFS_GETTABSERIEWIDTH 1
-
 @implementation Series
 
 - (id)init:(NSWindow*)window
@@ -24,7 +22,7 @@
 		flag = GUI_THREAD_SERIES;
 		
 		NSView *superview = window.contentView;
-		NSRect frame = NSMakeRect(0, 0, (int) [Prefs getPref:PREFS_GETTABSERIEWIDTH], window.frame.size.height);
+		NSRect frame = NSMakeRect(0, 0, (int) [Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH], superview.frame.size.height);
 		
 		tabSerie = [[NSView alloc] initWithFrame:frame];
 		[superview addSubview:tabSerie];
@@ -33,7 +31,7 @@
 		[background setColor:[NSColor redColor]];
 		[background setBordered:NO];
 
-		frame.origin.x = 25;			frame.origin.y = frame.size.height - 60;
+		frame.origin.x = 25;			frame.origin.y = frame.size.height - 45;
 		frame.size.width = 65;			frame.size.height = 25;
 		
 		NSButton *button = [[NSButton alloc] initWithFrame:frame];

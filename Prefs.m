@@ -8,6 +8,9 @@
 
 #import "Prefs.h"
 
+void* prefsCache;
+int mainThread = GUI_THREAD_SERIES;
+
 @implementation Prefs
 
 + (void) initCache
@@ -28,7 +31,31 @@
 
 + (void *) getPref : (int) request
 {
-	return (void *) 300;
+	if(prefsCache == NULL)
+		[self initCache];
+	
+	switch(request)
+	{
+		case PREFS_GET_TAB_SERIE_WIDTH:
+		{
+			if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
+				return (void*) TAB_SERIE_INACTIVE_CT;
+			else if(mainThread & GUI_THREAD_READER)
+				return (void*) TAB_SERIE_INACTIVE_LECTEUR;
+			else
+			{
+				if((mainThread & GUI_THREAD_SERIES) == 0)
+					NSLog(@"Couldn't identify mainThread in prefs");
+				return (void *) 600;
+			}
+		}
+			
+		default:
+		{
+			NSLog(@"Couldn't identify request: %d", request);
+		}
+	}
+	return NULL;
 }
 
 @end
