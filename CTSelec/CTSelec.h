@@ -10,8 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#include "../../../../Sources/graphics.h"
-#import "../RakAppDelegate.h"
+#import "FooterSDrag.h"
+#import "FooterSStatic.h"
 
 @interface CTSelec : NSViewCustom
 

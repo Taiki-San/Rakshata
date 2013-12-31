@@ -10,12 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Cocoa/Cocoa.h>
+#import "utils.h"
 
-
-@interface RakAppDelegate : NSObject <NSApplicationDelegate>
-
-@property (assign) IBOutlet NSWindow *window;
-- (void) validateWindowData : (NSRect) size;
+@implementation NSViewCustom
 
 @end

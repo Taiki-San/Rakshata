@@ -10,8 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "../Series.h"
-#import <Cocoa/Cocoa.h>
+#import "superHeader.h"
 
 @interface FooterStatic : Series
 

@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "Reader.h"
+#import "superHeader.h"
 
 @implementation Reader
 
@@ -19,8 +19,7 @@
     self = [super initWithFrame:frame];
     if (self)
 	{
-		flag = GUI_THREAD_READER;
-        // Initialization code here.
+		// Initialization code here.
     }
     return self;
 }

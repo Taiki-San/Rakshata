@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "Series.h"
+#import "superHeader.h"
 
 @implementation Series
 
@@ -19,8 +19,6 @@
     self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_SERIES;
-		
 		NSView *superview = window.contentView;
 		NSRect frame = NSMakeRect(0, 0, (int) [Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH], superview.frame.size.height);
 		

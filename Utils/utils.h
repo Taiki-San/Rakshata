@@ -10,9 +10,12 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#ifndef Interface_utils_h
-#define Interface_utils_h
-
 #import "MainViewController.h"	//Allow to create NSViewController without NIB
 
-#endif
+/*Custom NSView to add a couple of shared variable*/
+
+@interface NSViewCustom : NSView
+{
+	int flag;
+}
+@end

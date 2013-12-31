@@ -13,8 +13,7 @@
 #define SIZE_MIN_HEIGHT 300
 #define SIZE_MIN_WIDTH 500
 
-#import "Series.h"
-#import "RakAppDelegate.h"
+#import "superHeader.h"
 
 @implementation RakAppDelegate
 
@@ -23,7 +22,10 @@
 	[self validateWindowData:[[self window] frame]];
 	Series* tabSerie = [[Series alloc] init:self.window];
 	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
-		
+}
+
+- (void) applicationWillTerminate:(NSNotification *)notification
+{
 	//[[self window] close];
 	//[tabSerie release];
 }
@@ -50,6 +52,3 @@
 
 @end
 
-@implementation NSViewCustom
-
-@end

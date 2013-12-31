@@ -10,12 +10,26 @@
  **                                                                                          **
  *********************************************************************************************/
 
+/*Included from every files so we better should prevent recursive includes*/
+
+#ifndef SUPERHEADER_INCLUDED
+
+#define SUPERHEADER_INCLUDED
+
+#include "../../../Sources/graphics.h"
 #import <Cocoa/Cocoa.h>
 
+#import "utils.h"
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate>
+/* Différentes super-classes de l'interface	*/
 
-@property (assign) IBOutlet NSWindow *window;
-- (void) validateWindowData : (NSRect) size;
+#import "Series.h"
+#import "CTSelec.h"
+#import "Reader.h"
+#import "Prefs.h"
 
-@end
+#import "MDL.h"
+
+#import "RakAppDelegate.h"
+
+#endif
