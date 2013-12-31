@@ -10,22 +10,9 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Foundation/Foundation.h>
-#include "../../../Sources/graphics.h"
+#ifndef Interface_utils_h
+#define Interface_utils_h
 
-@interface Prefs : NSObject
+#import "MainViewController.h"	//Allow to create NSViewController without NIB
 
-+ (void) initCache;
-+ (void) rebuildCache;
-+ (void) clearCache;
-+ (void *) getPref : (int) request;
-
-@end
-
-/*Codes servant à identifier les requêtes*/
-#define PREFS_GET_TAB_SERIE_WIDTH 1
-
-/*Divers constantes utilisées un peu partout mais renvoyés par Prefs*/
-#define TAB_SERIE_INACTIVE_CT				200
-#define TAB_SERIE_INACTIVE_LECTEUR			200
-#define TAB_SERIE_INACTIVE_LECTEUR_REDUCED	50
+#endif

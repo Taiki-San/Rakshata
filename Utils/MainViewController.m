@@ -10,22 +10,16 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Foundation/Foundation.h>
-#include "../../../Sources/graphics.h"
+#import "MainViewController.h"
 
-@interface Prefs : NSObject
+@implementation MainViewController
 
-+ (void) initCache;
-+ (void) rebuildCache;
-+ (void) clearCache;
-+ (void *) getPref : (int) request;
+- (id)initWithFrame:(NSRect)frame
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self)
+        [self setView:[[NSView alloc] initWithFrame:frame]];
+    return self;
+}
 
 @end
-
-/*Codes servant à identifier les requêtes*/
-#define PREFS_GET_TAB_SERIE_WIDTH 1
-
-/*Divers constantes utilisées un peu partout mais renvoyés par Prefs*/
-#define TAB_SERIE_INACTIVE_CT				200
-#define TAB_SERIE_INACTIVE_LECTEUR			200
-#define TAB_SERIE_INACTIVE_LECTEUR_REDUCED	50

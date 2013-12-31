@@ -1,10 +1,14 @@
-//
-//  RakAppDelegate.m
-//  Interface
-//
-//  Created by Taiki on 23/12/2013.
-//  Copyright (c) 2013 Taiki. All rights reserved.
-//
+/*********************************************************************************************
+ **	__________         __           .__            __                 ________   _______   	**
+ **	\______   \_____  |  | __  _____|  |__ _____ _/  |______   	___  _\_____  \  \   _  \  	**
+ **	 |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \  	\  \/ //  ____/  /  /_\  \ 	**
+ **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
+ **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
+ **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
+ **                                                                                          **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
+ **                                                                                          **
+ *********************************************************************************************/
 
 #define SIZE_MIN_HEIGHT 300
 #define SIZE_MIN_WIDTH 500
@@ -19,7 +23,7 @@
 	[self validateWindowData:[[self window] frame]];
 	Series* tabSerie = [[Series alloc] init:self.window];
 	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
-	
+		
 	//[[self window] close];
 	//[tabSerie release];
 }

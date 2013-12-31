@@ -35,18 +35,28 @@
 		frame.size.width = 65;			frame.size.height = 25;
 		
 		NSButton *button = [[NSButton alloc] initWithFrame:frame];
-
+		
+		/*Tests*/
+		winController = [[PrefsUI alloc] init];
+		[winController setAnchor:button];
+		
+		
 		[button setTitle:@"Prefs"];
 		[button setButtonType:NSMomentaryLightButton];
 		[button setBezelStyle:NSRoundedBezelStyle];
 
 		[button setTarget:self];
-		[button setAction:@selector(logTest)];
+		[button setAction:@selector(gogoWindow)];
 		[tabSerie addSubview:background];
 		[tabSerie addSubview:button];
-		[button release];
+		[background release];
 	}
     return self;
+}
+
+- (void) gogoWindow
+{
+	[winController showPopover];
 }
 
 - (void) logTest

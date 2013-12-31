@@ -13,12 +13,16 @@
 #include "../../../../Sources/graphics.h"
 #import "../RakAppDelegate.h"
 #import <Cocoa/Cocoa.h>
+#import "PrefsUI.h"
 
 @interface Series : NSViewCustom
 {
 	NSView* tabSerie;
+	
+	PrefsUI * winController;
 }
 - (id)init:(NSWindow*)window;
+- (void) gogoWindow;
 - (void) logTest;
 
 @end
