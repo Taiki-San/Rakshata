@@ -55,7 +55,25 @@ int mainThread = GUI_THREAD_SERIES;
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
-			return  (void*) getWidthReader(mainThread);
+			return (void*) getWidthReader(mainThread);
+			break;
+		}
+			
+		case PREFS_GET_TAB_SERIE_POSX:
+		{
+			return (void*) 0;	//Le tab série est collé au bord gauche
+			break;
+		}
+			
+		case PREFS_GET_TAB_CT_POSX:
+		{
+			return (void*) getWidthSerie(mainThread);
+			break;
+		}
+			
+		case PREFS_GET_TAB_READER_POSX:
+		{
+			return (void*) (getWidthSerie(mainThread) + getWidthCT(mainThread));
 			break;
 		}
 			

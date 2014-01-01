@@ -14,23 +14,16 @@
 
 @implementation CTSelec
 
-- (id)initWithFrame:(NSRect)frame
+- (id)init:(NSWindow*)window
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_CT;	//On initialise les flags
-
-		[self setItemPropertiesToDefault:self];
+		NSView *superview = window.contentView;
+		tabCT = [self setUpView:superview:CREATE_CUSTOM_VIEW_TAB_CT];
 	}
     return self;
 }
-
-- (void)setItemPropertiesToDefault:sender
-{
-    [sender setBackgroundColor:[NSColor whiteColor]];
-}
-
 - (void)drawRect:(NSRect)dirtyRect
 {
 	[super drawRect:dirtyRect];

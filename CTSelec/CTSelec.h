@@ -14,7 +14,9 @@
 #import "FooterSStatic.h"
 
 @interface CTSelec : NSViewCustom
-
-- (void)setItemPropertiesToDefault:sender;
+{
+	NSView * tabCT;
+}
+- (id)init:(NSWindow*)window;
 
 @end

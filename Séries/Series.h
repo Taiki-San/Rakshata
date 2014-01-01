@@ -21,7 +21,7 @@
 	PrefsUI * winController;
 }
 - (id)init:(NSWindow*)window;
-- (int) getRequestedViewWidth:(NSView*)contentView;
+- (void) craftPrefButton : (NSRect) tabSerieFrame;
 
 - (void) resizeView:(NSRect)frame;
 - (void) drawView;

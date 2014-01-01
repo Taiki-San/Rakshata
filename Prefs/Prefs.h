@@ -25,6 +25,10 @@
 #define PREFS_GET_TAB_SERIE_WIDTH	1
 #define PREFS_GET_TAB_CT_WIDTH		2
 #define PREFS_GET_TAB_READER_WIDTH	3
+#define PREFS_GET_TAB_SERIE_POSX	4	//Les trois élements de chaques blocs doivent se suivre, en revanche, les deux blocs peuvent être séparés
+#define PREFS_GET_TAB_CT_POSX		5
+#define PREFS_GET_TAB_READER_POSX	6
+
 
 /*Divers constantes utilisées un peu partout mais renvoyés par Prefs*/
 #define TAB_SERIE_ACTIVE					78

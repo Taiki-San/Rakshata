@@ -21,7 +21,9 @@
 {
 	[self validateWindowData:[[self window] frame]];
 	Series* tabSerie = [[Series alloc] init:self.window];
-	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
+	CTSelec * tabCT = [[CTSelec alloc] init:self.window];
+	Reader * tabReader = [[Reader alloc] init:self.window];
+	//	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

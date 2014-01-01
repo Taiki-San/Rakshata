@@ -11,5 +11,10 @@
  *********************************************************************************************/
 
 @interface Reader : NSViewCustom
+{
+	NSView *tabReader;
+}
+
+- (id)init:(NSWindow*)window;
 
 @end

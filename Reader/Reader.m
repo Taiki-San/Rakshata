@@ -14,13 +14,14 @@
 
 @implementation Reader
 
-- (id)initWithFrame:(NSRect)frame
+- (id)init:(NSWindow*)window
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self)
 	{
-		// Initialization code here.
-    }
+		NSView *superview = window.contentView;
+		tabReader = [self setUpView:superview:CREATE_CUSTOM_VIEW_TAB_READER];
+	}
     return self;
 }
 
