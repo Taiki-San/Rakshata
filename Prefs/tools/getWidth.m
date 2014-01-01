@@ -10,45 +10,48 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#define SIZE_MIN_HEIGHT 600
-#define SIZE_MIN_WIDTH 950
-
 #import "superHeader.h"
 
-@implementation RakAppDelegate
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+uint64 getWidthSerie(int mainThread)
 {
-	[self validateWindowData:[[self window] frame]];
-	Series* tabSerie = [[Series alloc] init:self.window];
-	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
+	if(mainThread & GUI_THREAD_SERIES)
+		return TAB_SERIE_ACTIVE;
+	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
+		return TAB_SERIE_INACTIVE_CT;
+	else if(mainThread & GUI_THREAD_READER)
+		return TAB_SERIE_INACTIVE_LECTEUR;
+#ifdef DEV_VERSION
+	else
+		NSLog(@"Couldn't identify thread: %8x", mainThread);
+#endif
+	return 0;
 }
 
-- (void) applicationWillTerminate:(NSNotification *)notification
+uint64 getWidthCT(int mainThread)
 {
-	//[[self window] close];
-	//[tabSerie release];
+	if(mainThread & GUI_THREAD_SERIES)
+		return TAB_CT_INACTIVE_SERIE;
+	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
+		return TAB_CT_ACTIVE;
+	else if(mainThread & GUI_THREAD_READER)
+		return TAB_CT_INACTIVE_LECTEUR;
+#ifdef DEV_VERSION
+	else
+		NSLog(@"Couldn't identify thread: %8x", mainThread);
+#endif
+	return 0;
 }
-
-- (void) validateWindowData : (NSRect) size
+uint64 getWidthReader(int mainThread)
 {
-	bool needUpdate = false;
-
-	if(size.size.height < SIZE_MIN_HEIGHT || 1)
-	{
-		size.size.height = SIZE_MIN_HEIGHT;
-		needUpdate = true;
-	}
-
-	if(size.size.width < SIZE_MIN_WIDTH || 1)
-	{
-		size.size.width = SIZE_MIN_WIDTH;
-		needUpdate = true;
-	}
-	
-	if(needUpdate)
-		[[self window] setFrame:size display:NO];
+	if(mainThread & GUI_THREAD_SERIES)
+		return TAB_READER_INACTIVE_SERIE;
+	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
+		return TAB_READER_INACTIVE_CT;
+	else if(mainThread & GUI_THREAD_READER)
+		return TAB_READER_ACTIVE;
+#ifdef DEV_VERSION
+	else
+		NSLog(@"Couldn't identify thread: %8x", mainThread);
+#endif
+	return 0;
 }
-
-@end
-

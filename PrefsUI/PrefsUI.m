@@ -103,11 +103,7 @@
 // -------------------------------------------------------------------------------
 - (void)popoverWillShow:(NSNotification *)notification
 {
-    NSPopover *localPopover = [notification object];
-    if (localPopover.appearance == NSPopoverAppearanceHUD)
-    {
-        //viewControllerHUD is loaded by now, so set its UI up
-    }
+	//viewControllerHUD is loaded by now, so set its UI up
 }
 
 // -------------------------------------------------------------------------------
@@ -143,27 +139,18 @@
 // -------------------------------------------------------------------------------
 - (void)popoverDidClose:(NSNotification *)notification
 {
-    NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
-    if (closeReason)
-    {
-        // closeReason can be:
-        //      NSPopoverCloseReasonStandard
-        //      NSPopoverCloseReasonDetachToWindow
-        //
-        // add new code here if you want to respond "after" the popover closes
-        //
-    }
-    
+	//Ajouter des codes à la fermeture
+
     [popover release];
     popover = nil;
 }
 
 // -------------------------------------------------------------------------------
-// Invoked on the delegate asked for the detachable window for the popover.
+// Prevent the window to be detachable
 // -------------------------------------------------------------------------------
 - (NSWindow *)detachableWindowForPopover:(NSPopover *)popover
 {
-	return HUDWindow;
+	return nil;
 }
 
 @end

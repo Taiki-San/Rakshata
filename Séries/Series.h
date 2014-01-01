@@ -16,11 +16,17 @@
 {
 	NSView* tabSerie;
 	
+	NSButton *button;
+	
 	PrefsUI * winController;
 }
 - (id)init:(NSWindow*)window;
+- (int) getRequestedViewWidth:(NSView*)contentView;
+
+- (void) resizeView:(NSRect)frame;
+- (void) drawView;
+
 - (void) gogoWindow;
-- (void) logTest;
 
 @end
 

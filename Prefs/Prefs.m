@@ -10,7 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "Prefs.h"
+#import "superHeader.h"
+#include "prefsTools.h"
 
 void* prefsCache;
 int mainThread = GUI_THREAD_SERIES;
@@ -42,16 +43,20 @@ int mainThread = GUI_THREAD_SERIES;
 	{
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
-			if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
-				return (void*) TAB_SERIE_INACTIVE_CT;
-			else if(mainThread & GUI_THREAD_READER)
-				return (void*) TAB_SERIE_INACTIVE_LECTEUR;
-			else
-			{
-				if((mainThread & GUI_THREAD_SERIES) == 0)
-					NSLog(@"Couldn't identify mainThread in prefs");
-				return (void *) 600;
-			}
+			return (void*) getWidthSerie(mainThread);
+			break;
+		}
+			
+		case PREFS_GET_TAB_CT_WIDTH:
+		{
+			return (void*) getWidthCT(mainThread);
+			break;
+		}
+			
+		case PREFS_GET_TAB_READER_WIDTH:
+		{
+			return  (void*) getWidthReader(mainThread);
+			break;
 		}
 			
 		default:

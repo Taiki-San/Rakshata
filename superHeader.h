@@ -18,6 +18,8 @@
 
 #include "../../../Sources/graphics.h"
 #import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+
 
 #import "utils.h"
 
