@@ -10,6 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface MDL : NSViewCustom
+@interface MDL : NSMainTabView
 
 @end

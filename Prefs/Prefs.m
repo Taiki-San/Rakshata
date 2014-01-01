@@ -14,7 +14,7 @@
 #include "prefsTools.h"
 
 void* prefsCache;
-int mainThread = GUI_THREAD_SERIES;
+int mainThread = GUI_THREAD_READER;
 
 @implementation Prefs
 

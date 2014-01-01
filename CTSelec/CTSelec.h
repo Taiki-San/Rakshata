@@ -13,9 +13,9 @@
 #import "FooterSDrag.h"
 #import "FooterSStatic.h"
 
-@interface CTSelec : NSViewCustom
+@interface CTSelec : NSMainTabView
 {
-	NSView * tabCT;
+
 }
 - (id)init:(NSWindow*)window;
 

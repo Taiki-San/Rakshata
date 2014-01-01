@@ -36,13 +36,13 @@
 {
 	bool needUpdate = false;
 
-	if(size.size.height < SIZE_MIN_HEIGHT || 1)
+	if(size.size.height < SIZE_MIN_HEIGHT)
 	{
 		size.size.height = SIZE_MIN_HEIGHT;
 		needUpdate = true;
 	}
 
-	if(size.size.width < SIZE_MIN_WIDTH || 1)
+	if(size.size.width < SIZE_MIN_WIDTH)
 	{
 		size.size.width = SIZE_MIN_WIDTH;
 		needUpdate = true;

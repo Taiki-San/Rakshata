@@ -19,10 +19,10 @@
     self = [super init];
     if (self)
 	{
-		NSView *superview = window.contentView;
-		tabSerie = [self setUpView:superview:CREATE_CUSTOM_VIEW_TAB_SERIE];
+		flag = GUI_THREAD_SERIES;
+		[self setUpView:window.contentView];
 		
-		[self craftPrefButton:tabSerie.frame];
+		[self craftPrefButton:self.frame];
 		
 		/*Initialise la fenêtre de prefs*/
 		winController = [[PrefsUI alloc] init];
@@ -45,11 +45,12 @@
 	
 	[button setTarget:self];
 	[button setAction:@selector(gogoWindow)];
-	[tabSerie addSubview:button];
+	[self addSubview:button];
 }
 
 - (void) gogoWindow
 {
+	[self setFrame:NSMakeRect(0, 0, self.frame.size.width+50, self.frame.size.height+50)];
 	[winController showPopover];
 }
 

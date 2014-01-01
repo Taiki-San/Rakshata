@@ -12,10 +12,8 @@
 
 #import "PrefsUI.h"
 
-@interface Series : NSViewCustom
-{
-	NSView* tabSerie;
-	
+@interface Series : NSMainTabView
+{	
 	NSButton *button;
 	
 	PrefsUI * winController;

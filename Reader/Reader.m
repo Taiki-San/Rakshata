@@ -19,8 +19,8 @@
     self = [super init];
     if (self)
 	{
-		NSView *superview = window.contentView;
-		tabReader = [self setUpView:superview:CREATE_CUSTOM_VIEW_TAB_READER];
+		flag = GUI_THREAD_READER;
+		[self setUpView:window.contentView];
 	}
     return self;
 }

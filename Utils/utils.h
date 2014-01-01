@@ -14,8 +14,9 @@
 
 /*Custom NSView to add a couple of shared variable*/
 
-@interface NSViewCustom : NSView
+@interface NSMainTabView : NSView
 {
+	//	NSColor* backgroundColor;
 	int flag;
 }
 
@@ -23,9 +24,9 @@
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
-- (NSView *) setUpView: (NSView *)superView : (int)type;
-- (int) convertTypeToPrefArg : (int) type : (bool) getX;
-- (int) getRequestedViewPosX: (int) widthWindow : (int) source;
-- (int) getRequestedViewWidth:(int) widthWindow : (int) source;
+- (NSView *) setUpView: (NSView *)superView;
+- (int) convertTypeToPrefArg : (bool) getX;
+- (int) getRequestedViewPosX: (int) widthWindow;
+- (int) getRequestedViewWidth:(int) widthWindow;
 
 @end

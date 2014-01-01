@@ -16,7 +16,7 @@
 
 #define SUPERHEADER_INCLUDED
 
-#include "../../../Sources/graphics.h"
+#include "graphics.h"
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 

@@ -19,8 +19,8 @@
     self = [super init];
     if (self)
 	{
-		NSView *superview = window.contentView;
-		tabCT = [self setUpView:superview:CREATE_CUSTOM_VIEW_TAB_CT];
+		flag = GUI_THREAD_CT;
+		[self setUpView:window.contentView];
 	}
     return self;
 }
