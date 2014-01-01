@@ -9,6 +9,13 @@
 **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
+#ifndef GRAPHICS_H
+
+#define GRAPHICS_H
+
+#ifndef MUTEX_VAR
+	#define MUTEX_VAR void
+#endif
 
 typedef void(GUI_FUNC) (void * data, bool* cancel);
 typedef struct REQ REQ;
@@ -70,3 +77,5 @@ void GUI_unlockMutex(REQ *request);
 
 /**		Objective-C Primitives	**/
 //#include "ObjC/WindowHandler.h"
+
+#endif

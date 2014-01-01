@@ -33,7 +33,7 @@ typedef struct tome_metadata
 
 typedef struct dataMangas
 {
-    //Infos gÈnÈrales
+    //Infos générales
     char mangaName[LONGUEUR_NOM_MANGA_MAX];
     char mangaNameShort[LONGUEUR_COURT];
     TEAMS_DATA *team;

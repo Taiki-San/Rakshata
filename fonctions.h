@@ -305,11 +305,13 @@ int sortTomes(const void *a, const void *b);
 void versionRak(char *output);
 int positionnementApres(FILE* stream, char *stringToFind);
 int positionnementApresChar(char* input, char *stringToFind);
+void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char *output);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) (caract >= '0' && caract <= '9')
 #define swapValues(a, b) do { a ^= b; b ^= a; a ^= b; } while(0)
+#define MIN(a, b) (a < b ? a : b)
 void hexToDec(const char *input, unsigned char *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);

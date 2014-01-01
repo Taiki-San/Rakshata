@@ -117,6 +117,24 @@ int positionnementApresChar(char* input, char *stringToFind)
     return i;
 }
 
+void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
+{
+	//Only forbiden caracter so far
+	int posInput, posOutput;
+	
+	for(posInput = posOutput = 0; posInput < length; posInput++)
+	{
+		if(input[posInput] == '&')
+		{
+			output[posOutput++] = '%';
+			output[posOutput++] = '2';
+			output[posOutput++] = '6';
+		}
+		else
+			output[posOutput++] = input[posInput];
+	}
+}
+
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
 {
 	char temp[LONGUEUR_NOM_MANGA_MAX] = {0}, buffer[LONGUEUR_COURT] = {0};
@@ -417,6 +435,7 @@ void mergeSort(int * tab, size_t length)
     free(tmp);
 }
 
+#if 0
 ///Unused so far
 
 int removeDuplicate(int * array, int length)
@@ -433,3 +452,4 @@ int removeDuplicate(int * array, int length)
 	}
 	return newLength;
 }
+#endif

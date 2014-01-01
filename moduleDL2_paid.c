@@ -112,7 +112,12 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                         }
                     }
                 }
-                free(bufferOutBak);
+                else
+				{
+					int pos;
+					for(pos = 0; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
+				}
+				free(bufferOutBak);
             }
             free(POSTRequest);
         }
@@ -137,9 +142,16 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factur
     output = malloc(length * sizeof(char));
     if(output != NULL)
     {
+		char bufferURLDepot[3*LONGUEUR_URL], bufferMangaName[3*LONGUEUR_NOM_MANGA_MAX], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
+		
+		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
         snprintf(output, length-1, "ver=%d&mail=%s&id=%d", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL, *factureID);
+
         for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
+			checkIfCharToEscapeFromPOST(data[index[pos]]->datas->team->URL_depot, LONGUEUR_URL, bufferURLDepot);
+			checkIfCharToEscapeFromPOST(data[index[pos]]->datas->mangaName, LONGUEUR_NOM_MANGA_MAX, bufferMangaName);
+			
             snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
                                                                                 compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE,
                                                                                 compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? data[index[pos]]->partOfTome : data[index[pos]]->chapitre);

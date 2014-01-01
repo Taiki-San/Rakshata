@@ -199,10 +199,11 @@ int earlyInit(int argc, char *argv[])
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else
-    int randomPtr = open("/dev/random", O_RDONLY), seed;
-    read(randomPtr, &seed, sizeof(int));
+    int randomPtr = open("/dev/urandom", O_RDONLY);
+	long long seed;
+    read(randomPtr, &seed, sizeof(seed));
     close(randomPtr);
-	srand(time(NULL)+seed); //Initialisation de l'aléatoire
+	srand(time(NULL)^seed); //Initialisation de l'aléatoire
 #endif
 
     char *temp;

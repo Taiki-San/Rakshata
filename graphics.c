@@ -18,6 +18,7 @@ static MUTEX_VAR *GUI_lockAccessSharedRessource;
 static pthread_cond_t wakeUpMainGUIThread = PTHREAD_COND_INITIALIZER;
 static REQ * sharedStruct = NULL;
 
+#warning "Should come from the Prefs class"
 uint32_t currentMainThread = GUI_THREAD_MDL;
 
 /***************				PUBLIC API				***************/
