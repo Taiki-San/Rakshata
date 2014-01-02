@@ -170,7 +170,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
 
 /**Module2_paid.h**/
 void MDLPHandle(DATA_LOADED ** data, int length);
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factureID);
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
 void MDLPHandlePayProcedure(DATA_PAY * arg);
 bool waitForGetPaid(unsigned int factureID);
 void MDLPDestroyCache(unsigned int factureID);

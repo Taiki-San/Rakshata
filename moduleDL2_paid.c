@@ -29,8 +29,8 @@ void MDLPHandle(DATA_LOADED ** data, int length)
     if(index != NULL)
     {
         int sizeIndex;
-        unsigned int randomID;
-        char * POSTRequest = MDLPCraftPOSTRequest(data, index, &randomID);
+        unsigned int factureID = -1;
+        char * POSTRequest = MDLPCraftPOSTRequest(data, index);
 
         if(POSTRequest != NULL)
         {
@@ -46,8 +46,8 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                 if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
                     int prix = -1, pos = 0;
-                    sscanfs(bufferOut, "%d", &prix);
-                    if(prix != -1)
+                    sscanfs(bufferOut, "%d %d", &prix, &factureID);
+                    if(prix != -1 && factureID != -1)
                     {
                         int posStatusLocal = 0;
                         int ** statusLocal = calloc(sizeIndex+1, sizeof(int*));
@@ -137,16 +137,11 @@ void MDLPHandle(DATA_LOADED ** data, int length)
     return;
 }
 
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factureID)
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 {
     int pos, length = strlen(COMPTE_PRINCIPAL_MAIL) + 50, compteur;
     char *output = NULL, buffer[500];
     void *buf;
-
-    do
-    {
-        *factureID = ~rand() | rand();
-    }while(*factureID == 0);
 
     output = malloc(length * sizeof(char));
     if(output != NULL)
@@ -154,7 +149,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index, unsigned int *factur
 		char bufferURLDepot[3*LONGUEUR_URL], bufferMangaName[3*LONGUEUR_NOM_MANGA_MAX], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
 		
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
-        snprintf(output, length-1, "ver=%d&mail=%s&id=%d", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL, *factureID);
+        snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
 
         for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
