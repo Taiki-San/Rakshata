@@ -10,12 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface Reader : NSMainTabView
-{
-
-}
+@interface RakFooter : NSMainTabView
 
 - (id)init:(NSWindow*)window;
-- (void) hideBothTab;
 
 @end

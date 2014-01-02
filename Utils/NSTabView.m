@@ -16,7 +16,7 @@
 
 - (NSView *) setUpView: (NSView *)superView
 {
-	NSRect frame = NSMakeRect([self getRequestedViewPosX: superView.frame.size.width], 0, [self getRequestedViewWidth: superView.frame.size.width], superView.frame.size.height);
+	NSRect frame = [self createFrame:superView];
 	
 	self = [super initWithFrame:frame];
 	[superView addSubview:self];
@@ -24,46 +24,11 @@
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
 	[self drawRect:frame];
-	
-	/*		All the shit between this point and return is for debugging purposes	*/
-	if(flag & (GUI_THREAD_SERIES | GUI_THREAD_CT))
-	{
-		frame.origin.y = frame.size.height * 0.25;
-		frame.size.height *= 0.75;
-
-		if(flag & GUI_THREAD_CT)
-			frame.origin.x = 0;
-	}
-	else
-		frame.origin.x = 0;
-
-	[self drawContentView:frame];
-	
 	return self;
 }
 
 - (void) drawContentView: (NSRect) frame
 {
-	if(flag & GUI_THREAD_SERIES)
-	{
-		frame.origin.y = frame.size.height * 0.25;
-		frame.size.height *= 0.75;
-		[[NSColor redColor] setFill];
-	}
-	
-	else if(flag & GUI_THREAD_CT)
-	{
-		frame.origin.y = frame.size.height * 0.25;
-		frame.size.height *= 0.75;
-		frame.origin.x = 0;
-		[[NSColor blueColor] setFill];
-	}
-	else
-	{
-		frame.origin.x = 0;
-		[[NSColor greenColor] setFill];
-	}
-	
 	NSRectFill(frame);
 }
 
@@ -103,46 +68,45 @@
 }
 
 /*		Utilities		*/
+- (NSRect) createFrame : (NSView*) superView
+{
+	NSRect frame;
+	
+	frame.origin.x = [self getRequestedViewPosX: superView.frame.size.width];
+	frame.origin.y = [self getRequestedViewPosY: superView.frame.size.height];
+	frame.size.width = [self getRequestedViewWidth: superView.frame.size.width];
+	frame.size.height = [self getRequestedViewHeight: superView.frame.size.height];
+	
+	return frame;
+}
+
 - (int) convertTypeToPrefArg : (bool) getX
 {
-	int arg;
-	
-	switch(flag & GUI_THREAD_MASK)
-	{
-		case GUI_THREAD_SERIES:
-		{
-			arg = PREFS_GET_TAB_SERIE_WIDTH;
-			break;
-		}
-			
-		case GUI_THREAD_CT:
-		{
-			arg = PREFS_GET_TAB_CT_WIDTH;
-			break;
-		}
-			
-		case GUI_THREAD_READER:
-		{
-			arg = PREFS_GET_TAB_READER_WIDTH;
-			break;
-		}
-	}
-	
-	if(getX)
-	{
-		arg += PREFS_GET_TAB_SERIE_POSX - PREFS_GET_TAB_SERIE_WIDTH;
-	}
-	return arg;
+	return getX ? PREFS_GET_TAB_SERIE_POSX - PREFS_GET_TAB_SERIE_WIDTH : 0;
 }
 
 - (int) getRequestedViewPosX: (int) widthWindow
 {
-	return widthWindow * (int) [Prefs getPref:[self convertTypeToPrefArg:YES]] / 100;
+	int prefData;
+	[Prefs getPref:[self convertTypeToPrefArg:YES]:&prefData];
+	return widthWindow * prefData / 100;
+}
+
+- (int) getRequestedViewPosY: (int) heightWindow
+{
+	return 0;
 }
 
 - (int) getRequestedViewWidth:(int) widthWindow
 {
-	return widthWindow * (int) [Prefs getPref:[self convertTypeToPrefArg:NO]] / 100;
+	int prefData;
+	[Prefs getPref:[self convertTypeToPrefArg:NO]:&prefData];
+	return widthWindow * prefData / 100;
+}
+
+- (int) getRequestedViewHeight:(int) heightWindow
+{
+	return heightWindow;
 }
 
 - (BOOL) acceptsFirstResponder

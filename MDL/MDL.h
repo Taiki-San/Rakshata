@@ -12,4 +12,6 @@
 
 @interface MDL : NSMainTabView
 
+- (id)init:(NSWindow*)window;
+
 @end

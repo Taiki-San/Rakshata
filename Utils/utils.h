@@ -29,8 +29,11 @@
 - (void) refreshViewSize;
 
 
+- (NSRect) createFrame : (NSView*) superView;
 - (int) convertTypeToPrefArg : (bool) getX;
 - (int) getRequestedViewPosX: (int) widthWindow;
+- (int) getRequestedViewPosY: (int) heightWindow;
 - (int) getRequestedViewWidth:(int) widthWindow;
+- (int) getRequestedViewHeight:(int) heightWindow;
 
 @end

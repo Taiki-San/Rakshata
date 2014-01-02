@@ -12,6 +12,37 @@
 
 #import "superHeader.h"
 
-@interface FooterDrag : Series
+@implementation RakFooter
+
+- (id)init:(NSWindow*)window
+{
+    self = [super init];
+    if (self)
+	{
+		flag = GUI_THREAD_SERIES;
+		[self setUpView:window.contentView];
+		
+	}
+    return self;
+}
+
+- (void) drawContentView: (NSRect) frame
+{
+	[[NSColor yellowColor] setFill];
+	
+	[super drawContentView:frame];
+}
+
+- (int) convertTypeToPrefArg : (bool) getX
+{
+	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
+}
+
+- (int) getRequestedViewHeight:(int)heightWindow
+{
+	int ratio;
+	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT :&ratio];
+	return heightWindow * ratio / 100;
+}
 
 @end

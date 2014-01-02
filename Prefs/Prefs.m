@@ -14,7 +14,7 @@
 #include "prefsTools.h"
 
 void* prefsCache;
-uint mainThread = GUI_THREAD_READER;
+uint mainThread = GUI_THREAD_SERIES;
 uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 
 @implementation Prefs
@@ -35,46 +35,92 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 	
 }
 
-+ (void *) getPref : (int) requestID
++ (void) getPref : (int) requestID : (void*) outputContainer
 {
 	if(prefsCache == NULL)
 		[self initCache];
 	
 	switch(requestID)
 	{
+		case PREFS_GET_MAIN_THREAD:
+		{
+			int* output = outputContainer;
+			*output = mainThread;
+			break;
+		}
+			
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
-			return (void*) getWidthSerie(mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = getWidthSerie(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
-			return (void*) getWidthCT(mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = getWidthCT(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
-			return (void*) getWidthReader(mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = getWidthReader(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
-			return (void*) 0;	//Le tab série est collé au bord gauche
+			int * output = outputContainer;
+			*output = 0;	//Le tab série est collé au bord gauche
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
-			return (void*) getWidthSerie(mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = getWidthSerie(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
-			return (void*) (getWidthSerie(mainThread, stateTabsReader) + getWidthCT(mainThread, stateTabsReader));
+			int * output = outputContainer;
+			*output = (getWidthSerie(mainThread, stateTabsReader) + getWidthCT(mainThread, stateTabsReader));
+			break;
+		}
+			
+		case PREFS_GET_SERIE_FOOTER_HEIGHT:
+		{
+			int *output = outputContainer;
+			*output = TAB_SERIE_FOOTER_HEIGHT;
+			break;
+		}
+			
+		case PREFS_GET_CT_FOOTER_HEIGHT:
+		{
+			int *output = outputContainer;
+			*output = TAB_CT_FOOTER_HEIGHT;
+			break;
+		}
+			
+		case PREFS_GET_READER_FOOTER_HEIGHT:
+		{
+			int *output = outputContainer;
+			*output = TAB_READER_FOOTER_HEIGHT;
+			break;
+		}
+			
+		case PREFS_GET_MDL_FRAME:
+		{
+			getFrameMDL(outputContainer, mainThread, stateTabsReader);
+			break;
+		}
+		case PREFS_GET_MDL_WIDTH_SERIE:
+		{
+			int *output = outputContainer;
+			*output = getWidthSerie(mainThread, stateTabsReader) * TAB_SERIE_MDL_POSX / 100;
 			break;
 		}
 			
@@ -83,7 +129,6 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 			NSLog(@"Couldn't identify request: %d", requestID);
 		}
 	}
-	return NULL;
 }
 
 + (bool) setPref : (uint) requestID : (uint64) value

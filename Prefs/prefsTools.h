@@ -11,6 +11,8 @@
  *********************************************************************************************/
 
 /***********	Get Width	**************/
-uint64 getWidthSerie(int mainThread, int stateTabsReader);
-uint64 getWidthCT(int mainThread, int stateTabsReader);
-uint64 getWidthReader(int mainThread, int stateTabsReader);
+int getWidthSerie(int mainThread, int stateTabsReader);
+int getWidthCT(int mainThread, int stateTabsReader);
+int getWidthReader(int mainThread, int stateTabsReader);
+
+void getFrameMDL(NSRect *frame, int mainThread, int stateTabsReader);

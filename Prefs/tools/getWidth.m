@@ -12,7 +12,7 @@
 
 #import "superHeader.h"
 
-uint64 getWidthSerie(int mainThread, int stateTabsReader)
+int getWidthSerie(int mainThread, int stateTabsReader)
 {
 	if(mainThread & GUI_THREAD_SERIES)
 		return TAB_SERIE_ACTIVE;
@@ -35,7 +35,7 @@ uint64 getWidthSerie(int mainThread, int stateTabsReader)
 	return 0;
 }
 
-uint64 getWidthCT(int mainThread, int stateTabsReader)
+int getWidthCT(int mainThread, int stateTabsReader)
 {
 	if(mainThread & GUI_THREAD_SERIES)
 		return TAB_CT_INACTIVE_SERIE;
@@ -57,7 +57,7 @@ uint64 getWidthCT(int mainThread, int stateTabsReader)
 #endif
 	return 0;
 }
-uint64 getWidthReader(int mainThread, int stateTabsReader)
+int getWidthReader(int mainThread, int stateTabsReader)
 {
 	if(mainThread & GUI_THREAD_SERIES)
 		return TAB_READER_INACTIVE_SERIE;
@@ -79,4 +79,37 @@ uint64 getWidthReader(int mainThread, int stateTabsReader)
 		NSLog(@"Couldn't identify thread: %8x", mainThread);
 #endif
 	return 0;
+}
+
+void getFrameMDL(NSRect *frame, int mainThread, int stateTabsReader)
+{
+	int arg;
+	frame->origin.y = 0;
+	
+	switch(mainThread & GUI_THREAD_MASK)
+	{
+		case GUI_THREAD_SERIES:
+		{
+			[Prefs getPref:PREFS_GET_MDL_WIDTH_SERIE :&arg];		frame->origin.x = arg;
+			frame->size.width = getWidthSerie(mainThread, stateTabsReader) - frame->origin.x;
+			[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &arg];	frame->size.height = arg;
+			break;
+		}
+			
+		case GUI_THREAD_CT:
+		{
+			[Prefs getPref:PREFS_GET_TAB_CT_POSX: &arg];		frame->origin.x = arg;
+			[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT:&arg];	frame->size.height = arg;
+			[Prefs getPref:PREFS_GET_TAB_CT_WIDTH: &arg];		frame->size.width = arg;
+			break;
+		}
+			
+		case GUI_THREAD_READER:
+		{
+			frame->origin.x = 0;
+			[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT :&arg];	frame->size.height = arg;
+			[Prefs getPref:PREFS_GET_TAB_READER_WIDTH :&arg];		frame->size.width = 100 - arg;
+			break;
+		}
+	}
 }

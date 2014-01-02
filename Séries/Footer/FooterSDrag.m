@@ -12,6 +12,6 @@
 
 #import "superHeader.h"
 
-@interface FooterStatic : Series
+@implementation RakFooter (Drag)
 
 @end

@@ -20,10 +20,10 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self validateWindowData:[[self window] frame]];
-	Series* tabSerie = [[Series alloc] init:self.window];
-	CTSelec * tabCT = [[CTSelec alloc] init:self.window];
-	Reader * tabReader = [[Reader alloc] init:self.window];
-	//	[tabSerie drawRect:NSMakeRect(0, 0, tabSerie.frame.size.width, tabSerie.frame.size.height)];
+	[[Series alloc] init:self.window];
+	[[CTSelec alloc] init:self.window];
+	[[Reader alloc] init:self.window];
+	[[MDL alloc] init:self.window];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

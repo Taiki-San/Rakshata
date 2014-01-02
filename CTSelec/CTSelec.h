@@ -10,9 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "FooterSDrag.h"
-#import "FooterSStatic.h"
-
 @interface CTSelec : NSMainTabView
 {
 

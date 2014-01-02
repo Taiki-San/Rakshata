@@ -14,22 +14,58 @@
 
 @implementation MDL
 
-- (id)initWithFrame:(NSRect)frame
+- (id)init:(NSWindow*)window
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_MDL;
-        // Initialization code here.
-    }
+		[self setUpView:window.contentView];
+	}
     return self;
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)drawContentView:(NSRect)frame
 {
-	[super drawRect:dirtyRect];
-	
-    // Drawing code here.
+	[[NSColor grayColor] setFill];
+	[super drawContentView:frame];
 }
+
+- (void) refreshViewSize
+{
+	NSRect frame = [self createFrame:[self superview]];
+	[self setFrameSize:frame.size];
+}
+
+- (NSRect) createFrame:(NSView *)superView
+{
+	NSRect frame;
+	[Prefs getPref:PREFS_GET_MDL_FRAME:&frame];
+	frame.origin.x *= superView.frame.size.width;		frame.origin.x /= 100;
+	frame.origin.y *= superView.frame.size.height;		frame.origin.y /= 100;
+	frame.size.width *= superView.frame.size.width;		frame.size.width /= 100;
+	frame.size.height *= superView.frame.size.height;	frame.size.height /= 100;
+	return frame;
+}
+
+- (int) getRequestedViewPosX:(int) widthWindow
+{
+	NSRect frame;
+	[Prefs getPref:PREFS_GET_MDL_FRAME:&frame];
+	return widthWindow * frame.origin.x / 100;
+}
+
+- (int) getRequestedViewWidth:(int) widthWindow
+{
+	NSRect frame;
+	[Prefs getPref:PREFS_GET_MDL_FRAME:&frame];
+	return widthWindow * frame.size.width / 100;
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	
+}
+
 
 @end

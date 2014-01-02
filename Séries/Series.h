@@ -11,22 +11,18 @@
  *********************************************************************************************/
 
 #import "PrefsUI.h"
+#import "Footer.h"
 
 @interface Series : NSMainTabView
 {	
 	NSButton *button;
+	RakFooter * footer;
 	
 	PrefsUI * winController;
 }
 - (id)init:(NSWindow*)window;
 - (void) craftPrefButton : (NSRect) tabSerieFrame;
 
-- (void) resizeView:(NSRect)frame;
-- (void) drawView;
-
 - (void) gogoWindow;
 
 @end
-
-#import "Footer Static/FooterSStatic.h"
-#import "Footer Drag/FooterSDrag.h"

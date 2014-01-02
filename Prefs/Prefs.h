@@ -17,18 +17,28 @@
 + (void) initCache;
 + (void) rebuildCache;
 + (void) clearCache;
-+ (void *) getPref : (int) requestID;
++ (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;
 
 @end
 
 /*Codes servant à identifier les requêtes*/
-#define PREFS_GET_TAB_SERIE_WIDTH	1
-#define PREFS_GET_TAB_CT_WIDTH		2
-#define PREFS_GET_TAB_READER_WIDTH	3
-#define PREFS_GET_TAB_SERIE_POSX	4	//Les trois élements de chaques blocs doivent se suivre, en revanche, les deux blocs peuvent être séparés
-#define PREFS_GET_TAB_CT_POSX		5
-#define PREFS_GET_TAB_READER_POSX	6
+#define PREFS_GET_MAIN_THREAD			0
+
+#define PREFS_GET_TAB_SERIE_WIDTH		1
+#define PREFS_GET_TAB_CT_WIDTH			2
+#define PREFS_GET_TAB_READER_WIDTH		3
+
+#define PREFS_GET_TAB_SERIE_POSX		4	//Les trois élements de chaques blocs doivent se suivre, en revanche, les deux blocs peuvent être séparés
+#define PREFS_GET_TAB_CT_POSX			5
+#define PREFS_GET_TAB_READER_POSX		6
+
+#define	PREFS_GET_SERIE_FOOTER_HEIGHT	7
+#define PREFS_GET_CT_FOOTER_HEIGHT		8
+#define PREFS_GET_READER_FOOTER_HEIGHT	9
+
+#define PREFS_GET_MDL_FRAME				10
+#define	PREFS_GET_MDL_WIDTH_SERIE		11
 
 #define PREFS_SET_OWNMAINTAB		1
 #define PREFS_SET_READER_TABS_STATE	2
@@ -36,18 +46,22 @@
 
 /*Divers constantes utilisées un peu partout mais renvoyés par Prefs*/
 
-//	Widths of tabs in percents
+//	Widths of tabs in percents by default
 #define TAB_SERIE_ACTIVE					78
 #define TAB_SERIE_INACTIVE_CT				20
 #define TAB_SERIE_INACTIVE_LECTEUR			15
 #define TAB_SERIE_INACTIVE_LECTEUR_REDUCED	3
 #define TAB_SERIE_INACTIVE_DISTRACTION_FREE	0
+#define TAB_SERIE_FOOTER_HEIGHT				25
+#define TAB_SERIE_MDL_POSX					66
+
 
 #define TAB_CT_INACTIVE_SERIE				20
 #define TAB_CT_ACTIVE						70
 #define TAB_CT_INACTIVE_LECTEUR				15
 #define TAB_CT_INACTIVE_LECTEUR_REDUCED		3
 #define TAB_CT_INACTIVE_DISTRACTION_FREE	0
+#define TAB_CT_FOOTER_HEIGHT				25
 
 #define TAB_READER_INACTIVE_SERIE			2
 #define TAB_READER_INACTIVE_CT				10
@@ -55,6 +69,7 @@
 #define TAB_READER_ACTIVE_PARTIAL			82
 #define TAB_READER_ACTIVE_FULL				94
 #define TAB_READER_ACTIVE_DISTRACTION_FREE	100
+#define TAB_READER_FOOTER_HEIGHT			25
 
 //	State of tabs in the reader
 #define STATE_READER_TAB_DEFAULT			STATE_READER_TAB_SERIE_COLLAPSED

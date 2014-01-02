@@ -10,26 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "superHeader.h"
-
-@implementation FooterDrag
-
-- (id)initWithFrame:(NSRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self)
-	{
-		flag = GUI_THREAD_MDL;	//On initialise les flags
-        // Initialization code here.
-    }
-    return self;
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-	[super drawRect:dirtyRect];
-	
-    // Drawing code here.
-}
+@interface RakFooter : Series
 
 @end

@@ -27,6 +27,10 @@
 		/*Initialise la fenêtre de prefs*/
 		winController = [[PrefsUI alloc] init];
 		[winController setAnchor:button];
+		
+		/*Initialise le bandeau inférieur*/
+		footer = [[RakFooter alloc] init:window];
+		[self addSubview:footer];
 	}
     return self;
 }
@@ -54,23 +58,18 @@
 	[winController showPopover];
 }
 
-- (void) resizeView:(NSRect)frame
+- (void) drawContentView: (NSRect) frame
 {
-
-}
-
-- (void) drawView
-{
-
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-	[[NSColor whiteColor] setFill];
-	NSRectFill(dirtyRect);
-	[super drawRect:dirtyRect];
+	//frame.origin.y = frame.size.height * 0.25;
+	//frame.size.height *= 0.75;
+	[[NSColor redColor] setFill];
 	
-    // Drawing code here.
+	[super drawContentView:frame];
+}
+
+- (int) convertTypeToPrefArg : (bool) getX
+{
+	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
 }
 
 @end

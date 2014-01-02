@@ -10,12 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface Reader : NSMainTabView
-{
+#import "superHeader.h"
 
-}
-
-- (id)init:(NSWindow*)window;
-- (void) hideBothTab;
+@implementation RakFooter (Static)
 
 @end

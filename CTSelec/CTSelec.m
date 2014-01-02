@@ -24,11 +24,20 @@
 	}
     return self;
 }
-- (void)drawRect:(NSRect)dirtyRect
+
+- (void)drawContentView:(NSRect)frame
 {
-	[super drawRect:dirtyRect];
-	
-    // Drawing code here.
+	/*frame.origin.y = frame.size.height * 0.25;
+	frame.size.height *= 0.75;
+	frame.origin.x = 0;*/
+	[[NSColor blueColor] setFill];
+
+	[super drawContentView:frame];
+}
+
+- (int) convertTypeToPrefArg : (bool) getX
+{
+	return PREFS_GET_TAB_CT_WIDTH + [super convertTypeToPrefArg:getX];
 }
 
 @end
