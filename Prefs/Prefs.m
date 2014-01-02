@@ -14,7 +14,8 @@
 #include "prefsTools.h"
 
 void* prefsCache;
-int mainThread = GUI_THREAD_READER;
+uint mainThread = GUI_THREAD_READER;
+uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 
 @implementation Prefs
 
@@ -34,28 +35,28 @@ int mainThread = GUI_THREAD_READER;
 	
 }
 
-+ (void *) getPref : (int) request
++ (void *) getPref : (int) requestID
 {
 	if(prefsCache == NULL)
 		[self initCache];
 	
-	switch(request)
+	switch(requestID)
 	{
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
-			return (void*) getWidthSerie(mainThread);
+			return (void*) getWidthSerie(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
-			return (void*) getWidthCT(mainThread);
+			return (void*) getWidthCT(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
-			return (void*) getWidthReader(mainThread);
+			return (void*) getWidthReader(mainThread, stateTabsReader);
 			break;
 		}
 			
@@ -67,22 +68,49 @@ int mainThread = GUI_THREAD_READER;
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
-			return (void*) getWidthSerie(mainThread);
+			return (void*) getWidthSerie(mainThread, stateTabsReader);
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
-			return (void*) (getWidthSerie(mainThread) + getWidthCT(mainThread));
+			return (void*) (getWidthSerie(mainThread, stateTabsReader) + getWidthCT(mainThread, stateTabsReader));
 			break;
 		}
 			
 		default:
 		{
-			NSLog(@"Couldn't identify request: %d", request);
+			NSLog(@"Couldn't identify request: %d", requestID);
 		}
 	}
 	return NULL;
 }
 
++ (bool) setPref : (uint) requestID : (uint64) value
+{
+	bool ret_value = false;
+	
+	if(prefsCache == NULL)
+		[self initCache];
+	
+	switch (requestID)
+	{
+		case PREFS_SET_OWNMAINTAB:
+		{
+			ret_value = mainThread != (uint) value;
+			mainThread = value & GUI_MASK;
+			break;
+		}
+			
+		case PREFS_SET_READER_TABS_STATE:
+		{
+			ret_value = stateTabsReader == (uint) value;
+			stateTabsReader = value & STATE_READER_TAB_MASK;
+		}
+
+		default:
+			break;
+	}
+	return ret_value;
+}
 @end

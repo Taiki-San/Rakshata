@@ -11,6 +11,6 @@
  *********************************************************************************************/
 
 /***********	Get Width	**************/
-uint64 getWidthSerie(int mainThread);
-uint64 getWidthCT(int mainThread);
-uint64 getWidthReader(int mainThread);
+uint64 getWidthSerie(int mainThread, int stateTabsReader);
+uint64 getWidthCT(int mainThread, int stateTabsReader);
+uint64 getWidthReader(int mainThread, int stateTabsReader);

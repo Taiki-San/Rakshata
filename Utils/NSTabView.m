@@ -20,37 +20,89 @@
 	
 	self = [super initWithFrame:frame];
 	[superView addSubview:self];
-	
-	/*		All the shit between this point and return is for debugging purposes	*/
-	if(flag & GUI_THREAD_SERIES)
-	{
-		frame.origin.y = frame.size.height * 0.25;
-		frame.size.height *= 0.75;
-	}
-	else
-		frame.origin.x = 0;
-	
-	NSColorWell *background = [[NSColorWell alloc] initWithFrame:frame];
-	
-	if(flag & GUI_THREAD_SERIES)
-		[background setColor:[NSColor redColor]];
-	else if(flag & GUI_THREAD_CT)
-		[background setColor:[NSColor blueColor]];
-	else
-		[background setColor:[NSColor greenColor]];
-	
-	[background setBordered:NO];
-	[self addSubview:background];
-	[background release];
-	
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
 	[self drawRect:frame];
 	
+	/*		All the shit between this point and return is for debugging purposes	*/
+	if(flag & (GUI_THREAD_SERIES | GUI_THREAD_CT))
+	{
+		frame.origin.y = frame.size.height * 0.25;
+		frame.size.height *= 0.75;
+
+		if(flag & GUI_THREAD_CT)
+			frame.origin.x = 0;
+	}
+	else
+		frame.origin.x = 0;
+
+	[self drawContentView:frame];
+	
 	return self;
 }
 
+- (void) drawContentView: (NSRect) frame
+{
+	if(flag & GUI_THREAD_SERIES)
+	{
+		frame.origin.y = frame.size.height * 0.25;
+		frame.size.height *= 0.75;
+		[[NSColor redColor] setFill];
+	}
+	
+	else if(flag & GUI_THREAD_CT)
+	{
+		frame.origin.y = frame.size.height * 0.25;
+		frame.size.height *= 0.75;
+		frame.origin.x = 0;
+		[[NSColor blueColor] setFill];
+	}
+	else
+	{
+		frame.origin.x = 0;
+		[[NSColor greenColor] setFill];
+	}
+	
+	NSRectFill(frame);
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+	[self drawContentView:dirtyRect];
+    [super drawRect:dirtyRect];
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+		[self refreshMainViews];
+}
+
+- (void) refreshMainViews
+{
+	NSView *superView = self.superview;
+	NSUInteger i, count = [superView.subviews count];
+	
+	for (i = 0; i < count; [superView.subviews[i++] refreshViewSize]);
+}
+
+- (void) refreshViewSize
+{
+	NSView * superView = [self superview];
+	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: superView.frame.size.width], superView.frame.size.height)];
+}
+
+- (void)setFrameSize:(NSSize)newSize
+{
+	int widthWindow = ((NSView*) self.window.contentView).frame.size.width;
+	NSPoint point = NSMakePoint([self getRequestedViewPosX:widthWindow], 0);
+	newSize.width = [self getRequestedViewWidth:widthWindow];
+	[super setFrameSize:newSize];
+	[self setFrameOrigin:point];
+}
+
+/*		Utilities		*/
 - (int) convertTypeToPrefArg : (bool) getX
 {
 	int arg;
@@ -93,21 +145,9 @@
 	return widthWindow * (int) [Prefs getPref:[self convertTypeToPrefArg:NO]] / 100;
 }
 
-- (void) drawRect:(NSRect) dirtyRect
+- (BOOL) acceptsFirstResponder
 {
-
-}
-
-/* Handle Live Resize	*/
-
-- (void)setFrameSize:(NSSize)newSize
-{
-	int widthWindow = ((NSView*) self.window.contentView).frame.size.width;
-	NSPoint point = NSMakePoint([self getRequestedViewPosX:widthWindow], 0);
-	newSize.width = [self getRequestedViewWidth:widthWindow];
-	[super setFrameSize:newSize];
-	[self setFrameOrigin:point];
-	[self.subviews[0] setFrameSize:newSize];
+	return YES;
 }
 
 @end

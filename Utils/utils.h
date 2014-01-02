@@ -16,7 +16,6 @@
 
 @interface NSMainTabView : NSView
 {
-	//	NSColor* backgroundColor;
 	int flag;
 }
 
@@ -25,6 +24,11 @@
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
 - (NSView *) setUpView: (NSView *)superView;
+- (void) drawContentView: (NSRect) frame;
+- (void) refreshMainViews;
+- (void) refreshViewSize;
+
+
 - (int) convertTypeToPrefArg : (bool) getX;
 - (int) getRequestedViewPosX: (int) widthWindow;
 - (int) getRequestedViewWidth:(int) widthWindow;
