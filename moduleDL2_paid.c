@@ -45,9 +45,9 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                 snprintf(URL, 200, "https://%s/checkPaid.php", SERVEUR_URL);
                 if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
-                    int prix = 0, pos = 0;
-                    sscanfs(bufferOut, "%d",&prix);
-                    if(prix != 0)
+                    int prix = -1, pos = 0;
+                    sscanfs(bufferOut, "%d", &prix);
+                    if(prix != -1)
                     {
                         int posStatusLocal = 0;
                         int ** statusLocal = calloc(sizeIndex+1, sizeof(int*));
@@ -92,6 +92,9 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                     pos++;
                                 }
                             }
+							
+							for(; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);	//Manque
+							
                             if(needLogin)
                             {
                                 DATA_PAY * arg = malloc(sizeof(DATA_PAY));
@@ -111,6 +114,12 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                 free(statusLocal);
                         }
                     }
+					else
+					{
+						int pos;
+						for(pos = 0; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
+					}
+
                 }
                 else
 				{

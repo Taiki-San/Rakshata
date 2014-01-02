@@ -57,6 +57,8 @@ struct REQ
 
 #define GUI_MODE_MASK				0x000000FF
 
+#define GUI_MASK					(GUI_THREAD_MASK|GUI_WINDOW_MASK|GUI_MODE_MASK)
+
 #define GUI_MAINTHREAD_QUIT			(GUI_THREAD_MASK|GUI_WINDOW_MASK|GUI_MODE_MASK)	//Code bloqué, réservé au message _quit_
 
 /** Public prototypes	**/
