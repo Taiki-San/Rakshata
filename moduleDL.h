@@ -34,17 +34,17 @@ extern pthread_mutex_t mutexAskUIThreadWIP;
 #define HAUTEUR_TEXTE_INSTALLATION 55
 
 /*Codes*/
-#define MDL_CODE_UNPAID -4
-#define MDL_CODE_INTERNAL_ERROR -3
-#define MDL_CODE_ERROR_INSTALL -2
-#define MDL_CODE_ERROR_DL -1
-#define MDL_CODE_DEFAULT 0
-#define MDL_CODE_WAITING_PAY 1
-#define MDL_CODE_WAITING_LOGIN 2
-#define MDL_CODE_DL 3
-#define MDL_CODE_DL_OVER 4
-#define MDL_CODE_INSTALL 5
-#define MDL_CODE_INSTALL_OVER 6
+#define MDL_CODE_UNPAID				-4
+#define MDL_CODE_INTERNAL_ERROR		-3
+#define MDL_CODE_ERROR_INSTALL		-2
+#define MDL_CODE_ERROR_DL			-1
+#define MDL_CODE_DEFAULT			0
+#define MDL_CODE_WAITING_PAY		1
+#define MDL_CODE_WAITING_LOGIN		2
+#define MDL_CODE_DL					3
+#define MDL_CODE_DL_OVER			4
+#define MDL_CODE_INSTALL			5
+#define MDL_CODE_INSTALL_OVER		6
 #define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
 
 #define MDLP_CODE_ERROR 0  //En cas de données insuffisante, calloc met directement error aux manquants

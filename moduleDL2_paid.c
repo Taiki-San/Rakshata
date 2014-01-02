@@ -320,10 +320,9 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length)
 
 bool MDLPCheckIfPaid(unsigned int factureID)
 {
-    char URL[300], POST[150], output[50];
-    snprintf(URL, 300, "https://%s/checkOrder.php", SERVEUR_URL);
-    snprintf(POST, 150, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-    if(download_mem(URL, POST, output, 50, SSL_ON) == CODE_RETOUR_OK)
+    char URL[300], output[50];
+    snprintf(URL, 300, "https://%s/order/%d", SERVEUR_URL, factureID);
+    if(download_mem(URL, NULL, output, 50, SSL_ON) == CODE_RETOUR_OK)
     {
         if(output[0] == '1')
             return true;

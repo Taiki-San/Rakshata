@@ -42,6 +42,7 @@
 #endif
 
 /*Environnement*/
+#define STORE_URL	"store.rakshata.com"
 #define SERVEUR_URL "rsp.rakshata.com"
 #define BACKUP_INTERNET_CHECK "http://www.apple.com/library/test/success.html"
 
