@@ -12,10 +12,15 @@
 
 @interface Reader : NSMainTabView
 {
-
+	int sharedTokenCheckIfSameSession;
 }
 
 - (id)init:(NSWindow*)window;
+
+- (void) collapseAllTabs;
 - (void) hideBothTab;
+- (void) unhideBothTab;
+- (void) hideCursor;
+
 
 @end

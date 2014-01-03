@@ -28,6 +28,7 @@
 - (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;
 
+-(BOOL) isCursorOnMe;
 
 - (NSRect) createFrame : (NSView*) superView;
 - (int) convertTypeToPrefArg : (bool) getX;

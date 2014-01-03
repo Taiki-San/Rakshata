@@ -38,12 +38,6 @@
     [super drawRect:dirtyRect];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
-{
-	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
-		[self refreshLevelViews : [self superview]];
-}
-
 - (void) refreshLevelViews : (NSView*) superView
 {
 	NSUInteger i, count = [superView.subviews count];
@@ -68,7 +62,35 @@
 	[self setFrameOrigin:frame.origin];
 }
 
-/*		Utilities		*/
+/**		Events		**/
+
+- (BOOL) acceptsFirstResponder
+{
+	return YES;
+}
+
+-(BOOL) isCursorOnMe
+{
+	NSPoint mouseLoc = [NSEvent mouseLocation], selfLoc = self.frame.origin;
+	NSSize selfSize = self.frame.size;
+	
+	if(selfLoc.x < mouseLoc.x && selfLoc.x + selfSize.width >= mouseLoc.x &&
+		selfLoc.y < mouseLoc.y && selfLoc.y + selfSize.height >= mouseLoc.y)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+		[self refreshLevelViews : [self superview]];
+}
+
+
+/*		Graphic Utilities		*/
 - (NSRect) createFrame : (NSView*) superView
 {
 	NSRect frame;
@@ -108,11 +130,6 @@
 - (int) getRequestedViewHeight:(int) heightWindow
 {
 	return heightWindow;
-}
-
-- (BOOL) acceptsFirstResponder
-{
-	return YES;
 }
 
 @end

@@ -27,11 +27,7 @@
 
 - (void)drawContentView:(NSRect)frame
 {
-	/*frame.origin.y = frame.size.height * 0.25;
-	frame.size.height *= 0.75;
-	frame.origin.x = 0;*/
 	[[NSColor blueColor] setFill];
-
 	[super drawContentView:frame];
 }
 
