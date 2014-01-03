@@ -58,6 +58,12 @@
 	[winController showPopover];
 }
 
+- (void) refreshViewSize
+{
+	[super refreshViewSize];
+	[self refreshLevelViews: self];
+}
+
 - (void) drawContentView: (NSRect) frame
 {
 	//frame.origin.y = frame.size.height * 0.25;

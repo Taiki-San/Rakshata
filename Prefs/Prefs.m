@@ -112,15 +112,27 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 			break;
 		}
 			
-		case PREFS_GET_MDL_FRAME:
+		case PREFS_GET_MDL_WIDTH:
 		{
-			getFrameMDL(outputContainer, mainThread, stateTabsReader);
+			getMDLWidth(outputContainer, mainThread, stateTabsReader);
 			break;
 		}
-		case PREFS_GET_MDL_WIDTH_SERIE:
+			
+		case PREFS_GET_MDL_HEIGHT:
 		{
-			int *output = outputContainer;
-			*output = getWidthSerie(mainThread, stateTabsReader) * TAB_SERIE_MDL_POSX / 100;
+			getMDLHeight(outputContainer, mainThread, stateTabsReader);
+			break;
+		}
+			
+		case PREFS_GET_MDL_POS_Y:
+		{
+			getMDLPosY(outputContainer, mainThread, stateTabsReader);
+			break;
+		}
+			
+		case PREFS_GET_MDL_POS_X:
+		{
+			getMDLPosX(outputContainer, mainThread, stateTabsReader);
 			break;
 		}
 			

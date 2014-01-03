@@ -65,11 +65,11 @@ int getWidthReader(int mainThread, int stateTabsReader)
 		return TAB_READER_INACTIVE_CT;
 	else if(mainThread & GUI_THREAD_READER)
 	{
-		if(stateTabsReader & STATE_READER_NONE_COLLAPSED)
+		if(stateTabsReader == STATE_READER_NONE_COLLAPSED)
 			return TAB_READER_ACTIVE;
-		else if(stateTabsReader & STATE_READER_TAB_ALL_COLLAPSED)
+		else if(stateTabsReader == STATE_READER_TAB_ALL_COLLAPSED)
 			return TAB_READER_ACTIVE_FULL;
-		else if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
+		else if(stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
 			return TAB_READER_ACTIVE_DISTRACTION_FREE;
 		else
 			return TAB_READER_ACTIVE_PARTIAL;
@@ -81,35 +81,83 @@ int getWidthReader(int mainThread, int stateTabsReader)
 	return 0;
 }
 
-void getFrameMDL(NSRect *frame, int mainThread, int stateTabsReader)
+/**		Code MDL	**/
+
+void getMDLWidth(int * output, int mainThread, int stateTabsReader)
 {
-	int arg;
-	frame->origin.y = 0;
-	
 	switch(mainThread & GUI_THREAD_MASK)
 	{
 		case GUI_THREAD_SERIES:
 		{
-			[Prefs getPref:PREFS_GET_MDL_WIDTH_SERIE :&arg];		frame->origin.x = arg;
-			frame->size.width = getWidthSerie(mainThread, stateTabsReader) - frame->origin.x;
-			[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &arg];	frame->size.height = arg;
+			*output = TAB_SERIE_MDL_WIDTH;
 			break;
 		}
 			
 		case GUI_THREAD_CT:
 		{
-			[Prefs getPref:PREFS_GET_TAB_CT_POSX: &arg];		frame->origin.x = arg;
-			[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT:&arg];	frame->size.height = arg;
-			[Prefs getPref:PREFS_GET_TAB_CT_WIDTH: &arg];		frame->size.width = arg;
+			[Prefs getPref:PREFS_GET_TAB_CT_WIDTH: output];
 			break;
 		}
 			
 		case GUI_THREAD_READER:
 		{
-			frame->origin.x = 0;
-			[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT :&arg];	frame->size.height = arg;
-			[Prefs getPref:PREFS_GET_TAB_READER_WIDTH :&arg];		frame->size.width = 100 - arg;
+			[Prefs getPref:PREFS_GET_TAB_READER_WIDTH :output];
+			*output = 100 - *output;
 			break;
 		}
 	}
+}
+
+void getMDLHeight(int * output, int mainThread, int stateTabsReader)
+{
+	switch(mainThread & GUI_THREAD_MASK)
+	{
+		case GUI_THREAD_SERIES:
+		{
+			[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: output];
+			break;
+		}
+			
+		case GUI_THREAD_CT:
+		{
+			[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: output];
+			break;
+		}
+			
+		case GUI_THREAD_READER:
+		{
+			[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT: output];
+			break;
+		}
+	}
+}
+
+void getMDLPosX(int * output, int mainThread, int stateTabsReader)
+{
+	switch(mainThread & GUI_THREAD_MASK)
+	{
+		case GUI_THREAD_SERIES:
+		{
+			getMDLWidth(output, mainThread, stateTabsReader);
+			*output = getWidthSerie(mainThread, stateTabsReader) - *output;
+			break;
+		}
+			
+		case GUI_THREAD_CT:
+		{
+			[Prefs getPref:PREFS_GET_TAB_CT_POSX: output];
+			break;
+		}
+			
+		case GUI_THREAD_READER:
+		{
+			*output = 0;
+			break;
+		}
+	}
+}
+
+void getMDLPosY(int * output, int mainThread, int stateTabsReader)
+{
+	*output = 0;
 }

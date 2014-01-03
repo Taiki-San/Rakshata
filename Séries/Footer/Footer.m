@@ -33,6 +33,19 @@
 	[super drawContentView:frame];
 }
 
+- (void)setFrameSize: (NSSize)newSize
+{
+	int mainThread;
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	if(mainThread & flag)
+	{
+		[self setHidden:NO];
+		[super setFrameSize:newSize];
+	}
+	else
+		[self setHidden:YES];
+}
+
 - (int) convertTypeToPrefArg : (bool) getX
 {
 	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];

@@ -10,12 +10,5 @@
  **                                                                                          **
  *********************************************************************************************/
 
-/***********	Get Width	**************/
-int getWidthSerie(int mainThread, int stateTabsReader);
-int getWidthCT(int mainThread, int stateTabsReader);
-int getWidthReader(int mainThread, int stateTabsReader);
-
-void getMDLPosX(int * output, int mainThread, int stateTabsReader);
-void getMDLPosY(int * output, int mainThread, int stateTabsReader);
-void getMDLHeight(int * output, int mainThread, int stateTabsReader);
-void getMDLWidth(int * output, int mainThread, int stateTabsReader);
+#define PREFS_SET_OWNMAINTAB		1
+#define PREFS_SET_READER_TABS_STATE	2

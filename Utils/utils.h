@@ -25,7 +25,7 @@
 
 - (NSView *) setUpView: (NSView *)superView;
 - (void) drawContentView: (NSRect) frame;
-- (void) refreshMainViews;
+- (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;
 
 

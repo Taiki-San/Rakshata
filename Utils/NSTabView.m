@@ -41,15 +41,18 @@
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
-		[self refreshMainViews];
+		[self refreshLevelViews : [self superview]];
 }
 
-- (void) refreshMainViews
+- (void) refreshLevelViews : (NSView*) superView
 {
-	NSView *superView = self.superview;
 	NSUInteger i, count = [superView.subviews count];
 	
-	for (i = 0; i < count; [superView.subviews[i++] refreshViewSize]);
+	for (i = 0; i < count; i++)
+	{
+		if([superView.subviews[i] respondsToSelector:@selector(refreshViewSize)])
+			[superView.subviews[i] refreshViewSize];
+	}
 }
 
 - (void) refreshViewSize
@@ -60,11 +63,9 @@
 
 - (void)setFrameSize:(NSSize)newSize
 {
-	int widthWindow = ((NSView*) self.window.contentView).frame.size.width;
-	NSPoint point = NSMakePoint([self getRequestedViewPosX:widthWindow], 0);
-	newSize.width = [self getRequestedViewWidth:widthWindow];
-	[super setFrameSize:newSize];
-	[self setFrameOrigin:point];
+	NSRect frame = [self createFrame:[self superview]];
+	[super setFrameSize:frame.size];
+	[self setFrameOrigin:frame.origin];
 }
 
 /*		Utilities		*/
