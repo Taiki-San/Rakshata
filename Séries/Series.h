@@ -13,9 +13,9 @@
 #import "PrefsUI.h"
 #import "Footer.h"
 
-@interface Series : NSMainTabView
+@interface Series : RakTabView
 {	
-	NSButton *button;
+	NSRakButton *button;
 	RakFooter * footer;
 	
 	PrefsUI * winController;

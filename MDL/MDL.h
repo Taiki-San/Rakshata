@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface MDL : NSMainTabView
+@interface MDL : RakTabView
 
 - (id)init:(NSWindow*)window;
 

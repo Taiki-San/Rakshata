@@ -78,13 +78,15 @@
 
 - (void) hideBothTab
 {
-	NSView * superView = [self superview];
-	NSUInteger i, count = [[superView subviews] count];
+	NSArray *subView = [[self superview] subviews];
+	NSView *subViewView;
+	NSUInteger i, count = [subView count];
 	
 	for(i = 0; i < count; i++)
 	{
-		if([superView subviews][i] != self)
-			[[superView subviews][i] setHidden:YES];
+		subViewView = [subView objectAtIndex:i];
+		if(subViewView != self)
+			[subViewView setHidden:YES];
 	}
 	[Prefs setPref:PREFS_SET_READER_TABS_STATE :STATE_READER_TAB_DISTRACTION_FREE];
 	[self refreshLevelViews:[self superview]];
@@ -92,13 +94,15 @@
 
 - (void) unhideBothTab
 {
-	NSView * superView = [self superview];
-	NSUInteger i, count = [[superView subviews] count];
+	NSArray *subView = [[self superview] subviews];
+	NSView *subViewView;
+	NSUInteger i, count = [subView count];
 	
 	for(i = 0; i < count; i++)
 	{
-		if([[superView subviews][i] isHidden])
-			[[superView subviews][i] setHidden:NO];
+		subViewView = [subView objectAtIndex:i];
+		if([subViewView isHidden])
+			[subViewView setHidden:NO];
 	}
 }
 

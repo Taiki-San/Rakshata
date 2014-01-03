@@ -41,7 +41,7 @@
 	
 	frame.origin.x = 25;			frame.origin.y = tabSerieFrame.size.height - 45;
 	frame.size.width = 65;			frame.size.height = 25;
-	button = [[NSButton alloc] initWithFrame:frame];
+	button = [[NSRakButton alloc] initWithFrame:frame];
 	
 	[button setTitle:@"Prefs"];
 	[button setButtonType:NSMomentaryLightButton];
@@ -58,6 +58,12 @@
 	[winController showPopover];
 }
 
+- (void) setFrameSize:(NSSize)newSize
+{
+	[super setFrameSize:newSize];
+	[button refreshViewSize];
+}
+
 - (void) refreshViewSize
 {
 	[super refreshViewSize];
@@ -66,10 +72,7 @@
 
 - (void) drawContentView: (NSRect) frame
 {
-	//frame.origin.y = frame.size.height * 0.25;
-	//frame.size.height *= 0.75;
 	[[NSColor redColor] setFill];
-	
 	[super drawContentView:frame];
 }
 

@@ -12,7 +12,7 @@
 
 #import "superHeader.h"
 
-@implementation NSMainTabView
+@implementation RakTabView
 
 - (NSView *) setUpView: (NSView *)superView
 {
@@ -40,12 +40,15 @@
 
 - (void) refreshLevelViews : (NSView*) superView
 {
-	NSUInteger i, count = [superView.subviews count];
+	NSArray *subView = [superView subviews];
+	RakTabView *subViewView;
+	NSUInteger i, count = [subView count];
 	
-	for (i = 0; i < count; i++)
+	for(i = 0; i < count; i++)
 	{
-		if([superView.subviews[i] respondsToSelector:@selector(refreshViewSize)])
-			[superView.subviews[i] refreshViewSize];
+		subViewView = [subView objectAtIndex:i];
+		if([subViewView respondsToSelector:@selector(refreshViewSize)])
+			[subViewView refreshViewSize];
 	}
 }
 

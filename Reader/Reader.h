@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface Reader : NSMainTabView
+@interface Reader : RakTabView
 {
 	int sharedTokenCheckIfSameSession;
 }

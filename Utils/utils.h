@@ -14,7 +14,7 @@
 
 /*Custom NSView to add a couple of shared variable*/
 
-@interface NSMainTabView : NSView
+@interface RakTabView : NSView
 {
 	int flag;
 }
@@ -36,5 +36,11 @@
 - (int) getRequestedViewPosY: (int) heightWindow;
 - (int) getRequestedViewWidth:(int) widthWindow;
 - (int) getRequestedViewHeight:(int) heightWindow;
+
+@end
+
+@interface NSRakButton: NSButton
+
+- (void) refreshViewSize;
 
 @end

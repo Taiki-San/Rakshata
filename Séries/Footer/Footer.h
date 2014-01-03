@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface RakFooter : NSMainTabView
+@interface RakFooter : RakTabView
 
 - (id)init:(NSWindow*)window;
 

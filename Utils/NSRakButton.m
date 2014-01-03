@@ -10,10 +10,17 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@interface CTSelec : RakTabView
-{
+#import "superHeader.h"
 
+@implementation NSRakButton
+
+- (void) refreshViewSize
+{
+	NSPoint newPos;
+	newPos.x = 25;
+	newPos.y = self.superview.frame.size.height - 45;
+		
+	[self setFrameOrigin:newPos];
 }
-- (id)init:(NSWindow*)window;
 
 @end

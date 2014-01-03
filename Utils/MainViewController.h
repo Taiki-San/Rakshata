@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-
 @interface MainViewController : NSViewController
 - (id)initWithFrame:(NSRect)frame;
 @end
