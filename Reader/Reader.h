@@ -12,10 +12,11 @@
 
 @interface Reader : RakTabView
 {
-	int sharedTokenCheckIfSameSession;
+	int gonnaReduceTabs;
 }
 
 - (id)init:(NSWindow*)window;
+- (void) initReaderMainView;
 
 - (void) collapseAllTabs;
 - (void) hideBothTab;

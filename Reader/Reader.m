@@ -20,7 +20,7 @@
     if (self)
 	{
 		flag = GUI_THREAD_READER;
-		sharedTokenCheckIfSameSession = 0;
+		gonnaReduceTabs = 0;
 		[self setUpView:window.contentView];
 	}
     return self;
@@ -50,22 +50,33 @@
 
 - (void) refreshViewSize
 {
-	int mainThread;
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	if(mainThread & flag)
+	if(gonnaReduceTabs)
 	{
-		if(sharedTokenCheckIfSameSession == 0)
-		{
-			int copy;
-			sharedTokenCheckIfSameSession = copy = rand();
-			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(sharedTokenCheckIfSameSession == copy){[self collapseAllTabs];}	});
-		}
+		bool isReaderMode;
+		[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
+		if(!isReaderMode)
+			gonnaReduceTabs = 0;
 	}
-	else
-		sharedTokenCheckIfSameSession = 0;
 	
 	[super refreshViewSize];
+}
+
+- (void) readerIsOpening
+{
+	int copy;
+	gonnaReduceTabs = copy = rand();
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
+}
+
+- (void) initReaderMainView
+{
+	
+}
+
+- (void) resizeReaderCatchArea
+{
+	
 }
 
 /**	Hide stuffs	**/

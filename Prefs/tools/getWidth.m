@@ -12,7 +12,7 @@
 
 #import "superHeader.h"
 
-int getWidthSerie(int mainThread, int stateTabsReader)
+int getWidthSerie(int mainThread, int stateTabsReader, bool toGetPosX)
 {
 	if(mainThread & GUI_THREAD_SERIES)
 		return TAB_SERIE_ACTIVE;
@@ -20,12 +20,12 @@ int getWidthSerie(int mainThread, int stateTabsReader)
 		return TAB_SERIE_INACTIVE_CT;
 	else if(mainThread & GUI_THREAD_READER)
 	{
-		if(stateTabsReader & STATE_READER_TAB_SERIE_COLLAPSED)
-			return TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
-		else if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
+		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
 			return TAB_SERIE_INACTIVE_DISTRACTION_FREE;
-		else
+		else if(!toGetPosX || stateTabsReader & STATE_READER_TAB_SERIE_FOCUS)
 			return TAB_SERIE_INACTIVE_LECTEUR;
+		else
+			return TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
 		
 	}
 #ifdef DEV_VERSION
@@ -35,7 +35,7 @@ int getWidthSerie(int mainThread, int stateTabsReader)
 	return 0;
 }
 
-int getWidthCT(int mainThread, int stateTabsReader)
+int getWidthCT(int mainThread, int stateTabsReader, bool toGetPosX)
 {
 	if(mainThread & GUI_THREAD_SERIES)
 		return TAB_CT_INACTIVE_SERIE;
@@ -43,13 +43,12 @@ int getWidthCT(int mainThread, int stateTabsReader)
 		return TAB_CT_ACTIVE;
 	else if(mainThread & GUI_THREAD_READER)
 	{
-		if(stateTabsReader & STATE_READER_TAB_CT_COLLAPSED)
-			return TAB_CT_INACTIVE_LECTEUR_REDUCED;
-		else if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
+		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
 			return TAB_CT_INACTIVE_DISTRACTION_FREE;
-		else
+		else if(!toGetPosX || stateTabsReader & STATE_READER_TAB_CT_FOCUS)
 			return TAB_CT_INACTIVE_LECTEUR;
-		
+		else
+			return TAB_CT_INACTIVE_LECTEUR_REDUCED;
 	}
 #ifdef DEV_VERSION
 	else
@@ -139,7 +138,7 @@ void getMDLPosX(int * output, int mainThread, int stateTabsReader)
 		case GUI_THREAD_SERIES:
 		{
 			getMDLWidth(output, mainThread, stateTabsReader);
-			*output = getWidthSerie(mainThread, stateTabsReader) - *output;
+			*output = getWidthSerie(mainThread, stateTabsReader, false) - *output;
 			break;
 		}
 			

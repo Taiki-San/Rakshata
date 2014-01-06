@@ -17,6 +17,8 @@
 @interface RakTabView : NSView
 {
 	int flag;
+	bool readerMode;
+	NSTrackingArea * trackingArea;
 }
 
 #define CREATE_CUSTOM_VIEW_TAB_SERIE	1
@@ -27,6 +29,14 @@
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;
+
+- (void) readerIsOpening;
+- (void) resizeReaderCatchArea;
+- (void) releaseReaderCatchArea;
+
+- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
+- (void) applyRefreshSizeReaderChecks;
+- (BOOL) isStillCollapsedReaderTab;
 
 -(BOOL) isCursorOnMe;
 

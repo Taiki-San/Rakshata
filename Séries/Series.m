@@ -81,4 +81,22 @@
 	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
 }
 
+/**		Reader		**/
+- (BOOL) isStillCollapsedReaderTab
+{
+	int state;
+	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
+	return (state & STATE_READER_TAB_SERIE_FOCUS) == 0;
+}
+
+- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+{
+	int var;
+	NSRect frame = viewFrame;
+	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&var];
+	frame.size.width = (var * self.window.frame.size.width / 100);
+	frame.origin.x = frame.origin.y = 0;
+	return frame;
+}
+
 @end

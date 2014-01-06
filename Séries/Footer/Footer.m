@@ -58,4 +58,9 @@
 	return heightWindow * ratio / 100;
 }
 
+- (void) applyRefreshSizeReaderChecks
+{
+	
+}
+
 @end

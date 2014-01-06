@@ -52,14 +52,14 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = getWidthSerie(mainThread, stateTabsReader);
+			*output = getWidthSerie(mainThread, stateTabsReader, false);
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = getWidthCT(mainThread, stateTabsReader);
+			*output = getWidthCT(mainThread, stateTabsReader, false);
 			break;
 		}
 			
@@ -80,14 +80,14 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			int * output = outputContainer;
-			*output = getWidthSerie(mainThread, stateTabsReader);
+			*output = getWidthSerie(mainThread, stateTabsReader, true);
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
 			int * output = outputContainer;
-			*output = (getWidthSerie(mainThread, stateTabsReader) + getWidthCT(mainThread, stateTabsReader));
+			*output = (getWidthSerie(mainThread, stateTabsReader, true) + getWidthCT(mainThread, stateTabsReader, true));
 			break;
 		}
 			
@@ -136,6 +136,20 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 			break;
 		}
 			
+		case PREFS_GET_IS_READER_MT:
+		{
+			bool * data = outputContainer;
+			*data = (mainThread & GUI_THREAD_READER) != 0;
+			break;
+		}
+			
+		case PREFS_GET_READER_TABS_STATE:
+		{
+			int * output = outputContainer;
+			*output = stateTabsReader;
+			break;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);
@@ -163,6 +177,39 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 		{
 			ret_value = stateTabsReader == (uint) value;
 			stateTabsReader = value & STATE_READER_TAB_MASK;
+			break;
+		}
+			
+		case PREFS_SET_READER_TABS_STATE_FROM_CALLER:
+		{
+			int newValue = 0;
+			switch(value)
+			{
+				case GUI_THREAD_SERIES:
+				{
+					newValue = STATE_READER_TAB_SERIE_FOCUS;
+					break;
+				}
+				case GUI_THREAD_CT:
+				{
+					newValue = STATE_READER_TAB_CT_FOCUS;
+					break;
+				}
+				case GUI_THREAD_MDL:
+				{
+					newValue = STATE_READER_TAB_MDL_FOCUS;
+					break;
+				}
+			}
+			if(!newValue)
+				ret_value = false;
+			else
+			{
+				ret_value = stateTabsReader == (uint) newValue;
+				stateTabsReader = newValue;
+			}
+			
+			break;
 		}
 
 		default:

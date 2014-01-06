@@ -24,6 +24,12 @@
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
 	[self drawRect:frame];
+	
+	int mainThread;
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	readerMode = (mainThread & GUI_THREAD_READER) != 0;
+	trackingArea = NULL;
+		
 	return self;
 }
 
@@ -56,6 +62,8 @@
 {
 	NSView * superView = [self superview];
 	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: superView.frame.size.width], superView.frame.size.height)];
+	
+	[self applyRefreshSizeReaderChecks];
 }
 
 - (void)setFrameSize:(NSSize)newSize
@@ -65,12 +73,75 @@
 	[self setFrameOrigin:frame.origin];
 }
 
-/**		Events		**/
+/**		Reader		**/
 
-- (BOOL) acceptsFirstResponder
+- (void) readerIsOpening
 {
-	return YES;
+	//Appelé quand les tabs ont été réduits
+	if([self isCursorOnMe])
+	{
+		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
+		[self refreshLevelViews:[self superview]];
+	}
+	else
+	{
+		[self resizeReaderCatchArea];
+	}
 }
+
+- (void) resizeReaderCatchArea
+{
+	[self releaseReaderCatchArea];
+	
+	if([self isStillCollapsedReaderTab])
+	{
+		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+		[self addTrackingArea:trackingArea];
+	}
+}
+
+- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+{
+	return viewFrame;
+}
+
+- (void) applyRefreshSizeReaderChecks
+{
+	bool isReaderMode;
+	[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
+	
+	if(!readerMode && isReaderMode)
+	{
+		readerMode = true;
+		[self readerIsOpening];
+	}
+	else if(readerMode && isReaderMode)
+	{
+		[self resizeReaderCatchArea];
+	}
+	else
+	{
+		readerMode = false;
+		[trackingArea release];
+	}
+}
+
+- (BOOL) isStillCollapsedReaderTab
+{
+	return true;
+}
+
+- (void) releaseReaderCatchArea
+{
+	if(trackingArea != NULL)
+	{
+		[self removeTrackingArea:trackingArea];
+		[trackingArea release];
+		trackingArea = NULL;
+	}
+}
+
+/**		Events		**/
 
 -(BOOL) isCursorOnMe
 {
@@ -86,9 +157,20 @@
 	return false;
 }
 
+- (void)mouseMoved:(NSEvent *)theEvent
+{
+	[self mouseEntered:theEvent];
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+		[self refreshLevelViews : [self superview]];
+}
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 		[self refreshLevelViews : [self superview]];
 }
 

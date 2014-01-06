@@ -11,8 +11,8 @@
  *********************************************************************************************/
 
 /***********	Get Width	**************/
-int getWidthSerie(int mainThread, int stateTabsReader);
-int getWidthCT(int mainThread, int stateTabsReader);
+int getWidthSerie(int mainThread, int stateTabsReader, bool toGetPosX);
+int getWidthCT(int mainThread, int stateTabsReader, bool toGetPosX);
 int getWidthReader(int mainThread, int stateTabsReader);
 
 void getMDLPosX(int * output, int mainThread, int stateTabsReader);
