@@ -44,7 +44,6 @@
 
 - (void) refreshLevelViews:(NSView *)superView
 {
-	[Prefs setPref:PREFS_SET_READER_TABS_STATE :STATE_READER_TAB_DEFAULT];
 	[super refreshLevelViews:superView];
 }
 
@@ -74,9 +73,23 @@
 	
 }
 
+/**	NSTrackingArea	**/
+
+- (BOOL) isStillCollapsedReaderTab
+{
+	int state;
+	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
+	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
+}
+
 - (void) resizeReaderCatchArea
 {
-	
+	if([self isStillCollapsedReaderTab])
+		[super resizeReaderCatchArea];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent
+{
 }
 
 /**	Hide stuffs	**/

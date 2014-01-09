@@ -37,7 +37,7 @@
 	[self setFrameSize:frame.size];
 }
 
-- (void) mouseDown:(NSEvent *)theEvent
+- (void) resizeReaderCatchArea
 {
 	
 }

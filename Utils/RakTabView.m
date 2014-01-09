@@ -92,16 +92,14 @@
 - (void) resizeReaderCatchArea
 {
 	[self releaseReaderCatchArea];
-	
-	if([self isStillCollapsedReaderTab])
-	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
-		[self addTrackingArea:trackingArea];
-	}
+		
+	trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+	[self addTrackingArea:trackingArea];
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
+	viewFrame.origin.x = viewFrame.origin.y = 0;
 	return viewFrame;
 }
 
@@ -122,7 +120,11 @@
 	else
 	{
 		readerMode = false;
-		[trackingArea release];
+		if(trackingArea != NULL)
+		{
+			[trackingArea release];
+			trackingArea = NULL;
+		}
 	}
 }
 
@@ -157,11 +159,6 @@
 	return false;
 }
 
-- (void)mouseMoved:(NSEvent *)theEvent
-{
-	[self mouseEntered:theEvent];
-}
-
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
@@ -172,6 +169,17 @@
 {
 	if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 		[self refreshLevelViews : [self superview]];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent
+{
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+			if(![self isStillCollapsedReaderTab])
+				{
+					if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
+						[self refreshLevelViews : [self superview]];
+				}
+		});
 }
 
 

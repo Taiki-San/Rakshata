@@ -175,14 +175,14 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 			
 		case PREFS_SET_READER_TABS_STATE:
 		{
-			ret_value = stateTabsReader == (uint) value;
+			ret_value = stateTabsReader != (uint) value;
 			stateTabsReader = value & STATE_READER_TAB_MASK;
 			break;
 		}
 			
 		case PREFS_SET_READER_TABS_STATE_FROM_CALLER:
 		{
-			int newValue = 0;
+			int newValue = -1;
 			switch(value)
 			{
 				case GUI_THREAD_SERIES:
@@ -200,12 +200,20 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 					newValue = STATE_READER_TAB_MDL_FOCUS;
 					break;
 				}
+				case GUI_THREAD_READER:
+				{
+					newValue = STATE_READER_TAB_ALL_COLLAPSED;
+					break;
+				}
 			}
-			if(!newValue)
+			if(newValue == -1)
+			{
 				ret_value = false;
+				NSLog(@"Couldn't identify thread in PREFS_SET_READER_TABS_STATE_FROM_CALLER");
+			}
 			else
 			{
-				ret_value = stateTabsReader == (uint) newValue;
+				ret_value = stateTabsReader != (uint) newValue;
 				stateTabsReader = newValue;
 			}
 			
