@@ -58,12 +58,12 @@ typedef struct
 #if BYTE_ORDER == BIG_ENDIAN
 
 #	define LE32(x) MirrorBytes32(x)
-unsigned __int32 MirrorBytes32 (unsigned __int32 x)
+uint32_t MirrorBytes32 (uint32_t x)
 {
-	unsigned __int32 n = (unsigned __int8) x;
-	n <<= 8; n |= (unsigned __int8) (x >> 8);
-	n <<= 8; n |= (unsigned __int8) (x >> 16);
-	return (n << 8) | (unsigned __int8) (x >> 24);
+	uint32_t n = (uint8_t) x;
+	n <<= 8; n |= (uint8_t) (x >> 8);
+	n <<= 8; n |= (uint8_t) (x >> 16);
+	return (n << 8) | (uint8_t) (x >> 24);
 }
 
 #else
