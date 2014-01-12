@@ -104,7 +104,7 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                     arg->somethingToPay = somethingToPay;
                                     arg->sizeStatusLocal = posStatusLocal;
                                     arg->statusLocal = statusLocal;
-                                    arg->factureID = randomID;
+                                    arg->factureID = factureID;
                                     createNewThread(MDLPHandlePayProcedure, arg);
                                 }
                                 else
