@@ -227,7 +227,7 @@ void affichageRepoIconnue()
 int UI_Alert(char* titre, char* contenu)
 {
     int ret_value = 0;
-#ifdef __APPLE__
+#ifdef __APPLE__NO
 	NSAlert * alert = [NSAlert alertWithMessageText: [NSString stringWithFormat:@"%s", titre]
 									  defaultButton: @"Ok"
 									alternateButton: nil
