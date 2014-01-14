@@ -64,10 +64,8 @@ int getWidthReader(int mainThread, int stateTabsReader)
 		return TAB_READER_INACTIVE_CT;
 	else if(mainThread & GUI_THREAD_READER)
 	{
-		if(stateTabsReader == STATE_READER_NONE_COLLAPSED)
+		if(stateTabsReader == STATE_READER_TAB_ALL_COLLAPSED)
 			return TAB_READER_ACTIVE;
-		else if(stateTabsReader == STATE_READER_TAB_ALL_COLLAPSED)
-			return TAB_READER_ACTIVE_FULL;
 		else if(stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
 			return TAB_READER_ACTIVE_DISTRACTION_FREE;
 		else

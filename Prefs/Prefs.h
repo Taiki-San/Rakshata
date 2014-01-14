@@ -5,14 +5,37 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
 #define DEV_VERSION
 
+
+
+#include "RakPrefsDeepData.h"
+
 @interface Prefs : NSObject
+{
+	// Prefs "sécurisés"
+	NSString * email;
+	
+	//	Prefs unencrypted
+	int langue;
+	BOOL startInFullscreen;
+	
+	// Contexte
+	uint mainThread;		//Default : GUI_THREAD_SERIES
+	uint stateTabsReader;	//Default : STATE_READER_TAB_DEFAULT
+	uint backgroundTabsWhenMDLActive;
+	
+	// Prefs taille/pos elements (pourcentages)
+	RakWidthSeries	*	tabSerieWidth;
+	RakWidthCT		*	tabCTWidth;
+	RakWidthReader	*	tabReaderWidth;
+	
+}
 
 + (void) initCache;
 + (void) rebuildCache;

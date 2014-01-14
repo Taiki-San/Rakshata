@@ -33,20 +33,15 @@
 	anchor = newAnchor;
 }
 
-// -------------------------------------------------------------------------------
-//  createPopover
-// -------------------------------------------------------------------------------
 - (void)createPopover
 {
     if (popover == nil)
     {
-        // create and setup our popover
         popover = [[NSPopover alloc] init];
         
 		popover.contentViewController = viewControllerHUD;
         popover.appearance = 1;
 		
-		//Get if animation have to be set from Prefs /  animates = YES
         popover.animates = YES;
         
         // AppKit will close the popover when the user interacts with a user interface element outside the popover.
@@ -58,11 +53,6 @@
     }
 }
 
-
-
-// -------------------------------------------------------------------------------
-//  dealloc
-// -------------------------------------------------------------------------------
 - (void)dealloc
 {
 	if(anchor == nil)
@@ -71,9 +61,6 @@
     [super dealloc];
 }
 
-// -------------------------------------------------------------------------------
-//  showPopoverAction:sender
-// -------------------------------------------------------------------------------
 - (void)showPopover
 {
     [self createPopover];

@@ -37,11 +37,6 @@
 	[self setFrameSize:frame.size];
 }
 
-- (void) resizeReaderCatchArea
-{
-	
-}
-
 /**	 Get View Size	**/
 
 - (int) convertTypeToPrefArg : (bool) getX

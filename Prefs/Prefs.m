@@ -13,14 +13,20 @@
 #import "superHeader.h"
 #include "prefsTools.h"
 
-void* prefsCache;
+Prefs* prefsCache;
 uint mainThread = GUI_THREAD_SERIES;
 uint stateTabsReader = STATE_READER_TAB_DEFAULT;
+uint backgroundTabsState = GUI_THREAD_SERIES;
 
 @implementation Prefs
 
 + (void) initCache
 {
+	prefsCache = [Prefs alloc];
+	if(prefsCache != NULL)
+	{
+		[prefsCache init];
+	}
 	//We'll have to cache the old encrypted prefs /!\ prefs de crypto à protéger!!!
 	//Also, need to get the open prefs including tabs size, theme and various stuffs
 }
@@ -52,21 +58,21 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = getWidthSerie(mainThread, stateTabsReader, false);
+			*output = [prefsCache->tabSerieWidth getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = getWidthCT(mainThread, stateTabsReader, false);
+			*output = [prefsCache->tabCTWidth getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = getWidthReader(mainThread, stateTabsReader);
+			*output = [prefsCache->tabReaderWidth getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
@@ -225,4 +231,26 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 	}
 	return ret_value;
 }
+
+/************		Private sections		************/
+
+- (id) init
+{
+	self = [super init];
+	if(self != nil)
+	{
+		char staticTest[] = "ffffffffffffffff";
+		
+		tabSerieWidth = [RakWidthSeries alloc];
+		[tabSerieWidth init:staticTest];
+		
+		tabCTWidth = [RakWidthCT alloc];
+		[tabCTWidth init:staticTest];
+		
+		tabReaderWidth = [RakWidthReader alloc];
+		[tabReaderWidth init:staticTest];
+	}
+	return self;
+}
+
 @end
