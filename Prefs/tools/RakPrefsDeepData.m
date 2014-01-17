@@ -12,7 +12,7 @@
 
 #include "superHeader.h"
 
-#define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 7
+#define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 10
 
 uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 
@@ -60,19 +60,23 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	else if(mainThread & GUI_THREAD_READER)
 	{
 		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
-			ret_value = 3;
+			ret_value = 6;
+		else if(stateTabsReader & STATE_READER_TAB_ALL_COLLAPSED)
+			ret_value = 5;
+		else if(stateTabsReader & [self getFlagFocus])	//Si on a le focus
+			ret_value = 4;
 		else
-			ret_value = 2;
+			ret_value = 3;
 		
 	}
 	else if(mainThread & GUI_THREAD_MDL)
 	{
 		if(backgroundTabsWhenMDLActive & GUI_THREAD_SERIES)
-			ret_value = 4;
+			ret_value = 7;
 		else if(backgroundTabsWhenMDLActive & GUI_THREAD_CT)
-			ret_value = 5;
+			ret_value = 8;
 		else if(backgroundTabsWhenMDLActive & GUI_THREAD_READER)
-			ret_value = 6;
+			ret_value = 9;
 		else
 #ifdef DEV_VERSION
 			NSLog(@"%s: couldn't identify request for MDL: %8x %8x %8x", __PRETTY_FUNCTION__, mainThread, backgroundTabsWhenMDLActive, stateTabsReader);
@@ -87,10 +91,13 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	jumpTable[0] = @selector(getDefaultFocusSerie);
 	jumpTable[1] = @selector(getDefaultFocusCT);
 	jumpTable[2] = @selector(getDefaultFocusReader);
-	jumpTable[3] = @selector(getDefaultFocusReaderDFMode);
-	jumpTable[4] = @selector(getDefaultFocusMDLInSerie);
-	jumpTable[5] = @selector(getDefaultFocusMDLInCT);
-	jumpTable[6] = @selector(getDefaultFocusMDLInReader);
+	jumpTable[3] = @selector(getDefaultFocusReaderOneCollapsed);
+	jumpTable[4] = @selector(getDefaultFocusReaderMainTab);
+	jumpTable[5] = @selector(getDefaultFocusReaderAllCollapsed);
+	jumpTable[6] = @selector(getDefaultFocusReaderDFMode);
+	jumpTable[7] = @selector(getDefaultFocusMDLInSerie);
+	jumpTable[8] = @selector(getDefaultFocusMDLInCT);
+	jumpTable[9] = @selector(getDefaultFocusMDLInReader);
 }
 
 - (void) setAtIndex: (uint8_t) index : (uint8_t) data
@@ -114,20 +121,35 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 		}
 		case 3:
 		{
-			focusReaderDFMode = data;
+			focusReaderOneCollapsed = data;
 			break;
 		}
 		case 4:
 		{
-			focusMDLInSerie = data;
+			focusReaderMainTab = data;
 			break;
 		}
 		case 5:
 		{
-			focusMDLInCT = data;
+			focusReaderAllCollapsed = data;
 			break;
 		}
 		case 6:
+		{
+			focusReaderDFMode = data;
+			break;
+		}
+		case 7:
+		{
+			focusMDLInSerie = data;
+			break;
+		}
+		case 8:
+		{
+			focusMDLInCT = data;
+			break;
+		}
+		case 9:
 		{
 			focusMDLInReader = data;
 			break;
@@ -150,20 +172,29 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 
 		case 1:
 			return focusCT;
-
+			
 		case 2:
 			return focusReader;
-
+			
 		case 3:
-			return focusReaderDFMode;
-
+			return focusReaderOneCollapsed;
+			
 		case 4:
-			return focusMDLInSerie;
-
+			return focusReaderMainTab;
+			
 		case 5:
-			return focusMDLInCT;
+			return focusReaderAllCollapsed;
 
 		case 6:
+			return focusReaderDFMode;
+
+		case 7:
+			return focusMDLInSerie;
+
+		case 8:
+			return focusMDLInCT;
+
+		case 9:
 			return focusMDLInReader;
 
 		default:
@@ -176,6 +207,11 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	return 0xff;
 }
 
+- (uint8_t) getFlagFocus
+{
+	return STATE_READER_TAB_MASK;
+}
+
 - (uint8_t) getDefaultFocusSerie
 {
 	return 0;
@@ -191,185 +227,39 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	return 0;
 }
 
-- (uint8_t) getDefaultFocusReaderDFMode
-{
-	return 0;
-}
-
-- (uint8_t) getDefaultFocusMDLInSerie
-{
-	return 0;
-}
-
-- (uint8_t) getDefaultFocusMDLInCT
-{
-	return 0;
-}
-
-- (uint8_t) getDefaultFocusMDLInReader
-{
-	return 0;
-}
-
-@end
-
-@implementation RakWidthSeries
-
-- (uint8_t) getDefaultFocusSerie
-{
-	return TAB_SERIE_ACTIVE;
-}
-
-- (uint8_t) getDefaultFocusCT
-{
-	return TAB_SERIE_INACTIVE_CT;
-}
-
-- (uint8_t) getDefaultFocusReader
-{
-	return TAB_SERIE_INACTIVE_LECTEUR;
-}
-
-- (uint8_t) getDefaultFocusReaderDFMode
-{
-	return TAB_SERIE_INACTIVE_DISTRACTION_FREE;
-}
-
-- (uint8_t) getDefaultFocusMDLInSerie
-{
-	return [self getDefaultFocusSerie];
-}
-
-- (uint8_t) getDefaultFocusMDLInCT
-{
-	return [self getDefaultFocusCT];
-}
-
-- (uint8_t) getDefaultFocusMDLInReader
+- (uint8_t) getDefaultFocusReaderOneCollapsed
 {
 	return [self getDefaultFocusReader];
 }
 
-@end
-
-@implementation RakWidthCT
-
-- (uint8_t) getDefaultFocusSerie
-{
-	return TAB_CT_INACTIVE_SERIE;
-}
-
-- (uint8_t) getDefaultFocusCT
-{
-	return TAB_CT_ACTIVE;
-}
-
-- (uint8_t) getDefaultFocusReader
-{
-	return TAB_CT_INACTIVE_LECTEUR;
-}
-
-- (uint8_t) getDefaultFocusReaderDFMode
-{
-	return TAB_CT_INACTIVE_DISTRACTION_FREE;
-}
-
-- (uint8_t) getDefaultFocusMDLInSerie
-{
-	return [self getDefaultFocusSerie];
-}
-
-- (uint8_t) getDefaultFocusMDLInCT
-{
-	return [self getDefaultFocusCT];
-}
-
-- (uint8_t) getDefaultFocusMDLInReader
+- (uint8_t) getDefaultFocusReaderMainTab
 {
 	return [self getDefaultFocusReader];
 }
 
-@end
-
-@implementation RakWidthReader
-
-- (void) setNumberElem
-{
-	numberElem = 8;
-}
-
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data
-{
-	if(index == 7)
-	{
-		focusReaderPartial = data;
-	}
-	else
-	{
-		[super setAtIndex:index :data];
-	}
-}
-
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
-{
-	if(mainThread & GUI_THREAD_READER && stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_CT_FOCUS))
-		return 7;
-	else
-		return [super getIndexFromInput:mainThread :backgroundTabsWhenMDLActive :stateTabsReader];
-}
-
-- (uint8_t) getAtIndex: (uint8_t) index
-{
-	if(index == 7)
-		return focusReaderPartial;
-	else
-		return [super getAtIndex:index];
-}
-
-- (void) initJumpTable : (SEL *) jumpTable
-{
-	[super initJumpTable:jumpTable];
-	jumpTable[7] = @selector(getDefaultFocusReaderPartial);
-}
-
-- (uint8_t) getDefaultFocusSerie
-{
-	return TAB_READER_INACTIVE_SERIE;
-}
-
-- (uint8_t) getDefaultFocusCT
-{
-	return TAB_READER_INACTIVE_CT;
-}
-
-- (uint8_t) getDefaultFocusReader
-{
-	return TAB_READER_ACTIVE;		//All Collapsed
-}
-
-- (uint8_t) getDefaultFocusReaderDFMode
-{
-	return TAB_READER_ACTIVE_DISTRACTION_FREE;
-}
-
-- (uint8_t) getDefaultFocusMDLInSerie
-{
-	return [self getDefaultFocusSerie];
-}
-
-- (uint8_t) getDefaultFocusMDLInCT
-{
-	return [self getDefaultFocusCT];
-}
-
-- (uint8_t) getDefaultFocusMDLInReader
+- (uint8_t) getDefaultFocusReaderAllCollapsed
 {
 	return [self getDefaultFocusReader];
 }
 
-- (uint8_t) getDefaultFocusReaderPartial
+- (uint8_t) getDefaultFocusReaderDFMode
 {
-	return TAB_READER_ACTIVE_PARTIAL;
+	return 0;
+}
+
+- (uint8_t) getDefaultFocusMDLInSerie
+{
+	return 0;
+}
+
+- (uint8_t) getDefaultFocusMDLInCT
+{
+	return 0;
+}
+
+- (uint8_t) getDefaultFocusMDLInReader
+{
+	return 0;
 }
 
 @end

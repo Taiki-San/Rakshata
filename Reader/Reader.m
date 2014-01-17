@@ -42,11 +42,6 @@
 	return PREFS_GET_TAB_READER_WIDTH + [super convertTypeToPrefArg:getX];
 }
 
-- (void) refreshLevelViews:(NSView *)superView
-{
-	[super refreshLevelViews:superView];
-}
-
 - (void) refreshViewSize
 {
 	if(gonnaReduceTabs)

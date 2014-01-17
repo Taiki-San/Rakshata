@@ -17,6 +17,9 @@
 	uint8_t focusSerie;
 	uint8_t focusCT;
 	uint8_t focusReader;
+	uint8_t focusReaderOneCollapsed;
+	uint8_t focusReaderMainTab;
+	uint8_t focusReaderAllCollapsed;
 	uint8_t focusReaderDFMode;
 	uint8_t focusMDLInSerie;
 	uint8_t focusMDLInCT;
@@ -30,15 +33,22 @@
 - (uint8_t) getAtIndex: (uint8_t) index;
 - (uint8_t) getData: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
 
+- (uint8_t) getFlagFocus;
+
 - (uint8_t) getDefaultFocusSerie;
 - (uint8_t) getDefaultFocusCT;
 - (uint8_t) getDefaultFocusReader;
+- (uint8_t) getDefaultFocusReaderOneCollapsed;
+- (uint8_t) getDefaultFocusReaderMainTab;
+- (uint8_t) getDefaultFocusReaderAllCollapsed;
 - (uint8_t) getDefaultFocusReaderDFMode;
 - (uint8_t) getDefaultFocusMDLInSerie;
 - (uint8_t) getDefaultFocusMDLInCT;
 - (uint8_t) getDefaultFocusMDLInReader;
 
 @end
+
+/**		Data	**/
 
 @interface RakWidthSeries : RakPrefsDeepData
 
@@ -49,10 +59,17 @@
 @end
 
 @interface RakWidthReader : RakPrefsDeepData
-{
-	uint8_t focusReaderPartial;
-}
 
-- (uint8_t) getDefaultFocusReaderPartial;
 @end
 
+@interface RakPosXSeries : RakPrefsDeepData
+
+@end
+
+@interface RakPosXCT : RakPrefsDeepData
+
+@end
+
+@interface RakPosXReader : RakPrefsDeepData
+
+@end

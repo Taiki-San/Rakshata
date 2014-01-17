@@ -29,6 +29,11 @@
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	readerMode = (mainThread & GUI_THREAD_READER) != 0;
 	trackingArea = NULL;
+	
+	if(readerMode)
+	{
+		[self readerIsOpening];
+	}
 		
 	return self;
 }

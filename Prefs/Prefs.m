@@ -14,7 +14,7 @@
 #include "prefsTools.h"
 
 Prefs* prefsCache;
-uint mainThread = GUI_THREAD_SERIES;
+uint mainThread = GUI_THREAD_READER;
 uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 uint backgroundTabsState = GUI_THREAD_SERIES;
 
