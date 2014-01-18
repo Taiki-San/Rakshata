@@ -14,8 +14,10 @@
 #include "prefsTools.h"
 
 Prefs* prefsCache;
-uint mainThread = GUI_THREAD_READER;
-uint stateTabsReader = STATE_READER_TAB_DEFAULT;
+
+// Contexte
+uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
+uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
 uint backgroundTabsState = GUI_THREAD_SERIES;
 
 @implementation Prefs
@@ -79,21 +81,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
 			int * output = outputContainer;
-			*output = 0;	//Le tab série est collé au bord gauche
+			*output = [prefsCache->tabSeriePosX getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			int * output = outputContainer;
-			*output = getWidthSerie(mainThread, stateTabsReader, true);
+			*output = [prefsCache->tabCTPosX getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
 			int * output = outputContainer;
-			*output = (getWidthSerie(mainThread, stateTabsReader, true) + getWidthCT(mainThread, stateTabsReader, true));
+			*output = [prefsCache->tabReaderPosX getData: mainThread : backgroundTabsState: stateTabsReader];
 			break;
 		}
 			
@@ -239,18 +241,86 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	self = [super init];
 	if(self != nil)
 	{
-		char staticTest[] = "ffffffffffffffff";
+		char staticTest[] = "ffffffffffffffffffffffffff";
 		
+		//Width
 		tabSerieWidth = [RakWidthSeries alloc];
-		[tabSerieWidth init:staticTest];
-		
 		tabCTWidth = [RakWidthCT alloc];
-		[tabCTWidth init:staticTest];
-		
 		tabReaderWidth = [RakWidthReader alloc];
-		[tabReaderWidth init:staticTest];
+		
+		if(tabSerieWidth == NULL || tabCTWidth == NULL || tabReaderWidth == NULL)
+			[self flushMemory:YES];
+		
+		[tabSerieWidth init: prefsCache: staticTest];
+		[tabCTWidth init: prefsCache: staticTest];
+		[tabReaderWidth init: prefsCache: staticTest];
+		
+		//Pos X
+		tabSeriePosX = [RakPosXSeries alloc];
+		tabCTPosX = [RakPosXCT alloc];
+		tabReaderPosX = [RakPosXReader alloc];
+		
+		if(tabSeriePosX == NULL || tabCTPosX == NULL || tabReaderPosX == NULL)
+			[self flushMemory:YES];
+
+		[tabSeriePosX init: prefsCache: staticTest];
+		[tabCTPosX init: prefsCache: staticTest];
+		[tabReaderPosX init: prefsCache: staticTest];
+		
+		[checkConsistencyWidthPosXRakPrefsDeepData performTest:prefsCache :1 :true];
 	}
 	return self;
+}
+
+- (void) flushMemory : (bool) memoryError
+{
+	if(tabSerieWidth != NULL)
+		[tabSerieWidth release];
+	
+	if(tabCTWidth != NULL)
+		[tabCTWidth release];
+	
+	if(tabReaderWidth != NULL)
+		[tabReaderWidth release];
+	
+	if(tabSeriePosX != NULL)
+		[tabSeriePosX release];
+	
+	if(tabCTPosX != NULL)
+		[tabCTPosX release];
+	
+	if(tabReaderPosX != NULL)
+		[tabReaderPosX release];
+	
+	if(memoryError)
+		[[NSException exceptionWithName:@"NotEnoughMemory"
+							 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
+}
+
+- (NSArray *) executeConsistencyChecks : (uint8) request
+{
+	NSArray *array = [NSArray alloc];
+	if(array == NULL)
+		return NULL;
+	
+	switch(request)
+	{
+		case 1:
+		{
+			array = [array initWithObjects:tabSerieWidth, tabCTWidth, tabReaderWidth, tabSeriePosX, tabCTPosX, tabReaderPosX, nil];
+			break;
+		}
+		default:
+		{
+#ifdef DEV_VERSION
+			NSLog(@"WTF! %s couldn't identify request: %d", __PRETTY_FUNCTION__, request);
+#endif
+			[array release];
+			array = NULL;
+			break;
+		}
+	}
+	return array;
 }
 
 @end

@@ -12,8 +12,6 @@
 
 #define DEV_VERSION
 
-
-
 #include "RakPrefsDeepData.h"
 
 @interface Prefs : NSObject
@@ -25,15 +23,14 @@
 	int langue;
 	BOOL startInFullscreen;
 	
-	// Contexte
-	uint mainThread;		//Default : GUI_THREAD_SERIES
-	uint stateTabsReader;	//Default : STATE_READER_TAB_DEFAULT
-	uint backgroundTabsWhenMDLActive;
-	
 	// Prefs taille/pos elements (pourcentages)
 	RakWidthSeries	*	tabSerieWidth;
 	RakWidthCT		*	tabCTWidth;
 	RakWidthReader	*	tabReaderWidth;
+	
+	RakPosXSeries	*	tabSeriePosX;
+	RakPosXCT		*	tabCTPosX;
+	RakPosXReader	*	tabReaderPosX;
 	
 }
 
@@ -43,6 +40,8 @@
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;
 
+//Not public, only called by subprefs
+- (NSArray *) executeConsistencyChecks : (uint8) request;
 @end
 
 #include "prefsRequest.h"

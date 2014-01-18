@@ -10,9 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class Prefs;
+
 @interface RakPrefsDeepData : NSObject
 {
 	int numberElem;
+	Prefs* mammouth;
 	
 	uint8_t focusSerie;
 	uint8_t focusCT;
@@ -26,14 +29,15 @@
 	uint8_t focusMDLInReader;
 }
 
-- (id) init : (char *) inputData;
+- (id) init : (Prefs*) creator : (char *) inputData;
 - (void) initJumpTable : (SEL *) jumpTable;
 - (void) setAtIndex: (uint8_t) index : (uint8_t) data;
 - (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
 - (uint8_t) getAtIndex: (uint8_t) index;
 - (uint8_t) getData: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
 
-- (uint8_t) getFlagFocus;
+- (int) getNbElem;
+- (void) performSelfCheck;
 
 - (uint8_t) getDefaultFocusSerie;
 - (uint8_t) getDefaultFocusCT;
@@ -45,6 +49,12 @@
 - (uint8_t) getDefaultFocusMDLInSerie;
 - (uint8_t) getDefaultFocusMDLInCT;
 - (uint8_t) getDefaultFocusMDLInReader;
+
+@end
+
+@interface checkConsistencyWidthPosXRakPrefsDeepData : NSObject
+
++ (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError;
 
 @end
 

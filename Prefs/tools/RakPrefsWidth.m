@@ -12,7 +12,14 @@
 
 #include "superHeader.h"
 
+//On ne overwrite pas toutes les méthodes liés au lecteur car les views ne changent pratiquement jamais de taille
+
 @implementation RakWidthSeries
+
+- (uint8_t) getFlagFocus
+{
+	return STATE_READER_TAB_SERIE_FOCUS;
+}
 
 - (uint8_t) getDefaultFocusSerie
 {
@@ -53,6 +60,11 @@
 
 @implementation RakWidthCT
 
+- (uint8_t) getFlagFocus
+{
+	return STATE_READER_TAB_CT_FOCUS;
+}
+
 - (uint8_t) getDefaultFocusSerie
 {
 	return TAB_CT_INACTIVE_SERIE;
@@ -91,6 +103,11 @@
 @end
 
 @implementation RakWidthReader
+
+- (uint8_t) getFlagFocus
+{
+	return STATE_READER_TAB_ALL_COLLAPSED;
+}
 
 - (uint8_t) getDefaultFocusSerie
 {
