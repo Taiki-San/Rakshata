@@ -19,7 +19,6 @@
 #define TAB_SERIE_FOOTER_HEIGHT				25
 #define TAB_SERIE_MDL_WIDTH					25
 
-
 #define TAB_CT_INACTIVE_SERIE				20
 #define TAB_CT_ACTIVE						70
 #define TAB_CT_INACTIVE_LECTEUR				15
@@ -33,6 +32,11 @@
 #define TAB_READER_ACTIVE_PARTIAL			82
 #define TAB_READER_ACTIVE_DISTRACTION_FREE	100
 #define TAB_READER_FOOTER_HEIGHT			25
+
+#define TAB_MDL_WIDTH						80
+#define TAB_MDL_HEIGHT						90
+#define TAB_MDL_POSX						10
+#define TAB_MDL_POSY						0
 
 //	State of tabs in the reader
 #define STATE_READER_TAB_DEFAULT			STATE_READER_TAB_CT_FOCUS

@@ -14,7 +14,61 @@
 
 #define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 10
 
+CGFloat hex2intPrefs(char hex[2], int maximum);
+
 @implementation RakPrefsTabDeepData
+
+- (id) init : (Prefs*) creator : (char *) inputData
+{
+	self = [super init];
+	if(self != nil)
+	{
+		[self setNumberElem];
+		
+		NSRect dataBuf, dataDefault;
+		int i;
+		SEL jumpTable[numberElem];
+		
+		mammouth = creator;
+		[self initJumpTable:jumpTable];
+		
+		for(i = 0; i < numberElem-1; i++)	//Le dernier cas est particulier
+		{
+			dataBuf.origin.x	= hex2intPrefs(&inputData[16*i], 1000) / 10;
+			dataBuf.origin.y	= hex2intPrefs(&inputData[16*i + 4], 1000) / 10;
+			dataBuf.size.height = hex2intPrefs(&inputData[16*i + 8], 1000) / 10;
+			dataBuf.size.width	= hex2intPrefs(&inputData[16*i + 12], 1000) / 10;
+			
+			//On regarde si il y a des données invalides
+			if(dataBuf.origin.x == -1 || dataBuf.origin.y == -1 || dataBuf.size.height == -1 || dataBuf.size.width == -1)
+			{
+				dataDefault = [self triggerJumpTable:jumpTable[i]];
+				
+				if(dataBuf.origin.x == -1)
+					dataBuf.origin.x = dataDefault.origin.x;
+				
+				if(dataBuf.origin.y == -1)
+					dataBuf.origin.y = dataDefault.origin.y;
+				
+				if(dataBuf.size.height == -1)
+					dataBuf.size.height = dataDefault.size.height;
+				
+				if(dataBuf.size.width == -1)
+					dataBuf.size.width = dataDefault.size.width;
+			}
+			[self setAtIndex:i :dataBuf];
+		}
+		
+		//cas du footer
+		CGFloat footer = hex2intPrefs(&inputData[16*i], 1000) / 10;
+		if(footer == -1)
+			footer = [self getDefaultFooterHeight];
+		
+		[self setFooterHeight:footer];
+		
+	}
+	return self;
+}
 
 - (void) setNumberElem
 {
@@ -33,6 +87,26 @@
 	jumpTable[7] = @selector(getDefaultFocusMDLInSerie);
 	jumpTable[8] = @selector(getDefaultFocusMDLInCT);
 	jumpTable[9] = @selector(getDefaultFocusMDLInReader);
+	jumpTable[10] = @selector(getDefaultFooterHeight);
+}
+
+- (NSRect) triggerJumpTable : (SEL) selector
+{
+	NSRect output = {{0,0},{0,0}};
+	
+	if (selector != NULL && [self respondsToSelector:selector])
+	{
+		NSInvocation *invocation = [[NSInvocation alloc] init];
+		
+		[invocation setTarget:self];
+		[invocation setSelector:selector];
+		[invocation setReturnValue:&output];
+		[invocation invoke];
+		
+		[invocation release];
+	}
+	
+	return output;
 }
 
 - (uint8_t) getFlagFocus
@@ -40,61 +114,101 @@
 	return STATE_READER_TAB_MASK;
 }
 
+//Getters
+
+- (NSRect) getDataTab: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
+{
+	return [self getAtIndex: [self getIndexFromInput:mainThread :backgroundTabsWhenMDLActive :stateTabsReader]];
+}
+
+- (void) reinitAtIndex : (uint8_t) index
+{
+	if(index < numberElem)
+	{
+		SEL jumpTable[numberElem];
+		[self initJumpTable:jumpTable];
+		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]] ];
+	}
+#ifdef DEV_VERSION
+	else
+		NSLog(@"[%s] : Unknown index: %d", __PRETTY_FUNCTION__, index);
+#endif
+}
+
 //Defaults
 
-- (uint8_t) getDefaultFocusSerie
+- (NSRect) getDefaultFocusSerie
 {
-	return 0;
+	NSRect output;
+	
+	return output;
 }
 
-- (uint8_t) getDefaultFocusCT
+- (NSRect) getDefaultFocusCT
 {
-	return 0;
+	NSRect output;
+	
+	return output;
 }
 
-- (uint8_t) getDefaultFocusReader
+- (NSRect) getDefaultFocusReader
 {
-	return 0;
+	NSRect output;
+	
+	return output;
 }
 
-- (uint8_t) getDefaultFocusReaderOneCollapsed
-{
-	return [self getDefaultFocusReader];
-}
-
-- (uint8_t) getDefaultFocusReaderMainTab
-{
-	return [self getDefaultFocusReader];
-}
-
-- (uint8_t) getDefaultFocusReaderAllCollapsed
+- (NSRect) getDefaultFocusReaderOneCollapsed
 {
 	return [self getDefaultFocusReader];
 }
 
-- (uint8_t) getDefaultFocusReaderDFMode
+- (NSRect) getDefaultFocusReaderMainTab
 {
-	return 0;
+	return [self getDefaultFocusReader];
 }
 
-- (uint8_t) getDefaultFocusMDLInSerie
+- (NSRect) getDefaultFocusReaderAllCollapsed
 {
-	return 0;
+	return [self getDefaultFocusReader];
 }
 
-- (uint8_t) getDefaultFocusMDLInCT
+- (NSRect) getDefaultFocusReaderDFMode
 {
-	return 0;
+	NSRect output;
+	
+	return output;
 }
 
-- (uint8_t) getDefaultFocusMDLInReader
+- (NSRect) getDefaultFocusMDLInSerie
+{
+	NSRect output;
+	
+	return output;
+}
+
+- (NSRect) getDefaultFocusMDLInCT
+{
+	NSRect output;
+	
+	return output;
+}
+
+- (NSRect) getDefaultFocusMDLInReader
+{
+	NSRect output;
+	
+	return output;
+}
+
+- (CGFloat) getDefaultFooterHeight
 {
 	return 0;
 }
 
 //Getters
 
-- (uint8_t) getAtIndex: (uint8_t) index
+- (NSRect) getAtIndex: (uint8_t) index
 {
 	switch(index)
 	{
@@ -135,10 +249,11 @@
 #endif
 		}
 	}
-	return 0xff;
+	NSRect outputFailure = {{0, 0}, {0, 0}};
+	return outputFailure;
 }
 
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data
+- (void) setAtIndex: (uint8_t) index : (NSRect) data
 {
 	switch(index)
 	{
@@ -238,6 +353,16 @@
 	return ret_value;
 }
 
+- (CGFloat) getFooterHeight
+{
+	return footerHeight;
+}
+
+- (void) setFooterHeight : (CGFloat) data
+{
+	footerHeight = data;
+}
+
 @end
 
 @implementation checkConsistencyWidthPosXRakPrefsTabDeepData
@@ -258,7 +383,7 @@
 			otherPan = i % nbElem;
 		
 		//On vérifie que la pos X du panneau A + la largeur est supérieure ou égale à la pos X du panneau 2
-		if([[array objectAtIndex:(i / nbElem) + 3] getAtIndex: (i % nbElem) ] + [[array objectAtIndex: (i / nbElem)] getAtIndex: (i % nbElem) ] < [[array objectAtIndex:(i / nbElem) + 4] getAtIndex: (otherPan) ])
+		if([[array objectAtIndex:(i / nbElem)] getAtIndex: (i % nbElem) ].origin.x + [[array objectAtIndex: (i / nbElem)] getAtIndex: (i % nbElem) ].size.width < [[array objectAtIndex:(i / nbElem) + 1] getAtIndex: (otherPan) ].origin.x)
 		{
 			ret_value = false;
 #ifdef DEV_VERSION

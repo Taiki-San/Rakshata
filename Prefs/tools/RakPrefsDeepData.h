@@ -20,8 +20,6 @@
 
 - (id) init : (Prefs*) creator : (char *) inputData;
 - (void) initJumpTable : (SEL *) jumpTable;
-- (uint8_t) getAtIndex: (uint8_t) index;
-- (uint8_t) getData: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
 - (void) setAtIndex: (uint8_t) index : (uint8_t) data;
 - (void) reinitAtIndex : (uint8_t) index;
 
@@ -30,5 +28,5 @@
 
 @end
 
-#import "RakPrefsTabDeepData.h"
-#import "RakPrefsMDLDeepData.h"
+#include "RakPrefsTabDeepData.h"
+#include "RakPrefsMDLDeepData.h"

@@ -62,11 +62,6 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	return 0xff;
 }
 
-- (uint8_t) getData: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
-{
-	return [self getAtIndex: [self getIndexFromInput:mainThread :backgroundTabsWhenMDLActive :stateTabsReader]];
-}
-
 - (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
 {
 	return 0xff;

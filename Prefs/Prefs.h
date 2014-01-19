@@ -14,6 +14,20 @@
 
 #include "RakPrefsDeepData.h"
 
+enum DIRECT_QUERY_REQUEST {
+	QUERY_SERIE = 0,
+	QUERY_CT = 1,
+	QUERY_READER = 2,
+	QUERY_MDL = 3
+};
+
+enum QUERY_SUBREQUEST {
+	QUERY_GET_WIDTH = 0,
+	QUERY_GET_HEIGHT = 1,
+	QUERY_GET_POSX = 2,
+	QUERY_GET_POSY = 3
+};
+
 @interface Prefs : NSObject
 {
 	// Prefs "sécurisés"
@@ -24,13 +38,11 @@
 	BOOL startInFullscreen;
 	
 	// Prefs taille/pos elements (pourcentages)
-	RakWidthSeries	*	tabSerieWidth;
-	RakWidthCT		*	tabCTWidth;
-	RakWidthReader	*	tabReaderWidth;
+	RakSizeSeries	*	tabSerieSize;
+	RakSizeCT		*	tabCTSize;
+	RakSizeReader	*	tabReaderSize;
 	
-	RakPosXSeries	*	tabSeriePosX;
-	RakPosXCT		*	tabCTPosX;
-	RakPosXReader	*	tabReaderPosX;
+	RakPrefsMDLDeepData * prefsPosMDL;
 	
 }
 
@@ -39,6 +51,9 @@
 + (void) clearCache;
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;
+
+//Semi-public, use of this method should be avoided when possible
++ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer;
 
 //Not public, only called by subprefs
 - (NSArray *) executeConsistencyChecks : (uint8) request;

@@ -48,6 +48,11 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	if(prefsCache == NULL)
 		[self initCache];
 	
+	[prefsCache getPrefInternal : requestID : outputContainer];
+}
+
+- (void) getPrefInternal : (int) requestID : (void*) outputContainer
+{
 	switch(requestID)
 	{
 		case PREFS_GET_MAIN_THREAD:
@@ -60,87 +65,91 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabSerieWidth getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabCTWidth getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabReaderWidth getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabSeriePosX getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabCTPosX getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
 			int * output = outputContainer;
-			*output = [prefsCache->tabReaderPosX getData: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_SERIE_FOOTER_HEIGHT:
 		{
-			int *output = outputContainer;
-			*output = TAB_SERIE_FOOTER_HEIGHT;
+			CGFloat *output = outputContainer;
+			*output = [tabSerieSize getFooterHeight];
 			break;
 		}
 			
 		case PREFS_GET_CT_FOOTER_HEIGHT:
 		{
-			int *output = outputContainer;
-			*output = TAB_CT_FOOTER_HEIGHT;
+			CGFloat *output = outputContainer;
+			*output = [tabCTSize getFooterHeight];
 			break;
 		}
 			
 		case PREFS_GET_READER_FOOTER_HEIGHT:
 		{
-			int *output = outputContainer;
-			*output = TAB_READER_FOOTER_HEIGHT;
+			CGFloat *output = outputContainer;
+			*output = [tabReaderSize getFooterHeight];
 			break;
 		}
 			
 		case PREFS_GET_MDL_WIDTH:
 		{
-			getMDLWidth(outputContainer, mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : QUERY_GET_WIDTH];
 			break;
 		}
 			
 		case PREFS_GET_MDL_HEIGHT:
 		{
-			getMDLHeight(outputContainer, mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : QUERY_GET_HEIGHT];
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_Y:
 		{
-			getMDLPosY(outputContainer, mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSY];
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_X:
 		{
-			getMDLPosX(outputContainer, mainThread, stateTabsReader);
+			int * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSX];
 			break;
 		}
 			
@@ -234,6 +243,66 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	return ret_value;
 }
 
++ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer
+{
+	if(prefsCache == NULL)
+		[self initCache];
+	
+	[prefsCache directQueryInternal:request :subRequest :mainThreadLocal :stateTabsReaderLocal :backgroundTabsStateLocal :outputContainer];
+	
+}
+
+- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer
+{
+	if(mainThreadLocal == -1)
+		mainThreadLocal = mainThread;
+	if(stateTabsReaderLocal == -1)
+		stateTabsReaderLocal = stateTabsReader;
+	if(backgroundTabsStateLocal == -1)
+		backgroundTabsStateLocal = backgroundTabsState;
+	
+	uint *output = outputContainer;
+	*output = -1;
+	
+	NSRect frame;
+	
+	switch(request)
+	{
+		case QUERY_SERIE:
+		{
+			frame = [tabSerieSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			break;
+		}
+		case QUERY_CT:
+		{
+			frame = [tabCTSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			break;
+		}
+		case QUERY_READER:
+		{
+			frame = [tabReaderSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			break;
+		}
+		case QUERY_MDL:
+		{
+			*output = [prefsCache->prefsPosMDL getData: mainThread : subRequest];
+			break;
+		}
+	}
+	
+	if(request == QUERY_SERIE || request == QUERY_CT || request == QUERY_READER)
+	{
+		if(subRequest == QUERY_GET_HEIGHT)
+			*output = frame.size.height;
+		else if(subRequest == QUERY_GET_WIDTH)
+			*output = frame.size.width;
+		else if(subRequest == QUERY_GET_POSX)
+			*output = frame.origin.x;
+		else if(subRequest == QUERY_GET_POSY)
+			*output = frame.origin.y;
+	}
+}
+
 /************		Private sections		************/
 
 - (id) init
@@ -241,56 +310,47 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	self = [super init];
 	if(self != nil)
 	{
-		char staticTest[] = "ffffffffffffffffffffffffff";
+		char staticTest[] = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 		
-		//Width
-		tabSerieWidth = [RakWidthSeries alloc];
-		tabCTWidth = [RakWidthCT alloc];
-		tabReaderWidth = [RakWidthReader alloc];
+		tabSerieSize = [RakSizeSeries alloc];
+		tabCTSize = [RakSizeCT alloc];
+		tabReaderSize = [RakSizeReader alloc];
 		
-		if(tabSerieWidth == NULL || tabCTWidth == NULL || tabReaderWidth == NULL)
+		if(tabSerieSize == NULL || tabCTSize == NULL || tabReaderSize == NULL)
 			[self flushMemory:YES];
 		
-		[tabSerieWidth init: prefsCache: staticTest];
-		[tabCTWidth init: prefsCache: staticTest];
-		[tabReaderWidth init: prefsCache: staticTest];
-		
-		//Pos X
-		tabSeriePosX = [RakPosXSeries alloc];
-		tabCTPosX = [RakPosXCT alloc];
-		tabReaderPosX = [RakPosXReader alloc];
-		
-		if(tabSeriePosX == NULL || tabCTPosX == NULL || tabReaderPosX == NULL)
-			[self flushMemory:YES];
-
-		[tabSeriePosX init: prefsCache: staticTest];
-		[tabCTPosX init: prefsCache: staticTest];
-		[tabReaderPosX init: prefsCache: staticTest];
+		[tabSerieSize init: prefsCache: staticTest];
+		[tabCTSize init: prefsCache: staticTest];
+		[tabReaderSize init: prefsCache: staticTest];
 		
 		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
+		
+		//Must come after tabs prefs initialization
+		prefsPosMDL = [RakPrefsMDLDeepData alloc];
+		if(prefsPosMDL == NULL)
+			[self flushMemory:YES];
+		
+		[prefsPosMDL init: prefsCache: staticTest];
 	}
 	return self;
 }
 
 - (void) flushMemory : (bool) memoryError
 {
-	if(tabSerieWidth != NULL)
-		[tabSerieWidth release];
+	if(tabSerieSize != NULL)
+		[tabSerieSize release];
 	
-	if(tabCTWidth != NULL)
-		[tabCTWidth release];
+	if(tabCTSize != NULL)
+		[tabCTSize release];
 	
-	if(tabReaderWidth != NULL)
-		[tabReaderWidth release];
+	if(tabReaderSize != NULL)
+		[tabReaderSize release];
 	
-	if(tabSeriePosX != NULL)
-		[tabSeriePosX release];
+	if(prefsPosMDL != NULL)
+		[prefsPosMDL release];
 	
-	if(tabCTPosX != NULL)
-		[tabCTPosX release];
-	
-	if(tabReaderPosX != NULL)
-		[tabReaderPosX release];
+	[prefsCache release];
+	prefsCache = NULL;
 	
 	if(memoryError)
 		[[NSException exceptionWithName:@"NotEnoughMemory"
@@ -307,7 +367,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	{
 		case 1:
 		{
-			array = [array initWithObjects:tabSerieWidth, tabCTWidth, tabReaderWidth, tabSeriePosX, tabCTPosX, tabReaderPosX, nil];
+			array = [array initWithObjects: tabSerieSize, tabCTSize, tabReaderSize, nil];
 			break;
 		}
 		default:

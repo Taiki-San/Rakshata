@@ -13,28 +13,43 @@
 
 @interface RakPrefsTabDeepData : RakPrefsDeepData
 {
-	uint8_t focusSerie;
-	uint8_t focusCT;
-	uint8_t focusReader;
-	uint8_t focusReaderOneCollapsed;
-	uint8_t focusReaderMainTab;
-	uint8_t focusReaderAllCollapsed;
-	uint8_t focusReaderDFMode;
-	uint8_t focusMDLInSerie;
-	uint8_t focusMDLInCT;
-	uint8_t focusMDLInReader;
+	
+	NSRect focusSerie;
+	NSRect focusCT;
+	NSRect focusReader;
+	NSRect focusReaderOneCollapsed;
+	NSRect focusReaderMainTab;
+	NSRect focusReaderAllCollapsed;
+	NSRect focusReaderDFMode;
+	NSRect focusMDLInSerie;
+	NSRect focusMDLInCT;
+	NSRect focusMDLInReader;
+	
+	CGFloat footerHeight;
 }
 
-- (uint8_t) getDefaultFocusSerie;
-- (uint8_t) getDefaultFocusCT;
-- (uint8_t) getDefaultFocusReader;
-- (uint8_t) getDefaultFocusReaderOneCollapsed;
-- (uint8_t) getDefaultFocusReaderMainTab;
-- (uint8_t) getDefaultFocusReaderAllCollapsed;
-- (uint8_t) getDefaultFocusReaderDFMode;
-- (uint8_t) getDefaultFocusMDLInSerie;
-- (uint8_t) getDefaultFocusMDLInCT;
-- (uint8_t) getDefaultFocusMDLInReader;
+- (NSRect) getDefaultFocusSerie;
+- (NSRect) getDefaultFocusCT;
+- (NSRect) getDefaultFocusReader;
+- (NSRect) getDefaultFocusReaderOneCollapsed;
+- (NSRect) getDefaultFocusReaderMainTab;
+- (NSRect) getDefaultFocusReaderAllCollapsed;
+- (NSRect) getDefaultFocusReaderDFMode;
+- (NSRect) getDefaultFocusMDLInSerie;
+- (NSRect) getDefaultFocusMDLInCT;
+- (NSRect) getDefaultFocusMDLInReader;
+- (CGFloat) getDefaultFooterHeight;
+
+- (NSRect) triggerJumpTable : (SEL) selector;
+
+- (NSRect) getAtIndex: (uint8_t) index;
+- (void) setAtIndex: (uint8_t) index : (NSRect) data;
+- (NSRect) getDataTab: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
+
+- (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
+- (CGFloat) getFooterHeight;
+- (void) setFooterHeight : (CGFloat) data;
+
 
 @end
 
@@ -46,23 +61,15 @@
 
 /**		Data	**/
 
-@interface RakWidthSeries : RakPrefsTabDeepData
+@interface RakSizeSeries : RakPrefsTabDeepData
 
 @end
 
-@interface RakWidthCT : RakPrefsTabDeepData
+@interface RakSizeCT : RakPrefsTabDeepData
 
 @end
 
-@interface RakWidthReader : RakPrefsTabDeepData
-
-@end
-
-@interface RakPosXSeries : RakPrefsTabDeepData
-
-@end
-
-@interface RakPosXCT : RakPrefsTabDeepData
+@interface RakSizeReader : RakPrefsTabDeepData
 
 @end
 
