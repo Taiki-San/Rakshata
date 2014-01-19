@@ -267,7 +267,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		[tabCTPosX init: prefsCache: staticTest];
 		[tabReaderPosX init: prefsCache: staticTest];
 		
-		[checkConsistencyWidthPosXRakPrefsDeepData performTest:prefsCache :1 :true];
+		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
 	}
 	return self;
 }

@@ -10,25 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class Prefs;
+#include "superHeader.h"
 
-@interface RakPrefsDeepData : NSObject
-{
-	int numberElem;
-	Prefs* mammouth;
-}
-
-- (id) init : (Prefs*) creator : (char *) inputData;
-- (void) initJumpTable : (SEL *) jumpTable;
-- (uint8_t) getAtIndex: (uint8_t) index;
-- (uint8_t) getData: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data;
-- (void) reinitAtIndex : (uint8_t) index;
-
-- (int) getNbElem;
-- (void) performSelfCheck;
+@implementation RakPrefsMDLDeepData
 
 @end
-
-#import "RakPrefsTabDeepData.h"
-#import "RakPrefsMDLDeepData.h"

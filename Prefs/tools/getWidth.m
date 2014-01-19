@@ -12,72 +12,6 @@
 
 #import "superHeader.h"
 
-int getWidthSerie(int mainThread, int stateTabsReader, bool toGetPosX)
-{
-	if(mainThread & GUI_THREAD_SERIES)
-		return TAB_SERIE_ACTIVE;
-	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
-		return TAB_SERIE_INACTIVE_CT;
-	else if(mainThread & GUI_THREAD_READER)
-	{
-		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
-			return TAB_SERIE_INACTIVE_DISTRACTION_FREE;
-		else if(!toGetPosX || stateTabsReader & STATE_READER_TAB_SERIE_FOCUS)
-			return TAB_SERIE_INACTIVE_LECTEUR;
-		else
-			return TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
-		
-	}
-#ifdef DEV_VERSION
-	else
-		NSLog(@"Couldn't identify thread: %8x", mainThread);
-#endif
-	return 0;
-}
-
-int getWidthCT(int mainThread, int stateTabsReader, bool toGetPosX)
-{
-	if(mainThread & GUI_THREAD_SERIES)
-		return TAB_CT_INACTIVE_SERIE;
-	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
-		return TAB_CT_ACTIVE;
-	else if(mainThread & GUI_THREAD_READER)
-	{
-		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
-			return TAB_CT_INACTIVE_DISTRACTION_FREE;
-		else if(!toGetPosX || stateTabsReader & STATE_READER_TAB_CT_FOCUS)
-			return TAB_CT_INACTIVE_LECTEUR;
-		else
-			return TAB_CT_INACTIVE_LECTEUR_REDUCED;
-	}
-#ifdef DEV_VERSION
-	else
-		NSLog(@"Couldn't identify thread: %8x", mainThread);
-#endif
-	return 0;
-}
-int getWidthReader(int mainThread, int stateTabsReader)
-{
-	if(mainThread & GUI_THREAD_SERIES)
-		return TAB_READER_INACTIVE_SERIE;
-	else if(mainThread & (GUI_THREAD_CT | GUI_THREAD_MDL))
-		return TAB_READER_INACTIVE_CT;
-	else if(mainThread & GUI_THREAD_READER)
-	{
-		if(stateTabsReader == STATE_READER_TAB_ALL_COLLAPSED)
-			return TAB_READER_ACTIVE;
-		else if(stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
-			return TAB_READER_ACTIVE_DISTRACTION_FREE;
-		else
-			return TAB_READER_ACTIVE_PARTIAL;
-	}
-#ifdef DEV_VERSION
-	else
-		NSLog(@"Couldn't identify thread: %8x", mainThread);
-#endif
-	return 0;
-}
-
 /**		Code MDL	**/
 
 void getMDLWidth(int * output, int mainThread, int stateTabsReader)
@@ -135,8 +69,10 @@ void getMDLPosX(int * output, int mainThread, int stateTabsReader)
 	{
 		case GUI_THREAD_SERIES:
 		{
+			int widthSerie;
 			getMDLWidth(output, mainThread, stateTabsReader);
-			*output = getWidthSerie(mainThread, stateTabsReader, false) - *output;
+			[Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH: &widthSerie];
+			*output = widthSerie - *output;
 			break;
 		}
 			
