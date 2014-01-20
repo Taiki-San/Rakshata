@@ -12,26 +12,27 @@
 
 @interface RakPrefsMDLDeepData : RakPrefsDeepData
 {
-	uint8_t heightMDLSerie;
-	uint8_t heightMDLCT;
-	uint8_t heightMDLReader;
-	uint8_t heightMDLFull;
+	CGFloat heightMDLSerie;
+	CGFloat heightMDLCT;
+	CGFloat heightMDLReader;
+	CGFloat heightMDLFull;
 	
-	uint8_t widthMDLSerie;
-	uint8_t widthMDLCT;
-	uint8_t widthMDLReader;
-	uint8_t widthMDLFull;
+	CGFloat widthMDLSerie;
+	CGFloat widthMDLCT;
+	CGFloat widthMDLReader;
+	CGFloat widthMDLFull;
 
-	uint8_t posXMDLSerie;
-	uint8_t posXMDLCT;
-	uint8_t posXMDLReader;
-	uint8_t posXMDLFull;
+	CGFloat posXMDLSerie;
+	CGFloat posXMDLCT;
+	CGFloat posXMDLReader;
+	CGFloat posXMDLFull;
 	
-	uint8_t posYMDL;
-	uint8_t posYMDLFull;
+	CGFloat posYMDL;
+	CGFloat posYMDLFull;
 }
 
-- (uint8_t) getData: (int) mainThread : (uint8_t) request;
+- (CGFloat) getData: (int) mainThread : (uint8_t) request;
 - (uint8_t) getIndexFromInput: (int) mainThread : (int) request;
+- (void) setAtIndex: (uint8_t) index : (CGFloat) data;
 
 @end

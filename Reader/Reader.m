@@ -46,9 +46,11 @@
 {
 	if(gonnaReduceTabs)
 	{
+		int mainTab;
 		bool isReaderMode;
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
-		if(!isReaderMode)
+		[Prefs getPref:PREFS_GET_READER_TABS_STATE :&mainTab];
+		if(!isReaderMode || (mainTab & STATE_READER_TAB_DEFAULT) == 0)
 			gonnaReduceTabs = 0;
 	}
 	
@@ -58,7 +60,7 @@
 - (void) readerIsOpening
 {
 	int copy;
-	gonnaReduceTabs = copy = rand();
+	gonnaReduceTabs = copy = rand() + 1;
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
 }

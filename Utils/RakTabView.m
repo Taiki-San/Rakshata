@@ -178,13 +178,16 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(![self isStillCollapsedReaderTab])
-				{
-					if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
-						[self refreshLevelViews : [self superview]];
-				}
+	if(![self isStillCollapsedReaderTab])
+	{
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+			if(readerMode && ![self isStillCollapsedReaderTab])
+			{
+				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
+					[self refreshLevelViews : [self superview]];
+			}
 		});
+	}
 }
 
 
@@ -206,26 +209,26 @@
 	return getX ? PREFS_GET_TAB_SERIE_POSX - PREFS_GET_TAB_SERIE_WIDTH : 0;
 }
 
-- (int) getRequestedViewPosX: (int) widthWindow
+- (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow
 {
-	int prefData;
+	CGFloat prefData;
 	[Prefs getPref:[self convertTypeToPrefArg:YES]:&prefData];
 	return widthWindow * prefData / 100;
 }
 
-- (int) getRequestedViewPosY: (int) heightWindow
+- (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow
 {
 	return 0;
 }
 
-- (int) getRequestedViewWidth:(int) widthWindow
+- (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
 {
-	int prefData;
+	CGFloat prefData;
 	[Prefs getPref:[self convertTypeToPrefArg:NO]:&prefData];
 	return widthWindow * prefData / 100;
 }
 
-- (int) getRequestedViewHeight:(int) heightWindow
+- (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
 {
 	return heightWindow;
 }

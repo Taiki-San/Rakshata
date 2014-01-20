@@ -16,6 +16,7 @@
 @interface RakAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
+
 - (void) validateWindowData : (NSRect) size;
 
 @end

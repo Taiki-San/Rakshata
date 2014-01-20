@@ -51,9 +51,9 @@
 	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
 }
 
-- (int) getRequestedViewHeight:(int)heightWindow
+- (CGFloat) getRequestedViewHeight:(CGFloat)heightWindow
 {
-	int ratio;
+	CGFloat ratio;
 	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT :&ratio];
 	return heightWindow * ratio / 100;
 }

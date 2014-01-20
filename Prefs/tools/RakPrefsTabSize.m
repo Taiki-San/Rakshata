@@ -127,7 +127,7 @@
 	NSRect output = { {0, 0}, {0, 0}};
 	
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR;
-	output.size.width = TAB_CT_INACTIVE_LECTEUR;
+	output.size.width = TAB_CT_INACTIVE_LECTEUR;	//_REDUCED displayed but to prevent too much redraw, we keep drawing a full size tab
 	
 	return output;
 }

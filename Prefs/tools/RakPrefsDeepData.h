@@ -20,8 +20,10 @@
 
 - (id) init : (Prefs*) creator : (char *) inputData;
 - (void) initJumpTable : (SEL *) jumpTable;
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data;
+- (void) setAtIndex: (uint8_t) index : (CGFloat) data;
 - (void) reinitAtIndex : (uint8_t) index;
+
+- (CGFloat) triggerJumpTable : (SEL) selector;
 
 - (int) getNbElem;
 - (void) performSelfCheck;

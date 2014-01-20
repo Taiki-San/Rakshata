@@ -46,7 +46,7 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	int posCT, posReader, heightMDL;
+	CGFloat posCT, posReader, heightMDL;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&posCT];
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];

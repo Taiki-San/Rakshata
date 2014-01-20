@@ -34,15 +34,15 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 		
 		for(i = 0; i < numberElem-1; i++)	//Le dernier cas est particulier
 		{
-			dataBuf.origin.x	= hex2intPrefs(&inputData[16*i], 1000) / 10;
-			dataBuf.origin.y	= hex2intPrefs(&inputData[16*i + 4], 1000) / 10;
-			dataBuf.size.height = hex2intPrefs(&inputData[16*i + 8], 1000) / 10;
-			dataBuf.size.width	= hex2intPrefs(&inputData[16*i + 12], 1000) / 10;
+			dataBuf.origin.x	= hex2intPrefs(&inputData[16*i], 1000);
+			dataBuf.origin.y	= hex2intPrefs(&inputData[16*i + 4], 1000);
+			dataBuf.size.height = hex2intPrefs(&inputData[16*i + 8], 1000);
+			dataBuf.size.width	= hex2intPrefs(&inputData[16*i + 12], 1000);
 			
 			//On regarde si il y a des données invalides
 			if(dataBuf.origin.x == -1 || dataBuf.origin.y == -1 || dataBuf.size.height == -1 || dataBuf.size.width == -1)
 			{
-				dataDefault = [self triggerJumpTable:jumpTable[i]];
+				dataDefault = [self triggerJumpTableLocal:jumpTable[i]];
 				
 				if(dataBuf.origin.x == -1)
 					dataBuf.origin.x = dataDefault.origin.x;
@@ -56,13 +56,22 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 				if(dataBuf.size.width == -1)
 					dataBuf.size.width = dataDefault.size.width;
 			}
+			else
+			{
+				dataBuf.origin.x	/= 10;
+				dataBuf.origin.y	/= 10;
+				dataBuf.size.width	/= 10;
+				dataBuf.size.height /= 10;
+			}
 			[self setAtIndex:i :dataBuf];
 		}
 		
 		//cas du footer
-		CGFloat footer = hex2intPrefs(&inputData[16*i], 1000) / 10;
+		CGFloat footer = hex2intPrefs(&inputData[16*i], 1000);
 		if(footer == -1)
 			footer = [self getDefaultFooterHeight];
+		else
+			footer /= 10;
 		
 		[self setFooterHeight:footer];
 		
@@ -90,20 +99,19 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	jumpTable[10] = @selector(getDefaultFooterHeight);
 }
 
-- (NSRect) triggerJumpTable : (SEL) selector
+- (NSRect) triggerJumpTableLocal : (SEL) selector
 {
 	NSRect output = {{0,0},{0,0}};
 	
 	if (selector != NULL && [self respondsToSelector:selector])
 	{
-		NSInvocation *invocation = [[NSInvocation alloc] init];
+		NSMethodSignature * signature = [[self class] instanceMethodSignatureForSelector:selector];
+		NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:signature];
 		
 		[invocation setTarget:self];
 		[invocation setSelector:selector];
-		[invocation setReturnValue:&output];
 		[invocation invoke];
-		
-		[invocation release];
+		[invocation getReturnValue:&output];
 	}
 	
 	return output;
@@ -127,7 +135,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	{
 		SEL jumpTable[numberElem];
 		[self initJumpTable:jumpTable];
-		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]] ];
+		[self setAtIndex:index : [self triggerJumpTableLocal: jumpTable[index]] ];
 	}
 #ifdef DEV_VERSION
 	else
@@ -373,6 +381,9 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	BOOL ret_value = true;
 	NSArray * array = [mainInstance executeConsistencyChecks: 1];
 	
+	if(array == NULL)
+		return false;
+	
 	uint i, nbElem = [[array objectAtIndex: 0] getNbElem], otherPan;
 	
 	for(i = 0; i < nbElem * 2; i++)
@@ -396,6 +407,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 			}
 		}
 	}
+	[array release];
 	return ret_value;
 }
 

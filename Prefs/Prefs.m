@@ -64,42 +64,42 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 			
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
 			break;
 		}
@@ -127,28 +127,28 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 			
 		case PREFS_GET_MDL_WIDTH:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : QUERY_GET_WIDTH];
 			break;
 		}
 			
 		case PREFS_GET_MDL_HEIGHT:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : QUERY_GET_HEIGHT];
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_Y:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSY];
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_X:
 		{
-			int * output = outputContainer;
+			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSX];
 			break;
 		}
@@ -226,7 +226,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 			if(newValue == -1)
 			{
 				ret_value = false;
-				NSLog(@"Couldn't identify thread in PREFS_SET_READER_TABS_STATE_FROM_CALLER");
+				NSLog(@"[%s]: Couldn't identify thread :%llu", __PRETTY_FUNCTION__, value);
 			}
 			else
 			{
@@ -261,7 +261,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	if(backgroundTabsStateLocal == -1)
 		backgroundTabsStateLocal = backgroundTabsState;
 	
-	uint *output = outputContainer;
+	CGFloat *output = outputContainer;
 	*output = -1;
 	
 	NSRect frame;
@@ -310,7 +310,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	self = [super init];
 	if(self != nil)
 	{
-		char staticTest[] = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+		char staticTest[] = "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 		
 		tabSerieSize = [RakSizeSeries alloc];
 		tabCTSize = [RakSizeCT alloc];

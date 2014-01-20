@@ -12,7 +12,7 @@
 
 #include "superHeader.h"
 
-uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
+CGFloat hex2intPrefs(char hex[4], int maximum);
 
 @implementation RakPrefsDeepData
 
@@ -23,7 +23,8 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	{
 		[self setNumberElem];
 		
-		uint8_t dataBuf, i;
+		CGFloat dataBuf;
+		uint i;
 		SEL jumpTable[numberElem];
 		
 		mammouth = creator;
@@ -31,9 +32,11 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 		
 		for(i = 0; i < numberElem; i++)
 		{
-			dataBuf = hex2intPrefs(&inputData[2*i], 100);
-			if(dataBuf == 0xFF)
-				dataBuf = (uint8_t) [self performSelector:jumpTable[i]];
+			dataBuf = hex2intPrefs(&inputData[4*i], 1000);
+			if(dataBuf == -1)
+				dataBuf = [self triggerJumpTable:jumpTable[i]];
+			else
+				dataBuf /= 10;
 			[self setAtIndex:i :dataBuf];
 		}
 	}
@@ -42,12 +45,13 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 
 - (void) initJumpTable : (SEL *) jumpTable
 {
-	
+	int i;
+	for(i = 0; i < numberElem; jumpTable[i] = NULL);
 }
 
 - (void) setNumberElem
 {
-	numberElem = 0;
+	numberElem = 1;
 }
 
 - (uint8_t) getFlagFocus
@@ -55,11 +59,29 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	return STATE_READER_TAB_MASK;
 }
 
+- (CGFloat) triggerJumpTable : (SEL) selector
+{
+	CGFloat output = -1;
+	
+	if (selector != NULL && [self respondsToSelector:selector])
+	{
+		NSMethodSignature * signature = [[self class] instanceMethodSignatureForSelector:selector];
+		NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:signature];
+		
+		[invocation setTarget:self];
+		[invocation setSelector:selector];
+		[invocation invoke];
+		[invocation getReturnValue:&output];
+	}
+	
+	return output;
+}
+
 //Getters
 
-- (uint8_t) getAtIndex: (uint8_t) index
+- (CGFloat) getAtIndex: (uint8_t) index
 {
-	return 0xff;
+	return -1;
 }
 
 - (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
@@ -67,7 +89,7 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 	return 0xff;
 }
 
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data
+- (void) setAtIndex: (uint8_t) index : (CGFloat) data
 {
 
 }
@@ -79,7 +101,7 @@ uint8_t hex2intPrefs(char hex[2], uint8_t maximum);
 		SEL jumpTable[numberElem];
 		[self initJumpTable:jumpTable];
 		
-		[self setAtIndex:index : (uint8_t) [self performSelector: jumpTable[index]] ];
+		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]] ];
 	}
 #ifdef DEV_VERSION
 	else

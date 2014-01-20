@@ -28,6 +28,8 @@
 	CGFloat footerHeight;
 }
 
+- (id) init : (Prefs*) creator : (char *) inputData;
+
 - (NSRect) getDefaultFocusSerie;
 - (NSRect) getDefaultFocusCT;
 - (NSRect) getDefaultFocusReader;
@@ -40,7 +42,7 @@
 - (NSRect) getDefaultFocusMDLInReader;
 - (CGFloat) getDefaultFooterHeight;
 
-- (NSRect) triggerJumpTable : (SEL) selector;
+- (NSRect) triggerJumpTableLocal : (SEL) selector;
 
 - (NSRect) getAtIndex: (uint8_t) index;
 - (void) setAtIndex: (uint8_t) index : (NSRect) data;

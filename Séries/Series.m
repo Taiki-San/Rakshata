@@ -91,10 +91,10 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	int var, heightMDL;
+	CGFloat var, heightMDL;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&var];
-	frame.size.width = (var * self.window.frame.size.width / 100);
+	frame.size.width = var * self.window.frame.size.width / 100;
 	frame.origin.x = 0;
 	
 	[Prefs getPref:PREFS_GET_MDL_HEIGHT:&heightMDL];

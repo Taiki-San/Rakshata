@@ -29,7 +29,6 @@
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
 	//[[self window] close];
-	//[tabSerie release];
 }
 
 - (void) validateWindowData : (NSRect) size

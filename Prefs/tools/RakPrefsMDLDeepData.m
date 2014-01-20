@@ -39,12 +39,12 @@
 	jumpTable[13] = @selector(getDefaultPosYFull);
 }
 
-- (uint8_t) getData: (int) mainThread : (uint8_t) request
+- (CGFloat) getData: (int) mainThread : (uint8_t) request
 {
 	return [self getAtIndex: [self getIndexFromInput:mainThread :request]];
 }
 
-- (uint8_t) getAtIndex: (uint8_t) index
+- (CGFloat) getAtIndex: (uint8_t) index
 {
 	switch(index)
 	{
@@ -100,7 +100,7 @@
 	return 0xff;
 }
 
-- (void) setAtIndex: (uint8_t) index : (uint8_t) data
+- (void) setAtIndex: (uint8_t) index : (CGFloat) data
 {
 	switch(index)
 	{
@@ -197,92 +197,96 @@
 		ret_value = 2;
 	else if(mainThread & GUI_THREAD_MDL)
 		ret_value = 3;
+	else
+#ifdef DEV_VERSION
+		NSLog(@"[%s]: couldn't identify request", __PRETTY_FUNCTION__);
+#endif
 		
 	return ret_value + request * 4;
 }
 
 //Defaults
 
-- (uint8_t) getDefaultWidthSerie
+- (CGFloat) getDefaultWidthSerie
 {
 	return TAB_SERIE_MDL_WIDTH;
 }
 
-- (uint8_t) getDefaultWidthCT
+- (CGFloat) getDefaultWidthCT
 {
-	uint8_t output;
+	CGFloat output;
 	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :-1 :&output];
 	return output;
 }
 
-- (uint8_t) getDefaultWidthReader
+- (CGFloat) getDefaultWidthReader
 {
-	uint8_t output;
+	CGFloat output;
 	[Prefs directQuery:QUERY_READER :QUERY_GET_WIDTH :GUI_THREAD_READER :-1 :-1 :&output];
 	return 100 - output;
 }
 
-- (uint8_t) getDefaultWidthFull
+- (CGFloat) getDefaultWidthFull
 {
 	return TAB_MDL_WIDTH;
 }
 
-- (uint8_t) getDefaultHeightSerie
+- (CGFloat) getDefaultHeightSerie
 {
 	int8_t output;
 	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &output];
 	return output;
 }
 
-- (uint8_t) getDefaultHeightCT
+- (CGFloat) getDefaultHeightCT
 {
 	int8_t output;
 	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output];
 	return output;
 }
 
-- (uint8_t) getDefaultHeightReader
+- (CGFloat) getDefaultHeightReader
 {
-	int8_t output;
+	CGFloat output;
 	[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT: &output];
 	return output;
 }
 
-- (uint8_t) getDefaultHeightFull
+- (CGFloat) getDefaultHeightFull
 {
 	return TAB_MDL_HEIGHT;
 }
 
-- (uint8_t) getDefaultPosXSerie
+- (CGFloat) getDefaultPosXSerie
 {
 	int widthSerie;
 	[Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH: &widthSerie];
 	return widthSerie - TAB_SERIE_MDL_WIDTH;
 }
 
-- (uint8_t) getDefaultPosXCT
+- (CGFloat) getDefaultPosXCT
 {
-	uint8_t output;
+	CGFloat output;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output];
 	return output;
 }
 
-- (uint8_t) getDefaultPosXReader
+- (CGFloat) getDefaultPosXReader
 {
 	return 0;
 }
 
-- (uint8_t) getDefaultPosXFull
+- (CGFloat) getDefaultPosXFull
 {
 	return TAB_MDL_POSX;
 }
 
-- (uint8_t) getDefaultPosY
+- (CGFloat) getDefaultPosY
 {
 	return 0;
 }
 
-- (uint8_t) getDefaultPosYFull
+- (CGFloat) getDefaultPosYFull
 {
 	return TAB_MDL_POSY;
 }

@@ -19,7 +19,6 @@
 	
 	NSPanel * HUDWindow;
     MainViewController *viewControllerHUD;
-	MainViewController *detachedViewControllerHUD;
     NSPopover *popover;
 
 	NSButton *anchor;
