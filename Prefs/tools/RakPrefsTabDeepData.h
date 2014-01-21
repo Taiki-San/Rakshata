@@ -10,6 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
+CGFloat hex2intPrefs(char hex[2], int maximum);
 
 @interface RakPrefsTabDeepData : RakPrefsDeepData
 {
@@ -21,9 +22,6 @@
 	NSRect focusReaderMainTab;
 	NSRect focusReaderAllCollapsed;
 	NSRect focusReaderDFMode;
-	NSRect focusMDLInSerie;
-	NSRect focusMDLInCT;
-	NSRect focusMDLInReader;
 	
 	CGFloat footerHeight;
 }
@@ -37,9 +35,6 @@
 - (NSRect) getDefaultFocusReaderMainTab;
 - (NSRect) getDefaultFocusReaderAllCollapsed;
 - (NSRect) getDefaultFocusReaderDFMode;
-- (NSRect) getDefaultFocusMDLInSerie;
-- (NSRect) getDefaultFocusMDLInCT;
-- (NSRect) getDefaultFocusMDLInReader;
 - (CGFloat) getDefaultFooterHeight;
 
 - (NSRect) triggerJumpTableLocal : (SEL) selector;
@@ -75,6 +70,27 @@
 
 @end
 
-@interface RakPosXReader : RakPrefsTabDeepData
+//De par son comportement très dépendant des données des autres tabs, RakMDLSize ne dépent pas de RakPrefsDeepData
+@interface RakMDLSize : NSObject
+{
+	Prefs* mammouth;
+	
+	//Prefs propres au MDL
+	CGFloat widthMDLSerie;
+	CGFloat heightMDLReaderFocus;
+	NSRect focusMDLSize;
+}
+
+- (id) init : (Prefs*) creator : (char*) inputData;
+
+- (uint8_t) getFlagFocus;
+- (NSRect) getData:(int) mainThread : (int) stateTabsReader;
+- (NSRect) getFocusSerie;
+- (NSRect) getFocusCT;
+- (NSRect) getFocusReader : (int) stateTabsReader;
+- (NSRect) getDefaultFocusMDL;
+- (CGFloat) getDefaultSerieWidth;
+- (CGFloat) getDefaultFocusReaderHeight;
 
 @end
+

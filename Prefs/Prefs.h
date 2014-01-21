@@ -42,7 +42,7 @@ enum QUERY_SUBREQUEST {
 	RakSizeCT		*	tabCTSize;
 	RakSizeReader	*	tabReaderSize;
 	
-	RakPrefsMDLDeepData * prefsPosMDL;
+	RakMDLSize * prefsPosMDL;
 	
 }
 

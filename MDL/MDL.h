@@ -14,4 +14,6 @@
 
 - (id)init:(NSWindow*)window;
 
+- (NSRect) getRequestedViewSize: (CGFloat) widthWindow : (CGFloat) heightWindow;
+
 @end

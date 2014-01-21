@@ -49,27 +49,41 @@
 	return frame;
 }
 
-/////////////DEBUG
-
 - (void) refreshViewSize
 {
-	NSView * superView = [self superview];
+	NSRect frame = [self createFrame:[self superview]];
 	
-	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: superView.frame.size.width], [self getRequestedViewHeight: superView.frame.size.height])];
-	
-	[self setFrameOrigin:NSMakePoint([self getRequestedViewPosX: superView.frame.size.width], [self getRequestedViewPosY: superView.frame.size.height])];
+	[self setFrameSize:frame.size];
+	[self setFrameOrigin:frame.origin];
 	
 	[self applyRefreshSizeReaderChecks];
 
 }
 
-//////////////////
+/**	 Graphics optimizations	**/
+- (NSRect) createFrame : (NSView*) superView
+{
+	return [self getRequestedViewSize:superView.frame.size.width:superView.frame.size.height];
+}
 
 /**	 Get View Size	**/
 
 - (int) convertTypeToPrefArg : (bool) getX
 {
 	return PREFS_GET_MDL_WIDTH + [super convertTypeToPrefArg:getX];
+}
+
+- (NSRect) getRequestedViewSize: (CGFloat) widthWindow : (CGFloat) heightWindow
+{
+	NSRect output;
+	[Prefs getPref:PREFS_GET_MDL_FRAME:&output];
+	
+	output.origin.x *= widthWindow / 100;
+	output.origin.y *= heightWindow / 100;
+	output.size.height *= heightWindow / 100;
+	output.size.width *= widthWindow / 100;
+	
+	return output;
 }
 
 - (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow

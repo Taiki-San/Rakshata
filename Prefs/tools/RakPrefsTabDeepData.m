@@ -12,9 +12,7 @@
 
 #include "superHeader.h"
 
-#define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 10
-
-CGFloat hex2intPrefs(char hex[2], int maximum);
+#define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 8
 
 @implementation RakPrefsTabDeepData
 
@@ -93,10 +91,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	jumpTable[4] = @selector(getDefaultFocusReaderMainTab);
 	jumpTable[5] = @selector(getDefaultFocusReaderAllCollapsed);
 	jumpTable[6] = @selector(getDefaultFocusReaderDFMode);
-	jumpTable[7] = @selector(getDefaultFocusMDLInSerie);
-	jumpTable[8] = @selector(getDefaultFocusMDLInCT);
-	jumpTable[9] = @selector(getDefaultFocusMDLInReader);
-	jumpTable[10] = @selector(getDefaultFooterHeight);
+	jumpTable[7] = @selector(getDefaultFooterHeight);
 }
 
 - (NSRect) triggerJumpTableLocal : (SEL) selector
@@ -188,27 +183,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	return output;
 }
 
-- (NSRect) getDefaultFocusMDLInSerie
-{
-	NSRect output;
-	
-	return output;
-}
-
-- (NSRect) getDefaultFocusMDLInCT
-{
-	NSRect output;
-	
-	return output;
-}
-
-- (NSRect) getDefaultFocusMDLInReader
-{
-	NSRect output;
-	
-	return output;
-}
-
 - (CGFloat) getDefaultFooterHeight
 {
 	return 0;
@@ -240,15 +214,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 			
 		case 6:
 			return focusReaderDFMode;
-			
-		case 7:
-			return focusMDLInSerie;
-			
-		case 8:
-			return focusMDLInCT;
-			
-		case 9:
-			return focusMDLInReader;
 			
 		default:
 		{
@@ -298,21 +263,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 		case 6:
 		{
 			focusReaderDFMode = data;
-			break;
-		}
-		case 7:
-		{
-			focusMDLInSerie = data;
-			break;
-		}
-		case 8:
-		{
-			focusMDLInCT = data;
-			break;
-		}
-		case 9:
-		{
-			focusMDLInReader = data;
 			break;
 		}
 		default:
@@ -384,7 +334,8 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	if(array == NULL)
 		return false;
 	
-	uint i, nbElem = [[array objectAtIndex: 0] getNbElem], otherPan;
+	uint i, nbElem = [[array objectAtIndex: 0] getNbElem] - 1, otherPan;
+	//nbElem est décrémenté car on ne test pas la hauteur du footer
 	
 	for(i = 0; i < nbElem * 2; i++)
 	{

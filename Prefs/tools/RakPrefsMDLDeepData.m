@@ -14,281 +14,150 @@
 
 // RELY ON PREFS FROM TABS! NEED TO BE LOADED AFTERWARD
 
-@implementation RakPrefsMDLDeepData
+@implementation RakMDLSize
 
-- (void) setNumberElem
+- (id) init : (Prefs*) creator : (char*) inputData
 {
-	numberElem = 14;
-}
-
-- (void) initJumpTable : (SEL *) jumpTable
-{
-	jumpTable[0] = @selector(getDefaultWidthSerie);
-	jumpTable[1] = @selector(getDefaultWidthCT);
-	jumpTable[2] = @selector(getDefaultWidthReader);
-	jumpTable[3] = @selector(getDefaultWidthFull);
-	jumpTable[4] = @selector(getDefaultHeightSerie);
-	jumpTable[5] = @selector(getDefaultHeightCT);
-	jumpTable[6] = @selector(getDefaultHeightReader);
-	jumpTable[7] = @selector(getDefaultHeightFull);
-	jumpTable[8] = @selector(getDefaultPosXSerie);
-	jumpTable[9] = @selector(getDefaultPosXCT);
-	jumpTable[10] = @selector(getDefaultPosXReader);
-	jumpTable[11] = @selector(getDefaultPosXFull);
-	jumpTable[12] = @selector(getDefaultPosY);
-	jumpTable[13] = @selector(getDefaultPosYFull);
-}
-
-- (CGFloat) getData: (int) mainThread : (uint8_t) request
-{
-	return [self getAtIndex: [self getIndexFromInput:mainThread :request]];
-}
-
-- (CGFloat) getAtIndex: (uint8_t) index
-{
-	switch(index)
+	self = [super init];
+	if(self != nil)
 	{
-		case 0:
-			return widthMDLSerie;
-			
-		case 1:
-			return widthMDLCT;
-			
-		case 2:
-			return widthMDLReader;
-			
-		case 3:
-			return widthMDLFull;
-			
-		case 4:
-			return heightMDLSerie;
-			
-		case 5:
-			return heightMDLCT;
-			
-		case 6:
-			return heightMDLReader;
-			
-		case 7:
-			return heightMDLFull;
-			
-		case 8:
-			return posXMDLSerie;
-			
-		case 9:
-			return posXMDLCT;
-			
-		case 10:
-			return posXMDLReader;
-			
-		case 11:
-			return posXMDLFull;
-			
-		case 12:
-			return posYMDL;
-			
-		case 13:
-			return posYMDLFull;
-			
-		default:
-		{
-#ifdef DEV_VERSION
-			NSLog(@"%s : Couldn't identify the index", __PRETTY_FUNCTION__);
-#endif
-		}
-	}
-	return 0xff;
-}
-
-- (void) setAtIndex: (uint8_t) index : (CGFloat) data
-{
-	switch(index)
-	{
-		case 0:
-		{
-			widthMDLSerie = data;
-			break;
-		}
-		case 1:
-		{
-			widthMDLCT = data;
-			break;
-		}
-		case 2:
-		{
-			widthMDLReader = data;
-			break;
-		}
-		case 3:
-		{
-			widthMDLFull = data;
-			break;
-		}
-		case 4:
-		{
-			heightMDLSerie = data;
-			break;
-		}
-		case 5:
-		{
-			heightMDLCT = data;
-			break;
-		}
-		case 6:
-		{
-			heightMDLReader = data;
-			break;
-		}
-		case 7:
-		{
-			heightMDLFull = data;
-			break;
-		}
-		case 8:
-		{
-			posXMDLSerie = data;
-			break;
-		}
-		case 9:
-		{
-			posXMDLCT = data;
-			break;
-		}
-		case 10:
-		{
-			posXMDLReader = data;
-			break;
-		}
-		case 11:
-		{
-			posXMDLFull = data;
-			break;
-		}
-		case 12:
-		{
-			posYMDL = data;
-			break;
-		}
-		case 13:
-		{
-			posYMDLFull = data;
-			break;
-		}
-		default:
-		{
-#ifdef DEV_VERSION
-			NSLog(@"[%s] : Couldn't identify the index: %d", __PRETTY_FUNCTION__, index);
-#endif
-		}
-	}
-}
-
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) request
-{
-	uint8_t ret_value = 0xff;
-	
-	if(request == QUERY_GET_POSY)		//Moins de choix pour la pos Y (généralement collé en bas
-		ret_value = (mainThread & GUI_THREAD_MDL) ? 1 : 0;
-	else if(mainThread & GUI_THREAD_SERIES)
-		ret_value = 0;
-	else if(mainThread & GUI_THREAD_CT)
-		ret_value = 1;
-	else if(mainThread & GUI_THREAD_READER)
-		ret_value = 2;
-	else if(mainThread & GUI_THREAD_MDL)
-		ret_value = 3;
-	else
-#ifdef DEV_VERSION
-		NSLog(@"[%s]: couldn't identify request", __PRETTY_FUNCTION__);
-#endif
+		mammouth = creator;
 		
-	return ret_value + request * 4;
+		widthMDLSerie = hex2intPrefs(inputData, 1000);
+		if(widthMDLSerie == -1)
+			widthMDLSerie = [self getDefaultSerieWidth];
+		else
+			widthMDLSerie /= 10;
+		
+		heightMDLReaderFocus = hex2intPrefs(inputData, 1000);
+		if(heightMDLReaderFocus == -1)
+			heightMDLReaderFocus = [self getDefaultFocusReaderHeight];
+		else
+			heightMDLReaderFocus /= 10;
+		
+		focusMDLSize.origin.x	= hex2intPrefs(&inputData[4], 1000);
+		focusMDLSize.origin.y	= hex2intPrefs(&inputData[8], 1000);
+		focusMDLSize.size.height = hex2intPrefs(&inputData[12], 1000);
+		focusMDLSize.size.width	= hex2intPrefs(&inputData[16], 1000);
+		
+		if(focusMDLSize.origin.x == -1 || focusMDLSize.origin.y == -1 || focusMDLSize.size.height == -1 || focusMDLSize.size.width == -1)
+		{
+			NSRect dataDefault = [self getDefaultFocusMDL];
+			
+			if(focusMDLSize.origin.x == -1)
+				focusMDLSize.origin.x = dataDefault.origin.x;
+			
+			if(focusMDLSize.origin.y == -1)
+				focusMDLSize.origin.y = dataDefault.origin.y;
+			
+			if(focusMDLSize.size.height == -1)
+				focusMDLSize.size.height = dataDefault.size.height;
+			
+			if(focusMDLSize.size.width == -1)
+				focusMDLSize.size.width = dataDefault.size.width;
+		}
+		else
+		{
+			focusMDLSize.origin.x	/= 10;
+			focusMDLSize.origin.y	/= 10;
+			focusMDLSize.size.width	/= 10;
+			focusMDLSize.size.height /= 10;
+		}
+	}
+	return self;
 }
 
-//Defaults
+- (uint8_t) getFlagFocus
+{
+	return STATE_READER_TAB_MDL_FOCUS;
+}
 
-- (CGFloat) getDefaultWidthSerie
+- (NSRect) getData:(int) mainThread : (int) stateTabsReader
+{
+	switch (mainThread)
+	{
+		case GUI_THREAD_SERIES:
+			return [self getFocusSerie];
+			
+		case GUI_THREAD_CT:
+			return [self getFocusCT];
+			
+		case GUI_THREAD_READER:
+			return [self getFocusReader:stateTabsReader];
+			
+		case GUI_THREAD_MDL:
+			return focusMDLSize;
+	}
+#ifdef DEV_VERSION
+	NSLog(@"[%s]: Couldn't identify request : %8x", __PRETTY_FUNCTION__, mainThread);
+#endif
+	
+	return focusMDLSize;	//Renvoyer quelque chose...
+}
+
+- (NSRect) getFocusSerie
+{
+	NSRect output = { {0, 0}, {0, 0}};
+	
+	output.size.width = widthMDLSerie;			//Pref modifiable
+
+	CGFloat widthSerie;
+	[Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH: &widthSerie];
+	
+	output.origin.x = widthSerie - output.size.width;	//Fortement lié au précédent
+	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &output.size.height];
+	
+	return output;
+}
+
+- (NSRect) getFocusCT
+{
+	NSRect output = { {0, 0}, {0, 0}};
+	
+	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output.origin.x];
+	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output.size.height];
+	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :-1 :&output.size.width];
+	output.origin.y = 0;
+	
+	return output;
+}
+
+- (NSRect) getFocusReader : (int) stateTabsReader
+{
+	NSRect output = { {0, 0}, {0, 0}};
+	
+	output.origin.x = 0;
+	output.origin.y = 0;
+	[Prefs getPref:PREFS_GET_TAB_READER_POSX: &output.size.width];
+	
+	if(stateTabsReader & [self getFlagFocus])
+		output.size.height = heightMDLReaderFocus;
+	else
+		[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT: &output.size.height];
+	
+	return output;
+}
+
+- (NSRect) getDefaultFocusMDL
+{
+	NSRect output = { {0, 0}, {0, 0}};
+	
+	output.origin.x = TAB_MDL_POSX;
+	output.origin.y = TAB_MDL_POSY;
+	output.size.width = TAB_MDL_WIDTH;
+	output.size.height = TAB_MDL_HEIGHT;
+	
+	return output;
+}
+
+- (CGFloat) getDefaultSerieWidth
 {
 	return TAB_SERIE_MDL_WIDTH;
 }
 
-- (CGFloat) getDefaultWidthCT
+- (CGFloat) getDefaultFocusReaderHeight
 {
-	CGFloat output;
-	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :-1 :&output];
-	return output;
-}
-
-- (CGFloat) getDefaultWidthReader
-{
-	CGFloat output;
-	[Prefs directQuery:QUERY_READER :QUERY_GET_WIDTH :GUI_THREAD_READER :-1 :-1 :&output];
-	return 100 - output;
-}
-
-- (CGFloat) getDefaultWidthFull
-{
-	return TAB_MDL_WIDTH;
-}
-
-- (CGFloat) getDefaultHeightSerie
-{
-	int8_t output;
-	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &output];
-	return output;
-}
-
-- (CGFloat) getDefaultHeightCT
-{
-	int8_t output;
-	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output];
-	return output;
-}
-
-- (CGFloat) getDefaultHeightReader
-{
-	CGFloat output;
-	[Prefs getPref:PREFS_GET_READER_FOOTER_HEIGHT: &output];
-	return output;
-}
-
-- (CGFloat) getDefaultHeightFull
-{
-	return TAB_MDL_HEIGHT;
-}
-
-- (CGFloat) getDefaultPosXSerie
-{
-	int widthSerie;
-	[Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH: &widthSerie];
-	return widthSerie - TAB_SERIE_MDL_WIDTH;
-}
-
-- (CGFloat) getDefaultPosXCT
-{
-	CGFloat output;
-	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output];
-	return output;
-}
-
-- (CGFloat) getDefaultPosXReader
-{
-	return 0;
-}
-
-- (CGFloat) getDefaultPosXFull
-{
-	return TAB_MDL_POSX;
-}
-
-- (CGFloat) getDefaultPosY
-{
-	return 0;
-}
-
-- (CGFloat) getDefaultPosYFull
-{
-	return TAB_MDL_POSY;
+	return 50;
 }
 
 @end

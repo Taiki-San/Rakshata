@@ -128,28 +128,35 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		case PREFS_GET_MDL_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : QUERY_GET_WIDTH];
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_MDL_HEIGHT:
 		{
 			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : QUERY_GET_HEIGHT];
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.height;
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_Y:
 		{
 			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSY];
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.y;
 			break;
 		}
 			
 		case PREFS_GET_MDL_POS_X:
 		{
 			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : QUERY_GET_POSX];
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;
+			break;
+		}
+			
+		case PREFS_GET_MDL_FRAME:
+		{
+			NSRect * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader];
 			break;
 		}
 			
@@ -285,22 +292,19 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		}
 		case QUERY_MDL:
 		{
-			*output = [prefsCache->prefsPosMDL getData: mainThread : subRequest];
+			frame = [prefsPosMDL getData: mainThread : stateTabsReaderLocal];
 			break;
 		}
 	}
 	
-	if(request == QUERY_SERIE || request == QUERY_CT || request == QUERY_READER)
-	{
-		if(subRequest == QUERY_GET_HEIGHT)
-			*output = frame.size.height;
-		else if(subRequest == QUERY_GET_WIDTH)
-			*output = frame.size.width;
-		else if(subRequest == QUERY_GET_POSX)
-			*output = frame.origin.x;
-		else if(subRequest == QUERY_GET_POSY)
-			*output = frame.origin.y;
-	}
+	if(subRequest == QUERY_GET_HEIGHT)
+		*output = frame.size.height;
+	else if(subRequest == QUERY_GET_WIDTH)
+		*output = frame.size.width;
+	else if(subRequest == QUERY_GET_POSX)
+		*output = frame.origin.x;
+	else if(subRequest == QUERY_GET_POSY)
+		*output = frame.origin.y;
 }
 
 /************		Private sections		************/
@@ -326,7 +330,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
 		
 		//Must come after tabs prefs initialization
-		prefsPosMDL = [RakPrefsMDLDeepData alloc];
+		prefsPosMDL = [RakMDLSize alloc];
 		if(prefsPosMDL == NULL)
 			[self flushMemory:YES];
 		
