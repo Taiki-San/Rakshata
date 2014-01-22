@@ -309,12 +309,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 
 /************		Private sections		************/
 
+char * loadPref(int length);
+
 - (id) init
 {
 	self = [super init];
 	if(self != nil)
 	{
-		char staticTest[] = "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+		int bufferSize = (8 * (4 * 4) + 4) * 3 + 6 * 4; //(8 structures de 4 * 4 char + 1 * 4 char) * 3 tabs + (2 + 4) * 4 chars dans le MDL
+		char *input = loadPref(bufferSize), recoveryBuffer[bufferSize];
+
+		if(input == NULL)
+		{
+			input = recoveryBuffer;
+			for(int i = 0; i < bufferSize; input[i++] = 'f');
+		}
 		
 		tabSerieSize = [RakSizeSeries alloc];
 		tabCTSize = [RakSizeCT alloc];
@@ -323,9 +332,9 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		if(tabSerieSize == NULL || tabCTSize == NULL || tabReaderSize == NULL)
 			[self flushMemory:YES];
 		
-		[tabSerieSize init: prefsCache: staticTest];
-		[tabCTSize init: prefsCache: staticTest];
-		[tabReaderSize init: prefsCache: staticTest];
+		[tabSerieSize init: prefsCache: input];
+		[tabCTSize init: prefsCache: &input[8 * (4 * 4) + 4]];
+		[tabReaderSize init: prefsCache: &input[(8 * (4 * 4) + 4) * 2]];
 		
 		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
 		
@@ -334,7 +343,10 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		if(prefsPosMDL == NULL)
 			[self flushMemory:YES];
 		
-		[prefsPosMDL init: prefsCache: staticTest];
+		[prefsPosMDL init: prefsCache: &input[(8 * (4 * 4) + 4) * 3]];
+	
+		if(input != recoveryBuffer)
+			free(input);
 	}
 	return self;
 }
