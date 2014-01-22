@@ -63,4 +63,9 @@
 	
 }
 
+- (void) readerIsOpening
+{
+	
+}
+
 @end
