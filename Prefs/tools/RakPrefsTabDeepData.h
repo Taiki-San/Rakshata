@@ -13,8 +13,7 @@
 CGFloat hex2intPrefs(char hex[2], int maximum);
 
 @interface RakPrefsTabDeepData : RakPrefsDeepData
-{
-	
+{	
 	NSRect focusSerie;
 	NSRect focusCT;
 	NSRect focusReader;
@@ -27,6 +26,10 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 }
 
 - (id) init : (Prefs*) creator : (char *) inputData;
+- (void) dumpData : (char *) output : (uint) length;
+
+- (void) setExpectedBufferSize;
+- (int) getExpectedBufferSize;
 
 - (NSRect) getDefaultFocusSerie;
 - (NSRect) getDefaultFocusCT;
@@ -70,10 +73,11 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 
 @end
 
-//De par son comportement très dépendant des données des autres tabs, RakMDLSize ne dépent pas de RakPrefsDeepData
+//Structure trop différente pour qu'un héritage de RakPrefsTab soit rentable
 @interface RakMDLSize : NSObject
 {
 	Prefs* mammouth;
+	int sizeInputBuffer;
 	
 	//Prefs propres au MDL
 	CGFloat widthMDLSerie;
@@ -82,6 +86,11 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 }
 
 - (id) init : (Prefs*) creator : (char*) inputData;
+- (void) dumpData : (char *) output : (uint) length;
+
+- (void) setExpectedBufferSize;
+- (int) getExpectedBufferSize;
+
 
 - (uint8_t) getFlagFocus;
 - (NSRect) getData:(int) mainThread : (int) stateTabsReader;

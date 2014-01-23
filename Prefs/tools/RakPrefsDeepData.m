@@ -22,6 +22,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 	if(self != nil)
 	{
 		[self setNumberElem];
+		[self setExpectedBufferSize];
 		
 		CGFloat dataBuf;
 		uint i;
@@ -52,6 +53,11 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 - (void) setNumberElem
 {
 	numberElem = 1;
+}
+
+- (void) setExpectedBufferSize
+{
+	sizeInputBuffer = numberElem * 4;
 }
 
 - (uint8_t) getFlagFocus

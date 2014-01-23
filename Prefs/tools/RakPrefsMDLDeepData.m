@@ -12,9 +12,9 @@
 
 #include "superHeader.h"
 
-// RELY ON PREFS FROM TABS! NEED TO BE LOADED AFTERWARD
-
 @implementation RakMDLSize
+
+//Taille du buffer: 24 chars
 
 - (id) init : (Prefs*) creator : (char*) inputData
 {
@@ -22,6 +22,7 @@
 	if(self != nil)
 	{
 		mammouth = creator;
+		[self setExpectedBufferSize];
 		
 		widthMDLSerie = hex2intPrefs(inputData, 1000);
 		if(widthMDLSerie == -1)
@@ -29,16 +30,16 @@
 		else
 			widthMDLSerie /= 10;
 		
-		heightMDLReaderFocus = hex2intPrefs(inputData, 1000);
+		heightMDLReaderFocus = hex2intPrefs(&inputData[4], 1000);
 		if(heightMDLReaderFocus == -1)
 			heightMDLReaderFocus = [self getDefaultFocusReaderHeight];
 		else
 			heightMDLReaderFocus /= 10;
 		
-		focusMDLSize.origin.x	= hex2intPrefs(&inputData[4], 1000);
-		focusMDLSize.origin.y	= hex2intPrefs(&inputData[8], 1000);
-		focusMDLSize.size.height = hex2intPrefs(&inputData[12], 1000);
-		focusMDLSize.size.width	= hex2intPrefs(&inputData[16], 1000);
+		focusMDLSize.origin.x	= hex2intPrefs(&inputData[6], 1000);
+		focusMDLSize.origin.y	= hex2intPrefs(&inputData[12], 1000);
+		focusMDLSize.size.height = hex2intPrefs(&inputData[16], 1000);
+		focusMDLSize.size.width	= hex2intPrefs(&inputData[20], 1000);
 		
 		if(focusMDLSize.origin.x == -1 || focusMDLSize.origin.y == -1 || focusMDLSize.size.height == -1 || focusMDLSize.size.width == -1)
 		{
@@ -66,6 +67,53 @@
 	}
 	return self;
 }
+
+- (void) setExpectedBufferSize
+{
+	sizeInputBuffer = 4 + 4 + 4 * 4;
+}
+
+- (int) getExpectedBufferSize
+{
+	return sizeInputBuffer;
+}
+
+//Save state when quit
+
+- (void) dumpData : (char *) output : (uint) length
+{
+	if(length < sizeInputBuffer)	//Taille du buffer
+	{
+#ifdef DEV_VERSION
+		NSLog(@"[%s]: Not enough room to same prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
+#endif
+		return;
+	}
+	
+	if(output == NULL)
+		return;
+		
+	snprintf(output, 9, "%04x%04x", (uint) floor(widthMDLSerie * 10 + 0.5), (uint) floor(heightMDLReaderFocus * 10 + 0.5));
+	
+
+	//On a pas de \0 final donc on va faire la conversion dans un buffer intermédiaire puis le copie
+	char buffer[17];
+	NSRect frame = focusMDLSize;
+	
+	frame.origin.x =	floor(frame.origin.x * 10 + 0.5);
+	frame.origin.y =	floor(frame.origin.y * 10 + 0.5);
+	frame.size.width =	floor(frame.size.width * 10 + 0.5);
+	frame.size.height = floor(frame.size.height * 10 + 0.5);
+	
+	snprintf(buffer, 17, "%04x%04x%04x%04x", (uint) frame.origin.x, (uint) frame.origin.y, (uint) frame.size.height, (uint) frame.size.width);
+	
+	for(uint8_t i = 0; i < 16; i++)
+		output[8 + i] = buffer[i];
+	
+	//AAANNNND, We're done :D
+}
+
+//Getters
 
 - (uint8_t) getFlagFocus
 {

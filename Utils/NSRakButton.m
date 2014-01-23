@@ -23,4 +23,9 @@
 	[self setFrameOrigin:newPos];
 }
 
+- (int) requestedPriority
+{
+	return 1;
+}
+
 @end

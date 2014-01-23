@@ -22,6 +22,7 @@
 	if(self != nil)
 	{
 		[self setNumberElem];
+		[self setExpectedBufferSize];
 		
 		NSRect dataBuf, dataDefault;
 		int i;
@@ -82,6 +83,16 @@
 	numberElem = DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData;
 }
 
+- (void) setExpectedBufferSize
+{
+	sizeInputBuffer = (numberElem-1) * 16 + 4;
+}
+
+- (int) getExpectedBufferSize
+{
+	return sizeInputBuffer;
+}
+
 - (void) initJumpTable : (SEL *) jumpTable
 {
 	jumpTable[0] = @selector(getDefaultFocusSerie);
@@ -112,12 +123,54 @@
 	return output;
 }
 
+//Save state when quit
+
+- (void) dumpData : (char *) output : (uint) length
+{
+	if(length < sizeInputBuffer)	//Taille du buffer
+	{
+#ifdef DEV_VERSION
+		NSLog(@"[%s]: Not enough room to same prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
+#endif
+		return;
+	}
+	
+	if(output == NULL)
+	{
+		return;
+	}
+	
+	NSRect frame;
+	for(int i = 0; i < numberElem - 1; i++)
+	{
+		frame = [self getAtIndex:i];
+
+		frame.origin.x =	floor(frame.origin.x * 10 + 0.5);
+		frame.origin.y =	floor(frame.origin.y * 10 + 0.5);
+		frame.size.width =	floor(frame.size.width * 10 + 0.5);
+		frame.size.height = floor(frame.size.height * 10 + 0.5);
+		
+		snprintf(output, 17, "%04x%04x%04x%04x", (uint) frame.origin.x, (uint) frame.origin.y, (uint) frame.size.height, (uint) frame.size.width);
+		output += 16;
+	}
+	
+	//On a pas de \0 final donc on va faire la conversion dans un buffer intermédiaire puis le copie
+	CGFloat footer = [self getFooterHeight];
+	char buffer[5];
+	snprintf(buffer, 5, "%04x", (uint) floor(footer * 10 + 0.5));
+	for(uint8_t i = 0; i < 4; i++)
+		output[i] = buffer[i];
+	
+	//AAANNNND, We're done :D
+}
+
+
+//Getters
+
 - (uint8_t) getFlagFocus
 {
 	return STATE_READER_TAB_MASK;
 }
-
-//Getters
 
 - (NSRect) getDataTab: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
 {
@@ -297,11 +350,11 @@
 	else if(mainThread & GUI_THREAD_MDL)
 	{
 		if(backgroundTabsWhenMDLActive & GUI_THREAD_SERIES)
-			ret_value = 7;
+			ret_value = 0;
 		else if(backgroundTabsWhenMDLActive & GUI_THREAD_CT)
-			ret_value = 8;
+			ret_value = 1;
 		else if(backgroundTabsWhenMDLActive & GUI_THREAD_READER)
-			ret_value = 9;
+			ret_value = [self getFlagFocus] & STATE_READER_TAB_SERIE_FOCUS ? 4 : 3;
 		else
 #ifdef DEV_VERSION
 			NSLog(@"[%s]: couldn't identify request for MDL: %8x %8x %8x", __PRETTY_FUNCTION__, mainThread, backgroundTabsWhenMDLActive, stateTabsReader);

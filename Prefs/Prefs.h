@@ -56,6 +56,9 @@ enum QUERY_SUBREQUEST {
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer;
 
 //Not public, only called by subprefs
+- (id) init;
+- (char*) dumpPrefs;
+- (void) flushMemory : (bool) memoryError;
 - (NSArray *) executeConsistencyChecks : (uint8) request;
 @end
 

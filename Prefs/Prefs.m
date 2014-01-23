@@ -193,6 +193,10 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		case PREFS_SET_OWNMAINTAB:
 		{
 			ret_value = mainThread != (uint) value;
+			
+			if(value & GUI_THREAD_MDL && !(mainThread & GUI_THREAD_MDL))
+				backgroundTabsState = mainThread;
+			
 			mainThread = value & GUI_MASK;
 			break;
 		}
@@ -349,6 +353,24 @@ char * loadPref(int length);
 			free(input);
 	}
 	return self;
+}
+
+- (char*) dumpPrefs
+{
+	char *output = NULL;
+	uint expectedSize[] = { [tabSerieSize getExpectedBufferSize], [tabCTSize getExpectedBufferSize], [tabReaderSize getExpectedBufferSize], [prefsPosMDL getExpectedBufferSize] };
+	
+	output = calloc(expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3], sizeof(char));
+	
+	if(output != NULL)
+	{
+		[tabSerieSize dumpData:		output					 :	expectedSize[0]];
+		[tabCTSize dumpData:		&output[expectedSize[0]] :	expectedSize[1]];
+		[tabReaderSize dumpData:	&output[expectedSize[1]] :	expectedSize[2]];
+		[prefsPosMDL dumpData:		&output[expectedSize[2]] :	expectedSize[3]];
+	}
+	
+	return output;
 }
 
 - (void) flushMemory : (bool) memoryError

@@ -22,8 +22,8 @@
 	[self validateWindowData:[[self window] frame]];
 	[[Series alloc] init:self.window];
 	[[CTSelec alloc] init:self.window];
-	[[MDL alloc] init:self.window];
 	[[Reader alloc] init:self.window];
+	[[MDL alloc] init:self.window];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

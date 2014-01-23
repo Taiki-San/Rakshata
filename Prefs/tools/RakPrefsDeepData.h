@@ -14,14 +14,18 @@
 
 @interface RakPrefsDeepData : NSObject
 {
-	int numberElem;
 	Prefs* mammouth;
+	int numberElem;
+	int sizeInputBuffer;
 }
 
 - (id) init : (Prefs*) creator : (char *) inputData;
 - (void) initJumpTable : (SEL *) jumpTable;
 - (void) setAtIndex: (uint8_t) index : (CGFloat) data;
 - (void) reinitAtIndex : (uint8_t) index;
+
+- (void) setNumberElem;
+- (void) setExpectedBufferSize;
 
 - (CGFloat) triggerJumpTable : (SEL) selector;
 
