@@ -217,7 +217,7 @@ static void downloader(TMP_DL *output)
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
         define_user_agent(curl);
 
-        if(output->URL[8] == 'r') //RSP
+        if(!strncmp(&output->URL[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&output->URL[8], STORE_URL, strlen(STORE_URL))) //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
@@ -296,7 +296,7 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     useDNSCache(curl);
     if(SSL_enabled == SSL_ON)
     {
-        if(adresse[8] == 'r') //RSP
+        if(!strncmp(&adresse[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&adresse[8], STORE_URL, strlen(STORE_URL))) //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
@@ -348,10 +348,10 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
     int i = 0;
     char *input = ptr;
     TMP_DL *buffer_dl = buffer_dl_void;
-    
+
 	for(; i < size * nmemb && buffer_dl->current_pos < buffer_dl->length - 1; ((char*)buffer_dl->buf)[(buffer_dl->current_pos)++] = input[i++]);
 	((char*)buffer_dl->buf)[buffer_dl->current_pos] = 0;
-    
+
 	return i;
 }
 
@@ -377,9 +377,9 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
 {
 	int i;
 	TMP_DL *data = output_void;
-    DATA_DL_OBFS *output = data->buf; 
+    DATA_DL_OBFS *output = data->buf;
     char *input = ptr;
-	
+
     if(output->data == NULL || output->mask == NULL || data->length != FILE_EXPECTED_SIZE || size * nmemb >= data->length - data->current_pos)
     {
         if(output->data == NULL || output->mask == NULL)
@@ -389,11 +389,11 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
                 data->length = 30*1024*1024;
             else
                 data->length = 3 * FILE_EXPECTED_SIZE / 2; //50% de marge
-            
+
 			output->data = ralloc(data->length);
             if(output->data == NULL)
                 return -1;
-            
+
 			output->mask = ralloc(data->length);
             if(output->mask == NULL)
                 return -1;
@@ -402,10 +402,10 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
         {
 			if(data->length != FILE_EXPECTED_SIZE)
 				data->length = FILE_EXPECTED_SIZE;
-			
+
 			if(size * nmemb >= data->length - data->current_pos)
 				data->length += (FILE_EXPECTED_SIZE > size * nmemb ? FILE_EXPECTED_SIZE : size * nmemb);
-			
+
             void *internalBufferTmp = realloc(output->data, data->length);
             if(internalBufferTmp == NULL)
                 return -1;
@@ -420,14 +420,14 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
 
     if(size * nmemb == 0) //Rien à écrire
         return 0;
-	
+
     //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
-    
+
 	for(i = 0; i < size * nmemb; data->current_pos++)
 	{
 		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (rand() % 0xff)));
 	}
-    
+
 	return size*nmemb;
 }
 
