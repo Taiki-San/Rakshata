@@ -15,7 +15,9 @@
 #endif
 
 #define CRYPTO_BUFFER_SIZE 16
-typedef uint32_t DWORD;
+#ifndef _WIN32
+    typedef uint32_t DWORD;
+#endif // _WIN32
 typedef uint32_t u4byte;
 typedef unsigned char BYTE;
 
@@ -25,7 +27,7 @@ typedef unsigned char BYTE;
 **                                                  **
 *****************************************************/
 
-typedef DWORD RK_KEY;
+typedef uint32_t RK_KEY;
 
 int rijndaelSetupEncrypt(RK_KEY *rk, const unsigned char *key, int keybits);
 int rijndaelSetupDecrypt(RK_KEY *rk, const unsigned char *key, int keybits);
@@ -46,12 +48,12 @@ void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16]
 *****************************************************/
 
 typedef struct {
-	DWORD	key[140];
+	uint32_t	key[140];
 } SERPENT_STATIC_DATA;
 
-void Serpent_set_key(SERPENT_STATIC_DATA *l_key,const DWORD *in_key, const DWORD key_len);
-void Serpent_encrypt(SERPENT_STATIC_DATA *l_key,const DWORD *in_blk, DWORD *out_blk);
-void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const DWORD *in_blk, DWORD *out_blk);
+void Serpent_set_key(SERPENT_STATIC_DATA *l_key,const uint32_t *in_key, const uint32_t key_len);
+void Serpent_encrypt(SERPENT_STATIC_DATA *l_key,const uint32_t *in_blk, uint32_t *out_blk);
+void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const uint32_t *in_blk, uint32_t *out_blk);
 
 
 /*****************************************************
@@ -66,7 +68,7 @@ typedef struct
 	u4byte s_key[4];
 	u4byte mk_tab[4 * 256];
 	u4byte k_len;
-	
+
 } TwofishInstance;
 
 //Truecrypt don't use the return value, so I guess it's fine to discard it

@@ -207,7 +207,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                         for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
                         if(posIV != -1) //Pas premier passage, IV existante
                             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
-                        Serpent_encrypt(&pSer, (DWORD*) plaintext, (DWORD*) ciphertext);
+                        Serpent_encrypt(&pSer, (uint32_t*) plaintext, (uint32_t*) ciphertext);
                         memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
                         memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
 
@@ -251,7 +251,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                 }
             }while (err>0);
 		}
-		
+
         if (fout)
             fclose(fout);
 

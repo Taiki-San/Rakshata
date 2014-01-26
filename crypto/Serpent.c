@@ -32,7 +32,7 @@ typedef unsigned char BYTE;
 #  define rotr(x,n) _lrotr(x,n)
 #  define rotl(x,n) _lrotl(x,n)
 
-#define bswap(x)    (rotl(x, 8) & 0x00ff00ff | rotr(x, 8) & 0xff00ff00)
+#define bswap(x)    ((rotl(x, 8) & 0x00ff00ff) | (rotr(x, 8) & 0xff00ff00))
 
 #define byte(x,n)   ((BYTE)((x) >> (8 * n)))
 
@@ -263,7 +263,7 @@ typedef unsigned char BYTE;
     e = t12 ^ t16
 
 /* 16 term solution that performs less well than 17 term one
-   in my environment (PPro/PII)                                  
+   in my environment (PPro/PII)
 
 #define sb3(a,b,c,d,e,f,g,h)    \
     t1 = a ^ b;     \
@@ -519,14 +519,14 @@ void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
         return;
 
     i = 0; lk = (key_len + 31) / 32;
-    
+
     while(i < lk)
     {
 #ifdef  BLOCK_SWAP
         l_key[i] = io_swap(in_key[lk - i - 1]);
 #else
         l_key[i] = in_key[i];
-#endif  
+#endif
         i++;
     }
 
@@ -536,17 +536,17 @@ void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
 
             l_key[i++] = 0;
 
-        i = key_len / 32; lk = 1 << key_len % 32; 
+        i = key_len / 32; lk = 1 << key_len % 32;
 
         l_key[i] = (l_key[i] & (lk - 1)) | lk;
     }
 
     for(i = 0; i < 132; ++i)
     {
-        lk = l_key[i] ^ l_key[i + 3] ^ l_key[i + 5] 
+        lk = l_key[i] ^ l_key[i + 3] ^ l_key[i + 5]
                                 ^ l_key[i + 7] ^ 0x9e3779b9 ^ i;
 
-        l_key[i + 8] = (lk << 11) | (lk >> 21); 
+        l_key[i + 8] = (lk << 11) | (lk >> 21);
     }
 
     k_set( 0,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get( 0,e,f,g,h);
@@ -588,49 +588,49 @@ void Serpent_encrypt(const DWORD *l_key,const DWORD *in_blk, DWORD *out_blk)
 {
 	DWORD  a,b,c,d,e,f,g,h;
     DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
-    
+
 #ifdef  BLOCK_SWAP
-    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]); 
+    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]);
     c = io_swap(in_blk[1]); d = io_swap(in_blk[0]);
 #else
     a = in_blk[0]; b = in_blk[1]; c = in_blk[2]; d = in_blk[3];
 #endif
 
-    k_xor( 0,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor( 1,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor( 2,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor( 3,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor( 4,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor( 5,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor( 6,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor( 7,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor( 8,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor( 9,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(10,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(11,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(12,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(13,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(14,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(15,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(16,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(17,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(18,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(19,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(20,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(21,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(22,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(23,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(24,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(25,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(26,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(27,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(28,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(29,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d); 
-    k_xor(30,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h); 
-    k_xor(31,e,f,g,h); sb7(e,f,g,h,a,b,c,d); k_xor(32,a,b,c,d); 
-    
+    k_xor( 0,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor( 1,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor( 2,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor( 3,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor( 4,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor( 5,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor( 6,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor( 7,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor( 8,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor( 9,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(10,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(11,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(12,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(13,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(14,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(15,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(16,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(17,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(18,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(19,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(20,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(21,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(22,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(23,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(24,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(25,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(26,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(27,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(28,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(29,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
+    k_xor(30,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
+    k_xor(31,e,f,g,h); sb7(e,f,g,h,a,b,c,d); k_xor(32,a,b,c,d);
+
 #ifdef  BLOCK_SWAP
-    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b); 
+    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b);
     out_blk[1] = io_swap(c); out_blk[0] = io_swap(d);
 #else
     out_blk[0] = a; out_blk[1] = b; out_blk[2] = c; out_blk[3] = d;
@@ -641,9 +641,9 @@ void Serpent_decrypt(const DWORD *l_key,const DWORD *in_blk, DWORD *out_blk)
 {
 	DWORD  a,b,c,d,e,f,g,h;
     DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
-    
+
 #ifdef  BLOCK_SWAP
-    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]); 
+    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]);
     c = io_swap(in_blk[1]); d = io_swap(in_blk[0]);
 #else
     a = in_blk[0]; b = in_blk[1]; c = in_blk[2]; d = in_blk[3];
@@ -681,9 +681,9 @@ void Serpent_decrypt(const DWORD *l_key,const DWORD *in_blk, DWORD *out_blk)
     irot(e,f,g,h); ib2(e,f,g,h,a,b,c,d); k_xor( 2,a,b,c,d);
     irot(a,b,c,d); ib1(a,b,c,d,e,f,g,h); k_xor( 1,e,f,g,h);
     irot(e,f,g,h); ib0(e,f,g,h,a,b,c,d); k_xor( 0,a,b,c,d);
-    
+
 #ifdef  BLOCK_SWAP
-    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b); 
+    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b);
     out_blk[1] = io_swap(c); out_blk[0] = io_swap(d);
 #else
     out_blk[0] = a; out_blk[1] = b; out_blk[2] = c; out_blk[3] = d;

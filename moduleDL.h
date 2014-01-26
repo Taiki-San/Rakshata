@@ -11,7 +11,11 @@
 *********************************************************************************************/
 
 extern SDL_Renderer * rendererDL;
-extern pthread_mutex_t mutexAskUIThreadWIP;
+#ifdef _WIN32
+    #define mutexAskUIThreadWIP mutexUI
+#else
+    extern pthread_mutex_t mutexAskUIThreadWIP;
+#endif
 
 #define HAUTEUR_FENETRE_DL 470
 

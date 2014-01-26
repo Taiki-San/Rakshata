@@ -34,14 +34,14 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
 	TwofishInstance pTwoF;
 
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
-    TwofishSetKey(&pTwoF, (DWORD*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
-	Serpent_set_key(&pSer, (DWORD*) key, KEYBITS);
-    
+    TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
+	Serpent_set_key(&pSer, (uint32_t*) key, KEYBITS);
+
     for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {
         rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        Serpent_decrypt(&pSer, (DWORD*) ciphertext, (DWORD*) plaintext);
+        Serpent_decrypt(&pSer, (uint32_t*) ciphertext, (uint32_t*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
@@ -49,7 +49,7 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
         memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
 
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        TwofishDecrypt(&pTwoF, (u4byte*) ciphertext, (u4byte*) plaintext);
+        TwofishDecrypt(&pTwoF, (uint32_t*) ciphertext, (uint32_t*) plaintext);
         if(posIV != -1) //Pas premier passage, IV existante
             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
@@ -259,7 +259,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
 
     decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
 	crashTemp(key, SHA256_DIGEST_LENGTH);
-	
+
 	SDL_Surface *surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
 
 #ifdef DEV_VERSION

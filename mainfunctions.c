@@ -6,7 +6,7 @@
 **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
 **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
 **                                                                                          **
-**    Licence propri√©taire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -189,7 +189,7 @@ int mainLecture()
                             }
 
                             chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-                            setLastChapitreLu(&mangaDB[mangaChoisis], isTome, chapitreChoisis); //On √©crit le dernier chapitre lu
+                            setLastChapitreLu(&mangaDB[mangaChoisis], isTome, chapitreChoisis); //On écrit le dernier chapitre lu
                             retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, isTome, &fullscreen);
 
                             if(retourLecteur != 0)

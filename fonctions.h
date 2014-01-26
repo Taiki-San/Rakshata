@@ -22,7 +22,11 @@ void loadIcon(SDL_Window *window_ptr);
 SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
 SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
 void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
-#define checkIfRetina(window) ((window->flags & SDL_WINDOW_ALLOW_HIGHDPI) != 0)
+#ifdef _WIN32
+    #define checkIfRetina(window)   0
+#else
+    #define checkIfRetina(window) ((window->flags & SDL_WINDOW_ALLOW_HIGHDPI) != 0)
+#endif // _WIN32
 #define getRetinaZoom() (isRetina + 1)
 void updateWindowSize(int w, int h);
 void getResolution();
