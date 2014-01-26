@@ -183,8 +183,9 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
                 }
                 posID++;
                 for(i = 0; nomPagesTmp[i] != NULL; free(nomPagesTmp[i++]));
-                free(nomPagesTmp);
             }
+			
+			free(nomPagesTmp);
         }
 		
         if(isTome)

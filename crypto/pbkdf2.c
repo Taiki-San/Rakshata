@@ -62,7 +62,7 @@ int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, uint32_t inputLengt
 
         if(r){
             F(prf_hlen, input, inputLength, salt, saltLength, iteneration, l+1, tmpbuff, outbuff);
-            out = lengthOutput + (l * prf_hlen);
+            out = output + (l * prf_hlen);
             memcpy(out, outbuff, r);
         }
     }

@@ -210,11 +210,13 @@ DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int con
 {
     int i = 0;
     char temp[500], stringGenericUsable[TRAD_LENGTH];
+	
+	memset(prefs, 0, sizeof(PREFS_ENGINE));
 
     //On capitalise la première lettre
     if(strlen(stringGeneric) >= TRAD_LENGTH)
         stringGeneric[TRAD_LENGTH-1] = 0;
-    strcpy(stringGenericUsable, stringGeneric);
+    strncpy(stringGenericUsable, stringGeneric, TRAD_LENGTH);
     if(stringGenericUsable[0] >= 'a' && stringGenericUsable[0] <= 'z')
         stringGenericUsable[0] += 'A'-'a';
 

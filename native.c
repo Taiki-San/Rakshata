@@ -389,7 +389,6 @@ void removeFolder(char *path)
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
     char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 2);
-    char *buffer = NULL;
 	
 	if(name != NULL)
 		snprintf(name, strlen(REPERTOIREEXECUTION) + strlen(path) + 2, "%s/%s", REPERTOIREEXECUTION, path);
@@ -406,7 +405,8 @@ void removeFolder(char *path)
         logR(temp);
 #endif
         removeR(name);
-		free(name);
+		if(name != path)
+			free(name);
         return;
     }
 
@@ -415,20 +415,15 @@ void removeFolder(char *path)
     {
         if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
             continue;
+		uint size = strlen(path) + strlen(entry->d_name) + 0x10;
+		char buffer[size];
 
-        buffer = malloc(strlen(path) + strlen(entry->d_name) + 0x10);
-        if(buffer == NULL)
-        {
-            memoryError(strlen(path) + strlen(entry->d_name) + 0x10);
-            continue;
-        }
-        snprintf(buffer, strlen(path) + strlen(entry->d_name) + 0x10, "%s/%s", path, entry->d_name);
+        snprintf(buffer, size, "%s/%s", path, entry->d_name);
 
         if(checkDirExist(buffer))
             removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
         else
             removeR(buffer); //On est sur un fichier, on le supprime.
-        free(buffer);
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
@@ -437,7 +432,8 @@ void removeFolder(char *path)
     snprintf(temp2, 300, "Removed: %s\n", name);
     logR(temp2);
 #endif
-    free(name);
+	if(name != path)
+		free(name);
 }
 
 #ifdef _WIN32

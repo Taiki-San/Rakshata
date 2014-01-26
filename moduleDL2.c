@@ -167,7 +167,8 @@ void mainMDL()
     /*On libère la mémoire*/
     for(i = 0; i < nbElemTotal; i++)
     {
-        free((*todoList)[i]->listChapitreOfTome);
+		if((*todoList)[i] != NULL)
+			free((*todoList)[i]->listChapitreOfTome);
         free((*todoList)[i]);
         free(status[i]);
         free(statusCache[i]);
