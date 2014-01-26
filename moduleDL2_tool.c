@@ -735,12 +735,14 @@ void lancementModuleDL()
     createNewThread(MDLLauncher, NULL);
     while(1)
     {
-        if(rendererDL != NULL)
+        if(rendererDL != NULL || rendererDL == (void*) 0x1)
             break;
         if(SDL_PollEvent(&event))
             SDL_PushEvent(&event);
         SDL_Delay(100);
     }
+    if(rendererDL == (void*) 0x1)   //Si une erreur a empeche le lancement
+        rendererDL = NULL;
 }
 
 /*UI*/

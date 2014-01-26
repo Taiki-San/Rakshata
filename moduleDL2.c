@@ -193,12 +193,15 @@ void MDLLauncher()
     if(INSTANCE_RUNNING || !checkLancementUpdate())
     {
         INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
+        rendererDL = (void*) 0x1;
         quit_thread(0);
     }
 
     if(!loadEmailProfile())
+    {
+        rendererDL = (void*) 0x1;
         quit_thread(0);
-
+    }
     INSTANCE_RUNNING = 1;
 
 #ifdef _WIN32
@@ -486,7 +489,7 @@ bool MDLTelechargement(DATA_MOD_DL* input)
             dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
             ret_value = download_UI(&dataDL);
             free(dataDL.URL);
-			
+
 			for(i = 0; i < 19 && dataDL.buf != NULL && ((DATA_DL_OBFS *) dataDL.buf)->data != NULL && ((DATA_DL_OBFS *) dataDL.buf)->mask != NULL; i++)
 				firstTwentyBytesOfArchive[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
 			firstTwentyBytesOfArchive[i] = 0;
