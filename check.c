@@ -336,13 +336,13 @@ void networkAndVersionTest()
         MUTEX_LOCK(mutex);
         NETWORK_ACCESS = CONNEXION_OK;
         MUTEX_UNLOCK(mutex);
-        if(bufferDL[0] == '1' && !checkFileExist("update/update")) //Update needed
+        if(bufferDL[0] == '1' && !checkFileExist("data/update")) //Update needed
         {
             FILE* test = NULL;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
             snprintf(temp, TAILLE_BUFFER, "https://%s/update/%s/%d", SERVEUR_URL, BUILD, CURRENTVERSION);
-            download_disk(temp, NULL, "data/update", SSL_OFF);
+            download_disk(temp, NULL, "data/update", SSL_ON);
 
 			test = fopenR("data/update", "r");
 			if(test)

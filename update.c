@@ -32,7 +32,7 @@ void checkUpdate()
         ***                                                                             ***
         ***********************************************************************************/
 
-		int i, j, ligne = 0;
+		int i, ligne = 0;
         char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][TRAD_LENGTH], temp[TAILLE_BUFFER], URL[500];
 
 
@@ -45,14 +45,14 @@ void checkUpdate()
 
         for(i = 0; i < TAILLE_BUFFER; i++)
         {
-            for(j = 0; j < TAILLE_BUFFER; files[i][j++] = 0);
-            for(j = 0; j < 2; action[i][j++] = 0);
+            memset(&files[i], 0, TAILLE_BUFFER);
+            action[i][0] = action[i][1] = 0;
         }
 
         //Lecture du fichier de MaJ, protection contre les overflow
-        for(; fgetc(test) != EOF && ligne < TAILLE_BUFFER; ligne++)
+        for(; (i = fgetc(test)) != EOF && ligne < TAILLE_BUFFER; ligne++)
         {
-            fseek(test, -1, SEEK_CUR);
+            ungetc(i, test);
             fscanfs(test, "%s %s", action[ligne], 2, files[ligne], TAILLE_BUFFER);
         }
         fclose(test);
@@ -62,13 +62,13 @@ void checkUpdate()
         MUTEX_LOCK(mutexRS);
 
         window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
-        WINDOW_SIZE_W = getW(renderer);
-        WINDOW_SIZE_H = getH(renderer);
         loadIcon(window);
         renderer = setupRendererSafe(window);
+        WINDOW_SIZE_W = getW(renderer);
+        WINDOW_SIZE_H = getH(renderer);
 
         MUTEX_UNLOCK(mutexRS);
-        
+
         police = OpenFont(FONTUSED, POLICE_MOYEN);
 
         SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
