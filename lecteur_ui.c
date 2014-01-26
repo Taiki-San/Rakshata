@@ -106,7 +106,7 @@ SDL_Texture* loadControlBar(int favState)
         positionIcone.y = bandeauControleSurface->h / 2 + BORDURE_BUTTON_H;
 		
 		
-        if(!getUnlock)
+        if(!getUnlock())
             SDL_SetSurfaceAlphaMod(icone, 120);
 		
         SDL_BlitSurface(icone, NULL, bandeauControleSurface, &positionIcone);

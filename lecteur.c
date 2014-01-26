@@ -18,7 +18,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
     int i, changementPage = READER_ETAT_DEFAULT;
     int hauteurMax = 0, largeurMax = 0, ctrlPressed = 0;
 	int curPosIntoStruct = 0, pageAccesDirect = 0;
-    bool pageCharge, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad, setTopInfosToWarning, redrawScreen, noRefresh;
+    bool pageCharge = false, changementEtat = false, pageTooBigForScreen, pageTooBigToLoad, setTopInfosToWarning, redrawScreen, noRefresh;
     char temp[LONGUEUR_NOM_MANGA_MAX*5+350], texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH], infos[300];
     SDL_Surface *page = NULL, *prevPage = NULL, *nextPage = NULL, *UI_PageAccesDirect = NULL;
     SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;

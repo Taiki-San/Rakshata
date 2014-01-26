@@ -429,7 +429,7 @@ void reader_initPagePosition(SDL_Surface * page, bool fullscreen, bool pageTooBi
 	
 	else
 	{
-		positionPage->x = fullscreen ? getPtRetinaW(renderer) / 2 - page->w / 2 : BORDURE_LAT_LECTURE;
+		positionPage->x = getPtRetinaW(renderer) / 2 - page->w / 2;
 		positionPage->y = BORDURE_HOR_LECTURE;
 
 		positionPage->w = positionSlide->w = page->w;
