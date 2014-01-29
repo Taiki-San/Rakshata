@@ -313,15 +313,16 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 
 /************		Private sections		************/
 
-char * loadPref(int length);
+char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (id) init
 {
 	self = [super init];
 	if(self != nil)
 	{
-		int bufferSize = (8 * (4 * 4) + 4) * 3 + 6 * 4; //(8 structures de 4 * 4 char + 1 * 4 char) * 3 tabs + (2 + 4) * 4 chars dans le MDL
-		char *input = loadPref(bufferSize), recoveryBuffer[bufferSize];
+		uint expectedSize[] = { [RakSizeSeries getExpectedBufferSizeVirtual], [RakSizeCT getExpectedBufferSizeVirtual], [RakSizeReader getExpectedBufferSizeVirtual], [RakMDLSize getExpectedBufferSizeVirtual] };
+		int bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
+		char *input = loadPref("si", bufferSize, 'f'), recoveryBuffer[bufferSize];
 
 		if(input == NULL)
 		{
@@ -337,8 +338,8 @@ char * loadPref(int length);
 			[self flushMemory:YES];
 		
 		[tabSerieSize init: prefsCache: input];
-		[tabCTSize init: prefsCache: &input[8 * (4 * 4) + 4]];
-		[tabReaderSize init: prefsCache: &input[(8 * (4 * 4) + 4) * 2]];
+		[tabCTSize init: prefsCache: &input[expectedSize[0]]];
+		[tabReaderSize init: prefsCache: &input[expectedSize[0] + expectedSize[1]]];
 		
 		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
 		
@@ -347,7 +348,7 @@ char * loadPref(int length);
 		if(prefsPosMDL == NULL)
 			[self flushMemory:YES];
 		
-		[prefsPosMDL init: prefsCache: &input[(8 * (4 * 4) + 4) * 3]];
+		[prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
 	
 		if(input != recoveryBuffer)
 			free(input);
@@ -364,10 +365,10 @@ char * loadPref(int length);
 	
 	if(output != NULL)
 	{
-		[tabSerieSize dumpData:		output					 :	expectedSize[0]];
+		[tabSerieSize dumpData:		output	: expectedSize[0]];
 		[tabCTSize dumpData:		&output[expectedSize[0]] :	expectedSize[1]];
-		[tabReaderSize dumpData:	&output[expectedSize[1]] :	expectedSize[2]];
-		[prefsPosMDL dumpData:		&output[expectedSize[2]] :	expectedSize[3]];
+		[tabReaderSize dumpData:	&output[expectedSize[0] + expectedSize[1]] :	expectedSize[2]];
+		[prefsPosMDL dumpData:		&output[expectedSize[0] + expectedSize[1] + expectedSize[2]] :	expectedSize[3]];
 	}
 	
 	return output;

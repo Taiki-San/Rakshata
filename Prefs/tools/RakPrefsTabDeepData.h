@@ -30,6 +30,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 
 - (void) setExpectedBufferSize;
 - (int) getExpectedBufferSize;
++ (int) getExpectedBufferSizeVirtual;
 
 - (NSRect) getDefaultFocusSerie;
 - (NSRect) getDefaultFocusCT;
@@ -90,7 +91,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 
 - (void) setExpectedBufferSize;
 - (int) getExpectedBufferSize;
-
++ (int) getExpectedBufferSizeVirtual;
 
 - (uint8_t) getFlagFocus;
 - (NSRect) getData:(int) mainThread : (int) stateTabsReader;

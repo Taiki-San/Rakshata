@@ -78,6 +78,11 @@
 	return sizeInputBuffer;
 }
 
++ (int) getExpectedBufferSizeVirtual
+{
+	return 4 + 4 + 4 * 4;
+}
+
 //Save state when quit
 
 - (void) dumpData : (char *) output : (uint) length

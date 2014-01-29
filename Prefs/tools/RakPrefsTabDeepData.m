@@ -93,6 +93,12 @@
 	return sizeInputBuffer;
 }
 
++ (int) getExpectedBufferSizeVirtual
+{
+	return (DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData - 1) * 16 + 4;
+}
+
+
 - (void) initJumpTable : (SEL *) jumpTable
 {
 	jumpTable[0] = @selector(getDefaultFocusSerie);

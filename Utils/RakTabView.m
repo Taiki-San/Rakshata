@@ -23,7 +23,6 @@
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
-	[self drawRect:frame];
 	
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
