@@ -10,9 +10,9 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "MainViewController.h"
+#include "superHeader.h"
 
-@implementation MainViewController
+@implementation RakPrefsWindow
 
 - (id)initWithFrame:(NSRect)frame
 {

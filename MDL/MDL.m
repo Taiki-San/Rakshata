@@ -51,7 +51,7 @@
 
 - (void) refreshViewSize
 {
-	NSRect frame = [self createFrame:[self superview]];
+	NSRect frame = [self createFrame];
 	
 	[self setFrameSize:frame.size];
 	[self setFrameOrigin:frame.origin];
@@ -61,9 +61,10 @@
 }
 
 /**	 Graphics optimizations	**/
-- (NSRect) createFrame : (NSView*) superView
+- (NSRect) createFrame
 {
-	return [self getRequestedViewSize:superView.frame.size.width:superView.frame.size.height];
+	NSSize size = [self superview].frame.size;
+	return [self getRequestedViewSize:size.width:size.height];
 }
 
 /**	 Get View Size	**/

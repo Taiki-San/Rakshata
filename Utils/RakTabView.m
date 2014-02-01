@@ -16,12 +16,13 @@
 
 - (NSView *) setUpView: (NSView *)superView
 {
-	NSRect frame = [self createFrame:superView];
+	NSRect frame = [self createFrameWithSuperView:superView];
 	
 	self = [super initWithFrame:frame];
 	[superView addSubview:self];
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
+	[self setWantsLayer:YES];
 	[self setNeedsDisplay:YES];
 	
 	int mainThread;
@@ -45,21 +46,22 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
 	[self drawContentView:dirtyRect];
-    [super drawRect:dirtyRect];
 }
 
 - (void) refreshLevelViews : (NSView*) superView
 {
+	[self refreshLevelViewsAnimation:superView];
+}
+
+- (void) refreshLevelViewsAnimation : (NSView*) superView
+{
 	NSArray *subView = [superView subviews];
-	RakTabView *subViewView;
-	NSUInteger i, count = [subView count];
 	
-	for(i = 0; i < count; i++)
-	{
-		subViewView = [subView objectAtIndex:i];
-		if([subViewView respondsToSelector:@selector(refreshViewSize)])
-			[subViewView refreshViewSize];
-	}
+	//Variable to set up the animation
+	RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
+	[animation init:subView:animation];
+	[animation setUpViews];
+	[animation perform];
 }
 
 - (void) refreshViewSize
@@ -68,13 +70,6 @@
 	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: superView.frame.size.width], superView.frame.size.height)];
 	
 	[self applyRefreshSizeReaderChecks];
-}
-
-- (void)setFrameSize:(NSSize)newSize
-{
-	NSRect frame = [self createFrame:[self superview]];
-	[super setFrameSize:frame.size];
-	[self setFrameOrigin:frame.origin];
 }
 
 /**		Reader		**/
@@ -147,6 +142,11 @@
 	}
 }
 
+- (void) setUpViewForAnimation
+{
+	
+}
+
 /**		Events		**/
 
 -(BOOL) isCursorOnMe
@@ -191,7 +191,13 @@
 
 
 /*		Graphic Utilities		*/
-- (NSRect) createFrame : (NSView*) superView
+
+- (NSRect) createFrame
+{
+	return [self createFrameWithSuperView:[self superview]];
+}
+
+- (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
 	
@@ -233,3 +239,4 @@
 }
 
 @end
+

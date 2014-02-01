@@ -12,64 +12,57 @@
 
 #import "superHeader.h"
 
-@implementation RakFooter
+@implementation RakTabAnimationResize
 
-- (id)init:(NSWindow*)window
+- (id) init : (NSArray*)views : (RakTabAnimationResize*) instance
 {
-    self = [super init];
-    if (self)
+	self = [super init];
+	if(self != nil)
 	{
-		flag = GUI_THREAD_SERIES;
-		[self setUpView:window.contentView];
-
-		uint mainThread;
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		[self setHidden:!(mainThread & flag)];
+		_views = views;
+		_instance = instance;
 	}
-    return self;
+	return self;
 }
 
-- (void) drawContentView: (NSRect) frame
+- (void) setUpViews
 {
-	[[NSColor yellowColor] setFill];
-	
-	[super drawContentView:frame];
-}
-
-- (void)setFrameSize: (NSSize)newSize
-{
-	int mainThread;
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	if(mainThread & flag || mainThread & GUI_THREAD_MDL)
+	RakTabView * currentView;
+	NSUInteger i, count = [_views count];
+	for(i = 0; i < count; i++)
 	{
-		if([self isHidden])
-			[self setHidden:NO];
-		[super setFrameSize:newSize];
+		currentView = [_views objectAtIndex:i];
+		if([currentView respondsToSelector:@selector(setUpViewForAnimation)])
+			[currentView setUpViewForAnimation];
 	}
-	else if(![self isHidden])
-		[self setHidden:YES];
 }
 
-- (int) convertTypeToPrefArg : (bool) getX
+- (void) perform
 {
-	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
-}
-
-- (CGFloat) getRequestedViewHeight:(CGFloat)heightWindow
-{
-	CGFloat ratio;
-	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT :&ratio];
-	return heightWindow * ratio / 100;
-}
-
-- (void) applyRefreshSizeReaderChecks
-{
+	RakTabView *subViewView;
+	NSUInteger i, count = [_views count];
 	
+	[NSAnimationContext beginGrouping];
+	
+	[[NSAnimationContext currentContext] setDuration:0.25];
+	
+	for(i = 0; i < count; i++)
+	{
+		subViewView = [_views objectAtIndex:i];
+		if([subViewView respondsToSelector:@selector(createFrame)])
+			[subViewView.animator setFrame:[subViewView createFrame]];
+	}
+	
+	[[NSAnimationContext currentContext] setCompletionHandler:^{
+		[self performSelector:@selector(cleanUpAnimation) withObject:_views withObject:self];
+	}];
+	
+	[NSAnimationContext endGrouping];
 }
 
-- (void) readerIsOpening
+- (void) cleanUpAnimation
 {
-	
+	[_instance release];
 }
 
 @end

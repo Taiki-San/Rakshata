@@ -10,10 +10,15 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "MainViewController.h"	//Allow to create NSViewController without NIB
+//Allow to create NSViewController without NIB
+@interface RakPrefsWindow : NSViewController
+
+- (id)initWithFrame:(NSRect)frame;
+
+@end
+
 
 /*Custom NSView to add a couple of shared variable*/
-
 @interface RakTabView : NSView
 {
 	int flag;
@@ -33,6 +38,7 @@
 - (void) readerIsOpening;
 - (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;
+- (void) setUpViewForAnimation;
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
 - (void) applyRefreshSizeReaderChecks;
@@ -40,12 +46,25 @@
 
 -(BOOL) isCursorOnMe;
 
-- (NSRect) createFrame : (NSView*) superView;
+- (NSRect) createFrame;
+- (NSRect) createFrameWithSuperView : (NSView*) superView;
+
 - (int) convertTypeToPrefArg : (bool) getX;
 - (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow;
 - (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 - (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow;
+
+@end
+
+@interface RakTabAnimationResize : NSObject
+{
+	RakTabAnimationResize * _instance;
+	NSArray* _views;
+}
+- (id) init : (NSArray*)views : (RakTabAnimationResize*) instance;
+- (void) setUpViews;
+- (void) perform;
 
 @end
 
