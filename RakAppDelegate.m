@@ -13,7 +13,7 @@
 #define SIZE_MIN_HEIGHT 600
 #define SIZE_MIN_WIDTH 950
 
-#import "superHeader.h"
+
 
 @implementation RakAppDelegate
 

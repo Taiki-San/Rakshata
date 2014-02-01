@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "superHeader.h"
-
 #define DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData 8
 
 @implementation RakPrefsTabDeepData

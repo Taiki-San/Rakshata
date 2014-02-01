@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "superHeader.h"
-
 @implementation CTSelec
 
 - (id)init:(NSWindow*)window

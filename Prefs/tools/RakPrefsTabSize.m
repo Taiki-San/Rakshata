@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "superHeader.h"
-
 //On ne overwrite pas toutes les méthodes liés au lecteur car les views ne changent pratiquement jamais de taille
 
 @implementation RakSizeSeries

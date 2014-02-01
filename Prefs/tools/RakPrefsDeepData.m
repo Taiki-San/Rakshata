@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "superHeader.h"
-
 CGFloat hex2intPrefs(char hex[4], int maximum);
 
 @implementation RakPrefsDeepData

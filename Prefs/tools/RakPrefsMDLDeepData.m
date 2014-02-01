@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "superHeader.h"
-
 @implementation RakMDLSize
 
 //Taille du buffer: 24 chars

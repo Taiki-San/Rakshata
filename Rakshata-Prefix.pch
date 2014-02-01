@@ -12,26 +12,29 @@
 
 /*Included from every files so we better should prevent recursive includes*/
 
-#ifndef SUPERHEADER_INCLUDED
-
-#define SUPERHEADER_INCLUDED
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #include "graphics.h"
-#import <Cocoa/Cocoa.h>
-#import <Foundation/Foundation.h>
 
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+	#import <Foundation/Foundation.h>
 
-#import "utils.h"
+	#import "utils.h"
 
-/* Différentes super-classes de l'interface	*/
+	/* Différentes super-classes de l'interface	*/
 
-#import "Series.h"
-#import "CTSelec.h"
-#import "Reader.h"
-#import "Prefs.h"
+	#import "Series.h"
+	#import "CTSelec.h"
+	#import "Reader.h"
+	#import "Prefs.h"
 
-#import "MDL.h"
+	#import "MDL.h"
 
-#import "RakAppDelegate.h"
+	#import "RakAppDelegate.h"
 
 #endif
