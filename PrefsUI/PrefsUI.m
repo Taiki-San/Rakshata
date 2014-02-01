@@ -22,7 +22,7 @@
 		HUDWindow = [[NSPanel alloc] initWithContentRect:NSMakeRect(50, 100, 150, 200)
 								   styleMask:NSHUDWindowMask backing:NSBackingStoreBuffered defer:NO];
 		
-		viewControllerHUD = [[MainViewController alloc] initWithFrame:self.window.frame];
+		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame:self.window.frame];
 		[self setAnchor:nil];
 	}
 	return self;

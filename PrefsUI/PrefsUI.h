@@ -18,7 +18,7 @@
 @private
 	
 	NSPanel * HUDWindow;
-    MainViewController *viewControllerHUD;
+    RakPrefsWindow *viewControllerHUD;
     NSPopover *popover;
 
 	NSButton *anchor;
