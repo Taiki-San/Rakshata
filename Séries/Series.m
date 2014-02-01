@@ -54,7 +54,6 @@
 
 - (void) gogoWindow
 {
-	[self setFrame:NSMakeRect(0, 0, self.frame.size.width+50, self.frame.size.height+50)];
 	[winController showPopover];
 }
 

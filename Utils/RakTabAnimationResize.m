@@ -14,13 +14,14 @@
 
 @implementation RakTabAnimationResize
 
-- (id) init : (NSArray*)views : (RakTabAnimationResize*) instance
+- (id) init : (RakTabAnimationResize*) instance : (NSArray*)views
 {
 	self = [super init];
 	if(self != nil)
 	{
 		_views = views;
 		_instance = instance;
+		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
 	}
 	return self;
 }
@@ -32,8 +33,8 @@
 	for(i = 0; i < count; i++)
 	{
 		currentView = [_views objectAtIndex:i];
-		if([currentView respondsToSelector:@selector(setUpViewForAnimation)])
-			[currentView setUpViewForAnimation];
+		if([currentView respondsToSelector:@selector(setUpViewForAnimation:)])
+			[currentView setUpViewForAnimation : readerMode];
 	}
 }
 
@@ -62,6 +63,15 @@
 
 - (void) cleanUpAnimation
 {
+	NSUInteger count = [_views count];
+	RakTabView * currentView;
+	for(NSUInteger i = 0; i < count; i++)
+	{
+		currentView = [_views objectAtIndex:i];
+		if([currentView respondsToSelector:@selector(applyRefreshSizeReaderChecks)])
+			[currentView applyRefreshSizeReaderChecks];
+
+	}
 	[_instance release];
 }
 

@@ -13,16 +13,20 @@
 #import <Cocoa/Cocoa.h>
 #import "utils.h"
 
+//Allow to create NSViewController without NIB
+@interface RakPrefsWindow : NSViewController
+
+- (id)initWithFrame:(NSRect)frame;
+
+@end
+
 @interface PrefsUI : NSView <NSPopoverDelegate>
 {
-@private
-	
 	NSPanel * HUDWindow;
     RakPrefsWindow *viewControllerHUD;
     NSPopover *popover;
 
-	NSButton *anchor;
-    
+	NSButton *anchor;    
 }
 - (void)showPopover;
 - (void) setAnchor : (NSButton *) newAnchor;

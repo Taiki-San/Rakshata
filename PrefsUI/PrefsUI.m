@@ -12,6 +12,18 @@
 
 #import "PrefsUI.h"
 
+@implementation RakPrefsWindow
+
+- (id)initWithFrame:(NSRect)frame
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self)
+        [self setView:[[NSView alloc] initWithFrame:frame]];
+    return self;
+}
+
+@end
+
 @implementation PrefsUI
 
 - (id) init

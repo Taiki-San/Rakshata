@@ -22,8 +22,8 @@
 	[superView addSubview:self];
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
-	[self setWantsLayer:YES];
-	[self setNeedsDisplay:YES];
+	//	[self setWantsLayer:YES];
+	[self setNeedsDisplay:NO];
 	
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
@@ -59,7 +59,7 @@
 	
 	//Variable to set up the animation
 	RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
-	[animation init:subView:animation];
+	[animation init: animation : subView];
 	[animation setUpViews];
 	[animation perform];
 }
@@ -142,7 +142,7 @@
 	}
 }
 
-- (void) setUpViewForAnimation
+- (void) setUpViewForAnimation : (BOOL) readerMode
 {
 	
 }

@@ -10,14 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-//Allow to create NSViewController without NIB
-@interface RakPrefsWindow : NSViewController
-
-- (id)initWithFrame:(NSRect)frame;
-
-@end
-
-
 /*Custom NSView to add a couple of shared variable*/
 @interface RakTabView : NSView
 {
@@ -38,7 +30,7 @@
 - (void) readerIsOpening;
 - (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;
-- (void) setUpViewForAnimation;
+- (void) setUpViewForAnimation : (BOOL) readerMode;
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
 - (void) applyRefreshSizeReaderChecks;
@@ -59,10 +51,11 @@
 
 @interface RakTabAnimationResize : NSObject
 {
+	BOOL readerMode;
 	RakTabAnimationResize * _instance;
 	NSArray* _views;
 }
-- (id) init : (NSArray*)views : (RakTabAnimationResize*) instance;
+- (id) init : (RakTabAnimationResize*) instance : (NSArray*)views;
 - (void) setUpViews;
 - (void) perform;
 
