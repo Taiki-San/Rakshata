@@ -15,7 +15,11 @@
 {
 	int flag;
 	bool readerMode;
+	NSView *blurView;
 	NSTrackingArea * trackingArea;
+	
+@public
+	uint resizeAnimationCount;
 }
 
 #define CREATE_CUSTOM_VIEW_TAB_SERIE	1
@@ -23,6 +27,8 @@
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
 - (NSView *) setUpView: (NSView *)superView;
+- (void) setUpBlur;
+
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;

@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-
-
 @implementation RakTabView
 
 - (NSView *) setUpView: (NSView *)superView
@@ -22,12 +20,13 @@
 	[superView addSubview:self];
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
-	//	[self setWantsLayer:YES];
-	[self setNeedsDisplay:NO];
+	[self setNeedsDisplay:YES];
+	[self setUpBlur];
 	
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	readerMode = (mainThread & GUI_THREAD_READER) != 0;
+	resizeAnimationCount = 0;
 	trackingArea = NULL;
 	
 	if(readerMode)
@@ -36,6 +35,27 @@
 	}
 		
 	return self;
+}
+
+- (void) setUpBlur
+{
+	blurView = [[NSView alloc] initWithFrame:[self frame]];
+	blurView.layer = [CALayer layer];
+	[blurView setWantsLayer:YES];
+	
+	CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+	[blurFilter setDefaults];
+	
+	[blurView layer].backgroundFilters = [NSArray arrayWithObject:blurFilter];
+	[blurView setHidden:YES];
+	[self addSubview:blurView];
+}
+
+/**			Handle Fullscreen			**/
+
+- (BOOL) inLiveResize;
+{
+	return [super inLiveResize];
 }
 
 - (void) drawContentView: (NSRect) frame
@@ -66,10 +86,22 @@
 
 - (void) refreshViewSize
 {
-	NSView * superView = [self superview];
-	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: superView.frame.size.width], superView.frame.size.height)];
+	NSSize sizeSV = self.superview.frame.size;
+	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: sizeSV.width], sizeSV.height)];
 	
 	[self applyRefreshSizeReaderChecks];
+}
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	if(!resizeAnimationCount)
+	{
+		NSRect frame = [self createFrame];
+		[super setFrameSize:frame.size];
+		[self setFrameOrigin:frame.origin];
+	}
+	else
+		[super setFrameSize:newSize];
 }
 
 /**		Reader		**/
@@ -79,11 +111,23 @@
 	//Appelé quand les tabs ont été réduits
 	if([self isCursorOnMe])
 	{
+		if(![blurView isHidden])
+			[blurView setHidden:YES];
+		
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
 		[self refreshLevelViews:[self superview]];
 	}
 	else
 	{
+		if([blurView isHidden])
+		{
+			[blurView retain];
+			[blurView removeFromSuperview];
+			[self addSubview:blurView];
+			[blurView setHidden:NO];
+			[blurView release];
+		}
+		
 		[self resizeReaderCatchArea];
 	}
 }

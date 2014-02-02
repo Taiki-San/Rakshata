@@ -40,23 +40,26 @@
 
 - (void) perform
 {
-	RakTabView *subViewView;
+	RakTabView *currentView;
 	NSUInteger i, count = [_views count];
 	
 	[NSAnimationContext beginGrouping];
 	
 	[[NSAnimationContext currentContext] setDuration:ANIMATION_DURATION];
-	
+
+	[[NSAnimationContext currentContext] setCompletionHandler:^{
+		[self cleanUpAnimation];
+	}];
+
 	for(i = 0; i < count; i++)
 	{
-		subViewView = [_views objectAtIndex:i];
-		if([subViewView respondsToSelector:@selector(createFrame)])
-			[subViewView.animator setFrame:[subViewView createFrame]];
+		currentView = [_views objectAtIndex:i];
+		if([currentView respondsToSelector:@selector(createFrame)])
+		{
+			[currentView.animator setFrame:[currentView createFrame]];
+			currentView->resizeAnimationCount++;
+		}
 	}
-	
-	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		[self performSelector:@selector(cleanUpAnimation) withObject:_views withObject:self];
-	}];
 	
 	[NSAnimationContext endGrouping];
 }
@@ -70,6 +73,7 @@
 		currentView = [_views objectAtIndex:i];
 		if([currentView respondsToSelector:@selector(applyRefreshSizeReaderChecks)])
 			[currentView applyRefreshSizeReaderChecks];
+		currentView->resizeAnimationCount--;
 
 	}
 	[_instance release];

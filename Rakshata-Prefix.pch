@@ -22,6 +22,7 @@
 
 #ifdef __OBJC__
 	#import <Cocoa/Cocoa.h>
+	#import <QuartzCore/QuartzCore.h>
 	#import <Foundation/Foundation.h>
 
 	#import "utils.h"
