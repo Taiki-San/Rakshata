@@ -156,7 +156,7 @@
 
 -(BOOL) isCursorOnMe
 {
-	NSPoint mouseLoc = [NSEvent mouseLocation], selfLoc = self.frame.origin;
+	NSPoint mouseLoc = [self getCursorPosInWindow], selfLoc = self.frame.origin;
 	NSSize selfSize = self.frame.size;
 	
 	if(selfLoc.x < mouseLoc.x && selfLoc.x + selfSize.width >= mouseLoc.x &&
@@ -168,15 +168,33 @@
 	return false;
 }
 
+- (NSPoint) getCursorPosInWindow	//mouseLocation return the obsolute position, not the position inside the window
+{
+	NSPoint mouseLoc = [NSEvent mouseLocation], windowLoc = self.window.frame.origin;
+
+	mouseLoc.x -= windowLoc.x;
+	mouseLoc.y -= windowLoc.y;
+	
+	return mouseLoc;
+}
+
+-(BOOL) mouseOutOfWindow
+{
+	NSPoint mouseLoc = [self getCursorPosInWindow];
+	NSSize windowSize = self.window.frame.size;
+	
+	return (mouseLoc.x < 0 || mouseLoc.x > windowSize.width || mouseLoc.y < 0 || mouseLoc.y > windowSize.height);
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
 		[self refreshLevelViews : [self superview]];
 }
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+	if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 		[self refreshLevelViews : [self superview]];
 }
 
@@ -185,7 +203,7 @@
 	if(![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(readerMode && ![self isStillCollapsedReaderTab] && ![self abortCollapseReaderTab] && ![self isCursorOnMe])
+			if(readerMode && [self mouseOutOfWindow])
 			{
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview]];

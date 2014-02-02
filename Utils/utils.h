@@ -37,7 +37,10 @@
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;
 
--(BOOL) isCursorOnMe;
+- (BOOL) isCursorOnMe;
+- (NSPoint) getCursorPosInWindow;
+- (BOOL) mouseOutOfWindow;
+
 
 - (NSRect) createFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
