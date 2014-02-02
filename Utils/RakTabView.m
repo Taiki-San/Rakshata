@@ -132,6 +132,11 @@
 	return true;
 }
 
+- (BOOL) abortCollapseReaderTab
+{
+	return false;
+}
+
 - (void) releaseReaderCatchArea
 {
 	if(trackingArea != NULL)
@@ -177,10 +182,10 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if(![self isStillCollapsedReaderTab])
+	if(![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(readerMode && ![self isStillCollapsedReaderTab])
+			if(readerMode && ![self isStillCollapsedReaderTab] && ![self abortCollapseReaderTab] && ![self isCursorOnMe])
 			{
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview]];

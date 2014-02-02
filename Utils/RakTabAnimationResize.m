@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-
+#define ANIMATION_DURATION 0.2
 
 @implementation RakTabAnimationResize
 
@@ -45,7 +45,7 @@
 	
 	[NSAnimationContext beginGrouping];
 	
-	[[NSAnimationContext currentContext] setDuration:0.25];
+	[[NSAnimationContext currentContext] setDuration:ANIMATION_DURATION];
 	
 	for(i = 0; i < count; i++)
 	{

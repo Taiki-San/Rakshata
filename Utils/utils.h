@@ -35,6 +35,7 @@
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
 - (void) applyRefreshSizeReaderChecks;
 - (BOOL) isStillCollapsedReaderTab;
+- (BOOL) abortCollapseReaderTab;
 
 -(BOOL) isCursorOnMe;
 

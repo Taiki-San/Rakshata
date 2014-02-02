@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-
-
 @implementation Series
 
 - (id)init:(NSWindow*)window
@@ -20,6 +18,8 @@
     if (self)
 	{
 		flag = GUI_THREAD_SERIES;
+		prefsUIIsOpen = false;
+		
 		[self setUpView:window.contentView];
 		
 		[self craftPrefButton:self.frame];
@@ -34,6 +34,8 @@
 	}
     return self;
 }
+
+/**		Pref UI		**/
 
 - (void) craftPrefButton : (NSRect) tabSerieFrame
 {
@@ -52,10 +54,36 @@
 	[self addSubview:button];
 }
 
+- (BOOL) getIfPrefUIOpen
+{
+	return prefsUIIsOpen;
+}
+
+- (BOOL) setIfPrefUIOpen : (BOOL) input
+{
+	BOOL retValue = prefsUIIsOpen != input;
+	prefsUIIsOpen = input;
+	return retValue;
+}
+
 - (void) gogoWindow
 {
+	[self setIfPrefUIOpen:YES];
 	[winController showPopover];
 }
+
+- (BOOL) abortCollapseReaderTab
+{
+	return [self getIfPrefUIOpen];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent	//Appelé quand je sors
+{
+	if(!prefsUIIsOpen)
+		[super mouseExited:theEvent];
+}
+
+/**			Other		**/
 
 - (void) setFrameSize:(NSSize)newSize
 {

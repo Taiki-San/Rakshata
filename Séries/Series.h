@@ -14,11 +14,12 @@
 #import "Footer.h"
 
 @interface Series : RakTabView
-{	
+{
 	NSRakButton *button;
 	RakFooter * footer;
 	
 	PrefsUI * winController;
+	BOOL prefsUIIsOpen;
 }
 - (id)init:(NSWindow*)window;
 - (void) craftPrefButton : (NSRect) tabSerieFrame;
