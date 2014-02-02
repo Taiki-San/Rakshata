@@ -188,7 +188,7 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
 		[self refreshLevelViews : [self superview]];
 }
 
