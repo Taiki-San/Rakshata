@@ -24,7 +24,7 @@
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
-		B6E5146518771492006470ED /* NSRakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* NSRakButton.m */; };
+		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
 		B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E89388189EF39700ACAF36 /* CTSelec.m */; };
 		B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6E8938A189EF3A600ACAF36 /* Images.xcassets */; };
 		B6E8938D189EF3A600ACAF36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E8938B189EF3A600ACAF36 /* main.m */; };
@@ -39,6 +39,7 @@
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
 		B621824818735395008AC5DD /* prefsTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prefsTools.h; path = Prefs/prefsTools.h; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
+		B638E2FB18A04A2B00B7628C /* graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics.h; path = C/graphics.h; sourceTree = "<group>"; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; };
 		B64640D71870DBD2005705E7 /* PrefsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PrefsUI.m; path = PrefsUI/PrefsUI.m; sourceTree = "<group>"; };
 		B668FBEA18832D0600549A3C /* temporaryCode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = temporaryCode.c; sourceTree = "<group>"; };
@@ -52,7 +53,6 @@
 		B67449441876116200F96DB4 /* prefsRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsRequest.h; path = Prefs/prefsRequest.h; sourceTree = "<group>"; };
 		B67449451876118100F96DB4 /* prefsSetters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsSetters.h; path = Prefs/prefsSetters.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
-		B6870552189A78FC0069FC55 /* graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = graphics.h; path = "../Rakshata Leg/Sources/graphics.h"; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; };
@@ -70,11 +70,11 @@
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RakAppDelegate.h; sourceTree = "<group>"; };
 		B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakAppDelegate.m; sourceTree = "<group>"; };
 		B6CF07DC1868DD58009B16A3 /* RakshataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6E5146418771492006470ED /* NSRakButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSRakButton.m; path = Utils/NSRakButton.m; sourceTree = "<group>"; };
+		B6E5146418771492006470ED /* RakButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakButton.m; path = Utils/RakButton.m; sourceTree = "<group>"; };
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		B6E8938B189EF3A600ACAF36 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B6E8938B189EF3A600ACAF36 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Ressources/main.m; sourceTree = "<group>"; };
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 		B66B4627189A7129000354D1 /* C Core */ = {
 			isa = PBXGroup;
 			children = (
-				B6870552189A78FC0069FC55 /* graphics.h */,
+				B638E2FB18A04A2B00B7628C /* graphics.h */,
 				B668FBEA18832D0600549A3C /* temporaryCode.c */,
 			);
 			name = "C Core";
@@ -209,7 +209,7 @@
 			children = (
 				B66CDD31189C545F007B9389 /* RakTabView */,
 				B6CC724D18723121003A745B /* utils.h */,
-				B6E5146418771492006470ED /* NSRakButton.m */,
+				B6E5146418771492006470ED /* RakButton.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -219,6 +219,7 @@
 			children = (
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6002C30189EF15E00466654 /* MainMenu.xib */,
+				B6E8938B189EF3A600ACAF36 /* main.m */,
 				B66B4627189A7129000354D1 /* C Core */,
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
@@ -276,7 +277,6 @@
 			isa = PBXGroup;
 			children = (
 				B6E8938A189EF3A600ACAF36 /* Images.xcassets */,
-				B6E8938B189EF3A600ACAF36 /* main.m */,
 			);
 			name = "Supporting Files";
 			path = Ressources;
@@ -379,7 +379,7 @@
 				B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */,
 				B69D61DE186CA3D0003504F9 /* MDL.m in Sources */,
 				B67449411875E65000F96DB4 /* FooterSDrag.m in Sources */,
-				B6E5146518771492006470ED /* NSRakButton.m in Sources */,
+				B6E5146518771492006470ED /* RakButton.m in Sources */,
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
 				B6E8938D189EF3A600ACAF36 /* main.m in Sources */,
 				B62182471873527A008AC5DD /* Prefs.m in Sources */,

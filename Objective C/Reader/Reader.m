@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-
-
 @implementation Reader
 
 - (id)init:(NSWindow*)window
@@ -24,11 +22,6 @@
 		[self setUpView:window.contentView];
 	}
     return self;
-}
-
-- (void) mouseMoved:(NSEvent *)theEvent
-{
-	NSLog(@"Move!");
 }
 
 - (void) drawContentView:(NSRect)frame

@@ -43,7 +43,7 @@
 	
 	frame.origin.x = 25;			frame.origin.y = tabSerieFrame.size.height - 45;
 	frame.size.width = 65;			frame.size.height = 25;
-	button = [[NSRakButton alloc] initWithFrame:frame];
+	button = [[RakButton alloc] initWithFrame:frame];
 	
 	[button setTitle:@"Prefs"];
 	[button setButtonType:NSMomentaryLightButton];

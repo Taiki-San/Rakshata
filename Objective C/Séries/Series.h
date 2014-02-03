@@ -15,7 +15,7 @@
 
 @interface Series : RakTabView
 {
-	NSRakButton *button;
+	RakButton *button;
 	RakFooter * footer;
 	
 	PrefsUI * winController;

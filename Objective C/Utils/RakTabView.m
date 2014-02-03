@@ -92,8 +92,23 @@
 	[self applyRefreshSizeReaderChecks];
 }
 
+/**			Overwrite methods to resize the main view in order to resize subviews	**/
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[blurView setFrame:frameRect];
+	[super setFrame:frameRect];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin
+{
+	[blurView setFrameOrigin:newOrigin];
+	[super setFrameOrigin:newOrigin];
+}
+
 - (void) setFrameSize:(NSSize)newSize
 {
+	[blurView setFrameSize:newSize];
 	if(!resizeAnimationCount)
 	{
 		NSRect frame = [self createFrame];

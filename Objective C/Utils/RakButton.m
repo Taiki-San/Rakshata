@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-@implementation NSRakButton
+@implementation RakButton
 
 - (void) refreshViewSize
 {
