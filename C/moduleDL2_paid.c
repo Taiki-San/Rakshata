@@ -22,8 +22,6 @@ void MDLPHandle(DATA_LOADED ** data, int length)
     if(!MDLPCheckAnythingPayable(data, length))
         return;
 
-    MDLPDispCheckingIfPaid();
-
     index = MDLPGeneratePaidIndex(data, length);
     if(index != NULL)
     {
@@ -132,7 +130,6 @@ void MDLPHandle(DATA_LOADED ** data, int length)
         free(index);
     }
 
-    MDLPEraseDispChecking();
     return;
 }
 
@@ -185,20 +182,10 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     unsigned int factureID = arg->factureID;
     free(arg);
 
-    SDL_Window * windowAuth = NULL;
-    SDL_Renderer *rendererAuth = NULL;
+	prix ++;
+	prix--;
 
-    MUTEX_LOCK(mutexRS);
-
-    windowAuth = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN|SDL_WINDOW_INPUT_FOCUS);
-    
-    loadIcon(windowAuth);
-    nameWindow(windowAuth, 1);
-    rendererAuth = setupRendererSafe(windowAuth);
-
-    MUTEX_UNLOCK(mutexRS);
-
-    if(getPassword(rendererAuth, password) == 1)
+    if(getPassword(GUI_DEFAULT_THREAD, password) == 1)
     {
         int i = 0;
         for(; i < sizeStatusLocal; i++)
@@ -211,8 +198,6 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
         if(toPay)
         {
             int out = 0;
-            MDLPDispAskToPay(rendererAuth, prix);
-            out = MDLPWaitEvent(rendererAuth);
             if(out == 1)   //Nop
             {
                 for(i = 0; i < sizeStatusLocal; i++)
@@ -232,13 +217,6 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     }
     else
         cancel = true;
-
-    MUTEX_LOCK(mutexRS);
-
-    SDL_DestroyRenderer(rendererAuth);
-    SDL_DestroyWindow(windowAuth);
-
-    MUTEX_UNLOCK(mutexRS);
 
     if(!cancel && toPay)
     {
@@ -323,171 +301,3 @@ bool MDLPCheckIfPaid(unsigned int factureID)
     }
     return false;
 }
-
-/** UI **/
-
-void MDLPDispCheckingIfPaid()
-{
-    char trad[SIZE_TRAD_ID_31][TRAD_LENGTH];
-    SDL_Texture *texture = NULL;
-    SDL_Rect position;
-    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
-    loadTrad(trad, 31);
-
-    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
-
-    if(police != NULL)
-    {
-
-        texture = MDLTUITTFWrite(police, trad[0], couleur);
-
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-#endif
-
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.x = rendererDL->window->w / 2 - position.w / 2;
-            position.y = HAUTEUR_POURCENTAGE * getRetinaZoom();
-            MDLTUICopy(texture, NULL, &position);
-            MDLTUIDestroyTexture(texture);
-        }
-        TTF_CloseFont(police);
-        MDLTUIRefresh();
-    }
-
-}
-
-void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
-{
-    char trad[SIZE_TRAD_ID_31][TRAD_LENGTH];
-    SDL_Texture *texture = NULL;
-    SDL_Rect position;
-    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
-    loadTrad(trad, 31);
-
-    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
-
-    if(police != NULL)
-    {
-        SDL_RenderClear(renderVar);
-        char buffer[TRAD_LENGTH+10];
-        position.y = 20 * getRetinaZoom();
-
-        snprintf(buffer, TRAD_LENGTH+10, trad[1], prix/100, prix%100);
-        texture = TTF_Write(renderVar, police, buffer, couleur);
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.x = renderVar->window->w / 2 - position.w / 2;
-            SDL_RenderCopy(renderVar, texture, NULL, &position);
-            SDL_DestroyTexture(texture);
-        }
-
-        position.y += MDL_INTERLIGNE * getRetinaZoom();
-        texture = TTF_Write(renderVar, police, trad[2], couleur);
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.x = renderVar->window->w / 2 - position.w / 2;
-            SDL_RenderCopy(renderVar, texture, NULL, &position);
-            SDL_DestroyTexture(texture);
-        }
-
-        position.y += MDL_INTERLIGNE * getRetinaZoom();
-        texture = TTF_Write(renderVar, police, trad[3], couleur);
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.x = renderVar->window->w / 2 - position.w / 2;
-            SDL_RenderCopy(renderVar, texture, NULL, &position);
-            SDL_DestroyTexture(texture);
-        }
-
-        TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD);
-        position.y = (20+3*MDL_INTERLIGNE + (renderVar->window->h - (20+3*MDL_INTERLIGNE)) / 2) * getRetinaZoom();
-
-        texture = TTF_Write(renderVar, police, trad[4], couleur);
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.y -= position.h / 2;
-            position.x = renderVar->window->w / 4 - position.w / 2;
-            SDL_RenderCopy(renderVar, texture, NULL, &position);
-            SDL_DestroyTexture(texture);
-        }
-
-        texture = TTF_Write(renderVar, police, trad[5], couleur);
-        if(texture != NULL)
-        {
-            position.h = texture->h;
-            position.w = texture->w;
-            position.x = renderVar->window->w / 2 + renderVar->window->w / 4 - position.w / 2;
-            SDL_RenderCopy(renderVar, texture, NULL, &position);
-            SDL_DestroyTexture(texture);
-        }
-        TTF_CloseFont(police);
-        SDL_RenderPresent(renderVar);
-    }
-}
-
-int MDLPWaitEvent(SDL_Renderer * renderVar)
-{
-    SDL_Event event;
-    while(1)
-    {
-        SDL_WaitEvent(&event);
-        if(haveInputFocus(&event, renderVar->window))
-        {
-            switch(event.type)
-            {
-                case SDL_WINDOWEVENT:
-                {
-                    if(event.window.event == SDL_WINDOWEVENT_CLOSE)
-                        return 1; //Nop
-                    break;
-                }
-                case SDL_KEYDOWN:
-                {
-                    if(event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_ESCAPE)
-                        return 1;   //Nop
-                    else if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
-                        return 2;   //Eyup
-                    break;
-                }
-                case SDL_MOUSEBUTTONUP:
-                {
-                    if(event.button.y >= 20+3*MDL_INTERLIGNE)
-                    {
-                        if(event.button.x > renderVar->window->w / 2)
-                            return 1;   //Nop
-                        else
-                            return 2;   //Eyup
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    return 1; //Shouldn't happen
-}
-
-void MDLPEraseDispChecking()
-{
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-#endif
-    MDLTUIBackground(0, (HAUTEUR_POURCENTAGE-1) * getRetinaZoom(), getW(rendererDL), getH(rendererDL) - HAUTEUR_POURCENTAGE * getRetinaZoom());
-    MDLTUIRefresh();
-}
-

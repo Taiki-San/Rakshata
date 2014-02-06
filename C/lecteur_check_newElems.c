@@ -161,10 +161,8 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
         quit_thread(0);
 	
     bool severalNewElems = false;
-    int ret_value, firstNewElem, nombreElement;
+    int ret_value = 1, firstNewElem, nombreElement;
     char localization[SIZE_TRAD_ID_30][TRAD_LENGTH], stringDisplayed[6*TRAD_LENGTH], title[3*TRAD_LENGTH];
-    SDL_MessageBoxData alerte;
-    SDL_MessageBoxButtonData bouton[2];
     loadTrad(localization, 30);
 	
     if(isTome)
@@ -183,28 +181,14 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
     snprintf(stringDisplayed, 6*TRAD_LENGTH, "%s %d %s %s%s%s\n%s", localization[0], nombreElement, localization[1+severalNewElems], localization[5+isTome], severalNewElems?"s ":" ", localization[7], localization[8]);
     title[0] += 'A' - 'a';
 	
-    bouton[1].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
-    bouton[1].buttonid = 1; //Valeur retournée
-    bouton[1].text = localization[9]; //Accepté
-    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
-    bouton[0].buttonid = 0;
-    bouton[0].text = localization[10]; //Refusé
+    // localization[9]; //Accepté
+    // localization[10]; //Refusé
 	
-    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
-    alerte.title = title;
-    alerte.message = stringDisplayed;
-    alerte.numbuttons = 2;
-    alerte.buttons = bouton;
-    alerte.window = window;
-    alerte.colorScheme = NULL;
+#ifdef IDENTIFY_MISSING_UI
+	#warning "Send alert"
+#endif
 	
-	MUTEX_UNIX_LOCK;
-	
-    SDL_ShowMessageBox(&alerte, &ret_value);
-	
-	MUTEX_UNIX_UNLOCK;
-	
-    if(ret_value == 1)
+    if(ret_value)
         addtoDownloadListFromReader(mangaDB, firstNewElem+1, isTome);
 	
     quit_thread(0);

@@ -108,60 +108,13 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
     fclose(fichierTrad);
 }
 
-int changementLangue()
+void setNewLangue(int newLangue)
 {
-    int j = 0;
-    char menus[SIZE_TRAD_ID_13][TRAD_LENGTH];
-    SDL_Texture *texteAAfficher = NULL;
-    SDL_Rect position;
-    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
-    loadTrad(menus, 13);
-
-    /*On change la taille de l'écran*/
-    if(WINDOW_SIZE_H != HAUTEUR_LANGUE)
-        updateWindowSize(LARGEUR_LANGUE, HAUTEUR_LANGUE);
-
-    MUTEX_UNIX_LOCK;
-    police = OpenFont(FONTUSED, POLICE_GROS);
-    SDL_RenderClear(renderer);
-
-    texteAAfficher = TTF_Write(renderer, police, menus[0], couleurTexte);
-    if(texteAAfficher != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-        position.y = HAUTEUR_MENU_LANGUE;
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
-    }
-
-    texteAAfficher = TTF_Write(renderer, police, menus[NOMBRE_LANGUE+1], couleurTexte);
-    if(texteAAfficher != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAAfficher->w / 2;
-        position.y = WINDOW_SIZE_H - texteAAfficher->h;
-        position.h = texteAAfficher->h;
-        position.w = texteAAfficher->w;
-        SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-        SDL_DestroyTextureS(texteAAfficher);
-    }
-    TTF_CloseFont(police);
-    MUTEX_UNIX_UNLOCK;
-
-    j = displayMenu(&(menus[1]), NOMBRE_LANGUE, HAUTEUR_TEXTE_LANGUE, false);
-    if(j > 0)
-    {
-        langue = j;
-        removeFromPref(SETTINGS_LANGUE_FLAG);
-        snprintf(menus[0], LONGUEURTEXTE, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
-        addToPref(SETTINGS_LANGUE_FLAG, menus[0]);
-        nameWindow(window, 0);
-        return 0;
-    }
-    return j;
+	char newPref[LONGUEURTEXTE];
+	langue = newLangue;
+	removeFromPref(SETTINGS_LANGUE_FLAG);
+	snprintf(newPref, LONGUEURTEXTE, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+	addToPref(SETTINGS_LANGUE_FLAG, newPref);
 }
 
 int tradAvailable()

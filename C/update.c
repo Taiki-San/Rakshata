@@ -35,11 +35,6 @@ void checkUpdate()
         char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][TRAD_LENGTH], temp[TAILLE_BUFFER], URL[500];
 
 
-		SDL_Texture *infosAvancement = NULL;
-        SDL_Rect position;
-        Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-        TTF_Font *police = NULL;
-
 		remove("Rakshata.exe.old");
 
         for(i = 0; i < TAILLE_BUFFER; i++)
@@ -57,66 +52,14 @@ void checkUpdate()
         fclose(test);
         remove("data/update"); //Evite des téléchargements en parallèle de l'update
 
-        /*Initialisation écran*/
-        MUTEX_LOCK(mutexRS);
-
-        window = SDL_CreateWindow(PROJECT_NAME, RESOLUTION[0] / 2 - LARGEUR / 2, 25, LARGEUR, 300, CREATE_WINDOW_FLAG|SDL_WINDOW_SHOWN);
-        loadIcon(window);
-        renderer = setupRendererSafe(window);
-        WINDOW_SIZE_W = getW(renderer);
-        WINDOW_SIZE_H = getH(renderer);
-
-        MUTEX_UNLOCK(mutexRS);
-
-        police = OpenFont(FONTUSED, POLICE_MOYEN);
-
-        SDL_SetWindowTitle(window, "Rakshata - Mise à jour en cours - Upgrade in progress");
-        SDL_RenderClear(renderer);
-
         loadTrad(trad, 12); //Chargement du texte puis écriture
-        infosAvancement = TTF_Write(renderer, police, trad[0], couleurTexte);
-        if(infosAvancement != NULL)
-        {
-            position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-            position.y = 20;
-            position.h = infosAvancement->h;
-            position.w = infosAvancement->w;
-            SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-            SDL_DestroyTextureS(infosAvancement);
-        }
-        infosAvancement = TTF_Write(renderer, police, trad[1], couleurTexte);
-        if(infosAvancement != NULL)
-        {
-            position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-            position.y = 20 + infosAvancement->h + INTERLIGNE;
-            position.h = infosAvancement->h;
-            position.w = infosAvancement->w;
-            SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-            SDL_DestroyTextureS(infosAvancement);
-        }
-        TTF_CloseFont(police);
-        police = OpenFont(FONTUSED, POLICE_GROS);
 
         for(i = 0; files[i][0] != 0 && i < ligne; i++)
         {
             /*Téléchargement et affichage des informations*/
-            crashTemp(temp, TAILLE_BUFFER);
-            refreshRendererIfBuggy(renderer);
-            applyBackground(renderer, 0, 150, WINDOW_SIZE_W, 100);
             snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
-            infosAvancement = TTF_Write(renderer, police, temp, couleurTexte);
-            if(infosAvancement != NULL)
-            {
-                position.h = infosAvancement->h;
-                position.w = infosAvancement->w;
-                position.x = (WINDOW_SIZE_W / 2) - (infosAvancement->w / 2);
-                position.y = 200;
-                SDL_RenderCopy(renderer, infosAvancement, NULL, &position);
-                SDL_DestroyTextureS(infosAvancement);
-            }
-            SDL_RenderPresent(renderer);
-
-            /*Application du playload*/
+        
+			/*Application du playload*/
             if(action[i][0] == 'D') //Depreciate
             {
                 char buffer[TAILLE_BUFFER+5];
@@ -186,11 +129,6 @@ void checkUpdate()
         }
 
         /*Application des modifications*/
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        renderer = NULL;
-        TTF_Quit();
-        SDL_Quit();
         lancementExternalBinary(files[ligne - 1]);
         exit(1);
     }
@@ -200,34 +138,6 @@ void checkJustUpdated()
 {
     if(checkFileExist("Rakshata.exe.old"))
     {
-        char *repo_new = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-        char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
-        TEAMS_DATA infosTeam;
-
-        if(repo == NULL || repo_new == NULL)
-        {
-            if(repo != NULL)
-                free(repo);
-            if(repo_new != NULL)
-                free(repo_new);
-            return;
-        }
-        repoBak = repo;
-        snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
-        int positionDansBuffer = strlen(repo_new);
-
-        while(*repo != 0 && *repo != '<' && *(repo+1) != '/' && *(repo+2) != SETTINGS_REPODB_FLAG && *(repo+3) != '>' && *(repo+4) != 0 && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
-        {
-            char ID[LONGUEUR_ID_TEAM];
-            repo += sscanfs(repo, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, infosTeam.teamLong, LONGUEUR_NOM_MANGA_MAX, infosTeam.teamCourt, LONGUEUR_COURT, infosTeam.type, LONGUEUR_ID_TEAM, infosTeam.URL_depot, LONGUEUR_URL, infosTeam.site, LONGUEUR_SITE);
-            for(; *repo == '\r' || *repo == '\n'; repo++);
-            snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "%s %s %s %s %s 1\n", infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site);
-            positionDansBuffer = strlen(repo_new);
-        }
-        free(repoBak);
-        snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "</%c>\n", SETTINGS_REPODB_FLAG);
-        updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
-        free(repo_new);
         remove("Rakshata.exe.old");
         remove("data/update");
     }

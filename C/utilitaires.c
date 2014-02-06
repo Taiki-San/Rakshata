@@ -323,6 +323,11 @@ void unescapeLineReturn(char *input)
     input[j] = 0;
 }
 
+void openOnlineHelp()
+{
+	ouvrirSite("http://www.rakshata.com/help");
+}
+
 bool isDownloadValid(char *input)
 {
     int i = 0;

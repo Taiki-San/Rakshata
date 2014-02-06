@@ -176,8 +176,6 @@ int earlyInit(int argc, char *argv[])
 
     createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
-    restrictEvent();
-
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else

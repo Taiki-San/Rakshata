@@ -730,18 +730,7 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 
 void lancementModuleDL()
 {
-    SDL_Event event;
     createNewThread(MDLLauncher, NULL);
-    while(1)
-    {
-        if(rendererDL != NULL || rendererDL == (void*) 0x1)
-            break;
-        if(SDL_PollEvent(&event))
-            SDL_PushEvent(&event);
-        usleep(100);
-    }
-    if(rendererDL == (void*) 0x1)   //Si une erreur a empeche le lancement
-        rendererDL = NULL;
 }
 
 /*UI*/

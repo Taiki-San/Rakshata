@@ -86,9 +86,6 @@ int check_evt()
 
     if(nbTotal)
     {
-        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
         char temp[200];
         FILE *test = NULL;
         
@@ -224,8 +221,6 @@ int check_evt()
     if(test != NULL)
         fclose(test);
 
-    updateWindowSize(LARGEUR, 730);
-    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     return 0;
 }
 

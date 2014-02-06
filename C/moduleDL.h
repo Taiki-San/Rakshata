@@ -166,7 +166,6 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void getIconPath(int status, char *path, uint length);
 
 /**Module2_event.h**/
-bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn);
 bool MDLisClicOnAValidX(int x, bool twoColumns);
 int MDLisClicOnAValidY(int y, int nombreElement);
 void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
@@ -182,10 +181,8 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length);
 int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
 bool MDLPCheckIfPaid(unsigned int factureID);
 
-void MDLPDispCheckingIfPaid();
 void MDLPDispAskToPay(int prix);
 int MDLPWaitEvent();
-void MDLPEraseDispChecking();
 
 /**Module2_UI.c**/
 void startMDLUIThread();

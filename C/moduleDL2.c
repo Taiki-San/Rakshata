@@ -71,7 +71,7 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        if(MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
+        if(rand() % 2)//MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
         {
             nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
             MDLUpdateIcons(true);
@@ -131,11 +131,7 @@ void mainMDL()
 
     /*Attente de la fin du thread de traitement*/
     while(isThreadStillRunning(threadData))
-    {
-        if(SDL_PollEvent(&event))
-            haveInputFocus(&event, rendererDL->window); //Renvoyer l'evenement si nécessaire
         usleep(100);
-    }
 
     MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranqillement
 
@@ -186,13 +182,11 @@ void MDLLauncher()
     if(INSTANCE_RUNNING || !checkLancementUpdate())
     {
         INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
-        rendererDL = (void*) 0x1;
         quit_thread(0);
     }
 
     if(!loadEmailProfile())
     {
-        rendererDL = (void*) 0x1;
         quit_thread(0);
     }
     INSTANCE_RUNNING = 1;
@@ -211,11 +205,7 @@ void MDLLauncher()
     fclose(fileBlocker);
 #endif
 
-    rendererDL = NULL;
     startMDLUIThread();
-    while(rendererDL == NULL)
-        usleep(100);
-
     mainMDL();
 
     INSTANCE_RUNNING = 0;
@@ -428,7 +418,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     else
         MDLDispInstallHeader(NULL);
 
-    nameWindow(rendererDL->window, (nombreInstalled*100/nbElemTotal)+2);
     if(!quit)
         MDLUpdateIcons(false);
     free(listSizeDL);
@@ -721,38 +710,17 @@ void MDLUpdateIcons(bool ignoreCache)
 			//x = (MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
             //y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2)) * getRetinaZoom();
 
-            texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
-            if(texture != NULL)
-            {
-                MDLTUICopy(texture, NULL, &position);
-                MDLTUIDestroyTexture(texture);
-            }
+            //getIcon(rendererDL, *status[posDebutPage + posDansPage]);
+
             *statusCache[posDebutPage + posDansPage] = currentStatus;
         }
     }
-    MDLTUIRefresh();
 }
 
 void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
 {
     char texte[500], trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
-    SDL_Texture *texture = NULL;
-    SDL_Rect position;
-    Rak_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
     loadTrad(trad, 22);
-    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED); //On réessaye
-    if(isInstall)
-        MDLTUIBackground(0, HAUTEUR_TEXTE_INSTALLATION * getRetinaZoom(), WINDOW_SIZE_W_DL, (MDL_HAUTEUR_DEBUT_CATALOGUE-HAUTEUR_TEXTE_INSTALLATION) * getRetinaZoom());
-    else
-        MDLTUIBackground(0, HAUTEUR_TEXTE_TELECHARGEMENT * getRetinaZoom(), WINDOW_SIZE_W_DL, (HAUTEUR_TEXTE_INSTALLATION-HAUTEUR_TEXTE_TELECHARGEMENT) * getRetinaZoom());
-
-    if(police == NULL)
-    {
-        logR("Failed at initialize font");
-        return;
-    }
 
     if(todoList == NULL)
         usstrcpy(texte, TRAD_LENGTH, trad[5+isInstall]);
@@ -761,24 +729,6 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
         snprintf(texte, 500, "%s %s %s %d %s %s", trad[isInstall], todoList->datas->mangaName, todoList->subFolder?trad[4]:trad[3], (todoList->subFolder?todoList->partOfTome:todoList->chapitre) / 10, trad[2], todoList->datas->team->teamLong);
         changeTo(texte, '_', ' ');
     }
-    texture = MDLTUITTFWrite(police, texte, couleurFont);
-    if(texture != NULL)
-    {
-        position.x = WINDOW_SIZE_W_DL / 2 - texture->w / 2;
-        if(isInstall)
-            position.y = HAUTEUR_TEXTE_INSTALLATION * getRetinaZoom();
-        else
-            position.y = HAUTEUR_TEXTE_TELECHARGEMENT * getRetinaZoom();
-        position.h = texture->h;
-        position.w = texture->w;
-#ifdef WIN_OPENGL_BUGGED
-		MDLTUIRefresh();
-#endif
-        MDLTUICopy(texture, NULL, &position);
-        MDLTUIDestroyTexture(texture);
-        MDLTUIRefresh();
-    }
-    TTF_CloseFont(police);
 }
 
 bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
@@ -786,26 +736,7 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
     int ret_value = 0, nbErreurDL = -1, nbErreurInst, nbErreurIntern;
     bool printDetails = false;
     char contenu[5*TRAD_LENGTH + 100];
-    SDL_MessageBoxData alerte;
-    SDL_MessageBoxButtonData bouton[3];
-
-    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
-    alerte.title = trad[7];
-    alerte.message = contenu;
-    alerte.numbuttons = 3;
-    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
-    bouton[0].buttonid = 2; //Valeur retournée
-    bouton[0].text = trad[12];
-    bouton[1].flags = 0;
-    bouton[1].buttonid = 1; //Valeur retournée
-    bouton[1].text = trad[11];
-    bouton[2].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
-    bouton[2].buttonid = 0; //Valeur retournée
-    bouton[2].text = trad[10];
-    alerte.buttons = bouton;
-    alerte.window = rendererDL->window;
-    alerte.colorScheme = NULL;
-
+	
     do
     {
         if(printDetails) //Nous allons assumer que contenu contient déjà l'alerte normale, sachant qu'elle doit être affichée pour
@@ -839,7 +770,6 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
             unescapeLineReturn(contenu);
         }
 
-        SDL_ShowMessageBox(&alerte, &ret_value);
         if(ret_value == 1)
             printDetails = !printDetails;
     }while(ret_value != 0 && ret_value != 2);

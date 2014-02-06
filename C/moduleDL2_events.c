@@ -18,84 +18,6 @@ extern int nbElemTotal;
 extern int **status;
 extern int **statusCache;
 
-bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn)
-{
-    bool refreshNeeded = false;
-    unsigned int time = SDL_GetTicks();
-    SDL_Event event;
-
-    while(1)
-    {
-        if(SDL_GetTicks() - time > 1500)
-            return false;
-        else if(SDL_PollEvent(&event) && haveInputFocus(&event, rendererDL->window))
-            break;
-        usleep(25);
-    }
-
-    switch(event.type)
-    {
-        case SDL_KEYDOWN:
-        {
-            switch(event.key.keysym.sym)
-            {
-                case SDLK_RIGHT:
-                {
-                    if((pageCourante + 2) * MDL_NOMBRE_ELEMENT_COLONNE < nbElemTotal)
-                    {
-                        pageCourante++;
-                        refreshNeeded = true;
-                    }
-                    break;
-                }
-                case SDLK_LEFT:
-                {
-                    if(pageCourante > 0)
-                    {
-                        pageCourante--;
-                        refreshNeeded = true;
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-            break;
-        }
-
-        case SDL_MOUSEBUTTONUP:
-        {
-            if(MDLisClicOnAValidX(event.button.x, nbElemDrawn > MDL_NOMBRE_ELEMENT_COLONNE))
-            {
-                //Cette fonction teste deux choses: vérifier la validité (return -1 sinon) et si valide, renvoie la ligne
-                //Sachant que cette fonction en avait besoin pour des checks, autant la renvoyer
-                int ligne = MDLisClicOnAValidY(event.button.y, nbElemDrawn);
-                if(ligne == -1)
-                    break;
-
-                if(event.button.x > LARGEUR/2) //Si seconde colonne
-                {
-                    ligne += MDL_NOMBRE_ELEMENT_COLONNE;
-                    if(ligne >= nbElemDrawn) //Pas > car ligne est égal à 0 pour la première colonne (cf MDLisClicOnAValidY)
-                        break;
-                }
-                MDLDealWithClicsOnIcons(todoList, ligne, (ligne == 0 || *status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne-1] != MDL_CODE_DEFAULT), pageCourante*MDL_NOMBRE_ELEMENT_COLONNE+ligne+1 >= nbElemTotal || *status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne+1] != MDL_CODE_DEFAULT);
-                if(*status[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne] == MDL_CODE_DEFAULT)
-                    refreshNeeded = true;
-            }
-            break;
-        }
-
-        case SDL_WINDOWEVENT:
-        {
-            if(event.window.event == SDL_WINDOWEVENT_CLOSE)
-                quit = true;
-            break;
-        }
-    }
-    return refreshNeeded;
-}
-
 /*Check externalized to readibility*/
 
 bool MDLisClicOnAValidX(int x, bool twoColumns)
@@ -161,28 +83,6 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
         {
             void *buffer;
             int ret_value = 0, pos = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne, i;
-            char contenu[500];
-            SDL_MessageBoxData alerte;
-            SDL_MessageBoxButtonData bouton[5];
-
-            snprintf(contenu, 500, trad[23], trad[(*todoList)[pos]->subFolder?13:12]);
-            unescapeLineReturn(contenu);
-            alerte.flags = SDL_MESSAGEBOX_WARNING;
-            alerte.title = trad[0];
-            alerte.message = contenu;
-            alerte.numbuttons = 1 + !isFirstNonDL*2 + !isLastNonDL*2;
-            for(i = 0; i < alerte.numbuttons; i++)
-            {
-                bouton[i].flags = 0;
-                bouton[i].buttonid = i + isFirstNonDL*2 +1; //Valeur retournée
-                bouton[i].text = trad[24 + i + isFirstNonDL*2];
-            }
-
-            alerte.buttons = bouton;
-            alerte.window = rendererDL->window;
-            alerte.colorScheme = NULL;
-            SDL_ShowMessageBox(&alerte, &ret_value);
-            MUTEX_LOCK(mutexAskUIThreadWIP);
 
             if(*status[pos] == MDL_CODE_DEFAULT)
             {
@@ -258,7 +158,6 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     }
                 }
             }
-            MUTEX_UNLOCK(mutexAskUIThreadWIP);
             break;
         }
         case MDL_CODE_INSTALL_OVER:
@@ -269,49 +168,14 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
 
             int ret_value = 0;
             char contenu[500];
-            SDL_MessageBoxData alerte;
-            SDL_MessageBoxButtonData bouton[2];
 
             snprintf(contenu, 500, "%s %s %s %s %s", trad[1], (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->mangaName, trad[2], (*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->datas->team->teamLong, trad[3]);
             changeTo(contenu, '_', ' ');
-            alerte.flags = SDL_MESSAGEBOX_INFORMATION;
-            alerte.title = trad[0];
-            alerte.message = contenu;
-            alerte.numbuttons = 2;
-            bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
-            bouton[0].buttonid = 1; //Valeur retournée
-            bouton[0].text = trad[4];
-            bouton[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
-            bouton[1].buttonid = 0; //Valeur retournée
-            bouton[1].text = trad[5];
+            //trad[0] = titrem 4 et 5 boutons
 
-            alerte.buttons = bouton;
-            alerte.window = rendererDL->window;
-            alerte.colorScheme = NULL;
-            SDL_ShowMessageBox(&alerte, &ret_value);
             if(ret_value == 1)
             {
                 //We got the confirmation \o/ let's kill the reader
-                if(window != NULL)
-                {
-                    SDL_Event event;
-                    event.type = SDL_WINDOWEVENT;
-                    event.window.event = SDL_WINDOWEVENT_CLOSE;
-                    event.window.windowID = window->id;
-                    SDL_PushEvent(&event);
-                    while(1)
-                    {
-                        usleep(250);
-                        if(window != NULL)
-                        {
-                            SDL_FlushEvent(SDL_WINDOWEVENT);
-                            SDL_PushEvent(&event);
-                        }
-                        else
-                            break;
-                    }
-                    SDL_FlushEvent(SDL_WINDOWEVENT);
-                }
                 FILE* inject = fopenR("data/laststate.dat", "w+");
                 if(inject != NULL)
                 {
@@ -369,7 +233,5 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             break;
         }
     }
-
-    SDL_FlushEvent(SDL_MOUSEBUTTONUP);
 }
 

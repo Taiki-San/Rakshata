@@ -30,8 +30,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "../main.h"
-
 /*SHA256.h*/
 #ifndef uint8
 #define uint8  unsigned char

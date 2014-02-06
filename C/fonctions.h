@@ -92,24 +92,14 @@ int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 int checkDLInProgress();
 
 /**Engine.c**/
-int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, bool disIcons);
-int engineCore(PREFS_ENGINE * prefs, int contexte, DATA_ENGINE* input, int hauteurAffichageRaw, bool *selectMangaDLRightClick);
-int engineSelection(PREFS_ENGINE prefs, int contexte, DATA_ENGINE* input, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurChapitre, int *outputType);
-int engineAnalyseOutput(int contexte, int output, int outputType, int *elementChoisis, PREFS_ENGINE * prefs, DATA_ENGINE *input, bool isClickable[ENGINE_ELEMENT_PAR_PAGE], int elementParColonne[ENGINE_NOMBRE_COLONNE], int button_selected[8], int *pageCourante, int pageTotale, int *limitationLettre, bool modeLigne);
-
 int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
 int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB);
-bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettre, int button_selected[8]);
 
-int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem);
 bool getUnlock();
 void setUnlock(bool var);
 
 void loadMultiPage(int nombreManga, int *pageSelection, int *pageTotale);
-void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);
-void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale);
 
-void displayBigMainMenuIcon();
 Rak_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, Rak_Color couleurUnread, Rak_Color couleurNew, Rak_Color couleurNothingToRead, Rak_Color couleurTexte);
 
 void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
@@ -164,11 +154,6 @@ char ** loadChapterConfigDat(char* input, int *nombrePage);
 void mainRakshata();
 int mainLecture();
 int mainChoixDL();
-
-/**Menu.c**/
-int ecranAccueil();
-int section();
-int showControls();
 
 /**ModuleDL2_tool.c**/
 int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
@@ -229,12 +214,10 @@ int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256
 
 /**Selection.c**/
 int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick);
-int checkProjet(MANGAS_DATA mangaDB);
 int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting
-int menuGestion();
 char *loadPrefFile();
 void addToPref(char flag, char *stringToAdd);
 void removeFromPref(char flag);
@@ -269,7 +252,7 @@ int extractNumFromConfigTome(char *input, int ID);
 
 /**Translation.c**/
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);
-int changementLangue();
+void setNewLangue(int newLangue);
 int tradAvailable();
 
 /**Unzip.c**/
@@ -303,8 +286,7 @@ void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);
 void unescapeLineReturn(char *input);
-void restrictEvent();
-int defineMaxTextureSize(int sizeIssue);
+void openOnlineHelp();
 bool isDownloadValid(char *input);
 int isJPEG(void *input);
 int isPNG(void *input);

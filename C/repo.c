@@ -333,8 +333,7 @@ int deleteRepo()
         windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
     curPage = 1;
-    teamChoisis = engineCore(&prefs, CONTEXTE_SUPPRESSION, data, BORDURE_SUP_SELEC_MANGA, NULL);
-
+	
     if(teamChoisis > PALIER_CHAPTER && teamChoisis < nombreTeam)
     {
         if((confirme = confirmationRepo(data[teamChoisis].stringToDisplay)) == 1)

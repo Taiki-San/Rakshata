@@ -24,10 +24,6 @@ char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
 PALETTE_GLOBALE palette;
-SDL_Window* window = NULL;
-SDL_Renderer *renderer = NULL;
-
-extern SDL_Renderer *rendererDL;
 
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -44,7 +40,7 @@ extern SDL_Renderer *rendererDL;
     #endif
 #endif
 
-int main(int argc, char *argv[])
+int mainC(int argc, char *argv[])
 {
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
@@ -56,36 +52,8 @@ int main(int argc, char *argv[])
 
     createNewThread(mainRakshata, NULL);
 
-    SDL_Event event;
-    int compteur = 0, timeSinceLastCheck = SDL_GetTicks();
-    while(getThreadCount())
-    {
-        event.type = 0;
-        SDL_WaitEventTimeout(&event, 250);
-        if(event.type != 0 && (event.type != SDL_WINDOWEVENT || event.window.event != SDL_WINDOWEVENT_RESIZED))
-        {
-            if(event.type == SDL_WINDOWEVENT)
-            {
-                MUTEX_LOCK(mutexRS);
-                SDL_PushEvent(&event);
-                MUTEX_UNLOCK(mutexRS);
-            }
-            else
-                SDL_PushEvent(&event);
-        }
-        usleep(250);
+	//Do something
 
-        if(renderer == NULL && rendererDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 500)
-        {
-            timeSinceLastCheck = SDL_GetTicks();
-            compteur++;
-            if(compteur > 10) //Si il s'accroche vraiment =<
-                break;
-        }
-    }
-
-    TTF_Quit();
-    SDL_Quit();
     releaseDNSCache();
     MUTEX_DESTROY(mutex_decrypt);
     MUTEX_DESTROY(mutexUI);

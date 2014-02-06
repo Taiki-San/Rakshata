@@ -163,7 +163,6 @@ int askForChapter(MANGAS_DATA *mangaDB, int contexte)
 
         do
         {
-            chapitreChoisis = engineCore(&prefs, CONTEXTE_CHAPITRE, chapitreDB, prefs.nombreElementTotal>ENGINE_ELEMENT_PAR_PAGE?BORDURE_SUP_SELEC_CHAPITRE_FULL:BORDURE_SUP_SELEC_CHAPITRE_PARTIAL, NULL);
             if(chapitreChoisis == ENGINE_RETVALUE_SWITCH)
                 continue;
         } while(0);

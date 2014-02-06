@@ -186,7 +186,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
         displayTemplateTome(mangaDB, prefs, contexte, texteTrad);
         do
         {
-            tomeChoisis = engineCore(&prefs, CONTEXTE_TOME, tomeDB, prefs.nombreElementTotal > ENGINE_ELEMENT_PAR_PAGE ? BORDURE_SUP_SELEC_TOME_FULL : BORDURE_SUP_SELEC_TOME_PARTIAL, NULL);
+            tomeChoisis = rand();
         }while(tomeChoisis == ENGINE_RETVALUE_SWITCH);
         free(tomeDB);
     }

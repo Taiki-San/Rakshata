@@ -174,12 +174,12 @@ int alreadyRefreshed;
 void updateDataBase(bool forced)
 {
     MUTEX_LOCK(mutex);
-    if(NETWORK_ACCESS != CONNEXION_DOWN && (SDL_GetTicks() - alreadyRefreshed > DB_CACHE_EXPIRENCY || forced))
+    if(NETWORK_ACCESS != CONNEXION_DOWN && (time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY || forced))
 	{
         MUTEX_UNLOCK(mutex);
 	    update_repo();
         update_mangas();
-        alreadyRefreshed = SDL_GetTicks();
+        alreadyRefreshed = time(NULL);
 	}
     else
         MUTEX_UNLOCK(mutex);
@@ -570,7 +570,6 @@ int deleteManga()
 						}
 						else
 						{
-							chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 							if(internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis))
 							{
 								noMoreChapter = 0;
@@ -582,7 +581,6 @@ int deleteManga()
 
 					else
 					{
-						chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W); //On recharge la liste des mangas dispo
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 						removeFolder(temp);
 						noMoreChapter = 0;

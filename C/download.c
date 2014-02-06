@@ -53,38 +53,18 @@ int download_UI(TMP_DL *output)
     int pourcent = 0, last_refresh = 0;
     char temp[500], texte[SIZE_TRAD_ID_20][TRAD_LENGTH];
     double last_file_size = 0, download_speed = 0;
-    SDL_Rect position;
-    SDL_Texture *pourcentAffiche = NULL;
-    TTF_Font *police = NULL;
-    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
-    position.y = HAUTEUR_POURCENTAGE * getRetinaZoom();	//Le macro faire une différence qui fait que ça marche mais il faut être très prudent
     FILE_EXPECTED_SIZE = errCode = 0;
     status = STATUS_DOWNLOADING;
     loadTrad(texte, 20);
 
     threadData = createNewThreadRetValue(downloader, output);
 
-    police = OpenFont(FONTUSED, POLICE_MOYEN);
-    pourcentAffiche = MDLTUITTFWrite(police, texte[0], couleur);
-    if(pourcentAffiche != NULL)
-    {
-        position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-        position.h = pourcentAffiche->h;
-        position.w = pourcentAffiche->w;
-#ifdef WIN_OPENGL_BUGGED
-        MDLTUIRefresh();
-#endif
-        MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, position.h);
-        MDLTUICopy(pourcentAffiche, NULL, &position);
-        MDLTUIRefresh();
-        MDLTUIDestroyTexture(pourcentAffiche);
-    }
     while(1)
     {
         if(FILE_EXPECTED_SIZE > 0)
         {
-            if(SDL_GetTicks() - last_refresh >= 500)
+            if(time(NULL) - last_refresh >= 500)
             {
                 if(!download_speed)
                     download_speed = (CURRENT_FILE_SIZE - last_file_size) / 1024;
@@ -97,47 +77,15 @@ int download_UI(TMP_DL *output)
 
                 /*Code d'affichage du pourcentage*/
                 snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
-                pourcentAffiche = MDLTUITTFWrite(police, temp, couleur);
 
-                if(pourcentAffiche != NULL)
-                {
-                    position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-                    position.h = pourcentAffiche->h;
-                    position.w = pourcentAffiche->w;
-#ifdef WIN_OPENGL_BUGGED
-					MDLTUIRefresh();
-#endif
-                    MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
-                    MDLTUICopy(pourcentAffiche, NULL, &position);
-                    MDLTUIRefresh();
-#ifdef WIN_OPENGL_BUGGED
-					MDLTUIRefresh();
-#endif
-                    MDLTUIDestroyTexture(pourcentAffiche);
-                }
-                last_refresh = SDL_GetTicks();
+                last_refresh = time(NULL);
             }
 			else
 				usleep(50);
 
             if(quit)
             {
-                pourcentAffiche = MDLTUITTFWrite(police, texte[5], couleur);
-                position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-                position.h = pourcentAffiche->h;
-                position.w = pourcentAffiche->w;
-#ifdef WIN_OPENGL_BUGGED
-                MDLTUIRefresh();
-#endif
-                MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, pourcentAffiche->h + 5);
-                MDLTUICopy(pourcentAffiche, NULL, &position);
-                MDLTUIRefresh();
-#ifdef WIN_OPENGL_BUGGED
-				MDLTUIRefresh();
-#endif
-                MDLTUIDestroyTexture(pourcentAffiche);
                 status = STATUS_FORCE_CLOSE;
-                TTF_CloseFont(police);
                 break;
             }
         }
@@ -152,26 +100,7 @@ int download_UI(TMP_DL *output)
         while(isThreadStillRunning(threadData))
             usleep(250);
     }
-    else
-    {
-        pourcentAffiche = MDLTUITTFWrite(police, texte[6], couleur);
-        if(pourcentAffiche != NULL)
-        {
-            position.x = WINDOW_SIZE_W_DL / 2 - pourcentAffiche->w / 2;
-            position.h = pourcentAffiche->h;
-            position.w = pourcentAffiche->w;
-#ifdef WIN_OPENGL_BUGGED
-            MDLTUIRefresh();
-#endif
-            MDLTUIBackground(0, position.y, WINDOW_SIZE_W_DL, WINDOW_SIZE_H_DL - position.y);
-            MDLTUICopy(pourcentAffiche, NULL, &position);
-            MDLTUIRefresh();
-#ifdef WIN_OPENGL_BUGGED
-			MDLTUIRefresh();
-#endif
-        }
-        TTF_CloseFont(police);
-    }
+
     status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
 #ifdef _WIN32
     CloseHandle(threadData);
@@ -320,15 +249,8 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
     }
 
-    SDL_Event event;
-    if(SDL_PollEvent(&event))
-        SDL_PushEvent(&event);
-
     res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
-
-    if(SDL_PollEvent(&event))
-        SDL_PushEvent(&event);
 
     if(output != NULL && printToAFile)
         fclose(output);
@@ -356,9 +278,6 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
 {
-    SDL_Event event;
-    if(SDL_PollEvent(&event))
-        SDL_PushEvent(&event);
     return fwrite(ptr, size, nmemb, input);
 }
 
