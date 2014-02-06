@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 bool addRepoByFileInProgress;
 
@@ -112,41 +111,22 @@ int ajoutRepo(bool ajoutParFichier)
 {
     int continuer = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][TRAD_LENGTH];
-    SDL_Texture *texte;
-    TTF_Font *police = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TEAMS_DATA teams;
 
 	loadTrad(texteTrad, 14);
 
-    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO_INIT)
-        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO_INIT);
-
+#ifdef IDENTIFY_MISSING_UI
+	#warning "ajoutRepo"
+#endif
+	
     if(!ajoutParFichier)
     {
-        MUTEX_UNIX_LOCK;
-        SDL_RenderClear(renderer);
-        police = OpenFont(FONTUSED, POLICE_GROS);
-        texte = TTF_Write(renderer, police, texteTrad[0], couleurTexte);
-        if(texte != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-            position.y = WINDOW_SIZE_H / 2 - texte->h / 2;
-            position.h = texte->h;
-            position.w = texte->w;
-            SDL_RenderCopy(renderer, texte, NULL, &position);
-            SDL_DestroyTextureS(texte);
-        }
-        TTF_CloseFont(police);
-        SDL_RenderPresent(renderer);
-        MUTEX_UNIX_UNLOCK;
+
     }
     else
     {
         if(addRepoData == NULL)
             return 0;
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
     }
     if(!checkNetworkState(CONNEXION_DOWN))
     {
@@ -155,30 +135,9 @@ int ajoutRepo(bool ajoutParFichier)
         {
             if(!ajoutParFichier)
             {
-                MUTEX_UNIX_LOCK;
-                police = OpenFont(FONTUSED, POLICE_PETIT);
-                SDL_RenderClear(renderer);
-
-                /*On affiche l'écran de sélection*/
-                texte = TTF_Write(renderer, police, texteTrad[1], couleurTexte);
-                if(texte != NULL)
-                {
-                    position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                    position.y = HAUTEUR_MENU_AJOUT_REPO;
-                    position.h = texte->h;
-                    position.w = texte->w;
-                    SDL_RenderCopy(renderer, texte, NULL, &position);
-                    SDL_DestroyTextureS(texte);
-                }
-                SDL_RenderPresent(renderer);
-                TTF_CloseFont(police);
-                MUTEX_UNIX_UNLOCK;
-
                 /*On attend l'URL*/
                 crashTemp(teams.URL_depot, LONGUEUR_URL);
-                continuer = waitClavier(renderer, teams.URL_depot, LONGUEUR_URL, true, 0, 0);
-                chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
+                
                 if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
                     continue;
                 else if(continuer == PALIER_QUIT)
@@ -260,66 +219,13 @@ int ajoutRepo(bool ajoutParFichier)
 
                 if(isDownloadValid(bufferDL)) //Si on pointe sur un vrai dépôt
                 {
-                    /*Redimension de la fenêtre*/
-                    if(WINDOW_SIZE_H != HAUTEUR_FENETRE_AJOUT_REPO)
-                        updateWindowSize(LARGEUR, HAUTEUR_FENETRE_AJOUT_REPO);
-
-                    MUTEX_UNIX_LOCK;
-                    SDL_RenderClear(renderer);
-                    police = OpenFont(FONTUSED, POLICE_MOYEN);
-
-                    texte = TTF_Write(renderer, police, texteTrad[2], couleurTexte);
-                    if(texte != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = BORDURE_SUP_MENU * getRetinaZoom();
-                        position.h = texte->h;
-                        position.w = texte->w;
-                        SDL_RenderCopy(renderer, texte, NULL, &position);
-                        SDL_DestroyTextureS(texte);
-                    }
-
-                    texte = TTF_Write(renderer, police, texteTrad[3], couleurTexte);
-                    if(texte != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = (BORDURE_SUP_MENU + INTERLIGNE) * getRetinaZoom() + texte->h;
-                        position.h = texte->h;
-                        position.w = texte->w;
-                        SDL_RenderCopy(renderer, texte, NULL, &position);
-                        SDL_DestroyTextureS(texte);
-                    }
-
                     /*On affiche les infos*/
                     snprintf(temp, TAILLE_BUFFER, "Team: %s", teams.teamLong);
                     changeTo(temp, '_', ' ');
-                    texte = TTF_Write(renderer, police, temp, couleurTexte);
-                    if(texte != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = HAUTEUR_ID_AJOUT_REPO * getRetinaZoom();
-                        position.h = texte->h;
-                        position.w = texte->w;
-                        SDL_RenderCopy(renderer, texte, NULL, &position);
-                        SDL_DestroyTextureS(texte);
-                    }
-
-                    snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
-                    texte = TTF_Write(renderer, police, temp, couleurTexte);
-                    if(texte != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - texte->w / 2;
-                        position.y = HAUTEUR_TEAM_AJOUT_REPO * getRetinaZoom();
-                        position.h = texte->h;
-                        position.w = texte->w;
-                        SDL_RenderCopy(renderer, texte, NULL, &position);
-                        SDL_DestroyTextureS(texte);
-                    }
-                    SDL_RenderPresent(renderer);
-                    TTF_CloseFont(police);
-                    MUTEX_UNIX_UNLOCK;
-
-                    if((continuer = waitEnter(renderer)) == 1)
+                    
+					snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
+                    
+					if(1)	//Si oui
                     {
                         char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
                         repoNew = ralloc((repo!=NULL?strlen(repo):0)+500);
@@ -379,12 +285,6 @@ int deleteRepo()
 
     repoBak = repo;
 
-    /*Initialisateurs graphique*/
-    SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-
     /*On commence par compter le nombre de temps*/
     while(*repo)
     {
@@ -403,7 +303,6 @@ int deleteRepo()
         removeFromPref(SETTINGS_REPODB_FLAG);
         removeFromPref(SETTINGS_MANGADB_FLAG);
 
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
         updateDataBase(true);
         return PALIER_MENU;
     }
@@ -433,33 +332,11 @@ int deleteRepo()
     else
         windowH = BORDURE_SUP_SELEC_MANGA + (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) * (ENGINE_ELEMENT_PAR_PAGE / ENGINE_NOMBRE_COLONNE) + LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA;
 
-    if(WINDOW_SIZE_H != windowH)
-        updateWindowSize(LARGEUR, windowH);
-
-    MUTEX_UNIX_LOCK;
-    police = OpenFont(FONTUSED, POLICE_GROS);
-    SDL_RenderClear(renderer);
-
-    texteAffiche = TTF_Write(renderer, police, texteTrad[0], couleur);
-    if(texteAffiche != NULL)
-    {
-        position.y = HAUTEUR_TEXTE;
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-    }
-    MUTEX_UNIX_UNLOCK;
-
     curPage = 1;
     teamChoisis = engineCore(&prefs, CONTEXTE_SUPPRESSION, data, BORDURE_SUP_SELEC_MANGA, NULL);
 
     if(teamChoisis > PALIER_CHAPTER && teamChoisis < nombreTeam)
     {
-        if(WINDOW_SIZE_H != HAUTEUR_DEL_REPO)
-            updateWindowSize(LARGEUR, HAUTEUR_DEL_REPO);
-
         if((confirme = confirmationRepo(data[teamChoisis].stringToDisplay)) == 1)
         {
             int j = 0;
@@ -523,61 +400,10 @@ int defineTypeRepo(char *URL)
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
 {
     int confirme = 0;
-	char texte[SIZE_TRAD_ID_4][TRAD_LENGTH];
-    /*Initialisateurs graphique*/
-    SDL_Texture *texteAffiche = NULL;
-    SDL_Rect position;
-    TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    police = NULL;
-
-	police = OpenFont(FONTUSED, POLICE_MOYEN);
-
-    /*Remplissage des variables*/
-    loadTrad(texte, 4);
-
-    MUTEX_UNIX_LOCK;
-    SDL_RenderClear(renderer);
-    texteAffiche = TTF_Write(renderer, police, texte[0], couleur);
-    if(texteAffiche != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = HAUTEUR_MENU_CONFIRMATION_SUPPRESSION;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-    }
-
-    texteAffiche = TTF_Write(renderer, police, texte[1], couleur);
-    if(texteAffiche != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = HAUTEUR_CONSIGNES_CONFIRMATION_SUPPRESSION;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-    }
-
-    TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
-
-    texteAffiche = TTF_Write(renderer, police, team, couleur);
-    if(texteAffiche != NULL)
-    {
-        position.x = WINDOW_SIZE_W / 2 - texteAffiche->w / 2;
-        position.y = HAUTEUR_TEAM_CONFIRMATION_SUPPRESSION;
-        position.h = texteAffiche->h;
-        position.w = texteAffiche->w;
-        SDL_RenderCopy(renderer, texteAffiche, NULL, &position);
-        SDL_DestroyTextureS(texteAffiche);
-    }
-
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
-    MUTEX_UNIX_UNLOCK;
-
-    confirme = waitEnter(renderer);
+	char trad[SIZE_TRAD_ID_4][TRAD_LENGTH];
+	loadTrad(trad, 4);
+    
+	//On demande ~
 
     if(confirme == 1 || confirme == PALIER_QUIT) //Confirmé
         return confirme;

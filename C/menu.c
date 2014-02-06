@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 int ecranAccueil()
 {
@@ -65,7 +64,7 @@ int section()
     SDL_Texture *texte;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
     if(WINDOW_SIZE_H != HAUTEUR_FENETRE_SECTION)
         updateWindowSize(LARGEUR, HAUTEUR_FENETRE_SECTION);

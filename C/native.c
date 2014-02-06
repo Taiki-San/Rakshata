@@ -11,7 +11,6 @@
 *********************************************************************************************/
 
 #include <stdarg.h>
-#include "main.h"
 
 #define USE_FULL_PATH
 
@@ -365,17 +364,6 @@ void usstrcpy(void* output, size_t length, const void* input)
 void ustrcpy(void* output, const void* input)
 {
     usstrcpy(output, ustrlen((void*)input) + 1, input);
-}
-
-void SDL_FreeSurfaceS(SDL_Surface *surface)
-{
-    if(surface != NULL)
-        SDL_FreeSurface(surface);
-}
-
-void SDL_DestroyTextureS(SDL_Texture *texture)
-{
-    SDL_DestroyTexture(texture); //Gére déjà les cas imprévus
 }
 
 /**Différent en fonction de l'OS**/

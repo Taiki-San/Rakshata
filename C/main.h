@@ -31,4 +31,3 @@
 #include "structures.h"
 #include "externs.h"
 #include "fonctions.h"
-

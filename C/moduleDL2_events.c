@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 
 extern volatile bool quit;
@@ -31,7 +30,7 @@ bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn)
             return false;
         else if(SDL_PollEvent(&event) && haveInputFocus(&event, rendererDL->window))
             break;
-        SDL_Delay(25);
+        usleep(25);
     }
 
     switch(event.type)
@@ -302,7 +301,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     SDL_PushEvent(&event);
                     while(1)
                     {
-                        SDL_Delay(250);
+                        usleep(250);
                         if(window != NULL)
                         {
                             SDL_FlushEvent(SDL_WINDOWEVENT);

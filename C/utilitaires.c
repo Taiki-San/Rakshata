@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 void changeTo(char *string, char toFind, char toPut)
 {
@@ -191,6 +190,30 @@ void createPath(char *output)
 
 }
 
+IMG_DATA* readFile(char * path)
+{
+	if(path == NULL)
+		return NULL;
+	
+	IMG_DATA *output = calloc(1, sizeof(IMG_DATA));
+	if(output != NULL)
+	{
+		FILE* input = fopen(path, "r");
+		if(input != NULL)
+		{
+			fseek(input, 0, SEEK_END);
+			size_t length = ftell(input);
+			output->data = calloc(length, sizeof(char));
+			if(output->data != NULL)
+			{
+				rewind(input);
+				output->length = fread(output->data, sizeof(char), length, input);
+			}
+		}
+	}
+	return output;
+}
+
 void hexToDec(const char *input, unsigned char *output)
 {
     int i = 0, j = 0;
@@ -214,6 +237,34 @@ void hexToDec(const char *input, unsigned char *output)
 
             output[i] = output[i]*16 + temp;
         }
+    }
+}
+
+void hexToCGFloat(const char *input, uint32_t length, double *output)
+{
+    int i = 0, j = 0;
+	char c = 0, tmp[2];
+	
+    for(*output = 0; *input && i < length; i++)
+    {
+		tmp[0] = tmp[1] = 0;
+		
+        for(j = 0; j < 2; j++)
+        {
+            c = *input++;
+            if(c >= '0' && c <= '9')
+                tmp[j] = c - '0';
+			
+            else if(c >= 'a' && c <= 'f')
+                tmp[j] = 10 + (c - 'a');
+			
+            else if(c >= 'A' && c <= 'F')
+                tmp[j] = 10 + (c - 'A');
+			
+            else
+                break;
+        }
+		*output = *output * 0x100 + tmp[0] * 0x10 + tmp[1];
     }
 }
 
@@ -270,48 +321,6 @@ void unescapeLineReturn(char *input)
         }
     }
     input[j] = 0;
-}
-
-void restrictEvent()
-{
-    SDL_EventState(SDL_SYSWMEVENT, SDL_DISABLE);
-    SDL_EventState(SDL_TEXTEDITING, SDL_DISABLE);
-    SDL_EventState(SDL_JOYAXISMOTION, SDL_DISABLE);
-    SDL_EventState(SDL_JOYBALLMOTION, SDL_DISABLE);
-    SDL_EventState(SDL_JOYHATMOTION, SDL_DISABLE);
-    SDL_EventState(SDL_JOYBUTTONDOWN, SDL_DISABLE);
-    SDL_EventState(SDL_JOYBUTTONUP, SDL_DISABLE);
-    SDL_EventState(SDL_FINGERDOWN, SDL_DISABLE);
-    SDL_EventState(SDL_FINGERUP, SDL_DISABLE);
-    SDL_EventState(SDL_FINGERMOTION, SDL_DISABLE);
-    SDL_EventState(SDL_CLIPBOARDUPDATE, SDL_DISABLE);
-    SDL_EventState(SDL_DROPFILE, SDL_DISABLE);
-    SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
-}
-
-static int maxSize = 0;
-int defineMaxTextureSize(int sizeIssue)
-{
-    /*Appelé dans un context ou mutexTUI est verrouillé*/
-    if(maxSize)
-        return maxSize;
-	
-    SDL_Texture *texture = NULL;
-    for(sizeIssue = MIN(16384, sizeIssue); texture == NULL && sizeIssue > 0; sizeIssue -= 10)
-    {
-        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STATIC, sizeIssue, sizeIssue);
-    }
-	
-    SDL_DestroyTexture(texture);
-    maxSize = sizeIssue;
-
-#ifdef DEV_BUILD
-    char temp[100];
-    snprintf(temp, 100, "Max size: %d\n", maxSize);
-    logR(temp);
-#endif
-
-    return sizeIssue;
 }
 
 bool isDownloadValid(char *input)
@@ -395,7 +404,7 @@ void addToRegistry(bool firstStart)
 
 void mergeSortMerge(int * tab, int *tmp, size_t length)
 {
-    int pos1 = 0, pos2 = length / 2, posTmp = 0;
+    size_t pos1 = 0, pos2 = length / 2, posTmp = 0;
 
     while(pos1 < length / 2 && pos2 < length)
         tmp[posTmp++] = (tab[pos1] < tab[pos2]) ? tab[pos1++] : tab[pos2++];

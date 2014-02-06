@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 #include "MDLCache.h"
 
@@ -739,7 +738,7 @@ void lancementModuleDL()
             break;
         if(SDL_PollEvent(&event))
             SDL_PushEvent(&event);
-        SDL_Delay(100);
+        usleep(100);
     }
     if(rendererDL == (void*) 0x1)   //Si une erreur a empeche le lancement
         rendererDL = NULL;
@@ -747,58 +746,60 @@ void lancementModuleDL()
 
 /*UI*/
 
-SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status)
+void getIconPath(int status, char *path, uint length)
 {
+	if(path == NULL)
+		return;
+	
     switch(status)
     {
         case MDL_CODE_DEFAULT:
         case MDL_CODE_DL_OVER:
         case MDL_CODE_WAITING_LOGIN:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_WAIT);
+			strncpy(path, MDL_ICON_WAIT, length);
             break;
         }
         case MDL_CODE_DL:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_DL);
+			strncpy(path, MDL_ICON_DL, length);
             break;
         }
         case MDL_CODE_INSTALL:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_INSTALL);
+			strncpy(path, MDL_ICON_INSTALL, length);
             break;
         }
         case MDL_CODE_WAITING_PAY:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_TO_PAY);
+			strncpy(path, MDL_ICON_TO_PAY, length);
             break;
         }
         case MDL_CODE_INSTALL_OVER:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_OVER);
+			strncpy(path, MDL_ICON_OVER, length);
             break;
         }
         case MDL_CODE_ERROR_DL:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_DOWNLOAD);
+			strncpy(path, MDL_ICON_ERROR_DOWNLOAD, length);
             break;
         }
         case MDL_CODE_ERROR_INSTALL:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_INSTALL);
+			strncpy(path, MDL_ICON_ERROR_INSTALL, length);
             break;
         }
         case MDL_CODE_INTERNAL_ERROR:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_GENERAL);
+			strncpy(path, MDL_ICON_ERROR_GENERAL, length);
             break;
         }
         default:
         {
-            return MDLTUILoadIMG(rendererVar, MDL_ICON_ERROR_DEFAULT);
+			strncpy(path, MDL_ICON_ERROR_DEFAULT, length);
             break;
         }
     }
-    return NULL;
 }
 

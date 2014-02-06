@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "crypto/crypto.h"
 
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
@@ -33,7 +32,7 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
     SERPENT_STATIC_DATA pSer;
 	TwofishInstance pTwoF;
 
-    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
+    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? (*password = 0, *password++) : 0);
     TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
 	Serpent_set_key(&pSer, (uint32_t*) key, KEYBITS);
 
@@ -149,7 +148,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 
-SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
+IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
     int i = 0, nombreEspace = 0;
     rawData *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
@@ -182,7 +181,7 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     if(test == NULL) //Si on trouve pas config.enc
     {
         free(path);
-        return IMG_Load(pathPage);
+		return readFile(pathPage);
     }
     fseek(test, 0, SEEK_END);
     sizeDBPass = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
@@ -249,30 +248,34 @@ SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int p
     }
     for(i = 0; i < sizeDBPass; configEnc[i++] = 0); //On écrase le cache
     free(configEnc);
+	
+	//On fait les allocations finales
+	IMG_DATA *output = malloc(sizeof(IMG_DATA));
+	if(output != NULL)
+	{
+		void* buf_in = ralloc(size + 2 * CRYPTO_BUFFER_SIZE);
+		output->data = calloc(size + 2 * CRYPTO_BUFFER_SIZE, sizeof(rawData));
+		if(buf_in != NULL && output->data != NULL)
+		{
+			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
 
-    rawData* buf_page = ralloc((size + 0xff) * sizeof(rawData));
-    void* buf_in = ralloc(size + 2*CRYPTO_BUFFER_SIZE);
-
-    test = fopenR(pathPage, "rb");
-    fread(buf_in, 1, size, test);
-    fclose(test);
-
-    decryptPage(key, buf_in, buf_page, size/(CRYPTO_BUFFER_SIZE*2));
-	crashTemp(key, SHA256_DIGEST_LENGTH);
-
-	SDL_Surface *surface_page = IMG_Load_RW(SDL_RWFromMem(buf_page, size), 1);
-
-#ifdef DEV_VERSION
-    if(surface_page == NULL)
-    {
-        FILE *newFile = fopenR("buffer.png", "wb");
-        fwrite(buf_page, 1, size, newFile);
-        fclose(newFile);
-    }
-#endif
-    free(buf_in);
-    free(buf_page);
-    return surface_page;
+			test = fopenR(pathPage, "rb");
+			fread(buf_in, 1, size, test);
+			fclose(test);
+			
+			decryptPage(key, buf_in, output->data, size/(CRYPTO_BUFFER_SIZE*2));
+			crashTemp(key, SHA256_DIGEST_LENGTH);
+		}
+		else
+		{
+			free(output->data);
+			free(output);
+			output = NULL;
+		}
+		
+		free(buf_in);
+	}
+    return output;
 }
 
 void getPasswordArchive(char *fileName, char password[300])

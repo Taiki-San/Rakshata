@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 int RESOLUTION[2]; //Résolution
 int WINDOW_SIZE_H = 0;
@@ -74,7 +73,7 @@ int main(int argc, char *argv[])
             else
                 SDL_PushEvent(&event);
         }
-        SDL_Delay(250);
+        usleep(250);
 
         if(renderer == NULL && rendererDL == NULL && SDL_GetTicks() - timeSinceLastCheck > 500)
         {

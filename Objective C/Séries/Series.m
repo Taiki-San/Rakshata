@@ -28,6 +28,14 @@
 		winController = [[PrefsUI alloc] init];
 		[winController setAnchor:button];
 		
+		/*****		TEST		*****/
+		NSView *test = [[NSView alloc] initWithFrame:NSMakeRect(50, 0, 100, 400)];
+		CALayer *viewLayer = [CALayer layer];
+		[viewLayer setBackgroundColor:CGColorCreateGenericRGB(0.0, 0.0, 0.0, 1)]; //RGB plus Alpha Channel
+		[test setWantsLayer:YES]; // view's backing store is using a Core Animation Layer
+		[test setLayer:viewLayer];
+		[self addSubview:test];
+		
 		/*Initialise le bandeau inférieur*/
 		footer = [[RakFooter alloc] init:window];
 		[self addSubview:footer];
@@ -42,7 +50,7 @@
 	NSRect frame;
 	
 	frame.origin.x = 25;			frame.origin.y = tabSerieFrame.size.height - 45;
-	frame.size.width = 65;			frame.size.height = 25;
+	frame.size.width = 65;			frame.size.height = 28;
 	button = [[RakButton alloc] initWithFrame:frame];
 	
 	[button setTitle:@"Prefs"];

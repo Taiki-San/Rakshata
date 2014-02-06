@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 
 int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
@@ -29,8 +28,7 @@ void mainMDL()
     DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
     THREAD_TYPE threadData;
     MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
-    SDL_Event event;
-
+    
     /*Initialisation*/
     loadTrad(trad, 22);
     quit = false;
@@ -57,17 +55,12 @@ void mainMDL()
     {
         if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             break;
-        if(SDL_PollEvent(&event))
-            SDL_PushEvent(&event);
-        SDL_Delay(50);
+        usleep
+(50);
     }
 
     if(checkNetworkState(CONNEXION_DOWN))
         return;
-	
-#ifdef WIN_OPENGL_BUGGED
-	MDLTUIRefresh();
-#endif
 
     MDLDispDownloadHeader(NULL);
     MDLDispInstallHeader(NULL);
@@ -141,7 +134,7 @@ void mainMDL()
     {
         if(SDL_PollEvent(&event))
             haveInputFocus(&event, rendererDL->window); //Renvoyer l'evenement si nécessaire
-        SDL_Delay(100);
+        usleep(100);
     }
 
     MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranqillement
@@ -221,7 +214,7 @@ void MDLLauncher()
     rendererDL = NULL;
     startMDLUIThread();
     while(rendererDL == NULL)
-        SDL_Delay(100);
+        usleep(100);
 
     mainMDL();
 
@@ -262,7 +255,7 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             {
                 for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_WAITING_LOGIN && *status[dataPos] != MDL_CODE_WAITING_PAY; dataPos++);
                 if(dataPos < nbElemTotal) {
-                    SDL_Delay(400);
+                    usleep(400);
                 }
                 else
                 {
@@ -272,7 +265,7 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             }
         }
         else
-            SDL_Delay(25);
+            usleep(25);
     }
     for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
     free(historiqueTeam);
@@ -398,7 +391,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         {
             MDLUpdateIcons(false);
             while(*input.currentState != MDL_CODE_INSTALL)
-                SDL_Delay(250);
+                usleep(250);
         }
         MDLDispInstallHeader(input.todoList);
 
@@ -685,19 +678,7 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 {
     int curseurDebut = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, nbrElementDisp;
     char texte[200];
-    SDL_Texture *texture = NULL;
-    SDL_Rect position;
-    SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
 
-    police = OpenFont(FONTUSED, MDL_SIZE_FONT_USED);
-    MDLTUIBackground(0, MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom(), WINDOW_SIZE_W_DL, MDL_NOMBRE_ELEMENT_COLONNE*MDL_INTERLIGNE * getRetinaZoom());
-
-    if(police == NULL)
-    {
-        logR("Failed at initialize font");
-        return -1;
-    }
 
     for(nbrElementDisp = 0; nbrElementDisp < MDL_NOMBRE_ELEMENT_COLONNE * MDL_NOMBRE_COLONNE && curseurDebut+nbrElementDisp < nbElemTotal; nbrElementDisp++)
     {
@@ -715,67 +696,30 @@ int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
         }
         changeTo(texte, '_', ' ');
 
-        texture = MDLTUITTFWrite(police, texte, couleurFont);
-        if(texture != NULL)
-        {
-            position.x = (MDL_BORDURE_CATALOGUE + (nbrElementDisp / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
-            position.y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (nbrElementDisp % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE) * getRetinaZoom();
-            position.w = texture->w;
-            position.h = texture->h;
-            MDLTUICopy(texture, NULL, &position);
-            MDLTUIDestroyTexture(texture);
-#ifdef WIN_OPENGL_BUGGED
-			MDLTUIRefresh();
-#endif
-        }
+		
+		//Print the element here
     }
 
     if(nbrElementDisp > 0)
     {
-        SDL_Surface *surface = SDL_CreateRGBSurface(0,2 * getRetinaZoom(), (nbrElementDisp > MDL_NOMBRE_ELEMENT_COLONNE ? MDL_NOMBRE_ELEMENT_COLONNE : nbrElementDisp) *  MDL_INTERLIGNE * getRetinaZoom(),32,0,0,0,0); //Barre séparatrice
-        if(surface != NULL)
-        {
-            SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 95, 95, 95));
-            texture = MDLTUICreateTextureFromSurface(surface);
-
-            if(texture != NULL)
-            {
-                position.x = (MDL_ICON_POS + MDL_ICON_SIZE + (LARGEUR / 2 - MDL_ICON_POS - MDL_ICON_SIZE) / 3) * getRetinaZoom();
-                position.y = MDL_HAUTEUR_DEBUT_CATALOGUE * getRetinaZoom();
-                position.h = texture->h;
-                position.w = texture->w;
-                MDLTUICopy(texture, NULL, &position);
-                MDLTUIDestroyTexture(texture);
-            }
-            SDL_FreeSurface(surface);
-        }
+		//Barre séparatrice
     }
 
-#ifdef WIN_OPENGL_BUGGED
-    MDLTUIRefresh();
-    MDLTUIRefresh();
-#endif
-
-    TTF_CloseFont(police);
     return nbrElementDisp;
 }
 
 void MDLUpdateIcons(bool ignoreCache)
 {
     int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, currentStatus;
-    SDL_Texture *texture = NULL;
-    SDL_Rect position;
-    position.h = position.w = MDL_ICON_SIZE * getRetinaZoom();
 
     /*RendererDL != NULL au cas où la fenêtre ai été fermée et que Rakshata soit en train de quitter*/
-    for(posDansPage = 0; rendererDL != NULL && posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
+    for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
     {
         currentStatus = *status[posDebutPage + posDansPage];
         if(currentStatus != *statusCache[posDebutPage + posDansPage] || ignoreCache)
         {
-            position.x = (MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
-            position.y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2)) * getRetinaZoom();
-            MDLTUIBackgroundPreCrafted(&position);
+			//x = (MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
+            //y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2)) * getRetinaZoom();
 
             texture = getIconTexture(rendererDL, *status[posDebutPage + posDansPage]);
             if(texture != NULL)
@@ -794,7 +738,7 @@ void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
     char texte[500], trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
     SDL_Texture *texture = NULL;
     SDL_Rect position;
-    SDL_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurFont = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     loadTrad(trad, 22);

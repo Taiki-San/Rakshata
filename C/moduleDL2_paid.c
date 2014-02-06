@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 
 extern volatile bool quit;
@@ -266,7 +265,7 @@ bool waitForGetPaid(unsigned int factureID)
 {
     do
     {
-        SDL_Delay(500);
+        usleep(500);
     } while(!MDLPCheckIfPaid(factureID) && quit == false);
 
     if(quit == false)
@@ -332,7 +331,7 @@ void MDLPDispCheckingIfPaid()
     char trad[SIZE_TRAD_ID_31][TRAD_LENGTH];
     SDL_Texture *texture = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     loadTrad(trad, 31);
@@ -368,7 +367,7 @@ void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix)
     char trad[SIZE_TRAD_ID_31][TRAD_LENGTH];
     SDL_Texture *texture = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     loadTrad(trad, 31);

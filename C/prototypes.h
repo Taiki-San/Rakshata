@@ -16,34 +16,9 @@
 #include <string.h>
 #include <wchar.h>
 #include <time.h>
-#include <SDL.h>
-#include <SDL_sysrender.h> //Header précis pour la structure SDL_Texture, permet de la dereferencer
-#include <SDL_sysvideo.h> //Header précis pour la structure SDL_Windows, permet de la dereferencer
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 #include <curl/curl.h>
 #include <sys/stat.h>
-
-#ifdef __INTEL_COMPILER
-	#include <dirent.msvc.h>
-	#include <io.h>
-	#define F_OK 1
-	#pragma comment(lib, "SDL.lib")
-	#pragma comment(lib, "libSDL_image.lib")
-	#pragma comment(lib, "libfreetype.lib")
-	#pragma comment(lib, "SDL2_ttf.lib")
-	#pragma comment(lib, "libcurl.lib")
-	#pragma comment(lib, "libeay32.lib") //SSL
-	#pragma comment(lib, "ssleay32.lib") //SSL
-	#pragma comment(lib, "Wldap32.lib")
-	#pragma comment(lib, "ws2_32.lib")
-	#pragma comment(lib, "winmm.lib")
-	#pragma comment(lib, "libzip.a")
-	#pragma comment(lib, "Imm32.lib")
-	#pragma comment(lib, "Version.lib")
-#else
-	#include <dirent.h>
-#endif
+#include <dirent.h>
 
 #ifdef _WIN32
 	#ifdef __MINGW32__
@@ -59,7 +34,7 @@
 
     #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE
-    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; SDL_Delay(rand() % 100))
+    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; usleep(rand() % 100))
     #define MUTEX_UNIX_LOCK //
     #define MUTEX_UNLOCK(a) ReleaseSemaphore (a, 1, NULL)
     #define MUTEX_UNIX_UNLOCK //

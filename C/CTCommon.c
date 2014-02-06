@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int contexte)
 {
@@ -55,7 +54,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
     /*Header*/
     MUTEX_UNIX_LOCK;

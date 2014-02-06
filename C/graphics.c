@@ -10,9 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
-#include "graphics.h"
-
 //Variables partagés
 static MUTEX_VAR *GUI_lockAccessSharedRessource;
 static pthread_cond_t wakeUpMainGUIThread = PTHREAD_COND_INITIALIZER;

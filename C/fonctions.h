@@ -12,28 +12,16 @@
 
 /**Affichage.c**/
 void welcome();
-void initialisationAffichage();
 void raffraichissmenent(bool forced);
-void affichageLancement();
-void chargement(SDL_Renderer* rendererVar, int h, int w);
 void loadPalette();
-bool areSameColors(SDL_Color a, SDL_Color b);
-void loadIcon(SDL_Window *window_ptr);
-SDL_Renderer* setupRendererSafe(SDL_Window *window_ptr);
-SDL_Texture * TTF_Write(SDL_Renderer *render, TTF_Font *font, const char *text, SDL_Color fg);
-void applyBackground(SDL_Renderer *renderVar, int x, int y, int w, int h);
+bool areSameColors(Rak_Color a, Rak_Color b);
+void loadIcon();
 #ifdef _WIN32
     #define checkIfRetina(window)   0
 #else
     #define checkIfRetina(window) ((window->flags & SDL_WINDOW_ALLOW_HIGHDPI) != 0)
 #endif // _WIN32
 #define getRetinaZoom() (isRetina + 1)
-void updateWindowSize(int w, int h);
-void getResolution();
-void restartEcran();
-TTF_Font * OpenFont(char * fontName, int size);
-void setRetinaSize(const SDL_Rect input, SDL_Rect * output);
-void nameWindow(SDL_Window* windows, const int value);
 #define getW(a) a->viewport.w
 #define getH(a) a->viewport.h
 
@@ -122,7 +110,7 @@ void engineLoadCurrentPage(int nombreElement, int pageCourante, int out[3]);
 void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], int pageSelection, int pageTotale);
 
 void displayBigMainMenuIcon();
-SDL_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte);
+Rak_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, Rak_Color couleurUnread, Rak_Color couleurNew, Rak_Color couleurNothingToRead, Rak_Color couleurTexte);
 
 void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
 
@@ -131,7 +119,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
 void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum);
 
 void engineDisplayTomeInfos(DATA_ENGINE input);
-void enfineEraseDisplayedTomeInfos(SDL_Renderer * renderer);
+void engineEraseDisplayedTomeInfos(int curThread);
 
 /**Error.c**/
 void logR(char *error);
@@ -154,12 +142,6 @@ void getNewFavs();
 void updateSectionMessage(char messageVersion[5]);
 void checkSectionMessageUpdate();
 
-/**IO.c**/
-int nombreEntree(char input);
-int waitEnter(SDL_Renderer* rendererVar);
-int waitClavier(SDL_Renderer *rendererVar, char *retour, int nombreMax, int showTyped, int startFromX, int startFromY);
-int haveInputFocus(SDL_Event *event, SDL_Window *windows);
-
 /**Keys.c**/
 int getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
@@ -167,7 +149,7 @@ int earlyInit(int argc, char *argv[]);
 int get_compte_infos();
 int logon();
 int check_login(char adresseEmail[100]);
-int getPassword(SDL_Renderer *currentRenderer, char password[100]);
+int getPassword(int curThread, char password[100]);
 void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1]);
 int checkPass(char adresseEmail[100], char password[100], int login);
 int createSecurePasswordDB(unsigned char *key_sent);
@@ -208,8 +190,6 @@ int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(void *input);
 void usstrcpy(void* output, size_t length, const void* input);
 void ustrcpy(void* output, const void* input);
-void SDL_FreeSurfaceS(SDL_Surface *surface);
-void SDL_DestroyTextureS(SDL_Texture *texture);
 
 void removeFolder(char *path);
 #define ouvrirSiteTeam(structTeam) ouvrirSite(structTeam->site)
@@ -222,7 +202,7 @@ int checkPID(int PID);
 int checkDirExist(char *dirname);
 
 /**PBKDF2.c**/
-int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, uint32_t inputLength, const uint8_t *salt, uint32_t saltLength, uint32_t iteneration, uint32_t lengthOutput, uint8_t *output);
+int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, size_t inputLength, const uint8_t *salt, size_t saltLength, uint32_t iteneration, size_t lengthOutput, uint8_t *output);
 void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
 
 /**Repo.c**/
@@ -242,7 +222,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX]);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
-SDL_Surface *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
+IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
 void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check);
@@ -267,7 +247,7 @@ void setFavorite(MANGAS_DATA* mangaDB);
 /**SHA256.c**/
 int sha256(unsigned char* input, void* output);
 int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
-void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output);
+void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output);
 
 /**Thread.c**/
 void createNewThread(void *function, void *arg);
@@ -312,11 +292,13 @@ int positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char *output);
+IMG_DATA* readFile(char * path);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) (caract >= '0' && caract <= '9')
 #define swapValues(a, b) do { a ^= b; b ^= a; a ^= b; } while(0)
 #define MIN(a, b) (a < b ? a : b)
 void hexToDec(const char *input, unsigned char *output);
+void hexToCGFloat(const char *input, uint32_t length, double *output);
 void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);

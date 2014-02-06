@@ -10,15 +10,14 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h" //To get MDL's icons name
 
 int check_evt()
 {
-    int i, j = 0, cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
+    int cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
     char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
 
-    for(i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
+    for(int i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
 
     /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
     snprintf(nomsATest[0], LONGUEUR_NOMS_DATA, "data/font.ttf");
@@ -64,55 +63,53 @@ int check_evt()
     snprintf(nomsATest[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 
     /*On test l'existance de tous les fichiers*/
-    for(i = j = 0; i < NOMBRE_DE_FICHIER_A_CHECKER-1; i++)
+	int nbCurrent, nbTotal;
+	for(nbCurrent = nbTotal = 0; nbCurrent < NOMBRE_DE_FICHIER_A_CHECKER-1; nbCurrent++)
     {
-        if(!checkFileExist(nomsATest[i]))
+        if(!checkFileExist(nomsATest[nbCurrent]))
         {
-            if(i == 0)
+            if(!nbCurrent)
                 cantwrite = 1;
             else
 #ifdef _WIN32
-                if(i == 39 && isDirectXLoaded())
-                    fichiersADL[j] = i;
+                if(nbCurrent == 39 && isDirectXLoaded())
+                    fichiersADL[nbTotal] = nbCurrent;
 #else
-                if(i == 1 || i == 39) //Pas besoin d'icone sur OSX
+                if(nbCurrent == 1 || nbCurrent == 39) //Pas besoin d'icone sur OSX
                     continue;
 #endif
             else
-                fichiersADL[j] = i;
-            j++;
+                fichiersADL[nbTotal] = nbCurrent;
+            nbTotal++;
         }
     }
 
-    if(j)
+    if(nbTotal)
     {
         updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
         chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
         char temp[200];
         FILE *test = NULL;
-        SDL_Texture *message = NULL;
-        SDL_Rect position;
-        SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-        TTF_Font *police = NULL;
-
-		SDL_Event event;
+        
+#ifdef IDENTIFY_MISSING_UI
+		#warning "Missing in check_evt"
+#endif
+		
 		while(1)
         {
             if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
                 break;
-            if(SDL_PollEvent(&event))
-                SDL_PushEvent(&event);
-            SDL_Delay(50);
+			usleep(50);
         }
 
         if(!checkNetworkState(CONNEXION_OK))
         {
             UI_Alert("Acces internet manquant", "Un acces Internet est necessaire pour recuperer les fichiers necessaires au\nbon fonctionnement de Rakshata, veuillez relancer Rakshata avec un acces Internet.\nNeanmoins, il est possible que cette erreur apparaisse car nos serveurs sont hors-ligne.\nAuquel cas, attendez que www.rakshata.com soit de nouveau accessible.");
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            renderer = NULL;
-            quit_thread(1);
+#ifdef IDENTIFY_MISSING_UI
+			#warning "Need to flush"
+#endif
+            quit_thread(0);
         }
 
         mkdirR("data");
@@ -122,7 +119,7 @@ int check_evt()
         mkdirR("data/italian");
         mkdirR("data/icon");
 
-        if(j > NOMBRE_DE_FICHIER_A_CHECKER - 5)     //Si suffisament de fichiers manquent, on assume nouvelle installe
+        if(nbTotal > NOMBRE_DE_FICHIER_A_CHECKER - 5)     //Si suffisament de fichiers manquent, on assume nouvelle installe
         {
             test = fopenR("data/firstLaunchAddRegistry", "w+");
             if(test != NULL)    fclose(test);
@@ -135,53 +132,28 @@ int check_evt()
         {
             snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[0]);
             download_disk(temp, NULL, nomsATest[0], SSL_ON);
-            j--;
+            nbTotal--;
         }
 
         MUTEX_UNIX_LOCK;
 
-        police = OpenFont(FONTUSED, POLICE_MOYEN);
-
-        for(i = 0; i <= j; i++)
+        for(nbCurrent = 0; nbCurrent <= nbTotal; nbCurrent++)
         {
-            if(!checkFileExist(nomsATest[fichiersADL[i]])) //On confirme que le fichier est absent
+            if(!checkFileExist(nomsATest[fichiersADL[nbCurrent]])) //On confirme que le fichier est absent
             {
-                SDL_RenderClear(renderer);
-                snprintf(temp, 200, "Environnement incomplet, veuillez patienter (%d/%d fichiers restaures).", i, j);
-                message = TTF_Write(renderer, police, temp, couleur);
-                if(message != NULL)
-                {
-                    position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                    position.y = WINDOW_SIZE_H / 2 - (message->h*3)/2;
-                    position.h = message->h;
-                    position.w = message->w;
-                    SDL_RenderCopy(renderer, message, NULL, &position);
-                    SDL_DestroyTextureS(message);
-                }
+#ifdef IDENTIFY_MISSING_UI
+				#warning "Status given by nbCurrent / nbTotal"
+#endif
+                snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[fichiersADL[nbCurrent]]);
+                download_disk(temp, NULL, nomsATest[fichiersADL[nbCurrent]], SSL_ON);
 
-                snprintf(temp, 200, "Incomplete environment, please wait (%d/%d files restored).", i, j);
-                message = TTF_Write(renderer, police, temp, couleur);
-                if(message != NULL)
-                {
-                    position.x = WINDOW_SIZE_W / 2 - message->w / 2;
-                    position.y = WINDOW_SIZE_H / 2 + message->h;
-                    position.h = message->h;
-                    position.w = message->w;
-                    SDL_RenderCopy(renderer, message, NULL, &position);
-                    SDL_DestroyTextureS(message);
-                }
-                SDL_RenderPresent(renderer);
-
-                snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[fichiersADL[i]]);
-                download_disk(temp, NULL, nomsATest[fichiersADL[i]], SSL_ON);
-
-                if(fichiersADL[i] == 4 || fichiersADL[i] == 7 || fichiersADL[i] == 10 || fichiersADL[i] == 13) //Si c'est un fichier de localization
+                if(fichiersADL[nbCurrent] == 4 || fichiersADL[nbCurrent] == 7 || fichiersADL[nbCurrent] == 10 || fichiersADL[nbCurrent] == 13) //Si c'est un fichier de localization
                 {
                     size_t k = 0; //On parse
 					char *buffer = NULL, c;
 					size_t size;
 
-                    test = fopenR(nomsATest[fichiersADL[i]], "r");
+                    test = fopenR(nomsATest[fichiersADL[nbCurrent]], "r");
                     fseek(test, 0, SEEK_END);
                     size = ftell(test);
                     rewind(test);
@@ -196,17 +168,17 @@ int check_evt()
                     }
                     fclose(test);
 
-                    test = fopenR(nomsATest[fichiersADL[i]], "w+");
+                    test = fopenR(nomsATest[fichiersADL[nbCurrent]], "w+");
                     fwrite(buffer, k, 1, test);
                     fclose(test);
 
                     free(buffer);
                 }
 
-                else if(fichiersADL[i] == 1) //Si c'est l'icone
-                    loadIcon(window);
+                else if(fichiersADL[nbCurrent] == 1) //Si c'est l'icone
+                    loadIcon();
 #ifdef _WIN32
-                else if(fichiersADL[i] == 39)
+                else if(fichiersADL[nbCurrent] == 39)
                 {
                     LoadLibrary("data/D3DX9_43.dll");
                     if(renderer != NULL) //Reset renderer for main window
@@ -221,9 +193,7 @@ int check_evt()
 
             }
         }
-        TTF_CloseFont(police);
         MUTEX_UNIX_UNLOCK;
-        nameWindow(window, 0);
     }
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;

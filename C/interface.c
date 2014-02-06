@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 /** Ce fichier contient l'interface entre les admins et les utilisateurs**/
 

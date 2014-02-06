@@ -5,12 +5,11 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
-#include "main.h"
 #include "lecteur.h"
 
 void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** fontTiny, SDL_Texture ** controlBar, bool isFavoris)
@@ -197,7 +196,7 @@ void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader
     changeTo(mangaDB.team->teamCourt, ' ', '_');
 }
 
-void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture, SDL_Rect * positionInfo)
+void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, Rak_Color color, SDL_Texture ** infoTexture, SDL_Rect * positionInfo)
 {
 	MUTEX_UNIX_LOCK;
 	
@@ -216,7 +215,7 @@ void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char *
 	}
 }
 
-void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture)
+void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, Rak_Color color, SDL_Texture ** infoTexture)
 {
 	SDL_DestroyTextureS(*infoTexture);
 	*infoTexture = TTF_Write(renderer, font, text, color);

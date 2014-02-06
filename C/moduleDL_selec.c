@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 #include "MDLCache.h"
 
@@ -22,7 +21,6 @@ int mainChoixDL()
     int pageChapitre = 1, previousMangaSelected = VALEUR_FIN_STRUCTURE_CHAPITRE;
 
     mkdirR("manga");
-    initialisationAffichage();
 
     MUTEX_LOCK(mutex);
     if(NETWORK_ACCESS != CONNEXION_DOWN)
@@ -105,10 +103,6 @@ int mainChoixDL()
 
         if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == ENGINE_RETVALUE_DL_START /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
-            MUTEX_UNIX_LOCK;
-            SDL_RenderClear(renderer);
-            MUTEX_UNIX_UNLOCK;
-            affichageLancement();
             lancementModuleDL();
         }
         else if(checkLancementUpdate())
@@ -158,29 +152,6 @@ void MDLFlushCachedCache()
 
 /*Recoit les données et si pas déjà présente, les injecte dans le cache.
 Il sera possible soit de découper cette fonction en un test et un ajout si nécessaire*/
-
-#if 0
-void testCache()
-{
-    bool isOutTrue;
-    MANGAS_DATA * mangaDB = miseEnCache(LOAD_DATABASE_ALL);
-    MDL_SELEC_CACHE * cache = NULL;
-
-    initCacheSelectionMDL(&cache, &mangaDB[5], true, 8);
-    initCacheSelectionMDL(&cache, mangaDB, true, 8);
-    initCacheSelectionMDL(&cache, &mangaDB[4], false, 8);
-
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, mangaDB), false);
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, mangaDB), true);
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[4]), false);
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[4]), true);
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[5]), false);
-    isOutTrue = checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[5]), true);
-
-    freeMDLSelecCache(cache);
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
-}
-#endif
 
 void initCacheSelectionMDL(MDL_SELEC_CACHE ** cache, MANGAS_DATA * mangaToPutInCache, bool isTome, int idElem)
 {

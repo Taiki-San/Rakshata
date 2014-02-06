@@ -316,7 +316,7 @@ int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1])
     return 0;
 }
 
-void sha256_salted(const uint8_t *input, uint32_t inputLen, const uint8_t *salt, uint32_t saltlen, uint8_t *output)
+void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output)
 {
     sha256_context ctx;
 	uint8_t *salt_copy = (uint8_t *) salt;

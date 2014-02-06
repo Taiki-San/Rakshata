@@ -46,7 +46,6 @@
 #endif
 
 #include "unzip.h"
-#include "../main.h"
 #include "../crypto/crypto.h"
 
 #define CASESENSITIVITY (0)

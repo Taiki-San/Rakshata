@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, bool disIcons)
 {
@@ -23,7 +22,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
     SDL_Texture *texture = NULL;
     SDL_Rect position;
     SDL_Event event;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font* police = NULL;
 
     MUTEX_UNIX_LOCK;
@@ -200,7 +199,7 @@ int displayMenu(char texte[][TRAD_LENGTH], int nombreElements, int hauteurBloc, 
             }
         }
 		else
-			SDL_Delay(10);
+			usleep(10);
 
         if(favorisToDL != -2 && SDL_GetTicks() - time_since_refresh > 200)
         {
@@ -294,8 +293,8 @@ int engineCore(PREFS_ENGINE * prefs, int contexte, DATA_ENGINE* input, int haute
     SDL_Texture *texte = NULL;
     SDL_Rect position;
     TTF_Font *police = NULL;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
-    SDL_Color couleurNothingToRead = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b }, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b}, currentColor;
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
+    Rak_Color couleurNothingToRead = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b }, couleurUnread = {palette.police_unread.r, palette.police_unread.g, palette.police_unread.b}, currentColor;
 
     if(input == NULL)
         return PALIER_MENU;
@@ -1022,7 +1021,7 @@ int engineAnalyseOutput(int contexte, int output, int outputType, int *elementCh
             else if (prefs->currentTomeInfoDisplayed != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
                 refreshRendererIfBuggy(renderer);
-                enfineEraseDisplayedTomeInfos(renderer);
+                engineEraseDisplayedTomeInfos(renderer);
                 SDL_RenderPresent(renderer);
                 prefs->currentTomeInfoDisplayed = VALEUR_FIN_STRUCTURE_CHAPITRE;
             }
@@ -1163,7 +1162,7 @@ void engineDisplayPageControls(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], 
     char temp[TAILLE_BUFFER];
     SDL_Texture *texte;
     SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
 
     if(pageTotale == 1)
         return;
@@ -1226,7 +1225,7 @@ void displayBigMainMenuIcon()
     }
 }
 
-SDL_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, SDL_Color couleurUnread, SDL_Color couleurNew, SDL_Color couleurNothingToRead, SDL_Color couleurTexte)
+Rak_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, Rak_Color couleurUnread, Rak_Color couleurNew, Rak_Color couleurNothingToRead, Rak_Color couleurTexte)
 {
     if(contexte == CONTEXTE_DL && !input.anythingToDownload)
         return couleurNothingToRead;
@@ -1260,7 +1259,7 @@ void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8])
     SDL_Texture *texte = NULL;
     TTF_Font *police = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_actif.r, palette.police_actif.g, palette.police_actif.b}, couleurUnavailable = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_actif.r, palette.police_actif.g, palette.police_actif.b}, couleurUnavailable = {palette.police_indispo.r, palette.police_indispo.g, palette.police_indispo.b};
 
     police = OpenFont(FONTUSED, POLICE_PETIT);
     TTF_SetFontStyle(police, TTF_STYLE_UNDERLINE);
@@ -1349,7 +1348,7 @@ void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localizatio
     char temp[TAILLE_BUFFER];
     SDL_Rect position;
     SDL_Texture *texte = NULL;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurNew = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     TTF_Font *police = OpenFont(FONTUSED, POLICE_PETIT);
 
     position.y = WINDOW_SIZE_H - (LARGEUR_BANDEAU_CONTROLE_SELECTION_MANGA - 10) * getRetinaZoom();
@@ -1397,7 +1396,7 @@ void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum)
 {
     char buffer[10];
     SDL_Texture *numero = NULL;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Rect position;
 
     MUTEX_UNIX_LOCK;
@@ -1435,10 +1434,10 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
 {
     SDL_Texture *texte;
     SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
-    enfineEraseDisplayedTomeInfos(renderer);
+    engineEraseDisplayedTomeInfos(renderer);
 
     MUTEX_UNIX_LOCK;
     police = OpenFont(FONTUSED, POLICE_GROS);
@@ -1477,10 +1476,11 @@ void engineDisplayTomeInfos(DATA_ENGINE input)
     MUTEX_UNIX_UNLOCK;
 }
 
-void enfineEraseDisplayedTomeInfos(SDL_Renderer * renderer)
+void engineEraseDisplayedTomeInfos(int curThread)
 {
     MUTEX_UNIX_LOCK;
-    applyBackground(renderer, 0, getH(renderer) - HAUTEUR_INFOS_TOMES, getW(renderer), HAUTEUR_INFOS_TOMES);
+	//Appelle le thread avec curThread
+	//    applyBackground(renderer, 0, getH(renderer) - HAUTEUR_INFOS_TOMES, getW(renderer), HAUTEUR_INFOS_TOMES);
     MUTEX_UNIX_UNLOCK;
 }
 

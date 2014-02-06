@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "moduleDL.h"
 
 static CURLSH* cacheDNS;
@@ -57,7 +56,7 @@ int download_UI(TMP_DL *output)
     SDL_Rect position;
     SDL_Texture *pourcentAffiche = NULL;
     TTF_Font *police = NULL;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
 
     position.y = HAUTEUR_POURCENTAGE * getRetinaZoom();	//Le macro faire une différence qui fait que ça marche mais il faut être très prudent
     FILE_EXPECTED_SIZE = errCode = 0;
@@ -119,7 +118,7 @@ int download_UI(TMP_DL *output)
                 last_refresh = SDL_GetTicks();
             }
 			else
-				SDL_Delay(50);
+				usleep(50);
 
             if(quit)
             {
@@ -143,7 +142,7 @@ int download_UI(TMP_DL *output)
             }
         }
         else
-            SDL_Delay(25);
+            usleep(25);
 
         if(!isThreadStillRunning(threadData))
             break;
@@ -151,7 +150,7 @@ int download_UI(TMP_DL *output)
     if(quit)
     {
         while(isThreadStillRunning(threadData))
-            SDL_Delay(250);
+            usleep(250);
     }
     else
     {

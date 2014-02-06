@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "MDLCache.h"
 
 int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick)
@@ -18,7 +17,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
     /*Initilisation*/
     int mangaChoisis, windowH, nombreManga, i;
 	char texteTrad[SIZE_TRAD_ID_18][TRAD_LENGTH];
-	SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+	Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     SDL_Texture *texte = NULL;
     MDL_SELEC_CACHE_MANGA * currentMangaCache;
     MDL_SELEC_CACHE * cache;
@@ -116,7 +115,7 @@ int checkProjet(MANGAS_DATA mangaDB)
     char path[TAILLE_BUFFER];
     SDL_Texture *image = NULL;
     SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     snprintf(path, TAILLE_BUFFER, "manga/%s/%s/infos.png", mangaDB.team->teamLong, mangaDB.mangaName);    //Path du infos.png

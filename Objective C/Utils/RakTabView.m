@@ -21,34 +21,39 @@
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
+	[self setWantsLayer:YES];
 	[self setUpBlur];
 	
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	readerMode = (mainThread & GUI_THREAD_READER) != 0;
-	resizeAnimationCount = 0;
 	trackingArea = NULL;
 	
 	if(readerMode)
 	{
+		resizeAnimationCount = -1;	//Disable animation
 		[self readerIsOpening];
 	}
+	
+	resizeAnimationCount = 0;	//activate animation
 		
 	return self;
 }
 
 - (void) setUpBlur
 {
+	NSRect frame = [self frame];
+	frame.origin.x = frame.origin.y = 0;
 	blurView = [[NSView alloc] initWithFrame:[self frame]];
-	blurView.layer = [CALayer layer];
 	[blurView setWantsLayer:YES];
 	
 	CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+	[self addSubview:blurView];
 	[blurFilter setDefaults];
 	
 	[blurView layer].backgroundFilters = [NSArray arrayWithObject:blurFilter];
 	[blurView setHidden:YES];
-	[self addSubview:blurView];
+	//	[blurView setAlphaValue:1];//0.5];
 }
 
 /**			Handle Fullscreen			**/
@@ -75,13 +80,20 @@
 
 - (void) refreshLevelViewsAnimation : (NSView*) superView
 {
-	NSArray *subView = [superView subviews];
-	
-	//Variable to set up the animation
-	RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
-	[animation init: animation : subView];
-	[animation setUpViews];
-	[animation perform];
+	if(resizeAnimationCount != -1)
+	{
+		NSArray *subView = [superView subviews];
+		
+		//Variable to set up the animation
+		RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
+		[animation init: animation : subView];
+		[animation setUpViews];
+		[animation perform];
+	}
+	else
+	{
+		[self setFrame:[self createFrame]];
+	}
 }
 
 - (void) refreshViewSize

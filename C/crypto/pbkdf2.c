@@ -21,7 +21,7 @@
 
 #include "../main.h"
 
-static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_t *salt, uint32_t saltlen, uint32_t count, uint32_t i, uint8_t *buffer, uint8_t *u)
+static void F(uint32_t prf_hlen, const uint8_t *pw, size_t pwlen, const uint8_t *salt, size_t saltlen, uint32_t count, size_t i, uint8_t *buffer, uint8_t *u)
 {
     uint32_t k;
     memcpy(buffer, salt, saltlen);
@@ -37,9 +37,9 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, uint32_t pwlen, const uint8_
     }
 }
 
-int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, uint32_t inputLength, const uint8_t *salt, uint32_t saltLength, uint32_t iteneration, uint32_t lengthOutput, uint8_t *output)
+int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, size_t inputLength, const uint8_t *salt, size_t saltLength, uint32_t iteneration, size_t lengthOutput, uint8_t *output)
 {
-    uint32_t    l,r;
+    size_t    l,r;
     uint32_t    i;
     uint8_t     *tmpbuff = NULL; /* Intermediate memspace for F */
     uint8_t     *outbuff = NULL; /* Results of F iteration */

@@ -82,8 +82,8 @@ void reader_initializeFontsAndSomeElements(TTF_Font ** fontNormal, TTF_Font ** f
 void reader_initializePosControlBar(SDL_Texture *controlBar, SDL_Rect * positionControlBar);
 SDL_Texture* loadControlBar(int favState);
 void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
-void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture, SDL_Rect *positionInfo);
-void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, SDL_Color color, SDL_Texture ** infoTexture);
+void generateMessageInfoLecteur(SDL_Renderer * renderer, TTF_Font * font, char * text, Rak_Color color, SDL_Texture ** infoTexture, SDL_Rect *positionInfo);
+void reader_setMessageInfoColorToWarning(SDL_Renderer * renderer, TTF_Font * font, char * text, Rak_Color color, SDL_Texture ** infoTexture);
 void cleanMemory(DATA_LECTURE dataReader, SDL_Surface *chapitre, SDL_Texture *pageTexture, bool pageTooBigToLoad, SDL_Surface *prevPage, SDL_Surface *nextPage, SDL_Surface *UI_PageAccesDirect, SDL_Texture *infoTexture, SDL_Texture *bandeauControle, TTF_Font *fontNormal, TTF_Font *fontTiny);
 void freeCurrentPage(SDL_Texture *texture, bool pageTooBigToLoad);
 void refreshScreen(SDL_Texture *page, bool pageTooBigToLoad, SDL_Rect positionSlide, SDL_Rect positionPage, SDL_Rect positionBandeauControle, SDL_Texture *bandeauControle, SDL_Texture *infoTexture, SDL_Rect positionInfos, int pageAccesDirect, SDL_Surface *UI_pageAccesDirect);

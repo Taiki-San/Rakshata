@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include <locale.h> //Pour définir la langue
 
 int affichageMenuGestion()
@@ -19,7 +18,7 @@ int affichageMenuGestion()
     SDL_Texture *texteAffiche = NULL;
     SDL_Rect position;
     TTF_Font *police;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
     loadTrad(menus, 3);
 
     if(WINDOW_SIZE_H != HAUTEUR_SELECTION_REPO)

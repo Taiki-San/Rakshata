@@ -9,13 +9,6 @@
 **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
-#ifndef GRAPHICS_H
-
-#define GRAPHICS_H
-
-#ifndef MUTEX_VAR
-	#define MUTEX_VAR void
-#endif
 
 typedef void(GUI_FUNC) (void * data, bool* cancel);
 typedef struct REQ REQ;
@@ -35,6 +28,8 @@ struct REQ
 /**		Flags	   **/
 
 //THREAD_ID	bytes 1&2
+
+#define GUI_DEFAULT_THREAD			0x13390000
 
 #define GUI_THREAD_READER			0x00010000
 #define GUI_THREAD_CT				0x00020000
@@ -78,6 +73,4 @@ bool GUI_isWindowAvailable(uint32_t flag);
 void GUI_unlockMutex(REQ *request);
 
 /**		Objective-C Primitives	**/
-//#include "ObjC/WindowHandler.h"
 
-#endif

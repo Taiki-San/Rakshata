@@ -1211,7 +1211,6 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
   PUTU32(plaintext + 12, s3);
 }
 
-#include "../main.h"
 #include "crypto.h"
 
 int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB)

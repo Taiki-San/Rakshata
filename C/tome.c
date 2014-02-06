@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "MDLCache.h"
 
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)

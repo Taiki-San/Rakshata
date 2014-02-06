@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
 {
@@ -115,7 +114,7 @@ int changementLangue()
     char menus[SIZE_TRAD_ID_13][TRAD_LENGTH];
     SDL_Texture *texteAAfficher = NULL;
     SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
     TTF_Font *police = NULL;
 
     loadTrad(menus, 13);

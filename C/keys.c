@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
-#include "graphics.h"
 #include "crypto/crypto.h"
 
 static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
@@ -168,42 +166,28 @@ int earlyInit(int argc, char *argv[])
     getDirectX();
 #endif
 
-    /*Launching SDL & SDL_TTF*/
-    if(SDL_Init(SDL_INIT_VIDEO)) //launch the SDL and check for failure
-    {
-        char temp[400];
-        snprintf(temp, 400, "Failed at initialize SDL: %s", SDL_GetError());
-        logR(temp);
-        return 0;
-    }
-	
+#ifdef IDENTIFY_MISSING_UI
+	#warning "Init de l'UI"
+#endif
+		
     loadLangueProfile();
     if(!checkAjoutRepoParFichier(argv[1]))
         return 0;
 
     createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
-    if(TTF_Init())
-    {
-        SDL_Quit();
-        char temp[400];
-        snprintf(temp, 400, "Failed at initialize SDL_TTF: %s", TTF_GetError());
-        logR(temp);
-        return 0;
-    }
-
     restrictEvent();
-    getResolution();
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
 
 #ifdef _WIN32
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #else
-    int randomPtr = open("/dev/urandom", O_RDONLY);
 	long long seed;
+
+    int randomPtr = open("/dev/urandom", O_RDONLY);
     read(randomPtr, &seed, sizeof(seed));
     close(randomPtr);
-	srand(time(NULL)^seed); //Initialisation de l'aléatoire
+
+	srand((seed ^ time(NULL)) & -1); //Initialisation de l'aléatoire
 #endif
 
     char *temp;
@@ -217,7 +201,7 @@ int earlyInit(int argc, char *argv[])
 
 int get_compte_infos()
 {
-    int i;
+    uint i;
 	if(!loadEmailProfile())
     {
         if(!checkFileExist(SECURE_DATABASE))
@@ -233,7 +217,7 @@ int get_compte_infos()
     }
 
     /*On vérifie la validité de la chaine*/
-    for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
+    for(i = strlen(COMPTE_PRINCIPAL_MAIL) - 1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
     if(!i) //on a pas de @
     {
         removeFromPref(SETTINGS_EMAIL_FLAG);
@@ -264,29 +248,16 @@ int get_compte_infos()
 
 int logon()
 {
-    int beginingOfEmailAdress = 0, resized = 0, retry = 0;
+	bool validEmail = false, validPass = false;
     char trad[SIZE_TRAD_ID_26][TRAD_LENGTH], adresseEmail[100];
-    SDL_Texture *ligne = NULL;
-    TTF_Font *police = NULL;
-    SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-
-    if(WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION) //HAUTEUR_FENETRE_DL a la même taille, on aura donc pas Ã  redimensionner celle lÃ 
-    {
-        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
-        resized = 1;
-    }
 
     if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
     {
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-        SDL_Event event;
         while(1)
         {
             if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
                 break;
-            SDL_PollEvent(&event);
-            SDL_Delay(50);
+            usleep(50);
         }
 
     }
@@ -295,90 +266,22 @@ int logon()
         connexionNeededToAllowANewComputer();
         return PALIER_QUIT;
     }
-    loadTrad(trad, 26); //Chargement de la trad
-    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
 
-    do
+    loadTrad(trad, 26); //Chargement de la trad
+
+    while (!validEmail)
     {
+		
 		int i = 0, login = 0;
         crashTemp(adresseEmail, 100);
 
-        MUTEX_UNIX_LOCK;
-
-        SDL_RenderClear(renderer);
-        police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
-
-        ligne = TTF_Write(renderer, police, trad[0], couleur); //Ligne d'explication
-        if(ligne != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-            position.y = 20 * getRetinaZoom();
-            position.h = ligne->h;
-            position.w = ligne->w;
-            SDL_RenderCopy(renderer, ligne, NULL, &position);
-            SDL_DestroyTextureS(ligne);
-        }
-        else
-            position.x = 170 * getRetinaZoom();
-
-        ligne = TTF_Write(renderer, police, trad[1], couleur);
-        position.y = 100 * getRetinaZoom();
-        if(ligne != NULL)
-        {
-            position.h = ligne->h;
-            position.w = ligne->w;
-            beginingOfEmailAdress = position.x + position.w + 25 * getRetinaZoom();
-            SDL_RenderCopy(renderer, ligne, NULL, &position);
-            SDL_DestroyTextureS(ligne);
-        }
-        else
-            beginingOfEmailAdress = 75 * getRetinaZoom();
-
-        TTF_CloseFont(police);
-        police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
-
-        ligne = TTF_Write(renderer, police, trad[2], couleur); //Disclamer
-        position.y += 85 * getRetinaZoom();
-        if(ligne != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-            position.h = ligne->h;
-            position.w = ligne->w;
-            SDL_RenderCopy(renderer, ligne, NULL, &position);
-            SDL_DestroyTextureS(ligne);
-        }
-
-        ligne = TTF_Write(renderer, police, trad[3], couleur); //Disclamer
-        position.y += 30 * getRetinaZoom();
-        if(ligne != NULL)
-        {
-            position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-            position.h = ligne->h;
-            position.w = ligne->w;
-            SDL_RenderCopy(renderer, ligne, NULL, &position);
-            SDL_DestroyTextureS(ligne);
-        }
-
-        SDL_RenderPresent(renderer);
-        TTF_CloseFont(police);
-        MUTEX_UNIX_UNLOCK;
-
-        do
-        {
-            if((i = waitClavier(renderer, adresseEmail, 60, true, beginingOfEmailAdress, 109 * getRetinaZoom())) != 0 && i != PALIER_CHAPTER) // Si l'utilisateur n'a pas mis son email, on quitte
-                return PALIER_QUIT;
-        }while(i == PALIER_CHAPTER);
-
-        chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
-        MUTEX_UNIX_LOCK;
-        SDL_RenderClear(renderer);
-        MUTEX_UNIX_UNLOCK;
-
+#ifdef IDENTIFY_MISSING_UI
+		#warning "Get email address"
+#endif
+		
         login = check_login(adresseEmail);
-        do
+        while(!validPass)
         {
-            retry = 0;
             switch(login)
             {
                 case 0: //New account
@@ -386,77 +289,7 @@ int logon()
                 {
                     char password[100];
                     crashTemp(password, 100);
-                    /**Leurs codes sont assez proches donc on les regroupes**/
-                    MUTEX_UNIX_LOCK;
-                    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_GROS);
-                    ligne = TTF_Write(renderer, police, trad[4+login], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-                    if(ligne != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.y = 20 * getRetinaZoom();
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-                    }
-
-                    ligne = TTF_Write(renderer, police, trad[6], couleur);
-                    if(ligne != NULL)
-                    {
-                        position.x = 50 * getRetinaZoom();
-                        position.y = 100 * getRetinaZoom();
-                        beginingOfEmailAdress = position.x + ligne->w + 25;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-                    }
-
-                    TTF_CloseFont(police);
-                    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
-
-                    ligne = TTF_Write(renderer, police, trad[7], couleur); //Disclamer
-                    position.y += 85 * getRetinaZoom();
-                    if(ligne != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-                    }
-
-                    ligne = TTF_Write(renderer, police, trad[8], couleur); //Disclamer
-                    position.y += 30 * getRetinaZoom();
-                    if(ligne != NULL)
-                    {
-                        position.x = WINDOW_SIZE_W / 2 - ligne->w / 2;
-                        position.h = ligne->h;
-                        position.w = ligne->w;
-                        SDL_RenderCopy(renderer, ligne, NULL, &position);
-                        SDL_DestroyTextureS(ligne);
-                    }
-
-                    SDL_RenderPresent(renderer);
-                    TTF_CloseFont(police);
-                    MUTEX_UNIX_UNLOCK;
-                    do
-                    {
-                        if((i = waitClavier(renderer, password, 50, !login, beginingOfEmailAdress, 109 * getRetinaZoom())) == PALIER_QUIT)
-                            return PALIER_QUIT;
-                        else if (i == PALIER_MENU || i == PALIER_CHAPTER) //Echap
-                        {
-                            password[0] = 0;
-                            retry = 1;
-                            break;
-                        }
-                    }while(!password[0]);
-
-                    if(!password[0])
-                        break;
-
-                    chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-
+                    
                     switch(checkPass(adresseEmail, password, login))
                     {
                         case 0: //Rejected
@@ -465,22 +298,20 @@ int logon()
                             snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
                             if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
                                 return PALIER_QUIT;
-                            retry = 2;
                             break;
                         }
                         case 1: //Accepted
                         {
                             char temp[200];
 
-                            for(beginingOfEmailAdress = 0; beginingOfEmailAdress < 100 && adresseEmail[beginingOfEmailAdress]; beginingOfEmailAdress++)
-                                COMPTE_PRINCIPAL_MAIL[beginingOfEmailAdress] = adresseEmail[beginingOfEmailAdress];
+                            for(i = 0; i < 100 && adresseEmail[i]; i++)
+                                COMPTE_PRINCIPAL_MAIL[i] = adresseEmail[i];
 
                             removeFromPref(SETTINGS_EMAIL_FLAG);
                             snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
                             addToPref(SETTINGS_EMAIL_FLAG, temp);
                             removeR(SECURE_DATABASE);
                             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
-                            retry = 0;
                             break;
                         }
                         default: //Else -> erreure critique, me contacter/check de la connexion/du site
@@ -501,7 +332,6 @@ int logon()
                     snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[10], trad[11], trad[12]);
                     if(UI_Alert(trad[9], contenuUIError) == -1) //Error/Quit
                         return PALIER_QUIT;
-                    retry = 1;
                     break;
                 }
 
@@ -511,26 +341,17 @@ int logon()
                     snprintf(contenuUIError, 2*TRAD_LENGTH+1, "%s\n%s", trad[18], trad[19]);
                     if(UI_Alert(trad[17], contenuUIError) == -1) //Error/Quit
                         return PALIER_QUIT;
-                    retry = 1;
                     break;
                 }
             }
-        }while(retry == 2);
-    } while (retry == 1);
-
-    if(resized)
-        restartEcran();
+        }
+    }
     return 0;
 }
 
-int getPassword(SDL_Renderer *currentRenderer, char password[100])
+int getPassword(int curThread, char password[100])
 {
-    int xPassword = 0, resized = 0, ret_value = 0, w = currentRenderer->window->w;
     char trad[SIZE_TRAD_ID_26][TRAD_LENGTH];
-    SDL_Texture *ligne = NULL;
-    SDL_Rect position;
-    SDL_Color couleur = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
 
     if(passwordGB[0] != 0)
     {
@@ -538,86 +359,21 @@ int getPassword(SDL_Renderer *currentRenderer, char password[100])
         return 1;
     }
 
-    if(currentRenderer == renderer && WINDOW_SIZE_H != SIZE_WINDOWS_AUTHENTIFICATION)
-    {
-        resized = WINDOW_SIZE_H;
-        updateWindowSize(LARGEUR, SIZE_WINDOWS_AUTHENTIFICATION);
-    }
-
     loadTrad(trad, 26);
 
-    MUTEX_UNIX_LOCK;
-    SDL_RenderClear(currentRenderer);
-    police = OpenFont(FONTUSED, POLICE_GROS);
-    ligne = TTF_Write(currentRenderer, police, trad[5], couleur); //Ligne d'explication. Si login = 1, on charge trad[5], sinon, trad[4]
-    if(ligne != NULL)
-    {
-        position.x = w / 2 - ligne->w / 2;
-        position.y = 20;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
-    }
-
-    ligne = TTF_Write(currentRenderer, police, trad[6], couleur);
-    position.y = 100;
-    if(ligne != NULL)
-    {
-        position.x = 50;
-        xPassword = position.x + ligne->w + 25;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
-    }
-    else
-        xPassword = 50 + LARGEUR_MOYENNE_MANGA_GROS + 25;
-
-    TTF_CloseFont(police);
-    police = OpenFont(FONT_USED_BY_DEFAULT, POLICE_MOYEN);
-
-    ligne = TTF_Write(currentRenderer, police, trad[7], couleur); //Disclamer
-    position.y += 85;
-    if(ligne != NULL)
-    {
-        position.x = w / 2 - ligne->w / 2;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
-    }
-
-    ligne = TTF_Write(currentRenderer, police, trad[8], couleur); //Disclamer
-    position.y += 30;
-    if(ligne != NULL)
-    {
-        position.x = w / 2 - ligne->w / 2;
-        position.h = ligne->h;
-        position.w = ligne->w;
-        SDL_RenderCopy(currentRenderer, ligne, NULL, &position);
-        SDL_DestroyTextureS(ligne);
-    }
-    TTF_CloseFont(police);
-    SDL_RenderPresent(currentRenderer);
-    MUTEX_UNIX_UNLOCK;
 
     while(1)
     {
-        if((ret_value = waitClavier(currentRenderer, password, 50, 0, xPassword, 105)) == PALIER_QUIT)
-            return PALIER_QUIT;
-
-        else if(ret_value == 0 && checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+		//Get Pass
+		
+		
+		//Traitement
+        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
-            if(resized)
-            {
-                updateWindowSize(LARGEUR, resized);
-                chargement(renderer, WINDOW_SIZE_H, WINDOW_SIZE_W);
-            }
             return 1;
         }
-        else if(ret_value == 0)
+        else
         {
             char contenuUIError[3*TRAD_LENGTH+1];
             snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
@@ -744,7 +500,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     if(key_sent == NULL)
     {
-        int ret_value = getPassword(renderer, password);
+        int ret_value = getPassword(GUI_DEFAULT_THREAD, password);
         if(ret_value < 0)
             return ret_value;
         bdd = fopenR(SECURE_DATABASE, "w+");

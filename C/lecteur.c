@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 #include "lecteur.h"
 
 int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fullscreen)
@@ -24,7 +23,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
     SDL_Texture *infoTexture = NULL, *pageTexture = NULL, *controlBar = NULL;
     TTF_Font *fontNormal = NULL, *fontTiny = NULL;
     SDL_Rect positionInfos, positionPage, positionControlBar, positionSlide;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
+    Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b}, couleurFinChapitre = {palette.police_new.r, palette.police_new.g, palette.police_new.b};
     SDL_Event event;
     DATA_LECTURE dataReader;
     loadTrad(texteTrad, 21);
@@ -444,7 +443,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                         {
                             slideOneStepUp(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
-                            SDL_Delay(10);
+                            usleep(10);
 #endif
                             break;
                         }
@@ -459,7 +458,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
                         {
                             slideOneStepDown(page, &positionSlide, &positionPage, 0, pageTooBigForScreen, DEPLACEMENT, &noRefresh);
 #ifdef _WIN32
-                            SDL_Delay(10);
+                            usleep(10);
 #endif
                             break;
                         }

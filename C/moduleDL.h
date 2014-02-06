@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-extern SDL_Renderer * rendererDL;
 #ifdef _WIN32
     #define mutexAskUIThreadWIP mutexUI
 #else
@@ -164,7 +163,7 @@ int sortMangasToDownload(const void *a, const void *b);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
-SDL_Texture *getIconTexture(SDL_Renderer *rendererVar, int status);
+void getIconPath(int status, char *path, uint length);
 
 /**Module2_event.h**/
 bool MDLEventsHandling(DATA_LOADED ***todoList, int nbElemDrawn);
@@ -184,21 +183,13 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
 bool MDLPCheckIfPaid(unsigned int factureID);
 
 void MDLPDispCheckingIfPaid();
-void MDLPDispAskToPay(SDL_Renderer * renderVar, int prix);
-int MDLPWaitEvent(SDL_Renderer * renderVar);
+void MDLPDispAskToPay(int prix);
+int MDLPWaitEvent();
 void MDLPEraseDispChecking();
 
 /**Module2_UI.c**/
 void startMDLUIThread();
 void MDLTUIQuit();
-void MDLTUICopy(SDL_Texture * texture, SDL_Rect * pos1, SDL_Rect * pos2);
-void MDLTUIBackground(int x, int y, int h, int w);
-void MDLTUIBackgroundPreCrafted(SDL_Rect * pos);
-void MDLTUIRefresh();
-SDL_Texture * MDLTUITTFWrite(TTF_Font * police, char * texte, SDL_Color couleur);
-void MDLTUIDestroyTexture(SDL_Texture * texture);
-SDL_Texture * MDLTUICreateTextureFromSurface(SDL_Surface * surface);
-SDL_Texture * MDLTUILoadIMG(SDL_Renderer * rendererVar, char* filename);
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

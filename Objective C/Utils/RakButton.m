@@ -19,6 +19,7 @@
 	newPos.y = self.superview.frame.size.height - 45;
 		
 	[self setFrameOrigin:newPos];
+	[self setFrameSize:NSMakeSize(65, 28)];
 }
 
 @end

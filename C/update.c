@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
 
 void checkUpdate()
 {
@@ -38,7 +37,7 @@ void checkUpdate()
 
 		SDL_Texture *infosAvancement = NULL;
         SDL_Rect position;
-        SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
+        Rak_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
         TTF_Font *police = NULL;
 
 		remove("Rakshata.exe.old");

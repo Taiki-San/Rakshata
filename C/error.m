@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "main.h"
-
 #ifdef __APPLE__
 	#include <AppKit/NSAlert.h>
 #endif
@@ -41,7 +39,7 @@ void connexionNeededToAllowANewComputer()
     loadTrad(trad, 27);
     snprintf(buffer, 2*TRAD_LENGTH+2, "%s\n%s", trad[1], trad[2]);
     unescapeLineReturn(buffer);
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, trad[0], buffer, NULL);
+	UI_Alert(trad[0], buffer);
 }
 
 int libcurlErrorCode(CURLcode code)
@@ -136,71 +134,30 @@ int erreurReseau()
 
 int showError()
 {
-    int i = 0;
-    char texte[SIZE_TRAD_ID_1][TRAD_LENGTH];
-    SDL_Texture *texteAAfficher = NULL;
-    SDL_Rect position;
-    SDL_Color couleurTexte = {palette.police.r, palette.police.g, palette.police.b};
-    TTF_Font *police = NULL;
-
-    /*Remplissage des variables*/
-    loadTrad(texte, 1);
-    position.y = (WINDOW_SIZE_H / 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) * 2 - (INTERLIGNE + LARGEUR_MOYENNE_MANGA_GROS) / 2 - 50) * getRetinaZoom();
-
-    MUTEX_UNIX_LOCK;
-
-    police = OpenFont(FONTUSED, POLICE_GROS);
-    restartEcran();
-    for(i = 0; i < SIZE_TRAD_ID_1; i++)
-    {
-        position.y = position.y + (LARGEUR_MOYENNE_MANGA_GROS + INTERLIGNE) * getRetinaZoom();
-        texteAAfficher = TTF_Write(renderer, police, texte[i], couleurTexte);
-        if(texteAAfficher != NULL)
-        {
-            position.x = (WINDOW_SIZE_W * getRetinaZoom() / 2) - (texteAAfficher->w / 2);
-            position.h = texteAAfficher->h;
-            position.w = texteAAfficher->w;
-            SDL_RenderCopy(renderer, texteAAfficher, NULL, &position);
-            SDL_DestroyTextureS(texteAAfficher);
-        }
-    }
-
-    TTF_CloseFont(police);
-    SDL_RenderPresent(renderer);
-    MUTEX_UNIX_UNLOCK;
-    return waitEnter(renderer);
+    char trad[SIZE_TRAD_ID_1][TRAD_LENGTH];
+    
+	/*Remplissage des variables*/
+    loadTrad(trad, 1);
+	
+#ifdef IDENTIFY_MISSING_UI
+	#warning "Missing in showError"
+#endif
+	
+    return -1;
 }
 
 int rienALire()
 {
     int ret_value = 0, output;
     char trad[SIZE_TRAD_ID_23][TRAD_LENGTH];
-	SDL_MessageBoxData alerte;
-    SDL_MessageBoxButtonData bouton[3];
 	loadTrad(trad, 23);
 	unescapeLineReturn(trad[1]);
 
-    alerte.flags = SDL_MESSAGEBOX_INFORMATION;
-    alerte.title = trad[0];
-    alerte.message = trad[1];
-    alerte.numbuttons = 3;
-    alerte.buttons = bouton;
-    alerte.window = window;
-    alerte.colorScheme = NULL;
-
-    bouton[0].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT|SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
-    bouton[0].buttonid = 3;
-    bouton[0].text = trad[4];
-
-    bouton[1].flags = 0;
-    bouton[1].buttonid = 2;
-    bouton[1].text = trad[3];
-
-    bouton[2].flags = 0;
-    bouton[2].buttonid = 1;
-    bouton[2].text = trad[2];
-    SDL_ShowMessageBox(&alerte, &ret_value);
-
+    
+#ifdef IDENTIFY_MISSING_UI
+	#warning "Missing in rienALire"
+#endif
+	
     /*On va appeler les fonctions correspondantes, ça serait plus propre de redescendre
     jusqu'à mainRakshata() mais je ne vois pas de moyen de le faire sans rendre le code infame*/
 
@@ -227,7 +184,7 @@ void affichageRepoIconnue()
 int UI_Alert(char* titre, char* contenu)
 {
     int ret_value = 0;
-#ifdef __APPLE__NO
+#ifdef __APPLE__
 	NSAlert * alert = [NSAlert alertWithMessageText: [NSString stringWithFormat:@"%s", titre]
 									  defaultButton: @"Ok"
 									alternateButton: nil
@@ -257,7 +214,7 @@ int UI_Alert(char* titre, char* contenu)
 int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
 {
     if(contexte == CONTEXTE_DL)
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, trad[15], trad[16], window);
+        UI_Alert(trad[15], trad[16]);
     return PALIER_MENU;
 }
 

@@ -10,7 +10,9 @@
 **                                                                                          **
 *********************************************************************************************/
 
-typedef unsigned char byte;
+#ifndef byte
+	typedef unsigned char byte;
+#endif
 typedef byte rawData;
 
 typedef struct infos_Team
@@ -46,12 +48,12 @@ typedef struct dataMangas
     int firstChapter;
     int lastChapter;
     int nombreChapitreSpeciaux;
-    int nombreChapitre;
+    size_t nombreChapitre;
     int *chapitres;
 
     //Tomes
     int firstTome;
-    int nombreTomes;
+    size_t nombreTomes;
     META_TOME *tomes;
 
     //Module DL
@@ -104,6 +106,8 @@ typedef struct
     int b;
 } PALETTE_RGB;
 
+typedef PALETTE_RGB Rak_Color;
+
 typedef struct
 {
     PALETTE_RGB fond;               //Background
@@ -113,4 +117,10 @@ typedef struct
     PALETTE_RGB police_actif;       //Police pour menus actifs (rouge)
     PALETTE_RGB police_indispo;     //Police pour menus indisponibles (gris)
 } PALETTE_GLOBALE;
+
+typedef struct
+{
+	void* data;
+	size_t length;
+} IMG_DATA;
 
