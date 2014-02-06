@@ -15,18 +15,6 @@ void welcome();
 void raffraichissmenent(bool forced);
 void loadPalette();
 bool areSameColors(Rak_Color a, Rak_Color b);
-void loadIcon();
-#ifdef _WIN32
-    #define checkIfRetina(window)   0
-#else
-    #define checkIfRetina(window) ((window->flags & SDL_WINDOW_ALLOW_HIGHDPI) != 0)
-#endif // _WIN32
-#define getRetinaZoom() (isRetina + 1)
-#define getW(a) a->viewport.w
-#define getH(a) a->viewport.h
-
-#define getPtRetinaW(a) a->window->w
-#define getPtRetinaH(a) a->window->h
 
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);

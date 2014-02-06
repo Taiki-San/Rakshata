@@ -32,6 +32,7 @@
 		B6EA520018A4065A00A9B16E /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FD18A4065A00A9B16E /* libcurl.a */; };
 		B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FE18A4065A00A9B16E /* libssl.a */; };
 		B6EA520318A407EF00A9B16E /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA520218A407EF00A9B16E /* libz.a */; };
+		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
 		B6F6ECEA18A3001400E3B55B /* affichage.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA318A3001400E3B55B /* affichage.c */; };
@@ -127,6 +128,8 @@
 		B6EA51FD18A4065A00A9B16E /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Ressources/libcurl.a; sourceTree = "<group>"; };
 		B6EA51FE18A4065A00A9B16E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Ressources/libssl.a; sourceTree = "<group>"; };
 		B6EA520218A407EF00A9B16E /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Ressources/libz.a; sourceTree = "<group>"; };
+		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
+		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
@@ -464,6 +467,8 @@
 			isa = PBXGroup;
 			children = (
 				B6F6ECB818A3001400E3B55B /* graphics.c */,
+				B6EA520818A4161100A9B16E /* interface.h */,
+				B6EA520618A4111000A9B16E /* interface.m */,
 			);
 			name = "Interface with UI";
 			sourceTree = "<group>";
@@ -631,6 +636,7 @@
 				B6F6ED0918A3001400E3B55B /* moduleDL2.c in Sources */,
 				B6F6ED0C18A3001400E3B55B /* repo.c in Sources */,
 				B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */,
+				B6EA520718A4111000A9B16E /* interface.m in Sources */,
 				B6F6ECF618A3001400E3B55B /* error.m in Sources */,
 				B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */,
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,

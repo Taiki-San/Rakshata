@@ -10,15 +10,23 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "../Objective C/Interface C/interface.h"
+
 //Variables partagés
 static MUTEX_VAR *GUI_lockAccessSharedRessource;
 static pthread_cond_t wakeUpMainGUIThread = PTHREAD_COND_INITIALIZER;
 static REQ * sharedStruct = NULL;
 
-#warning "Should come from the Prefs class"
-uint32_t currentMainThread = GUI_THREAD_MDL;
-
 /***************				PUBLIC API				***************/
+
+bool OBJ_addTask(GUI_FUNC * functionToCall, void* data, uint32_t flag, uint32_t repeat, bool *cancel, bool waitToBeDone, bool GUI)
+{
+	if(GUI)
+		return GUI_addPlan(functionToCall, data, flag, repeat, cancel, waitToBeDone);
+	else
+		functionToCall(data, cancel);
+	return true;
+}
 
 bool GUI_addPlan(GUI_FUNC * functionToCall, void* data, uint32_t flag, uint32_t repeat, bool *cancel, bool waitToBeDone)
 {
@@ -178,6 +186,8 @@ void GUI_initializaMainThread()
 
 void GUI_processRequest(REQ * request)
 {
+	uint32_t currentMainThread = getMainThread();
+	
 	if(request->flags & ((currentMainThread & GUI_THREAD_MASK) | GUI_MODE_BIG) ||		//Requête ne venant pas du thread principal mais voulant toucher à l'UI principale
 	   request->flags & (currentMainThread | GUI_MODE_SMALL))						//Requête du thread principal mais considérant son interface comme secondaire
 		return;

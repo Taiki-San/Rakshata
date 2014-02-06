@@ -171,11 +171,8 @@ int check_evt()
 
                     free(buffer);
                 }
-
-                else if(fichiersADL[nbCurrent] == 1) //Si c'est l'icone
-                    loadIcon();
 #ifdef _WIN32
-                else if(fichiersADL[nbCurrent] == 39)
+                if(fichiersADL[nbCurrent] == 39)
                 {
                     LoadLibrary("data/D3DX9_43.dll");
                     if(renderer != NULL) //Reset renderer for main window

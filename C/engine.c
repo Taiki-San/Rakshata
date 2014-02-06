@@ -59,7 +59,7 @@ bool engineCheckIfToDisplay(int contexte, DATA_ENGINE input, int limitationLettr
 
 int engineDefineElementClicked(int x, int y, int tailleTexte[ENGINE_NOMBRE_COLONNE][ENGINE_NOMBRE_LIGNE][2], int hauteurDebut, int nombreMaxElem)
 {
-    int ligne, colonne = 0, retinaDevider = getRetinaZoom();
+    int ligne, colonne = 0, retinaDevider = 1;
     for(ligne = 0; ligne < ENGINE_NOMBRE_LIGNE && (y < hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) || y > hauteurDebut + ligne * (LARGEUR_MOYENNE_MANGA_PETIT + INTERLIGNE) + LARGEUR_MOYENNE_MANGA_PETIT); ligne++);
 
     if(ligne < ENGINE_NOMBRE_LIGNE && y >= hauteurDebut) //Si on choisis un chapitre
