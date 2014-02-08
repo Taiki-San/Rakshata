@@ -12,78 +12,22 @@
 
 #include "moduleDL.h" //To get MDL's icons name
 
-int check_evt()
+/****	 Check environnment	  ****/
+void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA]);
+int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite);
+
+int checkEvnt()
 {
-    int cantwrite = 0, fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
-    char nomsATest[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
+    bool cantWrite = false;
+	int fichiersADL[NOMBRE_DE_FICHIER_A_CHECKER+1];
+    char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA];
 
-    for(int i = 0; i < NOMBRE_DE_FICHIER_A_CHECKER; fichiersADL[i++] = 0);
-
-    /*On injecte dans nomsATest la liste de tous les fichiers a tester*/
-    snprintf(nomsATest[0], LONGUEUR_NOMS_DATA, "data/font.ttf");
-    snprintf(nomsATest[1], LONGUEUR_NOMS_DATA, "data/icone.png");
-    snprintf(nomsATest[2], LONGUEUR_NOMS_DATA, "data/french/acceuil.png");
-    snprintf(nomsATest[3], LONGUEUR_NOMS_DATA, "data/french/controls.png");
-    snprintf(nomsATest[4], LONGUEUR_NOMS_DATA, "data/french/localization");
-    snprintf(nomsATest[5], LONGUEUR_NOMS_DATA, "data/english/acceuil.png");
-    snprintf(nomsATest[6], LONGUEUR_NOMS_DATA, "data/english/controls.png");
-    snprintf(nomsATest[7], LONGUEUR_NOMS_DATA, "data/english/localization");
-    snprintf(nomsATest[8], LONGUEUR_NOMS_DATA, "data/italian/acceuil.png");
-    snprintf(nomsATest[9], LONGUEUR_NOMS_DATA, "data/italian/controls.png");
-    snprintf(nomsATest[10], LONGUEUR_NOMS_DATA, "data/italian/localization");
-    snprintf(nomsATest[11], LONGUEUR_NOMS_DATA, "data/german/acceuil.png");
-    snprintf(nomsATest[12], LONGUEUR_NOMS_DATA, "data/german/controls.png");
-    snprintf(nomsATest[13], LONGUEUR_NOMS_DATA, "data/german/localization");
-    snprintf(nomsATest[14], LONGUEUR_NOMS_DATA, ICONE_DELETE);
-    snprintf(nomsATest[15], LONGUEUR_NOMS_DATA, ICONE_FAVORITED);
-    snprintf(nomsATest[16], LONGUEUR_NOMS_DATA, ICONE_FAVORIS_MENU);
-    snprintf(nomsATest[17], LONGUEUR_NOMS_DATA, ICONE_NOT_FAVORITED);
-    snprintf(nomsATest[18], LONGUEUR_NOMS_DATA, ICONE_FULLSCREEN);
-    snprintf(nomsATest[19], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU);
-    snprintf(nomsATest[20], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU_BIG);
-    snprintf(nomsATest[21], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_CHAPTER);
-    snprintf(nomsATest[22], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_PAGE);
-    snprintf(nomsATest[23], LONGUEUR_NOMS_DATA, ICONE_NEXT_CHAPTER);
-    snprintf(nomsATest[24], LONGUEUR_NOMS_DATA, ICONE_NEXT_PAGE);
-    snprintf(nomsATest[25], LONGUEUR_NOMS_DATA, ICONE_LOCK);
-    snprintf(nomsATest[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
-    snprintf(nomsATest[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
-    snprintf(nomsATest[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
-    snprintf(nomsATest[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DEFAULT);
-    snprintf(nomsATest[30], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_GENERAL);
-    snprintf(nomsATest[31], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DOWNLOAD);
-    snprintf(nomsATest[32], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_INSTALL);
-    snprintf(nomsATest[33], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
-    snprintf(nomsATest[34], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
-    snprintf(nomsATest[35], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
-    snprintf(nomsATest[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
-    snprintf(nomsATest[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
-    snprintf(nomsATest[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(nomsATest[39], LONGUEUR_NOMS_DATA, "data/D3DX9_43.dll");
-    snprintf(nomsATest[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    memset(fichiersADL, 0, NOMBRE_DE_FICHIER_A_CHECKER * sizeof(bool));
+	fillCheckEvntList(list);
 
     /*On test l'existance de tous les fichiers*/
-	int nbCurrent, nbTotal;
-	for(nbCurrent = nbTotal = 0; nbCurrent < NOMBRE_DE_FICHIER_A_CHECKER-1; nbCurrent++)
-    {
-        if(!checkFileExist(nomsATest[nbCurrent]))
-        {
-            if(!nbCurrent)
-                cantwrite = 1;
-            else
-#ifdef _WIN32
-                if(nbCurrent == 39 && isDirectXLoaded())
-                    fichiersADL[nbTotal] = nbCurrent;
-#else
-                if(nbCurrent == 1 || nbCurrent == 39) //Pas besoin d'icone sur OSX
-                    continue;
-#endif
-            else
-                fichiersADL[nbTotal] = nbCurrent;
-            nbTotal++;
-        }
-    }
-
+	int nbCurrent, nbTotal = checkFilesExistance(list, fichiersADL, &cantWrite);
+	
     if(nbTotal)
     {
         char temp[200];
@@ -125,10 +69,10 @@ int check_evt()
         /*On vas écrire un message annonçant qu'on va restaurer l'environnement
 		 On ne va pas utiliser les fichiers de trad car ils peuvent être corrompus*/
 
-        if(cantwrite) //Si police absente
+        if(cantWrite) //Si police absente
         {
-            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[0]);
-            download_disk(temp, NULL, nomsATest[0], SSL_ON);
+            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, list[0]);
+            download_disk(temp, NULL, list[0], SSL_ON);
             nbTotal--;
         }
 
@@ -136,13 +80,13 @@ int check_evt()
 
         for(nbCurrent = 0; nbCurrent <= nbTotal; nbCurrent++)
         {
-            if(!checkFileExist(nomsATest[fichiersADL[nbCurrent]])) //On confirme que le fichier est absent
+            if(!checkFileExist(list[fichiersADL[nbCurrent]])) //On confirme que le fichier est absent
             {
 #ifdef IDENTIFY_MISSING_UI
 				#warning "Status given by nbCurrent / nbTotal"
 #endif
-                snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, nomsATest[fichiersADL[nbCurrent]]);
-                download_disk(temp, NULL, nomsATest[fichiersADL[nbCurrent]], SSL_ON);
+                snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, list[fichiersADL[nbCurrent]]);
+                download_disk(temp, NULL, list[fichiersADL[nbCurrent]], SSL_ON);
 
                 if(fichiersADL[nbCurrent] == 4 || fichiersADL[nbCurrent] == 7 || fichiersADL[nbCurrent] == 10 || fichiersADL[nbCurrent] == 13) //Si c'est un fichier de localization
                 {
@@ -150,7 +94,7 @@ int check_evt()
 					char *buffer = NULL, c;
 					size_t size;
 
-                    test = fopenR(nomsATest[fichiersADL[nbCurrent]], "r");
+                    test = fopenR(list[fichiersADL[nbCurrent]], "r");
                     fseek(test, 0, SEEK_END);
                     size = ftell(test);
                     rewind(test);
@@ -165,7 +109,7 @@ int check_evt()
                     }
                     fclose(test);
 
-                    test = fopenR(nomsATest[fichiersADL[nbCurrent]], "w+");
+                    test = fopenR(list[fichiersADL[nbCurrent]], "w+");
                     fwrite(buffer, k, 1, test);
                     fclose(test);
 
@@ -195,9 +139,7 @@ int check_evt()
     //On charge les données par défaut si elles n'existent pas encore
     char *buf = loadLargePrefs(SETTINGS_REPODB_FLAG);
     if(buf != NULL)
-    {
         free(buf);
-    }
 
     FILE * test = fopenR(SECURE_DATABASE, "r");
     if(test == NULL || fgetc(test) == EOF)
@@ -220,6 +162,79 @@ int check_evt()
 
     return 0;
 }
+
+void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA])
+{
+	snprintf(list[0], LONGUEUR_NOMS_DATA, "data/font.ttf");
+    snprintf(list[1], LONGUEUR_NOMS_DATA, "data/icone.png");
+    snprintf(list[2], LONGUEUR_NOMS_DATA, "data/french/acceuil.png");
+    snprintf(list[3], LONGUEUR_NOMS_DATA, "data/french/controls.png");
+    snprintf(list[4], LONGUEUR_NOMS_DATA, "data/french/localization");
+    snprintf(list[5], LONGUEUR_NOMS_DATA, "data/english/acceuil.png");
+    snprintf(list[6], LONGUEUR_NOMS_DATA, "data/english/controls.png");
+    snprintf(list[7], LONGUEUR_NOMS_DATA, "data/english/localization");
+    snprintf(list[8], LONGUEUR_NOMS_DATA, "data/italian/acceuil.png");
+    snprintf(list[9], LONGUEUR_NOMS_DATA, "data/italian/controls.png");
+    snprintf(list[10], LONGUEUR_NOMS_DATA, "data/italian/localization");
+    snprintf(list[11], LONGUEUR_NOMS_DATA, "data/german/acceuil.png");
+    snprintf(list[12], LONGUEUR_NOMS_DATA, "data/german/controls.png");
+    snprintf(list[13], LONGUEUR_NOMS_DATA, "data/german/localization");
+    snprintf(list[14], LONGUEUR_NOMS_DATA, ICONE_DELETE);
+    snprintf(list[15], LONGUEUR_NOMS_DATA, ICONE_FAVORITED);
+    snprintf(list[16], LONGUEUR_NOMS_DATA, ICONE_FAVORIS_MENU);
+    snprintf(list[17], LONGUEUR_NOMS_DATA, ICONE_NOT_FAVORITED);
+    snprintf(list[18], LONGUEUR_NOMS_DATA, ICONE_FULLSCREEN);
+    snprintf(list[19], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU);
+    snprintf(list[20], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU_BIG);
+    snprintf(list[21], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_CHAPTER);
+    snprintf(list[22], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_PAGE);
+    snprintf(list[23], LONGUEUR_NOMS_DATA, ICONE_NEXT_CHAPTER);
+    snprintf(list[24], LONGUEUR_NOMS_DATA, ICONE_NEXT_PAGE);
+    snprintf(list[25], LONGUEUR_NOMS_DATA, ICONE_LOCK);
+    snprintf(list[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
+    snprintf(list[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
+    snprintf(list[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
+    snprintf(list[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DEFAULT);
+    snprintf(list[30], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_GENERAL);
+    snprintf(list[31], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DOWNLOAD);
+    snprintf(list[32], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_INSTALL);
+    snprintf(list[33], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
+    snprintf(list[34], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
+    snprintf(list[35], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
+    snprintf(list[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
+    snprintf(list[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
+    snprintf(list[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(list[39], LONGUEUR_NOMS_DATA, "data/D3DX9_43.dll");
+    snprintf(list[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+}
+
+int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite)
+{
+	int nbElemMissing = 0;
+	
+	for(int nbCurrent = 0; nbCurrent < NOMBRE_DE_FICHIER_A_CHECKER-1; nbCurrent++)
+    {
+        if(!checkFileExist(list[nbCurrent]))
+        {
+            if(!nbCurrent)
+                *cantWrite = true;
+            else
+#ifdef _WIN32
+                if(nbCurrent == 39 && isDirectXLoaded())
+                    results[nbElemMissing] = nbCurrent;
+#else
+			if(nbCurrent == 1 || nbCurrent == 39) //Pas besoin d'icone sur OSX
+				continue;
+#endif
+            else
+                results[nbElemMissing] = nbCurrent;
+            nbElemMissing++;
+        }
+    }
+	return nbElemMissing;
+}
+
+/****	   Other checks		 ****/
 
 extern int INSTANCE_RUNNING;
 int checkLancementUpdate()

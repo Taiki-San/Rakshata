@@ -10,14 +10,10 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#ifdef __APPLE__
-	#include <AppKit/NSAlert.h>
-#endif
-
 void logR(char *error)
 {
 #ifdef __APPLE__
-	NSLog(@ "%s", error);
+	sendToLog(error);
 #else
     FILE* logFile = fopenR("log", "a+");
     if(logFile != NULL)
@@ -183,32 +179,20 @@ void affichageRepoIconnue()
 
 int UI_Alert(char* titre, char* contenu)
 {
-    int ret_value = 0;
-#ifdef __APPLE__
-	NSAlert * alert = [NSAlert alertWithMessageText: [NSString stringWithFormat:@"%s", titre]
-									  defaultButton: @"Ok"
-									alternateButton: nil
-										otherButton: nil
-						  informativeTextWithFormat: @"%s", contenu];
-	[[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
-	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert runModal];	//utiliser beginSheetModalForWindow
-#else
-    SDL_MessageBoxData alerte;
-    SDL_MessageBoxButtonData bouton;
-    alerte.flags = SDL_MESSAGEBOX_ERROR;
-    alerte.title = titre;
-    alerte.message = contenu;
-    alerte.numbuttons = 1;
-    bouton.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT|SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
-    bouton.buttonid = 1; //Valeur retournée
-    bouton.text = "Ok";
-    alerte.buttons = &bouton;
-    alerte.window = window;
-    alerte.colorScheme = NULL;
-    SDL_ShowMessageBox(&alerte, &ret_value);
-#endif
-    return ret_value;
+	char charOK[10] = "Ok", charCancel[10] = "Cancel";
+	UIABUTT buttonOK, buttonCancel;
+	
+	buttonOK.buttonName = charOK;
+	buttonOK.ret_value = 1;
+	buttonOK.priority =	UIABUTTDefault;
+	buttonOK.next = &buttonCancel;
+	
+	buttonCancel.buttonName = charCancel;
+	buttonCancel.ret_value = 0;
+	buttonCancel.priority = UIABUTTOther;
+	buttonCancel.next = NULL;
+	
+    return internalUIAlert(titre, contenu, &buttonOK);
 }
 
 int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])

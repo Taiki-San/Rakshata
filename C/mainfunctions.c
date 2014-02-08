@@ -16,7 +16,7 @@ void mainRakshata()
 {
     int continuer = PALIER_DEFAULT, restoringState = 0, sectionChoisis;
 	
-    if(check_evt() == PALIER_QUIT) //Check envt
+    if(checkEvnt() == PALIER_QUIT) //Check envt
     {
         continuer = PALIER_QUIT;
     }

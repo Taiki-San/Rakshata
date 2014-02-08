@@ -29,7 +29,7 @@
  Issue Date: 14th January 1999
  */
 
-/* Adapted for TrueCrypt */
+/* Adapted for TrueCrypt */		/* v7.1a */
 /* Adapted for Rakshata	 */
 
 #include <stdint.h>

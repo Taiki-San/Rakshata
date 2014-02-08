@@ -22,7 +22,6 @@
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];
 	[self setWantsLayer:YES];
-	[self setUpBlur];
 	
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
@@ -38,22 +37,6 @@
 	resizeAnimationCount = 0;	//activate animation
 		
 	return self;
-}
-
-- (void) setUpBlur
-{
-	NSRect frame = [self frame];
-	frame.origin.x = frame.origin.y = 0;
-	blurView = [[NSView alloc] initWithFrame:[self frame]];
-	[blurView setWantsLayer:YES];
-	
-	CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
-	[self addSubview:blurView];
-	[blurFilter setDefaults];
-	
-	[blurView layer].backgroundFilters = [NSArray arrayWithObject:blurFilter];
-	[blurView setHidden:YES];
-	//	[blurView setAlphaValue:1];//0.5];
 }
 
 /**			Handle Fullscreen			**/
@@ -106,21 +89,8 @@
 
 /**			Overwrite methods to resize the main view in order to resize subviews	**/
 
-- (void) setFrame:(NSRect)frameRect
-{
-	[blurView setFrame:frameRect];
-	[super setFrame:frameRect];
-}
-
-- (void) setFrameOrigin:(NSPoint)newOrigin
-{
-	[blurView setFrameOrigin:newOrigin];
-	[super setFrameOrigin:newOrigin];
-}
-
 - (void) setFrameSize:(NSSize)newSize
 {
-	[blurView setFrameSize:newSize];
 	if(!resizeAnimationCount)
 	{
 		NSRect frame = [self createFrame];

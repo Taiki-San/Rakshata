@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 #include "main.h"
+#include "interface.h"
 #include "graphics.h"
 
 #ifdef __OBJC__

@@ -14,10 +14,16 @@
 	#include <stdint.h>
 #endif
 
+#define KEYLENGTH(keybits) ((keybits)/8)
+#define RKLENGTH(keybits)  ((keybits)/8+28)
+#define NROUNDS(keybits)   ((keybits)/32+6)
+
+#define KEYBITS 256
 #define CRYPTO_BUFFER_SIZE 16
+
 #ifndef _WIN32
     typedef uint32_t DWORD;
-#endif // _WIN32
+#endif
 typedef uint32_t u4byte;
 typedef unsigned char BYTE;
 
@@ -33,13 +39,6 @@ int rijndaelSetupEncrypt(RK_KEY *rk, const unsigned char *key, int keybits);
 int rijndaelSetupDecrypt(RK_KEY *rk, const unsigned char *key, int keybits);
 void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const rawData plaintext[16], rawData ciphertext[16]);
 void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16], rawData plaintext[16]);
-
-#define KEYLENGTH(keybits) ((keybits)/8)
-#define RKLENGTH(keybits)  ((keybits)/8+28)
-#define NROUNDS(keybits)   ((keybits)/32+6)
-
-#define KEYBITS 256
-
 
 /*****************************************************
 **                                                  **

@@ -28,14 +28,6 @@
 		winController = [[PrefsUI alloc] init];
 		[winController setAnchor:button];
 		
-		/*****		TEST		*****/
-		NSView *test = [[NSView alloc] initWithFrame:NSMakeRect(50, 0, 100, 400)];
-		CALayer *viewLayer = [CALayer layer];
-		[viewLayer setBackgroundColor:CGColorCreateGenericRGB(0.0, 0.0, 0.0, 1)]; //RGB plus Alpha Channel
-		[test setWantsLayer:YES]; // view's backing store is using a Core Animation Layer
-		[test setLayer:viewLayer];
-		[self addSubview:test];
-		
 		/*Initialise le bandeau inférieur*/
 		footer = [[RakFooter alloc] init:window];
 		[self addSubview:footer];

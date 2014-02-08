@@ -27,7 +27,6 @@
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
 - (NSView *) setUpView: (NSView *)superView;
-- (void) setUpBlur;
 
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;

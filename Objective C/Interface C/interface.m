@@ -24,3 +24,8 @@ uint32_t getMainThread()
 	
 	return output;
 }
+
+void sendToLog(char * string)
+{
+	NSLog(@"%s", string);
+}

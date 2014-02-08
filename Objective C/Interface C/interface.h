@@ -12,8 +12,33 @@
 
 /*****************************************
  **										**
+ **				  ERRORS				**
+ **										**
+ *****************************************/
+
+enum BUTTONS_CODES {
+	UIABUTTDefault		= 1,
+	UIABUTTAlternate	= 2,
+	UIABUTTOther		= 3
+};
+
+typedef struct UIABUTT UIABUTT;
+struct UIABUTT
+{
+	char *buttonName;
+	char priority;
+	int ret_value;
+	UIABUTT * next;
+};
+
+int internalUIAlert(char *titre, char* content, UIABUTT* buttons);
+
+
+/*****************************************
+ **										**
  **				  PREFS					**
  **										**
  *****************************************/
 
 uint32_t getMainThread();
+void sendToLog(char * string);

@@ -25,7 +25,10 @@ void displayTemplateChapitre(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contex
 DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 
 /**check.c**/
-int check_evt();
+int checkEvnt();
+void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA]);
+int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite);
+
 int checkLancementUpdate();
 void networkAndVersionTest();
 int checkNetworkState(int state);
