@@ -47,18 +47,18 @@ int libcurlErrorCode(CURLcode code)
     {
         case CURLE_FAILED_INIT :
         {
-            snprintf(log_message, 100, "Initialization failed\n");
+            snprintf(log_message, 100, "Initialization failed");
             break;
         }
 
         case CURLE_URL_MALFORMAT:
         {
-            snprintf(log_message, 100, "URL is malformated\n");
+            snprintf(log_message, 100, "URL is malformated");
             break;
         }
         case CURLE_COULDNT_RESOLVE_PROXY:
         {
-            snprintf(log_message, 100, "Failed at resolve the proxy\n");
+            snprintf(log_message, 100, "Failed at resolve the proxy");
             break;
         }
         case CURLE_COULDNT_RESOLVE_HOST:
@@ -70,19 +70,19 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_PARTIAL_FILE:
         {
-            snprintf(log_message, 100, "Partial file\n");
+            snprintf(log_message, 100, "Partial file");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
         {
-            snprintf(log_message, 100, "Everything is screwed up...\n");
+            snprintf(log_message, 100, "Everything is screwed up...");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_OPERATION_TIMEDOUT:
         {
-            snprintf(log_message, 100, "Request timed out\n");
+            snprintf(log_message, 100, "Request timed out");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
@@ -94,7 +94,7 @@ int libcurlErrorCode(CURLcode code)
         }
         case CURLE_SSL_CACERT_BADFILE:
         {
-            snprintf(log_message, 100, "SSL error\n");
+            snprintf(log_message, 100, "SSL error");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
