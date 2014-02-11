@@ -325,3 +325,81 @@ void setFavorite(MANGAS_DATA* mangaDB)
     free(favsNew);
 }
 
+/*****************************************************
+**													**
+**				Objective-C Prefs Code				**
+**													**
+*****************************************************/
+
+typedef double CGFloat;
+
+CGFloat hex2intPrefs(char hex[4], int maximum)
+{
+	CGFloat output;
+	hexToCGFloat(hex, 2, &output);
+	if(output > maximum)
+		output = -1;
+	
+	return output;
+}
+
+char * loadPref(char request[3], unsigned int length, char defaultChar)
+{
+	char * output = calloc(length, sizeof(char));
+	if(output != NULL)
+	{
+		int pos = 0;
+		FILE* prefs = fopen("prefs.txt", "r");
+		
+		if(prefs != NULL)
+		{
+			bool isWritting = false;
+			char c, count = 0;
+			unsigned int pos = 0;
+			
+			while((c = fgetc(prefs)) != EOF)
+			{
+				if(!isWritting)
+				{
+					if(count == 0 && c == '<')
+						count++;
+					else if(count == 1 && c == request[0])
+						count++;
+					else if(count == 2 && c == request[1])
+						count++;
+					else if(count == 3 && c == '>')
+					{
+						count = 0;
+						isWritting = true;
+					}
+					else
+						count = 0;
+				}
+				else
+				{
+					if(pos >= length)
+						break;
+					else if(isHexa(c))
+						output[pos++] = c;
+					else if(count == 0 && c == '<')
+						count++;
+					else if(count == 1 && c == '/')
+						count++;
+					else if(count == 2 && c == request[0])
+						count++;
+					else if(count == 3 && c == request[1])
+						count++;
+					else if(count == 4 && c == '>')	//Parsing over, on quitte
+						break;
+					else
+						count = 0;
+				}
+			}
+			
+			fclose(prefs);
+		}
+		
+		for(; pos < length; output[pos++] = defaultChar);	//On remplit la fin
+	}
+	return output;
+}
