@@ -66,7 +66,8 @@
 }
 - (id) init : (RakTabAnimationResize*) instance : (NSArray*)views;
 - (void) setUpViews;
-- (void) perform;
+- (void) performTo;
+- (void) performFromTo : (NSArray*) basePosition;
 
 @end
 

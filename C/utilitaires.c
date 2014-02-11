@@ -404,6 +404,13 @@ void addToRegistry(bool firstStart)
     RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
     RegCloseKey(hkey);
     free(bin);
+#else
+#ifdef __APPLE__
+	system("defaults write com.apple.LaunchServices LSHandlers -array-add \"<dict><key>LSHandlerContentTag</key>\
+	<string>rak</string><key>LSHandlerContentTagClass</key>\
+	<string>public.filename-extension</string><key>LSHandlerRoleAll</key>\
+		   <string>com.taiki.Rakshata</string></dict>\"");
+#endif
 #endif
 }
 

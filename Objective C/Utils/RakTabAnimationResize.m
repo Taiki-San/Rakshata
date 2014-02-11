@@ -38,22 +38,35 @@
 	}
 }
 
-- (void) perform
+- (void) performTo
+{
+	[self performFromTo:NULL];
+}
+
+- (void) performFromTo : (NSArray*) basePosition
 {
 	RakTabView *currentView;
 	NSUInteger i, count = [_views count];
+	BOOL haveBasePos = (basePosition != NULL || [basePosition count] != count);
 	
 	[NSAnimationContext beginGrouping];
 	
 	[[NSAnimationContext currentContext] setDuration:ANIMATION_DURATION];
-
+	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[self cleanUpAnimation];
 	}];
-
+	
 	for(i = 0; i < count; i++)
 	{
 		currentView = [_views objectAtIndex:i];
+		if(haveBasePos)
+		{
+			CABasicAnimation *animation = [CABasicAnimation animation];
+			animation.fromValue = [basePosition objectAtIndex:i];
+			currentView.animations = @{ @"frame" : animation };
+		}
+		
 		if([currentView respondsToSelector:@selector(createFrame)])
 		{
 			[currentView.animator setFrame:[currentView createFrame]];
