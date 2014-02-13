@@ -214,7 +214,7 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
 {
     char ** output;
     int i, j, scriptUtilise = 0;
-    FILE* file_input = fopenR(input, "r");
+    FILE* file_input = fopen(input, "r");
 	if(file_input == NULL)
         return NULL;
 	

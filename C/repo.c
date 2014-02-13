@@ -303,7 +303,7 @@ int deleteRepo()
         removeFromPref(SETTINGS_REPODB_FLAG);
         removeFromPref(SETTINGS_MANGADB_FLAG);
 
-        updateDataBase(true);
+        updateDatabase(true);
         return PALIER_MENU;
     }
 

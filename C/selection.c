@@ -73,7 +73,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
         free(data);
     }
     else {
-        mangaChoisis = rienALire();
+        mangaChoisis = emptyLibrary();
     }
 
     return mangaChoisis;

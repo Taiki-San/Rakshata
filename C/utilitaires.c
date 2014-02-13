@@ -21,13 +21,6 @@ void changeTo(char *string, char toFind, char toPut)
     }
 }
 
-int plusOuMoins(int compare1, int compare2, int tolerance)
-{
-    if(compare1 + tolerance > compare2 && compare1 - tolerance < compare2)
-        return 1;
-    return 0;
-}
-
 int sortNumbers(const void *a, const void *b)
 {
     if(*(int*)a == VALEUR_FIN_STRUCTURE_CHAPITRE)
@@ -77,21 +70,6 @@ void versionRak(char *output)
         snprintf(output, 10, "%d.%d", centaine, dizaine);
 }
 
-int positionnementApres(FILE* stream, char *stringToFind)
-{
-    int i = 0, length = strlen(stringToFind) + 10;
-    char *temp = malloc(length);
-    while((i = fgetc(stream)) != EOF && strcmp(temp, stringToFind))
-    {
-        fseek(stream, -1, SEEK_CUR);
-        fscanfs(stream, "%s", temp, length);
-    }
-    free(temp);
-    if(i == EOF)
-        return 0;
-    return 1;
-}
-
 int positionnementApresChar(char* input, char *stringToFind)
 {
     int i = 0;
@@ -132,40 +110,6 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
 		else
 			output[posOutput++] = input[posInput];
 	}
-}
-
-void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
-{
-	char temp[LONGUEUR_NOM_MANGA_MAX] = {0}, buffer[LONGUEUR_COURT] = {0};
-    char* manga = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak;
-    mangaBak = manga;
-
-    if(manga != NULL)
-    {
-        manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-        for(; *manga && *manga != '\n'; manga++);
-        for(; *manga == '\n'; manga++);
-        while(strcmp(temp, nomProjet) && strcmp(buffer, nomProjet) && *manga)
-        {
-            if(*manga == '#')
-            {
-                manga++;
-                for(;*manga == '\n'; manga++);
-                manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-                for(; *manga && *manga != '\n'; manga++);
-                for(; *manga == '\n'; manga++);
-            }
-            else if(*manga)
-            {
-                manga += sscanfs(manga, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
-                for(; *manga && *manga != '\n'; manga++);
-                for(; *manga == '\n'; manga++);
-            }
-            else
-                break;
-        }
-        free(mangaBak);
-    }
 }
 
 void createPath(char *output)

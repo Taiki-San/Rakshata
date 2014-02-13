@@ -294,7 +294,7 @@
 #define HAUTEUR_PREMIERE_LIGNE_INFOS_TOME 70
 
 /*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 41
+#define NOMBRE_DE_FICHIER_A_CHECKER 40
 #define LONGUEUR_NOMS_DATA 100
 
 /*Show numéro*/

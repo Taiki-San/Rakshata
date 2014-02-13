@@ -60,8 +60,6 @@ bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc);
 /**	lecteur_tool.c	**/
 int reader_getPosIntoContentIndex(MANGAS_DATA * mangaDB, int currentSelection, bool isTome);
 bool reader_isLastElem(MANGAS_DATA * mangaDB, int currentSelection, bool isTome);
-void reader_saveStateForRestore(char * mangaName, int currentSelection, bool isTome, int currentPage);
-void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool * isTome, int * page, bool removeWhenDone);
 void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 
 /**	lecteur_ui.c	**/

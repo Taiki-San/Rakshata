@@ -62,7 +62,7 @@ int checkEvnt()
 
         if(nbTotal > NOMBRE_DE_FICHIER_A_CHECKER - 5)     //Si suffisament de fichiers manquent, on assume nouvelle installe
         {
-            test = fopenR("data/firstLaunchAddRegistry", "w+");
+            test = fopen("data/firstLaunchAddRegistry", "w+");
             if(test != NULL)    fclose(test);
         }
 
@@ -94,7 +94,7 @@ int checkEvnt()
 					char *buffer = NULL, c;
 					size_t size;
 
-                    test = fopenR(list[fichiersADL[nbCurrent]], "r");
+                    test = fopen(list[fichiersADL[nbCurrent]], "r");
                     fseek(test, 0, SEEK_END);
                     size = ftell(test);
                     rewind(test);
@@ -109,26 +109,12 @@ int checkEvnt()
                     }
                     fclose(test);
 
-                    test = fopenR(list[fichiersADL[nbCurrent]], "w+");
+                    test = fopen(list[fichiersADL[nbCurrent]], "w+");
                     fwrite(buffer, k, 1, test);
                     fclose(test);
 
                     free(buffer);
                 }
-#ifdef _WIN32
-                if(fichiersADL[nbCurrent] == 39)
-                {
-                    LoadLibrary("data/D3DX9_43.dll");
-                    if(renderer != NULL) //Reset renderer for main window
-                    {
-                        SDL_Window * window = renderer->window;
-                        SDL_DestroyRenderer(renderer);
-                        renderer = setupRendererSafe(window);
-                        chargement(renderer, getH(renderer), getW(renderer));
-                    }
-                }
-#endif
-
             }
         }
         MUTEX_UNIX_UNLOCK;
@@ -141,19 +127,19 @@ int checkEvnt()
     if(buf != NULL)
         free(buf);
 
-    FILE * test = fopenR(SECURE_DATABASE, "r");
+    FILE * test = fopen(SECURE_DATABASE, "r");
     if(test == NULL || fgetc(test) == EOF)
     {
         if(test != NULL)
             fclose(test);
         createSecurePasswordDB(NULL);
-        test = fopenR(SECURE_DATABASE, "r");
+        test = fopen(SECURE_DATABASE, "r");
         if(test == NULL || fgetc(test) == EOF)
         {
             if(test != NULL)
                 fclose(test);
             logR("Failed at recreate a correct secure database");
-            removeR(SECURE_DATABASE);
+            remove(SECURE_DATABASE);
             exit(0);
         }
     }
@@ -204,8 +190,7 @@ void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA
     snprintf(list[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
     snprintf(list[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
     snprintf(list[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(list[39], LONGUEUR_NOMS_DATA, "data/D3DX9_43.dll");
-    snprintf(list[40], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(list[39], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 }
 
 int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite)
@@ -219,12 +204,9 @@ int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DAT
             if(!nbCurrent)
                 *cantWrite = true;
             else
-#ifdef _WIN32
-                if(nbCurrent == 39 && isDirectXLoaded())
-                    results[nbElemMissing] = nbCurrent;
-#else
-			if(nbCurrent == 1 || nbCurrent == 39) //Pas besoin d'icone sur OSX
-				continue;
+#ifndef _WIN32
+				if(nbCurrent == 1) //Pas besoin d'icone sur OSX
+					continue;
 #endif
             else
                 results[nbElemMissing] = nbCurrent;
@@ -252,7 +234,7 @@ int checkLancementUpdate()
     }
     CloseHandle (hSem);
 #else
-    FILE* test = fopenR("data/download", "r");
+    FILE* test = fopen("data/download", "r");
     if(test != NULL)
     {
         if(fgetc(test) != EOF)
@@ -321,13 +303,13 @@ void networkAndVersionTest()
             snprintf(temp, TAILLE_BUFFER, "https://%s/update/%s/%d", SERVEUR_URL, BUILD, CURRENTVERSION);
             download_disk(temp, NULL, "data/update", SSL_ON);
 
-			test = fopenR("data/update", "r");
+			test = fopen("data/update", "r");
 			if(test)
             {
                 for(i = 0; i < 5 && fgetc(test) != '<'; i++);
                 fclose(test);
                 if(i != 5)
-                    removeR("data/update");
+                    remove("data/update");
             }
         }
 
@@ -339,7 +321,7 @@ void networkAndVersionTest()
 			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
 			if(!i)
             {
-                removeR(SECURE_DATABASE);
+                remove(SECURE_DATABASE);
                 quit_thread(0);
             }
 
@@ -354,14 +336,14 @@ void networkAndVersionTest()
             }
 
 			/*A partir d'ici, le compte est killswitche*/
-			removeR(SECURE_DATABASE);
+			remove(SECURE_DATABASE);
 			removeFolder("manga");
 			removeFolder("data");
 			logR("Ugh, you did wrong things =/");
 			exit(0);
 		}
 		else
-            removeR(SECURE_DATABASE);
+            remove(SECURE_DATABASE);
     }
     quit_thread(0);
 }
@@ -382,7 +364,7 @@ void checkHostNonModifie()
 {
     char temp[TAILLE_BUFFER];
     FILE* host = NULL;
-    host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopenR car on se balade dans le DD, pas dans les fichiers de Rakshata
+    host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopen car on se balade dans le DD, pas dans les fichiers de Rakshata
     if(host != NULL)
     {
         int justeSautDeLigne = 1, j = 0, i = 0;
@@ -422,47 +404,13 @@ void checkHostNonModifie()
     }
 }
 
-bool checkRestore()
-{
-    if(checkRestoreAvailable())
-        return true;
-    removeR("data/laststate.dat");
-    return false;
-}
-
-int checkRestoreAvailable()
-{
-    FILE* restore = fopenR("data/laststate.dat", "r");
-    if(restore != NULL)
-    {
-        int chapitre = 0;
-        char manga[LONGUEUR_NOM_MANGA_MAX], temp[LONGUEUR_NOM_MANGA_MAX*5+50], team[LONGUEUR_NOM_MANGA_MAX], type[2] = {0, 0};
-        fscanfs(restore, "%s %s %d", manga, LONGUEUR_NOM_MANGA_MAX, type, 2, &chapitre);
-        fclose(restore);
-
-        teamOfProject(manga, team);
-        if(type[0] == 'C')
-        {
-            if(chapitre%10)
-                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d.%d/%s", team, manga, chapitre/10, chapitre%10, CONFIGFILE);
-            else
-                snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Chapitre_%d/%s", team, manga, chapitre/10, CONFIGFILE);
-        }
-        else
-            snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+50, "manga/%s/%s/Tome_%d/%s", team, manga, chapitre, CONFIGFILETOME);
-
-        return checkFileExist(temp);
-    }
-    return 0;
-}
-
 int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker)
 {
     int i = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX];
     char buffer2[LONGUEUR_COURT];
     FILE *mangas = NULL;
-    mangas = fopenR(MANGA_DATABASE, "r");
+    mangas = fopen(MANGA_DATABASE, "r");
 
     if(mangas != NULL)
     {
@@ -494,7 +442,7 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
     return 0;
 }
 
-int isItNew(MANGAS_DATA mangasDB)
+int checkNewManga(MANGAS_DATA mangasDB)
 {
 	/*Vérifie si le manga est nouveau ou pas (dossiers à créer)*/
     char buffer[5*LONGUEUR_NOM_MANGA_MAX+100];
@@ -517,7 +465,7 @@ int checkChapitreUnread(MANGAS_DATA mangasDB)
     snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX+100, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
     changeTo(mangasDB.mangaName, '_', ' ');
 
-    configDat = fopenR(temp, "r");
+    configDat = fopen(temp, "r");
 
     if(configDat == NULL) //Dans le cas d'un DL, signifie que le mangas n'a pas encore été DL
         return -1;
@@ -529,18 +477,6 @@ int checkChapitreUnread(MANGAS_DATA mangasDB)
     if(i == ' ') //Si le chapitre est déjà lu
         return 0;
     return 1;
-}
-
-int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis)
-{
-    char temp[LONGUEUR_NOM_MANGA_MAX*5+100];
-    if(chapitreChoisis%10)
-        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/Chapitre_%d.%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10, chapitreChoisis%10);
-    else
-        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/Chapitre_%d/config.enc", mangasDB.team->teamLong, mangasDB.mangaName, chapitreChoisis/10);
-    if(checkFileExist(temp))
-        return 1;
-    return 0;
 }
 
 int checkFirstLineButtonPressed(int button_selected[8])
@@ -566,40 +502,21 @@ int checkButtonPressed(int button_selected[8])
 
 int checkNameFileZip(char fileToTest[256])
 {
-    if( fileToTest[0] == '_' &&
-        fileToTest[1] == '_' &&
-        fileToTest[2] == 'M' &&
-        fileToTest[3] == 'A' &&
-        fileToTest[4] == 'C' &&
-        fileToTest[5] == 'O' &&
-        fileToTest[6] == 'S' &&
-        fileToTest[7] == 'X' &&
-        fileToTest[8] == '/') //On vérifie que c'est pas un de ces dossiers parasites créés par MACOS
+	if(!strncmp(fileToTest, "__MACOSX", 8) || !strncmp(fileToTest, ".DS_Store", 9))	//Dossier parasite de OSX
         return 0;
 
-    //strlen(fileToTest) - 1 est le dernier caractére, strlen(fileToTest) donnant la longueur de la chaine
+    //strlen(fileToTest) - 1 est le dernier caractère, strlen(fileToTest) donnant la longueur de la chaine
+	uint posLastChar = strlen(fileToTest) - 1;
 
-    if(fileToTest[strlen(fileToTest) - 1] == '/') //Si c'est un dossier, le dernier caractére est /
+    if(fileToTest[posLastChar] == '/') //Si c'est un dossier, le dernier caractère est /
         return 0;
 
-    if(fileToTest[strlen(fileToTest) - 3] == '.' &&
-            fileToTest[strlen(fileToTest) - 2] == 'd' &&
-            fileToTest[strlen(fileToTest) - 1] == 'b')
+    if(fileToTest[posLastChar - 2] == '.' && fileToTest[posLastChar - 1] == 'd' && fileToTest[posLastChar] == 'b')
         return 0;
 
-    if(fileToTest[strlen(fileToTest) - 4] == '.' &&
-            fileToTest[strlen(fileToTest) - 3] == 'e' &&
-            fileToTest[strlen(fileToTest) - 2] == 'x' &&
-            fileToTest[strlen(fileToTest) - 1] == 'e')
+    if(fileToTest[posLastChar - 3] == '.' && fileToTest[posLastChar - 2] == 'e' && fileToTest[posLastChar - 1] == 'x' && fileToTest[posLastChar] == 'e')
         return 0;
 
-    return 1;
-}
-
-int checkFileValide(FILE* file)
-{
-    if(file == NULL || fgetc(file) == '<' || fgetc(file) == '<' || fgetc(file) == '<')
-        return 0;
     return 1;
 }
 

@@ -12,55 +12,6 @@
 
 #include <stdarg.h>
 
-#define USE_FULL_PATH
-
-/**Fonction de base modifiés**/
-#ifdef USE_FULL_PATH
-
-FILE* fopenR(void *_path, char *right)
-{
-    unsigned char *path = _path;
-    unsigned char *temp = ralloc((ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2));
-	FILE* output = NULL;
-	if(temp == NULL)
-        return NULL;
-    snprintf((char *)temp, ustrlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
-    output = fopen((char *) temp, right);
-    free(temp);
-    return output;
-}
-
-void removeR(char *path)
-{
-	char *temp = ralloc(strlen(path) + strlen(REPERTOIREEXECUTION) + 2);
-    snprintf(temp, strlen(path) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, path);
-    remove(temp);
-	free(temp);
-}
-
-void renameR(char *initialName, char *newName)
-{
-	char *temp = malloc(strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2); //+1 pour le / et +1 pour \0
-	char *temp2 = malloc(strlen(newName) + strlen(REPERTOIREEXECUTION) + 2);
-
-    if(initialName[1] != ':')
-        snprintf(temp, strlen(initialName) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, initialName);
-    else
-        strcpy(temp, initialName);
-    if(newName[1] != ':')
-        snprintf(temp2, strlen(newName) + strlen(REPERTOIREEXECUTION) + 2, "%s/%s", REPERTOIREEXECUTION, newName);
-    else
-        strcpy(temp, newName);
-    rename(temp, temp2);
-	free(temp);
-	free(temp2);
-}
-#else
-    #define fopenR(a, b) fopen(a, b)
-    #define removeR(a) remove(a)
-    #define renameR(a, b) rename(a, b)
-#endif
-
 int mkdirR(char *path)
 {
 #ifdef _WIN32
@@ -70,12 +21,7 @@ int mkdirR(char *path)
 #endif
 }
 
-void chdirR()
-{
-	chdir(REPERTOIREEXECUTION);
-}
-
-void resetOriginalCHDir(int *argc, char** argv)
+void getToWD(int *argc, char** argv)
 {
     size_t length = strlen(argv[0])+1;
 #ifdef __APPLE__
@@ -392,7 +338,7 @@ void removeFolder(char *path)
         snprintf(temp, 300, "Can't open directory %s\n", name);
         logR(temp);
 #endif
-        removeR(name);
+        remove(name);
 		if(name != path)
 			free(name);
         return;
@@ -411,7 +357,7 @@ void removeFolder(char *path)
         if(checkDirExist(buffer))
             removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
         else
-            removeR(buffer); //On est sur un fichier, on le supprime.
+            remove(buffer); //On est sur un fichier, on le supprime.
     }
     closedir(directory);
     rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
@@ -423,42 +369,6 @@ void removeFolder(char *path)
 	if(name != path)
 		free(name);
 }
-
-#ifdef _WIN32
-
-static bool directXLoaded;
-
-void getDirectX()
-{
-    if(checkFileExist("data/D3DX9_43.dll"))
-    {
-        char pathToLib[512];
-        snprintf(pathToLib, 512, "%s/data/D3DX9_43.dll", REPERTOIREEXECUTION);
-        directXLoaded = (LoadLibrary(pathToLib) != NULL);
-    }
-    else
-    {
-        int d3dxVersion;
-        char directXName[50];
-        for ( d3dxVersion = 50; d3dxVersion > 0; d3dxVersion--)
-        {
-            snprintf(directXName, 50, "D3DX9_%02d.dll", d3dxVersion);
-            if(LoadLibrary(directXName))
-            {
-                directXLoaded = true;
-                break;
-            }
-        }
-        if(!d3dxVersion)    directXLoaded = false;
-    }
-}
-
-bool isDirectXLoaded()
-{
-    return directXLoaded;
-}
-
-#endif // _WIN32
 
 void ouvrirSite(char *URL)
 {
@@ -531,7 +441,7 @@ int checkPID(int PID)
     }
     #else
 	snprintf(temp, TAILLE_BUFFER, "proc/%d/cwd", PID);
-    test = fopenR(temp, "r");
+    test = fopen(temp, "r");
     if(test != NULL) //Si le PID existe
     {
 		int i, j;

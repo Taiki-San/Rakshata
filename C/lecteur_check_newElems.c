@@ -197,7 +197,7 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
 extern int INSTANCE_RUNNING;
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome)
 {
-    FILE* updateControler = fopenR(INSTALL_DATABASE, "a+");
+    FILE* updateControler = fopen(INSTALL_DATABASE, "a+");
 	if(updateControler != NULL)
 	{
 	    if(!isTome)

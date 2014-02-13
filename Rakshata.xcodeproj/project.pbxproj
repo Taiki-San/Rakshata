@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* MainMenu.xib */; };
+		B60BCE3418AD029900FBEB05 /* snapshot.c in Sources */ = {isa = PBXBuildFile; fileRef = B60BCE3318AD029900FBEB05 /* snapshot.c */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
@@ -84,6 +85,7 @@
 
 /* Begin PBXFileReference section */
 		B6002C30189EF15E00466654 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainMenu.xib; path = Ressources/MainMenu.xib; sourceTree = "<group>"; };
+		B60BCE3318AD029900FBEB05 /* snapshot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = snapshot.c; path = C/snapshot.c; sourceTree = "<group>"; };
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 				B6F6ECC518A3001400E3B55B /* mainfunctions.c */,
 				B6F6ECCF18A3001400E3B55B /* native.c */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
+				B60BCE3318AD029900FBEB05 /* snapshot.c */,
 				B6F6ECD318A3001400E3B55B /* securite.c */,
 				B6F6ECD518A3001400E3B55B /* settings.c */,
 				B6F6ECD718A3001400E3B55B /* thread.c */,
@@ -696,6 +699,7 @@
 				B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */,
 				B6F6ECEA18A3001400E3B55B /* affichage.c in Sources */,
 				B69D61D5186CA2F2003504F9 /* Reader.m in Sources */,
+				B60BCE3418AD029900FBEB05 /* snapshot.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -34,14 +34,14 @@ int getMasterKey(unsigned char *input)
 
     do
     {
-        bdd = fopenR(SECURE_DATABASE, "r");
+        bdd = fopen(SECURE_DATABASE, "r");
 
         if(bdd == NULL)
         {
             if(createSecurePasswordDB(NULL))
                 return 1;
             else
-                bdd = fopenR(SECURE_DATABASE, "r");
+                bdd = fopen(SECURE_DATABASE, "r");
         }
 
         fseek(bdd, 0, SEEK_END);
@@ -51,13 +51,13 @@ int getMasterKey(unsigned char *input)
         if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
         {
             fileInvalid = 1;
-            removeR(SECURE_DATABASE);
+            remove(SECURE_DATABASE);
         }
         else
             fileInvalid = 0;
     } while(fileInvalid);
 
-    bdd = fopenR(SECURE_DATABASE, "rb");
+    bdd = fopen(SECURE_DATABASE, "rb");
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
@@ -122,27 +122,17 @@ int getMasterKey(unsigned char *input)
 
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
 {
-    int i = 0;
+    int i;
     unsigned char randomChar[128];
 
     for(i = 0; i < 128; i++)
-    {
-        randomChar[i] = (rand() + 1) % (255 - 32) + 33; //Génére un nombre ASCII-étendu
-        if(randomChar[i] < ' ')
-            i--;
-    }
+		randomChar[i] = rand() % 0xFE + 1; //Génére un nombre ASCII-étendu
+
     sha256(randomChar, output);
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
         if(output[i] <= ' '  || output[i] == 255)
-        {
-            int j;
-            do {
-                j = (rand() + 1) % (255 - 32) + 33;
-            } while(j <= ' ');
-
-            output[i] = j;
-        }
+			output[i] = rand() % (0xFE - ' ' - 1) + ' ' + 1;
     }
 }
 
@@ -156,20 +146,13 @@ int earlyInit(int argc, char *argv[])
 #endif
 
 	GUI_startupMainGUIThread();
-    resetOriginalCHDir(&argc, argv);
+    getToWD(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
     loadPalette();
     resetUpdateDBCache();
     initializeDNSCache();
-#ifdef _WIN32
-    getDirectX();
-#endif
 
-#ifdef IDENTIFY_MISSING_UI
-	#warning "Init de l'UI"
-#endif
-		
     loadLangueProfile();
     if(!checkAjoutRepoParFichier(argv[1]))
         return 0;
@@ -209,7 +192,7 @@ int get_compte_infos()
         if(!loadEmailProfile())
         {
             logR("Failed at get email after re-enter it\n");
-            removeR(SETTINGS_FILE);
+            remove(SETTINGS_FILE);
             return PALIER_QUIT;
         }
     }
@@ -228,12 +211,12 @@ int get_compte_infos()
     if(i == 100) //on a pas de point aprés l'arobase
     {
         removeFromPref(SETTINGS_EMAIL_FLAG);
-        logR("Pas de point aprés l'arobase\n");
+        logR("Pas de point après l'arobase\n");
         crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
         exit(-1);
     }
 
-    for(i = 0; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '\'' && COMPTE_PRINCIPAL_MAIL[i] != '\"'; i++); // Injection SQL
+    for(i = 0; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '\'' && COMPTE_PRINCIPAL_MAIL[i] != '\"'; i++);
     if(i != 100)
     {
         removeFromPref(SETTINGS_EMAIL_FLAG);
@@ -308,7 +291,7 @@ int logon()
                             removeFromPref(SETTINGS_EMAIL_FLAG);
                             snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
                             addToPref(SETTINGS_EMAIL_FLAG, temp);
-                            removeR(SECURE_DATABASE);
+                            remove(SECURE_DATABASE);
                             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
                             break;
                         }
@@ -501,10 +484,10 @@ int createSecurePasswordDB(unsigned char *key_sent)
         int ret_value = getPassword(GUI_DEFAULT_THREAD, password);
         if(ret_value < 0)
             return ret_value;
-        bdd = fopenR(SECURE_DATABASE, "w+");
+        bdd = fopen(SECURE_DATABASE, "w+");
     }
     else
-        bdd = fopenR(SECURE_DATABASE, "r+");
+        bdd = fopen(SECURE_DATABASE, "r+");
 
     if(bdd == NULL)
     {
@@ -602,7 +585,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
         if(strcmp(temp, date))
         {
             logR("Read error");
-            removeR(SECURE_DATABASE);
+            remove(SECURE_DATABASE);
             return 1;
         }
 #else

@@ -259,7 +259,7 @@ IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page
 		{
 			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
 
-			test = fopenR(pathPage, "rb");
+			test = fopen(pathPage, "rb");
 			fread(buf_in, 1, size, test);
 			fclose(test);
 			
@@ -284,7 +284,7 @@ void getPasswordArchive(char *fileName, char password[300])
     char *fileNameWithoutDirectory = ralloc(strlen(fileName)+5);
     char *URL = NULL;
 
-    FILE* zipFile = fopenR(fileName, "r");
+    FILE* zipFile = fopen(fileName, "r");
 
     if(fileNameWithoutDirectory == NULL || zipFile == NULL)
     {

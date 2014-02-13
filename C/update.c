@@ -14,7 +14,7 @@
 void checkUpdate()
 {
     FILE* test = NULL;
-    test = fopenR("data/update", "r");
+    test = fopen("data/update", "r");
     if(test != NULL)
     {
         /**********************************************************************************
@@ -105,7 +105,7 @@ void checkUpdate()
                         char *buffer = NULL;
 						size_t size;
 
-						test = fopenR(files[i], "r");
+						test = fopen(files[i], "r");
                         fseek(test, 0, SEEK_END);
                         size = ftell(test);
                         rewind(test);
@@ -119,7 +119,7 @@ void checkUpdate()
                             buffer[j++] = k;
                         }
                         fclose(test);
-                        test = fopenR(files[i], "w+");
+                        test = fopen(files[i], "w+");
                         for(k=0; k < j; fputc(buffer[k++], test));
                         fclose(test);
                         free(buffer);

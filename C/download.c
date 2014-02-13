@@ -117,7 +117,7 @@ static void downloader(TMP_DL *output)
 #ifdef DEV_VERSION
     int proxy = 0;
 	char IPProxy[50];
-    FILE *fichier = fopenR("data/proxy", "r"); //Check proxy
+    FILE *fichier = fopen("data/proxy", "r"); //Check proxy
     if(fichier != NULL)
     {
         int i = 0;
@@ -235,7 +235,7 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
 
     if(printToAFile)
     {
-        output = fopenR(buffer_out, "wb");
+        output = fopen(buffer_out, "wb");
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     }

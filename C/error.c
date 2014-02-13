@@ -15,7 +15,7 @@ void logR(char *error)
 #ifdef __APPLE__
 	sendToLog(error);
 #else
-    FILE* logFile = fopenR("log", "a+");
+    FILE* logFile = fopen("log", "a+");
     if(logFile != NULL)
     {
         if(error != NULL)
@@ -139,10 +139,10 @@ int showError()
 	#warning "Missing in showError"
 #endif
 	
-    return -1;
+    return PALIER_DEFAULT;
 }
 
-int rienALire()
+int emptyLibrary()
 {
     int ret_value = 0, output;
     char trad[SIZE_TRAD_ID_23][TRAD_LENGTH];
@@ -151,7 +151,7 @@ int rienALire()
 
     
 #ifdef IDENTIFY_MISSING_UI
-	#warning "Missing in rienALire"
+	#warning "Missing in emptyLibrary"
 #endif
 	
     /*On va appeler les fonctions correspondantes, ça serait plus propre de redescendre

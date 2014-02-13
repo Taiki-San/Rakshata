@@ -171,10 +171,10 @@ void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
 #define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
 
 int alreadyRefreshed;
-void updateDataBase(bool forced)
+void updateDatabase(bool forced)
 {
     MUTEX_LOCK(mutex);
-    if(NETWORK_ACCESS != CONNEXION_DOWN && (time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY || forced))
+    if(NETWORK_ACCESS != CONNEXION_DOWN && (forced || time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY))
 	{
         MUTEX_UNLOCK(mutex);
 	    update_repo();
@@ -358,7 +358,7 @@ void update_mangas()
         if(bufferDL != NULL)
             free(bufferDL);
 
-        logR("Failed at allocate 10 bytes\n");
+		memoryError(10);
         return;
     }
     snprintf(manga_new, 10, "<%c>\n", SETTINGS_MANGADB_FLAG);
@@ -372,7 +372,7 @@ void update_mangas()
 		for(; *repo == '\r' || *repo == '\n'; repo++);
 
 		get_update_mangas(bufferDL, &teams);
-		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "sql_injection_failed") || !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))) //On réécrit si corrompue
+		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "internal_error") || !strcmp(bufferDL, "editor_not_found")) ) ) //On réécrit si corrompue
 		{
 		    if(mangas != NULL)
 		    {
@@ -570,12 +570,10 @@ int deleteManga()
 						}
 						else
 						{
-							if(internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis))
-							{
-								noMoreChapter = 0;
-								freeMangaData(mangas, NOMBRE_MANGA_MAX);
-								mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
-							}
+							internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis);
+							noMoreChapter = 0;
+							freeMangaData(mangas, NOMBRE_MANGA_MAX);
+							mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
 						}
 					}
 
@@ -600,78 +598,35 @@ int deleteManga()
 	return continuer;
 }
 
-int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
+void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
 {
     if(isTome)
-        return internalDeleteTome(mangaDB, selection);
-    return internalDeleteChapitre(mangaDB, selection);
+        internalDeleteTome(mangaDB, selection);
+    else
+		internalDeleteChapitre(mangaDB, selection);
 }
 
-int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete)
+void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete)
 {
-    if(mangaDB.tomes == NULL)
-        getUpdatedTomeList(&mangaDB);
+	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50;
+    char dir[length];
 
-    char temp[500];
-    snprintf(temp, 500, "manga/%s/%s/Tome_%d/", mangaDB.team->teamLong, mangaDB.mangaName, tomeDelete);
-    removeFolder(temp);
-    return 0;
+    snprintf(dir, length, "manga/%s/%s/Tome_%d/", mangaDB.team->teamLong, mangaDB.mangaName, tomeDelete);
+    
+	removeFolder(dir);
 }
 
-int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
+void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
 {
-	char temp[5*LONGUEUR_NOM_MANGA_MAX];
-	/*si il n'y a qu'un seul chapitre donc dans ce cas, on dégage tout*/
-    if(mangaDB.chapitres == NULL)
-        getUpdatedChapterList(&mangaDB); //ne modifie pas la structure originale
-
-	if(mangaDB.chapitres != NULL && mangaDB.chapitres[1] != VALEUR_FIN_STRUCTURE_CHAPITRE)
-	{
-		snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
-
-        if(chapitreDelete%10)
-            snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
-        else
-            snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
-		removeFolder(temp);
-
-		int length = 0;
-		for(; mangaDB.chapitres[length] == VALEUR_FIN_STRUCTURE_CHAPITRE; length++); //On énumère
-
-		if(mangaDB.chapitres[0] == chapitreDelete || mangaDB.chapitres[length-1] == chapitreDelete)
-		{
-		    snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, CONFIGFILE);
-
-            int i = 0;
-            FILE* config = fopenR(temp, "r");
-            fscanfs(config, "%d %d %d", &i, &i, &i);
-            fclose(config);
-            config = fopenR(temp, "w+");
-
-            if(mangaDB.chapitres[0] == chapitreDelete)
-                fprintf(config, "%d ", mangaDB.chapitres[1]);
-            else
-                fprintf(config, "%d ", mangaDB.chapitres[0]);
-
-            if(mangaDB.chapitres[length-1] == chapitreDelete)
-                fprintf(config, "%d ", mangaDB.chapitres[length-2]);
-            else
-                fprintf(config, "%d ", mangaDB.chapitres[length-1]);
-
-            if(i != 0)
-                fprintf(config, "%d", i);
-
-            fclose(config);
-		}
-	}
-
+	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50;
+    char dir[length];
+	
+	if(chapitreDelete%10)
+		snprintf(dir, length, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
 	else
-	{
-		snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
-		removeFolder(temp);
-		return 1;
-	}
-	return 0;
+		snprintf(dir, length, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
+	
+	removeFolder(dir);
 }
 
 void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
@@ -686,13 +641,13 @@ void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
         snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
 	if(isTome)
     {
-        fichier = fopenR(temp, "w+");
+        fichier = fopen(temp, "w+");
         fprintf(fichier, "%d", dernierChapitre);
         fclose(fichier);
     }
     else
     {
-        fichier = fopenR(temp, "r");
+        fichier = fopen(temp, "r");
         if(fichier == NULL)
             i = j = dernierChapitre;
         else
@@ -700,7 +655,7 @@ void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
             fscanfs(fichier, "%d %d", &i, &j);
             fclose(fichier);
         }
-        fichier = fopenR(temp, "w+");
+        fichier = fopen(temp, "w+");
         fprintf(fichier, "%d %d %d", i, j, dernierChapitre);
         fclose(fichier);
     }

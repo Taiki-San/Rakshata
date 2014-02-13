@@ -26,7 +26,7 @@ int mainChoixDL()
     if(NETWORK_ACCESS != CONNEXION_DOWN)
     {
         MUTEX_UNLOCK(mutex);
-        updateDataBase(false);
+        updateDatabase(false);
         MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
         MDL_SELEC_CACHE * cache = NULL;
         MDLSetCacheStruct(&cache);

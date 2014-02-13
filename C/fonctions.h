@@ -33,17 +33,13 @@ int checkLancementUpdate();
 void networkAndVersionTest();
 int checkNetworkState(int state);
 void checkHostNonModifie();
-bool checkRestore();
-int checkRestoreAvailable();
-int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker);
-int isItNew(MANGAS_DATA mangasDB); //Remplacer par checkNewManga
-int checkChapitreUnread(MANGAS_DATA mangasDB);
-int checkChapterEncrypted(MANGAS_DATA mangasDB, int chapitreChoisis);
+int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker);		///// NON UTILISEE
+int checkNewManga(MANGAS_DATA mangasDB);													///// NON UTILISEE
+int checkChapitreUnread(MANGAS_DATA mangasDB);												///// NON UTILISEE
 int checkFirstLineButtonPressed(int button_selected[8]);
 int checkSecondLineButtonPressed(int button_selected[8]);
 int checkButtonPressed(int button_selected[8]);
 int checkNameFileZip(char fileToTest[256]);
-int checkFileValide(FILE* file);
 bool checkPathEscape(char *string, int length);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
@@ -61,7 +57,7 @@ bool isAnythingToDownload(MANGAS_DATA *mangaDB);
 MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangaDB, size_t length);
-void updateDataBase(bool forced);
+void updateDatabase(bool forced);
 void resetUpdateDBCache();
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
 bool checkValidationRepo(char *bufferDL, int isPaid);
@@ -69,9 +65,9 @@ void update_repo();
 int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
 void update_mangas();
 int deleteManga();
-int internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
-int internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
-int internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
+void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
+void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
+void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
 void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
@@ -108,7 +104,7 @@ void connexionNeededToAllowANewComputer();
 int libcurlErrorCode(CURLcode code);
 int erreurReseau();
 int showError();
-int rienALire();
+int emptyLibrary();
 void affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
 int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
@@ -151,12 +147,8 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
 void lancementModuleDL();
 
 /**Native.c**/
-FILE* fopenR(void *_path, char *right);
-void removeR(char *path);
-void renameR(char *initialName, char *newName);
 int mkdirR(char *path);
-void chdirR();
-void resetOriginalCHDir(int *argc, char** argv);
+void getToWD(int *argc, char** argv);
 void strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
@@ -168,9 +160,6 @@ void usstrcpy(void* output, size_t length, const void* input);
 void ustrcpy(void* output, const void* input);
 
 void removeFolder(char *path);
-#define ouvrirSiteTeam(structTeam) ouvrirSite(structTeam->site)
-void getDirectX();
-bool isDirectXLoaded();
 void ouvrirSite(char *URL);
 int lancementExternalBinary(char cheminDAcces[100]);
 int checkPID(int PID);
@@ -218,6 +207,12 @@ int loadEmailProfile();
 char* loadLargePrefs(char flag);
 void setFavorite(MANGAS_DATA* mangaDB);
 
+/**Snapshot.c**/
+bool checkRestore();
+int checkRestoreAvailable();
+void reader_saveStateForRestore(char * mangaName, int currentSelection, bool isTome, int currentPage);
+void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool * isTome, int * page, bool removeWhenDone);
+
 /**SHA256.c**/
 int sha256(unsigned char* input, void* output);
 int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
@@ -256,20 +251,17 @@ void checkJustUpdated();
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, char toFind, char toPut);
-int plusOuMoins(int compare1, int compare2, int tolerance);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
 void versionRak(char *output);
-int positionnementApres(FILE* stream, char *stringToFind);
 int positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
-void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
 void createPath(char *output);
 IMG_DATA* readFile(char * path);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) (caract >= '0' && caract <= '9')
-#define swapValues(a, b) do { a ^= b; b ^= a; a ^= b; } while(0)
+#define swapValues(a, b) { a ^= b; b ^= a; a ^= b; }
 #define MIN(a, b) (a < b ? a : b)
 void hexToDec(const char *input, unsigned char *output);
 void hexToCGFloat(const char *input, uint32_t length, double *output);

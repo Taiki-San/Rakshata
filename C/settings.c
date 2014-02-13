@@ -102,7 +102,7 @@ void removeFromPref(char flag)
     prefsBak = prefs = loadPrefFile();
     if(prefs == NULL)
     {
-        removeR(SETTINGS_FILE);
+        remove(SETTINGS_FILE);
         return;
     }
     length = strlen(prefs);

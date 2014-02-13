@@ -140,7 +140,7 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
     if(!size)
     {
         path = malloc(strlen(zipFileName) + strlen(outputZip) + strlen(REPERTOIREEXECUTION) + 5);
-        test = fopenR(zipFileName, "r");
+        test = fopen(zipFileName, "r");
         if (test == NULL)
         {
             char temp[500];
@@ -376,7 +376,6 @@ quit:
     unzClose(uf);
     if(size)
         destroy_zmemfile(&fileops);
-    chdirR();
 
     if(path != NULL)
         free(path);

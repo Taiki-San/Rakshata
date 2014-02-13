@@ -128,7 +128,7 @@ int tradAvailable()
         return 0;
     }
     snprintf(temp, 256, "data/%s/localization", LANGUAGE_PATH[langue-1]);
-    test = fopenR(temp, "r");
+    test = fopen(temp, "r");
 
 	free(temp);
     if(test == NULL)

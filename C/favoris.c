@@ -57,7 +57,7 @@ void updateFavorites()
     if(favs != NULL)
         free(favs);
 
-    updateDataBase(false);
+    updateDatabase(false);
     MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
     if(mangaDB == NULL)
         return;
@@ -116,7 +116,7 @@ void getNewFavs()
                     snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].chapitres[j]/10, CONFIGFILE);
                 if(!checkFileExist(temp))
                 {
-                    import = fopenR(INSTALL_DATABASE, "a+");
+                    import = fopen(INSTALL_DATABASE, "a+");
                     if(import != NULL)
                     {
                         WEGOTSOMETHING = 1;

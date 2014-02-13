@@ -176,7 +176,7 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
             if(ret_value == 1)
             {
                 //We got the confirmation \o/ let's kill the reader
-                FILE* inject = fopenR("data/laststate.dat", "w+");
+                FILE* inject = fopen("data/laststate.dat", "w+");
                 if(inject != NULL)
                 {
                     if((*todoList)[pageCourante * MDL_NOMBRE_ELEMENT_COLONNE + ligne]->subFolder)

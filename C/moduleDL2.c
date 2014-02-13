@@ -200,7 +200,7 @@ void MDLLauncher()
         quit_thread(0);
     }
 #else
-    FILE *fileBlocker = fopenR("data/download", "w+");
+    FILE *fileBlocker = fopen("data/download", "w+");
     fprintf(fileBlocker, "%d", getpid());
     fclose(fileBlocker);
 #endif
@@ -215,7 +215,7 @@ void MDLLauncher()
     ReleaseSemaphore (hSem, 1, NULL);
     CloseHandle (hSem);
 #else
-    removeR("data/download");
+    remove("data/download");
 #endif
     quit_thread(0);
 }
@@ -343,7 +343,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         if(!checkChapterAlreadyInstalled(todoListTmp))
         {
             if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
-                ouvrirSiteTeam(todoListTmp.datas->team); //Ouverture du site de la team
+                ouvrirSite(todoListTmp.datas->team->site); //Ouverture du site de la team
             }
             argument.buf = NULL;
             argument.length = 0;
@@ -590,12 +590,12 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
         //On crée un message pour ne pas lire un chapitre en cours d'installe
         char temp_path_install[600];
         snprintf(temp_path_install, 600, "%s/installing", basePath);
-        ressources = fopenR(temp_path_install, "w+");
+        ressources = fopen(temp_path_install, "w+");
         if(ressources != NULL)
             fclose(ressources);
 
         erreurs = miniunzip (buf, basePath, "", sizeBuf, chapitre/10);
-        removeR(temp_path_install);
+        remove(temp_path_install);
 
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
         if(!erreurs && haveToPutTomeAsReadable)
@@ -621,7 +621,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
             else if(checkFileExist(temp))
             {
                 snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-                ressources = fopenR(temp, "r+");
+                ressources = fopen(temp, "r+");
                 if(ressources != NULL)
                 {
                     fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
@@ -634,7 +634,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
                 else
                     extremes[0] = extremes[1] = chapitre;
 
-                ressources = fopenR(temp, "w+");
+                ressources = fopen(temp, "w+");
                 if(extremes[0] > chapitre)
                     fprintf(ressources, "%d %d", chapitre, extremes[1]);
 
@@ -652,7 +652,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
             {
                 /*Création du config.dat du nouveau manga*/
                 snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-                ressources = fopenR(temp, "w+");
+                ressources = fopen(temp, "w+");
                 fprintf(ressources, "%d %d", chapitre, chapitre);
                 fclose(ressources);
             }
@@ -780,7 +780,7 @@ bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
 void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted)
 {
     int currentPosition, printSomething = 0;
-    FILE *import = fopenR(INSTALL_DATABASE, "a+");
+    FILE *import = fopen(INSTALL_DATABASE, "a+");
     if(import != NULL)
     {
         for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++) //currentPosition a déjà été incrémenté par le for précédent
@@ -811,7 +811,7 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool er
         }
         fclose(import);
         if(!printSomething)
-            removeR(INSTALL_DATABASE);
+            remove(INSTALL_DATABASE);
     }
 }
 

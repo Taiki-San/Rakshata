@@ -126,7 +126,7 @@ int mainLecture()
                                 char temp[LONGUEUR_NOM_MANGA_MAX], type[2] = {0, 0};
                                 FILE* test = NULL;
 
-                                test = fopenR("data/laststate.dat", "r");
+                                test = fopen("data/laststate.dat", "r");
                                 fscanfs(test, "%s %s %d", temp, LONGUEUR_NOM_MANGA_MAX, type, 2, &chapitreChoisis);
                                 fclose(test);
 

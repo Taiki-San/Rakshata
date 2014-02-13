@@ -89,7 +89,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 {
     int oldDownloadListLength = *nombreMangaTotal, nombreEspace = 0, dernierEspace = 1, i;
 
-    FILE* import = fopenR(INSTALL_DATABASE, "r");
+    FILE* import = fopen(INSTALL_DATABASE, "r");
     while((i = fgetc(import)) != EOF)
     {
         if(i == ' ')
@@ -227,7 +227,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
                 newBufferTodo = noDuplicate;
         }
         fclose(import);
-        removeR(INSTALL_DATABASE);
+        remove(INSTALL_DATABASE);
 		return newBufferTodo;
     }
     return NULL;
@@ -658,7 +658,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
         download_disk(URL, NULL, path, strcmp(mangaToCheck.team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
     }
     else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
-        removeR(path);
+        remove(path);
 }
 
 int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
@@ -669,7 +669,7 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
     MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
 
     /*On ouvre le fichier d'import*/
-    fichier = fopenR(INSTALL_DATABASE, "a+");
+    fichier = fopen(INSTALL_DATABASE, "a+");
 
     if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
