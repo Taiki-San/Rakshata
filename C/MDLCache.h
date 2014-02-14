@@ -14,11 +14,11 @@ typedef struct MDL_SELEC_CACHE_MANGA MDL_SELEC_CACHE_MANGA;
 struct MDL_SELEC_CACHE_MANGA
 {
     MANGAS_DATA * manga;
-    bool allTomeCached;     //On ne prend en compte que les élements non téléchargés
-    int * tome;
-    bool allChapterCached;
-    int * chapitre;
     MDL_SELEC_CACHE_MANGA * nextManga;
+    int * tome;
+    int * chapitre;
+    bool allTomeCached;     //On ne prend en compte que les élements non téléchargés
+    bool allChapterCached;
 };
 
 typedef struct MDL_SELEC_CACHE MDL_SELEC_CACHE; //Version publique

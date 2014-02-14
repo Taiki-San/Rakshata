@@ -71,20 +71,22 @@
 
 typedef struct data_loaded_from_download_list
 {
-	int chapitre;
+    MANGAS_DATA* datas;
 	int *listChapitreOfTome;
 	unsigned char *tomeName;
-	bool subFolder;
+	
+	int chapitre;
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
-    MANGAS_DATA* datas;
+
+	bool subFolder;
 } DATA_LOADED;
 
 typedef struct data_sent_to_pay_thread
 {
+    int ** statusLocal;
     int prix;
     int sizeStatusLocal;
     unsigned int factureID;
-    int ** statusLocal;
     bool somethingToPay;
 } DATA_PAY;
 
@@ -104,13 +106,14 @@ typedef struct download_data_struct
 
 typedef struct data_pour_installation
 {
+    MANGAS_DATA *mangaDB;
     void *downloadedData;
-    bool subFolder;
+    size_t length;
+
     int chapitre;
     int tome;
+    bool subFolder;
     bool isLastElemOfTome;
-    size_t length;
-    MANGAS_DATA *mangaDB;
 } DATA_INSTALL;
 
 typedef struct main_data_module_DL
@@ -122,10 +125,11 @@ typedef struct main_data_module_DL
 
 typedef struct argument_to_MDL_handler
 {
-    bool isTomeAndLastElem;
     int *currentState;
     char ***historiqueTeam;
     DATA_LOADED* todoList;
+
+    bool isTomeAndLastElem;
 } MDL_HANDLER_ARG;
 
 extern int WINDOW_SIZE_H_DL;

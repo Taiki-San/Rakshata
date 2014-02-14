@@ -91,9 +91,9 @@ typedef struct dataMangas
     size_t nombreTomes;
 
 	//Padding, rien de gaspillé en principe
-    char mangaName[LONGUEUR_NOM_MANGA_MAX];
+	char mangaName[LONGUEUR_NOM_MANGA_MAX];
     char mangaNameShort[LONGUEUR_COURT];
-	bool outdated;
+	uint outdated;
 } MANGAS_DATA;
 
 typedef struct data_provided_to_engine
