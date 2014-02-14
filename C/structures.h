@@ -22,7 +22,7 @@ typedef struct infos_Team
     char type[LONGUEUR_TYPE_TEAM];
     char URL_depot[LONGUEUR_URL];
     char site[LONGUEUR_SITE];
-    int openSite;
+    bool openSite;
 } TEAMS_DATA;
 
 typedef struct tome_metadata
@@ -33,77 +33,112 @@ typedef struct tome_metadata
     unsigned char description2[TOME_DESCRIPTION_LENGTH];
 }META_TOME;
 
+/**********************************************************************************************
+**
+**	Structure optimisée, explication du contenu
+**
+**		Infos générales
+**			-	mangaName				Nom complet du manga
+**			-	mangaNameShort			Nom court du manga, un ID, pas présenté au user
+**			-	team					Pointeur vers la structure de la team
+**			-	status					État du projet (en cours, fini, suspendu, etc...)
+**			-	genre					Type du projet (shonen & co)
+**			-	pageInfos				Version de la page d'info
+**			
+**		Chapitres
+**			-	firstChapter			# du premier chapitre
+**			-	lastChapter				# du dernier chapitre
+**			-	nombreChapitreSpeciaux	nombre de chapitres spéciaux
+**			-	nombreChapitre			nombre de chapitres total
+**			-	chapitres				tableau contenant tous les chapitres classés
+**
+**		Tomes
+**			-	firstTome				# du premier chapitre
+**			-	nombreTomes				nombre de tomes total
+**			-	tomes					tableau contenant tous les tomes classés
+**
+**		Module DL
+**			-	contentDownloadable		si il y a quelque chose qui n'est pas DL
+**			-	favoris					est-ce que c'est un favoris
+**			-	outdated				permet de voir si les données ont à être mis à jour
+**
+**********************************************************************************************/
+
 typedef struct dataMangas
 {
-    //Infos générales
-    char mangaName[LONGUEUR_NOM_MANGA_MAX];
-    char mangaNameShort[LONGUEUR_COURT];
+	//Pointeurs, un bloc chacun (64b)
     TEAMS_DATA *team;
-
-    int status;
-    int genre;
-    int pageInfos;
-
-    //Chapitres
-    int firstChapter;
-    int lastChapter;
-    int nombreChapitreSpeciaux;
-    size_t nombreChapitre;
     int *chapitres;
-
-    //Tomes
-    int firstTome;
-    size_t nombreTomes;
     META_TOME *tomes;
 
-    //Module DL
+	//Un bloc de 64b complet
+	uint16_t status;
+    uint16_t genre;
+    uint16_t pageInfos;
     bool contentDownloadable;
+    bool favoris;
+	
+	//Un bloc de 64b complet
+	int firstChapter;
+    int lastChapter;
+    
+	//Un bloc de 64b complet
+    uint nombreChapitreSpeciaux;
+    int firstTome;
+	
+	//Un bloc de 64b complet chacun
+	size_t nombreChapitre;
+    size_t nombreTomes;
 
-    int favoris;
+	//Padding, rien de gaspillé en principe
+    char mangaName[LONGUEUR_NOM_MANGA_MAX];
+    char mangaNameShort[LONGUEUR_COURT];
+	bool outdated;
 } MANGAS_DATA;
 
 typedef struct data_provided_to_engine
 {
-    char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
-    int ID;
-
     /*Variable pour CONTEXTE_LECTURE*/
     MANGAS_DATA *data;
+	
+	/*Variable pour CONTEXTE_TOME*/
+    char *description1; //Ligne de description 1
+    char *description2; //Ligne de description 2
 
+	//Position optimisée
+	int ID;
+	char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
+	
     /*Variable pour CONTEXTE_DL*/
     bool anythingToDownload;            //Si rien de nouveau à télécharger
     bool isFullySelected;               //Is element in cache
 
-    /*Variable pour CONTEXTE_TOME*/
-    char *description1; //Ligne de description 1
-    char *description2; //Ligne de description 2
-	
 } DATA_ENGINE;
 
 typedef struct preferences_to_engine
 {
-	int nombreElementTotal;
+	uint nombreElementTotal;
 	
-	int nombreChapitreDejaSelect;	//CONTEXTE_DL
+	uint nombreChapitreDejaSelect;	//CONTEXTE_DL
 	
-    /*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
-    int IDDernierElemLu;
-    char* website;
-	bool switchAvailable;
-	
-	/*Variable pour CONTEXTE_CHAPITRE*/
+    /*Variable pour CONTEXTE_CHAPITRE*/
 	int chapitrePlusAncien;
 	int chapitrePlusRecent;
 	
 	int currentTomeInfoDisplayed; //Précise si (et quel) tome est affiché
 	
+	/*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
+    int IDDernierElemLu;
+    char* website;
+	bool switchAvailable;
+	
 } PREFS_ENGINE;
 
 typedef struct
 {
-    int r;
-    int g;
-    int b;
+    char r;
+    char g;
+    char b;
 } PALETTE_RGB;
 
 typedef PALETTE_RGB Rak_Color;
