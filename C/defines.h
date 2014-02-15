@@ -17,9 +17,7 @@
 #define HAUTEUR 730
 #define BARRE_DES_TACHES_WINDOWS 75
 #define PERMISSIONS 0755
-#define NOMBRE_TEAM_MAX 100
 #define TAILLE_BUFFER 500
-#define MAX_INT 2147483646
 
 #define CREATE_WINDOW_FLAG SDL_WINDOW_OPENGL|SDL_WINDOW_ALLOW_HIGHDPI
 
@@ -138,48 +136,25 @@
 #define POLICE_GROS 26
 
 /*Couleurs*/
-#define OLD_STYLE
-#ifdef OLD_STYLE
-    #define POLICE_R 0
-    #define POLICE_G 0
-    #define POLICE_B 0
-    #define POLICE_NEW_R 203
-    #define POLICE_NEW_G 47
-    #define POLICE_NEW_B 47
-    #define POLICE_UNREAD_R 48
-    #define POLICE_UNREAD_G 170
-    #define POLICE_UNREAD_B 0
-    #define POLICE_ENABLE_R 203
-    #define POLICE_ENABLE_G 47
-    #define POLICE_ENABLE_B 47
-    #define POLICE_UNAVAILABLE_R 77
-    #define POLICE_UNAVAILABLE_G 77
-    #define POLICE_UNAVAILABLE_B 77
-    #define FOND_R 214
-    #define FOND_G 214
-    #define FOND_B 214
-    #define BANDEAU_INFOS_LECTEUR_STYLES TTF_STYLE_UNDERLINE
-#else
-    #define POLICE_R 85
-    #define POLICE_G 200
-    #define POLICE_B 85
-    #define POLICE_NEW_R 203
-    #define POLICE_NEW_G 35
-    #define POLICE_NEW_B 39
-    #define POLICE_UNREAD_R 72
-    #define POLICE_UNREAD_G 76
-    #define POLICE_UNREAD_B 246
-    #define POLICE_ENABLE_R 203
-    #define POLICE_ENABLE_G 35
-    #define POLICE_ENABLE_B 39
-    #define POLICE_UNAVAILABLE_R 77
-    #define POLICE_UNAVAILABLE_G 77
-    #define POLICE_UNAVAILABLE_B 77
-    #define FOND_R 54
-    #define FOND_G 54
-    #define FOND_B 54
-    #define BANDEAU_INFOS_LECTEUR_STYLES TTF_STYLE_UNDERLINE|TTF_STYLE_BOLD
-#endif
+#define POLICE_R 0
+#define POLICE_G 0
+#define POLICE_B 0
+#define POLICE_NEW_R 203
+#define POLICE_NEW_G 47
+#define POLICE_NEW_B 47
+#define POLICE_UNREAD_R 48
+#define POLICE_UNREAD_G 170
+#define POLICE_UNREAD_B 0
+#define POLICE_ENABLE_R 203
+#define POLICE_ENABLE_G 47
+#define POLICE_ENABLE_B 47
+#define POLICE_UNAVAILABLE_R 77
+#define POLICE_UNAVAILABLE_G 77
+#define POLICE_UNAVAILABLE_B 77
+#define FOND_R 214
+#define FOND_G 214
+#define FOND_B 214
+#define BANDEAU_INFOS_LECTEUR_STYLES TTF_STYLE_UNDERLINE
 
 /*Settings*/
 #define SECURE_DATABASE "data/secure.enc"
@@ -373,7 +348,6 @@
 #define EVERYTHING_IN_MEMORY 4
 #define NOMBRE_CLE_MAX_ACCEPTE 10
 #define FULL_ENCRYPTION 1
-#define MESSAGE_PASSWORD "0x4b4d1d341N33d4Password4b4d1d34"
 
 /*Hash algorithms*/
 #define SHA256_BLOCK_LENGTH	64

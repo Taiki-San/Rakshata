@@ -102,7 +102,7 @@ MANGAS_DATA* miseEnCache(int mode)
                                                                    && checkPathEscape(mangas[numeroManga].mangaName, LONGUEUR_NOM_MANGA_MAX)
                                                                    && checkPathEscape(teamList[numeroTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX))
 			{
-                memcpy(mangas[numeroManga].team, teamList[numeroTeam], sizeof(TEAMS_DATA));
+                mangas[numeroManga].team = teamList[numeroTeam];
                 mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], &cacheFavs);
                 if(mode == LOAD_DATABASE_ALL)
                     mangas[numeroManga].contentDownloadable = isAnythingToDownload(&mangas[numeroManga]);
@@ -141,12 +141,7 @@ quit:
 
 MANGAS_DATA* allocateDatabase(size_t length)
 {
-    size_t pos;
-    MANGAS_DATA* database = calloc(length, sizeof(MANGAS_DATA));
-    for(pos = 0; pos < length; pos++)
-        database[pos].team = calloc(1, sizeof(TEAMS_DATA));
-
-    return database;
+    return calloc(length, sizeof(MANGAS_DATA));
 }
 
 void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
@@ -154,17 +149,25 @@ void freeMangaData(MANGAS_DATA* mangaDB, size_t length)
     if(mangaDB == NULL)
         return;
 
-    size_t pos = 0;
+    size_t pos = 0, posTeamCollector = 0, i;
+	void* collector[length];
     for(; pos < length; pos++)
     {
         if(mangaDB[pos].chapitres != NULL)
             free(mangaDB[pos].chapitres);
         if(mangaDB[pos].team != NULL)
-            free(mangaDB[pos].team);
+		{
+			for(i = 0; i < posTeamCollector && mangaDB[pos].team != collector[i]; i++);
+			if(i == posTeamCollector)
+				collector[posTeamCollector++] = mangaDB[pos].team;
+		}
         if(mangaDB[pos].tomes != NULL)
             free(mangaDB[pos].tomes);
 
     }
+	while (posTeamCollector--)
+		free(collector[posTeamCollector]);
+
     free(mangaDB);
 }
 

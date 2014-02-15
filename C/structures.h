@@ -60,7 +60,11 @@ typedef struct tome_metadata
 **		Module DL
 **			-	contentDownloadable		si il y a quelque chose qui n'est pas DL
 **			-	favoris					est-ce que c'est un favoris
-**			-	outdated				permet de voir si les données ont à être mis à jour
+**
+**		Cache
+**
+**			-	dataExpirationCache		découpé en deux morceaux (4b/28b), 4b pour la version du cache,
+**										28 pour la position dans l'index (accélérer requêtes)
 **
 **********************************************************************************************/
 
@@ -83,17 +87,20 @@ typedef struct dataMangas
     int lastChapter;
     
 	//Un bloc de 64b complet
-    uint nombreChapitreSpeciaux;
+    uint32_t nombreChapitreSpeciaux;
     int firstTome;
 	
 	//Un bloc de 64b complet chacun
 	size_t nombreChapitre;
     size_t nombreTomes;
-
-	//Padding, rien de gaspillé en principe
+	
+	//Padding, 50 + 10 o, 4 o libres
 	char mangaName[LONGUEUR_NOM_MANGA_MAX];
     char mangaNameShort[LONGUEUR_COURT];
-	uint outdated;
+	
+	//32b récupérés par le cache
+	uint32_t dataExpirationCache;
+
 } MANGAS_DATA;
 
 typedef struct data_provided_to_engine
