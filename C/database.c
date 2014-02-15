@@ -17,7 +17,7 @@ static uint sizeCache = 0;
 MANGAS_DATA* miseEnCache(int mode)
 {
     void *buf;
-	uint nombreTeam, numeroTeam, nombreMangaDansDepot = 1, numeroManga = 0, currentBufferSize;
+	uint nombreTeam, numeroTeam, numeroManga = 0, currentBufferSize;
     char *repoDB, *repoBak, *mangaDB, *mangaBak, *cacheFavs = NULL;
     TEAMS_DATA **teamList = NULL;
     MANGAS_DATA *mangas = allocateDatabase(NOMBRE_MANGA_MAX);
@@ -85,7 +85,6 @@ MANGAS_DATA* miseEnCache(int mode)
 						for(; *mangaDB && *mangaDB != '#'; mangaDB++); //On saute la team courante
 						continue;
 					}
-					nombreMangaDansDepot = 1;
 				}
 				numeroManga--;
 				begining = false;
@@ -140,7 +139,6 @@ MANGAS_DATA* miseEnCache(int mode)
 					mangas[numeroManga].favoris = checkIfFaved(&mangas[numeroManga], &cacheFavs);
 					if(mode == LOAD_DATABASE_ALL)
 						mangas[numeroManga].contentDownloadable = isAnythingToDownload(&mangas[numeroManga]);
-					nombreMangaDansDepot++;
 				}
 				else
 				{
@@ -148,16 +146,6 @@ MANGAS_DATA* miseEnCache(int mode)
 					memset(mangas[numeroManga].mangaNameShort, 0, LONGUEUR_COURT);
 					mangas[numeroManga].firstChapter = mangas[numeroManga].lastChapter = mangas[numeroManga].firstTome = mangas[numeroManga].pageInfos = mangas[numeroManga].favoris = 0;
 					numeroManga--;
-				}
-				if(nombreMangaDansDepot >= NOMBRE_MANGA_MAX_PAR_DEPOT)
-				{
-					char bufferOutput[100], c;
-					while((c = *(mangaDB++)) != '#' && c != EOF);
-					if(c == '#')
-						mangaDB--;
-					snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "https://%s/overuse.php?team=%s", SERVEUR_URL, teamList[nombreTeam]->teamLong);
-					crashTemp(bufferOutput, 100);
-					download_mem(temp, NULL, bufferOutput, 100, SSL_ON);
 				}
 			}
 		}
