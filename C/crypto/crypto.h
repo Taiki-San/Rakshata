@@ -74,3 +74,33 @@ typedef struct
 u4byte * TwofishSetKey(TwofishInstance *instance, const u4byte in_key[], const u4byte key_len);
 void TwofishEncrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[]);
 void TwofishDecrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[4]);
+
+
+/*****************************************************
+**                                                  **
+**                      PBKDF2                      **
+**                                                  **
+*****************************************************/
+
+int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, size_t inputLength, const uint8_t *salt, size_t saltLength, uint32_t iteneration, size_t lengthOutput, uint8_t *output);
+void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
+
+
+/*****************************************************
+**                                                  **
+**                      SHA-256                     **
+**                                                  **
+*****************************************************/
+
+int sha256(unsigned char* input, void* output);
+int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
+void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output);
+
+
+/*****************************************************
+**                                                  **
+**                    Whirlpool                     **
+**                                                  **
+*****************************************************/
+
+void whirlpool(const unsigned char *input, size_t inputLength, char *output, bool outHex);

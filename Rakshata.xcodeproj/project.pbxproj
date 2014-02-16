@@ -34,6 +34,7 @@
 		B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FE18A4065A00A9B16E /* libssl.a */; };
 		B6EA520318A407EF00A9B16E /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA520218A407EF00A9B16E /* libz.a */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
+		B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6EDE77318B02BCC00DB3AFC /* Credits.rtf */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
 		B6F6ECEA18A3001400E3B55B /* affichage.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA318A3001400E3B55B /* affichage.c */; };
@@ -81,6 +82,8 @@
 		B6F6ED1818A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE718A3001400E3B55B /* unzip.c */; };
 		B6F6ED1918A3001400E3B55B /* update.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE818A3001400E3B55B /* update.c */; };
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
+		B6FD250618B123840025FE74 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FD250518B123840025FE74 /* libsqlite.a */; };
+		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -132,6 +135,7 @@
 		B6EA520218A407EF00A9B16E /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Ressources/libz.a; sourceTree = "<group>"; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
 		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
+		B6EDE77418B02BCC00DB3AFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = SOURCE_ROOT; };
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
@@ -199,6 +203,10 @@
 		B6F6ECE818A3001400E3B55B /* update.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = update.c; path = C/update.c; sourceTree = "<group>"; };
 		B6F6ECE918A3001400E3B55B /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/utilitaires.c; sourceTree = "<group>"; };
 		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unz_memory.c; sourceTree = "<group>"; };
+		B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Rakshata.entitlements; sourceTree = "<group>"; };
+		B6FD250518B123840025FE74 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Ressources/libsqlite.a; sourceTree = "<group>"; };
+		B6FD250718B1245C0025FE74 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = Ressources/sqlite3.h; sourceTree = "<group>"; };
+		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +214,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6FD250618B123840025FE74 /* libsqlite.a in Frameworks */,
 				B6EA520318A407EF00A9B16E /* libz.a in Frameworks */,
 				B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
@@ -353,6 +362,7 @@
 		B6CF07B21868DD58009B16A3 = {
 			isa = PBXGroup;
 			children = (
+				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6002C30189EF15E00466654 /* MainMenu.xib */,
 				B6E8938B189EF3A600ACAF36 /* main.m */,
@@ -376,6 +386,7 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6FD250518B123840025FE74 /* libsqlite.a */,
 				B6EA51FC18A4065A00A9B16E /* libcrypto.a */,
 				B6EA51FD18A4065A00A9B16E /* libcurl.a */,
 				B6EA51FE18A4065A00A9B16E /* libssl.a */,
@@ -417,6 +428,7 @@
 		B6CF07C51868DD58009B16A3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B6EDE77318B02BCC00DB3AFC /* Credits.rtf */,
 				B6E8938A189EF3A600ACAF36 /* Images.xcassets */,
 			);
 			name = "Supporting Files";
@@ -434,6 +446,7 @@
 				B6F6ECAC18A3001400E3B55B /* sha256.c */,
 				B6F6ECAD18A3001400E3B55B /* std_defs.h */,
 				B6F6ECAE18A3001400E3B55B /* Twofish.c */,
+				B6FD250818B1537E0025FE74 /* whirlpool.c */,
 			);
 			name = crypto;
 			path = C/crypto;
@@ -539,6 +552,7 @@
 				B6F6ECC418A3001400E3B55B /* main.h */,
 				B6F6ECD018A3001400E3B55B /* prototypes.h */,
 				B6F6ECD618A3001400E3B55B /* structures.h */,
+				B6FD250718B1245C0025FE74 /* sqlite3.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -607,6 +621,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6002C31189EF15E00466654 /* MainMenu.xib in Resources */,
+				B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */,
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -685,6 +700,7 @@
 				B6F6ECF018A3001400E3B55B /* sha256.c in Sources */,
 				B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */,
 				B6F6ECF418A3001400E3B55B /* download.c in Sources */,
+				B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */,
 				B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */,
 				B6F6ECEF18A3001400E3B55B /* Serpent.c in Sources */,
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
@@ -704,6 +720,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B6EDE77318B02BCC00DB3AFC /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6EDE77418B02BCC00DB3AFC /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		B6CF07EA1868DD58009B16A3 /* Debug */ = {
@@ -783,7 +810,7 @@
 				CLANG_WARN_BOOL_CONVERSION = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = NO;
-				CODE_SIGN_ENTITLEMENTS = Ressources/Rakshata.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -818,7 +845,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = NO;
-				CODE_SIGN_ENTITLEMENTS = Ressources/Rakshata.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;

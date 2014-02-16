@@ -56,7 +56,7 @@ bool isAnythingToDownload(MANGAS_DATA *mangaDB);
 /**Database.c**/
 MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
-void freeMangaData(MANGAS_DATA* mangaDB, size_t length);
+void freeMangaData(MANGAS_DATA* mangaDB, int lol);
 void updateDatabase(bool forced);
 void resetUpdateDBCache();
 int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
@@ -166,10 +166,6 @@ int checkPID(int PID);
 #define checkFileExist(filename) (access(filename, F_OK) != -1)
 int checkDirExist(char *dirname);
 
-/**PBKDF2.c**/
-int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, size_t inputLength, const uint8_t *salt, size_t saltLength, uint32_t iteneration, size_t lengthOutput, uint8_t *output);
-void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
-
 /**Repo.c**/
 int checkAjoutRepoParFichier(char *argv);
 int ajoutRepo(bool ajoutParFichier);
@@ -212,11 +208,6 @@ bool checkRestore();
 int checkRestoreAvailable();
 void reader_saveStateForRestore(char * mangaName, int currentSelection, bool isTome, int currentPage);
 void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool * isTome, int * page, bool removeWhenDone);
-
-/**SHA256.c**/
-int sha256(unsigned char* input, void* output);
-int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
-void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output);
 
 /**Thread.c**/
 void createNewThread(void *function, void *arg);
