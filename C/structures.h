@@ -63,8 +63,7 @@ typedef struct tome_metadata
 **
 **		Cache
 **
-**			-	dataExpirationCache		découpé en deux morceaux (4b/28b), 4b pour la version du cache,
-**										28 pour la position dans l'index (accélérer requêtes)
+**			-	cacheDBID				ID utilisé pour accéder très vite à l'élement
 **
 **********************************************************************************************/
 
@@ -99,7 +98,7 @@ typedef struct dataMangas
     char mangaNameShort[LONGUEUR_COURT];
 	
 	//32b récupérés par le cache
-	uint32_t dataExpirationCache;
+	uint32_t cacheDBID;
 
 } MANGAS_DATA;
 
