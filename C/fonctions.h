@@ -54,6 +54,16 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool isAnythingToDownload(MANGAS_DATA *mangaDB);
 
 /**Database.c**/
+int setupBDDCache();
+bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled, uint nbTeam);
+bool updateCache(MANGAS_DATA data, bool whatCanIUse, char * mangaNameShort);
+void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output);
+uint getDBTeamID(TEAMS_DATA * team);
+MANGAS_DATA * getCopyCache(int mode);
+char isProjectUpdated(uint ID, uint context);
+void updateIfRequired(MANGAS_DATA *data, char context);
+
+
 MANGAS_DATA* miseEnCache(int mode);
 MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangaDB, int lol);

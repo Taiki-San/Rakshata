@@ -55,8 +55,7 @@ void mainMDL()
     {
         if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
             break;
-        usleep
-(50);
+        usleep(50);
     }
 
     if(checkNetworkState(CONNEXION_DOWN))

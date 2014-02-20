@@ -522,8 +522,7 @@ int checkNameFileZip(char fileToTest[256])
 
 bool checkPathEscape(char *string, int length)
 {
-    int i;
-    for(i = 0; i < length && string[i] != 0; i++)
+    for(int i = 0; i < length && string[i]; i++)
     {
         if(string[i] == '.' && (string[i+1] == '/' || string[i+1] == '\\'))
         {

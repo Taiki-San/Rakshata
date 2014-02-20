@@ -2963,7 +2963,8 @@ SQLITE_API const char *sqlite3_errstr(int);
 ** Refer to documentation on individual methods above for additional
 ** information.
 */
-typedef struct sqlite3_stmt sqlite3_stmt;
+//Copied to structure.h
+//typedef struct sqlite3_stmt sqlite3_stmt;
 
 /*
 ** CAPI3REF: Run-time Limits

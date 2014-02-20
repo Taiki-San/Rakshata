@@ -15,6 +15,9 @@
 #endif
 typedef byte rawData;
 
+//Copied from sqlite3.h
+typedef struct sqlite3_stmt sqlite3_stmt;
+
 typedef struct infos_Team
 {
     char teamLong[LONGUEUR_NOM_MANGA_MAX];
