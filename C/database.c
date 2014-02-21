@@ -69,8 +69,6 @@ int setupBDDCache()
 		return 0;
 	}
 	
-	sleep(1);
-	
 	if(teamList != NULL)	//En principe inutile mais au cas où
 	{
 		for(int i = 0; i < lengthTeam; free(teamList[i++]));
@@ -109,8 +107,6 @@ int setupBDDCache()
 		}
     }
 	
-	sleep(1);
-	
 	if(nombreTeam == 0)	//Aucune team lue
 	{
 		free(internalTeamList);
@@ -129,8 +125,6 @@ int setupBDDCache()
 		sqlite3_finalize(request);
 		sqlite3_close(internalDB);
 	}
-	
-	sleep(1);
 	
 	//On est bon, let's go
     if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite(RDB_team, RDB_mangaNameShort, RDB_isInstalled, RDB_mangaName, RDB_status, RDB_genre, RDB_pageInfos, RDB_firstChapter, RDB_lastChapter, RDB_nombreChapitreSpeciaux, RDB_nombreChapitre, RDB_chapitres, RDB_firstTome, RDB_nombreTomes, RDB_tomes, RDB_contentDownloadable, RDB_favoris) values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
@@ -208,8 +202,6 @@ int setupBDDCache()
 		
 		sqlite3_finalize(request);
 		
-		sleep(1);
-		
 		//Work is done, we start freeing memory
 		for(numeroTeam = 0; numeroTeam < nombreTeam; numeroTeam++)
 		{
@@ -235,36 +227,12 @@ int setupBDDCache()
 		isUpdated = calloc(nbElem, sizeof(char));
 		if(isUpdated)
 			lengthIsUpdated = nbElem;
-		
-		sleep(1);
 	}
 	
 	free(mangaBak);
 	
 	return nombreManga;
 }
-
-/*void killCache()
-{
-	if(cache != NULL)
-	{
-		sqlite3_close_v2(cache);
-		cache = NULL;
-		nbElem = 0;
-	}
-	if(teamList != NULL)
-	{
-		for(; lengthTeam; free(teamList[--lengthTeam]));
-		free(teamList);
-		teamList = NULL;
-	}
-	if(isUpdated != NULL)
-	{
-		free(isUpdated);
-		isUpdated = NULL;
-		lengthIsUpdated = 0;
-	}
-}*/
 
 bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled, uint nbTeam)
 {
