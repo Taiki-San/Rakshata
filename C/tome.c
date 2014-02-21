@@ -116,6 +116,9 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
 
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
+	if(mangaDB->tomes == NULL)
+		return;
+	
     int nbElem = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
     FILE* config = NULL;

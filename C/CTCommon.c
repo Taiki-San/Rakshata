@@ -140,23 +140,40 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
 
 bool isAnythingToDownload(MANGAS_DATA *mangaDB)
 {
-    int prevSize, uselessVar;
+	bool ret_value = false;
+	void *oldPtr;
+    int prevSize, uselessVar, sizeBak;
     if(mangaDB->firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        refreshChaptersList(mangaDB);
+		oldPtr = mangaDB->chapitres;
+		sizeBak = mangaDB->nombreChapitre;
+		mangaDB->chapitres = NULL;
+		
+		refreshChaptersList(mangaDB);
         prevSize = mangaDB->nombreChapitre;
         checkChapitreValable(mangaDB, &uselessVar);
-        if(prevSize != mangaDB->nombreChapitre)
-            return true;
+		ret_value = prevSize != mangaDB->nombreChapitre;
+		
+		free(mangaDB->chapitres);
+		mangaDB->chapitres = oldPtr;
+		mangaDB->nombreChapitre = sizeBak;
     }
+	
     if(mangaDB->firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        refreshTomeList(mangaDB);
+        oldPtr = mangaDB->tomes;
+		sizeBak = mangaDB->nombreTomes;
+		mangaDB->tomes = NULL;
+		
+		refreshTomeList(mangaDB);
         prevSize = mangaDB->nombreTomes;
         checkTomeValable(mangaDB, &uselessVar);
-        if(prevSize != mangaDB->nombreTomes)
-            return true;
-    }
-    return false;
+        ret_value |= prevSize != mangaDB->nombreTomes;
+
+		free(mangaDB->tomes);
+		mangaDB->tomes = oldPtr;
+		mangaDB->nombreTomes = sizeBak;
+	}
+    return ret_value;
 }
 

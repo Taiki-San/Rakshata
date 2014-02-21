@@ -10,6 +10,5 @@
 
 int main(int argc, const char * argv[])
 {
-	testDB();
 	return NSApplicationMain(argc, argv);
 }
