@@ -46,7 +46,7 @@
 		B6F6ECF018A3001400E3B55B /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECAC18A3001400E3B55B /* sha256.c */; };
 		B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECAE18A3001400E3B55B /* Twofish.c */; };
 		B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECAF18A3001400E3B55B /* CTCommon.c */; };
-		B6F6ECF318A3001400E3B55B /* database.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB018A3001400E3B55B /* database.c */; };
+		B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB018A3001400E3B55B /* DBRefresh.c */; };
 		B6F6ECF418A3001400E3B55B /* download.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB218A3001400E3B55B /* download.c */; };
 		B6F6ECF518A3001400E3B55B /* engine.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB318A3001400E3B55B /* engine.c */; };
 		B6F6ECF618A3001400E3B55B /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB418A3001400E3B55B /* error.c */; };
@@ -84,6 +84,7 @@
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
 		B6FD250618B123840025FE74 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FD250518B123840025FE74 /* libsqlite.a */; };
 		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
+		B6FE79E118B903B4004BE38D /* DBcache.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FE79E018B903B4004BE38D /* DBcache.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -151,7 +152,7 @@
 		B6F6ECAD18A3001400E3B55B /* std_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = std_defs.h; sourceTree = "<group>"; };
 		B6F6ECAE18A3001400E3B55B /* Twofish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Twofish.c; sourceTree = "<group>"; };
 		B6F6ECAF18A3001400E3B55B /* CTCommon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CTCommon.c; path = C/CTCommon.c; sourceTree = "<group>"; };
-		B6F6ECB018A3001400E3B55B /* database.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = database.c; path = C/database.c; sourceTree = "<group>"; };
+		B6F6ECB018A3001400E3B55B /* DBRefresh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBRefresh.c; path = C/DBRefresh.c; sourceTree = "<group>"; };
 		B6F6ECB118A3001400E3B55B /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defines.h; path = C/defines.h; sourceTree = "<group>"; };
 		B6F6ECB218A3001400E3B55B /* download.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = download.c; path = C/download.c; sourceTree = "<group>"; };
 		B6F6ECB318A3001400E3B55B /* engine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = engine.c; path = C/engine.c; sourceTree = "<group>"; };
@@ -207,6 +208,7 @@
 		B6FD250518B123840025FE74 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Ressources/libsqlite.a; sourceTree = "<group>"; };
 		B6FD250718B1245C0025FE74 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = Ressources/sqlite3.h; sourceTree = "<group>"; };
 		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
+		B6FE79E018B903B4004BE38D /* DBcache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBcache.c; path = C/DBcache.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -506,7 +508,8 @@
 		B6F6ED1E18A3007600E3B55B /* DB */ = {
 			isa = PBXGroup;
 			children = (
-				B6F6ECB018A3001400E3B55B /* database.c */,
+				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
+				B6FE79E018B903B4004BE38D /* DBcache.c */,
 				B6F6ECAF18A3001400E3B55B /* CTCommon.c */,
 				B6F6ECA418A3001400E3B55B /* chapitre.c */,
 				B6F6ECD218A3001400E3B55B /* repo.c */,
@@ -689,6 +692,7 @@
 				B6F6ECF918A3001400E3B55B /* interface.c in Sources */,
 				B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */,
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,
+				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
 				B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
@@ -707,7 +711,7 @@
 				B6F6ED1018A3001400E3B55B /* thread.c in Sources */,
 				B67449401875E65000F96DB4 /* Footer.m in Sources */,
 				B67449421875E65000F96DB4 /* FooterSStatic.m in Sources */,
-				B6F6ECF318A3001400E3B55B /* database.c in Sources */,
+				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6F6ED1918A3001400E3B55B /* update.c in Sources */,
 				B6F6ED0E18A3001400E3B55B /* selection.c in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
@@ -835,6 +839,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = "-Wunreachable-code";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -872,6 +877,7 @@
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = "-Wunreachable-code";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

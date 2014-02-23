@@ -52,7 +52,7 @@ void checkNewElementInRepo(DATA_CK_LECTEUR *input)
     if(bufferDL == NULL)
         quit_thread(0);
 	
-    version = get_update_mangas(bufferDL, mangaDB.team);
+    version = getUpdatedProjectOfTeam(bufferDL, mangaDB.team);
 	
     if(!bufferDL[i]) //On a DL quelque chose
     {

@@ -301,7 +301,6 @@ int logon()
                             snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
                             UI_Alert(trad[13], contenuUIError);
                             return PALIER_QUIT;
-                            break;
                         }
                     }
                     break;

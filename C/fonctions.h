@@ -53,7 +53,7 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool isAnythingToDownload(MANGAS_DATA *mangaDB);
 
-/**Database.c**/
+/**DBCache.c**/
 int setupBDDCache();
 bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled, uint nbTeam);
 bool updateCache(MANGAS_DATA data, bool whatCanIUse, char * mangaNameShort);
@@ -62,18 +62,19 @@ uint getDBTeamID(TEAMS_DATA * team);
 MANGAS_DATA * getCopyCache(int mode);
 char isProjectUpdated(uint ID, uint context);
 void updateIfRequired(MANGAS_DATA *data, char context);
-
+TEAM_DATA** getCopyKnownTeams();
 
 MANGAS_DATA* miseEnCache(int mode);
-MANGAS_DATA* allocateDatabase(size_t length);
 void freeMangaData(MANGAS_DATA* mangaDB, int lol);
+
+/**DBRefresh.c**/
 void updateDatabase(bool forced);
 void resetUpdateDBCache();
-int get_update_repo(char *buffer_repo, TEAMS_DATA* teams);
+int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams);
 bool checkValidationRepo(char *bufferDL, int isPaid);
-void update_repo();
-int get_update_mangas(char *buffer_manga, TEAMS_DATA* teams);
-void update_mangas();
+void updateRepo();
+int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
+void updateProjects();
 int deleteManga();
 void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
