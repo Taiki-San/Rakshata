@@ -129,11 +129,11 @@ void get_file_date(const char *filename, char *date)
     free(input_parsed);
 }
 
-void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX])
+void KSTriggered(TEAMS_DATA team)
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char temp[LONGUEUR_NOM_MANGA_MAX+10];
-    snprintf(temp, LONGUEUR_NOM_MANGA_MAX+10, "manga/%s", teamLong);
+    snprintf(temp, LONGUEUR_NOM_MANGA_MAX+10, "manga/%s", team.teamLong);
     removeFolder(temp);
 }
 
@@ -339,49 +339,59 @@ void getPasswordArchive(char *fileName, char password[300])
     crashTemp(MK, SHA256_DIGEST_LENGTH);
 }
 
-void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
+void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
-    int i, j, k;
-    char bufferDL[(NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1], temp[350];
-
-	for(i = 0; i < NUMBER_MAX_TEAM_KILLSWITCHE; i++)
-        for(j=0; j < 2*SHA256_DIGEST_LENGTH+1; killswitch_string[i][j++] = 0);
-
     if(!checkNetworkState(CONNEXION_OK))
         return;
+	
+	int lengthBufferDL = (NUMBER_MAX_TEAM_KILLSWITCHE+1) * (2*SHA256_DIGEST_LENGTH+1);
+    char bufferDL[lengthBufferDL], temp[350];
+	
+	memset(outputKS, 0, NUMBER_MAX_TEAM_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
+	bufferDL[0] = 0;
 
     snprintf(temp, 350, "https://%s/killswitch", SERVEUR_URL);
-
-    crashTemp(bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1);
     download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;
 
-    crashTemp(temp, 350);
-    for(i = 0; i < 350 && bufferDL[i] != '\n' && bufferDL[i] != ' ' && bufferDL[i]; temp[i] = bufferDL[i], i++);
-    i = charToInt(temp);
-    for(j = 0; j < i; j++)
+	int posBuffer = 0, posBufferOut = 0, nbElemInKS, posBufferOutInLine;
+
+	for(; posBuffer < lengthBufferDL && !isNbr(bufferDL[posBuffer]); posBuffer++);
+	
+	if(posBuffer == lengthBufferDL)		//pas de données
+		return;
+	
+    for(; posBufferOut < 350 - 1 && isNbr(bufferDL[posBuffer]); temp[posBufferOut++] = bufferDL[posBuffer++]);
+
+    temp[posBufferOut] = 0;
+	nbElemInKS = charToInt(temp);
+	
+	if(nbElemInKS >= NUMBER_MAX_TEAM_KILLSWITCHE)
+		nbElemInKS = NUMBER_MAX_TEAM_KILLSWITCHE -1;
+	
+    for(posBufferOut = 0; posBufferOut < nbElemInKS; posBufferOut++)
     {
-        for(; bufferDL[i] != '\n'; i++);
-        for(k = 0; k < 100 && bufferDL[i] != '\n' && bufferDL[i] != ' ' && bufferDL[i] != 0; killswitch_string[j][k++] = bufferDL[i++]);
+        for(; bufferDL[posBuffer] && bufferDL[posBuffer] != '\n'; posBuffer++);
+        for(posBufferOutInLine = 0; posBufferOutInLine < 2*SHA256_DIGEST_LENGTH && isHexa(bufferDL[posBuffer]); outputKS[posBufferOut][posBufferOutInLine++] = bufferDL[posBuffer++]);
+		outputKS[posBufferOut][posBufferOutInLine] = 0;
     }
 }
 
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check)
+bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
-    int i = 0;
-    char pre_hash_check[LONGUEUR_TYPE_TEAM+LONGUEUR_URL+1], hash_check[2*SHA256_DIGEST_LENGTH+1];
-    if(!checkNetworkState(CONNEXION_OK) || killswitch_string[0][0] == 0)
-        return 0;
+	if(dataKS[0][0] == 0)
+        return false;
 
-    crashTemp(hash_check, 2*SHA256_DIGEST_LENGTH+1);
-    snprintf(pre_hash_check, LONGUEUR_TYPE_TEAM+LONGUEUR_URL, "%s%s", team_to_check.URL_depot, team_to_check.type);
-    sha256_legacy(pre_hash_check, hash_check);
+    char stringToHash[LONGUEUR_TYPE_TEAM+LONGUEUR_URL+1], hashedData[2*SHA256_DIGEST_LENGTH+1];
+	
+    snprintf(stringToHash, LONGUEUR_TYPE_TEAM+LONGUEUR_URL, "%s%s", dataCheck.URL_depot, dataCheck.type);
+    sha256_legacy(stringToHash, hashedData);
 
-    for(; strcmp(killswitch_string[i], hash_check) && i < NUMBER_MAX_TEAM_KILLSWITCHE && killswitch_string[i][0]; i++);
-    if(i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(killswitch_string[i], hash_check))
-        return 1;
-    return 0;
+	int i = 0;
+    for(; dataKS[i][0] && i < NUMBER_MAX_TEAM_KILLSWITCHE && strcmp(dataKS[i], hashedData); i++);
+
+    return i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(dataKS[i], hashedData);
 }
 

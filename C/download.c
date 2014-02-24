@@ -256,10 +256,8 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
         fclose(output);
 
     if(res != CURLE_OK) //Si problème
-    {
-        int codeErreur = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
-        return codeErreur;
-    }
+		return libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+
     return CODE_RETOUR_OK;
 }
 

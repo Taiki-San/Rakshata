@@ -58,11 +58,16 @@ int setupBDDCache();
 bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled, uint nbTeam);
 bool updateCache(MANGAS_DATA data, bool whatCanIUse, char * mangaNameShort);
 void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output);
-uint getDBTeamID(TEAMS_DATA * team);
-MANGAS_DATA * getCopyCache(int mode);
+MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType);
 char isProjectUpdated(uint ID, uint context);
 void updateIfRequired(MANGAS_DATA *data, char context);
-TEAM_DATA** getCopyKnownTeams();
+
+//Teams
+uint getDBTeamID(TEAMS_DATA * team);
+TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);
+void freeTeam(TEAMS_DATA **data);
+void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
+void updateTeamCache(TEAMS_DATA ** teamData);
 
 MANGAS_DATA* miseEnCache(int mode);
 void freeMangaData(MANGAS_DATA* mangaDB, int lol);
@@ -71,7 +76,6 @@ void freeMangaData(MANGAS_DATA* mangaDB, int lol);
 void updateDatabase(bool forced);
 void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams);
-bool checkValidationRepo(char *bufferDL, int isPaid);
 void updateRepo();
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
 void updateProjects();
@@ -192,12 +196,12 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
 void decryptPage(void *_password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
-void killswitchTriggered(char teamLong[LONGUEUR_NOM_MANGA_MAX]);
+void KSTriggered(TEAMS_DATA team);
 void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
 IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
-void Load_KillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
-int checkKillSwitch(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1], TEAMS_DATA team_to_check);
+void loadKS(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
+bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 
 /**Selection.c**/
 int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick);

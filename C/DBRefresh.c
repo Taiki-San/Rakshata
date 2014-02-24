@@ -12,7 +12,7 @@
 
 #define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
 
-int alreadyRefreshed;
+unsigned long alreadyRefreshed;
 void updateDatabase(bool forced)
 {
     MUTEX_LOCK(mutex);
@@ -32,29 +32,37 @@ void resetUpdateDBCache()
     alreadyRefreshed = -DB_CACHE_EXPIRENCY;
 }
 
+/************** UPDATE REPO	********************/
+
 int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
 {
+	if(buffer_repo == NULL)
+	{
+		buffer_repo = malloc(SIZE_BUFFER_UPDATE_DATABASE);
+		if(buffer_repo == NULL)
+			return -1;
+	}
+	
     int defaultVersion = VERSION_REPO;
 	char temp[500];
 	do
 	{
         if(!strcmp(teams->type, TYPE_DEPOT_1))
             snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URL_depot, defaultVersion);
-
+		
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
             snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URL_depot, defaultVersion);
-
+		
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
             snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
-
+		
         else
         {
-            char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
-            snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(repo): %s", teams->type);
-            logR(temp2);
+            snprintf(temp, 500, "Failed at understand what is the repo: %s", teams->type);
+            logR(temp);
             return -1;
         }
-
+		
         buffer_repo[0] = 0;
         download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
@@ -62,97 +70,126 @@ int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
 	return defaultVersion+1;
 }
 
-bool checkValidationRepo(char *bufferDL, int isPaid)
+bool isRemoteRepoLineValid(char * data, int version)
 {
-    if(strlen(bufferDL) < 5 || !isDownloadValid(bufferDL))
-        return 0;
+	if(version < 1 || version > 2)
+		return false;
+	
+	uint basePos, pos, nbrSpaces = 0;
+	
+	for(basePos = 0; data[basePos] && (data[basePos] < '!' || data[basePos] > '~'); basePos++);
+	
+	//Check the number of spaces
+	for(pos = basePos; data[pos];)
+	{
+		if(data[pos++] == ' ')
+		{
+			while(data[pos++] == ' ');
+			
+			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
+				nbrSpaces++;
 
-    if(isPaid && (!strcmp(bufferDL, "invalid_request")|| !strcmp(bufferDL, "editor_not_found") || !strcmp(bufferDL, "too_much_results") || !strcmp(bufferDL, "bad_editor")))
-        return 0;
+		}
+	}
+	
+	if((version == 1 && nbrSpaces != 5) || (version == 2 && nbrSpaces != 5))
+	{
+#ifdef DEV_VERSION
+		uint messageLength = 200 + strlen(data);
+		char logMessage[messageLength];
+		snprintf(logMessage, messageLength, "Incoherent number of spaces in downloaded repo file, dumping data: version = %d, nbrSpaces = %d\ndata: %s", version, nbrSpaces, data);
+		logR(logMessage);
+#endif
+		return false;
+	}
+	
+	return true;
+}
 
-    return 1;
+bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output)
+{
+	if(version == -1 || !isRemoteRepoLineValid(data, version))
+		logR("An error occured");
+	
+	else if(version == 1)	//Legacy mode
+	{
+		char uselessID[10];
+		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE);
+
+		output->openSite = (previousData == NULL) ? 1 : previousData->openSite;
+		return true;
+	}
+	
+	else if(version == 2)
+	{
+		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
+		
+		return true;
+	}
+	else
+		logR("Unsupported repo, an update is probably required");
+	
+	if(previousData != NULL)
+		memcpy(output, previousData, sizeof(TEAMS_DATA));
+	
+	return false;
 }
 
 void updateRepo()
 {
-	int i = 0, positionDansBuffer = 0, legacy;
-	char *bufferDL, *repo_new, killswitch[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
-    char URLRepoConnus[1000][LONGUEUR_URL], nomCourtRepoConnus[1000][LONGUEUR_COURT];
-	char* repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
-	TEAMS_DATA infosTeam, newInfos;
+	uint nbTeamToRefresh;
+	TEAMS_DATA **oldData = getCopyKnownTeams(&nbTeamToRefresh);
 
-    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-    repo_new = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-
-	if(repo == NULL || bufferDL == NULL || repo_new == NULL)
-    {
-        if(bufferDL != NULL)
-            free(bufferDL);
-        if(repo_new != NULL)
-            free(repo_new);
-        return;
-    }
-
-    nomCourtRepoConnus[0][0] = URLRepoConnus[0][0] = 0;
-
-    repoBak = repo;
-    snprintf(repo_new, SIZE_BUFFER_UPDATE_DATABASE, "<%c>\n", SETTINGS_REPODB_FLAG);
-    positionDansBuffer = strlen(repo_new);
-
-	Load_KillSwitch(killswitch);
-
-	while(*repo != 0 && *repo != '<' && *(repo+1) != '/' && *(repo+2) != SETTINGS_REPODB_FLAG && *(repo+3) != '>' && *(repo+4) != 0 && positionDansBuffer < SIZE_BUFFER_UPDATE_DATABASE)
+	if(oldData == NULL || nbTeamToRefresh == 0)
 	{
-        repo += sscanfs(repo, "%s %s %s %s %s %d", infosTeam.teamLong, LONGUEUR_NOM_MANGA_MAX, infosTeam.teamCourt, LONGUEUR_COURT, infosTeam.type, LONGUEUR_ID_TEAM, infosTeam.URL_depot, LONGUEUR_URL, infosTeam.site, LONGUEUR_SITE, &infosTeam.openSite);
-		for(; *repo == '\r' || *repo == '\n'; repo++);
-		if(checkKillSwitch(killswitch, infosTeam))
+		free(oldData);
+		return;
+	}
+	
+	char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
+	TEAMS_DATA newData;
+	
+	loadKS(dataKS);
+	
+	int dataVersion;
+	char * bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+
+	if(bufferDL == NULL)
+	{
+		freeTeam(oldData);
+		return;
+	}
+
+	for(int posTeam = 0; posTeam < nbTeamToRefresh; posTeam++)
+	{
+		if(oldData[posTeam] == NULL)
+			continue;
+		else if(checkKS(*oldData[posTeam], dataKS))
 		{
-			killswitchTriggered(infosTeam.teamLong);
+			KSTriggered(*oldData[posTeam]);
 			continue;
 		}
+		
+		//Refresh effectif
+		dataVersion = getUpdatedRepo(bufferDL, oldData[posTeam]);
+		if(parseRemoteRepoLine(bufferDL, oldData[posTeam], dataVersion, &newData))
+			memcpy(oldData[posTeam], &newData, sizeof(TEAMS_DATA));
 
-		//Vérification si repo déjà raffraichie
-		for(i = 0; i < 1000 && URLRepoConnus[i][0] && strcmp(URLRepoConnus[i], infosTeam.URL_depot) && strcmp(nomCourtRepoConnus[i], infosTeam.teamCourt); i++);
-		if((URLRepoConnus[i][0]) && i < 1000) //Il y a une corrélation (ces conditions sont plus rapides que strcmp)
-            continue;
-        else if(i < 1000)
-        {
-            strcpy(URLRepoConnus[i], infosTeam.URL_depot); //Ajout aux URL connues
-            strcpy(nomCourtRepoConnus[i], infosTeam.teamCourt); //Ajout aux URL connues
-            if(i < 1000-1)
-                nomCourtRepoConnus[i+1][0] = URLRepoConnus[i+1][0] = 0;
-        }
-
-		legacy = getUpdatedRepo(bufferDL, &infosTeam);
-		if(legacy == -1 || !checkValidationRepo(bufferDL, !strcmp(infosTeam.type, TYPE_DEPOT_3)))
-        {
-			snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE, "%s %s %s %s %s %d\n", infosTeam.teamLong, infosTeam.teamCourt, infosTeam.type, infosTeam.URL_depot, infosTeam.site, infosTeam.openSite);
-		}
-
-		else
-		{
-			if(legacy == 1) //Legacy
-			{
-			    char ID[LONGUEUR_ID_TEAM];
-			    sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, newInfos.teamLong, LONGUEUR_NOM_MANGA_MAX, newInfos.teamCourt, LONGUEUR_COURT, newInfos.type, LONGUEUR_TYPE_TEAM, newInfos.URL_depot, LONGUEUR_URL, newInfos.site, LONGUEUR_SITE);
-			    newInfos.openSite = infosTeam.openSite;
-			}
-			else
-			    sscanfs(bufferDL, "%s %s %s %s %s %d", newInfos.teamLong, LONGUEUR_NOM_MANGA_MAX, newInfos.teamCourt, LONGUEUR_COURT, newInfos.type, LONGUEUR_TYPE_TEAM, newInfos.URL_depot, LONGUEUR_URL, newInfos.site, LONGUEUR_SITE, &newInfos.openSite);
-
-            snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer, "%s %s %s %s %s %d\n", newInfos.teamLong, newInfos.teamCourt, newInfos.type, newInfos.URL_depot, newInfos.site, newInfos.openSite);
-		}
-		positionDansBuffer = strlen(repo_new);
 	}
-	snprintf(&repo_new[positionDansBuffer], SIZE_BUFFER_UPDATE_DATABASE-positionDansBuffer+10, "</%c>\n", SETTINGS_REPODB_FLAG);
-	updatePrefs(SETTINGS_REPODB_FLAG, repo_new);
 	free(bufferDL);
-	free(repoBak);
-	free(repo_new);
+	updateTeamCache(oldData);		//updateTeamCache free the data
 }
+
+/******************* UPDATE PROJECTS ****************************/
 
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
 {
+	if(buffer_manga == NULL)
+	{
+		buffer_manga = malloc(SIZE_BUFFER_UPDATE_DATABASE);
+		if(buffer_manga == NULL)
+			return -1;
+	}
 	int defaultVersion = VERSION_MANGA;
 	char temp[500];
     do
@@ -173,15 +210,88 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
             logR(temp2);
             return 0;
         }
+		
         buffer_manga[0] = 0;
         download_mem(temp, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
+		
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_manga));
+
     return defaultVersion+1;
+}
+
+uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem)
+{
+	if(oldData == NULL)
+		return UINT_MAX;
+	
+	uint output = posBase;
+	
+	for(output = posBase; output < nbElem && oldData[posBase].team != NULL; posBase++);
+	
+	void * ptrTeam = oldData[posBase].team;
+	
+	for (posBase++; oldData[posBase].team == ptrTeam; posBase++);
+	
+	return output;
+}
+
+bool isRemoteProjectLineValid(char * data, int version, bool firstLine)
+{
+	return true;
+}
+
+typedef struct MANGA_UPDATE_STRUCT MANGA_UPDATE_STRUCT;
+struct MANGA_UPDATE_STRUCT
+{
+	MANGAS_DATA * data;
+	MANGA_UPDATE_STRUCT * next;
+};
+
+MANGA_UPDATE_STRUCT * updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
+{
+	MANGA_UPDATE_STRUCT *output = malloc(sizeof(MANGA_UPDATE_STRUCT));
+	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
+	
+	if(output == NULL || bufferDL == NULL)
+	{
+		free(output);
+		free(bufferDL);
+		return NULL;
+	}
+	
+	for(; posBase <= posEnd && oldData[posBase].team != NULL; posBase++);
+	
+	int version = getUpdatedProjectOfTeam(bufferDL, oldData[posBase].team);
+	
+	
+	
+	return output;
 }
 
 void updateProjects()
 {
+	uint nbElem, posBase = 0, posEnd;
+	MANGAS_DATA * oldData = getCopyCache(LOAD_DATABASE_ALL, &nbElem, SORT_TEAM);
+	MANGA_UPDATE_STRUCT start, *current  = &start;
+	
+	start.data = NULL;
+	start.next = NULL;
+
+	while(posBase != nbElem)
+	{
+		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
+		if(posEnd != UINT_MAX)
+		{
+			current->next = updateProjectsFromTeam(oldData, posBase, posEnd);
+			current = current->next;
+		}
+		else
+			break;
+
+		posBase = posEnd + 1;
+	}
+	
 	int i = 0;
 	char *bufferDL, *manga_new, path[500];
     char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
@@ -210,9 +320,6 @@ void updateProjects()
 
 	while(*repo != 0)
 	{
-		repo += sscanfs(repo, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_ID_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
-		for(; *repo == '\r' || *repo == '\n'; repo++);
-
 		getUpdatedProjectOfTeam(bufferDL, &teams);
 		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "internal_error") || !strcmp(bufferDL, "editor_not_found")) ) ) //On réécrit si corrompue
 		{

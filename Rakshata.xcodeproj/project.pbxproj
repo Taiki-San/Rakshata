@@ -839,7 +839,10 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wunreachable-code";
+				WARNING_CFLAGS = (
+					"-Wunreachable-code",
+					"-Weverything",
+				);
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -877,7 +880,10 @@
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wunreachable-code";
+				WARNING_CFLAGS = (
+					"-Wunreachable-code",
+					"-Weverything",
+				);
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

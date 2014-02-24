@@ -13,6 +13,8 @@
 #include "sqlite3.h"
 
 #define INITIAL_BUFFER_SIZE 1024
+#define KEEP_UNUSED_TEAMS			//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
+
 static sqlite3 *cache = NULL;
 static uint nbElem = 0;
 
@@ -21,23 +23,6 @@ static uint lengthTeam = 0;
 
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
-
-
-enum RDB_CODES {
-	RDB_UPDATE_ID = 1,
-	RDB_UPDATE_TEAM = 2
-};
-
-enum RDB_ISUPDATE {
-	RDB_NOUPDATE	= 0x0,
-	RDB_UPDATECHAPS	= 0x1,
-	RDB_UPDATETOMES	= 0x2,
-	RDB_UPDATEALL	= 0x3,
-	RDB_CTXSERIES	= 0x3,
-	RDB_CTXCT		= 0xc,
-	RDB_CTXLECTEUR	= 0x30,
-	RDB_CTXMDL		= 0xc0
-};
 
 MANGAS_DATA* miseEnCache(int mode)
 {
@@ -88,13 +73,10 @@ int setupBDDCache()
         {
 			currentBufferSize *= 2;
 			buf = realloc(internalTeamList, currentBufferSize * sizeof(TEAMS_DATA*));
-			if(buf == NULL)
-			{
-				for(; nombreTeam--; free(internalTeamList[nombreTeam]));
-				break;
-			}
-			else
+			if(buf != NULL)
 				internalTeamList = buf;
+			else
+				break;
 		}
         
 		internalTeamList[nombreTeam] = (TEAMS_DATA*) calloc(1, sizeof(TEAMS_DATA));
@@ -113,8 +95,10 @@ int setupBDDCache()
 		return 0;
 	}
 	else
-		internalTeamList[nombreTeam+1] = NULL;
+		internalTeamList[nombreTeam] = NULL;
 	free(repoBak);
+	
+	getRideOfDuplicateInTeam(internalTeamList, &nombreTeam);
 	
 	//On vas parser les mangas
 	sqlite3_stmt* request = NULL;
@@ -129,10 +113,14 @@ int setupBDDCache()
 	//On est bon, let's go
     if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite(RDB_team, RDB_mangaNameShort, RDB_isInstalled, RDB_mangaName, RDB_status, RDB_genre, RDB_pageInfos, RDB_firstChapter, RDB_lastChapter, RDB_nombreChapitreSpeciaux, RDB_nombreChapitre, RDB_chapitres, RDB_firstTome, RDB_nombreTomes, RDB_tomes, RDB_contentDownloadable, RDB_favoris) values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
 	{
+#ifdef KEEP_UNUSED_TEAMS
+		bool begining = true;
+#else
 		bool isTeamUsed[nombreTeam], begining = true;
+		for(numeroTeam = 0; numeroTeam < nombreTeam; isTeamUsed[numeroTeam++] = false);
+#endif
 		char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 5 + 100];
 		
-		for(numeroTeam = 0; numeroTeam < nombreTeam; isTeamUsed[numeroTeam++] = false);
 		
 		while(*mangaDB != 0)
 		{
@@ -178,8 +166,9 @@ int setupBDDCache()
 				
 				if(checkPathEscape(mangas.mangaName, LONGUEUR_NOM_MANGA_MAX) && checkPathEscape(internalTeamList[numeroTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX))
 				{
+#ifndef KEEP_UNUSED_TEAMS
 					isTeamUsed[numeroTeam] = true;
-					
+#endif
 					mangas.chapitres = NULL;
 					mangas.tomes = NULL;
 					
@@ -202,6 +191,7 @@ int setupBDDCache()
 		
 		sqlite3_finalize(request);
 		
+#ifndef KEEP_UNUSED_TEAMS
 		//Work is done, we start freeing memory
 		for(numeroTeam = 0; numeroTeam < nombreTeam; numeroTeam++)
 		{
@@ -211,13 +201,8 @@ int setupBDDCache()
 				internalTeamList[numeroTeam] = NULL;
 			}
 		}
-		
-		if(sqlite3_prepare_v2(internalDB, "SELECT * FROM  rakSQLite ORDER BY RDB_mangaName ASC", -1, &request, NULL) == SQLITE_OK)
-		{
-			sqlite3_step(request);
-			sqlite3_finalize(request);
-		}
-		
+#endif
+
 		cache = internalDB;
 		nbElem = nombreManga;
 		
@@ -324,6 +309,8 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	uint data = sqlite3_column_int(state, 1), length;
 	if(data < lengthTeam)
 		output->team = teamList[data];
+	else
+		output->team = NULL;
 	
 	//Nom court
 	unsigned char *mangaName = (unsigned char*) sqlite3_column_text(state, 2);
@@ -372,22 +359,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	output->favoris = sqlite3_column_int(state, 17);
 }
 
-uint getDBTeamID(TEAMS_DATA * team)
-{
-	uint output;
-	if(teamList != NULL)
-	{
-		for(output = 0; output < lengthTeam && team != teamList[output]; output++);
-		if(output == lengthTeam)
-			return 0xffffffff;
-	}
-	else
-		return 0xffffffff;
-	
-	return output;
-}
-
-MANGAS_DATA * getCopyCache(int mode)
+MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
 {
 	uint pos;
 	MANGAS_DATA * output = NULL;
@@ -395,43 +367,41 @@ MANGAS_DATA * getCopyCache(int mode)
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
 		return NULL;
 	
+	if(sortType == -1)
+		sortType = SORT_DEFAULT;
+	
 	output = malloc((nbElem + 1) * sizeof(MANGAS_DATA));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
 	if(output != NULL)
 	{
-		sqlite3_stmt* request = NULL;
-		if(mode == LOAD_DATABASE_INSTALLED)
-			sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE RDB_isInstalled = 1", -1, &request, NULL);
-		else
-			sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite", -1, &request, NULL);
+		//On craft la requète en fonctions des arguments
+		char sortRequest[50], requestString[200];
+		if(sortType == SORT_NAME)
+			sprintf(sortRequest, "RDB_mangaName");
+		else if(sortType == SORT_TEAM)
+			sprintf(sortRequest, "RDB_team");
 		
+		if(mode == LOAD_DATABASE_INSTALLED)
+			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE RDB_isInstalled = 1 ORDER BY %s ASC", sortRequest);
+		else
+			snprintf(requestString, 200, "SELECT * FROM rakSQLite ORDER BY %s ASC", sortRequest);
+		
+		
+		sqlite3_stmt* request = NULL;
+		sqlite3_prepare_v2(cache, requestString, -1, &request, NULL);
+
 		for(pos = 0; pos < nbElem && sqlite3_step(request) == SQLITE_ROW; pos++)
 		{
 			copyOutputDBToStruct(request, &output[pos]);
 		}
 		memset(&output[pos], 0, sizeof(MANGAS_DATA));
 		sqlite3_finalize(request);
+		
+		if(nbElemCopied != NULL)
+			*nbElemCopied = pos;
 	}
+	else if(nbElemCopied != NULL)
+		*nbElemCopied = 0;
 	
-	return output;
-}
-
-TEAMS_DATA ** getCopyKnownTeams()
-{
-	TEAMS_DATA ** output = malloc(lengthTeam * sizeof(TEAMS_DATA*));
-	if(output != NULL)
-	{
-		for(int i = 0; i < lengthTeam; i++)
-		{
-			if(teamList[i] == NULL)
-				output[i] = NULL;
-			else
-			{
-				output = malloc(sizeof(TEAMS_DATA));
-				if(output != NULL)
-					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
-			}
-		}
-	}
 	return output;
 }
 
@@ -483,6 +453,111 @@ void updateIfRequired(MANGAS_DATA *data, char context)
 			break;
 		}
 	}
+}
+
+/*************		REPOSITORIES DATA		*****************/
+
+uint getDBTeamID(TEAMS_DATA * team)
+{
+	uint output;
+	if(teamList != NULL)
+	{
+		for(output = 0; output < lengthTeam && team != teamList[output]; output++);
+		if(output == lengthTeam)
+			return 0xffffffff;
+	}
+	else
+		return 0xffffffff;
+	
+	return output;
+}
+
+TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
+{
+	TEAMS_DATA ** output = malloc(lengthTeam * sizeof(TEAMS_DATA*));
+	if(output != NULL)
+	{
+		for(int i = 0; i < lengthTeam; i++)
+		{
+			if(teamList[i] == NULL)
+				output[i] = NULL;
+			else
+			{
+				output = malloc(sizeof(TEAMS_DATA));
+				if(output != NULL)
+					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
+			}
+		}
+		*nbTeamToRefresh = lengthTeam;
+	}
+	return output;
+}
+
+
+void freeTeam(TEAMS_DATA **data)
+{
+	for(int i = 0; data[i] != NULL; free(data[i++]));
+	free(data);
+}
+
+void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
+{
+	uint internalNombreTeam = *nombreTeam;
+	
+	//On va chercher des collisions
+	for(uint posBase = 0; posBase < internalNombreTeam; posBase++)	//On test avec jusqu'à nombreTeam - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	{
+		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
+			continue;
+		
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreTeam; posToCompareWith++)
+		{
+			if(data[posToCompareWith] == NULL)
+				continue;
+			
+			if(!strcmp(data[posBase]->URL_depot, data[posToCompareWith]->URL_depot))	//Même URL
+			{
+				if(!strcmp(data[posBase]->teamLong, data[posToCompareWith]->teamLong))
+				{
+					free(data[posToCompareWith]);
+					data[posToCompareWith] = NULL;
+				}
+			}
+		}
+	}
+	
+	//On va défragmenter la liste
+	uint posBase, posCheck;
+	for(posCheck = posBase = 0; posCheck < internalNombreTeam; posCheck++)
+	{
+		if(data[posCheck] != NULL)
+			posBase++;
+		else if(posBase != posCheck)
+			data[posBase++] = data[posCheck];
+	}
+	
+	*nombreTeam = posBase;
+}
+
+void updateTeamCache(TEAMS_DATA ** teamData)
+{
+	uint lengthTeamCopy = lengthTeam;
+	
+	for(int pos = 0; pos < lengthTeamCopy; pos++)
+	{
+		if(teamList[pos] != NULL && teamData[pos] != NULL)
+		{
+			memcpy(teamList[pos], teamData[pos], sizeof(TEAMS_DATA));
+			free(teamData[pos]);
+		}
+		else if(teamData[pos] != NULL)
+		{
+			teamList[pos] = teamData[pos];
+		}
+	}
+	
+	getRideOfDuplicateInTeam(teamList, &lengthTeam);
+	free(teamData);
 }
 
 //Si on voulait dupliquer la structure de la team pour chaque instance copié du cache, décommenter les lignes commentées
