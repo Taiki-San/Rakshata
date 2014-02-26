@@ -196,10 +196,9 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 #endif
 				if (err > 0)
                 {
-                    int i = 0, j, posDebChunk;
+                    int i = 0, j, posDebChunk = 0;
                     while(i < err)
                     {
-                        posDebChunk = i;
                         unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
 
                         for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
@@ -214,7 +213,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                         for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
                         if(posIV != -1) //Pas premier passage, IV existante
                             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
-                        TwofishEncrypt(&pTwoF, (u4byte*) plaintext, (u4byte*) ciphertext);
+                        TwofishEncrypt(&pTwoF, (uint32_t*) plaintext, (uint32_t*) ciphertext);
                         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
                         memcpy(&buf_enc[posDebChunk+CRYPTO_BUFFER_SIZE], ciphertext, CRYPTO_BUFFER_SIZE);
                         posIV = 0;

@@ -5,15 +5,13 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
+#include "db.h"
 #include "sqlite3.h"
-
-#define INITIAL_BUFFER_SIZE 1024
-#define KEEP_UNUSED_TEAMS			//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
 
 static sqlite3 *cache = NULL;
 static uint nbElem = 0;
@@ -302,15 +300,18 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 {
 	void* buffer;
 	
-	//ID d'accès rapide
-	output->cacheDBID = sqlite3_column_int(state, 0);
-	
 	//Team
 	uint data = sqlite3_column_int(state, 1), length;
-	if(data < lengthTeam)
+	if(data < lengthTeam)		//Si la team est pas valable, on drop complètement le projet
 		output->team = teamList[data];
 	else
-		output->team = NULL;
+	{
+		output->team = NULL;	//L'appelant est signalé d'ignorer l'élément
+		return;
+	}
+	
+	//ID d'accès rapide
+	output->cacheDBID = sqlite3_column_int(state, 0);
 	
 	//Nom court
 	unsigned char *mangaName = (unsigned char*) sqlite3_column_text(state, 2);
@@ -361,7 +362,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 
 MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
 {
-	uint pos;
+	uint pos = 0;
 	MANGAS_DATA * output = NULL;
 	
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
@@ -389,9 +390,12 @@ MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
 		sqlite3_stmt* request = NULL;
 		sqlite3_prepare_v2(cache, requestString, -1, &request, NULL);
 
-		for(pos = 0; pos < nbElem && sqlite3_step(request) == SQLITE_ROW; pos++)
+		while(pos < nbElem && sqlite3_step(request) == SQLITE_ROW)
 		{
 			copyOutputDBToStruct(request, &output[pos]);
+
+			if(output[pos].team != NULL)
+				pos++;
 		}
 		memset(&output[pos], 0, sizeof(MANGAS_DATA));
 		sqlite3_finalize(request);

@@ -267,6 +267,28 @@ void unescapeLineReturn(char *input)
     input[j] = 0;
 }
 
+uint getNumberLineReturn(char *input)
+{
+	uint output, pos;
+	
+	for(output = pos = 0; input[pos]; pos++)
+	{
+		if(input[pos] == '\n')
+			output++;
+	}
+	
+	return output;
+}
+
+uint jumpLine(char * data)
+{
+	uint pos;
+	for(pos = 0; data[pos] && data[pos] != '\n'; pos++);
+	while (data[++pos] == '\n' || data[pos] == '\r');
+
+	return pos;
+}
+
 void openOnlineHelp()
 {
 	ouvrirSite("http://www.rakshata.com/help");

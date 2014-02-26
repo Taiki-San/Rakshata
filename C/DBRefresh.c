@@ -10,9 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
+#include "db.h"
 
-unsigned long alreadyRefreshed;
 void updateDatabase(bool forced)
 {
     MUTEX_LOCK(mutex);
@@ -25,11 +24,6 @@ void updateDatabase(bool forced)
 	}
     else
         MUTEX_UNLOCK(mutex);
-}
-
-void resetUpdateDBCache()
-{
-    alreadyRefreshed = -DB_CACHE_EXPIRENCY;
 }
 
 /************** UPDATE REPO	********************/
@@ -68,71 +62,6 @@ int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
         defaultVersion--;
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
 	return defaultVersion+1;
-}
-
-bool isRemoteRepoLineValid(char * data, int version)
-{
-	if(version < 1 || version > 2)
-		return false;
-	
-	uint basePos, pos, nbrSpaces = 0;
-	
-	for(basePos = 0; data[basePos] && (data[basePos] < '!' || data[basePos] > '~'); basePos++);
-	
-	//Check the number of spaces
-	for(pos = basePos; data[pos];)
-	{
-		if(data[pos++] == ' ')
-		{
-			while(data[pos++] == ' ');
-			
-			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
-				nbrSpaces++;
-
-		}
-	}
-	
-	if((version == 1 && nbrSpaces != 5) || (version == 2 && nbrSpaces != 5))
-	{
-#ifdef DEV_VERSION
-		uint messageLength = 200 + strlen(data);
-		char logMessage[messageLength];
-		snprintf(logMessage, messageLength, "Incoherent number of spaces in downloaded repo file, dumping data: version = %d, nbrSpaces = %d\ndata: %s", version, nbrSpaces, data);
-		logR(logMessage);
-#endif
-		return false;
-	}
-	
-	return true;
-}
-
-bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output)
-{
-	if(version == -1 || !isRemoteRepoLineValid(data, version))
-		logR("An error occured");
-	
-	else if(version == 1)	//Legacy mode
-	{
-		char uselessID[10];
-		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE);
-
-		output->openSite = (previousData == NULL) ? 1 : previousData->openSite;
-		return true;
-	}
-	
-	else if(version == 2)
-	{
-		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
-		
-		return true;
-	}
-	else
-		logR("Unsupported repo, an update is probably required");
-	
-	if(previousData != NULL)
-		memcpy(output, previousData, sizeof(TEAMS_DATA));
-	
-	return false;
 }
 
 void updateRepo()
@@ -220,37 +149,11 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem)
-{
-	if(oldData == NULL)
-		return UINT_MAX;
-	
-	uint output = posBase;
-	
-	for(output = posBase; output < nbElem && oldData[posBase].team != NULL; posBase++);
-	
-	void * ptrTeam = oldData[posBase].team;
-	
-	for (posBase++; oldData[posBase].team == ptrTeam; posBase++);
-	
-	return output;
-}
-
-bool isRemoteProjectLineValid(char * data, int version, bool firstLine)
-{
-	return true;
-}
-
-typedef struct MANGA_UPDATE_STRUCT MANGA_UPDATE_STRUCT;
-struct MANGA_UPDATE_STRUCT
-{
-	MANGAS_DATA * data;
-	MANGA_UPDATE_STRUCT * next;
-};
-
 MANGA_UPDATE_STRUCT * updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 {
+	TEAMS_DATA *globalTeam = oldData[0].team;
 	MANGA_UPDATE_STRUCT *output = malloc(sizeof(MANGA_UPDATE_STRUCT));
+	uint magnitudeInput = posEnd - posBase;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
 	if(output == NULL || bufferDL == NULL)
@@ -259,13 +162,80 @@ MANGA_UPDATE_STRUCT * updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase,
 		free(bufferDL);
 		return NULL;
 	}
-	
-	for(; posBase <= posEnd && oldData[posBase].team != NULL; posBase++);
-	
+	else
+	{
+		output->next = NULL;
+		output->data = NULL;
+	}
+		
 	int version = getUpdatedProjectOfTeam(bufferDL, oldData[posBase].team);
 	
+	if(version == -1 || !downloadedProjectListSeemsLegit(bufferDL, *oldData))		//On a pas pu récupérer
+	{
+		output->data = calloc(magnitudeInput + 1, sizeof(MANGAS_DATA));
+		if(output->data != NULL)
+			memcpy(output->data, oldData, magnitudeInput * sizeof(MANGAS_DATA));
+
+		else
+			free(output);
+	}
+	else
+	{
+		uint maxNbrLine, posCur, curLine;
+		MANGAS_DATA* dataOutput;
+		
+		for (posCur = 0; bufferDL[posCur] == '\n' || bufferDL[posCur] == '\r'; posCur++);		//Si le fichier commençait par des \n, anti DoS
+		maxNbrLine = getNumberLineReturn(&bufferDL[posCur]) - 1;								//La première ligne contient le nom de la team
+		dataOutput = malloc((maxNbrLine + 1) * sizeof(MANGAS_DATA));							//On alloue de quoi tout recevoir
+		
+		if(dataOutput != NULL)
+		{
+			const short sizeBufferLine = LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 7 * 10 + 30;	//7 nombres * 10 digits + 30 pour de la marge, les espace, toussa
+			char bufferLine[sizeBufferLine];
+			//la première ligne a déjà étée checkée dans downloadedProjectListSeemsLegit, et on utilise pas la version dispo dans rak-manga-2
+			posCur += jumpLine(&bufferDL[posCur]);
+			
+			//On peut commencer à parser
+			for (curLine = 0; curLine < maxNbrLine && extractCurrentLine(&bufferDL[posCur], bufferLine, sizeBufferLine); curLine++)
+			{
+				dataOutput[curLine].team = globalTeam;
+				if(parseCurrentProjectLine(bufferLine, version, &dataOutput[curLine]))
+					curLine++;
+				else
+					memset(&dataOutput[curLine], 0, sizeof(MANGAS_DATA));
+			}
+			maxNbrLine = curLine;	//On a le nombre exacte de ligne remplie
+			
+			//On a fini de parser la permière partie
+			
+			if(version == 1)
+			{
+				//The fun begin, on a désormais à lire les bundles à la fin du fichier
+			}
+			
+			//On doit finir de mettre à jour chapitres/tome
+			char *cacheFavs;
+			for(curLine = 0; curLine < maxNbrLine; curLine++)
+			{
+				dataOutput[curLine].favoris = checkIfFaved(&dataOutput[curLine], &cacheFavs);
+				dataOutput[curLine].contentDownloadable = isAnythingToDownload(&dataOutput[curLine]);
+				
+				refreshChaptersList(&dataOutput[curLine]);
+				refreshTomeList(&dataOutput[curLine]);
+
+			}
+			
+			//Good, on charge maintenant l'output
+			output->data = dataOutput;
+		}
+		else
+		{
+			free(output);
+			output = NULL;
+		}
+	}
 	
-	
+	free(bufferDL);
 	return output;
 }
 

@@ -275,6 +275,8 @@ void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);
 void unescapeLineReturn(char *input);
+uint getNumberLineReturn(char *input);
+uint jumpLine(char * data);
 void openOnlineHelp();
 bool isDownloadValid(char *input);
 int isJPEG(void *input);

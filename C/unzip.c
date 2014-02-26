@@ -75,7 +75,7 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
     int i = 0, j = 0;
     int opt_do_extract_withoutpath = 0; //Extraire en crashant le path
 	int opt_overwrite = 1; /*Overwrite*/
-	int opt_encrypted = 0, ret_value=0;
+	int opt_encrypted = 0, ret_value = 0;
 	char *zipInput = NULL;
    	char *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
     char *pathToConfigFile = NULL;
@@ -205,10 +205,7 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
         {
             getPasswordArchive(zipFileName, password);
             if(!password[0])
-            {
-                ret_value = 1;
                 goto quit;
-            }
         }
     }
     for(i = 0; i < nombreFichiers; i++)
