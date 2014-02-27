@@ -265,6 +265,112 @@ void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint len
 	}
 }
 
+bool isProjectListSorted(MANGAS_DATA* data, uint length)
+{
+	for(uint i = 1; i < length; i++)
+	{
+		if(sortMangasInternal(&data[i-1], &data[i]))
+			return false;
+	}
+	return true;
+}
+
+void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData)
+{
+	uint IDTeam = getDBTeamID(oldData[0].team);
+	
+	if(IDTeam == 0xffffffff)
+		return;
+	
+	//On commence par reclasser les éléments
+	if(!isProjectListSorted(oldData, magnitudeOldData))
+		qsort(oldData, magnitudeOldData, sizeof(MANGAS_DATA), sortMangasInternal);
+	
+	if(!isProjectListSorted(newData, magnitudeNewData))
+		qsort(newData, magnitudeNewData, sizeof(MANGAS_DATA), sortMangasInternal);
+	
+	bool newChapters;
+	uint posOld = 0, posNew = 0;
+	int outputSort;
+	MANGAS_DATA internalBufferOld, internalBufferNew;
+	sqlite3_stmt * request = getAddToCacheRequest();
+	
+	while(posOld < magnitudeOldData && posNew < magnitudeNewData)
+	{
+		outputSort = sortMangasInternal(&oldData[posOld], &newData[posNew]);
+
+		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
+		{
+			removeFromCache(oldData[posOld]);
+#ifdef DELETE_UNLISTED_PROJECT
+			char path[LONGUEUR_NOM_MANGA_MAX * 2 + 10];
+			snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
+			removeFolder(path);
+#endif
+			posOld++;
+		}
+		
+		else if(outputSort == 0)	//On a trouvé une version mise à jour
+		{
+			internalBufferOld = oldData[posOld];
+			internalBufferNew = newData[posNew];
+			
+			if(internalBufferOld.lastChapter != internalBufferNew.lastChapter || internalBufferOld.firstTome != internalBufferNew.firstTome || internalBufferOld.nombreChapitreSpeciaux != internalBufferNew.nombreChapitreSpeciaux || internalBufferOld.pageInfos != internalBufferNew.pageInfos || internalBufferOld.status != internalBufferNew.status || internalBufferOld.firstChapter != internalBufferNew.firstChapter || strcmp(internalBufferOld.mangaName, internalBufferNew.mangaName) || internalBufferOld.genre != internalBufferNew.genre)	//quelque chose à changé
+			{
+				newData[posNew].cacheDBID = oldData[posOld].cacheDBID;
+				newData[posNew].favoris = oldData[posOld].favoris;
+
+				if(internalBufferOld.firstChapter != internalBufferNew.firstChapter || internalBufferOld.lastChapter != internalBufferNew.lastChapter || internalBufferOld.nombreChapitreSpeciaux != internalBufferNew.nombreChapitreSpeciaux)
+				{
+					refreshChaptersList(&newData[posNew]);
+					newChapters = true;
+				}
+				else
+				{
+					newData[posNew].chapitres = malloc(oldData[posOld].nombreChapitre * sizeof(int));
+					
+					if(newData[posNew].chapitres != NULL)
+					{
+						memcpy(newData[posNew].chapitres, oldData[posOld].chapitres, oldData[posOld].nombreChapitre * sizeof(int));
+						newData[posNew].nombreChapitre = oldData[posOld].nombreChapitre;
+					}
+					
+					newChapters = false;
+				}
+				
+				refreshTomeList(&newData[posNew]);
+				
+				if(newChapters || newData[posNew].tomes != NULL)
+				{
+					newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
+				}
+				else
+				{
+					newData[posNew].contentDownloadable = oldData[posOld].contentDownloadable;
+				}
+				
+				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
+			}
+			
+			posOld++;
+			posNew++;
+		}
+		
+		else						//Nouveau projet
+		{
+			newData[posNew].cacheDBID = 0;
+			
+			refreshChaptersList(&newData[posNew]);
+			refreshTomeList(&newData[posNew]);
+			newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
+			
+			addToCache(request, newData[posNew], IDTeam, false);
+			
+			posNew++;
+		}
+	}
+}
+
 /*****************		DIVERS		******************/
 
 void resetUpdateDBCache()

@@ -151,7 +151,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
 
 void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 {
-	TEAMS_DATA *globalTeam = oldData[0].team;
+	TEAMS_DATA *globalTeam = oldData[posBase].team;
 	uint magnitudeInput = posEnd - posBase;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
@@ -206,6 +206,8 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 			}
 			
 			//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
+			applyChangesProject(&oldData[posBase], magnitudeInput, dataOutput, maxNbrLine);
+			
 		}
 	}
 	

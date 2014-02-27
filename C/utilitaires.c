@@ -42,6 +42,18 @@ int sortMangas(const void *a, const void *b)
     return strcmp(struc1->mangaName, struc2->mangaName);
 }
 
+int sortMangasInternal(const void *a, const void *b)
+{
+    const MANGAS_DATA *struc1 = a;
+    const MANGAS_DATA *struc2 = b;
+	
+    if(struc1->mangaName[0] == 0)
+        return 1;
+    else if(struc2->mangaName[0] == 0)
+        return -1;
+    return strcmp(struc1->mangaName, struc2->mangaName);
+}
+
 int sortTomes(const void *a, const void *b)
 {
     const META_TOME *struc1 = a;

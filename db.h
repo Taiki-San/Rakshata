@@ -12,6 +12,7 @@
 
 #define INITIAL_BUFFER_SIZE 1024
 #define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
+//#define DELETE_UNLISTED_PROJECT
 
 #define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
 
@@ -27,5 +28,7 @@ uint getNumberLineReturn(char *input);
 bool extractCurrentLine(char * input, char * output, uint lengthOutput);
 bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output);
 void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock);
+bool isProjectListSorted(MANGAS_DATA* data, uint length);
+void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();

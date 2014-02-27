@@ -51,12 +51,14 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
-bool isAnythingToDownload(MANGAS_DATA *mangaDB);
+bool isAnythingToDownload(MANGAS_DATA mangaDB);
 
 /**DBCache.c**/
 int setupBDDCache();
-bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled, uint nbTeam);
-bool updateCache(MANGAS_DATA data, bool whatCanIUse, char * mangaNameShort);
+sqlite3_stmt * getAddToCacheRequest();
+bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled);
+bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
+void removeFromCache(MANGAS_DATA data);
 void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output);
 MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType);
 char isProjectUpdated(uint ID, uint context);
@@ -259,6 +261,7 @@ void checkJustUpdated();
 void changeTo(char *string, char toFind, char toPut);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
+int sortMangasInternal(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
 void versionRak(char *output);
 uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable);
