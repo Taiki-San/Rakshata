@@ -15,13 +15,6 @@
 
 #define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
 
-typedef struct MANGA_UPDATE_STRUCT MANGA_UPDATE_STRUCT;
-struct MANGA_UPDATE_STRUCT
-{
-	MANGAS_DATA * data;
-	MANGA_UPDATE_STRUCT * next;
-};
-
 unsigned long alreadyRefreshed;
 
 /******		DBTools.c	  ******/
@@ -30,7 +23,9 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 
 uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem);
 bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference);
+uint getNumberLineReturn(char *input);
 bool extractCurrentLine(char * input, char * output, uint lengthOutput);
 bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output);
+void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock);
 
 void resetUpdateDBCache();

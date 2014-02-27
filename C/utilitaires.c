@@ -70,12 +70,22 @@ void versionRak(char *output)
         snprintf(output, 10, "%d.%d", centaine, dizaine);
 }
 
+uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable)
+{
+	int pos;
+	for(pos = 0; input[pos] && input[pos] != toFind; pos++);
+	
+	if(isEOFAcceptable || input[pos])
+		return pos;
+	return 0;
+}
+
 int positionnementApresChar(char* input, char *stringToFind)
 {
     int i = 0;
     while(input[i])
     {
-        for(; input[i] != stringToFind[0] && input[i] != 0; i++);
+        for(; input[i] != stringToFind[0] && input[i]; i++);
         if(input[i] == stringToFind[0])
         {
             int j = 0;
@@ -265,19 +275,6 @@ void unescapeLineReturn(char *input)
         }
     }
     input[j] = 0;
-}
-
-uint getNumberLineReturn(char *input)
-{
-	uint output, pos;
-	
-	for(output = pos = 0; input[pos]; pos++)
-	{
-		if(input[pos] == '\n')
-			output++;
-	}
-	
-	return output;
 }
 
 uint jumpLine(char * data)

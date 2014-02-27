@@ -149,37 +149,21 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-MANGA_UPDATE_STRUCT * updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
+void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 {
 	TEAMS_DATA *globalTeam = oldData[0].team;
-	MANGA_UPDATE_STRUCT *output = malloc(sizeof(MANGA_UPDATE_STRUCT));
 	uint magnitudeInput = posEnd - posBase;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
-	if(output == NULL || bufferDL == NULL)
+	if(bufferDL == NULL)
 	{
-		free(output);
 		free(bufferDL);
-		return NULL;
-	}
-	else
-	{
-		output->next = NULL;
-		output->data = NULL;
+		return;
 	}
 		
 	int version = getUpdatedProjectOfTeam(bufferDL, oldData[posBase].team);
 	
-	if(version == -1 || !downloadedProjectListSeemsLegit(bufferDL, *oldData))		//On a pas pu récupérer
-	{
-		output->data = calloc(magnitudeInput + 1, sizeof(MANGAS_DATA));
-		if(output->data != NULL)
-			memcpy(output->data, oldData, magnitudeInput * sizeof(MANGAS_DATA));
-
-		else
-			free(output);
-	}
-	else
+	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, *oldData))		//On a des données à peu près valide
 	{
 		uint maxNbrLine, posCur, curLine;
 		MANGAS_DATA* dataOutput;
@@ -204,243 +188,45 @@ MANGA_UPDATE_STRUCT * updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase,
 				else
 					memset(&dataOutput[curLine], 0, sizeof(MANGAS_DATA));
 			}
-			maxNbrLine = curLine;	//On a le nombre exacte de ligne remplie
+			
+			dataOutput[curLine].team = NULL;	//On signale la fin dans la chaîne
+			maxNbrLine = curLine;				//On a le nombre exacte de ligne remplie
 			
 			//On a fini de parser la permière partie
 			
-			if(version == 1)
+			//The fun begins, on a désormais à lire les bundles à la fin du fichier
+			uint posEnd;
+			if(version == 1 && bufferDL[posCur] == '#')
 			{
-				//The fun begin, on a désormais à lire les bundles à la fin du fichier
-			}
-			
-			//On doit finir de mettre à jour chapitres/tome
-			char *cacheFavs;
-			for(curLine = 0; curLine < maxNbrLine; curLine++)
-			{
-				dataOutput[curLine].favoris = checkIfFaved(&dataOutput[curLine], &cacheFavs);
-				dataOutput[curLine].contentDownloadable = isAnythingToDownload(&dataOutput[curLine]);
+				posCur++;
+				posEnd = getPosOfChar(&bufferDL[posCur], '#', true);
+				parseDetailsBlock(&bufferDL[posCur], dataOutput, globalTeam->teamLong, posEnd);
+				posCur += posEnd;
 				
-				refreshChaptersList(&dataOutput[curLine]);
-				refreshTomeList(&dataOutput[curLine]);
-
 			}
 			
-			//Good, on charge maintenant l'output
-			output->data = dataOutput;
-		}
-		else
-		{
-			free(output);
-			output = NULL;
+			//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
 		}
 	}
 	
 	free(bufferDL);
-	return output;
 }
 
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd;
 	MANGAS_DATA * oldData = getCopyCache(LOAD_DATABASE_ALL, &nbElem, SORT_TEAM);
-	MANGA_UPDATE_STRUCT start, *current  = &start;
 	
-	start.data = NULL;
-	start.next = NULL;
-
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
-		{
-			current->next = updateProjectsFromTeam(oldData, posBase, posEnd);
-			current = current->next;
-		}
+			updateProjectsFromTeam(oldData, posBase, posEnd);
 		else
 			break;
 
 		posBase = posEnd + 1;
 	}
-	
-	int i = 0;
-	char *bufferDL, *manga_new, path[500];
-    char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL;
-    char *mangas = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangasBak = NULL;
-	TEAMS_DATA teams;
-
-    repoBak = repo;
-    mangasBak = mangas;
-    manga_new = ralloc(10);
-    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-
-    if(manga_new == NULL || bufferDL == NULL)
-    {
-        if(manga_new != NULL)
-            free(manga_new);
-        if(bufferDL != NULL)
-            free(bufferDL);
-
-		memoryError(10);
-        return;
-    }
-    snprintf(manga_new, 10, "<%c>\n", SETTINGS_MANGADB_FLAG);
-
-    if(repo == NULL)
-        return;
-
-	while(*repo != 0)
-	{
-		getUpdatedProjectOfTeam(bufferDL, &teams);
-		if(!bufferDL[0] || bufferDL[0] == '<' || bufferDL[1] == '<' || bufferDL[2] == '<' || (!strcmp(teams.type, TYPE_DEPOT_3) && (!strcmp(bufferDL, "invalid_request") || !strcmp(bufferDL, "internal_error") || !strcmp(bufferDL, "editor_not_found")) ) ) //On réécrit si corrompue
-		{
-		    if(mangas != NULL)
-		    {
-		        mangas += positionnementApresChar(mangas, teams.teamLong);
-		        if(mangas >= mangasBak)
-                {
-                    for(; *mangas != '\n' && mangas > mangasBak; mangas--);
-                    for(i = 0; mangas[i] && mangas[i] != '#'; i++);
-                    if(mangas[i] == '#')
-                        mangas[i+1] = 0;
-                    manga_new = mergeS(manga_new, mangas);
-                }
-                mangas = mangasBak;
-		    }
-		}
-		else
-		{
-		    size_t length, nombreLigne = 0, curPos = 0;
-		    for(length = 0; length < SIZE_BUFFER_UPDATE_DATABASE && bufferDL[length] && bufferDL[length] != '#'; length++)
-            {
-                if(bufferDL[length] == '\n')
-                    nombreLigne++;
-            }
-            length = (length+50) *2; //Pour le legacy, on peut avoir à imprimer plus de données
-		    char *manga_new_tmp = ralloc((length+50) *2), **mangaName = calloc(nombreLigne+1, sizeof(char*));
-		    if(manga_new_tmp == NULL || mangaName == NULL)
-            {
-                if(manga_new_tmp != NULL)
-                    free(manga_new_tmp);
-                if(mangaName != NULL)
-                    free(mangaName);
-                memoryError(strlen(bufferDL)+50);
-                return;
-            }
-		    int buffer_int[10], positionBuffer = 0, version;
-		    char buffer_char[2][LONGUEUR_NOM_MANGA_MAX];
-
-            positionBuffer = sscanfs(bufferDL, "%s %s", buffer_char[0], LONGUEUR_NOM_MANGA_MAX, buffer_char[1], LONGUEUR_NOM_MANGA_MAX);
-            version = databaseVersion(&bufferDL[positionBuffer]);
-            for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\r' && bufferDL[positionBuffer] != '\n'; positionBuffer++);
-            for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-
-            snprintf(manga_new_tmp, length, "%s %s\n", buffer_char[0], buffer_char[1]);
-
-            while(length > positionBuffer && bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#')
-            {
-                mangaName[curPos] = calloc(1, LONGUEUR_NOM_MANGA_MAX);
-                if(version == 0) //Legacy
-                {
-                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3]);
-                    for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-                    if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
-                    {
-                        snprintf(manga_new_tmp, length*2, "%s%s %s %d %d -1 -1 %d %d 0\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3]);
-                    }
-                    else
-                    {
-                        free(mangaName[curPos]);
-                        mangaName[curPos] = NULL;
-                        curPos--;
-                    }
-                }
-                else if(version == 1)
-                {
-                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s %s %d %d %d %d %d %d %d", mangaName[curPos], LONGUEUR_NOM_MANGA_MAX, buffer_char[0], LONGUEUR_NOM_MANGA_MAX, &buffer_int[0], &buffer_int[1], &buffer_int[2], &buffer_int[3], &buffer_int[4], &buffer_int[5], &buffer_int[6]);
-                    for(; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-                    if(checkPathEscape(mangaName[curPos], LONGUEUR_NOM_MANGA_MAX))
-                    {
-                        snprintf(manga_new_tmp, length*2, "%s%s %s %d %d %d %d %d %d %d\n", manga_new_tmp, mangaName[curPos], buffer_char[0], buffer_int[0], buffer_int[1], buffer_int[2], buffer_int[3], buffer_int[4], buffer_int[5], buffer_int[6]);
-
-                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[curPos], CHAPITRE_INDEX);
-                        if(checkFileExist(path))
-                            remove(path);
-                        snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[curPos], TOME_INDEX);
-                        if(checkFileExist(path))
-                            remove(path);
-                    }
-                    else
-                    {
-                        free(mangaName[curPos]);
-                        mangaName[curPos] = NULL;
-                        curPos--;
-                    }
-                }
-                if(curPos < nombreLigne)
-                    curPos++;
-            }
-            size_t curLength = strlen(manga_new_tmp);
-            if(curLength < length)
-                manga_new_tmp[curLength++] = '#';
-            if(curLength < length)
-                manga_new_tmp[curLength++] = '\n';
-            if(curLength > 2)
-                manga_new = mergeS(manga_new, manga_new_tmp);
-
-            if(version == 1)
-            {
-                while(bufferDL[positionBuffer] == '#' && bufferDL[positionBuffer+1])
-                {
-                    buffer_char[0][0] = 0;
-                    for(positionBuffer++; bufferDL[positionBuffer] == '\r' || bufferDL[positionBuffer] == '\n'; positionBuffer++);
-                    positionBuffer += sscanfs(&bufferDL[positionBuffer], "%s", buffer_char[0], LONGUEUR_NOM_MANGA_MAX);
-                    for(; bufferDL[positionBuffer] == ' '; positionBuffer++);
-
-                    if(buffer_char[0][0] && (bufferDL[positionBuffer] == 'T' || bufferDL[positionBuffer] == 'C'))
-                    {
-                        for(i = 0; i < curPos && strcmp(buffer_char[0], mangaName[i]); i++);
-                        if(i < curPos)  //Signifie que la comparaison est nulle
-                        {
-                            int j;
-                            FILE* out = NULL;
-                            snprintf(path, 500, "manga/%s/%s/", teams.teamLong, mangaName[i]);
-                            if(!checkDirExist(path))
-                                createPath(path);
-                            snprintf(path, 500, "manga/%s/%s/%s", teams.teamLong, mangaName[i], bufferDL[positionBuffer]=='T'?TOME_INDEX:CHAPITRE_INDEX);
-
-                            for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '\n' && bufferDL[positionBuffer] != '\r'; positionBuffer++);
-                            for(; bufferDL[positionBuffer] == '\n' || bufferDL[positionBuffer] == '\r'; positionBuffer++);
-                            for(i = 0; bufferDL[positionBuffer+i] && bufferDL[positionBuffer+i] != '#' && positionBuffer+i < SIZE_BUFFER_UPDATE_DATABASE; i++);
-                            for(j = i-1; j > 0 && (bufferDL[positionBuffer+j] == '\n' || bufferDL[positionBuffer+j] == '\r'); j--);
-
-                            out = fopen(path, "w+");
-                            if(out != NULL)
-                            {
-                                fwrite(&bufferDL[positionBuffer], j+1, 1, out);
-                                fclose(out);
-                            }
-                            positionBuffer += i;
-                        }
-                        else
-                            for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#'; positionBuffer++);
-                    }
-                    else
-                        for(; bufferDL[positionBuffer] && bufferDL[positionBuffer] != '#'; positionBuffer++);
-                }
-            }
-
-            for(; nombreLigne > 0; free(mangaName[nombreLigne--]));
-            free(mangaName[0]);
-            free(mangaName);
-            free(manga_new_tmp);
-		}
-	}
-	snprintf(&manga_new[strlen(manga_new)], strlen(manga_new)+10, "</%c>\n", SETTINGS_MANGADB_FLAG);
-	free(repoBak);
-	free(mangas);
-	updatePrefs(SETTINGS_MANGADB_FLAG, manga_new);
-	free(manga_new);
-	free(bufferDL);
 }
 
 extern int curPage; //Too lazy to use an argument

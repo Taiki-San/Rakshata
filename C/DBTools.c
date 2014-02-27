@@ -122,6 +122,25 @@ bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference)
 	return true;
 }
 
+uint getNumberLineReturn(char *input)
+{
+	uint output, pos;
+	bool wasLastLineAReturn = true;
+	
+	for(output = pos = 0; input[pos] && input[pos] != '#'; pos++)
+	{
+		if(input[pos] == '\n' && !wasLastLineAReturn)
+		{
+			output++;
+			wasLastLineAReturn = true;
+		}
+		else if(wasLastLineAReturn && input[pos] > ' ' && input[pos] <= '~')
+			wasLastLineAReturn = false;
+	}
+	
+	return output;
+}
+
 bool extractCurrentLine(char * input, char * output, uint lengthOutput)
 {
 	//This function is an advanced sanitizer of the line. It will copy the right amount of data, strip every unexepected char and return a nice, sanitized string
@@ -134,6 +153,8 @@ bool extractCurrentLine(char * input, char * output, uint lengthOutput)
 	
 	lengthOutput--;	//On évite ainsi d'avoir à faire un -1 à chaque itération
 
+	if(*input == '#')
+		return false;
 	
 	for(output[pos] = 0; pos < lengthOutput && (curChar = *input) && curChar != '\n' && curChar != '\r'; input++)
 	{
@@ -156,6 +177,13 @@ bool extractCurrentLine(char * input, char * output, uint lengthOutput)
 		}
 	}
 	output[pos] = 0;
+
+	//on déplace le curseur à la fin de la ligne
+	if(pos == lengthOutput)
+		for (; *input && *input != '\n' && *input != '\r'; input++);
+	
+	if(*input)
+		for(; *input == '\n' && *input == '\r'; input++);
 	
 	return (rank >= 6 && rank <= 10);
 }
@@ -185,6 +213,56 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	output->status = categorie % 10;
 
 	return checkPathEscape(output->mangaName, LONGUEUR_NOM_MANGA_MAX);
+}
+
+void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock)
+{
+	bool isTome;
+	uint index, pos;
+	char projectName[LONGUEUR_NOM_MANGA_MAX];
+	pos = sscanfs(input, "%s", projectName, LONGUEUR_NOM_MANGA_MAX);
+	
+	for(index = 0; data[index].team != NULL && strcmp(projectName, data[index].mangaName); index++);
+	
+	if(data[index].team == NULL)	//Le bloc n'est pas celui d'un projet
+		return;
+	
+	for(; input[pos] && input[pos] != ' '; pos++);
+	for(; input[pos] == ' '; pos++);
+	
+	//On regarde si on a un truc lisible
+	if(input[pos] == 'C')
+		isTome = false;
+
+	else if(input[pos] == 'T')
+		isTome = true;
+	
+	else
+		return;
+	
+	//On va créer le fichier et écrire le contenu du bloc
+
+	char path[LONGUEUR_NOM_MANGA_MAX * 2 + 100];
+	snprintf(path, sizeof(path), "manga/%s/%s", teamName, projectName);
+	
+	if(!checkDirExist(path))	//La fonction marche aussi pour voir si un dossier existe
+		createPath(path);
+	
+	snprintf(path, sizeof(path), "manga/%s/%s/%s", teamName, projectName, isTome ? TOME_INDEX : CHAPITRE_INDEX);
+	
+	pos += jumpLine(input);
+	
+	FILE *output = fopen(path, "w+");
+	if(output != NULL)
+	{
+		if(fwrite(&input[pos], sizeof(char), lengthOfBlock - pos, output) != lengthOfBlock - pos)
+		{
+#ifdef DEV_VERSION
+			logR("Something went wrong when parsing project data");
+#endif
+		}
+		fclose(output);
+	}
 }
 
 /*****************		DIVERS		******************/
