@@ -11,7 +11,6 @@
  *********************************************************************************************/
 
 #include "db.h"
-#include "sqlite3.h"
 
 static sqlite3 *cache = NULL;
 static uint nbElem = 0;
@@ -22,12 +21,20 @@ static uint lengthTeam = 0;
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
 
+void testDB()
+{
+	sleep(3);
+	setupBDDCache();
+	updateDatabase(true);
+	flushDB();
+	//sleep(3);
+	exit(0);
+}
+
 MANGAS_DATA* miseEnCache(int mode)
 {
 	return NULL;
 }
-
-void freeMangaData2(MANGAS_DATA* mangaDB);
 
 int setupBDDCache()
 {
@@ -107,6 +114,7 @@ int setupBDDCache()
 		sqlite3_finalize(request);
 		sqlite3_close(internalDB);
 	}
+	sqlite3_finalize(request);
 	
 	//On est bon, let's go
     if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite(RDB_team, RDB_mangaNameShort, RDB_isInstalled, RDB_mangaName, RDB_status, RDB_genre, RDB_pageInfos, RDB_firstChapter, RDB_lastChapter, RDB_nombreChapitreSpeciaux, RDB_nombreChapitre, RDB_chapitres, RDB_firstTome, RDB_nombreTomes, RDB_tomes, RDB_contentDownloadable, RDB_favoris) values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
@@ -212,9 +220,36 @@ int setupBDDCache()
 			lengthIsUpdated = nbElem;
 	}
 	
+	free(cacheFavs);
 	free(mangaBak);
 	
 	return nombreManga;
+}
+
+void flushDB()
+{
+	sqlite3_stmt* request = NULL;
+	sqlite3_prepare_v2(cache, "SELECT RDB_chapitres, RDB_tomes FROM rakSQLite", -1, &request, NULL);
+	
+	while(sqlite3_step(request) == SQLITE_ROW)
+	{
+		free((void*) sqlite3_column_int64(request, 0));
+		free((void*) sqlite3_column_int64(request, 1));
+	}
+	
+	sqlite3_finalize(request);
+	sqlite3_close_v2(cache);
+	cache = NULL;
+	nbElem = 0;
+	
+	for(int pos = 0; pos < lengthTeam; free(teamList[pos++]));
+	free(teamList);
+	teamList = NULL;
+	lengthTeam = 0;
+	
+	free(isUpdated);
+	isUpdated = NULL;
+	lengthIsUpdated = 0;
 }
 
 sqlite3_stmt * getAddToCacheRequest()
@@ -270,9 +305,31 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	if(cache && !setupBDDCache())	//Échec du chargement
 		return false;
 	
+	//On libère la mémoire des éléments remplacés
 	if(whatCanIUse == RDB_UPDATE_ID)
 	{
-		sqlite3_prepare(cache, "UPDATE rakSQLite SET RDB_mangaNameShort = ?, RDB_mangaName = ?, RDB_status = ?, RDB_genre = ?, RDB_pageInfos = ?, RDB_firstChapter = ?, RDB_lastChapter = ?, RDB_nombreChapitreSpeciaux = ?, RDB_nombreChapitre = ?, RDB_chapitres = ?, RDB_firstTome = ?, RDB_nombreTomes = ?, RDB_tomes = ?, RDB_contentDownloadable = ?, RDB_favoris = ? WHERE RDB_ID = ?", 0, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT RDB_chapitres, RDB_tomes FROM rakSQLite WHERE RDB_ID = ?1", -1, &request, NULL);
+		sqlite3_bind_int(request, 1, data.cacheDBID);
+	}
+	else
+	{
+		sqlite3_prepare_v2(cache, "SELECT RDB_chapitres, RDB_tomes FROM rakSQLite WHERE RDB_team = ?1 AND RDB_mangaNameShort = ?2", -1, &request, NULL);
+		sqlite3_bind_int64(request, 1, (uint64_t) data.team);
+		sqlite3_bind_text(request, 2, mangaNameShort, -1, SQLITE_STATIC);
+	}
+	
+	if(sqlite3_step(request) == SQLITE_ROW)
+	{
+		free((void*) sqlite3_column_int64(request, 1));
+		free((void*) sqlite3_column_int64(request, 2));
+	}
+	sqlite3_finalize(request);
+
+	
+	//On pratique le remplacement effectif
+	if(whatCanIUse == RDB_UPDATE_ID)
+	{
+		sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET RDB_mangaNameShort = ?1, RDB_mangaName = ?2, RDB_status = ?3, RDB_genre = ?4, RDB_pageInfos = ?5, RDB_firstChapter = ?6, RDB_lastChapter = ?7, RDB_nombreChapitreSpeciaux = ?8, RDB_nombreChapitre = ?9, RDB_chapitres = ?10, RDB_firstTome = ?11, RDB_nombreTomes = ?12, RDB_tomes = ?13, RDB_contentDownloadable = ?14, RDB_favoris = ?15 WHERE RDB_ID = ?16", -1, &request, NULL);
 		
 		sqlite3_bind_int(request, 16, data.cacheDBID);
 	}
@@ -281,10 +338,10 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 		if(mangaNameShort == NULL)
 			return false;
 		
-		sqlite3_prepare(cache, "UPDATE rakSQLite SET RDB_mangaNameShort = ?, RDB_mangaName = ?, RDB_status = ?, RDB_genre = ?, RDB_pageInfos = ?, RDB_firstChapter = ?, RDB_lastChapter = ?, RDB_nombreChapitreSpeciaux = ?, RDB_nombreChapitre = ?, RDB_chapitres = ?, RDB_firstTome = ?, RDB_nombreTomes = ?, RDB_tomes = ?, RDB_contentDownloadable = ?, RDB_favoris = ? WHERE RDB_team = ? AND RDB_mangaNameShort = ?", 0, &request, NULL);
+		sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET RDB_mangaNameShort = ?1, RDB_mangaName = ?2, RDB_status = ?3, RDB_genre = ?4, RDB_pageInfos = ?5, RDB_firstChapter = ?6, RDB_lastChapter = ?7, RDB_nombreChapitreSpeciaux = ?8, RDB_nombreChapitre = ?9, RDB_chapitres = ?10, RDB_firstTome = ?11, RDB_nombreTomes = ?12, RDB_tomes = ?13, RDB_contentDownloadable = ?14, RDB_favoris = ?15 WHERE RDB_team = ?16 AND RDB_mangaNameShort = ?17", -1, &request, NULL);
 		
 		sqlite3_bind_int64(request, 16, (uint64_t) data.team);
-		sqlite3_bind_int(request, 17, data.cacheDBID);
+		sqlite3_bind_text(request, 17, mangaNameShort, -1, SQLITE_STATIC);
 	}
 	
 	sqlite3_bind_text(request, 1, data.mangaNameShort, -1, SQLITE_STATIC);
@@ -303,9 +360,7 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	sqlite3_bind_int(request, 14, data.contentDownloadable);
 	sqlite3_bind_int(request, 15, data.favoris);
 	
-	sqlite3_step(request);
-	
-	if(sqlite3_changes(cache) == 0)
+	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
 		return false;
 	
 	sqlite3_finalize(request);
@@ -374,6 +429,8 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 		if(output->chapitres != NULL)
 			memcpy(output->chapitres, buffer, (output->nombreChapitre + 1) * sizeof(int));
 	}
+	else
+		output->chapitres = NULL;
 	
 	output->firstTome = sqlite3_column_int(state, 13);
 	output->nombreTomes = sqlite3_column_int(state, 14);
@@ -385,6 +442,9 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 		if(output->tomes != NULL)
 			memcpy(output->tomes, buffer, (output->nombreTomes + 1) * sizeof(META_TOME));
 	}
+	else
+		output->tomes = NULL;
+	
 	output->contentDownloadable = sqlite3_column_int(state, 16);
 	output->favoris = sqlite3_column_int(state, 17);
 }
@@ -516,8 +576,8 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 				output[i] = NULL;
 			else
 			{
-				output = malloc(sizeof(TEAMS_DATA));
-				if(output != NULL)
+				output[i] = malloc(sizeof(TEAMS_DATA));
+				if(output[i] != NULL)
 					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
 			}
 		}
@@ -558,18 +618,6 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
 			}
 		}
 	}
-	
-	//On va défragmenter la liste
-	uint posBase, posCheck;
-	for(posCheck = posBase = 0; posCheck < internalNombreTeam; posCheck++)
-	{
-		if(data[posCheck] != NULL)
-			posBase++;
-		else if(posBase != posCheck)
-			data[posBase++] = data[posCheck];
-	}
-	
-	*nombreTeam = posBase;
 }
 
 void updateTeamCache(TEAMS_DATA ** teamData)
@@ -597,7 +645,7 @@ void updateTeamCache(TEAMS_DATA ** teamData)
 
 #ifdef TEAM_COPIED_TO_INSTANCE
 
-void freeMangaData2(MANGAS_DATA* mangaDB)
+void freeMangaData(MANGAS_DATA* mangaDB)
 {
     if(mangaDB == NULL)
         return;
@@ -625,15 +673,17 @@ void freeMangaData2(MANGAS_DATA* mangaDB)
 
 #else
 
-void freeMangaData2(MANGAS_DATA* mangaDB)
+void freeMangaData(MANGAS_DATA* mangaDB)
 {
     if(mangaDB == NULL)
         return;
 	
-    for(size_t pos = 0; mangaDB[pos].team != NULL; pos++)
+	size_t pos;
+    for(pos = 0; mangaDB[pos].team != NULL; pos++)
     {
         free(mangaDB[pos].chapitres);
-        free(mangaDB[pos].tomes);
+		if(mangaDB[pos].tomes != NULL)
+			free(mangaDB[pos].tomes);
 		
     }
     free(mangaDB);
@@ -641,7 +691,7 @@ void freeMangaData2(MANGAS_DATA* mangaDB)
 
 #endif
 
-void freeMangaData(MANGAS_DATA* mangaDB, int lol)
+void freeMangaDataLegacy(MANGAS_DATA* mangaDB, int lol)
 {
-	freeMangaData2(mangaDB);
+	freeMangaData(mangaDB);
 }

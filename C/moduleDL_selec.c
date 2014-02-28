@@ -110,7 +110,7 @@ int mainChoixDL()
 
         MDLFlushCachedCache();
         freeMDLSelecCache(cache);
-        freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+        freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
     }
     else
     {

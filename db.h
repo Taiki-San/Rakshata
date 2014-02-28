@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#include "sqlite3.h"
+
 #define INITIAL_BUFFER_SIZE 1024
 #define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
 //#define DELETE_UNLISTED_PROJECT
@@ -25,7 +27,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem);
 bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference);
 uint getNumberLineReturn(char *input);
-bool extractCurrentLine(char * input, char * output, uint lengthOutput);
+bool extractCurrentLine(char * input, uint * posInput, char * output, uint lengthOutput);
 bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output);
 void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock);
 bool isProjectListSorted(MANGAS_DATA* data, uint length);

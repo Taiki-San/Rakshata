@@ -82,7 +82,12 @@ void escapeTomeLineElement(META_TOME *ligne)
 void refreshTomeList(MANGAS_DATA *mangaDB)
 {
     if(mangaDB->tomes != NULL)
-        free(mangaDB->tomes);
+	{
+		free(mangaDB->tomes);
+		mangaDB->tomes = NULL;
+	}
+	
+	mangaDB->nombreTomes = 0;
 
     /*On commence par énumérer les chapitres spéciaux*/
     char temp[TAILLE_BUFFER];

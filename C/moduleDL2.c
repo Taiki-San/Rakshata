@@ -162,7 +162,7 @@ void mainMDL()
         free(statusCache[i]);
     }
 
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
     free(*todoList);
     free(todoList);
     free(statusCache);

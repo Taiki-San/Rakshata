@@ -55,6 +55,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB);
 
 /**DBCache.c**/
 int setupBDDCache();
+void flushDB();
 sqlite3_stmt * getAddToCacheRequest();
 bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled);
 bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
@@ -72,7 +73,8 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
 void updateTeamCache(TEAMS_DATA ** teamData);
 
 MANGAS_DATA* miseEnCache(int mode);
-void freeMangaData(MANGAS_DATA* mangaDB, int lol);
+void freeMangaData(MANGAS_DATA* mangaDB);
+void freeMangaDataLegacy(MANGAS_DATA* mangaDB, int lol);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
@@ -261,7 +263,6 @@ void checkJustUpdated();
 void changeTo(char *string, char toFind, char toPut);
 int sortNumbers(const void *a, const void *b);
 int sortMangas(const void *a, const void *b);
-int sortMangasInternal(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
 void versionRak(char *output);
 uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable);
@@ -270,7 +271,7 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void createPath(char *output);
 IMG_DATA* readFile(char * path);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
-#define isNbr(caract) (caract >= '0' && caract <= '9')
+#define isNbr(caract) isdigit(caract)
 #define swapValues(a, b) { a ^= b; b ^= a; a ^= b; }
 #define MIN(a, b) (a < b ? a : b)
 void hexToDec(const char *input, unsigned char *output);

@@ -28,7 +28,7 @@ bool isRemoteRepoLineValid(char * data, int version)
 	{
 		if(data[pos++] == ' ')
 		{
-			while(data[pos++] == ' ');
+			for(; data[pos] == ' '; pos++);
 			
 			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
 				nbrSpaces++;
@@ -60,6 +60,9 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 		char uselessID[10];
 		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE);
 		
+		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
+			return false;
+		
 		output->openSite = (previousData == NULL) ? 1 : previousData->openSite;
 		return true;
 	}
@@ -67,6 +70,9 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	else if(version == 2)
 	{
 		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
+		
+		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
+			return false;
 		
 		return true;
 	}
@@ -87,7 +93,7 @@ uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbEle
 	if(oldData == NULL)
 		return UINT_MAX;
 	
-	for(; posBase < nbElem && oldData[posBase].team != NULL; posBase++);
+	for(; posBase < nbElem && oldData[posBase].team == NULL; posBase++);
 	
 	void * ptrTeam = oldData[posBase].team;
 	
@@ -141,63 +147,65 @@ uint getNumberLineReturn(char *input)
 	return output;
 }
 
-bool extractCurrentLine(char * input, char * output, uint lengthOutput)
+bool extractCurrentLine(char * input, uint *posInput, char * output, uint lengthOutput)
 {
 	//This function is an advanced sanitizer of the line. It will copy the right amount of data, strip every unexepected char and return a nice, sanitized string
-	uint pos = 0;
+	uint pos = 0, posInputLocal = *posInput;
 	bool wasLastCharASpace = false;
 	char curChar, rank = 0;
 	
 	//first, we jump spaces at the begining of the line
-	for(; *input == ' '; input++);
+	for(; input[posInputLocal] == ' '; posInputLocal++);
 	
 	lengthOutput--;	//On évite ainsi d'avoir à faire un -1 à chaque itération
 
-	if(*input == '#')
+	if(input[posInputLocal] == '#')
 		return false;
 	
-	for(output[pos] = 0; pos < lengthOutput && (curChar = *input) && curChar != '\n' && curChar != '\r'; input++)
+	for(output[pos] = 0; pos < lengthOutput && (curChar = input[posInputLocal]) && curChar != '\n' && curChar != '\r'; posInputLocal++)
 	{
 		if(curChar < ' ' || curChar > '~')
 			continue;
 			
 		else if(curChar == ' ')
 		{
-			if(wasLastCharASpace)
+			if(!wasLastCharASpace)
 			{
-				output[pos++] = *input;
+				output[pos++] = input[posInputLocal];
 				wasLastCharASpace = true;
 				rank++;
 			}
 		}
-		else if(rank < 2 || (curChar >= '0' && curChar <= '9'))
+		else if(rank < 2 || ((curChar >= '0' && curChar <= '9') || (wasLastCharASpace && curChar == '-')))
 		{
 			wasLastCharASpace = false;
-			output[pos++] = *input;
+			output[pos++] = input[posInputLocal];
 		}
 	}
 	output[pos] = 0;
 
-	//on déplace le curseur à la fin de la ligne
+	//on déplace le curseur à la fin de la ligne si le buffer à été limitant
 	if(pos == lengthOutput)
-		for (; *input && *input != '\n' && *input != '\r'; input++);
+		for (; input[posInputLocal] && input[posInputLocal] != '\n' && input[posInputLocal] != '\r'; posInputLocal++);
 	
 	if(*input)
-		for(; *input == '\n' && *input == '\r'; input++);
+		for(; input[posInputLocal] == '\n' || input[posInputLocal] == '\r'; posInputLocal++);
 	
-	return (rank >= 6 && rank <= 10);
+	*posInput = posInputLocal;
+	
+	return (rank >= 5 && rank <= 9);
 }
 
 bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 {
 	int categorie = 11;
-	if(version == 0)	//Legacy
+	if(version == 1)	//Legacy
 	{
 		sscanfs(input, "%s %s %d %d %d %d", output->mangaName, LONGUEUR_NOM_MANGA_MAX, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &categorie, &output->pageInfos);
 		output->firstTome = -1;
-		output->nombreChapitreSpeciaux = -1;
+		output->nombreChapitreSpeciaux = 0;
 	}
-	else if(version == 1)
+	else if(version == 2)
 	{
 		int depreciated;
 		sscanfs(input, "%s %s %d %d %d %d %d %d %d", output->mangaName, LONGUEUR_NOM_MANGA_MAX, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &output->firstTome, &depreciated, &categorie, &output->pageInfos, &output->nombreChapitreSpeciaux);
@@ -267,9 +275,10 @@ void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint len
 
 bool isProjectListSorted(MANGAS_DATA* data, uint length)
 {
+	int logData;
 	for(uint i = 1; i < length; i++)
 	{
-		if(sortMangasInternal(&data[i-1], &data[i]))
+		if((logData = sortMangas(&data[i-1], &data[i])) > 0)
 			return false;
 	}
 	return true;
@@ -284,10 +293,10 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 	
 	//On commence par reclasser les éléments
 	if(!isProjectListSorted(oldData, magnitudeOldData))
-		qsort(oldData, magnitudeOldData, sizeof(MANGAS_DATA), sortMangasInternal);
+		qsort(oldData, magnitudeOldData, sizeof(MANGAS_DATA), sortMangas);
 	
 	if(!isProjectListSorted(newData, magnitudeNewData))
-		qsort(newData, magnitudeNewData, sizeof(MANGAS_DATA), sortMangasInternal);
+		qsort(newData, magnitudeNewData, sizeof(MANGAS_DATA), sortMangas);
 	
 	bool newChapters;
 	uint posOld = 0, posNew = 0;
@@ -297,7 +306,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 	
 	while(posOld < magnitudeOldData && posNew < magnitudeNewData)
 	{
-		outputSort = sortMangasInternal(&oldData[posOld], &newData[posNew]);
+		outputSort = sortMangas(&oldData[posOld], &newData[posNew]);
 
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
@@ -369,6 +378,8 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 			posNew++;
 		}
 	}
+	
+	sqlite3_finalize(request);
 }
 
 /*****************		DIVERS		******************/

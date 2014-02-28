@@ -79,7 +79,7 @@ void updateFavorites()
             }
         }
     }
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
     if(!favorisToDL)
     {
         while(1)
@@ -133,6 +133,6 @@ void getNewFavs()
     if(WEGOTSOMETHING && checkLancementUpdate())
         lancementModuleDL();
 
-    freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
 }
 

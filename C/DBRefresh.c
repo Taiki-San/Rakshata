@@ -31,11 +31,7 @@ void updateDatabase(bool forced)
 int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
 {
 	if(buffer_repo == NULL)
-	{
-		buffer_repo = malloc(SIZE_BUFFER_UPDATE_DATABASE);
-		if(buffer_repo == NULL)
-			return -1;
-	}
+		return -1;
 	
     int defaultVersion = VERSION_REPO;
 	char temp[500];
@@ -156,20 +152,17 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
 	if(bufferDL == NULL)
-	{
-		free(bufferDL);
 		return;
-	}
-		
+
 	int version = getUpdatedProjectOfTeam(bufferDL, oldData[posBase].team);
 	
-	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, *oldData))		//On a des données à peu près valide
+	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, oldData[posBase]))		//On a des données à peu près valide
 	{
-		uint maxNbrLine, posCur, curLine;
+		uint maxNbrLine, posCur, curLine = 0;
 		MANGAS_DATA* dataOutput;
 		
 		for (posCur = 0; bufferDL[posCur] == '\n' || bufferDL[posCur] == '\r'; posCur++);		//Si le fichier commençait par des \n, anti DoS
-		maxNbrLine = getNumberLineReturn(&bufferDL[posCur]) - 1;								//La première ligne contient le nom de la team
+		maxNbrLine = getNumberLineReturn(&bufferDL[posCur]);									//La première ligne contient le nom de la team, mais il n'y a pas de \n à la fin de la dernière
 		dataOutput = malloc((maxNbrLine + 1) * sizeof(MANGAS_DATA));							//On alloue de quoi tout recevoir
 		
 		if(dataOutput != NULL)
@@ -180,7 +173,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 			posCur += jumpLine(&bufferDL[posCur]);
 			
 			//On peut commencer à parser
-			for (curLine = 0; curLine < maxNbrLine && extractCurrentLine(&bufferDL[posCur], bufferLine, sizeBufferLine); curLine++)
+			while (curLine < maxNbrLine && extractCurrentLine(bufferDL, &posCur, bufferLine, sizeBufferLine))
 			{
 				dataOutput[curLine].team = globalTeam;
 				if(parseCurrentProjectLine(bufferLine, version, &dataOutput[curLine]))
@@ -196,7 +189,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 			
 			//The fun begins, on a désormais à lire les bundles à la fin du fichier
 			uint posEnd;
-			if(version == 1 && bufferDL[posCur] == '#')
+			if(version == 2 && bufferDL[posCur] == '#')
 			{
 				posCur++;
 				posEnd = getPosOfChar(&bufferDL[posCur], '#', true);
@@ -208,6 +201,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 			//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
 			applyChangesProject(&oldData[posBase], magnitudeInput, dataOutput, maxNbrLine);
 			
+			free(dataOutput);
 		}
 	}
 	
@@ -227,8 +221,9 @@ void updateProjects()
 		else
 			break;
 
-		posBase = posEnd + 1;
+		posBase = posEnd;
 	}
+	freeMangaData(oldData);
 }
 
 extern int curPage; //Too lazy to use an argument
@@ -279,7 +274,7 @@ int deleteManga()
 						{
 							internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis);
 							noMoreChapter = 0;
-							freeMangaData(mangas, NOMBRE_MANGA_MAX);
+							freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
 							mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
 						}
 					}
@@ -289,7 +284,7 @@ int deleteManga()
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 						removeFolder(temp);
 						noMoreChapter = 0;
-						freeMangaData(mangas, NOMBRE_MANGA_MAX);
+						freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
                         mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
 					}
 				}
@@ -301,7 +296,7 @@ int deleteManga()
 			continuer = chapitreChoisis = PALIER_DEFAULT;
 		}
 	}
-	freeMangaData(mangas, NOMBRE_MANGA_MAX);
+	freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
 	return continuer;
 }
 

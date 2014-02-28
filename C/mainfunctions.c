@@ -169,7 +169,7 @@ int mainLecture()
                 }while(retry);
             }
         }
-        freeMangaData(mangaDB, NOMBRE_MANGA_MAX);
+        freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
     }
     return continuer;
 }
