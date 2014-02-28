@@ -202,7 +202,7 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	if(version == 1)	//Legacy
 	{
 		sscanfs(input, "%s %s %d %d %d %d", output->mangaName, LONGUEUR_NOM_MANGA_MAX, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &categorie, &output->pageInfos);
-		output->firstTome = -1;
+		output->firstTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
 		output->nombreChapitreSpeciaux = 0;
 	}
 	else if(version == 2)
@@ -286,6 +286,7 @@ bool isProjectListSorted(MANGAS_DATA* data, uint length)
 
 void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData)
 {
+	
 	uint IDTeam = getDBTeamID(oldData[0].team);
 	
 	if(IDTeam == 0xffffffff)
@@ -336,18 +337,20 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				}
 				else
 				{
-					newData[posNew].chapitres = malloc(oldData[posOld].nombreChapitre * sizeof(int));
+					newData[posNew].chapitres = malloc((oldData[posOld].nombreChapitre + 1) * sizeof(int));
 					
 					if(newData[posNew].chapitres != NULL)
 					{
 						memcpy(newData[posNew].chapitres, oldData[posOld].chapitres, oldData[posOld].nombreChapitre * sizeof(int));
 						newData[posNew].nombreChapitre = oldData[posOld].nombreChapitre;
+						newData[posNew].chapitres[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCTURE_CHAPITRE;
 					}
 					
 					newChapters = false;
 				}
 				
-				refreshTomeList(&newData[posNew]);
+				if(newData[posNew].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+					refreshTomeList(&newData[posNew]);
 				
 				if(newChapters || newData[posNew].tomes != NULL)
 				{

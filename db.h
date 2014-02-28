@@ -34,3 +34,28 @@ bool isProjectListSorted(MANGAS_DATA* data, uint length);
 void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();
+
+
+//========= Obfuscation	==========//
+
+#define RDB_ID							1
+#define RDB_team						2
+#define RDB_mangaNameShort				3
+#define RDB_isInstalled					4
+#define RDB_mangaName					5
+#define RDB_status						6
+#define RDB_genre						7
+#define RDB_pageInfos					8
+#define RDB_firstChapter				9
+#define RDB_lastChapter					10
+#define RDB_nombreChapitreSpeciaux		11
+#define RDB_nombreChapitre				12
+#define RDB_chapitres					13
+#define RDB_firstTome					14
+#define RDB_nombreTomes					15
+#define RDB_tomes						16
+#define RDB_contentDownloadable			17
+#define RDB_favoris						18
+
+#define STRINGIZE2(s) "`"#s"`"
+#define DBNAMETOID(s) STRINGIZE2(s)
