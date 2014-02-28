@@ -60,7 +60,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         return;
     }
     fscanfs(file, "%d %d", &fBack, &eBack);
-    if(fgetc(file) != EOF)
+    if(dernierLu != NULL && fgetc(file) != EOF)
     {
         fseek(file, -1, SEEK_CUR);
         fscanfs(file, "%d", dernierLu);
@@ -88,11 +88,14 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     first = mangaDB->chapitres[0];
     end = mangaDB->chapitres[nbElem-1];
 
-    if(first > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        *dernierLu = mangaDB->chapitres[0];
-
-    else if(end < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-        *dernierLu = mangaDB->chapitres[nbElem-1];
+	if(dernierLu != NULL)
+    {
+		if(first > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			*dernierLu = mangaDB->chapitres[0];
+		
+		else if(end < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			*dernierLu = mangaDB->chapitres[nbElem-1];
+	}
 
     if((first != fBack || end != eBack) && first <= end)
     {
@@ -101,7 +104,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
         if(temp != NULL)
         {
             fprintf(file, "%d %d", first, end);
-            if(*dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 fprintf(file, " %d", *dernierLu);
             fclose(file);
         }
@@ -119,9 +122,8 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
 void getUpdatedChapterList(MANGAS_DATA *mangaDB)
 {
-    int i = VALEUR_FIN_STRUCTURE_CHAPITRE;
     refreshChaptersList(mangaDB);
-    checkChapitreValable(mangaDB, &i);
+    checkChapitreValable(mangaDB, NULL);
 }
 
 int askForChapter(MANGAS_DATA *mangaDB, int contexte)

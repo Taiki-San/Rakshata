@@ -10,6 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "db.h"
 
 bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
 {
@@ -58,7 +59,7 @@ void updateFavorites()
         free(favs);
 
     updateDatabase(false);
-    MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+    MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_TEAM, RDB_CTXFAVS);
     if(mangaDB == NULL)
         return;
 
@@ -79,7 +80,7 @@ void updateFavorites()
             }
         }
     }
-    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaData(mangaDB);
     if(!favorisToDL)
     {
         while(1)
@@ -94,7 +95,7 @@ void updateFavorites()
 void getNewFavs()
 {
     FILE* import = NULL;
-    MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+    MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_TEAM, RDB_CTXFAVS);
     if(mangaDB == NULL)
         return;
 
@@ -103,10 +104,11 @@ void getNewFavs()
     {
         if(mangaDB[i].favoris)
         {
-            refreshChaptersList(&mangaDB[i]);
             if(mangaDB[i].chapitres == NULL)
                 continue;
 
+#warning "Support of Volumes required"
+			
             char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
             for(j = 0; mangaDB[i].chapitres[j] != VALEUR_FIN_STRUCTURE_CHAPITRE; j++)
             {
@@ -133,6 +135,6 @@ void getNewFavs()
     if(WEGOTSOMETHING && checkLancementUpdate())
         lancementModuleDL();
 
-    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaData(mangaDB);
 }
 

@@ -211,7 +211,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd;
-	MANGAS_DATA * oldData = getCopyCache(LOAD_DATABASE_ALL, &nbElem, SORT_TEAM);
+	MANGAS_DATA * oldData = getCopyCache(LOAD_DATABASE_ALL, &nbElem, SORT_TEAM, 0);
 	
 	while(posBase != nbElem)
 	{
@@ -232,9 +232,10 @@ int deleteManga()
 	/*Cette fonction va pomper comme un porc dans le module de selection de manga du lecteur*/
 	int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, noMoreChapter = 1, pageManga = 1, pageChapitre = 1;
 	char temp[2*LONGUEUR_NOM_MANGA_MAX + 0x80];
+	uint nbElem;
 
 	/*C/C du choix de manga pour le lecteur.*/
-	MANGAS_DATA *mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
+	MANGAS_DATA *mangas = getCopyCache(LOAD_DATABASE_INSTALLED, &nbElem, SORT_NAME, RDB_CTXDEL);
 
 	while(continuer > PALIER_MENU)
 	{
@@ -246,13 +247,15 @@ int deleteManga()
 
 		if(mangaChoisis <= PALIER_CHAPTER)
 			continuer = mangaChoisis;
-		else
+		else if(mangaChoisis < nbElem)
 		{
 		    bool isTome;
 			chapitreChoisis = PALIER_DEFAULT;
 			continuer = PALIER_DEFAULT;
 			while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT && noMoreChapter)
 			{
+				updateIfRequired(&mangas[mangaChoisis], RDB_CTXSERIES);
+
 			    curPage = pageChapitre;
 				chapitreChoisis = controleurChapTome(&mangas[mangaChoisis], &isTome, CONTEXTE_SUPPRESSION);
 				pageChapitre = curPage;
@@ -265,7 +268,8 @@ int deleteManga()
 					if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
 					{
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName, CONFIGFILE);
-						if(!checkFileExist(temp))
+
+						if(!checkFileExist(temp))	//Le projet n'est pas installé Oo
 						{
 							snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 							removeFolder(temp);
@@ -274,18 +278,19 @@ int deleteManga()
 						{
 							internalDeleteCT(mangas[mangaChoisis], isTome, chapitreChoisis);
 							noMoreChapter = 0;
-							freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
-							mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
 						}
 					}
 
 					else
 					{
+						//FIXME: ne pas delete les tomes
 						snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX + 0x80, "manga/%s/%s", mangas[mangaChoisis].team->teamLong, mangas[mangaChoisis].mangaName);
 						removeFolder(temp);
 						noMoreChapter = 0;
-						freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
-                        mangas = miseEnCache(LOAD_DATABASE_INSTALLED);
+						
+						updateIfRequired(&mangas[mangaChoisis], RDB_CTXSERIES);
+						mangas[mangaChoisis].contentDownloadable = true;
+						updateCache(mangas[mangaChoisis], RDB_UPDATE_ID, NULL);
 					}
 				}
 			}
@@ -296,7 +301,7 @@ int deleteManga()
 			continuer = chapitreChoisis = PALIER_DEFAULT;
 		}
 	}
-	freeMangaDataLegacy(mangas, NOMBRE_MANGA_MAX);
+	freeMangaData(mangas);
 	return continuer;
 }
 

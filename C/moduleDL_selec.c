@@ -12,6 +12,7 @@
 
 #include "moduleDL.h"
 #include "MDLCache.h"
+#include "db.h"
 
 extern int curPage; //Too lazy to use an argument
 int mainChoixDL()
@@ -27,7 +28,7 @@ int mainChoixDL()
     {
         MUTEX_UNLOCK(mutex);
         updateDatabase(false);
-        MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
+        MANGAS_DATA* mangaDB = getCopyCache(LOAD_DATABASE_ALL, NULL, SORT_NAME, RDB_CTXSELMDL);
         MDL_SELEC_CACHE * cache = NULL;
         MDLSetCacheStruct(&cache);
 
@@ -71,11 +72,12 @@ int mainChoixDL()
 
                 while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
                 {
+					updateIfRequired(&mangaDB[mangaChoisis], RDB_CTXSELMDL);
                     if(autoSelect)
                     {
                         chapitreChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE;
                         autoSelect = isTome = false;
-                        refreshChaptersList(&mangaDB[mangaChoisis]);
+                        checkChapitreValable(&mangaDB[mangaChoisis], NULL);
                     }
                     else
                     {
@@ -110,7 +112,7 @@ int mainChoixDL()
 
         MDLFlushCachedCache();
         freeMDLSelecCache(cache);
-        freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
+        freeMangaData(mangaDB);
     }
     else
     {

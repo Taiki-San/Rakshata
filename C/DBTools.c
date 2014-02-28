@@ -351,6 +351,8 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				
 				if(newData[posNew].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
 					refreshTomeList(&newData[posNew]);
+				else
+					newData[posNew].tomes = NULL;
 				
 				if(newChapters || newData[posNew].tomes != NULL)
 				{
@@ -362,6 +364,9 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				}
 				
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
+				
+				free(newData[posNew].chapitres);	//updateCache en fait une copie
+				free(newData[posOld].tomes);
 			}
 			
 			posOld++;

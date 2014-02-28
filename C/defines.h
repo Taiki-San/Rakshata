@@ -81,29 +81,6 @@
     #endif
 #endif
 
-/*Database*/
-enum RDB_CODES {
-	RDB_UPDATE_ID = 1,
-	RDB_UPDATE_TEAM = 2
-};
-
-enum RDB_ISUPDATE {
-	RDB_NOUPDATE	= 0x0,
-	RDB_UPDATECHAPS	= 0x1,
-	RDB_UPDATETOMES	= 0x2,
-	RDB_UPDATEALL	= 0x3,
-	RDB_CTXSERIES	= 0x3,
-	RDB_CTXCT		= 0xc,
-	RDB_CTXLECTEUR	= 0x30,
-	RDB_CTXMDL		= 0xc0
-};
-
-enum SORT_TYPES {
-	SORT_NAME = 1,
-	SORT_TEAM = 2,
-	SORT_DEFAULT = SORT_NAME,
-};
-
 /*Contextes*/
 #define CONTEXTE_LECTURE 1
 #define CONTEXTE_DL 2

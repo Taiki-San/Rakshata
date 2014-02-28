@@ -35,6 +35,28 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 
 void resetUpdateDBCache();
 
+/*Database*/
+enum RDB_CODES {
+	RDB_UPDATE_ID = 1,
+	RDB_UPDATE_TEAM = 2
+};
+
+enum RDB_ISUPDATE {
+	RDB_CTXSERIES	= 0x1,
+	RDB_CTXCT		= 0x2,
+	RDB_CTXLECTEUR	= 0x4,
+	RDB_CTXMDL		= 0x8,
+	RDB_CTXDEL		= 0x10,
+	RDB_CTXFAVS		= 0x10,
+	RDB_CTXSELMDL	= 0x40,
+	RDB_UNUSED3		= 0x80
+};
+
+enum SORT_TYPES {
+	SORT_NAME = 1,
+	SORT_TEAM = 2,
+	SORT_DEFAULT = SORT_NAME,
+};
 
 //========= Obfuscation	==========//
 

@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "moduleDL.h"
+#include "db.h"
 
 int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
 volatile bool quit;
@@ -27,7 +28,7 @@ void mainMDL()
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
     DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
     THREAD_TYPE threadData;
-    MANGAS_DATA* mangaDB = miseEnCache(LOAD_DATABASE_ALL);
+    MANGAS_DATA* mangaDB = getCopyCache(LOAD_DATABASE_ALL, NULL, SORT_NAME, RDB_CTXMDL);
     
     /*Initialisation*/
     loadTrad(trad, 22);
@@ -162,7 +163,7 @@ void mainMDL()
         free(statusCache[i]);
     }
 
-    freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
+    freeMangaData(mangaDB);
     free(*todoList);
     free(todoList);
     free(statusCache);

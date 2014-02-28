@@ -129,9 +129,9 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
     FILE* config = NULL;
 
     snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
-    if((config = fopen(temp, "r")) != NULL)
+    if(dernierLu != NULL && (config = fopen(temp, "r")) != NULL)
     {
-        *dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
         fscanfs(config, "%d", dernierLu);
         fclose(config);
     }
@@ -152,9 +152,8 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
 void getUpdatedTomeList(MANGAS_DATA *mangaDB)
 {
-    int i = VALEUR_FIN_STRUCTURE_CHAPITRE;
     refreshTomeList(mangaDB);
-    checkTomeValable(mangaDB, &i);
+    checkTomeValable(mangaDB, NULL);
 }
 
 int askForTome(MANGAS_DATA *mangaDB, int contexte)

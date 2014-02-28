@@ -61,8 +61,10 @@ bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool
 bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
 void removeFromCache(MANGAS_DATA data);
 void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output);
-MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType);
-char isProjectUpdated(uint ID, uint context);
+MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte context);
+bool isProjectUpdated(uint ID, byte context);
+void setProjectUpdated(uint ID);
+void signalProjectRefreshed(uint ID, byte context);
 void updateIfRequired(MANGAS_DATA *data, char context);
 
 //Teams
@@ -72,9 +74,7 @@ void freeTeam(TEAMS_DATA **data);
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
 void updateTeamCache(TEAMS_DATA ** teamData);
 
-MANGAS_DATA* miseEnCache(int mode);
 void freeMangaData(MANGAS_DATA* mangaDB);
-void freeMangaDataLegacy(MANGAS_DATA* mangaDB, int lol);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);

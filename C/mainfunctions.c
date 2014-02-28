@@ -10,6 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "db.h"
 
 bool addRepoByFileInProgress;
 void mainRakshata()
@@ -65,7 +66,7 @@ int mainLecture()
     {
         mangaChoisis = chapitreChoisis = 0;
 
-        MANGAS_DATA *mangaDB = miseEnCache(LOAD_DATABASE_INSTALLED);
+        MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_NAME, RDB_CTXFAVS);
 
         /*Appel des selectionneurs*/
         if(!restoringState)
@@ -121,6 +122,8 @@ int mainLecture()
                         retourLecteur = 0;
                         while(!retourLecteur)
                         {
+							updateIfRequired(&mangaDB[mangaChoisis], RDB_CTXLECTEUR);
+
                             if(restoringState == 1)
                             {
                                 char temp[LONGUEUR_NOM_MANGA_MAX], type[2] = {0, 0};
@@ -134,12 +137,12 @@ int mainLecture()
                                 if(type[0] == 'T')
                                 {
                                     isTome = true;
-                                    getUpdatedTomeList(&mangaDB[mangaChoisis]);
+									checkTomeValable(&mangaDB[mangaChoisis], NULL);
                                 }
                                 else
                                 {
                                     isTome = false;
-                                    getUpdatedChapterList(&mangaDB[mangaChoisis]);
+                                    checkChapitreValable(&mangaDB[mangaChoisis], NULL);
                                 }
                                 restoringState = 0;
                             }
@@ -169,7 +172,7 @@ int mainLecture()
                 }while(retry);
             }
         }
-        freeMangaDataLegacy(mangaDB, NOMBRE_MANGA_MAX);
+        freeMangaData(mangaDB);
     }
     return continuer;
 }

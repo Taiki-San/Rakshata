@@ -21,11 +21,6 @@ static uint lengthTeam = 0;
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
 
-MANGAS_DATA* miseEnCache(int mode)
-{
-	return NULL;
-}
-
 int setupBDDCache()
 {
     void *buf;
@@ -290,6 +285,8 @@ bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool
 bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 {
 #warning "Leak de la mémoire"
+	uint DBID;
+	void * buffer;
 	sqlite3_stmt *request = NULL;
 	
 	if(cache && !setupBDDCache())	//Échec du chargement
@@ -300,41 +297,28 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	{
 		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 		sqlite3_bind_int(request, 1, data.cacheDBID);
+		DBID = data.cacheDBID;
 	}
 	else
 	{
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2", -1, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2", -1, &request, NULL);
 		sqlite3_bind_int64(request, 1, (uint64_t) data.team);
 		sqlite3_bind_text(request, 2, mangaNameShort, -1, SQLITE_STATIC);
 	}
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-		void * buffer = (void*) sqlite3_column_int64(request, 0);
-		free(buffer);
-		buffer = (void*) sqlite3_column_int64(request, 1);
-		free(buffer);
+		free((void*) sqlite3_column_int64(request, 0));
+		free((void*) sqlite3_column_int64(request, 1));
+
+		if(whatCanIUse != RDB_UPDATE_ID)
+			DBID = sqlite3_column_int(request, 2);
 	}
 	sqlite3_finalize(request);
 
 	
 	//On pratique le remplacement effectif
-	if(whatCanIUse == RDB_UPDATE_ID)
-	{
-		sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_mangaNameShort)" = ?1, "DBNAMETOID(RDB_mangaName)" = ?2, "DBNAMETOID(RDB_status)" = ?3, "DBNAMETOID(RDB_genre)" = ?4, "DBNAMETOID(RDB_pageInfos)" = ?5, "DBNAMETOID(RDB_firstChapter)" = ?6, "DBNAMETOID(RDB_lastChapter)" = ?7, "DBNAMETOID(RDB_nombreChapitreSpeciaux)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_firstTome)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_contentDownloadable)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_ID)" = ?16", -1, &request, NULL);
-		
-		sqlite3_bind_int(request, 16, data.cacheDBID);
-	}
-	else
-	{
-		if(mangaNameShort == NULL)
-			return false;
-		
-		sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_mangaNameShort)" = ?1, "DBNAMETOID(RDB_mangaName)" = ?2, "DBNAMETOID(RDB_status)" = ?3, "DBNAMETOID(RDB_genre)" = ?4, "DBNAMETOID(RDB_pageInfos)" = ?5, "DBNAMETOID(RDB_firstChapter)" = ?6, "DBNAMETOID(RDB_lastChapter)" = ?7, "DBNAMETOID(RDB_nombreChapitreSpeciaux)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_firstTome)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_contentDownloadable)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_team)" = ?16 AND "DBNAMETOID(RDB_mangaNameShort)" = ?17", -1, &request, NULL);
-		
-		sqlite3_bind_int64(request, 16, (uint64_t) data.team);
-		sqlite3_bind_text(request, 17, mangaNameShort, -1, SQLITE_STATIC);
-	}
+	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_mangaNameShort)" = ?1, "DBNAMETOID(RDB_mangaName)" = ?2, "DBNAMETOID(RDB_status)" = ?3, "DBNAMETOID(RDB_genre)" = ?4, "DBNAMETOID(RDB_pageInfos)" = ?5, "DBNAMETOID(RDB_firstChapter)" = ?6, "DBNAMETOID(RDB_lastChapter)" = ?7, "DBNAMETOID(RDB_nombreChapitreSpeciaux)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_firstTome)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_contentDownloadable)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_ID)" = ?16", -1, &request, NULL);
 	
 	sqlite3_bind_text(request, 1, data.mangaNameShort, -1, SQLITE_STATIC);
 	sqlite3_bind_text(request, 2, data.mangaName, -1, SQLITE_STATIC);
@@ -345,17 +329,37 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	sqlite3_bind_int(request, 7, data.lastChapter);
 	sqlite3_bind_int(request, 8, data.nombreChapitreSpeciaux);
 	sqlite3_bind_int(request, 9, data.nombreChapitre);
-	sqlite3_bind_int64(request, 10, (int64_t) data.chapitres);
+
+	buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
+	if(buffer != NULL)
+		memcpy(buffer, data.chapitres, (data.nombreChapitre + 1) * sizeof(int));
+	
+	sqlite3_bind_int64(request, 10, (int64_t) buffer);
+
 	sqlite3_bind_int(request, 11, data.firstTome);
 	sqlite3_bind_int(request, 12, data.nombreTomes);
-	sqlite3_bind_int64(request, 13, (int64_t) data.tomes);
+	
+	if(data.tomes != NULL)
+	{
+		buffer = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
+		if(buffer != NULL)
+			memcpy(buffer, data.chapitres, (data.nombreTomes + 1) * sizeof(META_TOME));
+		
+		sqlite3_bind_int64(request, 13, (int64_t) buffer);
+	}
+	else
+		sqlite3_bind_int64(request, 13, 0x0);
+	
 	sqlite3_bind_int(request, 14, data.contentDownloadable);
 	sqlite3_bind_int(request, 15, data.favoris);
+	
+	sqlite3_bind_int(request, 16, DBID);	//WHERE
 	
 	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
 		return false;
 	
 	sqlite3_finalize(request);
+	setProjectUpdated(DBID);
 	
 	return true;
 }
@@ -453,7 +457,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	output->favoris = sqlite3_column_int(state, 17);
 }
 
-MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
+MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte context)
 {
 	uint pos = 0;
 	MANGAS_DATA * output = NULL;
@@ -486,6 +490,9 @@ MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
 		while(pos < nbElem && sqlite3_step(request) == SQLITE_ROW)
 		{
 			copyOutputDBToStruct(request, &output[pos]);
+			
+			if(context != 0)
+				signalProjectRefreshed(output[pos].cacheDBID, context);
 
 			if(output[pos].team != NULL)
 				pos++;
@@ -502,53 +509,45 @@ MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType)
 	return output;
 }
 
-char isProjectUpdated(uint ID, uint context)
+bool isProjectUpdated(uint ID, byte context)
 {
-	if(isUpdated == NULL || ID > lengthIsUpdated)
-		return 0xff;
-	
-	char output;
-	for(output = isUpdated[ID] & context; output >> 2; output >>= 2);
-	
-	return 0x0;
+	if(isUpdated != NULL && ID <= lengthIsUpdated)
+		return isUpdated[ID] & context;
+	return 0;
+}
+
+void setProjectUpdated(uint ID)
+{
+	if(isUpdated != NULL && ID <= lengthIsUpdated)
+		isUpdated[ID] = 0xff;
+}
+
+void signalProjectRefreshed(uint ID, byte context)
+{
+	if(isUpdated != NULL && ID <= lengthIsUpdated)
+		isUpdated[ID] &= ~context;
 }
 
 void updateIfRequired(MANGAS_DATA *data, char context)
 {
-	switch (isProjectUpdated(data->cacheDBID, context))
+	if(data == NULL)
+		return;
+
+	if (isProjectUpdated(data->cacheDBID, context))
 	{
-		case RDB_NOUPDATE:
-			break;
-			
-		case RDB_UPDATEALL:
+		sqlite3_stmt* request = NULL;
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?", -1, &request, NULL);
+		sqlite3_bind_int(request, 1, data->cacheDBID);
+		
+		if(sqlite3_step(request) == SQLITE_ROW)
 		{
-			if(data != NULL)
-			{
-				sqlite3_stmt* request = NULL;
-				sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?", -1, &request, NULL);
-				sqlite3_bind_int(request, 1, data->cacheDBID);
-				
-				if(sqlite3_step(request) == SQLITE_ROW)
-				{
-					free(data->chapitres);
-					free(data->tomes);
-					copyOutputDBToStruct(request, data);
-				}
-				
-				sqlite3_finalize(request);
-			}
-			break;
+			free(data->chapitres);
+			free(data->tomes);
+			copyOutputDBToStruct(request, data);
 		}
-		case RDB_UPDATECHAPS:
-		{
-			refreshChaptersList(data);
-			break;
-		}
-		case RDB_UPDATETOMES:
-		{
-			refreshTomeList(data);
-			break;
-		}
+		
+		signalProjectRefreshed(data->cacheDBID, context);
+		sqlite3_finalize(request);
 	}
 }
 
@@ -694,8 +693,3 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 }
 
 #endif
-
-void freeMangaDataLegacy(MANGAS_DATA* mangaDB, int lol)
-{
-	freeMangaData(mangaDB);
-}

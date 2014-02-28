@@ -142,7 +142,6 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 {
 	bool ret_value = false;
     uint prevSize;
-	int uselessVar;
 	
     if(mangaDB.firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
@@ -150,7 +149,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 		
 		refreshChaptersList(&mangaDB);
         prevSize = mangaDB.nombreChapitre;
-        checkChapitreValable(&mangaDB, &uselessVar);
+        checkChapitreValable(&mangaDB, NULL);
 		ret_value = prevSize != mangaDB.nombreChapitre;
 		
 		free(mangaDB.chapitres);
@@ -162,7 +161,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 		
 		refreshTomeList(&mangaDB);
         prevSize = mangaDB.nombreTomes;
-        checkTomeValable(&mangaDB, &uselessVar);
+        checkTomeValable(&mangaDB, NULL);
         ret_value |= prevSize != mangaDB.nombreTomes;
 
 		free(mangaDB.tomes);
