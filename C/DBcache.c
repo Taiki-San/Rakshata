@@ -316,7 +316,6 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	}
 	sqlite3_finalize(request);
 
-	
 	//On pratique le remplacement effectif
 	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_mangaNameShort)" = ?1, "DBNAMETOID(RDB_mangaName)" = ?2, "DBNAMETOID(RDB_status)" = ?3, "DBNAMETOID(RDB_genre)" = ?4, "DBNAMETOID(RDB_pageInfos)" = ?5, "DBNAMETOID(RDB_firstChapter)" = ?6, "DBNAMETOID(RDB_lastChapter)" = ?7, "DBNAMETOID(RDB_nombreChapitreSpeciaux)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_firstTome)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_contentDownloadable)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_ID)" = ?16", -1, &request, NULL);
 	
