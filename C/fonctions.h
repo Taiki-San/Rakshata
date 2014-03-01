@@ -60,12 +60,12 @@ sqlite3_stmt * getAddToCacheRequest();
 bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled);
 bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
 void removeFromCache(MANGAS_DATA data);
-void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output);
-MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte context);
+void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output);
+MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 bool isProjectUpdated(uint ID, byte context);
 void setProjectUpdated(uint ID);
-void signalProjectRefreshed(uint ID, byte context);
-void updateIfRequired(MANGAS_DATA *data, char context);
+void signalProjectRefreshed(uint ID, short context);
+void updateIfRequired(MANGAS_DATA *data, short context);
 
 //Teams
 uint getDBTeamID(TEAMS_DATA * team);

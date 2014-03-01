@@ -22,7 +22,10 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
 	PREFS_ENGINE prefs;
     DATA_ENGINE *data;
 
-    for(nombreManga = 0; mangaDB != NULL && nombreManga < NOMBRE_MANGA_MAX && mangaDB[nombreManga].mangaName[0]; nombreManga++); //Enumération
+	if(mangaDB == NULL)
+		return PALIER_MENU;
+		
+    for(nombreManga = 0; mangaDB[nombreManga].team != NULL; nombreManga++); //Enumération
 
     if(nombreManga > 0)
     {

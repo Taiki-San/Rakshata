@@ -28,7 +28,7 @@ int mainChoixDL()
     {
         MUTEX_UNLOCK(mutex);
         updateDatabase(false);
-        MANGAS_DATA* mangaDB = getCopyCache(LOAD_DATABASE_ALL, NULL, SORT_NAME, RDB_CTXSELMDL);
+        MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXSELMDL, NULL);
         MDL_SELEC_CACHE * cache = NULL;
         MDLSetCacheStruct(&cache);
 

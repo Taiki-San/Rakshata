@@ -59,7 +59,7 @@ void updateFavorites()
         free(favs);
 
     updateDatabase(false);
-    MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_TEAM, RDB_CTXFAVS);
+    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, NULL);
     if(mangaDB == NULL)
         return;
 
@@ -95,20 +95,19 @@ void updateFavorites()
 void getNewFavs()
 {
     FILE* import = NULL;
-    MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_TEAM, RDB_CTXFAVS);
+    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, NULL);
     if(mangaDB == NULL)
         return;
 
     int i, j, WEGOTSOMETHING = 0;
-    for(i = 0; i < NOMBRE_MANGA_MAX && mangaDB[i].mangaName[0]; i++)
+    for(i = 0; mangaDB[i].team != NULL; i++)
     {
         if(mangaDB[i].favoris)
         {
             if(mangaDB[i].chapitres == NULL)
                 continue;
 
-#warning "Support of Volumes required"
-			
+#warning "Support of Volumes required"			
             char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
             for(j = 0; mangaDB[i].chapitres[j] != VALEUR_FIN_STRUCTURE_CHAPITRE; j++)
             {

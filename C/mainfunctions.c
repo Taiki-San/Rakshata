@@ -66,7 +66,7 @@ int mainLecture()
     {
         mangaChoisis = chapitreChoisis = 0;
 
-        MANGAS_DATA *mangaDB = getCopyCache(LOAD_DATABASE_INSTALLED, NULL, SORT_NAME, RDB_CTXFAVS);
+        MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_NAME | RDB_CTXFAVS, NULL);
 
         /*Appel des selectionneurs*/
         if(!restoringState)

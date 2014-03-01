@@ -210,6 +210,90 @@ int setupBDDCache()
 	return nombreManga;
 }
 
+void syncCacheToDisk(byte syncCode)
+{
+	uint posStruct, posOut;
+	int newChar;
+	char *bufferOut;
+	
+	if(syncCode & SYNC_TEAM)
+	{
+		uint nbTeam;
+		TEAMS_DATA **teamDB = getCopyKnownTeams(&nbTeam);
+		bufferOut = malloc(nbTeam * MAX_TEAM_LINE_LENGTH + 200);
+		
+		if(teamDB != NULL && bufferOut != NULL)
+		{
+			for(posStruct = posOut = 0; posStruct < nbTeam; posStruct++)
+			{
+				if(teamDB[posStruct] != NULL)
+				{
+					newChar = snprintf(&bufferOut[posOut], MAX_TEAM_LINE_LENGTH, "%s %s %s %s %s %d\n", teamDB[posStruct]->teamLong, teamDB[posStruct]->teamCourt, teamDB[posStruct]->type, teamDB[posStruct]->URL_depot, teamDB[posStruct]->site, teamDB[posStruct]->openSite);
+					if(newChar > 0)
+						posOut += newChar;
+				}
+			}
+			if(posOut != 0)
+			{
+				bufferOut[posOut-1] = 0;	//On vire le dernier \n
+				updatePrefs(SETTINGS_REPODB_FLAG, bufferOut);
+			}
+		}
+		else
+			logR("Sync failed");
+		
+		if(teamDB != NULL)
+		{
+			for(uint i = 0; i < nbTeam; free(teamDB[i++]));
+			free(teamDB);
+		}
+		free(bufferOut);
+
+	}
+	
+	if(syncCode & SYNC_PROJECTS)
+	{
+		uint nbProject;
+		MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADALL | SORT_TEAM | RDB_NOCTCOPY, &nbProject);
+		TEAMS_DATA *currentTeam = NULL;
+		char *bufferOut = malloc(nbProject * 2 * MAX_PROJECT_LINE_LENGTH + 200);	//On a des infos sur la team qui sont affiché de temps en temps, d'où le *2
+		
+		if(mangaDB != NULL && bufferOut != NULL)
+		{
+			for(posStruct = posOut = 0; posStruct < nbProject; posStruct++)
+			{
+				if(mangaDB[posStruct].team != currentTeam)
+				{
+					if(mangaDB[posStruct].team != NULL)
+					{
+						for(; posStruct+1 < nbProject && mangaDB[posStruct+1].team != NULL; posStruct++);
+						continue;
+					}
+
+					newChar = snprintf(&bufferOut[posOut], MAX_PROJECT_LINE_LENGTH, "%s %s\n", mangaDB[posStruct].team->teamLong, mangaDB[posStruct].team->teamCourt);
+					if(newChar > 0)
+						posOut += newChar;
+				}
+				
+				newChar = snprintf(&bufferOut[posOut], MAX_PROJECT_LINE_LENGTH, "%s %s %d %d %d -1 %d%d %d %d\n", mangaDB[posStruct].mangaName, mangaDB[posStruct].mangaNameShort, mangaDB[posStruct].firstChapter, mangaDB[posStruct].lastChapter, mangaDB[posStruct].firstTome, mangaDB[posStruct].genre, mangaDB[posStruct].status, mangaDB[posStruct].pageInfos, mangaDB[posStruct].nombreChapitreSpeciaux);
+				if(newChar > 0)
+					posOut += newChar;
+			}
+			
+			if(posOut != 0)
+			{
+				bufferOut[posOut-1] = 0;	//On vire le dernier \n
+				updatePrefs(SETTINGS_MANGADB_FLAG, bufferOut);
+			}
+		}
+		else
+			logR("Sync failed");
+		
+		free(mangaDB);
+		free(bufferOut);
+	}
+}
+
 void flushDB()
 {
 	sqlite3_stmt* request = NULL;
@@ -387,7 +471,7 @@ void removeFromCache(MANGAS_DATA data)
 	nbElem--;
 }
 
-void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
+void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output)
 {
 	void* buffer;
 	
@@ -429,12 +513,17 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	output->nombreChapitreSpeciaux = sqlite3_column_int(state, 10);
 	output->nombreChapitre = sqlite3_column_int(state, 11);
 	
-	buffer = (void*) sqlite3_column_int64(state, 12);
-	if(buffer != NULL)
+	if(!dropChaptersAndTomes)
 	{
-		output->chapitres = malloc((output->nombreChapitre+2) * sizeof(int));
-		if(output->chapitres != NULL)
-			memcpy(output->chapitres, buffer, (output->nombreChapitre + 1) * sizeof(int));
+		buffer = (void*) sqlite3_column_int64(state, 12);
+		if(buffer != NULL)
+		{
+			output->chapitres = malloc((output->nombreChapitre+2) * sizeof(int));
+			if(output->chapitres != NULL)
+				memcpy(output->chapitres, buffer, (output->nombreChapitre + 1) * sizeof(int));
+		}
+		else
+			output->chapitres = NULL;
 	}
 	else
 		output->chapitres = NULL;
@@ -442,12 +531,17 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	output->firstTome = sqlite3_column_int(state, 13);
 	output->nombreTomes = sqlite3_column_int(state, 14);
 	
-	buffer = (void*) sqlite3_column_int64(state, 15);
-	if(buffer != NULL)
+	if(!dropChaptersAndTomes)
 	{
-		output->tomes = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
-		if(output->tomes != NULL)
-			memcpy(output->tomes, buffer, (output->nombreTomes + 1) * sizeof(META_TOME));
+		buffer = (void*) sqlite3_column_int64(state, 15);
+		if(buffer != NULL)
+		{
+			output->tomes = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
+			if(output->tomes != NULL)
+				memcpy(output->tomes, buffer, (output->nombreTomes + 1) * sizeof(META_TOME));
+		}
+		else
+			output->tomes = NULL;
 	}
 	else
 		output->tomes = NULL;
@@ -456,28 +550,27 @@ void copyOutputDBToStruct(sqlite3_stmt *state, MANGAS_DATA* output)
 	output->favoris = sqlite3_column_int(state, 17);
 }
 
-MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte context)
+MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 {
 	uint pos = 0;
 	MANGAS_DATA * output = NULL;
 	
+	*nbElemCopied = 0;
+	
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
 		return NULL;
-	
-	if(sortType == -1)
-		sortType = SORT_DEFAULT;
-	
+		
 	output = malloc((nbElem + 1) * sizeof(MANGAS_DATA));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
 	if(output != NULL)
 	{
 		//On craft la requète en fonctions des arguments
 		char sortRequest[50], requestString[200];
-		if(sortType == SORT_NAME)
+		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
 			strcpy(sortRequest, DBNAMETOID(RDB_mangaName));
-		else if(sortType == SORT_TEAM)
+		else
 			strcpy(sortRequest, DBNAMETOID(RDB_team));
 		
-		if(mode == LOAD_DATABASE_INSTALLED)
+		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
 		else
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite ORDER BY %s ASC", sortRequest);
@@ -488,10 +581,10 @@ MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte co
 
 		while(pos < nbElem && sqlite3_step(request) == SQLITE_ROW)
 		{
-			copyOutputDBToStruct(request, &output[pos]);
+			copyOutputDBToStruct(request, (maskRequest & RDB_NOCTCOPY), &output[pos]);
 			
-			if(context != 0)
-				signalProjectRefreshed(output[pos].cacheDBID, context);
+			if(maskRequest & RDB_CTXMASK)
+				signalProjectRefreshed(output[pos].cacheDBID, (maskRequest & RDB_CTXMASK) >> 8);
 
 			if(output[pos].team != NULL)
 				pos++;
@@ -502,8 +595,6 @@ MANGAS_DATA * getCopyCache(int mode, uint* nbElemCopied, short sortType, byte co
 		if(nbElemCopied != NULL)
 			*nbElemCopied = pos;
 	}
-	else if(nbElemCopied != NULL)
-		*nbElemCopied = 0;
 	
 	return output;
 }
@@ -521,16 +612,18 @@ void setProjectUpdated(uint ID)
 		isUpdated[ID] = 0xff;
 }
 
-void signalProjectRefreshed(uint ID, byte context)
+void signalProjectRefreshed(uint ID, short context)
 {
 	if(isUpdated != NULL && ID <= lengthIsUpdated)
-		isUpdated[ID] &= ~context;
+		isUpdated[ID] &= ~(context >> 8);
 }
 
-void updateIfRequired(MANGAS_DATA *data, char context)
+void updateIfRequired(MANGAS_DATA *data, short context)
 {
 	if(data == NULL)
 		return;
+	
+	context >>= 8;
 
 	if (isProjectUpdated(data->cacheDBID, context))
 	{
@@ -542,7 +635,7 @@ void updateIfRequired(MANGAS_DATA *data, char context)
 		{
 			free(data->chapitres);
 			free(data->tomes);
-			copyOutputDBToStruct(request, data);
+			copyOutputDBToStruct(request, false, data);
 		}
 		
 		signalProjectRefreshed(data->cacheDBID, context);
@@ -585,6 +678,8 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 		}
 		*nbTeamToRefresh = lengthTeam;
 	}
+	else
+		*nbTeamToRefresh = 0;
 	return output;
 }
 

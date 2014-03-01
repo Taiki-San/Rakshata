@@ -12,11 +12,14 @@
 
 #include "sqlite3.h"
 
-#define INITIAL_BUFFER_SIZE 1024
+#define INITIAL_BUFFER_SIZE			1024
+#define MAX_PROJECT_LINE_LENGTH		(LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 7 * 11 + 30)		//7 nombres * 10 digits + 30 pour de la marge, les espace, toussa
+#define MAX_TEAM_LINE_LENGTH		(LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + LONGUEUR_TYPE_TEAM + LONGUEUR_URL + LONGUEUR_SITE + 25)
+#define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
+
+//Options
 #define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
 //#define DELETE_UNLISTED_PROJECT
-
-#define DB_CACHE_EXPIRENCY 5*60*1000	//5 minutes
 
 unsigned long alreadyRefreshed;
 
@@ -36,26 +39,45 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 void resetUpdateDBCache();
 
 /*Database*/
+
+enum getCopyDBCodes
+{
+	RDB_LOADALL				= 0x0,
+	RDB_LOADINSTALLED		= 0x1,
+	RDB_LOADMASK			= 0x1,
+	
+	//Sorting type
+	SORT_NAME				= 0x0,
+	SORT_TEAM				= 0x2,
+	RDB_SORTMASK			= 0x2,
+	SORT_DEFAULT			= SORT_NAME,
+	
+	//Copy chapters to output struct?
+	RDB_NOCTCOPY			= 0x4,
+	
+	//Contexts
+	RDB_CTXSERIES			= 0x100,
+	RDB_CTXCT				= 0x200,
+	RDB_CTXLECTEUR			= 0x400,
+	RDB_CTXMDL				= 0x800,
+	RDB_CTXDEL				= 0x1000,
+	RDB_CTXFAVS				= 0x1000,
+	RDB_CTXSELMDL			= 0x4000,
+	RDB_UNUSED3				= 0x8000,
+	RDB_CTXMASK				= 0xff00
+};
+
+enum syncCode
+{
+	SYNC_TEAM		= 0x1,
+	SYNC_PROJECTS	= 0x2,
+	SYNC_ALL		= SYNC_TEAM | SYNC_PROJECTS
+};
+
+
 enum RDB_CODES {
 	RDB_UPDATE_ID = 1,
 	RDB_UPDATE_TEAM = 2
-};
-
-enum RDB_ISUPDATE {
-	RDB_CTXSERIES	= 0x1,
-	RDB_CTXCT		= 0x2,
-	RDB_CTXLECTEUR	= 0x4,
-	RDB_CTXMDL		= 0x8,
-	RDB_CTXDEL		= 0x10,
-	RDB_CTXFAVS		= 0x10,
-	RDB_CTXSELMDL	= 0x40,
-	RDB_UNUSED3		= 0x80
-};
-
-enum SORT_TYPES {
-	SORT_NAME = 1,
-	SORT_TEAM = 2,
-	SORT_DEFAULT = SORT_NAME,
 };
 
 //========= Obfuscation	==========//

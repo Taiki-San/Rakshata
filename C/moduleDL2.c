@@ -28,7 +28,7 @@ void mainMDL()
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
     DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
     THREAD_TYPE threadData;
-    MANGAS_DATA* mangaDB = getCopyCache(LOAD_DATABASE_ALL, NULL, SORT_NAME, RDB_CTXMDL);
+    MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
     
     /*Initialisation*/
     loadTrad(trad, 22);

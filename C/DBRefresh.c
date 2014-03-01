@@ -167,7 +167,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 		
 		if(dataOutput != NULL)
 		{
-			const short sizeBufferLine = LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 7 * 10 + 30;	//7 nombres * 10 digits + 30 pour de la marge, les espace, toussa
+			const short sizeBufferLine = MAX_PROJECT_LINE_LENGTH;
 			char bufferLine[sizeBufferLine];
 			//la première ligne a déjà étée checkée dans downloadedProjectListSeemsLegit, et on utilise pas la version dispo dans rak-manga-2
 			posCur += jumpLine(&bufferDL[posCur]);
@@ -211,7 +211,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd;
-	MANGAS_DATA * oldData = getCopyCache(LOAD_DATABASE_ALL, &nbElem, SORT_TEAM, 0);
+	MANGAS_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbElem);
 	
 	while(posBase != nbElem)
 	{
@@ -235,7 +235,7 @@ int deleteManga()
 	uint nbElem;
 
 	/*C/C du choix de manga pour le lecteur.*/
-	MANGAS_DATA *mangas = getCopyCache(LOAD_DATABASE_INSTALLED, &nbElem, SORT_NAME, RDB_CTXDEL);
+	MANGAS_DATA *mangas = getCopyCache(RDB_LOADINSTALLED | SORT_NAME | RDB_CTXDEL, &nbElem);
 
 	while(continuer > PALIER_MENU)
 	{
