@@ -103,7 +103,7 @@ void updateRepo()
 
 	}
 	free(bufferDL);
-	updateTeamCache(oldData);		//updateTeamCache free the data
+	updateTeamCache(oldData, -1);		//updateTeamCache free the data
 }
 
 /******************* UPDATE PROJECTS ****************************/

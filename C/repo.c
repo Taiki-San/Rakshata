@@ -225,23 +225,16 @@ int ajoutRepo(bool ajoutParFichier)
                     changeTo(temp, '_', ' ');
                     
 					snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
+					
+					bool userAgreeToInjection = rand() % 2;
+					
+#ifdef IDENTIFY_MISSING_UI
+	#warning "the user _should_ be prompted"
+#endif
                     
-					if(1)	//Si oui
+					if(userAgreeToInjection)
                     {
-                        char *repo = loadLargePrefs(SETTINGS_REPODB_FLAG), *repoBak = NULL, *repoNew = NULL;
-                        repoNew = ralloc((repo!=NULL?strlen(repo):0)+500);
-                        repoBak = repo;
-                        if(repoBak != NULL && *repoBak)
-                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, repoBak, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
-                        else
-                            snprintf(repoNew, (repo!=NULL?strlen(repo):0)+500, "<%c>\n%s %s %s %s %s %d\n<%c>\n", SETTINGS_REPODB_FLAG, teams.teamLong, teams.teamCourt, teams.type, teams.URL_depot, teams.site, teams.openSite, SETTINGS_REPODB_FLAG);
-                        updatePrefs(SETTINGS_REPODB_FLAG, repoNew);
-
-                        if(repoBak)
-                            free(repoBak);
-                        free(repoNew);
-
-                        resetUpdateDBCache();
+                        addRepoToDB(teams);
                         somethingAdded++;
                         if(ajoutParFichier)
                             continuer = 0;

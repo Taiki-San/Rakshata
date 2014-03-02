@@ -711,6 +711,34 @@ uint getDBTeamID(TEAMS_DATA * team)
 	return output;
 }
 
+bool addRepoToDB(TEAMS_DATA newTeam)
+{
+	uint nbTeam;
+	TEAMS_DATA **oldData = getCopyKnownTeams(&nbTeam), **newData = NULL, *newEntry = NULL;
+	if(oldData == NULL)
+		return false;
+		
+	newData	= malloc((nbTeam + 2) * sizeof(TEAMS_DATA*));
+	newEntry = malloc(sizeof(TEAMS_DATA));
+	if(newData == NULL || newEntry == NULL)
+	{
+		freeTeam(oldData);
+		free(newData);
+		free(newEntry);
+		return false;
+	}
+	
+	memcpy(newData, oldData, nbTeam * sizeof(TEAMS_DATA*));
+	memcpy(newEntry, &newTeam, sizeof(TEAMS_DATA));
+	newData[nbTeam] = newEntry;
+	newData[nbTeam + 1] = NULL;
+
+	updateTeamCache(newData, nbTeam+1);
+	syncCacheToDisk(SYNC_TEAM);
+	resetUpdateDBCache();
+	return true;
+}
+
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 {
 	TEAMS_DATA ** output = malloc(lengthTeam * sizeof(TEAMS_DATA*));
@@ -734,11 +762,50 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 	return output;
 }
 
-
-void freeTeam(TEAMS_DATA **data)
+void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
 {
-	for(int i = 0; data[i] != NULL; free(data[i++]));
-	free(data);
+	uint lengthTeamCopy = lengthTeam;
+	
+	TEAMS_DATA ** newReceiver;
+	
+	if(newAmountOfTeam == -1 || newAmountOfTeam == lengthTeamCopy)
+	{
+		newReceiver = teamList;
+		newAmountOfTeam = lengthTeamCopy;
+	}
+	else
+	{
+		newReceiver = calloc(newAmountOfTeam + 1, sizeof(TEAMS_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
+		if(newReceiver == NULL)
+			return;
+		
+		memcpy(newReceiver, teamList, lengthTeamCopy);
+		lengthTeamCopy = newAmountOfTeam;
+	}
+	
+	for(int pos = 0; pos < lengthTeamCopy; pos++)
+	{
+		if(newReceiver[pos] != NULL && teamData[pos] != NULL)
+		{
+			memcpy(newReceiver[pos], teamData[pos], sizeof(TEAMS_DATA));
+			free(teamData[pos]);
+		}
+		else if(teamData[pos] != NULL)
+		{
+			newReceiver[pos] = teamData[pos];
+		}
+	}
+	
+	getRideOfDuplicateInTeam(newReceiver, &lengthTeamCopy);
+	if(teamList != newReceiver)
+	{
+		void * buf = teamList;
+		teamList = newReceiver;
+		free(buf);
+		lengthTeam = lengthTeamCopy;
+	}
+	
+	free(teamData);
 }
 
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
@@ -768,28 +835,11 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
 	}
 }
 
-void updateTeamCache(TEAMS_DATA ** teamData)
+void freeTeam(TEAMS_DATA **data)
 {
-	uint lengthTeamCopy = lengthTeam;
-	
-	for(int pos = 0; pos < lengthTeamCopy; pos++)
-	{
-		if(teamList[pos] != NULL && teamData[pos] != NULL)
-		{
-			memcpy(teamList[pos], teamData[pos], sizeof(TEAMS_DATA));
-			free(teamData[pos]);
-		}
-		else if(teamData[pos] != NULL)
-		{
-			teamList[pos] = teamData[pos];
-		}
-	}
-	
-	getRideOfDuplicateInTeam(teamList, &lengthTeam);
-	free(teamData);
+	for(int i = 0; data[i] != NULL; free(data[i++]));
+	free(data);
 }
-
-//Si on voulait dupliquer la structure de la team pour chaque instance copié du cache, décommenter les lignes commentées
 
 #ifdef TEAM_COPIED_TO_INSTANCE
 
