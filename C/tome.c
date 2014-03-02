@@ -121,42 +121,48 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
     }
 }
 
-#warning "Use it less often and rewrite it to use work efficiently"
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
-    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
-    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
-    FILE* config = fopen(pathConfigFile, "r");
+	if(mangaDB.tomes == NULL || mangaDB.tomes[0].details == NULL)
+		return false;
 	
-    if(config == NULL)
-        return false;
+	uint pos = 0, nbTomes = mangaDB.nombreTomes, posDetails;
+	for(; pos < nbTomes && mangaDB.tomes[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[pos].ID != ID; pos++);
 	
-    while(fgetc(config) != EOF)
-    {
-        fseek(config, -1, SEEK_CUR);
-        fscanfs(config, "%s", name, 200);
+	if(mangaDB.tomes[pos].ID != ID)
+		return false;
+	
+	CONTENT_TOME * cache = mangaDB.tomes[pos].details;
+	char basePath[2*LONGUEUR_NOM_MANGA_MAX + 50], intermediaryDirectory[300], fullPath[2*LONGUEUR_NOM_MANGA_MAX + 350];
+	
+	snprintf(basePath, sizeof(basePath), "manga/%s/%s/", mangaDB.team->teamLong, mangaDB.mangaName);
+	
+	for(posDetails = 0; cache[posDetails].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; posDetails++)
+	{
+		if(cache[posDetails].isNative)
+		{
+			if(cache[posDetails].ID % 10)
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+			else
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d", cache[posDetails].ID / 10);
+		}
+		else
+		{
+			if(cache[posDetails].ID % 10)
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+			else
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d", ID, cache[posDetails].ID / 10);
+		}
 		
-        if(!checkPathEscape(name, 200))
-        {
-            fclose(config);
+		snprintf(fullPath, sizeof(fullPath), "%s/%s/%s", basePath, intermediaryDirectory, CONFIGFILE);
+        if(!checkFileExist(fullPath))
             return false;
-        }
 		
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
-        if(!checkFileExist(pathConfigFile))
-        {
-            fclose(config);
+		snprintf(fullPath, sizeof(fullPath), "%s/%s/installing", basePath, intermediaryDirectory);
+        if(checkFileExist(fullPath))
             return false;
-        }
-		
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
-        if(checkFileExist(pathConfigFile))
-        {
-            fclose(config);
-            return false;
-        }
-    }
-    fclose(config);
+	}
+	
     return true;
 }
 
