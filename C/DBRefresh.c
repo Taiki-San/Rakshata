@@ -20,6 +20,7 @@ void updateDatabase(bool forced)
         MUTEX_UNLOCK(mutex);
 	    updateRepo();
         updateProjects();
+		consolidateCache();
         alreadyRefreshed = time(NULL);
 	}
     else
@@ -109,35 +110,29 @@ void updateRepo()
 
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
 {
-	if(buffer_manga == NULL)
-	{
-		buffer_manga = malloc(SIZE_BUFFER_UPDATE_DATABASE);
-		if(buffer_manga == NULL)
-			return -1;
-	}
 	int defaultVersion = VERSION_MANGA;
-	char temp[500];
+	char URL[500];
     do
 	{
 	    if(!strcmp(teams->type, TYPE_DEPOT_1))
-            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            snprintf(temp, 500, "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(URL, sizeof(URL), "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {
-            char temp2[LONGUEUR_NOM_MANGA_MAX + 100];
-            snprintf(temp2, LONGUEUR_NOM_MANGA_MAX+100, "failed at read mode(manga database): %s", teams->type);
-            logR(temp2);
-            return 0;
+            char temp[LONGUEUR_NOM_MANGA_MAX + 100];
+            snprintf(temp, sizeof(temp), "failed at read mode(manga database): %s", teams->type);
+            logR(temp);
+            return -1;
         }
 		
         buffer_manga[0] = 0;
-        download_mem(temp, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
+        download_mem(URL, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
 		
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_manga));
@@ -154,7 +149,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 	if(bufferDL == NULL)
 		return;
 
-	int version = getUpdatedProjectOfTeam(bufferDL, oldData[posBase].team);
+	int version = getUpdatedProjectOfTeam(bufferDL, globalTeam);
 	
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, oldData[posBase]))		//On a des données à peu près valide
 	{

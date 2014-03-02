@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "crypto/crypto.h"
+#include "db.h"
 
 static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
 

@@ -366,7 +366,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
 				
 				free(newData[posNew].chapitres);	//updateCache en fait une copie
-				free(newData[posOld].tomes);
+				free(newData[posNew].tomes);
 			}
 			
 			posOld++;
@@ -385,6 +385,30 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 			
 			posNew++;
 		}
+	}
+	
+	while (posOld < magnitudeOldData)
+	{
+		removeFromCache(oldData[posOld]);
+#ifdef DELETE_UNLISTED_PROJECT
+		char path[LONGUEUR_NOM_MANGA_MAX * 2 + 10];
+		snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
+		removeFolder(path);
+#endif
+		posOld++;
+	}
+	
+	while (posNew < magnitudeNewData)
+	{
+		newData[posNew].cacheDBID = 0;
+		
+		refreshChaptersList(&newData[posNew]);
+		refreshTomeList(&newData[posNew]);
+		newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
+		
+		addToCache(request, newData[posNew], IDTeam, false);
+		
+		posNew++;
 	}
 	
 	sqlite3_finalize(request);

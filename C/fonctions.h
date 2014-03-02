@@ -53,43 +53,6 @@ int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
 
-/**DBCache.c**/
-int setupBDDCache();
-void flushDB();
-sqlite3_stmt * getAddToCacheRequest();
-bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool isInstalled);
-bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
-void removeFromCache(MANGAS_DATA data);
-void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output);
-MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
-bool isProjectUpdated(uint ID, byte context);
-void setProjectUpdated(uint ID);
-void signalProjectRefreshed(uint ID, short context);
-void updateIfRequired(MANGAS_DATA *data, short context);
-
-//Teams
-uint getDBTeamID(TEAMS_DATA * team);
-TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);
-void freeTeam(TEAMS_DATA **data);
-void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
-void updateTeamCache(TEAMS_DATA ** teamData);
-
-void freeMangaData(MANGAS_DATA* mangaDB);
-
-/**DBRefresh.c**/
-void updateDatabase(bool forced);
-void resetUpdateDBCache();
-int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams);
-void updateRepo();
-int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
-void updateProjects();
-int deleteManga();
-void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
-void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
-void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
-void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
-int databaseVersion(char* mangaDB);
-
 /**Donwload.c**/
 void initializeDNSCache();
 void releaseDNSCache();
