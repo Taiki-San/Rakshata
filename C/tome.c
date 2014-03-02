@@ -31,7 +31,7 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
     pos = 0;
     while(ligneCourante < nombreMaxElems && pos < size)
     {
-        for(i = 0; i < 14+MAX_TOME_NAME_LENGTH+2*TOME_DESCRIPTION_LENGTH && buffer[pos] != '\n' && buffer[pos] != '\r' && pos < size; ligne[i++] = buffer[pos++]); //Charge la première ligne
+        for(i = 0; i < sizeof(ligne)-1 && pos < size && buffer[pos] != '\n' && buffer[pos] != '\r'; ligne[i++] = buffer[pos++]); //Charge la première ligne
         ligne[i] = 0; //i <= longueur-1
 
         if(buffer[pos] != '\n') //Finis la ligne
@@ -42,7 +42,10 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         if((ligne[i] == ' ' || !ligne[i]) && i > 0 && i < 10) //Données saines
         {
             sscanfs(ligne, "%d %s %s %s", &lines[ligneCourante].ID, lines[ligneCourante].name, MAX_TOME_NAME_LENGTH, lines[ligneCourante].description1, TOME_DESCRIPTION_LENGTH, lines[ligneCourante].description2, TOME_DESCRIPTION_LENGTH);
-            escapeTomeLineElement(&lines[ligneCourante++]);
+            escapeTomeLineElement(&lines[ligneCourante]);
+			lines[ligneCourante].details = NULL;
+			parseTomeDetails(*mangaDB, lines[ligneCourante].ID, &(lines[ligneCourante].details));
+			ligneCourante++;
         }
     }
     if(ligneCourante == nombreMaxElems) //Aucun element invalide
@@ -53,6 +56,7 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         memcpy(mangaDB->tomes, lines, ligneCourante*sizeof(META_TOME));
         free(lines);
     }
+	memset(&lines[ligneCourante], 0, sizeof(META_TOME));
     qsort(mangaDB->tomes, ligneCourante, sizeof(META_TOME), sortTomes);
     mangaDB->nombreTomes = ligneCourante;
 
@@ -96,21 +100,19 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
     if(tomeDB != NULL)
     {
         unsigned char *buffer = NULL;
-        size_t size = 0;
-        fseek(tomeDB, 0, SEEK_END);
-        size = ftell(tomeDB);
-        if(size != 0)
-        {
-            buffer = calloc(1, size+1);
-            if(buffer == NULL)
-                memoryError(size+1);
-            else
-            {
-                rewind(tomeDB);
-                fread(buffer, size, 1, tomeDB);
-            }
-        }
-        fclose(tomeDB);
+        size_t size = getFileSize(temp);
+        if(size == 0)
+			return;
+
+		buffer = calloc(1, size+1);
+		if(buffer == NULL)
+			memoryError(size+1);
+		else
+		{
+			rewind(tomeDB);
+			fread(buffer, size, 1, tomeDB);
+		}
+		fclose(tomeDB);
         if(buffer != NULL)
         {
             tomeDBParser(mangaDB, buffer, size);
@@ -119,16 +121,136 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
     }
 }
 
+#warning "Use it less often and rewrite it to use work efficiently"
+bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
+{
+    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
+    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
+    FILE* config = fopen(pathConfigFile, "r");
+	
+    if(config == NULL)
+        return false;
+	
+    while(fgetc(config) != EOF)
+    {
+        fseek(config, -1, SEEK_CUR);
+        fscanfs(config, "%s", name, 200);
+		
+        if(!checkPathEscape(name, 200))
+        {
+            fclose(config);
+            return false;
+        }
+		
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
+        if(!checkFileExist(pathConfigFile))
+        {
+            fclose(config);
+            return false;
+        }
+		
+        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
+        if(checkFileExist(pathConfigFile))
+        {
+            fclose(config);
+            return false;
+        }
+    }
+    fclose(config);
+    return true;
+}
+
+bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output)
+{
+	//Sanitisation de base
+	if(output == NULL || ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		return false;
+	
+	if(*output != NULL)
+	{
+		free(*output);
+		*output = NULL;
+	}
+	
+	uint bufferSize, posBuf;
+	char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], *fileBuffer;
+    FILE* config;
+	
+	//On charge le fichier dans un buffer en mémoire pour accélérer les IO
+	snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
+	
+	bufferSize = getFileSize(pathConfigFile);
+	
+	if(!bufferSize || (config = fopen(pathConfigFile, "r")) == NULL)
+		return false;
+		
+	fileBuffer = malloc(bufferSize + 1);
+	if(fileBuffer == NULL)
+	{
+		fclose(config);
+		return false;
+	}
+	
+	posBuf = fread(fileBuffer, sizeof(char), bufferSize, config);
+	fileBuffer[posBuf] = 0;
+	bufferSize = posBuf;
+	
+	fclose(config);
+	
+	//On commence à parser
+	uint elemMax = countSpaces(fileBuffer) + 1, posOut;
+	int curID;
+	CONTENT_TOME * workingBuffer = malloc((elemMax + 1) * sizeof(CONTENT_TOME));
+	
+	if(workingBuffer == NULL)
+		return false;
+	
+	for(posOut = posBuf = 0; fileBuffer[posBuf] && posOut < elemMax;)
+	{
+		curID = extractNumFromConfigTome(&fileBuffer[posBuf], ID);
+		if(curID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		{
+			workingBuffer[posOut].ID = curID;
+			workingBuffer[posOut].isNative = (fileBuffer[posBuf] == 'C');
+			posOut++;
+		}
+		
+		while(fileBuffer[posBuf])
+		{
+			if(fileBuffer[posBuf++] == ' ' && (fileBuffer[posBuf] == 'C' || fileBuffer[posBuf] == 'T'))
+				break;
+		}
+	}
+	
+	if(posOut == 0)	//Rien n'a été lu
+	{
+		free(workingBuffer);
+		return false;
+	}
+
+	else if(posOut < elemMax)
+	{
+		void* buf = realloc(workingBuffer, (posOut + 1) * sizeof(CONTENT_TOME));
+		if(buf != NULL)
+			workingBuffer = buf;
+	}
+	
+	workingBuffer[posOut].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	*output = workingBuffer;
+	free(fileBuffer);
+	return true;
+}
+
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
 	if(mangaDB->tomes == NULL)
 		return;
 	
     int nbElem = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
+    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
     FILE* config = NULL;
 
-    snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
+    snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
     if(dernierLu != NULL && (config = fopen(temp, "r")) != NULL)
     {
 		*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -138,6 +260,13 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 
     for(nbElem = 0; mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreTomes; nbElem++)
     {
+		if(mangaDB->tomes[nbElem].details != NULL)
+		{
+			free(mangaDB->tomes[nbElem].details);
+			mangaDB->tomes[nbElem].details = NULL;
+		}
+		
+		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*mangaDB, mangaDB->tomes[nbElem].ID))
         {
             mangaDB->tomes[nbElem].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
@@ -154,6 +283,16 @@ void getUpdatedTomeList(MANGAS_DATA *mangaDB)
 {
     refreshTomeList(mangaDB);
     checkTomeValable(mangaDB, NULL);
+}
+
+void freeTomeList(META_TOME * data)
+{
+	if(data == NULL)
+		return;
+	
+	uint i = 0;
+	for(; data[i].details != NULL; free(data[i++].details));
+	free(data);
 }
 
 int askForTome(MANGAS_DATA *mangaDB, int contexte)
@@ -327,12 +466,14 @@ int extractNumFromConfigTome(char *input, int ID)
     int output = VALEUR_FIN_STRUCTURE_CHAPITRE, posDebut = 0;
     char basePath[100];
 
-    snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
-
     if(!strncmp(input, "Chapitre_", 9))
         posDebut = 9;
-    else if(!strncmp(input, basePath, strlen(basePath)))
-        posDebut = strlen(basePath);
+    else
+	{
+		snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
+		if(!strncmp(input, basePath, strlen(basePath)))
+			posDebut = strlen(basePath);
+	}
 
     if(posDebut)
     {

@@ -250,19 +250,14 @@
 		B66B4627189A7129000354D1 /* C Core */ = {
 			isa = PBXGroup;
 			children = (
-				B6F6ED2018A31EF600E3B55B /* Headers */,
+				B6F6ECA318A3001400E3B55B /* affichage.c */,
 				B6F6ED1F18A3007F00E3B55B /* Core */,
 				B6F6ED1E18A3007600E3B55B /* DB */,
-				B6F6ED1D18A3006F00E3B55B /* MDL */,
-				B6F6ED1C18A3006700E3B55B /* Interface with UI */,
-				B6F6ECA318A3001400E3B55B /* affichage.c */,
 				B6F6ECB318A3001400E3B55B /* engine.c */,
-				B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */,
-				B6F6ECBE18A3001400E3B55B /* lecteur_event.c */,
-				B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */,
-				B6F6ECC018A3001400E3B55B /* lecteur_tool.c */,
-				B6F6ECC118A3001400E3B55B /* lecteur_ui.c */,
-				B6F6ECC218A3001400E3B55B /* lecteur.c */,
+				B6F6ED2018A31EF600E3B55B /* Headers */,
+				B6F6ED1C18A3006700E3B55B /* Interface with UI */,
+				B6ED459018C3A3E900DE4E41 /* Lecteur Core */,
+				B6F6ED1D18A3006F00E3B55B /* MDL */,
 				B6F6ECD418A3001400E3B55B /* selection.c */,
 			);
 			name = "C Core";
@@ -443,6 +438,19 @@
 			);
 			name = "Supporting Files";
 			path = Ressources;
+			sourceTree = "<group>";
+		};
+		B6ED459018C3A3E900DE4E41 /* Lecteur Core */ = {
+			isa = PBXGroup;
+			children = (
+				B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */,
+				B6F6ECBE18A3001400E3B55B /* lecteur_event.c */,
+				B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */,
+				B6F6ECC018A3001400E3B55B /* lecteur_tool.c */,
+				B6F6ECC118A3001400E3B55B /* lecteur_ui.c */,
+				B6F6ECC218A3001400E3B55B /* lecteur.c */,
+			);
+			name = "Lecteur Core";
 			sourceTree = "<group>";
 		};
 		B6F6ECA618A3001400E3B55B /* crypto */ = {

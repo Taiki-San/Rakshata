@@ -163,16 +163,16 @@ int setupBDDCache()
 					mangas.tomes = NULL;
 					
 					mangas.team = internalTeamList[numeroTeam];	//checkIfFaved a besoin d'y accéder
-					mangas.favoris = checkIfFaved(&mangas, &cacheFavs);
-					mangas.contentDownloadable = isAnythingToDownload(mangas);
-					
 					refreshChaptersList(&mangas);
 					refreshTomeList(&mangas);
+					
+					mangas.favoris = checkIfFaved(&mangas, &cacheFavs);
+					mangas.contentDownloadable = isAnythingToDownload(mangas);
 					
 					if(!addToCache(request, mangas, numeroTeam, checkFileExist(temp)))
 					{
 						free(mangas.chapitres);
-						free(mangas.tomes);
+						freeTomeList(mangas.tomes);
 					}
 					nombreManga++;
 				}
@@ -193,17 +193,22 @@ int setupBDDCache()
 		}
 #endif
 
-		if(cache != NULL)
-			flushDB();
-		
-		cache = internalDB;
-		
-		teamList = internalTeamList;
-		lengthTeam = nombreTeam;
-		
-		isUpdated = calloc(nbElem, sizeof(char));
-		if(isUpdated)
-			lengthIsUpdated = nbElem;
+		if(nbElem)
+		{
+			if(cache != NULL)
+				flushDB();
+			
+			cache = internalDB;
+			
+			teamList = internalTeamList;
+			lengthTeam = nombreTeam;
+			
+			isUpdated = calloc(nbElem, sizeof(char));
+			if(isUpdated)
+				lengthIsUpdated = nbElem;
+		}
+		else
+			return 0;
 	}
 	
 	free(cacheFavs);
@@ -336,7 +341,7 @@ void flushDB()
 	while(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1));
 	}
 	
 	sqlite3_finalize(request);
@@ -426,7 +431,7 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1));
 
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 2);
@@ -493,7 +498,7 @@ void removeFromCache(MANGAS_DATA data)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1));
 	}
 	sqlite3_finalize(request);
 	
@@ -773,7 +778,7 @@ void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
 		newReceiver = teamList;
 		newAmountOfTeam = lengthTeamCopy;
 	}
-	else
+	else	//Resize teamList
 	{
 		newReceiver = calloc(newAmountOfTeam + 1, sizeof(TEAMS_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
 		if(newReceiver == NULL)
@@ -860,7 +865,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 				collector[posTeamCollector++] = mangaDB[pos].team;
 		}
         free(mangaDB[pos].chapitres);
-        free(mangaDB[pos].tomes);
+        freeTomeList(mangaDB[pos].tomes);
 		
     }
 	while (posTeamCollector--)
@@ -880,8 +885,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
     for(pos = 0; mangaDB[pos].team != NULL; pos++)
     {
         free(mangaDB[pos].chapitres);
-		if(mangaDB[pos].tomes != NULL)
-			free(mangaDB[pos].tomes);
+		freeTomeList(mangaDB[pos].tomes);
 		
     }
     free(mangaDB);

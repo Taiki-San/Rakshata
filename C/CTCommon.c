@@ -54,7 +54,7 @@ void displayIconeChapOrTome(bool isTome)
 
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte)
 {
-    int outChoisis, dernierLu, dernierLuTome = VALEUR_FIN_STRUCTURE_CHAPITRE, dernierLuChapitre = VALEUR_FIN_STRUCTURE_CHAPITRE, noChoice = 0;
+    int outChoisis = 0, dernierLu, dernierLuTome = VALEUR_FIN_STRUCTURE_CHAPITRE, dernierLuChapitre = VALEUR_FIN_STRUCTURE_CHAPITRE, noChoice = 0;
     char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH];
     DATA_ENGINE *data = NULL;
 	PREFS_ENGINE prefs;
@@ -137,6 +137,41 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
     else
         getUpdatedChapterList(mangaDB);
 }
+
+bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDChap)
+{
+	if(IDChap == -1)
+		return false;
+
+	if((!isCallerCtxTome && projectData.tomes == NULL) || (isCallerCtxTome && projectData.chapitres == NULL))
+		return false;
+
+	char pathToCheck[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
+	if(isCallerCtxTome)
+	{
+		if(IDChap % 10)
+			snprintf(pathToCheck, sizeof(pathToCheck), "manga/%s/%s/Chapitre_%d.%d/%s", projectData.team->teamLong, projectData.mangaName, IDChap / 10, IDChap % 10, CONFIGFILE);
+		else
+			snprintf(pathToCheck, sizeof(pathToCheck), "manga/%s/%s/Chapitre_%d/%s", projectData.team->teamLong, projectData.mangaName, IDChap / 10, CONFIGFILE);
+	}
+	else
+	{
+#warning "TODO: read details to see if the element is already installed, and where"
+	}
+	
+	return checkFileExist(pathToCheck);
+}
+
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
+{
+    if(isTome)
+    {
+        META_TOME *tome = data;
+        return checkTomeReadable(mangaDB, tome->ID);
+    }
+    return checkChapterReadable(mangaDB, *(int *) data);
+}
+
 
 bool isAnythingToDownload(MANGAS_DATA mangaDB)
 {

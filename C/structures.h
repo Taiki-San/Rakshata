@@ -28,8 +28,14 @@ typedef struct infos_Team
     bool openSite;
 } TEAMS_DATA;
 
+typedef struct details_tome_data{
+	int ID;
+	bool isNative;
+}CONTENT_TOME;
+
 typedef struct tome_metadata
 {
+	CONTENT_TOME * details;
     int ID;
     unsigned char name[MAX_TOME_NAME_LENGTH];
     unsigned char description1[TOME_DESCRIPTION_LENGTH];

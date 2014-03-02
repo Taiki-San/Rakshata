@@ -19,22 +19,12 @@ bool isRemoteRepoLineValid(char * data, int version)
 	if(version < 1 || version > 2)
 		return false;
 	
-	uint basePos, pos, nbrSpaces = 0;
+	uint basePos, nbrSpaces = 0;
 	
 	for(basePos = 0; data[basePos] && (data[basePos] < '!' || data[basePos] > '~'); basePos++);
 	
 	//Check the number of spaces
-	for(pos = basePos; data[pos];)
-	{
-		if(data[pos++] == ' ')
-		{
-			for(; data[pos] == ' '; pos++);
-			
-			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
-				nbrSpaces++;
-			
-		}
-	}
+	nbrSpaces = countSpaces(&data[basePos]);
 	
 	if((version == 1 && nbrSpaces != 5) || (version == 2 && nbrSpaces != 5))
 	{
@@ -366,7 +356,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
 				
 				free(newData[posNew].chapitres);	//updateCache en fait une copie
-				free(newData[posNew].tomes);
+				freeTomeList(newData[posNew].tomes);
 			}
 			
 			posOld++;

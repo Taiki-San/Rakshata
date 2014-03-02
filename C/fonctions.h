@@ -18,6 +18,7 @@ bool areSameColors(Rak_Color a, Rak_Color b);
 
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);
+bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int askForChapter(MANGAS_DATA *mangaDB, int mode);
@@ -41,9 +42,6 @@ int checkSecondLineButtonPressed(int button_selected[8]);
 int checkButtonPressed(int button_selected[8]);
 int checkNameFileZip(char fileToTest[256]);
 bool checkPathEscape(char *string, int length);
-bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
-bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 
 /**CTCommon.c**/
 int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int contexte);
@@ -51,6 +49,7 @@ void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome,
 void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
 
 /**Donwload.c**/
@@ -201,8 +200,11 @@ int getThreadCount();
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void escapeTomeLineElement(META_TOME *ligne);
 void refreshTomeList(MANGAS_DATA *mangaDB);
+bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
+bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);
+void freeTomeList(META_TOME * data);
 int askForTome(MANGAS_DATA* mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
@@ -249,6 +251,9 @@ bool isDownloadValid(char *input);
 int isJPEG(void *input);
 int isPNG(void *input);
 void addToRegistry(bool firstStart);
+uint countSpaces(char * data);
+uint32_t getFileSize(const char *filename);
+uint64_t getFileSize64(const char * filename);
 void mergeSort(int * tab, size_t length);
 int removeDuplicate(int * array, int length);
 

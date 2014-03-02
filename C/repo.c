@@ -34,9 +34,7 @@ int checkAjoutRepoParFichier(char *argv)
     if(input == NULL)
         return 0;
 
-    fseek(input, 0, SEEK_END);
-    size = ftell(input);
-    rewind(input);
+    size = getFileSize(argv);
     bufferRead = calloc(size+1, sizeof(char));
     if(bufferRead != NULL)
     {

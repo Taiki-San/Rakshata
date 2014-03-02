@@ -377,6 +377,55 @@ void addToRegistry(bool firstStart)
 #endif
 }
 
+uint countSpaces(char * data)
+{
+	uint nbrSpaces;
+	for(uint pos = nbrSpaces = 0; data[pos];)
+	{
+		if(data[pos++] == ' ')
+		{
+			for(; data[pos] == ' '; pos++);
+			
+			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
+				nbrSpaces++;
+			
+		}
+	}
+	return nbrSpaces;
+}
+
+uint32_t getFileSize(const char *filename)
+{
+	return getFileSize64(filename) & 0xffffffff;
+}
+
+uint64_t getFileSize64(const char * filename)
+{
+#ifdef _WIN32
+	HANDLE hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return 0; // error condition, could call GetLastError to find out more
+	
+    LARGE_INTEGER size;
+    if (!GetFileSizeEx(hFile, &size))
+    {
+        CloseHandle(hFile);
+        return 0; // error condition, could call GetLastError to find out more
+    }
+	
+    CloseHandle(hFile);
+    return size.QuadPart;
+	
+#else
+	struct stat st;
+	
+    if (stat(filename, &st) == 0)
+        return st.st_size;
+	
+    return -1;
+#endif
+}
+
 void mergeSortMerge(int * tab, int *tmp, size_t length)
 {
     size_t pos1 = 0, pos2 = length / 2, posTmp = 0;

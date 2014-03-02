@@ -163,29 +163,22 @@ IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page
     else
         return NULL;
 
-    test = fopen(pathPage, "r");
-    if(test == NULL) //Si on trouve pas la page
+	size = getFileSize(pathPage);
+    if(!size) //Si on trouve pas la page
     {
         free(path);
         return NULL;
     }
 
-    fseek(test, 0, SEEK_END);
-    size = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
-    fclose(test);
-
     if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
         size += CRYPTO_BUFFER_SIZE;
 
-    test = fopen(path, "r");
-    if(test == NULL) //Si on trouve pas config.enc
+	sizeDBPass = getFileSize(path);
+    if(!sizeDBPass) //Si on trouve pas config.enc
     {
         free(path);
 		return readFile(pathPage);
     }
-    fseek(test, 0, SEEK_END);
-    sizeDBPass = ftell(test); //Un fichier crypté a la même taille, on se base donc sur la taille du crypté pour avoir la taille du buffer
-    fclose(test);
 
     if(getMasterKey(key))
     {

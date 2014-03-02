@@ -95,11 +95,17 @@ int checkEvnt()
 					size_t size;
 
                     test = fopen(list[fichiersADL[nbCurrent]], "r");
-                    fseek(test, 0, SEEK_END);
-                    size = ftell(test);
-                    rewind(test);
+                    size = getFileSize(list[fichiersADL[nbCurrent]]);
 
-                    buffer = ralloc(size*2);
+                    buffer = calloc(2 * size, sizeof(char));
+					
+					if(test == NULL || buffer == NULL)
+					{
+						if(test != NULL)
+							fclose(test);
+						free(buffer);
+						continue;
+					}
 
                     while((c = fgetc(test)) != EOF && k < size*2)
                     {
@@ -530,72 +536,5 @@ bool checkPathEscape(char *string, int length)
         }
     }
     return true;
-}
-
-bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
-{
-    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350];
-    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
-    if(chapitre%10)
-    {
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
-        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
-    }
-    else
-    {
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
-        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
-    }
-    if(checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag))
-        return true;
-    return false;
-}
-
-bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
-{
-    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350], name[200];
-    snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
-    FILE* config = fopen(pathConfigFile, "r");
-
-    if(config == NULL)
-        return false;
-
-    while(fgetc(config) != EOF)
-    {
-        fseek(config, -1, SEEK_CUR);
-        fscanfs(config, "%s", name, 200);
-
-        if(!checkPathEscape(name, 200))
-        {
-            fclose(config);
-            return false;
-        }
-
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
-        if(!checkFileExist(pathConfigFile))
-        {
-            fclose(config);
-            return false;
-        }
-
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/%s/installing", mangaDB.team->teamLong, mangaDB.mangaName, name);
-        if(checkFileExist(pathConfigFile))
-        {
-            fclose(config);
-            return false;
-        }
-    }
-    fclose(config);
-    return true;
-}
-
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
-{
-    if(isTome)
-    {
-        META_TOME *tome = data;
-        return checkTomeReadable(mangaDB, tome->ID);
-    }
-    return checkChapterReadable(mangaDB, *(int *) data);
 }
 

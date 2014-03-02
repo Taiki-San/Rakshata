@@ -35,28 +35,26 @@ int getMasterKey(unsigned char *input)
 
     do
     {
-        bdd = fopen(SECURE_DATABASE, "r");
+		size = getFileSize(SECURE_DATABASE);
 
-        if(bdd == NULL)
+        if(size == 0)
         {
             if(createSecurePasswordDB(NULL))
                 return 1;
-            else
-                bdd = fopen(SECURE_DATABASE, "r");
+			else
+				size = getFileSize(SECURE_DATABASE);
         }
-
-        fseek(bdd, 0, SEEK_END);
-        size = ftell(bdd);
-        fclose(bdd);
-
-        if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
+		
+		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
         {
             fileInvalid = 1;
             remove(SECURE_DATABASE);
         }
-        else
+        
+		else
             fileInvalid = 0;
-    } while(fileInvalid);
+    
+	} while(fileInvalid);
 
     bdd = fopen(SECURE_DATABASE, "rb");
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
