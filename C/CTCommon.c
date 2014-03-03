@@ -156,7 +156,26 @@ bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDCha
 	}
 	else
 	{
-#warning "TODO: read details to see if the element is already installed, and where"
+		uint pos, pos2;
+		pathToCheck[0] = 0;
+		CONTENT_TOME * buf;
+		for(pos = 0; pos < projectData.nombreTomes; pos++)
+		{
+			buf = projectData.tomes[pos].details;
+			for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos2++)
+			{
+				if(buf[pos2].ID == IDChap && buf[pos2].isNative)
+				{
+					if(IDChap % 10)
+						snprintf(pathToCheck, sizeof(pathToCheck), "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", projectData.team->teamLong, projectData.mangaName, projectData.tomes[pos].ID, IDChap / 10, IDChap % 10, CONFIGFILE);
+					else
+						snprintf(pathToCheck, sizeof(pathToCheck), "manga/%s/%s/Tome_%d/Chapitre_%d/%s", projectData.team->teamLong, projectData.mangaName, projectData.tomes[pos].ID, IDChap / 10, CONFIGFILE);
+					break;
+				}
+			}
+		}
+		if(!pathToCheck[0])
+			return false;
 	}
 	
 	return checkFileExist(pathToCheck);
