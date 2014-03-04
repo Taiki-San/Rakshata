@@ -110,12 +110,12 @@ int charToInt(char *input)
     return output;
 }
 
-void fscanfs(FILE* stream, const char *format, ...)
+int fscanfs(FILE* stream, const char *format, ...)
 {
-    int i = 0, j = 0, format_read = 0;
+    int i = 0, j = 0, format_read = 0, nbElemRead = 0;
 
     if(stream == NULL)
-        return;
+        return -1;
 
     va_list pointer_argument;
     va_start (pointer_argument, format);
@@ -160,6 +160,7 @@ void fscanfs(FILE* stream, const char *format, ...)
 
                     buffer[i] = '\0';
                     buffer = NULL;
+					nbElemRead++;
                     break;
                 }
 
@@ -191,6 +192,7 @@ void fscanfs(FILE* stream, const char *format, ...)
                     if(negatif)
                         *number = *number *-1;
                     number = NULL;
+					nbElemRead++;
                     break;
                 }
 
@@ -201,6 +203,7 @@ void fscanfs(FILE* stream, const char *format, ...)
         }
     }
     va_end (pointer_argument);
+	return nbElemRead;
 }
 
 int sscanfs(char *char_input, const char *format, ...)
