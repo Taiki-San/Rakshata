@@ -138,14 +138,24 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
         getUpdatedChapterList(mangaDB);
 }
 
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
+{
+    if(isTome)
+    {
+        META_TOME *tome = data;
+        return checkTomeReadable(mangaDB, tome->ID);
+    }
+    return checkChapterReadable(mangaDB, *(int *) data);
+}
+
 bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDChap)
 {
 	if(IDChap == -1)
 		return false;
-
+	
 	if((!isCallerCtxTome && projectData.tomes == NULL) || (isCallerCtxTome && projectData.chapitres == NULL))
 		return false;
-
+	
 	char pathToCheck[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
 	if(isCallerCtxTome)
 	{
@@ -181,16 +191,28 @@ bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDCha
 	return checkFileExist(pathToCheck);
 }
 
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
+bool isChapterShared(char *path, MANGAS_DATA* data, int ID)
 {
-    if(isTome)
-    {
-        META_TOME *tome = data;
-        return checkTomeReadable(mangaDB, tome->ID);
-    }
-    return checkChapterReadable(mangaDB, *(int *) data);
+	if(path != NULL)
+	{
+		uint length = strlen(path);
+		char newPath[length + 10];
+		snprintf(newPath, sizeof(newPath), "%s/shared", path);
+		return checkFileExist(newPath);
+	}
+	else if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE && data != NULL)
+	{
+		char newPath[2*LONGUEUR_NOM_MANGA_MAX + 50];
+		if(ID % 10)
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d/shared", data->team->teamLong, data->mangaName, ID / 10, ID % 10);
+		else
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d/shared", data->team->teamLong, data->mangaName, ID / 10);
+		
+		return checkFileExist(newPath);
+	}
+	
+	return false;
 }
-
 
 bool isAnythingToDownload(MANGAS_DATA mangaDB)
 {
@@ -223,3 +245,11 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
     return ret_value;
 }
 
+#warning "À tester!"
+void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
+{
+    if(isTome)
+        internalDeleteTome(mangaDB, selection, true);
+    else
+		internalDeleteChapitre(mangaDB, selection, true);
+}

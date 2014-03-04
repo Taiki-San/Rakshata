@@ -300,37 +300,6 @@ int deleteManga()
 	return continuer;
 }
 
-void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
-{
-    if(isTome)
-        internalDeleteTome(mangaDB, selection);
-    else
-		internalDeleteChapitre(mangaDB, selection);
-}
-
-void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete)
-{
-	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50;
-    char dir[length];
-
-    snprintf(dir, length, "manga/%s/%s/Tome_%d/", mangaDB.team->teamLong, mangaDB.mangaName, tomeDelete);
-    
-	removeFolder(dir);
-}
-
-void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete)
-{
-	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50;
-    char dir[length];
-	
-	if(chapitreDelete%10)
-		snprintf(dir, length, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
-	else
-		snprintf(dir, length, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
-	
-	removeFolder(dir);
-}
-
 void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
 {
 	int i = 0, j = 0;

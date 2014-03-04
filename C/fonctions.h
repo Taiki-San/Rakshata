@@ -24,6 +24,7 @@ void getUpdatedChapterList(MANGAS_DATA *mangaDB);
 int askForChapter(MANGAS_DATA *mangaDB, int mode);
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
+void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
 
 /**check.c**/
 int checkEvnt();
@@ -50,7 +51,10 @@ void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
+bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDChap);
+bool isChapterShared(char *path, MANGAS_DATA* data, int ID);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
+void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 
 /**Donwload.c**/
 void initializeDNSCache();
@@ -134,7 +138,7 @@ void strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
 int charToInt(char *input);
-void fscanfs(FILE* stream, const char *format, ...);
+int fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(void *input);
 void usstrcpy(void* output, size_t length, const void* input);
@@ -210,6 +214,7 @@ void displayTemplateTome(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, 
 DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
 int extractNumFromConfigTome(char *input, int ID);
+void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Translation.c**/
 void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);

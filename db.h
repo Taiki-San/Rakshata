@@ -72,9 +72,6 @@ void updateRepo();
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
 void updateProjects();
 int deleteManga();
-void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
-void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete);
-void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete);
 void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 

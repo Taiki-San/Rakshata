@@ -492,3 +492,61 @@ int extractNumFromConfigTome(char *input, int ID)
     return output;
 }
 
+void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters)
+{
+	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50, position = tomeDelete, limit;
+    char dir[length];
+	
+	if(!mangaDB.nombreTomes)	//Si pas de tome dispo, cette fonction a aucun intérêt
+	{
+#ifdef DEV_VERSION
+		logR("Incoherency when deleting volumes");
+#endif
+		return;
+	}
+	
+	if(mangaDB.tomes[tomeDelete].ID != tomeDelete)
+	{
+		if(tomeDelete >= mangaDB.nombreTomes)
+		{
+			position = tomeDelete = mangaDB.nombreTomes - 1;
+			limit = 0;
+		}
+		else if(mangaDB.tomes[tomeDelete].ID > tomeDelete)
+			limit = 0;
+		else
+			limit = mangaDB.nombreTomes;
+		
+		if(limit == 0)
+			for(position++; position > 0 && mangaDB.tomes[position-1].ID > tomeDelete; position--);	//Gérer l'unsigned
+		else
+			for (; position < limit && mangaDB.tomes[position].ID < tomeDelete; position++);
+	}
+	
+	if(mangaDB.tomes[position].ID == tomeDelete)
+	{
+		int curID;
+		char basePath[2*LONGUEUR_NOM_MANGA_MAX + 50], dirToChap[2*LONGUEUR_NOM_MANGA_MAX + 100];
+		CONTENT_TOME * details = mangaDB.tomes[position].details;
+		
+		snprintf(basePath, sizeof(basePath), "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
+		
+		for(uint posDetails = 0; details[posDetails].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; posDetails++)
+		{
+			if(details[posDetails].isNative)
+			{
+				curID = details[posDetails].ID;
+				if (curID % 10)
+					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d.%d/shared", basePath, curID / 10, curID % 10);
+				else
+					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d/shared", basePath, curID / 10);
+				
+				if(checkFileExist(dirToChap))
+					remove(dirToChap);
+			}
+		}
+	}
+	
+    snprintf(dir, length, "manga/%s/%s/Tome_%d/", mangaDB.team->teamLong, mangaDB.mangaName, tomeDelete);
+	removeFolder(dir);
+}
