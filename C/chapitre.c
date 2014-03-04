@@ -284,23 +284,22 @@ DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int 
 
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters)
 {
-	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50;
-    char dir[length], dirCheck[length + 10];
+    char dir[2*LONGUEUR_NOM_MANGA_MAX + 50], dirCheck[2*LONGUEUR_NOM_MANGA_MAX + 60];
 	
 	if(chapitreDelete % 10)
-		snprintf(dir, length, "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
+		snprintf(dir, sizeof(dir), "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
 	else
-		snprintf(dir, length, "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
+		snprintf(dir, sizeof(dir), "manga/%s/%s/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10);
 	
 	snprintf(dirCheck, sizeof(dirCheck), "%s/shared", dir);
 	
-	if(careAboutLinkedChapters && checkFileExist(dir))	//Le fichier existe, c'est probablement un chapitre lié
+	if(careAboutLinkedChapters && checkFileExist(dirCheck))	//Le fichier existe, c'est probablement un chapitre lié
 	{
 		FILE * sharedData = fopen(dirCheck, "r");
 		if(sharedData != NULL)	//On arrive à ouvrir le fichier
 		{
 			uint IDTomeLinked = VALEUR_FIN_STRUCTURE_CHAPITRE;
-			fscanfs(sharedData, "%d", IDTomeLinked);
+			fscanfs(sharedData, "%d", &IDTomeLinked);
 			fclose(sharedData);
 
 			if(IDTomeLinked != VALEUR_FIN_STRUCTURE_CHAPITRE)	//On en extrait des données valables
@@ -314,11 +313,7 @@ void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAb
 					mkdirR(dirVol);
 					
 					//On craft le nouveau nom
-					if(chapitreDelete % 10)
-						snprintf(dirVol, sizeof(dirVol), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, IDTomeLinked, chapitreDelete/10, chapitreDelete%10);
-					else
-						snprintf(dirVol, sizeof(dirVol), "manga/%s/%s/Tome_%d/native/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, IDTomeLinked, chapitreDelete/10);
-
+					snprintf(dirVol, sizeof(dirVol), "manga/%s/%s/Tome_%d/native/Chapitre_%d", mangaDB.team->teamLong, mangaDB.mangaName, IDTomeLinked, chapitreDelete);
 					rename(dir, dirVol);
 					
 					//On supprime le fichier shared

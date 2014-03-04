@@ -518,7 +518,7 @@ void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinke
 			limit = mangaDB.nombreTomes;
 		
 		if(limit == 0)
-			for(position++; position > 0 && mangaDB.tomes[position-1].ID > tomeDelete; position--);	//Gérer l'unsigned
+			for(position++; position > 0 && mangaDB.tomes[--position].ID > tomeDelete;);	//Gérer l'unsigned
 		else
 			for (; position < limit && mangaDB.tomes[position].ID < tomeDelete; position++);
 	}

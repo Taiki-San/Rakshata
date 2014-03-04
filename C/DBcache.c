@@ -611,7 +611,8 @@ MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	uint pos = 0;
 	MANGAS_DATA * output = NULL;
 	
-	*nbElemCopied = 0;
+	if (nbElemCopied != NULL)
+		*nbElemCopied = 0;
 	
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
 		return NULL;

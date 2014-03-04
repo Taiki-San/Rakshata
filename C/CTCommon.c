@@ -245,7 +245,6 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
     return ret_value;
 }
 
-#warning "À tester!"
 void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
 {
     if(isTome)
