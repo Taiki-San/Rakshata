@@ -28,7 +28,11 @@ void mainMDL()
     char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
     DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
     THREAD_TYPE threadData;
-    MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
+    
+	if(todoList == NULL)
+		return;
+	
+	MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
     
     /*Initialisation*/
     loadTrad(trad, 22);
@@ -60,7 +64,7 @@ void mainMDL()
     }
 
     if(checkNetworkState(CONNEXION_DOWN))
-        return;
+		goto fail;
 
     MDLDispDownloadHeader(NULL);
     MDLDispInstallHeader(NULL);
@@ -133,8 +137,10 @@ void mainMDL()
     while(isThreadStillRunning(threadData))
         usleep(100);
 
-    MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranqillement
+    MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranquillement
 
+fail:
+	
     for(i = 0; i < nbElemTotal && (!jobUnfinished || !error); i++) //Si on a déjà trouvé les deux, pas la peine de continuer
     {
         if (*status[i] == MDL_CODE_DEFAULT)
@@ -145,7 +151,7 @@ void mainMDL()
             jobUnfinished = true;
         }
     }
-
+	
     /*Si interrompu, on enregistre ce qui reste à faire*/
     if(jobUnfinished)
     {
@@ -307,6 +313,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     DATA_MOD_DL argument;
     bool subFolder = input.todoList->subFolder;
     int i, nombreElement = subFolder ? input.todoList->chapitre : 1;
+	uint posTomeInStruct = 0xffffffff;
 
     argument.todoList = &todoListTmp;
     todoListTmp.datas = input.todoList->datas;
@@ -329,43 +336,92 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     {
         todoListTmp.listChapitreOfTome = NULL;
         todoListTmp.tomeName = NULL;
-        if(!subFolder) {
+        if(!subFolder)
+		{
             todoListTmp.chapitre = input.todoList->chapitre;
             todoListTmp.subFolder = false;
             todoListTmp.partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
         }
-        else {
+        else
+		{
             todoListTmp.chapitre = input.todoList->listChapitreOfTome[i-1];
             todoListTmp.subFolder = true;
             todoListTmp.partOfTome = input.todoList->partOfTome;
         }
 
-        if(!checkChapterAlreadyInstalled(todoListTmp))
-        {
-            if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
-                ouvrirSite(todoListTmp.datas->team->site); //Ouverture du site de la team
-            }
-            argument.buf = NULL;
-            argument.length = 0;
+		switch (MDL_isAlreadyInstalled(*todoListTmp.datas, todoListTmp.subFolder, todoListTmp.chapitre, &posTomeInStruct))
+		{
+			case NOT_INSTALLED:
+			{
+				if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
+					ouvrirSite(todoListTmp.datas->team->site); //Ouverture du site de la team
+				}
+				argument.buf = NULL;
+				argument.length = 0;
+				
+				if(MDLTelechargement(&argument))
+				{
+					if(i == nombreElement)
+						*input.currentState = MDL_CODE_ERROR_DL;
+				}
+				else if(quit)
+				{
+					MDLDispDownloadHeader(NULL);
+					*input.currentState = MDL_CODE_DEFAULT;
+				}
+				else
+				{
+					listDL[i-1] = argument.buf;
+					listSizeDL[i-1] = argument.length;
+					if(i == nombreElement)
+						*input.currentState = MDL_CODE_DL_OVER;
+				}
+				break;
+			}
+				
+			case ALTERNATIVE_INSTALLED:		//Le chapitre existe et à été installé par un tome
+			{
+				if(!subFolder && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
+				{
+					char oldPath[2*LONGUEUR_NOM_MANGA_MAX + 384], newPath[2*LONGUEUR_NOM_MANGA_MAX + 256];
+					if(todoListTmp.chapitre % 10)
+					{
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomes[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+					}
+					else
+					{
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomes[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10);
+					}
 
-            if(MDLTelechargement(&argument)) {
-                if(i == nombreElement)
-                    *input.currentState = MDL_CODE_ERROR_DL;
-            }
-            else if(quit) {
-                MDLDispDownloadHeader(NULL);
-                *input.currentState = MDL_CODE_DEFAULT;
-            }
-            else {
-                listDL[i-1] = argument.buf;
-                listSizeDL[i-1] = argument.length;
-                if(i == nombreElement)
-                    *input.currentState = MDL_CODE_DL_OVER;
-            }
-        }
-        else if(i == nombreElement) {
-            *input.currentState = MDL_CODE_INSTALL_OVER;
-        }
+					rename(oldPath, newPath);
+					
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
+				}
+				
+				if(i == nombreElement)
+				{
+					*input.currentState = MDL_CODE_INSTALL_OVER;
+				}
+				break;
+			}
+				
+			case ALREADY_INSTALLED:			//Le chapitre est déjà installé indépendament
+			{
+				if(subFolder)	//tome
+				{
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
+				}
+				
+				if(i == nombreElement)
+				{
+					*input.currentState = MDL_CODE_INSTALL_OVER;
+				}
+				break;
+			}
+				
+		}
     }
 
     if(*input.currentState == MDL_CODE_DL_OVER) //On lance l'installation
