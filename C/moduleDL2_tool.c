@@ -238,7 +238,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
 
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal)
 {
-    int curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = *nombreMangaTotal;
+    int curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = originalSize;
     for(; curPos < originalSize; curPos++)
     {
         if(currentList[curPos] == NULL)
@@ -249,6 +249,7 @@ DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNew
             if(currentList[research] == NULL)
                 continue;
 
+			//Tout est classé par team, si il y a un incohérence, c'est qu'on est plus dans la même team
             else if(currentList[curPos] == NULL || currentList[research]->datas != currentList[curPos]->datas)
                 break;
 
@@ -291,6 +292,139 @@ DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNew
     return currentList;
 }
 
+char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)
+{
+	if(IDChap == -1)
+		return ERROR_CHECK;
+	
+	char pathConfig[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+	char pathInstall[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
+#endif
+	
+	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
+	{
+		//Un chapitre interne peut avoir le même ID dans deux tomes différents, on a donc besoin du # du tome
+		if(projectData.tomes == NULL || posIndexTome == NULL || *posIndexTome > projectData.nombreTomes)
+			return ERROR_CHECK;
+		
+		int IDTome = projectData.tomes[*posIndexTome].ID;
+		if (IDTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+			return ERROR_CHECK;
+		
+		if(IDChap % 10)
+		{
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", projectData.team->teamLong, projectData.mangaName, IDTome, IDChap / 10, IDChap % 10,CONFIGFILE);
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%s/Tome_%d/Chapitre_%d.%d/installing", projectData.team->teamLong, projectData.mangaName, IDTome, IDChap / 10, IDChap % 10);
+#endif
+		}
+		else
+		{
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%s/Tome_%d/Chapitre_%d/%s", projectData.team->teamLong, projectData.mangaName, IDTome, IDChap / 10, CONFIGFILE);
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%s/Tome_%d/Chapitre_%d/installing", projectData.team->teamLong, projectData.mangaName, IDTome, IDChap / 10);
+#endif
+		}
+		
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+		return checkFileExist(pathConfig) && !checkFileExist(pathInstall) ? ALREADY_INSTALLED : NOT_INSTALLED;
+#else
+		return checkFileExist(pathConfig) ? ALREADY_INSTALLED : NOT_INSTALLED;
+#endif
+	}
+	
+	//Ici, on est dans le cas un peu délicat d'un chapitre normal, il faut vérifier dans le repertoire classique + checker si il appartient pas à un tome
+	
+	char basePath[LONGUEUR_NOM_MANGA_MAX * 2 + 256], nameChapter[256];
+	
+	//Craft les portions constantes du nom
+	snprintf(basePath, sizeof(basePath), "manga/%s/%s", projectData.team->teamLong, projectData.mangaName);
+	
+	if(IDChap % 10)
+		snprintf(nameChapter, sizeof(nameChapter), "Chapitre_%d.%d", IDChap / 10, IDChap % 10);
+	else
+		snprintf(nameChapter, sizeof(nameChapter), "Chapitre_%d", IDChap / 10);
+	
+	//On regarde si le chapitre est déjà installé
+	snprintf(pathConfig, sizeof(pathConfig), "%s/%s/%s", basePath, nameChapter, CONFIGFILE);
+	if(checkFileExist(pathConfig))
+	{
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+		snprintf(pathInstall, sizeof(pathInstall), "%s/%s/installing", basePath, nameChapter);
+		return checkFileExist(pathInstall) ? INSTALLING : ALREADY_INSTALLED;
+#else
+		return ALREADY_INSTALLED;
+#endif
+	}
+	
+	//Le chapitre est pas dans le repertoire par défaut, on va voir si un tome ne l'a pas choppé
+	
+	if(projectData.tomes == NULL)
+		return NOT_INSTALLED;
+	
+	uint pos, pos2;
+	CONTENT_TOME * buf;
+	
+	if(posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes || projectData.tomes[*posIndexTome].ID != IDChap)
+		pos = 0;
+	else
+		pos = *posIndexTome;
+	
+	for(; pos < projectData.nombreTomes; pos++)
+	{
+		buf = projectData.tomes[pos].details;
+		for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos2++)
+		{
+			if(buf[pos2].ID == IDChap && buf[pos2].isNative)
+			{
+				//On a trouvé le tome, on a plus qu'à faire le test
+				if(posIndexTome != NULL)
+					*posIndexTome = pos;
+				
+				snprintf(pathConfig, sizeof(pathConfig), "%s/Tome_%d/native/%s/%s", basePath, projectData.tomes[pos].ID, nameChapter, CONFIGFILE);
+				if(checkFileExist(pathConfig))
+				{
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+					snprintf(pathInstall, sizeof(pathInstall), "%s/Tome_%d/native/%s/installing", basePath, projectData.tomes[pos].ID, nameChapter);
+					return checkFileExist(pathInstall) ? INSTALLING : ALTERNATIVE_INSTALLED;
+#else
+					return ALTERNATIVE_INSTALLED;
+#endif
+				}
+			}
+		}
+	}
+	
+	return NOT_INSTALLED;
+}
+
+void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID)
+{
+	if (tomeID >= data.nombreTomes || data.tomes == NULL)
+		return;
+	
+	char pathToSharedFile[2*LONGUEUR_NOM_MANGA_MAX + 256];
+	if(chapitreID % 10)
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%s/Chapitre_%d.%d/shared", data.team->teamLong, data.mangaName, chapitreID / 10, chapitreID % 10);
+	else
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%s/Chapitre_%d/shared", data.team->teamLong, data.mangaName, chapitreID / 10);
+	
+	FILE * file = fopen(pathToSharedFile, "w+");
+	if(file != NULL)
+	{
+		fprintf(file, "%d", data.tomes[tomeID].ID);
+		fclose(file);
+	}
+	else
+	{
+#ifdef DEV_VERSION
+		logR("Couldn't open the shared file");
+		logR(pathToSharedFile);
+#endif
+	}
+}
+
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2)
 {
     if(struc1 == NULL || struc2 == NULL)
@@ -303,31 +437,24 @@ bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2)
     if(struc1->datas != struc2->datas)
         return false    **/
 
-    if(struc1->subFolder != struc2->subFolder)
+    if(struc1->subFolder != struc2->subFolder)	//L'un des deux est un sous chapitre, mais pas l'autre
+        return false;
+	
+	if(struc1->chapitre != struc2->chapitre)
+		return false;
+	
+    if(struc1->partOfTome != struc2->partOfTome)	//Deux tomes différents
         return false;
 
-    if(struc1->subFolder == true && struc1->partOfTome == struc2->partOfTome)
-        return true;
-
-    if(struc1->subFolder == false && struc1->chapitre == struc2->chapitre)
-        return true;
-
-    return false;
+    return true;
 }
 
+#warning "To test"
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
 {
     int length = strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100;
-    char *URL = NULL, *bufferDL = NULL;
+    char *bufferDL = NULL;
     DATA_LOADED** output = NULL;
-	FILE *inCache = NULL;
-
-    bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-    if(bufferDL == NULL)
-    {
-        free(URL);
-        return NULL;
-    }
 
     char bufferPath[length];
 	snprintf(bufferPath, length, "manga/%s/%s/Tome_%d/%s.tmp", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
@@ -335,11 +462,29 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
     
 	if(length)
     {
-        if(length >= SIZE_BUFFER_UPDATE_DATABASE)
-            length = SIZE_BUFFER_UPDATE_DATABASE-1;
+		bufferDL = malloc(length+1);
+		if(bufferDL == NULL)
+			return NULL;
+
+		FILE * cache = fopen(bufferPath, "rb");
+		length = fread(bufferPath, 1, length, cache);
+		fclose(cache);
+		
+		if(!length)
+		{
+			free(bufferDL);
+			return NULL;
+		}
+		else
+			bufferPath[length] = 0;
 	}
     else
     {
+		char *URL = NULL;
+		bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
+		if(bufferDL == NULL)
+			return NULL;
+
         ///Craft URL
         if (!strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_1) || !strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2))
         {
@@ -355,146 +500,139 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
                 snprintf(URL, length, "https://%s/getTomeData.php?ver=%d&target=%s&project=%s&tome=%d&mail=%s", SERVEUR_URL, CURRENTVERSION, tomeDatas.datas->team->URL_depot, tomeDatas.datas->mangaName, tomeDatas.chapitre, COMPTE_PRINCIPAL_MAIL);
         }
 
-        if(URL == NULL)
-        {
-            free(bufferDL);
-            return NULL;
-        }
+        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
+		{
+			free(bufferDL);
+			free(URL);
+			return NULL;
+		}
+
+		free(URL);
     }
 
-    if(inCache || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas.datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) == CODE_RETOUR_OK)
-    {
-        int i, nombreEspace, posBuf, posStartNbrTmp, posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        char temp[100], basePath[100];
-
-        snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas.chapitre);
-
-        bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
-        if(isDownloadValid(bufferDL))
-        {
-            for(posBuf = nombreEspace = 0; bufferDL[posBuf] && posBuf < SIZE_BUFFER_UPDATE_DATABASE; bufferDL[posBuf++] == ' '?nombreEspace++:0); //We count spaces in the file, there won't be more elements, but maybe less (invalid data)
-
-            output = calloc(nombreEspace+2, sizeof(DATA_LOADED*));
-            if(output == NULL)
-            {
-                if(inCache != NULL)
-                    fclose(inCache);
-                if(URL != NULL)
-                    free(URL);
-                free(bufferDL);
-                return NULL;
-            }
-
-            for(posBuf = *outLength = 0; bufferDL[posBuf] && posBuf < SIZE_BUFFER_UPDATE_DATABASE && *outLength <= nombreEspace;)
-            {
-                for(; bufferDL[posBuf] == ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
-                posBuf += sscanfs(&bufferDL[posBuf], "%s", temp, 100);
-                for(; bufferDL[posBuf] && bufferDL[posBuf] != ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
-
-                //on place posStart juste avant le # du chapitre
-                if(!strncmp(temp, "Chapitre_", 9))
-                    posStartNbrTmp = 9;
-                else if(!strncmp(temp, basePath, strlen(basePath)))
-                    posStartNbrTmp = strlen(basePath);
-                else
-                    posStartNbrTmp = 0;
-
-                if(posStartNbrTmp)
-                {
-                    for(i = 0; i < 9 && isNbr(temp[posStartNbrTmp+i]); i++);
-                    if(temp[posStartNbrTmp+i] == 0 || temp[posStartNbrTmp+i] == '.') //La fin de la chaine n'est consitué que de nombres
-                    {
-                        int chapitre = 0;
-
-                        if(i == 9) //Si nombre > 99'999'999, on tronque
-                            temp[posStartNbrTmp+10] = 0;
-
-                        sscanfs(&temp[posStartNbrTmp], "%d", &chapitre);
-                        chapitre *= 10;
-
-                        if(temp[posStartNbrTmp+i] == '.' && isNbr(temp[posStartNbrTmp+i+1]))
-                        {
-                            chapitre += (int) temp[posStartNbrTmp+i+1] - '0';
-                        }
-
-                        if(posStartNbrTmp == 9)
-                        {
-                            output[*outLength] = malloc(sizeof(DATA_LOADED));
-                            if(output[*outLength] != NULL)
-                            {
-                                output[*outLength]->listChapitreOfTome = NULL;
-                                output[*outLength]->datas = tomeDatas.datas;
-                                output[*outLength]->partOfTome = tomeDatas.chapitre;
-                                output[*outLength]->subFolder = false;  //Si le fichier est dans le repertoire du tome
-                                output[*outLength]->chapitre = chapitre;
-                                (*outLength)++;
-                            }
-                        }
-                        else
-                        {
-                            if(posElemsTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
-                            {
-                                posElemsTome = (*outLength)++;
-                                output[posElemsTome] = calloc(1, sizeof(DATA_LOADED));
-                                if(output[posElemsTome] == NULL)
-                                {
-                                    posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                                    continue;
-                                }
-                                output[posElemsTome]->datas = tomeDatas.datas;
-                                output[posElemsTome]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
-                                output[posElemsTome]->subFolder = true;
-
-                                if(tomeDatas.datas != NULL && tomeDatas.datas->tomes == NULL) {
-                                    refreshTomeList(tomeDatas.datas);
-                                }
-                                if(tomeDatas.datas != NULL && tomeDatas.datas->tomes != NULL)
-                                {
-                                    for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomes[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomes[i].ID != tomeDatas.chapitre; i++);
-                                    if(tomeDatas.datas->tomes[i].ID == tomeDatas.chapitre)
-                                    {
-                                        if(tomeDatas.datas->tomes[i].name[0] != 0)
-                                            output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
-                                        else
-                                            output[posElemsTome]->tomeName = NULL;
-                                    }
-                                }
-                            }
-                            output[posElemsTome]->chapitre++; //Update the number of chapter
-                            void *buf = realloc(output[posElemsTome]->listChapitreOfTome, output[posElemsTome]->chapitre*sizeof(int));
-                            if(buf != NULL)
-                            {
-                                output[posElemsTome]->listChapitreOfTome = buf;
-                                output[posElemsTome]->listChapitreOfTome[output[posElemsTome]->chapitre-1] = chapitre;
-                            }
-                        }
-                    }
-                }
-            }
-            printTomeDatas(*tomeDatas.datas, bufferDL, tomeDatas.chapitre);
-
-            /*On va vérifier si le tome est pas déjà lisible*/
-			uint lengthTmp = strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100;
-            char bufferPathTmp[lengthTmp], bufferPath[lengthTmp];
-            
-			snprintf(bufferPath, lengthTmp, "manga/%s/%s/Tome_%d/%s", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
-			snprintf(bufferPathTmp, lengthTmp, "manga/%s/%s/Tome_%d/%s.tmp", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
-			rename(bufferPathTmp, bufferPath);
-			if(checkTomeReadable(*tomeDatas.datas, tomeDatas.chapitre)) //Si déjà lisible, on le dégage de la liste
-			{
-				for((*outLength)--; *outLength >= 0; free(output[(*outLength)--]));
-				free(output);
-				output = NULL;
-				*outLength = 0;
-			}
+    int i, nombreEspace, posBuf, posStartNbrTmp, posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	char temp[100], basePath[100];
+	
+	snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas.chapitre);
+	
+	bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
+	if(isDownloadValid(bufferDL))
+	{
+		nombreEspace = countSpaces(bufferDL);	//We count spaces in the file, there won't be more elements, but maybe less (invalid data)
+		
+		output = calloc(nombreEspace+2, sizeof(DATA_LOADED*));
+		if(output == NULL)
+		{
+			free(bufferDL);
+			return NULL;
+		}
+		
+		for(posBuf = *outLength = 0; bufferDL[posBuf] && *outLength <= nombreEspace;)
+		{
+			for(; bufferDL[posBuf] == ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
+			posBuf += sscanfs(&bufferDL[posBuf], "%s", temp, 100);
+			for(; bufferDL[posBuf] && bufferDL[posBuf] != ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
+			
+			//on place posStart juste avant le # du chapitre
+			if(!strncmp(temp, "Chapitre_", 9))
+				posStartNbrTmp = 9;
+			else if(!strncmp(temp, basePath, strlen(basePath)))
+				posStartNbrTmp = strlen(basePath);
 			else
-				rename(bufferPath, bufferPathTmp);
-
-        }
-    }
-    if(inCache != NULL)
-        fclose(inCache);
-    free(URL);
+				posStartNbrTmp = 0;
+			
+			if(posStartNbrTmp)
+			{
+				for(i = 0; i < 9 && isNbr(temp[posStartNbrTmp+i]); i++);
+				if(temp[posStartNbrTmp+i] == 0 || temp[posStartNbrTmp+i] == '.') //La fin de la chaine n'est consitué que de nombres
+				{
+					int chapitre = 0;
+					
+					if(i == 9) //Si nombre > 99'999'999, on tronque
+						temp[posStartNbrTmp+10] = 0;
+					
+					sscanfs(&temp[posStartNbrTmp], "%d", &chapitre);
+					chapitre *= 10;
+					
+					if(temp[posStartNbrTmp+i] == '.' && isNbr(temp[posStartNbrTmp+i+1]))
+					{
+						chapitre += (int) temp[posStartNbrTmp+i+1] - '0';
+					}
+					
+					if(posStartNbrTmp == 9)
+					{
+						output[*outLength] = malloc(sizeof(DATA_LOADED));
+						if(output[*outLength] != NULL)
+						{
+							output[*outLength]->listChapitreOfTome = NULL;
+							output[*outLength]->datas = tomeDatas.datas;
+							output[*outLength]->partOfTome = tomeDatas.chapitre;
+							output[*outLength]->subFolder = false;  //Si le fichier est dans le repertoire du tome
+							output[*outLength]->chapitre = chapitre;
+							(*outLength)++;
+						}
+					}
+					else
+					{
+						if(posElemsTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+						{
+							posElemsTome = (*outLength)++;
+							output[posElemsTome] = calloc(1, sizeof(DATA_LOADED));
+							if(output[posElemsTome] == NULL)
+							{
+								posElemsTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+								continue;
+							}
+							output[posElemsTome]->datas = tomeDatas.datas;
+							output[posElemsTome]->partOfTome = tomeDatas.chapitre; //Si le fichier est dans le repertoire du tome
+							output[posElemsTome]->subFolder = true;
+							
+							if(tomeDatas.datas != NULL && tomeDatas.datas->tomes == NULL) {
+								refreshTomeList(tomeDatas.datas);
+							}
+							if(tomeDatas.datas != NULL && tomeDatas.datas->tomes != NULL)
+							{
+								for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomes[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomes[i].ID != tomeDatas.chapitre; i++);
+								if(tomeDatas.datas->tomes[i].ID == tomeDatas.chapitre)
+								{
+									if(tomeDatas.datas->tomes[i].name[0] != 0)
+										output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
+									else
+										output[posElemsTome]->tomeName = NULL;
+								}
+							}
+						}
+						output[posElemsTome]->chapitre++; //Update the number of chapter
+						void *buf = realloc(output[posElemsTome]->listChapitreOfTome, output[posElemsTome]->chapitre*sizeof(int));
+						if(buf != NULL)
+						{
+							output[posElemsTome]->listChapitreOfTome = buf;
+							output[posElemsTome]->listChapitreOfTome[output[posElemsTome]->chapitre-1] = chapitre;
+						}
+					}
+				}
+			}
+		}
+		printTomeDatas(*tomeDatas.datas, bufferDL, tomeDatas.chapitre);
+		
+		/*On va vérifier si le tome est pas déjà lisible*/
+		uint lengthTmp = strlen(tomeDatas.datas->team->teamLong) + strlen(tomeDatas.datas->mangaName) + 100;
+		char bufferPathTmp[lengthTmp], bufferPath[lengthTmp];
+		
+		snprintf(bufferPath, lengthTmp, "manga/%s/%s/Tome_%d/%s", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
+		snprintf(bufferPathTmp, lengthTmp, "manga/%s/%s/Tome_%d/%s.tmp", tomeDatas.datas->team->teamLong, tomeDatas.datas->mangaName, tomeDatas.chapitre, CONFIGFILETOME);
+		rename(bufferPathTmp, bufferPath);
+		if(checkTomeReadable(*tomeDatas.datas, tomeDatas.chapitre)) //Si déjà lisible, on le dégage de la liste
+		{
+			for((*outLength)--; *outLength >= 0; free(output[(*outLength)--]));
+			free(output);
+			output = NULL;
+			*outLength = 0;
+		}
+		else
+			rename(bufferPath, bufferPathTmp);
+		
+	}
     free(bufferDL);
     return output;
 }
@@ -571,39 +709,6 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
         }
     }
     return false;
-}
-
-bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck)
-{
-    char configFile[512], installingFile[512];
-    if(dataToCheck.subFolder)
-    {
-        if(dataToCheck.chapitre%10)
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
-        }
-        else
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Tome_%d/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.partOfTome, dataToCheck.chapitre/10);
-        }
-    }
-
-    else
-    {
-        if(dataToCheck.chapitre%10)
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d.%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d.%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, dataToCheck.chapitre%10);
-        }
-        else
-        {
-            snprintf(configFile, 512, "manga/%s/%s/Chapitre_%d/%s", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10, CONFIGFILE);
-            snprintf(installingFile, 512, "manga/%s/%s/Chapitre_%d/installing", dataToCheck.datas->team->teamLong, dataToCheck.datas->mangaName, dataToCheck.chapitre/10);
-        }
-    }
-    return checkFileExist(configFile) || checkFileExist(installingFile);
 }
 
 void grabInfoPNG(MANGAS_DATA mangaToCheck)

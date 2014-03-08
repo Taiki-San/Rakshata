@@ -48,21 +48,19 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
 
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
 {
-    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*5+350];
-    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*5+350];
+    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*3+350];
+    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*3+350];
     if(chapitre%10)
     {
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
-        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), "manga/%s/%s/Chapitre_%d.%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
     }
     else
     {
-        snprintf(pathConfigFile, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
-        snprintf(pathInstallFlag, LONGUEUR_NOM_MANGA_MAX*5+350, "manga/%s/%s/Chapitre_%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Chapitre_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, CONFIGFILE);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), "manga/%s/%s/Chapitre_%d/installing", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
     }
-    if(checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag))
-        return true;
-    return false;
+    return checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag);
 }
 
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
@@ -328,3 +326,28 @@ void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAb
 	}
 	removeFolder(dir);
 }
+
+bool isChapterShared(char *path, MANGAS_DATA* data, int ID)
+{
+	if(path != NULL)
+	{
+		uint length = strlen(path);
+		char newPath[length + 10];
+		snprintf(newPath, sizeof(newPath), "%s/shared", path);
+		return checkFileExist(newPath);
+	}
+	else if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE && data != NULL)
+	{
+		char newPath[2*LONGUEUR_NOM_MANGA_MAX + 50];
+		if(ID % 10)
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d/shared", data->team->teamLong, data->mangaName, ID / 10, ID % 10);
+		else
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d/shared", data->team->teamLong, data->mangaName, ID / 10);
+		
+		return checkFileExist(newPath);
+	}
+	
+	return false;
+}
+
+

@@ -10,6 +10,9 @@
 **                                                                                          **
 *********************************************************************************************/
 
+//#define INSTALLING_CONSIDERED_AS_INSTALLED
+
+
 #ifdef _WIN32
     #define mutexAskUIThreadWIP mutexUI
 #else
@@ -68,6 +71,17 @@
 
 /*Divers*/
 #define HAUTEUR_POURCENTAGE WINDOW_SIZE_H_DL - 50
+
+enum isInstalledRC {
+	ERROR_CHECK				= -1,
+	NOT_INSTALLED			= 0,
+	ALTERNATIVE_INSTALLED	= 1,
+#ifdef INSTALLING_CONSIDERED_AS_INSTALLED
+	INSTALLING				= 2,
+#endif
+	ALREADY_INSTALLED		= 3
+};
+
 
 typedef struct data_loaded_from_download_list
 {
@@ -160,12 +174,13 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 #define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal);
+char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
+void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
 int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
-bool checkChapterAlreadyInstalled(DATA_LOADED dataToCheck);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void getIconPath(int status, char *path, uint length);
 

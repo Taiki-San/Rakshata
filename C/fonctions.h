@@ -25,6 +25,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int mode);
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
+bool isChapterShared(char *path, MANGAS_DATA* data, int ID);
 
 /**check.c**/
 int checkEvnt();
@@ -51,8 +52,6 @@ void displayIconeChapOrTome(bool isTome);
 int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
-bool isAlreadyInstalled(MANGAS_DATA projectData, bool isCallerCtxTome, int IDChap);
-bool isChapterShared(char *path, MANGAS_DATA* data, int ID);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
 void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 
@@ -242,7 +241,7 @@ void createPath(char *output);
 IMG_DATA* readFile(char * path);
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
 #define isNbr(caract) isdigit(caract)
-#define swapValues(a, b) { a ^= b; b ^= a; a ^= b; }
+#define swapValues(a, b) { uint c; c = b; b = a; a = c; }
 #define MIN(a, b) (a < b ? a : b)
 void hexToDec(const char *input, unsigned char *output);
 void hexToCGFloat(const char *input, uint32_t length, double *output);
