@@ -25,7 +25,7 @@ int askForChapter(MANGAS_DATA *mangaDB, int mode);
 void displayTemplateChapitre(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
-bool isChapterShared(char *path, MANGAS_DATA* data, int ID);
+bool isChapterShared(char *path, MANGAS_DATA data, int ID);
 
 /**check.c**/
 int checkEvnt();

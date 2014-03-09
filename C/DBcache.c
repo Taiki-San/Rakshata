@@ -21,6 +21,8 @@ static uint lengthTeam = 0;
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
 
+//Routines génériques
+
 int setupBDDCache()
 {
     void *buf;
@@ -656,6 +658,8 @@ MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	return output;
 }
 
+//Check si le projet est à jour
+
 bool isProjectUpdated(uint ID, byte context)
 {
 	if(isUpdated != NULL && ID <= lengthIsUpdated)
@@ -893,3 +897,26 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 }
 
 #endif
+
+//Requêtes pour obtenir des données spécifiques
+
+void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
+{
+	sqlite3_stmt* request = NULL;
+	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_team)" FROM rakSQLite WHERE "DBNAMETOID(RDB_mangaName)" = ?1", -1, &request, NULL);
+	sqlite3_bind_text(request, 1, nomProjet, -1, SQLITE_STATIC);
+	
+	if(sqlite3_step(request) == SQLITE_ROW)
+	{
+		uint data = sqlite3_column_int(request, 1);
+		if(data < lengthTeam)		//Si la team est pas valable, on drop complètement le projet
+			strncpy(nomTeam, teamList[data]->teamLong, LONGUEUR_NOM_MANGA_MAX);
+		else
+			memset(nomTeam, 0, LONGUEUR_NOM_MANGA_MAX);
+	}
+	else
+		memset(nomTeam, 0, LONGUEUR_NOM_MANGA_MAX);
+
+	sqlite3_finalize(request);
+}
+

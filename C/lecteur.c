@@ -41,7 +41,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
 		dataReader.pageCourante = 0;
 	}
 	
-    if(configFileLoader(mangaDB, isTome, *chapitreChoisis, &dataReader))
+    if(configFileLoader(*mangaDB, isTome, *chapitreChoisis, &dataReader))
     {
         i = showError();
 		return i > PALIER_MENU ? PALIER_CHAPTER : i;

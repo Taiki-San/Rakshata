@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#include "db.h"
+
 //****		Les routines pour sauvegarder et restaurer l'état de Rakshata	****//
 
 bool checkRestore()
@@ -18,41 +20,6 @@ bool checkRestore()
         return true;
     remove("data/laststate.dat");
     return false;
-}
-
-//		Vieeeelllllllleeeeeee rouine u_u
-void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
-{
-	char temp[LONGUEUR_NOM_MANGA_MAX] = {0}, buffer[LONGUEUR_COURT] = {0};
-    char* manga = loadLargePrefs(SETTINGS_MANGADB_FLAG), *mangaBak;
-    mangaBak = manga;
-	
-    if(manga != NULL)
-    {
-        manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-        for(; *manga && *manga != '\n'; manga++);
-        for(; *manga == '\n'; manga++);
-        while(strcmp(temp, nomProjet) && strcmp(buffer, nomProjet) && *manga)
-        {
-            if(*manga == '#')
-            {
-                manga++;
-                for(;*manga == '\n'; manga++);
-                manga += sscanfs(manga, "%s", nomTeam, LONGUEUR_NOM_MANGA_MAX);
-                for(; *manga && *manga != '\n'; manga++);
-                for(; *manga == '\n'; manga++);
-            }
-            else if(*manga)
-            {
-                manga += sscanfs(manga, "%s %s\n", temp, LONGUEUR_NOM_MANGA_MAX, buffer, LONGUEUR_COURT);
-                for(; *manga && *manga != '\n'; manga++);
-                for(; *manga == '\n'; manga++);
-            }
-            else
-                break;
-        }
-        free(mangaBak);
-    }
 }
 
 int checkRestoreAvailable()

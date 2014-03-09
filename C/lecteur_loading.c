@@ -45,14 +45,13 @@ int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGT
 
 /**	Load the reader data	**/
 
-int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader)
+bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
 {
-    int i, prevPos = 0, nombrePages = 0, posID = 0, nombreTours = 1, lengthBasePath, lengthFullPath;
-    char name[LONGUEUR_NOM_PAGE];
-    FILE* config = NULL;
-	
+    int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
+	uint nombreToursRequis = 1;
+    char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL;
+	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
-    bool allocError;
 	
     dataReader->nombrePageTotale = 1;
 	
@@ -86,8 +85,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
     {
         char input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL;
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name, CONFIGFILE);
-        allocError = false;
+        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -100,44 +98,45 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
             if(intermediaryPtr != NULL)
                 dataReader->pathNumber = intermediaryPtr;
             else
-                allocError = true;
+                goto memoryFail;
 			
             ///pageCouranteDuChapitre
             intermediaryPtr = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePageTotale+1) * sizeof(int));
             if(intermediaryPtr != NULL)
                 dataReader->pageCouranteDuChapitre = intermediaryPtr;
             else
-                allocError = true;
+                goto memoryFail;
 			
             ///nomPages
             intermediaryPtr = realloc(dataReader->nomPages, (dataReader->nombrePageTotale+1) * sizeof(char*));
             if(intermediaryPtr != NULL)
                 dataReader->nomPages = intermediaryPtr;
             else
-                allocError = true;
+                goto memoryFail;
 			
             ///chapitreTomeCPT
-            intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (++nombreTours) * sizeof(int));
+            intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (nombreTours + 2) * sizeof(int));
             if(intermediaryPtr != NULL)
                 dataReader->chapitreTomeCPT = intermediaryPtr;
             else
-                allocError = true;
+                goto memoryFail;
 			
             ///path
-            intermediaryPtr = realloc(dataReader->path, nombreTours * sizeof(char*));
+            intermediaryPtr = realloc(dataReader->path, (nombreTours + 2) * sizeof(char*));
             if(intermediaryPtr != NULL)
             {
                 dataReader->path = intermediaryPtr;
                 dataReader->path[nombreTours-2] = malloc(LONGUEUR_NOM_PAGE);
                 
                 if(dataReader->path[nombreTours-2] == NULL)
-                    allocError = true;
+                    goto memoryFail;
             }
             else
-                allocError = true;
+				goto memoryFail;
 			
-            if(allocError)  //Si on a eu un problème en allouant de la mémoire
+            if(0)  //Si on a eu un problème en allouant de la mémoire
             {
+memoryFail:
 				if(dataReader->pathNumber == NULL || dataReader->pageCouranteDuChapitre == NULL || dataReader->nomPages == NULL || dataReader->chapitreTomeCPT == NULL || dataReader->path == NULL || dataReader->path[nombreTours-2] == NULL)
 				{
 					free(dataReader->pathNumber);				dataReader->pathNumber = NULL;
@@ -156,11 +155,11 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
             {
                 dataReader->path[nombreTours-1] = NULL;
 				
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name);
                 if(isTome)
-                    dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, chapitre_tome);
+                    dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else
-                    dataReader->chapitreTomeCPT[posID] = chapitre_tome;
+                    dataReader->chapitreTomeCPT[posID] = IDRequested;
 				
                 lengthBasePath = strlen(dataReader->path[posID]);
 				
@@ -200,7 +199,7 @@ int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_
 	
     if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)
     {
-        dataReader->IDDisplayed = chapitre_tome;
+        dataReader->IDDisplayed = IDRequested;
         dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
         dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
         dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur

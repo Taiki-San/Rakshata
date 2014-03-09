@@ -6,7 +6,7 @@
 **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
 **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
 **                                                                                          **
-**    Licence propriÈtaire, code source confidentiel, distribution formellement interdite   **
+**    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
 **                                                                                          **
 *********************************************************************************************/
 
@@ -30,7 +30,7 @@ typedef struct infos_Team
 
 typedef struct details_tome_data{
 	int ID;
-	bool isNative;
+	bool isNative;			//Chapitre indé
 }CONTENT_TOME;
 
 typedef struct tome_metadata

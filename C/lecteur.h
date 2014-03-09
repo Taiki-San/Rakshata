@@ -52,7 +52,7 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 
 int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure);
 int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
-int configFileLoader(MANGAS_DATA *mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
+bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 
 int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure);

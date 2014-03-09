@@ -64,6 +64,8 @@ void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
 
 void freeMangaData(MANGAS_DATA* mangaDB);
 
+void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
+
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
 void resetUpdateDBCache();

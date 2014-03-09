@@ -216,7 +216,7 @@ bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output)
 		curID = extractNumFromConfigTome(&fileBuffer[posBuf], ID);
 		if(curID != VALEUR_FIN_STRUCTURE_CHAPITRE)
 		{
-			workingBuffer[posOut].ID = curID;
+			workingBuffer[posOut].ID = curID * 10;
 			workingBuffer[posOut].isNative = (fileBuffer[posBuf] == 'C');
 			posOut++;
 		}

@@ -416,13 +416,13 @@ void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID)
 		fprintf(file, "%d", data.tomes[tomeID].ID);
 		fclose(file);
 	}
+#ifdef DEV_VERSION
 	else
 	{
-#ifdef DEV_VERSION
 		logR("Couldn't open the shared file");
 		logR(pathToSharedFile);
-#endif
 	}
+#endif
 }
 
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2)

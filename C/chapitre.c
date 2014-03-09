@@ -327,7 +327,7 @@ void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAb
 	removeFolder(dir);
 }
 
-bool isChapterShared(char *path, MANGAS_DATA* data, int ID)
+bool isChapterShared(char *path, MANGAS_DATA data, int ID)
 {
 	if(path != NULL)
 	{
@@ -336,13 +336,13 @@ bool isChapterShared(char *path, MANGAS_DATA* data, int ID)
 		snprintf(newPath, sizeof(newPath), "%s/shared", path);
 		return checkFileExist(newPath);
 	}
-	else if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE && data != NULL)
+	else if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
 	{
 		char newPath[2*LONGUEUR_NOM_MANGA_MAX + 50];
 		if(ID % 10)
-			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d/shared", data->team->teamLong, data->mangaName, ID / 10, ID % 10);
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d/shared", data.team->teamLong, data.mangaName, ID / 10, ID % 10);
 		else
-			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d/shared", data->team->teamLong, data->mangaName, ID / 10);
+			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d/shared", data.team->teamLong, data.mangaName, ID / 10);
 		
 		return checkFileExist(newPath);
 	}
