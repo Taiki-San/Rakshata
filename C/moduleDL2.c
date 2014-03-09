@@ -606,12 +606,22 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 
     /*Récupération des valeurs envoyés*/
 
-    if(subFolder == true)
+    if(tome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        if(chapitre%10)
-            snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10, chapitre%10);
-        else
-            snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10);
+		if(subFolder)
+		{
+			if(chapitre%10)
+				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10, chapitre%10);
+			else
+				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10);
+		}
+		else
+		{
+			if(chapitre%10)
+				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10, chapitre%10);
+			else
+				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/native/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10);
+		}
     }
     else
     {

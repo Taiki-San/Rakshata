@@ -60,30 +60,56 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
 	
     if(isTome)
     {
-        snprintf(name, LONGUEUR_NOM_PAGE, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, chapitre_tome, CONFIGFILETOME);
-        config = fopen(name, "r");
-        if(config == NULL)
-		{
-			char log[LONGUEUR_NOM_PAGE+50];
-			snprintf(log, LONGUEUR_NOM_PAGE+50, "Error: Couldn't open volume data: %s", name);
-			logR(log);
+		uint pos;
+		for(pos = 0; pos < mangaDB.nombreTomes && mangaDB.tomes[pos].ID != IDRequested; pos++);
+		if(pos >= mangaDB.nombreTomes)
 			return 1;
-		}
-
-        name[0] = 0;
-        fscanfs(config, "%s", name, LONGUEUR_NOM_PAGE);
-    }
+		
+		localBuffer = mangaDB.tomes[pos].details;
+		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos++);
+		nombreToursRequis = pos;
+	}
     else
-    {
-        if(chapitre_tome%10)
-            snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", chapitre_tome/10, chapitre_tome%10);
-        else
-            snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", chapitre_tome/10);
-    }
+		nombreToursRequis = 1;
 	
-    do
+    for(uint nombreTours = 0; nombreTours < nombreToursRequis; nombreTours++)
     {
-        char input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL;
+		if(isTome)
+		{
+			tmp = localBuffer[nombreTours].ID;
+			if(localBuffer[nombreTours].isNative)
+			{
+				if(isChapterShared(NULL, mangaDB, tmp))
+				{
+					if(IDRequested%10)
+						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", tmp/10, tmp%10);
+					else
+						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", tmp/10);
+				}
+				else
+				{
+					if(tmp % 10)
+						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
+					else
+						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d", IDRequested, tmp / 10);
+				}
+				
+			}
+			else
+			{
+				if(tmp % 10)
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
+				else
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, tmp / 10);
+			}
+		}
+		else
+		{
+			if(IDRequested%10)
+				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", IDRequested/10, IDRequested%10);
+			else
+				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
+		}
 		
         snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
 		
@@ -184,18 +210,7 @@ memoryFail:
 			
 			free(nomPagesTmp);
         }
-		
-        if(isTome)
-        {
-            if(fgetc(config) == EOF)
-            {
-                fclose(config);
-                break;
-            }
-            fseek(config, -1, SEEK_CUR);
-            fscanfs(config, "%s", name, LONGUEUR_NOM_PAGE);
-        }
-    } while(isTome && posID < LONGUEUR_NOM_PAGE);
+	}
 	
     if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)
     {
