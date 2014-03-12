@@ -263,8 +263,10 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	
 }
 
-- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer
+- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (CGFloat*) output
 {
+	if(output == NULL)
+		return;
 	if(mainThreadLocal == -1)
 		mainThreadLocal = mainThread;
 	if(stateTabsReaderLocal == -1)
@@ -272,7 +274,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 	if(backgroundTabsStateLocal == -1)
 		backgroundTabsStateLocal = backgroundTabsState;
 	
-	CGFloat *output = outputContainer;
 	*output = -1;
 	
 	NSRect frame;

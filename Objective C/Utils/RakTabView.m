@@ -12,7 +12,7 @@
 
 @implementation RakTabView
 
-- (NSView *) setUpView: (NSView *)superView
+- (id) setUpView: (NSView *)superView
 {
 	NSRect frame = [self createFrameWithSuperView:superView];
 	

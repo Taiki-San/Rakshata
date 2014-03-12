@@ -15,7 +15,7 @@ typedef struct REQ REQ;
 
 struct REQ
 {
-	GUI_FUNC * functionName;		//Fonction à appelé
+	GUI_FUNC * functionName;		//Fonction à appeler
 	void * dataToFunction;			//Argument
 	uint32_t flags;					//Permet de contrôler la provenance de la requête
 	uint32_t repeat;				//Si un thread indépendant doit répéter cette requête et si oui, intervale en ms
