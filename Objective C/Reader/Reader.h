@@ -10,9 +10,12 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@class RakReaderBottomBar;
+
 @interface Reader : RakTabView
 {
 	int gonnaReduceTabs;
+	RakReaderBottomBar * bottomBar;
 }
 
 - (id)init:(NSWindow*)window;
@@ -22,7 +25,6 @@
 - (void) hideBothTab;
 - (void) unhideBothTab;
 - (void) hideCursor;
-
 
 @end
 

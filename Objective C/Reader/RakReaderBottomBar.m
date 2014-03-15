@@ -12,32 +12,69 @@
 
 @implementation RakReaderBottomBar
 
-- (id)init: (BOOL) displayed
+- (id)init: (BOOL) displayed : (id) parent
 {
+	self = [self setUpView:parent];
 	
-    return self;
+	if(!displayed)
+		[self setHidden:![self isHidden]];
+	
+	return self;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	[super drawRect:dirtyRect];
+	NSRect rect = NSMakeRect([self bounds].origin.x + 3, [self bounds].origin.y + 3, [self bounds].size.width - 6, [self bounds].size.height - 6);
 	
-    // Drawing code here.
+	roundBorders = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:10.0 yRadius:10.0];
+	[roundBorders addClip];
+	[[NSColor controlColor] set];
+	NSRectFill(dirtyRect);
 }
 
-- (CGFloat) getWidthTab
+/*	Routines à overwrite	*/
+
+/* Gestion des évènements*/
+- (void)mouseDown:(NSEvent *)theEvent
 {
-	CGFloat output = 0;
-	[Prefs directQuery:QUERY_READER :QUERY_GET_WIDTH :GUI_THREAD_READER :-1 :-1 :&output];
+	
+}
+
+- (void) readerIsOpening
+{
+	
+}
+
+- (void) applyRefreshSizeReaderChecks
+{
+	
+}
+
+/*Constraints routines*/
+
+- (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow
+{
+	return widthWindow / 2 - [self getRequestedViewWidth : widthWindow] / 2;
+}
+
+- (CGFloat) getRequestedViewPosY:(CGFloat) heightWindow
+{
+	return RD_CONTROLBAR_POSY;
+}
+
+- (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
+{
+	CGFloat output = widthWindow * RD_CONTROLBAR_WIDHT_PERC / 100;
+	
+	output = MIN(output, RD_CONTROLBAR_WIDHT_MAX);
+	output = MAX(output, RD_CONTROLBAR_WIDHT_MIN);
+	
 	return output;
 }
 
-- (NSRect) getPosBar
+- (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
 {
-	NSRect output = {{0, 0}, {0, 0}};
-	CGFloat sizeWindow;
-
-	return output;
+	return RD_CONTROLBAR_HEIGHT;
 }
 
 @end

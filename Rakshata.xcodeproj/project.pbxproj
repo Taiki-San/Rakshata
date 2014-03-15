@@ -15,7 +15,6 @@
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */ = {isa = PBXBuildFile; fileRef = B646EA7918A6EEFF00F96F8A /* errors.m */; };
-		B65409C918CFC37B00E9AF30 /* RakPrefsReaderStripe.m in Sources */ = {isa = PBXBuildFile; fileRef = B65409C818CFC37B00E9AF30 /* RakPrefsReaderStripe.m */; };
 		B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
 		B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */; };
 		B67449401875E65000F96DB4 /* Footer.m in Sources */ = {isa = PBXBuildFile; fileRef = B674493B1875E65000F96DB4 /* Footer.m */; };
@@ -103,7 +102,6 @@
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; };
 		B64640D71870DBD2005705E7 /* PrefsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PrefsUI.m; path = PrefsUI/PrefsUI.m; sourceTree = "<group>"; };
 		B646EA7918A6EEFF00F96F8A /* errors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = errors.m; path = "Objective C/Interface C/errors.m"; sourceTree = "<group>"; };
-		B65409C818CFC37B00E9AF30 /* RakPrefsReaderStripe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakPrefsReaderStripe.m; sourceTree = "<group>"; };
 		B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsDeepData.h; path = Prefs/tools/RakPrefsDeepData.h; sourceTree = "<group>"; };
 		B668FBED188344AE00549A3C /* RakPrefsDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsDeepData.m; path = Prefs/tools/RakPrefsDeepData.m; sourceTree = "<group>"; };
 		B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabAnimationResize.m; path = Utils/RakTabAnimationResize.m; sourceTree = "<group>"; };
@@ -292,7 +290,6 @@
 				B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */,
 				B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */,
 				B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */,
-				B65409C818CFC37B00E9AF30 /* RakPrefsReaderStripe.m */,
 				B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */,
 			);
 			name = "Deep Prefs";
@@ -719,7 +716,6 @@
 				B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
-				B65409C918CFC37B00E9AF30 /* RakPrefsReaderStripe.m in Sources */,
 				B6F6ECFD18A3001400E3B55B /* lecteur_event.c in Sources */,
 				B6F6ED0F18A3001400E3B55B /* settings.c in Sources */,
 				B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */,
@@ -840,6 +836,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -877,6 +874,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;

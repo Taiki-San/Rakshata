@@ -20,6 +20,7 @@
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
 		[self setUpView:window.contentView];
+		bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
 	}
     return self;
 }

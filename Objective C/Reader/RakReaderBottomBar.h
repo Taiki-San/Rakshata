@@ -10,9 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakReaderBottomBar : Reader
+#define RD_CONTROLBAR_HEIGHT		(26+2*3)
+#define RD_CONTROLBAR_WIDHT_PERC	75
+#define RD_CONTROLBAR_WIDHT_MIN		500
+#define RD_CONTROLBAR_WIDHT_MAX		1000
+#define RD_CONTROLBAR_POSY			20
 
-- (id)init: (BOOL) displayed;
-- (CGFloat) getWidthBar;
+@interface RakReaderBottomBar : Reader
+{
+	NSBezierPath *roundBorders;
+}
+
+- (id)init: (BOOL) displayed : (id) parent;
 
 @end
