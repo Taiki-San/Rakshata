@@ -396,8 +396,10 @@
 	
 	for(i = 0; i < nbElem * 2; i++)
 	{
-		if(i % nbElem == 3 || i % nbElem == 4)	//Le cas particulier où on a un panneau ouvert et un autre replié
-			otherPan = i % nbElem == 3 ? 4 : 3;
+		if(i % nbElem == 3)			//Le cas particulier où on a un panneau ouvert et un autre replié
+			otherPan = 4;
+		else if(i % nbElem == 4)	//Same
+			otherPan = 3;
 		else
 			otherPan = i % nbElem;
 		
