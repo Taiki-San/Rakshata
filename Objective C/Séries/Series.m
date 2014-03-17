@@ -97,10 +97,9 @@
 	[self refreshLevelViews: self];
 }
 
-- (void) drawContentView: (NSRect) frame
+- (NSColor*) getMainColor
 {
-	[[NSColor redColor] setFill];
-	[super drawContentView:frame];
+	return [NSColor redColor];
 }
 
 - (int) convertTypeToPrefArg : (bool) getX

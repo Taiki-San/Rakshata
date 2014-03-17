@@ -23,10 +23,9 @@
     return self;
 }
 
-- (void)drawContentView:(NSRect)frame
+- (NSColor*) getMainColor
 {
-	[[NSColor grayColor] setFill];
-	[super drawContentView:frame];
+	return [NSColor grayColor];
 }
 
 - (BOOL) isStillCollapsedReaderTab

@@ -46,8 +46,14 @@
 	return [super inLiveResize];
 }
 
+- (NSColor*) getMainColor
+{
+	return [NSColor blueColor];
+}
+
 - (void) drawContentView: (NSRect) frame
 {
+	[[self getMainColor] setFill];
 	NSRectFill(frame);
 }
 

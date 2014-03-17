@@ -23,10 +23,9 @@
     return self;
 }
 
-- (void)drawContentView:(NSRect)frame
+- (NSColor*) getMainColor
 {
-	[[NSColor blueColor] setFill];
-	[super drawContentView:frame];
+	return [NSColor blueColor];
 }
 
 - (int) convertTypeToPrefArg : (bool) getX

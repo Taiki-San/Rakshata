@@ -62,12 +62,10 @@
 
 /**	Drawing	**/
 
-- (void) drawContentView:(NSRect)frame
+- (NSColor*) getMainColor
 {
-	[[NSColor greenColor] setFill];
-	[super drawContentView:frame];
+	return [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
 }
-
 
 /**	NSTrackingArea	**/
 
