@@ -22,14 +22,18 @@
 	return self;
 }
 
+- (NSColor*) getMainColor
+{
+	return [NSColor colorWithSRGBRed:62/255.0f green:62/255.0 blue:62/255.0 alpha:1.0];
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
 	NSRect rect = NSMakeRect([self bounds].origin.x + 3, [self bounds].origin.y + 3, [self bounds].size.width - 6, [self bounds].size.height - 6);
 	
 	roundBorders = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:10.0 yRadius:10.0];
 	[roundBorders addClip];
-	[[NSColor controlColor] set];
-	NSRectFill(dirtyRect);
+	[super drawRect:dirtyRect];
 }
 
 /*	Routines à overwrite	*/
