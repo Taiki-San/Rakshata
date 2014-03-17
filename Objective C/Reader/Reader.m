@@ -20,15 +20,9 @@
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
 		[self setUpView:window.contentView];
-		bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
+		[self initReaderMainView];
 	}
     return self;
-}
-
-- (void) drawContentView:(NSRect)frame
-{
-	[[NSColor greenColor] setFill];
-	[super drawContentView:frame];
 }
 
 - (int) convertTypeToPrefArg : (bool) getX
@@ -61,8 +55,19 @@
 
 - (void) initReaderMainView
 {
-	
+	mainImage = [[RakPage alloc] init: @"lol.png": self];
+	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
+	//	[self addSubview:mainImage];
 }
+
+/**	Drawing	**/
+
+- (void) drawContentView:(NSRect)frame
+{
+	[[NSColor greenColor] setFill];
+	[super drawContentView:frame];
+}
+
 
 /**	NSTrackingArea	**/
 

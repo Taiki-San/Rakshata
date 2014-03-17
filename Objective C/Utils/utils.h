@@ -49,6 +49,7 @@
 
 - (NSRect) createFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
+- (NSRect) getCurrentFrame;
 
 - (int) convertTypeToPrefArg : (bool) getX;
 - (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow;

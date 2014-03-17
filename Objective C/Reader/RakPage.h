@@ -10,27 +10,23 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@class RakReaderBottomBar;
-@class RakPage;
+#define READER_PAGE_TOP_BORDER	40
+#define READER_PAGE_BORDERS_HIGH (RD_CONTROLBAR_HEIGHT + RD_CONTROLBAR_POSY + READER_PAGE_TOP_BORDER + 10)
 
-#define READER_BORDURE_VERT_PAGE 10
-
-@interface Reader : RakTabView
+@interface RakPage : NSScrollView
 {
-	int gonnaReduceTabs;
-	RakReaderBottomBar * bottomBar;
-	RakPage * mainImage;
+	NSImage *page;
+	NSImageView * pageView;
+	
+	NSRect frameReader;
+	NSRect selfFrame;
+	BOOL pageTooLarge;
+	BOOL pageTooHigh;
 }
 
-- (id)init:(NSWindow*)window;
-- (void) initReaderMainView;
+- (id) init : (NSString*) path : (Reader*)superView;
+- (void) releaseEverything;
 
-- (void) collapseAllTabs;
-- (void) hideBothTab;
-- (void) unhideBothTab;
-- (void) hideCursor;
+- (void) initialPositionning : (BOOL) canIHazSuperview: (NSRect) frameWindow;
 
 @end
-
-#import "RakReaderBottomBar.h"
-#import "RakPage.h"

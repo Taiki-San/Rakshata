@@ -273,6 +273,11 @@
 	return frame;
 }
 
+- (NSRect) getCurrentFrame
+{
+	return self.frame;
+}
+
 - (int) convertTypeToPrefArg : (bool) getX
 {
 	return getX ? PREFS_GET_TAB_SERIE_POSX - PREFS_GET_TAB_SERIE_WIDTH : 0;
