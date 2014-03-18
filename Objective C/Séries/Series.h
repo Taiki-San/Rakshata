@@ -21,7 +21,8 @@
 	PrefsUI * winController;
 	BOOL prefsUIIsOpen;
 }
-- (id)init:(NSWindow*)window;
+
+- (id) init : (NSView *) contentView;
 - (void) craftPrefButton : (NSRect) tabSerieFrame;
 
 - (void) gogoWindow;

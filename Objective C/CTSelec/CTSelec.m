@@ -12,13 +12,13 @@
 
 @implementation CTSelec
 
-- (id)init:(NSWindow*)window
+- (id)init:(NSView*)contentView
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_CT;
-		[self setUpView:window.contentView];
+		[self setUpView:contentView];
 	}
     return self;
 }
@@ -47,12 +47,12 @@
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&posCT];
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
-	frame.size.width = ((posReader - posCT) * self.window.frame.size.width / 100);
+	frame.size.width = ((posReader - posCT) * self.superview.frame.size.width / 100);
 	frame.origin.x = 0;
 	
 	[Prefs getPref:PREFS_GET_MDL_HEIGHT:&heightMDL];
-	frame.size.height -= self.window.frame.size.height * heightMDL / 100;
-	frame.origin.y = self.window.frame.size.height * heightMDL / 100;
+	frame.size.height -= self.superview.frame.size.height * heightMDL / 100;
+	frame.origin.y = self.superview.frame.size.height * heightMDL / 100;
 	
 	return frame;
 }

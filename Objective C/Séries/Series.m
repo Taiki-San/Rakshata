@@ -12,7 +12,7 @@
 
 @implementation Series
 
-- (id)init:(NSWindow*)window
+- (id)init:(NSView*)contentView
 {
     self = [super init];
     if (self)
@@ -20,7 +20,7 @@
 		flag = GUI_THREAD_SERIES;
 		prefsUIIsOpen = false;
 		
-		[self setUpView:window.contentView];
+		[self setUpView:contentView];
 		
 		[self craftPrefButton:self.frame];
 		
@@ -29,7 +29,7 @@
 		[winController setAnchor:button];
 		
 		/*Initialise le bandeau inférieur*/
-		footer = [[RakFooter alloc] init:window];
+		footer = [[RakFooter alloc] init:contentView];
 		[self addSubview:footer];
 	}
     return self;
@@ -120,12 +120,12 @@
 	CGFloat var, heightMDL;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&var];
-	frame.size.width = var * self.window.frame.size.width / 100;
+	frame.size.width = var * self.superview.frame.size.width / 100;
 	frame.origin.x = 0;
 	
 	[Prefs getPref:PREFS_GET_MDL_HEIGHT:&heightMDL];
-	frame.size.height -= self.window.frame.size.height * heightMDL / 100;
-	frame.origin.y = self.window.frame.size.height * heightMDL / 100;
+	frame.size.height -= self.superview.frame.size.height * heightMDL / 100;
+	frame.origin.y = self.superview.frame.size.height * heightMDL / 100;
 	
 	return frame;
 }

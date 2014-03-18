@@ -12,14 +12,14 @@
 
 @implementation Reader
 
-- (id)init:(NSWindow*)window
+- (id)init:(NSView*)contentView
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
-		[self setUpView:window.contentView];
+		[self setUpView:contentView];
 		[self initReaderMainView];
 	}
     return self;

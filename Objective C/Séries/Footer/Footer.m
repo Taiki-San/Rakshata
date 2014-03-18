@@ -10,17 +10,15 @@
  **                                                                                          **
  *********************************************************************************************/
 
-
-
 @implementation RakFooter
 
-- (id)init:(NSWindow*)window
+- (id)init:(NSView*)contentView
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_SERIES;
-		[self setUpView:window.contentView];
+		[self setUpView:contentView];
 
 		uint mainThread;
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];

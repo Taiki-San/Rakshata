@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#define READER_PAGE_TOP_BORDER	80
+#define READER_PAGE_TOP_BORDER	78
 #define READER_PAGE_BORDERS_HIGH (RD_CONTROLBAR_HEIGHT + RD_CONTROLBAR_POSY + READER_PAGE_TOP_BORDER + 10)
 
 @interface RakPage : NSScrollView
@@ -26,7 +26,6 @@
 }
 
 - (id) init : (NSString*) path : (Reader*)superView;
-- (void) releaseEverything;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
 

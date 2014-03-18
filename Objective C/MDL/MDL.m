@@ -12,13 +12,13 @@
 
 @implementation MDL
 
-- (id)init:(NSWindow*)window
+- (id)init:(NSView*)contentView
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_MDL;
-		[self setUpView:window.contentView];
+		[self setUpView:contentView];
 	}
     return self;
 }
@@ -40,7 +40,7 @@
 	CGFloat posReader;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
-	frame.size.width = posReader * self.window.frame.size.width / 100;
+	frame.size.width = posReader * self.superview.frame.size.width / 100;
 	frame.origin.x = frame.origin.y = 0;
 	
 	return frame;

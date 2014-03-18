@@ -12,6 +12,6 @@
 
 @interface RakFooter : RakTabView
 
-- (id)init:(NSWindow*)window;
+- (id)init:(NSView*)contentView;
 
 @end

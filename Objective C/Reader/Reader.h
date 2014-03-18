@@ -22,7 +22,7 @@
 	RakPage * mainImage;
 }
 
-- (id)init:(NSWindow*)window;
+- (id)init:(NSView*)contentView;
 - (void) initReaderMainView;
 
 - (void) collapseAllTabs;

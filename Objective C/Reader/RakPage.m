@@ -81,11 +81,11 @@
 	return YES;
 }
 
-- (void) releaseEverything
+- (void) dealloc
 {
 	[pageView.image release];
 	[pageView release];
-	[self release];
+	[super dealloc];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -135,6 +135,13 @@
 		self.hasHorizontalScroller = pageTooLarge;
 	}
 	[super setFrame:frameReader];
+}
+
+/*Event handling*/
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	NSLog(@"Hey there!");
 }
 
 @end

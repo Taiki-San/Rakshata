@@ -14,6 +14,6 @@
 {
 
 }
-- (id)init:(NSWindow*)window;
+- (id)init : (NSView*)contentView;
 
 @end
