@@ -23,6 +23,8 @@
 	[self setNeedsDisplay:YES];
 	[self setWantsLayer:YES];
 	
+	[self.layer setCornerRadius:7.5];
+		
 	int mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	readerMode = (mainThread & GUI_THREAD_READER) != 0;

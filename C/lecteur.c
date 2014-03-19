@@ -21,14 +21,14 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
     DATA_LECTURE dataReader;
     loadTrad(texteTrad, 21);
 
-	curPosIntoStruct = reader_getPosIntoContentIndex(mangaDB, *chapitreChoisis, isTome);	//Check the chapter can be read
+	curPosIntoStruct = reader_getPosIntoContentIndex(*mangaDB, *chapitreChoisis, isTome);	//Check the chapter can be read
 	if(curPosIntoStruct == -1)
 	{
 		return PALIER_CHAPTER;
 	}
 
-	setLastChapitreLu(mangaDB, isTome, *chapitreChoisis);
-	if(reader_isLastElem(mangaDB, *chapitreChoisis, isTome))
+	setLastChapitreLu(*mangaDB, isTome, *chapitreChoisis);
+	if(reader_isLastElem(*mangaDB, isTome, *chapitreChoisis))
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
 
 	//On met la page courante par défaut

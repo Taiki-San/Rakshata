@@ -12,31 +12,57 @@
 
 @implementation RakReaderBottomBar
 
+#define RADIUS_BORDERS 13.0
+
 - (id)init: (BOOL) displayed : (id) parent
 {
 	self = [self setUpView:parent];
 	
+	[self.layer setCornerRadius:RADIUS_BORDERS];
+		
 	if(!displayed)
 		[self setHidden:![self isHidden]];
 	
 	return self;
 }
 
+- (void) setupPath
+{
+	NSSize selfSize = self.frame.size;
+	
+	contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+	
+	CGContextBeginPath(contextBorder);
+	CGContextAddArc(contextBorder, RADIUS_BORDERS, selfSize.height / 2, RADIUS_BORDERS, -M_PI, M_PI_2, 1);
+	CGContextAddLineToPoint(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height);
+	CGContextAddArc(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height/2, RADIUS_BORDERS, M_PI_2, 0, 1);
+}
+
 - (NSColor*) getMainColor
 {
-	return [NSColor colorWithSRGBRed:62/255.0f green:62/255.0 blue:62/255.0 alpha:1.0];
+	return [NSColor colorWithSRGBRed:20/255.0f green:20/255.0 blue:20/255.0 alpha:0.8];
+}
+
+- (NSColor*) getColorFront
+{
+	return [NSColor colorWithSRGBRed:75/255.0f green:75/255.0 blue:75/255.0 alpha:0.8];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	NSRect rect = NSMakeRect([self bounds].origin.x + 3, [self bounds].origin.y + 3, [self bounds].size.width - 6, [self bounds].size.height - 6);
-	
-	roundBorders = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:10.0 yRadius:10.0];
-	[roundBorders addClip];
 	[super drawRect:dirtyRect];
+	
+	[self setupPath];
+	[[self getColorFront] setStroke];
+	CGContextStrokePath(contextBorder);
 }
 
 /*	Routines à overwrite	*/
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+}
 
 /* Gestion des évènements*/
 - (void)mouseDown:(NSEvent *)theEvent

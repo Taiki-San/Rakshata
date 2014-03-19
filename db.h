@@ -28,7 +28,7 @@ bool isRemoteRepoLineValid(char * data, int version);
 bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output);
 
 uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem);
-bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference);
+bool downloadedProjectListSeemsLegit(char *data, TEAMS_DATA* team);
 uint getNumberLineReturn(char *input);
 bool extractCurrentLine(char * input, uint * posInput, char * output, uint lengthOutput);
 bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output);
@@ -72,9 +72,10 @@ void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams);
 void updateRepo();
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
+void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, bool updateDB);
 void updateProjects();
 int deleteManga();
-void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre);
+void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 

@@ -10,10 +10,15 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#include "lecteur.h"
+
 @implementation RakPage
 
-- (id) init : (NSString*) path : (Reader*)superView
+- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
 {
+	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest])
+		return nil;
+	
 	//We load the image
 	page = [[NSImage alloc] initWithContentsOfFile:path];
 	if(page == NULL)
@@ -141,7 +146,60 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	NSLog(@"Hey there!");
+	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+
+	if(pageTooHigh)
+		mouseLoc.y += [self.contentView documentRect].size.height - [self frame].size.height - [self.contentView documentVisibleRect].origin.y;
+	
+	if(pageTooLarge)
+		mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
+	
+	if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [self.contentView documentRect].size.height - READER_PAGE_TOP_BORDER)
+		[self.superview mouseDown:theEvent];
+	else
+		[self nextPage];
+}
+
+/*Error management*/
+
+- (void) failure
+{
+	NSLog(@"Something went wrong delete?");
+}
+
+
+/*Active routines*/
+
+- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
+{
+	memcpy(&project, &dataRequest, sizeof(dataRequest));
+	currentElem = elemRequest;
+	isTome = isTomeRequest;
+	
+	updateIfRequired(&project, RDB_CTXLECTEUR);
+	
+	posElemInStructure = reader_getPosIntoContentIndex(project, currentElem, isTome);
+	if(posElemInStructure == -1)
+	{
+		[self failure];
+		return NO;
+	}
+	
+	setLastChapitreLu(project, isTome, currentElem);
+	if(reader_isLastElem(project, isTome, currentElem))
+        startCheckNewElementInRepo(project, isTome, currentElem, false);
+
+	
+	if(configFileLoader(project, isTome, currentElem, &data))
+	{
+		[self failure];
+		return NO;
+	}
+}
+
+- (void) nextPage
+{
+	NSLog(@"Hey, got clicked");
 }
 
 @end

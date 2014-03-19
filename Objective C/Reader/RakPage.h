@@ -20,13 +20,29 @@
 	
 	NSRect frameReader;
 	NSRect selfFrame;
+	
 	BOOL pageTooLarge;
 	BOOL pageTooHigh;
 	BOOL areSlidersHidden;
+	
+	/*context data*/
+@private
+	MANGAS_DATA project;
+	DATA_LECTURE data;
+	
+	int currentElem;
+	int posElemInStructure;
+	bool isTome;
+	
 }
 
-- (id) init : (NSString*) path : (Reader*)superView;
+- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
+
+- (void) failure;
+
+- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
+- (void) nextPage;
 
 @end

@@ -140,7 +140,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
+void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, bool updateDB)
 {
 	TEAMS_DATA *globalTeam = oldData[posBase].team;
 	uint magnitudeInput = posEnd - posBase;
@@ -151,7 +151,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 
 	int version = getUpdatedProjectOfTeam(bufferDL, globalTeam);
 	
-	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, oldData[posBase]))		//On a des données à peu près valide
+	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, globalTeam))		//On a des données à peu près valide
 	{
 		uint maxNbrLine, posCur, curLine = 0;
 		MANGAS_DATA* dataOutput;
@@ -194,7 +194,8 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd)
 			}
 			
 			//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
-			applyChangesProject(&oldData[posBase], magnitudeInput, dataOutput, maxNbrLine);
+			if(updateDB)
+				applyChangesProject(&oldData[posBase], magnitudeInput, dataOutput, maxNbrLine);
 			
 			free(dataOutput);
 		}
@@ -212,7 +213,7 @@ void updateProjects()
 	{
 		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
-			updateProjectsFromTeam(oldData, posBase, posEnd);
+			updateProjectsFromTeam(oldData, posBase, posEnd, true);
 		else
 			break;
 
@@ -300,16 +301,16 @@ int deleteManga()
 	return continuer;
 }
 
-void setLastChapitreLu(MANGAS_DATA* mangasDB, bool isTome, int dernierChapitre)
+void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre)
 {
 	int i = 0, j = 0;
 	char temp[5*LONGUEUR_NOM_MANGA_MAX];
 	FILE* fichier = NULL;
 
     if(isTome)
-        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILETOME);
+        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILETOME);
 	else
-        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB->team->teamLong, mangasDB->mangaName, CONFIGFILE);
+        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
 	if(isTome)
     {
         fichier = fopen(temp, "w+");

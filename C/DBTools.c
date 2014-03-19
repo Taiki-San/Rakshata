@@ -92,7 +92,7 @@ uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbEle
 	return posBase;
 }
 
-bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference)
+bool downloadedProjectListSeemsLegit(char *data, TEAMS_DATA* team)
 {
 	if(strlen(data) < 20)	//Test pourris mais plutôt rapide
 		return false;
@@ -112,7 +112,7 @@ bool downloadedProjectListSeemsLegit(char *data, MANGAS_DATA reference)
 	if(teamName[0] == 0 || teamNameCourt[0] == 0)	//Header malformé
 		return false;
 	
-	if(strcmp(reference.team->teamLong, teamName) || strcmp(reference.team->teamCourt, teamNameCourt))
+	if(strcmp(team->teamLong, teamName) || strcmp(team->teamCourt, teamNameCourt))
 		return false;
 	
 	return true;

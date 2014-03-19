@@ -12,16 +12,28 @@
 
 #define SIZE_MIN_HEIGHT 600
 #define SIZE_MIN_WIDTH 950
+#define BORDER_WIDTH 4
 
 @implementation RakAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	NSView *contentView = [[self window] contentView];
+
+	NSRect frame = [contentView frame];
+	frame.origin.x += BORDER_WIDTH;
+	frame.origin.y += BORDER_WIDTH;
+	frame.size.height -= 2 * BORDER_WIDTH;
+	frame.size.width -= 2 * BORDER_WIDTH;
+	[contentView setFrame:frame];
+	
+	self.window.backgroundColor = [NSColor colorWithSRGBRed:21/255.0f green:21/255.0 blue:21/255.0 alpha:1.0];
 	[self validateWindowData:[[self window] frame]];
-	[[Series alloc] init:self.window];
-	[[CTSelec alloc] init:self.window];
-	[[Reader alloc] init:self.window];
-	[[MDL alloc] init:self.window];
+
+	[[Series alloc] init:contentView];
+	[[CTSelec alloc] init:contentView];
+	[[Reader alloc] init:contentView];
+	[[MDL alloc] init:contentView];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

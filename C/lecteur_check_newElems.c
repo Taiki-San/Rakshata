@@ -37,6 +37,7 @@ void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, bool *
 
 void checkNewElementInRepo(DATA_CK_LECTEUR *input)
 {
+#warning "Need update!"
     bool isTome = input->isTome, newStuffs = false, *fullscreen;
     int i = 0, j = 0, version, CT;
     char temp[LONGUEUR_NOM_MANGA_MAX], *bufferDL, teamCourt[LONGUEUR_COURT];
