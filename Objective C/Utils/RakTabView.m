@@ -76,11 +76,9 @@
 		NSArray *subView = [superView subviews];
 		
 		//Variable to set up the animation
-		RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
-		animation = [animation init: animation : subView];
+		RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: subView];
 		[animation setUpViews];
 		[animation performTo];
-		[animation release];
 	}
 	else
 	{

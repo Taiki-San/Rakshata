@@ -14,13 +14,12 @@
 
 @implementation RakTabAnimationResize
 
-- (id) init : (RakTabAnimationResize*) instance : (NSArray*)views
+- (id) init : (NSArray*)views
 {
 	self = [super init];
 	if(self != nil)
 	{
 		_views = views;
-		_instance = instance;
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
 	}
 	return self;
@@ -87,9 +86,8 @@
 		if([currentView respondsToSelector:@selector(applyRefreshSizeReaderChecks)])
 			[currentView applyRefreshSizeReaderChecks];
 		currentView->resizeAnimationCount--;
-
 	}
-	[_instance release];
+	[super release];
 }
 
 @end

@@ -16,7 +16,7 @@
 
 @implementation RakAppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void) applicationWillFinishLaunching:(NSNotification *)notification
 {
 	NSView *contentView = [[self window] contentView];
 
@@ -38,11 +38,10 @@
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
-	[tabSerie release];
-	[tabCT release];
-	[tabReader release];
-	[tabMDL release];
-	//[[self window] close];
+	[tabSerie release];			tabSerie = nil;
+	[tabCT release];			tabCT = nil;
+	[tabReader release];		tabReader = nil;
+	[tabMDL release];			tabMDL = nil;
 }
 
 - (void) validateWindowData : (NSRect) size

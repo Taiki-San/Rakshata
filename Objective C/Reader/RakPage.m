@@ -144,7 +144,7 @@
 	isTome = isTomeRequest;
 	loadTrad(texteTrad, 21);
 	
-	prevPage = nextPage = NULL;
+	prevPage = pageData = nextPage = nil;
 	cacheBeingBuilt = false;
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
@@ -174,17 +174,18 @@
 
 - (NSData *) getPage : (uint) posData
 {
-	IMG_DATA * pageData = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
+	IMG_DATA * dataPage = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
 	
-	if(pageData == NULL)
+	if(dataPage == NULL)
 	{
 		[self failure];
 		return NULL;
 	}
 	
-	NSData *output = [NSData dataWithBytes:pageData->data length:pageData->length];
+	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
 	
-	free(pageData);
+	free(dataPage->data);
+	free(dataPage);
 
 	return output;
 }
@@ -194,7 +195,6 @@
 	cacheBeingBuilt = true;
 	
 	int localCurrentPage = data.pageCourante;
-	NSData *dataPage;
 	
 	if(localCurrentPage < 0 || localCurrentPage >= data.nombrePageTotale)	//Données hors de nos bornes
 	{
@@ -202,21 +202,21 @@
 		return;
 	}
 	
+	if(nextPage == nil)
+	{
+		if (localCurrentPage >= 0 && localCurrentPage < data.nombrePageTotale)
+		{
+			nextPage = [self getPage:localCurrentPage+1];
+			[nextPage retain];
+		}
+	}
+
 	if(prevPage == nil)
 	{
 		if(localCurrentPage > 0)
 		{
-			dataPage = [self getPage:localCurrentPage-1];
-			prevPage = [[NSImage alloc] initWithData:dataPage];
-		}
-	}
-	
-	if(nextPage == NULL)
-	{
-		if (localCurrentPage >= 0 && localCurrentPage < data.nombrePageTotale)
-		{
-			dataPage = [self getPage:localCurrentPage+1];
-			nextPage = [[NSImage alloc] initWithData:dataPage];
+			prevPage = [self getPage:localCurrentPage-1];
+			[prevPage retain];
 		}
 	}
 	
@@ -237,7 +237,7 @@
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
-		if(data.pageCourante+1 >= data.nombrePageTotale)
+		if(data.pageCourante+1 > data.nombrePageTotale)
 			return;
 		data.pageCourante++;
 	}
@@ -273,9 +273,9 @@
 			prevPage = nil;
 		}
 		
-		if (page != nil)
+		if (pageData != nil)
 		{
-			[page release];
+			[pageData release];
 		}
 		
 		if(nextPage != nil)
@@ -284,25 +284,24 @@
 			nextPage = nil;
 		}
 
-		NSData *dataPage = [self getPage:data.pageCourante];
-		page = [[NSImage alloc] initWithData:dataPage];
-		//		[dataPage release];
+		pageData = [self getPage:data.pageCourante];
+		[pageData retain];
 	}
 	else if(switchType == READER_ETAT_PREVPAGE)
 	{
 		if(nextPage != nil)
 			[nextPage release];
 		
-		nextPage = page;
+		nextPage = pageData;
 		
 		if(prevPage == nil)
 		{
-			NSData *dataPage = [self getPage:data.pageCourante];
-			page = [[NSImage alloc] initWithData:dataPage];
+			pageData = [self getPage:data.pageCourante];
+			[pageData retain];
 		}
 		else
 		{
-			page = prevPage;
+			pageData = prevPage;
 			prevPage = nil;
 		}
 	}
@@ -311,24 +310,29 @@
 		if(prevPage != nil)
 			[prevPage release];
 		
-		prevPage = page;
+		prevPage = pageData;
 		
 		if(nextPage == nil)
 		{
-			NSData *dataPage = [self getPage:data.pageCourante];
-			page = [[NSImage alloc] initWithData:dataPage];
+			pageData = [self getPage:data.pageCourante];
+			[pageData retain];
 		}
 		else
 		{
-			page = nextPage;
+			pageData = nextPage;
 			nextPage = nil;
 		}
 	}
 	
+	if(page != nil)
+		[page release];
+	
+	page = [[NSImage alloc] initWithData:pageData];
+	
 	if(page == nil)
 		return false;
 	
-	
+	[page setCacheMode:NSImageCacheNever];
 	[self performSelectorInBackground:@selector(buildCache) withObject:nil];
 
 	//Work, we now craft the size of this view
@@ -345,18 +349,31 @@
 	pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
 	
 	if(pageView != nil)
-		[pageView release];
-	
-	pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
-	
-	[pageView setImageAlignment:NSImageAlignCenter];
-	[pageView setImageFrameStyle:NSImageFrameNone];
-	[pageView setImage:page];
-	
-	self.documentView =	pageView;
+	{
+		[pageView setFrame:pageViewSize];
+		[pageView setImage:page];
+
+	}
+	else
+	{
+		pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
+		[pageView setImageAlignment:NSImageAlignCenter];
+		[pageView setImageFrameStyle:NSImageFrameNone];
+		[pageView setImage:page];
+
+		self.documentView =	pageView;
+	}
 	
 	if (pageTooHigh)
 		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
+}
+
+- (void) flushCache
+{
+	[prevPage release];		prevPage = nil;
+	[page release];			page = nil;
+	[pageData release];		pageData = nil;
+	[nextPage release];		nextPage = nil;
 }
 
 @end

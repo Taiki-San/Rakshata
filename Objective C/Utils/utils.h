@@ -62,10 +62,9 @@
 @interface RakTabAnimationResize : NSObject
 {
 	BOOL readerMode;
-	RakTabAnimationResize * _instance;
 	NSArray* _views;
 }
-- (id) init : (RakTabAnimationResize*) instance : (NSArray*)views;
+- (id) init : (NSArray*)views;
 - (void) setUpViews;
 - (void) performTo;
 - (void) performFromTo : (NSArray*) basePosition;

@@ -17,9 +17,10 @@
 
 @interface RakPage : NSScrollView
 {
-	NSImage *prevPage;
-	NSImage *page;
-	NSImage *nextPage;
+	NSData *prevPage;
+	NSData *pageData;
+	NSImage* page;
+	NSData *nextPage;
 	
 	NSImageView * pageView;
 	
