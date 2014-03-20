@@ -50,9 +50,11 @@
 
 - (void) failure;
 
+- (void) nextPage;
+- (void) prevPage;
+
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
 - (void) buildCache;
-- (void) nextPage;
 - (void) changePage : (byte) switchType;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) addPageToView;

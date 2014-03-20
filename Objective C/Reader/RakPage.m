@@ -17,7 +17,7 @@
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest])
 		return nil;
 	
-	if (![self craftPageAndSetupEnv:superView])
+	if (![self craftPageAndSetupEnv:superView : READER_ETAT_DEFAULT])
 		return nil;
 
 	//We create the NSScrollview
@@ -47,41 +47,7 @@
 		[superView addSubview:self];
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	}
-	else
-	{
-		[page release];
-	}
 	return self;
-}
-
-- (BOOL) craftPageAndSetupEnv : (Reader *) superView
-{
-	page = [[NSImage alloc] initWithData:[self getPage:data.pageCourante]];
-	if(page == nil)
-		return false;
-	
-	//Worked, we now craft the size of this view
-	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
-	[self initialPositionning:NO:[superView getCurrentFrame]];
-	
-	return true;
-}
-
-- (void) addPageToView
-{
-	//We create the view that si going to be displayed
-	NSRect pageViewSize = selfFrame;
-	pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
-	pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
-	
-	[pageView setImageAlignment:NSImageAlignCenter];
-	[pageView setImageFrameStyle:NSImageFrameNone];
-	[pageView setImage:page];
-	
-	self.documentView =	pageView;
-	
-	if (pageTooHigh)
-		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
 }
 
 - (BOOL) isEditable
@@ -92,13 +58,6 @@
 - (BOOL) allowsCutCopyPaste
 {
 	return YES;
-}
-
-- (void) dealloc
-{
-	[pageView.image release];
-	[pageView release];
-	[super dealloc];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -185,6 +144,9 @@
 	isTome = isTomeRequest;
 	loadTrad(texteTrad, 21);
 	
+	prevPage = nextPage = NULL;
+	cacheBeingBuilt = false;
+	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
 	
 	posElemInStructure = reader_getPosIntoContentIndex(project, currentElem, isTome);
@@ -227,17 +189,174 @@
 	return output;
 }
 
+- (void) buildCache
+{
+	cacheBeingBuilt = true;
+	
+	int localCurrentPage = data.pageCourante;
+	NSData *dataPage;
+	
+	if(localCurrentPage < 0 || localCurrentPage >= data.nombrePageTotale)	//Données hors de nos bornes
+	{
+		cacheBeingBuilt = false;
+		return;
+	}
+	
+	if(prevPage == nil)
+	{
+		if(localCurrentPage > 0)
+		{
+			dataPage = [self getPage:localCurrentPage-1];
+			prevPage = [[NSImage alloc] initWithData:dataPage];
+		}
+	}
+	
+	if(nextPage == NULL)
+	{
+		if (localCurrentPage >= 0 && localCurrentPage < data.nombrePageTotale)
+		{
+			dataPage = [self getPage:localCurrentPage+1];
+			nextPage = [[NSImage alloc] initWithData:dataPage];
+		}
+	}
+	
+	cacheBeingBuilt = false;
+}
+
 - (void) nextPage
 {
-	if(data.pageCourante+1 >= data.nombrePageTotale)
+	[self changePage:READER_ETAT_NEXTPAGE];
+}
+
+- (void) prevPage
+{
+	[self changePage:READER_ETAT_PREVPAGE];
+}
+
+- (void) changePage : (byte) switchType
+{
+	if(switchType == READER_ETAT_NEXTPAGE)
+	{
+		if(data.pageCourante+1 >= data.nombrePageTotale)
+			return;
+		data.pageCourante++;
+	}
+	else if(switchType == READER_ETAT_PREVPAGE)
+	{
+		if(data.pageCourante < 1)
+			return;
+		data.pageCourante--;
+	}
+	else
+	{
+		NSLog(@"Couldn't understand which direction I should move to");
 		return;
+	}
 	
-	data.pageCourante++;
-	[pageView.image release];
-	[pageView release];
-	
-	[self craftPageAndSetupEnv:(Reader *)self.superview];
+	[self craftPageAndSetupEnv:(Reader *)self.superview : switchType];
 	[self addPageToView];	
+}
+
+- (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType
+{
+	while(cacheBeingBuilt)
+	{
+		usleep(25);
+	}
+	
+	if(switchType == READER_ETAT_DEFAULT)
+	{
+		//We rebuild the cache from scratch
+		if(prevPage != nil)
+		{
+			[prevPage release];
+			prevPage = nil;
+		}
+		
+		if (page != nil)
+		{
+			[page release];
+		}
+		
+		if(nextPage != nil)
+		{
+			[nextPage release];
+			nextPage = nil;
+		}
+
+		NSData *dataPage = [self getPage:data.pageCourante];
+		page = [[NSImage alloc] initWithData:dataPage];
+		//		[dataPage release];
+	}
+	else if(switchType == READER_ETAT_PREVPAGE)
+	{
+		if(nextPage != nil)
+			[nextPage release];
+		
+		nextPage = page;
+		
+		if(prevPage == nil)
+		{
+			NSData *dataPage = [self getPage:data.pageCourante];
+			page = [[NSImage alloc] initWithData:dataPage];
+		}
+		else
+		{
+			page = prevPage;
+			prevPage = nil;
+		}
+	}
+	else
+	{
+		if(prevPage != nil)
+			[prevPage release];
+		
+		prevPage = page;
+		
+		if(nextPage == nil)
+		{
+			NSData *dataPage = [self getPage:data.pageCourante];
+			page = [[NSImage alloc] initWithData:dataPage];
+		}
+		else
+		{
+			page = nextPage;
+			nextPage = nil;
+		}
+	}
+	
+	if(page == nil)
+		return false;
+	
+	
+	[self performSelectorInBackground:@selector(buildCache) withObject:nil];
+
+	//Work, we now craft the size of this view
+	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
+	[self initialPositionning:NO:[superView getCurrentFrame]];
+	
+	return true;
+}
+
+- (void) addPageToView
+{
+	//We create the view that si going to be displayed
+	NSRect pageViewSize = selfFrame;
+	pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
+	
+	if(pageView != nil)
+		[pageView release];
+	
+	pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
+	
+	[pageView setImageAlignment:NSImageAlignCenter];
+	[pageView setImageFrameStyle:NSImageFrameNone];
+	[pageView setImage:page];
+	
+	self.documentView =	pageView;
+	
+	if (pageTooHigh)
+		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
 }
 
 @end
