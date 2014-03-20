@@ -18,7 +18,8 @@ static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
 int getMasterKey(unsigned char *input)
 {
     /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
-    int nombreCle, i, j, fileInvalid;
+    int nombreCle, i, j;
+	bool fileInvalid;
 	char date[100];
     unsigned char buffer[250 + (SHA256_DIGEST_LENGTH+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
     size_t size;
@@ -41,18 +42,17 @@ int getMasterKey(unsigned char *input)
         {
             if(createSecurePasswordDB(NULL))
                 return 1;
-			else
-				size = getFileSize(SECURE_DATABASE);
+			fileInvalid = true;
         }
 		
 		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
         {
-            fileInvalid = 1;
+            fileInvalid = true;
             remove(SECURE_DATABASE);
         }
         
 		else
-            fileInvalid = 0;
+            fileInvalid = false;
     
 	} while(fileInvalid);
 
@@ -121,17 +121,21 @@ int getMasterKey(unsigned char *input)
 
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
 {
-    int i;
+	char i;
+#ifndef __APPLE__
     unsigned char randomChar[128];
 
     for(i = 0; i < 128; i++)
-		randomChar[i] = rand() % 0xFE + 1; //Génére un nombre ASCII-étendu
+		randomChar[i] = getRandom() % 0xFE + 1; //Génére un nombre ASCII-étendu
 
     sha256(randomChar, output);
+#else
+	arc4random_buf(output, SHA256_DIGEST_LENGTH);
+#endif
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
         if(output[i] <= ' '  || output[i] == 255)
-			output[i] = rand() % (0xFE - ' ' - 1) + ' ' + 1;
+			output[i] = getRandom() % (0xFE - ' ' - 1) + ' ' + 1;
     }
 }
 
@@ -158,16 +162,8 @@ int earlyInit(int argc, char *argv[])
 
     createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
-#ifdef _WIN32
+#ifndef __APPLE__
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
-#else
-	long long seed;
-
-    int randomPtr = open("/dev/urandom", O_RDONLY);
-    read(randomPtr, &seed, sizeof(seed));
-    close(randomPtr);
-
-	srand((seed ^ time(NULL)) & -1); //Initialisation de l'aléatoire
 #endif
 
     char *temp;
@@ -344,7 +340,12 @@ int getPassword(int curThread, char password[100])
     while(1)
     {
 		//Get Pass
-		
+#ifdef DEV_VERSION
+		strcpy(password, "YuW7Nr8|<7543|*d");
+#else
+		#warning "Lolnope"
+#endif
+
 		
 		//Traitement
         if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))

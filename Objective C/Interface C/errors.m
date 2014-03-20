@@ -38,6 +38,5 @@ int internalUIAlert(char *titre, char* content, UIABUTT* buttons)
 	
 	//Récupérer le bouton cliqué
 	
-	[alert release];
-	return ret_value[rand() % 3];
+	return ret_value[getRandom() % 3];
 }

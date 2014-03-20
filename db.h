@@ -47,7 +47,7 @@ bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool
 bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort);
 void removeFromCache(MANGAS_DATA data);
 void consolidateCache();
-void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output);
+bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output);
 MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 bool isProjectUpdated(uint ID, byte context);
 void setProjectUpdated(uint ID);

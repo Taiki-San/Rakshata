@@ -32,13 +32,14 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
     while(ligneCourante < nombreMaxElems && pos < size)
     {
         for(i = 0; i < sizeof(ligne)-1 && pos < size && buffer[pos] != '\n' && buffer[pos] != '\r'; ligne[i++] = buffer[pos++]); //Charge la première ligne
-        ligne[i] = 0; //i <= longueur-1
+        
+		ligne[i] = 0; //i <= longueur-1
 
         if(buffer[pos] != '\n') //Finis la ligne
             while(pos < size && buffer[++pos] != '\n');
         for(pos++; pos < size && (buffer[pos] == '\n' || buffer[pos] == '\r') ; pos++);
 
-        for(i = 0; i < 10 && isNbr(ligne[i]); i++);
+        for(i = 0; i < 10 && ligne[i] && isNbr(ligne[i]); i++);
         if((ligne[i] == ' ' || !ligne[i]) && i > 0 && i < 10) //Données saines
         {
             sscanfs(ligne, "%d %s %s %s", &lines[ligneCourante].ID, lines[ligneCourante].name, MAX_TOME_NAME_LENGTH, lines[ligneCourante].description1, TOME_DESCRIPTION_LENGTH, lines[ligneCourante].description2, TOME_DESCRIPTION_LENGTH);
@@ -56,7 +57,8 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         memcpy(mangaDB->tomes, lines, ligneCourante*sizeof(META_TOME));
         free(lines);
     }
-	memset(&lines[ligneCourante], 0, sizeof(META_TOME));
+
+	memset(&mangaDB->tomes[ligneCourante], 0, sizeof(META_TOME));
     qsort(mangaDB->tomes, ligneCourante, sizeof(META_TOME), sortTomes);
     mangaDB->nombreTomes = ligneCourante;
 
@@ -208,7 +210,6 @@ bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output)
 	
 	posBuf = fread(fileBuffer, sizeof(char), bufferSize, config);
 	fileBuffer[posBuf] = 0;
-	bufferSize = posBuf;
 	
 	fclose(config);
 	
@@ -347,7 +348,7 @@ int askForTome(MANGAS_DATA *mangaDB, int contexte)
         displayTemplateTome(mangaDB, prefs, contexte, texteTrad);
         do
         {
-            tomeChoisis = rand();
+            tomeChoisis = getRandom();
         }while(tomeChoisis == ENGINE_RETVALUE_SWITCH);
         free(tomeDB);
     }

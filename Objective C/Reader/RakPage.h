@@ -17,7 +17,10 @@
 
 @interface RakPage : NSScrollView
 {
+	NSImage *prevPage;
 	NSImage *page;
+	NSImage *nextPage;
+	
 	NSImageView * pageView;
 	
 	NSRect frameReader;
@@ -29,6 +32,8 @@
 	
 	/*context data*/
 @private
+	bool cacheBeingBuilt;
+	
 	MANGAS_DATA project;
 	DATA_LECTURE data;
 	
@@ -40,14 +45,16 @@
 }
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
-- (BOOL) craftPageAndSetupEnv : (Reader *) superView;
-- (void) addPageToView;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
 
 - (void) failure;
 
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
+- (void) buildCache;
 - (void) nextPage;
+- (void) changePage : (byte) switchType;
+- (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
+- (void) addPageToView;
 
 @end

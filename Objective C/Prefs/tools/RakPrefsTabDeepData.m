@@ -386,9 +386,9 @@
 + (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError
 {
 	BOOL ret_value = true;
-	NSArray * array = [mainInstance executeConsistencyChecks: 1];
+	NSArray * array = [mainInstance initExecuteConsistencyChecks: 1];
 	
-	if(array == NULL)
+	if(array == nil)
 		return false;
 	
 	uint i, nbElem = [[array objectAtIndex: 0] getNbElem] - 1, otherPan;

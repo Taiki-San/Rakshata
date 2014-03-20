@@ -12,7 +12,7 @@
 
 @implementation RakTabView
 
-- (id) setUpView: (NSView *)superView
+- (id) initView: (NSView *)superView
 {
 	NSRect frame = [self createFrameWithSuperView:superView];
 	
@@ -77,9 +77,10 @@
 		
 		//Variable to set up the animation
 		RakTabAnimationResize *animation = [RakTabAnimationResize alloc];
-		[animation init: animation : subView];
+		animation = [animation init: animation : subView];
 		[animation setUpViews];
 		[animation performTo];
+		[animation release];
 	}
 	else
 	{

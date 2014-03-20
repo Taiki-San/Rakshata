@@ -300,6 +300,16 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 			frame = [prefsPosMDL getData: mainThread : stateTabsReaderLocal];
 			break;
 		}
+		default:
+		{
+#ifdef DEV_VERSION
+			NSLog(@"%s: Received garbage", __PRETTY_FUNCTION__);
+#else
+			NSLog(@"Received garbage");
+#endif
+			memset(output, 0, sizeof(*output));
+			return;
+		}
 	}
 	
 	if(subRequest == QUERY_GET_HEIGHT)
@@ -397,11 +407,11 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 							 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
 }
 
-- (NSArray *) executeConsistencyChecks : (uint8) request
+- (NSArray *) initExecuteConsistencyChecks : (uint8) request
 {
 	NSArray *array = [NSArray alloc];
-	if(array == NULL)
-		return NULL;
+	if(array == nil)
+		return nil;
 	
 	switch(request)
 	{
@@ -416,7 +426,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			NSLog(@"WTF! %s couldn't identify request: %d", __PRETTY_FUNCTION__, request);
 #endif
 			[array release];
-			array = NULL;
+			array = nil;
 			break;
 		}
 	}

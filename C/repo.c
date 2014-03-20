@@ -224,7 +224,7 @@ int ajoutRepo(bool ajoutParFichier)
                     
 					snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
 					
-					bool userAgreeToInjection = rand() % 2;
+					bool userAgreeToInjection = getRandom() % 2;
 					
 #ifdef IDENTIFY_MISSING_UI
 	#warning "the user _should_ be prompted"

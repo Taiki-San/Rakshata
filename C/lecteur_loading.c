@@ -191,6 +191,12 @@ memoryFail:
 				
                 for(i = 0; prevPos < dataReader->nombrePageTotale; prevPos++) //Réinintialisation
                 {
+					if(nomPagesTmp[i] == NULL)
+					{
+						prevPos--;
+						dataReader->nombrePageTotale--;
+						continue;
+					}
                     lengthFullPath = lengthBasePath + strlen(nomPagesTmp[i]) + 0x10; // '/' + \0 + margin
                     dataReader->nomPages[prevPos] = malloc(lengthFullPath);
                     if(dataReader->nomPages[prevPos] != NULL)
@@ -247,6 +253,12 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
         for(i = 0; i < *nombrePage; i++)
         {
             output[i] = malloc(LONGUEUR_NOM_PAGE+1);
+			if(output[i] == NULL)
+			{
+				memoryError(LONGUEUR_NOM_PAGE+1);
+				continue;
+			}
+			
             if(!scriptUtilise)
                 fscanfs(file_input, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
 			
@@ -276,7 +288,7 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
     char temp[300];
     for(i = *nombrePage; i >= 0; i--)
     {
-        if(output[i][0])
+        if(output[i] != NULL && output[i][0])
         {
             snprintf(temp, 300, "%s%s", input, output[i]);
             if(checkFileExist(temp))

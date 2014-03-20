@@ -75,7 +75,7 @@ void mainMDL()
 
     while(!quit) //Corps de la fonction
     {
-        if(rand() % 2)//MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
+        if(getRandom() % 2)//MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
         {
             nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
             MDLUpdateIcons(true);

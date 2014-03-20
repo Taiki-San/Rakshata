@@ -59,7 +59,7 @@ enum QUERY_SUBREQUEST {
 - (id) init;
 - (char*) dumpPrefs;
 - (void) flushMemory : (bool) memoryError;
-- (NSArray *) executeConsistencyChecks : (uint8) request;
+- (NSArray *) initExecuteConsistencyChecks : (uint8) request;
 @end
 
 #include "prefsRequest.h"

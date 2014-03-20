@@ -14,6 +14,12 @@
 
 
 @interface RakAppDelegate : NSObject <NSApplicationDelegate>
+{
+	Series * tabSerie;
+	CTSelec * tabCT;
+	Reader * tabReader;
+	MDL * tabMDL;
+}
 
 @property (assign) IBOutlet NSWindow *window;
 

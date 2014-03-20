@@ -18,7 +18,10 @@
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self)
-        [self setView:[[NSView alloc] initWithFrame:frame]];
+	{
+		mainView = [[NSView alloc] initWithFrame:frame];
+		[self setView:mainView];
+	}
     return self;
 }
 

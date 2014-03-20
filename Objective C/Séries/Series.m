@@ -20,7 +20,7 @@
 		flag = GUI_THREAD_SERIES;
 		prefsUIIsOpen = false;
 		
-		[self setUpView:contentView];
+		self = [self initView:contentView];
 		
 		[self craftPrefButton:self.frame];
 		

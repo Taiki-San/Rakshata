@@ -17,7 +17,7 @@
 
 @interface Reader : RakTabView
 {
-	int gonnaReduceTabs;
+	uint gonnaReduceTabs;
 	RakReaderBottomBar * bottomBar;
 	RakPage * mainImage;
 }

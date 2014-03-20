@@ -70,7 +70,7 @@ int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool
         }
         do
         {
-			mangaChoisis = rand();
+			mangaChoisis = getRandom();
         }while((mangaChoisis == ENGINE_RETVALUE_DL_START || mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) && contexte != CONTEXTE_DL);
 
         free(data);

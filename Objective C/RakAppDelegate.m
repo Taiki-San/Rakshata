@@ -30,14 +30,18 @@
 	self.window.backgroundColor = [NSColor colorWithSRGBRed:21/255.0f green:21/255.0 blue:21/255.0 alpha:1.0];
 	[self validateWindowData:[[self window] frame]];
 
-	[[Series alloc] init:contentView];
-	[[CTSelec alloc] init:contentView];
-	[[Reader alloc] init:contentView];
-	[[MDL alloc] init:contentView];
+	tabSerie =	[[Series alloc] init:contentView];
+	tabCT =		[[CTSelec alloc] init:contentView];
+	tabReader =	[[Reader alloc] init:contentView];
+	tabMDL =	[[MDL alloc] init:contentView];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
+	[tabSerie release];
+	[tabCT release];
+	[tabReader release];
+	[tabMDL release];
 	//[[self window] close];
 }
 

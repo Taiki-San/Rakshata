@@ -195,19 +195,21 @@ int setupBDDCache()
 		}
 #endif
 
-		if(nbElem)
+		if(nombreManga)
 		{
+			
 			if(cache != NULL)
 				flushDB();
 			
 			cache = internalDB;
+			nbElem = nombreManga;
 			
 			teamList = internalTeamList;
 			lengthTeam = nombreTeam;
 			
-			isUpdated = calloc(nbElem, sizeof(char));
+			isUpdated = calloc(nombreManga, sizeof(char));
 			if(isUpdated)
-				lengthIsUpdated = nbElem;
+				lengthIsUpdated = nombreManga;
 		}
 		else
 			return 0;
@@ -311,9 +313,7 @@ void syncCacheToDisk(byte syncCode)
 					posOut += newChar;
 			}
 			
-			newChar = snprintf(&bufferOut[posOut], 10, "</%c>\n", SETTINGS_MANGADB_FLAG);
-			if(newChar > 0)
-				posOut += newChar;
+			snprintf(&bufferOut[posOut], 10, "</%c>\n", SETTINGS_MANGADB_FLAG);
 
 			if(syncCode == SYNC_PROJECTS)
 				updateCode = SETTINGS_MANGADB_FLAG;
@@ -438,6 +438,12 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 2);
 	}
+	else
+	{
+		sqlite3_finalize(request);
+		return false;
+	}
+	
 	sqlite3_finalize(request);
 
 	//On pratique le remplacement effectif
@@ -521,7 +527,7 @@ void consolidateCache()
 
 }
 
-void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output)
+bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output)
 {
 	void* buffer;
 	
@@ -532,7 +538,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	else
 	{
 		output->team = NULL;	//L'appelant est signalé d'ignorer l'élément
-		return;
+		return false;
 	}
 	
 	//ID d'accès rapide
@@ -542,7 +548,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	unsigned char *mangaName = (unsigned char*) sqlite3_column_text(state, 2);
 
 	if(mangaName == NULL)
-		return;
+		return false;
 	
 	length = ustrlen(mangaName);
 	memcpy(output->mangaNameShort, mangaName, (length >= LONGUEUR_COURT ? length : LONGUEUR_COURT) * sizeof(char));
@@ -555,7 +561,7 @@ void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	mangaName = (unsigned char*) sqlite3_column_text(state, 4);
 	
 	if(mangaName == NULL)
-		return;
+		return false;
 	
 	length = ustrlen(mangaName);
 	memcpy(output->mangaName, mangaName, (length >= LONGUEUR_NOM_MANGA_MAX ? length : LONGUEUR_NOM_MANGA_MAX) * sizeof(char));
@@ -606,6 +612,8 @@ void copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	
 	output->contentDownloadable = sqlite3_column_int(state, 16);
 	output->favoris = sqlite3_column_int(state, 17);
+	
+	return true;
 }
 
 MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
@@ -640,7 +648,8 @@ MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 		while(pos < nbElem && sqlite3_step(request) == SQLITE_ROW)
 		{
-			copyOutputDBToStruct(request, (maskRequest & RDB_NOCTCOPY), &output[pos]);
+			if(!copyOutputDBToStruct(request, (maskRequest & RDB_NOCTCOPY), &output[pos]))
+				continue;
 			
 			if(maskRequest & RDB_CTXMASK)
 				signalProjectRefreshed(output[pos].cacheDBID, (maskRequest & RDB_CTXMASK) >> 8);
@@ -746,6 +755,9 @@ bool addRepoToDB(TEAMS_DATA newTeam)
 	updateTeamCache(newData, nbTeam+1);
 	syncCacheToDisk(SYNC_TEAM);
 	resetUpdateDBCache();
+	
+	free(oldData);
+	
 	return true;
 }
 
@@ -781,7 +793,6 @@ void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
 	if(newAmountOfTeam == -1 || newAmountOfTeam == lengthTeamCopy)
 	{
 		newReceiver = teamList;
-		newAmountOfTeam = lengthTeamCopy;
 	}
 	else	//Resize teamList
 	{

@@ -15,6 +15,9 @@
 
 //Allow to create NSViewController without NIB
 @interface RakPrefsWindow : NSViewController
+{
+	NSView * mainView;
+}
 
 - (id)initWithFrame:(NSRect)frame;
 

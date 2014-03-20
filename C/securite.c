@@ -383,3 +383,11 @@ bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SH
     return i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(dataKS[i], hashedData);
 }
 
+uint getRandom()
+{
+#ifdef __APPLE__
+	return arc4random();
+#else
+	return rand();
+#endif
+}

@@ -341,7 +341,7 @@ static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_vo
 
 	for(i = 0; i < size * nmemb; data->current_pos++)
 	{
-		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (rand() % 0xff)));
+		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (getRandom() & 0xff)));
 	}
 
 	return size*nmemb;

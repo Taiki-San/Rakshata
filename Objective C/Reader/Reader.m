@@ -19,7 +19,7 @@
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
-		[self setUpView:contentView];
+		self = [self initView:contentView];
 		[self initReaderMainView];
 	}
     return self;
@@ -47,8 +47,11 @@
 
 - (void) readerIsOpening
 {
-	int copy;
-	gonnaReduceTabs = copy = rand() + 1;
+	uint copy;
+	do
+	{
+		gonnaReduceTabs = copy = getRandom();
+	}while (!copy);
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
 }

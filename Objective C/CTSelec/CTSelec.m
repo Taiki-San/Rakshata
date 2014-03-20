@@ -18,7 +18,7 @@
     if (self)
 	{
 		flag = GUI_THREAD_CT;
-		[self setUpView:contentView];
+		self = [self initView:contentView];
 	}
     return self;
 }

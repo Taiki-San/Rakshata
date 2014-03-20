@@ -18,7 +18,7 @@
     if (self)
 	{
 		flag = GUI_THREAD_MDL;
-		[self setUpView:contentView];
+		self = [self initView:contentView];
 	}
     return self;
 }

@@ -35,7 +35,7 @@
 
     #define THREAD_TYPE HANDLE
     #define MUTEX_VAR HANDLE
-    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; usleep(rand() % 100))
+    #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; usleep(getRandom() & 0x80))
     #define MUTEX_UNIX_LOCK //
     #define MUTEX_UNLOCK(a) ReleaseSemaphore (a, 1, NULL)
     #define MUTEX_UNIX_UNLOCK //
