@@ -422,7 +422,7 @@ uint64_t getFileSize64(const char * filename)
     if (stat(filename, &st) == 0)
         return st.st_size;
 	
-    return -1;
+    return 0;
 #endif
 }
 

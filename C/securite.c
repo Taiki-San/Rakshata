@@ -24,7 +24,6 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
 
 void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_t length)
 {
-    MUTEX_LOCK(mutex_decrypt);
     int posIV, i, j = 0, k;
     size_t pos_buffer;
     unsigned char *password = _password;
@@ -32,7 +31,7 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
     SERPENT_STATIC_DATA pSer;
 	TwofishInstance pTwoF;
 
-    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? (*password = 0, *password++) : 0);
+    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password, *(password++) = 0);
     TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
 	Serpent_set_key(&pSer, (uint32_t*) key, KEYBITS);
 
@@ -56,7 +55,6 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
         memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
         posIV = 0;
     }
-    MUTEX_UNLOCK(mutex_decrypt);
 }
 
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
@@ -72,20 +70,15 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
             (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
 #else
 	#ifdef __APPLE__
-        int c = 0, i = 0, j = 0;
+        int c = 0, i = 0;
         unsigned char buffer_fingerprint[5000];
-		char command_line[4][100];
+		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
 
-        snprintf((char *) command_line[0], 100, "system_profiler SPHardwareDataType | grep 'Serial Number'");
-        snprintf((char *) command_line[1], 100, "system_profiler SPHardwareDataType | grep 'Hardware UUID'");
-        snprintf((char *) command_line[2], 100, "system_profiler SPHardwareDataType | grep 'Boot ROM Version'");
-        snprintf((char *) command_line[3], 100, "system_profiler SPHardwareDataType | grep 'SMC Version'");
-
-        FILE *system_output = NULL;
-        for(j = 0; j < 4; j++)
+        FILE *system_output;
+        for(int j = 0; j < 4; j++)
         {
             system_output = popen(command_line[j], "r");
-            while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la premiére partie
+            while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
             fgetc(system_output);
             for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
             buffer_fingerprint[i++] = ' ';
@@ -95,7 +88,7 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
 	#else
 
     /**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
-    En faisant à nouveau le coup de popen ou de fopen, on en récupére quelques un, on les hash et basta**/
+    En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
 
 	#endif
 #endif
@@ -107,9 +100,10 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
 void get_file_date(const char *filename, char *date)
 {
     int length = strlen(filename) + strlen(REPERTOIREEXECUTION) + 5;
-    char *input_parsed = malloc(length);
-	snprintf(input_parsed, length, "%s/%s", REPERTOIREEXECUTION, filename);
+    char input_parsed[length];
 #ifdef _WIN32
+	snprintf(input_parsed, length, "%s/%s", REPERTOIREEXECUTION, filename);
+
     HANDLE hFile;
     FILETIME ftEdit;
     SYSTEMTIME ftTime;
@@ -122,11 +116,12 @@ void get_file_date(const char *filename, char *date)
 
     snprintf(date, 100, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
-    struct stat buf;
+	strncpy(input_parsed, filename, length);
+
+	struct stat buf;
     if(!stat(input_parsed, &buf))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
 #endif
-    free(input_parsed);
 }
 
 void KSTriggered(TEAMS_DATA team)
@@ -148,7 +143,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }
 
-IMG_DATA *IMG_LoadS(char *pathRoot, char *pathPage, int numeroChapitre, int page)
+IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
     int i = 0, nombreEspace = 0;
     rawData *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis

@@ -55,7 +55,11 @@
 
 - (void) initReaderMainView
 {
-	mainImage = [[RakPage alloc] init: @"lol.png": self];
+	setupBDDCache();
+	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
+	int i = 21;
+	
+	mainImage = [[RakPage alloc] init: self: mangaData[i] : 150: false];
 	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
 	//	[self addSubview:mainImage];
 }

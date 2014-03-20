@@ -13,6 +13,8 @@
 #define READER_PAGE_TOP_BORDER	78
 #define READER_PAGE_BORDERS_HIGH (RD_CONTROLBAR_HEIGHT + RD_CONTROLBAR_POSY + READER_PAGE_TOP_BORDER + 10)
 
+#include "lecteur.h"
+
 @interface RakPage : NSScrollView
 {
 	NSImage *page;
@@ -34,9 +36,12 @@
 	int posElemInStructure;
 	bool isTome;
 	
+	char texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
 }
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
+- (BOOL) craftPageAndSetupEnv : (Reader *) superView;
+- (void) addPageToView;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
 

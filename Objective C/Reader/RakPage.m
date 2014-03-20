@@ -10,8 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "lecteur.h"
-
 @implementation RakPage
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
@@ -19,27 +17,14 @@
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest])
 		return nil;
 	
-	//We load the image
-	page = [[NSImage alloc] initWithContentsOfFile:path];
-	if(page == NULL)
+	if (![self craftPageAndSetupEnv:superView])
 		return nil;
-	
-	//Worked, we now craft the size of this view
-	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
-	[self initialPositionning:NO:[superView getCurrentFrame]];
 
 	//We create the NSScrollview
 	self = [self initWithFrame:frameReader];
 	if(self != nil)
 	{
-		//We create the view which will be displayed
-		NSRect pageViewSize = selfFrame;
-		pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
-		pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
-		
-		[pageView setImageAlignment:NSImageAlignCenter];
-		[pageView setImageFrameStyle:NSImageFrameNone];
-		[pageView setImage:page];
+		[self addPageToView];
 		
 		areSlidersHidden = YES;
 		
@@ -47,7 +32,6 @@
 
 		self.hasVerticalScroller =		pageTooHigh;
 		self.hasHorizontalScroller =	pageTooLarge;
-		self.documentView =				pageView;
 		self.borderType =				NSNoBorder;
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
@@ -59,13 +43,7 @@
 			self.verticalScroller.alphaValue =	0;
 			self.horizontalScroller.alphaValue = 0;
 		}
-		
-		//À améliorer
-		if (pageTooHigh)
-		{
-			[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
-		}
-		
+				
 		[superView addSubview:self];
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	}
@@ -74,6 +52,36 @@
 		[page release];
 	}
 	return self;
+}
+
+- (BOOL) craftPageAndSetupEnv : (Reader *) superView
+{
+	page = [[NSImage alloc] initWithData:[self getPage:data.pageCourante]];
+	if(page == nil)
+		return false;
+	
+	//Worked, we now craft the size of this view
+	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
+	[self initialPositionning:NO:[superView getCurrentFrame]];
+	
+	return true;
+}
+
+- (void) addPageToView
+{
+	//We create the view that si going to be displayed
+	NSRect pageViewSize = selfFrame;
+	pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
+	pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
+	
+	[pageView setImageAlignment:NSImageAlignCenter];
+	[pageView setImageFrameStyle:NSImageFrameNone];
+	[pageView setImage:page];
+	
+	self.documentView =	pageView;
+	
+	if (pageTooHigh)
+		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
 }
 
 - (BOOL) isEditable
@@ -175,6 +183,7 @@
 	memcpy(&project, &dataRequest, sizeof(dataRequest));
 	currentElem = elemRequest;
 	isTome = isTomeRequest;
+	loadTrad(texteTrad, 21);
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
 	
@@ -188,18 +197,47 @@
 	setLastChapitreLu(project, isTome, currentElem);
 	if(reader_isLastElem(project, isTome, currentElem))
         startCheckNewElementInRepo(project, isTome, currentElem, false);
-
+	
+	//On met la page courante par défaut
+	data.pageCourante = reader_getCurrentPageIfRestore(texteTrad);
 	
 	if(configFileLoader(project, isTome, currentElem, &data))
 	{
 		[self failure];
 		return NO;
 	}
+	
+	return YES;
+}
+
+- (NSData *) getPage : (uint) posData
+{
+	IMG_DATA * pageData = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
+	
+	if(pageData == NULL)
+	{
+		[self failure];
+		return NULL;
+	}
+	
+	NSData *output = [NSData dataWithBytes:pageData->data length:pageData->length];
+	
+	free(pageData);
+
+	return output;
 }
 
 - (void) nextPage
 {
-	NSLog(@"Hey, got clicked");
+	if(data.pageCourante+1 >= data.nombrePageTotale)
+		return;
+	
+	data.pageCourante++;
+	[pageView.image release];
+	[pageView release];
+	
+	[self craftPageAndSetupEnv:(Reader *)self.superview];
+	[self addPageToView];	
 }
 
 @end

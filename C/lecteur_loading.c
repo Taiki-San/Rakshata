@@ -152,9 +152,9 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
             if(intermediaryPtr != NULL)
             {
                 dataReader->path = intermediaryPtr;
-                dataReader->path[nombreTours-2] = malloc(LONGUEUR_NOM_PAGE);
+                dataReader->path[nombreTours] = malloc(LONGUEUR_NOM_PAGE);
                 
-                if(dataReader->path[nombreTours-2] == NULL)
+                if(dataReader->path[nombreTours] == NULL)
                     goto memoryFail;
             }
             else
@@ -163,14 +163,14 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
             if(0)  //Si on a eu un problème en allouant de la mémoire
             {
 memoryFail:
-				if(dataReader->pathNumber == NULL || dataReader->pageCouranteDuChapitre == NULL || dataReader->nomPages == NULL || dataReader->chapitreTomeCPT == NULL || dataReader->path == NULL || dataReader->path[nombreTours-2] == NULL)
+				if(dataReader->pathNumber == NULL || dataReader->pageCouranteDuChapitre == NULL || dataReader->nomPages == NULL || dataReader->chapitreTomeCPT == NULL || dataReader->path == NULL || dataReader->path[nombreTours] == NULL)
 				{
 					free(dataReader->pathNumber);				dataReader->pathNumber = NULL;
 					free(dataReader->pageCouranteDuChapitre);	dataReader->pageCouranteDuChapitre = NULL;
 					free(dataReader->nomPages);					dataReader->nomPages = NULL;
 					free(dataReader->chapitreTomeCPT);			dataReader->chapitreTomeCPT = NULL;
 					if(dataReader->path != NULL)
-						free(dataReader->path[nombreTours-2]);
+						free(dataReader->path[nombreTours]);
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}
@@ -179,7 +179,7 @@ memoryFail:
             }
             else
             {
-                dataReader->path[nombreTours-1] = NULL;
+                dataReader->path[nombreTours+1] = NULL;
 				
                 snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name);
                 if(isTome)

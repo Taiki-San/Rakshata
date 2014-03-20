@@ -32,14 +32,7 @@ int lecteur(MANGAS_DATA *mangaDB, int *chapitreChoisis, bool isTome, bool *fulls
         startCheckNewElementInRepo(*mangaDB, isTome, *chapitreChoisis, fullscreen);
 
 	//On met la page courante par défaut
-	if(*chapitreChoisis == (isTome ? mangaDB->tomes[curPosIntoStruct].ID : mangaDB->chapitres[curPosIntoStruct]))
-	{
-		dataReader.pageCourante = reader_getCurrentPageIfRestore(texteTrad);
-	}
-	else	//Si on a eu à changer de chapitre à cause d'une corruption
-	{
-		dataReader.pageCourante = 0;
-	}
+	dataReader.pageCourante = reader_getCurrentPageIfRestore(texteTrad);
 	
     if(configFileLoader(*mangaDB, isTome, *chapitreChoisis, &dataReader))
     {

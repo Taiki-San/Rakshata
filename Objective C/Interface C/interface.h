@@ -42,3 +42,12 @@ int internalUIAlert(char *titre, char* content, UIABUTT* buttons);
 
 uint32_t getMainThread();
 void sendToLog(char * string);
+
+
+/*****************************************
+ **										**
+ **				  READER				**
+ **										**
+ *****************************************/
+
+void* generateNSDataFromDecryptedStuffs(void* stuffs, size_t length);

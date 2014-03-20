@@ -22,7 +22,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
                                   SIZE_TRAD_ID_26, SIZE_TRAD_ID_27, SIZE_TRAD_ID_28, SIZE_TRAD_ID_29, SIZE_TRAD_ID_30,
                                   SIZE_TRAD_ID_31};
 
-    char numeroID[3] = {0, 0, 0}, *buffer = NULL;
+    char numeroID[3] = {0, 0, 0}, buffer[256];
     FILE* fichierTrad = NULL;
 
     if(IDTrad > NOMBRE_TRAD_ID_MAX)
@@ -31,8 +31,7 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
     if(langue == 0)
         loadLangueProfile();
 
-    buffer = malloc(ustrlen(REPERTOIREEXECUTION) + 20 + ustrlen(LANGUAGE_PATH[langue - 1]));
-    snprintf(buffer, ustrlen(REPERTOIREEXECUTION)+20+ustrlen(LANGUAGE_PATH[langue - 1]), "%s/data/%s/localization", REPERTOIREEXECUTION, LANGUAGE_PATH[langue - 1]);
+    snprintf(buffer, sizeof(buffer), "data/%s/localization", LANGUAGE_PATH[langue - 1]);
     fichierTrad = fopen(buffer, "r");
 
     if(fichierTrad == NULL)
@@ -42,8 +41,6 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
         logR(temp);
         exit(0);
     }
-
-    free(buffer);
 
     if(IDTrad == 1)
     {
