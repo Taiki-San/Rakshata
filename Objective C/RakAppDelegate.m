@@ -14,29 +14,32 @@
 #define SIZE_MIN_WIDTH 950
 #define BORDER_WIDTH 4
 
+NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
+
 @implementation RakAppDelegate
 
 - (void) awakeFromNib
 {
 	NSView *contentView = [[self window] contentView];
 
-	NSRect frame = [contentView frame];
-	frame.origin.x += BORDER_WIDTH;
-	frame.origin.y += BORDER_WIDTH;
-	frame.size.height -= 2 * BORDER_WIDTH;
-	frame.size.width -= 2 * BORDER_WIDTH;
-	[contentView setFrame:frame];
-	
 	self.window.backgroundColor = [NSColor colorWithSRGBRed:21/255.0f green:21/255.0 blue:21/255.0 alpha:1.0];
 	[self validateWindowData:[[self window] frame]];
 	
-	dispatcher = [[RakEventDispatcher alloc] init];
-	[self.window makeFirstResponder:dispatcher];
+	tabSerie =	[Series alloc];
+	tabCT =		[CTSelec alloc];
+	tabReader =	[Reader alloc];
+	tabMDL =	[MDL alloc];
 
-	tabSerie =	[[Series alloc] init:contentView];
-	tabCT =		[[CTSelec alloc] init:contentView];
-	tabReader =	[[Reader alloc] init:contentView];
-	tabMDL =	[[MDL alloc] init:contentView];
+	[self.window.contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
+	[self.window makeFirstResponder:self.window.contentView];
+	
+	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
+	[Prefs initCache];
+	
+	[tabSerie init:contentView];
+	[tabCT init:contentView];
+	[tabReader init:contentView];
+	[tabMDL init:contentView];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

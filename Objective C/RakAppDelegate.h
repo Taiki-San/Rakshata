@@ -10,13 +10,10 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-
+extern NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 @interface RakAppDelegate : NSObject <NSApplicationDelegate>
 {
-	RakEventDispatcher * dispatcher;
-	
 	Series * tabSerie;
 	CTSelec * tabCT;
 	Reader * tabReader;

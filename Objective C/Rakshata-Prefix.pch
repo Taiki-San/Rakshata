@@ -34,11 +34,12 @@
 	#import "Series.h"
 	#import "CTSelec.h"
 	#import "Reader.h"
-	#import "Prefs.h"
 
 	#import "MDL.h"
 
-	#import "RakEventDispatcher.h"
+	#import "RakContentView.h"
 	#import "RakAppDelegate.h"
+
+	#import "Prefs.h"
 
 #endif

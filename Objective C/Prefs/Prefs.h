@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define DEV_VERSION
-
 #include "RakPrefsDeepData.h"
 
 enum DIRECT_QUERY_REQUEST {
@@ -30,6 +28,8 @@ enum QUERY_SUBREQUEST {
 
 @interface Prefs : NSObject
 {
+	RakContentView* firstResponder;
+	
 	// Prefs "sécurisés"
 	NSString * email;
 	
@@ -58,6 +58,7 @@ enum QUERY_SUBREQUEST {
 //Not public, only called by subprefs
 - (id) init;
 - (char*) dumpPrefs;
+- (void) refreshFirstResponder;
 - (void) flushMemory : (bool) memoryError;
 - (NSArray *) initExecuteConsistencyChecks : (uint8) request;
 @end

@@ -5,11 +5,10 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
- *********************************************************************************************/
-
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
+ ********************************************************************************************/
 
 #include "prefsTools.h"
 
@@ -18,7 +17,7 @@ Prefs* prefsCache;
 // Contexte
 uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
 uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
-uint backgroundTabsState = GUI_THREAD_SERIES;
+uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have focus
 
 @implementation Prefs
 
@@ -198,6 +197,8 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 				backgroundTabsState = mainThread;
 			
 			mainThread = value & GUI_MASK;
+			[prefsCache refreshFirstResponder];
+			
 			break;
 		}
 			
@@ -205,6 +206,9 @@ uint backgroundTabsState = GUI_THREAD_SERIES;
 		{
 			ret_value = stateTabsReader != (uint) value;
 			stateTabsReader = value & STATE_READER_TAB_MASK;
+
+			[prefsCache refreshFirstResponder];
+			
 			break;
 		}
 			
@@ -360,6 +364,9 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			[self flushMemory:YES];
 		
 		[prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
+		
+		firstResponder = mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView;
+		[self refreshFirstResponder];
 	
 		if(input != recoveryBuffer)
 			free(input);
@@ -383,6 +390,11 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	}
 	
 	return output;
+}
+
+- (void) refreshFirstResponder
+{
+	[firstResponder updateContext:mainThread :stateTabsReader];
 }
 
 - (void) flushMemory : (bool) memoryError

@@ -62,6 +62,8 @@
 
 /*Handle the position of the whole thing when anything change*/
 
+#pragma mark    -   Position manipulation
+
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow
 {
 	if(canIHazSuperview)
@@ -111,6 +113,8 @@
 
 /*Event handling*/
 
+#pragma mark    -   Events
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -126,8 +130,6 @@
 	else
 		[self nextPage];
 }
-
-#pragma mark    -   NSResponder
 
 - (void) keyDown:(NSEvent *)theEvent
 {
@@ -159,6 +161,8 @@
 
 /*Error management*/
 
+#pragma mark    -   Errors
+
 - (void) failure
 {
 	NSLog(@"Something went wrong delete?");
@@ -166,6 +170,8 @@
 
 
 /*Active routines*/
+
+#pragma mark    -   Active routines
 
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
 {

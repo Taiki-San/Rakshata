@@ -77,7 +77,7 @@
 /**	Events **/
 - (void) keyDown:(NSEvent *)theEvent
 {
-	
+	[mainImage keyDown:theEvent];
 }
 
 /**	NSTrackingArea	**/

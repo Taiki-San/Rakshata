@@ -260,6 +260,10 @@
 	}
 }
 
+- (void) keyDown:(NSEvent *)theEvent
+{
+	
+}
 
 /*		Graphic Utilities		*/
 
@@ -271,11 +275,12 @@
 - (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
+	RakContentView * actualSuperView = (RakContentView*) superView;
 	
-	frame.origin.x = [self getRequestedViewPosX: superView.frame.size.width];
-	frame.origin.y = [self getRequestedViewPosY: superView.frame.size.height];
-	frame.size.width = [self getRequestedViewWidth: superView.frame.size.width];
-	frame.size.height = [self getRequestedViewHeight: superView.frame.size.height];
+	frame.origin.x = [self getRequestedViewPosX: [actualSuperView getFrame].size.width];
+	frame.origin.y = [self getRequestedViewPosY: [actualSuperView getFrame].size.height];
+	frame.size.width = [self getRequestedViewWidth: [actualSuperView getFrame].size.width];
+	frame.size.height = [self getRequestedViewHeight: [actualSuperView getFrame].size.height];
 	
 	return frame;
 }
