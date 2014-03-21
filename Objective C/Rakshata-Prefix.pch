@@ -38,6 +38,7 @@
 
 	#import "MDL.h"
 
+	#import "RakEventDispatcher.h"
 	#import "RakAppDelegate.h"
 
 #endif

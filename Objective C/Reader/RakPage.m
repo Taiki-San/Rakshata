@@ -122,9 +122,39 @@
 		mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
 	
 	if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [self.contentView documentRect].size.height - READER_PAGE_TOP_BORDER)
-		[self.superview mouseDown:theEvent];
+		[self prevPage];
 	else
 		[self nextPage];
+}
+
+#pragma mark    -   NSResponder
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
+    unichar     const   code        =   [character characterAtIndex:0];
+	
+    switch (code)
+    {
+        case NSUpArrowFunctionKey:
+        {
+            break;
+        }
+        case NSDownArrowFunctionKey:
+        {
+            break;
+        }
+        case NSLeftArrowFunctionKey:
+        {
+            [self prevPage];
+            break;
+        }
+        case NSRightArrowFunctionKey:
+        {
+            [self nextPage];
+            break;
+        }
+    }
 }
 
 /*Error management*/

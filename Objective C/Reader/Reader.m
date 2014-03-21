@@ -5,9 +5,9 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
 @implementation Reader
@@ -59,12 +59,12 @@
 - (void) initReaderMainView
 {
 	setupBDDCache();
-	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
-	int i = 21;
+	uint i;
+	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, &i);
+	i--;
 	
-	mainImage = [[RakPage alloc] init: self: mangaData[i] : 150: false];
+	mainImage = [[RakPage alloc] init: self: mangaData[i] : 10: false];
 	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
-	//	[self addSubview:mainImage];
 }
 
 /**	Drawing	**/
@@ -72,6 +72,12 @@
 - (NSColor*) getMainColor
 {
 	return [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
+}
+
+/**	Events **/
+- (void) keyDown:(NSEvent *)theEvent
+{
+	
 }
 
 /**	NSTrackingArea	**/

@@ -16,7 +16,7 @@
 
 @implementation RakAppDelegate
 
-- (void) applicationWillFinishLaunching:(NSNotification *)notification
+- (void) awakeFromNib
 {
 	NSView *contentView = [[self window] contentView];
 
@@ -29,6 +29,9 @@
 	
 	self.window.backgroundColor = [NSColor colorWithSRGBRed:21/255.0f green:21/255.0 blue:21/255.0 alpha:1.0];
 	[self validateWindowData:[[self window] frame]];
+	
+	dispatcher = [[RakEventDispatcher alloc] init];
+	[self.window makeFirstResponder:dispatcher];
 
 	tabSerie =	[[Series alloc] init:contentView];
 	tabCT =		[[CTSelec alloc] init:contentView];

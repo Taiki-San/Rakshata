@@ -5,26 +5,11 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-
-
-@interface RakAppDelegate : NSObject <NSApplicationDelegate>
-{
-	RakEventDispatcher * dispatcher;
-	
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
-}
-
-@property (assign) IBOutlet NSWindow *window;
-
-- (void) validateWindowData : (NSRect) size;
+@interface RakEventDispatcher : NSResponder
 
 @end
