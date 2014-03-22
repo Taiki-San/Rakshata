@@ -148,7 +148,7 @@ int mainLecture()
                             }
 
                             setLastChapitreLu(mangaDB[mangaChoisis], isTome, chapitreChoisis); //On Žcrit le dernier chapitre lu
-                            retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, isTome, &fullscreen);
+							//retourLecteur = lecteur(&mangaDB[mangaChoisis], &chapitreChoisis, isTome, &fullscreen);
 
                             if(retourLecteur != 0)
                             {

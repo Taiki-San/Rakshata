@@ -63,7 +63,6 @@
 		B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */; };
 		B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC018A3001400E3B55B /* lecteur_tool.c */; };
 		B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC118A3001400E3B55B /* lecteur_ui.c */; };
-		B6F6ED0118A3001400E3B55B /* lecteur.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC218A3001400E3B55B /* lecteur.c */; };
 		B6F6ED0218A3001400E3B55B /* mainfunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC518A3001400E3B55B /* mainfunctions.c */; };
 		B6F6ED0418A3001400E3B55B /* moduleDL_selec.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */; };
 		B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */; };
@@ -183,7 +182,6 @@
 		B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_loading.c; path = C/lecteur_loading.c; sourceTree = "<group>"; };
 		B6F6ECC018A3001400E3B55B /* lecteur_tool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_tool.c; path = C/lecteur_tool.c; sourceTree = "<group>"; };
 		B6F6ECC118A3001400E3B55B /* lecteur_ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_ui.c; path = C/lecteur_ui.c; sourceTree = "<group>"; };
-		B6F6ECC218A3001400E3B55B /* lecteur.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur.c; path = C/lecteur.c; sourceTree = "<group>"; };
 		B6F6ECC318A3001400E3B55B /* lecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lecteur.h; path = C/lecteur.h; sourceTree = "<group>"; };
 		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
 		B6F6ECC518A3001400E3B55B /* mainfunctions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mainfunctions.c; path = C/mainfunctions.c; sourceTree = "<group>"; };
@@ -462,7 +460,6 @@
 				B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */,
 				B6F6ECC018A3001400E3B55B /* lecteur_tool.c */,
 				B6F6ECC118A3001400E3B55B /* lecteur_ui.c */,
-				B6F6ECC218A3001400E3B55B /* lecteur.c */,
 			);
 			name = "Lecteur Core";
 			sourceTree = "<group>";
@@ -702,7 +699,6 @@
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
 				B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */,
 				B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */,
-				B6F6ED0118A3001400E3B55B /* lecteur.c in Sources */,
 				B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */,
 				B6F6ECEE18A3001400E3B55B /* Rijndael.c in Sources */,
 				B6F6ED1318A3001400E3B55B /* ioapi.c in Sources */,

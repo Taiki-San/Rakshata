@@ -13,7 +13,7 @@
 
 /**	Set up the evnt	**/
 
-int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure)
+bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure)
 {
 	if(isTome)
 	{
@@ -153,9 +153,11 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
             {
                 dataReader->path = intermediaryPtr;
                 dataReader->path[nombreTours] = malloc(LONGUEUR_NOM_PAGE);
-                
+
                 if(dataReader->path[nombreTours] == NULL)
                     goto memoryFail;
+				
+				dataReader->path[nombreTours+1] = NULL;
             }
             else
 				goto memoryFail;
@@ -169,8 +171,9 @@ memoryFail:
 					free(dataReader->pageCouranteDuChapitre);	dataReader->pageCouranteDuChapitre = NULL;
 					free(dataReader->nomPages);					dataReader->nomPages = NULL;
 					free(dataReader->chapitreTomeCPT);			dataReader->chapitreTomeCPT = NULL;
+
 					if(dataReader->path != NULL)
-						free(dataReader->path[nombreTours]);
+						for (int i = 0; i <= nombreTours; free(dataReader->path[i++]));
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}
@@ -179,8 +182,6 @@ memoryFail:
             }
             else
             {
-                dataReader->path[nombreTours+1] = NULL;
-				
                 snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
@@ -301,55 +302,35 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
     return output;
 }
 
-int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure)
+void releaseDataReader(DATA_LECTURE *data)
 {
-    int ret_value;
+	free(data->pathNumber);					data->pathNumber = NULL;
+	free(data->pageCouranteDuChapitre);		data->pageCouranteDuChapitre = NULL;
+	free(data->chapitreTomeCPT);			data->chapitreTomeCPT = NULL;
 	
-    if(goToNextPage) //Page suivante
-    {
-        if (dataReader->pageCourante < dataReader->nombrePageTotale) //Changement de page
-        {
-            dataReader->pageCourante += 1;
-            *changementPage = READER_ETAT_NEXTPAGE;
-			ret_value = READER_CHANGEPAGE_SUCCESS;
-        }
-        else if(changeChapter(mangaDB, isTome, chapitreChoisis, currentPosIntoStructure, goToNextPage)) //On envois l'ordre de passer au chapitre suivant
-        {
-            ret_value = READER_CHANGEPAGE_NEXTCHAP;
-        }
-        else //On met le menu en rouge
-        {
-            ret_value = READER_CHANGEPAGE_UPDATE_TOPBAR;
-        }
-    }
-    else
-    {
-        if (dataReader->pageCourante > 0)
-        {
-            dataReader->pageCourante -= 1;
-            *changementPage = READER_ETAT_PREVPAGE;
-			ret_value = READER_CHANGEPAGE_SUCCESS;
-        }
-        else if(changeChapter(mangaDB, isTome, chapitreChoisis, currentPosIntoStructure, goToNextPage))
-        {
-            ret_value = READER_CHANGEPAGE_NEXTCHAP;
-        }
-        else
-            ret_value = READER_CHANGEPAGE_UPDATE_TOPBAR;
-    }
-    return ret_value;
+	if (data->nomPages != NULL)
+	{
+		for (int i = data->nombrePageTotale; i > 0; free(data->nomPages[--i]));
+		free(data->nomPages);					data->nomPages = NULL;
+	}
+	
+	if(data->path != NULL)
+	{
+		for(int i = 0; data->path[i] != NULL; free(data->path[i++]));
+		free(data->path);						data->path = NULL;
+	}
 }
 
-bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, int posIntoStruc, bool goToNextChap)
+bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
-	posIntoStruc += (goToNextChap ? 1 : -1);
+	*posIntoStruc += (goToNextChap ? 1 : -1);
 	
-	if(changeChapterAllowed(mangaDB, isTome, posIntoStruc))
+	if(changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 	{
 		if(isTome)
-            *ptrToSelectedID = mangaDB->tomes[posIntoStruc].ID;
+            *ptrToSelectedID = mangaDB->tomes[*posIntoStruc].ID;
         else
-            *ptrToSelectedID = mangaDB->chapitres[posIntoStruc];
+            *ptrToSelectedID = mangaDB->chapitres[*posIntoStruc];
 		return true;
 	}
 	return false;
@@ -357,7 +338,7 @@ bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, int 
 
 bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc)
 {
-    getUpdatedCTList(mangaDB, isTome);
+    updateIfRequired(mangaDB, RDB_CTXLECTEUR);
 	
 	return (isTome && posIntoStruc < mangaDB->nombreTomes) || (!isTome && posIntoStruc < mangaDB->nombreChapitre);
 }

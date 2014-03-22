@@ -14,7 +14,7 @@
 
 int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, bool isTome)
 {
-	int curPosIntoStruct;
+	uint curPosIntoStruct;
 		
 	if(!isTome)
     {

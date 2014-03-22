@@ -50,13 +50,14 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 
 /** lecteur_loading.c **/
 
-int reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, int *currentPosIntoStructure);
+bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure);
 int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
+void releaseDataReader(DATA_LECTURE *data);
 
 int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure);
-bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, int posIntoStruc, bool goToNextChap);
+bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
 bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc);
 
 /**	lecteur_tool.c	**/
@@ -114,6 +115,7 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
 #define READER_ETAT_DEFAULT 0
 #define READER_ETAT_PREVPAGE 1
 #define READER_ETAT_NEXTPAGE 2
+
 
 #define READER_CHANGEPAGE_SUCCESS		0
 #define READER_CHANGEPAGE_NEXTCHAP		1
