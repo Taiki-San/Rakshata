@@ -688,10 +688,10 @@ void signalProjectRefreshed(uint ID, short context)
 		isUpdated[ID] &= ~(context >> 8);
 }
 
-void updateIfRequired(MANGAS_DATA *data, short context)
+bool updateIfRequired(MANGAS_DATA *data, short context)
 {
 	if(data == NULL)
-		return;
+		return false;
 	
 	context >>= 8;
 
@@ -710,7 +710,11 @@ void updateIfRequired(MANGAS_DATA *data, short context)
 		
 		signalProjectRefreshed(data->cacheDBID, context);
 		sqlite3_finalize(request);
+		
+		return true;
 	}
+	
+	return false;
 }
 
 /*************		REPOSITORIES DATA		*****************/

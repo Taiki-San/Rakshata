@@ -52,7 +52,7 @@ MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 bool isProjectUpdated(uint ID, byte context);
 void setProjectUpdated(uint ID);
 void signalProjectRefreshed(uint ID, short context);
-void updateIfRequired(MANGAS_DATA *data, short context);
+bool updateIfRequired(MANGAS_DATA *data, short context);
 
 //Teams
 uint getDBTeamID(TEAMS_DATA * team);

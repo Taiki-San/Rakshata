@@ -276,6 +276,9 @@
 	cacheBeingBuilt = actionBeingProcessessed = false;
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
+
+	checkChapitreValable(&project, NULL);
+	checkTomeValable(&project, NULL);
 	
 	posElemInStructure = reader_getPosIntoContentIndex(project, currentElem, isTome);
 	if(posElemInStructure == -1)
@@ -383,11 +386,7 @@
 - (void) changeChapter : (bool) goToNext
 {
 	uint newPosIntoStruct = posElemInStructure;
-	if(!changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
-	{
-		[self failure];
-	}
-	else
+	if(changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
 	{
 		posElemInStructure = newPosIntoStruct;
 		[self updateContext];
@@ -399,7 +398,11 @@
 	[self flushCache];
 	releaseDataReader(&data);
 	
-	updateIfRequired(&project, RDB_CTXLECTEUR);
+	if(updateIfRequired(&project, RDB_CTXLECTEUR))
+	{
+		checkChapitreValable(&project, NULL);
+		checkTomeValable(&project, NULL);
+	}
 	
 	setLastChapitreLu(project, isTome, currentElem);
 	if(reader_isLastElem(project, isTome, currentElem))

@@ -65,7 +65,10 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
 
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
-    int first = -1, end = -1, fBack, eBack, nbElem = 0;
+    if(mangaDB->chapitres == NULL || mangaDB->chapitres[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		return;
+	
+	int first = -1, end = -1, fBack, eBack, nbElem = 0;
     char temp[TAILLE_BUFFER*5];
 
     snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
