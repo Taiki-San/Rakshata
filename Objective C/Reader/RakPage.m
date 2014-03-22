@@ -140,10 +140,12 @@
     {
         case NSUpArrowFunctionKey:
         {
+			[self moveSlider:PAGE_MOVE];
             break;
         }
         case NSDownArrowFunctionKey:
         {
+			[self moveSlider: -PAGE_MOVE];
             break;
         }
         case NSLeftArrowFunctionKey:
@@ -267,6 +269,30 @@
 - (void) prevPage
 {
 	[self changePage:READER_ETAT_PREVPAGE];
+}
+
+- (void) moveSlider : (int) move
+{
+	if(!pageTooHigh)
+		return;
+	
+	NSPoint point = [[self contentView] bounds].origin;
+	
+	if(move < 0 && point.y < -move)
+		point.y = 0;
+	
+	else if(move > 0)
+	{
+		CGFloat basePos = [self.documentView frame].size.height - self.frame.size.height;
+		if(point.y > basePos - move)
+			point.y = basePos;
+		else
+			point.y += move;
+	}
+	else
+		point.y += move;
+	
+	[self.contentView scrollToPoint:point];
 }
 
 - (void) changePage : (byte) switchType
