@@ -275,12 +275,16 @@
 - (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
-	RakContentView * actualSuperView = (RakContentView*) superView;
+	NSSize sizeSuperView;
+	if([superView class] == [RakContentView class])
+		sizeSuperView = [(RakContentView*) superView getFrame].size;
+	else
+		sizeSuperView = superView.frame.size;
 	
-	frame.origin.x = [self getRequestedViewPosX: [actualSuperView getFrame].size.width];
-	frame.origin.y = [self getRequestedViewPosY: [actualSuperView getFrame].size.height];
-	frame.size.width = [self getRequestedViewWidth: [actualSuperView getFrame].size.width];
-	frame.size.height = [self getRequestedViewHeight: [actualSuperView getFrame].size.height];
+	frame.origin.x = [self getRequestedViewPosX: sizeSuperView.width];
+	frame.origin.y = [self getRequestedViewPosY: sizeSuperView.height];
+	frame.size.width = [self getRequestedViewWidth: sizeSuperView.width];
+	frame.size.height = [self getRequestedViewHeight: sizeSuperView.height];
 	
 	return frame;
 }

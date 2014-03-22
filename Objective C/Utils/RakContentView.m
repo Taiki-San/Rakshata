@@ -12,12 +12,6 @@
 
 @implementation RakContentView
 
-- (id) initWithCoder:(NSCoder *)aDecoder
-{
-	self =  [super initWithCoder:aDecoder];
-	return self;
-}
-
 - (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL
 {
 	_tabSerie = tabSerie;
@@ -68,10 +62,17 @@
 - (NSRect) getFrame
 {
 	NSRect frame = [self frame];
-	frame.origin.x += 4;
-	frame.origin.y += 4;
-	frame.size.height -= 2 * 4;
-	frame.size.width -= 2 * 4;
+	
+	if (frame.origin.x != BORDER_WIDTH || frame.origin.y != BORDER_WIDTH)
+	{
+		[self setFrameOrigin:NSMakePoint(BORDER_WIDTH, BORDER_WIDTH)];
+		frame.origin.x = frame.origin.y = BORDER_WIDTH;
+		
+		frame.size.height -= 2 * BORDER_WIDTH;
+		frame.size.width -= 2 * BORDER_WIDTH;
+		[self setFrameSize:frame.size];
+	}
+	
 	return frame;
 }
 

@@ -21,6 +21,7 @@
 #include "main.h"
 #include "interface.h"
 #include "graphics.h"
+#include "constants.h"
 
 #ifdef __OBJC__
 	#import <Cocoa/Cocoa.h>

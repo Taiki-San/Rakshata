@@ -70,7 +70,7 @@ void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay
 
 
 /*Mouvements*/
-#define DEPLACEMENT 50
+#define PAGE_MOVE 50
 #define DEPLACEMENT_BIG positionSlide.h - BORDURE_CONTROLE_LECTEUR
 #define DEPLACEMENT_SOURIS 7
 #define DEPLACEMENT_LATERAL_PAGE 5

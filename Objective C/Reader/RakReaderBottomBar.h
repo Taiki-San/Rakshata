@@ -10,12 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#define RD_CONTROLBAR_HEIGHT		26
-#define RD_CONTROLBAR_WIDHT_PERC	75
-#define RD_CONTROLBAR_WIDHT_MIN		500
-#define RD_CONTROLBAR_WIDHT_MAX		1000
-#define RD_CONTROLBAR_POSY			20
-
 @interface RakReaderBottomBar : Reader
 {
 	CGContextRef contextBorder;

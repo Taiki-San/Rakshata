@@ -5,14 +5,10 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
-
-#define SIZE_MIN_HEIGHT 600
-#define SIZE_MIN_WIDTH 950
-#define BORDER_WIDTH 4
 
 NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 

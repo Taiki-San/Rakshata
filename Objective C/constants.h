@@ -8,27 +8,29 @@
  **                                                                                         **
  **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
  **                                                                                         **
- ********************************************************************************************/
+ *********************************************************************************************/
 
-@class RakReaderBottomBar;
-@class RakPage;
+/** Window behavior **/
 
-@interface Reader : RakTabView
-{
-	uint gonnaReduceTabs;
-	RakReaderBottomBar * bottomBar;
-	RakPage * mainImage;
-}
+#define SIZE_MIN_HEIGHT 600
+#define SIZE_MIN_WIDTH 950
+#define BORDER_WIDTH 4
 
-- (id)init:(NSView*)contentView;
-- (void) initReaderMainView;
+#pragma mark	-	Reader
 
-- (void) collapseAllTabs;
-- (void) hideBothTab;
-- (void) unhideBothTab;
-- (void) hideCursor;
+/** Reader itself **/
 
-@end
+#define READER_BORDURE_VERT_PAGE 10
 
-#import "RakReaderBottomBar.h"
-#import "RakPage.h"
+/** Constants used by pages **/
+
+#define READER_PAGE_TOP_BORDER	78
+#define READER_PAGE_BORDERS_HIGH (RD_CONTROLBAR_HEIGHT + RD_CONTROLBAR_POSY + READER_PAGE_TOP_BORDER + 10)
+
+/** Bottom reader bar **/
+
+#define RD_CONTROLBAR_HEIGHT		26
+#define RD_CONTROLBAR_WIDHT_PERC	75
+#define RD_CONTROLBAR_WIDHT_MIN		500
+#define RD_CONTROLBAR_WIDHT_MAX		1000
+#define RD_CONTROLBAR_POSY			20

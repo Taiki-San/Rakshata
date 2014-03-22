@@ -118,6 +118,7 @@
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
 		B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakReaderBottomBar.h; path = Reader/RakReaderBottomBar.h; sourceTree = "<group>"; };
 		B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakReaderBottomBar.m; path = Reader/RakReaderBottomBar.m; sourceTree = "<group>"; };
+		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; };
@@ -244,6 +245,7 @@
 		B6218242187351A3008AC5DD /* Prefs */ = {
 			isa = PBXGroup;
 			children = (
+				B67983A518DD08AB007F18CD /* constants.h */,
 				B6B3830F188740E7005B5F01 /* Deep Prefs */,
 				B67449431876114E00F96DB4 /* Includes */,
 				B62182451873527A008AC5DD /* Prefs.h */,

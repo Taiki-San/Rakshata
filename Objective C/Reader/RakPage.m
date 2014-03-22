@@ -402,6 +402,9 @@
 	
 	if (pageTooHigh)
 		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
+	
+	[self setFrameSize:frameReader.size];
+	[self setFrameOrigin:frameReader.origin];
 }
 
 - (void) flushCache
