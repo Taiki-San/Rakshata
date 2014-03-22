@@ -156,4 +156,14 @@
 	[mainImage nextPage];
 }
 
+- (void) prevChapter
+{
+	[mainImage prevChapter];
+}
+
+- (void) nextChapter
+{
+	[mainImage nextChapter];
+}
+
 @end

@@ -203,6 +203,16 @@
 	[self changePage:READER_ETAT_PREVPAGE];
 }
 
+- (void) nextChapter
+{
+	[self changeChapter:true];
+}
+
+- (void) prevChapter
+{
+	[self changeChapter:false];
+}
+
 - (void) moveSliderX : (int) move
 {
 	if(!pageTooLarge)
@@ -286,7 +296,6 @@
 		[self failure];
 		return NO;
 	}
-	
 	return YES;
 }
 
@@ -346,16 +355,22 @@
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
 		if(data.pageCourante+1 > data.nombrePageTotale)
+		{
+			[self changeChapter:true];
 			return;
+		}
 		data.pageCourante++;
 	}
 	else if(switchType == READER_ETAT_PREVPAGE)
 	{
 		if(data.pageCourante < 1)
+		{
+			[self changeChapter:false];
 			return;
+		}
 		data.pageCourante--;
 	}
-	else
+	else if(switchType != READER_ETAT_DEFAULT)
 	{
 		NSLog(@"Couldn't understand which direction I should move to");
 		return;
@@ -363,6 +378,39 @@
 	
 	[self craftPageAndSetupEnv:(Reader *)self.superview : switchType];
 	[self addPageToView];	
+}
+
+- (void) changeChapter : (bool) goToNext
+{
+	uint newPosIntoStruct = posElemInStructure;
+	if(!changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
+	{
+		[self failure];
+	}
+	else
+	{
+		posElemInStructure = newPosIntoStruct;
+		[self updateContext];
+	}
+}
+
+- (void) updateContext
+{
+	[self flushCache];
+	releaseDataReader(&data);
+	
+	updateIfRequired(&project, RDB_CTXLECTEUR);
+	
+	setLastChapitreLu(project, isTome, currentElem);
+	if(reader_isLastElem(project, isTome, currentElem))
+        startCheckNewElementInRepo(project, isTome, currentElem, false);
+	
+	data.pageCourante = 0;
+	
+	if(configFileLoader(project, isTome, currentElem, &data))
+		[self failure];
+	
+	[self changePage:READER_ETAT_DEFAULT];
 }
 
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType
@@ -503,6 +551,7 @@
 	[self flushCache];
 	[self removeFromSuperview];
 	self.documentView = nil;
+	releaseDataReader(&data);
 }
 
 @end

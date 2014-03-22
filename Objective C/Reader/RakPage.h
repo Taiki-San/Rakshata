@@ -51,12 +51,16 @@
 
 - (void) nextPage;
 - (void) prevPage;
+- (void) nextChapter;
+- (void) prevChapter;
 - (void) moveSliderX : (int) move;
 - (void) moveSliderY : (int) move;
 
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
 - (void) buildCache;
 - (void) changePage : (byte) switchType;
+- (void) changeChapter : (bool) goToNext;
+- (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) addPageToView;
 

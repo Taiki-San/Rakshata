@@ -57,10 +57,10 @@
 	favorite = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
 	fullscreen = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:2] :YES :self :@selector(buttonHitten)];
 	
-	prevChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:3] :NO :self :@selector(buttonHitten)];
+	prevChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:3] :NO :self.superview :@selector(prevChapter)];
 	prevPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:4] :NO :self.superview :@selector(prevPage)];
 	nextPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:5] :YES :self.superview :@selector(nextPage)];
-	nextChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:6] :YES :self :@selector(buttonHitten)];
+	nextChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:6] :YES :self.superview :@selector(nextChapter)];
 
 	trash = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
 }
