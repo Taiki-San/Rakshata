@@ -12,6 +12,8 @@
 
 @implementation Reader
 
+#pragma mark - Main view management
+
 - (id)init:(NSView*)contentView
 {
     self = [super init];
@@ -63,7 +65,7 @@
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, &i);
 	i--;
 	
-	mainImage = [[RakPage alloc] init: self: mangaData[i] : 10: false];
+	mainImage = [[RakPage alloc] init: self: mangaData[21] : 540: false];
 	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
 }
 
@@ -140,6 +142,18 @@
 - (void) hideCursor
 {
 	[NSCursor setHiddenUntilMouseMoves:YES];
+}
+
+#pragma mark - Proxy work
+
+- (void) prevPage
+{
+	[mainImage prevPage];
+}
+
+- (void) nextPage
+{
+	[mainImage nextPage];
 }
 
 @end

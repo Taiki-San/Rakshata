@@ -19,6 +19,8 @@
 	self = [self initView:parent];
 	
 	[self.layer setCornerRadius:RADIUS_BORDERS];
+	
+	[self loadIcons : parent];
 		
 	if(!displayed)
 		[self setHidden:![self isHidden]];
@@ -37,6 +39,117 @@
 	CGContextAddLineToPoint(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height);
 	CGContextAddArc(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height/2, RADIUS_BORDERS, M_PI_2, M_PI_2 / 3, 1);
 }
+
+#pragma mark - Buttons
+
+- (void) buttonHitten
+{
+	NSLog(@"Luna shall be our queen");
+}
+
+- (short) numberIconsInBar
+{
+	return 7;
+}
+
+- (void) loadIcons : (Reader*) superView
+{
+	favorite = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:2] :YES :self :@selector(buttonHitten)];
+	
+	prevChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:3] :NO :self :@selector(buttonHitten)];
+	prevPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:4] :NO :self.superview :@selector(prevPage)];
+	nextPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:5] :YES :self.superview :@selector(nextPage)];
+	nextChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:6] :YES :self :@selector(buttonHitten)];
+
+	trash = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
+}
+
+- (CGFloat) getPosXButton : (uint) IDButton
+{
+	CGFloat output = 0;
+	
+	switch (IDButton)
+	{
+		case 1:			//favorite
+		{
+			output = 20;
+			break;
+		}
+		case 2:			//fullscreen
+		{
+			output = 60;
+			break;
+		}
+			
+		case 3:			//previous chapter
+		{
+			output = self.frame.size.width / 2 - 40;
+			
+			if(prevChapter != nil)
+				output -= prevChapter.frame.size.width;
+			
+			break;
+		}
+			
+		case 4:			//previous page
+		{
+			output = self.frame.size.width / 2 - 5;
+			
+			if(prevPage != nil)
+				output -= prevPage.frame.size.width;
+			
+			break;
+		}
+			
+		case 5:			//next page
+		{
+			output = self.frame.size.width / 2 + 5;
+			break;
+		}
+			
+		case 6:			//next page
+		{
+			output = self.frame.size.width / 2 + 40;
+			break;
+		}
+			
+		case 7:			//trash
+		{
+			output = self.frame.size.width - 25;
+			
+			if(trash != nil)
+				output -= trash.frame.size.width;
+			
+			break;
+		}
+	}
+	
+	return output;
+}
+
+- (void) recalculateButtonPosition
+{
+	RakButton* icons[] = {favorite, fullscreen, prevChapter, prevPage, nextPage, nextChapter, trash};
+	short nbElem = [self numberIconsInBar];
+	CGFloat midleHeightBar = self.frame.size.height / 2, lastElemHeight = 0;
+	NSPoint origin;
+	
+	for(char pos = 0; pos < nbElem; pos++)
+	{
+		origin.x = [self getPosXButton:pos+1];
+		
+		if(icons[pos].frame.size.height != lastElemHeight)
+		{
+			origin.y = midleHeightBar - icons[pos].frame.size.height / 2;
+			lastElemHeight = icons[pos].frame.size.height;
+		}
+		
+		[icons[pos] setFrameOrigin:origin];
+	}
+}
+
+#pragma mark - Color stuffs
 
 - (NSColor*) getMainColor
 {
@@ -58,10 +171,12 @@
 }
 
 /*	Routines à overwrite	*/
+#pragma mark - Routine to overwrite
 
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
+	[self recalculateButtonPosition];
 }
 
 /* Gestion des évènements*/
@@ -81,6 +196,7 @@
 }
 
 /*Constraints routines*/
+#pragma mark - Data about bar position
 
 - (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow
 {

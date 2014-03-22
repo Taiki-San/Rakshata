@@ -127,7 +127,7 @@
 		B69D61DC186CA3D0003504F9 /* MDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDL.h; path = MDL/MDL.h; sourceTree = "<group>"; };
 		B69D61DD186CA3D0003504F9 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
-		B6CC724D18723121003A745B /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = utils.h; path = Utils/utils.h; sourceTree = "<group>"; };
+		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; };
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF07BE1868DD58009B16A3 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B6CF07C11868DD58009B16A3 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -372,7 +372,7 @@
 			children = (
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
-				B6CC724D18723121003A745B /* utils.h */,
+				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
 			);
 			name = Utils;

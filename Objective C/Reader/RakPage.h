@@ -60,4 +60,7 @@
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) addPageToView;
 
+- (void) flushCache;
+- (void) getTheFuckOut;
+
 @end

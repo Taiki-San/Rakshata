@@ -191,6 +191,65 @@
 	NSLog(@"Something went wrong delete?");
 }
 
+#pragma mark - High level API
+
+- (void) nextPage
+{
+	[self changePage:READER_ETAT_NEXTPAGE];
+}
+
+- (void) prevPage
+{
+	[self changePage:READER_ETAT_PREVPAGE];
+}
+
+- (void) moveSliderX : (int) move
+{
+	if(!pageTooLarge)
+		return;
+	
+	NSPoint point = [[self contentView] bounds].origin;
+	
+	if(move < 0 && point.x < -move)
+		point.x = 0;
+	
+	else if(move > 0)
+	{
+		CGFloat basePos = [self.documentView frame].size.width - self.frame.size.width;
+		if(point.x > basePos - move)
+			point.x = basePos;
+		else
+			point.x += move;
+	}
+	else
+		point.x += move;
+	
+	[self.contentView scrollToPoint:point];
+}
+
+- (void) moveSliderY : (int) move
+{
+	if(!pageTooHigh)
+		return;
+	
+	NSPoint point = [[self contentView] bounds].origin;
+	
+	if(move < 0 && point.y < -move)
+		point.y = 0;
+	
+	else if(move > 0)
+	{
+		CGFloat basePos = [self.documentView frame].size.height - self.frame.size.height;
+		if(point.y > basePos - move)
+			point.y = basePos;
+		else
+			point.y += move;
+	}
+	else
+		point.y += move;
+	
+	[self.contentView scrollToPoint:point];
+}
 
 /*Active routines*/
 
@@ -282,64 +341,6 @@
 	cacheBeingBuilt = false;
 }
 
-- (void) nextPage
-{
-	[self changePage:READER_ETAT_NEXTPAGE];
-}
-
-- (void) prevPage
-{
-	[self changePage:READER_ETAT_PREVPAGE];
-}
-
-- (void) moveSliderX : (int) move
-{
-	if(!pageTooLarge)
-		return;
-	
-	NSPoint point = [[self contentView] bounds].origin;
-	
-	if(move < 0 && point.x < -move)
-		point.x = 0;
-	
-	else if(move > 0)
-	{
-		CGFloat basePos = [self.documentView frame].size.width - self.frame.size.width;
-		if(point.x > basePos - move)
-			point.x = basePos;
-		else
-			point.x += move;
-	}
-	else
-		point.x += move;
-	
-	[self.contentView scrollToPoint:point];
-}
-
-- (void) moveSliderY : (int) move
-{
-	if(!pageTooHigh)
-		return;
-	
-	NSPoint point = [[self contentView] bounds].origin;
-	
-	if(move < 0 && point.y < -move)
-		point.y = 0;
-	
-	else if(move > 0)
-	{
-		CGFloat basePos = [self.documentView frame].size.height - self.frame.size.height;
-		if(point.y > basePos - move)
-			point.y = basePos;
-		else
-			point.y += move;
-	}
-	else
-		point.y += move;
-	
-	[self.contentView scrollToPoint:point];
-}
-
 - (void) changePage : (byte) switchType
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
@@ -429,9 +430,6 @@
 		}
 	}
 	
-	if(page != nil)
-		[page release];
-	
 	page = [[NSImage alloc] initWithData:pageData];
 	
 	if(page == nil)
@@ -465,9 +463,13 @@
 		[pageView setImageAlignment:NSImageAlignCenter];
 		[pageView setImageFrameStyle:NSImageFrameNone];
 		[pageView setImage:page];
-
+	
 		self.documentView =	pageView;
+		
+		[pageView release];
 	}
+	
+	[page release];
 	
 	NSPoint sliderStart;
 	
@@ -489,10 +491,18 @@
 
 - (void) flushCache
 {
+	while (cacheBeingBuilt);
+	
 	[prevPage release];		prevPage = nil;
-	[page release];			page = nil;
 	[pageData release];		pageData = nil;
 	[nextPage release];		nextPage = nil;
+}
+
+- (void) getTheFuckOut
+{
+	[self flushCache];
+	[self removeFromSuperview];
+	self.documentView = nil;
 }
 
 @end

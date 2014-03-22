@@ -10,10 +10,17 @@
  **                                                                                          **
  *********************************************************************************************/
 
-/*Custom NSView to add a couple of shared variable*/
-
 @interface RakButton: NSButton
 
++ (id) initForReader : (NSView*) superView : (NSString*) pathToImage : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 - (void) refreshViewSize;
+
+@end
+
+@interface RakButtonCell : NSButtonCell
+{
+	NSImage *nonClicked;
+	NSImage *clicked;
+}
 
 @end

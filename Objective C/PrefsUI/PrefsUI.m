@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "PrefsUI.h"
-
 @implementation RakPrefsWindow
 
 - (id)initWithFrame:(NSRect)frame

@@ -10,9 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-#import "utils.h"
-
 //Allow to create NSViewController without NIB
 @interface RakPrefsWindow : NSViewController
 {

@@ -28,6 +28,9 @@
 - (void) unhideBothTab;
 - (void) hideCursor;
 
+- (void) prevPage;
+- (void) nextPage;
+
 @end
 
 #import "RakReaderBottomBar.h"

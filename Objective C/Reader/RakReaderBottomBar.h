@@ -10,13 +10,30 @@
  **                                                                                         **
  ********************************************************************************************/
 
+
 @interface RakReaderBottomBar : Reader
 {
+	/** Images of different icons **/
+	RakButton *favorite;
+	RakButton *fullscreen;
+	
+	RakButton *prevChapter;
+	RakButton *prevPage;
+	RakButton *nextPage;
+	RakButton *nextChapter;
+	
+	RakButton *trash;
+	
 	CGContextRef contextBorder;
 }
 
 - (id)init: (BOOL) displayed : (id) parent;
 - (void) setupPath;
+
+- (short) numberIconsInBar;
+- (void) loadIcons : (Reader*) superView;
+- (CGFloat) getPosXButton : (uint) IDButton;
+- (void) recalculateButtonPosition;
 
 - (NSColor*) getColorFront;
 
