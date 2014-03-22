@@ -135,17 +135,24 @@
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
+	bool isModPressed = [theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask);
 	
     switch (code)
     {
         case NSUpArrowFunctionKey:
         {
-			[self moveSlider:PAGE_MOVE];
+			if(isModPressed)
+				[self moveSliderX:-PAGE_MOVE];
+            else
+				[self moveSliderY:PAGE_MOVE];
             break;
         }
         case NSDownArrowFunctionKey:
         {
-			[self moveSlider: -PAGE_MOVE];
+			if(isModPressed)
+				[self moveSliderX:PAGE_MOVE];
+            else
+				[self moveSliderY:-PAGE_MOVE];
             break;
         }
         case NSLeftArrowFunctionKey:
@@ -271,7 +278,31 @@
 	[self changePage:READER_ETAT_PREVPAGE];
 }
 
-- (void) moveSlider : (int) move
+- (void) moveSliderX : (int) move
+{
+	if(!pageTooLarge)
+		return;
+	
+	NSPoint point = [[self contentView] bounds].origin;
+	
+	if(move < 0 && point.x < -move)
+		point.x = 0;
+	
+	else if(move > 0)
+	{
+		CGFloat basePos = [self.documentView frame].size.width - self.frame.size.width;
+		if(point.x > basePos - move)
+			point.x = basePos;
+		else
+			point.x += move;
+	}
+	else
+		point.x += move;
+	
+	[self.contentView scrollToPoint:point];
+}
+
+- (void) moveSliderY : (int) move
 {
 	if(!pageTooHigh)
 		return;
@@ -426,8 +457,19 @@
 		self.documentView =	pageView;
 	}
 	
+	NSPoint sliderStart;
+	
 	if (pageTooHigh)
-		[self.contentView scrollToPoint:NSMakePoint(0, pageViewSize.size.height - frameReader.size.height)];
+		sliderStart.y = pageViewSize.size.height - frameReader.size.height;
+	else
+		sliderStart.y = 0;
+	
+	if(pageTooLarge)
+		sliderStart.x = pageViewSize.size.width - frameReader.size.width;
+	else
+		sliderStart.x = 0;
+	
+	[self.contentView scrollToPoint:sliderStart];
 	
 	[self setFrameSize:frameReader.size];
 	[self setFrameOrigin:frameReader.origin];

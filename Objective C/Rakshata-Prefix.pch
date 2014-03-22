@@ -28,6 +28,7 @@
 	#import <QuartzCore/QuartzCore.h>
 	#import <Foundation/Foundation.h>
 
+	#import "RakTabView.h"
 	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/

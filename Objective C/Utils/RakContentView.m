@@ -72,6 +72,12 @@
 		frame.size.width -= 2 * BORDER_WIDTH;
 		[self setFrameSize:frame.size];
 	}
+	else if(frame.size.height == self.window.frame.size.height || frame.size.width == self.window.frame.size.width)
+	{
+		frame.size.height -= 2 * BORDER_WIDTH;
+		frame.size.width -= 2 * BORDER_WIDTH;
+		[self setFrameSize:frame.size];
+	}
 	
 	return frame;
 }

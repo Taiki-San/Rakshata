@@ -50,6 +50,8 @@
 
 - (void) nextPage;
 - (void) prevPage;
+- (void) moveSliderX : (int) move;
+- (void) moveSliderY : (int) move;
 
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest;
 - (void) buildCache;
