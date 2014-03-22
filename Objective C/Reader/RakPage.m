@@ -117,6 +117,11 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+	if (actionBeingProcessessed)
+		return;
+	
+	actionBeingProcessessed = true;
+	
 	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 
 	if(pageTooHigh)
@@ -129,10 +134,17 @@
 		[self prevPage];
 	else
 		[self nextPage];
+	
+	actionBeingProcessessed = false;
 }
 
 - (void) keyDown:(NSEvent *)theEvent
 {
+	if(actionBeingProcessessed)
+		return;
+	
+	actionBeingProcessessed = true;
+	
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
 	bool isModPressed = [theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask);
@@ -166,6 +178,8 @@
             break;
         }
     }
+	
+	actionBeingProcessessed = false;
 }
 
 /*Error management*/
@@ -190,7 +204,7 @@
 	loadTrad(texteTrad, 21);
 	
 	prevPage = pageData = nextPage = nil;
-	cacheBeingBuilt = false;
+	cacheBeingBuilt = actionBeingProcessessed = false;
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
 	
@@ -353,9 +367,7 @@
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType
 {
 	while(cacheBeingBuilt)
-	{
 		usleep(25);
-	}
 	
 	if(switchType == READER_ETAT_DEFAULT)
 	{

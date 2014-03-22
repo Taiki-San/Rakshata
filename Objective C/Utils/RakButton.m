@@ -14,12 +14,8 @@
 
 - (void) refreshViewSize
 {
-	NSPoint newPos;
-	newPos.x = 25;
-	newPos.y = self.superview.frame.size.height - 45;
-		
-	[self setFrameOrigin:newPos];
-	[self setFrameSize:NSMakeSize(65, 28)];
+	NSRect frame = { {25, self.superview.frame.size.height - 45 } , {65, 28} };
+	[self setFrame:frame];
 }
 
 @end

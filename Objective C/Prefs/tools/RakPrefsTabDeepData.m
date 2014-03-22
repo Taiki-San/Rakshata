@@ -359,8 +359,8 @@
 			ret_value = 1;
 		else if(backgroundTabsWhenMDLActive & GUI_THREAD_READER)
 			ret_value = [self getFlagFocus] & STATE_READER_TAB_SERIE_FOCUS ? 4 : 3;
-		else
 #ifdef DEV_VERSION
+		else
 			NSLog(@"[%s]: couldn't identify request for MDL: %8x %8x %8x", __PRETTY_FUNCTION__, mainThread, backgroundTabsWhenMDLActive, stateTabsReader);
 #endif
 	}

@@ -31,6 +31,7 @@
 	/*context data*/
 @private
 	bool cacheBeingBuilt;
+	bool actionBeingProcessessed;
 	
 	MANGAS_DATA project;
 	DATA_LECTURE data;
