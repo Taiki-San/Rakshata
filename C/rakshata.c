@@ -10,16 +10,11 @@
 **                                                                                          **
 *********************************************************************************************/
 
-int RESOLUTION[2]; //Résolution
-int WINDOW_SIZE_H = 0;
-int WINDOW_SIZE_W = 0;
-bool isRetina = false;
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
-char FONTUSED[300] = FONT_USED_BY_DEFAULT;
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
 PALETTE_GLOBALE palette;
@@ -29,6 +24,8 @@ PALETTE_GLOBALE palette;
     MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;  //Resize
     MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;    //One encryption algo imple. isn't thread-safe
     MUTEX_VAR mutexUI = PTHREAD_MUTEX_INITIALIZER;        //Prevent accessing the GUI in twwo different threads at the same time
+
+	int NSApplicationMain(int argc, const char *argv[]);
 #else
     MUTEX_VAR mutex;
     MUTEX_VAR mutexRS;
@@ -39,25 +36,21 @@ PALETTE_GLOBALE palette;
     #endif
 #endif
 
-int mainC(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
 
-    if(checkLancementUpdate()) //Si il n'y a pas d'installation a faire ou qu'elle est en cours.
-        lancementModuleDL();
-
     checkUpdate();
 
-    createNewThread(mainRakshata, NULL);
-
-	//Do something
+    int ret_value = NSApplicationMain(argc, (const char **)argv);
 
     releaseDNSCache();
     MUTEX_DESTROY(mutex_decrypt);
     MUTEX_DESTROY(mutexUI);
     MUTEX_DESTROY(mutexRS);
     MUTEX_DESTROY(mutex);
-    return 0;
+
+    return ret_value;
 }
 

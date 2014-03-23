@@ -74,7 +74,7 @@ void updateRepo();
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
 void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, bool updateDB);
 void updateProjects();
-int deleteManga();
+void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome);
 void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
@@ -101,9 +101,9 @@ enum getCopyDBCodes
 	RDB_CTXCT				= 0x200,
 	RDB_CTXLECTEUR			= 0x400,
 	RDB_CTXMDL				= 0x800,
-	RDB_CTXDEL				= 0x1000,
+	RDB_CTXSELMDL			= 0x1000,
 	RDB_CTXFAVS				= 0x1000,
-	RDB_CTXSELMDL			= 0x4000,
+	RDB_UNUSED2				= 0x4000,
 	RDB_UNUSED3				= 0x8000,
 	RDB_CTXMASK				= 0xff00
 };

@@ -356,7 +356,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
 				
 				free(newData[posNew].chapitres);	//updateCache en fait une copie
-				freeTomeList(newData[posNew].tomes);
+				freeTomeList(newData[posNew].tomes, false);
 			}
 			
 			posOld++;

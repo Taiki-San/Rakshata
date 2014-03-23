@@ -301,13 +301,15 @@ void getUpdatedTomeList(MANGAS_DATA *mangaDB)
     checkTomeValable(mangaDB, NULL);
 }
 
-void freeTomeList(META_TOME * data)
+void freeTomeList(META_TOME * data, bool includeDetails)
 {
 	if(data == NULL)
 		return;
+
+	//On ne free pas details car c'est une ressource qu'une copie du cache ne duplique pas
+	if(includeDetails)
+		for(uint i = 0; data[i].details != NULL; free(data[i++].details));
 	
-	uint i = 0;
-	for(; data[i].details != NULL; free(data[i++].details));
 	free(data);
 }
 

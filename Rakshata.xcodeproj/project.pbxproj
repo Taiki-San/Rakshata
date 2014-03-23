@@ -27,13 +27,13 @@
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
+		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
 		B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E45D7118D5F290007E1D5C /* RakPage.m */; };
 		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
 		B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E89388189EF39700ACAF36 /* CTSelec.m */; };
 		B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6E8938A189EF3A600ACAF36 /* Images.xcassets */; };
-		B6E8938D189EF3A600ACAF36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E8938B189EF3A600ACAF36 /* main.m */; };
 		B6EA51FF18A4065A00A9B16E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FC18A4065A00A9B16E /* libcrypto.a */; };
 		B6EA520018A4065A00A9B16E /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FD18A4065A00A9B16E /* libcurl.a */; };
 		B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FE18A4065A00A9B16E /* libssl.a */; };
@@ -97,7 +97,6 @@
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
-		B621824818735395008AC5DD /* prefsTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prefsTools.h; path = Prefs/prefsTools.h; sourceTree = "<group>"; };
 		B623390818DBB7F800FC188A /* RakContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContentView.h; path = Utils/RakContentView.h; sourceTree = "<group>"; };
 		B623390918DBB7F800FC188A /* RakContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContentView.m; path = Utils/RakContentView.m; sourceTree = "<group>"; };
 		B62C9EF218BD73D500CE910F /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/DBTools.c; sourceTree = "<group>"; };
@@ -129,6 +128,8 @@
 		B69D61DC186CA3D0003504F9 /* MDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDL.h; path = MDL/MDL.h; sourceTree = "<group>"; };
 		B69D61DD186CA3D0003504F9 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
+		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
+		B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContextRestoration.m; path = Prefs/RakContextRestoration.m; sourceTree = "<group>"; };
 		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; };
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF07BE1868DD58009B16A3 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -145,7 +146,6 @@
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		B6E8938B189EF3A600ACAF36 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Ressources/main.m; sourceTree = "<group>"; };
 		B6EA51FC18A4065A00A9B16E /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Ressources/libcrypto.a; sourceTree = "<group>"; };
 		B6EA51FD18A4065A00A9B16E /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Ressources/libcurl.a; sourceTree = "<group>"; };
 		B6EA51FE18A4065A00A9B16E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Ressources/libssl.a; sourceTree = "<group>"; };
@@ -252,9 +252,10 @@
 				B67449431876114E00F96DB4 /* Includes */,
 				B62182451873527A008AC5DD /* Prefs.h */,
 				B62182461873527A008AC5DD /* Prefs.m */,
+				B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */,
+				B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */,
 				B62F1E6318DE4EB0005FF4A5 /* RakResPath.h */,
 				B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */,
-				B621824818735395008AC5DD /* prefsTools.h */,
 			);
 			name = Prefs;
 			sourceTree = "<group>";
@@ -279,8 +280,8 @@
 			isa = PBXGroup;
 			children = (
 				B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */,
-				B621824018732CB0008AC5DD /* RakTabView.m */,
 				B67983A618DD192E007F18CD /* RakTabView.h */,
+				B621824018732CB0008AC5DD /* RakTabView.m */,
 			);
 			name = RakTabView;
 			sourceTree = "<group>";
@@ -387,7 +388,6 @@
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6002C30189EF15E00466654 /* window.xib */,
-				B6E8938B189EF3A600ACAF36 /* main.m */,
 				B66B4627189A7129000354D1 /* C Core */,
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
@@ -709,6 +709,7 @@
 				B62F1E6518DE4EB0005FF4A5 /* RakResPath.m in Sources */,
 				B6F6ED1318A3001400E3B55B /* ioapi.c in Sources */,
 				B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */,
+				B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */,
 				B62C9EF318BD73D500CE910F /* DBTools.c in Sources */,
 				B6F6ECF718A3001400E3B55B /* favoris.c in Sources */,
 				B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */,
@@ -722,7 +723,6 @@
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
 				B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */,
 				B6F6ED0A18A3001400E3B55B /* native.c in Sources */,
-				B6E8938D189EF3A600ACAF36 /* main.m in Sources */,
 				B6F6ED0218A3001400E3B55B /* mainfunctions.c in Sources */,
 				B62182471873527A008AC5DD /* Prefs.m in Sources */,
 				B6F6ECF518A3001400E3B55B /* engine.c in Sources */,

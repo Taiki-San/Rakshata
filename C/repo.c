@@ -24,7 +24,7 @@ AUTO_ADD_REPO *addRepoData = NULL;
 int checkAjoutRepoParFichier(char *argv)
 {
     addRepoByFileInProgress = false;
-    if(argv == NULL)
+    if(argv == NULL || *argv == '-')
         return 1;
 
     int version = 0;

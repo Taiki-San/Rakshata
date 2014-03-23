@@ -23,44 +23,19 @@ int mkdirR(char *path)
 
 void getToWD(int *argc, char** argv)
 {
-    size_t length = strlen(argv[0])+1;
-#ifdef __APPLE__
-    if(argv[0] != NULL) {
-
-        int i;
-        char *newPath = malloc(length+20);
-        if(newPath != NULL)
-        {
-            for(i = length -1; i > 0 && argv[0][i] != '/'; argv[0][i--] = 0);
-            snprintf(newPath, length+19, "%s../..", argv[0]);
-            chdir(newPath);
-            free(newPath);
-        }
-        (*argc) -= 2;
-        if(*argc > 1)
-        {
-            argv[1] = argv[3];
-        }
-        else
-            argv[1] = NULL;
-    }
-    else
-        argc = 0;
-#else
+#ifndef __APPLE__
     if(*argc >= 2 && argv[0] != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
     {
-        char* path = malloc(length+1);
-        if(path != NULL)
-        {
-            usstrcpy(path, length, argv[0]);
-            length--;
-            do
-            {
-                for(; length > 0 && path[length] != '/' && path[length] != '\\'; path[length--] = 0);
-            }while(length > 0 && !checkFileExist(path));
-            chdir(path);
-            free(path);
-        }
+		size_t length = strlen(argv[0])+1;
+
+        char path[length+1];
+		usstrcpy(path, length, argv[0]);
+		length--;
+		do
+		{
+			for(; length > 0 && path[length] != '/' && path[length] != '\\'; path[length--] = 0);
+		}while(length > 0 && !checkFileExist(path));
+		chdir(path);
     }
 #endif
     getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));

@@ -207,7 +207,7 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);
-void freeTomeList(META_TOME * data);
+void freeTomeList(META_TOME * data, bool includeDetails);
 int askForTome(MANGAS_DATA* mangaDB, int contexte);
 void displayTemplateTome(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);

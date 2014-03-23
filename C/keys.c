@@ -148,7 +148,6 @@ int earlyInit(int argc, char *argv[])
     mutexUI = CreateSemaphore(NULL, 1, 1, NULL);
 #endif
 
-	GUI_startupMainGUIThread();
     getToWD(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);

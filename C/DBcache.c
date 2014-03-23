@@ -174,7 +174,7 @@ int setupBDDCache()
 					if(!addToCache(request, mangas, numeroTeam, checkFileExist(temp)))
 					{
 						free(mangas.chapitres);
-						freeTomeList(mangas.tomes);
+						freeTomeList(mangas.tomes, true);
 					}
 					nombreManga++;
 				}
@@ -343,7 +343,7 @@ void flushDB()
 	while(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
 	}
 	
 	sqlite3_finalize(request);
@@ -433,7 +433,7 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1), false);
 
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 2);
@@ -506,7 +506,7 @@ void removeFromCache(MANGAS_DATA data)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
 	}
 	sqlite3_finalize(request);
 	
@@ -885,7 +885,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 				collector[posTeamCollector++] = mangaDB[pos].team;
 		}
         free(mangaDB[pos].chapitres);
-        freeTomeList(mangaDB[pos].tomes);
+        freeTomeList(mangaDB[pos].tomes, false);
 		
     }
 	while (posTeamCollector--)
@@ -905,7 +905,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
     for(pos = 0; mangaDB[pos].team != NULL; pos++)
     {
         free(mangaDB[pos].chapitres);
-		freeTomeList(mangaDB[pos].tomes);
+		freeTomeList(mangaDB[pos].tomes, false);
 		
     }
     free(mangaDB);
