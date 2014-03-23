@@ -39,7 +39,7 @@
 
 - (void) craftPrefButton : (NSRect) tabSerieFrame
 {
-	NSRect frame;
+	/*NSRect frame;
 	
 	frame.origin.x = 25;			frame.origin.y = tabSerieFrame.size.height - 45;
 	frame.size.width = 65;			frame.size.height = 28;
@@ -51,7 +51,7 @@
 	
 	[button setTarget:self];
 	[button setAction:@selector(gogoWindow)];
-	[self addSubview:button];
+	[self addSubview:button];*/
 }
 
 - (BOOL) getIfPrefUIOpen

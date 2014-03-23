@@ -10,31 +10,23 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@class RakReaderBottomBar;
-@class RakPage;
+#define NAME_ICON_FAV @"RD_favorite",
+#define NAME_ICON_FULLSCREEN	@"RD_fullscreen"
+#define NAME_ICON_PREVCHAP		@"RD_prev_chapter"
+#define NAME_ICON_PREVPAGE		@"RD_prev_page"
+#define NAME_ICON_NXTPAGE		@"RD_next_page"
+#define NAME_ICON_NXTCHAP		@"RD_next_chapter"
+#define NAME_ICON_TRASH			@"RD_trash"
 
-@interface Reader : RakTabView
+enum RAKBUTTON_STATES
 {
-	uint gonnaReduceTabs;
-	RakReaderBottomBar * bottomBar;
-	RakPage * mainImage;
-}
+	RB_STATE_STANDARD		= 1,
+	RB_STATE_HIGHLIGHTED	= 2,
+	RB_STATE_UNAVAILABLE	= 3
+};
 
-- (id)init:(NSView*)contentView;
-- (void) initReaderMainView;
+@interface RakResPath : NSObject
 
-- (void) collapseAllTabs;
-- (void) hideBothTab;
-- (void) unhideBothTab;
-- (void) hideCursor;
-
-- (void) prevPage;
-- (void) nextPage;
-- (void) prevChapter;
-- (void) nextChapter;
-- (void) triggerFullscreen;
++ (NSImage *) craftResNameFromContext: (NSString*) baseName : (BOOL) highlighted : (BOOL) available : (uint) themeID;
 
 @end
-
-#import "RakReaderBottomBar.h"
-#import "RakPage.h"

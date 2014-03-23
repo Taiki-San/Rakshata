@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #include "RakPrefsDeepData.h"
+#import "RakResPath.h"
 
 enum DIRECT_QUERY_REQUEST {
 	QUERY_SERIE = 0,

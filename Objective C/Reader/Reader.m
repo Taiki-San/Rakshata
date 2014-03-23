@@ -166,4 +166,9 @@
 	[mainImage nextChapter];
 }
 
+- (void) triggerFullscreen
+{
+	[self.window toggleFullScreen:self];
+}
+
 @end

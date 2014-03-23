@@ -54,15 +54,17 @@
 
 - (void) loadIcons : (Reader*) superView
 {
-	favorite = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
-	fullscreen = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:2] :YES :self :@selector(buttonHitten)];
+	NSView * superview = self.superview;
 	
-	prevChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:3] :NO :self.superview :@selector(prevChapter)];
-	prevPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:4] :NO :self.superview :@selector(prevPage)];
-	nextPage = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:5] :YES :self.superview :@selector(nextPage)];
-	nextChapter = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:6] :YES :self.superview :@selector(nextChapter)];
+	favorite = [RakButton initForReader:self :@"icon" : 1 :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton initForReader:self :@"icon" : 2 :[self getPosXButton:2] :YES :superview :@selector(triggerFullscreen)];
+	
+	prevChapter = [RakButton initForReader:self :@"icon" : 3 :[self getPosXButton:3] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton initForReader:self :@"icon" : 1 :[self getPosXButton:4] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton initForReader:self :@"icon" : 2 :[self getPosXButton:5] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton initForReader:self :@"icon" : 3 :[self getPosXButton:6] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton initForReader:self :@"icon.png" :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
+	trash = [RakButton initForReader:self :@"icon": 1 :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
 }
 
 - (CGFloat) getPosXButton : (uint) IDButton

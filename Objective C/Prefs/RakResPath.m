@@ -10,31 +10,32 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@class RakReaderBottomBar;
-@class RakPage;
+@implementation RakResPath
 
-@interface Reader : RakTabView
++ (NSImage *) craftResNameFromContext: (NSString*) baseName : (BOOL) highlighted : (BOOL) available : (uint) themeID
 {
-	uint gonnaReduceTabs;
-	RakReaderBottomBar * bottomBar;
-	RakPage * mainImage;
+	NSString * pathPortionHighlighted, *pathPortionAvailable;
+	
+	if(highlighted)
+		pathPortionHighlighted = @"_focus";
+	else
+		pathPortionHighlighted = @"";
+	
+	if(!available)
+		pathPortionAvailable = @"_unavailable";
+	else
+		pathPortionAvailable = @"";
+
+	if(themeID == 1 || themeID == 2)
+	{
+		NSString * fullFileName = [NSString stringWithFormat:@"theme_%d_%@%@%@", themeID, baseName, pathPortionHighlighted, pathPortionAvailable];
+		return [[NSBundle mainBundle] imageForResource:fullFileName];
+	}
+	else
+	{
+		NSLog(@"Unsupported, for now");
+		return nil;
+	}
 }
 
-- (id)init:(NSView*)contentView;
-- (void) initReaderMainView;
-
-- (void) collapseAllTabs;
-- (void) hideBothTab;
-- (void) unhideBothTab;
-- (void) hideCursor;
-
-- (void) prevPage;
-- (void) nextPage;
-- (void) prevChapter;
-- (void) nextChapter;
-- (void) triggerFullscreen;
-
 @end
-
-#import "RakReaderBottomBar.h"
-#import "RakPage.h"

@@ -43,5 +43,6 @@
 	#import "RakAppDelegate.h"
 
 	#import "Prefs.h"
+	#import "RakResPath.h"
 
 #endif

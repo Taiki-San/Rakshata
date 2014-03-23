@@ -12,15 +12,20 @@
 
 @interface RakButton: NSButton
 
-+ (id) initForReader : (NSView*) superView : (NSString*) pathToImage : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
++ (id) initForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 - (void) refreshViewSize;
 
 @end
 
 @interface RakButtonCell : NSButtonCell
 {
+	bool notAvailable;
+	
 	NSImage *nonClicked;
 	NSImage *clicked;
+	NSImage *unAvailable;
 }
+
+- (id) initWithPage : (NSString*) imageName : (short) state;
 
 @end

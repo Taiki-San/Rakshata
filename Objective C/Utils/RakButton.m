@@ -5,26 +5,25 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
 @implementation RakButton
 
-+ (id) initForReader : (NSView*) superView : (NSString*) pathToImage : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (id) initForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
 	RakButton *output = [[RakButton new] autorelease];
 	
 	if(output != nil)
 	{
-		NSImage * tmpImage = [[NSImage alloc] initByReferencingFile:pathToImage];
+		RakButtonCell * cell = [[RakButtonCell alloc] initWithPage: imageName : stateAtStartup];
 		
-		if(tmpImage != nil)
+		if(cell != nil)
 		{
 			//Set image
-			[output setImage:tmpImage];
-			[tmpImage release];
+			[output setCell:cell];
 			
 			//Update a couple of prefs
 			[output sizeToFit];
@@ -72,10 +71,51 @@
 
 @implementation RakButtonCell
 
+- (id) initWithPage : (NSString*) imageName : (short) state
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		clicked		= [RakResPath craftResNameFromContext:imageName : YES : YES : 1];
+		nonClicked	= [RakResPath craftResNameFromContext:imageName : NO : YES : 1];
+		unAvailable = [RakResPath craftResNameFromContext:imageName : NO : NO : 1];
+		notAvailable = false;
+		
+		if(state == RB_STATE_STANDARD && nonClicked != nil)
+			[self setImage:nonClicked];
+		else if(state == RB_STATE_HIGHLIGHTED && clicked != nil)
+			[self setImage:clicked];
+		else if(unAvailable != nil)
+		{
+			[self setImage:unAvailable];
+			notAvailable = true;
+		}
+		else
+		{
+			NSLog(@"Failed at create button for icon: %@", imageName);
+			[self release];
+			return nil;
+		}
+	}
+	
+	return self;
+}
+
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
+	if(notAvailable)
+		return;
+	
 	if (flag)
+	{
+		[self setImage:clicked];
 		self.backgroundColor = [NSColor clearColor];
+	}
+	else
+	{
+		[self setImage:nonClicked];
+	}
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
 }
