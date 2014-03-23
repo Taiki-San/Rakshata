@@ -12,7 +12,7 @@
 
 @interface MDL : RakTabView
 
-- (id)init:(NSView*)contentView;
+- (id)init : (NSView*)contentView : (NSString *) state;
 
 - (NSRect) getRequestedViewSize: (CGFloat) widthWindow : (CGFloat) heightWindow;
 

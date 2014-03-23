@@ -14,14 +14,14 @@
 
 #pragma mark - Main view management
 
-- (id)init:(NSView*)contentView
+- (id)init : (NSView*)contentView : (NSString *) state
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
-		self = [self initView:contentView];
+		self = [self initView : contentView : state];
 		[self initReaderMainView];
 	}
     return self;

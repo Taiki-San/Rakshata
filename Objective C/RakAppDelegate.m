@@ -31,19 +31,24 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
 	[Prefs initCache];
+	NSArray *context = [RakContextRestoration loadContext];
 	
-	[tabSerie init:contentView];
-	[tabCT init:contentView];
-	[tabReader init:contentView];
-	[tabMDL init:contentView];
+	[tabSerie init:contentView : [context objectAtIndex:0]];
+	[tabCT init:contentView : [context objectAtIndex:1]];
+	[tabReader init:contentView : [context objectAtIndex:2]];
+	[tabMDL init:contentView : [context objectAtIndex:3]];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
-	[tabSerie release];			tabSerie = nil;
-	[tabCT release];			tabCT = nil;
-	[tabReader release];		tabReader = nil;
-	[tabMDL release];			tabMDL = nil;
+	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
+	
+	saveSerie = [tabSerie byebye];		[tabSerie release];			tabSerie = nil;
+	saveCT =	[tabCT byebye];			[tabCT release];			tabCT = nil;
+	saveReader =[tabReader byebye];		[tabReader release];		tabReader = nil;
+	saveMDL =	[tabMDL byebye];		[tabMDL release];			tabMDL = nil;
+	
+	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 }
 
 - (void) validateWindowData : (NSRect) size

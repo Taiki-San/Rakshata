@@ -12,7 +12,7 @@
 
 @implementation RakTabView
 
-- (id) initView: (NSView *)superView
+- (id) initView: (NSView *)superView : (NSString *) state
 {
 	NSRect frame = [self createFrameWithSuperView:superView];
 	
@@ -41,12 +41,13 @@
 	return self;
 }
 
-/**			Handle Fullscreen			**/
-
-- (BOOL) inLiveResize;
+- (NSString *) byebye
 {
-	return [super inLiveResize];
+	[self removeFromSuperview];
+	return [NSString stringWithFormat:@"Nothing D:"];
 }
+
+/**			Handle Fullscreen			**/
 
 - (NSColor*) getMainColor
 {

@@ -25,7 +25,8 @@
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
-- (id) initView: (NSView *)superView;
+- (id) initView: (NSView *)superView : (NSString *) state;
+- (NSString *) byebye;
 
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;

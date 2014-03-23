@@ -12,13 +12,13 @@
 
 @implementation MDL
 
-- (id)init:(NSView*)contentView
+- (id)init : (NSView*)contentView : (NSString *) state
 {
     self = [super init];
     if (self)
 	{
 		flag = GUI_THREAD_MDL;
-		self = [self initView:contentView];
+		self = [self initView: contentView : state];
 	}
     return self;
 }

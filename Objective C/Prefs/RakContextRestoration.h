@@ -5,15 +5,14 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
- *********************************************************************************************/
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
+ ********************************************************************************************/
 
-@interface CTSelec : RakTabView
-{
+@interface RakContextRestoration : NSObject
 
-}
-- (id)init : (NSView*)contentView : (NSString *) state;
++ (void) saveContext : (NSString *) contextSerie : (NSString *) contextCT : (NSString *) contextReader : (NSString *) contextMDL;
++ (NSArray *) loadContext;
 
 @end

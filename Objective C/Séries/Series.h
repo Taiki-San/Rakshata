@@ -22,7 +22,7 @@
 	BOOL prefsUIIsOpen;
 }
 
-- (id) init : (NSView *) contentView;
+- (id)init : (NSView*)contentView : (NSString *) state;
 - (void) craftPrefButton : (NSRect) tabSerieFrame;
 
 - (void) gogoWindow;

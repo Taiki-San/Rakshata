@@ -18,7 +18,7 @@
     if (self)
 	{
 		flag = GUI_THREAD_SERIES;
-		self = [self initView:contentView];
+		self = [self initView : contentView : nil];
 
 		uint mainThread;
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];

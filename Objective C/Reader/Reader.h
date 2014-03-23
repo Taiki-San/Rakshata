@@ -20,7 +20,7 @@
 	RakPage * mainImage;
 }
 
-- (id)init:(NSView*)contentView;
+- (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView;
 
 - (void) collapseAllTabs;

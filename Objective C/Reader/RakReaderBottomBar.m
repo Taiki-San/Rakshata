@@ -16,7 +16,7 @@
 
 - (id)init: (BOOL) displayed : (id) parent
 {
-	self = [self initView:parent];
+	self = [self initView : parent : nil];
 	
 	[self.layer setCornerRadius:RADIUS_BORDERS];
 	
