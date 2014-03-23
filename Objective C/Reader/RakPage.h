@@ -60,6 +60,7 @@
 - (void) buildCache;
 - (void) changePage : (byte) switchType;
 - (void) changeChapter : (bool) goToNext;
+- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest;
 - (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) addPageToView;

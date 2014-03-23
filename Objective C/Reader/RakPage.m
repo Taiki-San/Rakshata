@@ -393,6 +393,14 @@
 	}
 }
 
+- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest
+{
+	[self flushCache];
+	releaseDataReader(&data);
+	
+	[self initialLoading:projectRequest :elemRequest :isTomeRequest];
+}
+
 - (void) updateContext
 {
 	[self flushCache];
@@ -552,9 +560,9 @@
 - (void) getTheFuckOut
 {
 	[self flushCache];
+	releaseDataReader(&data);
 	[self removeFromSuperview];
 	self.documentView = nil;
-	releaseDataReader(&data);
 }
 
 @end
