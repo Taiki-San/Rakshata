@@ -35,9 +35,12 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	
 }
 
-+ (void) clearCache
++ (void) syncCacheToDisk
 {
-	
+	if(prefsCache != nil)
+	{
+		[prefsCache dumpPrefs];
+	}
 }
 
 + (void) getPref : (int) requestID : (void*) outputContainer

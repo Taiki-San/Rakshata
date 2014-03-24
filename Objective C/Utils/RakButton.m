@@ -77,9 +77,9 @@
 	
 	if(self != nil)
 	{
-		clicked		= [RakResPath craftResNameFromContext:imageName : YES : YES : 1];
-		nonClicked	= [RakResPath craftResNameFromContext:imageName : NO : YES : 1];
-		unAvailable = [RakResPath craftResNameFromContext:imageName : NO : NO : 1];
+		clicked		= [[RakResPath craftResNameFromContext:imageName : YES : YES : 1] retain];
+		nonClicked	= [[RakResPath craftResNameFromContext:imageName : NO : YES : 1] retain];
+		unAvailable = [[RakResPath craftResNameFromContext:imageName : NO : NO : 1] retain];
 		notAvailable = false;
 		
 		if(state == RB_STATE_STANDARD && nonClicked != nil)
@@ -118,6 +118,15 @@
 	}
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
+}
+
+- (void) dealloc
+{
+	[clicked release];
+	[nonClicked release];
+	[unAvailable release];
+	[self setImage:nil];
+	[super dealloc];
 }
 
 @end

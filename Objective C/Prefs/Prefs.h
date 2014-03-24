@@ -50,7 +50,7 @@ enum QUERY_SUBREQUEST {
 
 + (void) initCache;
 + (void) rebuildCache;
-+ (void) clearCache;
++ (void) syncCacheToDisk;
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;
 

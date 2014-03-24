@@ -102,7 +102,6 @@
 				[mainImage setSliderPos:sliderPos];
 				
 				return;
-				
 			}
 		}
 	}
