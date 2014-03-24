@@ -59,9 +59,6 @@ int mainLecture()
     int continuer = PALIER_DEFAULT, mangaChoisis, chapitreChoisis, retourLecteur, pageManga = 1, pageChapitre = 1;
     bool retry, fullscreen, restoringState = 0;
 
-    if(checkRestore())
-        restoringState = 1;
-
     while(continuer > PALIER_MENU)
     {
         mangaChoisis = chapitreChoisis = 0;

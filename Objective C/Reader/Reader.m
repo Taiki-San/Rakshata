@@ -22,9 +22,120 @@
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
 		self = [self initView : contentView : state];
-		[self initReaderMainView];
+		[self initReaderMainView : state];
 	}
     return self;
+}
+
+- (void) initReaderMainView : (NSString *) state
+{
+	initialized = false;
+	
+	if(state != nil && [state caseInsensitiveCompare:STATE_EMPTY] != NSOrderedSame)
+	{
+		NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+		NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+		
+		if([dataState count] == 7)
+		{
+			while (1)
+			{
+				uint nbElem, indexTeam;
+				
+				//We first get the index of the team, to perform a search in the DB
+				const TEAMS_DATA **tmpData = getDirectAccessToKnownTeams(&nbElem);
+				
+				if(tmpData == NULL || nbElem == 0)
+					break;
+				
+				const char * URLRepo = [[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding];
+				
+				for (indexTeam = 0; indexTeam < nbElem; indexTeam++)
+				{
+					if(tmpData[indexTeam] != NULL && !strcmp(tmpData[indexTeam]->URL_depot, URLRepo))
+						break;
+				}
+				
+				if(indexTeam == nbElem)
+				{
+					NSLog(@"Couldn't find the repo to restore, abort :/");
+					break;
+				}
+				
+				//We have a valid index, now, let's query the database to get the project
+				
+				const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
+	
+				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXLECTEUR);
+				
+				if(project == NULL)
+				{
+					NSLog(@"Couldn't find the project to restore, abort :/");
+					break;
+				}
+				else
+				{
+					checkChapitreValable(project, NULL);
+					checkTomeValable(project, NULL);
+				}
+				
+				//Perfect! now, all we have to do is to sanitize last few data :D
+				
+				int elemToRead;
+				bool isTome;
+				uint page;
+				
+				elemToRead = [[dataState objectAtIndex:2] intValue];
+				isTome = [[dataState objectAtIndex:3] boolValue];
+				page = [[dataState objectAtIndex:4] intValue];
+				
+				[self startReading: *project: elemToRead: isTome : page];
+				
+				free(project);
+				
+				if(mainImage == nil)
+					return;
+				
+				NSPoint sliderPos;
+				sliderPos.x = [[dataState objectAtIndex:5] intValue];
+				sliderPos.y = [[dataState objectAtIndex:6] intValue];
+				[mainImage setSliderPos:sliderPos];
+				
+				return;
+				
+			}
+		}
+	}
+	
+	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
+	[self startReading: mangaData[21] : 540: false : 0];
+}
+
+- (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
+{
+	initialized = true;
+	
+	mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
+	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
+}
+
+- (NSString *) byebye
+{
+	NSString * output;
+	
+	if (initialized)
+	{
+		output = [mainImage getContextToGTFO];
+
+		[mainImage getTheFuckOut];
+		[bottomBar byebye];
+	}
+	else
+	{
+		output = [super byebye];
+	}
+	
+	return output;
 }
 
 - (int) convertTypeToPrefArg : (bool) getX
@@ -56,17 +167,6 @@
 	}while (!copy);
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
-}
-
-- (void) initReaderMainView
-{
-	setupBDDCache();
-	uint i;
-	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, &i);
-	i--;
-	
-	mainImage = [[RakPage alloc] init: self: mangaData[21] : 540: false];
-	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
 }
 
 /**	Drawing	**/

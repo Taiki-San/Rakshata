@@ -524,7 +524,6 @@ void consolidateCache()
 	sqlite3_prepare_v2(cache, "VACUUM", -1, &request, NULL);
 	sqlite3_step(request);
 	sqlite3_finalize(request);
-
 }
 
 bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS_DATA* output)
@@ -779,6 +778,12 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 				output[i] = malloc(sizeof(TEAMS_DATA));
 				if(output[i] != NULL)
 					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
+				else	//Memory error, let's get the fuck out of here
+				{
+					for (; *nbTeamToRefresh > 0; free(output[--(*nbTeamToRefresh)]));
+					free(output);
+					return NULL;
+				}
 			}
 		}
 		*nbTeamToRefresh = lengthTeam;
@@ -786,6 +791,12 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 	else
 		*nbTeamToRefresh = 0;
 	return output;
+}
+
+const TEAMS_DATA ** getDirectAccessToKnownTeams(uint *nbTeamToRefresh)
+{
+	*nbTeamToRefresh = lengthTeam;
+	return (const TEAMS_DATA **) teamList;
 }
 
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
@@ -915,23 +926,40 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 
 //Requêtes pour obtenir des données spécifiques
 
-void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX])
+MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context)
 {
+	if(IDTeam >= lengthTeam || mangaNameCourt == NULL)
+		return NULL;
+	
+	MANGAS_DATA * output = calloc(1, sizeof(MANGAS_DATA));
+	if(output == NULL)
+		return NULL;
+	
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_team)" FROM rakSQLite WHERE "DBNAMETOID(RDB_mangaName)" = ?1", -1, &request, NULL);
-	sqlite3_bind_text(request, 1, nomProjet, -1, SQLITE_STATIC);
+	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL);
+	
+	sqlite3_bind_int(request, 1, IDTeam);
+	sqlite3_bind_text(request, 2, mangaNameCourt, -1, SQLITE_STATIC);
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-		uint data = sqlite3_column_int(request, 1);
-		if(data < lengthTeam)		//Si la team est pas valable, on drop complètement le projet
-			strncpy(nomTeam, teamList[data]->teamLong, LONGUEUR_NOM_MANGA_MAX);
-		else
-			memset(nomTeam, 0, LONGUEUR_NOM_MANGA_MAX);
+		if(!copyOutputDBToStruct(request, false, output))
+		{
+			free(output);
+			output = NULL;
+		}
+		else if(context & RDB_CTXMASK)
+			signalProjectRefreshed(output->cacheDBID, (context & RDB_CTXMASK) >> 8);
 	}
-	else
-		memset(nomTeam, 0, LONGUEUR_NOM_MANGA_MAX);
 
+	if (sqlite3_step(request) == SQLITE_ROW)
+	{
+		free(output);
+		output = NULL;
+		logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
+	}
+	
 	sqlite3_finalize(request);
-}
 
+	return output;
+}

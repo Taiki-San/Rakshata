@@ -187,12 +187,6 @@ int loadEmailProfile();
 char* loadLargePrefs(char flag);
 void setFavorite(MANGAS_DATA* mangaDB);
 
-/**Snapshot.c**/
-bool checkRestore();
-int checkRestoreAvailable();
-void reader_saveStateForRestore(char * mangaName, int currentSelection, bool isTome, int currentPage);
-void reader_loadStateForRestore(char * mangaName, int * currentSelection, bool * isTome, int * page, bool removeWhenDone);
-
 /**Thread.c**/
 void createNewThread(void *function, void *arg);
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

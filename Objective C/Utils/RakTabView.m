@@ -44,7 +44,7 @@
 - (NSString *) byebye
 {
 	[self removeFromSuperview];
-	return [NSString stringWithFormat:@"Nothing D:"];
+	return [NSString stringWithFormat:STATE_EMPTY];
 }
 
 /**			Handle Fullscreen			**/

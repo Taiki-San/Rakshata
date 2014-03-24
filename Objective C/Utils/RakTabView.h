@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define STATE_EMPTY @"Luna is bored"
+
 @interface RakTabView : NSView
 {
 	int flag;

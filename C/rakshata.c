@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "db.h"
+
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
@@ -42,6 +44,7 @@ int main(int argc, char *argv[])
         return -1; //Si echec
 
     checkUpdate();
+	setupBDDCache();
 
     int ret_value = NSApplicationMain(argc, (const char **)argv);
 

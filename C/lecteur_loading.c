@@ -29,20 +29,6 @@ bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *curre
 	return *currentPosIntoStructure < mangaDB.nombreChapitre;	//As-ton trouvé un tome?
 }
 
-int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH])
-{
-	if(checkRestore())
-    {
-		int var;
-		
-		reader_loadStateForRestore(NULL, NULL, NULL, &var, true);
-		reader_notifyUserRestore(localization);
-
-		return var;
-    }
-	return 0;
-}
-
 /**	Load the reader data	**/
 
 bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)

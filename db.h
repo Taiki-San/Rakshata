@@ -60,11 +60,13 @@ bool addRepoToDB(TEAMS_DATA newTeam);
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);
 void freeTeam(TEAMS_DATA **data);
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
+const TEAMS_DATA ** getDirectAccessToKnownTeams(uint *nbTeamToRefresh);
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
 
 void freeMangaData(MANGAS_DATA* mangaDB);
 
-void teamOfProject(char nomProjet[LONGUEUR_NOM_MANGA_MAX], char nomTeam[LONGUEUR_NOM_MANGA_MAX]);
+//Searches
+MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);

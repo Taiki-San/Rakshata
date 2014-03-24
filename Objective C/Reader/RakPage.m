@@ -12,9 +12,9 @@
 
 @implementation RakPage
 
-- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
+- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
-	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest])
+	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return nil;
 	
 	if (![self craftPageAndSetupEnv:superView : READER_ETAT_DEFAULT])
@@ -57,7 +57,13 @@
 
 - (BOOL) allowsCutCopyPaste
 {
-	return YES;
+	return NO;
+}
+
+- (NSString *) getContextToGTFO
+{
+	NSPoint sliders = [[self contentView] bounds].origin;
+	return [NSString stringWithFormat:@"%s\n%s\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URL_depot, project.mangaNameShort, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -261,11 +267,19 @@
 	[self.contentView scrollToPoint:point];
 }
 
+- (void) setSliderPos : (NSPoint) newPos
+{
+	NSPoint point = [[self contentView] bounds].origin;
+	
+	[self moveSliderY : newPos.y - point.y];
+	[self moveSliderX : newPos.x - point.x];
+}
+
 /*Active routines*/
 
 #pragma mark    -   Active routines
 
-- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest
+- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	memcpy(&project, &dataRequest, sizeof(dataRequest));
 	currentElem = elemRequest;
@@ -292,13 +306,19 @@
         startCheckNewElementInRepo(project, isTome, currentElem, false);
 	
 	//On met la page courante par défaut
-	data.pageCourante = reader_getCurrentPageIfRestore(texteTrad);
+	data.pageCourante = 0;
 	
 	if(configFileLoader(project, isTome, currentElem, &data))
 	{
 		[self failure];
 		return NO;
 	}
+	
+	if(startPage < data.nombrePageTotale)
+		data.pageCourante = startPage;
+	else
+		data.pageCourante = data.nombrePageTotale - 1;
+	
 	return YES;
 }
 
@@ -393,12 +413,12 @@
 	}
 }
 
-- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest
+- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (uint) startPage
 {
 	[self flushCache];
 	releaseDataReader(&data);
 	
-	[self initialLoading:projectRequest :elemRequest :isTomeRequest];
+	[self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage];
 }
 
 - (void) updateContext

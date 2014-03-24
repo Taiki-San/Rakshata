@@ -14,25 +14,34 @@
 
 + (void) saveContext : (NSString *) contextSerie : (NSString *) contextCT : (NSString *) contextReader : (NSString *) contextMDL
 {
-	FILE * output = fopen("context.dat", "w+");
+	FILE * output = fopen("context.dat.new", "w+");
 	
 	if(output == NULL)
 		return;
 	
 	NSString * chain[] = {contextSerie, contextCT, contextReader, contextMDL};
 	const char * intermediaryBuffer;
+	char* stringOutput;
 	size_t length;
 	
 	for(byte i = 0; i < 4; i++)
 	{
 		intermediaryBuffer = [chain[i] UTF8String];
-		length = strlen(intermediaryBuffer) * 2;
+		length = strlen(intermediaryBuffer);
 		
-		char stringOutput[length+1];
+		stringOutput = malloc(length * 2 + 1);
+		
+		if (stringOutput == NULL)
+		{
+			memoryError(length + 1);
+			fclose(output);
+			remove("context.dat.new");
+			return;
+		}
 		
 		decToHex((const unsigned char*) intermediaryBuffer, length, stringOutput);
 		
-		stringOutput[length] = 0;
+		stringOutput[length*2] = 0;
 		
 		fputs(stringOutput, output);
 		
@@ -41,6 +50,8 @@
 	}
 	
 	fclose(output);
+	remove("context.dat");
+	rename("context.dat.new", "context.dat");
 }
 
 + (NSArray *) loadContext

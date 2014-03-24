@@ -51,7 +51,6 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 /** lecteur_loading.c **/
 
 bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure);
-int reader_getCurrentPageIfRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
 bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 void releaseDataReader(DATA_LECTURE *data);

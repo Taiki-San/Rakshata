@@ -15,13 +15,17 @@
 
 @interface Reader : RakTabView
 {
+	bool initialized;
+	
 	uint gonnaReduceTabs;
 	RakReaderBottomBar * bottomBar;
 	RakPage * mainImage;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
-- (void) initReaderMainView;
+- (void) initReaderMainView : (NSString *) state;
+
+- (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
 
 - (void) collapseAllTabs;
 - (void) hideBothTab;
