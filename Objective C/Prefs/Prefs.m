@@ -366,7 +366,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		
 		[prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
 		
-		firstResponder = mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView;
+		firstResponder = [(RakContentViewBack *) mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView getFirstResponder];
 		[self refreshFirstResponder];
 	
 		if(input != recoveryBuffer)

@@ -10,6 +10,54 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@implementation RakContentViewBack
+
+#define WIDTH_BORDER_FAREST		2
+#define WIDTH_BORDER_MIDDLE		1
+#define WIDTH_BORDER_INTERNAL	1
+
+- (void) setupBorders
+{
+	[self setAutoresizesSubviews:YES];
+	
+	self.window.backgroundColor = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0 blue:20/255.0 alpha:1.0];
+	NSRect frame = [self frame];
+	
+	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
+	frame.size.height -= 2 * WIDTH_BORDER_FAREST;
+	frame.origin.x += WIDTH_BORDER_FAREST;
+	frame.origin.y += WIDTH_BORDER_FAREST;
+	
+	RakBorder * internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [NSColor colorWithSRGBRed:32/255.0f green:32/255.0 blue:32/255.0 alpha:1]];
+	if (internalRows)
+		[self addSubview:internalRows];
+	
+	frame.size.width -= 2 * WIDTH_BORDER_MIDDLE;
+	frame.size.height -= 2 * WIDTH_BORDER_MIDDLE;
+	frame.origin.x += WIDTH_BORDER_MIDDLE;
+	frame.origin.y += WIDTH_BORDER_MIDDLE;
+	
+	internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [NSColor colorWithSRGBRed:50/255.0f green:50/255.0 blue:50/255.0 alpha:1]];
+	if (internalRows)
+		[self addSubview:internalRows];
+	
+	frame.size.width -= 2 * WIDTH_BORDER_INTERNAL;
+	frame.size.height -= 2 * WIDTH_BORDER_INTERNAL;
+	frame.origin.x += WIDTH_BORDER_INTERNAL;
+	frame.origin.y += WIDTH_BORDER_INTERNAL;
+	
+	RakContentView * contentView = [[RakContentView alloc] initWithFrame:frame];
+	if(contentView != nil)
+		[self addSubview:contentView];
+}
+
+- (RakContentView *) getFirstResponder
+{
+	return firstResponder;
+}
+
+@end
+
 @implementation RakContentView
 
 - (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL
@@ -57,29 +105,6 @@
 		default:
 			break;
 	}
-}
-
-- (NSRect) getFrame
-{
-	NSRect frame = [self frame];
-	
-	if (frame.origin.x != BORDER_WIDTH || frame.origin.y != BORDER_WIDTH)
-	{
-		[self setFrameOrigin:NSMakePoint(BORDER_WIDTH, BORDER_WIDTH)];
-		frame.origin.x = frame.origin.y = BORDER_WIDTH;
-		
-		frame.size.height -= 2 * BORDER_WIDTH;
-		frame.size.width -= 2 * BORDER_WIDTH;
-		[self setFrameSize:frame.size];
-	}
-	else if(frame.size.height == self.window.frame.size.height || frame.size.width == self.window.frame.size.width)
-	{
-		frame.size.height -= 2 * BORDER_WIDTH;
-		frame.size.width -= 2 * BORDER_WIDTH;
-		[self setFrameSize:frame.size];
-	}
-	
-	return frame;
 }
 
 @end

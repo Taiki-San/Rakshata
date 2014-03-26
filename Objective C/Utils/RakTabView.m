@@ -278,7 +278,7 @@
 	NSRect frame;
 	NSSize sizeSuperView;
 	if([superView class] == [RakContentView class])
-		sizeSuperView = [(RakContentView*) superView getFrame].size;
+		sizeSuperView = [(RakContentView*) superView frame].size;
 	else
 		sizeSuperView = superView.frame.size;
 	

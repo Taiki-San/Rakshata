@@ -10,29 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakContentView : NSView
-{
-	uint _mainThread;
-	uint _stateTabsReader;
-	
-	Series* _tabSerie;
-	CTSelec* _tabCT;
-	Reader* _tabReader;
-	MDL* _tabMDL;
-}
+@interface RakBorder : NSView
 
-- (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL;
-- (void) updateContext : (uint) mainThread : (uint) stateTabsReader;
+-  (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
+- (void) setColor : (NSColor *) newColor;
 
 @end
-
-@interface RakContentViewBack : NSView
-{
-	RakContentView * firstResponder;
-}
-
-- (void) setupBorders;
-- (RakContentView *) getFirstResponder;
-
-@end
-

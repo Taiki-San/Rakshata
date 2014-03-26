@@ -16,18 +16,24 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 - (void) awakeFromNib
 {
-	NSView *contentView = [[self window] contentView];
-
-	self.window.backgroundColor = [NSColor colorWithSRGBRed:21/255.0f green:21/255.0 blue:21/255.0 alpha:1.0];
 	[self validateWindowData:[[self window] frame]];
+	[self.window.contentView setupBorders];
+	
+	RakContentView * contentView = [self getContentView];
+	
+	if(contentView == nil)
+	{
+		NSLog(@"Couldn't build view structure");
+		exit(EXIT_FAILURE);
+	}
 	
 	tabSerie =	[Series alloc];
 	tabCT =		[CTSelec alloc];
 	tabReader =	[Reader alloc];
 	tabMDL =	[MDL alloc];
 
-	[self.window.contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
-	[self.window makeFirstResponder:self.window.contentView];
+	[contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
+	[self.window makeFirstResponder:contentView];
 	
 	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
 	[Prefs initCache];
@@ -49,6 +55,19 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	saveMDL =	[tabMDL byebye];		[tabMDL release];			tabMDL = nil;
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
+}
+
+- (RakContentView*) getContentView
+{
+	NSView *contentView = [[self window] contentView];
+	
+	uint count = [contentView.subviews count], i;
+	for(i = 0; i < count && [contentView.subviews[i] class] != [RakContentView class]; i++);
+	
+	if(i == count)
+		return nil;
+	
+	return contentView.subviews[i];
 }
 
 - (void) validateWindowData : (NSRect) size

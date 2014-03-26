@@ -72,7 +72,7 @@
             <rect key="contentRect" x="91" y="318" width="950" height="470"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
             <value key="minSize" type="size" width="700" height="410"/>
-            <view key="contentView" wantsLayer="YES" id="372" customClass="RakContentView">
+            <view key="contentView" wantsLayer="YES" id="372" customClass="RakContentViewBack">
                 <rect key="frame" x="0.0" y="0.0" width="950" height="470"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>

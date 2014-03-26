@@ -10,29 +10,34 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakContentView : NSView
+@implementation RakBorder
+
+- (void) setColor : (NSColor *) color
 {
-	uint _mainThread;
-	uint _stateTabsReader;
+	self.layer.backgroundColor	= color.CGColor;
+	self.layer.borderColor		= color.CGColor;
+}
+
+-  (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color
+{
+	self = [super initWithFrame:frameRect];
 	
-	Series* _tabSerie;
-	CTSelec* _tabCT;
-	Reader* _tabReader;
-	MDL* _tabMDL;
+	if(self != nil)
+	{
+		[self setWantsLayer:YES];
+		self .layer.masksToBounds   = YES;
+		self.layer.borderWidth      = borderWidth;
+		self.layer.cornerRadius		= angleRounds;
+		self.layer.backgroundColor	= color.CGColor;
+		self.layer.borderColor		= color.CGColor;
+	}
+	
+	return self;
 }
 
-- (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL;
-- (void) updateContext : (uint) mainThread : (uint) stateTabsReader;
-
-@end
-
-@interface RakContentViewBack : NSView
+- (void)drawRect:(NSRect)dirtyRect
 {
-	RakContentView * firstResponder;
+	
 }
 
-- (void) setupBorders;
-- (RakContentView *) getFirstResponder;
-
 @end
-

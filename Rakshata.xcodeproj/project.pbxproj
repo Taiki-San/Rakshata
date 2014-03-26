@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* window.xib */; };
+		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
 		B623390A18DBB7F800FC188A /* RakContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B623390918DBB7F800FC188A /* RakContentView.m */; };
@@ -93,6 +94,8 @@
 
 /* Begin PBXFileReference section */
 		B6002C30189EF15E00466654 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = Ressources/window.xib; sourceTree = "<group>"; };
+		B61DD14B18E23915009D51E3 /* RakBorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakBorder.h; path = Utils/RakBorder.h; sourceTree = "<group>"; };
+		B61DD14C18E23915009D51E3 /* RakBorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBorder.m; path = Utils/RakBorder.m; sourceTree = "<group>"; };
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
@@ -379,6 +382,8 @@
 				B6519A5418E0B610003FF1B6 /* RakScroller.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B61DD14B18E23915009D51E3 /* RakBorder.h */,
+				B61DD14C18E23915009D51E3 /* RakBorder.m */,
 				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
 			);
@@ -704,6 +709,7 @@
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
+				B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */,
 				B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */,
 				B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */,
 				B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */,
