@@ -13,6 +13,11 @@
 @interface RakScroller : NSScroller
 {
 	NSColor *color;
+	
+	NSColor *passive;
+	NSColor *active;
+	
+	CGContextRef contextBorder;
 }
 
 @end

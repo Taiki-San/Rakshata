@@ -12,50 +12,88 @@
 
 @implementation RakScroller
 
-- (void)highlight:(BOOL)flag
+- (id) initWithFrame:(NSRect)frameRect
 {
-	if(flag)
-		color = [NSColor greenColor];
-	else
-		color = [NSColor redColor];
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+	{
+		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE] retain];
+		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE] retain];
+		color = passive;
+		[self setKnobStyle:NSScrollerKnobStyleLight];
+	}
+	
+	return self;
 }
 
-- (NSScrollerKnobStyle) knobStyle
+- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
-	return [super knobStyle];
+	slotRect.origin.x += slotRect.size.width / 4;
+	slotRect.size.width /= 2;
+	
+	[[NSColor blackColor] set];
+	NSRectFill(slotRect);
+}
+
+#define RADIUS_BORDERS	6.5f
+#define BAR_WIDTH		(2 * RADIUS_BORDERS)
+
+- (void) setupPath : (NSRect) selfRect
+{
+	contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+	
+	CGContextBeginPath(contextBorder);
+	CGContextAddArc(contextBorder, selfRect.size.width / 2, selfRect.origin.y + selfRect.size.height - RADIUS_BORDERS, RADIUS_BORDERS, M_PI, 0, 1);
+	CGContextAddLineToPoint(contextBorder, selfRect.size.width / 2 + BAR_WIDTH / 2, RADIUS_BORDERS);
+	CGContextAddArc(contextBorder, selfRect.size.width / 2, selfRect.origin.y + RADIUS_BORDERS, RADIUS_BORDERS, 0, M_PI, 1);
+	CGContextAddLineToPoint(contextBorder, selfRect.size.width / 2 - BAR_WIDTH / 2, selfRect.origin.y + selfRect.size.height - RADIUS_BORDERS);
+}
+
+- (NSColor*) getColorBar
+{
+	return color;
 }
 
 - (void)drawKnob
 {
-	[super drawKnob];
-/*	NSRect knobRect = [self rectForPart:NSScrollerKnob];
-	[[NSColor greenColor] set];
-	[NSBezierPath fillRect:knobRect];*/
+	NSRect knobRect = [self rectForPart:NSScrollerKnob];
+	[self setupPath:knobRect];
+	[[self getColorBar] setFill];
+	CGContextFillPath(contextBorder);
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void) mouseDown:(NSEvent *)theEvent
 {
-    [[NSColor clearColor] set];
-    NSRectFill(dirtyRect);
+	color = active;
+	[self setNeedsDisplay:YES];
+	[super mouseDown:theEvent];
+	color = passive;
+	[self setNeedsDisplay:YES];
+}
+
++ (void) updateScrollers : (NSScrollView *) view
+{
+	NSRect horizontalScrollerFrame = [[view horizontalScroller] frame];
+	NSRect verticalScrollerFrame = [[view verticalScroller] frame];
 	
-	[self setKnobStyle:NSScrollerKnobStyleDark];
+	if ([view verticalScroller] != nil && ![[view verticalScroller] isKindOfClass:[RakScroller class]])
+		[view setVerticalScroller:[[[RakScroller alloc] initWithFrame:verticalScrollerFrame] autorelease]];
 	
-    [self drawKnob];
+	if ([view horizontalScroller] != nil && ![[view horizontalScroller] isKindOfClass:[RakScroller class]])
+		[view setHorizontalScroller:[[[RakScroller alloc] initWithFrame:horizontalScrollerFrame] autorelease]];
 }
 
 /*
- - (void) updateScrollers
- {
- NSRect horizontalScrollerFrame = [[self horizontalScroller] frame];
- NSRect verticalScrollerFrame = [[self verticalScroller] frame];
+ Code to move sliders according to an internal view move:
  
- if ([self verticalScroller] != nil && ![[self verticalScroller] isKindOfClass:[RakScroller class]])
- [self setVerticalScroller:[[[RakScroller alloc] initWithFrame:verticalScrollerFrame] autorelease]];
+	selfFrame = la taille de l'élément complet
+	readerView = la taille de la view
  
- if ([self horizontalScroller] != nil && ![[self horizontalScroller] isKindOfClass:[RakScroller class]])
- [self setHorizontalScroller:[[[RakScroller alloc] initWithFrame:horizontalScrollerFrame] autorelease]];
- }
- 
-*/
+ if(pageTooLarge)
+	self.horizontalScroller.floatValue = 1 - sliderStart.x / (selfFrame.size.width + 2 * READER_BORDURE_VERT_PAGE - frameReader.size.width);
+ if(pageTooHigh)
+	self.verticalScroller.floatValue = 1 - sliderStart.y / (selfFrame.size.height + READER_PAGE_BORDERS_HIGH - frameReader.size.height);
+ */
 
 @end

@@ -563,7 +563,7 @@
 		sliderStart.x = 0;
 	
 	[self.contentView scrollToPoint:sliderStart];
-	
+
 	[self setFrameSize:frameReader.size];
 	[self setFrameOrigin:frameReader.origin];
 }

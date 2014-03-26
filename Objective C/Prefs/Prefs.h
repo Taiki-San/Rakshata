@@ -28,6 +28,18 @@ enum QUERY_SUBREQUEST {
 	QUERY_GET_POSY = 3
 };
 
+enum COLOR_REQUEST {
+	GET_COLOR_EXTERNALBORDER_FAREST,
+	GET_COLOR_EXTERNALBORDER_MIDDLE,
+	GET_COLOR_EXTERNALBORDER_CLOSEST,
+	GET_COLOR_INACTIVE,
+	GET_COLOR_SURVOL,
+	GET_COLOR_ACTIVE,
+	GET_COLOR_READER_BAR,
+	GET_COLOR_READER_BAR_FRONT,
+	GET_COLOR_BACKGROUND_INTAB,
+};
+
 @interface Prefs : NSObject
 {
 	RakContentView* firstResponder;
@@ -51,6 +63,9 @@ enum QUERY_SUBREQUEST {
 + (void) initCache;
 + (void) rebuildCache;
 + (void) syncCacheToDisk;
+
++ (NSColor*) getSystemColor : (byte) context;
+
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;
 

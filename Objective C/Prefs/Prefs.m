@@ -43,6 +43,67 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	}
 }
 
++ (NSColor*) getSystemColor : (byte) context
+{
+	NSColor* output;
+	switch (context)
+	{
+		case GET_COLOR_EXTERNALBORDER_FAREST:
+		{
+			output = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0f blue:20/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_EXTERNALBORDER_MIDDLE:
+		{
+			output = [NSColor colorWithSRGBRed:32/255.0f green:32/255.0f blue:32/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_EXTERNALBORDER_CLOSEST:
+		{
+			output = [NSColor colorWithSRGBRed:50/255.0f green:50/255.0f blue:50/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_INACTIVE:
+		{
+			output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_SURVOL:
+		{
+			output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_ACTIVE:
+		{
+			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
+			break;
+		}
+		case GET_COLOR_READER_BAR:
+		{
+			output = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0f blue:20/255.0f alpha:0.8];
+			break;
+		}
+		case GET_COLOR_READER_BAR_FRONT:
+		{
+			output = [NSColor colorWithSRGBRed:75/255.0f green:75/255.0f blue:75/255.0f alpha:0.8];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_INTAB:
+		{
+			output = [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
+			break;
+		}
+		
+		default:
+		{
+			return nil;
+		}
+	}
+	
+	return output;
+}
+
 + (void) getPref : (int) requestID : (void*) outputContainer
 {
 	if(prefsCache == NULL)

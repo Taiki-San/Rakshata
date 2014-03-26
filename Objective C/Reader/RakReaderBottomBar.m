@@ -155,12 +155,12 @@
 
 - (NSColor*) getMainColor
 {
-	return [NSColor colorWithSRGBRed:20/255.0f green:20/255.0 blue:20/255.0 alpha:0.8];
+	return [Prefs getSystemColor:GET_COLOR_READER_BAR];
 }
 
 - (NSColor*) getColorFront
 {
-	return [NSColor colorWithSRGBRed:75/255.0f green:75/255.0 blue:75/255.0 alpha:0.8];
+	return [Prefs getSystemColor:GET_COLOR_READER_BAR_FRONT];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

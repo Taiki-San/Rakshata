@@ -12,15 +12,58 @@
 
 @implementation RakContentViewBack
 
+#define WIDTH_BORDER_ALL		4
 #define WIDTH_BORDER_FAREST		2
 #define WIDTH_BORDER_MIDDLE		1
 #define WIDTH_BORDER_INTERNAL	1
 
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+	self = [super initWithCoder:aDecoder];
+	
+	if(self != nil)
+	{
+		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+		[self setAutoresizesSubviews:YES];
+		[self setNeedsDisplay:YES];
+		[self setWantsLayer:YES];
+	}
+	
+	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	
+	if(![self.subviews count])
+		return;
+	
+	frameRect.size.width -= 2 * WIDTH_BORDER_FAREST;
+	frameRect.size.height -= 2 * WIDTH_BORDER_FAREST;
+	frameRect.origin.x += WIDTH_BORDER_FAREST;
+	frameRect.origin.y += WIDTH_BORDER_FAREST;
+	
+	[self.subviews[0] setFrame:frameRect];
+	
+	frameRect.size.width -= 2 * WIDTH_BORDER_MIDDLE;
+	frameRect.size.height -= 2 * WIDTH_BORDER_MIDDLE;
+	frameRect.origin.x += WIDTH_BORDER_MIDDLE;
+	frameRect.origin.y += WIDTH_BORDER_MIDDLE;
+	
+	[self.subviews[1] setFrame:frameRect];
+		
+	frameRect.size.width -= 2 * WIDTH_BORDER_INTERNAL;
+	frameRect.size.height -= 2 * WIDTH_BORDER_INTERNAL;
+	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
+	frameRect.origin.y += WIDTH_BORDER_INTERNAL;
+	
+	[self.subviews[2] setFrame:frameRect];
+}
+
 - (void) setupBorders
 {
-	[self setAutoresizesSubviews:YES];
-	
-	self.window.backgroundColor = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0 blue:20/255.0 alpha:1.0];
+	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST];
 	NSRect frame = [self frame];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
@@ -28,7 +71,7 @@
 	frame.origin.x += WIDTH_BORDER_FAREST;
 	frame.origin.y += WIDTH_BORDER_FAREST;
 	
-	RakBorder * internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [NSColor colorWithSRGBRed:32/255.0f green:32/255.0 blue:32/255.0 alpha:1]];
+	RakBorder * internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE]];
 	if (internalRows)
 		[self addSubview:internalRows];
 	
@@ -37,7 +80,7 @@
 	frame.origin.x += WIDTH_BORDER_MIDDLE;
 	frame.origin.y += WIDTH_BORDER_MIDDLE;
 	
-	internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [NSColor colorWithSRGBRed:50/255.0f green:50/255.0 blue:50/255.0 alpha:1]];
+	internalRows = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST]];
 	if (internalRows)
 		[self addSubview:internalRows];
 	
@@ -46,9 +89,9 @@
 	frame.origin.x += WIDTH_BORDER_INTERNAL;
 	frame.origin.y += WIDTH_BORDER_INTERNAL;
 	
-	RakContentView * contentView = [[RakContentView alloc] initWithFrame:frame];
-	if(contentView != nil)
-		[self addSubview:contentView];
+	firstResponder = [[RakContentView alloc] initWithFrame:frame];
+	if(firstResponder != nil)
+		[self addSubview:firstResponder];
 }
 
 - (RakContentView *) getFirstResponder

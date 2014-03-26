@@ -172,7 +172,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_INTAB];
 }
 
 /**	Events **/
