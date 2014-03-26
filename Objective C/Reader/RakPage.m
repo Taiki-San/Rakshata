@@ -102,7 +102,7 @@
 	{
 		pageTooHigh = false;
 		frameReader.origin.y = (frameReader.size.height - READER_PAGE_BORDERS_HIGH) / 2 - selfFrame.size.height / 2;
-		frameReader.size.height = selfFrame.size.height;
+		frameReader.size.height = selfFrame.size.height + READER_PAGE_BORDERS_HIGH;
 	}
 }
 

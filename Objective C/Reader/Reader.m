@@ -137,9 +137,38 @@
 	return output;
 }
 
-- (int) convertTypeToPrefArg : (bool) getX
+- (int) getCodePref : (int) request
 {
-	return PREFS_GET_TAB_READER_WIDTH + [super convertTypeToPrefArg:getX];
+	int output;
+	
+	switch (request)
+	{
+		case CONVERT_CODE_POSX:
+		{
+			output = PREFS_GET_TAB_READER_POSX;
+			break;
+		}
+			
+		case CONVERT_CODE_POSY:
+		{
+			output = PREFS_GET_TAB_READER_POSY;
+			break;
+		}
+			
+		case CONVERT_CODE_HEIGHT:
+		{
+			output = PREFS_GET_TAB_READER_HEIGHT;
+			break;
+		}
+			
+		case CONVERT_CODE_WIDTH:
+		{
+			output = PREFS_GET_TAB_READER_WIDTH;
+			break;
+		}
+	}
+	
+	return output;
 }
 
 - (void) refreshViewSize

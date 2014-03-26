@@ -27,11 +27,9 @@
     return self;
 }
 
-- (void) drawContentView: (NSRect) frame
+- (NSColor*) getMainColor
 {
-	[[NSColor yellowColor] setFill];
-	
-	[super drawContentView:frame];
+	return [NSColor yellowColor];
 }
 
 - (void)setFrameSize: (NSSize)newSize
@@ -48,9 +46,38 @@
 		[self setHidden:YES];
 }
 
-- (int) convertTypeToPrefArg : (bool) getX
+- (int) getCodePref : (int) request
 {
-	return PREFS_GET_TAB_SERIE_WIDTH + [super convertTypeToPrefArg:getX];
+	int output;
+	
+	switch (request)
+	{
+		case CONVERT_CODE_POSX:
+		{
+			output = PREFS_GET_TAB_SERIE_POSX;
+			break;
+		}
+			
+		case CONVERT_CODE_POSY:
+		{
+			output = PREFS_GET_TAB_SERIE_POSY;
+			break;
+		}
+			
+		case CONVERT_CODE_HEIGHT:
+		{
+			output = PREFS_GET_TAB_SERIE_HEIGHT;
+			break;
+		}
+			
+		case CONVERT_CODE_WIDTH:
+		{
+			output = PREFS_GET_TAB_SERIE_WIDTH;
+			break;
+		}
+	}
+	
+	return output;
 }
 
 - (CGFloat) getRequestedViewHeight:(CGFloat)heightWindow

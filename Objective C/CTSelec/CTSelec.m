@@ -28,9 +28,38 @@
 	return [NSColor blueColor];
 }
 
-- (int) convertTypeToPrefArg : (bool) getX
+- (int) getCodePref : (int) request
 {
-	return PREFS_GET_TAB_CT_WIDTH + [super convertTypeToPrefArg:getX];
+	int output;
+	
+	switch (request)
+	{
+		case CONVERT_CODE_POSX:
+		{
+			output = PREFS_GET_TAB_CT_POSX;
+			break;
+		}
+			
+		case CONVERT_CODE_POSY:
+		{
+			output = PREFS_GET_TAB_CT_POSY;
+			break;
+		}
+			
+		case CONVERT_CODE_HEIGHT:
+		{
+			output = PREFS_GET_TAB_CT_HEIGHT;
+			break;
+		}
+			
+		case CONVERT_CODE_WIDTH:
+		{
+			output = PREFS_GET_TAB_CT_WIDTH;
+			break;
+		}
+	}
+	
+	return output;
 }
 
 /**		Reader		**/
@@ -43,17 +72,12 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	CGFloat posCT, posReader, heightMDL;
+	CGFloat posCT, posReader;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&posCT];
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
-	frame.size.width = ((posReader - posCT) * self.superview.frame.size.width / 100);
-	frame.origin.x = 0;
-	
-	[Prefs getPref:PREFS_GET_MDL_HEIGHT:&heightMDL];
-	frame.size.height -= self.superview.frame.size.height * heightMDL / 100;
-	frame.origin.y = self.superview.frame.size.height * heightMDL / 100;
-	
+	frame.size.width = (posReader - posCT) * self.superview.frame.size.width / 100;
+	frame.origin.x = frame.origin.y = 0;
 	return frame;
 }
 

@@ -66,11 +66,6 @@
 
 /**	 Get View Size	**/
 
-- (int) convertTypeToPrefArg : (bool) getX
-{
-	return PREFS_GET_MDL_WIDTH + [super convertTypeToPrefArg:getX];
-}
-
 - (NSRect) getRequestedViewSize: (CGFloat) widthWindow : (CGFloat) heightWindow
 {
 	NSRect output;
@@ -94,7 +89,7 @@
 - (CGFloat) getRequestedViewPosY:(CGFloat) heightWindow
 {
 	CGFloat output;
-	[Prefs getPref:PREFS_GET_MDL_POS_Y:&output];
+	[Prefs getPref:PREFS_GET_MDL_POSY:&output];
 	return output * heightWindow / 100;
 }
 

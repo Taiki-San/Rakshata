@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* window.xib */; };
+		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
@@ -94,6 +95,8 @@
 
 /* Begin PBXFileReference section */
 		B6002C30189EF15E00466654 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = Ressources/window.xib; sourceTree = "<group>"; };
+		B61A790818E389F300D8E0E0 /* RakText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakText.h; path = Utils/RakText.h; sourceTree = "<group>"; };
+		B61A790918E389F300D8E0E0 /* RakText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakText.m; path = Utils/RakText.m; sourceTree = "<group>"; };
 		B61DD14B18E23915009D51E3 /* RakBorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakBorder.h; path = Utils/RakBorder.h; sourceTree = "<group>"; };
 		B61DD14C18E23915009D51E3 /* RakBorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBorder.m; path = Utils/RakBorder.m; sourceTree = "<group>"; };
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; };
@@ -378,6 +381,8 @@
 		B6CC724918723084003A745B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B61A790818E389F300D8E0E0 /* RakText.h */,
+				B61A790918E389F300D8E0E0 /* RakText.m */,
 				B6519A5318E0B610003FF1B6 /* RakScroller.h */,
 				B6519A5418E0B610003FF1B6 /* RakScroller.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
@@ -754,6 +759,7 @@
 				B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */,
 				B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */,
 				B6F6ECEF18A3001400E3B55B /* Serpent.c in Sources */,
+				B61A790A18E389F300D8E0E0 /* RakText.m in Sources */,
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
 				B6F6ED1018A3001400E3B55B /* thread.c in Sources */,
 				B67449401875E65000F96DB4 /* Footer.m in Sources */,

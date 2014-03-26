@@ -16,7 +16,6 @@
 {
 	int flag;
 	bool readerMode;
-	NSView *blurView;
 	NSTrackingArea * trackingArea;
 	
 @public
@@ -53,7 +52,8 @@
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
 - (NSRect) getCurrentFrame;
 
-- (int) convertTypeToPrefArg : (bool) getX;
+
+- (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow;
 - (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;

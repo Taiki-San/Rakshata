@@ -116,23 +116,11 @@
 	//Appelé quand les tabs ont été réduits
 	if([self isCursorOnMe])
 	{
-		if(![blurView isHidden])
-			[blurView setHidden:YES];
-		
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
 		[self refreshLevelViews:[self superview]];
 	}
 	else
 	{
-		if([blurView isHidden])
-		{
-			[blurView retain];
-			[blurView removeFromSuperview];
-			[self addSubview:blurView];
-			[blurView setHidden:NO];
-			[blurView release];
-		}
-		
 		[self resizeReaderCatchArea];
 	}
 }
@@ -295,33 +283,37 @@
 	return self.frame;
 }
 
-- (int) convertTypeToPrefArg : (bool) getX
+- (int) getCodePref : (int) request
 {
-	return getX ? PREFS_GET_TAB_SERIE_POSX - PREFS_GET_TAB_SERIE_WIDTH : 0;
+	return 0;
 }
 
 - (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow
 {
 	CGFloat prefData;
-	[Prefs getPref:[self convertTypeToPrefArg:YES]:&prefData];
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_POSX]:&prefData];
 	return widthWindow * prefData / 100;
 }
 
 - (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow
 {
-	return 0;
+	CGFloat prefData;
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_POSY]:&prefData];
+	return heightWindow * prefData / 100;
 }
 
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
 {
 	CGFloat prefData;
-	[Prefs getPref:[self convertTypeToPrefArg:NO]:&prefData];
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH]:&prefData];
 	return widthWindow * prefData / 100;
 }
 
 - (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
 {
-	return heightWindow;
+	CGFloat prefData;
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_HEIGHT]:&prefData];
+	return heightWindow * prefData / 100;
 }
 
 @end

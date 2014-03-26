@@ -144,6 +144,41 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
+		case PREFS_GET_MDL_WIDTH:
+		{
+			CGFloat * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.width;
+			break;
+		}
+			
+		case PREFS_GET_TAB_SERIE_HEIGHT:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			break;
+		}
+			
+		case PREFS_GET_TAB_CT_HEIGHT:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			break;
+		}
+			
+		case PREFS_GET_TAB_READER_HEIGHT:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			break;
+		}
+		
+		case PREFS_GET_MDL_HEIGHT:
+		{
+			CGFloat * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.height;
+			break;
+		}
+			
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
 			CGFloat * output = outputContainer;
@@ -165,6 +200,41 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
+		case PREFS_GET_MDL_POS_X:
+		{
+			CGFloat * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;
+			break;
+		}
+			
+		case PREFS_GET_TAB_SERIE_POSY:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			break;
+		}
+			
+		case PREFS_GET_TAB_CT_POSY:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			break;
+		}
+			
+		case PREFS_GET_TAB_READER_POSY:
+		{
+			CGFloat * output = outputContainer;
+			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			break;
+		}
+			
+		case PREFS_GET_MDL_POSY:
+		{
+			CGFloat * output = outputContainer;
+			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.y;
+			break;
+		}
+			
 		case PREFS_GET_SERIE_FOOTER_HEIGHT:
 		{
 			CGFloat *output = outputContainer;
@@ -183,34 +253,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		{
 			CGFloat *output = outputContainer;
 			*output = [tabReaderSize getFooterHeight];
-			break;
-		}
-			
-		case PREFS_GET_MDL_WIDTH:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.width;
-			break;
-		}
-			
-		case PREFS_GET_MDL_HEIGHT:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.height;
-			break;
-		}
-			
-		case PREFS_GET_MDL_POS_Y:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.y;
-			break;
-		}
-			
-		case PREFS_GET_MDL_POS_X:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;
 			break;
 		}
 			
