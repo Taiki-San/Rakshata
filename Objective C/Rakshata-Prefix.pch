@@ -33,6 +33,7 @@
 	#import "RakScroller.h"
 	#import "RakBorder.h"
 	#import "RakText.h"
+	#import "RakBackButton.h"
 
 	/* Différentes super-classes de l'interface	*/
 

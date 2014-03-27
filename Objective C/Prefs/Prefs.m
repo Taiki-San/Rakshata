@@ -89,9 +89,25 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_INTAB:
+		case GET_COLOR_BACKGROUND_READER_INTAB:
 		{
 			output = [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
+			break;
+		}
+		case GET_COLOR_BACKGROUND_TABS:
+		{
+			output = [NSColor colorWithDeviceRed:47/255.0f green:47/255.0 blue:47/255.0 alpha:1.0];
+			break;
+		}
+		case GET_COLOR_BORDER_TABS:
+		{
+			output = [NSColor colorWithSRGBRed:52/255.0f green:52/255.0 blue:52/255.0 alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUD_BACK_BUTTONS:
+		{
+			output = [NSColor colorWithSRGBRed:39/255.0f green:39/255.0 blue:39/255.0 alpha:1.0];
 			break;
 		}
 		

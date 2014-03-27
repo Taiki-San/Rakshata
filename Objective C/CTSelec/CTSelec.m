@@ -19,13 +19,19 @@
 	{
 		flag = GUI_THREAD_CT;
 		self = [self initView:contentView : state];
+		
+		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
+		self.layer.borderWidth = 2;
+		
+		RakBackButton *button = [[RakBackButton alloc] initWithFrame:[self frame]];
+		[self addSubview:button];
 	}
     return self;
 }
 
 - (NSColor*) getMainColor
 {
-	return [NSColor blueColor];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS];
 }
 
 - (int) getCodePref : (int) request

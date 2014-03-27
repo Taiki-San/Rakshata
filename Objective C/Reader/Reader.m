@@ -12,6 +12,8 @@
 
 @implementation Reader
 
+#define NO_RETRACTION_WIP
+
 #pragma mark - Main view management
 
 - (id)init : (NSView*)contentView : (NSString *) state
@@ -194,6 +196,10 @@
 		gonnaReduceTabs = copy = getRandom();
 	}while (!copy);
 	
+#ifdef NO_RETRACTION_WIP
+	copy--;
+#endif
+	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
 }
 
@@ -201,7 +207,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_INTAB];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB];
 }
 
 /**	Events **/
