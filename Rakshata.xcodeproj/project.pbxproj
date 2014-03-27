@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* window.xib */; };
+		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
+		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
+		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
+		B6033BD218E4617000750226 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCD18E4617000750226 /* libssl.a */; };
+		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
 		B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */; };
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
@@ -37,10 +42,6 @@
 		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
 		B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E89388189EF39700ACAF36 /* CTSelec.m */; };
 		B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6E8938A189EF3A600ACAF36 /* Images.xcassets */; };
-		B6EA51FF18A4065A00A9B16E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FC18A4065A00A9B16E /* libcrypto.a */; };
-		B6EA520018A4065A00A9B16E /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FD18A4065A00A9B16E /* libcurl.a */; };
-		B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA51FE18A4065A00A9B16E /* libssl.a */; };
-		B6EA520318A407EF00A9B16E /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EA520218A407EF00A9B16E /* libz.a */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
 		B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6EDE77318B02BCC00DB3AFC /* Credits.rtf */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
@@ -89,13 +90,17 @@
 		B6F6ED1818A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE718A3001400E3B55B /* unzip.c */; };
 		B6F6ED1918A3001400E3B55B /* update.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE818A3001400E3B55B /* update.c */; };
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
-		B6FD250618B123840025FE74 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FD250518B123840025FE74 /* libsqlite.a */; };
 		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
 		B6FE79E118B903B4004BE38D /* DBcache.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FE79E018B903B4004BE38D /* DBcache.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B6002C30189EF15E00466654 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = Ressources/window.xib; sourceTree = "<group>"; };
+		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
+		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
+		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
+		B6033BCD18E4617000750226 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
+		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
 		B61A790818E389F300D8E0E0 /* RakText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakText.h; path = Utils/RakText.h; sourceTree = "<group>"; };
 		B61A790918E389F300D8E0E0 /* RakText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakText.m; path = Utils/RakText.m; sourceTree = "<group>"; };
 		B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakBackButton.h; path = Utils/RakBackButton.h; sourceTree = "<group>"; };
@@ -156,10 +161,6 @@
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		B6EA51FC18A4065A00A9B16E /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Ressources/libcrypto.a; sourceTree = "<group>"; };
-		B6EA51FD18A4065A00A9B16E /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Ressources/libcurl.a; sourceTree = "<group>"; };
-		B6EA51FE18A4065A00A9B16E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Ressources/libssl.a; sourceTree = "<group>"; };
-		B6EA520218A407EF00A9B16E /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Ressources/libz.a; sourceTree = "<group>"; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
 		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
 		B6EDE77418B02BCC00DB3AFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = SOURCE_ROOT; };
@@ -230,7 +231,6 @@
 		B6F6ECE918A3001400E3B55B /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/utilitaires.c; sourceTree = "<group>"; };
 		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unz_memory.c; sourceTree = "<group>"; };
 		B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Rakshata.entitlements; sourceTree = "<group>"; };
-		B6FD250518B123840025FE74 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Ressources/libsqlite.a; sourceTree = "<group>"; };
 		B6FD250718B1245C0025FE74 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = Ressources/sqlite3.h; sourceTree = "<group>"; };
 		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
 		B6FE79E018B903B4004BE38D /* DBcache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBcache.c; path = C/DBcache.c; sourceTree = "<group>"; };
@@ -241,13 +241,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6FD250618B123840025FE74 /* libsqlite.a in Frameworks */,
-				B6EA520318A407EF00A9B16E /* libz.a in Frameworks */,
-				B6EA520118A4065A00A9B16E /* libssl.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
-				B6EA520018A4065A00A9B16E /* libcurl.a in Frameworks */,
+				B6033BD118E4617000750226 /* libsqlite.a in Frameworks */,
+				B6033BD218E4617000750226 /* libssl.a in Frameworks */,
+				B6033BD018E4617000750226 /* libcurl.a in Frameworks */,
 				B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */,
-				B6EA51FF18A4065A00A9B16E /* libcrypto.a in Frameworks */,
+				B6033BD318E4617000750226 /* libz.a in Frameworks */,
+				B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,11 +427,11 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B6FD250518B123840025FE74 /* libsqlite.a */,
-				B6EA51FC18A4065A00A9B16E /* libcrypto.a */,
-				B6EA51FD18A4065A00A9B16E /* libcurl.a */,
-				B6EA51FE18A4065A00A9B16E /* libssl.a */,
-				B6EA520218A407EF00A9B16E /* libz.a */,
+				B6033BCA18E4617000750226 /* libcrypto.a */,
+				B6033BCB18E4617000750226 /* libcurl.a */,
+				B6033BCC18E4617000750226 /* libsqlite.a */,
+				B6033BCD18E4617000750226 /* libssl.a */,
+				B6033BCE18E4617000750226 /* libz.a */,
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
 				B6CF07BE1868DD58009B16A3 /* Cocoa.framework */,
 				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
@@ -890,6 +890,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/Taiki/Mavy/Rakshata/Ressources,
+					"$(PROJECT_DIR)/Libraries",
 				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -930,6 +931,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/Taiki/Mavy/Rakshata/Ressources,
+					"$(PROJECT_DIR)/Libraries",
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
