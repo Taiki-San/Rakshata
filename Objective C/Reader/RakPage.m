@@ -14,6 +14,8 @@
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
+	readerMode = superView->readerMode;
+	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return nil;
 	
@@ -77,20 +79,6 @@
 	else
 		frameReader = frameWindow;
 	
-	//Largeur
-	if(selfFrame.size.width > frameReader.size.width - 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
-	{
-		pageTooLarge = true;
-		frameReader.size.width = frameReader.size.width - 2*READER_BORDURE_VERT_PAGE;
-		frameReader.origin.x = READER_BORDURE_VERT_PAGE;
-	}
-	else
-	{
-		pageTooLarge = false;
-		frameReader.origin.x = frameReader.size.width / 2 - selfFrame.size.width / 2;
-		frameReader.size.width = selfFrame.size.width;
-	}
-
 	//Hauteur
 	if (selfFrame.size.height > frameReader.size.height - READER_PAGE_BORDERS_HIGH)
 	{
@@ -104,17 +92,54 @@
 		frameReader.origin.y = (frameReader.size.height - READER_PAGE_BORDERS_HIGH) / 2 - selfFrame.size.height / 2;
 		frameReader.size.height = selfFrame.size.height + READER_PAGE_BORDERS_HIGH;
 	}
+	
+	if(!readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
+		return;
+	
+	//Largeur
+	if(selfFrame.size.width > frameReader.size.width - 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
+	{
+		pageTooLarge = true;
+		frameReader.size.width = frameReader.size.width - 2*READER_BORDURE_VERT_PAGE;
+		frameReader.origin.x = READER_BORDURE_VERT_PAGE;
+	}
+	else
+	{
+		pageTooLarge = false;
+		frameReader.origin.x = frameReader.size.width / 2 - selfFrame.size.width / 2;
+		frameReader.size.width = selfFrame.size.width;
+	}
 }
 
 - (void) setFrame:(NSRect)frameRect
 {
-	if(frameRect.size.width != frameReader.size.width || frameRect.size.height != frameReader.size.height)
+	if((frameRect.size.width != frameReader.size.width && readerMode) || frameRect.size.height != frameReader.size.height)
 	{
+		if(!readerMode)
+		{
+			frameRect.size.width = self.frame.size.width;
+			frameRect.origin.x = self.frame.origin.x;
+			frameRect.origin.y = self.frame.origin.y;
+		}
+		
 		[self initialPositionning:YES:frameRect];
 		self.hasVerticalScroller = pageTooHigh;
 		self.hasHorizontalScroller = pageTooLarge;
 	}
+	else if(!readerMode)
+		return;
+	
 	[super setFrame:frameReader];
+}
+
+- (void) leaveReaderMode
+{
+	readerMode = false;
+}
+
+- (void) startReaderMode
+{
+	readerMode = true;
 }
 
 /*Event handling*/
@@ -123,6 +148,12 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+	if(!readerMode)
+	{
+		[self.superview mouseDown:theEvent];
+		return;
+	}
+	
 	if (actionBeingProcessessed)
 		return;
 	

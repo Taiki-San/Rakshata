@@ -184,7 +184,7 @@
 	}
 }
 
-- (void) setUpViewForAnimation : (BOOL) readerMode
+- (void) setUpViewForAnimation : (BOOL) newReaderMode
 {
 	
 }

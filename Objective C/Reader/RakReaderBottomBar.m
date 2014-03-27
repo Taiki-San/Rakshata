@@ -40,6 +40,16 @@
 	CGContextAddArc(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height/2, RADIUS_BORDERS, M_PI_2, M_PI_2 / 3, 1);
 }
 
+- (void) leaveReaderMode
+{
+	readerMode = false;
+}
+
+- (void) startReaderMode
+{
+	readerMode = true;
+}
+
 #pragma mark - Buttons
 
 - (void) buttonHitten
@@ -177,8 +187,26 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
+	if(!readerMode)
+	{
+		if(frameRect.size.height == self.frame.size.height)
+			return;
+		
+		frameRect.size.width = self.frame.size.width;
+		frameRect.origin.x = self.frame.origin.x;
+		frameRect.origin.y = self.frame.origin.y;
+	}
+	
 	[super setFrame:frameRect];
-	[self recalculateButtonPosition];
+	
+	if(readerMode)
+		[self recalculateButtonPosition];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin
+{
+	if(readerMode)
+		[super setFrameOrigin:newOrigin];
 }
 
 /* Gestion des évènements*/

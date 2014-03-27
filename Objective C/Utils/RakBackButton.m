@@ -29,8 +29,10 @@
 
 		//On initialise la cellule
 		[self.cell switchToNewContext: @"arrowBack" : RB_STATE_STANDARD];
-		
-		self.layer.backgroundColor = [NSColor clearColor].CGColor;//[self getColorBackground].CGColor;
+	
+		//Set tracking area
+		frame.origin.x = frame.origin.y = 0;
+		[self addTrackingRect:frame owner:self userData:NULL assumeInside:NO];
 	}
     return self;
 }
@@ -66,6 +68,18 @@
 - (NSColor *) getColorBackgroundSlider
 {
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING];
+}
+
+#pragma mark - Animation
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	
+}
+
+- (void) mouseExited:(NSEvent *)theEvent
+{
+	
 }
 
 @end

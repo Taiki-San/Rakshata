@@ -26,6 +26,8 @@
 - (void) initReaderMainView : (NSString *) state;
 
 - (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
+- (void) willLeaveReader;
+- (void) willOpenReader;
 
 - (void) collapseAllTabs;
 - (void) hideBothTab;

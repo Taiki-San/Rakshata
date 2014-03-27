@@ -15,10 +15,10 @@
 @interface RakTabView : NSView
 {
 	int flag;
-	bool readerMode;
 	NSTrackingArea * trackingArea;
 	
 @public
+	bool readerMode;
 	uint resizeAnimationCount;
 }
 
@@ -36,7 +36,7 @@
 - (void) readerIsOpening;
 - (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;
-- (void) setUpViewForAnimation : (BOOL) readerMode;
+- (void) setUpViewForAnimation : (BOOL) newReaderMode;
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
 - (void) applyRefreshSizeReaderChecks;

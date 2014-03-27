@@ -117,7 +117,7 @@
 	initialized = true;
 	
 	mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
-	bottomBar = [[RakReaderBottomBar alloc] init: YES: self];
+	bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
 }
 
 - (NSString *) byebye
@@ -201,6 +201,36 @@
 #endif
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
+}
+
+- (void) willLeaveReader
+{
+	if(mainImage != nil)
+		[mainImage leaveReaderMode];
+	
+	if(bottomBar != nil)
+		[bottomBar leaveReaderMode];
+	
+	//	[self setAutoresizesSubviews:NO];
+}
+
+- (void) willOpenReader
+{
+	if(mainImage != nil)
+		[mainImage startReaderMode];
+	
+	if(bottomBar != nil)
+		[bottomBar startReaderMode];
+	
+	//	[self setAutoresizesSubviews:YES];
+}
+
+- (void) setUpViewForAnimation : (BOOL) newReaderMode
+{
+	if(newReaderMode && !readerMode)
+		[self willOpenReader];
+	else if(!newReaderMode && readerMode)
+		[self willLeaveReader];
 }
 
 /**	Drawing	**/

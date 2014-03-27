@@ -30,6 +30,8 @@
 	
 	/*context data*/
 @private
+	bool readerMode;
+	
 	bool cacheBeingBuilt;
 	bool actionBeingProcessessed;
 	
@@ -47,6 +49,8 @@
 - (NSString *) getContextToGTFO;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
+- (void) leaveReaderMode;
+- (void) startReaderMode;
 
 - (void) failure;
 

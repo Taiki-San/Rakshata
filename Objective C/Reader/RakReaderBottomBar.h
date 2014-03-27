@@ -30,6 +30,9 @@
 - (id)init: (BOOL) displayed : (id) parent;
 - (void) setupPath;
 
+- (void) leaveReaderMode;
+- (void) startReaderMode;
+
 - (short) numberIconsInBar;
 - (void) loadIcons : (Reader*) superView;
 - (CGFloat) getPosXButton : (uint) IDButton;

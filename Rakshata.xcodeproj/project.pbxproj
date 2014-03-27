@@ -360,12 +360,12 @@
 		B6CC724718723077003A745B /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				B69D61D3186CA2F2003504F9 /* Reader.h */,
-				B69D61D4186CA2F2003504F9 /* Reader.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
 				B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */,
+				B69D61D3186CA2F2003504F9 /* Reader.h */,
+				B69D61D4186CA2F2003504F9 /* Reader.m */,
 			);
 			name = Reader;
 			sourceTree = "<group>";
@@ -384,18 +384,18 @@
 		B6CC724918723084003A745B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				B61A790818E389F300D8E0E0 /* RakText.h */,
-				B61A790918E389F300D8E0E0 /* RakText.m */,
-				B6519A5318E0B610003FF1B6 /* RakScroller.h */,
-				B6519A5418E0B610003FF1B6 /* RakScroller.m */,
-				B623390818DBB7F800FC188A /* RakContentView.h */,
-				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */,
+				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
 				B61DD14B18E23915009D51E3 /* RakBorder.h */,
 				B61DD14C18E23915009D51E3 /* RakBorder.m */,
 				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
-				B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */,
-				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
+				B623390818DBB7F800FC188A /* RakContentView.h */,
+				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B6519A5318E0B610003FF1B6 /* RakScroller.h */,
+				B6519A5418E0B610003FF1B6 /* RakScroller.m */,
+				B61A790818E389F300D8E0E0 /* RakText.h */,
+				B61A790918E389F300D8E0E0 /* RakText.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -454,12 +454,12 @@
 			children = (
 				B6CC724318723044003A745B /* CT */,
 				B6CC724618723071003A745B /* MDL */,
+				B6218242187351A3008AC5DD /* Prefs */,
 				B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */,
 				B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */,
+				B66CDD31189C545F007B9389 /* RakTabView */,
 				B6CC724718723077003A745B /* Reader */,
 				B6CC72481872307D003A745B /* Series */,
-				B6218242187351A3008AC5DD /* Prefs */,
-				B66CDD31189C545F007B9389 /* RakTabView */,
 				B6CC724918723084003A745B /* Utils */,
 			);
 			name = "Objective-C";
