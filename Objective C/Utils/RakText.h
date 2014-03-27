@@ -10,6 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakText : NSTextField
+@interface RakText : NSTextView
 
 @end

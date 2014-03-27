@@ -17,7 +17,6 @@
     self = [super initWithFrame:frame];
     if (self)
 	{
-		[self setBezeled:NO];
 		[self setDrawsBackground:NO];
 		[self setEditable:NO];
 		[self setSelectable:NO];
