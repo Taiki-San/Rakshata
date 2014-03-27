@@ -50,17 +50,17 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	{
 		case GET_COLOR_EXTERNALBORDER_FAREST:
 		{
-			output = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0f blue:20/255.0f alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_EXTERNALBORDER_MIDDLE:
 		{
-			output = [NSColor colorWithSRGBRed:32/255.0f green:32/255.0f blue:32/255.0f alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:32/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_EXTERNALBORDER_CLOSEST:
 		{
-			output = [NSColor colorWithSRGBRed:50/255.0f green:50/255.0f blue:50/255.0f alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_INACTIVE:
@@ -80,37 +80,43 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		}
 		case GET_COLOR_READER_BAR:
 		{
-			output = [NSColor colorWithSRGBRed:20/255.0f green:20/255.0f blue:20/255.0f alpha:0.8];
+			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:0.8];
 			break;
 		}
 		case GET_COLOR_READER_BAR_FRONT:
 		{
-			output = [NSColor colorWithSRGBRed:75/255.0f green:75/255.0f blue:75/255.0f alpha:0.8];
+			output = [NSColor colorWithDeviceWhite:75/255.0f alpha:0.8];
 			break;
 		}
 			
 		case GET_COLOR_BACKGROUND_READER_INTAB:
 		{
-			output = [NSColor colorWithSRGBRed:42/255.0f green:42/255.0 blue:42/255.0 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:42/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_BACKGROUND_TABS:
 		{
-			output = [NSColor colorWithDeviceRed:47/255.0f green:47/255.0 blue:47/255.0 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:47/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_BORDER_TABS:
 		{
-			output = [NSColor colorWithSRGBRed:52/255.0f green:52/255.0 blue:52/255.0 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:52/255.0f alpha:1.0];
 			break;
 		}
 			
 		case GET_COLOR_BACKGROUD_BACK_BUTTONS:
 		{
-			output = [NSColor colorWithSRGBRed:39/255.0f green:39/255.0 blue:39/255.0 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
 			break;
 		}
-		
+			
+		case GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING:
+		{
+			output = [NSColor colorWithDeviceWhite:100/255.0f alpha:1.0];
+			break;
+		}
+			
 		default:
 		{
 			return nil;

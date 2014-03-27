@@ -11,10 +11,23 @@
  *********************************************************************************************/
 
 @interface RakBackButton : NSButton
+{
+	NSImage * icon;
+}
+
+- (id)initWithFrame:(NSRect)frame : (int) numberReturnChar;
 
 - (NSColor *) getColorBackground;
-- (NSColor *) getColorTextStandBy;
-- (NSColor *) getColorTextActivating;
-- (NSColor *) getColorClick;
+- (NSColor *) getColorBackgroundSlider;
+
+@end
+
+@interface RakBackButtonCell : RakButtonCell
+{
+	bool animationInProgress;
+	CGFloat animationStatus;
+}
+
+- (void) switchToNewContext : (NSString*) imageName : (short) state;
 
 @end
