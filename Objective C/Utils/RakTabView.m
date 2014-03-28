@@ -12,6 +12,8 @@
 
 @implementation RakTabView
 
+#pragma mark - Core view management
+
 - (id) initView: (NSView *)superView : (NSString *) state
 {
 	NSRect frame = [self createFrameWithSuperView:superView];
@@ -47,6 +49,7 @@
 	return [NSString stringWithFormat:STATE_EMPTY];
 }
 
+#pragma mark - Drawing, and FS support
 /**			Handle Fullscreen			**/
 
 - (NSColor*) getMainColor
@@ -109,6 +112,7 @@
 		[super setFrameSize:newSize];
 }
 
+#pragma mark - Reader
 /**		Reader		**/
 
 - (void) readerIsOpening
@@ -189,6 +193,7 @@
 	
 }
 
+#pragma mark - Events
 /**		Events		**/
 
 -(BOOL) isCursorOnMe
@@ -254,6 +259,7 @@
 	
 }
 
+#pragma mark - Graphic Utilities
 /*		Graphic Utilities		*/
 
 - (NSRect) createFrame
