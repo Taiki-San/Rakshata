@@ -23,10 +23,18 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;
 		
-		RakBackButton *button = [[RakBackButton alloc] initWithFrame:[self frame]];
+		RakBackButton *button = [[RakBackButton alloc] initWithFrame:[self frame]:1];
+		[button setTarget:self];
+		[button setAction:@selector(backButtonClicked)];
+		
 		[self addSubview:button];
 	}
     return self;
+}
+
+- (void) backButtonClicked
+{
+	[self mouseDown:NULL];
 }
 
 - (NSColor*) getMainColor

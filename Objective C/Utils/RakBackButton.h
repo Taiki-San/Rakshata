@@ -10,15 +10,21 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBackButton : NSButton
+@interface RakBackButton : NSButton <NSAnimationDelegate>
 {
-	NSImage * icon;
+	bool cursorOnMe;
+
+	NSAnimation * _animation;
 }
 
 - (id)initWithFrame:(NSRect)frame : (int) numberReturnChar;
 
 - (NSColor *) getColorBackground;
 - (NSColor *) getColorBackgroundSlider;
+
+@end
+
+@interface RakBackButtonAnimation : NSAnimation
 
 @end
 
@@ -29,5 +35,8 @@
 }
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state;
+
+- (void) setAnimationInProgress : (bool) start;
+- (void) setAnimationStatus:(CGFloat) status;
 
 @end

@@ -26,11 +26,13 @@
 		[self setWantsLayer:true];
 		[self setBordered:NO];
 		[self.layer setCornerRadius:4];
+		cursorOnMe = false;
 
 		//On initialise la cellule
 		[self.cell switchToNewContext: @"arrowBack" : RB_STATE_STANDARD];
 	
 		//Set tracking area
+		frame = [self frame];
 		frame.origin.x = frame.origin.y = 0;
 		[self addTrackingRect:frame owner:self userData:NULL assumeInside:NO];
 	}
@@ -70,16 +72,63 @@
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING];
 }
 
-#pragma mark - Animation
+#pragma mark - Events
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	
+	cursorOnMe = true;
+	[self startAnimation];
 }
 
 - (void) mouseExited:(NSEvent *)theEvent
 {
+	cursorOnMe = false;
+	[self.cell setAnimationInProgress:false];
+	[_animation stopAnimation];
+}
+
+//	Haaaaaccckkkyyyyyyyyy, in theory, nobody should call this function except before performing the click
+- (SEL) action
+{
+	cursorOnMe = false;
+	[self.cell setAnimationInProgress:false];
+	return [super action];
+}
+
+#pragma mark - Animation
+
+- (void) startAnimation
+{
+	_animation = [[NSAnimation alloc] initWithDuration:1.5 animationCurve:NSAnimationLinear];
+	[_animation setFrameRate:20.0];
+	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
+	[_animation setDelegate:self];
 	
+	for (NSAnimationProgress i = 0; i < 1; i+= 0.05)
+	{
+		[_animation addProgressMark:i];
+	}
+	
+	[self.cell setAnimationInProgress:true];
+	[_animation startAnimation];
+}
+
+- (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
+{
+	if(cursorOnMe)
+	{
+		[self.cell setAnimationStatus: progress];
+		[self setNeedsDisplay:YES];
+	}
+}
+
+- (void)animationDidEnd:(NSAnimation *)animation
+{
+	if(cursorOnMe && animation)
+	{
+		[self.cell setAnimationInProgress:false];
+		[self performClick:self];
+	}
 }
 
 @end
@@ -109,6 +158,17 @@
 	}
 }
 
+- (void) setAnimationInProgress : (bool) start
+{
+	animationInProgress = start;
+	animationStatus = 0;
+}
+
+- (void) setAnimationStatus:(CGFloat) status
+{
+	animationStatus = status;
+}
+
 - (void)drawBezelWithFrame:(NSRect)frame inView:(RakBackButton *)controlView
 {
 	NSGraphicsContext *ctx = [NSGraphicsContext currentContext];
@@ -122,13 +182,22 @@
 	}
 	else if (animationInProgress)
 	{
-		NSGradient *backgroundGradient = [[NSGradient alloc] initWithColorsAndLocations:
-										  [controlView getColorBackgroundSlider], 0.98f,
-										  [controlView getColorBackground], 1.0f,
-										  nil];
+		NSRect drawingRect = frame;
 		
-		[backgroundGradient drawInRect:frame angle:270.0f];
-		[backgroundGradient release];
+		drawingRect.size.width *= animationStatus;
+		if (animationStatus)
+		{
+			[[controlView getColorBackgroundSlider] setFill];
+			NSRectFill(drawingRect);
+		}
+			
+		if(animationStatus != 1)
+		{
+			drawingRect.origin.x = drawingRect.size.width;
+			drawingRect.size.width = frame.size.width;
+			[[controlView getColorBackground] setFill];
+			NSRectFill(drawingRect);
+		}
 	}
 	else
 	{
