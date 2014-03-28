@@ -60,6 +60,12 @@
 	return [RakBackButtonCell class];
 }
 
+- (void) setHidden:(BOOL)flag
+{
+	if([self isHidden] != flag)
+		[super setHidden:flag];
+}
+
 #pragma mark - Color
 
 - (NSColor *) getColorBackground
@@ -99,12 +105,12 @@
 
 - (void) startAnimation
 {
-	_animation = [[NSAnimation alloc] initWithDuration:1.5 animationCurve:NSAnimationLinear];
-	[_animation setFrameRate:20.0];
+	_animation = [[NSAnimation alloc] initWithDuration:1.6 animationCurve:NSAnimationLinear];
+	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
 	
-	for (NSAnimationProgress i = 0; i < 1; i+= 0.05)
+	for (NSAnimationProgress i = 0; i < 1; i+= 0.01)
 	{
 		[_animation addProgressMark:i];
 	}
