@@ -34,3 +34,17 @@
 #define RD_CONTROLBAR_WIDHT_MIN		500
 #define RD_CONTROLBAR_WIDHT_MAX		1000
 #define RD_CONTROLBAR_POSY			20
+
+/**	CT itself	**/
+
+/** RakChapterView **/
+#define CT_VIEW_READERMODE_LATERAL_BORDER 5			//	%
+#define CT_VIEW_READERMORE_BOTTOMBAR_WIDTH	14
+
+/**		Utils	**/
+
+/*		RakBackButton		*/
+#define RBB_BUTTON_HEIGHT	25
+#define RBB_BUTTON_WIDTH	75						//	%
+#define RBB_BUTTON_POSX		12.5f					//	%
+#define RBB_TOP_BORDURE		10

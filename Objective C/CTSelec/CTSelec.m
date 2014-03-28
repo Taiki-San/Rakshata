@@ -5,10 +5,10 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
- *********************************************************************************************/
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
+ ********************************************************************************************/
 
 @implementation CTSelec
 
@@ -23,13 +23,25 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;
 		
-		RakBackButton *button = [[RakBackButton alloc] initWithFrame:[self frame]:1];
-		[button setTarget:self];
-		[button setAction:@selector(backButtonClicked)];
+		backButton = [[RakBackButton alloc] initWithFrame:[self frame]:1];
+		[backButton setTarget:self];
+		[backButton setAction:@selector(backButtonClicked)];
+		[backButton setHidden:!readerMode];
+		[self addSubview:backButton];
 		
-		[self addSubview:button];
+		//Calculate contentView size
+				
+		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize]];
+		[self addSubview:coreView];
 	}
     return self;
+}
+
+- (void) dealloc
+{
+	[backButton removeFromSuperview];
+	[backButton release];
+	[super dealloc];
 }
 
 - (void) backButtonClicked
@@ -76,7 +88,20 @@
 	return output;
 }
 
+- (void) setUpViewForAnimation : (BOOL) reader
+{
+	[backButton setHidden:!reader];
+}
+
+#pragma mark - Reader code
 /**		Reader		**/
+
+- (void) readerIsOpening
+{
+	[super readerIsOpening];
+	
+}
+
 - (BOOL) isStillCollapsedReaderTab
 {
 	int state;
@@ -93,6 +118,27 @@
 	frame.size.width = (posReader - posCT) * self.superview.frame.size.width / 100;
 	frame.origin.x = frame.origin.y = 0;
 	return frame;
+}
+
+#pragma mark - Self code used in reader mode
+
+- (NSRect) calculateContentViewSize
+{
+	NSRect frame = [self frame];
+
+	//frame.origin.y = bordure + size, 2*bordure + size = 2*y - size
+	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_VIEW_READERMORE_BOTTOMBAR_WIDTH;
+	frame.origin.x = CT_VIEW_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+	frame.origin.y = CT_VIEW_READERMORE_BOTTOMBAR_WIDTH;
+	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+
+	return frame;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	[coreView setFrame:[self calculateContentViewSize]];
 }
 
 @end

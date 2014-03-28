@@ -111,9 +111,16 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
+			//To improve
 		case GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING:
 		{
 			output = [NSColor colorWithDeviceWhite:100/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUD_CT_READERMODE:
+		{
+			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
 			break;
 		}
 			

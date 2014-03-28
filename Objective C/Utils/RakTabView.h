@@ -29,6 +29,7 @@
 - (id) initView: (NSView *)superView : (NSString *) state;
 - (NSString *) byebye;
 
+- (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;

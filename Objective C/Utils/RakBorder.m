@@ -25,7 +25,7 @@
 	if(self != nil)
 	{
 		[self setWantsLayer:YES];
-		self .layer.masksToBounds   = YES;
+		self.layer.masksToBounds	= YES;
 		self.layer.borderWidth      = borderWidth;
 		self.layer.cornerRadius		= angleRounds;
 		self.layer.backgroundColor	= color.CGColor;

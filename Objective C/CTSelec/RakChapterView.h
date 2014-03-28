@@ -5,20 +5,22 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
- *********************************************************************************************/
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
+ ********************************************************************************************/
 
-#import "RakChapterView.h"
+@interface RakTextProjectName : RakText
 
-@interface CTSelec : RakTabView
+@end
+
+@interface RakChapterView : NSView
 {
-	RakBackButton *backButton;
-	RakChapterView * coreView;
+	uint mainThread;
+	RakTextProjectName *projectName;
 }
-- (id)init : (NSView*)contentView : (NSString *) state;
 
-- (NSRect) calculateContentViewSize;
+- (NSRect) getProjectNameSize;
+- (NSColor*) getBackgroundColor;
 
 @end

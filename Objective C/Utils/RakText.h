@@ -10,6 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakText : NSTextView
+@interface RakText : NSTextField
+
+- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
+- (void) additionalDrawing;
 
 @end

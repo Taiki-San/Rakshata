@@ -14,10 +14,11 @@
 
 - (id)initWithFrame:(NSRect)frame : (int) numberReturnChar
 {
-	frame.origin.x = frame.size.width / 8;
-	frame.origin.y = frame.size.height - 35;
-	frame.size.width *= 0.75;
-	frame.size.height = 25;
+	frame.origin.x = frame.size.width * RBB_BUTTON_POSX / 100.0f;
+	frame.origin.y = frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT;
+	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
+	frame.size.height = RBB_BUTTON_HEIGHT;
+	
 	
     self = [super initWithFrame:frame];
     if (self)
@@ -42,9 +43,9 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	frameRect.size.height = self.frame.size.height;
-	frameRect.size.width = self.superview.frame.size.width * 0.75;
-	frameRect.origin.x = self.superview.frame.size.width / 8;
-	frameRect.origin.y = self.superview.frame.size.height - self.frame.size.height - 10;
+	frameRect.size.width = self.superview.frame.size.width * RBB_BUTTON_WIDTH / 100.0f;
+	frameRect.origin.x = self.superview.frame.size.width * RBB_BUTTON_POSX / 100.0f;
+	frameRect.origin.y = self.superview.frame.size.height - self.frame.size.height - RBB_TOP_BORDURE;
 	
 	[super setFrame:frameRect];
 }
@@ -82,8 +83,16 @@
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	cursorOnMe = true;
-	[self startAnimation];
+	if([self confirmMouseOnMe])
+	{
+		cursorOnMe = true;
+		[self startAnimation];
+	}
+}
+
+- (bool) confirmMouseOnMe
+{
+	return ![(RakTabView *) self.superview isStillCollapsedReaderTab];
 }
 
 - (void) mouseExited:(NSEvent *)theEvent
@@ -91,6 +100,7 @@
 	cursorOnMe = false;
 	[self.cell setAnimationInProgress:false];
 	[_animation stopAnimation];
+	[self setNeedsDisplay:YES];
 }
 
 //	Haaaaaccckkkyyyyyyyyy, in theory, nobody should call this function except before performing the click
