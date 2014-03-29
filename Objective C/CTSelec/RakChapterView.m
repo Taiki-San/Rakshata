@@ -22,22 +22,13 @@
 		self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 		self.layer.cornerRadius = 12;
 		
-		
-		projectName = [[RakTextProjectName alloc] initWithText:[self getProjectNameSize] :@"\nTestTestTestTestTestTestTestTestTest" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
-		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self frame] :@"TestTestTestTestTestTestTestTestTest" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:projectName];
+		
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName:@"defaultCTBackground" :[self frame]];
+		[self addSubview:projectImage];
     }
     return self;
-}
-
-- (NSRect) getProjectNameSize
-{
-	NSRect frame = [self frame];
-	frame.size.height = 40;
-	frame.origin.x = 0;
-	frame.origin.y = self.frame.size.height - frame.size.height;
-	
-	return frame;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -50,7 +41,8 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	[projectName setFrame:[self getProjectNameSize]];
+	[projectName setFrame:frameRect];
+	[projectImage setFrame:frameRect];
 }
 
 #pragma mark - Color
@@ -97,5 +89,76 @@
 	[[Prefs getSystemColor:GET_COLOR_INACTIVE] setFill];
 	NSRectFill(frame);
 }
+
+- (NSRect) getProjectNameSize : (NSRect) superViewSize
+{
+	NSRect frame = superViewSize;
+	frame.size.height = CT_VIEW_READERMORE_WIDTH_PROJECT_NAME;
+	frame.origin.x = 0;
+	frame.origin.y = superViewSize.size.height - frame.size.height;
+
+	return frame;
+}
+
+- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
+{
+	self = [super initWithText:[self getProjectNameSize:frame] :text :color];
+	
+	if(self != nil)
+	{
+		[self setFont:[NSFont fontWithName:@"Helvetica" size:16]];
+		[self setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
+	}
+	
+	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:[self getProjectNameSize:frameRect]];
+}
+
+@end
+
+@implementation RakCTProjectImageView
+
+- (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame
+{
+	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
+	if(projectImageBase != nil)
+	{
+		self = [super initWithFrame:[self getProjectImageSize: superViewFrame : [projectImageBase size] ] ];
+		
+		if(self != nil)
+		{
+			[self setImageAlignment:NSImageAlignCenter];
+			[self setImageFrameStyle:NSImageFrameNone];
+			[self setImage:projectImageBase];
+		}
+	}
+	else
+		self = nil;
+	
+	return self;
+}
+
+- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize
+{
+	NSRect frame;
+	
+	frame.size.height = imageSize.height;
+	frame.size.width = imageSize.width;
+	
+	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
+	frame.origin.y = superViewFrame.size.height - CT_VIEW_READERMORE_WIDTH_PROJECT_NAME - 25 - imageSize.height;
+	
+	return frame;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:[self getProjectImageSize:frameRect :[self image].size]];
+}
+
 
 @end

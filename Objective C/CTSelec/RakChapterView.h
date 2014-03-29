@@ -12,15 +12,24 @@
 
 @interface RakTextProjectName : RakText
 
+- (NSRect) getProjectNameSize : (NSRect) superViewSize;
+
+@end
+
+@interface RakCTProjectImageView : NSImageView
+
+- (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame;
+- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
+
 @end
 
 @interface RakChapterView : NSView
 {
 	uint mainThread;
 	RakTextProjectName *projectName;
+	RakCTProjectImageView * projectImage;
 }
 
-- (NSRect) getProjectNameSize;
 - (NSColor*) getBackgroundColor;
 
 @end
