@@ -23,6 +23,10 @@
 #include "graphics.h"
 #include "constants.h"
 
+#ifdef DEV_VERSION
+#define DISABLE_MDLTAB_DEBUG
+#endif
+
 #ifdef __OBJC__
 	#import <Cocoa/Cocoa.h>
 	#import <QuartzCore/QuartzCore.h>

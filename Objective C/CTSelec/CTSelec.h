@@ -10,6 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
+#import "RakCTCoreViewButtons.h"
 #import "RakChapterView.h"
 
 @interface CTSelec : RakTabView

@@ -10,38 +10,18 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakTextProjectName : RakText
-
-- (NSRect) getProjectNameSize : (NSRect) superViewSize;
+@interface RakCTCoreViewButtons : NSSegmentedControl
 
 @end
 
-@interface RakCTProjectImageView : NSImageView
-
-- (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame;
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
-
-@end
-
-@interface RakCTContentTabView : NSView
+@interface RakCTCoreViewButtonsCell : NSSegmentedCell
 {
-	MANGAS_DATA data;
-	RakCTCoreViewButtons * buttons;
+	NSTextFieldCell * firstField;
+	NSTextFieldCell * secondField;
 }
 
-- (id) initWithProject : (MANGAS_DATA) project : (NSRect) frame;
-
-@end
-
-@interface RakChapterView : NSView
-{
-	uint mainThread;
-	RakTextProjectName *projectName;
-	RakCTProjectImageView * projectImage;
-	RakCTContentTabView * coreView;
-}
-
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project;
-- (NSColor*) getBackgroundColor;
+- (void) createCellWithText : (NSString*) string forElem : (uint) cellID;
+- (NSColor *) getFontColor : (uint) cellID;
+- (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView;
 
 @end

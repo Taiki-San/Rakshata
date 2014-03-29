@@ -30,11 +30,18 @@
 		[self addSubview:backButton];
 		
 		//Calculate contentView size
-				
-		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize]];
+		
+		MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
+		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[21]];
 		[self addSubview:coreView];
 	}
     return self;
+}
+
+// !!!!!!!! DEBUG PURPOSE ONLY !!!!!!!!!!!
+- (void)mouseExited:(NSEvent *)theEvent
+{
+
 }
 
 - (void) dealloc
