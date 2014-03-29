@@ -209,6 +209,7 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:[self getSizeOfCoreView:frameRect]];
+	[buttons setFrame:[self bounds]];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

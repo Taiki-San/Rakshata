@@ -10,34 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBackButton : NSButton <NSAnimationDelegate>
-{
-	bool cursorOnMe;
-	NSTrackingRectTag tag;
-
-	NSAnimation * _animation;
-}
-
-- (id)initWithFrame:(NSRect)frame : (int) numberReturnChar;
-
-- (NSColor *) getColorBackground;
-- (NSColor *) getColorBackgroundSlider;
-
-@end
-
-@interface RakBackButtonAnimation : NSAnimation
-
-@end
-
-@interface RakBackButtonCell : RakButtonCell
-{
-	bool animationInProgress;
-	CGFloat animationStatus;
-}
-
-- (void) switchToNewContext : (NSString*) imageName : (short) state;
-
-- (void) setAnimationInProgress : (bool) start;
-- (void) setAnimationStatus:(CGFloat) status;
-
-@end
+#import "RakTabView.h"
+#import "RakButton.h"
+#import "RakScroller.h"
+#import "RakBorder.h"
+#import "RakText.h"
+#import "RakBackButton.h"
+#import "RakCenteredTextFieldCell.h"

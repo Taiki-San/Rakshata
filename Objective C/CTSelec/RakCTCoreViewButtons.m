@@ -120,9 +120,10 @@
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID
 {
-	NSTextFieldCell * cell = [[[NSTextFieldCell alloc] initTextCell:string] retain];
+	NSTextFieldCell * cell = [[[RakCenteredTextFieldCell alloc] initTextCell:string] retain];
 	
-	[cell setFont:[NSFont fontWithName:@"Helvetica" size:13]];
+	[cell setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+	[cell setAlignment:NSCenterTextAlignment];
 	
 	if(cellID == 0)
 		firstField = cell;
@@ -164,6 +165,13 @@
 		
 		[cell drawInteriorWithFrame:frame inView:controlView];
 	}
+}
+
+- (void) dealloc
+{
+	if(firstField != nil)	[firstField dealloc];
+	if(secondField != nil)	[secondField dealloc];
+	[super dealloc];
 }
 
 @end

@@ -35,7 +35,7 @@
 		//Set tracking area
 		frame = [self frame];
 		frame.origin.x = frame.origin.y = 0;
-		[self addTrackingRect:frame owner:self userData:NULL assumeInside:NO];
+		tag = [self addTrackingRect:frame owner:self userData:NULL assumeInside:NO];
 	}
     return self;
 }
@@ -48,6 +48,10 @@
 	frameRect.origin.y = self.superview.frame.size.height - self.frame.size.height - RBB_TOP_BORDURE;
 	
 	[super setFrame:frameRect];
+	
+	[self removeTrackingRect:tag];
+	tag = [self addTrackingRect:frameRect owner:self userData:NULL assumeInside:NO];
+	
 }
 
 - (void) drawRect:(NSRect)dirtyRect

@@ -10,34 +10,26 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBackButton : NSButton <NSAnimationDelegate>
+@implementation RakCenteredTextFieldCell
+
+- (NSRect)drawingRectForBounds:(NSRect)theRect
 {
-	bool cursorOnMe;
-	NSTrackingRectTag tag;
+    // Get the parent's idea of where we should draw
+    NSRect newRect = [super drawingRectForBounds:theRect];
+	
+	// Get our ideal size for current text
+	NSSize textSize = [self cellSizeForBounds:theRect];
+	
+	// Center that in the proposed rect
+	
+	float heightDelta = newRect.size.height - textSize.height;
+	if (heightDelta > 0)
+	{
+		newRect.size.height -= heightDelta;
+		newRect.origin.y += (heightDelta / 2);
+	}
 
-	NSAnimation * _animation;
+    return newRect;
 }
-
-- (id)initWithFrame:(NSRect)frame : (int) numberReturnChar;
-
-- (NSColor *) getColorBackground;
-- (NSColor *) getColorBackgroundSlider;
-
-@end
-
-@interface RakBackButtonAnimation : NSAnimation
-
-@end
-
-@interface RakBackButtonCell : RakButtonCell
-{
-	bool animationInProgress;
-	CGFloat animationStatus;
-}
-
-- (void) switchToNewContext : (NSString*) imageName : (short) state;
-
-- (void) setAnimationInProgress : (bool) start;
-- (void) setAnimationStatus:(CGFloat) status;
 
 @end

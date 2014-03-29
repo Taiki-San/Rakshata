@@ -32,12 +32,7 @@
 	#import <QuartzCore/QuartzCore.h>
 	#import <Foundation/Foundation.h>
 
-	#import "RakTabView.h"
-	#import "RakButton.h"
-	#import "RakScroller.h"
-	#import "RakBorder.h"
-	#import "RakText.h"
-	#import "RakBackButton.h"
+	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/
 
