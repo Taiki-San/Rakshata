@@ -167,10 +167,7 @@
 	if(pageTooLarge)
 		mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
 	
-	if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [self.contentView documentRect].size.height - READER_PAGE_TOP_BORDER)
-		[self prevPage];
-	else
-		[self nextPage];
+	[self nextPage];
 	
 	actionBeingProcessessed = false;
 }
