@@ -130,13 +130,13 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			//To improve
-		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
+		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
 		{
 			output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];
 			break;
 		}
 			//To improve
-		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
+		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
 		{
 			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
 			break;

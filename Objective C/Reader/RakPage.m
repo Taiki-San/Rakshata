@@ -28,8 +28,6 @@
 	{
 		[self addPageToView];
 		
-		areSlidersHidden = YES;
-		
 		//We set preferences ~
 
 		self.hasVerticalScroller =		pageTooHigh;
@@ -40,11 +38,8 @@
 		self.needsDisplay =				YES;
 		self.autoresizesSubviews =		YES;
 		
-		if(areSlidersHidden)
-		{
-			self.verticalScroller.alphaValue =	0;
-			self.horizontalScroller.alphaValue = 0;
-		}
+		self.verticalScroller.alphaValue =	0;
+		self.horizontalScroller.alphaValue = 0;
 				
 		[superView addSubview:self];
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];

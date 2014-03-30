@@ -27,6 +27,7 @@
 {
 	MANGAS_DATA data;
 	RakCTCoreViewButtons * buttons;
+	RakCTCoreContentView * tableViewControllerChapter;
 }
 
 - (id) initWithProject : (MANGAS_DATA) project : (NSRect) frame;

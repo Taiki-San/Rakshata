@@ -10,16 +10,21 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakScroller : NSScroller
+@interface RakCTCoreContentView : NSObject <NSTableViewDelegate, NSTableViewDataSource>
 {
-	NSColor *color;
-	
-	NSColor *passive;
-	NSColor *active;
-	
-	CGContextRef contextBorder;
+	bool isTome;
+	void* data;
+	uint amountData;
+	NSScrollView * scrollView;
+	NSTableView * _tableView;
 }
 
-+ (void) updateScrollers : (NSScrollView *) view;
+- (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest;
+- (void) setSuperView : (NSView *) superview;
+- (NSRect) getTableViewFrame : (NSRect) superViewFrame;
+
+@end
+
+@interface RakCTScrollView : NSScrollView
 
 @end

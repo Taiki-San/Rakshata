@@ -21,7 +21,9 @@
 }
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID;
+
 - (NSColor *) getFontColor : (uint) cellID;
+- (NSTextFieldCell*) getCellForID : (uint) cellID;
 - (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView;
 
 @end

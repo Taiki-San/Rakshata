@@ -43,7 +43,7 @@
 {
 	NSRect frame = self.frame;
 	
-	frame.size.height = 25;
+	frame.size.height = CT_READERMODE_HEIGHT_CT_BUTTON;
 	frame.origin.y = superViewFrame.size.height - frame.size.height;
 	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
 	
@@ -101,7 +101,7 @@
 		//Draw the cell
 		frame.size.width = [self widthForSegment:i] - 1;
 		
-		if([self isSelectedForSegment:i])
+		if(![self isSelectedForSegment:i])
 			[[NSColor colorWithDeviceWhite:44.0f/255.0f alpha:1.0] setFill];
 		
 		else
@@ -141,15 +141,18 @@
 		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED];
 }
 
+- (NSTextFieldCell*) getCellForID : (uint) cellID
+{
+	if(cellID == 0)
+		return firstField;
+	else
+		return secondField;
+}
+
 -  (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView
 {
-	NSTextFieldCell * cell;
-	
-	if(cellID == 0)
-		cell = firstField;
-	else
-		cell = secondField;
-	
+	NSTextFieldCell * cell = [self getCellForID:cellID];
+
 	if(cell == nil)
 	{
 		[self createCellWithText:[self labelForSegment:cellID] forElem:cellID];

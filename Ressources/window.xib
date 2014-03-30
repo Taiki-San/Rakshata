@@ -76,6 +76,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="950" height="470"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>
+            <connections>
+                <outlet property="initialFirstResponder" destination="372" id="pUA-Hb-oGz"/>
+            </connections>
         </window>
         <customObject id="494" customClass="RakAppDelegate">
             <connections>

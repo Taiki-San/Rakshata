@@ -92,5 +92,11 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 		[[self window] setFrame:size display:NO];
 }
 
+- (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
+{
+	return YES;
+}
+
+
 @end
 

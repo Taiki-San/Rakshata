@@ -92,7 +92,7 @@
 - (NSRect) getProjectNameSize : (NSRect) superViewSize
 {
 	NSRect frame = superViewSize;
-	frame.size.height = CT_VIEW_READERMORE_WIDTH_PROJECT_NAME;
+	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
 	frame.origin.y = superViewSize.size.height - frame.size.height;
 
 	return frame;
@@ -126,10 +126,10 @@
 	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
 	if(projectImageBase != nil)
 	{
-		if(projectImageBase.size.height != CT_VIEW_READERMORE_HEIGHT_PROJECT_IMAGE)
+		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
 		{
 			NSSize imageSize = projectImageBase.size;
-			CGFloat ratio = imageSize.height / CT_VIEW_READERMORE_HEIGHT_PROJECT_IMAGE;
+			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
 			
 			imageSize.height *= ratio;
 			imageSize.width *= ratio;
@@ -160,7 +160,7 @@
 	frame.size.width = imageSize.width;
 	
 	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
-	frame.origin.y = superViewFrame.size.height - CT_VIEW_READERMORE_WIDTH_PROJECT_NAME - CT_VIEW_READERMORE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;
+	frame.origin.y = superViewFrame.size.height - CT_READERMODE_WIDTH_PROJECT_NAME - CT_READERMODE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;
 	
 	return frame;
 }
@@ -191,16 +191,31 @@
 		{
 			[buttons setEnabled:true forSegment:0];
 			[buttons setSelected:true forSegment:0];
+			
+			if(data.nombreChapitre == 1)
+			{
+				NSString * name = [buttons labelForSegment:0];
+				[buttons setLabel:[name substringToIndex:[name length] - 0] forSegment:0];
+			}
 		}
 		
 		if(data.nombreTomes > 0)
 		{
 			[buttons setEnabled:true forSegment:1];
+			
 			if([buttons selectedSegment] == -1)
 				[buttons setSelected:true forSegment:1];
+			
+			if(data.nombreTomes == 1)
+			{
+				NSString * name = [buttons labelForSegment:1];
+				[buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
+			}
 		}
 
 		[self addSubview:buttons];
+		tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] :data :false];
+		[tableViewControllerChapter setSuperView:self];
 	}
 	
 	return self;
@@ -221,7 +236,7 @@
 {
 	NSRect frame = superViewFrame;
 	
-	frame.size.height -= CT_VIEW_READERMORE_HEIGHT_HEADER_TAB;
+	frame.size.height -= CT_READERMODE_HEIGHT_HEADER_TAB;
 	
 	return frame;
 }

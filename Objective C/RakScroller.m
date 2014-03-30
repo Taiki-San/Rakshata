@@ -32,22 +32,27 @@
 	slotRect.origin.x += slotRect.size.width / 4;
 	slotRect.size.width /= 2;
 	
+	slotRect.size.height -= 20;
+	slotRect.origin.y += 10;
+	
+	[self setupPath:slotRect : slotRect.size.width : slotRect.size.width / 2.0f];
+	
 	[[NSColor blackColor] set];
-	NSRectFill(slotRect);
+	CGContextFillPath(contextBorder);
 }
 
 #define RADIUS_BORDERS	6.5f
 #define BAR_WIDTH		(2 * RADIUS_BORDERS)
 
-- (void) setupPath : (NSRect) selfRect
+- (void) setupPath : (NSRect) selfRect : (CGFloat) barWidth : (CGFloat) radius
 {
 	contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	
 	CGContextBeginPath(contextBorder);
-	CGContextAddArc(contextBorder, selfRect.size.width / 2, selfRect.origin.y + selfRect.size.height - RADIUS_BORDERS, RADIUS_BORDERS, M_PI, 0, 1);
-	CGContextAddLineToPoint(contextBorder, selfRect.size.width / 2 + BAR_WIDTH / 2, RADIUS_BORDERS);
-	CGContextAddArc(contextBorder, selfRect.size.width / 2, selfRect.origin.y + RADIUS_BORDERS, RADIUS_BORDERS, 0, M_PI, 1);
-	CGContextAddLineToPoint(contextBorder, selfRect.size.width / 2 - BAR_WIDTH / 2, selfRect.origin.y + selfRect.size.height - RADIUS_BORDERS);
+	CGContextAddArc(contextBorder, selfRect.origin.x + selfRect.size.width / 2, selfRect.origin.y + selfRect.size.height - radius, radius, M_PI, 0, 1);
+	CGContextAddLineToPoint(contextBorder, selfRect.origin.x + selfRect.size.width / 2 + barWidth / 2, radius);
+	CGContextAddArc(contextBorder, selfRect.origin.x + selfRect.size.width / 2, selfRect.origin.y + radius, radius, 0, M_PI, 1);
+	CGContextAddLineToPoint(contextBorder, selfRect.origin.x + selfRect.size.width / 2 - barWidth / 2, selfRect.origin.y + selfRect.size.height - radius);
 }
 
 - (NSColor*) getColorBar
@@ -58,7 +63,7 @@
 - (void)drawKnob
 {
 	NSRect knobRect = [self rectForPart:NSScrollerKnob];
-	[self setupPath:knobRect];
+	[self setupPath:knobRect : BAR_WIDTH : RADIUS_BORDERS];
 	[[self getColorBar] setFill];
 	CGContextFillPath(contextBorder);
 }

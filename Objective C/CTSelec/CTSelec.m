@@ -134,9 +134,9 @@
 	NSRect frame = [self frame];
 
 	//frame.origin.y = bordure + size, 2*bordure + size = 2*y - size
-	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_VIEW_READERMORE_BOTTOMBAR_WIDTH;
-	frame.origin.x = CT_VIEW_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = CT_VIEW_READERMORE_BOTTOMBAR_WIDTH;
+	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
+	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+	frame.origin.y = CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
 
 	return frame;
