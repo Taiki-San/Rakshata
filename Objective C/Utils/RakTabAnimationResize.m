@@ -46,7 +46,7 @@
 {
 	RakTabView *currentView;
 	NSUInteger i, count = [_views count];
-	BOOL haveBasePos = (basePosition != NULL || [basePosition count] != count);
+	haveBasePos = (basePosition != NULL || [basePosition count] != count);
 	
 	[NSAnimationContext beginGrouping];
 	
@@ -63,7 +63,7 @@
 		{
 			CABasicAnimation *animation = [CABasicAnimation animation];
 			animation.fromValue = [basePosition objectAtIndex:i];
-			currentView.animations = @{ @"frame" : animation };
+			[currentView.animations setValue:animation forKey:@"frame"];
 		}
 		
 		if([currentView respondsToSelector:@selector(createFrame)])
@@ -84,10 +84,15 @@
 	{
 		currentView = [_views objectAtIndex:i];
 		if([currentView respondsToSelector:@selector(applyRefreshSizeReaderChecks)])
+		{
 			[currentView applyRefreshSizeReaderChecks];
+			if(haveBasePos)
+			{
+				[[currentView.animations objectForKey:@"frame"] release];
+			}
+		}
 		currentView->resizeAnimationCount--;
 	}
-	[super release];
 }
 
 @end

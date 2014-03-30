@@ -85,6 +85,7 @@
 		RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: subView];
 		[animation setUpViews];
 		[animation performTo];
+		[animation release];
 	}
 	else
 	{

@@ -70,6 +70,7 @@
 @interface RakTabAnimationResize : NSObject
 {
 	BOOL readerMode;
+	BOOL haveBasePos;
 	NSArray* _views;
 }
 - (id) init : (NSArray*)views;
