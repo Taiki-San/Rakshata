@@ -33,9 +33,7 @@
 		[self.cell switchToNewContext: @"arrowBack" : RB_STATE_STANDARD];
 	
 		//Set tracking area
-		frame = [self frame];
-		frame.origin.x = frame.origin.y = 0;
-		tag = [self addTrackingRect:frame owner:self userData:NULL assumeInside:NO];
+		tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
 	}
     return self;
 }
@@ -50,7 +48,7 @@
 	[super setFrame:frameRect];
 	
 	[self removeTrackingRect:tag];
-	tag = [self addTrackingRect:frameRect owner:self userData:NULL assumeInside:NO];
+	tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
 	
 }
 
@@ -148,6 +146,7 @@
 	{
 		[self.cell setAnimationInProgress:false];
 		[self performClick:self];
+		[animation release];
 	}
 }
 

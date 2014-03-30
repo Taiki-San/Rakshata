@@ -33,8 +33,13 @@
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView;
 - (void) refreshViewSize;
+- (void) animationIsOver : (uint) mainThread;
 
+- (void) seriesIsOpening;
+- (void) CTIsOpening;
 - (void) readerIsOpening;
+- (void) MDLIsOpening;
+
 - (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;
 - (void) setUpViewForAnimation : (BOOL) newReaderMode;

@@ -63,6 +63,8 @@
 		[column setWidth:_tableView.frame.size.width];
 
 		//Customisation
+		normal		= [[self getTextColor] retain];
+		highlight	= [[self getTextHighlightColor] retain];
 		[_tableView setHeaderView:nil];
 		[_tableView setBackgroundColor:[NSColor clearColor]];
 		[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -82,6 +84,12 @@
 - (void) setSuperView : (NSView *) superview
 {
 	[superview addSubview:scrollView];
+}
+
+- (void) setFrame : (NSRect) frameRect
+{
+	[scrollView setFrame:[self getTableViewFrame:frameRect]];
+	//	[_tableView setFrame:scrollView.contentView.bounds];
 }
 
 - (void) setHidden : (bool) state
@@ -104,6 +112,16 @@
 - (NSColor *) getTextColor
 {
 	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+}
+
+- (NSColor *) getTextHighlightColor
+{
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE];
+}
+
+- (NSColor *) getBackgroundHighlightColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING];
 }
 
 #pragma mark - Methods to deal with tableView
@@ -152,7 +170,9 @@
 		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
 		// Note that the height of the frame is not really relevant, because the row height will modify the height.
 		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : nil];
-		[result setTextColor:[self getTextColor]];
+		[result setTextColor:normal];
+		[result setBackgroundColor:[self getBackgroundHighlightColor]];
+		[result setDrawsBackground:false];
 		[result setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
 		
 		result.identifier = @"Mane 6";
@@ -166,6 +186,30 @@
 	return result;
 	
 }
+
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
+{
+	RakText* element;
+	if([aTableView selectedRow] != -1)
+	{
+		element = [aTableView viewAtColumn:0 row:[aTableView selectedRow] makeIfNecessary:NO];
+		if (element != nil)
+		{
+			[element setTextColor:normal];
+			[element setDrawsBackground:NO];
+		}
+	}
+	
+	element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
+    if (element != nil)
+    {
+		[element setTextColor: highlight];
+		[element setDrawsBackground:YES];
+    }
+	
+	return YES;
+}
+
 
 #pragma mark - Get result from NSTableView
 
@@ -204,6 +248,21 @@
 	}
 	
 	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	
+	NSScroller * scroller = self.verticalScroller;
+	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
+	{
+		[scroller setHidden:true];
+	}
+	else if([scroller isHidden])
+	{
+		[scroller setHidden:false];
+	}
 }
 
 @end

@@ -145,7 +145,7 @@
 	RakButton* icons[] = {favorite, fullscreen, prevChapter, prevPage, nextPage, nextChapter, trash};
 	short nbElem = [self numberIconsInBar];
 	CGFloat midleHeightBar = self.frame.size.height / 2, lastElemHeight = 0;
-	NSPoint origin;
+	NSPoint origin = {0, 0};
 	
 	for(char pos = 0; pos < nbElem; pos++)
 	{

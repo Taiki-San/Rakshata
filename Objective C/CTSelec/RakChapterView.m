@@ -45,6 +45,22 @@
 	[coreView setFrame:frameRect];
 }
 
+- (id) retain
+{
+	[projectName retain];
+	[projectImage retain];
+	[coreView retain];
+	return [super retain];
+}
+
+- (oneway void) release
+{
+	[super release];
+	[projectName release];
+	[projectImage release];
+	[coreView release];
+}
+
 - (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
 {
 	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
@@ -74,6 +90,9 @@
 			code = GET_COLOR_BACKGROUD_CT_READERMODE;
 			break;
 		}
+			
+		default:
+			return [NSColor clearColor];
 	}
 	
 	return [Prefs getSystemColor:code];
@@ -229,7 +248,7 @@
 				isTome = false;
 			else	//Projet illisible
 			{
-				[self faillure];
+				[self failure];
 				return nil;
 			}
 		}
@@ -276,13 +295,31 @@
 {
 	[super setFrame:[self getSizeOfCoreView:frameRect]];
 	[buttons setFrame:[self bounds]];
+	[tableViewControllerChapter setFrame:[self bounds]];
+	[tableViewControllerVolume setFrame:[self bounds]];
 }
 
-- (void) faillure
+- (void) failure
 {
 	NSLog(@"Got crappy data D:");
 	[buttons removeFromSuperview];
 	[self release];
+}
+
+- (id) retain
+{
+	[buttons retain];
+	[tableViewControllerChapter retain];
+	[tableViewControllerVolume retain];
+	return [super retain];
+}
+
+- (oneway void) release
+{
+	[super release];
+	[buttons release];
+	[tableViewControllerChapter release];
+	[tableViewControllerVolume release];
 }
 
 - (NSRect) getSizeOfCoreView : (NSRect) superViewFrame

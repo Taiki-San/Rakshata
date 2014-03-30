@@ -97,12 +97,6 @@
 #pragma mark - Reader code
 /**		Reader		**/
 
-- (void) readerIsOpening
-{
-	[super readerIsOpening];
-	
-}
-
 - (BOOL) isStillCollapsedReaderTab
 {
 	int state;

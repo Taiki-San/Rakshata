@@ -114,8 +114,29 @@
 		[super setFrameSize:newSize];
 }
 
-#pragma mark - Reader
-/**		Reader		**/
+#pragma mark - Tab opening notification
+
+- (void) animationIsOver : (uint) mainThread
+{
+	if(mainThread & GUI_THREAD_READER)
+		[self readerIsOpening];
+	else if (mainThread & GUI_THREAD_SERIES)
+		[self seriesIsOpening];
+	else if(mainThread & GUI_THREAD_CT)
+		[self CTIsOpening];
+	else if(mainThread & GUI_THREAD_MDL)
+		[self MDLIsOpening];
+}
+
+- (void) seriesIsOpening
+{
+	
+}
+
+- (void) CTIsOpening
+{
+	
+}
 
 - (void) readerIsOpening
 {
@@ -130,6 +151,14 @@
 		[self resizeReaderCatchArea];
 	}
 }
+
+- (void) MDLIsOpening
+{
+	
+}
+
+#pragma mark - Reader
+/**		Reader		**/
 
 - (void) resizeReaderCatchArea
 {
@@ -153,7 +182,6 @@
 	if(!readerMode && isReaderMode)
 	{
 		readerMode = true;
-		[self readerIsOpening];
 	}
 	else if(readerMode && isReaderMode)
 	{

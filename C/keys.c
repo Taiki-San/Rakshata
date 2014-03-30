@@ -340,7 +340,7 @@ int getPassword(int curThread, char password[100])
     {
 		//Get Pass
 #ifdef DEV_VERSION
-		strcpy(password, "YuW7Nr8|<7543|*d");
+		strncpy(password, "YuW7Nr8|<7543|*d", strlen("YuW7Nr8|<7543|*d"));
 #else
 		#warning "Lolnope"
 #endif

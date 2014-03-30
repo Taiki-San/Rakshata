@@ -28,6 +28,9 @@
 
 @interface RakContentViewBack : NSView
 {
+	RakBorder* internalRows1;
+	RakBorder* internalRows2;
+	
 	RakContentView * firstResponder;
 }
 

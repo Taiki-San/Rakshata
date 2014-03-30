@@ -17,13 +17,22 @@
 	uint amountData;
 	NSScrollView * scrollView;
 	NSTableView * _tableView;
+	
+	//Color cache
+	NSColor * normal;
+	NSColor * highlight;
 }
 
 - (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest;
 - (void) setSuperView : (NSView *) superview;
 - (void) setHidden : (bool) state;
+- (void) setFrame : (NSRect) frameRect;
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;
+
+- (NSColor *) getTextColor;
+- (NSColor *) getTextHighlightColor;
+- (NSColor *) getBackgroundHighlightColor;
 
 @end
 

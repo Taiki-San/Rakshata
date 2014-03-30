@@ -346,6 +346,12 @@
 
 - (NSData *) getPage : (uint) posData
 {
+	if(data.path == NULL)
+	{
+		[self failure];
+		return nil;
+	}
+	
 	IMG_DATA * dataPage = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
 	
 	if(dataPage == NULL)
@@ -421,8 +427,10 @@
 		return;
 	}
 	
-	[self craftPageAndSetupEnv:(Reader *)self.superview : switchType];
-	[self addPageToView];	
+	if([self craftPageAndSetupEnv:(Reader *)self.superview : switchType])
+		[self addPageToView];
+	else
+		[self failure];
 }
 
 - (void) changeChapter : (bool) goToNext
