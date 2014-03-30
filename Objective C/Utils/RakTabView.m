@@ -71,6 +71,10 @@
 - (void) refreshLevelViews : (NSView*) superView
 {
 	[self refreshLevelViewsAnimation:superView];
+	
+	uint mainThread;
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	[self animationIsOver:mainThread];
 }
 
 - (void) refreshLevelViewsAnimation : (NSView*) superView
@@ -145,7 +149,6 @@
 	if([self isCursorOnMe])
 	{
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
-		[self refreshLevelViews:[self superview]];
 	}
 	else
 	{
