@@ -27,7 +27,7 @@ int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, boo
     }
     else
     {
-        if(mangaDB.tomes== NULL)
+        if(mangaDB.tomes == NULL)
         {
 			logR("Error: failed at loading available content for the project");
 			return -1;

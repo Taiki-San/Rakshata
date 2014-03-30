@@ -92,7 +92,6 @@ void updateFavorites()
     }
 }
 
-#warning "To test"
 void getNewFavs()
 {
 	uint maxValue;

@@ -28,9 +28,12 @@
 	MANGAS_DATA data;
 	RakCTCoreViewButtons * buttons;
 	RakCTCoreContentView * tableViewControllerChapter;
+	RakCTCoreContentView * tableViewControllerVolume;
 }
 
-- (id) initWithProject : (MANGAS_DATA) project : (NSRect) frame;
+- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame;
+- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
 
 @end
 
@@ -42,7 +45,8 @@
 	RakCTContentTabView * coreView;
 }
 
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project;
+- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome;
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
 - (NSColor*) getBackgroundColor;
 
 @end

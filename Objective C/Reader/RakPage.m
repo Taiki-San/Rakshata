@@ -12,7 +12,7 @@
 
 @implementation RakPage
 
-- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	readerMode = superView->readerMode;
 	
@@ -302,7 +302,7 @@
 
 #pragma mark    -   Active routines
 
-- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	memcpy(&project, &dataRequest, sizeof(dataRequest));
 	currentElem = elemRequest;
@@ -328,16 +328,15 @@
 	if(reader_isLastElem(project, isTome, currentElem))
         startCheckNewElementInRepo(project, isTome, currentElem, false);
 	
-	//On met la page courante par défaut
-	data.pageCourante = 0;
-	
 	if(configFileLoader(project, isTome, currentElem, &data))
 	{
 		[self failure];
 		return NO;
 	}
 	
-	if(startPage < data.nombrePageTotale)
+	if(startPage < 0)
+		data.pageCourante = 0;
+	else if(startPage < data.nombrePageTotale)
 		data.pageCourante = startPage;
 	else
 		data.pageCourante = data.nombrePageTotale - 1;
@@ -436,12 +435,13 @@
 	}
 }
 
-- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (uint) startPage
+- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
 {
 	[self flushCache];
 	releaseDataReader(&data);
 	
-	[self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage];
+	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
+		[self changePage:READER_ETAT_DEFAULT];
 }
 
 - (void) updateContext

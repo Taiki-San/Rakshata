@@ -125,7 +125,7 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
 
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
-	if(mangaDB.tomes == NULL || mangaDB.tomes[0].details == NULL)
+	if(mangaDB.tomes == NULL || ID >= mangaDB.nombreTomes ||  mangaDB.tomes[ID].details == NULL)
 		return false;
 	
 	uint pos = 0, nbTomes = mangaDB.nombreTomes, posDetails;
@@ -226,7 +226,7 @@ bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output)
 		curID = extractNumFromConfigTome(&fileBuffer[posBuf], ID);
 		if(curID != VALEUR_FIN_STRUCTURE_CHAPITRE)
 		{
-			workingBuffer[posOut].ID = curID * 10;
+			workingBuffer[posOut].ID = curID;
 			workingBuffer[posOut].isNative = (fileBuffer[posBuf] == 'C');
 			posOut++;
 		}
@@ -266,27 +266,30 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
     FILE* config = NULL;
 
-    snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
-    if(dernierLu != NULL && (config = fopen(temp, "r")) != NULL)
+    if(dernierLu != NULL)
     {
-		*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        fscanfs(config, "%d", dernierLu);
-        fclose(config);
+		snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
+		if((config = fopen(temp, "r")) != NULL)
+		{
+			*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+			fscanfs(config, "%d", dernierLu);
+			fclose(config);
+		}
     }
 
     for(nbElem = 0; mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreTomes; nbElem++)
     {
-		if(mangaDB->tomes[nbElem].details != NULL)
-		{
-			free(mangaDB->tomes[nbElem].details);
-			mangaDB->tomes[nbElem].details = NULL;
-		}
-		
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*mangaDB, mangaDB->tomes[nbElem].ID))
         {
             mangaDB->tomes[nbElem].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
             mangaDB->tomes[nbElem].name[0] = 0;
+			
+			if(mangaDB->tomes[nbElem].details != NULL)
+			{
+				free(mangaDB->tomes[nbElem].details);
+				mangaDB->tomes[nbElem].details = NULL;
+			}
         }
     }
 

@@ -203,6 +203,11 @@ memoryFail:
 			
 			free(nomPagesTmp);
         }
+		else
+		{
+			nombreTours--;
+			nombreToursRequis--;
+		}
 	}
 	
     if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)

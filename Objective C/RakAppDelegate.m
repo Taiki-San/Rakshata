@@ -33,6 +33,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	tabMDL =	[MDL alloc];
 
 	[contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
+	[self.window setInitialFirstResponder:contentView];
 	[self.window makeFirstResponder:contentView];
 	
 	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;

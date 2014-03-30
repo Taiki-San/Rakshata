@@ -84,6 +84,12 @@
 	[superview addSubview:scrollView];
 }
 
+- (void) setHidden : (bool) state
+{
+	if([scrollView isHidden] != state)
+		[scrollView setHidden:state];
+}
+
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame
 {
 	NSRect frame = superViewFrame;
@@ -159,6 +165,18 @@
 	// Return the result
 	return result;
 	
+}
+
+#pragma mark - Get result from NSTableView
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification;
+{
+	uint result = [_tableView selectedRow];
+	
+	if(result < amountData)
+	{
+		[(RakCTContentTabView*) scrollView.superview gotClickedTransmitData: isTome : result];
+	}
 }
 
 @end

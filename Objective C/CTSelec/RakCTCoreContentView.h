@@ -21,6 +21,8 @@
 
 - (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest;
 - (void) setSuperView : (NSView *) superview;
+- (void) setHidden : (bool) state;
+
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;
 
 @end

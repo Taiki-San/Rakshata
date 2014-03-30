@@ -32,16 +32,10 @@
 		//Calculate contentView size
 		
 		MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
-		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[21]];
+		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[17] : true];
 		[self addSubview:coreView];
 	}
     return self;
-}
-
-// !!!!!!!! DEBUG PURPOSE ONLY !!!!!!!!!!!
-- (void)mouseExited:(NSEvent *)theEvent
-{
-
 }
 
 - (void) dealloc
@@ -146,6 +140,35 @@
 {
 	[super setFrame:frameRect];
 	[coreView setFrame:[self calculateContentViewSize]];
+}
+
+#pragma mark - Communication with other tabs
+
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
+{
+	int i = 0;
+	NSArray * superViewSubviews = self.superview.subviews;
+	for (; i < [superViewSubviews count] && [[superViewSubviews objectAtIndex:i] class] != [Reader class]; i++);
+	
+	if(i == [superViewSubviews count])
+	{
+		NSLog(@"Couldn't find the reader tab Oo");
+		return;
+	}
+	
+	Reader * readerTab = [superViewSubviews objectAtIndex:i];
+	
+	int ID;
+	
+	if(isTome && index < data.nombreTomes)
+		ID = data.tomes[index].ID;
+	else if(!isTome && index < data.nombreChapitre)
+		ID = data.chapitres[index];
+	else
+		return;
+	
+	[readerTab mouseDown:NULL];
+	[readerTab startReading:data : ID : isTome : -1];
 }
 
 @end

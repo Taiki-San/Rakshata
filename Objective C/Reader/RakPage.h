@@ -45,7 +45,7 @@
 	char texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
 }
 
-- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (NSString *) getContextToGTFO;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
@@ -62,11 +62,11 @@
 - (void) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
 
-- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) buildCache;
 - (void) changePage : (byte) switchType;
 - (void) changeChapter : (bool) goToNext;
-- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (uint) startPage;
+- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) addPageToView;

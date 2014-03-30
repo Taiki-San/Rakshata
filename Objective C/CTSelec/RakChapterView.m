@@ -12,7 +12,7 @@
 
 @implementation RakChapterView
 
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project
+- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome
 {
     self = [super initWithFrame:frame];
     if (self)
@@ -28,7 +28,7 @@
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName:@"defaultCTBackground" :[self bounds]];
 		[self addSubview:projectImage];
 		
-		coreView = [[RakCTContentTabView alloc] initWithProject : project : [self bounds]];
+		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds]];
 		[self addSubview:coreView];
     }
     return self;
@@ -43,6 +43,11 @@
 	[projectName setFrame:frameRect];
 	[projectImage setFrame:frameRect];
 	[coreView setFrame:frameRect];
+}
+
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
+{
+	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
 }
 
 #pragma mark - Color
@@ -174,7 +179,7 @@
 
 @implementation RakCTContentTabView
 
-- (id) initWithProject : (MANGAS_DATA) project : (NSRect) frame
+- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame
 {
 	if(project.nombreChapitre == 0 && project.nombreTomes == 0)
 		return nil;
@@ -184,13 +189,17 @@
 	if (self != nil)
 	{
 		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
+		[buttons setTarget:self];
+		[buttons setAction:@selector(switchIsTome:)];
 		
 		memcpy(&data, &project, sizeof(MANGAS_DATA));
 		
 		if(data.nombreChapitre > 0)
 		{
 			[buttons setEnabled:true forSegment:0];
-			[buttons setSelected:true forSegment:0];
+			
+			if(!isTome)
+				[buttons setSelected:true forSegment:0];
 			
 			if(data.nombreChapitre == 1)
 			{
@@ -198,12 +207,14 @@
 				[buttons setLabel:[name substringToIndex:[name length] - 0] forSegment:0];
 			}
 		}
+		else if(!isTome)
+			isTome = true;
 		
 		if(data.nombreTomes > 0)
 		{
 			[buttons setEnabled:true forSegment:1];
 			
-			if([buttons selectedSegment] == -1)
+			if(isTome)
 				[buttons setSelected:true forSegment:1];
 			
 			if(data.nombreTomes == 1)
@@ -212,13 +223,53 @@
 				[buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
 			}
 		}
+		else
+		{
+			if(data.nombreChapitre > 0)
+				isTome = false;
+			else	//Projet illisible
+			{
+				[self faillure];
+				return nil;
+			}
+		}
 
 		[self addSubview:buttons];
-		tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] :data :false];
-		[tableViewControllerChapter setSuperView:self];
+		tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false];
+		if(tableViewControllerChapter != nil)
+		{
+			[tableViewControllerChapter setHidden:isTome];
+			[tableViewControllerChapter setSuperView:self];
+		}
+	
+		tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true];
+		if(tableViewControllerVolume != nil)
+		{
+			[tableViewControllerVolume setHidden:!isTome];
+			[tableViewControllerVolume setSuperView:self];
+		}
 	}
 	
 	return self;
+}
+
+- (void) switchIsTome : (RakCTCoreViewButtons*) sender
+{
+	bool isTome;
+	if ([sender selectedSegment] == 0)
+		isTome = false;
+	else
+		isTome = true;
+	
+	if(tableViewControllerChapter != nil)
+		[tableViewControllerChapter setHidden:isTome];
+	if(tableViewControllerVolume != nil)
+		[tableViewControllerVolume setHidden:!isTome];
+}
+
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index
+{
+	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
 }
 
 - (void) setFrame:(NSRect)frameRect
@@ -227,9 +278,11 @@
 	[buttons setFrame:[self bounds]];
 }
 
-- (void) drawRect:(NSRect)dirtyRect
+- (void) faillure
 {
-	[super drawRect:dirtyRect];
+	NSLog(@"Got crappy data D:");
+	[buttons removeFromSuperview];
+	[self release];
 }
 
 - (NSRect) getSizeOfCoreView : (NSRect) superViewFrame

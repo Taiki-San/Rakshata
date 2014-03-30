@@ -77,6 +77,8 @@
 {
 	if(resizeAnimationCount != -1)
 	{
+		[self.window makeFirstResponder:[self.window initialFirstResponder]];
+		
 		NSArray *subView = [superView subviews];
 		
 		//Variable to set up the animation

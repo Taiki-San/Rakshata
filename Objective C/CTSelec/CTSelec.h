@@ -19,8 +19,11 @@
 	RakBackButton *backButton;
 	RakChapterView * coreView;
 }
+
 - (id)init : (NSView*)contentView : (NSString *) state;
 
 - (NSRect) calculateContentViewSize;
+
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
 
 @end

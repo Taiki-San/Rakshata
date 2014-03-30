@@ -116,8 +116,13 @@
 {
 	initialized = true;
 	
-	mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
-	bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
+	if(mainImage == nil)
+		mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
+	else
+		[mainImage changeProject : project : elemToRead : isTome : startPage];
+	
+	if(bottomBar == nil)
+		bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
 }
 
 - (NSString *) byebye
