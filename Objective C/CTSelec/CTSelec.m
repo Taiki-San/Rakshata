@@ -28,14 +28,85 @@
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!readerMode];
 		[self addSubview:backButton];
+
+		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
+		{
+			NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+			NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+			
+			if([dataState count] == 7)
+			{
+				do
+				{
+					uint nbElem, indexTeam;
+					
+					//We first get the index of the team, to perform a search in the DB
+					const TEAMS_DATA **tmpData = getDirectAccessToKnownTeams(&nbElem);
+					
+					if(tmpData == NULL || nbElem == 0)
+						break;
+					
+					const char * URLRepo = [[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding];
+					
+					for (indexTeam = 0; indexTeam < nbElem; indexTeam++)
+					{
+						if(tmpData[indexTeam] != NULL && !strcmp(tmpData[indexTeam]->URL_depot, URLRepo))
+							break;
+					}
+					
+					if(indexTeam == nbElem)
+					{
+						NSLog(@"Couldn't find the repo to restore, abort :/");
+						break;
+					}
+					
+					//We have a valid index, now, let's query the database to get the project
+					
+					const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
+					
+					MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXCT);
+					
+					if(project == NULL)
+					{
+						NSLog(@"Couldn't find the project to restore, abort :/");
+						break;
+					}
+					else
+					{
+						checkChapitreValable(project, NULL);
+						checkTomeValable(project, NULL);
+					}
+					
+					//Perfect! now, all we have to do is to sanitize last few data :D
+					bool isTome = [[dataState objectAtIndex:2] boolValue] != 0;
+					long context[4];
+					context[0] = [[dataState objectAtIndex:3] floatValue];		//elemSelectedChapter
+					context[1] = [[dataState objectAtIndex:4] floatValue];		//scrollerPosChapter
+					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
+					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
+						
+					coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : *project : isTome : context];
+					free(project);
+					
+				} while (0);
+			}
+		}
+		else
+		{
+			[self noContent];
+		}
 		
-		//Calculate contentView size
-		
-		MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
-		coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[17] : true];
-		[self addSubview:coreView];
+		if(coreView != nil)
+			[self addSubview:coreView];
 	}
     return self;
+}
+
+- (void) noContent
+{
+	long context[4] = {-1, -1, -1, -1};
+	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
+	coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[21] : false : context];
 }
 
 - (void) dealloc
@@ -92,6 +163,17 @@
 - (void) setUpViewForAnimation : (BOOL) reader
 {
 	[backButton setHidden:!reader];
+}
+
+- (NSString *) byebye
+{
+	NSString * string;
+	if(coreView == nil || (string = [coreView getContextToGTFO]) == nil)
+	{
+		return [super byebye];
+	}
+	   
+	return string;
 }
 
 #pragma mark - Reader code

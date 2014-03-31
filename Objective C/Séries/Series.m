@@ -94,7 +94,7 @@
 - (void) refreshViewSize
 {
 	[super refreshViewSize];
-	[self refreshLevelViews: self];
+	[self refreshLevelViews: self : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
 - (NSColor*) getMainColor

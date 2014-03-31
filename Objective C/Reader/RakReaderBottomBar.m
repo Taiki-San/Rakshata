@@ -215,7 +215,7 @@
 	
 }
 
-- (void) readerIsOpening
+- (void) readerIsOpening : (byte) context
 {
 	
 }

@@ -32,21 +32,26 @@
 	readerMode = (mainThread & GUI_THREAD_READER) != 0;
 	trackingArea = NULL;
 	
-	if(readerMode)
-	{
-		resizeAnimationCount = -1;	//Disable animation
-		[self readerIsOpening];
-	}
-	
+	[self endOfInitialization];
 	resizeAnimationCount = 0;	//activate animation
 		
 	return self;
+}
+
+- (void) endOfInitialization
+{
+	
 }
 
 - (NSString *) byebye
 {
 	[self removeFromSuperview];
 	return [NSString stringWithFormat:STATE_EMPTY];
+}
+
+- (void) noContent
+{
+	
 }
 
 #pragma mark - Drawing, and FS support
@@ -68,13 +73,13 @@
 	[self drawContentView:dirtyRect];
 }
 
-- (void) refreshLevelViews : (NSView*) superView
+- (void) refreshLevelViews : (NSView*) superView : (byte) context
 {
 	[self refreshLevelViewsAnimation:superView];
 	
 	uint mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	[self animationIsOver:mainThread];
+	[self animationIsOver : mainThread : context];
 }
 
 - (void) refreshLevelViewsAnimation : (NSView*) superView
@@ -121,32 +126,32 @@
 
 #pragma mark - Tab opening notification
 
-- (void) animationIsOver : (uint) mainThread
+- (void) animationIsOver : (uint) mainThread : (byte) context
 {
 	if(mainThread & GUI_THREAD_READER)
-		[self readerIsOpening];
+		[self readerIsOpening : context];
 	else if (mainThread & GUI_THREAD_SERIES)
-		[self seriesIsOpening];
+		[self seriesIsOpening : context];
 	else if(mainThread & GUI_THREAD_CT)
-		[self CTIsOpening];
+		[self CTIsOpening : context];
 	else if(mainThread & GUI_THREAD_MDL)
-		[self MDLIsOpening];
+		[self MDLIsOpening : context];
 }
 
-- (void) seriesIsOpening
+- (void) seriesIsOpening : (byte) context
 {
 	
 }
 
-- (void) CTIsOpening
+- (void) CTIsOpening : (byte) context
 {
 	
 }
 
-- (void) readerIsOpening
+- (void) readerIsOpening : (byte) context
 {
 	//Appelé quand les tabs ont été réduits
-	if([self isCursorOnMe])
+	if(context == REFRESHVIEWS_CHANGE_READER_TAB && [self isCursorOnMe])
 	{
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
 	}
@@ -156,7 +161,7 @@
 	}
 }
 
-- (void) MDLIsOpening
+- (void) MDLIsOpening : (byte) context
 {
 	
 }
@@ -265,13 +270,13 @@
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
-		[self refreshLevelViews : [self superview]];
+		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
-		[self refreshLevelViews : [self superview]];
+		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
@@ -282,7 +287,7 @@
 			if(readerMode && [self mouseOutOfWindow])
 			{
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
-					[self refreshLevelViews : [self superview]];
+					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			}
 		});
 	}

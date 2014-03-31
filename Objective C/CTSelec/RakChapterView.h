@@ -31,9 +31,11 @@
 	RakCTCoreContentView * tableViewControllerVolume;
 }
 
-- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame;
+- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+
+- (NSString *) getContextToGTFO;
 
 @end
 
@@ -45,8 +47,10 @@
 	RakCTContentTabView * coreView;
 }
 
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome;
+- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context;
 - (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
 - (NSColor*) getBackgroundColor;
+
+- (NSString *) getContextToGTFO;
 
 @end

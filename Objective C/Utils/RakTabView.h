@@ -12,6 +12,11 @@
 
 #define STATE_EMPTY @"Luna is bored"
 
+enum {
+    REFRESHVIEWS_CHANGE_MT,
+    REFRESHVIEWS_CHANGE_READER_TAB
+} REFRESHVIEWS_CODE;
+
 @interface RakTabView : NSView
 {
 	int flag;
@@ -27,18 +32,20 @@
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
 - (id) initView: (NSView *)superView : (NSString *) state;
+- (void) endOfInitialization;
 - (NSString *) byebye;
+- (void) noContent;
 
 - (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
-- (void) refreshLevelViews : (NSView*) superView;
+- (void) refreshLevelViews : (NSView*) superView : (byte) context;
 - (void) refreshViewSize;
-- (void) animationIsOver : (uint) mainThread;
+- (void) animationIsOver : (uint) mainThread : (byte) context;
 
-- (void) seriesIsOpening;
-- (void) CTIsOpening;
-- (void) readerIsOpening;
-- (void) MDLIsOpening;
+- (void) seriesIsOpening : (byte) context;
+- (void) CTIsOpening : (byte) context;
+- (void) readerIsOpening : (byte) context;
+- (void) MDLIsOpening : (byte) context;
 
 - (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;

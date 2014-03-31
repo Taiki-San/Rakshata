@@ -12,8 +12,6 @@
 
 @implementation Reader
 
-#define NO_RETRACTION_WIP
-
 #pragma mark - Main view management
 
 - (id)init : (NSView*)contentView : (NSString *) state
@@ -32,6 +30,7 @@
 - (void) initReaderMainView : (NSString *) state
 {
 	initialized = false;
+	bool failedInit = true;
 	
 	if(state != nil && [state caseInsensitiveCompare:STATE_EMPTY] != NSOrderedSame)
 	{
@@ -40,7 +39,7 @@
 		
 		if([dataState count] == 7)
 		{
-			while (1)
+			do
 			{
 				uint nbElem, indexTeam;
 				
@@ -96,18 +95,30 @@
 				free(project);
 				
 				if(mainImage == nil)
-					return;
+					break;
 				
 				NSPoint sliderPos;
 				sliderPos.x = [[dataState objectAtIndex:5] intValue];
 				sliderPos.y = [[dataState objectAtIndex:6] intValue];
 				[mainImage setSliderPos:sliderPos];
 				
-				return;
-			}
+				failedInit = true;
+			}while (0);
 		}
 	}
 	
+	if(!failedInit)
+		[self noContent];
+	else
+	{
+		resizeAnimationCount = -1;	//Disable animation
+		[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
+		resizeAnimationCount = 0;
+	}
+}
+
+- (void) noContent
+{
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
 	[self startReading: mangaData[21] : 540: false : 0];
 }
@@ -193,19 +204,22 @@
 	[super refreshViewSize];
 }
 
-- (void) readerIsOpening
+- (void) readerIsOpening : (byte) context
 {
-	uint copy;
-	do
+	if(context == REFRESHVIEWS_CHANGE_MT)
 	{
-		gonnaReduceTabs = copy = getRandom();
-	}while (!copy);
-	
+		uint copy;
+		do
+		{
+			gonnaReduceTabs = copy = getRandom();
+		}while (!copy);
+		
 #ifdef NO_RETRACTION_WIP
-	copy--;
+		copy--;
 #endif
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
+	}
 }
 
 - (void) willLeaveReader
@@ -216,7 +230,7 @@
 	if(bottomBar != nil)
 		[bottomBar leaveReaderMode];
 	
-	//	[self setAutoresizesSubviews:NO];
+	[self setAutoresizesSubviews:NO];
 }
 
 - (void) willOpenReader
@@ -227,7 +241,7 @@
 	if(bottomBar != nil)
 		[bottomBar startReaderMode];
 	
-	//	[self setAutoresizesSubviews:YES];
+	[self setAutoresizesSubviews:YES];
 }
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
@@ -275,7 +289,7 @@
 - (void) collapseAllTabs
 {
 	[Prefs setPref:PREFS_SET_READER_TABS_STATE: STATE_READER_TAB_ALL_COLLAPSED];
-	[super refreshLevelViews:[self superview]];
+	[super refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
 - (void) hideBothTab
@@ -291,7 +305,7 @@
 			[subViewView setHidden:YES];
 	}
 	[Prefs setPref:PREFS_SET_READER_TABS_STATE :STATE_READER_TAB_DISTRACTION_FREE];
-	[self refreshLevelViews:[self superview]];
+	[self refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
 - (void) unhideBothTab

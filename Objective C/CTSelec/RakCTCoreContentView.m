@@ -14,12 +14,14 @@
 
 #pragma mark - Classical initialization
 
-- (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest
+- (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition
 {
 	self = [super init];
-	
+
 	if(self != nil)
 	{
+		NSInteger row = -1, tmpRow = 0;
+
 		//We check we have valid data
 		isTome = isTomeRequest;
 		
@@ -29,7 +31,16 @@
 			data = malloc(amountData * sizeof(META_TOME));
 			
 			if(data != NULL)
+			{
 				memcpy(data, project.tomes, amountData * sizeof(META_TOME));
+				if(elemSelected != -1)
+				{
+					for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
+
+					if(tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID == elemSelected)
+						row = tmpRow;
+				}
+			}
 		}
 		else if(!isTome && project.chapitres != NULL)
 		{
@@ -37,12 +48,23 @@
 			data = malloc(amountData * sizeof(int));
 			
 			if(data != NULL)
+			{
 				memcpy(data, project.chapitres, amountData * sizeof(int));
+				if(elemSelected != -1)
+				{
+					for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);
+					
+					if(tmpRow < amountData && ((int*)data)[tmpRow] == elemSelected)
+						row = tmpRow;
+				}
+			}
 		}
 		
 		if(data == NULL)
 		{
+#ifdef DEV_VERSION
 			NSLog(@"Invalid request");
+#endif
 			[self release];
 			return nil;
 		}
@@ -76,9 +98,28 @@
 		[_tableView setDelegate:self];
 		[_tableView setDataSource:self];
 		[_tableView reloadData];
-		[_tableView scrollRowToVisible:0];
+		
+		if(row != -1)
+		{
+			[self tableView:_tableView shouldSelectRow:row];		//Apply graphic changes
+			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+			[_tableView scrollRowToVisible:row];
+		}
+		else
+		{
+			[_tableView scrollRowToVisible:0];
+#ifdef DEV_VERSION
+			int prevVal = isTome ? ((META_TOME*)data)[tmpRow].ID : ((int*)data)[tmpRow], nextVal = isTome ? ((META_TOME*)data)[tmpRow+1].ID : ((int*)data)[tmpRow+1];
+			NSLog(@"Arf, couldn't locate the element: %ld : %ld : %d : %d", elemSelected, (long)tmpRow, prevVal, nextVal);
+#endif
+		}
 	}
 	return self;
+}
+
+- (void) failure
+{
+	NSLog(@"[%s] - Unrecoverable error, we need to abort!", __PRETTY_FUNCTION__);
 }
 
 - (void) setSuperView : (NSView *) superview
@@ -86,10 +127,41 @@
 	[superview addSubview:scrollView];
 }
 
+- (bool) reloadData : (int) nbElem : (void *) newData
+{
+	void * newDataBuf = NULL;
+	
+	if(isTome)
+	{
+		newDataBuf = malloc(nbElem * sizeof(META_TOME));
+		if(newDataBuf != NULL)
+		{
+			memcpy(newDataBuf, newData, nbElem * sizeof(META_TOME));
+		}
+	}
+	else
+	{
+		newDataBuf = malloc(nbElem * sizeof(int));
+		if(newDataBuf != NULL)
+		{
+			memcpy(newDataBuf, newData, nbElem * sizeof(int));
+		}
+	}
+
+	
+	if(newDataBuf == NULL)
+		return false;
+		
+	free(data);
+	data = newDataBuf;
+	
+	return true;
+}
+
 - (void) setFrame : (NSRect) frameRect
 {
 	[scrollView setFrame:[self getTableViewFrame:frameRect]];
-	//	[_tableView setFrame:scrollView.contentView.bounds];
+	[_tableView reloadData];
 }
 
 - (void) setHidden : (bool) state
@@ -109,6 +181,33 @@
 	return frame;
 }
 
+#pragma mark - Backup routine
+
+- (NSInteger) getSelectedElement
+{
+	NSInteger row = [_tableView selectedRow];
+	
+	if(row < 0 || row > amountData)
+		return -1;
+	
+	if(isTome)
+		return ((META_TOME *) data)[row].ID;
+	else
+		return ((int *) data)[row];
+}
+
+- (float) getSliderPos
+{
+	if([scrollView hasVerticalScroller])
+	{
+		return [scrollView.verticalScroller floatValue];
+	}
+	else
+		return -1;
+}
+
+#pragma mark - Colors
+
 - (NSColor *) getTextColor
 {
 	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
@@ -121,7 +220,7 @@
 
 - (NSColor *) getBackgroundHighlightColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL];
 }
 
 #pragma mark - Methods to deal with tableView

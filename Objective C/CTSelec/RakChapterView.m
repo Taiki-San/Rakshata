@@ -12,7 +12,7 @@
 
 @implementation RakChapterView
 
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome
+- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context
 {
     self = [super initWithFrame:frame];
     if (self)
@@ -28,7 +28,7 @@
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName:@"defaultCTBackground" :[self bounds]];
 		[self addSubview:projectImage];
 		
-		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds]];
+		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
 		[self addSubview:coreView];
     }
     return self;
@@ -43,6 +43,13 @@
 	[projectName setFrame:frameRect];
 	[projectImage setFrame:frameRect];
 	[coreView setFrame:frameRect];
+}
+
+- (NSString *) getContextToGTFO
+{
+	if (coreView == nil)
+		return nil;
+	return [coreView getContextToGTFO];
 }
 
 - (id) retain
@@ -198,7 +205,7 @@
 
 @implementation RakCTContentTabView
 
-- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame
+- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
 {
 	if(project.nombreChapitre == 0 && project.nombreTomes == 0)
 		return nil;
@@ -226,7 +233,7 @@
 				[buttons setLabel:[name substringToIndex:[name length] - 0] forSegment:0];
 			}
 		}
-		else if(!isTome)
+		else if(!isTome)	//Si on recoit une demande incohérante
 			isTome = true;
 		
 		if(data.nombreTomes > 0)
@@ -242,10 +249,13 @@
 				[buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
 			}
 		}
-		else
+		else if(isTome)
 		{
 			if(data.nombreChapitre > 0)
+			{
+				[buttons setSelected:true forSegment:0];
 				isTome = false;
+			}
 			else	//Projet illisible
 			{
 				[self failure];
@@ -254,18 +264,25 @@
 		}
 
 		[self addSubview:buttons];
-		tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false];
-		if(tableViewControllerChapter != nil)
+		
+		if(data.nombreChapitre > 0)
 		{
-			[tableViewControllerChapter setHidden:isTome];
-			[tableViewControllerChapter setSuperView:self];
+			tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
+			if(tableViewControllerChapter != nil)
+			{
+				[tableViewControllerChapter setHidden:isTome];
+				[tableViewControllerChapter setSuperView:self];
+			}
 		}
-	
-		tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true];
-		if(tableViewControllerVolume != nil)
+
+		if(data.nombreTomes > 0)
 		{
-			[tableViewControllerVolume setHidden:!isTome];
-			[tableViewControllerVolume setSuperView:self];
+			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
+			if(tableViewControllerVolume != nil)
+			{
+				[tableViewControllerVolume setHidden:!isTome];
+				[tableViewControllerVolume setSuperView:self];
+			}
 		}
 	}
 	
@@ -295,6 +312,16 @@
 {
 	[super setFrame:[self getSizeOfCoreView:frameRect]];
 	[buttons setFrame:[self bounds]];
+	
+	if(updateIfRequired(&data, RDB_CTXCT))
+	{
+		checkChapitreValable(&data, NULL);
+		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres];
+		
+		checkTomeValable(&data, NULL);
+		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes];
+	}
+	
 	[tableViewControllerChapter setFrame:[self bounds]];
 	[tableViewControllerVolume setFrame:[self bounds]];
 }
@@ -304,6 +331,14 @@
 	NSLog(@"Got crappy data D:");
 	[buttons removeFromSuperview];
 	[self release];
+}
+
+- (NSString *) getContextToGTFO
+{
+	if(data.team == NULL)
+		return nil;
+	
+	return [NSString stringWithFormat:@"%s\n%s\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URL_depot, data.mangaNameShort, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
 }
 
 - (id) retain
