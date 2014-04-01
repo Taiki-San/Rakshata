@@ -103,7 +103,7 @@
 		{
 			[self tableView:_tableView shouldSelectRow:row];		//Apply graphic changes
 			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-			[_tableView scrollRowToVisible:row];
+			[scrollView.contentView scrollToPoint:NSMakePoint(0, scrollerPosition)];
 		}
 		else
 		{
@@ -200,7 +200,7 @@
 {
 	if([scrollView hasVerticalScroller])
 	{
-		return [scrollView.verticalScroller floatValue];
+		return (float) [[scrollView contentView] bounds].origin.y;
 	}
 	else
 		return -1;

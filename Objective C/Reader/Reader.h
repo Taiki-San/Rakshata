@@ -29,7 +29,7 @@
 - (void) willLeaveReader;
 - (void) willOpenReader;
 
-- (void) collapseAllTabs;
+- (void) collapseAllTabs : (bool) forced;
 - (void) hideBothTab;
 - (void) unhideBothTab;
 - (void) hideCursor;

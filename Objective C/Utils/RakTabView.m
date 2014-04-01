@@ -102,6 +102,16 @@
 	}
 }
 
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	
+	if(readerMode)
+	{
+		[self resizeReaderCatchArea];
+	}
+}
+
 - (void) refreshViewSize
 {
 	NSSize sizeSV = self.superview.frame.size;
@@ -155,10 +165,7 @@
 	{
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
 	}
-	else
-	{
-		[self resizeReaderCatchArea];
-	}
+	[self resizeReaderCatchArea];
 }
 
 - (void) MDLIsOpening : (byte) context

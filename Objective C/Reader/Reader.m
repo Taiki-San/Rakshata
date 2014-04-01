@@ -218,7 +218,12 @@
 		copy--;
 #endif
 		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{	if(gonnaReduceTabs == copy){[self collapseAllTabs];}	});
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+			if(gonnaReduceTabs == copy)
+			{
+				[self collapseAllTabs : false];
+			}
+		});
 	}
 }
 
@@ -286,10 +291,13 @@
 
 /**	Hide stuffs	**/
 
-- (void) collapseAllTabs
+- (void) collapseAllTabs : (bool) forced
 {
-	[Prefs setPref:PREFS_SET_READER_TABS_STATE: STATE_READER_TAB_ALL_COLLAPSED];
-	[super refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+	if(forced || [self isCursorOnMe] || [self mouseOutOfWindow])
+	{
+		[Prefs setPref:PREFS_SET_READER_TABS_STATE: STATE_READER_TAB_ALL_COLLAPSED];
+	}
+	[super refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];	//Initialisera les surfaces de tracking
 }
 
 - (void) hideBothTab
