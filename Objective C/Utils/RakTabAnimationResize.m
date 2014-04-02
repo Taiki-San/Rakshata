@@ -83,10 +83,12 @@
 	for(NSUInteger i = 0; i < count; i++)
 	{
 		currentView = [_views objectAtIndex:i];
-		if([currentView respondsToSelector:@selector(applyRefreshSizeReaderChecks)])
+		
+		//resizeAnimationCount == 1 => dernière animation en cours
+		if(currentView->resizeAnimationCount == 1 && [currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
 		{
-			[currentView applyRefreshSizeReaderChecks];
-			if(haveBasePos)
+			[currentView refreshDataAfterAnimation];
+			if(haveBasePos)	//si on a qqchose à libérer
 			{
 				[[currentView.animations objectForKey:@"frame"] release];
 			}

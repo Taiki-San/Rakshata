@@ -117,7 +117,7 @@
 	NSSize sizeSV = self.superview.frame.size;
 	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: sizeSV.width], sizeSV.height)];
 	
-	[self applyRefreshSizeReaderChecks];
+	[self refreshDataAfterAnimation];
 }
 
 /**			Overwrite methods to resize the main view in order to resize subviews	**/
@@ -165,7 +165,6 @@
 	{
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
 	}
-	[self resizeReaderCatchArea];
 }
 
 - (void) MDLIsOpening : (byte) context
@@ -190,17 +189,16 @@
 	return viewFrame;
 }
 
-- (void) applyRefreshSizeReaderChecks
+- (void) refreshDataAfterAnimation
 {
 	bool isReaderMode;
 	[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
 	
-	if(!readerMode && isReaderMode)
+	if(isReaderMode)
 	{
-		readerMode = true;
-	}
-	else if(readerMode && isReaderMode)
-	{
+		if(!readerMode)
+			readerMode = true;
+
 		[self resizeReaderCatchArea];
 	}
 	else
@@ -212,6 +210,7 @@
 			trackingArea = NULL;
 		}
 	}
+	[self setFrame:[self frame]];	//Redraw with the final context
 }
 
 - (BOOL) isStillCollapsedReaderTab

@@ -52,7 +52,7 @@ enum {
 - (void) setUpViewForAnimation : (BOOL) newReaderMode;
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
-- (void) applyRefreshSizeReaderChecks;
+- (void) refreshDataAfterAnimation;
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;
 

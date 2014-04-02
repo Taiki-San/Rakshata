@@ -53,7 +53,7 @@
 	[self setFrameSize:frame.size];
 	[self setFrameOrigin:frame.origin];
 	
-	[self applyRefreshSizeReaderChecks];
+	[self refreshDataAfterAnimation];
 
 }
 

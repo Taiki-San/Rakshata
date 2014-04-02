@@ -103,6 +103,10 @@
 		{
 			[self tableView:_tableView shouldSelectRow:row];		//Apply graphic changes
 			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+		}
+		
+		if(scrollerPosition != -1)
+		{
 			[scrollView.contentView scrollToPoint:NSMakePoint(0, scrollerPosition)];
 		}
 		else

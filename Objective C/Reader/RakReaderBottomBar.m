@@ -17,6 +17,7 @@
 - (id)init: (BOOL) displayed : (id) parent
 {
 	self = [self initView : parent : nil];
+	resizeAnimationCount = -1;	//Prevent this element to get caught in animation
 	
 	[self.layer setCornerRadius:RADIUS_BORDERS];
 	
@@ -66,15 +67,15 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
-	fullscreen = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:2] :YES :superview :@selector(triggerFullscreen)];
+	favorite = [RakButton initForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton initForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXButton:2] :YES :superview :@selector(triggerFullscreen)];
 	
-	prevChapter = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:3] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:4] :NO :superview :@selector(prevPage)];
-	nextPage = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:5] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton initForReader:self :@"icon" : RB_STATE_STANDARD :[self getPosXButton:6] :YES :superview :@selector(nextChapter)];
+	prevChapter = [RakButton initForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXButton:3] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton initForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXButton:4] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton initForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXButton:5] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXButton:6] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton initForReader:self :@"icon": RB_STATE_STANDARD :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
+	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
 }
 
 - (CGFloat) getPosXButton : (uint) IDButton
@@ -149,6 +150,9 @@
 	
 	for(char pos = 0; pos < nbElem; pos++)
 	{
+		if (icons[pos] == nil)
+			continue;
+		
 		origin.x = [self getPosXButton:pos+1];
 		
 		if(icons[pos].frame.size.height != lastElemHeight)
@@ -196,7 +200,7 @@
 		frameRect.origin.x = self.frame.origin.x;
 		frameRect.origin.y = self.frame.origin.y;
 	}
-	
+
 	[super setFrame:frameRect];
 	
 	if(readerMode)
@@ -209,18 +213,28 @@
 		[super setFrameOrigin:newOrigin];
 }
 
+- (NSRect) createFrameWithSuperView : (NSView*) superView
+{
+	return NSMakeRect(0, 0, 0, 0);
+}
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	
+}
+
 /* Gestion des évènements*/
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	
 }
 
-- (void) readerIsOpening : (byte) context
+- (void) animationIsOver:(uint)mainThread :(byte)context
 {
 	
 }
 
-- (void) applyRefreshSizeReaderChecks
+- (void) refreshDataAfterAnimation
 {
 	
 }

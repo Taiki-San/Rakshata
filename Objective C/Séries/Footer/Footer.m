@@ -27,6 +27,16 @@
     return self;
 }
 
+- (NSRect) createFrameWithSuperView : (NSView*) superView
+{
+	return NSMakeRect(0, 0, 0, 0);
+}
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	
+}
+
 - (NSColor*) getMainColor
 {
 	return [NSColor yellowColor];
@@ -87,7 +97,7 @@
 	return heightWindow * ratio / 100;
 }
 
-- (void) applyRefreshSizeReaderChecks
+- (void) refreshDataAfterAnimation
 {
 	
 }

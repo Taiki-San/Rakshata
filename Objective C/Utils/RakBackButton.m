@@ -30,7 +30,7 @@
 		cursorOnMe = false;
 
 		//On initialise la cellule
-		[self.cell switchToNewContext: @"arrowBack" : RB_STATE_STANDARD];
+		[self.cell switchToNewContext: @"back" : RB_STATE_STANDARD];
 	
 		//Set tracking area
 		tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
@@ -117,12 +117,12 @@
 
 - (void) startAnimation
 {
-	_animation = [[NSAnimation alloc] initWithDuration:1.6 animationCurve:NSAnimationLinear];
+	_animation = [[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear];
 	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
 	
-	for (NSAnimationProgress i = 0; i < 1; i+= 0.01)
+	for (NSAnimationProgress i = 0; i < 1; i+= 1/60.0f)
 	{
 		[_animation addProgressMark:i];
 	}
