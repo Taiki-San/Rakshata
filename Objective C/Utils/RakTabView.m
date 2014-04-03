@@ -230,8 +230,8 @@
 		selfSize.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
 	}
 	
-	if(selfLoc.x < mouseLoc.x && selfLoc.x + selfSize.width >= mouseLoc.x &&
-		selfLoc.y < mouseLoc.y && selfLoc.y + selfSize.height >= mouseLoc.y)
+	if(selfLoc.x - 5 < mouseLoc.x && selfLoc.x + selfSize.width + 5 >= mouseLoc.x &&
+		selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
 	{
 		return true;
 	}

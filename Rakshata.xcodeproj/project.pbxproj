@@ -40,6 +40,7 @@
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
+		B6D24C8118EDE0A100E5960B /* update crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D24C8018EDE0A100E5960B /* update crypto.c */; };
 		B6D43D7218E70E780030B7FF /* RakCTCoreViewButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D43D7118E70E780030B7FF /* RakCTCoreViewButtons.m */; };
 		B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E45D7118D5F290007E1D5C /* RakPage.m */; };
 		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
@@ -164,6 +165,7 @@
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RakAppDelegate.h; sourceTree = "<group>"; };
 		B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakAppDelegate.m; sourceTree = "<group>"; };
 		B6CF07DC1868DD58009B16A3 /* RakshataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6D24C8018EDE0A100E5960B /* update crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "update crypto.c"; path = "../update crypto.c"; sourceTree = "<group>"; };
 		B6D43D7018E70E780030B7FF /* RakCTCoreViewButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTCoreViewButtons.h; path = CTSelec/RakCTCoreViewButtons.h; sourceTree = "<group>"; };
 		B6D43D7118E70E780030B7FF /* RakCTCoreViewButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTCoreViewButtons.m; path = CTSelec/RakCTCoreViewButtons.m; sourceTree = "<group>"; };
 		B6E45D7018D5F290007E1D5C /* RakPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPage.h; path = Reader/RakPage.h; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 		B6F6ECA618A3001400E3B55B /* crypto */ = {
 			isa = PBXGroup;
 			children = (
+				B6D24C8018EDE0A100E5960B /* update crypto.c */,
 				B6F6ECA718A3001400E3B55B /* crypto.h */,
 				B6F6ECA818A3001400E3B55B /* pbkdf2.c */,
 				B6F6ECA918A3001400E3B55B /* Rijndael.c */,
@@ -793,6 +796,7 @@
 				B61A790A18E389F300D8E0E0 /* RakText.m in Sources */,
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
 				B6F6ED1018A3001400E3B55B /* thread.c in Sources */,
+				B6D24C8118EDE0A100E5960B /* update crypto.c in Sources */,
 				B67449401875E65000F96DB4 /* Footer.m in Sources */,
 				B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */,
 				B67449421875E65000F96DB4 /* FooterSStatic.m in Sources */,

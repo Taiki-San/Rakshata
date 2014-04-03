@@ -48,12 +48,11 @@ void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16]
 
 typedef struct {
 	uint32_t	key[140];
-} SERPENT_STATIC_DATA;
+} SerpentInstance;
 
-void Serpent_set_key(SERPENT_STATIC_DATA *l_key,const uint32_t *in_key, const uint32_t key_len);
-void Serpent_encrypt(SERPENT_STATIC_DATA *l_key,const uint32_t *in_blk, uint32_t *out_blk);
-void Serpent_decrypt(SERPENT_STATIC_DATA *l_key,const uint32_t *in_blk, uint32_t *out_blk);
-
+void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks);
+void serpent_encrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBlock);
+void serpent_decrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBlock);
 
 /*****************************************************
 **                                                  **
@@ -104,3 +103,25 @@ void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, s
 *****************************************************/
 
 void whirlpool(const unsigned char *input, size_t inputLength, char *output, bool outHex);
+
+/*****************************************************
+ **                                                  **
+ **                  More stuffs                     **
+ **                                                  **
+ *****************************************************/
+
+typedef struct
+{
+	rawData * bufIn;
+	rawData * bufOut;
+	size_t length;
+	rawData CBC[2][CRYPTO_BUFFER_SIZE];
+	
+	int * decWhenJobDone;
+
+	TwofishInstance twofish;
+	SerpentInstance serpent;
+	
+	bool needFreeMemory;
+	
+} DECRYPT_PAGE_DATA;

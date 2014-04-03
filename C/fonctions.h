@@ -161,7 +161,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
 int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB);
 int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
-void decryptPage(void *_password, rawData *buffer_int, rawData *buffer_out, size_t length);
+void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void KSTriggered(TEAMS_DATA team);

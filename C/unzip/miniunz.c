@@ -171,7 +171,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
         {
             int posIV;
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
-            SERPENT_STATIC_DATA pSer;
+            SerpentInstance pSer;
 			TwofishInstance pTwoF;
 
             generateRandomKey(passwordPageCrypted);
@@ -179,7 +179,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                 key[posIV] = *passwordPageCrypted!= 0 ? *passwordPageCrypted++ : 0;
 
             TwofishSetKey(&pTwoF, (u4byte*) key, KEYBITS);
-            Serpent_set_key(&pSer, (u4byte*) key, KEYBITS);
+            serpent_set_key((uint8_t*) key, KEYLENGTH(KEYBITS), &pSer);
             posIV = -1;
 
             do
@@ -205,7 +205,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                         for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
                         if(posIV != -1) //Pas premier passage, IV existante
                             for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
-                        Serpent_encrypt(&pSer, (uint32_t*) plaintext, (uint32_t*) ciphertext);
+                        serpent_encrypt(&pSer, (uint8_t*) plaintext, (uint8_t*) ciphertext);
                         memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
                         memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
 

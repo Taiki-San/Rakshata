@@ -13,6 +13,8 @@
 #include "crypto/crypto.h"
 #include "db.h"
 
+#define NB_ROUNDS_MK	512
+
 static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
 
 int getMasterKey(unsigned char *input)
@@ -21,7 +23,7 @@ int getMasterKey(unsigned char *input)
     int nombreCle, i, j;
 	bool fileInvalid;
 	char date[100];
-    unsigned char buffer[250 + (SHA256_DIGEST_LENGTH+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+    unsigned char buffer[250 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
     size_t size;
 	FILE* bdd = NULL;
 	
@@ -73,7 +75,7 @@ int getMasterKey(unsigned char *input)
     crashTemp(date, 100);
     generateFingerPrint(&buffer[250]);	//Buffer < 250 contient la concatenation de la date et de l'email. buffer > 250 contient la fingerprint
 
-    pbkdf2(buffer, &buffer[250], hash);
+	internal_pbkdf2(SHA256_DIGEST_LENGTH, buffer, SHA256_DIGEST_LENGTH, &buffer[250], WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, hash);
     crashTemp(buffer, 250+SHA256_DIGEST_LENGTH+1);
 
     int nrounds = rijndaelSetupDecrypt(rijndaelKey, hash, KEYBITS);
@@ -341,11 +343,11 @@ int getPassword(int curThread, char password[100])
 		//Get Pass
 #ifdef DEV_VERSION
 		strncpy(password, "YuW7Nr8|<7543|*d", strlen("YuW7Nr8|<7543|*d"));
+		password[strlen("YuW7Nr8|<7543|*d")] = 0;
 #else
 		#warning "Lolnope"
 #endif
 
-		
 		//Traitement
         if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
         {
@@ -473,7 +475,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
 int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
-    unsigned char fingerPrint[SHA256_DIGEST_LENGTH+1];
+    unsigned char fingerPrint[WP_DIGEST_SIZE+1];
     char password[100], date[200], temp[300];
     FILE* bdd = NULL;
 
@@ -525,8 +527,8 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     unsigned char key[SHA256_DIGEST_LENGTH+1];
     key[SHA256_DIGEST_LENGTH] = 0;
-
-    pbkdf2((unsigned char *)temp, fingerPrint, key);
+	
+	internal_pbkdf2(SHA256_DIGEST_LENGTH, (void*)temp, SHA256_DIGEST_LENGTH, fingerPrint, WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, key);
     crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
     crashTemp(temp, 300);
 
@@ -544,8 +546,12 @@ int createSecurePasswordDB(unsigned char *key_sent)
     else
     {
         for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-            if(key_sent[i] <= ' ') { key_sent[i] += ' '; }
-        usstrcpy(key, SHA256_DIGEST_LENGTH, key_sent);
+		{
+			if(key_sent[i] <= ' ')
+				key_sent[i] += ' ';
+			
+			key[i] = key_sent[i];
+		}
     }
 
     bdd = fopen(SECURE_DATABASE, "ab+");

@@ -18,6 +18,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 {
 	[self validateWindowData:[[self window] frame]];
 	[self.window.contentView setupBorders];
+	[self.window setDelegate:self];
 	
 	RakContentView * contentView = [self getContentView];
 	
@@ -98,6 +99,10 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	return YES;
 }
 
+- (void)windowDidEnterFullScreen:(NSNotification *)notification
+{
+	NSLog(@"Lolilol");
+}
 
 @end
 

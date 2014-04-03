@@ -22,43 +22,107 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
     return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
-void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_t length)
+void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 {
-    int posIV, i, j = 0, k;
-    size_t pos_buffer;
-    unsigned char *password = _password;
-    unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
-    SERPENT_STATIC_DATA pSer;
+	byte posIV;
+	size_t length = data->length;
+	
+	rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
+	rawData *buffer_in = data->bufIn, *buffer_out = data->bufOut;
+	rawData IV[2][CRYPTO_BUFFER_SIZE];
+	
+	SerpentInstance pSer;
 	TwofishInstance pTwoF;
-
-    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password, *(password++) = 0);
-    TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);
-	Serpent_set_key(&pSer, (uint32_t*) key, KEYBITS);
-	for(i = 0; i < KEYLENGTH(KEYBITS); key[i++] = 0);
-
-    for(k = pos_buffer = 0, posIV = -1; k < length; k++)
+	
+	memcpy(IV, data->CBC, 2 * CRYPTO_BUFFER_SIZE * sizeof(rawData));
+	memcpy(&pSer, &data->serpent, sizeof(SerpentInstance));
+	memcpy(&pTwoF, &data->twofish, sizeof(TwofishInstance));
+	
+	for(size_t k = 0, pos_buffer = 0; k < length; k++)
     {
-        rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
         memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
-        Serpent_decrypt(&pSer, (uint32_t*) ciphertext, (uint32_t*) plaintext);
-        if(posIV != -1) //Pas premier passage, IV existante
-            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
+        serpent_decrypt(&pSer, (uint8_t*) ciphertext, (uint8_t*) plaintext);
+        
+		for (posIV = 0; posIV < CRYPTO_BUFFER_SIZE; posIV++)
+			plaintext[posIV] ^= IV[0][posIV];
+		
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
         pos_buffer += CRYPTO_BUFFER_SIZE;
-        memcpy(ciphertext_iv[0], ciphertext, CRYPTO_BUFFER_SIZE);
-
-        memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
+        memcpy(IV[0], ciphertext, CRYPTO_BUFFER_SIZE);
+		
+        
+		memcpy(ciphertext, &buffer_in[pos_buffer], CRYPTO_BUFFER_SIZE);
         TwofishDecrypt(&pTwoF, (uint32_t*) ciphertext, (uint32_t*) plaintext);
-        if(posIV != -1) //Pas premier passage, IV existante
-            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
+        
+		for (posIV = 0; posIV < CRYPTO_BUFFER_SIZE; posIV++)
+			plaintext[posIV] ^= IV[1][posIV];
+		
         memcpy(&buffer_out[pos_buffer], plaintext, CRYPTO_BUFFER_SIZE);
         pos_buffer += CRYPTO_BUFFER_SIZE;
-        memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
-        posIV = 0;
+        memcpy(IV[1], ciphertext, CRYPTO_BUFFER_SIZE);
     }
+	
+	(*(data->decWhenJobDone))--;
+	
+	if(data->needFreeMemory)
+	{
+		free(data);
+		quit_thread(0);
+	}
 }
 
-void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
+void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t length)
+{
+    int jobIsDone = 1;
+	
+	//On génère les données qui seront envoyés au worker
+	
+	DECRYPT_PAGE_DATA data;
+
+    TwofishSetKey(&data.twofish, (uint32_t*) password, KEYBITS);
+	serpent_set_key((uint8_t*) password, KEYLENGTH(KEYBITS), &data.serpent);
+	for(byte i = 0; i < KEYLENGTH(KEYBITS); ((rawData*)password)[i++] = 0);
+	
+	data.needFreeMemory = false;
+	data.length = length;
+	data.bufIn = buffer_in;
+	data.bufOut = buffer_out;
+	data.decWhenJobDone = &jobIsDone;
+	memset(&data.CBC, 0, 2 * CRYPTO_BUFFER_SIZE);
+
+	if(length > 64 * 1024 / (2 * CRYPTO_BUFFER_SIZE))	// > 64 ko
+	{
+		DECRYPT_PAGE_DATA *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA));
+		if(dataThread != NULL)
+		{
+			jobIsDone++;
+			
+			//Feed data
+			dataThread->needFreeMemory = true;
+			dataThread->length = length / 2;
+			dataThread->bufIn = &buffer_in[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
+			dataThread->bufOut = &buffer_out[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
+			dataThread->decWhenJobDone = &jobIsDone;
+			memcpy(dataThread->CBC, &buffer_in[(length - dataThread->length - 1) * 2 * CRYPTO_BUFFER_SIZE], 2 * CRYPTO_BUFFER_SIZE);
+			memcpy(&dataThread->serpent, &data.serpent, sizeof(data.serpent));
+			memcpy(&dataThread->twofish, &data.twofish, sizeof(data.twofish));
+			
+			data.length -= dataThread->length;
+			
+			createNewThread(decryptPageWorker, dataThread);
+		}
+	}
+	
+	decryptPageWorker(&data);
+
+	while (jobIsDone);
+	
+	FILE* file = fopen("lol.png", "wb");
+	fwrite(buffer_out, length * 2 * CRYPTO_BUFFER_SIZE, 1, file);
+	fclose(file);
+}
+
+void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 {
 #ifdef _WIN32
     unsigned char buffer_fingerprint[5000], buf_name[1024];
@@ -93,9 +157,8 @@ void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1])
 
 	#endif
 #endif
-    memset(output, 0, SHA256_DIGEST_LENGTH);
-    sha256(buffer_fingerprint, output);
-    output[SHA256_DIGEST_LENGTH] = 0;
+    whirlpool(buffer_fingerprint, ustrlen(buffer_fingerprint), (char*) output, false);
+    output[WP_DIGEST_SIZE] = 0;
 }
 
 void get_file_date(const char *filename, char *date)
@@ -185,7 +248,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 
 	unsigned char numChapitreChar[10];
     snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
-    internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 2048, PBKDF2_OUTPUT_LENGTH, hash);
+    internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
 
@@ -242,18 +305,20 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 	IMG_DATA *output = malloc(sizeof(IMG_DATA));
 	if(output != NULL)
 	{
-		void* buf_in = ralloc(size + 2 * CRYPTO_BUFFER_SIZE);
-		output->data = calloc(size + 2 * CRYPTO_BUFFER_SIZE, sizeof(rawData));
+		void* buf_in = malloc(size + 2 * CRYPTO_BUFFER_SIZE);
+		output->data = malloc((size + 2 * CRYPTO_BUFFER_SIZE) * sizeof(rawData));
 		if(buf_in != NULL && output->data != NULL)
 		{
 			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
 
 			test = fopen(pathPage, "rb");
-			fread(buf_in, 1, size, test);
+			uint unRead = size - fread(buf_in, 1, size, test);
 			fclose(test);
 			
+			if(unRead)
+				memset(&buf_in[size], 0, unRead);
+			
 			decryptPage(key, buf_in, output->data, size/(CRYPTO_BUFFER_SIZE*2));
-			crashTemp(key, SHA256_DIGEST_LENGTH);
 		}
 		else
 		{

@@ -1,691 +1,574 @@
-///////////////////////////////////////////////
-//
-// **************************
-// ** ENGLISH - 07/07/2012 **
-//
-// Project/Software name: libObfuscate v2.00
-// Contact: "EmbeddedSW" <embedded@embeddedsw.net>
-// Company: EmbeddedSW.net
-//
-// THIS IS A FREE SOFTWARE
-//
-// This software is released under GNU LGPL:
-//
-// * LGPL 3.0 <http://www.gnu.org/licenses/lgpl.html>
-//
-// You're free to copy, distribute and make commercial use
-// of this software under the following conditions:
-//
-// * You have to cite the author (and copyright owner): EmbeddedSW
-// * You have to provide a link to the author's Homepage: <http://www.embeddedsw.net/>
-//
-///////////////////////////////////////////////
+// serpent.cpp - written and placed in the public domain by Wei Dai
 
+/* Adapted for TrueCrypt */
+/* Adapter for Rakshata	 */
+
+#include "crypto.h"
 #include <stdint.h>
 
-typedef uint32_t DWORD;
-typedef unsigned char BYTE;
+#include <memory.h>
 
-#define _lrotr(x, n) ((((uint32_t)(x)) >> ((int) ((n) & 31))) | (((uint32_t)(x)) << ((int) ((32 - ((n) & 31))))))
-#define _lrotl(x, n) ((((uint32_t)(x)) << ((int) ((n) & 31))) | (((uint32_t)(x)) >> ((int) ((32 - ((n) & 31))))))
-
-#  define rotr(x,n) _lrotr(x,n)
-#  define rotl(x,n) _lrotl(x,n)
-
-#define bswap(x)    ((rotl(x, 8) & 0x00ff00ff) | (rotr(x, 8) & 0xff00ff00))
-
-#define byte(x,n)   ((BYTE)((x) >> (8 * n)))
-
-// ??
-#define BLOCK_SWAP
-
-#ifdef  BLOCK_SWAP
-#define BYTE_SWAP
-#define WORD_SWAP
-#endif
-
-#ifdef  BYTE_SWAP
-#define io_swap(x)  bswap(x)
+#if defined(_WIN32) && !defined(_DEBUG)
+#include <stdlib.h>
+#define rotlFixed _rotl
+#define rotrFixed _rotr
 #else
-#define io_swap(x)  (x)
+#define rotlFixed(x,n)   (((x) << (n)) | ((x) >> (32 - (n))))
+#define rotrFixed(x,n)   (((x) >> (n)) | ((x) << (32 - (n))))
 #endif
 
-#ifdef  WORD_SWAP
+// linear transformation
+#define LT(i,a,b,c,d,e)	{\
+a = rotlFixed(a, 13);	\
+c = rotlFixed(c, 3); 	\
+d = rotlFixed(d ^ c ^ (a << 3), 7); 	\
+b = rotlFixed(b ^ a ^ c, 1); 	\
+a = rotlFixed(a ^ b ^ d, 5); 		\
+c = rotlFixed(c ^ d ^ (b << 7), 22);}
 
-#define get_block(x)                            \
-    ((DWORD *)(x))[0] = io_swap(in_blk[3]);     \
-    ((DWORD *)(x))[1] = io_swap(in_blk[2]);     \
-    ((DWORD *)(x))[2] = io_swap(in_blk[1]);     \
-    ((DWORD *)(x))[3] = io_swap(in_blk[0])
+// inverse linear transformation
+#define ILT(i,a,b,c,d,e)	{\
+c = rotrFixed(c, 22);	\
+a = rotrFixed(a, 5); 	\
+c ^= d ^ (b << 7);	\
+a ^= b ^ d; 		\
+b = rotrFixed(b, 1); 	\
+d = rotrFixed(d, 7) ^ c ^ (a << 3);	\
+b ^= a ^ c; 		\
+c = rotrFixed(c, 3); 	\
+a = rotrFixed(a, 13);}
 
-#define put_block(x)                            \
-    out_blk[3] = io_swap(((DWORD *)(x))[0]);    \
-    out_blk[2] = io_swap(((DWORD *)(x))[1]);    \
-    out_blk[1] = io_swap(((DWORD *)(x))[2]);    \
-    out_blk[0] = io_swap(((DWORD *)(x))[3])
+// order of output from S-box functions
+#define beforeS0(f) f(0,a,b,c,d,e)
+#define afterS0(f) f(1,b,e,c,a,d)
+#define afterS1(f) f(2,c,b,a,e,d)
+#define afterS2(f) f(3,a,e,b,d,c)
+#define afterS3(f) f(4,e,b,d,c,a)
+#define afterS4(f) f(5,b,a,e,c,d)
+#define afterS5(f) f(6,a,c,b,e,d)
+#define afterS6(f) f(7,a,c,d,b,e)
+#define afterS7(f) f(8,d,e,b,a,c)
 
-#define get_key(x,len)                          \
-    ((DWORD *)(x))[4] = ((DWORD *)(x))[5] =     \
-    ((DWORD *)(x))[6] = ((DWORD *)(x))[7] = 0;  \
-    switch((((len) + 63) / 64)) {               \
-    case 2:                                     \
-    ((DWORD *)(x))[0] = io_swap(in_key[3]);     \
-    ((DWORD *)(x))[1] = io_swap(in_key[2]);     \
-    ((DWORD *)(x))[2] = io_swap(in_key[1]);     \
-    ((DWORD *)(x))[3] = io_swap(in_key[0]);     \
-    break;                                      \
-    case 3:                                     \
-    ((DWORD *)(x))[0] = io_swap(in_key[5]);     \
-    ((DWORD *)(x))[1] = io_swap(in_key[4]);     \
-    ((DWORD *)(x))[2] = io_swap(in_key[3]);     \
-    ((DWORD *)(x))[3] = io_swap(in_key[2]);     \
-    ((DWORD *)(x))[4] = io_swap(in_key[1]);     \
-    ((DWORD *)(x))[5] = io_swap(in_key[0]);     \
-    break;                                      \
-    case 4:                                     \
-    ((DWORD *)(x))[0] = io_swap(in_key[7]);     \
-    ((DWORD *)(x))[1] = io_swap(in_key[6]);     \
-    ((DWORD *)(x))[2] = io_swap(in_key[5]);     \
-    ((DWORD *)(x))[3] = io_swap(in_key[4]);     \
-    ((DWORD *)(x))[4] = io_swap(in_key[3]);     \
-    ((DWORD *)(x))[5] = io_swap(in_key[2]);     \
-    ((DWORD *)(x))[6] = io_swap(in_key[1]);     \
-    ((DWORD *)(x))[7] = io_swap(in_key[0]);     \
-    }
+// order of output from inverse S-box functions
+#define beforeI7(f) f(8,a,b,c,d,e)
+#define afterI7(f) f(7,d,a,b,e,c)
+#define afterI6(f) f(6,a,b,c,e,d)
+#define afterI5(f) f(5,b,d,e,c,a)
+#define afterI4(f) f(4,b,c,e,a,d)
+#define afterI3(f) f(3,a,b,e,c,d)
+#define afterI2(f) f(2,b,d,e,c,a)
+#define afterI1(f) f(1,a,b,c,e,d)
+#define afterI0(f) f(0,a,d,b,e,c)
 
-#else
+// The instruction sequences for the S-box functions
+// come from Dag Arne Osvik's paper "Speeding up Serpent".
 
-#define get_block(x)                            \
-    ((DWORD *)(x))[0] = io_swap(in_blk[0]);     \
-    ((DWORD *)(x))[1] = io_swap(in_blk[1]);     \
-    ((DWORD *)(x))[2] = io_swap(in_blk[2]);     \
-    ((DWORD *)(x))[3] = io_swap(in_blk[3])
-
-#define put_block(x)                            \
-    out_blk[0] = io_swap(((DWORD *)(x))[0]);    \
-    out_blk[1] = io_swap(((DWORD *)(x))[1]);    \
-    out_blk[2] = io_swap(((DWORD *)(x))[2]);    \
-    out_blk[3] = io_swap(((DWORD *)(x))[3])
-
-#define get_key(x,len)                          \
-    ((DWORD *)(x))[4] = ((DWORD *)(x))[5] =     \
-    ((DWORD *)(x))[6] = ((DWORD *)(x))[7] = 0;  \
-    switch((((len) + 63) / 64)) {               \
-    case 4:                                     \
-    ((DWORD *)(x))[6] = io_swap(in_key[6]);     \
-    ((DWORD *)(x))[7] = io_swap(in_key[7]);     \
-    case 3:                                     \
-    ((DWORD *)(x))[4] = io_swap(in_key[4]);     \
-    ((DWORD *)(x))[5] = io_swap(in_key[5]);     \
-    case 2:                                     \
-    ((DWORD *)(x))[0] = io_swap(in_key[0]);     \
-    ((DWORD *)(x))[1] = io_swap(in_key[1]);     \
-    ((DWORD *)(x))[2] = io_swap(in_key[2]);     \
-    ((DWORD *)(x))[3] = io_swap(in_key[3]);     \
-    }
-
-#endif
-
-#define sb0(a,b,c,d,e,f,g,h)    \
-    t1 = a ^ d;     \
-    t2 = a & d;     \
-    t3 = c ^ t1;    \
-    t6 = b & t1;    \
-    t4 = b ^ t3;    \
-    t10 = ~t3;      \
-    h = t2 ^ t4;    \
-    t7 = a ^ t6;    \
-    t14 = ~t7;      \
-    t8 = c | t7;    \
-    t11 = t3 ^ t7;  \
-    g = t4 ^ t8;    \
-    t12 = h & t11;  \
-    f = t10 ^ t12;  \
-    e = t12 ^ t14
-
-/* 15 terms */
-
-#define ib0(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = a ^ b;     \
-    t3 = t1 | t2;   \
-    t4 = d ^ t3;    \
-    t7 = d & t2;    \
-    t5 = c ^ t4;    \
-    t8 = t1 ^ t7;   \
-    g = t2 ^ t5;    \
-    t11 = a & t4;   \
-    t9 = g & t8;    \
-    t14 = t5 ^ t8;  \
-    f = t4 ^ t9;    \
-    t12 = t5 | f;   \
-    h = t11 ^ t12;  \
-    e = h ^ t14
-
-/* 14 terms!  */
-
-#define sb1(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = b ^ t1;    \
-    t3 = a | t2;    \
-    t4 = d | t2;    \
-    t5 = c ^ t3;    \
-    g = d ^ t5;     \
-    t7 = b ^ t4;    \
-    t8 = t2 ^ g;    \
-    t9 = t5 & t7;   \
-    h = t8 ^ t9;    \
-    t11 = t5 ^ t7;  \
-    f = h ^ t11;    \
-    t13 = t8 & t11; \
-    e = t5 ^ t13
-
-/* 17 terms */
-
-#define ib1(a,b,c,d,e,f,g,h)    \
-    t1 = a ^ d;     \
-    t2 = a & b;     \
-    t3 = b ^ c;     \
-    t4 = a ^ t3;    \
-    t5 = b | d;     \
-    t7 = c | t1;    \
-    h = t4 ^ t5;    \
-    t8 = b ^ t7;    \
-    t11 = ~t2;      \
-    t9 = t4 & t8;   \
-    f = t1 ^ t9;    \
-    t13 = t9 ^ t11; \
-    t12 = h & f;    \
-    g = t12 ^ t13;  \
-    t15 = a & d;    \
-    t16 = c ^ t13;  \
-    e = t15 ^ t16
-
-/* 16 terms */
-
-#define sb2(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = b ^ d;     \
-    t3 = c & t1;    \
-    t13 = d | t1;   \
-    e = t2 ^ t3;    \
-    t5 = c ^ t1;    \
-    t6 = c ^ e;     \
-    t7 = b & t6;    \
-    t10 = e | t5;   \
-    h = t5 ^ t7;    \
-    t9 = d | t7;    \
-    t11 = t9 & t10; \
-    t14 = t2 ^ h;   \
-    g = a ^ t11;    \
-    t15 = g ^ t13;  \
-    f = t14 ^ t15
-
-/* 16 terms */
-
-#define ib2(a,b,c,d,e,f,g,h)    \
-    t1 = b ^ d;     \
-    t2 = ~t1;       \
-    t3 = a ^ c;     \
-    t4 = c ^ t1;    \
-    t7 = a | t2;    \
-    t5 = b & t4;    \
-    t8 = d ^ t7;    \
-    t11 = ~t4;      \
-    e = t3 ^ t5;    \
-    t9 = t3 | t8;   \
-    t14 = d & t11;  \
-    h = t1 ^ t9;    \
-    t12 = e | h;    \
-    f = t11 ^ t12;  \
-    t15 = t3 ^ t12; \
-    g = t14 ^ t15
-
-/* 17 terms */
-
-#define sb3(a,b,c,d,e,f,g,h)    \
-    t1 = a ^ c;     \
-    t2 = d ^ t1;    \
-    t3 = a & t2;    \
-    t4 = d ^ t3;    \
-    t5 = b & t4;    \
-    g = t2 ^ t5;    \
-    t7 = a | g;     \
-    t8 = b | d;     \
-    t11 = a | d;    \
-    t9 = t4 & t7;   \
-    f = t8 ^ t9;    \
-    t12 = b ^ t11;  \
-    t13 = g ^ t9;   \
-    t15 = t3 ^ t8;  \
-    h = t12 ^ t13;  \
-    t16 = c & t15;  \
-    e = t12 ^ t16
-
-/* 16 term solution that performs less well than 17 term one
-   in my environment (PPro/PII)
-
-#define sb3(a,b,c,d,e,f,g,h)    \
-    t1 = a ^ b;     \
-    t2 = a & c;     \
-    t3 = a | d;     \
-    t4 = c ^ d;     \
-    t5 = t1 & t3;   \
-    t6 = t2 | t5;   \
-    g = t4 ^ t6;    \
-    t8 = b ^ t3;    \
-    t9 = t6 ^ t8;   \
-    t10 = t4 & t9;  \
-    e = t1 ^ t10;   \
-    t12 = g & e;    \
-    f = t9 ^ t12;   \
-    t14 = b | d;    \
-    t15 = t4 ^ t12; \
-    h = t14 ^ t15
-*/
-
-/* 17 terms */
-
-#define ib3(a,b,c,d,e,f,g,h)    \
-    t1 = b ^ c;     \
-    t2 = b | c;     \
-    t3 = a ^ c;     \
-    t7 = a ^ d;     \
-    t4 = t2 ^ t3;   \
-    t5 = d | t4;    \
-    t9 = t2 ^ t7;   \
-    e = t1 ^ t5;    \
-    t8 = t1 | t5;   \
-    t11 = a & t4;   \
-    g = t8 ^ t9;    \
-    t12 = e | t9;   \
-    f = t11 ^ t12;  \
-    t14 = a & g;    \
-    t15 = t2 ^ t14; \
-    t16 = e & t15;  \
-    h = t4 ^ t16
-
-/* 15 terms */
-
-#define sb4(a,b,c,d,e,f,g,h)    \
-    t1 = a ^ d;     \
-    t2 = d & t1;    \
-    t3 = c ^ t2;    \
-    t4 = b | t3;    \
-    h = t1 ^ t4;    \
-    t6 = ~b;        \
-    t7 = t1 | t6;   \
-    e = t3 ^ t7;    \
-    t9 = a & e;     \
-    t10 = t1 ^ t6;  \
-    t11 = t4 & t10; \
-    g = t9 ^ t11;   \
-    t13 = a ^ t3;   \
-    t14 = t10 & g;  \
-    f = t13 ^ t14
-
-/* 17 terms */
-
-#define ib4(a,b,c,d,e,f,g,h)    \
-    t1 = c ^ d;     \
-    t2 = c | d;     \
-    t3 = b ^ t2;    \
-    t4 = a & t3;    \
-    f = t1 ^ t4;    \
-    t6 = a ^ d;     \
-    t7 = b | d;     \
-    t8 = t6 & t7;   \
-    h = t3 ^ t8;    \
-    t10 = ~a;       \
-    t11 = c ^ h;    \
-    t12 = t10 | t11;\
-    e = t3 ^ t12;   \
-    t14 = c | t4;   \
-    t15 = t7 ^ t14; \
-    t16 = h | t10;  \
-    g = t15 ^ t16
-
-/* 16 terms */
-
-#define sb5(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = a ^ b;     \
-    t3 = a ^ d;     \
-    t4 = c ^ t1;    \
-    t5 = t2 | t3;   \
-    e = t4 ^ t5;    \
-    t7 = d & e;     \
-    t8 = t2 ^ e;    \
-    t10 = t1 | e;   \
-    f = t7 ^ t8;    \
-    t11 = t2 | t7;  \
-    t12 = t3 ^ t10; \
-    t14 = b ^ t7;   \
-    g = t11 ^ t12;  \
-    t15 = f & t12;  \
-    h = t14 ^ t15
-
-/* 16 terms */
-
-#define ib5(a,b,c,d,e,f,g,h)    \
-    t1 = ~c;        \
-    t2 = b & t1;    \
-    t3 = d ^ t2;    \
-    t4 = a & t3;    \
-    t5 = b ^ t1;    \
-    h = t4 ^ t5;    \
-    t7 = b | h;     \
-    t8 = a & t7;    \
-    f = t3 ^ t8;    \
-    t10 = a | d;    \
-    t11 = t1 ^ t7;  \
-    e = t10 ^ t11;  \
-    t13 = a ^ c;    \
-    t14 = b & t10;  \
-    t15 = t4 | t13; \
-    g = t14 ^ t15
-
-/* 15 terms */
-
-#define sb6(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = a ^ d;     \
-    t3 = b ^ t2;    \
-    t4 = t1 | t2;   \
-    t5 = c ^ t4;    \
-    f = b ^ t5;     \
-    t13 = ~t5;      \
-    t7 = t2 | f;    \
-    t8 = d ^ t7;    \
-    t9 = t5 & t8;   \
-    g = t3 ^ t9;    \
-    t11 = t5 ^ t8;  \
-    e = g ^ t11;    \
-    t14 = t3 & t11; \
-    h = t13 ^ t14
-
-/* 15 terms */
-
-#define ib6(a,b,c,d,e,f,g,h)    \
-    t1 = ~a;        \
-    t2 = a ^ b;     \
-    t3 = c ^ t2;    \
-    t4 = c | t1;    \
-    t5 = d ^ t4;    \
-    t13 = d & t1;   \
-    f = t3 ^ t5;    \
-    t7 = t3 & t5;   \
-    t8 = t2 ^ t7;   \
-    t9 = b | t8;    \
-    h = t5 ^ t9;    \
-    t11 = b | h;    \
-    e = t8 ^ t11;   \
-    t14 = t3 ^ t11; \
-    g = t13 ^ t14
-
-/* 17 terms */
-
-#define sb7(a,b,c,d,e,f,g,h)    \
-    t1 = ~c;        \
-    t2 = b ^ c;     \
-    t3 = b | t1;    \
-    t4 = d ^ t3;    \
-    t5 = a & t4;    \
-    t7 = a ^ d;     \
-    h = t2 ^ t5;    \
-    t8 = b ^ t5;    \
-    t9 = t2 | t8;   \
-    t11 = d & t3;   \
-    f = t7 ^ t9;    \
-    t12 = t5 ^ f;   \
-    t15 = t1 | t4;  \
-    t13 = h & t12;  \
-    g = t11 ^ t13;  \
-    t16 = t12 ^ g;  \
-    e = t15 ^ t16
-
-/* 17 terms */
-
-#define ib7(a,b,c,d,e,f,g,h)    \
-    t1 = a & b;     \
-    t2 = a | b;     \
-    t3 = c | t1;    \
-    t4 = d & t2;    \
-    h = t3 ^ t4;    \
-    t6 = ~d;        \
-    t7 = b ^ t4;    \
-    t8 = h ^ t6;    \
-    t11 = c ^ t7;   \
-    t9 = t7 | t8;   \
-    f = a ^ t9;     \
-    t12 = d | f;    \
-    e = t11 ^ t12;  \
-    t14 = a & h;    \
-    t15 = t3 ^ f;   \
-    t16 = e ^ t14;  \
-    g = t15 ^ t16
-
-#define k_xor(r,a,b,c,d)    \
-    a ^= l_key[4 * r +  8]; \
-    b ^= l_key[4 * r +  9]; \
-    c ^= l_key[4 * r + 10]; \
-    d ^= l_key[4 * r + 11]
-
-#define k_set(r,a,b,c,d)    \
-    a = l_key[4 * r +  8];  \
-    b = l_key[4 * r +  9];  \
-    c = l_key[4 * r + 10];  \
-    d = l_key[4 * r + 11]
-
-#define k_get(r,a,b,c,d)    \
-    l_key[4 * r +  8] = a;  \
-    l_key[4 * r +  9] = b;  \
-    l_key[4 * r + 10] = c;  \
-    l_key[4 * r + 11] = d
-
-/* the linear transformation and its inverse    */
-
-#define rot(a,b,c,d)    \
-    a = rotl(a, 13);    \
-    c = rotl(c, 3);     \
-    d ^= c ^ (a << 3);  \
-    b ^= a ^ c;         \
-    d = rotl(d, 7);     \
-    b = rotl(b, 1);     \
-    a ^= b ^ d;         \
-    c ^= d ^ (b << 7);  \
-    a = rotl(a, 5);     \
-    c = rotl(c, 22)
-
-#define irot(a,b,c,d)   \
-    c = rotr(c, 22);    \
-    a = rotr(a, 5);     \
-    c ^= d ^ (b << 7);  \
-    a ^= b ^ d;         \
-    d = rotr(d, 7);     \
-    b = rotr(b, 1);     \
-    d ^= c ^ (a << 3);  \
-    b ^= a ^ c;         \
-    c = rotr(c, 3);     \
-    a = rotr(a, 13)
-
-void Serpent_set_key(DWORD *l_key,const DWORD *in_key, const DWORD key_len)
-{
-	DWORD  i,lk,a,b,c,d,e,f,g,h;
-    DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
-
-    if(key_len > 256)
-
-        return;
-
-    i = 0; lk = (key_len + 31) / 32;
-
-    while(i < lk)
-    {
-#ifdef  BLOCK_SWAP
-        l_key[i] = io_swap(in_key[lk - i - 1]);
-#else
-        l_key[i] = in_key[i];
-#endif
-        i++;
-    }
-
-    if(key_len < 256)
-    {
-        while(i < 8)
-
-            l_key[i++] = 0;
-
-        i = key_len / 32; lk = 1 << key_len % 32;
-
-        l_key[i] = (l_key[i] & (lk - 1)) | lk;
-    }
-
-    for(i = 0; i < 132; ++i)
-    {
-        lk = l_key[i] ^ l_key[i + 3] ^ l_key[i + 5]
-                                ^ l_key[i + 7] ^ 0x9e3779b9 ^ i;
-
-        l_key[i + 8] = (lk << 11) | (lk >> 21);
-    }
-
-    k_set( 0,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get( 0,e,f,g,h);
-    k_set( 1,a,b,c,d);sb2(a,b,c,d,e,f,g,h);k_get( 1,e,f,g,h);
-    k_set( 2,a,b,c,d);sb1(a,b,c,d,e,f,g,h);k_get( 2,e,f,g,h);
-    k_set( 3,a,b,c,d);sb0(a,b,c,d,e,f,g,h);k_get( 3,e,f,g,h);
-    k_set( 4,a,b,c,d);sb7(a,b,c,d,e,f,g,h);k_get( 4,e,f,g,h);
-    k_set( 5,a,b,c,d);sb6(a,b,c,d,e,f,g,h);k_get( 5,e,f,g,h);
-    k_set( 6,a,b,c,d);sb5(a,b,c,d,e,f,g,h);k_get( 6,e,f,g,h);
-    k_set( 7,a,b,c,d);sb4(a,b,c,d,e,f,g,h);k_get( 7,e,f,g,h);
-    k_set( 8,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get( 8,e,f,g,h);
-    k_set( 9,a,b,c,d);sb2(a,b,c,d,e,f,g,h);k_get( 9,e,f,g,h);
-    k_set(10,a,b,c,d);sb1(a,b,c,d,e,f,g,h);k_get(10,e,f,g,h);
-    k_set(11,a,b,c,d);sb0(a,b,c,d,e,f,g,h);k_get(11,e,f,g,h);
-    k_set(12,a,b,c,d);sb7(a,b,c,d,e,f,g,h);k_get(12,e,f,g,h);
-    k_set(13,a,b,c,d);sb6(a,b,c,d,e,f,g,h);k_get(13,e,f,g,h);
-    k_set(14,a,b,c,d);sb5(a,b,c,d,e,f,g,h);k_get(14,e,f,g,h);
-    k_set(15,a,b,c,d);sb4(a,b,c,d,e,f,g,h);k_get(15,e,f,g,h);
-    k_set(16,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get(16,e,f,g,h);
-    k_set(17,a,b,c,d);sb2(a,b,c,d,e,f,g,h);k_get(17,e,f,g,h);
-    k_set(18,a,b,c,d);sb1(a,b,c,d,e,f,g,h);k_get(18,e,f,g,h);
-    k_set(19,a,b,c,d);sb0(a,b,c,d,e,f,g,h);k_get(19,e,f,g,h);
-    k_set(20,a,b,c,d);sb7(a,b,c,d,e,f,g,h);k_get(20,e,f,g,h);
-    k_set(21,a,b,c,d);sb6(a,b,c,d,e,f,g,h);k_get(21,e,f,g,h);
-    k_set(22,a,b,c,d);sb5(a,b,c,d,e,f,g,h);k_get(22,e,f,g,h);
-    k_set(23,a,b,c,d);sb4(a,b,c,d,e,f,g,h);k_get(23,e,f,g,h);
-    k_set(24,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get(24,e,f,g,h);
-    k_set(25,a,b,c,d);sb2(a,b,c,d,e,f,g,h);k_get(25,e,f,g,h);
-    k_set(26,a,b,c,d);sb1(a,b,c,d,e,f,g,h);k_get(26,e,f,g,h);
-    k_set(27,a,b,c,d);sb0(a,b,c,d,e,f,g,h);k_get(27,e,f,g,h);
-    k_set(28,a,b,c,d);sb7(a,b,c,d,e,f,g,h);k_get(28,e,f,g,h);
-    k_set(29,a,b,c,d);sb6(a,b,c,d,e,f,g,h);k_get(29,e,f,g,h);
-    k_set(30,a,b,c,d);sb5(a,b,c,d,e,f,g,h);k_get(30,e,f,g,h);
-    k_set(31,a,b,c,d);sb4(a,b,c,d,e,f,g,h);k_get(31,e,f,g,h);
-    k_set(32,a,b,c,d);sb3(a,b,c,d,e,f,g,h);k_get(32,e,f,g,h);
+#define S0(i, r0, r1, r2, r3, r4) \
+{           \
+r3 ^= r0;   \
+r4 = r1;   \
+r1 &= r3;   \
+r4 ^= r2;   \
+r1 ^= r0;   \
+r0 |= r3;   \
+r0 ^= r4;   \
+r4 ^= r3;   \
+r3 ^= r2;   \
+r2 |= r1;   \
+r2 ^= r4;   \
+r4 = ~r4;      \
+r4 |= r1;   \
+r1 ^= r3;   \
+r1 ^= r4;   \
+r3 |= r0;   \
+r1 ^= r3;   \
+r4 ^= r3;   \
 }
 
-void Serpent_encrypt(const DWORD *l_key,const DWORD *in_blk, DWORD *out_blk)
-{
-	DWORD  a,b,c,d,e,f,g,h;
-    DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
-
-#ifdef  BLOCK_SWAP
-    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]);
-    c = io_swap(in_blk[1]); d = io_swap(in_blk[0]);
-#else
-    a = in_blk[0]; b = in_blk[1]; c = in_blk[2]; d = in_blk[3];
-#endif
-
-    k_xor( 0,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor( 1,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor( 2,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor( 3,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor( 4,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor( 5,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor( 6,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor( 7,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor( 8,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor( 9,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(10,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(11,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(12,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(13,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(14,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(15,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(16,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(17,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(18,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(19,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(20,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(21,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(22,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(23,e,f,g,h); sb7(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(24,a,b,c,d); sb0(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(25,e,f,g,h); sb1(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(26,a,b,c,d); sb2(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(27,e,f,g,h); sb3(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(28,a,b,c,d); sb4(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(29,e,f,g,h); sb5(e,f,g,h,a,b,c,d); rot(a,b,c,d);
-    k_xor(30,a,b,c,d); sb6(a,b,c,d,e,f,g,h); rot(e,f,g,h);
-    k_xor(31,e,f,g,h); sb7(e,f,g,h,a,b,c,d); k_xor(32,a,b,c,d);
-
-#ifdef  BLOCK_SWAP
-    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b);
-    out_blk[1] = io_swap(c); out_blk[0] = io_swap(d);
-#else
-    out_blk[0] = a; out_blk[1] = b; out_blk[2] = c; out_blk[3] = d;
-#endif
+#define I0(i, r0, r1, r2, r3, r4) \
+{           \
+r2 = ~r2;      \
+r4 = r1;   \
+r1 |= r0;   \
+r4 = ~r4;      \
+r1 ^= r2;   \
+r2 |= r4;   \
+r1 ^= r3;   \
+r0 ^= r4;   \
+r2 ^= r0;   \
+r0 &= r3;   \
+r4 ^= r0;   \
+r0 |= r1;   \
+r0 ^= r2;   \
+r3 ^= r4;   \
+r2 ^= r1;   \
+r3 ^= r0;   \
+r3 ^= r1;   \
+r2 &= r3;   \
+r4 ^= r2;   \
 }
 
-void Serpent_decrypt(const DWORD *l_key,const DWORD *in_blk, DWORD *out_blk)
+#define S1(i, r0, r1, r2, r3, r4) \
+{           \
+r0 = ~r0;      \
+r2 = ~r2;      \
+r4 = r0;   \
+r0 &= r1;   \
+r2 ^= r0;   \
+r0 |= r3;   \
+r3 ^= r2;   \
+r1 ^= r0;   \
+r0 ^= r4;   \
+r4 |= r1;   \
+r1 ^= r3;   \
+r2 |= r0;   \
+r2 &= r4;   \
+r0 ^= r1;   \
+r1 &= r2;   \
+r1 ^= r0;   \
+r0 &= r2;   \
+r0 ^= r4;   \
+}
+
+#define I1(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r1;   \
+r1 ^= r3;   \
+r3 &= r1;   \
+r4 ^= r2;   \
+r3 ^= r0;   \
+r0 |= r1;   \
+r2 ^= r3;   \
+r0 ^= r4;   \
+r0 |= r2;   \
+r1 ^= r3;   \
+r0 ^= r1;   \
+r1 |= r3;   \
+r1 ^= r0;   \
+r4 = ~r4;      \
+r4 ^= r1;   \
+r1 |= r0;   \
+r1 ^= r0;   \
+r1 |= r4;   \
+r3 ^= r1;   \
+}
+
+#define S2(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r0;   \
+r0 &= r2;   \
+r0 ^= r3;   \
+r2 ^= r1;   \
+r2 ^= r0;   \
+r3 |= r4;   \
+r3 ^= r1;   \
+r4 ^= r2;   \
+r1 = r3;   \
+r3 |= r4;   \
+r3 ^= r0;   \
+r0 &= r1;   \
+r4 ^= r0;   \
+r1 ^= r3;   \
+r1 ^= r4;   \
+r4 = ~r4;      \
+}
+
+#define I2(i, r0, r1, r2, r3, r4) \
+{           \
+r2 ^= r3;   \
+r3 ^= r0;   \
+r4 = r3;   \
+r3 &= r2;   \
+r3 ^= r1;   \
+r1 |= r2;   \
+r1 ^= r4;   \
+r4 &= r3;   \
+r2 ^= r3;   \
+r4 &= r0;   \
+r4 ^= r2;   \
+r2 &= r1;   \
+r2 |= r0;   \
+r3 = ~r3;      \
+r2 ^= r3;   \
+r0 ^= r3;   \
+r0 &= r1;   \
+r3 ^= r4;   \
+r3 ^= r0;   \
+}
+
+#define S3(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r0;   \
+r0 |= r3;   \
+r3 ^= r1;   \
+r1 &= r4;   \
+r4 ^= r2;   \
+r2 ^= r3;   \
+r3 &= r0;   \
+r4 |= r1;   \
+r3 ^= r4;   \
+r0 ^= r1;   \
+r4 &= r0;   \
+r1 ^= r3;   \
+r4 ^= r2;   \
+r1 |= r0;   \
+r1 ^= r2;   \
+r0 ^= r3;   \
+r2 = r1;   \
+r1 |= r3;   \
+r1 ^= r0;   \
+}
+
+#define I3(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r2;   \
+r2 ^= r1;   \
+r1 &= r2;   \
+r1 ^= r0;   \
+r0 &= r4;   \
+r4 ^= r3;   \
+r3 |= r1;   \
+r3 ^= r2;   \
+r0 ^= r4;   \
+r2 ^= r0;   \
+r0 |= r3;   \
+r0 ^= r1;   \
+r4 ^= r2;   \
+r2 &= r3;   \
+r1 |= r3;   \
+r1 ^= r2;   \
+r4 ^= r0;   \
+r2 ^= r4;   \
+}
+
+#define S4(i, r0, r1, r2, r3, r4) \
+{           \
+r1 ^= r3;   \
+r3 = ~r3;      \
+r2 ^= r3;   \
+r3 ^= r0;   \
+r4 = r1;   \
+r1 &= r3;   \
+r1 ^= r2;   \
+r4 ^= r3;   \
+r0 ^= r4;   \
+r2 &= r4;   \
+r2 ^= r0;   \
+r0 &= r1;   \
+r3 ^= r0;   \
+r4 |= r1;   \
+r4 ^= r0;   \
+r0 |= r3;   \
+r0 ^= r2;   \
+r2 &= r3;   \
+r0 = ~r0;      \
+r4 ^= r2;   \
+}
+
+#define I4(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r2;   \
+r2 &= r3;   \
+r2 ^= r1;   \
+r1 |= r3;   \
+r1 &= r0;   \
+r4 ^= r2;   \
+r4 ^= r1;   \
+r1 &= r2;   \
+r0 = ~r0;      \
+r3 ^= r4;   \
+r1 ^= r3;   \
+r3 &= r0;   \
+r3 ^= r2;   \
+r0 ^= r1;   \
+r2 &= r0;   \
+r3 ^= r0;   \
+r2 ^= r4;   \
+r2 |= r3;   \
+r3 ^= r0;   \
+r2 ^= r1;   \
+}
+
+#define S5(i, r0, r1, r2, r3, r4) \
+{           \
+r0 ^= r1;   \
+r1 ^= r3;   \
+r3 = ~r3;      \
+r4 = r1;   \
+r1 &= r0;   \
+r2 ^= r3;   \
+r1 ^= r2;   \
+r2 |= r4;   \
+r4 ^= r3;   \
+r3 &= r1;   \
+r3 ^= r0;   \
+r4 ^= r1;   \
+r4 ^= r2;   \
+r2 ^= r0;   \
+r0 &= r3;   \
+r2 = ~r2;      \
+r0 ^= r4;   \
+r4 |= r3;   \
+r2 ^= r4;   \
+}
+
+#define I5(i, r0, r1, r2, r3, r4) \
+{           \
+r1 = ~r1;      \
+r4 = r3;   \
+r2 ^= r1;   \
+r3 |= r0;   \
+r3 ^= r2;   \
+r2 |= r1;   \
+r2 &= r0;   \
+r4 ^= r3;   \
+r2 ^= r4;   \
+r4 |= r0;   \
+r4 ^= r1;   \
+r1 &= r2;   \
+r1 ^= r3;   \
+r4 ^= r2;   \
+r3 &= r4;   \
+r4 ^= r1;   \
+r3 ^= r0;   \
+r3 ^= r4;   \
+r4 = ~r4;      \
+}
+
+#define S6(i, r0, r1, r2, r3, r4) \
+{           \
+r2 = ~r2;      \
+r4 = r3;   \
+r3 &= r0;   \
+r0 ^= r4;   \
+r3 ^= r2;   \
+r2 |= r4;   \
+r1 ^= r3;   \
+r2 ^= r0;   \
+r0 |= r1;   \
+r2 ^= r1;   \
+r4 ^= r0;   \
+r0 |= r3;   \
+r0 ^= r2;   \
+r4 ^= r3;   \
+r4 ^= r0;   \
+r3 = ~r3;      \
+r2 &= r4;   \
+r2 ^= r3;   \
+}
+
+#define I6(i, r0, r1, r2, r3, r4) \
+{           \
+r0 ^= r2;   \
+r4 = r2;   \
+r2 &= r0;   \
+r4 ^= r3;   \
+r2 = ~r2;      \
+r3 ^= r1;   \
+r2 ^= r3;   \
+r4 |= r0;   \
+r0 ^= r2;   \
+r3 ^= r4;   \
+r4 ^= r1;   \
+r1 &= r3;   \
+r1 ^= r0;   \
+r0 ^= r3;   \
+r0 |= r2;   \
+r3 ^= r1;   \
+r4 ^= r0;   \
+}
+
+#define S7(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r2;   \
+r2 &= r1;   \
+r2 ^= r3;   \
+r3 &= r1;   \
+r4 ^= r2;   \
+r2 ^= r1;   \
+r1 ^= r0;   \
+r0 |= r4;   \
+r0 ^= r2;   \
+r3 ^= r1;   \
+r2 ^= r3;   \
+r3 &= r0;   \
+r3 ^= r4;   \
+r4 ^= r2;   \
+r2 &= r0;   \
+r4 = ~r4;      \
+r2 ^= r4;   \
+r4 &= r0;   \
+r1 ^= r3;   \
+r4 ^= r1;   \
+}
+
+#define I7(i, r0, r1, r2, r3, r4) \
+{           \
+r4 = r2;   \
+r2 ^= r0;   \
+r0 &= r3;   \
+r2 = ~r2;      \
+r4 |= r3;   \
+r3 ^= r1;   \
+r1 |= r0;   \
+r0 ^= r2;   \
+r2 &= r4;   \
+r1 ^= r2;   \
+r2 ^= r0;   \
+r0 |= r2;   \
+r3 &= r4;   \
+r0 ^= r3;   \
+r4 ^= r1;   \
+r3 ^= r4;   \
+r4 |= r0;   \
+r3 ^= r2;   \
+r4 ^= r2;   \
+}
+
+// key xor
+#define KX(r, a, b, c, d, e)	{\
+a ^= k[4 * r + 0]; \
+b ^= k[4 * r + 1]; \
+c ^= k[4 * r + 2]; \
+d ^= k[4 * r + 3];}
+
+//Endian management
+#if BYTE_ORDER == BIG_ENDIAN
+	#define LE32(x) MirrorBytes32(x)
+#else
+	#define LE32(x) (x)
+#endif
+
+
+void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks)
 {
-	DWORD  a,b,c,d,e,f,g,h;
-    DWORD  t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16;
+	uint32_t a,b,c,d,e;
+	uint32_t *k = (uint32_t *) &ks->key;
+	uint32_t t;
+	int i;
+	
+	for (i = 0; i < keylen / sizeof(int32_t); i++)
+		k[i] = LE32(((uint32_t*)userKey)[i]);
+	
+	if (keylen < 32)
+		k[keylen/4] |= (uint32_t)1 << ((keylen%4)*8);
+	
+	k += 8;
+	t = k[-1];
+	for (i = 0; i < 132; ++i)
+		k[i] = t = rotlFixed(k[i-8] ^ k[i-5] ^ k[i-3] ^ t ^ 0x9e3779b9 ^ i, 11);
+	k -= 20;
+	
+#define LK(r, a, b, c, d, e)	{\
+a = k[(8-r)*4 + 0];		\
+b = k[(8-r)*4 + 1];		\
+c = k[(8-r)*4 + 2];		\
+d = k[(8-r)*4 + 3];}
+	
+#define SK(r, a, b, c, d, e)	{\
+k[(8-r)*4 + 4] = a;		\
+k[(8-r)*4 + 5] = b;		\
+k[(8-r)*4 + 6] = c;		\
+k[(8-r)*4 + 7] = d;}	\
 
-#ifdef  BLOCK_SWAP
-    a = io_swap(in_blk[3]); b = io_swap(in_blk[2]);
-    c = io_swap(in_blk[1]); d = io_swap(in_blk[0]);
-#else
-    a = in_blk[0]; b = in_blk[1]; c = in_blk[2]; d = in_blk[3];
-#endif
+	for (i=0; i<4; i++)
+	{
+		afterS2(LK); afterS2(S3); afterS3(SK);
+		afterS1(LK); afterS1(S2); afterS2(SK);
+		afterS0(LK); afterS0(S1); afterS1(SK);
+		beforeS0(LK); beforeS0(S0); afterS0(SK);
+		k += 8*4;
+		afterS6(LK); afterS6(S7); afterS7(SK);
+		afterS5(LK); afterS5(S6); afterS6(SK);
+		afterS4(LK); afterS4(S5); afterS5(SK);
+		afterS3(LK); afterS3(S4); afterS4(SK);
+	}
+	afterS2(LK); afterS2(S3); afterS3(SK);
+}
 
-    k_xor(32,a,b,c,d); ib7(a,b,c,d,e,f,g,h); k_xor(31,e,f,g,h);
-    irot(e,f,g,h); ib6(e,f,g,h,a,b,c,d); k_xor(30,a,b,c,d);
-    irot(a,b,c,d); ib5(a,b,c,d,e,f,g,h); k_xor(29,e,f,g,h);
-    irot(e,f,g,h); ib4(e,f,g,h,a,b,c,d); k_xor(28,a,b,c,d);
-    irot(a,b,c,d); ib3(a,b,c,d,e,f,g,h); k_xor(27,e,f,g,h);
-    irot(e,f,g,h); ib2(e,f,g,h,a,b,c,d); k_xor(26,a,b,c,d);
-    irot(a,b,c,d); ib1(a,b,c,d,e,f,g,h); k_xor(25,e,f,g,h);
-    irot(e,f,g,h); ib0(e,f,g,h,a,b,c,d); k_xor(24,a,b,c,d);
-    irot(a,b,c,d); ib7(a,b,c,d,e,f,g,h); k_xor(23,e,f,g,h);
-    irot(e,f,g,h); ib6(e,f,g,h,a,b,c,d); k_xor(22,a,b,c,d);
-    irot(a,b,c,d); ib5(a,b,c,d,e,f,g,h); k_xor(21,e,f,g,h);
-    irot(e,f,g,h); ib4(e,f,g,h,a,b,c,d); k_xor(20,a,b,c,d);
-    irot(a,b,c,d); ib3(a,b,c,d,e,f,g,h); k_xor(19,e,f,g,h);
-    irot(e,f,g,h); ib2(e,f,g,h,a,b,c,d); k_xor(18,a,b,c,d);
-    irot(a,b,c,d); ib1(a,b,c,d,e,f,g,h); k_xor(17,e,f,g,h);
-    irot(e,f,g,h); ib0(e,f,g,h,a,b,c,d); k_xor(16,a,b,c,d);
-    irot(a,b,c,d); ib7(a,b,c,d,e,f,g,h); k_xor(15,e,f,g,h);
-    irot(e,f,g,h); ib6(e,f,g,h,a,b,c,d); k_xor(14,a,b,c,d);
-    irot(a,b,c,d); ib5(a,b,c,d,e,f,g,h); k_xor(13,e,f,g,h);
-    irot(e,f,g,h); ib4(e,f,g,h,a,b,c,d); k_xor(12,a,b,c,d);
-    irot(a,b,c,d); ib3(a,b,c,d,e,f,g,h); k_xor(11,e,f,g,h);
-    irot(e,f,g,h); ib2(e,f,g,h,a,b,c,d); k_xor(10,a,b,c,d);
-    irot(a,b,c,d); ib1(a,b,c,d,e,f,g,h); k_xor( 9,e,f,g,h);
-    irot(e,f,g,h); ib0(e,f,g,h,a,b,c,d); k_xor( 8,a,b,c,d);
-    irot(a,b,c,d); ib7(a,b,c,d,e,f,g,h); k_xor( 7,e,f,g,h);
-    irot(e,f,g,h); ib6(e,f,g,h,a,b,c,d); k_xor( 6,a,b,c,d);
-    irot(a,b,c,d); ib5(a,b,c,d,e,f,g,h); k_xor( 5,e,f,g,h);
-    irot(e,f,g,h); ib4(e,f,g,h,a,b,c,d); k_xor( 4,a,b,c,d);
-    irot(a,b,c,d); ib3(a,b,c,d,e,f,g,h); k_xor( 3,e,f,g,h);
-    irot(e,f,g,h); ib2(e,f,g,h,a,b,c,d); k_xor( 2,a,b,c,d);
-    irot(a,b,c,d); ib1(a,b,c,d,e,f,g,h); k_xor( 1,e,f,g,h);
-    irot(e,f,g,h); ib0(e,f,g,h,a,b,c,d); k_xor( 0,a,b,c,d);
+void serpent_encrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBlock)
+{
+	uint32_t a, b, c, d, e;
+	uint i=1;
+	const uint32_t *k = (uint32_t *)&ks->key[8];
+	uint32_t *in = (uint32_t *) inBlock;
+	uint32_t *out = (uint32_t *) outBlock;
+	
+    a = LE32(in[0]);
+	b = LE32(in[1]);
+	c = LE32(in[2]);
+	d = LE32(in[3]);
+	
+	do
+	{
+		beforeS0(KX); beforeS0(S0); afterS0(LT);
+		afterS0(KX); afterS0(S1); afterS1(LT);
+		afterS1(KX); afterS1(S2); afterS2(LT);
+		afterS2(KX); afterS2(S3); afterS3(LT);
+		afterS3(KX); afterS3(S4); afterS4(LT);
+		afterS4(KX); afterS4(S5); afterS5(LT);
+		afterS5(KX); afterS5(S6); afterS6(LT);
+		afterS6(KX); afterS6(S7);
+		
+		if (i == 4)
+			break;
+		
+		++i;
+		c = b;
+		b = e;
+		e = d;
+		d = a;
+		a = e;
+		k += 32;
+		beforeS0(LT);
+	}
+	while (1);
+	
+	afterS7(KX);
+	
+    out[0] = LE32(d);
+	out[1] = LE32(e);
+	out[2] = LE32(b);
+	out[3] = LE32(a);
+}
 
-#ifdef  BLOCK_SWAP
-    out_blk[3] = io_swap(a); out_blk[2] = io_swap(b);
-    out_blk[1] = io_swap(c); out_blk[0] = io_swap(d);
-#else
-    out_blk[0] = a; out_blk[1] = b; out_blk[2] = c; out_blk[3] = d;
-#endif
+void serpent_decrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBlock)
+{
+	uint32_t a, b, c, d, e;
+	const uint32_t *k = (uint32_t *)&ks->key[104];
+	uint i=4;
+	uint32_t *in = (uint32_t *) inBlock;
+	uint32_t *out = (uint32_t *) outBlock;
+	
+    a = LE32(in[0]);
+	b = LE32(in[1]);
+	c = LE32(in[2]);
+	d = LE32(in[3]);
+	
+	beforeI7(KX);
+	goto start;
+	
+	do
+	{
+		c = b;
+		b = d;
+		d = e;
+		k -= 32;
+		beforeI7(ILT);
+	start:
+		beforeI7(I7); afterI7(KX);
+		afterI7(ILT); afterI7(I6); afterI6(KX);
+		afterI6(ILT); afterI6(I5); afterI5(KX);
+		afterI5(ILT); afterI5(I4); afterI4(KX);
+		afterI4(ILT); afterI4(I3); afterI3(KX);
+		afterI3(ILT); afterI3(I2); afterI2(KX);
+		afterI2(ILT); afterI2(I1); afterI1(KX);
+		afterI1(ILT); afterI1(I0); afterI0(KX);
+	}
+	while (--i != 0);
+	
+    out[0] = LE32(a);
+	out[1] = LE32(d);
+	out[2] = LE32(b);
+	out[3] = LE32(e);
 }
