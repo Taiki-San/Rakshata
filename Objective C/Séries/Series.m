@@ -97,6 +97,21 @@
 	[self refreshLevelViews: self : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
+- (NSRect) getFrameOfNextTab
+{
+	NSRect output;
+	[Prefs getPref:PREFS_GET_TAB_CT_FRAME :&output];
+	
+	NSSize sizeSuperView = [self.superview frame].size;
+	
+	output.origin.x *= sizeSuperView.width / 100.0f;
+	output.origin.y *= sizeSuperView.height / 100.0f;
+	output.size.width *= sizeSuperView.width / 100.0f;
+	output.size.height *= sizeSuperView.height / 100.0f;
+	
+	return output;
+}
+
 - (NSColor*) getMainColor
 {
 	return [NSColor redColor];
@@ -129,6 +144,12 @@
 		case CONVERT_CODE_WIDTH:
 		{
 			output = PREFS_GET_TAB_SERIE_WIDTH;
+			break;
+		}
+			
+		case CONVERT_CODE_FRAME:
+		{
+			output = PREFS_GET_TAB_SERIE_FRAME;
 			break;
 		}
 	}

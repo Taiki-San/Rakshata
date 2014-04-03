@@ -22,6 +22,7 @@
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
 		self = [self initView : contentView : state];
+		
 		[self initReaderMainView : state];
 	}
     return self;
@@ -117,6 +118,11 @@
 	}
 }
 
+- (void) endOfInitialization
+{
+	
+}
+
 - (void) noContent
 {
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
@@ -145,7 +151,6 @@
 		output = [mainImage getContextToGTFO];
 
 		[mainImage getTheFuckOut];
-		[bottomBar byebye];
 	}
 	else
 	{
@@ -184,6 +189,12 @@
 			output = PREFS_GET_TAB_READER_WIDTH;
 			break;
 		}
+			
+		case CONVERT_CODE_FRAME:
+		{
+			output = PREFS_GET_TAB_READER_FRAME;
+			break;
+		}
 	}
 	
 	return output;
@@ -202,6 +213,13 @@
 	}
 	
 	[super refreshViewSize];
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	[mainImage setFrame:frameRect];
+	[bottomBar setFrame:frameRect];
 }
 
 - (void) readerIsOpening : (byte) context
@@ -282,11 +300,12 @@
 - (void) resizeReaderCatchArea
 {
 	if([self isStillCollapsedReaderTab])
-		[super resizeReaderCatchArea];
+		[super resizeReaderCatchArea : readerMode];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
+	
 }
 
 /**	Hide stuffs	**/

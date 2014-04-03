@@ -10,9 +10,10 @@
  **                                                                                         **
  ********************************************************************************************/
 
-
-@interface RakReaderBottomBar : Reader
+@interface RakReaderBottomBar : NSView
 {
+	bool readerMode;
+	
 	/** Images of different icons **/
 	RakButton *favorite;
 	RakButton *fullscreen;
@@ -27,7 +28,7 @@
 	CGContextRef contextBorder;
 }
 
-- (id)init: (BOOL) displayed : (id) parent;
+- (id)init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;
 
 - (void) leaveReaderMode;

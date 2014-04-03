@@ -85,6 +85,12 @@
 			output = PREFS_GET_TAB_SERIE_WIDTH;
 			break;
 		}
+			
+		case CONVERT_CODE_FRAME:
+		{
+			output = PREFS_GET_TAB_SERIE_FRAME;
+			break;
+		}
 	}
 	
 	return output;

@@ -149,31 +149,28 @@
 		return;
 	}
 	
-	if (actionBeingProcessessed)
-		return;
-	
-	actionBeingProcessessed = true;
-	
 	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 
 	if(pageTooHigh)
+	{
 		mouseLoc.y += [self.contentView documentRect].size.height - [self frame].size.height - [self.contentView documentVisibleRect].origin.y;
+		if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) self.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
+			return;
+	}
 	
 	if(pageTooLarge)
+	{
 		mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
+		if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [self frame].size.width - READER_BORDURE_VERT_PAGE)
+			return;
+
+	}
 	
 	[self nextPage];
-	
-	actionBeingProcessessed = false;
 }
 
 - (void) keyDown:(NSEvent *)theEvent
 {
-	if(actionBeingProcessessed)
-		return;
-	
-	actionBeingProcessessed = true;
-	
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
 	bool isModPressed = [theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask);
@@ -207,8 +204,6 @@
             break;
         }
     }
-	
-	actionBeingProcessessed = false;
 }
 
 /*Error management*/
@@ -310,7 +305,7 @@
 	loadTrad(texteTrad, 21);
 	
 	prevPage = pageData = nextPage = nil;
-	cacheBeingBuilt = actionBeingProcessessed = false;
+	cacheBeingBuilt = false;
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
 
@@ -559,7 +554,7 @@
 {
 	//We create the view that si going to be displayed
 	NSRect pageViewSize = selfFrame;
-	pageViewSize.size.height += 2*READER_PAGE_TOP_BORDER;
+	pageViewSize.size.height += READER_PAGE_BORDERS_HIGH; 
 	
 	if(pageView != nil)
 	{

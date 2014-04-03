@@ -12,11 +12,6 @@
 
 @implementation RakContentViewBack
 
-#define WIDTH_BORDER_ALL		4
-#define WIDTH_BORDER_FAREST		2
-#define WIDTH_BORDER_MIDDLE		1
-#define WIDTH_BORDER_INTERNAL	1
-
 - (id) initWithCoder:(NSCoder *)aDecoder
 {
 	self = [super initWithCoder:aDecoder];

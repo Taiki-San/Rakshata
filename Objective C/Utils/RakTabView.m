@@ -40,7 +40,7 @@
 
 - (void) endOfInitialization
 {
-	
+	[self resizeReaderCatchArea : readerMode];
 }
 
 - (NSString *) byebye
@@ -84,32 +84,21 @@
 
 - (void) refreshLevelViewsAnimation : (NSView*) superView
 {
-	if(resizeAnimationCount != -1)
-	{
-		[self.window makeFirstResponder:[self.window initialFirstResponder]];
-		
-		NSArray *subView = [superView subviews];
-		
-		//Variable to set up the animation
-		RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: subView];
-		[animation setUpViews];
-		[animation performTo];
-		[animation release];
-	}
-	else
-	{
-		[self setFrame:[self createFrame]];
-	}
+	[self.window makeFirstResponder:[self.window initialFirstResponder]];
+	
+	NSArray *subView = [superView subviews];
+	
+	//Variable to set up the animation
+	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: subView];
+	[animation setUpViews];
+	[animation performTo];
+	[animation release];
 }
 
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	
-	if(readerMode)
-	{
-		[self resizeReaderCatchArea];
-	}
+	[self resizeReaderCatchArea : readerMode];
 }
 
 - (void) refreshViewSize
@@ -175,12 +164,15 @@
 #pragma mark - Reader
 /**		Reader		**/
 
-- (void) resizeReaderCatchArea
+- (void) resizeReaderCatchArea : (bool) inReaderMode
 {
 	[self releaseReaderCatchArea];
 		
-	trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
-	[self addTrackingArea:trackingArea];
+	if(inReaderMode)
+	{
+		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+		[self addTrackingArea:trackingArea];
+	}
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
@@ -193,23 +185,10 @@
 {
 	bool isReaderMode;
 	[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
+	readerMode = isReaderMode;
 	
-	if(isReaderMode)
-	{
-		if(!readerMode)
-			readerMode = true;
-
-		[self resizeReaderCatchArea];
-	}
-	else
-	{
-		readerMode = false;
-		if(trackingArea != NULL)
-		{
-			[trackingArea release];
-			trackingArea = NULL;
-		}
-	}
+	[self resizeReaderCatchArea : readerMode];
+	
 	[self setFrame:[self frame]];	//Redraw with the final context
 }
 
@@ -246,6 +225,11 @@
 	NSPoint mouseLoc = [self getCursorPosInWindow], selfLoc = self.frame.origin;
 	NSSize selfSize = self.frame.size;
 	
+	if(readerMode && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
+	{
+		selfSize.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
+	}
+	
 	if(selfLoc.x < mouseLoc.x && selfLoc.x + selfSize.width >= mouseLoc.x &&
 		selfLoc.y < mouseLoc.y && selfLoc.y + selfSize.height >= mouseLoc.y)
 	{
@@ -259,10 +243,15 @@
 {
 	NSPoint mouseLoc = [NSEvent mouseLocation], windowLoc = self.window.frame.origin;
 
-	mouseLoc.x -= windowLoc.x;
-	mouseLoc.y -= windowLoc.y;
+	mouseLoc.x -= windowLoc.x + WIDTH_BORDER_ALL;
+	mouseLoc.y -= windowLoc.y + WIDTH_BORDER_ALL;
 	
 	return mouseLoc;
+}
+
+- (NSRect) getFrameOfNextTab
+{
+	return NSMakeRect(0, 0, 0, 0);
 }
 
 -(BOOL) mouseOutOfWindow
@@ -281,8 +270,11 @@
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
-		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+	//On attend 0.125 secondes avant de lancer l'animation au cas d'un passage rapide
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+		if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+	});
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
@@ -321,10 +313,11 @@
 	else
 		sizeSuperView = superView.frame.size;
 	
-	frame.origin.x = [self getRequestedViewPosX: sizeSuperView.width];
-	frame.origin.y = [self getRequestedViewPosY: sizeSuperView.height];
-	frame.size.width = [self getRequestedViewWidth: sizeSuperView.width];
-	frame.size.height = [self getRequestedViewHeight: sizeSuperView.height];
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_FRAME] :&frame];
+	frame.origin.x *= sizeSuperView.width / 100.0f;
+	frame.origin.y *= sizeSuperView.height / 100.0f;
+	frame.size.width *= sizeSuperView.width / 100.0f;
+	frame.size.height *= sizeSuperView.height / 100.0f;
 	
 	return frame;
 }

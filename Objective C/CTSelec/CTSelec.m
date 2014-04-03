@@ -155,6 +155,12 @@
 			output = PREFS_GET_TAB_CT_WIDTH;
 			break;
 		}
+			
+		case CONVERT_CODE_FRAME:
+		{
+			output = PREFS_GET_TAB_CT_FRAME;
+			break;
+		}
 	}
 	
 	return output;
@@ -216,6 +222,21 @@
 {
 	[super setFrame:frameRect];
 	[coreView setFrame:[self calculateContentViewSize]];
+}
+
+- (NSRect) getFrameOfNextTab
+{
+	NSRect output;
+	[Prefs getPref:PREFS_GET_TAB_READER_FRAME :&output];
+	
+	NSSize sizeSuperView = [self.superview frame].size;
+	
+	output.origin.x *= sizeSuperView.width / 100.0f;
+	output.origin.y *= sizeSuperView.height / 100.0f;
+	output.size.width *= sizeSuperView.width / 100.0f;
+	output.size.height *= sizeSuperView.height / 100.0f;
+	
+	return output;
 }
 
 #pragma mark - Communication with other tabs

@@ -33,7 +33,6 @@
 	bool readerMode;
 	
 	bool cacheBeingBuilt;
-	bool actionBeingProcessessed;
 	
 	MANGAS_DATA project;
 	DATA_LECTURE data;

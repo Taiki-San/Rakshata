@@ -47,7 +47,7 @@ enum {
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
-- (void) resizeReaderCatchArea;
+- (void) resizeReaderCatchArea : (bool) inReaderMode;
 - (void) releaseReaderCatchArea;
 - (void) setUpViewForAnimation : (BOOL) newReaderMode;
 
@@ -58,6 +58,7 @@ enum {
 
 - (BOOL) isCursorOnMe;
 - (NSPoint) getCursorPosInWindow;
+- (NSRect) getFrameOfNextTab;
 - (BOOL) mouseOutOfWindow;
 
 

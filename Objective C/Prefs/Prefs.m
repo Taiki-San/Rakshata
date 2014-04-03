@@ -310,6 +310,27 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
+		case PREFS_GET_TAB_SERIE_FRAME:
+		{
+			NSRect * output = outputContainer;
+			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			break;
+		}
+			
+		case PREFS_GET_TAB_CT_FRAME:
+		{
+			NSRect * output = outputContainer;
+			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			break;
+		}
+			
+		case PREFS_GET_TAB_READER_FRAME:
+		{
+			NSRect * output = outputContainer;
+			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			break;
+		}
+			
 		case PREFS_GET_MDL_FRAME:
 		{
 			NSRect * output = outputContainer;

@@ -32,8 +32,9 @@ void decryptPage(void *_password, rawData *buffer_in, rawData *buffer_out, size_
 	TwofishInstance pTwoF;
 
     for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password, *(password++) = 0);
-    TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);	//Un bug dans la génération de la clée nous force à la recréer
+    TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);
 	Serpent_set_key(&pSer, (uint32_t*) key, KEYBITS);
+	for(i = 0; i < KEYLENGTH(KEYBITS); key[i++] = 0);
 
     for(k = pos_buffer = 0, posIV = -1; k < length; k++)
     {

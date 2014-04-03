@@ -14,18 +14,26 @@
 
 #define RADIUS_BORDERS 13.0
 
-- (id)init: (BOOL) displayed : (id) parent
+- (id)init: (BOOL) displayed : (Reader*) parent
 {
-	self = [self initView : parent : nil];
-	resizeAnimationCount = -1;	//Prevent this element to get caught in animation
+	self = [super initWithFrame:[self createFrameWithSuperView:parent.frame]];
 	
-	[self.layer setCornerRadius:RADIUS_BORDERS];
-	
-	[self loadIcons : parent];
+	if(self != nil)
+	{
+		[self setAutoresizesSubviews:true];
+		[parent addSubview:self];
 		
-	if(!displayed)
-		[self setHidden:![self isHidden]];
-	
+		readerMode = parent->readerMode;
+
+		[self setWantsLayer:YES];
+		[self.layer setCornerRadius:RADIUS_BORDERS];
+		
+		[self loadIcons : parent];
+		
+		if(!displayed)
+			[self setHidden:![self isHidden]];
+	}
+
 	return self;
 }
 
@@ -179,7 +187,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	[super drawRect:dirtyRect];
+	[[self getMainColor] setFill];
+	NSRectFill(dirtyRect);
 	
 	[self setupPath];
 	[[self getColorFront] setStroke];
@@ -193,6 +202,8 @@
 {
 	if(!readerMode)
 	{
+		frameRect.size.height = [self getRequestedViewHeight:frameRect.size.height];
+		
 		if(frameRect.size.height == self.frame.size.height)
 			return;
 		
@@ -200,7 +211,9 @@
 		frameRect.origin.x = self.frame.origin.x;
 		frameRect.origin.y = self.frame.origin.y;
 	}
-
+	else
+		frameRect = [self createFrameWithSuperView:frameRect];
+	
 	[super setFrame:frameRect];
 	
 	if(readerMode)
@@ -213,34 +226,15 @@
 		[super setFrameOrigin:newOrigin];
 }
 
-- (NSRect) createFrameWithSuperView : (NSView*) superView
-{
-	return NSMakeRect(0, 0, 0, 0);
-}
-
-- (void) mouseEntered:(NSEvent *)theEvent
-{
-	
-}
-
-/* Gestion des évènements*/
-- (void)mouseDown:(NSEvent *)theEvent
-{
-	
-}
-
-- (void) animationIsOver:(uint)mainThread :(byte)context
-{
-	
-}
-
-- (void) refreshDataAfterAnimation
-{
-	
-}
 
 /*Constraints routines*/
 #pragma mark - Data about bar position
+
+- (NSRect) createFrameWithSuperView : (NSRect) superviewRect
+{
+	NSSize size = superviewRect.size;
+	return NSMakeRect([self getRequestedViewPosX:size.width], [self getRequestedViewPosY:size.height], [self getRequestedViewWidth:size.width], [self getRequestedViewHeight:size.height]);
+}
 
 - (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow
 {
