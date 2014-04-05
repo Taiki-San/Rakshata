@@ -699,9 +699,7 @@
 	[alert setMessageText:[NSString stringWithFormat:@"%s %s%s!", onlyOneElementAvailable ? "Un" : "Des", element, onlyOneElementAvailable ? " est disponible" : "s sont disponibles"]];
 	[alert setInformativeText :[NSString stringWithFormat:@"J'ai remarqué qu'il y a %s %s%s non-téléchargé%s après celui-là. Voulez vous que je le%s télécharge pour vous?", onlyOneElementAvailable ? "un" : "quelques", element, particule, particule, particule]];
 	
-	[alert addButtonWithTitle:@"Nope"];
-	NSButton * firstButton = [[alert buttons] objectAtIndex:0];
-	[firstButton setTitle:@"Eyup!"];
+	[alert addButtonWithTitle:@"Eyup!"];
 	[alert addButtonWithTitle:@"Nope"];
 	
 	if([alert runModal] == NSAlertFirstButtonReturn)
