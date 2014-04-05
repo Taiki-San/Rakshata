@@ -116,10 +116,6 @@ void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t
 	decryptPageWorker(&data);
 
 	while (jobIsDone);
-	
-	FILE* file = fopen("lol.png", "wb");
-	fwrite(buffer_out, length * 2 * CRYPTO_BUFFER_SIZE, 1, file);
-	fclose(file);
 }
 
 void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
