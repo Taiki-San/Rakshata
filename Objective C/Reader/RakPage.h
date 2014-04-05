@@ -12,6 +12,19 @@
 
 #include "lecteur.h"
 
+@interface RakArgumentToRefreshAlert : NSObject
+{
+	MANGAS_DATA * data;
+	uint nbElem;
+}
+
+- (void) setData : (MANGAS_DATA *) newData;
+- (MANGAS_DATA *) data;
+- (void) setNbElem : (uint) newData;
+- (uint) nbElem;
+
+@end
+
 @interface RakPage : NSScrollView
 {
 	NSData *prevPage;
@@ -68,7 +81,11 @@
 - (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
+- (void) deleteElement;
 - (void) addPageToView;
+
+- (void) checkIfNewElements;
+- (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
 
 - (void) flushCache;
 - (void) getTheFuckOut;

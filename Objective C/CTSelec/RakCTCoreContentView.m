@@ -91,7 +91,7 @@
 		[_tableView setBackgroundColor:[NSColor clearColor]];
 		[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 		[_tableView setFocusRingType:NSFocusRingTypeNone];
-		[_tableView setAllowsMultipleSelection:false];
+		[_tableView setAllowsMultipleSelection:NO];
 		
 		//End of setup
 		[_tableView addTableColumn:column];
@@ -275,7 +275,7 @@
 		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : nil];
 		[result setTextColor:normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
-		[result setDrawsBackground:false];
+		[result setDrawsBackground:NO];
 		[result setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
 		
 		result.identifier = @"Mane 6";
@@ -310,6 +310,13 @@
 		[element setDrawsBackground:YES];
     }
 	
+	return YES;
+}
+
+#pragma mark - Drag'n drop support
+
+- (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
+{
 	return YES;
 }
 
@@ -360,11 +367,11 @@
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
 	{
-		[scroller setHidden:true];
+		[scroller setHidden:YES];
 	}
 	else if([scroller isHidden])
 	{
-		[scroller setHidden:false];
+		[scroller setHidden:NO];
 	}
 }
 

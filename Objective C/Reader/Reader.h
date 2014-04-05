@@ -39,6 +39,7 @@
 - (void) prevChapter;
 - (void) nextChapter;
 - (void) triggerFullscreen;
+- (void) deleteElement;
 
 @end
 

@@ -100,7 +100,7 @@
 - (void) mouseExited:(NSEvent *)theEvent
 {
 	cursorOnMe = false;
-	[self.cell setAnimationInProgress:false];
+	[self.cell setAnimationInProgress:NO];
 	[_animation stopAnimation];
 	[self setNeedsDisplay:YES];
 }
@@ -109,7 +109,7 @@
 - (SEL) action
 {
 	cursorOnMe = false;
-	[self.cell setAnimationInProgress:false];
+	[self.cell setAnimationInProgress:NO];
 	return [super action];
 }
 
@@ -144,7 +144,7 @@
 {
 	if(cursorOnMe && animation)
 	{
-		[self.cell setAnimationInProgress:false];
+		[self.cell setAnimationInProgress:NO];
 		[self performClick:self];
 		[animation release];
 	}

@@ -83,7 +83,7 @@
 	nextPage = [RakButton initForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXButton:5] :YES :superview :@selector(nextPage)];
 	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXButton:6] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXButton:7] :NO :self :@selector(buttonHitten)];
+	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXButton:7] :NO :superView :@selector(deleteElement)];
 }
 
 - (CGFloat) getPosXButton : (uint) IDButton

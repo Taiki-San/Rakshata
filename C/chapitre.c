@@ -63,6 +63,20 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
     return checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag);
 }
 
+bool isChapterEncrypted(MANGAS_DATA mangaDB, int chapitre)
+{
+    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*3+350];
+    if(chapitre%10)
+    {
+        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Chapitre_%d.%d/config.enc", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10);
+    }
+    else
+    {
+        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Chapitre_%d/config.enc", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10);
+    }
+    return checkFileExist(pathConfigFile);
+}
+
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
     if(mangaDB->chapitres == NULL || mangaDB->chapitres[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)

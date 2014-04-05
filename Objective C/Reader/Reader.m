@@ -381,4 +381,9 @@
 	[self.window toggleFullScreen:self];
 }
 
+- (void) deleteElement
+{
+	[mainImage deleteElement];
+}
+
 @end

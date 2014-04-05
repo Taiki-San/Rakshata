@@ -325,7 +325,9 @@
 	
 	setLastChapitreLu(project, isTome, currentElem);
 	if(reader_isLastElem(project, isTome, currentElem))
-        startCheckNewElementInRepo(project, isTome, currentElem, false);
+	{
+		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
+	}
 	
 	if(configFileLoader(project, isTome, currentElem, &data))
 	{
@@ -343,7 +345,9 @@
 	return YES;
 }
 
-void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
+#ifdef DEV_VERSION
+	void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
+#endif
 
 - (NSData *) getPage : (uint) posData
 {
@@ -493,7 +497,7 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
 	
 	setLastChapitreLu(project, isTome, currentElem);
 	if(reader_isLastElem(project, isTome, currentElem))
-        startCheckNewElementInRepo(project, isTome, currentElem, false);
+        [self checkIfNewElements];
 	
 	data.pageCourante = 0;
 	
@@ -583,6 +587,36 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
 	return true;
 }
 
+- (void) deleteElement
+{
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	[alert setMessageText:[NSString stringWithFormat:@"Suppression d'un %s", isTome ? "tome" : "chapitre"]];
+	[alert setInformativeText :[NSString stringWithFormat:@"Attention: vous vous apprêtez à supprimer définitivement un %s, pour le relire, vous aurez à le télécharger de nouveau, en êtes vous sûr?", isTome ? "tome" : "chapitre"]];
+	
+	[alert addButtonWithTitle:@"NON!"];
+	NSButton * firstButton = [[alert buttons] objectAtIndex:0];
+	[firstButton setTitle:@"I want it dead"];
+	[alert addButtonWithTitle:@"NON!"];
+	
+	if([alert runModal] == NSAlertFirstButtonReturn)
+	{
+		[alert release];
+		while (cacheBeingBuilt);
+		internalDeleteCT(project, isTome, currentElem);
+		
+		if(posElemInStructure != isTome ? project.nombreTomes : project.nombreChapitre)
+			[self nextChapter];
+		else if(posElemInStructure > 0)
+			[self prevChapter];
+		else
+			[self failure];
+	}
+	else
+		[alert release];
+}
+
 - (void) addPageToView
 {
 	//We create the view that si going to be displayed
@@ -627,6 +661,60 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
 	[self setFrameOrigin:frameReader.origin];
 }
 
+#pragma mark - Checks if new elements to download
+
+- (void) checkIfNewElements
+{
+	MANGAS_DATA localProject;
+	memcpy(&localProject, &project, sizeof(MANGAS_DATA));
+	
+	uint nbElemToGrab = checkNewElementInRepo(&localProject, isTome, currentElem);
+	
+	if(!nbElemToGrab)
+		return;
+	
+	RakArgumentToRefreshAlert * argument = [RakArgumentToRefreshAlert alloc];
+	argument.data = &localProject;
+	argument.nbElem = nbElemToGrab;
+	
+	[self performSelectorOnMainThread:@selector(promptToGetNewElems:) withObject:argument waitUntilDone:YES];
+	
+	[argument release];
+}
+
+- (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments
+{
+	MANGAS_DATA localProject = *arguments.data;
+	uint nbElemToGrab = arguments.nbElem;
+	
+	if(project.cacheDBID != localProject.cacheDBID)
+		return;
+	
+	bool onlyOneElementAvailable = nbElemToGrab == 1;
+	char * element = isTome ? "tome" : "chapitre", * particule = onlyOneElementAvailable ? "" : "s";
+	
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	[alert setMessageText:[NSString stringWithFormat:@"%s %s%s!", onlyOneElementAvailable ? "Un" : "Des", element, onlyOneElementAvailable ? " est disponible" : "s sont disponibles"]];
+	[alert setInformativeText :[NSString stringWithFormat:@"J'ai remarqué qu'il y a %s %s%s non-téléchargé%s après celui-là. Voulez vous que je le%s télécharge pour vous?", onlyOneElementAvailable ? "un" : "quelques", element, particule, particule, particule]];
+	
+	[alert addButtonWithTitle:@"Nope"];
+	NSButton * firstButton = [[alert buttons] objectAtIndex:0];
+	[firstButton setTitle:@"Eyup!"];
+	[alert addButtonWithTitle:@"Nope"];
+	
+	if([alert runModal] == NSAlertFirstButtonReturn)
+	{
+		addtoDownloadListFromReader(localProject, nbElemToGrab, isTome);
+		//Still need to warn the MDL to start to work
+	}
+	
+	[alert release];
+}
+
+#pragma mark - Quit
+
 - (void) flushCache
 {
 	while (cacheBeingBuilt);
@@ -642,6 +730,31 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
 	releaseDataReader(&data);
 	[self removeFromSuperview];
 	self.documentView = nil;
+}
+
+@end
+
+//Shitty class only used because performSelectorOnMainThread want a class, an not two perfectly fine arguments
+@implementation RakArgumentToRefreshAlert
+
+- (void) setData : (MANGAS_DATA *) newData
+{
+	data = newData;
+}
+
+- (MANGAS_DATA *) data
+{
+	return data;
+}
+
+- (void) setNbElem : (uint) newData
+{
+	nbElem = newData;
+}
+
+- (uint) nbElem
+{
+	return nbElem;
 }
 
 @end

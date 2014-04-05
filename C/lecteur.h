@@ -30,22 +30,13 @@ typedef struct data_lecture_tome
     int *chapitreTomeCPT; //Pour la crypto
 } DATA_LECTURE;
 
-typedef struct data_thread_check_new_CT
-{
-    MANGAS_DATA mangaDB;
-    bool isTome;
-    int CT;
-    bool * fullscreen;
-} DATA_CK_LECTEUR;
-
 /** lecteur_event.c **/
 
 void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementEtat);
 
 /** lecteur_check_newElems.c **/
 
-void startCheckNewElementInRepo(MANGAS_DATA mangaDB, bool isTome, int CT, bool * fullscreen);
-void checkNewElementInRepo(DATA_CK_LECTEUR *input);
+uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT);
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome);
 
 /** lecteur_loading.c **/
