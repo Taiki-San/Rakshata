@@ -101,7 +101,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 - (void)windowDidEnterFullScreen:(NSNotification *)notification
 {
-	NSLog(@"Lolilol");
+	NSLog(@"Fullscreen mode :D");
 }
 
 @end

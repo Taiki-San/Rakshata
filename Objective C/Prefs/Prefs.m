@@ -89,6 +89,12 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
+		case GET_COLOR_READER_BAR_PAGE_COUNTER:
+		{
+			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:1];
+			break;
+		}
+			
 		case GET_COLOR_BACKGROUND_READER_INTAB:
 		{
 			output = [NSColor colorWithDeviceWhite:42/255.0f alpha:1.0];

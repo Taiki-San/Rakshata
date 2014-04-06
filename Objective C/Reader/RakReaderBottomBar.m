@@ -29,6 +29,7 @@
 		[self.layer setCornerRadius:RADIUS_BORDERS];
 		
 		[self loadIcons : parent];
+		[self loadPageCounter : parent];
 		
 		if(!displayed)
 			[self setHidden:![self isHidden]];
@@ -75,18 +76,24 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton initForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXButton:1] :YES :self :@selector(buttonHitten)];
-	fullscreen = [RakButton initForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXButton:2] :YES :superview :@selector(triggerFullscreen)];
+	favorite = [RakButton initForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement:1] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton initForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXElement:2] :YES :superview :@selector(triggerFullscreen)];
 	
-	prevChapter = [RakButton initForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXButton:3] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton initForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXButton:4] :NO :superview :@selector(prevPage)];
-	nextPage = [RakButton initForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXButton:5] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXButton:6] :YES :superview :@selector(nextChapter)];
+	prevChapter = [RakButton initForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement:3] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton initForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement:4] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton initForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement:5] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement:6] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXButton:7] :NO :superView :@selector(deleteElement)];
+	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement:7] :NO :superView :@selector(deleteElement)];
 }
 
-- (CGFloat) getPosXButton : (uint) IDButton
+- (void) loadPageCounter : (Reader *) superView
+{
+	pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement:8] :10 :150];
+	[self addSubview:pageCount];
+}
+
+- (CGFloat) getPosXElement : (uint) IDButton
 {
 	CGFloat output = 0;
 	
@@ -129,7 +136,7 @@
 			break;
 		}
 			
-		case 6:			//next page
+		case 6:			//next chapter
 		{
 			output = self.frame.size.width / 2 + 40;
 			break;
@@ -144,12 +151,20 @@
 			
 			break;
 		}
+			
+		case 8:		//Page counter, we set the middle of the place we want to put it
+		{
+			//Centered between the next chapter and the trashcan
+			//output = ((self.frame.size.width / 2 + 40 + 20) + (self.frame.size.width - 25)) / 2;
+			output = self.frame.size.width * 3 / 4 + 17.5f;		//Optimized version
+			break;
+		}
 	}
 	
 	return output;
 }
 
-- (void) recalculateButtonPosition
+- (void) recalculateElementsPosition
 {
 	RakButton* icons[] = {favorite, fullscreen, prevChapter, prevPage, nextPage, nextChapter, trash};
 	short nbElem = [self numberIconsInBar];
@@ -161,7 +176,7 @@
 		if (icons[pos] == nil)
 			continue;
 		
-		origin.x = [self getPosXButton:pos+1];
+		origin.x = [self getPosXElement:pos+1];
 		
 		if(icons[pos].frame.size.height != lastElemHeight)
 		{
@@ -171,6 +186,9 @@
 		
 		[icons[pos] setFrameOrigin:origin];
 	}
+	
+	//Repositionate pageCounter
+	[pageCount updateSize:self.frame.size.height : [self getPosXElement:8]];
 }
 
 #pragma mark - Color stuffs
@@ -217,7 +235,7 @@
 	[super setFrame:frameRect];
 	
 	if(readerMode)
-		[self recalculateButtonPosition];
+		[self recalculateElementsPosition];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
@@ -226,6 +244,10 @@
 		[super setFrameOrigin:newOrigin];
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	//Prevent a clic on the bar to end up on the page
+}
 
 /*Constraints routines*/
 #pragma mark - Data about bar position

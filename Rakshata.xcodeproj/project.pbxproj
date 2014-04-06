@@ -384,10 +384,10 @@
 		B6CC724718723077003A745B /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
-				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
+				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
+				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
 				B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */,
 				B69D61D3186CA2F2003504F9 /* Reader.h */,

@@ -575,7 +575,23 @@
 	page = [[NSImage alloc] initWithData:pageData];
 	
 	if(page == nil)
+	{
+#ifdef DEV_VERSION
+		FILE * lol = fopen("lol.png", "wb");
+		void * buffer = malloc([pageData length]);
+		if(lol != NULL && buffer != NULL)
+		{
+			[pageData getBytes:buffer length:[pageData length]];
+			fwrite(buffer, [pageData length], 1, lol);
+			fclose(lol);
+		}
+		else if(lol != NULL)
+			fclose(lol);
+		else
+			free(buffer);
+#endif
 		return false;
+	}
 	
 	[page setCacheMode:NSImageCacheNever];
 	[self performSelectorInBackground:@selector(buildCache) withObject:nil];

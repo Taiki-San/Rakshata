@@ -43,5 +43,6 @@
 
 @end
 
+#import "RakPageCounter.h"
 #import "RakReaderBottomBar.h"
 #import "RakPage.h"

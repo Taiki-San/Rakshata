@@ -10,37 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakReaderBottomBar : NSView
+@interface RakPageCounter : RakText
 {
-	bool readerMode;
-	
-	/** Images of different icons **/
-	RakButton *favorite;
-	RakButton *fullscreen;
-	
-	RakButton *prevChapter;
-	RakButton *prevPage;
-	RakButton *nextPage;
-	RakButton *nextChapter;
-	
-	RakButton *trash;
-	
-	RakPageCounter * pageCount;
-	
-	CGContextRef contextBorder;
+	uint currentPage;
+	uint pageMax;
 }
 
-- (id)init: (BOOL) displayed : (Reader*) parent;
-- (void) setupPath;
+- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg;
 
-- (void) leaveReaderMode;
-- (void) startReaderMode;
+- (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;
 
-- (short) numberIconsInBar;
-- (void) loadIcons : (Reader*) superView;
-- (CGFloat) getPosXElement : (uint) IDButton;
-- (void) recalculateElementsPosition;
-
-- (NSColor*) getColorFront;
+- (NSColor *) getColorBackground;
+- (NSColor *) getFontColor;
 
 @end
