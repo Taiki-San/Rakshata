@@ -68,7 +68,10 @@
 	
 	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE]];
 	if (internalRows1 != nil)
+	{
 		[self addSubview:internalRows1];
+		[internalRows1 release];
+	}
 	
 	frame.size.width -= 2 * WIDTH_BORDER_MIDDLE;
 	frame.size.height -= 2 * WIDTH_BORDER_MIDDLE;
@@ -77,7 +80,10 @@
 	
 	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST]];
 	if (internalRows2 != nil)
+	{
 		[self addSubview:internalRows2];
+		[internalRows2 release];
+	}
 	
 	frame.size.width -= 2 * WIDTH_BORDER_INTERNAL;
 	frame.size.height -= 2 * WIDTH_BORDER_INTERNAL;
@@ -86,7 +92,10 @@
 	
 	firstResponder = [[RakContentView alloc] initWithFrame:frame];
 	if(firstResponder != nil)
+	{
 		[self addSubview:firstResponder];
+		[firstResponder release];
+	}
 }
 
 - (RakContentView *) getFirstResponder
@@ -94,12 +103,11 @@
 	return firstResponder;
 }
 
-- (void) dealloc
+- (void) releaseBorders
 {
 	[internalRows1 removeFromSuperview];
 	[internalRows2 removeFromSuperview];
 	[firstResponder removeFromSuperview];
-	[super dealloc];
 }
 
 @end

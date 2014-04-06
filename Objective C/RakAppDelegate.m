@@ -59,6 +59,9 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	saveMDL =	[tabMDL byebye];		[tabMDL release];			tabMDL = nil;
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
+	
+	[(RakContentViewBack *)self.window.contentView releaseBorders];
+	flushDB();
 }
 
 - (RakContentView*) getContentView

@@ -33,6 +33,8 @@
 - (id)init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;
 
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
+
 - (void) leaveReaderMode;
 - (void) startReaderMode;
 

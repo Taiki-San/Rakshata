@@ -131,15 +131,23 @@
 
 - (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
 {
+	bool shouldNotifyBottomBarInitialized = false;
+	
 	initialized = true;
 	
 	if(mainImage == nil)
+	{
 		mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
+		shouldNotifyBottomBarInitialized = true;
+	}
 	else
 		[mainImage changeProject : project : elemToRead : isTome : startPage];
 	
 	if(bottomBar == nil)
 		bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
+	
+	if(shouldNotifyBottomBarInitialized)
+		[mainImage bottomBarInitialized];
 }
 
 - (NSString *) byebye
@@ -384,6 +392,11 @@
 - (void) deleteElement
 {
 	[mainImage deleteElement];
+}
+
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
+{
+	[bottomBar updatePage:newCurrentPage :newPageMax];
 }
 
 @end

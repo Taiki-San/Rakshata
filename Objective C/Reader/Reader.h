@@ -40,6 +40,7 @@
 - (void) nextChapter;
 - (void) triggerFullscreen;
 - (void) deleteElement;
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 
 @end
 

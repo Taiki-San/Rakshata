@@ -29,7 +29,6 @@
 		[self.layer setCornerRadius:RADIUS_BORDERS];
 		
 		[self loadIcons : parent];
-		[self loadPageCounter : parent];
 		
 		if(!displayed)
 			[self setHidden:![self isHidden]];
@@ -60,6 +59,21 @@
 	readerMode = true;
 }
 
+#pragma mark - Update page counter
+
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
+{
+	if(pageCount == nil)
+	{
+		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement:8] :newCurrentPage :newPageMax];
+		[self addSubview:pageCount];
+	}
+	else
+	{
+		[pageCount updatePage:newCurrentPage :newPageMax];
+	}
+}
+
 #pragma mark - Buttons
 
 - (void) buttonHitten
@@ -85,12 +99,6 @@
 	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement:6] :YES :superview :@selector(nextChapter)];
 
 	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement:7] :NO :superView :@selector(deleteElement)];
-}
-
-- (void) loadPageCounter : (Reader *) superView
-{
-	pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement:8] :10 :150];
-	[self addSubview:pageCount];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton

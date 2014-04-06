@@ -51,6 +51,12 @@
 	return self;
 }
 
+- (void) bottomBarInitialized
+{
+	//And we update the bar with data
+	[(Reader*)[self superview] updatePage:data.pageCourante+1 : data.nombrePageTotale];
+}
+
 - (BOOL) isEditable
 {
 	return NO;
@@ -460,7 +466,12 @@
 	}
 	
 	if([self craftPageAndSetupEnv:(Reader *)self.superview : switchType])
+	{
 		[self addPageToView];
+		
+		//And we update the bar
+		[(Reader*)[self superview] updatePage:data.pageCourante+1 : data.nombrePageTotale];
+	}
 	else
 		[self failure];
 }

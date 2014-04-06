@@ -58,6 +58,7 @@
 }
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
+- (void) bottomBarInitialized;
 - (NSString *) getContextToGTFO;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;

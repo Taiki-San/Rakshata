@@ -26,14 +26,36 @@
     return self;
 }
 
+- (void) updateContext
+{
+	[self setStringValue:[NSString stringWithFormat:@"%d/%d", currentPage, pageMax]];
+	
+	[self updateSize: self.superview.bounds.size.height : -1];
+
+	[self setNeedsDisplay:YES];
+}
+
 #pragma mark - Size related
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX
 {
-	[self sizeToFit];
-	
 	NSPoint origin;
-	origin.x = posX - self.bounds.size.width / 2;
+	
+	if(posX == -1)
+	{
+		CGFloat previousWidth = self.bounds.size.width, newWidth;
+		
+		[self sizeToFit];
+		
+		newWidth = self.bounds.size.width;
+		origin.x = self.frame.origin.x - (newWidth - previousWidth) / 2;
+	}
+	else
+	{
+		[self sizeToFit];
+		origin.x = posX - self.bounds.size.width / 2;
+	}
+	
 	origin.y = heightSuperView / 2 - self.bounds.size.height / 2;
 	
 	[self setFrameOrigin:origin];
@@ -81,6 +103,16 @@
     [super drawRect:dirtyRect];
 
 	[self drawBorder];
+}
+
+#pragma mark - Setters/Getters
+
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
+{
+	currentPage = newCurrentPage;
+	pageMax = newPageMax;
+	
+	[self updateContext];
 }
 
 @end

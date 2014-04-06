@@ -41,6 +41,7 @@
 
 - (void) setupBorders;
 - (RakContentView *) getFirstResponder;
+- (void) releaseBorders;
 
 @end
 

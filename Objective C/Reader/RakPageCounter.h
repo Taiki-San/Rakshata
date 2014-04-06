@@ -17,10 +17,13 @@
 }
 
 - (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg;
+- (void) updateContext;
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;
 
 - (NSColor *) getColorBackground;
 - (NSColor *) getFontColor;
+
+- (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 
 @end
