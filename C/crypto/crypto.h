@@ -122,6 +122,7 @@ typedef struct
 	TwofishInstance twofish;
 	SerpentInstance serpent;
 	
+	byte depth;
 	bool needFreeMemory;
 	
 } DECRYPT_PAGE_DATA;

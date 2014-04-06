@@ -33,6 +33,7 @@
 		B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */; };
 		B67E079018E765A40007EB44 /* RakCenteredTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */; };
 		B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */; };
+		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -146,6 +147,8 @@
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTCoreContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTCoreContentView.h; path = CTSelec/RakCTCoreContentView.h; sourceTree = "<group>"; };
 		B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTCoreContentView.m; path = CTSelec/RakCTCoreContentView.m; sourceTree = "<group>"; };
+		B67F92B718F0C2B0002FC657 /* RakPageCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageCounter.h; path = Reader/RakPageCounter.h; sourceTree = "<group>"; };
+		B67F92B818F0C2B0002FC657 /* RakPageCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageCounter.m; path = Reader/RakPageCounter.m; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; };
@@ -381,6 +384,8 @@
 		B6CC724718723077003A745B /* Reader */ = {
 			isa = PBXGroup;
 			children = (
+				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
+				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
@@ -779,6 +784,7 @@
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,
 				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
 				B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */,
+				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
 				B6F6ECFD18A3001400E3B55B /* lecteur_event.c in Sources */,

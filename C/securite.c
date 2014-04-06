@@ -26,6 +26,30 @@ void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 {
 	byte posIV;
 	size_t length = data->length;
+
+	if(length > 1000 && data->depth < 2)	// > 1000 * 2 * 16o
+	{
+		DECRYPT_PAGE_DATA *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA));
+		if(dataThread != NULL)
+		{
+			(*(data->decWhenJobDone))++;
+			
+			//Feed data
+			dataThread->depth = data->depth + 1;
+			dataThread->needFreeMemory = true;
+			dataThread->length = length / 2;
+			dataThread->bufIn = &data->bufIn[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
+			dataThread->bufOut = &data->bufOut[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
+			dataThread->decWhenJobDone = data->decWhenJobDone;
+			memcpy(dataThread->CBC, &data->bufIn[(length - dataThread->length - 1) * 2 * CRYPTO_BUFFER_SIZE], 2 * CRYPTO_BUFFER_SIZE);
+			memcpy(&dataThread->serpent, &data->serpent, sizeof(data->serpent));
+			memcpy(&dataThread->twofish, &data->twofish, sizeof(data->twofish));
+			
+			length -= dataThread->length;
+			
+			createNewThread(decryptPageWorker, dataThread);
+		}
+	}
 	
 	rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
 	rawData *buffer_in = data->bufIn, *buffer_out = data->bufOut;
@@ -84,35 +108,13 @@ void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t
 	for(byte i = 0; i < KEYLENGTH(KEYBITS); ((rawData*)password)[i++] = 0);
 	
 	data.needFreeMemory = false;
+	data.depth = 0;
 	data.length = length;
 	data.bufIn = buffer_in;
 	data.bufOut = buffer_out;
 	data.decWhenJobDone = &jobIsDone;
 	memset(&data.CBC, 0, 2 * CRYPTO_BUFFER_SIZE);
 
-	if(length > 64 * 1024 / (2 * CRYPTO_BUFFER_SIZE))	// > 64 ko
-	{
-		DECRYPT_PAGE_DATA *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA));
-		if(dataThread != NULL)
-		{
-			jobIsDone++;
-			
-			//Feed data
-			dataThread->needFreeMemory = true;
-			dataThread->length = length / 2;
-			dataThread->bufIn = &buffer_in[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
-			dataThread->bufOut = &buffer_out[(length - dataThread->length) * 2 * CRYPTO_BUFFER_SIZE];
-			dataThread->decWhenJobDone = &jobIsDone;
-			memcpy(dataThread->CBC, &buffer_in[(length - dataThread->length - 1) * 2 * CRYPTO_BUFFER_SIZE], 2 * CRYPTO_BUFFER_SIZE);
-			memcpy(&dataThread->serpent, &data.serpent, sizeof(data.serpent));
-			memcpy(&dataThread->twofish, &data.twofish, sizeof(data.twofish));
-			
-			data.length -= dataThread->length;
-			
-			createNewThread(decryptPageWorker, dataThread);
-		}
-	}
-	
 	decryptPageWorker(&data);
 
 	while (jobIsDone);
@@ -205,40 +207,26 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
-    int i = 0, nombreEspace = 0;
-    rawData *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
-    char *path;
+    uint curPosInConfigEnc, posInKeyOut, length, lengthPath = strlen(pathRoot) + 60;
+    rawData *configEnc = NULL;
+    char path[lengthPath];
     unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
     size_t size, sizeDBPass;
-    FILE* test= NULL;
 
-	path = malloc(strlen(pathRoot) + 60);
-	if(path != NULL)
-        snprintf(path, strlen(pathRoot) + 60, "%s/config.enc", pathRoot);
-    else
+	snprintf(path, sizeof(path), "%s/config.enc", pathRoot);
+    
+	if(!(size = getFileSize(pathPage))) //Si on trouve pas la page
         return NULL;
-
-	size = getFileSize(pathPage);
-    if(!size) //Si on trouve pas la page
-    {
-        free(path);
-        return NULL;
-    }
 
     if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
         size += CRYPTO_BUFFER_SIZE;
 
-	sizeDBPass = getFileSize(path);
-    if(!sizeDBPass) //Si on trouve pas config.enc
-    {
-        free(path);
+	if(!(sizeDBPass = getFileSize(path))) //Si on trouve pas config.enc
 		return readFile(pathPage);
-    }
 
     if(getMasterKey(key))
     {
         logR("Huge fail: database corrupted\n");
-        free(path);
         exit(-1);
     }
 
@@ -250,51 +238,51 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 
     configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
-    free(path);
+    crashTemp(hash, SHA256_DIGEST_LENGTH);
 
-    for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
-    if(i == 0 || configEnc[i] != ' ')
+    for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
+    if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
     {
         logR("Huge fail: database corrupted\n");
         free(configEnc);
         return NULL;
     }
-    crashTemp(hash, SHA256_DIGEST_LENGTH);
 
-    int length2 = ustrlen(configEnc); //pour le \0
-    for(i = 0; i < length2 && configEnc[i] != ' '; i++); //On saute le nombre de page
-    if((length2 - i) % (SHA256_DIGEST_LENGTH+1) && (length2 - i) % (2*SHA256_DIGEST_LENGTH+1))
+    length = ustrlen(configEnc); //pour le \0
+    for(curPosInConfigEnc = 0; curPosInConfigEnc < length && configEnc[curPosInConfigEnc] != ' '; curPosInConfigEnc++); //On saute le nombre de page
+    if((length - curPosInConfigEnc) % (SHA256_DIGEST_LENGTH + curPosInConfigEnc) && (length - curPosInConfigEnc) % (2*SHA256_DIGEST_LENGTH+1))
     {
         //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
         //Au cas où ça se reproduit, cette condition devrait bloquer le bug
-        if(((length2 - i) % (SHA256_DIGEST_LENGTH+1) == 1 || (length2 - i) % (2*SHA256_DIGEST_LENGTH+1) == 1) && configEnc[length2-1] == ' ');
-        else
+        if(((length - curPosInConfigEnc) % (SHA256_DIGEST_LENGTH+1) != 1 && (length - curPosInConfigEnc) % (2*SHA256_DIGEST_LENGTH+1) != 1) || configEnc[length-1] != ' ')
         {
             logR("Huge fail: database corrupted\n");
-            for(i = 0; i < sizeDBPass; configEnc[i++] = 0);
+            for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
             free(configEnc);
             return NULL;
         }
     }
 
-    i += 1 + page * (SHA256_DIGEST_LENGTH+1);
+    curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
 
-    /*La, configEnc[i] est la premiére lettre de la clé*/
-    for(nombreEspace = 0; nombreEspace < SHA256_DIGEST_LENGTH && configEnc[i]; key[nombreEspace++] = configEnc[i++]); //On parse la clée
-    if(configEnc[i] && configEnc[i] != ' ')
+    /*La, configEnc[i] est la première lettre de la clé*/
+    for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && configEnc[curPosInConfigEnc]; key[posInKeyOut++] = configEnc[curPosInConfigEnc++]);	//On parse la clée
+	
+    if(configEnc[curPosInConfigEnc] && configEnc[curPosInConfigEnc] != ' ')	//On est au milieu d'un clé (pas super normal mais bon, on regarde si c'est sauvable
     {
-        if(!configEnc[i+SHA256_DIGEST_LENGTH] || configEnc[i+SHA256_DIGEST_LENGTH] == ' ')
-            i += SHA256_DIGEST_LENGTH;
+        if(!configEnc[curPosInConfigEnc+SHA256_DIGEST_LENGTH] || configEnc[curPosInConfigEnc+SHA256_DIGEST_LENGTH] == ' ')	//Une clé sur 64 char (super legacy), si c'est ça, on saute la fin de la clé
+            curPosInConfigEnc += SHA256_DIGEST_LENGTH;
     }
-    if(nombreEspace != SHA256_DIGEST_LENGTH || (configEnc[i] && configEnc[i] != ' ')) //On vérifie que le parsage est complet
+	
+    if(posInKeyOut != SHA256_DIGEST_LENGTH || (configEnc[curPosInConfigEnc] && configEnc[curPosInConfigEnc] != ' ')) //On vérifie que le parsage est complet
     {
         crashTemp(key, SHA256_DIGEST_LENGTH);
-        for(i = 0; i < sizeDBPass; configEnc[i++] = 0);
+        for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
         return NULL;
     }
-    for(i = 0; i < sizeDBPass; configEnc[i++] = 0); //On écrase le cache
+	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);	//On écrase le cache
     free(configEnc);
 	
 	//On fait les allocations finales
@@ -307,9 +295,9 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		{
 			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
 
-			test = fopen(pathPage, "rb");
-			uint unRead = size - fread(buf_in, 1, size, test);
-			fclose(test);
+			FILE* pageFile = fopen(pathPage, "rb");
+			uint unRead = size - fread(buf_in, 1, size, pageFile);
+			fclose(pageFile);
 			
 			if(unRead)
 				memset(&buf_in[size], 0, unRead);
