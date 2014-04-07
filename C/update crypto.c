@@ -901,7 +901,7 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 	for(pos = 0; pos < length2 && configEnc[pos] != ' '; pos++);
 	pos++;
 	
-	for(int curPage = 0; curPage < dataLecteur->nombrePageTotale; curPage++)
+	for(int curPage = 0; curPage <= dataLecteur->nombrePageTotale; curPage++)
 	{
 		memcpy(key, &configEnc[pos], KEYLENGTH(KEYBITS));
 		pos += KEYLENGTH(KEYBITS) + 1;

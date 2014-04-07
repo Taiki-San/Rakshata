@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
     int ret_value = NSApplicationMain(argc, (const char **)argv);
 
+	flushDB();
     releaseDNSCache();
     MUTEX_DESTROY(mutex_decrypt);
     MUTEX_DESTROY(mutexUI);

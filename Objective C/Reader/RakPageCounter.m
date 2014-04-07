@@ -14,13 +14,13 @@
 
 - (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg;
 {
-    self = [super initWithText:[superView bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg, pageMaxArg] :[self getColorBackground]];
+    self = [super initWithText:[superView bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getColorBackground]];
     if (self)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superView bounds].size.height : posX];
-		currentPage = currentPageArg;
-		pageMax = pageMaxArg;
+		currentPage = currentPageArg+1;
+		pageMax = pageMaxArg+1;
 		[self setTextColor:[self getFontColor]];
     }
     return self;
@@ -109,8 +109,8 @@
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
 {
-	currentPage = newCurrentPage;
-	pageMax = newPageMax;
+	currentPage = newCurrentPage + 1;
+	pageMax = newPageMax + 1;
 	
 	[self updateContext];
 }

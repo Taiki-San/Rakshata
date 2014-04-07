@@ -61,7 +61,6 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 	
 	[(RakContentViewBack *)self.window.contentView releaseBorders];
-	flushDB();
 }
 
 - (RakContentView*) getContentView
@@ -102,9 +101,23 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	return YES;
 }
 
+- (void) windowWillEnterFullScreen:(NSNotification *)notification
+{
+	
+}
+
 - (void)windowDidEnterFullScreen:(NSNotification *)notification
 {
-	NSLog(@"Fullscreen mode :D");
+	NSRect frame = [[self.window screen] visibleFrame];
+
+	frame.size.width += frame.origin.x;
+	frame.origin.x = 0;
+	frame.size.height += frame.origin.y;
+	frame.origin.y = 0;
+	
+	NSLog(@"%f - %f - %f - %f", frame.size.height, frame.size.width, frame.origin.x, frame.origin.y);
+
+	[self.window.contentView setFrame:frame];
 }
 
 @end

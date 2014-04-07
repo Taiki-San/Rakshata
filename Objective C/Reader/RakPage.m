@@ -54,7 +54,7 @@
 - (void) bottomBarInitialized
 {
 	//And we update the bar with data
-	[(Reader*)[self superview] updatePage:data.pageCourante+1 : data.nombrePageTotale];
+	[(Reader*)[self superview] updatePage:data.pageCourante : data.nombrePageTotale];
 }
 
 - (BOOL) isEditable
@@ -470,7 +470,7 @@
 		[self addPageToView];
 		
 		//And we update the bar
-		[(Reader*)[self superview] updatePage:data.pageCourante+1 : data.nombrePageTotale];
+		[(Reader*)[self superview] updatePage:data.pageCourante : data.nombrePageTotale];
 	}
 	else
 		[self failure];
