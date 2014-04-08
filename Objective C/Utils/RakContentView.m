@@ -29,6 +29,14 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
+	//isFullscreen
+	if(([self.window styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask)
+	{
+		frameRect.size.height = self.window.frame.size.height;
+		frameRect.size.width = self.window.frame.size.width;
+	}
+	
+	
 	[super setFrame:frameRect];
 	
 	if(![self.subviews count])

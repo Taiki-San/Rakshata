@@ -101,24 +101,5 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	return YES;
 }
 
-- (void) windowWillEnterFullScreen:(NSNotification *)notification
-{
-	
-}
-
-- (void)windowDidEnterFullScreen:(NSNotification *)notification
-{
-	NSRect frame = [[self.window screen] visibleFrame];
-
-	frame.size.width += frame.origin.x;
-	frame.origin.x = 0;
-	frame.size.height += frame.origin.y;
-	frame.origin.y = 0;
-	
-	NSLog(@"%f - %f - %f - %f", frame.size.height, frame.size.width, frame.origin.x, frame.origin.y);
-
-	[self.window.contentView setFrame:frame];
-}
-
 @end
 

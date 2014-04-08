@@ -138,6 +138,10 @@
 	if(mainImage == nil)
 	{
 		mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
+		
+		if(mainImage == nil)	//Failed at initializing, most probably because of unreadable data
+			return;
+
 		shouldNotifyBottomBarInitialized = true;
 	}
 	else

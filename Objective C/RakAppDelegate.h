@@ -12,7 +12,7 @@
 
 extern NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
+@interface RakAppDelegate : NSObject <NSApplicationDelegate>
 {
 	Series * tabSerie;
 	CTSelec * tabCT;
