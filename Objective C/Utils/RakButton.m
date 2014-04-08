@@ -12,6 +12,51 @@
 
 @implementation RakButton
 
++ (id) initForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
+{
+	RakButton *output = [[RakButton new] autorelease];
+	
+	if(output != nil)
+	{
+		RakButtonCell * cell = [[RakButtonCell alloc] initWithPage: imageName : RB_STATE_STANDARD];
+		
+		if(cell != nil)
+		{
+			//Set image
+			[output setCell:cell];
+			
+			//Update a couple of prefs
+			[output sizeToFit];
+			output.wantsLayer = YES;
+			output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
+			output.layer.cornerRadius = 4;
+			[output setBordered:NO];
+			
+			//Set action
+			if(target != nil)
+			{
+				[output setTarget:target];
+				[output setAction:selectorToCall];
+			}
+			
+			//Set origin
+			origin.x -= cell.cellSize.width / 2;
+			origin.y -= cell.cellSize.height / 2;
+			[output setFrameOrigin: origin];
+			
+			//Add to the superview
+			[superView addSubview:output];
+		}
+		else
+		{
+			[output release];
+			output = nil;
+		}
+	}
+	
+	return output;
+}
+
 + (id) initForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
 	RakButton *output = [[RakButton new] autorelease];

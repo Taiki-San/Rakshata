@@ -27,9 +27,6 @@
 		B6519A5518E0B610003FF1B6 /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B6519A5418E0B610003FF1B6 /* RakScroller.m */; };
 		B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
 		B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */; };
-		B67449401875E65000F96DB4 /* Footer.m in Sources */ = {isa = PBXBuildFile; fileRef = B674493B1875E65000F96DB4 /* Footer.m */; };
-		B67449411875E65000F96DB4 /* FooterSDrag.m in Sources */ = {isa = PBXBuildFile; fileRef = B674493D1875E65000F96DB4 /* FooterSDrag.m */; };
-		B67449421875E65000F96DB4 /* FooterSStatic.m in Sources */ = {isa = PBXBuildFile; fileRef = B674493F1875E65000F96DB4 /* FooterSStatic.m */; };
 		B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */; };
 		B67E079018E765A40007EB44 /* RakCenteredTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */; };
 		B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */; };
@@ -131,10 +128,6 @@
 		B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsDeepData.h; path = Prefs/tools/RakPrefsDeepData.h; sourceTree = "<group>"; };
 		B668FBED188344AE00549A3C /* RakPrefsDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsDeepData.m; path = Prefs/tools/RakPrefsDeepData.m; sourceTree = "<group>"; };
 		B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabAnimationResize.m; path = Utils/RakTabAnimationResize.m; sourceTree = "<group>"; };
-		B674493A1875E65000F96DB4 /* Footer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Footer.h; path = "Séries/Footer/Footer.h"; sourceTree = "<group>"; };
-		B674493B1875E65000F96DB4 /* Footer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Footer.m; path = "Séries/Footer/Footer.m"; sourceTree = "<group>"; };
-		B674493D1875E65000F96DB4 /* FooterSDrag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FooterSDrag.m; path = "Séries/Footer/FooterSDrag.m"; sourceTree = "<group>"; };
-		B674493F1875E65000F96DB4 /* FooterSStatic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FooterSStatic.m; path = "Séries/Footer/FooterSStatic.m"; sourceTree = "<group>"; };
 		B67449441876116200F96DB4 /* prefsRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsRequest.h; path = Prefs/prefsRequest.h; sourceTree = "<group>"; };
 		B67449451876118100F96DB4 /* prefsSetters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsSetters.h; path = Prefs/prefsSetters.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
@@ -352,17 +345,6 @@
 			name = CT;
 			sourceTree = "<group>";
 		};
-		B6CC724418723053003A745B /* Footer */ = {
-			isa = PBXGroup;
-			children = (
-				B674493A1875E65000F96DB4 /* Footer.h */,
-				B674493B1875E65000F96DB4 /* Footer.m */,
-				B674493D1875E65000F96DB4 /* FooterSDrag.m */,
-				B674493F1875E65000F96DB4 /* FooterSStatic.m */,
-			);
-			name = Footer;
-			sourceTree = "<group>";
-		};
 		B6CC724518723063003A745B /* PrefsUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -399,7 +381,6 @@
 		B6CC72481872307D003A745B /* Series */ = {
 			isa = PBXGroup;
 			children = (
-				B6CC724418723053003A745B /* Footer */,
 				B6CC724518723063003A745B /* PrefsUI */,
 				B69D61D6186CA308003504F9 /* Series.h */,
 				B69D61D7186CA308003504F9 /* Series.m */,
@@ -767,7 +748,6 @@
 				B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */,
 				B69D61DE186CA3D0003504F9 /* MDL.m in Sources */,
 				B6F6ECF818A3001400E3B55B /* graphics.c in Sources */,
-				B67449411875E65000F96DB4 /* FooterSDrag.m in Sources */,
 				B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */,
 				B6F6ED0D18A3001400E3B55B /* securite.c in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,
@@ -803,9 +783,7 @@
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
 				B6F6ED1018A3001400E3B55B /* thread.c in Sources */,
 				B6D24C8118EDE0A100E5960B /* update crypto.c in Sources */,
-				B67449401875E65000F96DB4 /* Footer.m in Sources */,
 				B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */,
-				B67449421875E65000F96DB4 /* FooterSStatic.m in Sources */,
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6F6ED1918A3001400E3B55B /* update.c in Sources */,
 				B6F6ED0E18A3001400E3B55B /* selection.c in Sources */,

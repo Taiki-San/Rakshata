@@ -18,7 +18,6 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 {
 	[self validateWindowData:[[self window] frame]];
 	[self.window.contentView setupBorders];
-	[self.window setDelegate:self];
 	
 	RakContentView * contentView = [self getContentView];
 	

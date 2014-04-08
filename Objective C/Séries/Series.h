@@ -11,19 +11,17 @@
  *********************************************************************************************/
 
 #import "PrefsUI.h"
-#import "Footer.h"
 
 @interface Series : RakTabView
 {
-	RakButton *button;
-	RakFooter * footer;
+	RakButton *preferenceButton;
+	RakBackButton * backButton;
 	
 	PrefsUI * winController;
 	BOOL prefsUIIsOpen;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
-- (void) craftPrefButton : (NSRect) tabSerieFrame;
 
 - (void) gogoWindow;
 

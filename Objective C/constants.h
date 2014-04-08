@@ -49,6 +49,9 @@
 #define CT_READERMODE_HEIGHT_BORDER_TABLEVIEW 10
 #define CT_READERMODE_BORDER_TABLEVIEW	10
 
+/** Serie itself **/
+#define SR_PREF_BUTTON_BORDERS 25
+
 /**		Utils	**/
 
 /*		RakBackButton		*/

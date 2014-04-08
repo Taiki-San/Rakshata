@@ -21,60 +21,32 @@
 		prefsUIIsOpen = false;
 		
 		self = [self initView:contentView : state];
-		
-		[self craftPrefButton:self.frame];
-		
-		/*Initialise la fenêtre de prefs*/
-		winController = [[PrefsUI alloc] init];
-		[winController setAnchor:button];
-		
-		/*Initialise le bandeau inférieur*/
-		footer = [[RakFooter alloc] init:contentView];
-		[self addSubview:footer];
+		[self initContent];
 	}
     return self;
 }
 
+- (void) initContent
+{
+	preferenceButton = [RakButton initForSeries : self : @"X" : NSMakePoint(SR_PREF_BUTTON_BORDERS, self.frame.size.height - SR_PREF_BUTTON_BORDERS) : self : @selector(gogoWindow)];
+	
+	/*Initialise la fenêtre de prefs*/
+	winController = [[PrefsUI alloc] init];
+	[winController setAnchor:preferenceButton];
+	
+}
+
 /**		Pref UI		**/
-
-- (void) craftPrefButton : (NSRect) tabSerieFrame
-{
-	/*NSRect frame;
-	
-	frame.origin.x = 25;			frame.origin.y = tabSerieFrame.size.height - 45;
-	frame.size.width = 65;			frame.size.height = 28;
-	button = [[RakButton alloc] initWithFrame:frame];
-	
-	[button setTitle:@"Prefs"];
-	[button setButtonType:NSMomentaryLightButton];
-	[button setBezelStyle:NSRoundedBezelStyle];
-	
-	[button setTarget:self];
-	[button setAction:@selector(gogoWindow)];
-	[self addSubview:button];*/
-}
-
-- (BOOL) getIfPrefUIOpen
-{
-	return prefsUIIsOpen;
-}
-
-- (BOOL) setIfPrefUIOpen : (BOOL) input
-{
-	BOOL retValue = prefsUIIsOpen != input;
-	prefsUIIsOpen = input;
-	return retValue;
-}
 
 - (void) gogoWindow
 {
-	[self setIfPrefUIOpen:YES];
+	prefsUIIsOpen = true;
 	[winController showPopover];
 }
 
 - (BOOL) abortCollapseReaderTab
 {
-	return [self getIfPrefUIOpen];
+	return prefsUIIsOpen;
 }
 
 - (void)mouseExited:(NSEvent *)theEvent	//Appelé quand je sors
@@ -85,10 +57,11 @@
 
 /**			Other		**/
 
-- (void) setFrameSize:(NSSize)newSize
+- (void) setFrame:(NSRect)frameRect
 {
-	[super setFrameSize:newSize];
-	[button refreshViewSize];
+	[super setFrame:frameRect];
+	
+	[preferenceButton setFrameOrigin:NSMakePoint(preferenceButton.frame.origin.x, frameRect.size.height - SR_PREF_BUTTON_BORDERS - preferenceButton.frame.size.height / 2)];
 }
 
 - (void) refreshViewSize
