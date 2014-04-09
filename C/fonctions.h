@@ -138,7 +138,7 @@ void *ralloc(size_t length);
 int charToInt(char *input);
 int fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
-size_t ustrlen(void *input);
+size_t ustrlen(const void *input);
 void usstrcpy(void* output, size_t length, const void* input);
 void ustrcpy(void* output, const void* input);
 
