@@ -5,9 +5,9 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
 @implementation Series
@@ -28,15 +28,21 @@
 
 - (void) initContent
 {
-	preferenceButton = [RakButton initForSeries : self : @"X" : NSMakePoint(SR_PREF_BUTTON_BORDERS, self.frame.size.height - SR_PREF_BUTTON_BORDERS) : self : @selector(gogoWindow)];
+	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
+	preferenceButton = [RakButton initForSeries : self : @"X" : NSMakePoint(SR_PREF_BUTTON_BORDERS, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT) : self : @selector(gogoWindow)];
 	
-	/*Initialise la fenêtre de prefs*/
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
 	
+	[self setupBackButton];
+	
+	long tmp[4] = {0, 0, 0, 0};
+	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame] : tmp];
+	[self addSubview:coreView];
 }
 
 /**		Pref UI		**/
+#pragma mark - Preference UI
 
 - (void) gogoWindow
 {
@@ -55,13 +61,59 @@
 		[super mouseExited:theEvent];
 }
 
+#pragma mark - Back button
+
+- (void) setupBackButton
+{
+	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame]: false];
+	[backButton setTarget:self];
+	[backButton setAction:@selector(backButtonClicked)];
+	[backButton setHidden:!readerMode];
+	[self addSubview:backButton];
+}
+
+- (NSRect) backButtonFrame
+{
+	if(preferenceButton != nil)
+	{
+		NSRect frame = [self bounds];
+		
+		frame.origin.x = preferenceButton.frame.size.width;
+		frame.size.width -= frame.origin.x;
+		
+		return frame;
+	}
+	else
+		return [self frame];
+}
+
+- (void) backButtonClicked
+{
+	[self mouseDown:NULL];
+}
+
+#pragma mark - Routine to setup and communicate with coreview
+
+- (NSRect) getCoreviewFrame
+{
+	NSRect frame = [self bounds];
+	
+	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + SR_READERMODE_BOTTOMBAR_WIDTH;
+	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+	frame.origin.y = SR_READERMODE_BOTTOMBAR_WIDTH;
+	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+	
+	return frame;
+}
+
 /**			Other		**/
+#pragma mark - RakTabView routines
 
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
 	
-	[preferenceButton setFrameOrigin:NSMakePoint(preferenceButton.frame.origin.x, frameRect.size.height - SR_PREF_BUTTON_BORDERS - preferenceButton.frame.size.height / 2)];
+	[preferenceButton setFrameOrigin:NSMakePoint(preferenceButton.frame.origin.x, frameRect.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
 }
 
 - (void) refreshViewSize
@@ -83,11 +135,6 @@
 	output.size.height *= sizeSuperView.height / 100.0f;
 	
 	return output;
-}
-
-- (NSColor*) getMainColor
-{
-	return [NSColor redColor];
 }
 
 - (int) getCodePref : (int) request

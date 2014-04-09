@@ -18,7 +18,7 @@
 	NSAnimation * _animation;
 }
 
-- (id)initWithFrame:(NSRect)frame : (int) numberReturnChar;
+- (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack;
 
 - (NSColor *) getColorBackground;
 - (NSColor *) getColorBackgroundSlider;

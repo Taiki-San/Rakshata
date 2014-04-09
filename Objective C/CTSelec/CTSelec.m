@@ -23,7 +23,7 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;
 		
-		backButton = [[RakBackButton alloc] initWithFrame:[self frame]:1];
+		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
 		[backButton setTarget:self];
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!readerMode];
@@ -85,7 +85,7 @@
 					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
-					coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : *project : isTome : context];
+					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize] : *project : isTome : context];
 					free(project);
 					
 				} while (0);
@@ -106,7 +106,7 @@
 {
 	long context[4] = {-1, -1, -1, -1};
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
-	coreView = [[RakChapterView alloc] initWithFrame:[self calculateContentViewSize] : mangaData[21] : false : context];
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize] : mangaData[21] : false : context];
 }
 
 - (void) dealloc
@@ -119,11 +119,6 @@
 - (void) backButtonClicked
 {
 	[self mouseDown:NULL];
-}
-
-- (NSColor*) getMainColor
-{
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS];
 }
 
 - (int) getCodePref : (int) request

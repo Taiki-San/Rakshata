@@ -125,8 +125,9 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		}
 			
 		case GET_COLOR_BACKGROUD_CT_READERMODE:
+		case GET_COLOR_BACKGROUD_SR_READERMODE:
 		{
-			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
 			break;
 		}
 

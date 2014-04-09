@@ -10,40 +10,71 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakTextProjectName : RakMenuText
+@implementation RakTabContentTemplate
 
-@end
-
-@interface RakCTProjectImageView : NSImageView
-
-- (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame;
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
-
-@end
-
-@interface RakCTContentTabView : NSView
+- (void) setupInternal
 {
-	MANGAS_DATA data;
-	RakCTCoreViewButtons * buttons;
-	RakCTCoreContentView * tableViewControllerChapter;
-	RakCTCoreContentView * tableViewControllerVolume;
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	[self setWantsLayer:true];
+	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.layer.cornerRadius = 12;
 }
 
-- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
-- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
-
-- (NSString *) getContextToGTFO;
-
-@end
-
-@interface RakChapterView : RakTabContentTemplate
+- (NSString *) getContextToGTFO
 {
-	RakTextProjectName *projectName;
-	RakCTProjectImageView * projectImage;
-	RakCTContentTabView * coreView;
+	return STATE_EMPTY;
 }
 
-- (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context;
+#pragma mark - Hooks to critical routines
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	
+	frameRect.origin.x = frameRect.origin.y = 0;
+	
+	[self setFrameInternalViews:frameRect];
+}
+
+- (id) retain
+{
+	[self retainInternalViews];
+	return [super retain];
+}
+
+- (oneway void) release
+{
+	[super release];
+	[self releaseInternalViews];
+}
+
+- (void) setFrameInternalViews : (NSRect) newBound
+{
+	
+}
+
+- (void) retainInternalViews
+{
+	
+}
+
+- (void) releaseInternalViews
+{
+	
+}
+
+#pragma mark - Proxy
+
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
+{
+
+}
+
+#pragma mark - Color
+
+- (NSColor*) getBackgroundColor
+{
+	return [NSColor clearColor];
+}
 
 @end

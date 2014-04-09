@@ -10,12 +10,14 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#import "PrefsUI.h"
+#import "RakSRRessources.h"
 
 @interface Series : RakTabView
 {
 	RakButton *preferenceButton;
 	RakBackButton * backButton;
+	
+	RakSerieView * coreView;
 	
 	PrefsUI * winController;
 	BOOL prefsUIIsOpen;
@@ -24,5 +26,10 @@
 - (id)init : (NSView*)contentView : (NSString *) state;
 
 - (void) gogoWindow;
+
+- (void) setupBackButton;
+- (void) backButtonClicked;
+
+- (NSRect) getCoreviewFrame;
 
 @end

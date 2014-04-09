@@ -10,9 +10,60 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBorder : NSView
+@implementation RakSerieView
 
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+- (id)initContent:(NSRect)frame : (long [4]) context
+{
+    self = [super initWithFrame:frame];
+    if (self)
+	{
+		[self setupInternal];
+		
+		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		[self addSubview:headerText];
+	}
+	
+	return self;
+}
+
+- (void) retainInternalViews
+{
+	[headerText retain];
+}
+
+- (void) releaseInternalViews
+{
+	[headerText release];
+}
+
+- (NSColor*) getBackgroundColor
+{
+	byte code;
+	switch (mainThread & GUI_THREAD_MASK)
+	{
+		case GUI_THREAD_READER:
+		{
+			code = GET_COLOR_BACKGROUD_SR_READERMODE;
+			break;
+		}
+			
+		case GUI_THREAD_CT:
+		{
+			code = GET_COLOR_BACKGROUD_SR_READERMODE;
+			break;
+		}
+			
+		case GUI_THREAD_SERIES:
+		{
+			code = GET_COLOR_BACKGROUD_SR_READERMODE;
+			break;
+		}
+			
+		default:
+			return [NSColor clearColor];
+	}
+	
+	return [Prefs getSystemColor:code];
+}
 
 @end

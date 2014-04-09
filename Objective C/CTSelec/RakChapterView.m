@@ -12,15 +12,12 @@
 
 @implementation RakChapterView
 
-- (id)initWithFrame:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context
+- (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context
 {
     self = [super initWithFrame:frame];
     if (self)
 	{
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		[self setWantsLayer:true];
-		self.layer.backgroundColor = [self getBackgroundColor].CGColor;
-		self.layer.cornerRadius = 12;
+		[self setupInternal];
 		
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:projectName];
@@ -34,17 +31,6 @@
     return self;
 }
 
-- (void) setFrame:(NSRect)frameRect
-{
-	[super setFrame:frameRect];
-	
-	frameRect.origin.x = frameRect.origin.y = 0;
-	
-	[projectName setFrame:frameRect];
-	[projectImage setFrame:frameRect];
-	[coreView setFrame:frameRect];
-}
-
 - (NSString *) getContextToGTFO
 {
 	if (coreView == nil)
@@ -52,17 +38,22 @@
 	return [coreView getContextToGTFO];
 }
 
-- (id) retain
+- (void) setFrameInternalViews : (NSRect) newBound
+{
+	[projectName setFrame:newBound];
+	[projectImage setFrame:newBound];
+	[coreView setFrame:newBound];
+}
+
+- (void) retainInternalViews
 {
 	[projectName retain];
 	[projectImage retain];
 	[coreView retain];
-	return [super retain];
 }
 
-- (oneway void) release
+- (void) releaseInternalViews
 {
-	[super release];
 	[projectName release];
 	[projectImage release];
 	[coreView release];
@@ -109,43 +100,9 @@
 
 @implementation RakTextProjectName
 
-- (void) additionalDrawing
+- (CGFloat) getFontSize
 {
-	NSRect frame = self.bounds;
-
-	frame.origin.y = frame.size.height - 2;
-	frame.size.height = 2;
-	
-	[[Prefs getSystemColor:GET_COLOR_INACTIVE] setFill];
-	NSRectFill(frame);
-}
-
-- (NSRect) getProjectNameSize : (NSRect) superViewSize
-{
-	NSRect frame = superViewSize;
-	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
-	frame.origin.y = superViewSize.size.height - frame.size.height;
-
-	return frame;
-}
-
-- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
-{
-	text = [text stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-	self = [super initWithText:[self getProjectNameSize:frame] :text :color];
-	
-	if(self != nil)
-	{
-		[self setFont:[NSFont fontWithName:@"Helvetica-Bold" size:16]];
-		[self setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
-	}
-	
-	return self;
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	[super setFrame:[self getProjectNameSize:frameRect]];
+	return 16;
 }
 
 @end

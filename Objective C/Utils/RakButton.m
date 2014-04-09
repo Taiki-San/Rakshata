@@ -41,7 +41,6 @@
 			
 			//Set origin
 			origin.x -= cell.cellSize.width / 2;
-			origin.y -= cell.cellSize.height / 2;
 			[output setFrameOrigin: origin];
 			
 			//Add to the superview

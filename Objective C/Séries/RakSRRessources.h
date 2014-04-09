@@ -10,9 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBorder : NSView
-
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+@interface RakSRHeaderText : RakMenuText
 
 @end
+
+#import "PrefsUI.h"
+#import "RakSerieView.h"

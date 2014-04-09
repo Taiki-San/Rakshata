@@ -50,8 +50,13 @@
 #define CT_READERMODE_BORDER_TABLEVIEW	10
 
 /** Serie itself **/
+
 #define SR_PREF_BUTTON_BORDERS 25
 
+/** RakSerieView **/
+#define SR_READERMODE_LATERAL_BORDER 5			//	%
+#define SR_READERMODE_BOTTOMBAR_WIDTH	14
+ 
 /**		Utils	**/
 
 /*		RakBackButton		*/

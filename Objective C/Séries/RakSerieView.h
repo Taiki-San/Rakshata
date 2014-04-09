@@ -10,9 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBorder : NSView
+@interface RakSerieView : RakTabContentTemplate
+{
+	RakSRHeaderText* headerText;
+}
 
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+- (id)initContent:(NSRect)frame : (long [4]) context;
 
 @end

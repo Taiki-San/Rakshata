@@ -8,11 +8,18 @@
  **                                                                                         **
  **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakBorder : NSView
+@interface RakMenuText : RakText
 
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+- (void) additionalDrawing;
+
+- (NSColor *) getTextColor;
+- (NSColor *) getBarColor;
+- (CGFloat) getFontSize;
+- (NSFont *) getFont;
+
+- (NSRect) getProjectNameSize : (NSRect) superViewSize;
+- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color;
 
 @end

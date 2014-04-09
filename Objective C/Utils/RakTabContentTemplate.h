@@ -8,11 +8,22 @@
  **                                                                                         **
  **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakBorder : NSView
+@interface RakTabContentTemplate : NSView
+{
+	uint mainThread;
+}
 
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+- (void) setupInternal;
+- (NSString *) getContextToGTFO;
+
+- (void) setFrameInternalViews : (NSRect) newBound;
+- (void) retainInternalViews;
+- (void) releaseInternalViews;
+
+- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
+
+- (NSColor*) getBackgroundColor;
 
 @end

@@ -59,7 +59,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [NSColor blueColor];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS];
 }
 
 - (void) drawContentView: (NSRect) frame

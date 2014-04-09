@@ -10,9 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBorder : NSView
+@implementation RakSRHeaderText
 
-- (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color;
-- (void) setColor : (NSColor *) newColor;
+- (CGFloat) getFontSize
+{
+	return 18;
+}
 
 @end

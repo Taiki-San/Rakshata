@@ -12,9 +12,9 @@
 
 @implementation RakBackButton
 
-- (id)initWithFrame:(NSRect)frame : (int) numberReturnChar
+- (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack
 {
-	frame.origin.x = frame.size.width * RBB_BUTTON_POSX / 100.0f;
+	frame.origin.x += frame.size.width * RBB_BUTTON_POSX / 100.0f;
 	frame.origin.y = frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT;
 	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
 	frame.size.height = RBB_BUTTON_HEIGHT;
@@ -30,7 +30,7 @@
 		cursorOnMe = false;
 
 		//On initialise la cellule
-		[self.cell switchToNewContext: @"back" : RB_STATE_STANDARD];
+		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
 	
 		//Set tracking area
 		tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
