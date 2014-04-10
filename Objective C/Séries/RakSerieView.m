@@ -26,6 +26,11 @@
 	return self;
 }
 
+- (void) setFrameInternalViews:(NSRect)newBound
+{
+	[headerText setFrame:[self bounds]];
+}
+
 - (void) retainInternalViews
 {
 	[headerText retain];
