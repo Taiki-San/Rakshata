@@ -20,6 +20,11 @@
 	self.layer.cornerRadius = 12;
 }
 
+- (BOOL) isOpaque
+{
+	return YES;
+}
+
 - (NSString *) getContextToGTFO
 {
 	return STATE_EMPTY;

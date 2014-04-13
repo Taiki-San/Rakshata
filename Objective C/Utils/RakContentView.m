@@ -111,11 +111,12 @@
 	return firstResponder;
 }
 
-- (void) releaseBorders
+- (void) dealloc
 {
 	[internalRows1 removeFromSuperview];
 	[internalRows2 removeFromSuperview];
 	[firstResponder removeFromSuperview];
+	[super dealloc];
 }
 
 @end

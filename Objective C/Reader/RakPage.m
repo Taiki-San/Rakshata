@@ -151,32 +151,48 @@
 
 #pragma mark    -   Events
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown:(NSEvent *)theEvent
 {
-	if(!readerMode)
-	{
-		[self.superview mouseDown:theEvent];
-		return;
-	}
-	
-	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	noDrag = true;
+}
 
-	if(pageTooHigh)
-	{
-		mouseLoc.y += [self.contentView documentRect].size.height - [self frame].size.height - [self.contentView documentVisibleRect].origin.y;
-		if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) self.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
-			return;
-	}
-	
-	if(pageTooLarge)
-	{
-		mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
-		if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [self frame].size.width - READER_BORDURE_VERT_PAGE)
-			return;
+- (void) mouseDragged:(NSEvent *)theEvent
+{
+	noDrag = false;
+}
 
+- (void)mouseUp:(NSEvent *)theEvent
+{
+	bool fail = false;
+
+	if(!readerMode || !noDrag)
+		fail = true;
+	else
+	{
+		NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+		
+		if(pageTooHigh)
+		{
+			mouseLoc.y += [self.contentView documentRect].size.height - [self frame].size.height - [self.contentView documentVisibleRect].origin.y;
+			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) self.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
+				fail = true;
+		}
+		
+		if(pageTooLarge)
+		{
+			mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
+			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [self frame].size.width - READER_BORDURE_VERT_PAGE)
+				fail = true;
+		}
 	}
 	
-	[self nextPage];
+	if(fail)
+	{
+		[self.superview mouseDown:NULL];
+		[self.superview mouseUp:theEvent];
+	}
+	else
+		[self nextPage];
 }
 
 - (void) keyDown:(NSEvent *)theEvent

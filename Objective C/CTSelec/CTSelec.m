@@ -118,7 +118,8 @@
 
 - (void) backButtonClicked
 {
-	[self mouseDown:NULL];
+	noDrag = true;
+	[self mouseUp:NULL];
 }
 
 - (int) getCodePref : (int) request
@@ -259,7 +260,7 @@
 	else
 		return;
 	
-	[readerTab mouseDown:NULL];
+	[readerTab mouseUp:NULL];
 	[readerTab startReading:data : ID : isTome : -1];
 }
 

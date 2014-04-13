@@ -89,7 +89,8 @@
 
 - (void) backButtonClicked
 {
-	[self mouseDown:NULL];
+	noDrag = true;
+	[self mouseUp:NULL];
 }
 
 #pragma mark - Routine to setup and communicate with coreview

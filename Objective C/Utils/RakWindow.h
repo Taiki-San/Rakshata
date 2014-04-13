@@ -10,10 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@interface RakWindow : NSWindow
+{
+	bool dragInProgress;
+	NSPoint initialLocation;
+}
+
+- (void) stopDrag;
 
 @end
-
-#import "PrefsUI.h"
-#import "RakSerieSubmenu.h"
-#import "RakSerieView.h"

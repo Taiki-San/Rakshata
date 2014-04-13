@@ -10,10 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@interface RakTextCell : RakCenteredTextFieldCell
+
+- (id)initWithText : (NSString *) text : (NSColor *) color;
 
 @end
-
-#import "PrefsUI.h"
-#import "RakSerieSubmenu.h"
-#import "RakSerieView.h"

@@ -10,10 +10,40 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@interface RakTreeView : NSOutlineView
 
 @end
 
-#import "PrefsUI.h"
-#import "RakSerieSubmenu.h"
-#import "RakSerieView.h"
+@interface RakSerieSubmenu : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+{
+	BOOL _isRecentDownload;
+	
+	uint _sizeCache;
+	MANGAS_DATA * _cache;
+	
+	NSInteger _nbElemDisplayed;
+	NSPointerArray * _data;
+	
+	RakTreeView * content;
+}
+
+- (id) init : (NSView *) superview : (BOOL) isRecentDownload;
+
+- (NSColor *) getFontColor;
+
+@end
+
+@interface RakSerieSubmenuItem : NSObject
+{
+	BOOL _isRootItem;
+	NSString * dataRoot;
+	MANGAS_DATA * dataChild;
+	
+	NSArray * children;
+}
+
+- (id) init : (void*) data : (BOOL) isRootItem;
+- (BOOL) isRootItem;
+- (NSString*) getData;
+
+@end

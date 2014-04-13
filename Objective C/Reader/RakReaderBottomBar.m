@@ -252,7 +252,7 @@
 		[super setFrameOrigin:newOrigin];
 }
 
-- (void) mouseDown:(NSEvent *)theEvent
+- (void) mouseUp:(NSEvent *)theEvent
 {
 	//Prevent a clic on the bar to end up on the page
 }

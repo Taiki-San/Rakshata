@@ -21,6 +21,8 @@
 		
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
+		
+		[[RakSerieSubmenu alloc] init:self :NO];
 	}
 	
 	return self;

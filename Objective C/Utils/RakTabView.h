@@ -19,6 +19,7 @@ enum {
 
 @interface RakTabView : NSView
 {
+	bool noDrag;
 	int flag;
 	NSTrackingArea * trackingArea;
 	
@@ -57,10 +58,10 @@ enum {
 - (BOOL) abortCollapseReaderTab;
 
 - (BOOL) isCursorOnMe;
+- (BOOL) isCursorOnRect : (NSRect) frame;
 - (NSPoint) getCursorPosInWindow;
 - (NSRect) getFrameOfNextTab;
 - (BOOL) mouseOutOfWindow;
-
 
 - (NSRect) createFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;

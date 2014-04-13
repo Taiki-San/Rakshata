@@ -18,6 +18,9 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 {
 	[self validateWindowData:[[self window] frame]];
 	[self.window.contentView setupBorders];
+	[self.window setMovableByWindowBackground:YES];
+	[self.window setMovable:YES];
+	[self.window setStyleMask:NSBorderlessWindowMask|NSResizableWindowMask];
 	
 	RakContentView * contentView = [self getContentView];
 	
@@ -58,8 +61,6 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	saveMDL =	[tabMDL byebye];		[tabMDL release];			tabMDL = nil;
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
-	
-	[(RakContentViewBack *)self.window.contentView releaseBorders];
 }
 
 - (RakContentView*) getContentView

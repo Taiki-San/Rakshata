@@ -10,10 +10,42 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@implementation RakTextCell
+
+- (id)initWithText : (NSString *) text : (NSColor *) color
+{
+	self = [self initTextCell:text];
+    if (self)
+	{
+		self.editable = NO;
+		self.bordered = NO;
+		self.drawsBackground = YES;
+		
+		self.font = [NSFont systemFontOfSize:13];
+		self.alignment = NSCenterTextAlignment;
+		
+		if(color != nil)
+			self.backgroundColor = color;
+		else
+			self.backgroundColor = [NSColor clearColor];
+		
+		self.selectable = NO;
+    }
+    return self;
+}
+
+- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+{
+	if (flag)
+	{
+		self.backgroundColor = [NSColor clearColor];
+	}
+	else
+	{
+
+	}
+	
+	[super highlight:flag withFrame:cellFrame inView:controlView];
+}
 
 @end
-
-#import "PrefsUI.h"
-#import "RakSerieSubmenu.h"
-#import "RakSerieView.h"

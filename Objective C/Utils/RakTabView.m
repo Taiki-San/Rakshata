@@ -220,18 +220,28 @@
 #pragma mark - Events
 /**		Events		**/
 
--(BOOL) isCursorOnMe
+- (BOOL) isCursorOnMe
 {
-	NSPoint mouseLoc = [self getCursorPosInWindow], selfLoc = self.frame.origin;
-	NSSize selfSize = self.frame.size;
+	NSRect frame = [self bounds];
 	
 	if(readerMode && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 	{
-		selfSize.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
+		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
 	}
 	
+	return [self isCursorOnRect:frame];
+}
+
+- (BOOL) isCursorOnRect : (NSRect) frame
+{
+	NSPoint mouseLoc = [self getCursorPosInWindow], selfLoc = self.frame.origin;
+	NSSize selfSize = frame.size;
+	
+	selfLoc.x += frame.origin.x;
+	selfLoc.y += frame.origin.y;
+		
 	if(selfLoc.x - 5 < mouseLoc.x && selfLoc.x + selfSize.width + 5 >= mouseLoc.x &&
-		selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
+	   selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
 	{
 		return true;
 	}
@@ -262,9 +272,19 @@
 	return (mouseLoc.x < 0 || mouseLoc.x > windowSize.width || mouseLoc.y < 0 || mouseLoc.y > windowSize.height);
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown:(NSEvent *)theEvent
 {
-	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	noDrag = true;
+}
+
+- (void) mouseDragged:(NSEvent *)theEvent
+{
+	noDrag = false;
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+	if(noDrag && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 

@@ -44,6 +44,7 @@
 	/*context data*/
 @private
 	bool readerMode;
+	bool noDrag;
 	
 	bool cacheBeingBuilt;
 	

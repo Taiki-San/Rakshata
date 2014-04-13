@@ -19,7 +19,6 @@
 	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
 	frame.size.height = RBB_BUTTON_HEIGHT;
 	
-	
     self = [super initWithFrame:frame];
     if (self)
 	{
@@ -83,6 +82,16 @@
 
 #pragma mark - Events
 
+- (bool) confirmMouseOnMe
+{
+	if([self.superview superclass] == [RakTabView class])	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
+	{
+		return ![(RakTabView *) self.superview isStillCollapsedReaderTab] && [(RakTabView *) self.superview isCursorOnRect:[self frame]];
+	}
+	else
+		return YES;
+}
+
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	if([self confirmMouseOnMe])
@@ -92,9 +101,16 @@
 	}
 }
 
-- (bool) confirmMouseOnMe
+- (void) mouseDown:(NSEvent *)theEvent
 {
-	return ![(RakTabView *) self.superview isStillCollapsedReaderTab];
+	cursorOnMe = false;
+	[(RakWindow*) self.window stopDrag];
+	[self.cell setAnimationInProgress:NO];
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	[self performClick:self];
 }
 
 - (void) mouseExited:(NSEvent *)theEvent
@@ -105,18 +121,21 @@
 	[self setNeedsDisplay:YES];
 }
 
-//	Haaaaaccckkkyyyyyyyyy, in theory, nobody should call this function except before performing the click
-- (SEL) action
+- (void) performClick : (id) sender
 {
-	cursorOnMe = false;
-	[self.cell setAnimationInProgress:NO];
-	return [super action];
+	if([self confirmMouseOnMe])
+	{
+		cursorOnMe = false;
+		[self.cell setAnimationInProgress:NO];
+		[super performClick:sender];
+	}
 }
 
 #pragma mark - Animation
 
 - (void) startAnimation
 {
+	aborted = false;
 	_animation = [[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear];
 	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
@@ -142,12 +161,16 @@
 
 - (void)animationDidEnd:(NSAnimation *)animation
 {
-	if(cursorOnMe && animation)
+	if(!aborted && cursorOnMe)
 	{
 		[self.cell setAnimationInProgress:NO];
 		[self performClick:self];
-		[animation release];
 	}
+	
+	if(animation != nil)
+		[animation release];
+
+	_animation = nil;
 }
 
 @end
