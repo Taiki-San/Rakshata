@@ -22,7 +22,13 @@
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
 		
-		[[RakSerieSubmenu alloc] init:self :NO];
+		recentRead = [[RakSerieList alloc] init : [self getFrameQuickAccess:1] : NO];
+		if(recentRead != nil)	[self addSubview:[recentRead getContent]];
+		
+		recentDL = [[RakSerieList alloc] init : [self getFrameQuickAccess:2] : YES];
+		if(recentDL != nil)		[self addSubview:[recentDL getContent]];
+		
+		[self updateRecentBlocsOrigin];
 	}
 	
 	return self;
@@ -42,6 +48,13 @@
 {
 	[headerText release];
 }
+
+- (BOOL)isFlipped
+{
+	return YES;	//Required to fix issues with QuickAccesses
+}
+
+#pragma mark - Color
 
 - (NSColor*) getBackgroundColor
 {
@@ -71,6 +84,40 @@
 	}
 	
 	return [Prefs getSystemColor:code];
+}
+
+#pragma mark - Frame calcul
+
+- (NSRect) getFrameQuickAccess : (uint8_t) position
+{
+	NSRect frame = [self bounds];
+	
+	frame.size.width -= 2 * SR_READERMODE_MARGIN_OUTLINE;
+	frame.origin.x = SR_READERMODE_MARGIN_OUTLINE;
+	
+	return frame;
+}
+
+- (void) updateRecentBlocsOrigin
+{
+	NSPoint origin = NSMakePoint(0, headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE);
+	
+	NSRect frame;
+	
+	if(recentRead != nil)
+	{
+		frame = [recentRead getContent].frame;
+		origin.x = frame.origin.x;
+		[recentRead setFrameOrigin:origin];
+		
+		origin.y += SR_READERMODE_ILBWIDTH_OUTLINE + frame.size.height;
+	}
+	
+	if(recentDL != nil)
+	{
+		origin.x = [recentDL getContent].frame.origin.x;
+		[recentDL setFrameOrigin:origin];
+	}
 }
 
 @end

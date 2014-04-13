@@ -180,8 +180,8 @@
 		
 		if(pageTooLarge)
 		{
-			mouseLoc.x += [self.contentView documentVisibleRect].origin.x;
-			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [self frame].size.width - READER_BORDURE_VERT_PAGE)
+			mouseLoc.x += [self.contentView documentRect].size.width - [self frame].size.width - [self.contentView documentVisibleRect].origin.x;
+			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) self.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
 				fail = true;
 		}
 	}

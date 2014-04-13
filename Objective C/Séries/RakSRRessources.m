@@ -12,6 +12,14 @@
 
 @implementation RakSRHeaderText
 
+- (NSRect) getProjectNameSize : (NSRect) superViewSize
+{
+	NSRect frame = superViewSize;
+	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
+	
+	return frame;
+}
+
 - (CGFloat) getFontSize
 {
 	return 18;

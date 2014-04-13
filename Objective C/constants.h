@@ -56,6 +56,12 @@
 /** RakSerieView **/
 #define SR_READERMODE_LATERAL_BORDER 5			//	%
 #define SR_READERMODE_BOTTOMBAR_WIDTH	14
+
+/** RakSerieSubmenu **/
+#define SR_READERMODE_MARGIN_ELEMENT_OUTLINE 8
+#define SR_READERMODE_MARGIN_OUTLINE		15
+#define SR_READERMODE_LBWIDTH_OUTLINE		26	//LB = Line Break
+#define SR_READERMODE_ILBWIDTH_OUTLINE		13	//ILB = Intermediary LB
  
 /**		Utils	**/
 

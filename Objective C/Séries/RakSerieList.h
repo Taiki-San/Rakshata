@@ -14,9 +14,10 @@
 
 @end
 
-@interface RakSerieSubmenu : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	BOOL _isRecentDownload;
+	BOOL initializationOver;
 	
 	uint _sizeCache;
 	MANGAS_DATA * _cache;
@@ -27,13 +28,16 @@
 	RakTreeView * content;
 }
 
-- (id) init : (NSView *) superview : (BOOL) isRecentDownload;
+- (id) init : (NSRect) frame : (BOOL) isRecentDownload;
+- (RakTreeView *) getContent;
+
+- (void) setFrameOrigin : (NSPoint) newOrigin;
 
 - (NSColor *) getFontColor;
 
 @end
 
-@interface RakSerieSubmenuItem : NSObject
+@interface RakSerieListItem : NSObject
 {
 	BOOL _isRootItem;
 	NSString * dataRoot;

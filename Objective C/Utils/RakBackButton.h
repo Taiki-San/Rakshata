@@ -13,7 +13,6 @@
 @interface RakBackButton : NSButton <NSAnimationDelegate>
 {
 	bool cursorOnMe;
-	bool aborted;
 	NSTrackingRectTag tag;
 
 	NSAnimation * _animation;

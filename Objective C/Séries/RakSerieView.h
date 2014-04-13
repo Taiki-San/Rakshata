@@ -13,8 +13,14 @@
 @interface RakSerieView : RakTabContentTemplate
 {
 	RakSRHeaderText* headerText;
+	
+	RakSerieList * recentRead;
+	RakSerieList * recentDL;
 }
 
 - (id)initContent:(NSRect)frame : (long [4]) context;
+
+- (NSRect) getFrameQuickAccess : (uint8_t) position;
+- (void) updateRecentBlocsOrigin;
 
 @end

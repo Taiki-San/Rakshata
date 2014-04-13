@@ -135,7 +135,6 @@
 
 - (void) startAnimation
 {
-	aborted = false;
 	_animation = [[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear];
 	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
@@ -161,7 +160,7 @@
 
 - (void)animationDidEnd:(NSAnimation *)animation
 {
-	if(!aborted && cursorOnMe)
+	if(cursorOnMe)
 	{
 		[self.cell setAnimationInProgress:NO];
 		[self performClick:self];

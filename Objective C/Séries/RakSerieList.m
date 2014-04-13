@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakSerieSubmenuItem
+@implementation RakSerieListItem
 
 - (id) init : (void*) data : (BOOL) isRootItem
 {
@@ -52,20 +52,21 @@
 
 @end
 
-@implementation RakSerieSubmenu
+@implementation RakSerieList
 
-- (id) init : (NSView *) superview : (BOOL) isRecentDownload
+- (id) init : (NSRect) frame : (BOOL) isRecentDownload
 {
 	self = [super init];
 	
 	if(self != nil)
 	{
+		initializationOver = NO;
 		_isRecentDownload = isRecentDownload;
 		[self loadContent];
 		
 		if(_data != nil)
 		{
-			content = [[RakTreeView alloc] initWithFrame:[self getContentFrame:[superview bounds]]];
+			content = [[RakTreeView alloc] initWithFrame:frame];
 			NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
 			[column setWidth:content.frame.size.width];
 			
@@ -80,7 +81,7 @@
 			[content addTableColumn:column];
 			[content setOutlineTableColumn:column];
 			[content expandItem:nil expandChildren:YES];
-			[superview addSubview:content];
+			initializationOver = YES;
 		}
 		else
 			[self release];
@@ -89,14 +90,9 @@
 	return self;
 }
 
-- (NSRect) getContentFrame : (NSRect) superviewFrame
+- (RakTreeView *) getContent
 {
-	superviewFrame.origin.y = superviewFrame.size.height - 150 - 100;
-	superviewFrame.size.height = 150;
-	superviewFrame.size.width /= 2;
-	superviewFrame.origin.x = superviewFrame.size.width / 2;
-	
-	return superviewFrame;
+	return content;
 }
 
 - (id) retain
@@ -120,11 +116,16 @@
 	[super dealloc];
 }
 
+- (void) setFrameOrigin : (NSPoint) newOrigin
+{
+	[content setFrameOrigin:newOrigin];
+}
+
 #pragma mark - Color
 
 - (NSColor *) getFontColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
 }
 
 #pragma mark - Loading routines
@@ -167,9 +168,9 @@
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
 	if(item == nil)
-		return [[RakSerieSubmenuItem alloc] init : @"Header" : YES];
+		return [[RakSerieListItem alloc] init : (_isRecentDownload ? @"Téléchargé récemment" : @"Consulté récemment") : YES];
 	else
-		return [[RakSerieSubmenuItem alloc] init : [_data pointerAtIndex:index] : NO];
+		return [[RakSerieListItem alloc] init : [_data pointerAtIndex:index] : NO];
 }
 
 
@@ -206,6 +207,8 @@
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
 	[cell setDrawsBackground:NO];
+	[cell setTextColor:[self getFontColor]];
+	[cell setFont:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]]];
 	
 	if(item == nil)	//Header
 	{
@@ -217,18 +220,41 @@
 	}
 }
 
+- (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	
+}
+
+- (NSTableRowView *)outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
+{
+	return nil;
+}
+
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	RakText * output = [[RakText alloc] initWithText:NSMakeRect(0, 0, outlineView.frame.size.height, outlineView.frame.size.height) :@"Lol" :[self getFontColor]];
+	
+	[output sizeToFit];
+	
+	return output;
+}
+
 @end
 
 @implementation RakTreeView
 
-- (NSRect)frameOfCellAtColumn:(NSInteger)column row:(NSInteger)row{
-    
-	NSRect superFrame = [super frameOfCellAtColumn:column row:row];
+- (NSRect)frameOfOutlineCellAtRow:(NSInteger)row
+{
+	NSRect superFrame = [super frameOfOutlineCellAtRow:row];
 	
-	
-    if (column == 0)
+	if (row > 0)
 	{
-        return NSMakeRect(0, superFrame.origin.y, [self bounds].size.width, superFrame.size.height);
+        return NSMakeRect(SR_READERMODE_MARGIN_ELEMENT_OUTLINE, superFrame.origin.y, [self bounds].size.width, superFrame.size.height);
     }
     return superFrame;
 }
