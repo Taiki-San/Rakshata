@@ -10,15 +10,36 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakWindow.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakText.h"
-#import "RakCenteredTextFieldCell.h"
-#import "RakTextCell.h"
-#import "RakMenuText.h"
-#import "RakBackButton.h"
-#import "RakList.h"
+@interface RakListScrollView : NSScrollView
+
+@end
+
+@interface RakList : NSObject <NSTableViewDelegate, NSTableViewDataSource>
+{
+	void* data;
+	uint amountData;
+	RakListScrollView * scrollView;
+	NSTableView * _tableView;
+	
+	//Color cache
+	NSColor * normal;
+	NSColor * highlight;
+}
+
+- (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
+- (void) failure;
+- (void) setSuperView : (NSView *) superview;
+- (bool) reloadData : (int) nbElem : (void *) newData;
+- (void) setHidden : (bool) state;
+- (void) setFrame : (NSRect) frameRect;
+
+- (NSRect) getTableViewFrame : (NSRect) superViewFrame;
+
+- (NSInteger) getSelectedElement;
+- (float) getSliderPos;
+
+- (NSColor *) getTextColor;
+- (NSColor *) getTextHighlightColor;
+- (NSColor *) getBackgroundHighlightColor;
+
+@end

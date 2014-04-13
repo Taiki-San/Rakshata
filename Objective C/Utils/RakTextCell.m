@@ -19,15 +19,14 @@
 	{
 		self.editable = NO;
 		self.bordered = NO;
-		self.drawsBackground = YES;
+		self.drawsBackground = NO;
+		self.backgroundColor = [NSColor clearColor];
 		
 		self.font = [NSFont systemFontOfSize:13];
 		self.alignment = NSCenterTextAlignment;
 		
 		if(color != nil)
-			self.backgroundColor = color;
-		else
-			self.backgroundColor = [NSColor clearColor];
+			self.textColor = color;
 		
 		self.selectable = NO;
     }

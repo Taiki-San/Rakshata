@@ -80,7 +80,7 @@
 
 - (NSColor *) getFontColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];//[NSColor whiteColor];
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
 }
 
 - (void) drawBorder

@@ -42,6 +42,7 @@
 		B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36418F99CD7001D1F8E /* RakTextCell.m */; };
 		B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36718F9E92F001D1F8E /* RakWindow.m */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
+		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
@@ -170,6 +171,8 @@
 		B6A1E36618F9E92F001D1F8E /* RakWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakWindow.h; path = Utils/RakWindow.h; sourceTree = "<group>"; };
 		B6A1E36718F9E92F001D1F8E /* RakWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakWindow.m; path = Utils/RakWindow.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
+		B6B46DAE18FB34FE00EB1FE6 /* RakList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakList.h; path = Utils/RakList.h; sourceTree = "<group>"; };
+		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; };
 		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
 		B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContextRestoration.m; path = Prefs/RakContextRestoration.m; sourceTree = "<group>"; };
 		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; };
@@ -428,6 +431,8 @@
 				B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B6B46DAE18FB34FE00EB1FE6 /* RakList.h */,
+				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
 				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
 				B6519A5318E0B610003FF1B6 /* RakScroller.h */,
@@ -801,6 +806,7 @@
 				B6F6ECF918A3001400E3B55B /* interface.c in Sources */,
 				B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */,
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,
+				B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */,
 				B678674E18F5ED4A004AA6B4 /* RakMenuText.m in Sources */,
 				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
 				B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */,
