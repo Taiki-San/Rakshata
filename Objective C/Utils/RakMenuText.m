@@ -61,12 +61,14 @@
 - (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
 {
 	text = [text stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-	self = [super initWithText:[self getProjectNameSize:frame] :text :color];
+	self = [super initWithText:[self getProjectNameSize:frame] :text : [self getTextColor]];
 	
 	if(self != nil)
 	{
 		[self setFont:[self getFont]];
-		[self setTextColor:[self getTextColor]];
+		[self setBackgroundColor:color];
+		[self setDrawsBackground:YES];
+		
 	}
 	
 	return self;

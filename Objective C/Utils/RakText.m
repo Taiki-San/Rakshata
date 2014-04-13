@@ -19,12 +19,11 @@
 	{
 		self.editable = NO;
 		self.bordered = NO;
-		self.drawsBackground = YES;
-
+		self.drawsBackground = NO;
+		self.backgroundColor = [NSColor clearColor];
+		
 		if(color != nil)
-			self.backgroundColor = color;
-		else
-			self.backgroundColor = [NSColor clearColor];
+			self.textColor = color;
 		
 		self.stringValue = text;
 		self.selectable = NO;

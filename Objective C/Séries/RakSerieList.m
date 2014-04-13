@@ -10,11 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@implementation RakSerieList
 
 @end
-
-#import "PrefsUI.h"
-#import "RakSerieQA.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
