@@ -14,8 +14,8 @@
 {
 	RakSRHeaderText* headerText;
 	
-	RakSerieList * recentRead;
-	RakSerieList * recentDL;
+	RakSerieQA * recentRead;
+	RakSerieQA * recentDL;
 }
 
 - (id)initContent:(NSRect)frame : (long [4]) context;

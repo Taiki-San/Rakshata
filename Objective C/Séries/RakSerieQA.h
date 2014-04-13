@@ -14,7 +14,7 @@
 
 @end
 
-@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface RakSerieQA : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	BOOL _isRecentDownload;
 	BOOL initializationOver;
@@ -37,7 +37,7 @@
 
 @end
 
-@interface RakSerieListItem : NSObject
+@interface RakSerieQAItem : NSObject
 {
 	BOOL _isRootItem;
 	NSString * dataRoot;

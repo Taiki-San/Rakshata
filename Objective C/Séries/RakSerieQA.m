@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakSerieListItem
+@implementation RakSerieQAItem
 
 - (id) init : (void*) data : (BOOL) isRootItem
 {
@@ -52,7 +52,7 @@
 
 @end
 
-@implementation RakSerieList
+@implementation RakSerieQA
 
 - (id) init : (NSRect) frame : (BOOL) isRecentDownload
 {
@@ -168,9 +168,9 @@
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
 	if(item == nil)
-		return [[RakSerieListItem alloc] init : (_isRecentDownload ? @"Téléchargé récemment" : @"Consulté récemment") : YES];
+		return [[RakSerieQAItem alloc] init : (_isRecentDownload ? @"Téléchargé récemment" : @"Consulté récemment") : YES];
 	else
-		return [[RakSerieListItem alloc] init : [_data pointerAtIndex:index] : NO];
+		return [[RakSerieQAItem alloc] init : [_data pointerAtIndex:index] : NO];
 }
 
 

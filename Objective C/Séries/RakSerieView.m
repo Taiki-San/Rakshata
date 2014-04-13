@@ -22,10 +22,10 @@
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
 		
-		recentRead = [[RakSerieList alloc] init : [self getFrameQuickAccess:1] : NO];
+		recentRead = [[RakSerieQA alloc] init : [self getFrameQuickAccess:1] : NO];
 		if(recentRead != nil)	[self addSubview:[recentRead getContent]];
 		
-		recentDL = [[RakSerieList alloc] init : [self getFrameQuickAccess:2] : YES];
+		recentDL = [[RakSerieQA alloc] init : [self getFrameQuickAccess:2] : YES];
 		if(recentDL != nil)		[self addSubview:[recentDL getContent]];
 		
 		[self updateRecentBlocsOrigin];

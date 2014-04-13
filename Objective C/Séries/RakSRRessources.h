@@ -15,5 +15,5 @@
 @end
 
 #import "PrefsUI.h"
-#import "RakSerieList.h"
+#import "RakSerieQA.h"
 #import "RakSerieView.h"
