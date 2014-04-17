@@ -11,5 +11,11 @@
  *********************************************************************************************/
 
 @interface RakSerieList : RakList
+{
+	bool* _installed;
+}
+
+- (id) init : (NSRect) frame;
+- (void) reloadData;
 
 @end

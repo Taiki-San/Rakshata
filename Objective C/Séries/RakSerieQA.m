@@ -71,6 +71,7 @@
 			[column setWidth:content.frame.size.width];
 			
 			//Customisation
+			[content setIntercellSpacing:NSMakeSize(0, 1)];
 			[content setBackgroundColor:[NSColor clearColor]];
 			[content setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 			[content setFocusRingType:NSFocusRingTypeNone];
@@ -204,25 +205,9 @@
 	return [item isRootItem];
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
-{
-	[cell setDrawsBackground:NO];
-	[cell setTextColor:[self getFontColor]];
-	[cell setFont:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]]];
-	
-	if(item == nil)	//Header
-	{
-		
-	}
-	else			//Normal elements
-	{
-		
-	}
-}
-
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	
+
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
@@ -230,18 +215,41 @@
 	
 }
 
-- (NSTableRowView *)outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
+- (NSTableRowView *) outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
 {
-	return nil;
+	if (![self outlineView:outlineView isGroupItem:item])
+		return nil;
+	
+	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:nil];
+	if (!rowView)
+	{
+		rowView = [[RakTableRowView alloc] init];
+		rowView.identifier = @"HeaderRowView";
+	}
+
+	return rowView;
 }
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-	RakText * output = [[RakText alloc] initWithText:NSMakeRect(0, 0, outlineView.frame.size.height, outlineView.frame.size.height) :@"Lol" :[self getFontColor]];
+	RakText *rowView = [outlineView makeViewWithIdentifier:@"StandardLine" owner:nil];
+	if (!rowView)
+	{
+		rowView = [[RakText alloc] init];
+		rowView.identifier = @"StandardLine";
+		[rowView setTextColor:[self getFontColor]];
+	}
 	
-	[output sizeToFit];
+	return rowView;
+}
+
+@end
+
+@implementation RakTableRowView
+
+- (void) drawBackgroundInRect:(NSRect)dirtyRect
+{
 	
-	return output;
 }
 
 @end

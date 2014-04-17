@@ -27,9 +27,10 @@
 }
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
+- (bool) didInitWentWell;
 - (void) failure;
+
 - (void) setSuperView : (NSView *) superview;
-- (bool) reloadData : (int) nbElem : (void *) newData;
 - (void) setHidden : (bool) state;
 - (void) setFrame : (NSRect) frameRect;
 

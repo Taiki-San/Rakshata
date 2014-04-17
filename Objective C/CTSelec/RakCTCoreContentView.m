@@ -65,6 +65,11 @@
 	return self;
 }
 
+- (bool) didInitWentWell
+{
+	return data != NULL;
+}
+
 - (bool) reloadData : (int) nbElem : (void *) newData
 {
 	void * newDataBuf = NULL;

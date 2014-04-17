@@ -12,6 +12,22 @@
 
 @implementation RakText
 
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		self.editable = NO;
+		self.bordered = NO;
+		self.drawsBackground = NO;
+		self.backgroundColor = [NSColor clearColor];
+		self.selectable = NO;
+	}
+	
+	return self;
+}
+
 - (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
 {
     self = [self initWithFrame:frame];

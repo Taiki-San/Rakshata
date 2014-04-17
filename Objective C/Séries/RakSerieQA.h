@@ -14,6 +14,10 @@
 
 @end
 
+@interface RakTableRowView : NSTableRowView
+
+@end
+
 @interface RakSerieQA : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	BOOL _isRecentDownload;

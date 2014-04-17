@@ -16,11 +16,15 @@
 	
 	RakSerieQA * recentRead;
 	RakSerieQA * recentDL;
+	
+	RakSerieList * mainList;
 }
 
 - (id)initContent:(NSRect)frame : (long [4]) context;
 
 - (NSRect) getFrameQuickAccess : (uint8_t) position;
 - (void) updateRecentBlocsOrigin;
+
+- (void) gotClickedTransmitData : (uint) rowClicked;
 
 @end

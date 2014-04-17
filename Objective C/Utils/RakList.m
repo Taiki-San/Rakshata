@@ -16,7 +16,7 @@
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition
 {
-	if(data == NULL)
+	if(![self didInitWentWell])
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Invalid request");
@@ -71,6 +71,11 @@
 	}
 }
 
+- (bool) didInitWentWell
+{
+	return false;
+}
+
 - (void) failure
 {
 #ifdef DEV_VERSION
@@ -81,11 +86,6 @@
 - (void) setSuperView : (NSView *) superview
 {
 	[superview addSubview:scrollView];
-}
-
-- (bool) reloadData : (int) nbElem : (void *) newData
-{
-	return false;
 }
 
 - (void) setFrame : (NSRect) frameRect

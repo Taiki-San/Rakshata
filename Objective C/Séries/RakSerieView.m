@@ -29,6 +29,13 @@
 		if(recentDL != nil)		[self addSubview:[recentDL getContent]];
 		
 		[self updateRecentBlocsOrigin];
+		
+		mainList = [[RakSerieList alloc] init:[self getMainListFrame]];
+		if(mainList != nil)
+		{
+			[mainList setHidden:false];
+			[mainList setSuperView:self];
+		}
 	}
 	
 	return self;
@@ -98,6 +105,33 @@
 	return frame;
 }
 
+- (NSRect) getMainListFrame
+{
+	NSRect output = self.frame, cache;
+	
+	if(recentDL != nil)
+	{
+		cache = [recentDL getContent].frame;
+		output.size.height -= cache.size.height + cache.origin.y + SR_READERMODE_LBWIDTH_OUTLINE;
+		output.origin.y = cache.size.height + cache.origin.y + SR_READERMODE_LBWIDTH_OUTLINE;
+	}
+	else if(recentRead != nil)
+	{
+		cache = [recentRead getContent].frame;
+		output.size.height -= cache.size.height + cache.origin.y + SR_READERMODE_LBWIDTH_OUTLINE;
+		output.origin.y = cache.size.height + cache.origin.y + SR_READERMODE_LBWIDTH_OUTLINE;
+	}
+	else if(headerText != nil)
+	{
+		
+	}
+	
+	output.origin.x = SR_READERMODE_MARGIN_OUTLINE;
+	output.size.width -= 2 * SR_READERMODE_MARGIN_OUTLINE;
+	
+	return output;
+}
+
 - (void) updateRecentBlocsOrigin
 {
 	NSPoint origin = NSMakePoint(0, headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE);
@@ -118,6 +152,13 @@
 		origin.x = [recentDL getContent].frame.origin.x;
 		[recentDL setFrameOrigin:origin];
 	}
+}
+
+#pragma mark - Data transmission
+
+- (void) gotClickedTransmitData : (uint) rowClicked
+{
+	
 }
 
 @end
