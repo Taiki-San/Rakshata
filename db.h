@@ -67,6 +67,8 @@ void freeMangaData(MANGAS_DATA* mangaDB);
 
 //Searches
 MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context);
+bool * getInstalledFromData(MANGAS_DATA * data, uint sizeData);
+bool isProjectInstalledInCache (uint ID);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
