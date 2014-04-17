@@ -531,7 +531,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	void* buffer;
 	
 	//Team
-	uint data = sqlite3_column_int(state, 1), length;
+	uint data = sqlite3_column_int(state, RDB_team-1), length;
 	if(data < lengthTeam)		//Si la team est pas valable, on drop complètement le projet
 		output->team = teamList[data];
 	else
@@ -541,10 +541,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	}
 	
 	//ID d'accès rapide
-	output->cacheDBID = sqlite3_column_int(state, 0);
+	output->cacheDBID = sqlite3_column_int(state, RDB_ID-1);
 	
 	//Nom court
-	unsigned char *mangaName = (unsigned char*) sqlite3_column_text(state, 2);
+	unsigned char *mangaName = (unsigned char*) sqlite3_column_text(state, RDB_mangaNameShort-1);
 
 	if(mangaName == NULL)
 		return false;
@@ -557,7 +557,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	//isInstalled est ici, on saute donc son index
 	
 	//Nom du projet
-	mangaName = (unsigned char*) sqlite3_column_text(state, 4);
+	mangaName = (unsigned char*) sqlite3_column_text(state, RDB_mangaName-1);
 	
 	if(mangaName == NULL)
 		return false;
@@ -568,17 +568,17 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 		output->mangaName[LONGUEUR_NOM_MANGA_MAX-1] = 0;
 	
 	//Divers données
-	output->status = sqlite3_column_int(state, 5);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD
-	output->genre = sqlite3_column_int(state, 6);
-	output->pageInfos = sqlite3_column_int(state, 7);
-	output->firstChapter = sqlite3_column_int(state, 8);
-	output->lastChapter = sqlite3_column_int(state, 9);
-	output->nombreChapitreSpeciaux = sqlite3_column_int(state, 10);
-	output->nombreChapitre = sqlite3_column_int(state, 11);
+	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD
+	output->genre = sqlite3_column_int(state, RDB_genre-1);
+	output->pageInfos = sqlite3_column_int(state, RDB_pageInfos-1);
+	output->firstChapter = sqlite3_column_int(state, RDB_firstChapter-1);
+	output->lastChapter = sqlite3_column_int(state, RDB_lastChapter-1);
+	output->nombreChapitreSpeciaux = sqlite3_column_int(state, RDB_nombreChapitreSpeciaux-1);
+	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
 	if(!dropChaptersAndTomes)
 	{
-		buffer = (void*) sqlite3_column_int64(state, 12);
+		buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 		if(buffer != NULL)
 		{
 			output->chapitres = malloc((output->nombreChapitre+2) * sizeof(int));
@@ -591,12 +591,12 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	else
 		output->chapitres = NULL;
 	
-	output->firstTome = sqlite3_column_int(state, 13);
-	output->nombreTomes = sqlite3_column_int(state, 14);
+	output->firstTome = sqlite3_column_int(state, RDB_firstTome-1);
+	output->nombreTomes = sqlite3_column_int(state, RDB_nombreTomes-1);
 	
 	if(!dropChaptersAndTomes)
 	{
-		buffer = (void*) sqlite3_column_int64(state, 15);
+		buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
 		if(buffer != NULL)
 		{
 			output->tomes = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
@@ -609,8 +609,8 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	else
 		output->tomes = NULL;
 	
-	output->contentDownloadable = sqlite3_column_int(state, 16);
-	output->favoris = sqlite3_column_int(state, 17);
+	output->contentDownloadable = sqlite3_column_int(state, RDB_contentDownloadable-1);
+	output->favoris = sqlite3_column_int(state, RDB_favoris);
 	
 	return true;
 }
@@ -961,5 +961,68 @@ MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint3
 	
 	sqlite3_finalize(request);
 
+	return output;
+}
+
+bool * getInstalledFromData(MANGAS_DATA * data, uint sizeData)
+{
+	if(data == NULL || sizeData == 0)
+		return NULL;
+	
+	bool * output = malloc(sizeData * sizeof(bool));
+	
+	if(output != NULL)
+	{
+		uint pos = 0;
+		sqlite3_stmt* request = NULL;
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_mangaName)" ASC", -1, &request, NULL);
+		
+		while(sqlite3_step(request) == SQLITE_ROW)
+		{
+			while(pos < nbElem && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
+			{
+				output[pos++] = false;
+			}
+			
+			if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
+				output[pos++] = true;
+
+			else if(pos < nbElem)		//Élément supprimé
+				output[pos++] = false;
+			
+			else
+				break;
+			
+		}
+		
+		for(; pos < nbElem; output[pos++] = false);
+		
+		sqlite3_finalize(request);
+	}
+	
+	return output;
+}
+
+bool isProjectInstalledInCache (uint ID)
+{
+	bool output = false;
+	
+	sqlite3_stmt* request = NULL;
+	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+
+	if(cache != NULL)
+	{
+		sqlite3_bind_int(request, 1, ID);
+		
+		if(sqlite3_step(request) == SQLITE_ROW)
+		{
+			if(sqlite3_column_int(request, RDB_isInstalled-1))
+				output = true;
+		}
+			
+		sqlite3_finalize(request);
+
+	}
+	
 	return output;
 }
