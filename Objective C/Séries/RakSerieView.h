@@ -14,16 +14,12 @@
 {
 	RakSRHeaderText* headerText;
 	
-	RakSerieQA * recentRead;
-	RakSerieQA * recentDL;
-	
 	RakSerieList * mainList;
 }
 
 - (id)initContent:(NSRect)frame : (long [4]) context;
 
-- (NSRect) getFrameQuickAccess : (uint8_t) position;
-- (void) updateRecentBlocsOrigin;
+- (NSRect) getMainListFrame;
 
 - (void) gotClickedTransmitData : (uint) rowClicked;
 

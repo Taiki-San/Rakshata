@@ -10,48 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakTreeView : NSOutlineView
-
-@end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-@interface RakSerieQA : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface RakSerieMainList : RakList
 {
-	BOOL _isRecentDownload;
-	BOOL initializationOver;
-	
-	uint _sizeCache;
-	MANGAS_DATA * _cache;
-	
-	NSInteger _nbElemDisplayed;
-	NSPointerArray * _data;
-	
-	RakTreeView * content;
+	bool* _installed;
 }
 
-- (id) init : (NSRect) frame : (BOOL) isRecentDownload;
-- (RakTreeView *) getContent;
-
-- (void) setFrameOrigin : (NSPoint) newOrigin;
-
-- (NSColor *) getFontColor;
-
-@end
-
-@interface RakSerieQAItem : NSObject
-{
-	BOOL _isRootItem;
-	NSString * dataRoot;
-	MANGAS_DATA * dataChild;
-	
-	NSArray * children;
-}
-
-- (id) init : (void*) data : (BOOL) isRootItem;
-- (BOOL) isRootItem;
-- (NSString*) getData;
+- (id) init : (NSRect) frame;
+- (void) reloadData;
 
 @end

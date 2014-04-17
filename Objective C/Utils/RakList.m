@@ -83,6 +83,11 @@
 #endif
 }
 
+- (NSScrollView*) getContent
+{
+	return scrollView;
+}
+
 - (void) setSuperView : (NSView *) superview
 {
 	[superview addSubview:scrollView];

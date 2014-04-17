@@ -30,6 +30,7 @@
 - (bool) didInitWentWell;
 - (void) failure;
 
+- (NSScrollView*) getContent;
 - (void) setSuperView : (NSView *) superview;
 - (void) setHidden : (bool) state;
 - (void) setFrame : (NSRect) frameRect;
