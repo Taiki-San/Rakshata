@@ -24,7 +24,7 @@
 	[self release];
 
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-	[self setAutoresizesSubviews:YES];
+	[self setAutoresizesSubviews:NO];
 	[self setNeedsDisplay:YES];
 	[self setWantsLayer:YES];
 	

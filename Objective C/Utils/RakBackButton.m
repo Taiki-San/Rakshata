@@ -39,10 +39,10 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
+	frameRect.origin.y = frameRect.size.height - self.frame.size.height - RBB_TOP_BORDURE;
 	frameRect.size.height = self.frame.size.height;
-	frameRect.size.width = self.superview.frame.size.width * RBB_BUTTON_WIDTH / 100.0f;
-	frameRect.origin.x = self.superview.frame.size.width * RBB_BUTTON_POSX / 100.0f;
-	frameRect.origin.y = self.superview.frame.size.height - self.frame.size.height - RBB_TOP_BORDURE;
+	frameRect.origin.x += frameRect.size.width * RBB_BUTTON_POSX / 100.0f;
+	frameRect.size.width *= RBB_BUTTON_WIDTH / 100.0f;
 	
 	[super setFrame:frameRect];
 	

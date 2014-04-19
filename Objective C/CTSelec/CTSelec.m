@@ -230,6 +230,7 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
+	[backButton setFrame:[self bounds]];
 	[coreView setFrame:[self calculateContentViewSize]];
 }
 

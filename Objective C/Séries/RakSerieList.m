@@ -191,7 +191,13 @@
 			[content addTableColumn:column];
 			[content setOutlineTableColumn:column];
 			[column release];
+			
+			//We need some tweaks to be sure everything is properly deployed
+			if(rootItems[2] != nil)
+				[rootItems[2] resetMainListHeight];
+
 			[content expandItem:nil expandChildren:YES];
+	
 			initializationStage = INIT_OVER;
 		}
 		else
@@ -450,6 +456,9 @@
 			
 			output = content.frame.size.height - (_nbElemReadDisplayed != 0) * (25 + p) - _nbElemReadDisplayed * ([outlineView rowHeight] + p) - (_nbElemDLDisplayed != 0) * (25 + p) - _nbElemDLDisplayed * ([outlineView rowHeight] + p) - (25 + p) - p;
 			
+			if(output < 25)
+				output = 25;
+
 			[item setMainListHeight:output];
 		}
 		
@@ -539,7 +548,7 @@
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification
 {
-    if (notification.object == content)
+    if (notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}
@@ -547,7 +556,7 @@
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification
 {
-    if (notification.object == content)
+    if (notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}

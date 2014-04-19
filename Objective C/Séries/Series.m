@@ -142,6 +142,8 @@
 	[super setFrame:frameRect];
 	
 	[preferenceButton setFrameOrigin:NSMakePoint(preferenceButton.frame.origin.x, frameRect.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+	[backButton setFrame:[self backButtonFrame]];
+	
 	[coreView setFrame:[self getCoreviewFrame]];
 }
 
