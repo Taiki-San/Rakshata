@@ -179,6 +179,7 @@
 	[mainImage getTheFuckOut];
 	[mainImage release];
 	
+	[self removeFromSuperview];	
 	[super dealloc];
 }
 
