@@ -32,8 +32,6 @@
 	NSRect _defaultFrame;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
-
 @end
 
 @interface RakTableRowView : NSTableRowView

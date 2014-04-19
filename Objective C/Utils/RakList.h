@@ -33,6 +33,7 @@
 - (NSScrollView*) getContent;
 - (void) setSuperView : (NSView *) superview;
 - (void) setHidden : (bool) state;
+- (NSRect) frame;
 - (void) setFrame : (NSRect) frameRect;
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;

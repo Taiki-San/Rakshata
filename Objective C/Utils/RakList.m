@@ -93,6 +93,11 @@
 	[superview addSubview:scrollView];
 }
 
+- (NSRect) frame
+{
+	return [scrollView frame];
+}
+
 - (void) setFrame : (NSRect) frameRect
 {
 	[scrollView setFrame:[self getTableViewFrame:frameRect]];
@@ -230,6 +235,30 @@
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	return YES;
+}
+
+- (NSView *) createDragView
+{
+	NSView * view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 300, 100)];
+	
+	view.wantsLayer = YES;
+	view.layer.backgroundColor = [NSColor redColor].CGColor;
+	
+	return view;
+}
+
+- (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
+{
+	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
+									   forView:tableView
+									   classes:[NSArray arrayWithObject:[NSPasteboardItem class]]
+								 searchOptions:nil
+									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
+	 {
+		 NSView * view = [self createDragView];
+		 [draggingItem setDraggingFrame:NSMakeRect(0, 0, view.frame.size.width, view.frame.size.height)
+							   contents:view];
+	 }];
 }
 
 @end

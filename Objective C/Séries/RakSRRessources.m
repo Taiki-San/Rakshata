@@ -38,11 +38,6 @@
 
 @implementation RakTreeView
 
-- (void) setDefaultFrame : (NSRect) frame
-{
-	_defaultFrame = frame;
-}
-
 - (NSRect) frame
 {
 	if(_defaultFrame.size.height != 0)
@@ -53,11 +48,8 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	if(_defaultFrame.size.height == 0)
-	{
-		_defaultFrame = frameRect;
-		[super setFrame:_defaultFrame];
-	}
+	_defaultFrame = frameRect;
+	[super setFrame:_defaultFrame];
 }
 
 @end
@@ -66,6 +58,9 @@
 
 - (void) setFixedWidth : (CGFloat) fixedWidth
 {
+	if(_fixedWidth != fixedWidth)
+		[super setWidth:fixedWidth];
+	
 	_fixedWidth = fixedWidth;
 }
 

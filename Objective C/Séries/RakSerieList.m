@@ -92,6 +92,20 @@
 	_mainListHeight = height;
 }
 
+- (void) resetMainListHeight
+{
+	if([self isRootItem] && [self isMainList])
+	{
+		if([children count] == 1)
+		{
+			RakSerieListItem *mainList = [children objectAtIndex:0];
+			[mainList setMainListHeight:0];
+		}
+	}
+	else
+		NSLog(@"Invalid request, I'm not the item you're looking for...");
+}
+
 - (CGFloat) getHeight
 {
 	if([self isRootItem])
@@ -161,8 +175,8 @@
 		if(_data != nil)
 		{
 			content = [[RakTreeView alloc] initWithFrame:frame];
-			[content setDefaultFrame:frame];
-			RakTableColumn * column = [[RakTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
+			[content setFrame:frame];
+			column = [[RakTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
 			[column setWidth:content.frame.size.width];
 			
 			//Customisation
@@ -213,13 +227,29 @@
 	for (char i = 0; i < 3; i++)
 	{
 		if(rootItems[i] != nil)
-		{
-			NSLog(@"%lu", (unsigned long)[rootItems[i] retainCount]);
 			[rootItems[i] release];
-		}
 	}
 	
 	[super dealloc];
+}
+
+- (void) setFrame: (NSRect) frame
+{
+	[column setFixedWidth:frame.size.width];
+	
+	NSRect mainListFrame = [_mainList frame];
+
+	mainListFrame.origin.x = mainListFrame.origin.y = 0;
+	mainListFrame.size.width = frame.size.width;
+	mainListFrame.size.height += frame.size.height - [content frame].size.height;
+	
+	[content setFrame:frame];
+
+	[_mainList setFrame:[self getMainListFrame:content]];
+	if(rootItems[2] != nil)
+		[rootItems[2] resetMainListHeight];
+	
+	[content reloadData];
 }
 
 - (void) setFrameOrigin : (NSPoint) newOrigin
@@ -471,7 +501,9 @@
 		}
 		else
 		{
-			_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView]];
+			if(_mainList == nil)
+				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView]];
+			
 			rowView = [_mainList getContent];
 		}
 	}

@@ -34,6 +34,7 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:[self bounds]];
+	[mainList setFrame:[self getMainListFrame]];
 }
 
 - (void) retainInternalViews

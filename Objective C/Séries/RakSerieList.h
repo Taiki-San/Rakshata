@@ -43,6 +43,7 @@ enum {
 - (BOOL) isRootItem;
 
 - (void) setMainListHeight : (CGFloat) height;
+- (void) resetMainListHeight;
 - (CGFloat) getHeight;
 
 - (void) setExpaded : (BOOL) expanded;
@@ -73,12 +74,14 @@ enum {
 	RakSerieListItem* rootItems[3];
 	
 	RakTreeView * content;
+	RakTableColumn * column;
 	RakSerieMainList * _mainList;
 }
 
 - (id) init : (NSRect) frame : (BOOL) isRecentDownload;
 - (RakTreeView *) getContent;
 
+- (void) setFrame: (NSRect) frame;
 - (void) setFrameOrigin : (NSPoint) newOrigin;
 
 - (NSColor *) getFontColor;
