@@ -54,7 +54,7 @@
 	rename("context.dat.new", "context.dat");
 }
 
-+ (NSArray *) loadContext
++ (NSArray *) initContext
 {
 	NSString * fileContent = [NSString stringWithContentsOfFile:@"context.dat" encoding:NSASCIIStringEncoding error:NULL];
 	

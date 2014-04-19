@@ -28,6 +28,7 @@
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!readerMode];
 		[self addSubview:backButton];
+		[backButton release];
 
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 		{
@@ -97,7 +98,10 @@
 		}
 		
 		if(coreView != nil)
+		{
 			[self addSubview:coreView];
+			[coreView release];
+		}
 	}
     return self;
 }
@@ -113,6 +117,10 @@
 {
 	[backButton removeFromSuperview];
 	[backButton release];
+	
+	[coreView removeFromSuperview];
+	[coreView release];
+	
 	[super dealloc];
 }
 
@@ -157,6 +165,9 @@
 			output = PREFS_GET_TAB_CT_FRAME;
 			break;
 		}
+		
+		default:
+			output = 0;
 	}
 	
 	return output;
@@ -174,6 +185,8 @@
 	{
 		return [super byebye];
 	}
+	else
+		[self removeFromSuperview];
 	   
 	return string;
 }

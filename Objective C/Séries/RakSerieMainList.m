@@ -51,6 +51,11 @@
 	}
 }
 
+- (BOOL) fontBold
+{
+	return NO;
+}
+
 #pragma mark - Methods to deal with tableView
 
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex

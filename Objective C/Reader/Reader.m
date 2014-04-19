@@ -161,8 +161,6 @@
 	if (initialized)
 	{
 		output = [mainImage getContextToGTFO];
-
-		[mainImage getTheFuckOut];
 	}
 	else
 	{
@@ -170,6 +168,18 @@
 	}
 	
 	return output;
+}
+
+- (void) dealloc
+{
+	[bottomBar removeFromSuperview];
+	[bottomBar release];
+	
+	[mainImage removeFromSuperview];
+	[mainImage getTheFuckOut];
+	[mainImage release];
+	
+	[super dealloc];
 }
 
 - (int) getCodePref : (int) request
@@ -207,6 +217,9 @@
 			output = PREFS_GET_TAB_READER_FRAME;
 			break;
 		}
+			
+		default:
+			output = 0;
 	}
 	
 	return output;

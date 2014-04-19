@@ -59,6 +59,20 @@
 	[coreView release];
 }
 
+- (void) dealloc
+{
+	[projectName removeFromSuperview];
+	[projectName release];
+	
+	[projectImage removeFromSuperview];
+	[projectImage release];
+	
+	[coreView removeFromSuperview];
+	[coreView release];
+	
+	[super dealloc];
+}
+
 - (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
 {
 	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
@@ -135,7 +149,10 @@
 		}
 	}
 	else
+	{
+		[self release];
 		self = nil;
+	}
 	
 	return self;
 }
@@ -165,7 +182,10 @@
 - (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
 {
 	if(project.nombreChapitre == 0 && project.nombreTomes == 0)
+	{
+		[self release];
 		return nil;
+	}
 	
 	self = [super initWithFrame:[self getSizeOfCoreView:frame]];
 	
@@ -224,7 +244,7 @@
 		
 		if(data.nombreChapitre > 0)
 		{
-			tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
+			tableViewControllerChapter = [[[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]] retain];
 			if(tableViewControllerChapter != nil)
 			{
 				[tableViewControllerChapter setHidden:isTome];
@@ -234,7 +254,7 @@
 
 		if(data.nombreTomes > 0)
 		{
-			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
+			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]] retain];
 			if(tableViewControllerVolume != nil)
 			{
 				[tableViewControllerVolume setHidden:!isTome];
@@ -308,10 +328,19 @@
 
 - (oneway void) release
 {
-	[super release];
 	[buttons release];
 	[tableViewControllerChapter release];
 	[tableViewControllerVolume release];
+	[super release];
+}
+
+- (void) dealloc
+{
+	[buttons removeFromSuperview];
+	[tableViewControllerChapter release];
+	[tableViewControllerVolume release];
+	
+	[super dealloc];
 }
 
 - (NSRect) getSizeOfCoreView : (NSRect) superViewFrame

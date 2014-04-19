@@ -10,14 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakTreeView : NSOutlineView
-
-@end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
 enum {
 	INIT_FIRST_STAGE	= 1,		//Nothing initialized
 	INIT_SECOND_STAGE	= 2,		//First panel initialized
@@ -25,31 +17,6 @@ enum {
 	INIT_FINAL_STAGE	= 4,		//Main list initialized
 	INIT_OVER			= 5
 };
-
-
-@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
-{
-	int initializationStage;
-	
-	uint _sizeCache;
-	MANGAS_DATA * _cache;
-	
-	uint8_t _nbElemReadDisplayed;
-	uint8_t _nbElemDLDisplayed;
-	NSPointerArray * _data;
-	
-	RakTreeView * content;
-	RakSerieMainList * _mainList;
-}
-
-- (id) init : (NSRect) frame : (BOOL) isRecentDownload;
-- (RakTreeView *) getContent;
-
-- (void) setFrameOrigin : (NSPoint) newOrigin;
-
-- (NSColor *) getFontColor;
-
-@end
 
 @interface RakSerieListItem : NSObject
 {
@@ -59,6 +26,7 @@ enum {
 	
 	BOOL _isRootItem;
 	uint _nbChildren;
+	NSMutableArray * children;
 	
 	NSString * dataRoot;
 	MANGAS_DATA * dataChild;
@@ -72,6 +40,40 @@ enum {
 - (BOOL) isRootItem;
 
 - (uint) getNbChildren;
+
+- (void) setChild : (id) child atIndex : (NSInteger) index;
+- (id) getChildAtIndex : (NSInteger) index;
+
 - (NSString*) getData;
+
+@end
+
+@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+{
+	int initializationStage;
+	
+	CGFloat _forcedHeight;
+	
+	uint _sizeCache;
+	MANGAS_DATA * _cache;
+	
+	uint8_t _nbElemReadDisplayed;
+	uint8_t _nbElemDLDisplayed;
+	NSPointerArray * _data;
+	
+	RakSerieListItem* rootItems[3];
+	
+	RakTreeView * content;
+	RakSerieMainList * _mainList;
+}
+
+- (id) init : (NSRect) frame : (BOOL) isRecentDownload;
+- (RakTreeView *) getContent;
+
+- (void) setFrameOrigin : (NSPoint) newOrigin;
+
+- (NSColor *) getFontColor;
+
+- (NSRect) getMainListFrame : (NSOutlineView*) outlineView;
 
 @end

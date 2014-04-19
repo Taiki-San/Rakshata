@@ -59,6 +59,21 @@
 	readerMode = true;
 }
 
+- (void) dealloc
+{
+	[favorite removeFromSuperview];		[favorite release];
+	[fullscreen removeFromSuperview];	[fullscreen release];
+	[prevChapter removeFromSuperview];	[prevChapter release];
+	[prevPage removeFromSuperview];		[prevPage release];
+	[nextPage removeFromSuperview];		[nextPage release];
+	[nextChapter removeFromSuperview];	[nextChapter release];
+	[trash removeFromSuperview];		[trash release];
+	
+	[pageCount removeFromSuperview];	[pageCount release];
+	
+	[super dealloc];
+}
+
 #pragma mark - Update page counter
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax

@@ -49,8 +49,8 @@
 
 - (oneway void) release
 {
-	[super release];
 	[self releaseInternalViews];
+	[super release];
 }
 
 - (void) setFrameInternalViews : (NSRect) newBound

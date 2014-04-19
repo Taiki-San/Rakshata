@@ -31,6 +31,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	}
 	
 	tabSerie =	[Series alloc];
+	
 	tabCT =		[CTSelec alloc];
 	tabReader =	[Reader alloc];
 	tabMDL =	[MDL alloc];
@@ -41,7 +42,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
 	[Prefs initCache];
-	NSArray *context = [RakContextRestoration loadContext];
+	NSArray *context = [RakContextRestoration initContext];
 	
 	[tabSerie init:contentView : [context objectAtIndex:0]];
 	[tabCT init:contentView : [context objectAtIndex:1]];

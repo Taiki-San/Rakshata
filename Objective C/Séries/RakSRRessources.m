@@ -26,3 +26,64 @@
 }
 
 @end
+
+@implementation RakTableRowView
+
+- (void) drawBackgroundInRect:(NSRect)dirtyRect
+{
+	
+}
+
+@end
+
+@implementation RakTreeView
+
+- (void) setDefaultFrame : (NSRect) frame
+{
+	_defaultFrame = frame;
+}
+
+- (NSRect) frame
+{
+	if(_defaultFrame.size.height != 0)
+		return _defaultFrame;
+	else
+		return [super frame];
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	if(_defaultFrame.size.height == 0)
+	{
+		_defaultFrame = frameRect;
+		[super setFrame:_defaultFrame];
+	}
+}
+
+@end
+
+@implementation RakTableColumn
+
+- (void) setFixedWidth : (CGFloat) fixedWidth
+{
+	_fixedWidth = fixedWidth;
+}
+
+- (void) setWidth:(CGFloat)width
+{
+	if(!_fixedWidth)
+		_fixedWidth = width;
+	
+	[super setWidth:_fixedWidth];
+}
+
+@end
+
+@implementation RakSRSubMenu
+
+- (CGFloat) getTextHeight
+{
+	return 21;
+}
+
+@end

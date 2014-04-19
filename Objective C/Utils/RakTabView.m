@@ -19,7 +19,10 @@
 	NSRect frame = [self createFrameWithSuperView:superView];
 	
 	self = [super initWithFrame:frame];
+
 	[superView addSubview:self];
+	[self release];
+
 	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[self setAutoresizesSubviews:YES];
 	[self setNeedsDisplay:YES];

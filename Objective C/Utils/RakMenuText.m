@@ -49,10 +49,15 @@
 
 #pragma mark - Controller
 
+- (CGFloat) getTextHeight
+{
+	return CT_READERMODE_WIDTH_PROJECT_NAME;
+}
+
 - (NSRect) getProjectNameSize : (NSRect) superViewSize
 {
 	NSRect frame = superViewSize;
-	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
+	frame.size.height = [self getTextHeight];
 	frame.origin.y = superViewSize.size.height - frame.size.height;
 	
 	return frame;
@@ -66,8 +71,17 @@
 	if(self != nil)
 	{
 		[self setFont:[self getFont]];
-		[self setBackgroundColor:color];
-		[self setDrawsBackground:YES];
+		
+		if(color != nil)
+		{
+			[self setBackgroundColor:color];
+			[self setDrawsBackground:YES];
+		}
+		else
+		{
+			[self setBackgroundColor:[NSColor clearColor]];
+			[self setDrawsBackground:NO];
+		}
 		
 	}
 	

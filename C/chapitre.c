@@ -224,7 +224,7 @@ DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int 
 
     if(strlen(stringGeneric) >= TRAD_LENGTH)
         stringGeneric[TRAD_LENGTH-1] = 0;
-    strcpy(stringGenericUsable, stringGeneric);
+    strncpy(stringGenericUsable, stringGeneric, TRAD_LENGTH);
     if(stringGenericUsable[0] >= 'a' && stringGenericUsable[0] <= 'z')
         stringGenericUsable[0] += 'A'-'a';
 

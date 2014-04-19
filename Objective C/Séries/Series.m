@@ -41,6 +41,33 @@
 	[self addSubview:coreView];
 }
 
+- (id) retain
+{
+	[preferenceButton retain];
+	[coreView retain];
+	
+	return [super retain];
+}
+
+- (oneway void) release
+{
+	[preferenceButton release];
+	[coreView release];
+	
+	[super release];
+}
+
+- (void) dealloc
+{
+	[preferenceButton removeFromSuperview];
+	[coreView removeFromSuperview];
+
+	[super retain];
+	[self removeFromSuperview];
+	
+	[super dealloc];
+}
+
 /**		Pref UI		**/
 #pragma mark - Preference UI
 
@@ -174,6 +201,9 @@
 			output = PREFS_GET_TAB_SERIE_FRAME;
 			break;
 		}
+			
+		default:
+			output = 0;
 	}
 	
 	return output;

@@ -47,6 +47,11 @@
     return self;
 }
 
++ (Class) cellClass
+{
+	return [RakCenteredTextFieldCell class];
+}
+
 - (void) additionalDrawing
 {
 	

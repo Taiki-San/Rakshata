@@ -22,6 +22,7 @@
 		
 		if(_isRootItem)
 		{
+			children = [[NSMutableArray alloc] init];
 			dataChild	= NULL;
 			_isRecentList = _isDLList = _isMainList = NO;
 			_nbChildren = nbChildren;
@@ -54,7 +55,11 @@
 		{
 			dataRoot	= nil;
 			dataChild	= data;
-			_isMainList = NO;
+			
+			if(dataChild == nil && initStage == INIT_FINAL_STAGE)
+				_isMainList = YES;
+			else
+				_isMainList = NO;
 		}
 	}
 	
@@ -88,6 +93,22 @@
 	return 0;
 }
 
+- (void) setChild : (id) child atIndex : (NSInteger) index
+{
+	if(children != nil)
+	{
+		[children insertObject:child atIndex:index];
+	}
+}
+
+- (id) getChildAtIndex : (NSInteger) index
+{
+	if(children != nil && [children count] > index)
+		return [children objectAtIndex:index];
+	
+	return nil;
+}
+
 - (NSString*) getData
 {
 	if(_isRootItem && dataRoot != NULL)
@@ -114,10 +135,12 @@
 		if(_data != nil)
 		{
 			content = [[RakTreeView alloc] initWithFrame:frame];
-			NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
+			[content setDefaultFrame:frame];
+			RakTableColumn * column = [[RakTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
 			[column setWidth:content.frame.size.width];
 			
 			//Customisation
+			[content setIndentationPerLevel:[content indentationPerLevel] / 2];
 			[content setBackgroundColor:[NSColor clearColor]];
 			[content setFocusRingType:NSFocusRingTypeNone];
 			
@@ -126,6 +149,7 @@
 			[content setDataSource:self];
 			[content addTableColumn:column];
 			[content setOutlineTableColumn:column];
+			[column release];
 			[content expandItem:nil expandChildren:YES];
 			initializationStage = INIT_OVER;
 		}
@@ -158,6 +182,15 @@
 	freeMangaData(_cache);
 	[_data release];
 	[content removeFromSuperview];
+	
+	for (char i = 0; i < 3; i++)
+	{
+		if(rootItems[i] != nil)
+		{
+			NSLog(@"%lu", (unsigned long)[rootItems[i] retainCount]);
+			[rootItems[i] release];
+		}
+	}
 	
 	[super dealloc];
 }
@@ -234,7 +267,7 @@
 	if(initializationStage == INIT_THIRD_STAGE)
 	{
 		if(_sizeCache)
-			return 0;
+			return 1;
 		initializationStage++;
 	}
 	
@@ -264,28 +297,43 @@
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
+	id output;
+	
 	if(item == nil)
 	{
-		id output = [[RakSerieListItem alloc] init : NULL : YES : initializationStage : [self getChildrenByInitialisationStage]];
+		if(index >= 3)
+			return nil;
+			
+		if(rootItems[index] == nil)
+		{
+			rootItems[index] = [[RakSerieListItem alloc] init : NULL : YES : initializationStage : [self getChildrenByInitialisationStage]];
+			
+			if(initializationStage != INIT_OVER)
+				initializationStage++;
+		}
 		
-		if(initializationStage != INIT_OVER)
-			initializationStage++;
-		
-		return output;
+		output = rootItems[index];
 	}
 	else if(![item isMainList])
 	{
-		return [[RakSerieListItem alloc] init : [_data pointerAtIndex: (index + ([item isDLList] ? 3 : 0))] : NO : initializationStage : 0];
-	}
-	else if(index < _sizeCache)
-	{
-		changeTo(_cache[index].mangaName, '_', ' ');
-		return [[RakSerieListItem alloc] init : _cache[index].mangaName : NO : initializationStage : 0];
+		output = [item getChildAtIndex:index];
+		if(output == nil)
+		{
+			output = [[RakSerieListItem alloc] init : [_data pointerAtIndex: (index + ([item isDLList] ? 3 : 0))] : NO : initializationStage : 0];
+			[item setChild:output atIndex:index];
+		}
 	}
 	else
 	{
-		return [[RakSerieListItem alloc] init : @"Inconsistency :(" : NO : initializationStage : 0];
+		output = [item getChildAtIndex:index];
+		if(output == nil)
+		{
+			output = [[RakSerieListItem alloc] init : nil : NO : initializationStage : 0];
+			[item setChild:output atIndex:index];
+		}
 	}
+	
+	return output;
 }
 
 
@@ -324,18 +372,19 @@
 	if(item == nil)
 		return 0;
 	else if([item isRootItem])
+		return 25;
+
+	else if([item isMainList])
 	{
-		if([item isMainList])
-		{
-			CGFloat output = content.frame.size.height - (_nbElemReadDisplayed != 0) * 21 - _nbElemReadDisplayed * 20 - (_nbElemDLDisplayed != 0) * 21 - _nbElemDLDisplayed * 20;
-			return output;
-		}
-		else
-			return 21;
+		CGFloat output = content.frame.size.height - (_nbElemReadDisplayed != 0) * 25 - _nbElemReadDisplayed * 20 - (_nbElemDLDisplayed != 0) * 25 - _nbElemDLDisplayed * 20 - 25 - 5;
+		return output;
 	}
+	
 	else
-		return 21;
+		return [outlineView rowHeight];
 }
+
+///			Manipulation we view added/removed
 
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
@@ -346,6 +395,8 @@
 {
 	
 }
+
+///		Craft views
 
 - (NSTableRowView *) outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
 {
@@ -368,10 +419,13 @@
 	
 	if([item isMainList])
 	{
-		rowView = [outlineView makeViewWithIdentifier:@"StandardLine" owner:nil];
-		if(rowView == nil)
+		if([item isRootItem])
 		{
-			_mainList = [[RakSerieMainList alloc] init: NSMakeRect(0, 0, outlineView.frame.size.height, outlineView.frame.size.height)];
+			rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"" : nil];
+		}
+		else
+		{
+			_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView]];
 			rowView = [_mainList getContent];
 		}
 	}
@@ -383,34 +437,30 @@
 			rowView = [[RakText alloc] init];
 			rowView.identifier = @"StandardLine";
 			[(RakText*) rowView setTextColor:[self getFontColor]];
+			
+			if([item isRootItem])
+				[(RakText*) rowView setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+			else
+				[(RakText*) rowView setFont:[NSFont fontWithName:@"Helvetica" size:13]];
 		}
 	}
 	
 	return rowView;
 }
 
-@end
-
-@implementation RakTableRowView
-
-- (void) drawBackgroundInRect:(NSRect)dirtyRect
+- (NSRect) getMainListFrame : (NSOutlineView*) outlineView
 {
+	NSRect frame = [outlineView bounds];
 	
+	frame.size.width -= 2 * [outlineView indentationPerLevel];
+	
+	return frame;
+}
+
+- (void) outlineViewItemWillCollapse:(NSNotification *)notification
+{
+	[content reloadData];
 }
 
 @end
 
-@implementation RakTreeView
-
-- (NSRect)frameOfOutlineCellAtRow:(NSInteger)row
-{
-	NSRect superFrame = [super frameOfOutlineCellAtRow:row];
-	
-	if (![[self itemAtRow:row] isRootItem])
-	{
-        return NSMakeRect(SR_READERMODE_MARGIN_ELEMENT_OUTLINE, superFrame.origin.y, [self bounds].size.width, superFrame.size.height);
-    }
-    return superFrame;
-}
-
-@end

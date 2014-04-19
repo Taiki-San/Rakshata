@@ -14,6 +14,32 @@
 
 @end
 
+@interface RakSRSubMenu : RakMenuText
+
+@end
+
+@interface RakTableColumn : NSTableColumn
+{
+	CGFloat _fixedWidth;
+}
+
+- (void) setFixedWidth : (CGFloat) fixedWidth;
+
+@end
+
+@interface RakTreeView : NSOutlineView
+{
+	NSRect _defaultFrame;
+}
+
+- (void) setDefaultFrame : (NSRect) frame;
+
+@end
+
+@interface RakTableRowView : NSTableRowView
+
+@end
+
 #import "PrefsUI.h"
 #import "RakSerieMainList.h"
 #import "RakSerieList.h"

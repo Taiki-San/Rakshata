@@ -14,11 +14,11 @@
 
 + (id) initForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [[RakButton new] autorelease];
+	RakButton *output = [RakButton new];
 	
 	if(output != nil)
 	{
-		RakButtonCell * cell = [[RakButtonCell alloc] initWithPage: imageName : RB_STATE_STANDARD];
+		RakButtonCell * cell = [[[RakButtonCell alloc] initWithPage: imageName : RB_STATE_STANDARD] autorelease];
 		
 		if(cell != nil)
 		{

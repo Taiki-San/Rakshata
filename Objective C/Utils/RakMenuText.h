@@ -19,6 +19,7 @@
 - (CGFloat) getFontSize;
 - (NSFont *) getFont;
 
+- (CGFloat) getTextHeight;
 - (NSRect) getProjectNameSize : (NSRect) superViewSize;
 - (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color;
 

@@ -37,7 +37,7 @@
 	
 	[scrollView setDocumentView:_tableView];
 	
-	NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"];
+	NSTableColumn * column = [[[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"] autorelease];
 	[column setWidth:_tableView.frame.size.width];
 	
 	//Customisation
@@ -105,6 +105,21 @@
 		[scrollView setHidden:state];
 }
 
+- (void) dealloc
+{
+	[scrollView removeFromSuperview];
+	[scrollView release];
+	
+	[_tableView release];
+	[_tableView release];		//Je dois le retain à quelque chose mais je vois pas, donc on tue sa hiérarchie puis on for à le libérer
+	
+	[normal release];
+	[highlight release];
+	free(data);
+	
+	[super dealloc];
+}
+
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame
 {
 	return superViewFrame;
@@ -144,6 +159,11 @@
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL];
 }
 
+- (BOOL) fontBold
+{
+	return YES;
+}
+
 #pragma mark - Methods to deal with tableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
@@ -164,7 +184,11 @@
 		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
-		[result setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+
+		if([self fontBold])
+			[result setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+		else
+			[result setFont:[NSFont fontWithName:@"Helvetica" size:13]];
 		
 		result.identifier = @"Mane 6";
 	}

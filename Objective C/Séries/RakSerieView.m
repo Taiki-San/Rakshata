@@ -39,11 +39,19 @@
 - (void) retainInternalViews
 {
 	[headerText retain];
+	[mainList retain];
 }
 
 - (void) releaseInternalViews
 {
 	[headerText release];
+	[mainList release];
+}
+
+- (void) dealloc
+{
+	NSLog(@"%lu", [mainList retainCount]);
+	[super dealloc];
 }
 
 - (BOOL)isFlipped
@@ -93,7 +101,7 @@
 		output.origin.y = headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE;
 	
 	output.size.height -= output.origin.y;
-	output.origin.x = SR_READERMODE_MARGIN_OUTLINE;
+	output.origin.x = SR_READERMODE_MARGIN_OUTLINE / 2;
 	output.size.width -= 2 * SR_READERMODE_MARGIN_OUTLINE;
 	
 	return output;

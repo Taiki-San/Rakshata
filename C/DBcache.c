@@ -632,9 +632,9 @@ MANGAS_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		//On craft la requète en fonctions des arguments
 		char sortRequest[50], requestString[200];
 		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
-			strcpy(sortRequest, DBNAMETOID(RDB_mangaName));
+			strncpy(sortRequest, DBNAMETOID(RDB_mangaName), 50);
 		else
-			strcpy(sortRequest, DBNAMETOID(RDB_team));
+			strncpy(sortRequest, DBNAMETOID(RDB_team), 50);
 		
 		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
@@ -737,6 +737,7 @@ bool addRepoToDB(TEAMS_DATA newTeam)
 {
 	uint nbTeam;
 	TEAMS_DATA **oldData = getCopyKnownTeams(&nbTeam), **newData = NULL, *newEntry = NULL;
+	
 	if(oldData == NULL)
 		return false;
 		
@@ -760,6 +761,7 @@ bool addRepoToDB(TEAMS_DATA newTeam)
 	resetUpdateDBCache();
 	
 	free(oldData);
+	free(newData);
 	
 	return true;
 }
@@ -780,7 +782,7 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
 				else	//Memory error, let's get the fuck out of here
 				{
-					for (; *nbTeamToRefresh > 0; free(output[--(*nbTeamToRefresh)]));
+					for (; i > 0; free(output[--i]));
 					free(output);
 					return NULL;
 				}
@@ -840,8 +842,6 @@ void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
 		free(buf);
 		lengthTeam = lengthTeamCopy;
 	}
-	
-	free(teamData);
 }
 
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
