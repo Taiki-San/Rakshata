@@ -224,22 +224,15 @@ void hexToCGFloat(const char *input, uint32_t length, double *output)
 
 void decToHex(const unsigned char *input, size_t length, char *output)
 {
-    int i = 0, j = 0, c = 0, temp = 0;
-    for(; i < length*2;)
-    {
-        c = *input++;
-        temp = c / 0x10;
-        for(j = 0; j < 2; j++)
-        {
-            if(temp <= 0x9)
-                output[i++] = temp + '0';
-            else if (temp <= 0xF)
-                output[i++] = (temp - 0xA) + 'A';
-            else
-                return;
-            temp = c % 0x10;
-        }
-    }
+	char hex[]= "0123456789ABCDEF";
+    
+	for (size_t i = 0; i < length; i++)
+	{
+		output[i * 2 + 0] = hex[input[i] >> 4  ];
+		output[i * 2 + 1] = hex[input[i] & 0x0F];
+	}
+
+	output[length * 2] = '\0';
 }
 
 void MajToMin(char* input)
