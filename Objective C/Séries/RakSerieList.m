@@ -24,6 +24,7 @@
 		{
 			children = [[NSMutableArray alloc] init];
 			dataChild	= NULL;
+			_expanded = YES;
 			_isRecentList = _isDLList = _isMainList = NO;
 			_nbChildren = nbChildren;
 			
@@ -86,6 +87,31 @@
 	return _isMainList;
 }
 
+- (void) setMainListHeight : (CGFloat) height
+{
+	_mainListHeight = height;
+}
+
+- (CGFloat) getHeight
+{
+	if([self isRootItem])
+		return 25;
+	else if([self isMainList] && _mainListHeight)
+		return _mainListHeight;
+	
+	return 0;
+}
+
+- (void) setExpaded : (BOOL) expanded
+{
+	_expanded = expanded;
+}
+
+- (BOOL) isExpanded
+{
+	return _expanded;
+}
+
 - (uint) getNbChildren
 {
 	if([self isRootItem])
@@ -143,6 +169,7 @@
 			[content setIndentationPerLevel:[content indentationPerLevel] / 2];
 			[content setBackgroundColor:[NSColor clearColor]];
 			[content setFocusRingType:NSFocusRingTypeNone];
+			[content setAutoresizesOutlineColumn:NO];
 			
 			//End of setup
 			[content setDelegate:self];
@@ -336,7 +363,6 @@
 	return output;
 }
 
-
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	if(item == NULL)
@@ -350,6 +376,18 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	return item != nil && ![item isRootItem];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item
+{
+	[item setExpaded:YES];
+	return YES;
+}
+
+- (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item
+{
+	[item setExpaded:NO];
+	return YES;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
@@ -369,19 +407,27 @@
 
 - (CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item
 {
+	CGFloat output;
+	
 	if(item == nil)
-		return 0;
-	else if([item isRootItem])
-		return 25;
+		output = 0;
 
-	else if([item isMainList])
+	else if((output = [item getHeight]) == 0)
 	{
-		CGFloat output = content.frame.size.height - (_nbElemReadDisplayed != 0) * 25 - _nbElemReadDisplayed * 20 - (_nbElemDLDisplayed != 0) * 25 - _nbElemDLDisplayed * 20 - 25 - 5;
-		return output;
+		if([item isMainList])
+		{
+			CGFloat p = [outlineView intercellSpacing].height;	//Padding
+			
+			output = content.frame.size.height - (_nbElemReadDisplayed != 0) * (25 + p) - _nbElemReadDisplayed * ([outlineView rowHeight] + p) - (_nbElemDLDisplayed != 0) * (25 + p) - _nbElemDLDisplayed * ([outlineView rowHeight] + p) - (25 + p) - p;
+			
+			[item setMainListHeight:output];
+		}
+		
+		else
+			output = [outlineView rowHeight];
 	}
 	
-	else
-		return [outlineView rowHeight];
+	return output;
 }
 
 ///			Manipulation we view added/removed
@@ -457,9 +503,62 @@
 	return frame;
 }
 
-- (void) outlineViewItemWillCollapse:(NSNotification *)notification
+#pragma mark - Notifications
+
+- (void)outlineViewItemDidExpand:(NSNotification *)notification
 {
-	[content reloadData];
+    if (notification.object == content)
+	{
+		[self updateMainListSizePadding];
+	}
+}
+
+- (void)outlineViewItemDidCollapse:(NSNotification *)notification
+{
+    if (notification.object == content)
+	{
+		[self updateMainListSizePadding];
+	}
+}
+
+- (void) updateMainListSizePadding
+{
+	BOOL currentPortionExpanded = NO;
+	RakSerieListItem *mainList = nil, *item;
+	NSInteger height = 0, positionMainList = -1, nbRow = [content numberOfRows];
+	CGFloat rowHeight = [content rowHeight], padding = [content intercellSpacing].height;
+	
+	for(NSInteger row = 0; row < nbRow; row++)
+	{
+		item = [content itemAtRow:row];
+		
+		if(item == nil)
+			continue;
+		
+		if([item isRootItem])
+		{
+			height += 25 + padding;
+			currentPortionExpanded = [item isExpanded];
+		}
+		
+		else if([item isMainList])
+		{
+			positionMainList = row;
+			mainList = item;
+		}
+		
+		else if(currentPortionExpanded)
+		{
+			height += rowHeight + padding;
+		}
+	}
+	
+	if(mainList != nil)
+	{
+		height = content.frame.size.height - height - padding;		//We got last row height
+		[mainList setMainListHeight:height];
+		[content noteHeightOfRowsWithIndexesChanged:[NSMutableIndexSet indexSetWithIndex:positionMainList]];
+	}
 }
 
 @end

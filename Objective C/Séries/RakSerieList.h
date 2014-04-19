@@ -20,9 +20,12 @@ enum {
 
 @interface RakSerieListItem : NSObject
 {
+	BOOL _expanded;
 	BOOL _isRecentList;
 	BOOL _isDLList;
 	BOOL _isMainList;
+	
+	CGFloat _mainListHeight;
 	
 	BOOL _isRootItem;
 	uint _nbChildren;
@@ -38,6 +41,12 @@ enum {
 - (BOOL) isDLList;
 - (BOOL) isMainList;
 - (BOOL) isRootItem;
+
+- (void) setMainListHeight : (CGFloat) height;
+- (CGFloat) getHeight;
+
+- (void) setExpaded : (BOOL) expanded;
+- (BOOL) isExpanded;
 
 - (uint) getNbChildren;
 
@@ -75,5 +84,7 @@ enum {
 - (NSColor *) getFontColor;
 
 - (NSRect) getMainListFrame : (NSOutlineView*) outlineView;
+
+- (void) updateMainListSizePadding;
 
 @end
