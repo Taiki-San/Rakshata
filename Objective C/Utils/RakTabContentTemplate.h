@@ -22,8 +22,6 @@
 - (void) retainInternalViews;
 - (void) releaseInternalViews;
 
-- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
-
 - (NSColor*) getBackgroundColor;
 
 @end

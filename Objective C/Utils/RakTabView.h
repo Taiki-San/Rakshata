@@ -37,6 +37,10 @@ enum {
 - (NSString *) byebye;
 - (void) noContent;
 
++ (BOOL) broadcastUpdateContext : (id) sender : (MANGAS_DATA) project : (BOOL) isTome : (int) element;
+- (void) contextChanged : (NSNotification*) notification;
+- (void) updateContextNotification : (MANGAS_DATA) project : (BOOL) isTome : (int) element;
+
 - (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView : (byte) context;

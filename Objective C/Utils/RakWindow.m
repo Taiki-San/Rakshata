@@ -12,15 +12,20 @@
 
 @implementation RakWindow
 
-- (BOOL) canBecomeKeyWindow { return YES; }
-- (BOOL) canBecomeMainWindow { return YES; }
-- (BOOL) acceptsFirstResponder { return YES; }
-- (BOOL) becomeFirstResponder { return YES; }
-- (BOOL) resignFirstResponder { return YES; }
+- (BOOL) canBecomeKeyWindow		{ return YES; }
+- (BOOL) canBecomeMainWindow	{ return YES; }
+- (BOOL) acceptsFirstResponder	{ return YES; }
+- (BOOL) becomeFirstResponder	{ return YES; }
+- (BOOL) resignFirstResponder	{ return YES; }
+
+- (BOOL) isFullscreen
+{
+	return ([self styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask;
+}
 
 - (void)sendEvent:(NSEvent *)theEvent
 {
-	if(([self styleMask] & NSFullScreenWindowMask) != NSFullScreenWindowMask)
+	if(![self isFullscreen])
 	{
 		if([theEvent type] == NSLeftMouseDown)
 			[self mouseDown:theEvent];
@@ -52,7 +57,10 @@
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-    NSPoint currentLocation;
+	if([self isFullscreen])
+		return;
+    
+	NSPoint currentLocation;
     NSPoint newOrigin;
 	
     NSRect  screenFrame = [[NSScreen mainScreen] frame];

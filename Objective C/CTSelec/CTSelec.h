@@ -24,6 +24,4 @@
 
 - (NSRect) calculateContentViewSize;
 
-- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index;
-
 @end

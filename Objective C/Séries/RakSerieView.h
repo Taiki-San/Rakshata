@@ -21,6 +21,4 @@
 
 - (NSRect) getMainListFrame;
 
-- (void) gotClickedTransmitData : (uint) rowClicked;
-
 @end

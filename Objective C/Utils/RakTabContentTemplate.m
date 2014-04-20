@@ -68,13 +68,6 @@
 	
 }
 
-#pragma mark - Proxy
-
-- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
-{
-
-}
-
 #pragma mark - Color
 
 - (NSColor*) getBackgroundColor

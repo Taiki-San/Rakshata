@@ -17,6 +17,8 @@
 @interface RakCTProjectImageView : NSImageView
 
 - (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame;
+- (void) updateProject : (NSString *) imageName;
+
 - (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
 
 @end
@@ -31,9 +33,11 @@
 
 - (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
 
 - (NSString *) getContextToGTFO;
+
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+- (void) updateContext : (MANGAS_DATA) newData;
 
 @end
 
@@ -45,5 +49,7 @@
 }
 
 - (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context;
+
+- (void) updateContext : (MANGAS_DATA) data;
 
 @end

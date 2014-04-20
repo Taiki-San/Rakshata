@@ -76,7 +76,7 @@
 	
 	if(result < amountData)
 	{
-		[(RakSerieView*) scrollView.superview gotClickedTransmitData: result];
+		[RakTabView broadcastUpdateContext: scrollView : ((MANGAS_DATA*) data)[result] : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
 	}
 }
 

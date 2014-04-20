@@ -19,24 +19,30 @@
 	NSRect frame = [self createFrameWithSuperView:superView];
 	
 	self = [super initWithFrame:frame];
-
-	[superView addSubview:self];
-	[self release];
-
-	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-	[self setAutoresizesSubviews:NO];
-	[self setNeedsDisplay:YES];
-	[self setWantsLayer:YES];
 	
-	[self.layer setCornerRadius:7.5];
+	if(self != nil)
+	{
 		
-	int mainThread;
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	readerMode = (mainThread & GUI_THREAD_READER) != 0;
-	trackingArea = NULL;
-	
-	[self endOfInitialization];
-	resizeAnimationCount = 0;	//activate animation
+		[superView addSubview:self];
+		[self release];
+		
+		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+		[self setAutoresizesSubviews:NO];
+		[self setNeedsDisplay:YES];
+		[self setWantsLayer:YES];
+		
+		[self.layer setCornerRadius:7.5];
+		
+		int mainThread;
+		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+		readerMode = (mainThread & GUI_THREAD_READER) != 0;
+		trackingArea = NULL;
+		
+		[self endOfInitialization];
+		resizeAnimationCount = 0;	//activate animation
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
+	}
 		
 	return self;
 }
@@ -52,7 +58,73 @@
 	return [NSString stringWithFormat:STATE_EMPTY];
 }
 
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
+}
+
 - (void) noContent
+{
+	
+}
+
+#pragma mark - Notification code
+
++ (BOOL) broadcastUpdateContext : (id) sender : (MANGAS_DATA) project : (BOOL) isTome : (int) element
+{
+	//We'll recover the main view by hicking the view hierarchy
+	
+	while (sender != nil && [sender superclass] != [RakTabView class])
+		sender = [sender superview];
+	
+	if(sender == nil)
+		return NO;
+	
+	//Ladies and gentlemen, your eyes are about to burn
+	
+	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[[[NSData alloc] initWithBytes:&project length:sizeof(project)] autorelease],
+																	[[NSNumber numberWithBool:isTome] autorelease], [[NSNumber numberWithInt:element] autorelease], nil]
+								forKeys:[NSArray arrayWithObjects:@"project", @"selectionType",@"selection",nil]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"RakNotificationContextUpdated" object:sender userInfo:userInfo];
+	
+	return YES;
+}
+
+- (void) contextChanged : (NSNotification*) notification
+{
+	if ([[notification object] class] != [self class])
+	{
+		NSDictionary *userInfo = [notification userInfo];
+		
+		id tmp;
+		MANGAS_DATA project;
+		BOOL isTome;
+		int element;
+		
+		tmp = [userInfo objectForKey:@"project"];
+		if(tmp != nil)
+			[tmp getBytes:&project length:sizeof(project)];
+		else
+			memset(&project, 0, sizeof(project));
+		
+		tmp = [userInfo objectForKey:@"selectionType"];
+		if (tmp != nil)
+			isTome = [tmp boolValue];
+		else
+			isTome = NO;
+		
+		tmp = [userInfo objectForKey:@"selection"];
+		if (tmp != nil)
+			element = [tmp intValue];
+		else
+			element = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		
+		[self updateContextNotification:project :isTome :element];
+	}
+}
+
+- (void) updateContextNotification : (MANGAS_DATA) project : (BOOL) isTome : (int) element
 {
 	
 }

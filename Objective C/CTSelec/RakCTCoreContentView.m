@@ -70,7 +70,7 @@
 	return data != NULL;
 }
 
-- (bool) reloadData : (int) nbElem : (void *) newData
+- (bool) reloadData : (int) nbElem : (void *) newData : (BOOL) resetScroller
 {
 	void * newDataBuf = NULL;
 	
@@ -97,6 +97,12 @@
 		
 	free(data);
 	data = newDataBuf;
+	amountData = nbElem;
+	
+	if(resetScroller)
+		[_tableView scrollRowToVisible:0];
+	
+	[_tableView reloadData];
 	
 	return true;
 }

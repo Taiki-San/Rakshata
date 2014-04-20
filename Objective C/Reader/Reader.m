@@ -382,6 +382,15 @@
 
 #pragma mark - Proxy work
 
+- (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
+{
+	if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	{
+		[self mouseDown:NULL];
+		[self startReading : project : element : isTome : -1];
+	}
+}
+
 - (void) prevPage
 {
 	[mainImage prevPage];

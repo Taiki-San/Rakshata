@@ -218,7 +218,6 @@
 {
 	NSRect frame = [self frame];
 
-	//frame.origin.y = bordure + size, 2*bordure + size = 2*y - size
 	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 	frame.origin.y = CT_READERMODE_BOTTOMBAR_WIDTH;
@@ -251,31 +250,14 @@
 
 #pragma mark - Communication with other tabs
 
-- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
+- (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
 {
-	int i = 0;
-	NSArray * superViewSubviews = self.superview.subviews;
-	for (; i < [superViewSubviews count] && [[superViewSubviews objectAtIndex:i] class] != [Reader class]; i++);
-	
-	if(i == [superViewSubviews count])
+	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE && project.team != NULL)
 	{
-		NSLog(@"Couldn't find the reader tab Oo");
-		return;
+		[coreView updateContext:project];
+		if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 	}
-	
-	Reader * readerTab = [superViewSubviews objectAtIndex:i];
-	
-	int ID;
-	
-	if(isTome && index < data.nombreTomes)
-		ID = data.tomes[index].ID;
-	else if(!isTome && index < data.nombreChapitre)
-		ID = data.chapitres[index];
-	else
-		return;
-	
-	[readerTab mouseUp:NULL];
-	[readerTab startReading:data : ID : isTome : -1];
 }
 
 @end

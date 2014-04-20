@@ -22,7 +22,7 @@
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName:@"defaultCTBackground" :[self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithUTF8String:project.mangaName] : [self bounds]];
 		[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -73,11 +73,6 @@
 	[super dealloc];
 }
 
-- (void) gotClickedTransmitData : (MANGAS_DATA) data : (bool) isTome : (uint) index
-{
-	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
-}
-
 #pragma mark - Color
 
 - (NSColor*) getBackgroundColor
@@ -110,6 +105,15 @@
 	return [Prefs getSystemColor:code];
 }
 
+#pragma mark - Proxy
+
+- (void) updateContext : (MANGAS_DATA) data
+{
+	[projectName setStringValue : [[NSString stringWithUTF8String: data.mangaName] stringByReplacingOccurrencesOfString:@"_" withString:@" "]];
+	[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
+	[coreView updateContext:data];
+}
+
 @end
 
 @implementation RakTextProjectName
@@ -126,6 +130,12 @@
 - (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame
 {
 	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
+	
+	if(projectImageBase == nil)
+	{
+		projectImageBase = [RakResPath craftResNameFromContext:@"defaultCTBackground" :NO :YES : 1];
+	}
+	
 	if(projectImageBase != nil)
 	{
 		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
@@ -155,6 +165,28 @@
 	}
 	
 	return self;
+}
+
+- (void) updateProject : (NSString *) imageName
+{
+	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
+	if(projectImageBase != nil)
+	{
+		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
+		{
+			NSSize imageSize = projectImageBase.size;
+			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
+			
+			imageSize.height *= ratio;
+			imageSize.width *= ratio;
+			
+			[projectImageBase setSize:imageSize];
+		}
+		
+		NSImage *old = [self image];
+		[self setImage:projectImageBase];
+		[old release];
+	}
 }
 
 - (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize
@@ -280,11 +312,6 @@
 		[tableViewControllerVolume setHidden:!isTome];
 }
 
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index
-{
-	[(RakChapterView *) self.superview gotClickedTransmitData: data : isTome : index];
-}
-
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:[self getSizeOfCoreView:frameRect]];
@@ -293,10 +320,10 @@
 	if(updateIfRequired(&data, RDB_CTXCT))
 	{
 		checkChapitreValable(&data, NULL);
-		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres];
+		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
 		
 		checkTomeValable(&data, NULL);
-		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes];
+		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
 	}
 	
 	[tableViewControllerChapter setFrame:[self bounds]];
@@ -350,6 +377,40 @@
 	frame.size.height -= CT_READERMODE_HEIGHT_HEADER_TAB;
 	
 	return frame;
+}
+
+#pragma mark - Proxy
+
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index
+{
+	int ID;
+	
+	if(isTome && index < data.nombreTomes)
+		ID = data.tomes[index].ID;
+	else if(!isTome && index < data.nombreChapitre)
+		ID = data.chapitres[index];
+	else
+		return;
+	
+	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
+}
+
+- (void) updateContext : (MANGAS_DATA) newData
+{
+	//Some danger of TOCTOU around here, some mutexes would be great
+	
+	if(!memcmp(&newData, &data, sizeof(data)))
+		return;
+	else
+		memcpy(&data, &newData, sizeof(data));
+	
+	updateIfRequired(&data, RDB_CTXCT);
+	
+	checkChapitreValable(&data, NULL);
+	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : YES];
+	
+	checkTomeValable(&data, NULL);
+	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : YES];
 }
 
 @end

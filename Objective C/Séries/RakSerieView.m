@@ -108,11 +108,4 @@
 	return output;
 }
 
-#pragma mark - Data transmission
-
-- (void) gotClickedTransmitData : (uint) rowClicked
-{
-	
-}
-
 @end

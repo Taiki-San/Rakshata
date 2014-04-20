@@ -16,6 +16,7 @@
 	NSPoint initialLocation;
 }
 
+- (BOOL) isFullscreen;
 - (void) stopDrag;
 
 @end
