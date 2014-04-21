@@ -113,6 +113,9 @@
 
 - (void) updateJumpTable
 {
+	if(amountData == 0)
+		return;
+	
 	if(_jumpToInstalled != NULL)
 		free(_jumpToInstalled);
 	
@@ -124,6 +127,12 @@
 	{
 		if(_installed[positionInstalled])
 			rawJumpTable[positionRawTable++] = positionInstalled;
+	}
+	
+	if (positionRawTable == 0)	//nothing installed
+	{
+		_jumpToInstalled = NULL;
+		_nbElemInstalled = 0;
 	}
 	
 	uint * newJumpTable = malloc(positionRawTable * sizeof(uint));

@@ -37,7 +37,6 @@ enum {
 }
 
 - (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
-- (void) restoreState : (NSString *) state;
 
 - (BOOL) isRecentList;
 - (BOOL) isDLList;

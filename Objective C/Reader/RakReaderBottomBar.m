@@ -105,15 +105,15 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton initForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement:1] :YES :self :@selector(buttonHitten)];
-	fullscreen = [RakButton initForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXElement:2] :YES :superview :@selector(triggerFullscreen)];
+	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement:1] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton allocForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXElement:2] :YES :superview :@selector(triggerFullscreen)];
 	
-	prevChapter = [RakButton initForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement:3] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton initForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement:4] :NO :superview :@selector(prevPage)];
-	nextPage = [RakButton initForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement:5] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton initForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement:6] :YES :superview :@selector(nextChapter)];
+	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement:3] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton allocForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement:4] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement:5] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement:6] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton initForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement:7] :NO :superView :@selector(deleteElement)];
+	trash = [RakButton allocForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement:7] :NO :superView :@selector(deleteElement)];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton

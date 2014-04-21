@@ -247,7 +247,7 @@
 	return YES;
 }
 
-- (NSView *) createDragView
+- (NSView *) newDragView
 {
 	NSView * view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 300, 100)];
 	
@@ -265,7 +265,7 @@
 								 searchOptions:nil
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
-		 NSView * view = [self createDragView];
+		 NSView * view = [self newDragView];
 		 [draggingItem setDraggingFrame:NSMakeRect(0, 0, view.frame.size.width, view.frame.size.height)
 							   contents:view];
 	 }];

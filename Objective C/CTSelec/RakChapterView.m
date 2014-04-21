@@ -203,9 +203,7 @@
 			[projectImageBase setSize:imageSize];
 		}
 		
-		NSImage *old = [self image];
 		[self setImage:projectImageBase];
-		[old release];
 	}
 }
 

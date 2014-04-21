@@ -42,7 +42,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
 	[Prefs initCache];
-	NSArray *context = [RakContextRestoration initContext];
+	NSArray *context = [RakContextRestoration newContext];
 	
 	[tabSerie init:contentView : [context objectAtIndex:0]];
 	[tabCT init:contentView : [context objectAtIndex:1]];
