@@ -149,6 +149,14 @@
 	return nil;
 }
 
+- (MANGAS_DATA*) getRawDataChild
+{
+	if (_isRootItem || _isMainList)
+		return NULL;
+	else
+		return dataChild;
+}
+
 - (NSString*) getData
 {
 	if(_isRootItem && dataRoot != NULL)
@@ -411,7 +419,20 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
-	return item != nil && ![item isRootItem];
+	if(item == nil || [item isRootItem] || [item isMainList])
+		return NO;
+	
+	MANGAS_DATA *tmp = [item getRawDataChild];
+	
+	if(tmp == NULL)
+		return NO;
+	
+	MANGAS_DATA dataToSend = *tmp;
+	changeTo(dataToSend.mangaName, ' ', '_');
+	
+	[RakTabView broadcastUpdateContext: content : dataToSend : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
+	
+	return YES;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item

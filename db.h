@@ -66,7 +66,7 @@ void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
 void freeMangaData(MANGAS_DATA* mangaDB);
 
 //Searches
-MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context);
+MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context, bool installed);
 bool * getInstalledFromData(MANGAS_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
 

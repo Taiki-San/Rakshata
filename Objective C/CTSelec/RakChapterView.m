@@ -20,13 +20,13 @@
 		[self setupInternal];
 		
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
-		[self addSubview:projectName];
+		if(projectName != nil)	[self addSubview:projectName];
 		
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithUTF8String:project.mangaName] : [self bounds]];
-		[self addSubview:projectImage];
+		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
-		[self addSubview:coreView];
+		if(coreView != nil)		[self addSubview:coreView];
     }
     return self;
 }
@@ -109,9 +109,29 @@
 
 - (void) updateContext : (MANGAS_DATA) data
 {
-	[projectName setStringValue : [[NSString stringWithUTF8String: data.mangaName] stringByReplacingOccurrencesOfString:@"_" withString:@" "]];
-	[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
-	[coreView updateContext:data];
+	if(projectName != nil)
+		[projectName setStringValue : [[NSString stringWithUTF8String: data.mangaName] stringByReplacingOccurrencesOfString:@"_" withString:@" "]];
+	else
+	{
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:data.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		if(projectName != nil)		[self addSubview:projectName];
+	}
+
+	if(projectImage != nil)
+		[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
+	else
+	{
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithUTF8String:data.mangaName] : [self bounds]];
+		if(projectImage != nil)		[self addSubview:projectImage];
+	}
+	
+	if(coreView != nil)
+		[coreView updateContext:data];
+	else
+	{
+		coreView = [[RakCTContentTabView alloc] initWithProject : data : false : [self bounds] : (long [4]) {-1, -1, -1, -1}];
+		if(coreView != nil)			[self addSubview:coreView];
+	}
 }
 
 @end
@@ -298,20 +318,6 @@
 	return self;
 }
 
-- (void) switchIsTome : (RakCTCoreViewButtons*) sender
-{
-	bool isTome;
-	if ([sender selectedSegment] == 0)
-		isTome = false;
-	else
-		isTome = true;
-	
-	if(tableViewControllerChapter != nil)
-		[tableViewControllerChapter setHidden:isTome];
-	if(tableViewControllerVolume != nil)
-		[tableViewControllerVolume setHidden:!isTome];
-}
-
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:[self getSizeOfCoreView:frameRect]];
@@ -395,6 +401,20 @@
 	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
 }
 
+- (void) switchIsTome : (RakCTCoreViewButtons*) sender
+{
+	bool isTome;
+	if ([sender selectedSegment] == 0)
+		isTome = false;
+	else
+		isTome = true;
+	
+	if(tableViewControllerChapter != nil)
+		[tableViewControllerChapter setHidden:isTome];
+	if(tableViewControllerVolume != nil)
+		[tableViewControllerVolume setHidden:!isTome];
+}
+
 - (void) updateContext : (MANGAS_DATA) newData
 {
 	//Some danger of TOCTOU around here, some mutexes would be great
@@ -406,11 +426,65 @@
 	
 	updateIfRequired(&data, RDB_CTXCT);
 	
-	checkChapitreValable(&data, NULL);
-	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : YES];
+	//No data available
+	if(data.nombreChapitre == 0 && data.nombreTomes == 0)
+	{
+		[tableViewControllerChapter setHidden:YES];
+		[tableViewControllerVolume setHidden:YES];
+
+		[self failure];
+	}
 	
-	checkTomeValable(&data, NULL);
-	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : YES];
+	//Update views, create them if required
+	if(data.chapitres != NULL)
+	{
+		checkChapitreValable(&data, NULL);
+		
+		if(tableViewControllerChapter == nil)
+		{
+			tableViewControllerChapter =  [[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain];
+			[tableViewControllerChapter setSuperView:self];
+		}
+		else
+			[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : YES];
+		
+		[buttons setEnabled:YES forSegment:0];
+	}
+	else
+		[buttons setEnabled:NO forSegment:0];
+
+	if(data.tomes != NULL)
+	{
+		checkTomeValable(&data, NULL);
+		
+		if(tableViewControllerVolume == nil)
+		{
+			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain];
+			[tableViewControllerVolume setSuperView:self];
+		}
+		else
+			[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : YES];
+		
+		[buttons setEnabled:YES forSegment:1];
+	}
+	else
+		[buttons setEnabled:NO forSegment:1];
+	
+	//Update focus
+	if([tableViewControllerChapter isHidden] && data.tomes == NULL)
+	{
+		[tableViewControllerChapter setHidden:NO];
+		if(![tableViewControllerVolume isHidden])
+			[tableViewControllerVolume setHidden:YES];
+		[buttons setSelectedSegment:0];
+	}
+	else if([tableViewControllerVolume isHidden] && data.chapitres == NULL)
+	{
+		[tableViewControllerVolume setHidden:NO];
+		if(![tableViewControllerChapter isHidden])
+			[tableViewControllerChapter setHidden:YES];
+		[buttons setSelectedSegment:1];
+	}
 }
 
 @end

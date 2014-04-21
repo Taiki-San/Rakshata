@@ -54,6 +54,7 @@ enum {
 - (void) setChild : (id) child atIndex : (NSInteger) index;
 - (id) getChildAtIndex : (NSInteger) index;
 
+- (MANGAS_DATA*) getRawDataChild;
 - (NSString*) getData;
 
 @end

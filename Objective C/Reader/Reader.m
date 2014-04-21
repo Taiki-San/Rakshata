@@ -68,7 +68,7 @@
 				
 				const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
 	
-				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXLECTEUR);
+				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXLECTEUR, true);
 				
 				if(project == NULL)
 				{

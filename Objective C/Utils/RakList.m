@@ -110,6 +110,11 @@
 		[scrollView setHidden:state];
 }
 
+- (BOOL) isHidden
+{
+	return [scrollView isHidden];
+}
+
 - (void) dealloc
 {
 	[scrollView removeFromSuperview];

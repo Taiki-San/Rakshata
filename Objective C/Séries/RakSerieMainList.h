@@ -13,9 +13,13 @@
 @interface RakSerieMainList : RakList
 {
 	bool* _installed;
+	uint _nbElemInstalled;
+	uint* _jumpToInstalled;
 }
 
 - (id) init : (NSRect) frame;
+
 - (void) reloadData;
+- (void) updateJumpTable;
 
 @end

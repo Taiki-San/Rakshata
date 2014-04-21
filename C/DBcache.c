@@ -926,7 +926,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 
 //Requêtes pour obtenir des données spécifiques
 
-MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context)
+MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context, bool installed)
 {
 	if(IDTeam >= lengthTeam || mangaNameCourt == NULL)
 		return NULL;
@@ -936,7 +936,13 @@ MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint3
 		return NULL;
 	
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL);
+
+	if(installed)
+	{
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL);
+	}
+	else
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_mangaNameShort)" = ?2", -1, &request, NULL);
 	
 	sqlite3_bind_int(request, 1, IDTeam);
 	sqlite3_bind_text(request, 2, mangaNameCourt, -1, SQLITE_STATIC);
@@ -950,13 +956,19 @@ MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint3
 		}
 		else if(context & RDB_CTXMASK)
 			signalProjectRefreshed(output->cacheDBID, (context & RDB_CTXMASK) >> 8);
+		
+		if (sqlite3_step(request) == SQLITE_ROW)
+		{
+			free(output);
+			output = NULL;
+			logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
+		}
 	}
-
-	if (sqlite3_step(request) == SQLITE_ROW)
+	else
 	{
 		free(output);
 		output = NULL;
-		logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
+		logR("[Error]: Request not found, something went wrong when parsing so data :/");
 	}
 	
 	sqlite3_finalize(request);
