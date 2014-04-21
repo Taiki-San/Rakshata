@@ -33,9 +33,11 @@ enum {
 	
 	NSString * dataRoot;
 	MANGAS_DATA * dataChild;
+	
 }
 
 - (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
+- (void) restoreState : (NSString *) state;
 
 - (BOOL) isRecentList;
 - (BOOL) isDLList;
@@ -62,6 +64,8 @@ enum {
 @interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	int initializationStage;
+	BOOL stateSubLists[2];
+	NSInteger stateMainList[2];
 	
 	CGFloat _forcedHeight;
 	
@@ -79,8 +83,11 @@ enum {
 	RakSerieMainList * _mainList;
 }
 
-- (id) init : (NSRect) frame : (BOOL) isRecentDownload;
+- (id) init : (NSRect) frame : (NSString*) state;
+- (void) restoreState : (NSString *) state;
+
 - (RakTreeView *) getContent;
+- (NSString*) getContextToGTFO;
 
 - (void) setFrame: (NSRect) frame;
 - (void) setFrameOrigin : (NSPoint) newOrigin;

@@ -12,19 +12,31 @@
 
 @implementation RakSerieMainList
 
-- (id) init : (NSRect) frame
+- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition
 {
 	self = [super init];
 	
 	if(self != nil)
 	{
+		selectedIndex = -1;
 		_jumpToInstalled = NULL;
 		
 		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &amountData);
 		_installed = getInstalledFromData(data, amountData);
 		[self updateJumpTable];
 		
-		for(uint i = 0; i < amountData; changeTo(((MANGAS_DATA*)data)[i++].mangaName, '_', ' '));
+		for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
+		{
+			if(selectedIndex == -1 && _installed[i])
+			{
+				if (((MANGAS_DATA*)data)[i].cacheDBID == selectedDBID)
+					selectedIndex = positionInInstalled;
+				else
+					positionInInstalled++;
+			}
+			
+			changeTo(((MANGAS_DATA*)data)[i].mangaName, '_', ' ');
+		}
 		
 		if(data == NULL || _installed == NULL)
 		{
@@ -32,7 +44,12 @@
 
 			freeMangaData(data); //Seul _cache peut ne pas être null dans cette branche
 		}
-		[self applyContext:frame :-1 :-1];
+		else
+		{
+		}
+		
+		
+		[self applyContext:frame : selectedIndex : scrollPosition];
 	}
 	return self;
 }
@@ -65,6 +82,11 @@
 		
 		free(tmp);
 	}
+}
+
+- (NSInteger) selectedRow
+{
+	return selectedIndex;
 }
 
 - (BOOL) fontBold
@@ -114,6 +136,23 @@
 	}
 }
 
+- (MANGAS_DATA) getElementAtIndex : (NSInteger) index
+{
+	MANGAS_DATA output;
+	
+	if(index >= 0 && index < amountData)
+	{
+		if (_jumpToInstalled != NULL && index < _nbElemInstalled)
+			index = _jumpToInstalled[index];
+		
+		memcpy(&output, &((MANGAS_DATA*) data)[index], sizeof(output));
+	}
+	else
+		memset(&output, 0, sizeof(output));
+	
+	return output;
+}
+
 #pragma mark - Methods to deal with tableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
@@ -139,43 +178,71 @@
 		return nil;
 }
 
+- (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
+	
+	if (row == selectedIndex)
+	{
+		[element setTextColor:highlight];
+		[element setDrawsBackground:YES];
+	}
+	else
+	{
+		[element setTextColor:normal];
+		[element setDrawsBackground:NO];
+	}
+}
+
+- (void) tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	if (row == -1)
+		return;
+	
+	RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
+	
+	if(element != nil && element.drawsBackground)
+	{
+		[element setTextColor:normal];
+		[element setDrawsBackground:NO];
+	}
+}
+
 #pragma mark - Get result from NSTableView
 
 //Have to subclass because main trick doesn't work there D:
-- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
+- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)rowIndex
 {
 	RakText* element;
-	uint nbRow = [aTableView numberOfRows];
-	for(uint row = 0; row < nbRow; row++)
+	
+	if(selectedIndex != rowIndex)
 	{
-		element = [aTableView viewAtColumn:0 row:row makeIfNecessary:NO];
-		if (element != nil && [element drawsBackground])
+		element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
+		if (element != nil)
 		{
 			[element setTextColor:normal];
 			[element setDrawsBackground:NO];
 		}
 	}
 	
-	element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
+	element = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
     if (element != nil)
     {
 		[element setTextColor: highlight];
 		[element setDrawsBackground:YES];
     }
 	
+	selectedIndex = rowIndex;
+	
 	return YES;
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	uint result = [_tableView selectedRow];
+	MANGAS_DATA dataToSend = [self getElementAtIndex : selectedIndex];
 	
-	if(result < amountData)
+	if(dataToSend.team != NULL)
 	{
-		if (_jumpToInstalled != NULL && result < _nbElemInstalled)
-			result = _jumpToInstalled[result];
-		
-		MANGAS_DATA dataToSend = ((MANGAS_DATA*) data)[result];
 		changeTo(dataToSend.mangaName, ' ', '_');
 		
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];

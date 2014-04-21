@@ -12,7 +12,7 @@
 
 @implementation RakSerieView
 
-- (id)initContent:(NSRect)frame : (long [4]) context
+- (id)initContent:(NSRect)frame : (NSString *) state
 {
     self = [super initWithFrame:frame];
     if (self)
@@ -22,7 +22,7 @@
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
 		
-		mainList = [[RakSerieList alloc] init : [self getMainListFrame] : NO];
+		mainList = [[RakSerieList alloc] init : [self getMainListFrame] : state];
 
 		if(mainList != nil)
 			[self addSubview:[mainList getContent]];
@@ -47,6 +47,11 @@
 {
 	[headerText release];
 	[mainList release];
+}
+
+- (NSString *) getContextToGTFO
+{
+	return [mainList getContextToGTFO];
 }
 
 - (void) dealloc

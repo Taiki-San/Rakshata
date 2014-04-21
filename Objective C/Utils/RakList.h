@@ -41,6 +41,7 @@
 
 - (NSInteger) getSelectedElement;
 - (float) getSliderPos;
+- (NSInteger) selectedRow;
 
 - (NSColor *) getTextColor;
 - (NSColor *) getTextHighlightColor;

@@ -17,7 +17,7 @@
 	RakSerieList * mainList;
 }
 
-- (id)initContent:(NSRect)frame : (long [4]) context;
+- (id)initContent:(NSRect)frame : (NSString *) state;
 
 - (NSRect) getMainListFrame;
 

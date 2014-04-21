@@ -171,7 +171,7 @@
 
 @implementation RakSerieList
 
-- (id) init : (NSRect) frame : (BOOL) isRecentDownload
+- (id) init : (NSRect) frame : (NSString*) state
 {
 	self = [super init];
 	
@@ -179,6 +179,7 @@
 	{
 		initializationStage = INIT_FIRST_STAGE;
 		[self loadContent];
+		[self restoreState:state];
 		
 		if(_data != nil)
 		{
@@ -201,11 +202,17 @@
 			[column release];
 			
 			//We need some tweaks to be sure everything is properly deployed
+			[content expandItem:nil expandChildren:YES];
+			
+			if(rootItems[0] != nil && !stateSubLists[0])
+					[content collapseItem:rootItems[0]];
+			
+			if(rootItems[1] != nil && !stateSubLists[1])
+					[content collapseItem:rootItems[1]];
+			
 			if(rootItems[2] != nil)
 				[rootItems[2] resetMainListHeight];
-
-			[content expandItem:nil expandChildren:YES];
-	
+			
 			initializationStage = INIT_OVER;
 		}
 		else
@@ -213,6 +220,74 @@
 	}
 	
 	return self;
+}
+
+- (void) restoreState : (NSString *) state
+{
+	//On va parser le context, ouééé
+	NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+	NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+	
+	stateMainList[0] = -1;	//Selection
+		
+	if([dataState count] == 3 || [dataState count] == 5)
+	{
+		stateSubLists[0] = [[dataState objectAtIndex:0] intValue] != 0;		//Recent read
+		stateSubLists[1] = [[dataState objectAtIndex:1] intValue] != 0;		//Recent DL
+
+		stateMainList[1] = [[dataState objectAtIndex:[dataState count] - 1] intValue];
+		
+		do
+		{
+			if([dataState count] == 5)
+			{
+				uint nbElem, indexTeam;
+				
+				//We first get the index of the team, to perform a search in the DB
+				const TEAMS_DATA **tmpData = getDirectAccessToKnownTeams(&nbElem);
+				
+				if(tmpData == NULL || nbElem == 0)
+					break;
+				
+				const char * URLRepo = [[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding];
+				
+				for (indexTeam = 0; indexTeam < nbElem; indexTeam++)
+				{
+					if(tmpData[indexTeam] != NULL && !strcmp(tmpData[indexTeam]->URL_depot, URLRepo))
+						break;
+				}
+				
+				if(indexTeam == nbElem)
+				{
+					NSLog(@"Couldn't find the repo to restore, abort :/");
+					break;
+				}
+				
+				//We have a valid index, now, let's query the database to get the project
+				
+				const char * mangaNameCourt = [[dataState objectAtIndex:3] cStringUsingEncoding:NSASCIIStringEncoding];
+				
+				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXCT, false);
+				
+				if(project == NULL || project->team == NULL)
+				{
+					free(project);
+					NSLog(@"Couldn't find the project to restore, abort :/");
+					break;
+				}
+				else
+				{
+					stateMainList[0] = project->cacheDBID;
+					free(project);
+				}
+			}
+		} while (0);
+	}
+	else
+	{
+		stateSubLists[0] = stateSubLists[1] = YES;
+		stateMainList[1] = -1;
+	}
 }
 
 - (RakTreeView *) getContent
@@ -343,6 +418,46 @@
 	}
 	
 	return 0;
+}
+
+//On sauvegarde l'état du tab read, du tab DL, l'élem sélectionné et la position du scroller
+- (NSString*) getContextToGTFO
+{
+	BOOL isTabReadOpen = YES, isTabDLOpen = YES;
+	
+	float scrollerPosition = _mainList != nil ? [_mainList getSliderPos] : -1;
+	
+	//We grab superior tabs state
+	for(NSInteger row = 0, nbRow = [content numberOfRows], tabExported = 0; row < nbRow && tabExported != 2; row++)
+	{
+		id item = [content itemAtRow:row];
+		
+		if(item == nil)
+			continue;
+		
+		else if([item isRootItem] && ![item isMainList])
+		{
+			if(tabExported == 0)
+				isTabReadOpen = [item isExpanded];
+			else
+				isTabDLOpen = [item isExpanded];
+			
+			tabExported++;
+		}
+	}
+	//We don't really care if we can't find both tabs, variables were defined with the default value
+	
+	//Great, now, export the state of the main list
+	NSString *currentSelection;
+	MANGAS_DATA data = [_mainList getElementAtIndex:[_mainList selectedRow]];
+	
+	if(data.team != NULL)
+		currentSelection = [NSString stringWithFormat:@"%s\n%s", data.team->URL_depot, data.mangaNameShort];
+	else
+		currentSelection = @"";
+
+	//And, we return everything
+	return [NSString stringWithFormat:@"%d\n%d\n%@\n%.0f", isTabReadOpen ? 1 : 0, isTabDLOpen ? 1 : 0, currentSelection, scrollerPosition];
 }
 
 #pragma mark - Data source to the view
@@ -532,7 +647,7 @@
 		else
 		{
 			if(_mainList == nil)
-				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView]];
+				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView] : stateMainList[0] : stateMainList[1]];
 			
 			rowView = [_mainList getContent];
 		}

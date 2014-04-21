@@ -15,11 +15,14 @@
 	bool* _installed;
 	uint _nbElemInstalled;
 	uint* _jumpToInstalled;
+	
+	NSInteger selectedIndex;
 }
 
-- (id) init : (NSRect) frame;
+- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition;
 
 - (void) reloadData;
 - (void) updateJumpTable;
+- (MANGAS_DATA) getElementAtIndex : (NSInteger) index;
 
 @end

@@ -22,7 +22,6 @@
 	
 	if(self != nil)
 	{
-		
 		[superView addSubview:self];
 		[self release];
 		
@@ -74,6 +73,9 @@
 + (BOOL) broadcastUpdateContext : (id) sender : (MANGAS_DATA) project : (BOOL) isTome : (int) element
 {
 	//We'll recover the main view by hicking the view hierarchy
+	
+	if(project.team == NULL)
+		return NO;
 	
 	while (sender != nil && [sender superclass] != [RakTabView class])
 		sender = [sender superview];
@@ -264,7 +266,7 @@
 	
 	[self resizeReaderCatchArea : readerMode];
 	
-	[self setFrame:[self frame]];	//Redraw with the final context
+	//[self setFrame:[self frame]];	//Redraw with the final context
 }
 
 - (BOOL) isStillCollapsedReaderTab

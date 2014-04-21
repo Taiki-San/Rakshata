@@ -21,12 +21,12 @@
 		prefsUIIsOpen = false;
 		
 		self = [self initView:contentView : state];
-		[self initContent];
+		[self initContent : state];
 	}
     return self;
 }
 
-- (void) initContent
+- (void) initContent : (NSString *) state
 {
 	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
 	preferenceButton = [RakButton initForSeries : self : @"X" : NSMakePoint(SR_PREF_BUTTON_BORDERS, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT) : self : @selector(gogoWindow)];
@@ -36,9 +36,20 @@
 	
 	[self setupBackButton];
 	
-	long tmp[4] = {0, 0, 0, 0};
-	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame] : tmp];
+	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame] : state];
 	[self addSubview:coreView];
+}
+
+- (NSString *) byebye
+{
+	NSString * output;
+	
+	if (coreView == nil || (output = [coreView getContextToGTFO]) == nil)
+		return [super byebye];
+	else
+		[self removeFromSuperview];
+	
+	return output;
 }
 
 - (id) retain

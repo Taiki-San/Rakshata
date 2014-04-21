@@ -370,7 +370,9 @@
 - (void) dealloc
 {
 	[buttons removeFromSuperview];
+	[[tableViewControllerChapter getContent] removeFromSuperviewWithoutNeedingDisplay];
 	[tableViewControllerChapter release];
+	[[tableViewControllerVolume getContent] removeFromSuperviewWithoutNeedingDisplay];
 	[tableViewControllerVolume release];
 	
 	[super dealloc];
@@ -470,15 +472,19 @@
 	else
 		[buttons setEnabled:NO forSegment:1];
 	
+	BOOL isTome = [buttons selectedSegment] == 1;
+	
+	[tableViewControllerChapter setHidden:isTome];
+	[tableViewControllerVolume setHidden:!isTome];
+	
 	//Update focus
-	if([tableViewControllerChapter isHidden] && data.tomes == NULL)
+	if(isTome && data.tomes == NULL)
 	{
 		[tableViewControllerChapter setHidden:NO];
-		if(![tableViewControllerVolume isHidden])
-			[tableViewControllerVolume setHidden:YES];
+		[tableViewControllerVolume setHidden:YES];
 		[buttons setSelectedSegment:0];
 	}
-	else if([tableViewControllerVolume isHidden] && data.chapitres == NULL)
+	else if(!isTome && data.chapitres == NULL)
 	{
 		[tableViewControllerVolume setHidden:NO];
 		if(![tableViewControllerChapter isHidden])

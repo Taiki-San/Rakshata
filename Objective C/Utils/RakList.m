@@ -152,6 +152,11 @@
 	return -1;
 }
 
+- (NSInteger) selectedRow
+{
+	return [_tableView selectedRow];
+}
+
 #pragma mark - Colors
 
 - (NSColor *) getTextColor
