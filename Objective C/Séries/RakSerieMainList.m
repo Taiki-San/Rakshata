@@ -44,10 +44,6 @@
 
 			freeMangaData(data); //Seul _cache peut ne pas être null dans cette branche
 		}
-		else
-		{
-		}
-		
 		
 		[self applyContext:frame : selectedIndex : scrollPosition];
 	}
@@ -98,17 +94,25 @@
 
 - (void) reloadData
 {
+	BOOL newData = NO;
+	
 	for(uint pos = 0; pos < amountData; pos++)
 	{
 		if(updateIfRequired(&((MANGAS_DATA*) data)[pos], RDB_CTXSERIES))
 		{
 			_installed[pos] = isProjectInstalledInCache(((MANGAS_DATA*)data)[pos].cacheDBID);
 			changeTo(((MANGAS_DATA*)data)[pos].mangaName, '_', ' ');
+			newData = YES;
 		}
 	}
 	
-	if(_jumpToInstalled != NULL)
-		[self updateJumpTable];
+	if(newData)
+	{
+		if(_jumpToInstalled != NULL)
+			[self updateJumpTable];
+
+		[_tableView reloadData];
+	}
 }
 
 - (void) updateJumpTable

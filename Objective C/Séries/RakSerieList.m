@@ -230,6 +230,14 @@
 	}
 }
 
+- (void) reloadMainList
+{
+	id view = [_mainList getContent];
+	
+	if([view class] == [RakSerieMainList class])
+		[(RakSerieMainList*) view reloadData];
+}
+
 - (void) goToNextInitStage
 {
 	initializationStage++;
