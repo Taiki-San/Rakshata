@@ -10,51 +10,44 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum {
-	INIT_FIRST_STAGE	= 1,		//Nothing initialized
-	INIT_SECOND_STAGE	= 2,		//First panel initialized
-	INIT_THIRD_STAGE	= 3,		//Second panel initialized
-	INIT_FINAL_STAGE	= 4,		//Main list initialized
-	INIT_OVER			= 5
-};
-
-#import "RakSerieListItem.h"
-
-@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface RakSerieListItem : NSObject
 {
-	int initializationStage;
-	BOOL stateSubLists[2];
-	NSInteger stateMainList[2];
+	BOOL _expanded;
+	BOOL _isRecentList;
+	BOOL _isDLList;
+	BOOL _isMainList;
 	
-	CGFloat _forcedHeight;
+	CGFloat _mainListHeight;
 	
-	uint _sizeCache;
-	MANGAS_DATA * _cache;
+	BOOL _isRootItem;
+	uint _nbChildren;
+	NSMutableArray * children;
 	
-	uint8_t _nbElemReadDisplayed;
-	uint8_t _nbElemDLDisplayed;
-	NSPointerArray * _data;
+	NSString * dataRoot;
+	MANGAS_DATA * dataChild;
 	
-	RakSerieListItem* rootItems[3];
-	
-	RakTreeView * content;
-	RakTableColumn * column;
-	RakSerieMainList * _mainList;
 }
 
-- (id) init : (NSRect) frame : (NSString*) state;
-- (void) restoreState : (NSString *) state;
+- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
 
-- (RakTreeView *) getContent;
-- (NSString*) getContextToGTFO;
+- (BOOL) isRecentList;
+- (BOOL) isDLList;
+- (BOOL) isMainList;
+- (BOOL) isRootItem;
 
-- (void) setFrame: (NSRect) frame;
-- (void) setFrameOrigin : (NSPoint) newOrigin;
+- (void) setMainListHeight : (CGFloat) height;
+- (void) resetMainListHeight;
+- (CGFloat) getHeight;
 
-- (NSColor *) getFontColor;
+- (void) setExpaded : (BOOL) expanded;
+- (BOOL) isExpanded;
 
-- (NSRect) getMainListFrame : (NSOutlineView*) outlineView;
+- (uint) getNbChildren;
 
-- (void) updateMainListSizePadding;
+- (void) setChild : (id) child atIndex : (NSInteger) index;
+- (id) getChildAtIndex : (NSInteger) index;
+
+- (MANGAS_DATA*) getRawDataChild;
+- (NSString*) getData;
 
 @end
