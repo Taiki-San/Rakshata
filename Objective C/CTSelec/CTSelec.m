@@ -254,6 +254,8 @@
 {
 	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE && project.team != NULL)
 	{
+		//We retract the panel first
+		
 		[coreView updateContext:project];
 		if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];

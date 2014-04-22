@@ -442,7 +442,7 @@
 		
 		if(tableViewControllerChapter == nil)
 		{
-			tableViewControllerChapter =  [[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain];
+			tableViewControllerChapter =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain] retain];	//Two retains because we, as a subview, will get released at the end of the refresh
 			[tableViewControllerChapter setSuperView:self];
 		}
 		else
@@ -459,7 +459,7 @@
 		
 		if(tableViewControllerVolume == nil)
 		{
-			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain];
+			tableViewControllerVolume =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain] retain];
 			[tableViewControllerVolume setSuperView:self];
 		}
 		else
