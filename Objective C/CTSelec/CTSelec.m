@@ -254,11 +254,66 @@
 {
 	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE && project.team != NULL)
 	{
-		//We retract the panel first
+		NSView * superview = self.superview;
+		Reader *readerTab = nil;
+		MDL * MDLTab = nil;
+		id elem;
 		
-		[coreView updateContext:project];
-		if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
-			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+		for(NSInteger i = 0; i < [superview.subviews count]; i++)
+		{
+			if([(elem = [superview.subviews objectAtIndex:i]) class] == [Reader class])
+				readerTab = elem;
+			else if([elem class] == [MDL class])
+			{
+				MDLTab = elem;
+				break;
+			}
+		}
+		
+		if(readerTab != nil)
+		{
+			__block NSRect readerFrame = readerTab.frame, MDLFrame = MDLTab.frame;
+			CGFloat widthCTTab = readerFrame.origin.x - self.frame.origin.x;
+			
+			readerFrame.origin.x -= widthCTTab;
+			readerFrame.size.width += widthCTTab;
+			MDLFrame.size.width -= widthCTTab;
+			
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+				[context setDuration:0.1];
+				
+				[readerTab.animator setFrame:readerFrame];
+				
+				if(MDLTab != nil)
+					[MDLTab.animator setFrame:MDLFrame];
+
+			} completionHandler:^{
+				
+				[coreView updateContext:project];
+				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+				
+				else	//Fuck, we have to cancel the animation...
+				{
+					readerFrame.origin.x += widthCTTab;
+					readerFrame.size.width -= widthCTTab;
+					MDLFrame.size.width += widthCTTab;
+					
+					if(readerTab != nil)
+						[readerTab setFrame:readerFrame];
+					
+					if(MDLTab != nil)
+						[MDLTab setFrame:MDLFrame];
+				}
+			}];
+			
+		}
+		else	//We bypass the fancy animation
+		{
+			[coreView updateContext:project];
+			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+		}
 	}
 }
 
