@@ -12,6 +12,7 @@
 
 #include "db.h"
 
+//Interesting to highjack
 void welcome()
 {
 	
@@ -76,9 +77,3 @@ bool areSameColors(Rak_Color a, Rak_Color b)
 {
     return (a.b == b.b && a.g == b.g && a.r == b.r);
 }
-
-void loadIcon()
-{
-	
-}
-

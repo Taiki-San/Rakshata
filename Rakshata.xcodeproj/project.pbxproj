@@ -80,7 +80,6 @@
 		B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */; };
 		B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC018A3001400E3B55B /* lecteur_tool.c */; };
 		B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC118A3001400E3B55B /* lecteur_ui.c */; };
-		B6F6ED0218A3001400E3B55B /* mainfunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC518A3001400E3B55B /* mainfunctions.c */; };
 		B6F6ED0418A3001400E3B55B /* moduleDL_selec.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */; };
 		B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */; };
 		B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */; };
@@ -236,7 +235,6 @@
 		B6F6ECC118A3001400E3B55B /* lecteur_ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_ui.c; path = C/lecteur_ui.c; sourceTree = "<group>"; };
 		B6F6ECC318A3001400E3B55B /* lecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lecteur.h; path = C/lecteur.h; sourceTree = "<group>"; };
 		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
-		B6F6ECC518A3001400E3B55B /* mainfunctions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mainfunctions.c; path = C/mainfunctions.c; sourceTree = "<group>"; };
 		B6F6ECC618A3001400E3B55B /* MDLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDLCache.h; path = C/MDLCache.h; sourceTree = "<group>"; };
 		B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL_selec.c; path = C/moduleDL_selec.c; sourceTree = "<group>"; };
 		B6F6ECC918A3001400E3B55B /* moduleDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = moduleDL.h; path = C/moduleDL.h; sourceTree = "<group>"; };
@@ -636,7 +634,6 @@
 				B6F6ECB618A3001400E3B55B /* favoris.c */,
 				B6F6ECBA18A3001400E3B55B /* interface.c */,
 				B6F6ECBC18A3001400E3B55B /* keys.c */,
-				B6F6ECC518A3001400E3B55B /* mainfunctions.c */,
 				B6F6ECCF18A3001400E3B55B /* native.c */,
 				B6F6ECD318A3001400E3B55B /* securite.c */,
 				B6F6ECD518A3001400E3B55B /* settings.c */,
@@ -804,7 +801,6 @@
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
 				B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */,
 				B6F6ED0A18A3001400E3B55B /* native.c in Sources */,
-				B6F6ED0218A3001400E3B55B /* mainfunctions.c in Sources */,
 				B62182471873527A008AC5DD /* Prefs.m in Sources */,
 				B6F6ECF518A3001400E3B55B /* engine.c in Sources */,
 				B6F6ED1218A3001400E3B55B /* translation.c in Sources */,

@@ -92,6 +92,7 @@ int libcurlErrorCode(CURLcode code)
             noLog = true;
             break;
         }
+		case CURLE_SSL_CONNECT_ERROR:
         case CURLE_SSL_CACERT_BADFILE:
         {
             snprintf(log_message, 100, "SSL error");
@@ -161,7 +162,7 @@ int emptyLibrary()
         output = ajoutRepo(false);
     }
     else if(ret_value == 2){    //Télécharger manga
-        output = mainChoixDL();
+        output = 0;//mainChoixDL();
     }
     else
         output = 0;

@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-
 /** Ce fichier contient l'interface entre les admins et les utilisateurs**/
 
 void updateSectionMessage(char messageVersion[5])

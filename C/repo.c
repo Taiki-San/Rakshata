@@ -106,6 +106,16 @@ int checkAjoutRepoParFichier(char *argv)
     return addRepoByFileInProgress;
 }
 
+void addRepoByFile()
+{
+    if(addRepoByFileInProgress)
+    {
+        if(ajoutRepo(true) > 0)
+            raffraichissmenent(true);
+    }
+	return;
+}
+
 int ajoutRepo(bool ajoutParFichier)
 {
     int continuer = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;

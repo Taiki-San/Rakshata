@@ -14,7 +14,6 @@
 void welcome();
 void raffraichissmenent(bool forced);
 void loadPalette();
-bool areSameColors(Rak_Color a, Rak_Color b);
 
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);
@@ -120,11 +119,6 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 /**Lecteur.c**/
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 
-/**Mainfunctions.c**/
-void mainRakshata();
-int mainLecture();
-int mainChoixDL();
-
 /**ModuleDL2_tool.c**/
 int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
 void lancementModuleDL();
@@ -151,6 +145,7 @@ int checkDirExist(char *dirname);
 
 /**Repo.c**/
 int checkAjoutRepoParFichier(char *argv);
+void addRepoByFile();
 int ajoutRepo(bool ajoutParFichier);
 int deleteRepo();
 int defineTypeRepo(char *URL);

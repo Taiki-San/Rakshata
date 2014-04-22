@@ -188,8 +188,9 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
                     inject = fopen("data/externalLaunch", "w+");
                     if(inject != NULL)
                         fclose(inject);
-
-                    createNewThread(mainRakshata, NULL);
+#ifdef IDENTIFY_MISSING_UI
+					#warning "Communicate with reader"
+#endif
                 }
                 else
                 {
