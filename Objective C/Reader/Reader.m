@@ -241,6 +241,15 @@
 	[super refreshViewSize];
 }
 
+- (void) resizeAnimation
+{
+	NSRect frame = [self createFrame];
+
+	[self.animator setFrame:frame];
+	[mainImage resizeAnimation:frame];
+	[bottomBar resizeAnimation:frame];
+}
+
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];

@@ -116,7 +116,17 @@
 	}
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self setFrameInternal: frameRect : YES];
+}
+
 - (void) setFrame:(NSRect)frameRect
+{
+	[self setFrameInternal: frameRect : NO];
+}
+
+- (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	if((frameRect.size.width != frameReader.size.width && readerMode) || frameRect.size.height != frameReader.size.height)
 	{
@@ -127,14 +137,17 @@
 			frameRect.origin.y = self.frame.origin.y;
 		}
 		
-		[self initialPositionning:YES:frameRect];
+		[self initialPositionning : !isAnimated : frameRect];
 		self.hasVerticalScroller = pageTooHigh;
 		self.hasHorizontalScroller = pageTooLarge;
 	}
 	else if(!readerMode)
 		return;
 	
-	[super setFrame:frameReader];
+	if(isAnimated)
+		[self.animator setFrame:frameReader];
+	else
+		[super setFrame:frameRect];
 }
 
 - (void) leaveReaderMode

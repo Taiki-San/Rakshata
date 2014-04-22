@@ -40,8 +40,10 @@
 
 - (short) numberIconsInBar;
 - (void) loadIcons : (Reader*) superView;
-- (CGFloat) getPosXElement : (uint) IDButton;
-- (void) recalculateElementsPosition;
+- (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width;
+
+- (void) resizeAnimation : (NSRect) frameRect;
+- (void) recalculateElementsPosition : (BOOL) isAnimated : (CGFloat) newWidth;
 
 - (NSColor*) getColorFront;
 

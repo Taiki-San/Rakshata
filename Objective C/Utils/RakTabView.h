@@ -67,6 +67,7 @@ enum {
 - (NSRect) getFrameOfNextTab;
 - (BOOL) mouseOutOfWindow;
 
+- (void) resizeAnimation;
 - (NSRect) createFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
 - (NSRect) getCurrentFrame;

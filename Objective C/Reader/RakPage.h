@@ -63,6 +63,9 @@
 - (NSString *) getContextToGTFO;
 
 - (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
+- (void) resizeAnimation : (NSRect) frameRect;
+- (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
+
 - (void) leaveReaderMode;
 - (void) startReaderMode;
 

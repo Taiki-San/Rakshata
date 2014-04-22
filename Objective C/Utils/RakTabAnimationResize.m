@@ -46,7 +46,7 @@
 {
 	RakTabView *currentView;
 	NSUInteger i, count = [_views count];
-	haveBasePos = (basePosition != NULL || [basePosition count] != count);
+	haveBasePos = (basePosition != nil && [basePosition count] == count);
 	
 	[NSAnimationContext beginGrouping];
 	
@@ -66,9 +66,9 @@
 			[currentView.animations setValue:animation forKey:@"frame"];
 		}
 		
-		if([currentView respondsToSelector:@selector(createFrame)])
+		if([currentView respondsToSelector:@selector(resizeAnimation)])
 		{
-			[currentView.animator setFrame:[currentView createFrame]];
+			[currentView resizeAnimation];
 			currentView->resizeAnimationCount++;
 		}
 	}

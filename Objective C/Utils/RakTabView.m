@@ -188,6 +188,11 @@
 
 /**			Overwrite methods to resize the main view in order to resize subviews	**/
 
+- (void) resizeAnimation
+{
+	[self.animator setFrame:[self createFrame]];
+}
+
 - (void) setFrameSize:(NSSize)newSize
 {
 	if(!resizeAnimationCount)
@@ -395,6 +400,11 @@
 
 #pragma mark - Graphic Utilities
 /*		Graphic Utilities		*/
+
+- (void) resizeWithAnimation
+{
+	[self.animator setFrame:[self createFrame]];
+}
 
 - (NSRect) createFrame
 {

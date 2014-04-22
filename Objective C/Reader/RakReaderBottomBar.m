@@ -80,7 +80,7 @@
 {
 	if(pageCount == nil)
 	{
-		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement:8] :newCurrentPage :newPageMax];
+		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement : 8 : self.frame.size.width] :newCurrentPage :newPageMax];
 		[self addSubview:pageCount];
 	}
 	else
@@ -105,18 +105,18 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement:1] :YES :self :@selector(buttonHitten)];
-	fullscreen = [RakButton allocForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXElement:2] :YES :superview :@selector(triggerFullscreen)];
+	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(buttonHitten)];
+	fullscreen = [RakButton allocForReader:self :@"Fullscreen" : RB_STATE_STANDARD :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
 	
-	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement:3] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton allocForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement:4] :NO :superview :@selector(prevPage)];
-	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement:5] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement:6] :YES :superview :@selector(nextChapter)];
+	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton allocForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement : 4 : self.frame.size.width] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton allocForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement:7] :NO :superView :@selector(deleteElement)];
+	trash = [RakButton allocForReader:self :@"X": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO :superView :@selector(deleteElement)];
 }
 
-- (CGFloat) getPosXElement : (uint) IDButton
+- (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width
 {
 	CGFloat output = 0;
 	
@@ -135,7 +135,7 @@
 			
 		case 3:			//previous chapter
 		{
-			output = self.frame.size.width / 2 - 40;
+			output = width / 2 - 40;
 			
 			if(prevChapter != nil)
 				output -= prevChapter.frame.size.width;
@@ -145,7 +145,7 @@
 			
 		case 4:			//previous page
 		{
-			output = self.frame.size.width / 2 - 5;
+			output = width / 2 - 5;
 			
 			if(prevPage != nil)
 				output -= prevPage.frame.size.width;
@@ -155,19 +155,19 @@
 			
 		case 5:			//next page
 		{
-			output = self.frame.size.width / 2 + 5;
+			output = width / 2 + 5;
 			break;
 		}
 			
 		case 6:			//next chapter
 		{
-			output = self.frame.size.width / 2 + 40;
+			output = width / 2 + 40;
 			break;
 		}
 			
 		case 7:			//trash
 		{
-			output = self.frame.size.width - 25;
+			output = width - 25;
 			
 			if(trash != nil)
 				output -= trash.frame.size.width;
@@ -179,7 +179,7 @@
 		{
 			//Centered between the next chapter and the trashcan
 			//output = ((self.frame.size.width / 2 + 40 + 20) + (self.frame.size.width - 25)) / 2;
-			output = self.frame.size.width * 3 / 4 + 17.5f;		//Optimized version
+			output = width * 3 / 4 + 17.5f;		//Optimized version
 			break;
 		}
 	}
@@ -187,7 +187,7 @@
 	return output;
 }
 
-- (void) recalculateElementsPosition
+- (void) recalculateElementsPosition : (BOOL) isAnimated : (CGFloat) newWidth
 {
 	RakButton* icons[] = {favorite, fullscreen, prevChapter, prevPage, nextPage, nextChapter, trash};
 	short nbElem = [self numberIconsInBar];
@@ -199,7 +199,7 @@
 		if (icons[pos] == nil)
 			continue;
 		
-		origin.x = [self getPosXElement:pos+1];
+		origin.x = [self getPosXElement : pos+1 : newWidth];
 		
 		if(icons[pos].frame.size.height != lastElemHeight)
 		{
@@ -207,11 +207,15 @@
 			lastElemHeight = icons[pos].frame.size.height;
 		}
 		
-		[icons[pos] setFrameOrigin:origin];
+		if(isAnimated)
+			[icons[pos].animator setFrameOrigin:origin];
+		else
+			[icons[pos] setFrameOrigin:origin];
+
 	}
 	
 	//Repositionate pageCounter
-	[pageCount updateSize:self.frame.size.height : [self getPosXElement:8]];
+	[pageCount updateSize:self.frame.size.height : [self getPosXElement : 8 : newWidth]];
 }
 
 #pragma mark - Color stuffs
@@ -239,7 +243,17 @@
 /*	Routines à overwrite	*/
 #pragma mark - Routine to overwrite
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self setFrameInternal:frameRect :YES];
+}
+
 - (void) setFrame:(NSRect)frameRect
+{
+	[self setFrameInternal:frameRect :NO];
+}
+
+- (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	if(!readerMode)
 	{
@@ -255,10 +269,13 @@
 	else
 		frameRect = [self createFrameWithSuperView:frameRect];
 	
-	[super setFrame:frameRect];
+	if(isAnimated)
+		[self.animator setFrame:frameRect];
+	else
+		[super setFrame:frameRect];
 	
 	if(readerMode)
-		[self recalculateElementsPosition];
+		[self recalculateElementsPosition : isAnimated : frameRect.size.width];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
