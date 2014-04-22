@@ -61,14 +61,3 @@ bool reader_isLastElem(MANGAS_DATA mangaDB, bool isTome, int currentSelection)
 	//Else
 	return currentSelection == mangaDB.chapitres[mangaDB.nombreChapitre-1];
 }
-
-/**	Snapshot system	**/
-
-void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH])
-{
-	if(checkFileExist("data/externalLaunch"))	//Si l'ouverture à été requise par un composant de Rakshata, on affiche pas la notification
-		remove("data/externalLaunch");
-	else
-		afficherMessageRestauration(localization[3], localization[4], localization[5], localization[6]);
-		
-}

@@ -76,10 +76,8 @@
 		B6F6ECF918A3001400E3B55B /* interface.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBA18A3001400E3B55B /* interface.c */; };
 		B6F6ECFB18A3001400E3B55B /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBC18A3001400E3B55B /* keys.c */; };
 		B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */; };
-		B6F6ECFD18A3001400E3B55B /* lecteur_event.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBE18A3001400E3B55B /* lecteur_event.c */; };
 		B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */; };
 		B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC018A3001400E3B55B /* lecteur_tool.c */; };
-		B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC118A3001400E3B55B /* lecteur_ui.c */; };
 		B6F6ED0418A3001400E3B55B /* moduleDL_selec.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */; };
 		B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */; };
 		B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */; };
@@ -229,10 +227,8 @@
 		B6F6ECBA18A3001400E3B55B /* interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interface.c; path = C/interface.c; sourceTree = "<group>"; };
 		B6F6ECBC18A3001400E3B55B /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/keys.c; sourceTree = "<group>"; };
 		B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_check_newElems.c; path = C/lecteur_check_newElems.c; sourceTree = "<group>"; };
-		B6F6ECBE18A3001400E3B55B /* lecteur_event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_event.c; path = C/lecteur_event.c; sourceTree = "<group>"; };
 		B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_loading.c; path = C/lecteur_loading.c; sourceTree = "<group>"; };
 		B6F6ECC018A3001400E3B55B /* lecteur_tool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_tool.c; path = C/lecteur_tool.c; sourceTree = "<group>"; };
-		B6F6ECC118A3001400E3B55B /* lecteur_ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_ui.c; path = C/lecteur_ui.c; sourceTree = "<group>"; };
 		B6F6ECC318A3001400E3B55B /* lecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lecteur.h; path = C/lecteur.h; sourceTree = "<group>"; };
 		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
 		B6F6ECC618A3001400E3B55B /* MDLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDLCache.h; path = C/MDLCache.h; sourceTree = "<group>"; };
@@ -533,10 +529,8 @@
 			isa = PBXGroup;
 			children = (
 				B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */,
-				B6F6ECBE18A3001400E3B55B /* lecteur_event.c */,
 				B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */,
 				B6F6ECC018A3001400E3B55B /* lecteur_tool.c */,
-				B6F6ECC118A3001400E3B55B /* lecteur_ui.c */,
 			);
 			name = "Lecteur Core";
 			sourceTree = "<group>";
@@ -811,11 +805,9 @@
 				B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */,
 				B678674E18F5ED4A004AA6B4 /* RakMenuText.m in Sources */,
 				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
-				B6F6ED0018A3001400E3B55B /* lecteur_ui.c in Sources */,
 				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
-				B6F6ECFD18A3001400E3B55B /* lecteur_event.c in Sources */,
 				B6F6ED0F18A3001400E3B55B /* settings.c in Sources */,
 				B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */,
 				B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */,

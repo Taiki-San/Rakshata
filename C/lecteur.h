@@ -53,11 +53,6 @@ bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc);
 /**	lecteur_tool.c	**/
 int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, bool isTome);
 bool reader_isLastElem(MANGAS_DATA mangaDB, bool isTome, int currentSelection);
-void reader_notifyUserRestore(char localization[SIZE_TRAD_ID_21][TRAD_LENGTH]);
-
-/**	lecteur_ui.c	**/
-void generateMessageInfoLecteurChar(MANGAS_DATA mangaDB, DATA_LECTURE dataReader, char localization[SIZE_TRAD_ID_21][TRAD_LENGTH], bool isTome, int fullscreen, int curPosIntoStruct, char* output, int sizeOut);
-void afficherMessageRestauration(char* title, char* content, char* noMoreDisplay, char* okString);
 
 
 /*Mouvements*/
