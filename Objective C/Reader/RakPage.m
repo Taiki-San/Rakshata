@@ -147,7 +147,7 @@
 	if(isAnimated)
 		[self.animator setFrame:frameReader];
 	else
-		[super setFrame:frameRect];
+		[super setFrame:frameReader];
 }
 
 - (void) leaveReaderMode

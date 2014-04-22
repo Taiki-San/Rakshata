@@ -71,9 +71,8 @@
     newOrigin.y = currentLocation.y - initialLocation.y;
 	
     // Don't let window get dragged up under the menu bar
-    if( (newOrigin.y+windowFrame.size.height) > (screenFrame.origin.y+screenFrame.size.height) ){
-        newOrigin.y=screenFrame.origin.y + (screenFrame.size.height-windowFrame.size.height);
-    }
+	if( (newOrigin.y+windowFrame.size.height) > (screenFrame.origin.y+screenFrame.size.height) )
+        newOrigin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height);
 	
     //go ahead and move the window to the new location
     [self setFrameOrigin:newOrigin];

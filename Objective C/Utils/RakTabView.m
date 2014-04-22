@@ -166,10 +166,9 @@
 	NSArray *subView = [superView subviews];
 	
 	//Variable to set up the animation
-	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: subView];
+	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: subView] autorelease];
 	[animation setUpViews];
 	[animation performTo];
-	[animation release];
 }
 
 - (void) setFrame:(NSRect)frameRect
@@ -381,7 +380,7 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if(![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
+	if(![(RakWindow*) self.window isFullscreen] && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			if(readerMode && [self mouseOutOfWindow])
