@@ -67,7 +67,7 @@ bool checkRecentDBValid(sqlite3 * DB)
 
 //Insert data
 
-bool addEntry(MANGAS_DATA data, bool wasItADL)
+bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 {
 	time_t timestamp = time(NULL);
 	

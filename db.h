@@ -86,7 +86,7 @@ int databaseVersion(char* mangaDB);
 sqlite3* getPtrRecentDB();
 bool checkRecentDBValid(sqlite3 * DB);
 
-bool addEntry(MANGAS_DATA data, bool wasItADL);
+bool addRecentEntry(MANGAS_DATA data, bool wasItADL);
 MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 
 
