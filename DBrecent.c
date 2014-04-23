@@ -133,6 +133,25 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 	return output;
 }
 
+void removeRecentEntry(MANGAS_DATA data)
+{
+	sqlite3 *database = getPtrRecentDB();
+	if(database == NULL)
+		return;
+	
+	sqlite3_stmt * request = NULL;
+	if(sqlite3_prepare_v2(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_mangaNameShort)" = ?2", -1, &request, NULL) == SQLITE_OK)
+	{
+		sqlite3_bind_text(request, 1, data.team->URL_depot, -1, SQLITE_STATIC);
+		sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
+		
+		sqlite3_step(request);
+	}
+	
+	sqlite3_finalize(request);
+	sqlite3_close(database);
+}
+
 MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 {
 	if(nbElem != NULL)
@@ -155,7 +174,7 @@ MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	char requestString[96];
 	int code = wantDL ? RDB_REC_lastDL : RDB_REC_lastRead;
 	
-	snprintf(requestString, sizeof(requestString), "SELECT * FROM `RakHL3IsALie` WHERE `%d` > 0 ORDER BY `%d` ASC", code, code);
+	snprintf(requestString, sizeof(requestString), "SELECT * FROM RakHL3IsALie WHERE `%d` > 0 ORDER BY `%d` ASC", code, code);
 	
 	if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
 	{

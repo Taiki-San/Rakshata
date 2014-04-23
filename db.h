@@ -87,6 +87,7 @@ sqlite3* getPtrRecentDB();
 bool checkRecentDBValid(sqlite3 * DB);
 
 bool addRecentEntry(MANGAS_DATA data, bool wasItADL);
+void removeRecentEntry(MANGAS_DATA data);
 MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 
 
