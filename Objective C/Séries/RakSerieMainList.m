@@ -188,12 +188,13 @@
 
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
+	RakText * element = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
 	
 	if (row == selectedIndex)
 	{
 		[element setTextColor:highlight];
 		[element setDrawsBackground:YES];
+		return;
 	}
 	else
 	{
@@ -223,7 +224,7 @@
 {
 	RakText* element;
 	
-	if(selectedIndex != rowIndex)
+	if(selectedIndex != -1 && selectedIndex != rowIndex)
 	{
 		element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
 		if (element != nil)
