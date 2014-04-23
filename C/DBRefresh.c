@@ -268,8 +268,6 @@ void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre)
         fprintf(fichier, "%d %d %d", i, j, dernierChapitre);
         fclose(fichier);
     }
-	
-	addRecentEntry(mangasDB, false);
 }
 
 int databaseVersion(char* mangaDB)

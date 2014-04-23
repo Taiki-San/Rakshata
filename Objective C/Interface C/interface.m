@@ -29,3 +29,14 @@ void sendToLog(char * string)
 {
 	NSLog(@"%s", string);
 }
+
+/*****************************************
+**										**
+**				  Series				**
+**										**
+*****************************************/
+
+void updateRecentSeries()
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakSeriesNeedUpdateContent" object:nil userInfo: @{@"request": [NSNumber numberWithInt:RELOAD_RECENT]}];
+}

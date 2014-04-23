@@ -18,6 +18,12 @@ enum {
 	INIT_OVER			= 5
 };
 
+enum {
+	RELOAD_RECENT		= 1,
+	RELOAD_MAINLIST		= 2,
+	RELOAD_BOTH			= 3
+};
+
 #import "RakSerieListItem.h"
 
 @interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
@@ -53,8 +59,14 @@ enum {
 
 - (NSColor *) getFontColor;
 
+- (void) loadContent;
+- (void) loadRecentFromDB;
+- (void) reloadContent;
+- (void) reloadMainList;
+
 - (NSRect) getMainListFrame : (NSOutlineView*) outlineView;
 
 - (void) updateMainListSizePadding;
+- (void) RakSeriesNeedUpdateContent : (NSNotification *) notification;
 
 @end

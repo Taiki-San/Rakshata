@@ -27,7 +27,7 @@
 		
 		for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
 		{
-			if(selectedIndex == -1 && _installed[i])
+			if(selectedDBID != -1 && selectedIndex == -1 && _installed[i])
 			{
 				if (((MANGAS_DATA*)data)[i].cacheDBID == selectedDBID)
 					selectedIndex = positionInInstalled;
@@ -83,11 +83,6 @@
 - (NSInteger) selectedRow
 {
 	return selectedIndex;
-}
-
-- (BOOL) fontBold
-{
-	return NO;
 }
 
 #pragma mark - Data manipulation

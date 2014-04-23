@@ -129,6 +129,8 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 
 	sqlite3_finalize(request);
 	sqlite3_close(database);
+	
+	updateRecentSeries();
 
 	return output;
 }

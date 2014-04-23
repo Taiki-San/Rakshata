@@ -522,6 +522,8 @@
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 		[self changePage:READER_ETAT_DEFAULT];
+	
+	addRecentEntry(project, false);
 }
 
 - (void) updateContext

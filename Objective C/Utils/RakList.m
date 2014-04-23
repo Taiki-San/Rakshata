@@ -176,7 +176,7 @@
 
 - (BOOL) fontBold
 {
-	return YES;
+	return NO;
 }
 
 #pragma mark - Methods to deal with tableView

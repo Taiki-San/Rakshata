@@ -47,14 +47,17 @@
 			
 			initializationStage = INIT_OVER;
 			
-			if(rootItems[0] != nil && !stateSubLists[0])
-					[content collapseItem:rootItems[0]];
+			uint8_t i = 0;
+			for(; i < 2 && ![rootItems[i+i] isMainList]; i++)
+			{
+				if(rootItems[i] != nil && !stateSubLists[i])
+					[content collapseItem:rootItems[i]];
+			}
 			
-			if(rootItems[1] != nil && !stateSubLists[1])
-					[content collapseItem:rootItems[1]];
+			if(rootItems[i] != nil)
+				[rootItems[i] resetMainListHeight];
 			
-			if(rootItems[2] != nil)
-				[rootItems[2] resetMainListHeight];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateContent:) name:@"RakSeriesNeedUpdateContent" object:nil];
 		}
 		else
 			[self release];
@@ -70,12 +73,12 @@
 	NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 	
 	stateMainList[0] = -1;	//Selection
-		
+	
 	if([dataState count] == 3 || [dataState count] == 5)
 	{
 		stateSubLists[0] = [[dataState objectAtIndex:0] intValue] != 0;		//Recent read
 		stateSubLists[1] = [[dataState objectAtIndex:1] intValue] != 0;		//Recent DL
-
+		
 		stateMainList[1] = [[dataState objectAtIndex:[dataState count] - 1] intValue];
 		
 		do
@@ -151,13 +154,13 @@
 	[column setFixedWidth:frame.size.width];
 	
 	NSRect mainListFrame = [_mainList frame];
-
+	
 	mainListFrame.origin.x = mainListFrame.origin.y = 0;
 	mainListFrame.size.width = frame.size.width;
 	mainListFrame.size.height += frame.size.height - [content frame].size.height;
 	
 	[content setFrame:frame];
-
+	
 	[_mainList setFrame:[self getMainListFrame:content]];
 	if(rootItems[2] != nil)
 		[rootItems[2] resetMainListHeight];
@@ -186,43 +189,82 @@
 	if(_cache != NULL)
 	{
 		_data = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsOpaqueMemory];
-		
-		//Recent read
-		uint8_t i = 0;
-		MANGAS_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
-		
-		if(recent != NULL)
-		{
-			for (; i < _nbElemReadDisplayed; i++)
-			{
-				changeTo(recent[i]->mangaName, '_', ' ');
-				[_data addPointer:recent[i]];
-			}
-			
-			free(recent);
-		}
-		
-		for (; i < 3; i++)
-			[_data addPointer:NULL];
-		
-		//Recent DL
-		recent = getRecentEntries (true, &_nbElemDLDisplayed);
-		i = 0;
-		
-		if(recent != NULL)
-		{
-			for (; i < _nbElemDLDisplayed; i++)
-			{
-				changeTo(recent[i]->mangaName, '_', ' ');
-				[_data addPointer:recent[i]];
-			}
-			
-			free(recent);
-		}
-		
-		for (; i < 3; i++)
-			[_data addPointer:NULL];
+		[self loadRecentFromDB];
 	}
+}
+
+- (void) loadRecentFromDB
+{
+	if(_data == nil)
+		return;
+	
+	//Recent read
+	uint8_t i = 0;
+	MANGAS_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
+	
+	if(recent != NULL)
+	{
+		for (; i < _nbElemReadDisplayed; i++)
+		{
+			changeTo(recent[i]->mangaName, '_', ' ');
+			[_data insertPointer:recent[i] atIndex:i];
+		}
+		
+		free(recent);
+	}
+	
+	for (; i < 3; i++)
+		[_data insertPointer:NULL atIndex:i];
+	
+	//Recent DL
+	recent = getRecentEntries (true, &_nbElemDLDisplayed);
+	i = 0;
+	
+	if(recent != NULL)
+	{
+		for (; i < _nbElemDLDisplayed; i++)
+		{
+			changeTo(recent[i]->mangaName, '_', ' ');
+			[_data insertPointer:recent[i] atIndex:i + 3];
+		}
+		
+		free(recent);
+	}
+	
+	for (; i < 3; i++)
+		[_data insertPointer:NULL atIndex: i + 3];
+}
+
+- (void) reloadContent
+{
+	void * collector[6];
+	for(int i = 0; i < 6; i++)
+		collector[i] = [_data pointerAtIndex:i];
+	
+	RakSerieListItem *items[3] = {rootItems[0], rootItems[1], rootItems[2]};
+	
+	uint8_t posMainList = 0;
+	for(; posMainList < 2 && rootItems[posMainList+1] != nil; rootItems[posMainList++] = nil);
+	[rootItems[posMainList] retain];
+	[_mainList retain];
+	
+	[self loadRecentFromDB];
+	
+	initializationStage = INIT_FIRST_STAGE;
+	[content reloadData];
+	
+	for(uint8_t i = 0; i < posMainList; i++)
+	{
+		if(items[i] != nil && [items[i] isExpanded])
+			[content expandItem:rootItems[i]];
+		[items[i] release];
+	}
+	
+	for(int i = 0; i < 6; i++)
+		free(collector[i]);
+	
+	[rootItems[posMainList] release];
+	[_mainList release];
 }
 
 - (void) reloadMainList
@@ -299,7 +341,7 @@
 		currentSelection = [NSString stringWithFormat:@"%s\n%s", data.team->URL_depot, data.mangaNameShort];
 	else
 		currentSelection = @"";
-
+	
 	//And, we return everything
 	return [NSString stringWithFormat:@"%d\n%d\n%@\n%.0f", isTabReadOpen ? 1 : 0, isTabDLOpen ? 1 : 0, currentSelection, scrollerPosition];
 }
@@ -333,7 +375,7 @@
 	{
 		if(index >= 3)
 			return nil;
-			
+		
 		if(rootItems[index] == nil)
 		{
 			uint nbChildren = [self getChildrenByInitialisationStage];	//The method could increment initializationStage, aka undefined behavior
@@ -428,7 +470,7 @@
 	
 	if(item == nil)
 		output = 0;
-
+	
 	else if((output = [item getHeight]) == 0)
 	{
 		if([item isMainList])
@@ -439,7 +481,7 @@
 			
 			if(output < 25)
 				output = 25;
-
+			
 			[item setMainListHeight:output];
 		}
 		
@@ -454,7 +496,7 @@
 
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-
+	
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
@@ -475,7 +517,7 @@
 		rowView = [[RakTableRowView alloc] init];
 		rowView.identifier = @"HeaderRowView";
 	}
-
+	
 	return rowView;
 }
 
@@ -581,6 +623,22 @@
 		[mainList setMainListHeight:height];
 		[content noteHeightOfRowsWithIndexesChanged:[NSMutableIndexSet indexSetWithIndex:positionMainList]];
 	}
+}
+
+- (void) RakSeriesNeedUpdateContent : (NSNotification *) notification
+{
+	NSNumber *requestObj = [notification.userInfo objectForKey:@"request"];
+	
+	if(requestObj == nil)
+		return;
+	
+	int request = [requestObj intValue];
+	
+	if(request == RELOAD_RECENT || request == RELOAD_BOTH)
+		[self reloadContent];
+	
+	if(request == RELOAD_MAINLIST || request == RELOAD_BOTH)
+		[self reloadMainList];
 }
 
 @end

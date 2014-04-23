@@ -46,8 +46,8 @@ void sendToLog(char * string);
 
 /*****************************************
  **										**
- **				  READER				**
+ **				  Series				**
  **										**
  *****************************************/
 
-void* generateNSDataFromDecryptedStuffs(void* stuffs, size_t length);
+void updateRecentSeries();
