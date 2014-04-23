@@ -39,32 +39,14 @@
 			{
 				do
 				{
-					uint nbElem, indexTeam;
-					
-					//We first get the index of the team, to perform a search in the DB
-					const TEAMS_DATA **tmpData = getDirectAccessToKnownTeams(&nbElem);
-					
-					if(tmpData == NULL || nbElem == 0)
-						break;
-					
-					const char * URLRepo = [[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding];
-					
-					for (indexTeam = 0; indexTeam < nbElem; indexTeam++)
-					{
-						if(tmpData[indexTeam] != NULL && !strcmp(tmpData[indexTeam]->URL_depot, URLRepo))
-							break;
-					}
-					
-					if(indexTeam == nbElem)
+					int indexTeam = getIndexOfTeam((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+					if(indexTeam == -1)
 					{
 						NSLog(@"Couldn't find the repo to restore, abort :/");
 						break;
 					}
-					
-					//We have a valid index, now, let's query the database to get the project
-					
+
 					const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
-					
 					MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXCT, false);
 					
 					if(project == NULL)

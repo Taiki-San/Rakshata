@@ -15,7 +15,7 @@
 static sqlite3 *cache = NULL;
 static uint nbElem = 0;
 
-static TEAMS_DATA **teamList;
+static TEAMS_DATA **teamList = NULL;
 static uint lengthTeam = 0;
 
 static char *isUpdated = NULL;
@@ -795,10 +795,19 @@ TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 	return output;
 }
 
-const TEAMS_DATA ** getDirectAccessToKnownTeams(uint *nbTeamToRefresh)
+int getIndexOfTeam(char * URL)
 {
-	*nbTeamToRefresh = lengthTeam;
-	return (const TEAMS_DATA **) teamList;
+	if(URL == NULL)
+		return -1;
+	
+	int output = 0;
+	
+	for(; output < lengthTeam && teamList[output] != NULL && strcmp(URL, teamList[output]->URL_depot); output++);
+	
+	if(output == lengthTeam || teamList[output] == NULL)	//Error
+		output = -1;
+	
+	return output;
 }
 
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)

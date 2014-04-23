@@ -60,7 +60,7 @@ bool addRepoToDB(TEAMS_DATA newTeam);
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);
 void freeTeam(TEAMS_DATA **data);
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
-const TEAMS_DATA ** getDirectAccessToKnownTeams(uint *nbTeamToRefresh);
+int getIndexOfTeam(char * URL);
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
 
 void freeMangaData(MANGAS_DATA* mangaDB);
@@ -81,6 +81,14 @@ void updateProjects();
 void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome);
 void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
+
+/**DBRecent.c**/
+sqlite3* getPtrRecentDB();
+bool checkRecentDBValid(sqlite3 * DB);
+
+bool addEntry(MANGAS_DATA data, bool wasItADL);
+MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
+
 
 
 /*Database*/
@@ -145,6 +153,11 @@ enum RDB_CODES {
 #define RDB_tomes						16
 #define RDB_contentDownloadable			17
 #define RDB_favoris						18
+
+#define RDB_REC_lastRead				1
+#define RDB_REC_lastDL					2
+#define RDB_REC_team					3
+#define RDB_REC_mangaNameShort			4
 
 #define STRINGIZE2(s) "`"#s"`"
 #define DBNAMETOID(s) STRINGIZE2(s)

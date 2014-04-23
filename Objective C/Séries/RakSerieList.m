@@ -45,6 +45,8 @@
 			//We need some tweaks to be sure everything is properly deployed
 			[content expandItem:nil expandChildren:YES];
 			
+			initializationStage = INIT_OVER;
+			
 			if(rootItems[0] != nil && !stateSubLists[0])
 					[content collapseItem:rootItems[0]];
 			
@@ -53,8 +55,6 @@
 			
 			if(rootItems[2] != nil)
 				[rootItems[2] resetMainListHeight];
-			
-			initializationStage = INIT_OVER;
 		}
 		else
 			[self release];
@@ -82,29 +82,12 @@
 		{
 			if([dataState count] == 5)
 			{
-				uint nbElem, indexTeam;
-				
-				//We first get the index of the team, to perform a search in the DB
-				const TEAMS_DATA **tmpData = getDirectAccessToKnownTeams(&nbElem);
-				
-				if(tmpData == NULL || nbElem == 0)
-					break;
-				
-				const char * URLRepo = [[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding];
-				
-				for (indexTeam = 0; indexTeam < nbElem; indexTeam++)
-				{
-					if(tmpData[indexTeam] != NULL && !strcmp(tmpData[indexTeam]->URL_depot, URLRepo))
-						break;
-				}
-				
-				if(indexTeam == nbElem)
+				int indexTeam = getIndexOfTeam((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
+				if(indexTeam == -1)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");
 					break;
 				}
-				
-				//We have a valid index, now, let's query the database to get the project
 				
 				const char * mangaNameCourt = [[dataState objectAtIndex:3] cStringUsingEncoding:NSASCIIStringEncoding];
 				
@@ -205,28 +188,40 @@
 		_data = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsOpaqueMemory];
 		
 		//Recent read
-		changeTo(_cache[_sizeCache - 1].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 1]];
+		uint8_t i = 0;
+		MANGAS_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
 		
-		changeTo(_cache[_sizeCache - 2].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 2]];
+		if(recent != NULL)
+		{
+			for (; i < _nbElemReadDisplayed; i++)
+			{
+				changeTo(recent[i]->mangaName, '_', ' ');
+				[_data addPointer:recent[i]];
+			}
+			
+			free(recent);
+		}
 		
-		changeTo(_cache[_sizeCache - 3].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 3]];
-		
-		_nbElemReadDisplayed = 3;
+		for (; i < 3; i++)
+			[_data addPointer:NULL];
 		
 		//Recent DL
-		changeTo(_cache[_sizeCache - 4].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 4]];
+		recent = getRecentEntries (true, &_nbElemDLDisplayed);
+		i = 0;
 		
-		changeTo(_cache[_sizeCache - 5].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 5]];
+		if(recent != NULL)
+		{
+			for (; i < _nbElemDLDisplayed; i++)
+			{
+				changeTo(recent[i]->mangaName, '_', ' ');
+				[_data addPointer:recent[i]];
+			}
+			
+			free(recent);
+		}
 		
-		changeTo(_cache[_sizeCache - 6].mangaName, '_', ' ');
-		[_data addPointer:&_cache[_sizeCache - 6]];
-		
-		_nbElemDLDisplayed = 3;
+		for (; i < 3; i++)
+			[_data addPointer:NULL];
 	}
 }
 
@@ -341,7 +336,8 @@
 			
 		if(rootItems[index] == nil)
 		{
-			rootItems[index] = [[RakSerieListItem alloc] init : NULL : YES : initializationStage : [self getChildrenByInitialisationStage]];
+			uint nbChildren = [self getChildrenByInitialisationStage];	//The method could increment initializationStage, aka undefined behavior
+			rootItems[index] = [[RakSerieListItem alloc] init : NULL : YES : initializationStage : nbChildren];
 			
 			if(initializationStage != INIT_OVER)
 				initializationStage++;
@@ -439,7 +435,7 @@
 		{
 			CGFloat p = [outlineView intercellSpacing].height;	//Padding
 			
-			output = content.frame.size.height - (_nbElemReadDisplayed != 0) * (25 + p) - _nbElemReadDisplayed * ([outlineView rowHeight] + p) - (_nbElemDLDisplayed != 0) * (25 + p) - _nbElemDLDisplayed * ([outlineView rowHeight] + p) - (25 + p) - p;
+			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (25 + p) + [rootItems[0] isExpanded] * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (25 + p) + [rootItems[1] isExpanded] * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (25 + p) + p);
 			
 			if(output < 25)
 				output = 25;
