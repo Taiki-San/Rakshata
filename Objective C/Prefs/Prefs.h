@@ -51,6 +51,12 @@ enum COLOR_REQUEST {
 	GET_COLOR_BACKGROUD_SR_READERMODE
 };
 
+enum FONT_REQUEST {
+	GET_FONT_TITLE,
+	GET_FONT_STANDARD,
+	GET_FONT_RD_BUTTONS
+};
+
 @interface Prefs : NSObject
 {
 	RakContentView* firstResponder;
@@ -76,6 +82,7 @@ enum COLOR_REQUEST {
 + (void) syncCacheToDisk;
 
 + (NSColor*) getSystemColor : (byte) context;
++ (NSString *) getFontName : (byte) context;
 
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (bool) setPref : (uint) requestID : (uint64) value;

@@ -176,7 +176,7 @@ MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	char requestString[96];
 	int code = wantDL ? RDB_REC_lastDL : RDB_REC_lastRead;
 	
-	snprintf(requestString, sizeof(requestString), "SELECT * FROM RakHL3IsALie WHERE `%d` > 0 ORDER BY `%d` ASC", code, code);
+	snprintf(requestString, sizeof(requestString), "SELECT * FROM RakHL3IsALie WHERE `%d` > 0 ORDER BY `%d` DESC", code, code);
 	
 	if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
 	{

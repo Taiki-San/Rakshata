@@ -165,6 +165,32 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	return output;
 }
 
++ (NSString *) getFontName : (byte) context
+{
+	NSString * output = nil;
+	
+	switch (context)
+	{
+		case GET_FONT_TITLE:
+		{
+			output = @"Futura";
+			break;
+		}
+		case GET_FONT_STANDARD:
+		{
+			output = @"Helvetica";
+			break;
+		}
+		case GET_FONT_RD_BUTTONS:
+		{
+			output = @"Helvetica-Bold";
+			break;
+		}
+	}
+	
+	return output;
+}
+
 + (void) getPref : (int) requestID : (void*) outputContainer
 {
 	if(prefsCache == NULL)

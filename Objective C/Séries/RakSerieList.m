@@ -162,8 +162,11 @@
 	[content setFrame:frame];
 	
 	[_mainList setFrame:[self getMainListFrame:content]];
-	if(rootItems[2] != nil)
-		[rootItems[2] resetMainListHeight];
+	char i;
+	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
+
+	if(i < 3)
+		[rootItems[i] resetMainListHeight];
 	
 	[content reloadData];
 }
@@ -549,9 +552,9 @@
 			[(RakText*) rowView setTextColor:[self getFontColor]];
 			
 			if([item isRootItem])
-				[(RakText*) rowView setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
 			else
-				[(RakText*) rowView setFont:[NSFont fontWithName:@"Helvetica" size:13]];
+				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		}
 	}
 	

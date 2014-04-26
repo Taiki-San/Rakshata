@@ -174,11 +174,6 @@
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL];
 }
 
-- (BOOL) fontBold
-{
-	return NO;
-}
-
 #pragma mark - Methods to deal with tableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
@@ -200,10 +195,7 @@
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
-		if([self fontBold])
-			[result setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
-		else
-			[result setFont:[NSFont fontWithName:@"Helvetica" size:13]];
+		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		
 		result.identifier = @"Mane 6";
 	}

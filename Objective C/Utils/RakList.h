@@ -46,6 +46,5 @@
 - (NSColor *) getTextColor;
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
-- (BOOL) fontBold;
 
 @end

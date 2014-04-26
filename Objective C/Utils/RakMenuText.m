@@ -44,7 +44,7 @@
 
 - (NSFont *) getFont
 {
-	return [NSFont fontWithName:@"Helvetica-Bold" size:[self getFontSize]];
+	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:[self getFontSize]];
 }
 
 #pragma mark - Controller

@@ -122,7 +122,7 @@
 {
 	NSTextFieldCell * cell = [[[RakCenteredTextFieldCell alloc] initTextCell:string] retain];
 	
-	[cell setFont:[NSFont fontWithName:@"Helvetica-Bold" size:13]];
+	[cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[cell setAlignment:NSCenterTextAlignment];
 	
 	if(cellID == 0)

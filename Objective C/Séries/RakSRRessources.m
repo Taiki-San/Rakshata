@@ -22,7 +22,7 @@
 
 - (CGFloat) getFontSize
 {
-	return 18;
+	return 16;
 }
 
 @end
