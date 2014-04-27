@@ -58,7 +58,7 @@
 
 + (id) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [[RakButton new] autorelease];
+	RakButton *output = [RakButton new];
 	
 	if(output != nil)
 	{

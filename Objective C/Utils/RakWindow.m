@@ -23,19 +23,30 @@
 	return ([self styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask;
 }
 
-- (void)sendEvent:(NSEvent *)theEvent
+- (void)sendEvent:(NSEvent *)event
 {
 	if(![self isFullscreen])
 	{
-		if([theEvent type] == NSLeftMouseDown)
-			[self mouseDown:theEvent];
-		else if([theEvent type] == NSLeftMouseDragged && dragInProgress)
-			[self mouseDragged:theEvent];
-		else if([theEvent type] == NSLeftMouseUp)
+		if([event type] == NSLeftMouseDown)
+			[self mouseDown:event];
+		else if([event type] == NSLeftMouseDragged && dragInProgress)
+			[self mouseDragged:event];
+		else if([event type] == NSLeftMouseUp)
 			dragInProgress = false;
 	}
 	
-	[super sendEvent:theEvent];
+	if ([event type] == NSKeyDown)
+	{
+        if (([event modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSCommandKeyMask)
+		{
+			NSString * character = [event charactersIgnoringModifiers];
+
+            if ([character isEqualToString:@"f"])
+			    [self toggleFullScreen:self];
+		}
+	}
+	
+	[super sendEvent:event];
 }
 
 - (void) stopDrag
