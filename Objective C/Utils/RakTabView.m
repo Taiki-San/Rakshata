@@ -413,11 +413,7 @@
 - (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
-	NSSize sizeSuperView;
-	if([superView class] == [RakContentView class])
-		sizeSuperView = [(RakContentView*) superView frame].size;
-	else
-		sizeSuperView = superView.frame.size;
+	NSSize sizeSuperView = [superView frame].size;
 	
 	[Prefs getPref:[self getCodePref:CONVERT_CODE_FRAME] :&frame];
 	frame.origin.x *= sizeSuperView.width / 100.0f;

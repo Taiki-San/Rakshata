@@ -62,6 +62,13 @@
 #define SR_READERMODE_MARGIN_OUTLINE		7
 #define SR_READERMODE_LBWIDTH_OUTLINE		10	//LB = Line Break
 #define SR_READERMODE_ILBWIDTH_OUTLINE		13	//ILB = Intermediary LB
+
+/** MDL itself **/
+
+/** RakMDLView **/
+#define MDL_READERMODE_LATERAL_BORDER 5			//	%
+#define MDL_READERMODE_BOTTOMBAR_WIDTH	14
+
  
 /**		Utils	**/
 

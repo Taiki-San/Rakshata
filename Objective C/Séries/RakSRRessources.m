@@ -12,7 +12,7 @@
 
 @implementation RakSRHeaderText
 
-- (NSRect) getProjectNameSize : (NSRect) superViewSize
+- (NSRect) getMenuFrame : (NSRect) superViewSize
 {
 	NSRect frame = superViewSize;
 	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;

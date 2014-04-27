@@ -38,6 +38,8 @@
 		B67E079018E765A40007EB44 /* RakCenteredTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */; };
 		B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
+		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
+		B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976685190D9C4D00B0A266 /* RakMDLRessources.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -163,6 +165,10 @@
 		B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTCoreContentView.m; path = CTSelec/RakCTCoreContentView.m; sourceTree = "<group>"; };
 		B67F92B718F0C2B0002FC657 /* RakPageCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageCounter.h; path = Reader/RakPageCounter.h; sourceTree = "<group>"; };
 		B67F92B818F0C2B0002FC657 /* RakPageCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageCounter.m; path = Reader/RakPageCounter.m; sourceTree = "<group>"; };
+		B6976681190D9B7D00B0A266 /* RakMDLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLView.h; path = MDL/RakMDLView.h; sourceTree = "<group>"; };
+		B6976682190D9B7D00B0A266 /* RakMDLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLView.m; path = MDL/RakMDLView.m; sourceTree = "<group>"; };
+		B6976684190D9C4D00B0A266 /* RakMDLRessources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLRessources.h; path = MDL/RakMDLRessources.h; sourceTree = "<group>"; };
+		B6976685190D9C4D00B0A266 /* RakMDLRessources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLRessources.m; path = MDL/RakMDLRessources.m; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; };
@@ -385,6 +391,10 @@
 			children = (
 				B69D61DC186CA3D0003504F9 /* MDL.h */,
 				B69D61DD186CA3D0003504F9 /* MDL.m */,
+				B6976684190D9C4D00B0A266 /* RakMDLRessources.h */,
+				B6976685190D9C4D00B0A266 /* RakMDLRessources.m */,
+				B6976681190D9B7D00B0A266 /* RakMDLView.h */,
+				B6976682190D9B7D00B0A266 /* RakMDLView.m */,
 			);
 			name = MDL;
 			sourceTree = "<group>";
@@ -772,6 +782,7 @@
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
+				B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,
 				B6F6ED0818A3001400E3B55B /* moduleDL2_UI.c in Sources */,
@@ -834,6 +845,7 @@
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
 				B6F6ED1018A3001400E3B55B /* thread.c in Sources */,
 				B6D24C8118EDE0A100E5960B /* update crypto.c in Sources */,
+				B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */,
 				B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */,
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6F6ED1918A3001400E3B55B /* update.c in Sources */,

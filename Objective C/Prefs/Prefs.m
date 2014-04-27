@@ -126,6 +126,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			
 		case GET_COLOR_BACKGROUD_CT_READERMODE:
 		case GET_COLOR_BACKGROUD_SR_READERMODE:
+		case GET_COLOR_BACKGROUD_MDL_READERMODE:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
 			break;
@@ -287,7 +288,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 			
-		case PREFS_GET_MDL_POS_X:
+		case PREFS_GET_MDL_POSX:
 		{
 			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;

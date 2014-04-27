@@ -21,6 +21,10 @@
 		prefsUIIsOpen = false;
 		
 		self = [self initView:contentView : state];
+		
+		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
+		self.layer.borderWidth = 2;
+		
 		[self initContent : state];
 	}
     return self;
@@ -116,7 +120,7 @@
 	{
 		NSRect frame = [self bounds];
 		
-		frame.origin.x = preferenceButton.frame.size.width;
+		frame.origin.x = preferenceButton.frame.origin.x + preferenceButton.frame.size.width;
 		frame.size.width -= frame.origin.x;
 		
 		return frame;
@@ -152,7 +156,7 @@
 {
 	[super setFrame:frameRect];
 	
-	[preferenceButton setFrameOrigin:NSMakePoint(preferenceButton.frame.origin.x, frameRect.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+	[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
 	[backButton setFrame:[self backButtonFrame]];
 	
 	[coreView setFrame:[self getCoreviewFrame]];

@@ -54,7 +54,7 @@
 	return CT_READERMODE_WIDTH_PROJECT_NAME;
 }
 
-- (NSRect) getProjectNameSize : (NSRect) superViewSize
+- (NSRect) getMenuFrame : (NSRect) superViewSize
 {
 	NSRect frame = superViewSize;
 	frame.size.height = [self getTextHeight];
@@ -66,7 +66,7 @@
 - (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
 {
 	text = [text stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-	self = [super initWithText:[self getProjectNameSize:frame] :text : [self getTextColor]];
+	self = [super initWithText:[self getMenuFrame:frame] :text : [self getTextColor]];
 	
 	if(self != nil)
 	{
@@ -90,8 +90,7 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self getProjectNameSize:frameRect]];
+	[super setFrame:[self getMenuFrame:frameRect]];
 }
-
 
 @end

@@ -10,17 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakMenuText : RakText
-
-- (void) additionalDrawing;
-
-- (NSColor *) getTextColor;
-- (NSColor *) getBarColor;
-- (CGFloat) getFontSize;
-- (NSFont *) getFont;
-
-- (CGFloat) getTextHeight;
-- (NSRect) getMenuFrame : (NSRect) superViewSize;
-- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color;
+@interface RakMDLHeaderText : RakMenuText
 
 @end

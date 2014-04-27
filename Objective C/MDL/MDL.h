@@ -10,10 +10,17 @@
  **                                                                                          **
  *********************************************************************************************/
 
+#import "RakMDLRessources.h"
+#import "RakMDLView.h"
+
 @interface MDL : RakTabView
+{
+	RakMDLView * coreView;
+}
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
-- (NSRect) getRequestedViewSize: (CGFloat) widthWindow : (CGFloat) heightWindow;
+- (void) initContent : (NSString *) state;
+- (NSRect) getCoreviewFrame;
 
 @end

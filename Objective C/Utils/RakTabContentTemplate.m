@@ -36,9 +36,7 @@
 {
 	[super setFrame:frameRect];
 	
-	frameRect.origin.x = frameRect.origin.y = 0;
-	
-	[self setFrameInternalViews:frameRect];
+	[self setFrameInternalViews:[self bounds]];
 }
 
 - (id) retain
