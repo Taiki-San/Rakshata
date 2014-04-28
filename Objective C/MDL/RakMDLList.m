@@ -10,18 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakMDLRessources.h"
-#import "RakMDLView.h"
-#import "RakMDLList.h"
-
-@interface MDL : RakTabView
-{
-	RakMDLView * coreView;
-}
-
-- (id)init : (NSView*)contentView : (NSString *) state;
-
-- (void) initContent : (NSString *) state;
-- (NSRect) getCoreviewFrame : (NSRect) frame;
+@implementation RakMDLList
 
 @end

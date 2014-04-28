@@ -57,6 +57,7 @@
 		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
 		B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E89388189EF39700ACAF36 /* CTSelec.m */; };
 		B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6E8938A189EF3A600ACAF36 /* Images.xcassets */; };
+		B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9D19D190EEF9B007F041C /* RakMDLList.m */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
 		B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC482218E5E03E00288C3B /* RakChapterView.m */; };
 		B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6EDE77318B02BCC00DB3AFC /* Credits.rtf */; };
@@ -205,6 +206,8 @@
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		B6E9D19C190EEF9B007F041C /* RakMDLList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLList.h; path = MDL/RakMDLList.h; sourceTree = "<group>"; };
+		B6E9D19D190EEF9B007F041C /* RakMDLList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLList.m; path = MDL/RakMDLList.m; sourceTree = "<group>"; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
 		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
 		B6EC482118E5E03E00288C3B /* RakChapterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakChapterView.h; path = CTSelec/RakChapterView.h; sourceTree = "<group>"; };
@@ -391,6 +394,8 @@
 			children = (
 				B69D61DC186CA3D0003504F9 /* MDL.h */,
 				B69D61DD186CA3D0003504F9 /* MDL.m */,
+				B6E9D19C190EEF9B007F041C /* RakMDLList.h */,
+				B6E9D19D190EEF9B007F041C /* RakMDLList.m */,
 				B6976684190D9C4D00B0A266 /* RakMDLRessources.h */,
 				B6976685190D9C4D00B0A266 /* RakMDLRessources.m */,
 				B6976681190D9B7D00B0A266 /* RakMDLView.h */,
@@ -789,6 +794,7 @@
 				B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */,
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
+				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
