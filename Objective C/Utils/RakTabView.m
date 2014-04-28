@@ -434,32 +434,11 @@
 	return 0;
 }
 
-- (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow
-{
-	CGFloat prefData;
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_POSX]:&prefData];
-	return widthWindow * prefData / 100;
-}
-
-- (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow
-{
-	CGFloat prefData;
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_POSY]:&prefData];
-	return heightWindow * prefData / 100;
-}
-
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
 {
 	CGFloat prefData;
 	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH]:&prefData];
 	return widthWindow * prefData / 100;
-}
-
-- (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
-{
-	CGFloat prefData;
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_HEIGHT]:&prefData];
-	return heightWindow * prefData / 100;
 }
 
 @end

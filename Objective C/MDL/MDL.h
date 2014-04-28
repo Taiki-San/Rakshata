@@ -21,6 +21,6 @@
 - (id)init : (NSView*)contentView : (NSString *) state;
 
 - (void) initContent : (NSString *) state;
-- (NSRect) getCoreviewFrame;
+- (NSRect) getCoreviewFrame : (NSRect) frame;
 
 @end

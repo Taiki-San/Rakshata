@@ -17,4 +17,6 @@
 
 - (id)initContent:(NSRect)frame : (NSString *) state;
 
+- (void) resizeAnimation : (NSRect) frame;
+
 @end

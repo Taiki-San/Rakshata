@@ -15,6 +15,7 @@
 - (id)initContent:(NSRect)frame : (NSString *) state
 {
     self = [super initWithFrame:frame];
+	
     if (self)
 	{
 		[self setupInternal];
@@ -26,10 +27,23 @@
 	return self;
 }
 
+/** Proxy work **/
+
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:newBound];
 }
+
+- (void) resizeAnimation : (NSRect) frame
+{
+	[self.animator setFrame:frame];
+	
+	frame.origin.x = frame.origin.y = 0;
+	
+	[headerText.animator setFrame:[headerText getMenuFrame:frame]];
+}
+
+/** Color **/
 
 - (NSColor*) getBackgroundColor
 {

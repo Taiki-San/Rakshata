@@ -30,21 +30,21 @@
 
 - (void) initContent : (NSString *) state
 {
-	coreView = [[RakMDLView alloc]  initContent:[self getCoreviewFrame] : state];
+	coreView = [[RakMDLView alloc]  initContent:[self getCoreviewFrame : [self bounds]] : state];
 	if(coreView != nil)
 		[self addSubview:coreView];
 }
 
 /*Coreview manipulation*/
 
-- (NSRect) getCoreviewFrame
+- (NSRect) getCoreviewFrame : (NSRect) frame
 {
-	NSRect output = [self bounds];
+	NSRect output = frame;
 	
-	output.origin.x = MDL_READERMODE_LATERAL_BORDER;
+	output.origin.x = MDL_READERMODE_LATERAL_BORDER * frame.size.width / 100;
 	output.origin.y = MDL_READERMODE_BOTTOMBAR_WIDTH;
 	output.size.height -= MDL_READERMODE_BOTTOMBAR_WIDTH;
-	output.size.width -= 2 * MDL_READERMODE_LATERAL_BORDER;
+	output.size.width -= 2 * output.origin.x;
 	
 	return output;
 }
@@ -52,8 +52,9 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
+	
 	if(coreView != nil)
-		[coreView setFrame:[self bounds]];
+		[coreView setFrame:[self getCoreviewFrame : frameRect]];
 }
 
 /*Internal stuffs*/
@@ -86,37 +87,39 @@
 	[self refreshDataAfterAnimation];
 }
 
+- (NSRect) getFrameOfNextTab
+{
+	NSRect output;
+	[Prefs getPref:PREFS_GET_TAB_READER_FRAME :&output];
+	
+	NSSize sizeSuperView = [self.superview frame].size;
+	
+	output.origin.x *= sizeSuperView.width / 100.0f;
+	output.origin.y *= sizeSuperView.height / 100.0f;
+	output.size.width *= sizeSuperView.width / 100.0f;
+	output.size.height *= sizeSuperView.height / 100.0f;
+	
+	return output;
+}
+
 - (BOOL) acceptsFirstMouse:(NSEvent *)theEvent { return NO; }
 - (BOOL) acceptsFirstResponder { return NO; }
 
 /**	 Get View Size	**/
-
-- (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow
-{
-	CGFloat output;
-	[Prefs getPref:PREFS_GET_MDL_POSX:&output];
-	return output * widthWindow / 100;
-}
-
-- (CGFloat) getRequestedViewPosY:(CGFloat) heightWindow
-{
-	CGFloat output;
-	[Prefs getPref:PREFS_GET_MDL_POSY:&output];
-	return output * heightWindow / 100;
-}
-
-- (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
-{
-	CGFloat output;
-	[Prefs getPref:PREFS_GET_MDL_HEIGHT: &output];
-	return output * heightWindow / 100;
-}
 
 - (CGFloat) getRequestedViewWidth: (CGFloat) widthWindow
 {
 	CGFloat prefData;
 	[Prefs getPref:PREFS_GET_MDL_WIDTH:&prefData];
 	return widthWindow * prefData / 100;
+}
+
+- (void) resizeAnimation
+{
+	NSRect frame = [self createFrame];
+	
+	[self.animator setFrame:frame];
+	[coreView resizeAnimation : [self getCoreviewFrame : frame]];
 }
 
 - (int) getCodePref : (int) request

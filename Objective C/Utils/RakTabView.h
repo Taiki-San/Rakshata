@@ -74,10 +74,7 @@ enum {
 
 
 - (int) getCodePref : (int) request;
-- (CGFloat) getRequestedViewPosX: (CGFloat) widthWindow;
-- (CGFloat) getRequestedViewPosY: (CGFloat) heightWindow;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
-- (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow;
 
 @end
 
