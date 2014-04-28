@@ -44,6 +44,7 @@
 #define TAB_READER_STRIPE_POSX
 #define TAB_READER_STRIPE_POSY
 
+#define TAB_MDL_WIDTH_READER				33
 #define TAB_MDL_WIDTH						80
 #define TAB_MDL_HEIGHT						90
 #define TAB_MDL_POSX						10

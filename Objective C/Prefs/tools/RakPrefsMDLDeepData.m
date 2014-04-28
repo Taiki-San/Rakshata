@@ -179,7 +179,7 @@
 	
 	output.origin.x = 0;
 	output.origin.y = 0;
-	[Prefs getPref:PREFS_GET_TAB_READER_POSX: &output.size.width];
+	output.size.width = TAB_MDL_WIDTH_READER;
 	
 	if(stateTabsReader & [self getFlagFocus])
 		output.size.height = heightMDLReaderFocus;

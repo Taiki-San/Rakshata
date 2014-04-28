@@ -53,7 +53,7 @@
 {
 	[super setFrame:frameRect];
 	if(coreView != nil)
-		[coreView setFrame:frameRect];
+		[coreView setFrame:[self bounds]];
 }
 
 /*Internal stuffs*/

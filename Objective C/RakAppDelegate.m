@@ -46,10 +46,10 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	[tabSerie init:contentView : [context objectAtIndex:0]];
 	[tabCT init:contentView : [context objectAtIndex:1]];
-	[tabReader init:contentView : [context objectAtIndex:2]];
 #ifndef DISABLE_MDLTAB_DEBUG
 	[tabMDL init:contentView : [context objectAtIndex:3]];
 #endif
+	[tabReader init:contentView : [context objectAtIndex:2]];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

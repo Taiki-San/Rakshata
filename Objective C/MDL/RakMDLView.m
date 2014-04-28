@@ -28,7 +28,6 @@
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
-#warning "Broken D:"
 	[headerText setFrame:newBound];
 }
 
