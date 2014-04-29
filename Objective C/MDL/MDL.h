@@ -11,8 +11,9 @@
  *********************************************************************************************/
 
 #import "RakMDLRessources.h"
-#import "RakMDLView.h"
+#import "RakMDLController.h"
 #import "RakMDLList.h"
+#import "RakMDLView.h"
 
 @interface MDL : RakTabView
 {

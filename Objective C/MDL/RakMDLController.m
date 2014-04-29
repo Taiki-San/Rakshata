@@ -10,6 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PREFS_SET_OWNMAINTAB					1
-#define PREFS_SET_READER_TABS_STATE				2
-#define PREFS_SET_READER_TABS_STATE_FROM_CALLER	3
+@implementation RakMDLController
+
+@end

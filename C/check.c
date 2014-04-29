@@ -224,42 +224,6 @@ int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DAT
 
 /****	   Other checks		 ****/
 
-extern int INSTANCE_RUNNING;
-int checkLancementUpdate()
-{
-    if(INSTANCE_RUNNING != 0 || !checkFileExist(INSTALL_DATABASE))
-        return 0;
-
-#ifdef _WIN32
-    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDL2");
-    if (WaitForSingleObject (hSem, 0) != WAIT_TIMEOUT)
-    {
-        ReleaseSemaphore (hSem, 1, NULL);
-        CloseHandle (hSem);
-        return 1;
-    }
-    CloseHandle (hSem);
-#else
-    FILE* test = fopen("data/download", "r");
-    if(test != NULL)
-    {
-        if(fgetc(test) != EOF)
-        {
-            int i = 0;
-            rewind(test);
-            fscanfs(test, "%d", &i);
-            fclose(test);
-            return checkPID(i);
-        }
-        else
-            fclose(test);
-    }
-    else
-        return 1;
-#endif
-    return 0;
-}
-
 void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/

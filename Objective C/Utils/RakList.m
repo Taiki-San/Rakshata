@@ -121,7 +121,7 @@
 	[scrollView release];
 	
 	[_tableView release];
-	[_tableView release];		//Je dois le retain à quelque chose mais je vois pas, donc on tue sa hiérarchie puis on for à le libérer
+	[_tableView release];		//Je dois le retain à quelque chose mais je vois pas, donc on tue sa hiérarchie puis on force à le libérer
 	
 	[normal release];
 	[highlight release];

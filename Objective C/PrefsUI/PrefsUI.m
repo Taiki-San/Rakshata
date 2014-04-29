@@ -5,9 +5,9 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite   **
- **                                                                                          **
+ **                                                                                         **
+ **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **                                                                                         **
  *********************************************************************************************/
 
 @implementation RakPrefsWindow

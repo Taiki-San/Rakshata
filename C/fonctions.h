@@ -31,7 +31,6 @@ int checkEvnt();
 void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA]);
 int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite);
 
-int checkLancementUpdate();
 void networkAndVersionTest();
 int checkNetworkState(int state);
 void checkHostNonModifie();
@@ -121,7 +120,6 @@ char ** loadChapterConfigDat(char* input, int *nombrePage);
 
 /**ModuleDL2_tool.c**/
 int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
-void lancementModuleDL();
 
 /**Native.c**/
 int mkdirR(char *path);

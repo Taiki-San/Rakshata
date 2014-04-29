@@ -148,7 +148,9 @@ void getNewFavs()
 	
 	fclose(import);
     freeMangaData(mangaDB);
-    if(WEGOTSOMETHING && checkLancementUpdate())
-        lancementModuleDL();
+    if(WEGOTSOMETHING)
+	{
+		#warning "Need to get linked to launcher"
+	}
 }
 

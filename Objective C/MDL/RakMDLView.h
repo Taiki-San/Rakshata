@@ -13,6 +13,7 @@
 @interface RakMDLView : RakTabContentTemplate
 {
 	RakMDLHeaderText * headerText;
+	RakMDLList * MDLList;
 }
 
 - (id)initContent:(NSRect)frame : (NSString *) state;

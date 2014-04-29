@@ -105,9 +105,9 @@ int mainChoixDL()
 
         if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == ENGINE_RETVALUE_DL_START /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
         {
-            lancementModuleDL();
+			//#warning "Need to get linked to launcher!
         }
-        else if(checkLancementUpdate())
+        else
             remove(INSTALL_DATABASE);
 
         MDLFlushCachedCache();

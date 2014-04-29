@@ -153,20 +153,14 @@ extern int WINDOW_SIZE_W_DL;
 int download_UI(TMP_DL *output);
 
 /**ModuleDL2.c**/
-void mainMDL();
-void MDLLauncher();
+void startMDL(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList);
+void MDLCleanup(int nbElemTotal, DATA_LOADED *** todoList, MANGAS_DATA * cache);
 void mainDLProcessing(DATA_LOADED *** todoList);
 void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historiqueTeam);
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
 bool MDLTelechargement(DATA_MOD_DL* input);
 bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
-int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
-void MDLUpdateIcons(bool ignoreCache);
-#define MDLDispDownloadHeader(a) MDLDispHeader(0, a)
-#define MDLDispInstallHeader(a) MDLDispHeader(1, a)
-void MDLDispHeader(bool isInstall, DATA_LOADED *todoList);
-bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH]);
-void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted);
+void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);
@@ -182,6 +176,7 @@ int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
+void MDLUpdateIcons();
 void getIconPath(int status, char *path, uint length);
 
 /**Module2_event.h**/
@@ -202,10 +197,6 @@ bool MDLPCheckIfPaid(unsigned int factureID);
 
 void MDLPDispAskToPay(int prix);
 int MDLPWaitEvent();
-
-/**Module2_UI.c**/
-void startMDLUIThread();
-void MDLTUIQuit();
 
 /**Native.c**/
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

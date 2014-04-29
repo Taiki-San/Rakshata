@@ -21,8 +21,11 @@
 		[self setupInternal];
 		
 		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
-		[self addSubview:headerText];
+		if(headerText != nil)		[self addSubview:headerText];
 		
+		
+		MDLList = [[RakMDLList alloc] init];
+		if(MDLList != nil)			[MDLList setSuperView:self];
 	}	
 	return self;
 }

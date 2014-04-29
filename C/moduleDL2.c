@@ -13,32 +13,33 @@
 #include "moduleDL.h"
 #include "db.h"
 
-int WINDOW_SIZE_H_DL = 0, WINDOW_SIZE_W_DL = 0, INSTANCE_RUNNING = 0;
 volatile bool quit;
 int pageCourante;
 int nbElemTotal;
 int **status; //Le status des différents elements
 int **statusCache;
 
-void mainMDL()
+void startMDL(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList)
 {
-    bool jobUnfinished = false, error = false, printError = false , printErrorAsked = false;
-    int i = 0;
-    int nombreElementDrawn;
-    char trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
-    DATA_LOADED ***todoList = malloc(sizeof(DATA_LOADED **));
-    THREAD_TYPE threadData;
+    uint i;
+	
+	if(COMPTE_PRINCIPAL_MAIL[0] == 0 && !loadEmailProfile())	//Pas de compte
+	{
+		*todoList = NULL;
+		return;
+	}
+	
+    *todoList = malloc(sizeof(DATA_LOADED **));
     
-	if(todoList == NULL)
+	if(*todoList == NULL)
 		return;
 	
 	MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
     
     /*Initialisation*/
-    loadTrad(trad, 22);
     quit = false;
     nbElemTotal = pageCourante = 0;
-    *todoList = MDL_loadDataFromImport(mangaDB, &nbElemTotal);
+    **todoList = MDL_loadDataFromImport(mangaDB, &nbElemTotal);
     if(nbElemTotal == 0)
         return;
 
@@ -63,102 +64,27 @@ void mainMDL()
         usleep(50);
     }
 
-    if(checkNetworkState(CONNEXION_DOWN))
-		goto fail;
+    if(!checkNetworkState(CONNEXION_DOWN))
+	{
+		MDLPHandle(**todoList, nbElemTotal);
+		*coreWorker = createNewThreadRetValue(mainDLProcessing, *todoList);
+	}
+}
 
-    MDLDispDownloadHeader(NULL);
-    MDLDispInstallHeader(NULL);
-    nombreElementDrawn = MDLDrawUI(*todoList, trad); //Initial draw
-    MDLUpdateIcons(true);
-    MDLPHandle(*todoList, nbElemTotal);
-    threadData = createNewThreadRetValue(mainDLProcessing, todoList);
+void MDLCleanup(int nbElemTotal, DATA_LOADED *** todoList, MANGAS_DATA * cache)
+{
+	uint i;
 
-    while(!quit) //Corps de la fonction
+    for(i = 0; i < nbElemTotal; i++) //Si on a déjà trouvé les deux, pas la peine de continuer
     {
-        if(getRandom() % 2)//MDLEventsHandling(todoList, nombreElementDrawn)) //Patiente pas mal, évite de surcharger le CPU
-        {
-            nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
-            MDLUpdateIcons(true);
-        }
-
-        else if(checkFileExist(INSTALL_DATABASE) && INSTANCE_RUNNING == -1)
-        {
-            int newNbElemTotal = nbElemTotal;
-            DATA_LOADED ** ptr = MDL_updateDownloadList(mangaDB, &newNbElemTotal, *todoList);
-            if(ptr != NULL)
-            {
-                int ** ptr2 = realloc(status, (newNbElemTotal+1)*sizeof(int*));
-                int ** ptr3 = realloc(statusCache, (newNbElemTotal+1)*sizeof(int*));
-                if(ptr2 == NULL || ptr3 == NULL)
-                {
-                    for(i = newNbElemTotal-1; i > nbElemTotal; free((*todoList)[i--]));
-                    free(*ptr);
-                    free(ptr);
-                    free(ptr2);
-                    free(ptr3);
-                }
-                else
-                {
-                    for(; nbElemTotal < newNbElemTotal; nbElemTotal++)
-                    {
-                        ptr2[nbElemTotal] = malloc(sizeof(int));
-                        if(ptr2[nbElemTotal] != NULL)
-                            *ptr2[nbElemTotal] = MDL_CODE_DEFAULT;
-
-                        ptr3[nbElemTotal] = malloc(sizeof(int));
-                        if(ptr3[nbElemTotal] != NULL)
-                            *ptr3[nbElemTotal] = MDL_CODE_DEFAULT;
-                    }
-                    status = ptr2;
-                    statusCache = ptr3;
-                    *todoList = ptr;
-                    nombreElementDrawn = MDLDrawUI(*todoList, trad); //Redraw if requested
-                    MDLUpdateIcons(true);
-                    MDLPHandle(*todoList, nbElemTotal); //Si des trucs payants
-                }
-            }
-            if(!isThreadStillRunning(threadData))
-            {
-                threadData = createNewThreadRetValue(mainDLProcessing, todoList);
-            }
-        }
-        else if(!printErrorAsked && !isThreadStillRunning(threadData))
-        {
-            for(i = 0; i < nbElemTotal && *status[i] >= MDL_CODE_DEFAULT; i++);
-            if(i != nbElemTotal)
-            {
-                printError = MDLDispError(trad);
-            }
-            printErrorAsked = true;
-        }
-    }
-
-    /*Attente de la fin du thread de traitement*/
-    while(isThreadStillRunning(threadData))
-        usleep(100);
-
-    MDLTUIQuit();   //On ferme le thread d'affichage, permet de libérer de la mémoire tranquillement
-
-fail:
-	
-    for(i = 0; i < nbElemTotal && (!jobUnfinished || !error); i++) //Si on a déjà trouvé les deux, pas la peine de continuer
-    {
-        if (*status[i] == MDL_CODE_DEFAULT)
-            jobUnfinished = true;
-        else if(*status[i] < MDL_CODE_DEFAULT) //Error
-        {
-            error = true;
-            jobUnfinished = true;
-        }
+        if (*status[i] <= MDL_CODE_DEFAULT)
+		{
+			/*Si interrompu, on enregistre ce qui reste à faire*/
+			MDLParseFile(*todoList, status, nbElemTotal);
+			break;
+		}
     }
 	
-    /*Si interrompu, on enregistre ce qui reste à faire*/
-    if(jobUnfinished)
-    {
-        if(error && !printErrorAsked)
-            printError = MDLDispError(trad);
-		MDLParseFile(*todoList, status, nbElemTotal, printError);
-    }
     /*On libère la mémoire*/
     for(i = 0; i < nbElemTotal; i++)
     {
@@ -169,61 +95,15 @@ fail:
         free(statusCache[i]);
     }
 
-    freeMangaData(mangaDB);
+    freeMangaData(cache);
     free(*todoList);
     free(todoList);
-    free(statusCache);
-    free(status);
+    free(statusCache);		statusCache = NULL;
+    free(status);			status = NULL;
 
 #ifdef _WIN32
     CloseHandle (threadData);
 #endif // _WIN32
-}
-
-void MDLLauncher()
-{
-    /*On affiche la petite fenêtre, on peut pas utiliser un mutex à cause
-    d'une réservation à deux endroits en parallèle, qui cause des crashs*/
-
-    if(INSTANCE_RUNNING || !checkLancementUpdate())
-    {
-        INSTANCE_RUNNING = -1; //Signale qu'il faut charger le nouveau fichier
-        quit_thread(0);
-    }
-
-    if(!loadEmailProfile())
-    {
-        quit_thread(0);
-    }
-    INSTANCE_RUNNING = 1;
-
-#ifdef _WIN32
-    HANDLE hSem = CreateSemaphore (NULL, 1, 1,"RakshataDL2");
-    if (WaitForSingleObject (hSem, 0) == WAIT_TIMEOUT)
-    {
-        logR("Fail: instance already running\n");
-        CloseHandle (hSem);
-        quit_thread(0);
-    }
-#else
-    FILE *fileBlocker = fopen("data/download", "w+");
-    fprintf(fileBlocker, "%d", getpid());
-    fclose(fileBlocker);
-#endif
-
-    startMDLUIThread();
-    mainMDL();
-
-    INSTANCE_RUNNING = 0;
-    MDLTUIQuit();
-
-#ifdef _WIN32
-    ReleaseSemaphore (hSem, 1, NULL);
-    CloseHandle (hSem);
-#else
-    remove("data/download");
-#endif
-    quit_thread(0);
 }
 
 /*Processing*/
@@ -244,7 +124,6 @@ void mainDLProcessing(DATA_LOADED *** todoList)
             for(dataPos = 0; dataPos < nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++);
             if(dataPos < nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
             {
-                MDLDispDownloadHeader((*todoList)[dataPos]);
                 MDLStartHandler(dataPos, *todoList, &historiqueTeam);
             }
             else
@@ -254,10 +133,7 @@ void mainDLProcessing(DATA_LOADED *** todoList)
                     usleep(400);
                 }
                 else
-                {
-                    MDLDispDownloadHeader(NULL);
                     break;
-                }
             }
         }
         else
@@ -366,7 +242,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				}
 				else if(quit)
 				{
-					MDLDispDownloadHeader(NULL);
 					*input.currentState = MDL_CODE_DEFAULT;
 				}
 				else
@@ -439,7 +314,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
             while(*input.currentState != MDL_CODE_INSTALL)
                 usleep(250);
         }
-        MDLDispInstallHeader(input.todoList);
 
         for(i = 0; i < nombreElement; i++)
         {
@@ -471,8 +345,6 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 
     if(i != nbElemTotal) //une installation a été trouvée
         *status[i] = MDL_CODE_INSTALL;
-    else
-        MDLDispInstallHeader(NULL);
 
     if(!quit)
         MDLUpdateIcons(false);
@@ -727,131 +599,57 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
     return erreurs != 0;    //0 ou 1
 }
 
-/*UI*/
-
-int MDLDrawUI(DATA_LOADED** todoList, char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
+void MDLAddElements(DATA_LOADED *** todoList, int * nbElemTotal, MANGAS_DATA * cache, THREAD_TYPE *threadData)
 {
-    int curseurDebut = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, nbrElementDisp;
-    char texte[200];
+	int newNbElemTotal = *nbElemTotal;
+	DATA_LOADED ** ptr = MDL_updateDownloadList(cache, &newNbElemTotal, *todoList);
+	if(ptr == NULL)
+		return;
 
-
-    for(nbrElementDisp = 0; nbrElementDisp < MDL_NOMBRE_ELEMENT_COLONNE * MDL_NOMBRE_COLONNE && curseurDebut+nbrElementDisp < nbElemTotal; nbrElementDisp++)
-    {
-        if(todoList[curseurDebut+nbrElementDisp] == NULL || todoList[curseurDebut+nbrElementDisp]->datas == NULL)
-            continue;
-
-        if(todoList[curseurDebut+nbrElementDisp]->subFolder == false)
-            snprintf(texte, 200, "%s %s %d", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, trad[3], todoList[curseurDebut+nbrElementDisp]->chapitre / 10);
-        else
-        {
-            if(todoList[curseurDebut+nbrElementDisp]->tomeName == NULL)
-                snprintf(texte, 200, "%s %s %d", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, trad[4], todoList[curseurDebut+nbrElementDisp]->partOfTome);
-            else
-                snprintf(texte, 200, "%s: %s", todoList[curseurDebut+nbrElementDisp]->datas->mangaName, todoList[curseurDebut+nbrElementDisp]->tomeName);
-        }
-        changeTo(texte, '_', ' ');
-
-		
-		//Print the element here
-    }
-
-    if(nbrElementDisp > 0)
-    {
-		//Barre séparatrice
-    }
-
-    return nbrElementDisp;
-}
-
-void MDLUpdateIcons(bool ignoreCache)
-{
-    int posDansPage, posDebutPage = pageCourante * MDL_NOMBRE_ELEMENT_COLONNE, currentStatus;
-
-    /*RendererDL != NULL au cas où la fenêtre ai été fermée et que Rakshata soit en train de quitter*/
-    for(posDansPage = 0; posDansPage < MDL_NOMBRE_COLONNE * MDL_NOMBRE_ELEMENT_COLONNE && posDebutPage + posDansPage < nbElemTotal; posDansPage++)
-    {
-        currentStatus = *status[posDebutPage + posDansPage];
-        if(currentStatus != *statusCache[posDebutPage + posDansPage] || ignoreCache)
-        {
-			//x = (MDL_ICON_POS + (posDansPage / MDL_NOMBRE_ELEMENT_COLONNE) * MDL_ESPACE_INTERCOLONNE) * getRetinaZoom();
-            //y = (MDL_HAUTEUR_DEBUT_CATALOGUE + (posDansPage % MDL_NOMBRE_ELEMENT_COLONNE) * MDL_INTERLIGNE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2)) * getRetinaZoom();
-
-            //getIcon(rendererDL, *status[posDebutPage + posDansPage]);
-
-            *statusCache[posDebutPage + posDansPage] = currentStatus;
-        }
-    }
-}
-
-void MDLDispHeader(bool isInstall, DATA_LOADED *todoList)
-{
-    char texte[500], trad[SIZE_TRAD_ID_22][TRAD_LENGTH];
-    loadTrad(trad, 22);
-
-    if(todoList == NULL)
-        usstrcpy(texte, TRAD_LENGTH, trad[5+isInstall]);
-    else
-    {
-        snprintf(texte, 500, "%s %s %s %d %s %s", trad[isInstall], todoList->datas->mangaName, todoList->subFolder?trad[4]:trad[3], (todoList->subFolder?todoList->partOfTome:todoList->chapitre) / 10, trad[2], todoList->datas->team->teamLong);
-        changeTo(texte, '_', ' ');
-    }
-}
-
-bool MDLDispError(char trad[SIZE_TRAD_ID_22][TRAD_LENGTH])
-{
-    int ret_value = 0, nbErreurDL = -1, nbErreurInst, nbErreurIntern;
-    bool printDetails = false;
-    char contenu[5*TRAD_LENGTH + 100];
+	int ** ptr2 = realloc(status, (newNbElemTotal+1)*sizeof(int*));
+	int ** ptr3 = realloc(statusCache, (newNbElemTotal+1)*sizeof(int*));
+	if(ptr2 == NULL || ptr3 == NULL)
+	{
+		for(int i = newNbElemTotal-1; i > *nbElemTotal; free((*todoList)[i--]));
+		free(*ptr);
+		free(ptr);
+		free(ptr2);
+		free(ptr3);
+	}
+	else
+	{
+		for(; *nbElemTotal < newNbElemTotal; (*nbElemTotal)++)
+		{
+			ptr2[*nbElemTotal] = malloc(sizeof(int));
+			if(ptr2[*nbElemTotal] != NULL)
+				*ptr2[*nbElemTotal] = MDL_CODE_DEFAULT;
+			
+			ptr3[*nbElemTotal] = malloc(sizeof(int));
+			if(ptr3[*nbElemTotal] != NULL)
+				*ptr3[*nbElemTotal] = MDL_CODE_DEFAULT;
+		}
+		status = ptr2;
+		statusCache = ptr3;
+		*todoList = ptr;
+		MDLPHandle(*todoList, *nbElemTotal); //Si des trucs payants
+	}
 	
-    do
-    {
-        if(printDetails) //Nous allons assumer que contenu contient déjà l'alerte normale, sachant qu'elle doit être affichée pour
-        {
-            if(nbErreurDL == -1)
-            {
-                int i;
-                nbErreurDL = nbErreurInst = nbErreurIntern = 0;
-                for(i = 0; i < nbElemTotal; i++)
-                {
-                    if(*status[i] == MDL_CODE_ERROR_DL)
-                        nbErreurDL++;
-                    else if(*status[i] == MDL_CODE_ERROR_INSTALL)
-                        nbErreurInst++;
-                    else if(*status[i] == MDL_CODE_INTERNAL_ERROR)
-                        nbErreurIntern++;
-                }
-                if(nbErreurDL != 0)
-                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurDL>1?"s ":" ", trad[14], nbErreurDL);
-
-                if(nbErreurInst != 0)
-                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s%s%s %d", contenu, trad[13], nbErreurInst>1?"s ":" ", trad[15], nbErreurInst);
-
-                if(nbErreurIntern != 0)
-                    snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s %d", contenu, trad[16 + (nbErreurIntern>1)], nbErreurIntern);
-            }
-        }
-        else
-        {
-            snprintf(contenu, 5*TRAD_LENGTH+100, "%s\n%s", trad[8], trad[9]);
-            unescapeLineReturn(contenu);
-        }
-
-        if(ret_value == 1)
-            printDetails = !printDetails;
-    }while(ret_value != 0 && ret_value != 2);
-    return ret_value == 2;
+	if(!isThreadStillRunning(*threadData))
+	{
+		*threadData = createNewThreadRetValue(mainDLProcessing, todoList);
+	}
 }
 
 /*Final processing*/
-void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal, bool errorPrinted)
+void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal)
 {
     int currentPosition, printSomething = 0;
     FILE *import = fopen(INSTALL_DATABASE, "a+");
     if(import != NULL)
     {
-        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++) //currentPosition a déjà été incrémenté par le for précédent
+        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++)
         {
-            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || (!errorPrinted && *status[currentPosition] <= MDL_CODE_ERROR_DL))
+            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] <= MDL_CODE_ERROR_DL)
                 continue;
             else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {

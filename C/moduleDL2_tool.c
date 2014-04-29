@@ -819,12 +819,12 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 	return nombreChapitre;
 }
 
-void lancementModuleDL()
-{
-    createNewThread(MDLLauncher, NULL);
-}
-
 /*UI*/
+
+void MDLUpdateIcons()
+{
+	
+}
 
 void getIconPath(int status, char *path, uint length)
 {
