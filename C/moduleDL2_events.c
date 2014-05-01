@@ -10,42 +10,11 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "moduleDL.h"
-
-extern volatile bool quit;
-extern int pageCourante;
-extern int nbElemTotal;
-extern int **status;
-extern int **statusCache;
-
 /*Check externalized to readibility*/
 
-bool MDLisClicOnAValidX(int x, bool twoColumns)
-{
-    if(x >= MDL_ICON_POS && x <= MDL_ICON_POS + MDL_ICON_SIZE) //Première colonne
-        return true;
-    if(twoColumns && x >= MDL_ESPACE_INTERCOLONNE + MDL_ICON_POS&& x <= MDL_ESPACE_INTERCOLONNE + MDL_ICON_POS + MDL_ICON_SIZE) //Seconde colonne
-        return true;
-    return false;
-}
+/**		Code here to help writting comportement when new buttons will get clicked		**/
 
-int MDLisClicOnAValidY(int y, int nombreElement)
-{
-    y -= MDL_HAUTEUR_DEBUT_CATALOGUE - (MDL_ICON_SIZE / 2 - MDL_LARGEUR_FONT / 2);
-
-    if(y < 0) //Trop haut
-        return -1;
-
-    if(y % MDL_INTERLIGNE > MDL_ICON_SIZE) //Sous l'icone
-        return -1;
-
-    int ligne = y / MDL_INTERLIGNE;
-
-    if(ligne >= MDL_NOMBRE_ELEMENT_COLONNE || ligne >= nombreElement) //Sous les icones
-        return -1;
-
-    return ligne;
-}
+#if 0
 
 void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL)
 {
@@ -236,3 +205,4 @@ void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNon
     }
 }
 
+#endif

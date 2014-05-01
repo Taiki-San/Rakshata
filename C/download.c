@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "moduleDL.h"
-
 static CURLSH* cacheDNS;
 
 static double FILE_EXPECTED_SIZE;

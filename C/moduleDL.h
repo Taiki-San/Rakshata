@@ -97,7 +97,7 @@ typedef struct data_loaded_from_download_list
 
 typedef struct data_sent_to_pay_thread
 {
-    int ** statusLocal;
+    int8_t ** statusLocal;
     int prix;
     int sizeStatusLocal;
     unsigned int factureID;
@@ -137,13 +137,28 @@ typedef struct main_data_module_DL
     size_t length;
 } DATA_MOD_DL;
 
+typedef struct argument_to_main_worker
+{
+	DATA_LOADED **** todoList;
+	int8_t *** status;
+	uint * nbElemTotal;
+	
+	bool * quit;
+	void * mainTab;		//RakMDLController
+	
+} MDL_MWORKER_ARG;
+
 typedef struct argument_to_MDL_handler
 {
-    int *currentState;
+    int8_t *currentState;
     char ***historiqueTeam;
-    DATA_LOADED* todoList;
-
+    
+	DATA_LOADED* todoList;
     bool isTomeAndLastElem;
+	
+	int8_t *** fullStatus;
+	uint statusLength;
+	
 } MDL_HANDLER_ARG;
 
 extern int WINDOW_SIZE_H_DL;
@@ -153,21 +168,16 @@ extern int WINDOW_SIZE_W_DL;
 int download_UI(TMP_DL *output);
 
 /**ModuleDL2.c**/
-void startMDL(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList);
-void MDLCleanup(int nbElemTotal, DATA_LOADED *** todoList, MANGAS_DATA * cache);
-void mainDLProcessing(DATA_LOADED *** todoList);
-void MDLStartHandler(int posElement, DATA_LOADED ** todoList, char ***historiqueTeam);
-void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
-bool MDLTelechargement(DATA_MOD_DL* input);
-bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
+bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
+void MDLCleanup(int nbElemTotal, int ** status, int ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache);
 void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 #define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
-DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal);
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
@@ -179,20 +189,30 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void MDLUpdateIcons();
 void getIconPath(int status, char *path, uint length);
 
+/**ModuleDLMainWorker.m**/
+void mainDLProcessing(MDL_MWORKER_ARG * arg);
+void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t * status, char ***historiqueTeam);
+
+/**ModuleDLWorker.c**/
+void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
+bool MDLTelechargement(DATA_MOD_DL* input);
+void MDLUpdateKillState(bool newState);
+bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
+
 /**Module2_event.h**/
 bool MDLisClicOnAValidX(int x, bool twoColumns);
 int MDLisClicOnAValidY(int y, int nombreElement);
 void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
 
 /**Module2_paid.h**/
-void MDLPHandle(DATA_LOADED ** data, int length);
+void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length);
 char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
 void MDLPHandlePayProcedure(DATA_PAY * arg);
 bool waitForGetPaid(unsigned int factureID);
 void MDLPDestroyCache(unsigned int factureID);
 
-bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length);
-int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length);
+bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, int length);
+int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length);
 bool MDLPCheckIfPaid(unsigned int factureID);
 
 void MDLPDispAskToPay(int prix);

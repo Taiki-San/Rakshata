@@ -10,19 +10,16 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "moduleDL.h"
-
-extern volatile bool quit;
-extern int **status;
+extern bool quit;
 char password[100];
 
-void MDLPHandle(DATA_LOADED ** data, int length)
+void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
 {
     int *index = NULL;
-    if(!MDLPCheckAnythingPayable(data, length))
+    if(!MDLPCheckAnythingPayable(data, *status, length))
         return;
 
-    index = MDLPGeneratePaidIndex(data, length);
+    index = MDLPGeneratePaidIndex(data, *status, length);
     if(index != NULL)
     {
         int sizeIndex;
@@ -47,7 +44,7 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                     if(prix != -1 && factureID != -1)
                     {
                         int posStatusLocal = 0;
-                        int ** statusLocal = calloc(sizeIndex+1, sizeof(int*));
+                        int8_t ** statusLocal = calloc(sizeIndex+1, sizeof(int8_t*));
                         if(statusLocal != NULL)
                         {
                             bool somethingToPay = false, needLogin = false;
@@ -68,20 +65,20 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                     {
                                         case MDLP_CODE_ERROR:
                                         {
-                                            *status[index[pos]] = MDL_CODE_INTERNAL_ERROR;
+                                            *(*status)[index[pos]] = MDL_CODE_INTERNAL_ERROR;
                                             break;
                                         }
                                         case MDLP_CODE_PAID:
                                         {
-                                            *status[index[pos]] = MDL_CODE_WAITING_LOGIN;
-                                            statusLocal[posStatusLocal++] = status[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+                                            *(*status)[index[pos]] = MDL_CODE_WAITING_LOGIN;
+                                            statusLocal[posStatusLocal++] = (*status)[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
                                             needLogin = true;
                                             break;
                                         }
                                         case MDLP_CODE_TO_PAY:
                                         {
-                                            *status[index[pos]] = MDL_CODE_WAITING_PAY;
-                                            statusLocal[posStatusLocal++] = status[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+                                            *(*status)[index[pos]] = MDL_CODE_WAITING_PAY;
+                                            statusLocal[posStatusLocal++] = (*status)[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
                                             needLogin = somethingToPay = true;
                                             break;
                                         }
@@ -90,7 +87,7 @@ void MDLPHandle(DATA_LOADED ** data, int length)
                                 }
                             }
 							
-							for(; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);	//Manque
+							for(; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);	//Manque
 							
                             if(needLogin)
                             {
@@ -114,14 +111,14 @@ void MDLPHandle(DATA_LOADED ** data, int length)
 					else
 					{
 						int pos;
-						for(pos = 0; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
+						for(pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
 					}
 
                 }
                 else
 				{
 					int pos;
-					for(pos = 0; pos < sizeIndex; *status[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
+					for(pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
 				}
 				free(bufferOutBak);
             }
@@ -178,7 +175,8 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 void MDLPHandlePayProcedure(DATA_PAY * arg)
 {
     bool toPay = arg->somethingToPay, cancel = false;
-    int prix = arg->prix, sizeStatusLocal = arg->sizeStatusLocal, **statusLocal = arg->statusLocal;
+    int prix = arg->prix, sizeStatusLocal = arg->sizeStatusLocal;
+	int8_t **statusLocal = arg->statusLocal;
     unsigned int factureID = arg->factureID;
     free(arg);
 
@@ -262,7 +260,7 @@ void MDLPDestroyCache(unsigned int factureID)
 
 /** Checks **/
 
-bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length)
+bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, int length)
 {
     int i;
     for(i = 0; i < length; i++)
@@ -273,7 +271,7 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int length)
     return false;
 }
 
-int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int length)
+int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length)
 {
     /*Optimisation possible: réduire la taille du tableau alloué*/
     int * output = malloc((length +1) * sizeof(int));

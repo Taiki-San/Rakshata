@@ -12,7 +12,17 @@
 
 @interface RakMDLController : NSObject
 {
+	MANGAS_DATA * cache;
+	
 	THREAD_TYPE coreWorker;
+	DATA_LOADED *** todoList;
+	int8_t ** status;
+	int8_t ** statusCache;
+	uint nbElem;
+
+	bool quit;
 }
+
+- (void) lol;
 
 @end

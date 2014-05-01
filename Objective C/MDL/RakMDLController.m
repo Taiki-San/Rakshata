@@ -12,4 +12,25 @@
 
 @implementation RakMDLController
 
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		quit = false;
+		
+		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
+
+		startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+	}
+	
+	return self;
+}
+
+- (void) lol
+{
+	NSLog(@"Hey");
+}
+
 @end

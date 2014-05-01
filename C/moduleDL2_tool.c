@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "moduleDL.h"
 #include "MDLCache.h"
 
 extern char password[100];
@@ -85,9 +84,10 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     return output;
 }
 
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
+DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
 {
-    int oldDownloadListLength = *nombreMangaTotal, nombreEspace = 0, i;
+    uint oldDownloadListLength = *nombreMangaTotal;
+	int nombreEspace = 0, i;
 	bool dernierEspace = true;
 
     FILE* import = fopen(INSTALL_DATABASE, "r");
@@ -236,9 +236,9 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, int* nombreMangaTota
     return NULL;
 }
 
-DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, int *nombreMangaTotal)
+DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal)
 {
-    int curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = originalSize;
+    uint curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = originalSize;
     for(; curPos < originalSize; curPos++)
     {
         if(currentList[curPos] == NULL)
