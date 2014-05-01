@@ -11,5 +11,8 @@
  *********************************************************************************************/
 
 @interface RakMDLList : RakList
+{
+	RakMDLController * controller;
+}
 
 @end

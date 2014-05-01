@@ -45,20 +45,27 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 	
 	//update the database from network (heavy part)
 	updateProjectsFromTeam(fullData, posStart, posEnd, true);
-    updateIfRequired(mangaDB, RDB_CTXLECTEUR);
+	
+	mangaDB->chapitres = NULL;		mangaDB->tomes = NULL;
+	
+    if(!updateIfRequired(mangaDB, RDB_CTXLECTEUR))
+	{
+		refreshChaptersList(mangaDB);
+		refreshTomeList(mangaDB);
+	}
 
     uint firstNewElem;
     
 	if(isTome)
 	{
 		for(firstNewElem = mangaDB->nombreTomes-1; firstNewElem > 0 && mangaDB->tomes[firstNewElem].ID > CT; firstNewElem--);
-		firstNewElem = mangaDB->nombreTomes - firstNewElem;
+		firstNewElem = mangaDB->nombreTomes - 1 - firstNewElem;
 	}
 
     else
 	{
         for(firstNewElem = mangaDB->nombreChapitre-1; firstNewElem > 0 && mangaDB->chapitres[firstNewElem] > CT; firstNewElem--);
-		firstNewElem = mangaDB->nombreChapitre - firstNewElem;
+		firstNewElem = mangaDB->nombreChapitre - 1 - firstNewElem;
 	}
     
     return firstNewElem;

@@ -72,10 +72,11 @@ void updateFavorites()
             snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].lastChapter, CONFIGFILE);
             if(!checkFileExist(temp))
             {
-                do
+                do	//Fix some issues when synchronous read/write (probably optimized out by the compiler anyway
                 {
                     favorisToDL = 1;
                 } while(!favorisToDL);
+				
                 break;
             }
         }
@@ -83,12 +84,10 @@ void updateFavorites()
     freeMangaData(mangaDB);
     if(!favorisToDL)
     {
-        while(1)
-        {
-            favorisToDL = -1;
-            if(favorisToDL == -1) //Un petit truc au cas où
-                break;
-        }
+        do	//Fix some issues when synchronous read/write (probably optimized out by the compiler anyway
+		{
+			favorisToDL = -1;
+		} while(favorisToDL != -1);
     }
 }
 
@@ -107,6 +106,7 @@ void getNewFavs()
     {
         if(mangaDB[i].favoris)
         {
+			refreshChaptersList(&mangaDB[i]);
             if(mangaDB[i].chapitres != NULL)
 			{
 				maxValue = mangaDB[i].nombreChapitre;
@@ -125,6 +125,8 @@ void getNewFavs()
 					}
 				}
 			}
+			
+			refreshTomeList(&mangaDB[i]);
 			if(mangaDB[i].tomes != NULL)
 			{
 				maxValue = mangaDB[i].nombreTomes;

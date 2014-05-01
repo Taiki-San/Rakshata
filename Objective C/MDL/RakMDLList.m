@@ -12,4 +12,16 @@
 
 @implementation RakMDLList
 
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		controller = [[RakMDLController alloc] init];
+	}
+	
+	return nil;
+}
+
 @end

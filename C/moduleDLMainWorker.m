@@ -32,10 +32,10 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	MDLUpdateKillState(*quit);
 	
 	//On va lancer le premier élément
-	for(dataPos = 0; dataPos < *nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
-	if(dataPos < *nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
+	for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+	if(dataPos < *nbElemTotal && *(*status)[dataPos] == MDL_CODE_DEFAULT)
 	{
-		MDLStartHandler(dataPos, *nbElemTotal, **todoList, (*status)[dataPos], &historiqueTeam);
+		MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
 	}
 	
 	
@@ -56,7 +56,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 
 			if(dataPos < *nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
 			{
-				MDLStartHandler(dataPos, *nbElemTotal, **todoList, (*status)[dataPos], &historiqueTeam);
+				MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
 			}
 			else
 			{
@@ -93,7 +93,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	quit_thread(0);
 }
 
-void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t * status, char ***historiqueTeam)
+void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam)
 {
     if(todoList[posElement] != NULL)
     {
@@ -103,10 +103,13 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
             memoryError(sizeof(MDL_HANDLER_ARG));
             return;
         }
-        *status = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
+        *(*status)[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
         argument->todoList = todoList[posElement];
-        argument->currentState = status;
+        argument->currentState = (*status)[posElement];
         argument->historiqueTeam = historiqueTeam;
+		argument->fullStatus = status;
+		argument->statusLength = nbElemTotal;
+		
         if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
             argument->isTomeAndLastElem = true;
         else
@@ -115,7 +118,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
     }
     else
     {
-        *status = MDL_CODE_INTERNAL_ERROR;
+        *(*status)[posElement] = MDL_CODE_INTERNAL_ERROR;
     }
 }
 

@@ -91,6 +91,10 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 	bool dernierEspace = true;
 
     FILE* import = fopen(INSTALL_DATABASE, "r");
+	
+	if(import == NULL)
+		return NULL;
+	
     while((i = fgetc(import)) != EOF)
     {
         if(i == ' ')

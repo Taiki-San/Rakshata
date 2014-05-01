@@ -35,7 +35,7 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
     *status = malloc((*nbElemTotal+1) * sizeof(int*));
     *statusCache = malloc((*nbElemTotal+1) * sizeof(int*));
 
-    if(status == NULL || statusCache == NULL)
+    if(*status == NULL || *statusCache == NULL)
 	{
 		free(*status);		*status = NULL;
 		free(*statusCache);	*statusCache = NULL;
@@ -46,7 +46,7 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
     {
         (*status)[i] = malloc(sizeof(int));
         (*statusCache)[i] = malloc(sizeof(int));
-        (*statusCache)[i] = (*status)[i] = MDL_CODE_DEFAULT;
+        *(*statusCache)[i] = *(*status)[i] = MDL_CODE_DEFAULT;
     }
 	
 	(*status)[i] = (*statusCache)[i] = NULL;

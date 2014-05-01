@@ -357,7 +357,7 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
             snprintf((char *)chapter, 15, "%ld", type);
 #endif
 
-            pbkdf2((uint8_t *) temp, chapter, hash);
+			internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
 
             crashTemp(temp, 256);
             snprintf(pathToConfigFile, strlen(path) + 50, "%s/config.enc", path);

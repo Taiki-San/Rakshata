@@ -207,7 +207,7 @@ void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
-    uint curPosInConfigEnc, posInKeyOut, length, lengthPath = strlen(pathRoot) + 60;
+    uint curPosInConfigEnc, posInKeyOut, lengthPath = strlen(pathRoot) + 60;
     rawData *configEnc = NULL;
     char path[lengthPath];
     unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
@@ -246,21 +246,6 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         logR("Huge fail: database corrupted\n");
         free(configEnc);
         return NULL;
-    }
-
-    length = ustrlen(configEnc); //pour le \0
-    for(curPosInConfigEnc = 0; curPosInConfigEnc < length && configEnc[curPosInConfigEnc] != ' '; curPosInConfigEnc++); //On saute le nombre de page
-    if((length - curPosInConfigEnc) % (SHA256_DIGEST_LENGTH + curPosInConfigEnc) && (length - curPosInConfigEnc) % (2*SHA256_DIGEST_LENGTH+1))
-    {
-        //Une fois, le nombre de caractère ne collait pas mais on se finissait par un espace donc ça changait rien
-        //Au cas où ça se reproduit, cette condition devrait bloquer le bug
-        if(((length - curPosInConfigEnc) % (SHA256_DIGEST_LENGTH+1) != 1 && (length - curPosInConfigEnc) % (2*SHA256_DIGEST_LENGTH+1) != 1) || configEnc[length-1] != ' ')
-        {
-            logR("Huge fail: database corrupted\n");
-            for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
-            free(configEnc);
-            return NULL;
-        }
     }
 
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);

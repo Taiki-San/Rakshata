@@ -26,6 +26,9 @@
 	
 	for(byte i = 0; i < 4; i++)
 	{
+		if(chain[i] == nil)
+			chain[i] = @"Luna is bored";
+		
 		intermediaryBuffer = [chain[i] UTF8String];
 		length = strlen(intermediaryBuffer);
 		

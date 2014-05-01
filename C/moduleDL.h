@@ -191,7 +191,7 @@ void getIconPath(int status, char *path, uint length);
 
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);
-void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t * status, char ***historiqueTeam);
+void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam);
 
 /**ModuleDLWorker.c**/
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);

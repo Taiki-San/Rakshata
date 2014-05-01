@@ -22,7 +22,10 @@
 		
 		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
 
-		startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+		if(startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self) == false)
+		{
+			[self release];			self = nil;
+		}
 	}
 	
 	return self;
