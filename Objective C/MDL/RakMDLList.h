@@ -13,6 +13,14 @@
 @interface RakMDLList : RakList
 {
 	RakMDLController * controller;
+	
+	CGFloat cellHeight;
+	
+	RakButton * pause;
+	RakButton * read;
+	RakButton * remove;
 }
+
+- (id) init : (NSRect) frame;
 
 @end

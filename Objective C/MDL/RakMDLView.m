@@ -24,10 +24,20 @@
 		if(headerText != nil)		[self addSubview:headerText];
 		
 		
-		MDLList = [[RakMDLList alloc] init];
+		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]]];
 		if(MDLList != nil)			[MDLList setSuperView:self];
 	}	
 	return self;
+}
+
+- (NSRect) getMainListFrame : (NSRect) bounds
+{
+	NSRect output = bounds;
+	
+	if(headerText != nil)
+		output.size.height -= headerText.frame.size.height;
+	
+	return output;
 }
 
 /** Proxy work **/

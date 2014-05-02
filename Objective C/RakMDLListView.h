@@ -10,25 +10,24 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakButton: NSButton
-
-+ (id) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall;
-+ (id) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
-- (void) refreshViewSize;
-
-@end
-
-@interface RakButtonCell : NSButtonCell
+@interface RakMDLListView : NSView
 {
-	bool notAvailable;
+	RakButton * _pause;
+	RakButton * _read;
+	RakButton * _remove;
 	
-	NSImage *nonClicked;
-	NSImage *clicked;
-	NSImage *unAvailable;
+	CGFloat iconWidth;
+	
+	RakText * requestName;
+	RakText * statusText;
 }
 
-- (id) initWithPage : (NSString*) imageName : (short) state;
-- (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
-- (id) copyWithZone:(NSZone *)zone;
+- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller;
+- (void) setFont : (NSFont*) font;
+- (void) updateData : (id) data;
+
+- (void) sendRemove;
+- (void) sendPause;
+- (void) sendRead;
 
 @end

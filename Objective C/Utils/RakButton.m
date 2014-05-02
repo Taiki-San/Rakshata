@@ -39,12 +39,15 @@
 				[output setAction:selectorToCall];
 			}
 			
-			//Set origin
-			origin.x -= cell.cellSize.width / 2;
-			[output setFrameOrigin: origin];
-			
-			//Add to the superview
-			[superView addSubview:output];
+			if(superView != nil)
+			{
+				//Set origin
+				origin.x -= cell.cellSize.width / 2;
+				[output setFrameOrigin: origin];
+				
+				//Add to the superview
+				[superView addSubview:output];
+			}
 		}
 		else
 		{
@@ -100,6 +103,24 @@
 	return output;
 }
 
+- (id) copyWithZone:(NSZone *)zone
+{
+	RakButton * output = [[RakButton allocWithZone:zone] init];
+	
+	if(output != nil)
+	{
+		[output setCell:[self.cell copy]];
+		
+		output.wantsLayer = YES;
+		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
+		output.layer.cornerRadius = 4;
+		[output setBordered:NO];
+	}
+	
+	return output;
+	
+}
+
 + (Class) cellClass
 {
 	return [RakButtonCell class];
@@ -145,6 +166,29 @@
 	
 	return self;
 }
+
+- (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		clicked = _clicked;
+		nonClicked = _nonClicked;
+		unAvailable = _unAvailable;
+		
+		[self setImage:nonClicked];
+	}
+	
+	return self;
+	
+}
+
+- (id) copyWithZone:(NSZone *)zone
+{
+	return [[RakButtonCell allocWithZone:zone] initWithRawData:clicked :nonClicked :unAvailable];
+}
+
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {

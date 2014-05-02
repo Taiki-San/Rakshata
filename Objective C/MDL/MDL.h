@@ -12,6 +12,7 @@
 
 #import "RakMDLRessources.h"
 #import "RakMDLController.h"
+#import "RakMDLListView.h"
 #import "RakMDLList.h"
 #import "RakMDLView.h"
 
