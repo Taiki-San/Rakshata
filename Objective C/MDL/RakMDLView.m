@@ -30,12 +30,12 @@
 	return self;
 }
 
-- (NSRect) getMainListFrame : (NSRect) bounds
+- (NSRect) getMainListFrame : (NSRect) output
 {
-	NSRect output = bounds;
+	output.origin.x = output.origin.y = 0;
 	
 	if(headerText != nil)
-		output.size.height -= headerText.frame.size.height;
+		output.size.height -= 5 + headerText.frame.size.height;
 	
 	return output;
 }
@@ -45,6 +45,7 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:newBound];
+	[MDLList setFrame:[self getMainListFrame:newBound]];
 }
 
 - (void) resizeAnimation : (NSRect) frame
@@ -54,6 +55,7 @@
 	frame.origin.x = frame.origin.y = 0;
 	
 	[headerText.animator setFrame:[headerText getMenuFrame:frame]];
+	[MDLList resizeAnimation:[self getMainListFrame:frame]];
 }
 
 /** Color **/

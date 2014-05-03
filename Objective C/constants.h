@@ -12,8 +12,8 @@
 
 /** Window behavior **/
 
-#define SIZE_MIN_HEIGHT 600
-#define SIZE_MIN_WIDTH 950
+#define SIZE_MIN_HEIGHT 410
+#define SIZE_MIN_WIDTH 700
 #define BORDER_WIDTH 4
 
 #pragma mark	-	Reader

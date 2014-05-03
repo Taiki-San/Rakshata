@@ -18,6 +18,17 @@
 	
 	if(self != nil)
 	{
+		isSecondTextHidden = YES;
+		
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [NSColor grayColor].CGColor;
+		
+		requestName = [[RakText alloc] initWithText:self.bounds : @"Attack on Titan chapitre XX" : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
+		
+		statusText = [[RakText alloc] initWithText:self.bounds : @"Terminé" : [Prefs getSystemColor:GET_COLOR_ACTIVE]];
+		if(statusText != nil)		{		[statusText sizeToFit];		}
+		
 		_pause = [pause copy];
 		if(_pause != nil)		[self addSubview:_pause];
 		
@@ -29,20 +40,11 @@
 		
 		iconWidth = [_remove frame].size.width;
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : @"Dummy request 1" : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
-		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
-		
-		statusText = [[RakText alloc] initWithText:self.bounds : @"Dummy request 2" : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
-		if(statusText != nil)		{		[statusText sizeToFit];		[self addSubview:statusText];		}
-		
 		[_pause setTarget:self];		[_pause setAction:@selector(sendPause)];
 		[_read setTarget:self];			[_read setAction:@selector(sendRead)];
 		[_remove setTarget:self];		[_remove setAction:@selector(sendRemove)];
 		
 		[self setPositionsOfStuffs];
-		
-/*		[self setWantsLayer:YES];
-		[self.layer setBackgroundColor:[NSColor whiteColor].CGColor];*/
 	}
 	
 	return self;
@@ -69,7 +71,7 @@
 		[requestName setFrameOrigin:newPoint];
 	}
 	
-	newPoint.x = frame.size.width;
+	newPoint.x = frame.size.width - 3;
 	
 	if (_remove != nil)
 	{
@@ -78,7 +80,7 @@
 		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
 		newPoint.x -= 5 + curFrame.size.width;
 		
-		[_remove setFrameOrigin:NSMakePoint(0, 0)];//newPoint];
+		[_remove setFrameOrigin:newPoint];
 	}
 	
 	if (_pause != nil)
@@ -93,13 +95,37 @@
 	
 	if(statusText != nil)
 	{
-		curFrame = statusText.frame;
-
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-		newPoint.x -= 5 + curFrame.size.width;
-		
-		[statusText setFrameOrigin:newPoint];
+		if(frame.size.width > 300)
+		{
+			if(isSecondTextHidden)
+			{
+				isSecondTextHidden = NO;
+				[self addSubview:statusText];
+			}
+			
+			curFrame = statusText.frame;
+			
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.x -= curFrame.size.width;
+			
+			[statusText setFrameOrigin:newPoint];
+		}
+		else if(!isSecondTextHidden)
+		{
+			isSecondTextHidden = YES;
+			[statusText removeFromSuperview];
+		}
 	}
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	bool reposition = frameRect.size.width != self.frame.size.width || frameRect.size.height != self.frame.size.height;
+	
+	[super setFrame:frameRect];
+
+	if(reposition)
+		[self setPositionsOfStuffs];
 }
 
 - (void) updateData : (id) data

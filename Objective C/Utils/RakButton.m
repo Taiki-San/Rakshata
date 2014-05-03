@@ -111,9 +111,7 @@
 	{
 		[output setCell:[self.cell copy]];
 		
-		output.wantsLayer = YES;
-		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
-		output.layer.cornerRadius = 4;
+		[output sizeToFit];
 		[output setBordered:NO];
 	}
 	

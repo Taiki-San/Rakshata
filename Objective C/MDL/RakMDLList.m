@@ -28,15 +28,26 @@
 			[self release];
 			return nil;
 		}
+		else
+		{
+			[pause setBordered:YES];		[read setBordered:YES];			[remove setBordered:YES];
+		}
 		
 		controller = [[RakMDLController alloc] init];
 		
-		cellHeight = [remove frame].size.height;
-		
+		cellHeight = 20;
+				
 		[self applyContext:frame : -1 : -1];
+		[_tableView setRowHeight:cellHeight];
+		[scrollView setHasHorizontalScroller:NO];
 	}
 	
 	return self;
+}
+
+- (void) resizeAnimation: (NSRect) frameRect
+{
+	[scrollView.animator setFrame:[self getTableViewFrame:frameRect]];
 }
 
 - (bool) didInitWentWell

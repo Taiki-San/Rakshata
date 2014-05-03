@@ -152,7 +152,7 @@
 			
 		case 4:			//previous page
 		{
-			output = width / 2 - 5;
+			output = width / 2 - 10;
 			
 			if(prevPage != nil)
 				output -= prevPage.frame.size.width;
@@ -162,7 +162,7 @@
 			
 		case 5:			//next page
 		{
-			output = width / 2 + 5;
+			output = width / 2 + 10;
 			break;
 		}
 			

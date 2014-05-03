@@ -22,5 +22,6 @@
 }
 
 - (id) init : (NSRect) frame;
+- (void) resizeAnimation: (NSRect) frameRect;
 
 @end

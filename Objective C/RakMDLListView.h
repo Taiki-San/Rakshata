@@ -12,6 +12,8 @@
 
 @interface RakMDLListView : NSView
 {
+	BOOL isSecondTextHidden;
+	
 	RakButton * _pause;
 	RakButton * _read;
 	RakButton * _remove;
