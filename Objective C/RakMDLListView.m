@@ -12,18 +12,40 @@
 
 @implementation RakMDLListView
 
-- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller
+- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID
 {
 	self = [self initWithFrame: NSMakeRect(0, 0, width, height)];
 	
 	if(self != nil)
 	{
 		isSecondTextHidden = YES;
+		_controller = controller;
+		_row = rowID;
 		
-		self.wantsLayer = YES;
-		self.layer.backgroundColor = [NSColor grayColor].CGColor;
+		todoList = [_controller getData:_row];
+		if(todoList == NULL)
+		{
+			[self release];
+			return nil;
+		}
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : @"Attack on Titan chapitre XX" : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		NSString * name;
+		
+		if((*todoList)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		{
+			name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10];
+		}
+		else
+		{
+			if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
+				name = [NSString stringWithFormat:@"%s %s", (*todoList)->datas->mangaName, (*todoList)->tomeName];
+			else
+				name = [NSString stringWithFormat:@"%s tome %d", (*todoList)->datas->mangaName, (*todoList)->partOfTome];
+		}
+		
+		name = [name stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+		
+		requestName = [[RakText alloc] initWithText:self.bounds : name : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
 		
 		statusText = [[RakText alloc] initWithText:self.bounds : @"Terminé" : [Prefs getSystemColor:GET_COLOR_ACTIVE]];
@@ -128,7 +150,7 @@
 		[self setPositionsOfStuffs];
 }
 
-- (void) updateData : (id) data
+- (void) updateData : (uint) data
 {
 	NSLog(@"Supposed to update stuffs");
 }

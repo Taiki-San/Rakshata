@@ -185,12 +185,26 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	CGFloat posCT, posReader;
+	CGFloat posCT, posReader, MDLHeight;
 	NSRect frame = viewFrame;
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&posCT];
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
 	frame.size.width = (posReader - posCT) * self.superview.frame.size.width / 100;
-	frame.origin.x = frame.origin.y = 0;
+	
+	NSArray * subviews = [self.superview subviews];
+	for (MDLHeight = 0; MDLHeight < [subviews count] && [[subviews objectAtIndex:MDLHeight] class] != [MDL class]; MDLHeight++);
+	
+	if(MDLHeight < [subviews count])
+	{
+		MDL * object = [subviews objectAtIndex:MDLHeight];
+		MDLHeight = [object frame].size.height - [object frame].origin.y - viewFrame.origin.y;
+		
+		frame.origin.y = MDLHeight;
+		frame.size.height -= MDLHeight;
+	}
+	else
+		frame.origin.y = 0;
+	
 	return frame;
 }
 

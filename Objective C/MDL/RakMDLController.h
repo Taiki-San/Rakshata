@@ -23,6 +23,8 @@
 	bool quit;
 }
 
+- (uint) getNbElem;
+- (DATA_LOADED **) getData : (uint) row;
 - (void) lol;
 
 @end

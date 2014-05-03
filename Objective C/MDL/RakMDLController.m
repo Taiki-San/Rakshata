@@ -31,6 +31,19 @@
 	return self;
 }
 
+- (uint) getNbElem
+{
+	return nbElem;
+}
+
+- (DATA_LOADED **) getData : (uint) row
+{
+	if(row >= nbElem)
+		return NULL;
+	
+	return &(*todoList)[row];
+}
+
 - (void) lol
 {
 	NSLog(@"Hey");

@@ -29,8 +29,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     size_t *listSizeDL;
     DATA_LOADED todoListTmp;
     DATA_MOD_DL argument;
-    bool subFolder = input.todoList->subFolder;
-    int i, nombreElement = subFolder ? input.todoList->chapitre : 1;
+    bool isTome = input.todoList->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE;
+    int i, nombreElement = isTome ? input.todoList->chapitre : 1;
 	uint posTomeInStruct = 0xffffffff;
 	
     argument.todoList = &todoListTmp;
@@ -54,7 +54,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     {
         todoListTmp.listChapitreOfTome = NULL;
         todoListTmp.tomeName = NULL;
-        if(!subFolder)
+        if(!isTome)
 		{
             todoListTmp.chapitre = input.todoList->chapitre;
             todoListTmp.subFolder = false;
@@ -98,7 +98,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 			case ALTERNATIVE_INSTALLED:		//Le chapitre existe et à été installé par un tome
 			{
-				if(!subFolder && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
+				if(!isTome && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
 				{
 					char oldPath[2*LONGUEUR_NOM_MANGA_MAX + 384], newPath[2*LONGUEUR_NOM_MANGA_MAX + 256];
 					if(todoListTmp.chapitre % 10)
@@ -126,7 +126,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 			case ALREADY_INSTALLED:			//Le chapitre est déjà installé indépendament
 			{
-				if(subFolder)	//tome
+				if(isTome)
 				{
 					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
 				}
@@ -160,8 +160,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         for(i = 0; i < nombreElement; i++)
         {
             if(listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
-													subFolder ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
-													input.todoList->partOfTome, subFolder, input.isTomeAndLastElem && i == nombreElement-1)) {
+													isTome ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
+													input.todoList->partOfTome, input.todoList->subFolder, input.isTomeAndLastElem && i == nombreElement-1)) {
                 error++;
             }
             free(listDL[i]); //Free un ptr null ne pose pas de problèmes

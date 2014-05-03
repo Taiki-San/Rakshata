@@ -269,8 +269,6 @@
 	readerMode = isReaderMode;
 	
 	[self resizeReaderCatchArea : readerMode];
-	
-	//[self setFrame:[self frame]];	//Redraw with the final context
 }
 
 - (BOOL) isStillCollapsedReaderTab

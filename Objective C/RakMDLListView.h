@@ -22,11 +22,15 @@
 	
 	RakText * requestName;
 	RakText * statusText;
+	
+	RakMDLController * _controller;
+	uint _row;
+	DATA_LOADED ** todoList;
 }
 
-- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller;
+- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID;
 - (void) setFont : (NSFont*) font;
-- (void) updateData : (id) data;
+- (void) updateData : (uint) data;
 
 - (void) sendRemove;
 - (void) sendPause;

@@ -18,7 +18,6 @@
 	
 	if(self != nil)
 	{
-		amountData = 42;
 		pause = [[RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil] retain];
 		read = [[RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil] retain];
 		remove = [[RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil] retain];
@@ -34,6 +33,16 @@
 		}
 		
 		controller = [[RakMDLController alloc] init];
+		if(controller == nil)
+		{
+			[pause release]; [pause release]; pause = nil;
+			[read release];  [read release];  read = nil;
+			[remove release]; [remove release]; remove = nil;
+			[self release];
+			return nil;
+		}
+		else
+			amountData = [controller getNbElem];
 		
 		cellHeight = 20;
 				
@@ -62,14 +71,12 @@
 	return amountData;
 }
 
-- (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+- (NSNumber*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if(rowIndex >= amountData)
 		return nil;
 	
-	NSString * output = @"Not so dummy request";
-	
-	return output;
+	return @(rowIndex);
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
@@ -82,7 +89,7 @@
 	{
 		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
 		// Note that the height of the frame is not really relevant, because the row height will modify the height.
-		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :pause :read :remove :nil];
+		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :pause :read :remove : controller : row];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		
@@ -90,7 +97,7 @@
 	}
 	else
 	{
-		[result updateData : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
+		[result updateData : row];
 	}
 	
 	// Return the result
