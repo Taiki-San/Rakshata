@@ -81,7 +81,6 @@
 		B6F6ECF518A3001400E3B55B /* engine.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB318A3001400E3B55B /* engine.c */; };
 		B6F6ECF618A3001400E3B55B /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB418A3001400E3B55B /* error.c */; };
 		B6F6ECF718A3001400E3B55B /* favoris.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB618A3001400E3B55B /* favoris.c */; };
-		B6F6ECF818A3001400E3B55B /* graphics.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECB818A3001400E3B55B /* graphics.c */; };
 		B6F6ECF918A3001400E3B55B /* interface.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBA18A3001400E3B55B /* interface.c */; };
 		B6F6ECFB18A3001400E3B55B /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBC18A3001400E3B55B /* keys.c */; };
 		B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */; };
@@ -245,7 +244,6 @@
 		B6F6ECB518A3001400E3B55B /* externs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externs.h; path = C/externs.h; sourceTree = "<group>"; };
 		B6F6ECB618A3001400E3B55B /* favoris.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = favoris.c; path = C/favoris.c; sourceTree = "<group>"; };
 		B6F6ECB718A3001400E3B55B /* fonctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fonctions.h; path = C/fonctions.h; sourceTree = "<group>"; };
-		B6F6ECB818A3001400E3B55B /* graphics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = graphics.c; path = C/graphics.c; sourceTree = "<group>"; };
 		B6F6ECB918A3001400E3B55B /* graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics.h; path = C/graphics.h; sourceTree = "<group>"; };
 		B6F6ECBA18A3001400E3B55B /* interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interface.c; path = C/interface.c; sourceTree = "<group>"; };
 		B6F6ECBC18A3001400E3B55B /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/keys.c; sourceTree = "<group>"; };
@@ -615,7 +613,6 @@
 		B6F6ED1C18A3006700E3B55B /* Interface with UI */ = {
 			isa = PBXGroup;
 			children = (
-				B6F6ECB818A3001400E3B55B /* graphics.c */,
 				B646EA7918A6EEFF00F96F8A /* errors.m */,
 				B6EA520818A4161100A9B16E /* interface.h */,
 				B6EA520618A4111000A9B16E /* interface.m */,
@@ -826,7 +823,6 @@
 				B6F6ECF718A3001400E3B55B /* favoris.c in Sources */,
 				B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */,
 				B69D61DE186CA3D0003504F9 /* MDL.m in Sources */,
-				B6F6ECF818A3001400E3B55B /* graphics.c in Sources */,
 				B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */,
 				B6F6ED0D18A3001400E3B55B /* securite.c in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,

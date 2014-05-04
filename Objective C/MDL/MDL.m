@@ -32,7 +32,10 @@
 {
 	coreView = [[RakMDLView alloc]  initContent:[self getCoreviewFrame : [self bounds]] : state];
 	if(coreView != nil)
+	{
 		[self addSubview:coreView];
+		[self setFrame:self.frame];
+	}
 }
 
 /*Coreview manipulation*/
@@ -51,10 +54,15 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self createFrameWithSuperView:self.superview]];
+	NSRect newFrame = [self createFrameWithSuperView:self.superview];
 	
-	if(coreView != nil)
-		[coreView setFrame:[self getCoreviewFrame : frameRect]];
+	if([self wouldFrameChange:newFrame])
+	{
+		[super setFrame:newFrame];
+		
+		if(coreView != nil)
+			[coreView setFrame:[self getCoreviewFrame : newFrame]];
+	}
 }
 
 /*Internal stuffs*/

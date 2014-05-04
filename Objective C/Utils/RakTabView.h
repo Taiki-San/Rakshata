@@ -77,6 +77,7 @@ enum {
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
 - (id) getMDL;
+- (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 @end
 

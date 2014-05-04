@@ -237,9 +237,12 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
-	[mainImage setFrame:frameRect];
-	[bottomBar setFrame:frameRect];
+	if([self wouldFrameChange:frameRect])
+	{
+		[super setFrame:frameRect];
+		[mainImage setFrame:frameRect];
+		[bottomBar setFrame:frameRect];
+	}
 }
 
 - (void) readerIsOpening : (byte) context

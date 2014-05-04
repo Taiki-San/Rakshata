@@ -154,12 +154,15 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
-	
-	[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
-	[backButton setFrame:[self backButtonFrame]];
-	
-	[coreView setFrame:[self getCoreviewFrame]];
+	if([self wouldFrameChange:frameRect])
+	{
+		[super setFrame:frameRect];
+		
+		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+		[backButton setFrame:[self backButtonFrame]];
+		
+		[coreView setFrame:[self getCoreviewFrame]];
+	}
 }
 
 - (void) refreshViewSize

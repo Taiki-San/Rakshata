@@ -173,8 +173,11 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
-	[self resizeReaderCatchArea : readerMode];
+	if([self wouldFrameChange:frameRect])
+	{
+		[super setFrame:frameRect];
+		[self resizeReaderCatchArea : readerMode];
+	}
 }
 
 - (void) refreshViewSize
@@ -456,6 +459,13 @@
 		return [subviews objectAtIndex:pos];
 	
 	return nil;
+}
+
+- (BOOL) wouldFrameChange : (NSRect) newFrame
+{
+	NSRect prevFrame = [self frame];
+	
+	return memcmp(&prevFrame, &newFrame, sizeof(NSRect)) != 0;
 }
 
 @end

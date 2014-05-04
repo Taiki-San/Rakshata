@@ -408,7 +408,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			if(value & GUI_THREAD_MDL && !(mainThread & GUI_THREAD_MDL))
 				backgroundTabsState = mainThread;
 			
-			mainThread = value & GUI_MASK;
+			mainThread = value & GUI_THREAD_MASK;
 			[prefsCache refreshFirstResponder];
 			
 			break;

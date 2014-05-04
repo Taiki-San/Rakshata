@@ -100,8 +100,15 @@
 
 - (void) setFrame : (NSRect) frameRect
 {
+	CGFloat oldWidth = _tableView.frame.size.width;
+
 	[scrollView setFrame:[self getTableViewFrame:frameRect]];
-	[_tableView reloadData];
+	
+	if(oldWidth != frameRect.size.width)
+	{
+		[_tableView setFrame:scrollView.frame];
+		[_tableView reloadData];
+	}
 }
 
 - (void) setHidden : (bool) state
