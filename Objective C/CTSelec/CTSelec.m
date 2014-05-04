@@ -191,6 +191,8 @@
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
 	frame.size.width = (posReader - posCT) * self.superview.frame.size.width / 100;
 	
+	frame.origin.x = 0;
+	
 	NSArray * subviews = [self.superview subviews];
 	for (MDLHeight = 0; MDLHeight < [subviews count] && [[subviews objectAtIndex:MDLHeight] class] != [MDL class]; MDLHeight++);
 	
@@ -199,8 +201,13 @@
 		MDL * object = [subviews objectAtIndex:MDLHeight];
 		MDLHeight = [object frame].size.height - [object frame].origin.y - viewFrame.origin.y;
 		
-		frame.origin.y = MDLHeight;
-		frame.size.height -= MDLHeight;
+		if(MDLHeight > 0)
+		{
+			frame.origin.y = MDLHeight;
+			frame.size.height -= MDLHeight;
+		}
+		else
+			frame.origin.y = 0;
 	}
 	else
 		frame.origin.y = 0;
@@ -260,10 +267,7 @@
 			if([(elem = [superview.subviews objectAtIndex:i]) class] == [Reader class])
 				readerTab = elem;
 			else if([elem class] == [MDL class])
-			{
 				MDLTab = elem;
-				break;
-			}
 		}
 		
 		if(readerTab != nil)
