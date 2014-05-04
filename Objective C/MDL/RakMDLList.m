@@ -54,6 +54,14 @@
 	return self;
 }
 
+- (CGFloat) contentHeight
+{
+	if(scrollView == nil)
+		return 0;
+	
+	return _tableView.frame.size.height;
+}
+
 - (void) resizeAnimation: (NSRect) frameRect
 {
 	[scrollView.animator setFrame:[self getTableViewFrame:frameRect]];

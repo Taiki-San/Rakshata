@@ -76,6 +76,8 @@ enum {
 - (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
+- (id) getMDL;
+
 @end
 
 @interface RakTabAnimationResize : NSObject

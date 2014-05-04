@@ -17,6 +17,8 @@
 }
 
 - (id)initContent:(NSRect)frame : (NSString *) state;
+- (CGFloat) getContentHeight;
+- (NSRect) getMainListFrame : (NSRect) output;
 
 - (void) resizeAnimation : (NSRect) frame;
 

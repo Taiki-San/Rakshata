@@ -51,7 +51,7 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
+	[super setFrame:[self createFrameWithSuperView:self.superview]];
 	
 	if(coreView != nil)
 		[coreView setFrame:[self getCoreviewFrame : frameRect]];
@@ -64,6 +64,23 @@
 	int state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
+}
+
+- (NSRect) createFrameWithSuperView : (NSView*) superView
+{
+	NSRect maximumSize = [super createFrameWithSuperView:superView];
+	
+	if(coreView == nil)
+		return maximumSize;
+	
+	CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
+	
+	if(contentHeight != 0 && maximumSize.size.height > contentHeight)
+	{
+		maximumSize.size.height = contentHeight;
+	}
+
+	return maximumSize;
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame

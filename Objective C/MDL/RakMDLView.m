@@ -30,6 +30,25 @@
 	return self;
 }
 
+- (CGFloat) getContentHeight
+{
+	CGFloat contentHeight = 0;
+	
+	if(headerText != nil)
+		contentHeight += headerText.frame.size.height;
+	
+	if(MDLList != nil)
+	{
+		CGFloat height = [MDLList contentHeight];
+		
+		if(height)	height += 5;
+
+		contentHeight+= height;
+	}
+	
+	return contentHeight;
+}
+
 - (NSRect) getMainListFrame : (NSRect) output
 {
 	output.origin.x = output.origin.y = 0;

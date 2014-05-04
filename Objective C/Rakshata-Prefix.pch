@@ -25,7 +25,7 @@
 #include "constants.h"
 
 #ifdef DEV_VERSION
-//#define DISABLE_MDLTAB_DEBUG
+	#define MDL_WIP
 #endif
 
 #ifdef __OBJC__

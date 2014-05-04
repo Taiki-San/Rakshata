@@ -193,13 +193,11 @@
 	
 	frame.origin.x = 0;
 	
-	NSArray * subviews = [self.superview subviews];
-	for (MDLHeight = 0; MDLHeight < [subviews count] && [[subviews objectAtIndex:MDLHeight] class] != [MDL class]; MDLHeight++);
+	MDL * tabMDL = [self getMDL];
 	
-	if(MDLHeight < [subviews count])
+	if(tabMDL != nil)
 	{
-		MDL * object = [subviews objectAtIndex:MDLHeight];
-		MDLHeight = [object frame].size.height - [object frame].origin.y - viewFrame.origin.y;
+		MDLHeight = [tabMDL frame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
 		
 		if(MDLHeight > 0)
 		{

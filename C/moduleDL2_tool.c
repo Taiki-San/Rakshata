@@ -234,7 +234,9 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
                 newBufferTodo = noDuplicate;
         }
         fclose(import);
+#ifndef MDL_WIP
         remove(INSTALL_DATABASE);
+#endif
 		return newBufferTodo;
     }
     return NULL;

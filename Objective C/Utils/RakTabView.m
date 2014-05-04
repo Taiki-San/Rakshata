@@ -439,5 +439,24 @@
 	return widthWindow * prefData / 100;
 }
 
+#pragma mark - Utilities
+
+- (MDL*) getMDL
+{
+	NSArray * subviews = [self.superview subviews];
+	
+	if(subviews == nil)
+		return nil;
+	
+	uint pos, count = [subviews count];
+	
+	for (pos = 0; pos < count && [[subviews objectAtIndex:pos] class] != [MDL class]; pos++);
+	
+	if(pos < count)
+		return [subviews objectAtIndex:pos];
+	
+	return nil;
+}
+
 @end
 

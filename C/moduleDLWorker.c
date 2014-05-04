@@ -14,6 +14,11 @@ bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 {
+#ifdef MDL_WIP
+	while(1)
+		sleep(10);
+#endif
+	
     MDL_HANDLER_ARG input;
     memcpy(&input, inputVolatile, sizeof(MDL_HANDLER_ARG));
     free(inputVolatile);

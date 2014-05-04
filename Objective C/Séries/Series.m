@@ -242,16 +242,19 @@
 	frame.size.width = var * self.superview.frame.size.width / 100;
 	frame.origin.x = 0;
 	
-	NSArray * subviews = [self.superview subviews];
-	for (var = 0; var < [subviews count] && [[subviews objectAtIndex:var] class] != [MDL class]; var++);
-	
-	if(var < [subviews count])
+	MDL * tabMDL = [self getMDL];
+
+	if(tabMDL != nil)
 	{
-		MDL * object = [subviews objectAtIndex:var];
-		var = [object frame].size.height - [object frame].origin.y - viewFrame.origin.y;
+		var = [tabMDL frame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
 		
-		frame.origin.y = var;
-		frame.size.height -= var;
+		if(var > 0)
+		{
+			frame.origin.y = var;
+			frame.size.height -= var;
+		}
+		else
+			frame.origin.y = 0;
 	}
 	else
 		frame.origin.y = 0;
