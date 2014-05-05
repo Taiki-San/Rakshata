@@ -58,7 +58,7 @@
 	
 	if([self wouldFrameChange:newFrame])
 	{
-		[super setFrame:newFrame];
+		[self internalSetFrame:newFrame];
 		
 		if(coreView != nil)
 			[coreView setFrame:[self getCoreviewFrame : newFrame]];

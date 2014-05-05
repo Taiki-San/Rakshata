@@ -180,11 +180,14 @@
 	}
 }
 
+- (void) internalSetFrame : (NSRect) newFrame
+{
+	[super setFrame:newFrame];
+}
+
 - (void) refreshViewSize
 {
-	NSSize sizeSV = self.superview.frame.size;
-	[self setFrameSize:NSMakeSize([self getRequestedViewWidth: sizeSV.width], sizeSV.height)];
-	
+	[self setFrame:[self createFrame]];
 	[self refreshDataAfterAnimation];
 }
 

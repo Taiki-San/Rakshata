@@ -231,7 +231,7 @@
 {
 	if([self wouldFrameChange:frameRect])
 	{
-		[super setFrame:frameRect];
+		[self internalSetFrame:frameRect];
 		[backButton setFrame:[self bounds]];
 		[coreView setFrame:[self calculateContentViewSize]];
 	}

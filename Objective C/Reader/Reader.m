@@ -239,7 +239,7 @@
 {
 	if([self wouldFrameChange:frameRect])
 	{
-		[super setFrame:frameRect];
+		[self internalSetFrame:frameRect];
 		[mainImage setFrame:frameRect];
 		[bottomBar setFrame:frameRect];
 	}

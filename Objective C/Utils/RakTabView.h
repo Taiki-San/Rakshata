@@ -44,6 +44,7 @@ enum {
 - (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView : (byte) context;
+- (void) internalSetFrame : (NSRect) newFrame;
 - (void) refreshViewSize;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 
