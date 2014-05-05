@@ -19,11 +19,15 @@
 @interface MDL : RakTabView
 {
 	RakMDLView * coreView;
+	
+	BOOL needUpdateMainViews;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
 - (void) initContent : (NSString *) state;
 - (NSRect) getCoreviewFrame : (NSRect) frame;
+
+- (void) updateDependingViews;
 
 @end

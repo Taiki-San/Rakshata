@@ -70,6 +70,7 @@ enum {
 
 - (void) resizeAnimation;
 - (NSRect) createFrame;
+- (BOOL) needToConsiderMDL;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
 - (NSRect) getCurrentFrame;
 

@@ -49,9 +49,9 @@
 {
 	NSRect output = { {0, 0}, {0, 0}};
 	
-	output.origin.y = TAB_READER_FOOTER_HEIGHT;
+	output.origin.y = 0;
 	output.size.width = TAB_SERIE_INACTIVE_LECTEUR;
-	output.size.height = 100 - TAB_READER_FOOTER_HEIGHT;
+	output.size.height = 100;
 	
 	return output;
 }
@@ -70,9 +70,9 @@
 {
 	NSRect output = { {0, 0}, {0, 0}};
 	
-	output.origin.y = TAB_READER_FOOTER_HEIGHT;
+	output.origin.y = 0;
 	output.size.width = TAB_SERIE_INACTIVE_DISTRACTION_FREE;
-	output.size.height = 100 - TAB_READER_FOOTER_HEIGHT;
+	output.size.height = 100;
 	
 	return output;
 }
@@ -132,10 +132,10 @@
 {
 	NSRect output = { {0, 0}, {0, 0}};
 	
-	output.origin.y =  TAB_READER_FOOTER_HEIGHT;
+	output.origin.y =  0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR;
 	output.size.width = TAB_CT_INACTIVE_LECTEUR;	//_REDUCED displayed but to prevent too much redraw, we keep drawing a full size tab
-	output.size.height = 100 - TAB_READER_FOOTER_HEIGHT;
+	output.size.height = 100;
 	
 	return output;
 }
@@ -149,10 +149,10 @@
 {
 	NSRect output = { {0, 0}, {0, 0}};
 	
-	output.origin.y =  TAB_READER_FOOTER_HEIGHT;
+	output.origin.y =  0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
 	output.size.width = TAB_CT_INACTIVE_LECTEUR;
-	output.size.height = 100 - TAB_READER_FOOTER_HEIGHT;
+	output.size.height = 100;
 	
 	return output;
 }
@@ -161,10 +161,10 @@
 {
 	NSRect output = { {0, 0}, {0, 0}};
 	
-	output.origin.y = TAB_READER_FOOTER_HEIGHT;
+	output.origin.y = 0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
 	output.size.width = TAB_CT_INACTIVE_LECTEUR;
-	output.size.height = 100 - TAB_READER_FOOTER_HEIGHT;
+	output.size.height = 100;
 	
 	return output;
 }

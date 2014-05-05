@@ -152,6 +152,11 @@
 /**			Other		**/
 #pragma mark - RakTabView routines
 
+- (BOOL) needToConsiderMDL
+{
+	return YES;
+}
+
 - (void) setFrame:(NSRect)frameRect
 {
 	if([self wouldFrameChange:frameRect])

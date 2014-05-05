@@ -414,6 +414,11 @@
 	return [self createFrameWithSuperView:[self superview]];
 }
 
+- (BOOL) needToConsiderMDL
+{
+	return false;
+}
+
 - (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
@@ -424,6 +429,16 @@
 	frame.origin.y *= sizeSuperView.height / 100.0f;
 	frame.size.width *= sizeSuperView.width / 100.0f;
 	frame.size.height *= sizeSuperView.height / 100.0f;
+	
+	if([self needToConsiderMDL])
+	{
+		MDL * tabMDL = [self getMDL];
+		if(tabMDL != nil)
+		{
+			frame.origin.y += tabMDL.frame.size.height;
+			frame.size.height -= tabMDL.frame.size.height;
+		}
+	}
 	
 	return frame;
 }

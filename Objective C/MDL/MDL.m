@@ -18,6 +18,7 @@
     if (self)
 	{
 		flag = GUI_THREAD_MDL;
+		needUpdateMainViews = NO;
 		self = [self initView: contentView : state];
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
@@ -34,7 +35,9 @@
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
-		[self setFrame:self.frame];
+		[self setFrame:[self createFrame]];	//Update the size if required
+		needUpdateMainViews = YES;
+		[self updateDependingViews];
 	}
 }
 
@@ -62,6 +65,9 @@
 		
 		if(coreView != nil)
 			[coreView setFrame:[self getCoreviewFrame : newFrame]];
+		
+		if(needUpdateMainViews)
+			[self updateDependingViews];
 	}
 }
 
@@ -86,9 +92,33 @@
 	if(contentHeight != 0 && maximumSize.size.height > contentHeight)
 	{
 		maximumSize.size.height = contentHeight;
+		needUpdateMainViews = YES;
 	}
 
 	return maximumSize;
+}
+
+- (void) updateDependingViews
+{
+	if(!needUpdateMainViews)
+		return;
+	
+	NSView * view;
+	NSArray * subviews = [[self superview] subviews];
+	uint count = [subviews count];
+	
+	for (uint i = 0; i < count; i++)
+	{
+		view = [subviews objectAtIndex:i];
+
+		if([view superclass] == [RakTabView class])
+		{
+			if([((RakTabView*) view) needToConsiderMDL])
+				[view setFrame:[(RakTabView *) view createFrame]];
+		}
+	}
+	
+	needUpdateMainViews = NO;
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
@@ -110,6 +140,12 @@
 	[self setFrameOrigin:frame.origin];
 	
 	[self refreshDataAfterAnimation];
+}
+
+- (void) refreshDataAfterAnimation
+{
+	[super refreshDataAfterAnimation];
+	[self updateDependingViews];
 }
 
 - (NSRect) getFrameOfNextTab

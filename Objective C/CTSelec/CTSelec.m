@@ -227,6 +227,11 @@
 	return frame;
 }
 
+- (BOOL) needToConsiderMDL
+{
+	return YES;
+}
+
 - (void) setFrame:(NSRect)frameRect
 {
 	if([self wouldFrameChange:frameRect])
