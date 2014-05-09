@@ -67,7 +67,8 @@
 	return _percText;
 }
 
-`{
+- (void) updatePercentage : (CGFloat) percentage
+{
 	if(percentage < 0 || percentage > 100 || _percentage == percentage)
 		return;
 	
