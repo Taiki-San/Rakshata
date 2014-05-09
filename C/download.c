@@ -12,20 +12,17 @@
 
 static CURLSH* cacheDNS;
 
-static double FILE_EXPECTED_SIZE;
-static double CURRENT_FILE_SIZE;
-static volatile int status = STATUS_END; //Status du DL: en cours, terminé...
-static int errCode;
-
 extern volatile bool quit;
 
-static void downloader(TMP_DL *output);
-static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void);
+static void downloadChapterCore(DL_DATA *data);
+static int handleDownloadMetadata(DL_DATA* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
+static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm);
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm);
-static void define_user_agent(CURL *curl);
+static void defineUserAgent(CURL *curl);
+
+/** DNS cache **/
 
 void initializeDNSCache()
 {
@@ -45,139 +42,231 @@ void releaseDNSCache()
         curl_share_cleanup(cacheDNS);
 }
 
-int download_UI(TMP_DL *output)
+/** Chapter download **/
+
+int downloadChapter(TMP_DL *output)
 {
     THREAD_TYPE threadData;
-    int pourcent = 0, last_refresh = 0;
-    char temp[500], texte[SIZE_TRAD_ID_20][TRAD_LENGTH];
-    double last_file_size = 0, download_speed = 0;
+	DL_DATA downloadData;
+	uint previousDownloaded = 0, downloadSpeed = 0;
+	size_t lastRefresh = -100;
+	float state;
+	
+	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
+	downloadData.outputContainer = output;
 
-    FILE_EXPECTED_SIZE = errCode = 0;
-    status = STATUS_DOWNLOADING;
-    loadTrad(texte, 20);
+    threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
-    threadData = createNewThreadRetValue(downloader, output);
-
-    while(1)
+    while(isThreadStillRunning(threadData) || quit)
     {
-        if(FILE_EXPECTED_SIZE > 0)
+        if(downloadData.totalExpectedSize)
         {
-            if(time(NULL) - last_refresh >= 500)
+            if(time(NULL) - lastRefresh >= 100)
             {
-                if(!download_speed)
-                    download_speed = (CURRENT_FILE_SIZE - last_file_size) / 1024;
+                if(!downloadSpeed)
+                    downloadSpeed = (downloadData.bytesDownloaded - previousDownloaded) / 1024;
                 else
-                    download_speed = (download_speed*2 + (CURRENT_FILE_SIZE - last_file_size) / 1024) / 3;
-                last_file_size = CURRENT_FILE_SIZE;
+                    downloadSpeed = (downloadSpeed*2 + (downloadData.bytesDownloaded - previousDownloaded) / 1024) / 3;
 
-                if(download_speed != 0)
-                    pourcent = CURRENT_FILE_SIZE * 100 / FILE_EXPECTED_SIZE;
+                previousDownloaded = downloadData.bytesDownloaded;
 
-                /*Code d'affichage du pourcentage*/
-                snprintf(temp, 500, "%s %d,%d %s - %d%% - %s %d %s", texte[1], (int) FILE_EXPECTED_SIZE / 1024 / 1024 /*Nombre de megaoctets / 1'048'576)*/, (int) FILE_EXPECTED_SIZE / 10240 % 100 /*Nombre de dizaines ko*/ , texte[2], pourcent /*Pourcent*/ , texte[3], (int) download_speed/*Débit*/, texte[4]);
+				state = downloadData.bytesDownloaded * 100 / downloadData.totalExpectedSize;
 
-                last_refresh = time(NULL);
+
+                lastRefresh = time(NULL);
             }
 			else
 				usleep(50);
-
-            if(quit)
-            {
-                status = STATUS_FORCE_CLOSE;
-                break;
-            }
         }
         else
             usleep(25);
-
-        if(!isThreadStillRunning(threadData))
-            break;
     }
+
     if(quit)
     {
         while(isThreadStillRunning(threadData))
-            usleep(250);
+            usleep(100);
     }
 
-    status = STATUS_IT_IS_OVER; //Libère pour le DL suivant
 #ifdef _WIN32
     CloseHandle(threadData);
 #endif // _WIN32
-    return errCode;
+	
+    return downloadData.errorCode;
 }
 
-static void downloader(TMP_DL *output)
+static void downloadChapterCore(DL_DATA *data)
 {
+	if(data == NULL || data->outputContainer == NULL)
+		quit_thread(0);
+	
     CURL *curl = NULL;
     CURLcode res; //Get return from download
-    CURRENT_FILE_SIZE = FILE_EXPECTED_SIZE = 0;
 
-#ifdef DEV_VERSION
-    int proxy = 0;
-	char IPProxy[50];
-    FILE *fichier = fopen("data/proxy", "r"); //Check proxy
-    if(fichier != NULL)
+	//Check if a proxy is configured
+    bool isProxyConfigured = false;
+	char IPProxy[40]; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
+    FILE *proxyFile = fopen("data/proxy", "r"); //Check proxy
+    if(proxyFile != NULL)
     {
-        int i = 0;
-        crashTemp(IPProxy, 16);
-        for(proxy = 0; proxy < 50; proxy++)
-        {
-            i = fgetc(fichier);
-            IPProxy[proxy] = i;
-        }
-        fclose(fichier);
-        fichier = NULL;
-        proxy = 1;
+        char lengthProxy = 0, c = 0, pos;
+        crashTemp(IPProxy, sizeof(IPProxy));
+		while(lengthProxy < sizeof(IPProxy) && (c = fgetc(proxyFile)) != EOF)
+		{
+			if(c == '.' || c == ':' || isHexa(c))
+				IPProxy[lengthProxy++] = c;
+		}
+		IPProxy[lengthProxy] = 0;
+		
+		//On assume que libcurl est capable de proprement parser le proxy
+		//On vérifie juste la cohérence IPv4/IPv6
+		
+		bool couldBeIPv4 = true, couldBeIPv6 = true;
+		short separatorCount = 0;
+		
+		for (pos = 0; pos < lengthProxy && (couldBeIPv4 || couldBeIPv6); pos++)
+		{
+			if(IPProxy[pos] == '.')
+			{
+				if(couldBeIPv6)
+					couldBeIPv6 = false;
+				else
+					separatorCount++;
+			}
+			else if(IPProxy[pos] == ':')
+			{
+				if(couldBeIPv4)
+					couldBeIPv4 = false;
+				else
+					separatorCount++;
+			}
+			else if(couldBeIPv4 && !isNbr(IPProxy[pos]) && isHexa(IPProxy[pos]))
+				couldBeIPv4 = false;
+		}
+		
+		if((couldBeIPv4 && separatorCount == 3) || (couldBeIPv6 && separatorCount == 7))
+			isProxyConfigured = true;
     }
-#endif
+	
+	//Start the main work
 
     curl = curl_easy_init();
-    if(curl)
+    if(curl != NULL)
     {
-#ifdef DEV_VERSION
-        if(proxy)
+        if(isProxyConfigured)
             curl_easy_setopt(curl, CURLOPT_PROXY, IPProxy); //Proxy
-#endif
-        curl_easy_setopt(curl, CURLOPT_URL, output->URL); //URL
+
+        curl_easy_setopt(curl, CURLOPT_URL, data->outputContainer->URL); //URL
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
-        define_user_agent(curl);
+        defineUserAgent(curl);
 
-        if(!strncmp(&output->URL[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&output->URL[8], STORE_URL, strlen(STORE_URL))) //RSP
+        if(!strncmp(&data->outputContainer->URL[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&data->outputContainer->URL[8], STORE_URL, strlen(STORE_URL))) //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
         }
-        else
+        else	//We don't ship all existing certificates, so we don't check it on non-critical transactions
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
-        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, downloadData);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_UI);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, data);
+        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, handleDownloadMetadata);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, data);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeDataChapter);
         useDNSCache(curl);
+		
         res = curl_easy_perform(curl);
 
         if(res != CURLE_OK) //Si problème
         {
-            MUTEX_LOCK(mutex);
-            errCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+            data->errorCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+
 #ifdef DEV_VERSION
-            if(errCode != CODE_RETOUR_DL_CLOSE)
-                logR(output->URL);
-#endif // DEV_VERSION
-            MUTEX_UNLOCK(mutex);
+            if(data->errorCode != CODE_RETOUR_DL_CLOSE)
+                logR(data->outputContainer->URL);
+#endif
+
         }
+		
         curl_easy_cleanup(curl);
     }
-    MUTEX_LOCK(mutex);
-    THREAD_COUNT--;
-    MUTEX_UNLOCK(mutex);
-#ifdef _WIN32
-    ExitThread(0);
-#else
-    pthread_exit(0);
-#endif
+
+	quit_thread(0);
+}
+
+/** Chapter download utilities **/
+static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
+{
+    if(quit)
+        return -1;
+	
+	if(ptr != NULL)
+	{
+		ptr->bytesDownloaded = nowDownloaded;
+		ptr->totalExpectedSize = totalToDownload;
+	}
+	
+    return 0;
+}
+
+static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData)
+{
+	if(downloadData == NULL || downloadData->outputContainer == NULL)
+		return -1;
+	
+	int i;
+	TMP_DL *data = downloadData->outputContainer;
+    DATA_DL_OBFS *output = data->buf;
+    char *input = ptr;
+	
+    if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos)
+    {
+        if(output->data == NULL || output->mask == NULL)
+        {
+            data->current_pos = 0;
+            if(!downloadData->totalExpectedSize)
+                data->length = 30*1024*1024;
+            else
+                data->length = 3 * downloadData->totalExpectedSize / 2; //50% de marge
+			
+			output->data = ralloc(data->length);
+            if(output->data == NULL)
+                return -1;
+			
+			output->mask = ralloc(data->length);
+            if(output->mask == NULL)
+                return -1;
+        }
+        else //Buffer trop petit, on l'agrandit
+        {
+			if(data->length != downloadData->totalExpectedSize)
+				data->length = downloadData->totalExpectedSize;
+			
+			if(size * nmemb >= data->length - data->current_pos)
+				data->length += (downloadData->totalExpectedSize > size * nmemb ? downloadData->totalExpectedSize : size * nmemb);
+			
+            void *internalBufferTmp = realloc(output->data, data->length);
+            if(internalBufferTmp == NULL)
+                return -1;
+            output->data = internalBufferTmp;
+			
+			internalBufferTmp = realloc(output->mask, data->length);
+            if(internalBufferTmp == NULL)
+                return -1;
+            output->mask = internalBufferTmp;
+        }
+    }
+	
+    if(size * nmemb == 0) //Rien à écrire
+        return 0;
+	
+    //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
+	
+	for(i = 0; i < size * nmemb; data->current_pos++)
+		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (getRandom() & 0xff)));
+	
+	return size*nmemb;
 }
 
 static int internal_download_easy(char* adresse, char* POST, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled);
@@ -215,7 +304,7 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     curl_easy_setopt(curl, CURLOPT_URL, adresse);
     if(POST != NULL)
          curl_easy_setopt(curl, CURLOPT_POSTFIELDS, POST);
-    define_user_agent(curl);
+    defineUserAgent(curl);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
@@ -277,75 +366,7 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
     return fwrite(ptr, size, nmemb, input);
 }
 
-static int downloadData(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
-{
-    if(status == STATUS_FORCE_CLOSE)
-        return -1;
-
-    FILE_EXPECTED_SIZE = TotalToDownload;
-    CURRENT_FILE_SIZE = NowDownloaded;
-    return 0;
-}
-
-static size_t save_data_UI(void *ptr, size_t size, size_t nmemb, void *output_void)
-{
-	int i;
-	TMP_DL *data = output_void;
-    DATA_DL_OBFS *output = data->buf;
-    char *input = ptr;
-
-    if(output->data == NULL || output->mask == NULL || data->length != FILE_EXPECTED_SIZE || size * nmemb >= data->length - data->current_pos)
-    {
-        if(output->data == NULL || output->mask == NULL)
-        {
-            data->current_pos = 0;
-            if(!FILE_EXPECTED_SIZE)
-                data->length = 30*1024*1024;
-            else
-                data->length = 3 * FILE_EXPECTED_SIZE / 2; //50% de marge
-
-			output->data = ralloc(data->length);
-            if(output->data == NULL)
-                return -1;
-
-			output->mask = ralloc(data->length);
-            if(output->mask == NULL)
-                return -1;
-        }
-        else //Buffer trop petit, on l'agrandit
-        {
-			if(data->length != FILE_EXPECTED_SIZE)
-				data->length = FILE_EXPECTED_SIZE;
-
-			if(size * nmemb >= data->length - data->current_pos)
-				data->length += (FILE_EXPECTED_SIZE > size * nmemb ? FILE_EXPECTED_SIZE : size * nmemb);
-
-            void *internalBufferTmp = realloc(output->data, data->length);
-            if(internalBufferTmp == NULL)
-                return -1;
-            output->data = internalBufferTmp;
-
-			internalBufferTmp = realloc(output->mask, data->length);
-            if(internalBufferTmp == NULL)
-                return -1;
-            output->mask = internalBufferTmp;
-        }
-    }
-
-    if(size * nmemb == 0) //Rien à écrire
-        return 0;
-
-    //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
-
-	for(i = 0; i < size * nmemb; data->current_pos++)
-	{
-		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (getRandom() & 0xff)));
-	}
-
-	return size*nmemb;
-}
-
-static void define_user_agent(CURL *curl)
+static void defineUserAgent(CURL *curl)
 {
 #ifdef _WIN32 //User Agent
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "Rakshata_WIN32");
@@ -357,6 +378,8 @@ static void define_user_agent(CURL *curl)
     #endif
 #endif
 }
+
+/** SSL related portion **/
 
 BIO * getBIORSPCertificate()
 {
@@ -487,11 +510,3 @@ static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * p
         return CURLE_SSL_CERTPROBLEM;
     return CURLE_OK ;
 }
-
-int checkDLInProgress() //Mutex should be set
-{
-    if(status == STATUS_DOWNLOADING)
-        return 1;
-    return 0;
-}
-
