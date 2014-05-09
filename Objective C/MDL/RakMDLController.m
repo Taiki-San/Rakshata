@@ -44,6 +44,14 @@
 	return &(*todoList)[row];
 }
 
+- (int8_t) statusOfID : (uint) row
+{
+	if(row < nbElem && status != NULL && status[row] != NULL)
+		return *(status[row]);
+	
+	return MDL_CODE_INTERNAL_ERROR;
+}
+
 - (void) lol
 {
 	NSLog(@"Hey");

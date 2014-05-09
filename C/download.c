@@ -44,13 +44,13 @@ void releaseDNSCache()
 
 /** Chapter download **/
 
-int downloadChapter(TMP_DL *output)
+int downloadChapter(TMP_DL *output, void ** rowViewResponsible)
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
 	uint previousDownloaded = 0, downloadSpeed = 0;
-	size_t lastRefresh = -100;
-	float state;
+	uint64_t lastRefresh = 0;
+	struct timeval timeStructure;
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
@@ -59,9 +59,10 @@ int downloadChapter(TMP_DL *output)
 
     while(isThreadStillRunning(threadData) || quit)
     {
-        if(downloadData.totalExpectedSize)
+        if(rowViewResponsible != NULL && downloadData.totalExpectedSize)
         {
-            if(time(NULL) - lastRefresh >= 100)
+			gettimeofday(&timeStructure, NULL);
+			if(timeStructure.tv_usec - lastRefresh >= 100000)	//100ms in us
             {
                 if(!downloadSpeed)
                     downloadSpeed = (downloadData.bytesDownloaded - previousDownloaded) / 1024;
@@ -70,10 +71,9 @@ int downloadChapter(TMP_DL *output)
 
                 previousDownloaded = downloadData.bytesDownloaded;
 
-				state = downloadData.bytesDownloaded * 100 / downloadData.totalExpectedSize;
+				updatePercentage(*rowViewResponsible, downloadData.bytesDownloaded * 100.0f / downloadData.totalExpectedSize);
 
-
-                lastRefresh = time(NULL);
+                lastRefresh = timeStructure.tv_usec;
             }
 			else
 				usleep(50);

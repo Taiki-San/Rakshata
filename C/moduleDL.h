@@ -12,13 +12,6 @@
 
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 
-
-#ifdef _WIN32
-    #define mutexAskUIThreadWIP mutexUI
-#else
-    extern pthread_mutex_t mutexAskUIThreadWIP;
-#endif
-
 #define HAUTEUR_FENETRE_DL 470
 
 /*Specs Font*/
@@ -51,6 +44,8 @@
 #define MDL_CODE_DL_OVER			4
 #define MDL_CODE_INSTALL			5
 #define MDL_CODE_INSTALL_OVER		6
+
+#define MDL_CODE_UNUSED				-5
 #define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
 
 #define MDLP_CODE_ERROR 0  //En cas de données insuffisante, calloc met directement error aux manquants
@@ -82,9 +77,15 @@ enum isInstalledRC {
 	ALREADY_INSTALLED		= 3
 };
 
+enum requestIDCodes {
+	RID_DEFAULT					= 0,
+	RID_UPDATE_STATUS			= 1
+};
+
 
 typedef struct data_loaded_from_download_list
 {
+	void * rowViewResponsible;
     MANGAS_DATA* datas;
 	int *listChapitreOfTome;
 	unsigned char *tomeName;
@@ -118,6 +119,15 @@ typedef struct download_data_struct
     size_t current_pos;
 } TMP_DL;
 
+typedef struct {
+	uint bytesDownloaded;
+	uint totalExpectedSize;
+	
+	TMP_DL * outputContainer;
+	
+	int errorCode;
+} DL_DATA;
+
 typedef struct data_pour_installation
 {
     MANGAS_DATA *mangaDB;
@@ -150,6 +160,7 @@ typedef struct argument_to_main_worker
 
 typedef struct argument_to_MDL_handler
 {
+	int selfCode;
     int8_t *currentState;
     char ***historiqueTeam;
     
@@ -165,7 +176,7 @@ extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
 /**Download.c**/
-int download_UI(TMP_DL *output);
+int downloadChapter(TMP_DL *output, void ** rowViewResponsible);
 
 /**ModuleDL2.c**/
 bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
@@ -186,7 +197,10 @@ int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
-void MDLUpdateIcons();
+void MDLDownloadOver(uint selfCode);
+void MDLUpdateIcons(uint selfCode, void * UIInstance);
+void updatePercentage(void * rowViewResponsible, float percentage);
+
 void getIconPath(int status, char *path, uint length);
 
 /**ModuleDLMainWorker.m**/

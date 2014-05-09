@@ -14,11 +14,6 @@ bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 {
-#ifdef MDL_WIP
-	while(1)
-		sleep(10);
-#endif
-	
     MDL_HANDLER_ARG input;
     memcpy(&input, inputVolatile, sizeof(MDL_HANDLER_ARG));
     free(inputVolatile);
@@ -26,7 +21,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     if(input.todoList == NULL || input.todoList->datas == NULL)
     {
         *input.currentState = MDL_CODE_INTERNAL_ERROR;
-        MDLUpdateIcons(false);
+        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         quit_thread(0);
     }
 	
@@ -48,12 +43,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         free(listDL);
         free(listSizeDL);
         *input.currentState = MDL_CODE_INTERNAL_ERROR;
-        MDLUpdateIcons(false);
+        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         quit_thread(0);
     }
 	
     *input.currentState = MDL_CODE_DL;
-    MDLUpdateIcons(false);
+	MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 	
     for(i = 1; i <= nombreElement; i++)
     {
@@ -71,6 +66,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
             todoListTmp.subFolder = true;
             todoListTmp.partOfTome = input.todoList->partOfTome;
         }
+		
+		// WARNING!! NO CHOICE BUT WE TRANSFORM A TRIPLE POINTER IN DOUBLE POINTER
+		todoListTmp.rowViewResponsible = &input.todoList->rowViewResponsible;
 		
 		switch (MDL_isAlreadyInstalled(*todoListTmp.datas, todoListTmp.subFolder, todoListTmp.chapitre, &posTomeInStruct))
 		{
@@ -146,6 +144,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		}
     }
 	
+	MDLDownloadOver(input.selfCode);
+	
     if(*input.currentState == MDL_CODE_DL_OVER) //On lance l'installation
     {
         int error = 0;
@@ -153,11 +153,11 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         if(i == input.statusLength) //Aucune installation en cours
         {
             *input.currentState = MDL_CODE_INSTALL;
-            MDLUpdateIcons(false);
+            MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         }
         else
         {
-            MDLUpdateIcons(false);
+            MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
             while(*input.currentState != MDL_CODE_INSTALL)
                 usleep(250);
         }
@@ -186,7 +186,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         *(*input.fullStatus)[i] = MDL_CODE_INSTALL;
 	
     if(!quit)
-        MDLUpdateIcons(false);
+        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+	
     free(listSizeDL);
     free(listDL);
     quit_thread(0);
@@ -236,7 +237,9 @@ bool MDLTelechargement(DATA_MOD_DL* input)
         do
         {
             dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
-            ret_value = download_UI(&dataDL);
+			
+			//La structure est supposée contenir un double pointeur mais ici un triple
+            ret_value = downloadChapter(&dataDL, input->todoList->rowViewResponsible);
             free(dataDL.URL);
 			
 			for(i = 0; i < 19 && dataDL.buf != NULL && ((DATA_DL_OBFS *) dataDL.buf)->data != NULL && ((DATA_DL_OBFS *) dataDL.buf)->mask != NULL; i++)

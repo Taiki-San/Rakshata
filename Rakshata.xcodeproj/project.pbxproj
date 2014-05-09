@@ -42,6 +42,7 @@
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B68B5225191AE3050057F35A /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5224191AE3050057F35A /* RakScroller.m */; };
 		B68B5228191AE31E0057F35A /* RakMDLListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5227191AE31E0057F35A /* RakMDLListView.m */; };
+		B68B522B191AE38D0057F35A /* RakProgressCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B522A191AE38D0057F35A /* RakProgressCircle.m */; };
 		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
 		B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976685190D9C4D00B0A266 /* RakMDLRessources.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
@@ -174,6 +175,8 @@
 		B68B5224191AE3050057F35A /* RakScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakScroller.m; path = Utils/RakScroller.m; sourceTree = "<group>"; };
 		B68B5226191AE31E0057F35A /* RakMDLListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLListView.h; path = MDL/RakMDLListView.h; sourceTree = "<group>"; };
 		B68B5227191AE31E0057F35A /* RakMDLListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLListView.m; path = MDL/RakMDLListView.m; sourceTree = "<group>"; };
+		B68B5229191AE38D0057F35A /* RakProgressCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakProgressCircle.h; path = Utils/RakProgressCircle.h; sourceTree = "<group>"; };
+		B68B522A191AE38D0057F35A /* RakProgressCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakProgressCircle.m; path = Utils/RakProgressCircle.m; sourceTree = "<group>"; };
 		B6976681190D9B7D00B0A266 /* RakMDLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLView.h; path = MDL/RakMDLView.h; sourceTree = "<group>"; };
 		B6976682190D9B7D00B0A266 /* RakMDLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLView.m; path = MDL/RakMDLView.m; sourceTree = "<group>"; };
 		B6976684190D9C4D00B0A266 /* RakMDLRessources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLRessources.h; path = MDL/RakMDLRessources.h; sourceTree = "<group>"; };
@@ -466,6 +469,8 @@
 				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
 				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
+				B68B5229191AE38D0057F35A /* RakProgressCircle.h */,
+				B68B522A191AE38D0057F35A /* RakProgressCircle.m */,
 				B68B5223191AE3050057F35A /* RakScroller.h */,
 				B68B5224191AE3050057F35A /* RakScroller.m */,
 				B678675518F5F4A8004AA6B4 /* RakTabContentTemplate.h */,
@@ -806,6 +811,7 @@
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
+				B68B522B191AE38D0057F35A /* RakProgressCircle.m in Sources */,
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
@@ -982,6 +988,10 @@
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1024,6 +1034,10 @@
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

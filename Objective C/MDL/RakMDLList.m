@@ -44,7 +44,7 @@
 		else
 			amountData = [controller getNbElem];
 		
-		cellHeight = 20;
+		cellHeight = 22;
 				
 		[self applyContext:frame : -1 : -1];
 		[_tableView setRowHeight:cellHeight];
@@ -59,7 +59,7 @@
 	if(scrollView == nil)
 		return 0;
 	
-	return _tableView.frame.size.height;
+	return _tableView.frame.size.height + [_tableView intercellSpacing].height;
 }
 
 - (void) resizeAnimation: (NSRect) frameRect
@@ -85,6 +85,27 @@
 		return nil;
 	
 	return @(rowIndex);
+}
+
+- (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	DATA_LOADED ** todoList = [controller getData:row];
+
+	if(todoList != NULL && *todoList != NULL)
+	{
+		(*todoList)->rowViewResponsible = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+		[(RakMDLListView*) (*todoList)->rowViewResponsible updateContext];
+	}
+}
+
+- (void) tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
+{
+	DATA_LOADED ** todoList = [controller getData:row];
+
+	if(todoList != NULL && *todoList != NULL)
+	{
+		(*todoList)->rowViewResponsible = NULL;
+	}
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row

@@ -18,7 +18,8 @@
 	RakButton * _read;
 	RakButton * _remove;
 	
-	CGFloat iconWidth;
+	RakProgressCircle * DLprogress;
+	
 	
 	RakText * requestName;
 	RakText * statusText;
@@ -26,13 +27,18 @@
 	RakMDLController * _controller;
 	uint _row;
 	DATA_LOADED ** todoList;
+	
+	CGFloat iconWidth;
+	int8_t previousStatus;
 }
 
 - (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID;
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;
 - (void) updateData : (uint) data;
+- (void) updateContext;
 
+- (void) updatePercentage : (CGFloat) percentage;
 - (void) sendRemove;
 - (void) sendPause;
 - (void) sendRead;

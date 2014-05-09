@@ -149,10 +149,22 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 		
-			//To improve
+		//To improve
 		case GET_COLOR_BACKGROUND_CT_TVCELL:
 		{
 			output = [NSColor colorWithDeviceWhite:44/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_PROGRESSCIRCLE_SLOT:
+		{
+			output = [NSColor colorWithDeviceWhite:192/255.0f alpha:0.5];
+			break;
+		}
+			
+		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
+		{
+			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
 			break;
 		}
 			

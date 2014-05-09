@@ -827,11 +827,6 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 
 /*UI*/
 
-void MDLUpdateIcons()
-{
-	
-}
-
 void getIconPath(int status, char *path, uint length)
 {
 	if(path == NULL)

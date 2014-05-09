@@ -189,9 +189,11 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
         for(; i < sizeStatusLocal; i++)
         {
             if(*statusLocal[i] == MDL_CODE_WAITING_LOGIN)
+			{
                 *statusLocal[i] = MDL_CODE_DEFAULT;
+				MDLUpdateIcons(i, NULL);
+			}
         }
-        MDLUpdateIcons(false);
 
         if(toPay)
         {

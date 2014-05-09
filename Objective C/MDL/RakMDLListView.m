@@ -28,6 +28,8 @@
 			[self release];
 			return nil;
 		}
+		else
+			previousStatus = MDL_CODE_UNUSED;
 		
 		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
@@ -36,13 +38,16 @@
 		if(statusText != nil)		{		[statusText sizeToFit];		}
 		
 		_pause = [pause copy];
-		if(_pause != nil)		[self addSubview:_pause];
+		if(_pause != nil)	{	[self addSubview:_pause];		[_pause setHidden:YES];	}
 		
 		_read = [read copy];
 		if(_read != nil)	{	[self addSubview:_read];		[_read setHidden:YES];	}
 		
 		_remove = [remove copy];
 		if(_remove != nil)		[self addSubview:_remove];
+		
+		DLprogress = [[RakProgressCircle alloc] initWithRadius:11 : NSMakePoint(0, 0)];
+		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
 		
 		iconWidth = [_remove frame].size.width;
 		
@@ -86,6 +91,7 @@
 	NSRect frame = [self bounds], curFrame;
 	NSPoint newPoint;
 	
+	//Text at extreme left
 	if (requestName != nil)
 	{
 		curFrame = requestName.frame;
@@ -98,6 +104,8 @@
 	
 	newPoint.x = frame.size.width - 3;
 	
+	
+	//Icon at extreme right
 	if (_remove != nil)
 	{
 		curFrame = _remove.frame;
@@ -108,24 +116,44 @@
 		[_remove setFrameOrigin:newPoint];
 	}
 	
-	if (_pause != nil)
+	// Complementary icon
+	if(_read != nil)
 	{
-		curFrame = _pause.frame;
-		
+		curFrame = _read.frame;
+
 		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
 		newPoint.x -= 5 + curFrame.size.width;
 		
+		[_read setFrameOrigin:newPoint];
+	}
+	
+	
+	if (_pause != nil)
+	{
+		if(_read == nil)
+		{
+			curFrame = _pause.frame;
+			
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.x -= 5 + curFrame.size.width;
+		}
+		
 		[_pause setFrameOrigin:newPoint];
+	}
+	
+	if(DLprogress != nil)
+	{
+		
 	}
 	
 	if(statusText != nil)
 	{
 		if(frame.size.width > 300)
 		{
-			if(isSecondTextHidden)
+			if(previousStatus == MDL_CODE_INSTALL_OVER && isSecondTextHidden)
 			{
 				isSecondTextHidden = NO;
-				[self addSubview:statusText];
+				[statusText setHidden:NO];
 			}
 			
 			curFrame = statusText.frame;
@@ -138,7 +166,7 @@
 		else if(!isSecondTextHidden)
 		{
 			isSecondTextHidden = YES;
-			[statusText removeFromSuperview];
+			[statusText setHidden:YES];
 		}
 	}
 }
@@ -166,7 +194,59 @@
 	[self setPositionsOfStuffs];
 }
 
+#pragma mark - View management
+
+- (void) updateContext
+{
+	int8_t newStatus = [_controller statusOfID : _row];
+	
+	if(newStatus == previousStatus)
+		return;
+	
+	if(![statusText isHidden])		[statusText setHidden:YES];
+	if(![_pause isHidden])			[_pause setHidden:YES];
+	if(![_read isHidden])			[_read setHidden:YES];
+	if(![DLprogress isHidden])		[DLprogress setHidden:YES];
+	
+	previousStatus = newStatus;
+
+	switch (newStatus)
+	{
+		case MDL_CODE_DL:
+		{
+			[_pause setHidden:NO];
+			[DLprogress setHidden:NO];
+			[DLprogress updatePercentage:0];
+			break;
+		}
+			
+		case MDL_CODE_INSTALL:
+		{
+			[statusText setStringValue:@"Installation"];
+			[statusText setHidden:NO];
+			[self setPositionsOfStuffs];
+			break;
+		}
+			
+		case MDL_CODE_INSTALL_OVER:
+		{
+			[_read setHidden:NO];
+			break;
+		}
+	}
+}
+
 #pragma mark - Proxy
+
+- (void) updatePercentage : (CGFloat) percentage
+{
+	NSLog(@"Hey, received a message: %f", percentage);
+	if(DLprogress != nil)
+	{
+		[DLprogress updatePercentage:percentage];
+		[DLprogress setNeedsDisplay:YES];
+	}
+}
 
 - (void) sendRemove
 {

@@ -10,23 +10,22 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakMDLController : NSObject
+@interface RakProgressCircle : NSView
 {
-	MANGAS_DATA * cache;
+	CGFloat _radius;
+	CGFloat _width;
 	
-	THREAD_TYPE coreWorker;
-	DATA_LOADED *** todoList;
-	int8_t ** status;
-	int8_t ** statusCache;
-	uint nbElem;
-
-	bool quit;
+	CGFloat _percentage;
+	
+	RakText * _percText;
+	
+	NSColor * slotColor;
+	NSColor * progressColor;
 }
 
-- (uint) getNbElem;
-- (DATA_LOADED **) getData : (uint) row;
-- (int8_t) statusOfID : (uint) row;
-
-- (void) lol;
+- (id)initWithRadius:(CGFloat) radius : (NSPoint) origin;
+- (void) setWidth : (CGFloat) width;
+- (RakText *) getText;
+- (void) updatePercentage : (CGFloat) percentage;
 
 @end
