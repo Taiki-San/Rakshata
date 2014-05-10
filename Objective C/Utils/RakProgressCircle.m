@@ -80,6 +80,12 @@
 
 #pragma mark - Drawing
 
+- (void) notifyNeedDisplay : (id) discarded
+{
+	[self setNeedsDisplay:YES];
+	[_percText setNeedsDisplay:YES];
+}
+
 - (void) centerText
 {
 	[_percText sizeToFit];
@@ -103,10 +109,13 @@
     CGContextStrokePath(ctx);
     
     // Progress Arc:
-    CGContextBeginPath(ctx);
-    CGContextAddArc(ctx, x, y, _radius, 0, 2 * M_PI * _percentage / 100, 0);
-    CGContextSetStrokeColorWithColor(ctx, progressColor.CGColor);
-    CGContextStrokePath(ctx);
+	if(_percentage != 0)
+	{
+		CGContextBeginPath(ctx);
+		CGContextAddArc(ctx, x, y, _radius, M_PI_2, M_PI_2 - (2 * M_PI * _percentage / 100), 1);
+		CGContextSetStrokeColorWithColor(ctx, progressColor.CGColor);
+		CGContextStrokePath(ctx);
+	}
 }
 
 - (void) drawRect:(NSRect)dirtyRect

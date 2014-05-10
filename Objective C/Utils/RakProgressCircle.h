@@ -28,4 +28,6 @@
 - (RakText *) getText;
 - (void) updatePercentage : (CGFloat) percentage;
 
+- (void) notifyNeedDisplay : (id) discarded;
+
 @end
