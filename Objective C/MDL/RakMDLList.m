@@ -44,7 +44,7 @@
 		else
 			amountData = [controller getNbElem];
 		
-		cellHeight = 22;
+		cellHeight = (11 + 1) * 2;
 				
 		[self applyContext:frame : -1 : -1];
 		[_tableView setRowHeight:cellHeight];

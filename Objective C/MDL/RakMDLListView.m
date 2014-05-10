@@ -130,11 +130,12 @@
 	
 	if (_pause != nil)
 	{
+		curFrame = _pause.frame;
+		
+		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		
 		if(_read == nil)
 		{
-			curFrame = _pause.frame;
-			
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
 			newPoint.x -= 5 + curFrame.size.width;
 		}
 		
@@ -143,7 +144,12 @@
 	
 	if(DLprogress != nil)
 	{
+		curFrame = DLprogress.frame;
 		
+		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		newPoint.x -= curFrame.size.width + 5;
+		
+		[DLprogress setFrameOrigin:newPoint];
 	}
 	
 	if(statusText != nil)
@@ -240,11 +246,10 @@
 
 - (void) updatePercentage : (CGFloat) percentage
 {
-	NSLog(@"Hey, received a message: %f", percentage);
 	if(DLprogress != nil)
 	{
 		[DLprogress updatePercentage:percentage];
-		[DLprogress setNeedsDisplay:YES];
+		[DLprogress performSelectorOnMainThread:@selector(notifyNeedDisplay:) withObject:nil waitUntilDone:YES];
 	}
 }
 

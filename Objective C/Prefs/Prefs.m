@@ -164,7 +164,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			
 		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
 		{
-			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
+			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];	//Active
 			break;
 		}
 			

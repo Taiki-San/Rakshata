@@ -14,7 +14,7 @@
 
 - (id)initWithRadius:(CGFloat) radius : (NSPoint) origin
 {
-	NSRect frame = NSMakeRect(origin.x, origin.y, radius * 2, radius * 2);
+	NSRect frame = NSMakeRect(origin.x, origin.y, (radius + 1) * 2, (radius + 1) * 2);
     self = [super initWithFrame:frame];
     
 	if (self)
@@ -26,6 +26,7 @@
 		_percText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%.0f", _percentage] :[Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		
 		[self addSubview:_percText];
+		[self centerText];
 		
 		slotColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT] retain];
 		progressColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS] retain];
@@ -72,10 +73,13 @@
 	if(percentage < 0 || percentage > 100 || _percentage == percentage)
 		return;
 	
-	_percentage = percentage;
+	if((int) _percentage != (int) percentage)
+	{
+		_percText.stringValue = [NSString stringWithFormat:@"%.0f", percentage];
+		[self centerText];
+	}
 	
-	_percText.stringValue = [NSString stringWithFormat:@"%.0f", _percentage];
-	[self centerText];
+	_percentage = percentage;
 }
 
 #pragma mark - Drawing
