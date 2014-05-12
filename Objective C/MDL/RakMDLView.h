@@ -22,4 +22,6 @@
 
 - (void) resizeAnimation : (NSRect) frame;
 
+- (void) needToQuit;
+
 @end

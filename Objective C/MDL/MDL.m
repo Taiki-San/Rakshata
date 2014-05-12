@@ -41,6 +41,13 @@
 	}
 }
 
+- (NSString *) byebye
+{
+	[coreView needToQuit];
+	
+	return [super byebye];
+}
+
 /*Coreview manipulation*/
 
 - (NSRect) getCoreviewFrame : (NSRect) frame

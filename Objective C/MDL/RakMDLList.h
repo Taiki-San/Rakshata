@@ -22,6 +22,8 @@
 }
 
 - (id) init : (NSRect) frame;
+- (void) needToQuit;
+
 - (CGFloat) contentHeight;
 - (void) resizeAnimation: (NSRect) frameRect;
 

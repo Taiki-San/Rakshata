@@ -144,6 +144,15 @@ void MDLDownloadOver(uint selfCode)
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 }
 
+void MDLQuit()
+{
+	MUTEX_LOCK(asynchronousTaskInThreads);
+	
+	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+	
+	MUTEX_UNLOCK(asynchronousTaskInThreads);
+}
+
 void MDLUpdateIcons(uint selfCode, void * UIInstance)
 {
 	if(UIInstance != NULL)

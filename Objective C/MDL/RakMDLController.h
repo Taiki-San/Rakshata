@@ -23,10 +23,10 @@
 	bool quit;
 }
 
+- (void) needToQuit;
+
 - (uint) getNbElem;
 - (DATA_LOADED **) getData : (uint) row;
 - (int8_t) statusOfID : (uint) row;
-
-- (void) lol;
 
 @end

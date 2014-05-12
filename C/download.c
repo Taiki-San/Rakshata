@@ -57,7 +57,7 @@ int downloadChapter(TMP_DL *output, void ** rowViewResponsible)
 
     threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
-    while(isThreadStillRunning(threadData) || quit)
+    while(isThreadStillRunning(threadData) && !quit)
     {
         if(rowViewResponsible != NULL && downloadData.totalExpectedSize)
         {

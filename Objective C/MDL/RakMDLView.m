@@ -109,4 +109,9 @@
 	return [Prefs getSystemColor:code];
 }
 
+- (void) needToQuit
+{
+	[MDLList needToQuit];
+}
+
 @end

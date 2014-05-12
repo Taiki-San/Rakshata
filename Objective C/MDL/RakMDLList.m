@@ -54,6 +54,11 @@
 	return self;
 }
 
+- (void) needToQuit
+{
+	[controller needToQuit];
+}
+
 - (CGFloat) contentHeight
 {
 	if(scrollView == nil)

@@ -31,6 +31,13 @@
 	return self;
 }
 
+- (void) needToQuit
+{
+	quit = true;
+	MDLQuit();
+	sleep(2);
+}
+
 - (uint) getNbElem
 {
 	return nbElem;
@@ -50,11 +57,6 @@
 		return *(status[row]);
 	
 	return MDL_CODE_INTERNAL_ERROR;
-}
-
-- (void) lol
-{
-	NSLog(@"Hey");
 }
 
 @end

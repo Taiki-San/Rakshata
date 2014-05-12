@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-bool quit;
+volatile bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 {
@@ -242,6 +242,20 @@ bool MDLTelechargement(DATA_MOD_DL* input)
             ret_value = downloadChapter(&dataDL, input->todoList->rowViewResponsible);
             free(dataDL.URL);
 			
+			if(ret_value != CODE_RETOUR_OK)
+			{
+				if(dataDL.buf != NULL)
+				{
+					free(((DATA_DL_OBFS *) dataDL.buf)->data);
+					free(((DATA_DL_OBFS *) dataDL.buf)->mask);
+					free(dataDL.buf);
+				}
+                if(ret_value != CODE_RETOUR_DL_CLOSE)
+                    output = true;
+				
+				break;
+			}
+			
 			for(i = 0; i < 19 && dataDL.buf != NULL && ((DATA_DL_OBFS *) dataDL.buf)->data != NULL && ((DATA_DL_OBFS *) dataDL.buf)->mask != NULL; i++)
 				firstTwentyBytesOfArchive[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
 			firstTwentyBytesOfArchive[i] = 0;
@@ -269,7 +283,7 @@ bool MDLTelechargement(DATA_MOD_DL* input)
                 }
                 output = true;
             }
-            else if(ret_value != CODE_RETOUR_OK || dataDL.buf == NULL || ((DATA_DL_OBFS *) dataDL.buf)->data == NULL || ((DATA_DL_OBFS *) dataDL.buf)->mask == NULL || dataDL.length < 50 || ((firstTwentyBytesOfArchive[0] != 'P' || firstTwentyBytesOfArchive[1] != 'K') && strncmp(firstTwentyBytesOfArchive, "http://", 7) && strncmp(firstTwentyBytesOfArchive, "https://", 8)))
+            else if(dataDL.buf == NULL || ((DATA_DL_OBFS *) dataDL.buf)->data == NULL || ((DATA_DL_OBFS *) dataDL.buf)->mask == NULL || dataDL.length < 50 || ((firstTwentyBytesOfArchive[0] != 'P' || firstTwentyBytesOfArchive[1] != 'K') && strncmp(firstTwentyBytesOfArchive, "http://", 7) && strncmp(firstTwentyBytesOfArchive, "https://", 8)))
             {
                 if(dataDL.buf != NULL)
 				{
