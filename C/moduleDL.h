@@ -86,6 +86,8 @@ enum requestIDCodes {
 typedef struct data_loaded_from_download_list
 {
 	void * rowViewResponsible;
+	CURL * curlHandler;
+	
     MANGAS_DATA* datas;
 	int *listChapitreOfTome;
 	unsigned char *tomeName;
@@ -94,6 +96,7 @@ typedef struct data_loaded_from_download_list
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
 
 	bool subFolder;
+	bool downloadSuspended;
 } DATA_LOADED;
 
 typedef struct data_sent_to_pay_thread
@@ -124,6 +127,7 @@ typedef struct {
 	uint totalExpectedSize;
 	
 	TMP_DL * outputContainer;
+	CURL ** curlHandler;
 	
 	int errorCode;
 } DL_DATA;
@@ -176,7 +180,7 @@ extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
 /**Download.c**/
-int downloadChapter(TMP_DL *output, void ** rowViewResponsible);
+int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
 bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);

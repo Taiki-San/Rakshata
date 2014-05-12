@@ -69,7 +69,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		
 		// WARNING!! NO CHOICE BUT WE TRANSFORM A TRIPLE POINTER IN DOUBLE POINTER
 		todoListTmp.rowViewResponsible = &input.todoList->rowViewResponsible;
-		
+		todoListTmp.curlHandler = &input.todoList->curlHandler;
+				
 		switch (MDL_isAlreadyInstalled(*todoListTmp.datas, todoListTmp.subFolder, todoListTmp.chapitre, &posTomeInStruct))
 		{
 			case NOT_INSTALLED:
@@ -239,7 +240,7 @@ bool MDLTelechargement(DATA_MOD_DL* input)
             dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
 			
 			//La structure est supposée contenir un double pointeur mais ici un triple
-            ret_value = downloadChapter(&dataDL, input->todoList->rowViewResponsible);
+            ret_value = downloadChapter(&dataDL, input->todoList->rowViewResponsible, input->todoList->curlHandler);
             free(dataDL.URL);
 			
 			if(ret_value != CODE_RETOUR_OK)

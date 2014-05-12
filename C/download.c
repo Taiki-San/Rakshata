@@ -44,7 +44,7 @@ void releaseDNSCache()
 
 /** Chapter download **/
 
-int downloadChapter(TMP_DL *output, void ** rowViewResponsible)
+int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHandler)
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
@@ -54,6 +54,7 @@ int downloadChapter(TMP_DL *output, void ** rowViewResponsible)
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
+	downloadData.curlHandler = curlHandler;
 
     threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
@@ -100,7 +101,6 @@ static void downloadChapterCore(DL_DATA *data)
 	if(data == NULL || data->outputContainer == NULL)
 		quit_thread(0);
 	
-    CURL *curl = NULL;
     CURLcode res; //Get return from download
 
 	//Check if a proxy is configured
@@ -150,7 +150,7 @@ static void downloadChapterCore(DL_DATA *data)
 	
 	//Start the main work
 
-    curl = curl_easy_init();
+    CURL* curl = curl_easy_init();
     if(curl != NULL)
     {
         if(isProxyConfigured)
@@ -176,7 +176,9 @@ static void downloadChapterCore(DL_DATA *data)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeDataChapter);
         useDNSCache(curl);
 		
+		*(data->curlHandler) = curl;
         res = curl_easy_perform(curl);
+		*(data->curlHandler) = NULL;
 
         if(res != CURLE_OK) //Si problème
         {

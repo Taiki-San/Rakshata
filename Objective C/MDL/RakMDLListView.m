@@ -260,7 +260,19 @@
 
 - (void) sendPause
 {
-	
+	if((*todoList)->curlHandler != NULL)
+	{
+		if((*todoList)->downloadSuspended)
+		{
+			(*todoList)->downloadSuspended = false;
+			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
+		}
+		else
+		{
+			(*todoList)->downloadSuspended = true;
+			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_ALL);
+		}
+	}
 }
 
 - (void) sendRead

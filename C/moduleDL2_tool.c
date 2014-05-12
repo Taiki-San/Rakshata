@@ -118,6 +118,7 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
             dernierEspace = false;
     }
     rewind(import);
+	
     if(*nombreMangaTotal)
     {
 		int c, j, posPtr = 0, chapitreTmp, posCatalogue = 0;
