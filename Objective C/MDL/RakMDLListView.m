@@ -277,7 +277,19 @@
 
 - (void) sendRead
 {
+	NSView * view = self;
 	
+	while (view != nil && [view class] != [MDL class])
+	{
+		view = view.superview;
+	}
+	
+	if(view == nil)
+		return;
+	
+	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
+
+	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE :(*todoList)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->chapitre : (*todoList)->partOfTome];
 }
 
 @end

@@ -233,4 +233,28 @@
 	return output;
 }
 
+/** Inter-tab communication **/
+
+- (void) propagateContextUpdate : (MANGAS_DATA) data : (bool) isTome : (int) element
+{
+	NSArray* subviews = self.superview.subviews;
+	
+	if (subviews == nil)
+		return;
+	
+	uint count = [subviews count];
+	RakTabView * currentView;
+	
+	for (uint i = 0; i < count; i++)
+	{
+		currentView = [subviews objectAtIndex:i];
+		
+		if([currentView class] == [CTSelec class])
+			[currentView updateContextNotification:data :isTome :VALEUR_FIN_STRUCTURE_CHAPITRE];
+		else if([currentView class] == [Reader class])
+			[currentView updateContextNotification:data :isTome :element];
+	}
+
+}
+
 @end

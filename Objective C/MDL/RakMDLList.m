@@ -145,7 +145,7 @@
 {
 	if(row < amountData)
 	{
-		NSLog(@"Great");
+
 	}
 	
 	return NO;

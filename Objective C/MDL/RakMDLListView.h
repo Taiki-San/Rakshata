@@ -20,7 +20,6 @@
 	
 	RakProgressCircle * DLprogress;
 	
-	
 	RakText * requestName;
 	RakText * statusText;
 	

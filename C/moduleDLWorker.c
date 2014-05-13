@@ -20,7 +20,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	
     if(input.todoList == NULL || input.todoList->datas == NULL)
     {
-        *input.currentState = MDL_CODE_INTERNAL_ERROR;
+        *(input.currentState) = MDL_CODE_INTERNAL_ERROR;
         MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         quit_thread(0);
     }
@@ -42,12 +42,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     {
         free(listDL);
         free(listSizeDL);
-        *input.currentState = MDL_CODE_INTERNAL_ERROR;
+        *(input.currentState) = MDL_CODE_INTERNAL_ERROR;
         MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         quit_thread(0);
     }
 	
-    *input.currentState = MDL_CODE_DL;
+    *(input.currentState) = MDL_CODE_DL;
 	MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 	
     for(i = 1; i <= nombreElement; i++)
@@ -84,18 +84,18 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				if(MDLTelechargement(&argument))
 				{
 					if(i == nombreElement)
-						*input.currentState = MDL_CODE_ERROR_DL;
+						*(input.currentState) = MDL_CODE_ERROR_DL;
 				}
 				else if(quit)
 				{
-					*input.currentState = MDL_CODE_DEFAULT;
+					*(input.currentState) = MDL_CODE_DEFAULT;
 				}
 				else
 				{
 					listDL[i-1] = argument.buf;
 					listSizeDL[i-1] = argument.length;
 					if(i == nombreElement)
-						*input.currentState = MDL_CODE_DL_OVER;
+						*(input.currentState) = MDL_CODE_DL_OVER;
 				}
 				break;
 			}
@@ -123,7 +123,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 				if(i == nombreElement)
 				{
-					*input.currentState = MDL_CODE_INSTALL_OVER;
+					*(input.currentState) = MDL_CODE_INSTALL_OVER;
 				}
 				break;
 			}
@@ -137,7 +137,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 				if(i == nombreElement)
 				{
-					*input.currentState = MDL_CODE_INSTALL_OVER;
+					*(input.currentState) = MDL_CODE_INSTALL_OVER;
 				}
 				break;
 			}
@@ -147,19 +147,19 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	
 	MDLDownloadOver(input.selfCode);
 	
-    if(*input.currentState == MDL_CODE_DL_OVER) //On lance l'installation
+    if(*(input.currentState) == MDL_CODE_DL_OVER) //On lance l'installation
     {
         int error = 0;
         for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_INSTALL; i++);
         if(i == input.statusLength) //Aucune installation en cours
         {
-            *input.currentState = MDL_CODE_INSTALL;
+            *(input.currentState) = MDL_CODE_INSTALL;
             MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
         }
         else
         {
             MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
-            while(*input.currentState != MDL_CODE_INSTALL)
+            while(*(input.currentState) != MDL_CODE_INSTALL)
                 usleep(250);
         }
 		
@@ -173,15 +173,17 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
             free(listDL[i]); //Free un ptr null ne pose pas de problèmes
         }
         if(error)
-            *input.currentState = MDL_CODE_ERROR_INSTALL;
+            *(input.currentState) = MDL_CODE_ERROR_INSTALL;
         else
-            *input.currentState = MDL_CODE_INSTALL_OVER;
+            *(input.currentState) = MDL_CODE_INSTALL_OVER;
     }
     else
-        for(i = 0; i < nombreElement; free(listDL[i++]));
+	{
+		for(i = 0; i < nombreElement; free(listDL[i++]));
+	}
 	
 	//On lance les éventuelles installations en attente
-    for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] == MDL_CODE_DL_OVER; i++);
+    for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_DL_OVER; i++);
 
     if(i != input.statusLength) //une installation a été trouvée
         *(*input.fullStatus)[i] = MDL_CODE_INSTALL;

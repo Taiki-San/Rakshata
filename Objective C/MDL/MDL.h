@@ -30,4 +30,6 @@
 
 - (void) updateDependingViews;
 
+- (void) propagateContextUpdate : (MANGAS_DATA) data : (bool) isTome : (int) element;
+
 @end

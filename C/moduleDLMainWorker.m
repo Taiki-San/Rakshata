@@ -64,9 +64,9 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		{
 			if(requestID == RID_UPDATE_STATUS)
 			{
-				for(dataPos = 0; dataPos < *nbElemTotal && *status[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+				for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 				
-				if(dataPos < *nbElemTotal && *status[dataPos] == MDL_CODE_DEFAULT)
+				if(dataPos < *nbElemTotal && *(*status)[dataPos] == MDL_CODE_DEFAULT)
 				{
 					MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
 				}
