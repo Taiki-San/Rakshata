@@ -59,4 +59,10 @@
 	return MDL_CODE_INTERNAL_ERROR;
 }
 
+- (void) setStatusOfID : (uint) row : (uint8_t) value
+{
+	if(row < nbElem && status != NULL && status[row] != NULL)
+		*(status[row]) = value;
+}
+
 @end

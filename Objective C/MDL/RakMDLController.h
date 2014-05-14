@@ -28,5 +28,6 @@
 - (uint) getNbElem;
 - (DATA_LOADED **) getData : (uint) row;
 - (int8_t) statusOfID : (uint) row;
+- (void) setStatusOfID : (uint) row : (uint8_t) value;
 
 @end

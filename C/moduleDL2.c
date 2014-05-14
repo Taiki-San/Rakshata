@@ -164,7 +164,7 @@ void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal)
     {
         for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++)
         {
-            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] <= MDL_CODE_ERROR_DL)
+            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] == MDL_CODE_ABORTED || *status[currentPosition] <= MDL_CODE_FIRST_ERROR)
                 continue;
             else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {

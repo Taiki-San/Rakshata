@@ -255,7 +255,32 @@
 
 - (void) sendRemove
 {
+	NSView * view = self;
 	
+	while (view != nil && [view class] != [NSTableView class])
+	{
+		view = view.superview;
+	}
+	
+	if(view == nil)
+		return;
+	
+	NSInteger row = [(NSTableView*) view rowForView:self];
+	
+    if (row != -1)
+        [(NSTableView*) view removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:row] withAnimation:NSTableViewAnimationEffectFade];
+	
+	if (previousStatus == MDL_CODE_DL)
+	{
+		//Abort DL
+	}
+	else if(previousStatus == MDL_CODE_INSTALL_OVER)
+	{
+		//Deletion
+		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+	}
+
+	[_controller setStatusOfID: _row :MDL_CODE_ABORTED];
 }
 
 - (void) sendPause

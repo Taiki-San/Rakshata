@@ -91,7 +91,7 @@ int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHand
 
 #ifdef _WIN32
     CloseHandle(threadData);
-#endif // _WIN32
+#endif
 	
     return downloadData.errorCode;
 }
