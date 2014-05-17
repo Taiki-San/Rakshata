@@ -144,11 +144,7 @@
 
 - (void) refreshViewSize
 {
-	NSRect frame = [self createFrame];
-	
-	[self setFrameSize:frame.size];
-	[self setFrameOrigin:frame.origin];
-	
+	[self setFrame: [self createFrame]];
 	[self refreshDataAfterAnimation];
 }
 
@@ -189,8 +185,11 @@
 {
 	NSRect frame = [self createFrame];
 	
-	[self.animator setFrame:frame];
-	[coreView resizeAnimation : [self getCoreviewFrame : frame]];
+	if([self wouldFrameChange:frame])
+	{
+		[self.animator setFrame:frame];
+		[coreView resizeAnimation : [self getCoreviewFrame : frame]];
+	}
 }
 
 - (int) getCodePref : (int) request

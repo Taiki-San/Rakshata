@@ -76,7 +76,7 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
 	return false;
 }
 
-void MDLCleanup(int nbElemTotal, int ** status, int ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache)
+void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache)
 {
 	uint i;
 
@@ -156,7 +156,7 @@ void MDLAddElements(DATA_LOADED *** todoList, int8_t *** status, int8_t *** stat
 }
 
 /*Final processing*/
-void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal)
+void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
 {
     int currentPosition, printSomething = 0;
     FILE *import = fopen(INSTALL_DATABASE, "a+");

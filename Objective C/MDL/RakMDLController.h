@@ -16,17 +16,22 @@
 	
 	THREAD_TYPE coreWorker;
 	DATA_LOADED *** todoList;
+	uint	* IDToPosition;
 	int8_t ** status;
 	int8_t ** statusCache;
+
 	uint nbElem;
+	uint discardedCount;
 
 	bool quit;
 }
 
 - (void) needToQuit;
 
-- (uint) getNbElem;
-- (DATA_LOADED **) getData : (uint) row;
+- (uint) getNbElem : (BOOL) considerDiscarded;
+- (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
+- (void) discardElement : (uint) element;
+
 - (int8_t) statusOfID : (uint) row;
 - (void) setStatusOfID : (uint) row : (uint8_t) value;
 

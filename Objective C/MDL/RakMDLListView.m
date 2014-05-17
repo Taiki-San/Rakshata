@@ -22,7 +22,7 @@
 		_controller = controller;
 		_row = rowID;
 		
-		todoList = [_controller getData:_row];
+		todoList = [_controller getData: _row : YES];
 		if(todoList == NULL)
 		{
 			[self release];
@@ -191,11 +191,17 @@
 {
 	if(data != _row)
 	{
-		todoList = [_controller getData:_row];
+		_row = data;
+		todoList = [_controller getData : _row : YES];
 		if(todoList == NULL)
 			return;
 		
 		[requestName setStringValue : [self getName]];
+		
+		[_pause setState:RB_STATE_STANDARD];
+		[_read setState:RB_STATE_STANDARD];
+		[_remove setState:RB_STATE_STANDARD];
+		
 	}
 	[self setPositionsOfStuffs];
 }
@@ -255,6 +261,9 @@
 
 - (void) sendRemove
 {
+	if(todoList == nil)
+		return;
+	
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
 	NSView * view = self;
@@ -283,6 +292,23 @@
 	}
 
 	[_controller setStatusOfID: _row :MDL_CODE_ABORTED];
+	[_controller discardElement: _row];
+	
+	[(NSTableView *) view reloadData];
+	
+	while(view != nil && [view class] != [MDL class])
+	{
+		view = view.superview;
+	}
+	
+	if(view == nil)
+		return;
+	
+	[NSAnimationContext beginGrouping];
+	
+	[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
+	
+	[NSAnimationContext endGrouping];
 }
 
 - (void) sendPause

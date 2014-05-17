@@ -22,7 +22,20 @@
 		
 		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, NULL);
 
-		if(startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self) == false)
+		if(startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
+		{
+			IDToPosition = malloc(nbElem * sizeof(uint));
+			if(IDToPosition != NULL)
+			{
+				for(discardedCount = 0; discardedCount < nbElem; discardedCount++)
+					IDToPosition[discardedCount] = discardedCount;
+			}
+			else
+			{
+				[self release];			self = nil;
+			}
+		}
+		else
 		{
 			[self release];			self = nil;
 		}
@@ -39,18 +52,37 @@
 		MDLQuit();
 	}
 }
-
-- (uint) getNbElem
+		   
+- (void) dealloc
 {
-	return nbElem;
+	MDLCleanup(nbElem, status, statusCache, todoList, cache);
+	[super dealloc];
 }
 
-- (DATA_LOADED **) getData : (uint) row
+- (uint) getNbElem : (BOOL) considerDiscarded
 {
-	if(row >= nbElem)
+	return considerDiscarded ? discardedCount : nbElem;
+}
+
+- (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded
+{
+	if(row >= (considerDiscarded ? discardedCount : nbElem))
 		return NULL;
 	
-	return &(*todoList)[row];
+	return &(*todoList)[considerDiscarded ? IDToPosition[row] : row];
+}
+
+- (void) discardElement : (uint) element
+{
+	if(element < discardedCount)
+	{
+		uint posDiscarded = IDToPosition[element];
+		
+		if(posDiscarded < discardedCount - 1)
+			memcpy(&IDToPosition[posDiscarded], &IDToPosition[posDiscarded+1], nbElem - posDiscarded);
+		discardedCount--;
+		
+	}
 }
 
 - (int8_t) statusOfID : (uint) row

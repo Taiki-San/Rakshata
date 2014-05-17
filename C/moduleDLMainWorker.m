@@ -163,9 +163,9 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance)
 	if(UIInstance != NULL)
 		[(RakMDLListView*) UIInstance updateContext];
 	
-	else if(mainTab != nil && [mainTab respondsToSelector:@selector(getData:)])
+	else if(mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
-		DATA_LOADED ** todoList = [mainTab getData:selfCode];
+		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
 		if(todoList != NULL && *todoList != NULL && (*todoList)->rowViewResponsible != NULL)
 			[(RakMDLListView *) (*todoList)->rowViewResponsible updateContext];
 	}

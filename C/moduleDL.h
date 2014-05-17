@@ -207,8 +207,8 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 /**ModuleDL2.c**/
 bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
-void MDLCleanup(int nbElemTotal, int ** status, int ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache);
-void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal);
+void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache);
+void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);

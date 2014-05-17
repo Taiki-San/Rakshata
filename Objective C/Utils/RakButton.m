@@ -124,12 +124,6 @@
 	return [RakButtonCell class];
 }
 
-- (void) refreshViewSize
-{
-	NSRect frame = { {25, self.superview.frame.size.height - 45 } , {65, 28} };
-	[self setFrame:frame];
-}
-
 @end
 
 @implementation RakButtonCell
@@ -179,7 +173,21 @@
 	}
 	
 	return self;
+}
+
+- (void) setState:(NSInteger)value
+{
+	notAvailable = false;
 	
+	if(value == RB_STATE_HIGHLIGHTED)
+		[self setImage:clicked];
+	else if(value == RB_STATE_STANDARD)
+		[self setImage:nonClicked];
+	else if(value == RB_STATE_UNAVAILABLE)
+	{
+		[self setImage:unAvailable];
+		notAvailable = true;
+	}
 }
 
 - (id) copyWithZone:(NSZone *)zone

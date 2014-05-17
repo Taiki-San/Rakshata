@@ -41,8 +41,6 @@
 			[self release];
 			return nil;
 		}
-		else
-			amountData = [controller getNbElem];
 		
 		cellHeight = MDLLIST_CELL_HEIGHT;
 				
@@ -64,7 +62,7 @@
 	if(scrollView == nil)
 		return 0;
 	
-	return _tableView.frame.size.height;
+	return [controller getNbElem:YES] * (cellHeight + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
 }
 
 - (void) resizeAnimation: (NSRect) frameRect
@@ -87,12 +85,12 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return amountData;
+	return [controller getNbElem : YES];
 }
 
 - (NSNumber*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if(rowIndex >= amountData)
+	if(rowIndex >= [controller getNbElem : YES])
 		return nil;
 	
 	return @(rowIndex);
@@ -100,7 +98,7 @@
 
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	DATA_LOADED ** todoList = [controller getData:row];
+	DATA_LOADED ** todoList = [controller getData:row : YES];
 
 	if(todoList != NULL && *todoList != NULL)
 	{
@@ -111,7 +109,10 @@
 
 - (void) tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	DATA_LOADED ** todoList = [controller getData:row];
+	if (row == -1)
+		return;
+	
+	DATA_LOADED ** todoList = [controller getData:row : YES];
 
 	if(todoList != NULL && *todoList != NULL)
 	{
@@ -149,10 +150,11 @@
 
 - (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row;
 {
-	if(row < amountData)
+
+	/*	if(row < [controller getNbElem : YES])
 	{
 
-	}
+	}*/
 	
 	return NO;
 }
