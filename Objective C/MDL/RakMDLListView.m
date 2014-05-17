@@ -304,11 +304,14 @@
 	if(view == nil)
 		return;
 	
-	[NSAnimationContext beginGrouping];
-	
-	[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
-	
-	[NSAnimationContext endGrouping];
+	if([(MDL*) view wouldFrameChange:[(MDL*) view createFrame]])
+	{
+		[NSAnimationContext beginGrouping];
+		
+		[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
+		
+		[NSAnimationContext endGrouping];
+	}
 }
 
 - (void) sendPause
