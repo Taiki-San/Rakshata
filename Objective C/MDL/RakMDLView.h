@@ -20,6 +20,8 @@
 - (CGFloat) getContentHeight;
 - (NSRect) getMainListFrame : (NSRect) output;
 
+- (void) updateScroller : (BOOL) hidden;
+
 - (void) resizeAnimation : (NSRect) frame;
 
 - (void) needToQuit;

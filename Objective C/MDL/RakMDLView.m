@@ -77,6 +77,12 @@
 	[MDLList resizeAnimation:[self getMainListFrame:frame]];
 }
 
+- (void) updateScroller : (BOOL) hidden
+{
+	if(MDLList != nil)
+		[MDLList setScrollerHidden:hidden];
+}
+
 /** Color **/
 
 - (NSColor*) getBackgroundColor

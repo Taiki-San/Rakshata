@@ -19,7 +19,7 @@
 	if(self != nil)
 	{
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-		[self setAutoresizesSubviews:YES];
+		[self setAutoresizesSubviews:NO];
 		[self setNeedsDisplay:YES];
 		[self setWantsLayer:YES];
 	}
@@ -121,6 +121,34 @@
 @end
 
 @implementation RakContentView
+
+- (id) initWithFrame:(NSRect)frameRect
+{
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+	{
+		[self setAutoresizesSubviews:NO];
+	}
+	
+	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	
+	NSView * view;
+	NSArray * subviews = self.subviews;
+	NSInteger i, count = [subviews count];
+	
+	for(i = 0; i < count; i++)
+	{
+		view = [subviews objectAtIndex:i];
+		if([view superclass] == [RakTabView class])
+			[(RakTabView *) view setFrame:[(RakTabView *) view createFrame]];
+	}
+}
 
 - (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL
 {

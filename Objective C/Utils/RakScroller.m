@@ -18,6 +18,8 @@
 	
 	if(self != nil)
 	{
+		incompleteDrawing = NO;
+		
 		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE] retain];
 		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE] retain];
 		color = passive;
@@ -36,9 +38,12 @@
 	slotRect.origin.y += 10;
 	
 	[self setupPath:slotRect : slotRect.size.width : slotRect.size.width / 2.0f];
-	
+
 	[[NSColor blackColor] set];
+	
 	CGContextFillPath(contextBorder);
+	
+	incompleteDrawing = !incompleteDrawing;
 }
 
 #define RADIUS_BORDERS	6.5f
@@ -66,6 +71,29 @@
 	[self setupPath:knobRect : BAR_WIDTH : RADIUS_BORDERS];
 	[[self getColorBar] setFill];
 	CGContextFillPath(contextBorder);
+	
+	incompleteDrawing = !incompleteDrawing;
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[super drawRect:dirtyRect];
+	
+	//Fix a weird bug, when the slot would be drawn, but not the knob
+	if(incompleteDrawing)
+	{
+		incompleteDrawing = NO;
+
+		if([self.superview class] == [RakListScrollView class])
+		{
+			RakListScrollView * view = (RakListScrollView*) self.superview;
+
+			if(self == [view horizontalScroller])
+				[view setHasHorizontalScroller:NO];
+			else if(self == [view verticalScroller])
+				[view setHasVerticalScroller:NO];
+		}
+	}
 }
 
 - (void) mouseDown:(NSEvent *)theEvent

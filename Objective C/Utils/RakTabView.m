@@ -198,18 +198,6 @@
 	[self.animator setFrame:[self createFrame]];
 }
 
-- (void) setFrameSize:(NSSize)newSize
-{
-	if(!resizeAnimationCount)
-	{
-		NSRect frame = [self createFrame];
-		[super setFrameSize:frame.size];
-		[self setFrameOrigin:frame.origin];
-	}
-	else
-		[super setFrameSize:newSize];
-}
-
 #pragma mark - Tab opening notification
 
 - (void) animationIsOver : (uint) mainThread : (byte) context

@@ -14,8 +14,40 @@
         <customObject id="-3" userLabel="Application"/>
         <menu title="AMainMenu" systemMenu="main" id="29">
             <items>
-                <menuItem title="Rakshata" id="56">
-                    <menu key="submenu" title="Rakshata" systemMenu="apple" id="57">
+                <menuItem title="Rakshata" id="Hri-sJ-p8T">
+                    <menu key="submenu" title="Rakshata" systemMenu="apple" id="dpW-Qr-oG6">
+                        <items>
+                            <menuItem title="About Rakshata" id="alb-cC-NkW">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="NdE-UH-XwG">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Preferences…" keyEquivalent="," id="NfC-pn-vLp"/>
+                            <menuItem isSeparatorItem="YES" id="vk9-Dz-qa9">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Services" id="eqN-YR-kmd">
+                                <menu key="submenu" title="Services" systemMenu="services" id="BCB-Zm-3at"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="GK4-SD-uU8">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Hide Rakshata" keyEquivalent="h" id="PP1-lM-wFQ"/>
+                            <menuItem title="Hide Others" keyEquivalent="h" id="Zps-kV-acr">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Show All" id="bu8-Zr-fPB"/>
+                            <menuItem isSeparatorItem="YES" id="jvg-Kz-6JP">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Quit Rakshata" keyEquivalent="q" id="1RY-Ig-jry"/>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Fichier" id="56" userLabel="Menu Item - Fichier">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Fichier" systemMenu="apple" id="57">
                         <items>
                             <menuItem title="About Rakshata" id="58">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -66,7 +98,7 @@
             </items>
         </menu>
         <window title="Rakshata" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" id="371" customClass="RakWindow">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="91" y="318" width="950" height="470"/>

@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define MDLLIST_CELL_HEIGHT ((11 + 1) * 2)
+
 @interface RakMDLList : RakList
 {
 	RakMDLController * controller;
@@ -23,6 +25,7 @@
 
 - (id) init : (NSRect) frame;
 - (void) needToQuit;
+- (void) setScrollerHidden : (BOOL) hidden;
 
 - (CGFloat) contentHeight;
 - (void) resizeAnimation: (NSRect) frameRect;

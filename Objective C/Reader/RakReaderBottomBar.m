@@ -20,7 +20,7 @@
 	
 	if(self != nil)
 	{
-		[self setAutoresizesSubviews:true];
+		[self setAutoresizesSubviews:YES];
 		[parent addSubview:self];
 		
 		readerMode = parent->readerMode;

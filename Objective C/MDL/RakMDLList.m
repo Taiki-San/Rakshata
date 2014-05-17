@@ -44,7 +44,7 @@
 		else
 			amountData = [controller getNbElem];
 		
-		cellHeight = (11 + 1) * 2;
+		cellHeight = MDLLIST_CELL_HEIGHT;
 				
 		[self applyContext:frame : -1 : -1];
 		[_tableView setRowHeight:cellHeight];
@@ -64,12 +64,18 @@
 	if(scrollView == nil)
 		return 0;
 	
-	return _tableView.frame.size.height + [_tableView intercellSpacing].height;
+	return _tableView.frame.size.height;
 }
 
 - (void) resizeAnimation: (NSRect) frameRect
 {
 	[scrollView.animator setFrame:[self getTableViewFrame:frameRect]];
+}
+
+- (void) setScrollerHidden : (BOOL) hidden
+{
+	if(scrollView != nil)
+		[scrollView setHasVerticalScroller:!hidden];
 }
 
 - (bool) didInitWentWell

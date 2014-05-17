@@ -18,6 +18,8 @@
 	NSColor *active;
 	
 	CGContextRef contextBorder;
+	
+	BOOL incompleteDrawing;
 }
 
 + (void) updateScrollers : (NSScrollView *) view;
