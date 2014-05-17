@@ -45,6 +45,7 @@
 @private
 	bool readerMode;
 	bool noDrag;
+	bool alreadyRefreshed;
 	
 	bool cacheBeingBuilt;
 	
@@ -82,6 +83,7 @@
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) buildCache;
 - (void) changePage : (byte) switchType;
+- (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (bool) goToNext;
 - (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateContext;

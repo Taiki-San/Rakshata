@@ -18,6 +18,7 @@
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
+	alreadyRefreshed = false;
 	readerMode = superView->readerMode;
 	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
@@ -505,6 +506,24 @@
 		[self failure];
 }
 
+- (void) jumpToPage : (uint) newPage
+{
+	if (newPage == data.pageCourante || newPage >= data.nombrePageTotale)
+		return;
+	
+	int pageCourante = data.pageCourante;
+	
+	if(newPage == pageCourante - 1)
+		[self changePage:READER_ETAT_PREVPAGE];
+	else if(newPage == pageCourante + 1)
+		[self changePage:READER_ETAT_NEXTPAGE];
+	else
+	{
+		data.pageCourante = newPage;
+		[self changePage:READER_ETAT_DEFAULT];
+	}
+}
+
 - (void) changeChapter : (bool) goToNext
 {
 	uint newPosIntoStruct = posElemInStructure;
@@ -517,6 +536,14 @@
 
 - (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
 {
+	if(projectRequest.cacheDBID != project.cacheDBID)
+		alreadyRefreshed = false;
+	else if(elemRequest == currentElem && isTomeRequest == isTome)
+	{
+		[self jumpToPage:startPage];
+		return;
+	}
+	
 	[self flushCache];
 	releaseDataReader(&data);
 	
@@ -723,6 +750,11 @@
 
 - (void) checkIfNewElements
 {
+	if(alreadyRefreshed)
+		return;
+	else
+		alreadyRefreshed = true;
+	
 	MANGAS_DATA localProject;
 	memcpy(&localProject, &project, sizeof(MANGAS_DATA));
 	
@@ -745,7 +777,7 @@
 	MANGAS_DATA localProject = *arguments.data;
 	uint nbElemToGrab = arguments.nbElem;
 	
-	if(project.cacheDBID != localProject.cacheDBID)
+	if(project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
 		return;
 	
 	bool onlyOneElementAvailable = nbElemToGrab == 1;
