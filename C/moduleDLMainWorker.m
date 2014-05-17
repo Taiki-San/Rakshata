@@ -76,7 +76,12 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 					for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_WAITING_LOGIN && *(*status)[dataPos] != MDL_CODE_WAITING_PAY; dataPos++);
 					
 					if(dataPos == *nbElemTotal)	//Non, on se casse
+					{
+						pthread_cond_broadcast(&condResumeExecution);
+						MUTEX_UNLOCK(mutexStartUIThread);
+						
 						break;
+					}
 				}
 			}
 		}
