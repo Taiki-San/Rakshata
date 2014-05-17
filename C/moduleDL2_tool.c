@@ -16,7 +16,7 @@ extern char password[100];
 
 /*Loaders divers*/
 
-char* MDL_craftDownloadURL(DATA_LOADED data)
+char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 {
     int length;
     char *output = NULL;

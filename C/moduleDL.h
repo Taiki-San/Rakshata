@@ -83,6 +83,10 @@ enum requestIDCodes {
 	RID_UPDATE_STATUS			= 1
 };
 
+enum downloadStatusCodes {
+	DLSTATUS_SUSPENDED	= 0x0f,
+	DLSTATUS_ABORT		= 0xf0
+};
 
 typedef struct data_loaded_from_download_list
 {
@@ -97,8 +101,25 @@ typedef struct data_loaded_from_download_list
     int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
 
 	bool subFolder;
-	bool downloadSuspended;
+	uint8_t downloadSuspended;	//Divised in two parts
 } DATA_LOADED;
+
+typedef struct intermediary_from_data_loaded_to_DL_thread
+{
+	void ** rowViewResponsible;
+	CURL ** curlHandler;
+	uint8_t * downloadSuspended;	//Divised in two parts
+	
+    MANGAS_DATA* datas;
+	int *listChapitreOfTome;
+	unsigned char *tomeName;
+	
+	int chapitre;
+    int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
+	
+	bool subFolder;
+	
+}PROXY_DATA_LOADED;
 
 typedef struct data_sent_to_pay_thread
 {
@@ -129,6 +150,7 @@ typedef struct {
 	
 	TMP_DL * outputContainer;
 	CURL ** curlHandler;
+	uint8_t *aborted;
 	
 	int errorCode;
 } DL_DATA;
@@ -147,7 +169,7 @@ typedef struct data_pour_installation
 
 typedef struct main_data_module_DL
 {
-    DATA_LOADED* todoList;
+    PROXY_DATA_LOADED* todoList;
     void* buf;
     size_t length;
 } DATA_MOD_DL;
@@ -181,7 +203,7 @@ extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
 /**Download.c**/
-int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHandler);
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
 bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
@@ -189,7 +211,7 @@ void MDLCleanup(int nbElemTotal, int ** status, int ** statusCache, DATA_LOADED 
 void MDLParseFile(DATA_LOADED **todoList, int **status, int nombreTotal);
 
 /**ModuleDL2_tool.c**/
-char* MDL_craftDownloadURL(DATA_LOADED data);
+char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 #define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList);

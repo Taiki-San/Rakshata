@@ -255,6 +255,8 @@
 
 - (void) sendRemove
 {
+	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
+	
 	NSView * view = self;
 	
 	while (view != nil && [view class] != [NSTableView class])
@@ -287,14 +289,14 @@
 {
 	if((*todoList)->curlHandler != NULL)
 	{
-		if((*todoList)->downloadSuspended)
+		if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED)
 		{
-			(*todoList)->downloadSuspended = false;
+			(*todoList)->downloadSuspended &= ~DLSTATUS_SUSPENDED;
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
 		}
 		else
 		{
-			(*todoList)->downloadSuspended = true;
+			(*todoList)->downloadSuspended |= DLSTATUS_SUSPENDED;
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_ALL);
 		}
 	}

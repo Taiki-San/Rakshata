@@ -44,7 +44,7 @@ void releaseDNSCache()
 
 /** Chapter download **/
 
-int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHandler)
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, CURL ** curlHandler)
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
@@ -55,6 +55,7 @@ int downloadChapter(TMP_DL *output, void ** rowViewResponsible, CURL ** curlHand
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
 	downloadData.curlHandler = curlHandler;
+	downloadData.aborted = abortTransmiter;
 
     threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
@@ -200,10 +201,7 @@ static void downloadChapterCore(DL_DATA *data)
 /** Chapter download utilities **/
 static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
 {
-    if(quit)
-        return -1;
-	
-	if(ptr != NULL)
+    if(ptr != NULL)
 	{
 		ptr->bytesDownloaded = nowDownloaded;
 		ptr->totalExpectedSize = totalToDownload;
@@ -214,13 +212,29 @@ static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double n
 
 static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData)
 {
-	if(downloadData == NULL || downloadData->outputContainer == NULL)
+	if(quit)						//Global message to quit
+        return -1;
+	
+	else if(downloadData == NULL)
 		return -1;
+	
+	else if(downloadData->aborted != NULL && *downloadData->aborted & DLSTATUS_ABORT)
+		return -1;
+	
+	else if(!size || !nmemb)		//Rien à écrire
+        return 0;
 	
 	int i;
 	TMP_DL *data = downloadData->outputContainer;
+	
+	if(data == NULL)
+		return -1;
+	
     DATA_DL_OBFS *output = data->buf;
     char *input = ptr;
+	
+	if(output == NULL)
+		return -1;
 	
     if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos)
     {
@@ -259,9 +273,6 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
             output->mask = internalBufferTmp;
         }
     }
-	
-    if(size * nmemb == 0) //Rien à écrire
-        return 0;
 	
     //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
 	
