@@ -66,6 +66,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case GET_COLOR_INACTIVE:
 		{
 			output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];
+			//output = [NSColor colorWithSRGBRed:39/255.0f green:174/255.0f blue:96/255.0f alpha:1.0];
 			break;
 		}
 		case GET_COLOR_SURVOL:
@@ -128,6 +129,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case GET_COLOR_BACKGROUD_MDL_READERMODE:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
+			//output = [NSColor colorWithSRGBRed:44/255.0f green:63/255.0f blue:80/255.0f alpha:1.0];
 			break;
 		}
 

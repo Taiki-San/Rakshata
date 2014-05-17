@@ -34,8 +34,10 @@
 - (void) needToQuit
 {
 	quit = true;
-	MDLQuit();
-	sleep(2);
+	if(isThreadStillRunning(coreWorker))
+	{
+		MDLQuit();
+	}
 }
 
 - (uint) getNbElem
