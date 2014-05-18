@@ -19,6 +19,7 @@
 - (id)initContent:(NSRect)frame : (NSString *) state;
 - (CGFloat) getContentHeight;
 - (NSRect) getMainListFrame : (NSRect) output;
+- (BOOL) isEmpty;
 
 - (void) updateScroller : (BOOL) hidden;
 

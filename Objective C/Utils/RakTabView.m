@@ -453,16 +453,17 @@
 - (MDL*) getMDL
 {
 	NSArray * subviews = [self.superview subviews];
+	NSView * view;
 	
 	if(subviews == nil)
 		return nil;
 	
 	uint pos, count = [subviews count];
 	
-	for (pos = 0; pos < count && [[subviews objectAtIndex:pos] class] != [MDL class]; pos++);
+	for (pos = 0; pos < count && [(view = [subviews objectAtIndex:pos]) class] != [MDL class]; pos++);
 	
-	if(pos < count)
-		return [subviews objectAtIndex:pos];
+	if(pos < count && [(MDL*) view available])
+		return (MDL*) view;
 	
 	return nil;
 }

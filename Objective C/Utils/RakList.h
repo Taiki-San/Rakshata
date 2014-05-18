@@ -12,6 +12,8 @@
 
 @interface RakListScrollView : NSScrollView
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end
 
 @interface RakList : NSObject <NSTableViewDelegate, NSTableViewDataSource>
@@ -36,6 +38,7 @@
 - (BOOL) isHidden;
 - (NSRect) frame;
 - (void) setFrame : (NSRect) frameRect;
+- (void) resizeAnimation : (NSRect) frameRect;
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;
 

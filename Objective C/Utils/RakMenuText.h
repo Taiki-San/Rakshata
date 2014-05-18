@@ -23,4 +23,6 @@
 - (NSRect) getMenuFrame : (NSRect) superViewSize;
 - (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color;
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end

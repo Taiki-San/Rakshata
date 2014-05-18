@@ -85,17 +85,29 @@
 	}
 }
 
-- (int8_t) statusOfID : (uint) row
+- (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded
 {
-	if(row < nbElem && status != NULL && status[row] != NULL)
+	if(row >= (considerDiscarded ? discardedCount : nbElem) || status == NULL)
+		return MDL_CODE_INTERNAL_ERROR;
+	
+	if(considerDiscarded)
+		row = IDToPosition[row];
+	   
+	if(status[row] != NULL)
 		return *(status[row]);
 	
 	return MDL_CODE_INTERNAL_ERROR;
 }
 
-- (void) setStatusOfID : (uint) row : (uint8_t) value
+- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value
 {
-	if(row < nbElem && status != NULL && status[row] != NULL)
+	if(row >= (considerDiscarded ? discardedCount : nbElem) || status == NULL)
+		return;
+	
+	if(considerDiscarded)
+		row = IDToPosition[row];
+	
+	if(status[row] != NULL)
 		*(status[row]) = value;
 }
 

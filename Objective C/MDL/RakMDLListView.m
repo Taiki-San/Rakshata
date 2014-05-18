@@ -198,10 +198,7 @@
 		
 		[requestName setStringValue : [self getName]];
 		
-		[_pause setState:RB_STATE_STANDARD];
-		[_read setState:RB_STATE_STANDARD];
-		[_remove setState:RB_STATE_STANDARD];
-		
+		[self updateContext];
 	}
 	[self setPositionsOfStuffs];
 }
@@ -210,7 +207,7 @@
 
 - (void) updateContext
 {
-	int8_t newStatus = [_controller statusOfID : _row];
+	int8_t newStatus = [_controller statusOfID : _row : YES];
 	
 	if(newStatus == previousStatus)
 		return;
@@ -219,6 +216,10 @@
 	if(![_pause isHidden])			[_pause setHidden:YES];
 	if(![_read isHidden])			[_read setHidden:YES];
 	if(![DLprogress isHidden])		[DLprogress setHidden:YES];
+	
+	[_read setState:RB_STATE_STANDARD];
+	[_pause setState:RB_STATE_STANDARD];
+	[_remove setState:RB_STATE_STANDARD];
 	
 	previousStatus = newStatus;
 
@@ -288,11 +289,12 @@
 	else if(previousStatus == MDL_CODE_INSTALL_OVER)
 	{
 		//Deletion
-		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+		//internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
 	}
 
-	[_controller setStatusOfID: _row :MDL_CODE_ABORTED];
+	[_controller setStatusOfID: _row : MDL_CODE_ABORTED : YES];
 	[_controller discardElement: _row];
+	(*todoList)->rowViewResponsible = NULL;
 	
 	[(NSTableView *) view reloadData];
 	

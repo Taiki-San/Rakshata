@@ -18,7 +18,11 @@
 - (void) setupInternal;
 - (NSString *) getContextToGTFO;
 
+- (void) resizeAnimation : (NSRect)frameRect;
+
 - (void) setFrameInternalViews : (NSRect) newBound;
+- (void) resizeAnimationInternalViews : (NSRect) newBound;
+
 - (void) retainInternalViews;
 - (void) releaseInternalViews;
 

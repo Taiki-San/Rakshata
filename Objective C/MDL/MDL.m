@@ -31,7 +31,7 @@
 
 - (void) initContent : (NSString *) state
 {
-	coreView = [[RakMDLView alloc]  initContent:[self getCoreviewFrame : [self bounds]] : state];
+	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : [self bounds]] : state];
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
@@ -39,6 +39,11 @@
 		needUpdateMainViews = YES;
 		[self updateDependingViews];
 	}
+}
+
+- (BOOL) available
+{
+	return  coreView != nil && ![coreView isEmpty];
 }
 
 - (NSString *) byebye
@@ -96,11 +101,17 @@
 	
 	CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
 	
-	if(contentHeight != 0 && maximumSize.size.height >= contentHeight - 2)
+	if(maximumSize.size.height >= contentHeight - 2)
 	{
 		maximumSize.size.height = contentHeight;
-		needUpdateMainViews = YES;
-		[coreView updateScroller:YES];
+
+		if([coreView isEmpty])	//Let's get the fuck out of here
+			maximumSize.origin.y = -contentHeight;
+		else
+		{
+			needUpdateMainViews = YES;
+			[coreView updateScroller:YES];
+		}
 	}
 	else
 		[coreView updateScroller:NO];
@@ -150,8 +161,11 @@
 
 - (void) refreshDataAfterAnimation
 {
-	[super refreshDataAfterAnimation];
-	[self updateDependingViews];
+	if(![coreView isEmpty])
+	{
+		[super refreshDataAfterAnimation];
+		[self updateDependingViews];
+	}
 }
 
 - (NSRect) getFrameOfNextTab

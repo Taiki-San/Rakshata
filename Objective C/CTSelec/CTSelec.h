@@ -22,6 +22,6 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
-- (NSRect) calculateContentViewSize;
+- (NSRect) calculateContentViewSize : (NSRect) frame;
 
 @end

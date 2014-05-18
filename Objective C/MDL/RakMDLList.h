@@ -24,6 +24,7 @@
 }
 
 - (id) init : (NSRect) frame;
+- (BOOL) isEmpty;
 - (void) needToQuit;
 - (void) setScrollerHidden : (BOOL) hidden;
 

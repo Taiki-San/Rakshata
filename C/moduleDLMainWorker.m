@@ -120,13 +120,16 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
         }
 		
         *(*status)[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
-        argument->todoList = todoList[posElement];
+
+		MDLUpdateIcons(posElement, todoList[posElement]->rowViewResponsible);
+		
+		argument->todoList = todoList[posElement];
         argument->currentState = (*status)[posElement];
         argument->historiqueTeam = historiqueTeam;
 		argument->fullStatus = status;
 		argument->statusLength = nbElemTotal;
 		
-        if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
+		if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
             argument->isTomeAndLastElem = true;
         else
             argument->isTomeAndLastElem = false;

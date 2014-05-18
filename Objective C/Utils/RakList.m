@@ -111,6 +111,20 @@
 	}
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	CGFloat oldWidth = _tableView.frame.size.width;
+	
+	[scrollView resizeAnimation:[self getTableViewFrame:frameRect]];
+	
+	if(oldWidth != frameRect.size.width)
+	{
+		[_tableView.animator setFrame:scrollView.frame];
+		[_tableView reloadData];
+	}
+
+}
+
 - (void) setHidden : (bool) state
 {
 	if([scrollView isHidden] != state)
@@ -300,6 +314,21 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
+	
+	NSScroller * scroller = self.verticalScroller;
+	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
+	{
+		[scroller setHidden:YES];
+	}
+	else if([scroller isHidden])
+	{
+		[scroller setHidden:NO];
+	}
+}
+
+- (void) resizeAnimation:(NSRect)frameRect
+{
+	[self.animator setFrame:frameRect];
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)

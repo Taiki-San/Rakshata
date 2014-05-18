@@ -39,6 +39,14 @@
 	[self setFrameInternalViews:[self bounds]];
 }
 
+- (void) resizeAnimation : (NSRect)frameRect
+{
+	[self.animator setFrame:frameRect];
+	
+	frameRect.origin.x = frameRect.origin.y = 0;
+	[self resizeAnimationInternalViews:frameRect];
+}
+
 - (id) retain
 {
 	[self retainInternalViews];
@@ -52,6 +60,11 @@
 }
 
 - (void) setFrameInternalViews : (NSRect) newBound
+{
+	
+}
+
+- (void) resizeAnimationInternalViews : (NSRect) newBound
 {
 	
 }

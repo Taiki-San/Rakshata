@@ -59,6 +59,11 @@
 	return output;
 }
 
+- (BOOL) isEmpty
+{
+	return [MDLList isEmpty];
+}
+
 /** Proxy work **/
 
 - (void) setFrameInternalViews:(NSRect)newBound

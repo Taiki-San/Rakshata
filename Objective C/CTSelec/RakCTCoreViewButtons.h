@@ -12,6 +12,8 @@
 
 @interface RakCTCoreViewButtons : NSSegmentedControl
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end
 
 @interface RakCTCoreViewButtonsCell : NSSegmentedCell

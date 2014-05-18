@@ -24,8 +24,9 @@
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
-
 - (void) initContent : (NSString *) state;
+- (BOOL) available;
+
 - (NSRect) getCoreviewFrame : (NSRect) frame;
 
 - (void) updateDependingViews;

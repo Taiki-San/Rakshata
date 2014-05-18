@@ -93,4 +93,9 @@
 	[super setFrame:[self getMenuFrame:frameRect]];
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame: [self getMenuFrame:frameRect]];
+}
+
 @end

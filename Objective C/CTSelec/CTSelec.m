@@ -68,7 +68,7 @@
 					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
-					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize] : *project : isTome : context];
+					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame]] : *project : isTome : context];
 					free(project);
 					
 				} while (0);
@@ -92,7 +92,7 @@
 {
 	long context[4] = {-1, -1, -1, -1};
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize] : mangaData[21] : false : context];
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame]] : mangaData[21] : false : context];
 }
 
 - (void) dealloc
@@ -215,10 +215,8 @@
 
 #pragma mark - Self code used in reader mode
 
-- (NSRect) calculateContentViewSize
+- (NSRect) calculateContentViewSize : (NSRect) frame
 {
-	NSRect frame = [self frame];
-
 	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 	frame.origin.y = CT_READERMODE_BOTTOMBAR_WIDTH;
@@ -238,7 +236,21 @@
 	{
 		[self internalSetFrame:frameRect];
 		[backButton setFrame:[self bounds]];
-		[coreView setFrame:[self calculateContentViewSize]];
+		[coreView setFrame:[self calculateContentViewSize : [self frame]]];
+	}
+}
+
+- (void) resizeAnimation
+{
+	NSRect frame = [self createFrame];
+	
+	if([self wouldFrameChange:frame])
+	{
+		[self.animator setFrame:frame];
+
+		frame.origin.x = frame.origin.y = 0;
+		[backButton resizeAnimation:frame];
+		[coreView resizeAnimation:[self calculateContentViewSize : frame]];
 	}
 }
 

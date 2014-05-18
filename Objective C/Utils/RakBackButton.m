@@ -37,18 +37,30 @@
     return self;
 }
 
+- (NSRect) createFrameFromSuperFrame : (NSRect) superFrame
+{
+	superFrame.origin.y = superFrame.size.height - self.frame.size.height - RBB_TOP_BORDURE;
+	superFrame.size.height = self.frame.size.height;
+	superFrame.origin.x += superFrame.size.width * RBB_BUTTON_POSX / 100.0f;
+	superFrame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
+	
+	return superFrame;
+}
+
 - (void) setFrame:(NSRect)frameRect
 {
-	frameRect.origin.y = frameRect.size.height - self.frame.size.height - RBB_TOP_BORDURE;
-	frameRect.size.height = self.frame.size.height;
-	frameRect.origin.x += frameRect.size.width * RBB_BUTTON_POSX / 100.0f;
-	frameRect.size.width *= RBB_BUTTON_WIDTH / 100.0f;
-	
-	[super setFrame:frameRect];
+	[super setFrame:[self createFrameFromSuperFrame:frameRect]];
 	
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame:[self createFrameFromSuperFrame:frameRect]];
 	
+	[self removeTrackingRect:tag];
+	tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

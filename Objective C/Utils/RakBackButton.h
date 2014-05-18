@@ -20,6 +20,9 @@
 
 - (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack;
 
+- (NSRect) createFrameFromSuperFrame : (NSRect) superFrame;
+- (void) resizeAnimation : (NSRect) frameRect;
+
 - (NSColor *) getColorBackground;
 - (NSColor *) getColorBackgroundSlider;
 

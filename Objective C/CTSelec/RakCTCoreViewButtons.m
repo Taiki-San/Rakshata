@@ -61,6 +61,11 @@
 	[super setFrame:[self getButtonFrame:frameRect]];
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : [self getButtonFrame:frameRect]];
+}
+
 + (Class)cellClass
 {
 	return [RakCTCoreViewButtonsCell class];

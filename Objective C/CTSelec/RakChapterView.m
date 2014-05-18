@@ -45,6 +45,13 @@
 	[coreView setFrame:newBound];
 }
 
+- (void) resizeAnimationInternalViews:(NSRect)newBound
+{
+	[projectName resizeAnimation:newBound];
+	[projectImage resizeAnimation:newBound];
+	[coreView resizeAnimation:newBound];
+}
+
 - (void) retainInternalViews
 {
 	[projectName retain];
@@ -225,6 +232,11 @@
 	[super setFrame:[self getProjectImageSize:frameRect :[self image].size]];
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : [self getProjectImageSize:frameRect :[self image].size]];
+}
+
 @end
 
 @implementation RakCTContentTabView
@@ -332,6 +344,26 @@
 	
 	[tableViewControllerChapter setFrame:[self bounds]];
 	[tableViewControllerVolume setFrame:[self bounds]];
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : [self getSizeOfCoreView:frameRect]];
+	
+	frameRect.origin.x = frameRect.origin.y = 0;
+	[buttons resizeAnimation:frameRect];
+	
+	if(updateIfRequired(&data, RDB_CTXCT))
+	{
+		checkChapitreValable(&data, NULL);
+		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
+		
+		checkTomeValable(&data, NULL);
+		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
+	}
+
+	[tableViewControllerChapter resizeAnimation:[self bounds]];
+	[tableViewControllerVolume resizeAnimation:[self bounds]];
 }
 
 - (void) failure

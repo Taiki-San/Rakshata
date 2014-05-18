@@ -32,7 +32,7 @@
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
 - (void) discardElement : (uint) element;
 
-- (int8_t) statusOfID : (uint) row;
-- (void) setStatusOfID : (uint) row : (uint8_t) value;
+- (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
+- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
 
 @end

@@ -21,6 +21,8 @@
 
 - (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end
 
 @interface RakCTContentTabView : NSView
@@ -33,6 +35,8 @@
 
 - (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
+
+- (void) resizeAnimation : (NSRect) frameRect;
 
 - (NSString *) getContextToGTFO;
 
