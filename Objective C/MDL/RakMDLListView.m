@@ -247,6 +247,8 @@
 			break;
 		}
 	}
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Proxy
@@ -267,6 +269,12 @@
 	
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
+	if(previousStatus == MDL_CODE_INSTALL_OVER)
+	{
+		//Deletion
+		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+	}
+	
 	NSView * view = self;
 	
 	while (view != nil && [view class] != [NSTableView class])
@@ -282,16 +290,6 @@
     if (row != -1)
         [(NSTableView*) view removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:row] withAnimation:NSTableViewAnimationEffectFade];
 	
-	if (previousStatus == MDL_CODE_DL)
-	{
-		//Abort DL
-	}
-	else if(previousStatus == MDL_CODE_INSTALL_OVER)
-	{
-		//Deletion
-		//internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
-	}
-
 	[_controller setStatusOfID: _row : MDL_CODE_ABORTED : YES];
 	[_controller discardElement: _row];
 	(*todoList)->rowViewResponsible = NULL;

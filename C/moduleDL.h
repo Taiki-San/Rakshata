@@ -215,6 +215,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 #define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+DATA_LOADED ** MDLCreateElement(MANGAS_DATA * data, bool isTome, int element, int * lengthCreated);
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID);
