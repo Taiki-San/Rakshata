@@ -23,9 +23,9 @@
 	RakButton * remove;
 }
 
-- (id) init : (NSRect) frame;
-- (BOOL) isEmpty;
+- (id) init : (NSRect) frame : (RakMDLController *) _controller;
 - (void) needToQuit;
+- (void) wakeUp;
 - (void) setScrollerHidden : (BOOL) hidden;
 
 - (CGFloat) contentHeight;

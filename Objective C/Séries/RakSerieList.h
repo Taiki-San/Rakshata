@@ -56,6 +56,7 @@ enum {
 
 - (void) setFrame: (NSRect) frame;
 - (void) setFrameOrigin : (NSPoint) newOrigin;
+- (void) resizeAnimation : (NSRect) frame;
 
 - (NSColor *) getFontColor;
 

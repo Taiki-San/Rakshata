@@ -37,6 +37,12 @@
 	[mainList setFrame:[self getMainListFrame]];
 }
 
+- (void) resizeAnimationInternalViews:(NSRect)newBound
+{
+	[headerText resizeAnimation:[self bounds]];
+	[mainList resizeAnimation:[self getMainListFrame]];
+}
+
 - (void) retainInternalViews
 {
 	[headerText retain];

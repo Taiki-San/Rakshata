@@ -201,42 +201,9 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 			newChunk = MDLCreateElement(currentProject, type[0] == 'T', chapitreTmp, &chunckSize);
 			
 			//Merge the new data structure to the main one
-			if(newChunk != NULL)
-			{
-				if(type[0] == 'C')
-				{
-					newBufferTodo[posPtr++] = *newChunk;
-					free(newChunk);
-				}
-				else
-				{
-					uint newSize = (*nombreMangaTotal - 1 + chunckSize);
-					DATA_LOADED ** ptrBak = realloc(newBufferTodo, newSize * sizeof(DATA_LOADED*));
-					if (ptrBak != NULL)
-					{
-						newBufferTodo = ptrBak;
-						for (int i = 0; i < chunckSize; newBufferTodo[posPtr++] = newChunk[i++]);
-						
-						//We set to NULL the stuffs we created
-						memset(&newBufferTodo[posPtr], 0, MIN(chunckSize - 1, newSize - posPtr) * sizeof(DATA_LOADED*));
-						*nombreMangaTotal = newSize;
-					}
-					else
-					{
-						for (int i = 0; i < chunckSize; i++)
-							free(newChunk[i]);
-						
-						free(newChunk);
-						(*nombreMangaTotal)--;
-						continue;
-					}
-				}
-			}
-			else
-			{
-				(*nombreMangaTotal)--;
-				continue;
-			}
+			
+			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreMangaTotal, &posPtr, newChunk, chunckSize);
+
         }
         if(posPtr > 1 && (oldDownloadListLength == 0 || oldDownloadListLength < posPtr))
         {
@@ -252,6 +219,44 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 		return newBufferTodo;
     }
     return NULL;
+}
+
+DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk, int chunckSize)
+{
+	if(mainList == NULL || newChunk == NULL)
+	{
+		(*mainListSize)--;
+		return mainList;
+	}
+	
+	if(chunckSize == 1)
+	{
+		mainList[(*currentPosition)++] = *newChunk;
+		free(newChunk);
+		return mainList;
+	}
+	
+	DATA_LOADED ** newMainList = realloc(mainList, (*mainListSize + chunckSize - 1) * sizeof(DATA_LOADED*));
+	if (newMainList != NULL)
+	{
+		for (int i = 0; i < chunckSize; newMainList[(*currentPosition)++] = newChunk[i++]);
+		
+		//We set to NULL the stuffs we created
+		memset(&newMainList[*currentPosition], 0, MIN(chunckSize - 1, (*mainListSize + chunckSize - 1) - *currentPosition) * sizeof(DATA_LOADED*));
+		*mainListSize += chunckSize - 1;
+	}
+	else
+	{
+		for (int i = 0; i < chunckSize; i++)
+			free(newChunk[i]);
+		
+		free(newChunk);
+		(*mainListSize)--;
+		
+		newMainList = mainList;
+	}
+	
+	return newMainList;
 }
 
 DATA_LOADED ** MDLCreateElement(MANGAS_DATA * data, bool isTome, int element, int * lengthCreated)
@@ -907,62 +912,38 @@ int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
 	return nombreChapitre;
 }
 
-/*UI*/
-
-void getIconPath(int status, char *path, uint length)
+bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem)
 {
-	if(path == NULL)
-		return;
+	if(list == NULL || status == NULL)
+		return false;
+	else if(element == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		return true;
 	
-    switch(status)
-    {
-        case MDL_CODE_DEFAULT:
-        case MDL_CODE_DL_OVER:
-        case MDL_CODE_WAITING_LOGIN:
-        {
-			strncpy(path, MDL_ICON_WAIT, length);
-            break;
-        }
-        case MDL_CODE_DL:
-        {
-			strncpy(path, MDL_ICON_DL, length);
-            break;
-        }
-        case MDL_CODE_INSTALL:
-        {
-			strncpy(path, MDL_ICON_INSTALL, length);
-            break;
-        }
-        case MDL_CODE_WAITING_PAY:
-        {
-			strncpy(path, MDL_ICON_TO_PAY, length);
-            break;
-        }
-        case MDL_CODE_INSTALL_OVER:
-        {
-			strncpy(path, MDL_ICON_OVER, length);
-            break;
-        }
-        case MDL_CODE_ERROR_DL:
-        {
-			strncpy(path, MDL_ICON_ERROR_DOWNLOAD, length);
-            break;
-        }
-        case MDL_CODE_ERROR_INSTALL:
-        {
-			strncpy(path, MDL_ICON_ERROR_INSTALL, length);
-            break;
-        }
-        case MDL_CODE_INTERNAL_ERROR:
-        {
-			strncpy(path, MDL_ICON_ERROR_GENERAL, length);
-            break;
-        }
-        default:
-        {
-			strncpy(path, MDL_ICON_ERROR_DEFAULT, length);
-            break;
-        }
-    }
+	for(uint i = 0; i < nbElem; i++)
+	{
+		if(list[i] == NULL || list[i]->datas == NULL)
+			continue;
+		
+		if(projectToTest.cacheDBID == list[i]->datas->cacheDBID)
+		{
+			if(isTome)
+			{
+				if(list[i]->partOfTome == element)
+				{
+					if(status[i] != MDL_CODE_INSTALL_OVER || !checkTomeReadable(projectToTest, element))
+						return true;
+				}
+			}
+			else
+			{
+				if(list[i]->chapitre == element && list[i]->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+				{
+					if(status[i] != MDL_CODE_INSTALL_OVER || !checkChapterReadable(projectToTest, element))
+						return true;
+				}
+			}
+		}
+	}
+	
+	return false;
 }
-

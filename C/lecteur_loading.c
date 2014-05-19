@@ -269,7 +269,7 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
         for(i = 0; i < *nombrePage; i++)
         {
             output[i] = malloc(LONGUEUR_NOM_PAGE+1);
-            snprintf(output[i], LONGUEUR_NOM_PAGE, "%d.jpg", i);
+            snprintf(output[i], LONGUEUR_NOM_PAGE, "%d.jpg", i);	//Sadly, legacy, use png as a default would have been more clever
         }
         output[i] = malloc(LONGUEUR_NOM_PAGE);
         output[i][0] = 0;

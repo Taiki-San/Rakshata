@@ -37,11 +37,11 @@
 
 	/* Différentes super-classes de l'interface	*/
 
+	#import "MDL.h"
+
 	#import "Series.h"
 	#import "CTSelec.h"
 	#import "Reader.h"
-
-	#import "MDL.h"
 
 	#import "RakContentView.h"
 	#import "RakAppDelegate.h"

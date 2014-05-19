@@ -16,45 +16,56 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
 {
     uint i;
 	
+	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || statusCache == NULL || nbElemTotal == NULL || quit == NULL)
+		return false;
+	
 	if(COMPTE_PRINCIPAL_MAIL[0] == 0 && !loadEmailProfile())	//Pas de compte
 	{
 		*todoList = NULL;
 		return false;
 	}
 	
-    *todoList = malloc(sizeof(DATA_LOADED **));
-    
-	if(*todoList == NULL)
-		return false;
-	
-    /*Initialisation*/
-    **todoList = MDL_loadDataFromImport(cache, nbElemTotal);
-    if(*nbElemTotal == 0)
-        return false;
-
-    *status = malloc((*nbElemTotal+1) * sizeof(int*));
-    *statusCache = malloc((*nbElemTotal+1) * sizeof(int*));
-
-    if(*status == NULL || *statusCache == NULL)
+    if (*todoList == NULL || **todoList == NULL || *status == NULL || *statusCache == NULL)
 	{
-		free(*status);		*status = NULL;
-		free(*statusCache);	*statusCache = NULL;
-		return false;
+		*todoList = malloc(sizeof(DATA_LOADED **));
+		
+		if(*todoList == NULL)
+			return false;
+		
+		/*Initialisation*/
+
+		**todoList = MDL_loadDataFromImport(cache, nbElemTotal);
+		if(*nbElemTotal == 0)	//No data doesn't mean init failure
+			return true;
+		
+		*status = malloc((*nbElemTotal+1) * sizeof(int*));
+		*statusCache = malloc((*nbElemTotal+1) * sizeof(int*));
+		
+		if(*status == NULL || *statusCache == NULL)
+		{
+			free(*status);		*status = NULL;
+			free(*statusCache);	*statusCache = NULL;
+			return false;
+		}
+		
+		for(i = 0; i < *nbElemTotal; i++)
+		{
+			(*status)[i] = malloc(sizeof(int));
+			(*statusCache)[i] = malloc(sizeof(int));
+			*(*statusCache)[i] = *(*status)[i] = MDL_CODE_DEFAULT;
+		}
+		
+		(*status)[i] = (*statusCache)[i] = NULL;
 	}
 
-    for(i = 0; i < *nbElemTotal; i++)
-    {
-        (*status)[i] = malloc(sizeof(int));
-        (*statusCache)[i] = malloc(sizeof(int));
-        *(*statusCache)[i] = *(*status)[i] = MDL_CODE_DEFAULT;
-    }
-	
-	(*status)[i] = (*statusCache)[i] = NULL;
+	return startWorker(cache, coreWorker, todoList, status, statusCache, nbElemTotal, quit, mainTab);
+}
 
-	
-    /*On attend d'avoir confirmé que on peut bien accéder à Internet*/
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
+{
+	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(50);		}
-
+	
     if(!checkNetworkState(CONNEXION_DOWN))
 	{
 		MDLPHandle(**todoList, status, *nbElemTotal);
@@ -67,9 +78,9 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
 			argument->nbElemTotal = nbElemTotal;
 			argument->quit = quit;
 			argument->mainTab = mainTab;
-
+			
 			*coreWorker = createNewThreadRetValue(mainDLProcessing, argument);
-
+			
 			return true;
 		}
 	}

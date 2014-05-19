@@ -12,7 +12,7 @@
 
 @implementation RakMDLView
 
-- (id)initContent:(NSRect)frame : (NSString *) state
+- (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller
 {
     self = [super initWithFrame:frame];
 	
@@ -24,7 +24,7 @@
 		if(headerText != nil)		[self addSubview:headerText];
 		
 		
-		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]]];
+		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
 		if(MDLList != nil)			[MDLList setSuperView:self];
 	}	
 	return self;
@@ -59,11 +59,6 @@
 	return output;
 }
 
-- (BOOL) isEmpty
-{
-	return [MDLList isEmpty];
-}
-
 /** Proxy work **/
 
 - (void) setFrameInternalViews:(NSRect)newBound
@@ -86,6 +81,11 @@
 {
 	if(MDLList != nil)
 		[MDLList setScrollerHidden:hidden];
+}
+
+- (void) wakeUp
+{
+	[MDLList wakeUp];
 }
 
 /** Color **/

@@ -16,12 +16,12 @@
 	RakMDLList * MDLList;
 }
 
-- (id)initContent:(NSRect)frame : (NSString *) state;
+- (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller;
 - (CGFloat) getContentHeight;
 - (NSRect) getMainListFrame : (NSRect) output;
-- (BOOL) isEmpty;
 
 - (void) updateScroller : (BOOL) hidden;
+- (void) wakeUp;
 
 - (void) resizeAnimation : (NSRect) frame;
 

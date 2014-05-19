@@ -79,7 +79,7 @@ enum {
 - (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
-- (id) getMDL;
+- (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 @end

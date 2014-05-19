@@ -37,6 +37,7 @@ bool isProjectListSorted(MANGAS_DATA* data, uint length);
 void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();
+MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data);
 
 /**DBCache.c**/
 int setupBDDCache();

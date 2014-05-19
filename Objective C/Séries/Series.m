@@ -170,6 +170,21 @@
 	}
 }
 
+- (void) resizeAnimation
+{
+	NSRect newFrame = [self createFrame];
+	if([self wouldFrameChange:newFrame])
+	{
+		[self.animator setFrame:newFrame];
+		
+		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+		[backButton resizeAnimation:[self backButtonFrame]];
+		
+		[coreView resizeAnimation:[self getCoreviewFrame]];
+	}
+	
+}
+
 - (void) refreshViewSize
 {
 	[super refreshViewSize];
@@ -250,7 +265,7 @@
 	frame.size.width = var * self.superview.frame.size.width / 100;
 	frame.origin.x = 0;
 	
-	MDL * tabMDL = [self getMDL];
+	MDL * tabMDL = [self getMDL : YES];
 
 	if(tabMDL != nil)
 	{

@@ -171,6 +171,29 @@
 	[content reloadData];
 }
 
+- (void) resizeAnimation : (NSRect) frame
+{
+	[column setFixedWidth:frame.size.width];
+	
+	NSRect mainListFrame = [_mainList frame];
+	
+	mainListFrame.origin.x = mainListFrame.origin.y = 0;
+	mainListFrame.size.width = frame.size.width;
+	mainListFrame.size.height += frame.size.height - [content frame].size.height;
+	
+	[content.animator setFrame:frame];
+	
+	[_mainList resizeAnimation:[self getMainListFrame:content]];
+
+	char i;
+	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
+	
+	if(i < 3)
+		[rootItems[i] resetMainListHeight];
+	
+	[content reloadData];
+}
+
 - (void) setFrameOrigin : (NSPoint) newOrigin
 {
 	[content setFrameOrigin:newOrigin];

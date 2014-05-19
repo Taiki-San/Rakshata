@@ -207,6 +207,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 /**ModuleDL2.c**/
 bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab);
 void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache);
 void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal);
 
@@ -215,6 +216,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 #define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
 DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk, int chunckSize);
 DATA_LOADED ** MDLCreateElement(MANGAS_DATA * data, bool isTome, int element, int * lengthCreated);
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
@@ -229,8 +231,7 @@ void MDLDownloadOver(uint selfCode);
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage);
-
-void getIconPath(int status, char *path, uint length);
+bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem);
 
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);

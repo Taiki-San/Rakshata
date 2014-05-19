@@ -44,7 +44,7 @@
 		if(_read != nil)	{	[self addSubview:_read];		[_read setHidden:YES];	}
 		
 		_remove = [remove copy];
-		if(_remove != nil)		[self addSubview:_remove];
+		if(_remove != nil)	{	[self addSubview:_remove];		[_remove setHidden:NO]; }
 		
 		DLprogress = [[RakProgressCircle alloc] initWithRadius:11 : NSMakePoint(0, 0)];
 		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
@@ -248,7 +248,7 @@
 		}
 	}
 	
-	[self setNeedsDisplay:YES];
+	[self display];
 }
 
 #pragma mark - Proxy

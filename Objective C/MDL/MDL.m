@@ -31,7 +31,9 @@
 
 - (void) initContent : (NSString *) state
 {
-	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : [self bounds]] : state];
+	controller = [[RakMDLController alloc] init: self];
+	
+	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : [self bounds]] : state : controller];
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
@@ -43,7 +45,13 @@
 
 - (BOOL) available
 {
-	return  coreView != nil && ![coreView isEmpty];
+	return coreView != nil && [controller getNbElem:YES] != 0;
+}
+
+- (void) wakeUp
+{
+	[coreView wakeUp];
+	[self updateDependingViews];
 }
 
 - (NSString *) byebye
@@ -51,6 +59,14 @@
 	[coreView needToQuit];
 	
 	return [super byebye];
+}
+
+/* Proxy */
+
+- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem
+{
+	if(controller != nil)
+		[controller addElement:data :isTome :newElem];
 }
 
 /*Coreview manipulation*/
@@ -105,7 +121,7 @@
 	{
 		maximumSize.size.height = contentHeight;
 
-		if([coreView isEmpty])	//Let's get the fuck out of here
+		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here
 			maximumSize.origin.y = -contentHeight;
 		else
 		{
@@ -161,7 +177,7 @@
 
 - (void) refreshDataAfterAnimation
 {
-	if(![coreView isEmpty])
+	if([controller getNbElem:YES] != 0)
 	{
 		[super refreshDataAfterAnimation];
 		[self updateDependingViews];

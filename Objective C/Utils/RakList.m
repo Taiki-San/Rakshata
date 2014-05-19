@@ -122,7 +122,6 @@
 		[_tableView.animator setFrame:scrollView.frame];
 		[_tableView reloadData];
 	}
-
 }
 
 - (void) setHidden : (bool) state

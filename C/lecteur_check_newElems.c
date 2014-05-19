@@ -71,6 +71,7 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
     return firstNewElem;
 }
 
+//Unused in the Objective-C codebase
 void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome)
 {
     FILE* updateControler = fopen(INSTALL_DATABASE, "a+");

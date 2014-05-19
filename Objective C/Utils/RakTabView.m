@@ -420,7 +420,7 @@
 	
 	if([self needToConsiderMDL])
 	{
-		MDL * tabMDL = [self getMDL];
+		MDL * tabMDL = [self getMDL : YES];
 		if(tabMDL != nil)
 		{
 			frame.origin.y += tabMDL.frame.size.height;
@@ -450,7 +450,7 @@
 
 #pragma mark - Utilities
 
-- (MDL*) getMDL
+- (MDL*) getMDL : (BOOL) requireAvailable
 {
 	NSArray * subviews = [self.superview subviews];
 	NSView * view;
@@ -462,7 +462,7 @@
 	
 	for (pos = 0; pos < count && [(view = [subviews objectAtIndex:pos]) class] != [MDL class]; pos++);
 	
-	if(pos < count && [(MDL*) view available])
+	if(pos < count && (!requireAvailable || [(MDL*) view available]))
 		return (MDL*) view;
 	
 	return nil;

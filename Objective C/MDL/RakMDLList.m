@@ -12,8 +12,11 @@
 
 @implementation RakMDLList
 
-- (id) init : (NSRect) frame
+- (id) init : (NSRect) frame : (RakMDLController *) _controller
 {
+	if(_controller == nil)
+		return nil;
+	
 	self = [super init];
 	
 	if(self != nil)
@@ -32,16 +35,7 @@
 			[pause setBordered:YES];		[read setBordered:YES];			[remove setBordered:YES];
 		}
 		
-		controller = [[RakMDLController alloc] init];
-		if(controller == nil)
-		{
-			[pause release]; [pause release]; pause = nil;
-			[read release];  [read release];  read = nil;
-			[remove release]; [remove release]; remove = nil;
-			[self release];
-			return nil;
-		}
-		
+		controller = _controller;
 		cellHeight = MDLLIST_CELL_HEIGHT;
 				
 		[self applyContext:frame : -1 : -1];
@@ -52,14 +46,14 @@
 	return self;
 }
 
-- (BOOL) isEmpty
-{
-	return [controller getNbElem:YES] == 0;
-}
-
 - (void) needToQuit
 {
 	[controller needToQuit];
+}
+
+- (void) wakeUp
+{
+	[_tableView reloadData];
 }
 
 - (CGFloat) contentHeight

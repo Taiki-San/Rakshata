@@ -193,7 +193,7 @@
 	
 	frame.origin.x = 0;
 	
-	MDL * tabMDL = [self getMDL];
+	MDL * tabMDL = [self getMDL : YES];
 	
 	if(tabMDL != nil)
 	{

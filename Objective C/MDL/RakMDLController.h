@@ -12,7 +12,10 @@
 
 @interface RakMDLController : NSObject
 {
+	MDL* _tabMDL;
+	
 	MANGAS_DATA * cache;
+	uint sizeCache;
 	
 	THREAD_TYPE coreWorker;
 	DATA_LOADED *** todoList;
@@ -26,6 +29,8 @@
 	bool quit;
 }
 
+- (id) init : (MDL *) tabMDL;
+
 - (void) needToQuit;
 
 - (uint) getNbElem : (BOOL) considerDiscarded;
@@ -34,5 +39,6 @@
 
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
+- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
 
 @end

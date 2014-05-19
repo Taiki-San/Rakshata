@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class MDL;
+
 #import "RakMDLRessources.h"
 #import "RakMDLController.h"
 #import "RakMDLListView.h"
@@ -19,6 +21,7 @@
 @interface MDL : RakTabView
 {
 	RakMDLView * coreView;
+	RakMDLController * controller;
 	
 	BOOL needUpdateMainViews;
 }
@@ -26,6 +29,9 @@
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initContent : (NSString *) state;
 - (BOOL) available;
+- (void) wakeUp;
+
+- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem;
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;
 

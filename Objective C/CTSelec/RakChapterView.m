@@ -257,7 +257,7 @@
 		[buttons setTarget:self];
 		[buttons setAction:@selector(switchIsTome:)];
 		
-		memcpy(&data, &project, sizeof(MANGAS_DATA));
+		data = getCopyOfProjectData(project);
 		
 		if(data.nombreChapitre > 0)
 		{

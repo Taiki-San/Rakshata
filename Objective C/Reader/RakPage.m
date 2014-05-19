@@ -783,7 +783,7 @@
 	bool onlyOneElementAvailable = nbElemToGrab == 1;
 	char * element = isTome ? "tome" : "chapitre", * particule = onlyOneElementAvailable ? "" : "s";
 	
-	NSAlert * alert = [[NSAlert alloc] init];
+	NSAlert * alert = [[[NSAlert alloc] init] retain];
 	
 	[alert setAlertStyle:NSInformationalAlertStyle];
 	[alert setMessageText:[NSString stringWithFormat:@"%s %s%s!", onlyOneElementAvailable ? "Un" : "Des", element, onlyOneElementAvailable ? " est disponible" : "s sont disponibles"]];
@@ -794,10 +794,39 @@
 	
 	if([alert runModal] == NSAlertFirstButtonReturn)
 	{
-		addtoDownloadListFromReader(localProject, nbElemToGrab, isTome);
-		//Still need to warn the MDL to start to work
+		//We sent the stuffs to the MDL
+		
+		NSView * reader = self;
+		
+		while (reader != nil && [reader class] != [Reader class])
+			reader = reader.superview;
+		
+		if(reader != nil)
+		{
+			MDL * tabMDL = [(Reader *) reader getMDL : NO];
+			if(tabMDL != nil)
+			{
+				if(!isTome)
+				{
+					nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
+					for(; localProject.chapitres[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
+					{
+						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitres[nbElemToGrab]];
+					}
+				}
+				else
+				{
+					nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
+					for(; localProject.tomes[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
+					{
+						[tabMDL proxyAddElement:localProject : isTome :localProject.tomes[nbElemToGrab++].ID];
+					}
+				}
+			}
+		}
 	}
 	
+	[alert release];
 	[alert release];
 }
 

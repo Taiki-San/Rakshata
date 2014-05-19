@@ -276,7 +276,6 @@ bool isProjectListSorted(MANGAS_DATA* data, uint length)
 
 void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData)
 {
-	
 	uint IDTeam = getDBTeamID(oldData[0].team);
 	
 	if(IDTeam == 0xffffffff)
@@ -409,4 +408,25 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 void resetUpdateDBCache()
 {
     alreadyRefreshed = -DB_CACHE_EXPIRENCY;
+}
+
+MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
+{
+	MANGAS_DATA newData = data;
+	
+	if(data.chapitres != NULL)
+	{
+		newData.chapitres = malloc(data.nombreChapitre * sizeof(int));
+		if(newData.chapitres != NULL)
+			memcpy(newData.chapitres, data.chapitres, data.nombreChapitre * sizeof(int));
+	}
+
+	if(data.tomes != NULL)
+	{
+		newData.tomes = malloc(data.nombreTomes * sizeof(META_TOME));
+		if(newData.tomes != NULL)
+			memcpy(newData.tomes, data.tomes, data.nombreTomes * sizeof(META_TOME));
+	}
+	
+	return newData;
 }
