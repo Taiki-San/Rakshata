@@ -166,10 +166,6 @@ int earlyInit(int argc, char *argv[])
 #ifndef __APPLE__
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #endif
-
-    char *temp;
-	setUnlock((temp = loadLargePrefs(SETTINGS_PASSWORD_FLAG)) == NULL);
-	free(temp);
     
 	checkJustUpdated();
 

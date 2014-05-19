@@ -111,44 +111,6 @@ typedef struct dataMangas
 
 } MANGAS_DATA;
 
-typedef struct data_provided_to_engine
-{
-    /*Variable pour CONTEXTE_LECTURE*/
-    MANGAS_DATA *data;
-	
-	/*Variable pour CONTEXTE_TOME*/
-    char *description1; //Ligne de description 1
-    char *description2; //Ligne de description 2
-
-	//Position optimisée
-	int ID;
-	char stringToDisplay[MAX_LENGTH_TO_DISPLAY];
-	
-    /*Variable pour CONTEXTE_DL*/
-    bool anythingToDownload;            //Si rien de nouveau à télécharger
-    bool isFullySelected;               //Is element in cache
-
-} DATA_ENGINE;
-
-typedef struct preferences_to_engine
-{
-	uint nombreElementTotal;
-	
-	uint nombreChapitreDejaSelect;	//CONTEXTE_DL
-	
-    /*Variable pour CONTEXTE_CHAPITRE*/
-	int chapitrePlusAncien;
-	int chapitrePlusRecent;
-	
-	int currentTomeInfoDisplayed; //Précise si (et quel) tome est affiché
-	
-	/*Variable commune à CONTEXTE_CHAPITRE et CONTEXTE_TOME*/
-    int IDDernierElemLu;
-    char* website;
-	bool switchAvailable;
-	
-} PREFS_ENGINE;
-
 typedef struct
 {
     char r;

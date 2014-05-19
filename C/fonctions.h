@@ -20,9 +20,6 @@ void refreshChaptersList(MANGAS_DATA *mangaDB);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedChapterList(MANGAS_DATA *mangaDB);
-int askForChapter(MANGAS_DATA *mangaDB, int mode);
-void displayTemplateChapitre(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-DATA_ENGINE *generateChapterList(MANGAS_DATA *mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
 bool isChapterShared(char *path, MANGAS_DATA data, int ID);
 
@@ -44,10 +41,6 @@ int checkNameFileZip(char fileToTest[256]);
 bool checkPathEscape(char *string, int length);
 
 /**CTCommon.c**/
-int autoSelectionChapitreTome(MANGAS_DATA *mangaDB, bool isTome, int contexte);
-void displayTemplateChapitreTome(MANGAS_DATA* mangaDB, int contexte, int isTome, PREFS_ENGINE data, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-void displayIconeChapOrTome(bool isTome);
-int askForCT(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
@@ -58,26 +51,6 @@ void initializeDNSCache();
 void releaseDNSCache();
 int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled);
 int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
-
-/**Engine.c**/
-int letterLimitationEnforced(int letter, char firstLetterOfTheManga);
-int buttonLimitationEnforced(int button_selected[8], MANGAS_DATA mangaDB);
-
-bool getUnlock();
-void setUnlock(bool var);
-
-void loadMultiPage(int nombreManga, int *pageSelection, int *pageTotale);
-
-Rak_Color getEngineColor(PREFS_ENGINE prefs, DATA_ENGINE input, int contexte, Rak_Color couleurUnread, Rak_Color couleurNew, Rak_Color couleurNothingToRead, Rak_Color couleurTexte);
-
-void generateChoicePanel(char trad[SIZE_TRAD_ID_11][TRAD_LENGTH], int enable[8]);
-
-void button_available(PREFS_ENGINE prefs, DATA_ENGINE* input, int button[8]);
-void engineDisplayDownloadButtons(int nombreChapitreDejaSelect, char localization[SIZE_TRAD_ID_11][TRAD_LENGTH]);
-void engineDisplayCurrentTypedChapter(int choix, int virgule, int hauteurNum);
-
-void engineDisplayTomeInfos(DATA_ENGINE input);
-void engineEraseDisplayedTomeInfos(int curThread);
 
 /**Error.c**/
 void logR(char *error);
@@ -164,10 +137,6 @@ void loadKS(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_
 bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 uint getRandom();
 
-/**Selection.c**/
-int controleurManga(MANGAS_DATA* mangaDB, int contexte, int nombreChapitre, bool *selectMangaDLRightClick);
-int controleurChapTome(MANGAS_DATA* mangaDB, bool *isTome, int contexte);
-
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting
 char *loadPrefFile();
@@ -194,9 +163,6 @@ bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
 void getUpdatedTomeList(MANGAS_DATA *mangaDB);
 void freeTomeList(META_TOME * data, bool includeDetails);
-int askForTome(MANGAS_DATA* mangaDB, int contexte);
-void displayTemplateTome(MANGAS_DATA* mangaDB, PREFS_ENGINE data, int contexte, char texteTrad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
-DATA_ENGINE *generateTomeList(MANGAS_DATA* mangaDB, bool ordreCroissant, int contexte, char* stringAll, char* stringGeneric, PREFS_ENGINE * prefs);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);
 int extractNumFromConfigTome(char *input, int ID);
 void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters);

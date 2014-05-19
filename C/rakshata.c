@@ -19,7 +19,6 @@ volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
-PALETTE_GLOBALE palette;
 
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;

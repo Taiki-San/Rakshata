@@ -13,7 +13,11 @@
 #include "MDLCache.h"
 #include "db.h"
 
-extern int curPage; //Too lazy to use an argument
+#ifdef IDENTIFY_MISSING_UI
+#warning "Need to get replaced"
+#endif
+
+/*extern int curPage; //Too lazy to use an argument
 int mainChoixDL()
 {
     bool autoSelect = false;
@@ -31,12 +35,12 @@ int mainChoixDL()
         MDL_SELEC_CACHE * cache = NULL;
         MDLSetCacheStruct(&cache);
 
-        /*C/C du choix de manga pour le lecteur.*/
+		//C/C du choix de manga pour le lecteur.
         while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
         {
             supprUsedInChapitre = 0;
 
-            /*Appel des selectionneurs*/
+			//Appel des selectionneurs
             curPage = pageManga;
             mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre, &autoSelect);
             pageManga = curPage;
@@ -102,7 +106,7 @@ int mainChoixDL()
             }
         }
 
-        if(continuer == PALIER_CHAPTER /*Si on demande bien le lancement*/ && mangaChoisis == ENGINE_RETVALUE_DL_START /*Confirmation n°2*/ && nombreChapitre /*Il y a bien des chapitres à DL*/)
+        if(continuer == PALIER_CHAPTER && mangaChoisis == ENGINE_RETVALUE_DL_START && nombreChapitre)
         {
 			//#warning "Need to get linked to launcher!
         }
@@ -119,7 +123,7 @@ int mainChoixDL()
         continuer = erreurReseau();
     }
     return continuer;
-}
+}*/
 
 /*Permet d'envoyer la variable de cache au coeur du système sans ajouter trop d'arguments*/
 bool isCacheStrucCached = false;
