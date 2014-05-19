@@ -527,6 +527,7 @@
 - (void) changeChapter : (bool) goToNext
 {
 	uint newPosIntoStruct = posElemInStructure;
+	
 	if(changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
 	{
 		posElemInStructure = newPosIntoStruct;

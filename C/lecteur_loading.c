@@ -316,15 +316,17 @@ bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint
 {
 	*posIntoStruc += (goToNextChap ? 1 : -1);
 	
-	if(changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
+	if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 	{
-		if(isTome)
-            *ptrToSelectedID = mangaDB->tomes[*posIntoStruc].ID;
-        else
-            *ptrToSelectedID = mangaDB->chapitres[*posIntoStruc];
-		return true;
+		refreshChaptersList(mangaDB);
+		if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
+			return false;
 	}
-	return false;
+	if(isTome)
+		*ptrToSelectedID = mangaDB->tomes[*posIntoStruc].ID;
+	else
+		*ptrToSelectedID = mangaDB->chapitres[*posIntoStruc];
+	return true;
 }
 
 bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc)

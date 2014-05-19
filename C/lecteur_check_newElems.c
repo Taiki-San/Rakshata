@@ -45,6 +45,7 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 	
 	//update the database from network (heavy part)
 	updateProjectsFromTeam(fullData, posStart, posEnd, true);
+	syncCacheToDisk(SYNC_PROJECTS);
 	
 	mangaDB->chapitres = NULL;		mangaDB->tomes = NULL;
 	
