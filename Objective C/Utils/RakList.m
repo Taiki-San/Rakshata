@@ -48,6 +48,7 @@
 	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 	[_tableView setFocusRingType:NSFocusRingTypeNone];
 	[_tableView setAllowsMultipleSelection:NO];
+	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:@"BasicTableViewDragAndDropDataType", nil]];
 	
 	//End of setup
 	[_tableView addTableColumn:column];

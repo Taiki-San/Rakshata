@@ -95,7 +95,7 @@
 	else
 	{
 		pageTooHigh = false;
-		frameReader.origin.y = (frameReader.size.height - READER_PAGE_BORDERS_HIGH) / 2 - selfFrame.size.height / 2;
+		frameReader.origin.y = (frameReader.size.height + READER_PAGE_BORDERS_HIGH) / 2 - selfFrame.size.height / 2;
 		frameReader.size.height = selfFrame.size.height + READER_PAGE_BORDERS_HIGH;
 	}
 	
@@ -668,7 +668,7 @@
 
 	//Work, we now craft the size of this view
 	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
-	[self initialPositionning:NO:[superView getCurrentFrame]];
+	[self initialPositionning:NO:[superView lastFrame]];
 	
 	return true;
 }

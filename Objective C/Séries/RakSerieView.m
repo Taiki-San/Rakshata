@@ -22,7 +22,7 @@
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
 		
-		mainList = [[RakSerieList alloc] init : [self getMainListFrame] : state];
+		mainList = [[RakSerieList alloc] init : [self getMainListFrame : [self frame]] : state];
 
 		if(mainList != nil)
 			[self addSubview:[mainList getContent]];
@@ -34,13 +34,13 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:[self bounds]];
-	[mainList setFrame:[self getMainListFrame]];
+	[mainList setFrame:[self getMainListFrame : [self frame]]];
 }
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
-	[headerText resizeAnimation:[self bounds]];
-	[mainList resizeAnimation:[self getMainListFrame]];
+	[headerText resizeAnimation: newBound];
+	[mainList resizeAnimation:[self getMainListFrame : newBound]];
 }
 
 - (void) retainInternalViews
@@ -105,18 +105,16 @@
 
 #pragma mark - Frame calcul
 
-- (NSRect) getMainListFrame
+- (NSRect) getMainListFrame : (NSRect) frame
 {
-	NSRect output = [self bounds];
-	
 	if(headerText != nil)
-		output.origin.y = headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE;
+		frame.origin.y = headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE;
 	
-	output.size.height -= output.origin.y;
-	output.origin.x = SR_READERMODE_MARGIN_OUTLINE / 2;
-	output.size.width -= 2 * SR_READERMODE_MARGIN_OUTLINE;
+	frame.size.height -= frame.origin.y;
+	frame.origin.x = SR_READERMODE_MARGIN_OUTLINE / 2;
+	frame.size.width -= 2 * SR_READERMODE_MARGIN_OUTLINE;
 	
-	return output;
+	return frame;
 }
 
 @end

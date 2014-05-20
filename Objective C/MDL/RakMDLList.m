@@ -142,7 +142,7 @@
 	}
 	else
 	{
-		[result updateData : row];
+		[result updateData : row : _tableView.frame.size.width];
 	}
 	
 	// Return the result
@@ -150,18 +150,13 @@
 	
 }
 
-#pragma mark - Get result from NSTableView
+- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row { return NO; }
 
-- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row;
+#pragma mark - Drag'n Drop support
+
+- (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
 {
-
-	/*	if(row < [controller getNbElem : YES])
-	{
-
-	}*/
-	
-	return NO;
+	return NSDragOperationNone;
 }
-
 
 @end

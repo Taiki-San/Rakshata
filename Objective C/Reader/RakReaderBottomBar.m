@@ -312,7 +312,7 @@
 
 - (CGFloat) getRequestedViewPosY:(CGFloat) heightWindow
 {
-	return RD_CONTROLBAR_POSY;
+	return heightWindow - RD_CONTROLBAR_POSY - RD_CONTROLBAR_HEIGHT;
 }
 
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow

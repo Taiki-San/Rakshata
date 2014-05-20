@@ -24,6 +24,8 @@ enum {
 	int flag;
 	NSTrackingArea * trackingArea;
 	
+	NSRect _lastFrame;
+	
 @public
 	bool readerMode;
 	uint resizeAnimationCount;
@@ -72,8 +74,9 @@ enum {
 - (void) resizeAnimation;
 - (NSRect) createFrame;
 - (BOOL) needToConsiderMDL;
+- (NSRect) lastFrame;
+- (void) updateLastFrame : (NSRect) newFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
-- (NSRect) getCurrentFrame;
 
 
 - (int) getCodePref : (int) request;

@@ -392,6 +392,12 @@
 #pragma mark - Graphic Utilities
 /*		Graphic Utilities		*/
 
+//BOOM
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
 - (void) resizeWithAnimation
 {
 	[self.animator setFrame:[self createFrame]];
@@ -405,6 +411,11 @@
 - (BOOL) needToConsiderMDL
 {
 	return false;
+}
+
+- (NSRect) lastFrame
+{
+	return _lastFrame;
 }
 
 - (NSRect) createFrameWithSuperView : (NSView*) superView
@@ -423,17 +434,19 @@
 		MDL * tabMDL = [self getMDL : YES];
 		if(tabMDL != nil)
 		{
-			frame.origin.y += tabMDL.frame.size.height;
-			frame.size.height -= tabMDL.frame.size.height;
+			frame.origin.y += [tabMDL lastFrame].size.height;
+			frame.size.height -= [tabMDL lastFrame].size.height;
 		}
 	}
+	
+	[self updateLastFrame:frame];
 	
 	return frame;
 }
 
-- (NSRect) getCurrentFrame
+- (void) updateLastFrame : (NSRect) newFrame
 {
-	return self.frame;
+	_lastFrame = newFrame;
 }
 
 - (int) getCodePref : (int) request

@@ -19,6 +19,6 @@
 
 - (id)initContent:(NSRect)frame : (NSString *) state;
 
-- (NSRect) getMainListFrame;
+- (NSRect) getMainListFrame : (NSRect) frame;
 
 @end

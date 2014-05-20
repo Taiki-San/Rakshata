@@ -30,6 +30,6 @@
 - (void) setupBackButton;
 - (void) backButtonClicked;
 
-- (NSRect) getCoreviewFrame;
+- (NSRect) getCoreviewFrame : (CGFloat) backButtonY;
 
 @end

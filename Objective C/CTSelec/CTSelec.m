@@ -68,7 +68,7 @@
 					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
-					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame]] : *project : isTome : context];
+					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : self.frame.size.height - backButton.frame.origin.y -  backButton.frame.size.height] : *project : isTome : context];
 					free(project);
 					
 				} while (0);
@@ -92,7 +92,7 @@
 {
 	long context[4] = {-1, -1, -1, -1};
 	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame]] : mangaData[21] : false : context];
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y] : mangaData[21] : false : context];
 }
 
 - (void) dealloc
@@ -197,7 +197,7 @@
 	
 	if(tabMDL != nil)
 	{
-		MDLHeight = [tabMDL frame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
+		MDLHeight = [tabMDL lastFrame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
 		
 		if(MDLHeight > 0)
 		{
@@ -215,11 +215,13 @@
 
 #pragma mark - Self code used in reader mode
 
-- (NSRect) calculateContentViewSize : (NSRect) frame
+- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY
 {
-	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
+	CGFloat previousHeight = frame.size.height;
+	
+	frame.size.height -= 2 * (frame.size.height - backButtonY) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = CT_READERMODE_BOTTOMBAR_WIDTH;
+	frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
 
 	return frame;
@@ -234,9 +236,11 @@
 {
 	if([self wouldFrameChange:frameRect])
 	{
-		[self internalSetFrame:frameRect];
-		[backButton setFrame:[self bounds]];
-		[coreView setFrame:[self calculateContentViewSize : [self frame]]];
+		[super setFrame : frameRect];
+		
+		frameRect.origin.x = frameRect.origin.y = 0;
+		[backButton setFrame:frameRect];
+		[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : frameRect.size.height - backButton.frame.origin.y -  backButton.frame.size.height]];
 	}
 }
 
@@ -250,7 +254,7 @@
 
 		frame.origin.x = frame.origin.y = 0;
 		[backButton resizeAnimation:frame];
-		[coreView resizeAnimation:[self calculateContentViewSize : frame]];
+		[coreView resizeAnimation:[self calculateContentViewSize : frame : frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT]];
 	}
 }
 

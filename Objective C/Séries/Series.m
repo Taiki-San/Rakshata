@@ -33,14 +33,14 @@
 - (void) initContent : (NSString *) state
 {
 	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
-	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT) : self : @selector(gogoWindow)];
+	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, [self lastFrame].size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT) : self : @selector(gogoWindow)];
 	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
 	
 	[self setupBackButton];
 	
-	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame] : state];
+	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : self.frame.size.height - backButton.frame.origin.y - backButton.frame.size.height] : state];
 	[self addSubview:coreView];
 }
 
@@ -116,17 +116,17 @@
 
 - (NSRect) backButtonFrame
 {
+	NSRect frame = [self lastFrame];
+	
 	if(preferenceButton != nil)
 	{
-		NSRect frame = [self bounds];
-		
 		frame.origin.x = preferenceButton.frame.origin.x + preferenceButton.frame.size.width;
 		frame.size.width -= frame.origin.x;
 		
 		return frame;
 	}
 	else
-		return [self frame];
+		return frame;
 }
 
 - (void) backButtonClicked
@@ -137,13 +137,14 @@
 
 #pragma mark - Routine to setup and communicate with coreview
 
-- (NSRect) getCoreviewFrame
+- (NSRect) getCoreviewFrame : (CGFloat) backButtonY
 {
-	NSRect frame = [self bounds];
+	NSRect frame = [self lastFrame];
+	CGFloat previousHeight = frame.size.height;
 	
-	frame.size.height -= 2 * (frame.size.height - backButton.frame.origin.y) - backButton.frame.size.height + SR_READERMODE_BOTTOMBAR_WIDTH;
+	frame.size.height -= 2 * (frame.size.height - backButtonY) - backButton.frame.size.height + SR_READERMODE_BOTTOMBAR_WIDTH;
 	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = SR_READERMODE_BOTTOMBAR_WIDTH;
+	frame.origin.y = previousHeight - frame.size.height - SR_READERMODE_BOTTOMBAR_WIDTH;
 	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
 	
 	return frame;
@@ -163,10 +164,10 @@
 	{
 		[self internalSetFrame:frameRect];
 		
-		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
 		[backButton setFrame:[self backButtonFrame]];
 		
-		[coreView setFrame:[self getCoreviewFrame]];
+		[coreView setFrame:[self getCoreviewFrame : frameRect.size.height - backButton.frame.origin.y - backButton.frame.size.height]];
 	}
 }
 
@@ -177,12 +178,11 @@
 	{
 		[self.animator setFrame:newFrame];
 		
-		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, self.frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT)];
+		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
 		[backButton resizeAnimation:[self backButtonFrame]];
 		
-		[coreView resizeAnimation:[self getCoreviewFrame]];
+		[coreView resizeAnimation:[self getCoreviewFrame : newFrame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT]];
 	}
-	
 }
 
 - (void) refreshViewSize
@@ -269,7 +269,7 @@
 
 	if(tabMDL != nil)
 	{
-		var = [tabMDL frame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
+		var = [tabMDL lastFrame].size.height - [tabMDL lastFrame].origin.y - viewFrame.origin.y;
 		
 		if(var > 0)
 		{

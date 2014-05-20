@@ -22,6 +22,6 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
-- (NSRect) calculateContentViewSize : (NSRect) frame;
+- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY;
 
 @end

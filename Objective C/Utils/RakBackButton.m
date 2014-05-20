@@ -15,7 +15,7 @@
 - (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack
 {
 	frame.origin.x += frame.size.width * RBB_BUTTON_POSX / 100.0f;
-	frame.origin.y = frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT;
+	frame.origin.y = RBB_TOP_BORDURE;
 	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
 	frame.size.height = RBB_BUTTON_HEIGHT;
 	
@@ -39,7 +39,7 @@
 
 - (NSRect) createFrameFromSuperFrame : (NSRect) superFrame
 {
-	superFrame.origin.y = superFrame.size.height - self.frame.size.height - RBB_TOP_BORDURE;
+	superFrame.origin.y = RBB_TOP_BORDURE;
 	superFrame.size.height = self.frame.size.height;
 	superFrame.origin.x += superFrame.size.width * RBB_BUTTON_POSX / 100.0f;
 	superFrame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
@@ -49,18 +49,23 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self createFrameFromSuperFrame:frameRect]];
+	NSRect newFrame = [self createFrameFromSuperFrame:frameRect];
+	[super setFrame: newFrame];
 	
+	newFrame.origin.x = newFrame.origin.y = 0;
 	[self removeTrackingRect:tag];
-	tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
+	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame:[self createFrameFromSuperFrame:frameRect]];
+	NSRect newFrame = [self createFrameFromSuperFrame:frameRect];
 	
+	[self.animator setFrame: newFrame];
+	
+	newFrame.origin.x = newFrame.origin.y = 0;
 	[self removeTrackingRect:tag];
-	tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
+	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

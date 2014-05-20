@@ -14,10 +14,9 @@
 
 - (NSRect) getMenuFrame : (NSRect) superViewSize
 {
-	NSRect frame = superViewSize;
-	frame.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
+	superViewSize.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
 	
-	return frame;
+	return superViewSize;
 }
 
 - (CGFloat) getFontSize

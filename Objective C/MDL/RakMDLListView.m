@@ -187,10 +187,11 @@
 		[self setPositionsOfStuffs];
 }
 
-- (void) updateData : (uint) data
+- (void) updateData : (uint) data : (uint) newCellWidth
 {
 	if(data != _row)
 	{
+		[self setFrameSize:NSMakeSize(newCellWidth, self.frame.size.height)];
 		_row = data;
 		todoList = [_controller getData : _row : YES];
 		if(todoList == NULL)

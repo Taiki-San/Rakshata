@@ -34,7 +34,7 @@
 - (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID;
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;
-- (void) updateData : (uint) data;
+- (void) updateData : (uint) data : (uint) newCellWidth;
 - (void) updateContext;
 
 - (void) updatePercentage : (CGFloat) percentage;

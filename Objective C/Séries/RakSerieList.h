@@ -65,7 +65,7 @@ enum {
 - (void) reloadContent;
 - (void) reloadMainList;
 
-- (NSRect) getMainListFrame : (NSOutlineView*) outlineView;
+- (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView;
 
 - (void) updateMainListSizePadding;
 - (void) RakSeriesNeedUpdateContent : (NSNotification *) notification;

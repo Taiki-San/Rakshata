@@ -161,7 +161,7 @@
 	
 	[content setFrame:frame];
 	
-	[_mainList setFrame:[self getMainListFrame:content]];
+	[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
 	char i;
 	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
 
@@ -183,7 +183,9 @@
 	
 	[content.animator setFrame:frame];
 	
-	[_mainList resizeAnimation:[self getMainListFrame:content]];
+	frame.origin.x = frame.origin.y = 0;
+	
+	[_mainList resizeAnimation:[self getMainListFrame:frame:content]];
 
 	char i;
 	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
@@ -560,7 +562,7 @@
 		else
 		{
 			if(_mainList == nil)
-				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame:outlineView] : stateMainList[0] : stateMainList[1]];
+				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]];
 			
 			rowView = [_mainList getContent];
 		}
@@ -584,10 +586,8 @@
 	return rowView;
 }
 
-- (NSRect) getMainListFrame : (NSOutlineView*) outlineView
+- (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
-	NSRect frame = [outlineView bounds];
-	
 	frame.size.width -= 2 * [outlineView indentationPerLevel];
 	
 	return frame;

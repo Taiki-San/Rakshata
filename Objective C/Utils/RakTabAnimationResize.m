@@ -44,6 +44,7 @@
 
 - (void) performFromTo : (NSArray*) basePosition
 {
+	BOOL caughtTheMDL = NO;
 	RakTabView *currentView;
 	NSUInteger i, count = [_views count];
 	haveBasePos = (basePosition != nil && [basePosition count] == count);
@@ -59,17 +60,26 @@
 	for(i = 0; i < count; i++)
 	{
 		currentView = [_views objectAtIndex:i];
-		if(haveBasePos)
+		if(caughtTheMDL ^ ([currentView class] == [MDL class]))
 		{
-			CABasicAnimation *animation = [CABasicAnimation animation];
-			animation.fromValue = [basePosition objectAtIndex:i];
-			[currentView.animations setValue:animation forKey:@"frame"];
-		}
-		
-		if([currentView respondsToSelector:@selector(resizeAnimation)])
-		{
-			[currentView resizeAnimation];
-			currentView->resizeAnimationCount++;
+			if(haveBasePos)
+			{
+				CABasicAnimation *animation = [CABasicAnimation animation];
+				animation.fromValue = [basePosition objectAtIndex:i];
+				[currentView.animations setValue:animation forKey:@"frame"];
+			}
+			
+			if([currentView respondsToSelector:@selector(resizeAnimation)])
+			{
+				[currentView resizeAnimation];
+				currentView->resizeAnimationCount++;
+			}
+			
+			if(!caughtTheMDL)
+			{
+				caughtTheMDL = YES;
+				i = -1;
+			}
 		}
 	}
 	

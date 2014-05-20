@@ -76,8 +76,8 @@
 	NSRect output = frame;
 	
 	output.origin.x = MDL_READERMODE_LATERAL_BORDER * frame.size.width / 100;
-	output.origin.y = MDL_READERMODE_BOTTOMBAR_WIDTH;
 	output.size.height -= MDL_READERMODE_BOTTOMBAR_WIDTH;
+	output.origin.y = MDL_READERMODE_BOTTOMBAR_WIDTH - MDL_READERMODE_BOTTOMBAR_WIDTH;
 	output.size.width -= 2 * output.origin.x;
 	
 	return output;
@@ -110,28 +110,29 @@
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superView];
 	
-	if(coreView == nil)
-		return maximumSize;
-	
-	maximumSize.size.height = round(maximumSize.size.height);
-	
-	CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
-	
-	if(maximumSize.size.height >= contentHeight - 2)
+	if(coreView != nil)
 	{
-		maximumSize.size.height = contentHeight;
-
-		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here
-			maximumSize.origin.y = -contentHeight;
-		else
+		maximumSize.size.height = round(maximumSize.size.height);
+		
+		CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
+		
+		if(maximumSize.size.height >= contentHeight - 2)
 		{
-			needUpdateMainViews = YES;
-			[coreView updateScroller:YES];
+			maximumSize.size.height = contentHeight;
+			
+			if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here
+				maximumSize.origin.y = -contentHeight;
+			else
+			{
+				needUpdateMainViews = YES;
+				[coreView updateScroller:YES];
+			}
 		}
+		else
+			[coreView updateScroller:NO];
 	}
-	else
-		[coreView updateScroller:NO];
 
+	[self updateLastFrame:maximumSize];
 	return maximumSize;
 }
 

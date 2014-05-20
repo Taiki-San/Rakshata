@@ -234,7 +234,7 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : [self getProjectImageSize:frameRect :[self image].size]];
+	[self.animator setFrame : [self getProjectImageSize: frameRect :[self image].size]];
 }
 
 @end
@@ -348,7 +348,8 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : [self getSizeOfCoreView:frameRect]];
+	NSRect coreView = [self getSizeOfCoreView:frameRect];
+	[self.animator setFrame : coreView];
 	
 	frameRect.origin.x = frameRect.origin.y = 0;
 	[buttons resizeAnimation:frameRect];
@@ -361,9 +362,10 @@
 		checkTomeValable(&data, NULL);
 		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
 	}
-
-	[tableViewControllerChapter resizeAnimation:[self bounds]];
-	[tableViewControllerVolume resizeAnimation:[self bounds]];
+	
+	coreView.origin.x = coreView.origin.y = 0;
+	[tableViewControllerChapter resizeAnimation:coreView];
+	[tableViewControllerVolume resizeAnimation:coreView];
 }
 
 - (void) failure
