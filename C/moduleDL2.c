@@ -80,6 +80,7 @@ bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED ****
 			argument->mainTab = mainTab;
 			
 			*coreWorker = createNewThreadRetValue(mainDLProcessing, argument);
+			MDLSetThreadID(coreWorker);
 			
 			return true;
 		}
@@ -163,6 +164,7 @@ void MDLAddElements(DATA_LOADED *** todoList, int8_t *** status, int8_t *** stat
 	if(!isThreadStillRunning(*threadData))	//Relance le thread si il s'était arrété
 	{
 		*threadData = createNewThreadRetValue(mainDLProcessing, todoList);
+		MDLSetThreadID(threadData);
 	}
 }
 

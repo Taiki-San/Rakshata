@@ -235,6 +235,7 @@ bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DA
 
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);
+void MDLSetThreadID(THREAD_TYPE *thread);
 void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam);
 
 /**ModuleDLWorker.c**/

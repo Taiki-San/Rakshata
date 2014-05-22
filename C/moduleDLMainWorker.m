@@ -14,6 +14,8 @@ pthread_mutex_t asynchronousTaskInThreads	= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexStartUIThread			= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condResumeExecution			= PTHREAD_COND_INITIALIZER;
 
+THREAD_TYPE *threadID = NULL;
+
 static uint requestID;
 static uint code;		//# of the thread querying us
 
@@ -21,7 +23,7 @@ RakMDLController *	mainTab;
 
 void mainDLProcessing(MDL_MWORKER_ARG * arg)
 {
-	MUTEX_LOCK(mutexStartUIThread);
+	pthread_mutex_trylock(&mutexStartUIThread);
 	
 	DATA_LOADED ****	todoList	=	arg->todoList;
 	bool *				quit		=	arg->quit;
@@ -103,9 +105,16 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
         }
 	}
 	
+	MUTEX_UNLOCK(mutexStartUIThread);
+	threadID = NULL;
 	for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
 	free(historiqueTeam);
 	quit_thread(0);
+}
+
+void MDLSetThreadID(THREAD_TYPE *thread)
+{
+	threadID = thread;
 }
 
 void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam)
@@ -143,6 +152,9 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 
 void MDLDownloadOver(uint selfCode)
 {
+	if(threadID == NULL || !isThreadStillRunning(*threadID))
+		return;
+	
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
 	requestID = RID_UPDATE_STATUS;
@@ -154,6 +166,9 @@ void MDLDownloadOver(uint selfCode)
 
 void MDLQuit()
 {
+	if(threadID == NULL || !isThreadStillRunning(*threadID))
+		return;
+		
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
 	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
