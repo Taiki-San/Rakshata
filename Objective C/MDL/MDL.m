@@ -31,7 +31,7 @@
 
 - (void) initContent : (NSString *) state
 {
-	controller = [[RakMDLController alloc] init: self];
+	controller = [[RakMDLController alloc] init: self : state];
 	
 	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : [self bounds]] : state : controller];
 	if(coreView != nil)
@@ -58,6 +58,9 @@
 {
 	[coreView needToQuit];
 	
+	NSString * output = [controller serializeData];
+	if(output != nil)
+		return output;
 	return [super byebye];
 }
 

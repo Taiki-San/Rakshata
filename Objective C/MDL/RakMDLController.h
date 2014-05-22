@@ -29,9 +29,10 @@
 	bool quit;
 }
 
-- (id) init : (MDL *) tabMDL;
+- (id) init : (MDL *) tabMDL : (NSString *) state;
 
 - (void) needToQuit;
+- (NSString *) serializeData;
 
 - (uint) getNbElem : (BOOL) considerDiscarded;
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;

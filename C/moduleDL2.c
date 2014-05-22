@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
 	
@@ -25,7 +25,7 @@ bool startMDL(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** to
 		return false;
 	}
 	
-    if (*todoList == NULL || **todoList == NULL || *status == NULL || *statusCache == NULL)
+    if(*todoList == NULL || **todoList == NULL || *status == NULL || *statusCache == NULL)
 	{
 		*todoList = malloc(sizeof(DATA_LOADED **));
 		
@@ -92,16 +92,6 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_L
 {
 	uint i;
 
-    for(i = 0; i < nbElemTotal; i++) //Si on a déjà trouvé les deux, pas la peine de continuer
-    {
-        if (*status[i] <= MDL_CODE_DEFAULT)
-		{
-			/*Si interrompu, on enregistre ce qui reste à faire*/
-			MDLParseFile(*todoList, status, nbElemTotal);
-			break;
-		}
-    }
-	
     /*On libère la mémoire*/
     for(i = 0; i < nbElemTotal; i++)
     {
@@ -169,11 +159,13 @@ void MDLAddElements(DATA_LOADED *** todoList, int8_t *** status, int8_t *** stat
 }
 
 /*Final processing*/
-void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
+char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
 {
-    int currentPosition, printSomething = 0;
-    FILE *import = fopen(INSTALL_DATABASE, "a+");
-    if(import != NULL)
+    int currentPosition;
+	uint sizePerElem = 42;
+	size_t fullSize = nombreTotal * sizePerElem;
+	char * output = malloc(fullSize), buffer[sizePerElem];
+    if(output != NULL)
     {
         for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++)
         {
@@ -183,10 +175,9 @@ void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
             {
                 if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
                 {
-                    int j;
-                    fprintf(import, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
-                    printSomething++;
-                    for(j = currentPosition+1; j < nombreTotal; j++)
+                    snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
+					strlcat(output, buffer, fullSize);
+                    for(int j = currentPosition+1; j < nombreTotal; j++)
                     {
                         if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
                         {
@@ -197,13 +188,12 @@ void MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
             }
             else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
             {
-                fprintf(import, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
-                printSomething++;
+				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
+				strlcat(output, buffer, fullSize);
             }
         }
-        fclose(import);
-        if(!printSomething)
-            remove(INSTALL_DATABASE);
     }
+	
+	return output;
 }
 

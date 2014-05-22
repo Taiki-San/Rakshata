@@ -12,7 +12,7 @@
 
 @implementation RakMDLController
 
-- (id) init : (MDL *) tabMDL
+- (id) init : (MDL *) tabMDL : (NSString *) state
 {
 	self = [super init];
 	
@@ -23,8 +23,8 @@
 		quit = false;
 		
 		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, &sizeCache);
-
-		if(startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
+		
+		if(startMDL([state UTF8String], cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
@@ -53,6 +53,25 @@
 	{
 		MDLQuit();
 	}
+}
+
+- (NSString *) serializeData
+{
+	for(int i = 0; i < nbElem; i++) //Si on a déjà trouvé les deux, pas la peine de continuer
+    {
+        if (*status[i] <= MDL_CODE_DEFAULT)
+		{
+			/*Si interrompu, on enregistre ce qui reste à faire*/
+			char * data = MDLParseFile(*todoList, status, nbElem);
+			if(data == NULL)
+				return nil;
+			NSString * output = [NSString stringWithUTF8String: data];
+			free(data);
+			return output;
+		}
+    }
+	
+	return nil;
 }
 		   
 - (void) dealloc
@@ -174,7 +193,7 @@
 	//Great, the injection is now over... We need to reanimate what needs to be
 	if(!isThreadStillRunning(coreWorker))
 	{
-		startMDL(cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+		startMDL(NULL, cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
 	}
 	
 	//Worker should be at work, now, let's wake the UI up
