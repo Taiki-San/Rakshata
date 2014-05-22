@@ -181,7 +181,7 @@
 		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
 		[backButton resizeAnimation:[self backButtonFrame]];
 		
-		[coreView resizeAnimation:[self getCoreviewFrame : newFrame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT]];
+		[coreView resizeAnimation:[self getCoreviewFrame : newFrame.size.height - RBB_TOP_BORDURE - backButton.frame.size.height]];
 	}
 }
 

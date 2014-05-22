@@ -152,13 +152,7 @@
 - (void) setFrame: (NSRect) frame
 {
 	[column setFixedWidth:frame.size.width];
-	
-	NSRect mainListFrame = [_mainList frame];
-	
-	mainListFrame.origin.x = mainListFrame.origin.y = 0;
-	mainListFrame.size.width = frame.size.width;
-	mainListFrame.size.height += frame.size.height - [content frame].size.height;
-	
+
 	[content setFrame:frame];
 	
 	[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
@@ -175,13 +169,11 @@
 {
 	[column setFixedWidth:frame.size.width];
 	
-	NSRect mainListFrame = [_mainList frame];
-	
-	mainListFrame.origin.x = mainListFrame.origin.y = 0;
-	mainListFrame.size.width = frame.size.width;
-	mainListFrame.size.height += frame.size.height - [content frame].size.height;
-	
-	[content.animator setFrame:frame];
+	//Fail at upsizing properly :/
+	if(frame.size.height > content.frame.size.height)
+		[content setFrame:frame];
+	else
+		[content.animator setFrame:frame];
 	
 	frame.origin.x = frame.origin.y = 0;
 	
