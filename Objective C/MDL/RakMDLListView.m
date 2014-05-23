@@ -228,9 +228,9 @@
 	{
 		case MDL_CODE_DL:
 		{
-			[_pause setHidden:NO];
+			[_pause setHidden:NO];				[_pause display];
 			[DLprogress setHidden:NO];
-			[DLprogress updatePercentage:0];
+			[DLprogress updatePercentage:0];	[DLprogress display];
 			break;
 		}
 			
@@ -239,12 +239,14 @@
 			[statusText setStringValue:@"Installation"];
 			[statusText setHidden:NO];
 			[self setPositionsOfStuffs];
+			[statusText display];
 			break;
 		}
 			
 		case MDL_CODE_INSTALL_OVER:
 		{
 			[_read setHidden:NO];
+			[_read display];
 			break;
 		}
 	}

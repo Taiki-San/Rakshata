@@ -60,6 +60,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		if(*quit)
 		{
 			MDLUpdateKillState(*quit);
+			break;
 		}
 		
 		else if(requestID != RID_DEFAULT)

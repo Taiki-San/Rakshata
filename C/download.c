@@ -100,7 +100,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 static void downloadChapterCore(DL_DATA *data)
 {
-	if(data == NULL || data->outputContainer == NULL || data->retryAttempt >= 5)
+	if(data == NULL || data->outputContainer == NULL || data->retryAttempt > 3)
 		quit_thread(0);
 	
     CURLcode res; //Get return from download
@@ -191,6 +191,8 @@ static void downloadChapterCore(DL_DATA *data)
 			if(data->errorCode == CODE_RETOUR_PARTIAL)	//On va retenter une fois le téléchargement
 			{
 				data->retryAttempt++;
+				data->bytesDownloaded = data->totalExpectedSize = data->errorCode = 0;
+				
 				downloadChapterCore(data);
 			}
 

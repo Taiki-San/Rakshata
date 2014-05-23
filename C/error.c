@@ -71,7 +71,7 @@ int libcurlErrorCode(CURLcode code)
         case CURLE_PARTIAL_FILE:
         {
             snprintf(log_message, 100, "Partial file");
-            ret_value = CODE_RETOUR_INTERNAL_FAIL;
+            ret_value = CODE_RETOUR_PARTIAL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
