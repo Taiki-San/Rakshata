@@ -24,7 +24,7 @@
 		
 		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, &sizeCache);
 		
-		if(startMDL([state UTF8String], cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
+		if(startMDL((char*) [state UTF8String], cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)

@@ -153,6 +153,7 @@ typedef struct {
 	uint8_t *aborted;
 	
 	int errorCode;
+	short retryAttempt;
 } DL_DATA;
 
 typedef struct data_pour_installation
@@ -214,8 +215,7 @@ char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal);
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
-#define MDL_loadDataFromImport(a, b) MDL_updateDownloadList(a, b, NULL)
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList);
+DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk, int chunckSize);
 DATA_LOADED ** MDLCreateElement(MANGAS_DATA * data, bool isTome, int element, int * lengthCreated);
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);

@@ -257,10 +257,7 @@
 - (void) updatePercentage : (CGFloat) percentage
 {
 	if(DLprogress != nil)
-	{
-		[DLprogress updatePercentage:percentage];
-		[DLprogress performSelectorOnMainThread:@selector(notifyNeedDisplay:) withObject:nil waitUntilDone:YES];
-	}
+		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:[NSNumber numberWithDouble:percentage] waitUntilDone:YES];
 }
 
 - (void) sendRemove

@@ -84,20 +84,15 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     return output;
 }
 
-DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, DATA_LOADED ** oldDownloadList)
+DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, char * state)
 {
-    uint oldDownloadListLength = *nombreMangaTotal;
-	int nombreEspace = 0, i;
-	bool dernierEspace = true;
+    uint oldDownloadListLength = *nombreMangaTotal, pos;
+	uint8_t nombreEspace = 0;
+	bool dernierEspace = true;	//Dernier caractère rencontré est un espace
 
-    FILE* import = fopen(INSTALL_DATABASE, "r");
-	
-	if(import == NULL)
-		return NULL;
-	
-    while((i = fgetc(import)) != EOF)
+    for(pos = 0; state[pos]; pos++)
     {
-        if(i == ' ')
+        if(state[pos] == ' ')
         {
 			if(!dernierEspace)
 			{
@@ -105,33 +100,38 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 				dernierEspace = true;
 			}
         }
-        else if(i == '\n')
+        else if(state[pos] == '\n')
         {
             if(nombreEspace == 3 && !dernierEspace)
                 (*nombreMangaTotal)++;
             nombreEspace = 0;
 			dernierEspace = true;
         }
-		else if(nombreEspace == 3 && !isNbr(i))
-			nombreEspace++; //Devrais invalider la ligne
+
+		else if((nombreEspace == 2 && (state[pos] != 'C' || state[pos] != 'T') && state[pos + 1] != ' ') || (nombreEspace == 3 && !isNbr(state[pos])) || nombreEspace > 3)
+		{
+			for (; state[pos] && state[pos] != '\n'; pos++);	//Ligne dropée
+			nombreEspace = 0;
+			dernierEspace = true;
+		}
+
         else if(dernierEspace)
             dernierEspace = false;
     }
-    rewind(import);
 	
     if(*nombreMangaTotal)
     {
-		int c, j, posPtr = 0, chapitreTmp, posCatalogue = 0;
+		uint posLine;
+		int posPtr = 0, chapitreTmp, posCatalogue = 0;
 		char ligne[2*LONGUEUR_COURT + 20], teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT], type[2];
 
-		//Create the new structure, then copy old data
+		//Create the new structure, initialized at NULL
         DATA_LOADED **newBufferTodo = calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
-
-		if(oldDownloadList != NULL)
+		
+		if(newBufferTodo == NULL)
 		{
-			for(; posPtr < oldDownloadListLength; posPtr++)
-				newBufferTodo[posPtr] = oldDownloadList[posPtr];
-			free(oldDownloadList);
+			*nombreMangaTotal = 0;
+			return NULL;
 		}
 
 		//Load data from import.dat
@@ -139,47 +139,39 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 		MANGAS_DATA * currentProject;
 		int chunckSize;
 		
-		while((c = fgetc(import)) != EOF && posPtr < *nombreMangaTotal) //On incrémente pas posPtr si la ligne est rejeté
+		for(pos = 0; state[pos] && posPtr < *nombreMangaTotal;) //On incrémente pas posPtr si la ligne est rejeté
         {
 			newBufferTodo[posPtr] = NULL;
 			
 			//Load the first line
-			for(j = 0; c != EOF && c != '\n' && j < 2*LONGUEUR_COURT+19; c = fgetc(import))
-				ligne[j++] = c;
-			for(ligne[j] = 0; c != '\n' && c != EOF; c = fgetc(import));
+			for(posLine = 0; state[pos + posLine] && state[pos + posLine] != '\n' && posLine < 2*LONGUEUR_COURT+19; posLine++)
+				ligne[posLine] = state[pos + posLine];
+			for(ligne[posLine] = 0, pos += posLine; state[pos] == '\n'; pos++);
 
-			//Sanity checks
-			for(c = nombreEspace = 0, dernierEspace = 1; ligne[c] && nombreEspace != 4 && (nombreEspace != 3 || isNbr(ligne[c])); c++)
+			//Sanity checks,
+			for(posLine = nombreEspace = 0, dernierEspace = true; ligne[posLine] && nombreEspace != 4 && (nombreEspace != 3 || isNbr(ligne[posLine])); posLine++)
 			{
-				if(ligne[c] == ' ')
+				if(ligne[posLine] == ' ')
 				{
 					if(!dernierEspace)
 						nombreEspace++;
-					dernierEspace = 1;
+					dernierEspace = true;
 				}
-				else if(nombreEspace == 2 && (ligne[c] != 'C' || ligne[c] != 'T') && ligne[c+1] != ' ')
+				else if(nombreEspace == 2 && (ligne[posLine] != 'C' || ligne[posLine] != 'T') && ligne[posLine + 1] != ' ')
 					nombreEspace = 4; //Invalidation
 
 				else
-					dernierEspace = 0;
+					dernierEspace = false;
 			}
-			if(nombreEspace != 3 || ligne[c])
-			{
-				(*nombreMangaTotal)--;
+			
+			if(nombreEspace != 3 || ligne[posLine])
 				continue;
-			}
 
 			//Grab preliminary data
 
             sscanfs(ligne, "%s %s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
 			
-			if(type[0] != 'C' && type[0] != 'T')
-			{
-				(*nombreMangaTotal)--;
-				continue;
-			}
-
-            if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
+			if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
 				currentProject = &mangaDB[posCatalogue];
             }
@@ -201,7 +193,6 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
 			newChunk = MDLCreateElement(currentProject, type[0] == 'T', chapitreTmp, &chunckSize);
 			
 			//Merge the new data structure to the main one
-			
 			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreMangaTotal, &posPtr, newChunk, chunckSize);
 
         }
@@ -212,10 +203,6 @@ DATA_LOADED ** MDL_updateDownloadList(MANGAS_DATA* mangaDB, uint* nombreMangaTot
             if(noDuplicate != newBufferTodo)
                 newBufferTodo = noDuplicate;
         }
-        fclose(import);
-#ifndef MDL_WIP
-        remove(INSTALL_DATABASE);
-#endif
 		return newBufferTodo;
     }
     return NULL;

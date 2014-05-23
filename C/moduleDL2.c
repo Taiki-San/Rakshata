@@ -15,7 +15,6 @@
 bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
-	
 	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || statusCache == NULL || nbElemTotal == NULL || quit == NULL)
 		return false;
 	
@@ -34,7 +33,7 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		
 		/*Initialisation*/
 
-		**todoList = MDL_loadDataFromImport(cache, nbElemTotal);
+		**todoList = MDLLoadDataFromState(cache, nbElemTotal, state);
 		if(*nbElemTotal == 0)	//No data doesn't mean init failure
 			return true;
 		
@@ -111,51 +110,6 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_L
 #ifdef _WIN32
     CloseHandle (threadData);
 #endif // _WIN32
-}
-
-/*Processing*/
-
-void MDLAddElements(DATA_LOADED *** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, MANGAS_DATA * cache, THREAD_TYPE *threadData)
-{
-	uint newNbElemTotal = *nbElemTotal;
-	DATA_LOADED ** ptr = MDL_updateDownloadList(cache, &newNbElemTotal, *todoList);
-	if(ptr == NULL)
-		return;
-
-	int8_t ** ptr2 = realloc(*status, (newNbElemTotal+1)*sizeof(int*));
-	int8_t ** ptr3 = realloc(*statusCache, (newNbElemTotal+1)*sizeof(int*));
-	
-	if(ptr2 == NULL || ptr3 == NULL)
-	{
-		for(int i = newNbElemTotal-1; i > *nbElemTotal; free((*todoList)[i--]));
-		free(*ptr);
-		free(ptr);
-		free(ptr2);
-		free(ptr3);
-	}
-	else
-	{
-		for(; *nbElemTotal < newNbElemTotal; (*nbElemTotal)++)
-		{
-			ptr2[*nbElemTotal] = malloc(sizeof(int));
-			if(ptr2[*nbElemTotal] != NULL)
-				*ptr2[*nbElemTotal] = MDL_CODE_DEFAULT;
-			
-			ptr3[*nbElemTotal] = malloc(sizeof(int));
-			if(ptr3[*nbElemTotal] != NULL)
-				*ptr3[*nbElemTotal] = MDL_CODE_DEFAULT;
-		}
-		*status = ptr2;
-		*statusCache = ptr3;
-		*todoList = ptr;
-		MDLPHandle(*todoList, status, *nbElemTotal); //Si des trucs payants
-	}
-	
-	if(!isThreadStillRunning(*threadData))	//Relance le thread si il s'était arrété
-	{
-		*threadData = createNewThreadRetValue(mainDLProcessing, todoList);
-		MDLSetThreadID(threadData);
-	}
 }
 
 /*Final processing*/

@@ -27,7 +27,8 @@
 - (void) setWidth : (CGFloat) width;
 - (RakText *) getText;
 - (void) updatePercentage : (CGFloat) percentage;
+- (void) updatePercentageProxy : (NSNumber*) percentage;
 
-- (void) notifyNeedDisplay : (id) discarded;
+- (void) notifyNeedDisplay;
 
 @end

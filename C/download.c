@@ -56,6 +56,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 	downloadData.outputContainer = output;
 	downloadData.curlHandler = curlHandler;
 	downloadData.aborted = abortTransmiter;
+	downloadData.retryAttempt = 0;
 
     threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
@@ -99,7 +100,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 static void downloadChapterCore(DL_DATA *data)
 {
-	if(data == NULL || data->outputContainer == NULL)
+	if(data == NULL || data->outputContainer == NULL || data->retryAttempt >= 5)
 		quit_thread(0);
 	
     CURLcode res; //Get return from download
@@ -118,6 +119,7 @@ static void downloadChapterCore(DL_DATA *data)
 				IPProxy[lengthProxy++] = c;
 		}
 		IPProxy[lengthProxy] = 0;
+		fclose(proxyFile);
 		
 		//On assume que libcurl est capable de proprement parser le proxy
 		//On vérifie juste la cohérence IPv4/IPv6
@@ -180,10 +182,17 @@ static void downloadChapterCore(DL_DATA *data)
 		*(data->curlHandler) = curl;
         res = curl_easy_perform(curl);
 		*(data->curlHandler) = NULL;
+        curl_easy_cleanup(curl);
 
         if(res != CURLE_OK) //Si problème
         {
             data->errorCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+			
+			if(data->errorCode == CODE_RETOUR_PARTIAL)	//On va retenter une fois le téléchargement
+			{
+				data->retryAttempt++;
+				downloadChapterCore(data);
+			}
 
 #ifdef DEV_VERSION
             if(data->errorCode != CODE_RETOUR_DL_CLOSE)
@@ -191,8 +200,6 @@ static void downloadChapterCore(DL_DATA *data)
 #endif
 
         }
-		
-        curl_easy_cleanup(curl);
     }
 
 	quit_thread(0);
@@ -201,6 +208,9 @@ static void downloadChapterCore(DL_DATA *data)
 /** Chapter download utilities **/
 static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
 {
+	if(quit)						//Global message to quit
+        return -1;
+	
     if(ptr != NULL)
 	{
 		ptr->bytesDownloaded = nowDownloaded;

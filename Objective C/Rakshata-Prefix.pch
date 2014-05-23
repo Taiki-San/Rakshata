@@ -24,10 +24,6 @@
 #include "graphics.h"
 #include "constants.h"
 
-#ifdef DEV_VERSION
-	#define MDL_WIP
-#endif
-
 #ifdef __OBJC__
 	#import <Cocoa/Cocoa.h>
 	#import <QuartzCore/QuartzCore.h>

@@ -82,9 +82,16 @@
 	_percentage = percentage;
 }
 
+- (void) updatePercentageProxy : (NSNumber*) percentage
+{
+	[self updatePercentage:[percentage doubleValue]];
+	[self notifyNeedDisplay];
+}
+
+
 #pragma mark - Drawing
 
-- (void) notifyNeedDisplay : (id) discarded
+- (void) notifyNeedDisplay
 {
 	[self setNeedsDisplay:YES];
 	[_percText setNeedsDisplay:YES];
