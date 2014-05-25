@@ -41,7 +41,11 @@
                             <menuItem isSeparatorItem="YES" id="jvg-Kz-6JP">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Quit Rakshata" keyEquivalent="q" id="1RY-Ig-jry"/>
+                            <menuItem title="Quit Rakshata" keyEquivalent="q" id="1RY-Ig-jry">
+                                <connections>
+                                    <action selector="terminate:" target="-1" id="7Ho-GI-I7H"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
