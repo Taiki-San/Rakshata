@@ -180,11 +180,6 @@
 	}
 }
 
-- (void) internalSetFrame : (NSRect) newFrame
-{
-	[super setFrame:newFrame];
-}
-
 - (void) refreshViewSize
 {
 	[self setFrame:[self createFrame]];
@@ -466,18 +461,15 @@
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
 	NSArray * subviews = [self.superview subviews];
-	NSView * view;
-	
 	if(subviews == nil)
 		return nil;
 	
-	uint pos, count = [subviews count];
+	int pos = [subviews indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
+		return [obj isKindOfClass:[MDL class]];
+	}];
 	
-	for (pos = 0; pos < count && [(view = [subviews objectAtIndex:pos]) class] != [MDL class]; pos++);
-	
-	if(pos < count && (!requireAvailable || [(MDL*) view available]))
-		return (MDL*) view;
-	
+	if(pos != -1)
+		return [subviews objectAtIndex:pos];
 	return nil;
 }
 

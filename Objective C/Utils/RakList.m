@@ -204,15 +204,14 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    // Get an existing cell with the MyView identifier if it exists
-    NSTextField *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
+    // Get an existing cell with the identifier if it exists
+    RakListDragTextView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
 	
-    // There is no existing cell to reuse so create a new one
-    if (result == nil) {
-		
+    if (result == nil)
+	{
 		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
 		// Note that the height of the frame is not really relevant, because the row height will modify the height.
-		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
+		result = [[RakListDragTextView alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
@@ -225,9 +224,7 @@
 		result.stringValue = [self tableView:tableView objectValueForTableColumn:tableColumn row:row];
 	}
 	
-	// Return the result
 	return result;
-	
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
@@ -301,6 +298,7 @@
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
 		self.autoresizesSubviews =		YES;
+		self.translatesAutoresizingMaskIntoConstraints = NO;
 		
 		self.verticalScroller.alphaValue =	0;
 		self.horizontalScroller.alphaValue = 0;

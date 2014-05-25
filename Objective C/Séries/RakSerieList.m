@@ -437,6 +437,13 @@
 		return [item getData];
 }
 
+- (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item
+{
+	if(![item isRootItem] && ![item isMainList])
+		return (RakListDragTextView *) [outlineView viewAtColumn:0 row:[outlineView rowForItem:item] makeIfNecessary:NO];
+	return nil;
+}
+
 #pragma mark - Delegate to the view
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
@@ -564,14 +571,14 @@
 		rowView = [outlineView makeViewWithIdentifier:@"StandardLine" owner:nil];
 		if (rowView == nil)
 		{
-			rowView = [[RakText alloc] init];
+			rowView = [[RakListDragTextView alloc] init];
 			rowView.identifier = @"StandardLine";
-			[(RakText*) rowView setTextColor:[self getFontColor]];
+			[(RakListDragTextView*) rowView setTextColor:[self getFontColor]];
 			
 			if([item isRootItem])
-				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
+				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
 			else
-				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		}
 	}
 	

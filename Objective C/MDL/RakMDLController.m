@@ -23,8 +23,12 @@
 		quit = false;
 		
 		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, &sizeCache);
+
+		char * stateChar = NULL;
+		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
+			stateChar = (char *) [state UTF8String];
 		
-		if(startMDL((char*) [state UTF8String], cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
+		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
@@ -51,7 +55,8 @@
 	quit = true;
 	if(isThreadStillRunning(coreWorker))
 	{
-		MDLQuit();
+#warning "Get stucked for no reason"
+		//		MDLQuit();
 	}
 }
 
@@ -204,12 +209,12 @@
 {
 	if(element < discardedCount)
 	{
-		uint posDiscarded = IDToPosition[element];
-		
-		if(posDiscarded < discardedCount - 1)
-			memcpy(&IDToPosition[posDiscarded], &IDToPosition[posDiscarded+1], nbElem - posDiscarded);
 		discardedCount--;
-		
+
+		for (uint posDiscarded = IDToPosition[element]; posDiscarded < discardedCount; posDiscarded++)
+		{
+			IDToPosition[posDiscarded] = IDToPosition[posDiscarded+1];
+		}
 	}
 }
 

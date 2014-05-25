@@ -254,6 +254,11 @@
 	[self display];
 }
 
+- (void) requestReloadData : (NSTableView *) tableView
+{
+	[tableView reloadData];
+}
+
 #pragma mark - Proxy
 
 - (void) updatePercentage : (CGFloat) percentage
@@ -306,11 +311,7 @@
 	
 	if([(MDL*) view wouldFrameChange:[(MDL*) view createFrame]])
 	{
-		[NSAnimationContext beginGrouping];
-		
 		[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
-		
-		[NSAnimationContext endGrouping];
 	}
 }
 

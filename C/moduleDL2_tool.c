@@ -86,39 +86,42 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
 
 DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, char * state)
 {
-    uint oldDownloadListLength = *nombreMangaTotal, pos;
+    uint pos;
 	uint8_t nombreEspace = 0;
 	bool dernierEspace = true;	//Dernier caractère rencontré est un espace
-
-    for(pos = 0; state[pos]; pos++)
-    {
-        if(state[pos] == ' ')
-        {
-			if(!dernierEspace)
+	
+	if(state != NULL)
+	{
+		for(pos = 0; state[pos]; pos++)
+		{
+			if(state[pos] == ' ')
 			{
-				nombreEspace++;
+				if(!dernierEspace)
+				{
+					nombreEspace++;
+					dernierEspace = true;
+				}
+			}
+			else if(state[pos] == '\n')
+			{
+				if(nombreEspace == 3 && !dernierEspace)
+					(*nombreMangaTotal)++;
+				nombreEspace = 0;
 				dernierEspace = true;
 			}
-        }
-        else if(state[pos] == '\n')
-        {
-            if(nombreEspace == 3 && !dernierEspace)
-                (*nombreMangaTotal)++;
-            nombreEspace = 0;
-			dernierEspace = true;
-        }
-
-		else if((nombreEspace == 2 && (state[pos] != 'C' || state[pos] != 'T') && state[pos + 1] != ' ') || (nombreEspace == 3 && !isNbr(state[pos])) || nombreEspace > 3)
-		{
-			for (; state[pos] && state[pos] != '\n'; pos++);	//Ligne dropée
-			nombreEspace = 0;
-			dernierEspace = true;
+			
+			else if((nombreEspace == 2 && (state[pos] != 'C' || state[pos] != 'T') && state[pos + 1] != ' ') || (nombreEspace == 3 && !isNbr(state[pos])) || nombreEspace > 3)
+			{
+				for (; state[pos] && state[pos] != '\n'; pos++);	//Ligne dropée
+				nombreEspace = 0;
+				dernierEspace = true;
+			}
+			
+			else if(dernierEspace)
+				dernierEspace = false;
 		}
+	}
 
-        else if(dernierEspace)
-            dernierEspace = false;
-    }
-	
     if(*nombreMangaTotal)
     {
 		uint posLine;
@@ -196,13 +199,9 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
 			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreMangaTotal, &posPtr, newChunk, chunckSize);
 
         }
-        if(posPtr > 1 && (oldDownloadListLength == 0 || oldDownloadListLength < posPtr))
-        {
-            qsort(&newBufferTodo[oldDownloadListLength], *nombreMangaTotal-oldDownloadListLength, sizeof(DATA_LOADED*), sortMangasToDownload);
-            DATA_LOADED **noDuplicate = MDLGetRidOfDuplicates(newBufferTodo, oldDownloadListLength, nombreMangaTotal);
-            if(noDuplicate != newBufferTodo)
-                newBufferTodo = noDuplicate;
-        }
+        if(posPtr > 1)
+            qsort(newBufferTodo, *nombreMangaTotal, sizeof(DATA_LOADED*), sortMangasToDownload);
+
 		return newBufferTodo;
     }
     return NULL;

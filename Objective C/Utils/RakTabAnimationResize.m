@@ -44,9 +44,8 @@
 
 - (void) performFromTo : (NSArray*) basePosition
 {
-	BOOL caughtTheMDL = NO;
 	RakTabView *currentView;
-	NSUInteger i, count = [_views count];
+	int i, count = [_views count];		//	i doit être un int pour récupérer -1 si indexOfObjectPassingTest fail, et count ne devrait pas causer d'overflow
 	haveBasePos = (basePosition != nil && [basePosition count] == count);
 	
 	[NSAnimationContext beginGrouping];
@@ -57,33 +56,37 @@
 		[self cleanUpAnimation];
 	}];
 	
+
+	i = [_views indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
+		return [obj isKindOfClass:[MDL class]];
+	}];
+	if(i != -1)
+		[self resizeView:[_views objectAtIndex:i] :haveBasePos ? [basePosition objectAtIndex:i] : nil];
+	
 	for(i = 0; i < count; i++)
 	{
 		currentView = [_views objectAtIndex:i];
-		if(caughtTheMDL ^ ([currentView class] == [MDL class]))
-		{
-			if(haveBasePos)
-			{
-				CABasicAnimation *animation = [CABasicAnimation animation];
-				animation.fromValue = [basePosition objectAtIndex:i];
-				[currentView.animations setValue:animation forKey:@"frame"];
-			}
-			
-			if([currentView respondsToSelector:@selector(resizeAnimation)])
-			{
-				[currentView resizeAnimation];
-				currentView->resizeAnimationCount++;
-			}
-			
-			if(!caughtTheMDL)
-			{
-				caughtTheMDL = YES;
-				i = -1;
-			}
-		}
+
+		[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:i] : nil];
+	}
+
+	[NSAnimationContext endGrouping];
+}
+
+- (void) resizeView : (RakTabView *) view : (id) basePos
+{
+	if(haveBasePos)
+	{
+		CABasicAnimation *animation = [CABasicAnimation animation];
+		animation.fromValue = basePos;
+		[view.animations setValue:animation forKey:@"frame"];
 	}
 	
-	[NSAnimationContext endGrouping];
+	if([view respondsToSelector:@selector(resizeAnimation)])
+	{
+		[view resizeAnimation];
+		view->resizeAnimationCount++;
+	}
 }
 
 - (void) cleanUpAnimation
@@ -95,14 +98,16 @@
 		currentView = [_views objectAtIndex:i];
 		
 		//resizeAnimationCount == 1 => dernière animation en cours
-		if(currentView->resizeAnimationCount == 1 && [currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
+		//Post mortem: no idea why, de mémoire un crash mais repose sur un contexte qu'on utilise plus pour l'instant, donc on laisse en place pour l'instant
+		if(currentView->resizeAnimationCount == 1)
 		{
-			[currentView refreshDataAfterAnimation];
 			if(haveBasePos)	//si on a qqchose à libérer
-			{
 				[[currentView.animations objectForKey:@"frame"] release];
-			}
 		}
+
+		if([currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
+			[currentView refreshDataAfterAnimation];
+		
 		currentView->resizeAnimationCount--;
 	}
 }

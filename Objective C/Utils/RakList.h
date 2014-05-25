@@ -10,7 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakListDragTextView.h"
+
 @interface RakListScrollView : NSScrollView
+{
+	NSView* documentViewToResize;
+}
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

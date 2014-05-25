@@ -36,6 +36,7 @@
 - (void) setFont : (NSFont*) font;
 - (void) updateData : (uint) data : (uint) newCellWidth;
 - (void) updateContext;
+- (void) requestReloadData : (NSTableView *) tableView;
 
 - (void) updatePercentage : (CGFloat) percentage;
 - (void) sendRemove;

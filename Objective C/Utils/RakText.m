@@ -18,6 +18,7 @@
 	
 	if(self != nil)
 	{
+		self.wantsLayer = NO;
 		self.editable = NO;
 		self.bordered = NO;
 		self.drawsBackground = NO;
@@ -33,6 +34,7 @@
     self = [self initWithFrame:frame];
     if (self)
 	{
+		self.wantsLayer = NO;
 		self.editable = NO;
 		self.bordered = NO;
 		self.drawsBackground = NO;

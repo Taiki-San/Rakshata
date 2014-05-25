@@ -162,7 +162,7 @@
 {
 	if([self wouldFrameChange:frameRect])
 	{
-		[self internalSetFrame:frameRect];
+		[super setFrame:frameRect];
 		
 		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
 		[backButton setFrame:[self backButtonFrame]];

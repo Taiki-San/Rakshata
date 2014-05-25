@@ -90,7 +90,7 @@
 {
 	if([self wouldFrameChange:frameRect])
 	{
-		[self internalSetFrame:frameRect];
+		[super setFrame:frameRect];
 		
 		if(coreView != nil)
 			[coreView setFrame:[self getCoreviewFrame : frameRect]];
@@ -207,6 +207,14 @@
 - (BOOL) acceptsFirstResponder { return NO; }
 
 /**	 Get View Size	**/
+
+- (NSRect) lastFrame
+{
+	if(_lastFrame.size.height + _lastFrame.origin.y <= 0)
+		return NSMakeRect(0, 0, 0, 0);
+
+	return [super lastFrame];
+}
 
 - (CGFloat) getRequestedViewWidth: (CGFloat) widthWindow
 {

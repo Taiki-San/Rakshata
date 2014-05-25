@@ -180,6 +180,7 @@
 		
 		if(self != nil)
 		{
+			[self setWantsLayer:NO];
 			[self setImageAlignment:NSImageAlignCenter];
 			[self setImageFrameStyle:NSImageFrameNone];
 			[self setImage:projectImageBase];

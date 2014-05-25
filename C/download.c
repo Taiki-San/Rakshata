@@ -48,8 +48,8 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
-	uint previousDownloaded = 0, downloadSpeed = 0;
-	uint64_t lastRefresh = 0;
+	uint downloadSpeed = 0;
+	uint64_t lastRefresh = 0, prevDLBytes = 0;
 	struct timeval timeStructure;
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
@@ -65,14 +65,14 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
         if(rowViewResponsible != NULL && downloadData.totalExpectedSize)
         {
 			gettimeofday(&timeStructure, NULL);
-			if(timeStructure.tv_usec - lastRefresh >= 100000)	//100ms in us
+			if(timeStructure.tv_usec - lastRefresh >= 100000 && prevDLBytes != downloadData.bytesDownloaded)	//100ms in us
             {
                 if(!downloadSpeed)
-                    downloadSpeed = (downloadData.bytesDownloaded - previousDownloaded) / 1024;
+                    downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) / 1024;
                 else
-                    downloadSpeed = (downloadSpeed*2 + (downloadData.bytesDownloaded - previousDownloaded) / 1024) / 3;
+                    downloadSpeed = (downloadSpeed*2 + (downloadData.bytesDownloaded - prevDLBytes) / 1024) / 3;
 
-                previousDownloaded = downloadData.bytesDownloaded;
+                prevDLBytes = downloadData.bytesDownloaded;
 
 				updatePercentage(*rowViewResponsible, downloadData.bytesDownloaded * 100.0f / downloadData.totalExpectedSize);
 
