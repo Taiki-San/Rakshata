@@ -60,6 +60,8 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		if(*quit)
 		{
 			MDLUpdateKillState(*quit);
+			pthread_cond_broadcast(&condResumeExecution);
+			MUTEX_UNLOCK(mutexStartUIThread);
 			break;
 		}
 		
@@ -186,7 +188,9 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance)
 	{
 		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
 		if(todoList != NULL && *todoList != NULL && (*todoList)->rowViewResponsible != NULL)
-			[(RakMDLListView *) (*todoList)->rowViewResponsible updateContext];
+		{
+			[(RakMDLListView *) (*todoList)->rowViewResponsible performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:YES];
+		}
 	}
 }
 

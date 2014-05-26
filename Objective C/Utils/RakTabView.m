@@ -408,6 +408,11 @@
 	return false;
 }
 
+- (void) setLastFrame : (NSRect) frame
+{
+	_lastFrame = frame;
+}
+
 - (NSRect) lastFrame
 {
 	return _lastFrame;

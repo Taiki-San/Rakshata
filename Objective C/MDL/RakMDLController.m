@@ -54,10 +54,7 @@
 {
 	quit = true;
 	if(isThreadStillRunning(coreWorker))
-	{
-#warning "Get stucked for no reason"
-		//		MDLQuit();
-	}
+		MDLQuit();
 }
 
 - (NSString *) serializeData

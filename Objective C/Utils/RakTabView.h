@@ -73,6 +73,7 @@ enum {
 - (void) resizeAnimation;
 - (NSRect) createFrame;
 - (BOOL) needToConsiderMDL;
+- (void) setLastFrame : (NSRect) frame;
 - (NSRect) lastFrame;
 - (void) updateLastFrame : (NSRect) newFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;

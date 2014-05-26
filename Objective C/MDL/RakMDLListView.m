@@ -309,7 +309,8 @@
 	if(view == nil)
 		return;
 	
-	if([(MDL*) view wouldFrameChange:[(MDL*) view createFrame]])
+	NSRect newMDLFrame = [(MDL*) view createFrame];
+	if([(MDL*) view wouldFrameChange:newMDLFrame])
 	{
 		[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
 	}
