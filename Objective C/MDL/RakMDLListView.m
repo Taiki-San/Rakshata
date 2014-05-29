@@ -321,15 +321,11 @@
 	if((*todoList)->curlHandler != NULL)
 	{
 		if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED)
-		{
-			(*todoList)->downloadSuspended &= ~DLSTATUS_SUSPENDED;
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
-		}
 		else
-		{
-			(*todoList)->downloadSuspended |= DLSTATUS_SUSPENDED;
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_ALL);
-		}
+		
+		(*todoList)->downloadSuspended ^= DLSTATUS_SUSPENDED;ç
 	}
 }
 
