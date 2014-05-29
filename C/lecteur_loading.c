@@ -318,7 +318,7 @@ bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint
 	
 	if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 	{
-		refreshChaptersList(mangaDB);
+		getUpdatedChapterList(mangaDB);
 		if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 			return false;
 	}

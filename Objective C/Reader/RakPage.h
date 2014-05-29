@@ -90,6 +90,7 @@
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) deleteElement;
 - (void) addPageToView;
+- (void) updateScrollerAfterResize;
 
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;

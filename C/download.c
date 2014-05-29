@@ -192,6 +192,7 @@ static void downloadChapterCore(DL_DATA *data)
 			{
 				data->retryAttempt++;
 				data->bytesDownloaded = data->totalExpectedSize = data->errorCode = 0;
+				((TMP_DL*) data->outputContainer)->current_pos = 0;
 				
 				downloadChapterCore(data);
 			}
@@ -248,7 +249,7 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
 	if(output == NULL)
 		return -1;
 	
-    if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos)
+    if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos || MIN(data->length, data->current_pos) == data->length)
     {
         if(output->data == NULL || output->mask == NULL)
         {

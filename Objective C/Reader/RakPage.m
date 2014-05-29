@@ -95,8 +95,8 @@
 	else
 	{
 		pageTooHigh = false;
-		frameReader.origin.y = (frameReader.size.height + READER_PAGE_BORDERS_HIGH) / 2 - selfFrame.size.height / 2;
-		frameReader.size.height = selfFrame.size.height + READER_PAGE_BORDERS_HIGH;
+		frameReader.origin.y = frameReader.size.height / 2 - selfFrame.size.height / 2;
+		frameReader.size.height = selfFrame.size.height;
 	}
 	
 	if(!readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
@@ -139,8 +139,7 @@
 		}
 		
 		[self initialPositionning : !isAnimated : frameRect];
-		self.hasVerticalScroller = pageTooHigh;
-		self.hasHorizontalScroller = pageTooLarge;
+		[self updateScrollerAfterResize];
 	}
 	else if(!readerMode)
 		return;
@@ -246,6 +245,12 @@
     }
 }
 
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+    if(pageTooHigh || pageTooLarge)
+		[super scrollWheel:theEvent];
+}
+
 /*Error management*/
 
 #pragma mark    -   Errors
@@ -339,7 +344,7 @@
 
 - (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
-	memcpy(&project, &dataRequest, sizeof(dataRequest));
+	project = getCopyOfProjectData(dataRequest);
 	currentElem = elemRequest;
 	isTome = isTomeRequest;
 	loadTrad(texteTrad, 21);
@@ -713,7 +718,6 @@
 	{
 		[pageView setFrame:pageViewSize];
 		[pageView setImage:page];
-
 	}
 	else
 	{
@@ -729,22 +733,30 @@
 	
 	[page release];
 	
+	[self updateScrollerAfterResize];
+	
+	[self setFrameSize:frameReader.size];
+	[self setFrameOrigin:frameReader.origin];
+}
+
+- (void) updateScrollerAfterResize
+{
 	NSPoint sliderStart;
 	
 	if (pageTooHigh)
-		sliderStart.y = pageViewSize.size.height - frameReader.size.height;
+		sliderStart.y = pageView.frame.size.height - frameReader.size.height;
 	else
-		sliderStart.y = 0;
+		sliderStart.y = READER_PAGE_TOP_BORDER;
 	
 	if(pageTooLarge)
-		sliderStart.x = pageViewSize.size.width - frameReader.size.width;
+		sliderStart.x = pageView.frame.size.width - frameReader.size.width;
 	else
 		sliderStart.x = 0;
 	
+	[self setHasHorizontalScroller:pageTooHigh];
+	[self setHasVerticalScroller:pageTooLarge];
+	
 	[self.contentView scrollToPoint:sliderStart];
-
-	[self setFrameSize:frameReader.size];
-	[self setFrameOrigin:frameReader.origin];
 }
 
 #pragma mark - Checks if new elements to download
