@@ -325,7 +325,7 @@
 		else
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_ALL);
 		
-		(*todoList)->downloadSuspended ^= DLSTATUS_SUSPENDED;ç
+		(*todoList)->downloadSuspended ^= DLSTATUS_SUSPENDED;
 	}
 }
 
