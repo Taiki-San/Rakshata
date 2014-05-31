@@ -6,7 +6,7 @@
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
  **                                                                                         **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
  *********************************************************************************************/
 
@@ -21,12 +21,18 @@
 
 @end
 
-@interface RakList : NSObject <NSTableViewDelegate, NSTableViewDataSource>
+@interface RakTableView : NSTableView
+
+- (NSColor *) _dropHighlightColor;
+
+@end
+
+@interface RakList : NSObject <NSTableViewDelegate, NSTableViewDataSource, NSDraggingDestination>
 {
 	void* data;
 	uint amountData;
 	RakListScrollView * scrollView;
-	NSTableView * _tableView;
+	RakTableView * _tableView;
 	
 	//Color cache
 	NSColor * normal;
@@ -54,5 +60,11 @@
 - (NSColor *) getTextColor;
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
+
+#define REORDER_SERIE @"ReorderProjects"
+#define REORDER_MDL @"ReorderMDL"
+
+- (NSString *) reorderCode;
+- (uint) getOwnerOfTV : (NSTableView *) tableView;
 
 @end

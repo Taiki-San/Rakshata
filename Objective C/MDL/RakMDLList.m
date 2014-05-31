@@ -6,7 +6,7 @@
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
  **                                                                                         **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
  *********************************************************************************************/
 
@@ -156,6 +156,11 @@
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
 {
+	uint tab = [self getOwnerOfTV:[info draggingSource]];
+	
+	if(tab == GUI_THREAD_SERIES || tab == GUI_THREAD_CT)
+		return NSDragOperationMove;
+
 	return NSDragOperationNone;
 }
 

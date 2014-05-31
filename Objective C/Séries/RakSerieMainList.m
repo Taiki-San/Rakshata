@@ -6,7 +6,7 @@
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
  **                                                                                         **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
  *********************************************************************************************/
 
@@ -257,5 +257,13 @@
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
 	}
 }
+
+#pragma mark - Drag and drop support
+
+- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
+{
+	return NSDragOperationNone;
+}
+
 
 @end

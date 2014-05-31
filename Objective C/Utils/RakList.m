@@ -6,7 +6,7 @@
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
  **                                                                                         **
- **    Licence propriétaire, code source confidentiel, distribution formellement interdite  **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
  *********************************************************************************************/
 
@@ -27,7 +27,7 @@
 	
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getTableViewFrame:frame]];
-	_tableView = [[NSTableView alloc] initWithFrame:scrollView.contentView.bounds];
+	_tableView = [[RakTableView alloc] initWithFrame:scrollView.contentView.bounds];
 	if(scrollView == nil || _tableView == nil)
 	{
 		NSLog(@"Luna refused to allocate this memory to us D:");
@@ -48,7 +48,7 @@
 	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 	[_tableView setFocusRingType:NSFocusRingTypeNone];
 	[_tableView setAllowsMultipleSelection:NO];
-	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:@"BasicTableViewDragAndDropDataType", nil]];
+	[self enableDrop];
 	
 	//End of setup
 	[_tableView addTableColumn:column];
@@ -156,6 +156,16 @@
 	return superViewFrame;
 }
 
+#pragma mark - Drag'n drop routines
+
+- (void) enableDrop
+{
+	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType, nil]];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
+    [_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+}
+
+
 #pragma mark - Backup routine
 
 - (NSInteger) getSelectedElement
@@ -197,12 +207,12 @@
 
 #pragma mark - Methods to deal with tableView
 
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+- (NSInteger)numberOfRowsInTableView:(RakTableView *)aTableView
 {
 	return data == NULL ? 0 : amountData;
 }
 
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+- (NSView *)tableView:(RakTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     // Get an existing cell with the identifier if it exists
     RakListDragTextView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
@@ -227,7 +237,7 @@
 	return result;
 }
 
-- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
+- (BOOL)tableView:(RakTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
 	RakText* element;
 	if([aTableView selectedRow] != -1)
@@ -252,9 +262,36 @@
 
 #pragma mark - Drag'n drop support
 
+- (uint) getOwnerOfTV : (RakTableView *) tableView
+{
+	NSView * view = tableView.superview;
+	
+	while(view != nil && [view superclass] != [RakTabView class])
+		view = view.superview;
+	
+	if(view != nil)
+	{
+		if([view class] == [Series class])
+			return GUI_THREAD_SERIES;
+		else if([view class] == [CTSelec class])
+			return GUI_THREAD_CT;
+		else if([view class] == [MDL class])
+			return GUI_THREAD_MDL;
+	}
+	
+	return 0;
+}
+
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
+	[pboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType,nil] owner:self];
 	return YES;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
+{
+	//Return the appopriate drag operation, NSDragOperationNone in the case none are authorized
+	return NSDragOperationCopy;
 }
 
 - (NSView *) newDragView
@@ -267,18 +304,44 @@
 	return view;
 }
 
+- (NSString *) reorderCode
+{
+	return nil;
+}
+
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:tableView
-									   classes:[NSArray arrayWithObject:[NSPasteboardItem class]]
+									   classes:[NSArray arrayWithObject:[RakListDragTextView class]]
 								 searchOptions:nil
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
 		 NSView * view = [self newDragView];
-		 [draggingItem setDraggingFrame:NSMakeRect(0, 0, view.frame.size.width, view.frame.size.height)
-							   contents:view];
+		 [draggingItem setDraggingFrame:NSMakeRect(0, 0, view.frame.size.width, view.frame.size.height) contents:view];
 	 }];
+	
+	NSString * type = [self reorderCode];
+	if(type != nil)
+		[session.draggingPasteboard setData:[NSData data] forType:type];
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	//Does the actual work after the drop
+	return YES;
+}
+
+- (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
+	//Need to cleanup once the drag is over
+}
+
+#pragma mark - NSDraggingDestination support
+
+- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
+{
+	return NSDragOperationMove;
 }
 
 @end
@@ -314,7 +377,7 @@
 	[super setFrame:frameRect];
 	
 	NSScroller * scroller = self.verticalScroller;
-	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
+	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
 	{
 		[scroller setHidden:YES];
 	}
@@ -329,7 +392,7 @@
 	[self.animator setFrame:frameRect];
 	
 	NSScroller * scroller = self.verticalScroller;
-	if(![scroller isHidden] && ((NSTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
+	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
 	{
 		[scroller setHidden:YES];
 	}
@@ -337,6 +400,23 @@
 	{
 		[scroller setHidden:NO];
 	}
+}
+
+@end
+
+@implementation RakTableView
+
+- (NSColor *) _dropHighlightColor
+{
+	return [NSColor redColor];
+}
+
+- (void)setDropRow:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	if(operation == NSTableViewDropOn)
+		operation = NSTableViewDropAbove;
+	
+	[super setDropRow:row dropOperation:operation];
 }
 
 @end
