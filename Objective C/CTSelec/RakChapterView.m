@@ -344,14 +344,7 @@
 	
 	[buttons setFrame:[self bounds]];
 	
-	if(updateIfRequired(&data, RDB_CTXCT))
-	{
-		checkChapitreValable(&data, NULL);
-		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
-		
-		checkTomeValable(&data, NULL);
-		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
-	}
+	[self refreshCTData];
 	
 	[tableViewControllerChapter setFrame:[self bounds]];
 	[tableViewControllerVolume setFrame:[self bounds]];
@@ -371,14 +364,7 @@
 	
 	[buttons resizeAnimation:frameRect];
 	
-	if(updateIfRequired(&data, RDB_CTXCT))
-	{
-		checkChapitreValable(&data, NULL);
-		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
-		
-		checkTomeValable(&data, NULL);
-		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
-	}
+	[self refreshCTData];
 	
 	[tableViewControllerChapter resizeAnimation:coreView];
 	[tableViewControllerVolume resizeAnimation:coreView];
@@ -465,9 +451,21 @@
 		[tableViewControllerVolume setHidden:!isTome];
 }
 
+- (void) refreshCTData
+{
+	if(updateIfRequired(&data, RDB_CTXCT))
+	{
+		checkChapitreValable(&data, NULL);
+		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
+		
+		checkTomeValable(&data, NULL);
+		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
+	}
+}
+
 - (void) updateContext : (MANGAS_DATA) newData
 {
-	//Some danger of TOCTOU around here, some mutexes would be great
+	//Some danger of TOCTOU around here, mutexes would be great
 	
 	if(!memcmp(&newData, &data, sizeof(data)))
 		return;
