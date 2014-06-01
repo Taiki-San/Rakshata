@@ -63,20 +63,29 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
 		}
+			
 		case GET_COLOR_INACTIVE:
+		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
 		{
-			output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];
-			//output = [NSColor colorWithSRGBRed:39/255.0f green:174/255.0f blue:96/255.0f alpha:1.0];
+			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
+			//output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];	//vert
 			break;
 		}
+			
 		case GET_COLOR_SURVOL:
+		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
 		{
-			output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];
+			output = [NSColor colorWithSRGBRed:102/255.0f green:149/255.0f blue:176/255.0f alpha:1.0];
+			//output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];	//vert
 			break;
 		}
+			
 		case GET_COLOR_ACTIVE:
+		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
+		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
 		{
-			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
+			output = [NSColor colorWithSRGBRed:159/255.0f green:202/255.0f blue:227/255.0f alpha:1.0];
+			//output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];	//vert
 			break;
 		}
 		case GET_COLOR_READER_BAR:
@@ -133,24 +142,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			break;
 		}
 
-		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
-		{
-			output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];
-			break;
-		}
-		
-		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
-		{
-			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];
-			break;
-		}
-			
-		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
-		{
-			output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];
-			break;
-		}
-		
 		//To improve
 		case GET_COLOR_BACKGROUND_CT_TVCELL:
 		{
@@ -161,12 +152,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case GET_COLOR_PROGRESSCIRCLE_SLOT:
 		{
 			output = [NSColor colorWithDeviceWhite:192/255.0f alpha:0.5];
-			break;
-		}
-			
-		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
-		{
-			output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];	//Active
 			break;
 		}
 			
