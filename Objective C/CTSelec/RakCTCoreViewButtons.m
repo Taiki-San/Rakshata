@@ -44,6 +44,9 @@
 	NSRect frame = self.frame;
 	
 	frame.size.height = CT_READERMODE_HEIGHT_CT_BUTTON;
+	if(frame.size.width > superViewFrame.size.width)
+		frame.size.width = superViewFrame.size.width;
+	
 	frame.origin.y = superViewFrame.size.height - frame.size.height;
 	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
 	
@@ -58,7 +61,15 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self getButtonFrame:frameRect]];
+	NSRect newFrame = [self getButtonFrame:frameRect];
+	[super setFrame: newFrame];
+
+	if(newFrame.size.width == frameRect.size.width)
+	{
+		[self sizeToFit];
+		newFrame = [self getButtonFrame:frameRect];
+		[super setFrame: newFrame];
+	}
 }
 
 - (void) resizeAnimation : (NSRect) frameRect

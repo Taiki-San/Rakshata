@@ -331,7 +331,17 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self getSizeOfCoreView:frameRect]];
+	NSRect coreView = [self getSizeOfCoreView:frameRect], bounds = self.bounds;
+	
+	if(NSEqualRects(self.frame, coreView))
+		return;
+
+	[super setFrame:coreView];
+	coreView.origin.x = coreView.origin.y = 0;
+	
+	if(NSEqualRects(coreView, bounds))
+	   return;
+	
 	[buttons setFrame:[self bounds]];
 	
 	if(updateIfRequired(&data, RDB_CTXCT))
@@ -349,10 +359,16 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	NSRect coreView = [self getSizeOfCoreView:frameRect];
-	[self.animator setFrame : coreView];
+	NSRect coreView = [self getSizeOfCoreView:frameRect], bounds = self.bounds;
 	
-	frameRect.origin.x = frameRect.origin.y = 0;
+	if(NSEqualRects(self.frame, coreView))
+		return;
+	
+	[self.animator setFrame:coreView];
+	
+	if(NSEqualRects(self.bounds, bounds))
+		return;
+	
 	[buttons resizeAnimation:frameRect];
 	
 	if(updateIfRequired(&data, RDB_CTXCT))
@@ -364,7 +380,6 @@
 		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
 	}
 	
-	coreView.origin.x = coreView.origin.y = 0;
 	[tableViewControllerChapter resizeAnimation:coreView];
 	[tableViewControllerVolume resizeAnimation:coreView];
 }
