@@ -51,6 +51,7 @@
 - (void) wakeUp
 {
 	[coreView wakeUp];
+	needUpdateMainViews = YES;
 	[self updateDependingViews];
 }
 
