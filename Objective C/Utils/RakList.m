@@ -161,10 +161,9 @@
 - (void) enableDrop
 {
 	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType, nil]];
-	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-    [_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
+    [_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 }
-
 
 #pragma mark - Backup routine
 

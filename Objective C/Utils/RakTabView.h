@@ -85,6 +85,8 @@ enum {
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
+- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element;
+
 @end
 
 @interface RakTabAnimationResize : NSObject

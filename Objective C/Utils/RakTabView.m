@@ -485,5 +485,12 @@
 	return memcmp(&prevFrame, &newFrame, sizeof(NSRect)) != 0;
 }
 
+#pragma mark - Drag'n Drop support
+
+- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element
+{
+	
+}
+
 @end
 
