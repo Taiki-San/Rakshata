@@ -79,7 +79,7 @@
 	
 	for (char pos = 0; pos < count; pos++)
 	{
-		buffer = [[data objectAtIndex:pos] autorelease];
+		buffer = [data objectAtIndex:pos];
 		
 		if([buffer length] & 1)	//Impaire, il faut ajouter un espace
 		{

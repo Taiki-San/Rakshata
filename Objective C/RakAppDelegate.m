@@ -16,6 +16,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 - (void) awakeFromNib
 {
+	[self validateWindowData:[[self window] frame]];
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
 	[self.window setMovable:YES];
@@ -74,6 +75,26 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 		return nil;
 	
 	return contentView.subviews[i];
+}
+
+- (void) validateWindowData : (NSRect) size
+{
+	bool needUpdate = false;
+
+	if(size.size.height < SIZE_MIN_HEIGHT)
+	{
+		size.size.height = SIZE_MIN_HEIGHT;
+		needUpdate = true;
+	}
+
+	if(size.size.width < SIZE_MIN_WIDTH)
+	{
+		size.size.width = SIZE_MIN_WIDTH;
+		needUpdate = true;
+	}
+	
+	if(needUpdate)
+		[[self window] setFrame:size display:NO];
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

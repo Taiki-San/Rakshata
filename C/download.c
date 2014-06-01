@@ -201,7 +201,6 @@ static void downloadChapterCore(DL_DATA *data)
             if(data->errorCode != CODE_RETOUR_DL_CLOSE)
                 logR(data->outputContainer->URL);
 #endif
-
         }
     }
 
