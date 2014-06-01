@@ -22,6 +22,4 @@ extern NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 @property (assign) IBOutlet NSWindow *window;
 
-- (void) validateWindowData : (NSRect) size;
-
 @end
