@@ -33,14 +33,14 @@
 				case INIT_FIRST_STAGE:
 				{
 					_isRecentList = YES;
-					dataRoot = @"Consulté récemment";
+					dataRoot = @"Consultées récemment";
 					break;
 				}
 					
 				case INIT_SECOND_STAGE:
 				{
 					_isDLList = YES;
-					dataRoot = @"Téléchargé récemment";
+					dataRoot = @"Téléchargées récemment";
 					break;
 				}
 					
