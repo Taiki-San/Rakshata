@@ -28,7 +28,7 @@
 
 #pragma mark - Image generation
 
-- (NSView *) generateRepresentation
+- (NSView *) newRepresentation
 {
 	NSView * view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 	
@@ -43,12 +43,11 @@
 
 - (void) createApercu
 {
-	NSView * view = [self generateRepresentation];
+	NSView * view = [[self newRepresentation] autorelease];
 	
 	if(view != nil)
 	{
 		self.image = [[NSImage alloc] initWithData:[view dataWithPDFInsideRect:[view bounds]]];
-		[view release];
 	}
 }
 

@@ -129,8 +129,11 @@
 	int newChunkSize;
 	DATA_LOADED ** newElement = MDLCreateElement(&cache[pos], isTome, element, &newChunkSize);
 	
-	if(newElement == NULL)
+	if(newElement == NULL || newChunkSize == 0)
+	{
+		free(newElement);
 		return;
+	}
 
 	uint newSize = nbElem + newChunkSize;
 	int8_t **newStatus = realloc(status, newSize * sizeof(int8_t*)), **newStatusCache = realloc(statusCache, newSize * sizeof(int8_t*));
@@ -158,8 +161,8 @@
 	//Increase the size of the status buffer
 	for (uint maxSize = nbElem + newChunkSize; nbElem < maxSize; nbElem++)
 	{
-		status[nbElem] = malloc(sizeof(int8_t*));
-		statusCache[nbElem] = malloc(sizeof(int8_t*));
+		status[nbElem] = malloc(sizeof(int8_t));
+		statusCache[nbElem] = malloc(sizeof(int8_t));
 		
 		if(status[nbElem] == NULL || statusCache[nbElem] == NULL)
 		{

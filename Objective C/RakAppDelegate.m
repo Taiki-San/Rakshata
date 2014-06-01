@@ -47,6 +47,8 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	[tabCT init:contentView : [context objectAtIndex:1]];
 	[tabMDL init:contentView : [context objectAtIndex:3]];
 	[tabReader init:contentView : [context objectAtIndex:2]];
+	
+	[context release];
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification

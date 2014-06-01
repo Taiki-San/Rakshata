@@ -753,11 +753,11 @@ void decryptPageLeg(void *password, rawData *buffer_in, rawData *buffer_out, siz
 	data.bufIn = buffer_in;
 	data.bufOut = buffer_out;
 	data.decWhenJobDone = &jobIsDone;
-	memset(&data.CBC, 0, 2 * CRYPTO_BUFFER_SIZE);
+	memset(&data.CBC, 0, 2 * CRYPTO_BUFFER_SIZE * sizeof(rawData));
 	
 	if(length > 64 * 1024 / (2 * CRYPTO_BUFFER_SIZE))	// > 64 ko
 	{
-		DECRYPT_PAGE_DATA_LEG *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA));
+		DECRYPT_PAGE_DATA_LEG *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA_LEG));
 		if(dataThread != NULL)
 		{
 			jobIsDone++;
@@ -927,10 +927,10 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 			
 			decryptPageLeg(key, buf_in, output, size/(CRYPTO_BUFFER_SIZE*2));
 			encryptPage(key, output, dataLecteur->nomPages[curPage], size / (CRYPTO_BUFFER_SIZE * 2));
-			
-			free(output);
-			free(buf_in);
 		}
+		
+		free(output);
+		free(buf_in);
 	}
 }
 #endif

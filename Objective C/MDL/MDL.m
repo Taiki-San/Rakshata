@@ -144,20 +144,7 @@
 	if(!needUpdateMainViews)
 		return;
 	
-	NSView * view;
-	NSArray * subviews = [[self superview] subviews];
-	uint count = [subviews count];
-	
-	for (uint i = 0; i < count; i++)
-	{
-		view = [subviews objectAtIndex:i];
-
-		if([view superclass] == [RakTabView class])
-		{
-			if([((RakTabView*) view) needToConsiderMDL])
-				[view setFrame:[(RakTabView *) view createFrame]];
-		}
-	}
+	[self refreshLevelViewsAnimation : self.superview];
 	
 	needUpdateMainViews = NO;
 }

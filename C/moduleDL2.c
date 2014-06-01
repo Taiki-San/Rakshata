@@ -37,8 +37,8 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		if(*nbElemTotal == 0)	//No data doesn't mean init failure
 			return true;
 		
-		*status = malloc((*nbElemTotal+1) * sizeof(int*));
-		*statusCache = malloc((*nbElemTotal+1) * sizeof(int*));
+		*status = malloc((*nbElemTotal+1) * sizeof(int8_t*));
+		*statusCache = malloc((*nbElemTotal+1) * sizeof(int8_t*));
 		
 		if(*status == NULL || *statusCache == NULL)
 		{
@@ -49,8 +49,8 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		
 		for(i = 0; i < *nbElemTotal; i++)
 		{
-			(*status)[i] = malloc(sizeof(int));
-			(*statusCache)[i] = malloc(sizeof(int));
+			(*status)[i] = malloc(sizeof(int8_t));
+			(*statusCache)[i] = malloc(sizeof(int8_t));
 			*(*statusCache)[i] = *(*status)[i] = MDL_CODE_DEFAULT;
 		}
 		

@@ -60,8 +60,7 @@
 	
     if ([acceptedTypes isEqualToString:NSFilenamesPboardType])
 	{
-		// the pasteboard contains a list of file names
-		//Take the first one
+		//The pasteboard contains a list of file names, we take the first one
 		NSArray *pasteboardContent = [pasteboard propertyListForType:@"NSFilenamesPboardType"];
 		
 		if(pasteboardContent == nil)

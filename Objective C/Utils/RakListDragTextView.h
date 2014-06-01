@@ -22,7 +22,7 @@
 
 @property(readwrite, retain) NSImage *image;
 
-- (NSView*) generateRepresentation;
+- (NSView*) newRepresentation;
 - (void) createApercu;
 
 @end

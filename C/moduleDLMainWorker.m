@@ -33,15 +33,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	
 	uint dataPos;
 	char **historiqueTeam = calloc(1, sizeof(char*));
-	int * codeToID = malloc(*nbElemTotal * sizeof(int));
 	
-	if(codeToID == NULL)
-	{
-		free(historiqueTeam);
-		quit_thread(0);
-	}
-	
-	memset(codeToID, VALEUR_FIN_STRUCTURE_CHAPITRE, *nbElemTotal * sizeof(int));
 	requestID = RID_DEFAULT;
 	
 	MDLUpdateKillState(*quit);

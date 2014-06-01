@@ -121,6 +121,8 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
 				dernierEspace = false;
 		}
 	}
+	else
+		*nombreMangaTotal = 0;
 
     if(*nombreMangaTotal)
     {

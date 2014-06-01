@@ -71,6 +71,7 @@
 		{
 			//Set image
 			[output setCell:cell];
+			[cell release];
 			
 			//Update a couple of prefs
 			[output sizeToFit];
@@ -109,7 +110,9 @@
 	
 	if(output != nil)
 	{
-		[output setCell:[self.cell copy]];
+		NSCell * cell = [self.cell copy];
+		[output setCell:cell];
+		[cell release];
 		
 		[output sizeToFit];
 		[output setBordered:NO];

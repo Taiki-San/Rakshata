@@ -289,7 +289,6 @@
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
-	//Return the appopriate drag operation, NSDragOperationNone in the case none are authorized
 	return NSDragOperationCopy;
 }
 
