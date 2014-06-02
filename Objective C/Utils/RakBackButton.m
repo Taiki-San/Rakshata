@@ -103,7 +103,11 @@
 {
 	if([self.superview superclass] == [RakTabView class])	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
 	{
-		return ![(RakTabView *) self.superview isStillCollapsedReaderTab] && [(RakTabView *) self.superview isCursorOnRect:[self frame]];
+		NSRect frame = [self frame];
+		if([self.superview isFlipped])
+			frame.origin.y = self.superview.frame.size.height - frame.size.height - frame.origin.y;
+		
+		return ![(RakTabView *) self.superview isStillCollapsedReaderTab] && [(RakTabView *) self.superview isCursorOnRect:frame];
 	}
 	else
 		return YES;
