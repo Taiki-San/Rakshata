@@ -350,7 +350,7 @@
 	
 	[buttons setFrame:[self bounds]];
 	
-	[self refreshCTData];
+	[self refreshCTData : NO : 0];
 	
 	[tableViewControllerChapter setFrame:[self bounds]];
 	[tableViewControllerVolume setFrame:[self bounds]];
@@ -370,7 +370,7 @@
 	
 	[buttons resizeAnimation:frameRect];
 	
-	[self refreshCTData];
+	[self refreshCTData : NO : 0];
 	
 	[tableViewControllerChapter resizeAnimation:coreView];
 	[tableViewControllerVolume resizeAnimation:coreView];
@@ -459,17 +459,14 @@
 
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 {
-	if(checkIfRequired && data.cacheDBID != ID)
+	if((checkIfRequired && data.cacheDBID != ID) || (!checkIfRequired && !updateIfRequired(&data, RDB_CTXCT)))
 		return;
+
+	checkChapitreValable(&data, NULL);
+	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
 		
-	if(updateIfRequired(&data, RDB_CTXCT))
-	{
-		checkChapitreValable(&data, NULL);
-		[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
-		
-		checkTomeValable(&data, NULL);
-		[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
-	}
+	checkTomeValable(&data, NULL);
+	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
 }
 
 - (void) updateContext : (MANGAS_DATA) newData

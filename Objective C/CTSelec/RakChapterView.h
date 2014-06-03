@@ -35,7 +35,7 @@
 
 - (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
-- (void) refreshCTData;
+- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 
