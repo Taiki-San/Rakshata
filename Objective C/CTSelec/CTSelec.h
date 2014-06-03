@@ -24,4 +24,6 @@
 
 - (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY;
 
+- (void) refreshCT;
+
 @end

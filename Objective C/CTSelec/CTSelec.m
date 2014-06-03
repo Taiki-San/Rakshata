@@ -339,4 +339,12 @@
 	}
 }
 
+#pragma mark - Proxy
+
+- (void) refreshCT
+{
+	if(coreView != nil)
+		[coreView refreshCT];
+}
+
 @end

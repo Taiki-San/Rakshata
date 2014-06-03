@@ -141,6 +141,12 @@
 	}
 }
 
+- (void) refreshCT
+{
+	if (coreView != nil)
+		[coreView refreshCTData];
+}
+
 @end
 
 @implementation RakTextProjectName

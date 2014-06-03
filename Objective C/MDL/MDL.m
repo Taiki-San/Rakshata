@@ -274,13 +274,10 @@
 	if (subviews == nil)
 		return;
 	
-	uint count = [subviews count];
 	RakTabView * currentView;
 	
-	for (uint i = 0; i < count; i++)
+	for (currentView in subviews)
 	{
-		currentView = [subviews objectAtIndex:i];
-		
 		if([currentView class] == [CTSelec class])
 			[currentView updateContextNotification:data :isTome :VALEUR_FIN_STRUCTURE_CHAPITRE];
 		else if([currentView class] == [Reader class])
