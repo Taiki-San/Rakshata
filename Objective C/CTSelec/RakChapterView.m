@@ -141,10 +141,10 @@
 	}
 }
 
-- (void) refreshCT
+- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 {
 	if (coreView != nil)
-		[coreView refreshCTData];
+		[coreView refreshCTData : checkIfRequired : ID];
 }
 
 @end
@@ -457,8 +457,11 @@
 		[tableViewControllerVolume setHidden:!isTome];
 }
 
-- (void) refreshCTData
+- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 {
+	if(checkIfRequired && data.cacheDBID != ID)
+		return;
+		
 	if(updateIfRequired(&data, RDB_CTXCT))
 	{
 		checkChapitreValable(&data, NULL);

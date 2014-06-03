@@ -56,6 +56,6 @@
 - (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context;
 
 - (void) updateContext : (MANGAS_DATA) data;
-- (void) refreshCT;
+- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 
 @end

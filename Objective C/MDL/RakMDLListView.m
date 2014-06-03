@@ -245,6 +245,7 @@
 			
 		case MDL_CODE_INSTALL_OVER:
 		{
+			[_controller refreshCT:_row];
 			[_read setHidden:NO];
 			[_read display];
 			break;

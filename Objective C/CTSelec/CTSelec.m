@@ -341,10 +341,10 @@
 
 #pragma mark - Proxy
 
-- (void) refreshCT
+- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID
 {
 	if(coreView != nil)
-		[coreView refreshCT];
+		[coreView refreshCT : checkIfRequired : ID];
 }
 
 @end

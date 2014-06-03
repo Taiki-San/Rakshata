@@ -42,4 +42,6 @@
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
 - (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
 
+- (void) refreshCT : (uint) ID;
+
 @end

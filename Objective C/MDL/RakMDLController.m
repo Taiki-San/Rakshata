@@ -230,4 +230,21 @@
 		*(status[row]) = value;
 }
 
+- (void) refreshCT : (uint) row
+{
+	DATA_LOADED ** data = [self getData:row :YES];
+	
+	if(data != NULL && *data != NULL)
+	{
+		for(NSView* view in _tabMDL.superview.subviews)
+		{
+			if([view class] == [CTSelec class])
+			{
+				[(CTSelec *) view refreshCT:YES :(*data)->datas->cacheDBID];
+				break;
+			}
+		}
+	}
+}
+
 @end
