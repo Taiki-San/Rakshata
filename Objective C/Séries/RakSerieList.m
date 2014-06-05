@@ -439,8 +439,9 @@
 
 - (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item
 {
-	if(![item isRootItem] && ![item isMainList])
-		return (RakListDragTextView *) [outlineView viewAtColumn:0 row:[outlineView rowForItem:item] makeIfNecessary:NO];
+	NSInteger row;
+	if(![item isRootItem] && ![item isMainList] && (row = [outlineView rowForItem:item]) != -1)
+		return (RakListDragTextView *) [outlineView viewAtColumn:0 row:row makeIfNecessary:NO];
 	return nil;
 }
 
