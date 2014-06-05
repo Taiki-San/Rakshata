@@ -368,7 +368,7 @@
 	if(NSEqualRects(self.bounds, bounds))
 		return;
 	
-	[buttons resizeAnimation:frameRect];
+	[buttons resizeAnimation:coreView];
 	
 	[self refreshCTData : NO : 0];
 	
@@ -462,10 +462,10 @@
 	if((checkIfRequired && data.cacheDBID != ID) || (!checkIfRequired && !updateIfRequired(&data, RDB_CTXCT)))
 		return;
 
-	checkChapitreValable(&data, NULL);
+	getUpdatedChapterList(&data);
 	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
 		
-	checkTomeValable(&data, NULL);
+	getUpdatedTomeList(&data);
 	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
 }
 
