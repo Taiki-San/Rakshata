@@ -168,6 +168,7 @@
 		B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabContentTemplate.m; path = Utils/RakTabContentTemplate.m; sourceTree = "<group>"; };
 		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; };
+		B67B35F9193FA1CD0043E5C4 /* Rakshata.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Rakshata.playground; sourceTree = "<group>"; };
 		B67E078E18E765A40007EB44 /* RakCenteredTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCenteredTextFieldCell.h; path = Utils/RakCenteredTextFieldCell.h; sourceTree = "<group>"; };
 		B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCenteredTextFieldCell.m; path = Utils/RakCenteredTextFieldCell.m; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -493,6 +494,7 @@
 		B6CF07B21868DD58009B16A3 = {
 			isa = PBXGroup;
 			children = (
+				B67B35F9193FA1CD0043E5C4 /* Rakshata.playground */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6002C30189EF15E00466654 /* window.xib */,

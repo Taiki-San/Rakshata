@@ -277,12 +277,15 @@ bool MDLTelechargement(DATA_MOD_DL* input)
                         free(((DATA_DL_OBFS *) dataDL.buf)->data);
                         free(((DATA_DL_OBFS *) dataDL.buf)->mask);
                         free(dataDL.buf);
+						dataDL.buf = NULL;
+						
                         dataDL.URL = MDL_craftDownloadURL(*input->todoList);
                         continue;
                     }
                     free(((DATA_DL_OBFS *) dataDL.buf)->data);
 					free(((DATA_DL_OBFS *) dataDL.buf)->mask);
 					free(dataDL.buf);
+					dataDL.buf = NULL;
                 }
                 output = true;
             }
@@ -293,10 +296,10 @@ bool MDLTelechargement(DATA_MOD_DL* input)
 					free(((DATA_DL_OBFS *) dataDL.buf)->data);
 					free(((DATA_DL_OBFS *) dataDL.buf)->mask);
 					free(dataDL.buf);
+					dataDL.buf = NULL;
 				}
                 if(ret_value != CODE_RETOUR_DL_CLOSE)
                     output = true;
-                //Le close est géré plus tard
             }
             else if(!strncmp(firstTwentyBytesOfArchive, "http://", 7) || !strncmp(firstTwentyBytesOfArchive, "https://", 8))
             {

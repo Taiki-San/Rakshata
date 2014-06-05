@@ -46,7 +46,7 @@
 #define MDL_CODE_INSTALL			5
 #define MDL_CODE_INSTALL_OVER		6
 
-#define MDL_CODE_UNUSED				-5
+#define MDL_CODE_UNUSED				-6
 #define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
 
 #define MDLP_CODE_ERROR 0  //En cas de données insuffisante, calloc met directement error aux manquants
