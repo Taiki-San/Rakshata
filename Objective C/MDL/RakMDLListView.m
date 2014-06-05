@@ -189,18 +189,19 @@
 
 - (void) updateData : (uint) data : (uint) newCellWidth
 {
-	if(data != _row)
-	{
-		[self setFrameSize:NSMakeSize(newCellWidth, self.frame.size.height)];
-		_row = data;
-		todoList = [_controller getData : _row : YES];
-		if(todoList == NULL)
-			return;
-		
-		[requestName setStringValue : [self getName]];
-		
-		[self updateContext];
-	}
+	[self setFrameSize:NSMakeSize(newCellWidth, self.frame.size.height)];
+
+	_row = data;
+	
+	todoList = [_controller getData : _row : YES];
+	if(todoList == NULL)
+		return;
+	
+	[requestName setStringValue : [self getName]];
+	
+	previousStatus = MDL_CODE_UNUSED;
+	[self updateContext];
+	
 	[self setPositionsOfStuffs];
 }
 
@@ -278,15 +279,21 @@
 	if(previousStatus == MDL_CODE_INSTALL_OVER)
 	{
 		//Deletion
-		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+		//internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
 	}
+	else if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
+	{
+		curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
+	}
+	
+	[_controller setStatusOfID: _row : MDL_CODE_ABORTED : YES];
+	[_controller discardElement: _row];
+	(*todoList)->rowViewResponsible = NULL;
 	
 	NSView * view = self;
 	
-	while (view != nil && [view class] != [NSTableView class])
-	{
+	while (view != nil && [view class] != [RakTableView class])
 		view = view.superview;
-	}
 	
 	if(view == nil)
 		return;
@@ -296,11 +303,7 @@
     if (row != -1)
         [(NSTableView*) view removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:row] withAnimation:NSTableViewAnimationEffectFade];
 	
-	[_controller setStatusOfID: _row : MDL_CODE_ABORTED : YES];
-	[_controller discardElement: _row];
-	(*todoList)->rowViewResponsible = NULL;
-	
-	[(NSTableView *) view reloadData];
+	//[(NSTableView *) view reloadData];
 	
 	while(view != nil && [view class] != [MDL class])
 	{

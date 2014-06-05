@@ -61,12 +61,12 @@
 	if(scrollView == nil)
 		return 0;
 	
-	CGFloat output = [controller getNbElem:YES] * (cellHeight + _tableView.intercellSpacing.height);
+	CGFloat nbElem = [controller getNbElem:YES];
 	
-	if(output != 0)
-		output += _tableView.intercellSpacing.height;
-	
-	return output;
+	if(!nbElem)
+		return 0;
+ 
+	return nbElem * (cellHeight + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
 }
 
 - (void) resizeAnimation: (NSRect) frameRect

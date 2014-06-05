@@ -108,6 +108,7 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[_tableView setFrame:scrollView.frame];
+		
 		[_tableView reloadData];
 	}
 }

@@ -120,18 +120,20 @@
 		
 		CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
 		
-		if(maximumSize.size.height >= contentHeight - 2)
+		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here, it's empty
+		{
+			maximumSize.size.height = contentHeight;
+			maximumSize.origin.y = -contentHeight;
+		}
+		
+		else if(maximumSize.size.height >= contentHeight - 2)
 		{
 			maximumSize.size.height = contentHeight;
 			
-			if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here
-				maximumSize.origin.y = -contentHeight;
-			else
-			{
-				needUpdateMainViews = YES;
-				[coreView updateScroller:YES];
-			}
+			needUpdateMainViews = YES;
+			[coreView updateScroller:YES];
 		}
+
 		else
 			[coreView updateScroller:NO];
 	}
