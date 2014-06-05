@@ -49,8 +49,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
 	uint downloadSpeed = 0;
-	uint64_t lastRefresh = 0, prevDLBytes = 0;
-	struct timeval timeStructure;
+	uint64_t prevDLBytes = 0;
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
@@ -60,12 +59,16 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
     threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
+	//Early initialization
+	
+	while(isThreadStillRunning(threadData) && !quit && downloadData.totalExpectedSize == 0)
+		usleep(50000);	//0.05s
+	
     while(isThreadStillRunning(threadData) && !quit)
     {
-        if(rowViewResponsible != NULL && downloadData.totalExpectedSize)
+        if(rowViewResponsible != NULL && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
         {
-			gettimeofday(&timeStructure, NULL);
-			if(timeStructure.tv_usec - lastRefresh >= 100000 && prevDLBytes != downloadData.bytesDownloaded)	//100ms in us
+			if(prevDLBytes != downloadData.bytesDownloaded)
             {
                 if(!downloadSpeed)
                     downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) / 1024;
@@ -76,13 +79,13 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 				updatePercentage(*rowViewResponsible, downloadData.bytesDownloaded * 100.0f / downloadData.totalExpectedSize);
 
-                lastRefresh = timeStructure.tv_usec;
+				usleep(50000);	//100 ms
             }
 			else
-				usleep(50);
+				usleep(1000);	//1 ms
         }
         else
-            usleep(25);
+			usleep(17000);	// 1/60 second, ~ 17 ms
     }
 
     if(quit)
