@@ -716,6 +716,12 @@
 	
 	if(pageView != nil)
 	{
+		//We reset the scroller first
+		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, pageView.frame.size.height, pageView.frame.size.width);
+		NSEvent *theEvent = [NSEvent eventWithCGEvent:cgEvent];
+		CFRelease(cgEvent);
+		[super scrollWheel:theEvent];
+		
 		[pageView setFrame:pageViewSize];
 		[pageView setImage:page];
 	}
@@ -744,17 +750,17 @@
 	NSPoint sliderStart;
 	
 	if (pageTooHigh)
-		sliderStart.y = pageView.frame.size.height - frameReader.size.height;
+		sliderStart.y = ((NSView*) self.documentView).frame.size.height - frameReader.size.height;
 	else
 		sliderStart.y = READER_PAGE_TOP_BORDER;
 	
 	if(pageTooLarge)
-		sliderStart.x = pageView.frame.size.width - frameReader.size.width;
+		sliderStart.x = ((NSView*) self.documentView).frame.size.width - frameReader.size.width;
 	else
 		sliderStart.x = 0;
 	
-	[self setHasHorizontalScroller:pageTooHigh];
-	[self setHasVerticalScroller:pageTooLarge];
+	[self setHasHorizontalScroller:pageTooLarge];
+	[self setHasVerticalScroller:pageTooHigh];
 	
 	[self.contentView scrollToPoint:sliderStart];
 }
