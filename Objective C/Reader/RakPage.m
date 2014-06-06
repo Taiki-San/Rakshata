@@ -572,7 +572,7 @@
 	
 	setLastChapitreLu(project, isTome, currentElem);
 	if(reader_isLastElem(project, isTome, currentElem))
-        [self checkIfNewElements];
+        [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
 	data.pageCourante = 0;
 	
@@ -830,7 +830,7 @@
 					nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
 					for(; localProject.chapitres[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitres[nbElemToGrab]];
+						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitres[nbElemToGrab] : localProject.chapitres[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
 					}
 				}
 				else
@@ -838,7 +838,7 @@
 					nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
 					for(; localProject.tomes[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.tomes[nbElemToGrab++].ID];
+						[tabMDL proxyAddElement:localProject : isTome :localProject.tomes[nbElemToGrab].ID : localProject.tomes[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
 					}
 				}
 			}
