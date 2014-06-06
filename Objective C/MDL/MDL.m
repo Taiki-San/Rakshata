@@ -67,10 +67,10 @@
 
 /* Proxy */
 
-- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem
+- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch
 {
 	if(controller != nil)
-		[controller addElement:data :isTome :newElem];
+		[controller addElement:data :isTome :newElem :partOfBatch];
 }
 
 /*Coreview manipulation*/

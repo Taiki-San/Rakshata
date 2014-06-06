@@ -31,7 +31,7 @@
 - (BOOL) available;
 - (void) wakeUp;
 
-- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem;
+- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch;
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;
 

@@ -40,7 +40,7 @@
 
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
-- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
+- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch;
 
 - (void) refreshCT : (uint) ID;
 

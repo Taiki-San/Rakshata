@@ -110,7 +110,7 @@
 	return MDL_CODE_INTERNAL_ERROR;
 }
 
-- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element
+- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
 	if (element == VALEUR_FIN_STRUCTURE_CHAPITRE)
 		return;
@@ -195,14 +195,17 @@
 	
 	*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, newElement, newChunkSize);
 	
-	//Great, the injection is now over... We need to reanimate what needs to be
-	if(!isThreadStillRunning(coreWorker))
+	if(!partOfBatch)
 	{
-		startMDL(NULL, cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+		//Great, the injection is now over... We need to reanimate what needs to be
+		if(!isThreadStillRunning(coreWorker))
+		{
+			startMDL(NULL, cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+		}
+		
+		//Worker should be at work, now, let's wake the UI up
+		[_tabMDL wakeUp];
 	}
-	
-	//Worker should be at work, now, let's wake the UI up
-	[_tabMDL wakeUp];
 }
 
 - (void) discardElement : (uint) element
