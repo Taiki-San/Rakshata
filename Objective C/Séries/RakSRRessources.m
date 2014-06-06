@@ -51,6 +51,11 @@
 	[super setFrame:_defaultFrame];
 }
 
+- (void) setDefaultFrame : (NSRect) frame
+{
+	_defaultFrame = frame;
+}
+
 @end
 
 @implementation RakTableColumn

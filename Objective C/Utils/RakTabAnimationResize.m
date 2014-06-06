@@ -64,7 +64,10 @@
 	for(currentView in _views)
 	{
 		if([currentView class] == [MDL class])
+		{
 			[currentView createFrame];
+			break;
+		}
 	}
 
 	for(i = 0; i < count; i++)

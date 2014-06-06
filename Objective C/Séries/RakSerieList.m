@@ -169,11 +169,8 @@
 {
 	[column setFixedWidth:frame.size.width];
 	
-	//Fail at upsizing properly :/
-	if(frame.size.height > content.frame.size.height)
-		[content setFrame:frame];
-	else
-		[content.animator setFrame:frame];
+	[content.animator setFrame:frame];
+	[content setDefaultFrame:frame];
 	
 	frame.origin.x = frame.origin.y = 0;
 	
