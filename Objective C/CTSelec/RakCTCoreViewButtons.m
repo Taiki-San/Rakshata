@@ -59,6 +59,14 @@
 	[self sizeToFit];
 }
 
+/*	Code supposed to delete constraints
+ - (void) checkForConstraints
+ {
+	if(self.constraints != nil && [self.constraints count])
+ [self removeConstraints:self.constraints];
+ }
+*/
+
 - (void) setFrame:(NSRect)frameRect
 {
 	NSRect newFrame = [self getButtonFrame:frameRect];

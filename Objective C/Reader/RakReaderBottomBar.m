@@ -20,6 +20,7 @@
 	
 	if(self != nil)
 	{
+		[self setTranslatesAutoresizingMaskIntoConstraints:NO];
 		[self setAutoresizesSubviews:YES];
 		[parent addSubview:self];
 		

@@ -32,6 +32,8 @@
 			output.layer.cornerRadius = 4;
 			[output setBordered:NO];
 			
+			[output setTranslatesAutoresizingMaskIntoConstraints:NO];
+			
 			//Set action
 			if(target != nil)
 			{

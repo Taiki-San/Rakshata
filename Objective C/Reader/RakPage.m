@@ -716,7 +716,7 @@
 	
 	if(pageView != nil)
 	{
-		//We reset the scroller first
+		//We reset the scroller first (check commit 5eb6b7fde2db for why this patch is important)
 		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, pageView.frame.size.height, pageView.frame.size.width);
 		NSEvent *theEvent = [NSEvent eventWithCGEvent:cgEvent];
 		CFRelease(cgEvent);

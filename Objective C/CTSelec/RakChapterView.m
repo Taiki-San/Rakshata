@@ -260,6 +260,8 @@
 	
 	if (self != nil)
 	{
+		[self setTranslatesAutoresizingMaskIntoConstraints:NO];
+
 		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
 		[buttons setTarget:self];
 		[buttons setAction:@selector(switchIsTome:)];

@@ -15,6 +15,7 @@
 - (void) setupInternal
 {
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	[self setTranslatesAutoresizingMaskIntoConstraints:NO];
 	[self setWantsLayer:YES];
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	self.layer.cornerRadius = 5.0;
