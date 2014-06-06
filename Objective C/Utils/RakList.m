@@ -262,6 +262,24 @@
 	return YES;
 }
 
+#pragma mark - Drag'n drop configuration
+
+- (BOOL) supportReorder
+{
+	return NO;
+}
+
+- (uint) getSelfCode
+{
+	NSLog(@"Default implementation shouldn't be used!");
+	return GUI_THREAD_MASK;
+}
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
+{
+	return NSDragOperationNone;
+}
+
 #pragma mark - Drag'n drop support
 
 - (uint) getOwnerOfTV : (RakTableView *) tableView
@@ -292,7 +310,16 @@
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
-	return NSDragOperationCopy;
+	uint tab = [self getOwnerOfTV:[info draggingSource]];
+	
+	if(tab == [self getSelfCode])
+	{
+		if([self supportReorder])
+			return NSDragOperationMove;
+		
+		return NSDragOperationNone;
+	}
+	return [self operationForContext:info :tab :row];
 }
 
 - (NSView *) newDragView

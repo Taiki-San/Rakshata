@@ -478,7 +478,7 @@
 	if(!memcmp(&newData, &data, sizeof(data)))
 		return;
 	else
-		memcpy(&data, &newData, sizeof(data));
+		data = getCopyOfProjectData(newData);
 	
 	updateIfRequired(&data, RDB_CTXCT);
 	

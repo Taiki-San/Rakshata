@@ -311,7 +311,17 @@
 
 			} completionHandler:^{
 				
-				[coreView updateContext:project];
+				MANGAS_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
+
+				if(newProject.cacheDBID == project.cacheDBID)
+				{
+					[coreView updateContext:newProject];
+					
+					//Coreview en fait aussi une copie, on doit donc release cette version
+					free(newProject.chapitres);
+					freeTomeList(newProject.tomes, true);
+				}
+				
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 				

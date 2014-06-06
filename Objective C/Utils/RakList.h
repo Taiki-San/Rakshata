@@ -67,4 +67,8 @@
 - (NSString *) reorderCode;
 - (uint) getOwnerOfTV : (NSTableView *) tableView;
 
+- (BOOL) supportReorder;
+- (uint) getSelfCode;
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow;
+
 @end

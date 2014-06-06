@@ -70,6 +70,7 @@ void freeMangaData(MANGAS_DATA* mangaDB);
 MANGAS_DATA * getDataFromSearch (uint IDTeam, const char * mangaNameCourt, uint32_t context, bool installed);
 bool * getInstalledFromData(MANGAS_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
+MANGAS_DATA getElementByID(uint projectID, uint32_t context);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
@@ -89,6 +90,7 @@ bool checkRecentDBValid(sqlite3 * DB);
 
 bool addRecentEntry(MANGAS_DATA data, bool wasItADL);
 void removeRecentEntry(MANGAS_DATA data);
+void removeRecentEntryInternal(char * URLRepo, char * mangaNameShort);
 MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 
 

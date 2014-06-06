@@ -260,10 +260,14 @@
 
 #pragma mark - Drag and drop support
 
-- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
+- (uint) getSelfCode
+{
+	return GUI_THREAD_SERIES;
+}
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
 {
 	return NSDragOperationNone;
 }
-
 
 @end

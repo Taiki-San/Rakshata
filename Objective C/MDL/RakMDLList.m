@@ -154,12 +154,13 @@
 
 #pragma mark - Drag'n Drop support
 
-- (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
+- (BOOL) supportReorder {	 return YES;	}
+- (uint) getSelfCode	{	return GUI_THREAD_MDL;	 }
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
 {
-	uint tab = [self getOwnerOfTV:[info draggingSource]];
-	
-	if(tab == GUI_THREAD_SERIES || tab == GUI_THREAD_CT)
-		return NSDragOperationMove;
+	if(sourceTab == GUI_THREAD_SERIES || sourceTab == GUI_THREAD_CT)
+		return NSDragOperationCopy;
 
 	return NSDragOperationNone;
 }

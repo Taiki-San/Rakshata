@@ -273,7 +273,7 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 	if(mangaDB->tomes == NULL)
 		return;
 	
-    int nbElem = 0;
+    uint nbElem = 0, deletedElems = 0;
     char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
     FILE* config = NULL;
 
@@ -288,25 +288,20 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 		}
     }
 
-    for(nbElem = 0; mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreTomes; nbElem++)
+    for(nbElem = 0; nbElem < mangaDB->nombreTomes && mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*mangaDB, mangaDB->tomes[nbElem].ID))
         {
-            mangaDB->tomes[nbElem].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
-            mangaDB->tomes[nbElem].name[0] = 0;
-			
-			if(mangaDB->tomes[nbElem].details != NULL)
-			{
+            if(mangaDB->tomes[nbElem].details != NULL)
 				free(mangaDB->tomes[nbElem].details);
-				mangaDB->tomes[nbElem].details = NULL;
-			}
+			
+			memcpy(&(mangaDB->tomes[nbElem]), &(mangaDB->tomes[nbElem+1]), (mangaDB->nombreTomes + 1 - nbElem) * sizeof(META_TOME));
+			deletedElems++;
         }
     }
-
-    qsort(mangaDB->tomes, nbElem, sizeof(META_TOME), sortTomes);
-    for(; nbElem > 0 && mangaDB->tomes[nbElem-1].ID == VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem--);
-    mangaDB->nombreTomes = nbElem;
+	
+	mangaDB->nombreTomes -= deletedElems;
 }
 
 void getUpdatedTomeList(MANGAS_DATA *mangaDB)
@@ -315,15 +310,42 @@ void getUpdatedTomeList(MANGAS_DATA *mangaDB)
     checkTomeValable(mangaDB, NULL);
 }
 
+void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
+{
+	if(input == NULL || output == NULL)
+		return;
+	
+	memcpy(output, input, (nombreTomes+1) * sizeof(META_TOME));
+	for(uint pos = 0, nbElem; pos < nombreTomes && input[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos++)
+	{
+		if(input[pos].details == NULL)
+			continue;
+		else
+			output[pos].details = NULL;
+		
+		for (nbElem = 0; input[pos].details[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++);
+		
+		if(nbElem > 0)
+		{
+			output[pos].details = malloc((nbElem + 1) * sizeof(CONTENT_TOME));
+			if(output[pos].details != NULL)
+				memcpy(output[pos].details, input[pos].details, (nbElem + 1) * sizeof(CONTENT_TOME));
+			
+		}
+	}
+	output[nombreTomes].ID = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	output[nombreTomes].details = NULL;
+}
+
 void freeTomeList(META_TOME * data, bool includeDetails)
 {
 	if(data == NULL)
 		return;
-
-	//On ne free pas details car c'est une ressource qu'une copie du cache ne duplique pas
-	if(includeDetails)
-		for(uint i = 0; data[i].details != NULL; free(data[i++].details));
 	
+	if(includeDetails)
+		for(uint i = 0; data[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; i++)
+			free(data[i].details);
+
 	free(data);
 }
 

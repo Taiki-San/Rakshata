@@ -355,7 +355,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
 				
 				free(newData[posNew].chapitres);	//updateCache en fait une copie
-				freeTomeList(newData[posNew].tomes, false);
+				freeTomeList(newData[posNew].tomes, true);
 			}
 			
 			posOld++;
@@ -425,7 +425,7 @@ MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
 	{
 		newData.tomes = malloc(data.nombreTomes * sizeof(META_TOME));
 		if(newData.tomes != NULL)
-			memcpy(newData.tomes, data.tomes, data.nombreTomes * sizeof(META_TOME));
+			copyTomeList(data.tomes, data.nombreTomes, newData.tomes);
 	}
 	
 	return newData;

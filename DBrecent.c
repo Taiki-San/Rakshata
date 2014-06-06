@@ -137,6 +137,11 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 
 void removeRecentEntry(MANGAS_DATA data)
 {
+	removeRecentEntryInternal(data.team->URL_depot, data.mangaNameShort);
+}
+
+void removeRecentEntryInternal(char * URLRepo, char * mangaNameShort)
+{
 	sqlite3 *database = getPtrRecentDB();
 	if(database == NULL)
 		return;
@@ -144,8 +149,8 @@ void removeRecentEntry(MANGAS_DATA data)
 	sqlite3_stmt * request = NULL;
 	if(sqlite3_prepare_v2(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_mangaNameShort)" = ?2", -1, &request, NULL) == SQLITE_OK)
 	{
-		sqlite3_bind_text(request, 1, data.team->URL_depot, -1, SQLITE_STATIC);
-		sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
+		sqlite3_bind_text(request, 1, URLRepo, -1, SQLITE_STATIC);
+		sqlite3_bind_text(request, 2, mangaNameShort, -1, SQLITE_STATIC);
 		
 		sqlite3_step(request);
 	}
@@ -201,6 +206,21 @@ MANGAS_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 				
 				if(output[*nbElem] != NULL)
 					(*nbElem)++;
+				else
+				{
+					uint lengthTeam = strlen(team) + 1, lengthName = strlen(mangaName) + 1;
+					char teamBak[lengthTeam], nameBak[lengthName];
+					
+					strncpy(teamBak, team, lengthTeam);
+					strncpy(nameBak, mangaName, lengthName);
+					
+					sqlite3_finalize(request);
+					
+					removeRecentEntryInternal(teamBak, nameBak);
+					
+					if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
+						break;
+				}
 			}
 		}
 	}

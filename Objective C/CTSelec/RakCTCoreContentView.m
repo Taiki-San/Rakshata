@@ -185,4 +185,17 @@
 	}
 }
 
+#pragma mark - Drag and drop support
+
+- (uint) getSelfCode
+{
+	return GUI_THREAD_CT;
+}
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
+{
+	return NSDragOperationCopy;
+}
+
+
 @end

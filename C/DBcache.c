@@ -433,7 +433,7 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1), false);
+		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
 
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 2);
@@ -472,7 +472,7 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	{
 		buffer = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
 		if(buffer != NULL)
-			memcpy(buffer, data.chapitres, (data.nombreTomes + 1) * sizeof(META_TOME));
+			copyTomeList(data.tomes, data.nombreTomes, buffer);
 		
 		sqlite3_bind_int64(request, 13, (int64_t) buffer);
 	}
@@ -601,7 +601,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 		{
 			output->tomes = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
 			if(output->tomes != NULL)
-				memcpy(output->tomes, buffer, (output->nombreTomes + 1) * sizeof(META_TOME));
+				copyTomeList(buffer, output->nombreTomes, output->tomes);
 		}
 		else
 			output->tomes = NULL;
@@ -905,7 +905,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 				collector[posTeamCollector++] = mangaDB[pos].team;
 		}
         free(mangaDB[pos].chapitres);
-        freeTomeList(mangaDB[pos].tomes, false);
+        freeTomeList(mangaDB[pos].tomes, true);
 		
     }
 	while (posTeamCollector--)
@@ -925,8 +925,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
     for(pos = 0; mangaDB[pos].team != NULL; pos++)
     {
         free(mangaDB[pos].chapitres);
-		freeTomeList(mangaDB[pos].tomes, false);
-		
+		freeTomeList(mangaDB[pos].tomes, true);
     }
     free(mangaDB);
 }
@@ -1029,7 +1028,7 @@ bool isProjectInstalledInCache (uint ID)
 	bool output = false;
 	
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 
 	if(cache != NULL)
 	{
@@ -1045,5 +1044,29 @@ bool isProjectInstalledInCache (uint ID)
 
 	}
 	
+	return output;
+}
+
+MANGAS_DATA getElementByID(uint projectID, uint32_t context)
+{
+	sqlite3_stmt* request = NULL;
+	MANGAS_DATA output;
+	
+	memset(&output, 0, sizeof(MANGAS_DATA));
+	
+	if(cache != NULL)
+	{
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		sqlite3_bind_int(request, 1, projectID);
+		
+		if(sqlite3_step(request) == SQLITE_ROW)
+		{
+			if(copyOutputDBToStruct(request, false, &output) && context & RDB_CTXMASK)
+				signalProjectRefreshed(output.cacheDBID, (context & RDB_CTXMASK) >> 8);
+		}
+		
+		sqlite3_finalize(request);
+	}
+
 	return output;
 }
