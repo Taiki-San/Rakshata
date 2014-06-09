@@ -19,7 +19,7 @@ void loadPalette();
 void refreshChaptersList(MANGAS_DATA *mangaDB);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu);
-void getUpdatedChapterList(MANGAS_DATA *mangaDB);
+void getUpdatedChapterList(MANGAS_DATA *mangaDB, bool getInstalled);
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
 bool isChapterShared(char *path, MANGAS_DATA data, int ID);
 
@@ -90,9 +90,6 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 /**Lecteur.c**/
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 
-/**ModuleDL2_tool.c**/
-int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis);
-
 /**Native.c**/
 int mkdirR(char *path);
 void getToWD(int *argc, char** argv);
@@ -161,7 +158,7 @@ void refreshTomeList(MANGAS_DATA *mangaDB);
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);
-void getUpdatedTomeList(MANGAS_DATA *mangaDB);
+void getUpdatedTomeList(MANGAS_DATA *mangaDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, bool includeDetails);
 void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome);

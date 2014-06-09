@@ -17,16 +17,10 @@ bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *curre
 {
 	if(isTome)
 	{
-		for((*currentPosIntoStructure)++; *currentPosIntoStructure < mangaDB.nombreTomes &&
-						!checkReadable(mangaDB, isTome, &mangaDB.tomes[*currentPosIntoStructure]) ; (*currentPosIntoStructure)++);
-		
-		return *currentPosIntoStructure < mangaDB.nombreTomes;	//As-ton trouvé un tome?
+		return *currentPosIntoStructure < mangaDB.nombreTomesInstalled;
 	}
 	
-	for((*currentPosIntoStructure)++; *currentPosIntoStructure < mangaDB.nombreChapitre &&
-				!checkReadable(mangaDB, isTome, &mangaDB.chapitres[*currentPosIntoStructure]) ; (*currentPosIntoStructure)++);
-
-	return *currentPosIntoStructure < mangaDB.nombreChapitre;	//As-ton trouvé un tome?
+	return *currentPosIntoStructure < mangaDB.nombreChapitreInstalled;	//As-ton trouvé un tome?
 }
 
 /**	Load the reader data	**/
@@ -47,11 +41,11 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
     if(isTome)
     {
 		uint pos;
-		for(pos = 0; pos < mangaDB.nombreTomes && mangaDB.tomes[pos].ID != IDRequested; pos++);
-		if(pos >= mangaDB.nombreTomes)
+		for(pos = 0; pos < mangaDB.nombreTomesInstalled && mangaDB.tomesInstalled[pos].ID != IDRequested; pos++);
+		if(pos >= mangaDB.nombreTomesInstalled)
 			return 1;
 		
-		localBuffer = mangaDB.tomes[pos].details;
+		localBuffer = mangaDB.tomesInstalled[pos].details;
 		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos++);
 		nombreToursRequis = pos;
 	}
@@ -318,21 +312,20 @@ bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint
 	
 	if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 	{
-		getUpdatedChapterList(mangaDB);
+		getUpdatedCTList(mangaDB, isTome);
+		
 		if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
 			return false;
 	}
 	if(isTome)
-		*ptrToSelectedID = mangaDB->tomes[*posIntoStruc].ID;
+		*ptrToSelectedID = mangaDB->tomesInstalled[*posIntoStruc].ID;
 	else
-		*ptrToSelectedID = mangaDB->chapitres[*posIntoStruc];
+		*ptrToSelectedID = mangaDB->chapitresInstalled[*posIntoStruc];
 	return true;
 }
 
 bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc)
 {
-    updateIfRequired(mangaDB, RDB_CTXLECTEUR);
-	
-	return (isTome && posIntoStruc < mangaDB->nombreTomes) || (!isTome && posIntoStruc < mangaDB->nombreChapitre);
+	return (isTome && posIntoStruc < mangaDB->nombreTomesInstalled) || (!isTome && posIntoStruc < mangaDB->nombreChapitreInstalled);
 }
 

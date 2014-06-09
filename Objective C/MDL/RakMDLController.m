@@ -116,7 +116,7 @@
 		return;
 	
 	uint pos;
-	for (pos = 0; pos < sizeCache && cache[pos].cacheDBID < data.cacheDBID ; pos++);
+	for (pos = 0; pos < sizeCache && cache[pos].cacheDBID != data.cacheDBID ; pos++);
 	
 	if(pos == sizeCache || cache[pos].cacheDBID != data.cacheDBID)
 	{

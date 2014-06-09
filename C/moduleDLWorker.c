@@ -31,12 +31,20 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     DATA_MOD_DL argument;
     bool isTome = input.todoList->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE;
     int i, nombreElement = isTome ? input.todoList->chapitre : 1;
-	uint posTomeInStruct = 0xffffffff;
+	uint posTomeInStruct = ERROR_CHECK;
 	
     argument.todoList = &todoListTmp;
     todoListTmp.datas = input.todoList->datas;
     listDL = calloc(nombreElement, sizeof(void*));
     listSizeDL = calloc(nombreElement, sizeof(size_t));
+	
+	if (isTome && todoListTmp.datas->tomesFull != NULL)	//We find the tome position
+	{
+		for(posTomeInStruct = 0; posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && todoListTmp.datas->tomesFull[posTomeInStruct].ID != input.todoList->partOfTome; posTomeInStruct++);
+	
+		if(posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			posTomeInStruct = ERROR_CHECK;
+	}
 	
     if(listDL == NULL || listSizeDL == NULL)
     {
@@ -107,12 +115,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					char oldPath[2*LONGUEUR_NOM_MANGA_MAX + 384], newPath[2*LONGUEUR_NOM_MANGA_MAX + 256];
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomes[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomes[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
 						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10);
 					}
 					

@@ -318,8 +318,10 @@
 					[coreView updateContext:newProject];
 					
 					//Coreview en fait aussi une copie, on doit donc release cette version
-					free(newProject.chapitres);
-					freeTomeList(newProject.tomes, true);
+					free(newProject.chapitresFull);
+					free(newProject.chapitresInstalled);
+					freeTomeList(newProject.tomesFull, true);
+					freeTomeList(newProject.tomesInstalled, true);
 				}
 				
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])

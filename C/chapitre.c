@@ -14,8 +14,12 @@
 
 void refreshChaptersList(MANGAS_DATA *mangaDB)
 {
-    if(mangaDB->chapitres != NULL)
-        free(mangaDB->chapitres);
+    if(mangaDB->chapitresFull != NULL || mangaDB->chapitresInstalled != NULL)
+	{
+		free(mangaDB->chapitresFull);
+		free(mangaDB->chapitresInstalled);
+		mangaDB->chapitresInstalled = NULL;
+	}
 
     /*On commence par énumérer les chapitres spéciaux*/
     int nbElem, i;
@@ -24,11 +28,11 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
     FILE* chapSpeciaux = fopen(temp, "r");
 
     nbElem = mangaDB->nombreChapitreSpeciaux + mangaDB->lastChapter - mangaDB->firstChapter + 1;
-    mangaDB->chapitres = calloc(nbElem+5, sizeof(int));
-    for(i = 0; i < nbElem+5; mangaDB->chapitres[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
+    mangaDB->chapitresFull = calloc(nbElem+5, sizeof(int));
+    for(i = 0; i < nbElem+5; mangaDB->chapitresFull[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
 
     for(i = 0; i <= mangaDB->lastChapter-mangaDB->firstChapter && i < nbElem; i++)
-        mangaDB->chapitres[i] = (mangaDB->firstChapter+i)*10;
+        mangaDB->chapitresFull[i] = (mangaDB->firstChapter+i)*10;
 
     if(chapSpeciaux != NULL)
     {
@@ -37,12 +41,12 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
             for(; i < nbElem && fgetc(chapSpeciaux) != EOF; i++)
             {
                 fseek(chapSpeciaux, -1, SEEK_CUR);
-                fscanfs(chapSpeciaux, "%d", &(mangaDB->chapitres[i]));
+                fscanfs(chapSpeciaux, "%d", &(mangaDB->chapitresFull[i]));
             }
         }
         fclose(chapSpeciaux);
     }
-    qsort(mangaDB->chapitres, i, sizeof(int), sortNumbers);
+    qsort(mangaDB->chapitresFull, i, sizeof(int), sortNumbers);
     mangaDB->nombreChapitre = i;
 }
 
@@ -65,85 +69,91 @@ bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
 
 void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
-    if(mangaDB->chapitres == NULL || mangaDB->chapitres[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if(mangaDB->chapitresInstalled != NULL)
+	{
+		free(mangaDB->chapitresInstalled);
+		mangaDB->chapitresInstalled = NULL;
+		mangaDB->nombreChapitreInstalled = 0;
+	}
+	
+    if(mangaDB->chapitresFull == NULL || mangaDB->chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
 		return;
 	
-	int first = -1, end = -1, fBack, eBack, nbElem = 0;
-    char temp[TAILLE_BUFFER*5];
+    char configFilePath[TAILLE_BUFFER*5];
 
-    snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-    FILE* file = fopen(temp, "r");
-    if(file == NULL)
+    snprintf(configFilePath, sizeof(configFilePath), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
+    if(!checkFileExist(configFilePath))
     {
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-    fscanfs(file, "%d %d", &fBack, &eBack);
-    if(dernierLu != NULL && fgetc(file) != EOF)
-    {
-        fseek(file, -1, SEEK_CUR);
-        fscanfs(file, "%d", dernierLu);
-    }
-    fclose(file);
-
-    for(nbElem = 0; mangaDB->chapitres[nbElem] != VALEUR_FIN_STRUCTURE_CHAPITRE && nbElem < mangaDB->nombreChapitre; nbElem++)
-    {
-        if(!checkChapterReadable(*mangaDB, mangaDB->chapitres[nbElem]))
-            mangaDB->chapitres[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-    }
-
-    qsort(mangaDB->chapitres, nbElem, sizeof(int), sortNumbers);
-    for(; nbElem > 0 && mangaDB->chapitres[nbElem-1] == VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem--);
-
-    if(nbElem == 0)
-    {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-        removeFolder(temp);
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-
-    first = mangaDB->chapitres[0];
-    end = mangaDB->chapitres[nbElem-1];
-
-	if(dernierLu != NULL)
-    {
-		if(first > *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-			*dernierLu = mangaDB->chapitres[0];
+		mangaDB->chapitresInstalled = malloc(sizeof(int));
 		
-		else if(end < *dernierLu && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-			*dernierLu = mangaDB->chapitres[nbElem-1];
-	}
+		if(mangaDB->chapitresInstalled != NULL)
+			mangaDB->chapitresInstalled[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		return;
+    }
+	
+    if(dernierLu != NULL)
+    {
+		int i;
+		
+		*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		FILE* file = fopen(configFilePath, "r");
+		
+		if(file != NULL)
+		{
+			fscanfs(file, "%d %d", &i, &i);
+			
+			if(fgetc(file) != EOF)
+			{
+				fseek(file, -1, SEEK_CUR);
+				fscanfs(file, "%d", dernierLu);
+			}
+			fclose(file);
+		}
+    }
+	
+	int *temporaryInstalledList = malloc((mangaDB->nombreChapitre + 1) * sizeof(int));
+	size_t nbElem = 0;
+	
+	if(temporaryInstalledList == NULL)
+		return;
 
-    if((first != fBack || end != eBack) && first <= end)
+    for(size_t pos = 0; mangaDB->chapitresFull[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE && pos < mangaDB->nombreChapitre; pos++)
     {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-        file = fopen(temp, "w+");
-        if(temp != NULL)
-        {
-            fprintf(file, "%d %d", first, end);
-            if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                fprintf(file, " %d", *dernierLu);
-            fclose(file);
-        }
+        if(checkChapterReadable(*mangaDB, mangaDB->chapitresFull[pos]))
+            temporaryInstalledList[nbElem++] = mangaDB->chapitresFull[pos];
     }
-    else if(first > end)
+	temporaryInstalledList[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+
+	if(nbElem != 0)
+	{
+		mangaDB->chapitresInstalled = malloc((nbElem + 1) * sizeof(int));
+		if(mangaDB->chapitresInstalled != NULL)
+		{
+			memcpy(mangaDB->chapitresInstalled, temporaryInstalledList, (nbElem + 1) * sizeof(int));
+			mangaDB->nombreChapitreInstalled = nbElem;
+		}
+	}
+	
+	free(temporaryInstalledList);
+
+    if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-        snprintf(temp, TAILLE_BUFFER, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-        removeFolder(temp);
-        mangaDB->chapitres[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
-        mangaDB->nombreChapitre = 0;
-        return;
-    }
-    mangaDB->nombreChapitre = nbElem;
+		int first = mangaDB->chapitresInstalled[0], end = mangaDB->chapitresInstalled[nbElem-1];
+		
+		if(*dernierLu < first)
+			*dernierLu = first;
+		
+		else if(*dernierLu > end)
+			*dernierLu = end;
+	}
 }
 
-void getUpdatedChapterList(MANGAS_DATA *mangaDB)
+void getUpdatedChapterList(MANGAS_DATA *mangaDB, bool getInstalled)
 {
     refreshChaptersList(mangaDB);
-    checkChapitreValable(mangaDB, NULL);
+
+	if(getInstalled)
+		checkChapitreValable(mangaDB, NULL);
 }
 
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters)

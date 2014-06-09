@@ -93,57 +93,52 @@ void updateFavorites()
 
 void getNewFavs()
 {
-	uint maxValue;
-    FILE* import = NULL;
+	FILE* import = NULL;
     MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, NULL);
 
     if(mangaDB == NULL)
         return;
 
-    int i, j, WEGOTSOMETHING = 0;
+    int i, WEGOTSOMETHING = 0, lastInstalled;
+	size_t posFull;
 
     for(i = 0; mangaDB[i].team != NULL; i++)
     {
         if(mangaDB[i].favoris)
         {
-			refreshChaptersList(&mangaDB[i]);
-            if(mangaDB[i].chapitres != NULL)
+			getUpdatedChapterList(&mangaDB[i], true);
+            if(mangaDB[i].chapitresFull != NULL && mangaDB[i].nombreChapitre > mangaDB[i].nombreChapitreInstalled)
 			{
-				maxValue = mangaDB[i].nombreChapitre;
-				for(j = 0; j < maxValue && mangaDB[i].chapitres[j] != VALEUR_FIN_STRUCTURE_CHAPITRE; j++)
+				lastInstalled = mangaDB[i].chapitresInstalled[mangaDB[i].nombreChapitreInstalled];
+				for(posFull = mangaDB[i].nombreChapitre - 1; posFull > 0 && mangaDB[i].chapitresFull[posFull] > lastInstalled; posFull--)
 				{
-					if(!checkChapterReadable(mangaDB[i], mangaDB[i].chapitres[j]))
+					if(import == NULL)
+						import = fopen(INSTALL_DATABASE, "a+");
+					
+					if(import != NULL)
 					{
-						if(import == NULL)
-							import = fopen(INSTALL_DATABASE, "a+");
-						
-						if(import != NULL)
-						{
-							WEGOTSOMETHING = 1;
-							fprintf(import, "%s %s C %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, mangaDB[i].chapitres[j]);
-						}
+						WEGOTSOMETHING = 1;
+						fprintf(import, "%s %s C %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, mangaDB[i].chapitresFull[posFull]);
 					}
 				}
 			}
 			
-			refreshTomeList(&mangaDB[i]);
-			if(mangaDB[i].tomes != NULL)
+			getUpdatedTomeList(&mangaDB[i], true);
+			if(mangaDB[i].tomesFull != NULL && mangaDB[i].nombreTomes > mangaDB[i].nombreTomesInstalled)
 			{
-				maxValue = mangaDB[i].nombreTomes;
-				for(j = 0; j < maxValue && mangaDB[i].tomes[j].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; j++)
+				lastInstalled = mangaDB[i].tomesInstalled[mangaDB[i].nombreTomesInstalled].ID;
+				for(posFull = mangaDB[i].nombreTomes - 1; posFull > 0 && mangaDB[i].tomesFull[posFull].ID > lastInstalled; posFull--)
 				{
-					if(!checkTomeReadable(mangaDB[i], mangaDB[i].tomes[j].ID))
+					if(import == NULL)
+						import = fopen(INSTALL_DATABASE, "a+");
+					
+					if(import != NULL)
 					{
-						if(import == NULL)
-							import = fopen(INSTALL_DATABASE, "a+");
-						
-						if(import != NULL)
-						{
-							WEGOTSOMETHING = 1;
-							fprintf(import, "%s %s T %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, mangaDB[i].tomes[j].ID);
-						}
+						WEGOTSOMETHING = 1;
+						fprintf(import, "%s %s T %d\n", mangaDB[i].team->teamCourt, mangaDB[i].mangaNameShort, mangaDB[i].tomesFull[posFull].ID);
 					}
 				}
+
 			}
         }
     }

@@ -13,9 +13,9 @@
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
 {
     if(isTome)
-        getUpdatedTomeList(mangaDB);
+        getUpdatedTomeList(mangaDB, true);
     else
-        getUpdatedChapterList(mangaDB);
+        getUpdatedChapterList(mangaDB, true);
 }
 
 bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
@@ -30,32 +30,36 @@ bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
 
 bool isAnythingToDownload(MANGAS_DATA mangaDB)
 {
-	bool ret_value = false;
-    uint prevSize;
+	bool ret_value = false, needFree = false;
 	
     if(mangaDB.firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-		mangaDB.chapitres = NULL;
+		if(mangaDB.chapitresInstalled == NULL)
+		{
+			checkChapitreValable(&mangaDB, NULL);
+			needFree = true;
+		}
 		
-		refreshChaptersList(&mangaDB);
-        prevSize = mangaDB.nombreChapitre;
-        checkChapitreValable(&mangaDB, NULL);
-		ret_value = prevSize != mangaDB.nombreChapitre;
+		ret_value = mangaDB.nombreChapitre != mangaDB.nombreChapitreInstalled;
 		
-		free(mangaDB.chapitres);
+		if(needFree)
+			free(mangaDB.chapitresInstalled);
     }
 	
     if(mangaDB.firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
     {
-		mangaDB.tomes = NULL;
-		
-		refreshTomeList(&mangaDB);
-        prevSize = mangaDB.nombreTomes;
-        checkTomeValable(&mangaDB, NULL);
-        ret_value |= prevSize != mangaDB.nombreTomes;
+		if(mangaDB.tomesInstalled == NULL)
+		{
+			checkTomeValable(&mangaDB, NULL);
+			needFree = true;
+		}
 
-		free(mangaDB.tomes);
+        ret_value |= mangaDB.nombreTomes != mangaDB.nombreTomesInstalled;
+
+		if(needFree)
+			free(mangaDB.tomesInstalled);
 	}
+	
     return ret_value;
 }
 

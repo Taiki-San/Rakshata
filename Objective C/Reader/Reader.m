@@ -62,8 +62,8 @@
 				}
 				else
 				{
-					checkChapitreValable(project, NULL);
-					checkTomeValable(project, NULL);
+					getUpdatedCTList(project, true);
+					getUpdatedCTList(project, false);
 				}
 				
 				//Perfect! now, all we have to do is to sanitize last few data :D

@@ -360,10 +360,10 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
 	{
 		//Un chapitre interne peut avoir le même ID dans deux tomes différents, on a donc besoin du # du tome
-		if(projectData.tomes == NULL || posIndexTome == NULL || *posIndexTome > projectData.nombreTomes)
+		if(projectData.tomesFull == NULL || posIndexTome == NULL || *posIndexTome > projectData.nombreTomes)
 			return ERROR_CHECK;
 		
-		int IDTome = projectData.tomes[*posIndexTome].ID;
+		int IDTome = projectData.tomesFull[*posIndexTome].ID;
 		if (IDTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
 			return ERROR_CHECK;
 		
@@ -414,21 +414,20 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 	}
 	
 	//Le chapitre est pas dans le repertoire par défaut, on va voir si un tome ne l'a pas choppé
-	
-	if(projectData.tomes == NULL)
+	if(projectData.tomesFull == NULL)
 		return NOT_INSTALLED;
 	
 	uint pos, pos2;
 	CONTENT_TOME * buf;
 	
-	if(posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes || projectData.tomes[*posIndexTome].ID != IDChap)
+	if(posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes || projectData.tomesFull[*posIndexTome].ID != IDChap)
 		pos = 0;
 	else
 		pos = *posIndexTome;
 	
 	for(; pos < projectData.nombreTomes; pos++)
 	{
-		buf = projectData.tomes[pos].details;
+		buf = projectData.tomesFull[pos].details;
 		for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos2++)
 		{
 			if(buf[pos2].ID == IDChap && buf[pos2].isNative)
@@ -437,11 +436,11 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 				if(posIndexTome != NULL)
 					*posIndexTome = pos;
 				
-				snprintf(pathConfig, sizeof(pathConfig), "%s/Tome_%d/native/%s/%s", basePath, projectData.tomes[pos].ID, nameChapter, CONFIGFILE);
+				snprintf(pathConfig, sizeof(pathConfig), "%s/Tome_%d/native/%s/%s", basePath, projectData.tomesFull[pos].ID, nameChapter, CONFIGFILE);
 				if(checkFileExist(pathConfig))
 				{
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-					snprintf(pathInstall, sizeof(pathInstall), "%s/Tome_%d/native/%s/installing", basePath, projectData.tomes[pos].ID, nameChapter);
+					snprintf(pathInstall, sizeof(pathInstall), "%s/Tome_%d/native/%s/installing", basePath, projectData.tomesFull[pos].ID, nameChapter);
 					return checkFileExist(pathInstall) ? INSTALLING : ALTERNATIVE_INSTALLED;
 #else
 					return ALTERNATIVE_INSTALLED;
@@ -456,7 +455,7 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 
 void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID)
 {
-	if (tomeID >= data.nombreTomes || data.tomes == NULL)
+	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
 	char pathToSharedFile[2*LONGUEUR_NOM_MANGA_MAX + 256];
@@ -468,7 +467,7 @@ void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID)
 	FILE * file = fopen(pathToSharedFile, "w+");
 	if(file != NULL)
 	{
-		fprintf(file, "%d", data.tomes[tomeID].ID);
+		fprintf(file, "%d", data.tomesFull[tomeID].ID);
 		fclose(file);
 	}
 #ifdef DEV_VERSION
@@ -663,18 +662,18 @@ DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength)
 					output[posElemsTome]->subFolder = true;
 					
 					//Si on a pas de données sur les tomes du projet
-					if(tomeDatas.datas != NULL && tomeDatas.datas->tomes == NULL)
+					if(tomeDatas.datas != NULL && tomeDatas.datas->tomesFull == NULL)
 						refreshTomeList(tomeDatas.datas);
 
 					//Si on a réussi à en récupérer
-					if(tomeDatas.datas != NULL && tomeDatas.datas->tomes != NULL)
+					if(tomeDatas.datas != NULL && tomeDatas.datas->tomesFull != NULL)
 					{
 						//On cherche notre correspondance dans la structure afin de choper le nom du tome
-						for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomes[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomes[i].ID != tomeDatas.chapitre; i++);
-						if(tomeDatas.datas->tomes[i].ID == tomeDatas.chapitre)
+						for(i = 0; i < tomeDatas.datas->nombreTomes && tomeDatas.datas->tomesFull[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas.datas->tomesFull[i].ID != tomeDatas.chapitre; i++);
+						if(tomeDatas.datas->tomesFull[i].ID == tomeDatas.chapitre)
 						{
-							if(tomeDatas.datas->tomes[i].name[0] != 0)
-								output[posElemsTome]->tomeName = tomeDatas.datas->tomes[i].name;
+							if(tomeDatas.datas->tomesFull[i].name[0] != 0)
+								output[posElemsTome]->tomeName = tomeDatas.datas->tomesFull[i].name;
 							else
 								output[posElemsTome]->tomeName = NULL;
 						}
@@ -831,73 +830,6 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
     }
     else if(!mangaToCheck.pageInfos && checkFileExist(path))//Si k = 0 et infos.png existe
         remove(path);
-}
-
-int ecritureDansImport(MANGAS_DATA * mangaDB, bool isTome, int chapitreChoisis)
-{
-    FILE* fichier = NULL;
-    char temp[TAILLE_BUFFER];
-    int elemChoisisSanitized = 0, nombreChapitre = 0;
-    MDL_SELEC_CACHE ** cache = MDLGetCacheStruct();
-
-    /*On ouvre le fichier d'import*/
-    fichier = fopen(INSTALL_DATABASE, "a+");
-
-    if(chapitreChoisis != VALEUR_FIN_STRUCTURE_CHAPITRE)
-    {
-        if(isTome)
-            for(elemChoisisSanitized = 0; mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID < chapitreChoisis; elemChoisisSanitized++);
-        else
-            for(elemChoisisSanitized = 0; mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[elemChoisisSanitized] < chapitreChoisis; elemChoisisSanitized++);
-
-        initCacheSelectionMDL(cache, mangaDB, isTome, chapitreChoisis); //On ajoute un seul élément
-    }
-    else
-    {
-        if(cache != NULL)
-        {
-            initCacheSelectionMDL(cache, mangaDB, isTome, chapitreChoisis);
-            MDL_SELEC_CACHE_MANGA * cacheManga = getStructCacheManga(*cache, mangaDB);
-            if(cacheManga != NULL)
-            {
-                if(isTome)
-                    cacheManga->allTomeCached = true;
-                else
-                    cacheManga->allChapterCached = true;
-            }
-        }
-    }
-
-    if(!isTome && mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE)
-    {
-        do
-        {
-            if(mangaDB->chapitres[elemChoisisSanitized]%10)
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[elemChoisisSanitized]/10, mangaDB->chapitres[elemChoisisSanitized]%10, CONFIGFILE);
-            else
-                snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/Chapitre_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, mangaDB->chapitres[elemChoisisSanitized]/10, CONFIGFILE);
-            if(!checkFileExist(temp))
-            {
-                fprintf(fichier, "%s %s C %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, mangaDB->chapitres[elemChoisisSanitized]);
-                nombreChapitre++;
-            }
-            elemChoisisSanitized++;
-        } while(chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->chapitres[elemChoisisSanitized] != VALEUR_FIN_STRUCTURE_CHAPITRE);
-    }
-    else if(isTome && elemChoisisSanitized != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
-    {
-        do
-        {
-            if(!checkTomeReadable(*mangaDB, mangaDB->tomes[elemChoisisSanitized].ID))
-            {
-                fprintf(fichier, "%s %s T %d\n", mangaDB->team->teamCourt, mangaDB->mangaNameShort, mangaDB->tomes[elemChoisisSanitized].ID);
-                nombreChapitre++;
-            }
-            elemChoisisSanitized++;
-        }while (chapitreChoisis == VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB->tomes[elemChoisisSanitized].ID != VALEUR_FIN_STRUCTURE_CHAPITRE);
-    }
-    fclose(fichier);
-	return nombreChapitre;
 }
 
 bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem)

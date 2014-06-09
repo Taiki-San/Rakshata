@@ -161,8 +161,8 @@ int setupBDDCache()
 #ifndef KEEP_UNUSED_TEAMS
 					isTeamUsed[numeroTeam] = true;
 #endif
-					mangas.chapitres = NULL;
-					mangas.tomes = NULL;
+					mangas.chapitresFull = NULL;
+					mangas.tomesFull = NULL;
 					
 					mangas.team = internalTeamList[numeroTeam];	//checkIfFaved a besoin d'y accéder
 					refreshChaptersList(&mangas);
@@ -173,8 +173,8 @@ int setupBDDCache()
 					
 					if(!addToCache(request, mangas, numeroTeam, checkFileExist(temp)))
 					{
-						free(mangas.chapitres);
-						freeTomeList(mangas.tomes, true);
+						free(mangas.chapitresFull);
+						freeTomeList(mangas.tomesFull, true);
 					}
 					nombreManga++;
 				}
@@ -392,10 +392,10 @@ bool addToCache(sqlite3_stmt* request, MANGAS_DATA data, uint posTeamIndex, bool
 	sqlite3_bind_int(internalRequest, 9, data.lastChapter);
 	sqlite3_bind_int(internalRequest, 10, data.nombreChapitreSpeciaux);
 	sqlite3_bind_int(internalRequest, 11, data.nombreChapitre);
-	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.chapitres);
+	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.chapitresFull);
 	sqlite3_bind_int(internalRequest, 13, data.firstTome);
 	sqlite3_bind_int(internalRequest, 14, data.nombreTomes);
-	sqlite3_bind_int64(internalRequest, 15, (int64_t) data.tomes);
+	sqlite3_bind_int64(internalRequest, 15, (int64_t) data.tomesFull);
 	sqlite3_bind_int(internalRequest, 16, data.contentDownloadable);
 	sqlite3_bind_int(internalRequest, 17, data.favoris);
 	
@@ -459,20 +459,26 @@ bool updateCache(MANGAS_DATA data, char whatCanIUse, char * mangaNameShort)
 	sqlite3_bind_int(request, 8, data.nombreChapitreSpeciaux);
 	sqlite3_bind_int(request, 9, data.nombreChapitre);
 
-	buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
-	if(buffer != NULL)
-		memcpy(buffer, data.chapitres, (data.nombreChapitre + 1) * sizeof(int));
+	if(data.chapitresFull != NULL)
+	{
+		buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
+		if(buffer != NULL)
+			memcpy(buffer, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
+		
+		sqlite3_bind_int64(request, 10, (int64_t) buffer);
+	}
+	else
+		sqlite3_bind_int64(request, 10, 0x0);
 	
-	sqlite3_bind_int64(request, 10, (int64_t) buffer);
 
 	sqlite3_bind_int(request, 11, data.firstTome);
 	sqlite3_bind_int(request, 12, data.nombreTomes);
 	
-	if(data.tomes != NULL)
+	if(data.tomesFull != NULL)
 	{
 		buffer = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
 		if(buffer != NULL)
-			copyTomeList(data.tomes, data.nombreTomes, buffer);
+			copyTomeList(data.tomesFull, data.nombreTomes, buffer);
 		
 		sqlite3_bind_int64(request, 13, (int64_t) buffer);
 	}
@@ -581,15 +587,27 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 		buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 		if(buffer != NULL)
 		{
-			output->chapitres = malloc((output->nombreChapitre+2) * sizeof(int));
-			if(output->chapitres != NULL)
-				memcpy(output->chapitres, buffer, (output->nombreChapitre + 1) * sizeof(int));
+			output->chapitresFull = malloc((output->nombreChapitre+2) * sizeof(int));
+			if(output->chapitresFull != NULL)
+			{
+				memcpy(output->chapitresFull, buffer, (output->nombreChapitre + 1) * sizeof(int));
+				output->chapitresInstalled = NULL;
+				checkChapitreValable(output, NULL);
+			}
+			else
+				output->chapitresInstalled = NULL;
 		}
 		else
-			output->chapitres = NULL;
+		{
+			output->chapitresFull = NULL;
+			output->chapitresInstalled = NULL;
+		}
 	}
 	else
-		output->chapitres = NULL;
+	{
+		output->chapitresFull = NULL;
+		output->chapitresInstalled = NULL;
+	}
 	
 	output->firstTome = sqlite3_column_int(state, RDB_firstTome-1);
 	output->nombreTomes = sqlite3_column_int(state, RDB_nombreTomes-1);
@@ -599,15 +617,27 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 		buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
 		if(buffer != NULL)
 		{
-			output->tomes = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
-			if(output->tomes != NULL)
-				copyTomeList(buffer, output->nombreTomes, output->tomes);
+			output->tomesFull = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
+			if(output->tomesFull != NULL)
+			{
+				copyTomeList(buffer, output->nombreTomes, output->tomesFull);
+				output->tomesInstalled = NULL;
+				checkTomeValable(output, NULL);
+			}
+			else
+				output->tomesInstalled = NULL;
 		}
 		else
-			output->tomes = NULL;
+		{
+			output->tomesFull = NULL;
+			output->tomesInstalled = NULL;
+		}
 	}
 	else
-		output->tomes = NULL;
+	{
+		output->tomesFull = NULL;
+		output->tomesInstalled = NULL;
+	}
 	
 	output->contentDownloadable = sqlite3_column_int(state, RDB_contentDownloadable-1);
 	output->favoris = sqlite3_column_int(state, RDB_favoris);
@@ -692,6 +722,8 @@ bool updateIfRequired(MANGAS_DATA *data, short context)
 	if(data == NULL)
 		return false;
 	
+	bool ret_value = false;
+	
 	context >>= 8;
 
 	if (isProjectUpdated(data->cacheDBID, context))
@@ -702,18 +734,21 @@ bool updateIfRequired(MANGAS_DATA *data, short context)
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
-			free(data->chapitres);
-			free(data->tomes);
+			free(data->chapitresFull);
+			free(data->tomesFull);
 			copyOutputDBToStruct(request, false, data);
+			
+			checkChapitreValable(data, NULL);
+			checkTomeValable(data, NULL);
+			
+			ret_value = true;
 		}
 		
 		signalProjectRefreshed(data->cacheDBID, context);
 		sqlite3_finalize(request);
-		
-		return true;
 	}
 	
-	return false;
+	return ret_value;
 }
 
 /*************		REPOSITORIES DATA		*****************/
@@ -923,9 +958,11 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 	
 	size_t pos;
     for(pos = 0; mangaDB[pos].team != NULL; pos++)
-    {
-        free(mangaDB[pos].chapitres);
-		freeTomeList(mangaDB[pos].tomes, true);
+	{
+		free(mangaDB[pos].chapitresFull);
+		free(mangaDB[pos].chapitresInstalled);
+		freeTomeList(mangaDB[pos].tomesFull, true);
+		freeTomeList(mangaDB[pos].tomesInstalled, true);
     }
     free(mangaDB);
 }

@@ -79,9 +79,11 @@ typedef struct tome_metadata
 typedef struct dataMangas
 {
 	//Pointeurs, un bloc chacun (64b)
-    TEAMS_DATA *team;
-    int *chapitres;
-    META_TOME *tomes;
+	TEAMS_DATA *team;
+	int *chapitresFull;
+	int *chapitresInstalled;
+	META_TOME *tomesFull;
+	META_TOME *tomesInstalled;
 
 	//Un bloc de 64b complet
 	uint16_t status;
@@ -100,7 +102,9 @@ typedef struct dataMangas
 	
 	//Un bloc de 64b complet chacun
 	size_t nombreChapitre;
-    size_t nombreTomes;
+	size_t nombreChapitreInstalled;
+	size_t nombreTomes;
+	size_t nombreTomesInstalled;
 	
 	//Padding, 50 + 10 o, 4 o libres
 	char mangaName[LONGUEUR_NOM_MANGA_MAX];

@@ -202,8 +202,10 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	}
 	
 	//On met des defaults
-	output->chapitres = NULL;
-	output->tomes = NULL;
+	output->chapitresFull = NULL;
+	output->chapitresInstalled = NULL;
+	output->tomesFull = NULL;
+	output->tomesInstalled = NULL;
 	output->favoris = 0;
 	output->contentDownloadable = 0;
 	
@@ -326,13 +328,13 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				}
 				else
 				{
-					newData[posNew].chapitres = malloc((oldData[posOld].nombreChapitre + 1) * sizeof(int));
+					newData[posNew].chapitresFull = malloc((oldData[posOld].nombreChapitre + 1) * sizeof(int));
 					
-					if(newData[posNew].chapitres != NULL)
+					if(newData[posNew].chapitresFull != NULL)
 					{
-						memcpy(newData[posNew].chapitres, oldData[posOld].chapitres, oldData[posOld].nombreChapitre * sizeof(int));
+						memcpy(newData[posNew].chapitresFull, oldData[posOld].chapitresFull, oldData[posOld].nombreChapitre * sizeof(int));
 						newData[posNew].nombreChapitre = oldData[posOld].nombreChapitre;
-						newData[posNew].chapitres[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+						newData[posNew].chapitresFull[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCTURE_CHAPITRE;
 					}
 					
 					newChapters = false;
@@ -341,9 +343,9 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				if(newData[posNew].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
 					refreshTomeList(&newData[posNew]);
 				else
-					newData[posNew].tomes = NULL;
+					newData[posNew].tomesFull = NULL;
 				
-				if(newChapters || newData[posNew].tomes != NULL)
+				if(newChapters || newData[posNew].tomesFull != NULL)
 				{
 					newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
 				}
@@ -354,8 +356,8 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 				
 				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
 				
-				free(newData[posNew].chapitres);	//updateCache en fait une copie
-				freeTomeList(newData[posNew].tomes, true);
+				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
+				freeTomeList(newData[posNew].tomesFull, true);
 			}
 			
 			posOld++;
@@ -414,18 +416,32 @@ MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
 {
 	MANGAS_DATA newData = data;
 	
-	if(data.chapitres != NULL)
+	if(data.chapitresFull != NULL)
 	{
-		newData.chapitres = malloc(data.nombreChapitre * sizeof(int));
-		if(newData.chapitres != NULL)
-			memcpy(newData.chapitres, data.chapitres, data.nombreChapitre * sizeof(int));
+		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(int));
+		if(newData.chapitresFull != NULL)
+			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(int));
 	}
-
-	if(data.tomes != NULL)
+	
+	if(data.chapitresInstalled != NULL)
 	{
-		newData.tomes = malloc(data.nombreTomes * sizeof(META_TOME));
-		if(newData.tomes != NULL)
-			copyTomeList(data.tomes, data.nombreTomes, newData.tomes);
+		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(int));
+		if(newData.chapitresInstalled != NULL)
+			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(int));
+	}
+	
+	if(data.tomesFull != NULL)
+	{
+		newData.tomesFull = malloc(data.nombreTomes * sizeof(META_TOME));
+		if(newData.tomesFull != NULL)
+			copyTomeList(data.tomesFull, data.nombreTomes, newData.tomesFull);
+	}
+	
+	if(data.tomesInstalled != NULL)
+	{
+		newData.tomesInstalled = malloc(data.nombreTomesInstalled * sizeof(META_TOME));
+		if(newData.tomesInstalled != NULL)
+			copyTomeList(data.tomesInstalled, data.nombreTomesInstalled, newData.tomesInstalled);
 	}
 	
 	return newData;

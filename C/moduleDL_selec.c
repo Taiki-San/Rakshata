@@ -17,114 +17,6 @@
 #warning "Need to get replaced"
 #endif
 
-/*extern int curPage; //Too lazy to use an argument
-int mainChoixDL()
-{
-    bool autoSelect = false;
-    int continuer = PALIER_DEFAULT, mangaChoisis = 0, chapitreChoisis = -1, nombreChapitre = 0, supprUsedInChapitre = 0, pageManga = 1;
-    int pageChapitre = 1, previousMangaSelected = VALEUR_FIN_STRUCTURE_CHAPITRE;
-
-    mkdirR("manga");
-
-    MUTEX_LOCK(mutex);
-    if(NETWORK_ACCESS != CONNEXION_DOWN)
-    {
-        MUTEX_UNLOCK(mutex);
-        updateDatabase(false);
-        MANGAS_DATA* mangaDB = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXSELMDL, NULL);
-        MDL_SELEC_CACHE * cache = NULL;
-        MDLSetCacheStruct(&cache);
-
-		//C/C du choix de manga pour le lecteur.
-        while((continuer > PALIER_MENU && continuer < 1) && (continuer != PALIER_CHAPTER || supprUsedInChapitre))
-        {
-            supprUsedInChapitre = 0;
-
-			//Appel des selectionneurs
-            curPage = pageManga;
-            mangaChoisis = controleurManga(mangaDB, CONTEXTE_DL, nombreChapitre, &autoSelect);
-            pageManga = curPage;
-
-            if(mangaChoisis == ENGINE_RETVALUE_DL_START) //Télécharger
-                continuer = PALIER_CHAPTER;
-            else if(mangaChoisis == ENGINE_RETVALUE_DL_CANCEL) //Annuler
-            {
-                if(nombreChapitre > 0)
-                {
-                    continuer = -1;
-                    nombreChapitre = 0;
-                    remove(INSTALL_DATABASE);
-                }
-                else
-                    continuer = PALIER_CHAPTER;
-            }
-            else if(mangaChoisis < PALIER_CHAPTER)
-                continuer = mangaChoisis;
-            else if(mangaChoisis == PALIER_CHAPTER)
-                continuer = PALIER_MENU;
-            else if(mangaChoisis > PALIER_DEFAULT)
-            {
-                bool isTome;
-                chapitreChoisis = PALIER_DEFAULT;
-                continuer = PALIER_DEFAULT;
-                if(previousMangaSelected == VALEUR_FIN_STRUCTURE_CHAPITRE || mangaChoisis != previousMangaSelected)
-                {
-                    pageChapitre = 1;
-                    previousMangaSelected = mangaChoisis;
-                }
-
-                while(chapitreChoisis > PALIER_CHAPTER && continuer == PALIER_DEFAULT)
-                {
-					updateIfRequired(&mangaDB[mangaChoisis], RDB_CTXSELMDL);
-                    if(autoSelect)
-                    {
-                        chapitreChoisis = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                        autoSelect = isTome = false;
-                        checkChapitreValable(&mangaDB[mangaChoisis], NULL);
-                    }
-                    else
-                    {
-                        curPage = pageChapitre;
-                        chapitreChoisis = controleurChapTome(&mangaDB[mangaChoisis], &isTome, CONTEXTE_DL);
-                        pageChapitre = curPage;
-                    }
-
-                    if (chapitreChoisis <= PALIER_CHAPTER)
-                    {
-                        continuer = chapitreChoisis;
-                        if(chapitreChoisis == PALIER_CHAPTER)
-                            supprUsedInChapitre = 1;
-                    }
-
-                    else
-                    {
-                        nombreChapitre = nombreChapitre + ecritureDansImport(&mangaDB[mangaChoisis], isTome, chapitreChoisis);
-                        if(!checkIfNonCachedStuffs(getStructCacheManga(cache, &mangaDB[mangaChoisis]), isTome))
-                            chapitreChoisis = PALIER_CHAPTER;
-                    }
-                }
-            }
-        }
-
-        if(continuer == PALIER_CHAPTER && mangaChoisis == ENGINE_RETVALUE_DL_START && nombreChapitre)
-        {
-			//#warning "Need to get linked to launcher!
-        }
-        else
-            remove(INSTALL_DATABASE);
-
-        MDLFlushCachedCache();
-        freeMDLSelecCache(cache);
-        freeMangaData(mangaDB);
-    }
-    else
-    {
-        MUTEX_UNLOCK(mutex);
-        continuer = erreurReseau();
-    }
-    return continuer;
-}*/
-
 /*Permet d'envoyer la variable de cache au coeur du système sans ajouter trop d'arguments*/
 bool isCacheStrucCached = false;
 MDL_SELEC_CACHE ** activeCache;
@@ -255,6 +147,7 @@ MDL_SELEC_CACHE_MANGA * getStructCacheManga(MDL_SELEC_CACHE * cache, MANGAS_DATA
     return internalCache;
 }
 
+//Unused in the Objective-C code
 bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
 {
     if(cacheManga == NULL)
@@ -266,20 +159,20 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
     int curPos, curElem, posCache = 0, length;
     MANGAS_DATA mangaDB = *cacheManga->manga;
 
-    if(isTome)  //Si iSTome && !allTomeCached, il y a des tomes valides
+    if(isTome)  //Si isTome && !allTomeCached, il y a des tomes valides
     {
         if(cacheManga->tome == NULL)    //Si pas de cache, c'est réglé
             return true;
 
-        length = cacheManga->tome[0];       //On stock la longueure pour évite de déréférencer le pointeur à chaque fois
+        length = cacheManga->tome[0];       //On stock la longueur pour évite de déréférencer le pointeur à chaque fois
         for(curPos = 0; curPos < mangaDB.nombreTomes; curPos++)
         {
-            curElem = mangaDB.tomes[curPos].ID;
+            curElem = mangaDB.tomesFull[curPos].ID;
 
             for(; posCache < length && cacheManga->tome[posCache+1] < curElem; posCache++);
             if(posCache < length && cacheManga->tome[posCache+1] == curElem)  //Si dans le cache
                 continue;
-            else if(!checkTomeReadable(mangaDB, mangaDB.tomes[curPos].ID))
+            else if(!checkTomeReadable(mangaDB, mangaDB.tomesFull[curPos].ID))
                 break;
         }
         return (curPos == mangaDB.nombreTomes);
@@ -292,12 +185,12 @@ bool checkIfNonCachedStuffs(MDL_SELEC_CACHE_MANGA * cacheManga, bool isTome)
         length = cacheManga->chapitre[0];       //On stock la longueure pour évite de déréférencer le pointeur à chaque fois
         for(curPos = 0; curPos < mangaDB.nombreChapitre; curPos++)
         {
-            curElem = mangaDB.chapitres[curPos];
+            curElem = mangaDB.chapitresFull[curPos];
 
             for(; posCache < length && cacheManga->chapitre[posCache+1] < curElem; posCache++);
             if(posCache < length && cacheManga->chapitre[posCache+1] == curElem)  //Si dans le cache
                 continue;
-            else if(!checkChapterReadable(mangaDB, mangaDB.chapitres[curPos]))
+            else if(!checkChapterReadable(mangaDB, mangaDB.chapitresFull[curPos]))
                 break;
         }
         return (curPos != mangaDB.nombreChapitre);

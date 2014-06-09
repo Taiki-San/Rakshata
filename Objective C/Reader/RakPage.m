@@ -697,7 +697,9 @@
 		while (cacheBeingBuilt);
 		internalDeleteCT(project, isTome, currentElem);
 		
-		if(posElemInStructure != isTome ? project.nombreTomes : project.nombreChapitre)
+		getUpdatedCTList(&project, isTome);
+		
+		if(posElemInStructure != isTome ? project.nombreTomesInstalled : project.nombreChapitreInstalled)
 			[self nextChapter];
 		else if(posElemInStructure > 0)
 			[self prevChapter];
@@ -828,17 +830,17 @@
 				if(!isTome)
 				{
 					nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
-					for(; localProject.chapitres[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
+					for(; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitres[nbElemToGrab] : localProject.chapitres[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
+						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitresFull[nbElemToGrab] : localProject.chapitresFull[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
 					}
 				}
 				else
 				{
 					nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
-					for(; localProject.tomes[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
+					for(; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.tomes[nbElemToGrab].ID : localProject.tomes[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
+						[tabMDL proxyAddElement:localProject : isTome :localProject.tomesFull[nbElemToGrab].ID : localProject.tomesFull[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
 					}
 				}
 			}

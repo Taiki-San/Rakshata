@@ -50,20 +50,20 @@ void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size)
         }
     }
     if(ligneCourante == nombreMaxElems) //Aucun element invalide
-        mangaDB->tomes = lines;
+        mangaDB->tomesFull = lines;
     else
     {
-        mangaDB->tomes = malloc((ligneCourante+1)*sizeof(META_TOME));
-        memcpy(mangaDB->tomes, lines, ligneCourante*sizeof(META_TOME));
+        mangaDB->tomesFull = malloc((ligneCourante+1)*sizeof(META_TOME));
+        memcpy(mangaDB->tomesFull, lines, ligneCourante*sizeof(META_TOME));
         free(lines);
     }
 
-	memset(&mangaDB->tomes[ligneCourante], 0, sizeof(META_TOME));
-    qsort(mangaDB->tomes, ligneCourante, sizeof(META_TOME), sortTomes);
+	memset(&mangaDB->tomesFull[ligneCourante], 0, sizeof(META_TOME));
+    qsort(mangaDB->tomesFull, ligneCourante, sizeof(META_TOME), sortTomes);
     mangaDB->nombreTomes = ligneCourante;
 
-    mangaDB->tomes[ligneCourante].name[0] = 0;
-    mangaDB->tomes[ligneCourante].ID = VALEUR_FIN_STRUCTURE_CHAPITRE; //Un flag final, au cas où
+    mangaDB->tomesFull[ligneCourante].name[0] = 0;
+    mangaDB->tomesFull[ligneCourante].ID = VALEUR_FIN_STRUCTURE_CHAPITRE; //Un flag final, au cas où
 }
 
 void escapeTomeLineElement(META_TOME *ligne)
@@ -87,17 +87,15 @@ void escapeTomeLineElement(META_TOME *ligne)
 
 void refreshTomeList(MANGAS_DATA *mangaDB)
 {
-    if(mangaDB->tomes != NULL)
+    if(mangaDB->tomesFull != NULL || mangaDB->tomesInstalled != NULL)
 	{
-		free(mangaDB->tomes);
-		mangaDB->tomes = NULL;
+		free(mangaDB->tomesFull);				mangaDB->tomesFull = NULL;
+		free(mangaDB->tomesInstalled);			mangaDB->tomesInstalled = NULL;
 	}
-	
-	mangaDB->nombreTomes = 0;
+	mangaDB->nombreTomes = mangaDB->nombreTomesInstalled = 0;
 
-    /*On commence par énumérer les chapitres spéciaux*/
-    char temp[TAILLE_BUFFER];
-    snprintf(temp, TAILLE_BUFFER, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, TOME_INDEX);
+	char temp[TAILLE_BUFFER];
+    snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, TOME_INDEX);
     FILE* tomeDB = fopen(temp, "r");
     if(tomeDB != NULL)
     {
@@ -108,33 +106,34 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
 
 		buffer = calloc(1, size+1);
 		if(buffer == NULL)
-			memoryError(size+1);
-		else
 		{
-			rewind(tomeDB);
-			fread(buffer, size, 1, tomeDB);
+			memoryError(size+1);
+			fclose(tomeDB);
+			return;
 		}
+
+		rewind(tomeDB);
+		fread(buffer, size, 1, tomeDB);
 		fclose(tomeDB);
-        if(buffer != NULL)
-        {
-            tomeDBParser(mangaDB, buffer, size);
-            free(buffer);
-        }
+		
+		tomeDBParser(mangaDB, buffer, size);
+		free(buffer);
     }
 }
 
+//Require the ID of the element in tomeFull
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
-	if(mangaDB.tomes == NULL || ID >= mangaDB.nombreTomes ||  mangaDB.tomes[ID].details == NULL)
+	if(mangaDB.tomesFull == NULL || ID >= mangaDB.nombreTomes ||  mangaDB.tomesFull[ID].details == NULL)
 		return false;
 	
 	uint pos = 0, nbTomes = mangaDB.nombreTomes, posDetails;
-	for(; pos < nbTomes && mangaDB.tomes[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomes[pos].ID != ID; pos++);
+	for(; pos < nbTomes && mangaDB.tomesFull[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomesFull[pos].ID != ID; pos++);
 	
-	if(mangaDB.tomes[pos].ID != ID)
+	if(mangaDB.tomesFull[pos].ID != ID)
 		return false;
 	
-	CONTENT_TOME * cache = mangaDB.tomes[pos].details;
+	CONTENT_TOME * cache = mangaDB.tomesFull[pos].details;
 	char basePath[2*LONGUEUR_NOM_MANGA_MAX + 50], intermediaryDirectory[300], fullPath[2*LONGUEUR_NOM_MANGA_MAX + 350];
 	
 	if (cache == NULL)
@@ -270,15 +269,19 @@ bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output)
 
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 {
-	if(mangaDB->tomes == NULL)
+	if(mangaDB->tomesInstalled != NULL)
+	{
+		free(mangaDB->tomesInstalled);	mangaDB->tomesInstalled = NULL;
+	}
+	
+	if(mangaDB->tomesFull == NULL)
 		return;
 	
-    uint nbElem = 0, deletedElems = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
-    FILE* config = NULL;
-
     if(dernierLu != NULL)
     {
+		char temp[LONGUEUR_NOM_MANGA_MAX*2+100];
+		FILE* config;
+		
 		snprintf(temp, sizeof(temp), "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILETOME);
 		if((config = fopen(temp, "r")) != NULL)
 		{
@@ -287,27 +290,36 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 			fclose(config);
 		}
     }
+	
+	mangaDB->tomesInstalled = malloc((mangaDB->nombreTomes + 1) * sizeof(META_TOME));
+	if(mangaDB->tomesInstalled == NULL)
+		return;
 
-    for(nbElem = 0; nbElem < mangaDB->nombreTomes && mangaDB->tomes[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
+	copyTomeList(mangaDB->tomesFull, mangaDB->nombreTomes, mangaDB->tomesInstalled);
+	mangaDB->nombreTomesInstalled = mangaDB->nombreTomes;
+	
+	size_t deletedItems = 0;
+    for(uint nbElem = 0; nbElem < mangaDB->nombreTomes && mangaDB->tomesFull[nbElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
-        if(!checkTomeReadable(*mangaDB, mangaDB->tomes[nbElem].ID))
+        if(!checkTomeReadable(*mangaDB, mangaDB->tomesFull[nbElem].ID))
         {
-            if(mangaDB->tomes[nbElem].details != NULL)
-				free(mangaDB->tomes[nbElem].details);
+            if(mangaDB->tomesInstalled[nbElem].details != NULL)
+				free(mangaDB->tomesInstalled[nbElem].details);
 			
-			memcpy(&(mangaDB->tomes[nbElem]), &(mangaDB->tomes[nbElem+1]), (mangaDB->nombreTomes + 1 - nbElem) * sizeof(META_TOME));
-			deletedElems++;
+			memcpy(&(mangaDB->tomesInstalled[nbElem-deletedItems]), &(mangaDB->tomesInstalled[nbElem-deletedItems+1]), (mangaDB->nombreTomesInstalled + 1 - nbElem) * sizeof(META_TOME));
+			mangaDB->nombreTomesInstalled--;
+			deletedItems++;
         }
     }
-	
-	mangaDB->nombreTomes -= deletedElems;
 }
 
-void getUpdatedTomeList(MANGAS_DATA *mangaDB)
+void getUpdatedTomeList(MANGAS_DATA *mangaDB, bool getInstalled)
 {
     refreshTomeList(mangaDB);
-    checkTomeValable(mangaDB, NULL);
+	
+	if(getInstalled)
+		checkTomeValable(mangaDB, NULL);
 }
 
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
@@ -408,7 +420,7 @@ void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinke
 	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50, position = tomeDelete, limit;
     char dir[length];
 	
-	if(!mangaDB.nombreTomes)	//Si pas de tome dispo, cette fonction a aucun intérêt
+	if(mangaDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
 	{
 #ifdef DEV_VERSION
 		logR("Incoherency when deleting volumes");
@@ -416,29 +428,29 @@ void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinke
 		return;
 	}
 	
-	if(mangaDB.tomes[tomeDelete].ID != tomeDelete)
+	if(tomeDelete >= mangaDB.nombreTomesInstalled || mangaDB.tomesInstalled[tomeDelete].ID != tomeDelete)
 	{
-		if(tomeDelete >= mangaDB.nombreTomes)
+		if(tomeDelete >= mangaDB.nombreTomesInstalled)
 		{
-			position = tomeDelete = mangaDB.nombreTomes - 1;
+			position = tomeDelete = mangaDB.nombreTomesInstalled - 1;
 			limit = 0;
 		}
-		else if(mangaDB.tomes[tomeDelete].ID > tomeDelete)
+		else if(mangaDB.tomesInstalled[tomeDelete].ID > tomeDelete)
 			limit = 0;
 		else
-			limit = mangaDB.nombreTomes;
+			limit = mangaDB.nombreTomesInstalled;
 		
 		if(limit == 0)
-			for(position++; position > 0 && mangaDB.tomes[--position].ID > tomeDelete;);	//Gérer l'unsigned
+			for(position++; position > 0 && mangaDB.tomesInstalled[--position].ID > tomeDelete;);	//Gérer l'unsigned
 		else
-			for (; position < limit && mangaDB.tomes[position].ID < tomeDelete; position++);
+			for (; position < limit && mangaDB.tomesInstalled[position].ID < tomeDelete; position++);
 	}
 	
-	if(mangaDB.tomes[position].ID == tomeDelete)
+	if(mangaDB.tomesInstalled[position].ID == tomeDelete)
 	{
 		int curID;
 		char basePath[2*LONGUEUR_NOM_MANGA_MAX + 50], dirToChap[2*LONGUEUR_NOM_MANGA_MAX + 100];
-		CONTENT_TOME * details = mangaDB.tomes[position].details;
+		CONTENT_TOME * details = mangaDB.tomesInstalled[position].details;
 		
 		snprintf(basePath, sizeof(basePath), "manga/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName);
 		

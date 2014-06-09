@@ -47,25 +47,28 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 	updateProjectsFromTeam(fullData, posStart, posEnd, true);
 	syncCacheToDisk(SYNC_PROJECTS);
 	
-	mangaDB->chapitres = NULL;		mangaDB->tomes = NULL;
+	free(mangaDB->chapitresFull);		mangaDB->chapitresFull = NULL;
+	free(mangaDB->tomesFull);			mangaDB->tomesFull = NULL;
+	free(mangaDB->chapitresInstalled);	mangaDB->chapitresInstalled = NULL;
+	free(mangaDB->tomesInstalled);		mangaDB->tomesInstalled = NULL;
 	
     if(!updateIfRequired(mangaDB, RDB_CTXLECTEUR))
 	{
-		refreshChaptersList(mangaDB);
-		refreshTomeList(mangaDB);
+		getUpdatedChapterList(mangaDB, true);
+		getUpdatedTomeList(mangaDB, true);
 	}
 
     uint firstNewElem;
     
 	if(isTome)
 	{
-		for(firstNewElem = mangaDB->nombreTomes-1; firstNewElem > 0 && mangaDB->tomes[firstNewElem].ID > CT; firstNewElem--);
+		for(firstNewElem = mangaDB->nombreTomes-1; firstNewElem > 0 && mangaDB->tomesFull[firstNewElem].ID > CT; firstNewElem--);
 		firstNewElem = mangaDB->nombreTomes - 1 - firstNewElem;
 	}
 
     else
 	{
-        for(firstNewElem = mangaDB->nombreChapitre-1; firstNewElem > 0 && mangaDB->chapitres[firstNewElem] > CT; firstNewElem--);
+        for(firstNewElem = mangaDB->nombreChapitre-1; firstNewElem > 0 && mangaDB->chapitresFull[firstNewElem] > CT; firstNewElem--);
 		firstNewElem = mangaDB->nombreChapitre - 1 - firstNewElem;
 	}
     
@@ -81,12 +84,12 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 	    if(!isTome)
         {
 			firstElem = mangaDB.nombreChapitre - firstElem;
-            for(; mangaDB.chapitres[firstElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitres[firstElem++]));
+            for(; mangaDB.chapitresFull[firstElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitresFull[firstElem++]));
         }
         else
         {
 			firstElem = mangaDB.nombreTomes - firstElem;
-            for(; mangaDB.tomes[firstElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomes[firstElem++].ID));
+            for(; mangaDB.tomesFull[firstElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomesFull[firstElem++].ID));
         }
 		fclose(updateControler);
 	}

@@ -25,14 +25,14 @@
 		//We check we have valid data
 		isTome = isTomeRequest;
 		
-		if(isTome && project.tomes != NULL)
+		if(isTome && project.tomesInstalled != NULL)
 		{
-			amountData = project.nombreTomes;
+			amountData = project.nombreTomesInstalled;
 			data = malloc(amountData * sizeof(META_TOME));
 			
 			if(data != NULL)
 			{
-				memcpy(data, project.tomes, amountData * sizeof(META_TOME));
+				memcpy(data, project.tomesInstalled, amountData * sizeof(META_TOME));
 				if(elemSelected != -1)
 				{
 					for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
@@ -42,14 +42,14 @@
 				}
 			}
 		}
-		else if(!isTome && project.chapitres != NULL)
+		else if(!isTome && project.chapitresInstalled != NULL)
 		{
-			amountData = project.nombreChapitre;
+			amountData = project.nombreChapitreInstalled;
 			data = malloc(amountData * sizeof(int));
 			
 			if(data != NULL)
 			{
-				memcpy(data, project.chapitres, amountData * sizeof(int));
+				memcpy(data, project.chapitresInstalled, amountData * sizeof(int));
 				if(elemSelected != -1)
 				{
 					for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);

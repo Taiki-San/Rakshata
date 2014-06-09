@@ -436,9 +436,9 @@
 	int ID;
 	
 	if(isTome && index < data.nombreTomes)
-		ID = data.tomes[index].ID;
+		ID = data.tomesInstalled[index].ID;
 	else if(!isTome && index < data.nombreChapitre)
-		ID = data.chapitres[index];
+		ID = data.chapitresInstalled[index];
 	else
 		return;
 	
@@ -464,11 +464,11 @@
 	if((checkIfRequired && data.cacheDBID != ID) || (!checkIfRequired && !updateIfRequired(&data, RDB_CTXCT)))
 		return;
 
-	getUpdatedChapterList(&data);
-	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : NO];
+	getUpdatedChapterList(&data, true);
+	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitresInstalled : NO];
 		
-	getUpdatedTomeList(&data);
-	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : NO];
+	getUpdatedTomeList(&data, true);
+	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomesInstalled : NO];
 }
 
 - (void) updateContext : (MANGAS_DATA) newData
@@ -480,7 +480,11 @@
 	else
 		data = getCopyOfProjectData(newData);
 	
-	updateIfRequired(&data, RDB_CTXCT);
+	if(!updateIfRequired(&data, RDB_CTXCT))
+	{
+		getUpdatedChapterList(&data, true);
+		getUpdatedTomeList(&data, true);
+	}
 	
 	//No data available
 	if(data.nombreChapitre == 0 && data.nombreTomes == 0)
@@ -492,34 +496,30 @@
 	}
 	
 	//Update views, create them if required
-	if(data.chapitres != NULL)
+	if(data.chapitresInstalled != NULL)
 	{
-		checkChapitreValable(&data, NULL);
-		
 		if(tableViewControllerChapter == nil)
 		{
 			tableViewControllerChapter =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain] retain];	//Two retains because we, as a subview, will get released at the end of the refresh
 			[tableViewControllerChapter setSuperView:self];
 		}
 		else
-			[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitres : YES];
+			[tableViewControllerChapter reloadData : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
 		
 		[buttons setEnabled:YES forSegment:0];
 	}
 	else
 		[buttons setEnabled:NO forSegment:0];
 
-	if(data.tomes != NULL)
+	if(data.tomesInstalled != NULL)
 	{
-		checkTomeValable(&data, NULL);
-		
 		if(tableViewControllerVolume == nil)
 		{
 			tableViewControllerVolume =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain] retain];
 			[tableViewControllerVolume setSuperView:self];
 		}
 		else
-			[tableViewControllerVolume reloadData : data.nombreTomes : data.tomes : YES];
+			[tableViewControllerVolume reloadData : data.nombreTomesInstalled : data.tomesInstalled : YES];
 		
 		[buttons setEnabled:YES forSegment:1];
 	}
@@ -532,13 +532,13 @@
 	[tableViewControllerVolume setHidden:!isTome];
 	
 	//Update focus
-	if(isTome && data.tomes == NULL)
+	if(isTome && data.tomesInstalled == NULL)
 	{
 		[tableViewControllerChapter setHidden:NO];
 		[tableViewControllerVolume setHidden:YES];
 		[buttons setSelectedSegment:0];
 	}
-	else if(!isTome && data.chapitres == NULL)
+	else if(!isTome && data.chapitresInstalled == NULL)
 	{
 		[tableViewControllerVolume setHidden:NO];
 		if(![tableViewControllerChapter isHidden])
