@@ -33,7 +33,7 @@
 - (void) initContent : (NSString *) state
 {
 	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
-	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, [self lastFrame].size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT) : self : @selector(gogoWindow)];
+	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, RBB_TOP_BORDURE) : self : @selector(gogoWindow)];
 	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
