@@ -36,11 +36,12 @@
 
 - (uint) getNbElem : (BOOL) considerDiscarded;
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
-- (void) discardElement : (uint) element;
 
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
 - (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch;
+- (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
+- (void) discardElement : (uint) element;
 
 - (void) refreshCT : (uint) ID;
 

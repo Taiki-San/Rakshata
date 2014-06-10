@@ -801,7 +801,59 @@
 	if(project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
 		return;
 	
-	bool onlyOneElementAvailable = nbElemToGrab == 1;
+	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
+	bool nothingAvailable = true, onlyOneElementAvailable = false;
+	MDL * tabMDL = sharedTabMDL;
+	
+	if(tabMDL == nil)
+		return;
+	
+	if(!isTome)
+	{
+		uint nbElemToGrab2 = localProject.nombreChapitre - nbElemToGrab;
+		for(; localProject.chapitresFull[nbElemToGrab2] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab2++)
+		{
+			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab2]])
+			{
+				if(nothingAvailable)
+				{
+					nothingAvailable = false;
+					onlyOneElementAvailable = true;
+				}
+				else
+				{
+					onlyOneElementAvailable = false;
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		uint nbElemToGrab2 = localProject.nombreTomes - nbElemToGrab;
+		for(; localProject.tomesFull[nbElemToGrab2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab2++)
+		{
+			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab2]])
+			{
+				if(nothingAvailable)
+				{
+					nothingAvailable = false;
+					onlyOneElementAvailable = true;
+				}
+				else
+				{
+					onlyOneElementAvailable = false;
+					break;
+				}
+			}
+		}
+	}
+	
+	//We got the data, now, craft the alert
+	
+	if(nothingAvailable)
+		return;
+	
 	char * element = isTome ? "tome" : "chapitre", * particule = onlyOneElementAvailable ? "" : "s";
 	
 	NSAlert * alert = [[[NSAlert alloc] init] retain];
@@ -817,32 +869,20 @@
 	{
 		//We sent the stuffs to the MDL
 		
-		NSView * reader = self;
-		
-		while (reader != nil && [reader class] != [Reader class])
-			reader = reader.superview;
-		
-		if(reader != nil)
+		if(!isTome)
 		{
-			MDL * tabMDL = [(Reader *) reader getMDL : NO];
-			if(tabMDL != nil)
+			nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
+			for(; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 			{
-				if(!isTome)
-				{
-					nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
-					for(; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
-					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.chapitresFull[nbElemToGrab] : localProject.chapitresFull[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
-					}
-				}
-				else
-				{
-					nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
-					for(; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
-					{
-						[tabMDL proxyAddElement:localProject : isTome :localProject.tomesFull[nbElemToGrab].ID : localProject.tomesFull[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
-					}
-				}
+				[tabMDL proxyAddElement:localProject : isTome :localProject.chapitresFull[nbElemToGrab] : localProject.chapitresFull[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
+			}
+		}
+		else
+		{
+			nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
+			for(; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
+			{
+				[tabMDL proxyAddElement:localProject : isTome :localProject.tomesFull[nbElemToGrab].ID : localProject.tomesFull[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
 			}
 		}
 	}

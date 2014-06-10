@@ -10,6 +10,8 @@
  **                                                                                          **
  *********************************************************************************************/
 
+#include "db.h"
+
 volatile bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
@@ -183,7 +185,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         if(error)
             *(input.currentState) = MDL_CODE_ERROR_INSTALL;
         else
-            *(input.currentState) = MDL_CODE_INSTALL_OVER;
+		{
+			*(input.currentState) = MDL_CODE_INSTALL_OVER;
+			addRecentEntry(*(input.todoList->datas), true);
+		}
     }
     else
 	{

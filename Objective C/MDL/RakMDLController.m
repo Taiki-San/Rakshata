@@ -59,11 +59,10 @@
 
 - (NSString *) serializeData
 {
-	for(int i = 0; i < nbElem; i++) //Si on a déjà trouvé les deux, pas la peine de continuer
+	for(int pos = 0; pos < nbElem; pos++)
     {
-        if (*status[i] <= MDL_CODE_DEFAULT)
+		if (*status[pos] <= MDL_CODE_DEFAULT)	//Si le moindre élément n'est pas dans la pipeline, on serialise
 		{
-			/*Si interrompu, on enregistre ce qui reste à faire*/
 			char * data = MDLParseFile(*todoList, status, nbElem);
 			if(data == NULL)
 				return nil;
@@ -123,79 +122,79 @@
 		//We need to refresh
 	}
 	
-	if(nbElem && MDLisThereCollision(data, isTome, element, *todoList, *status, nbElem))
-		return;
-	
-	int newChunkSize;
-	DATA_LOADED ** newElement = MDLCreateElement(&cache[pos], isTome, element, &newChunkSize);
-	
-	if(newElement == NULL || newChunkSize == 0)
+	if(!nbElem || !MDLisThereCollision(data, isTome, element, *todoList, *status, nbElem))
 	{
-		free(newElement);
-		return;
-	}
-
-	uint newSize = nbElem + newChunkSize;
-	int8_t **newStatus = realloc(status, newSize * sizeof(int8_t*)), **newStatusCache = realloc(statusCache, newSize * sizeof(int8_t*));
-	uint *newIDToPosition = realloc(IDToPosition, (discardedCount + newChunkSize) * sizeof(uint));
-
-	//Even if one of them failed, we need to update the pointer of the other
-	if(newStatus == NULL || newStatusCache == NULL || newIDToPosition == NULL)
-	{
-		if(newStatus != NULL)
-			status = newStatus;
+		int newChunkSize;
+		DATA_LOADED ** newElement = MDLCreateElement(&cache[pos], isTome, element, &newChunkSize);
 		
-		if(newStatusCache != NULL)
-			statusCache = newStatusCache;
-		
-		if(newIDToPosition != NULL)
-			IDToPosition = newIDToPosition;
-		
-		return;
-	}
-	
-	status = newStatus;
-	statusCache = newStatusCache;
-	IDToPosition = newIDToPosition;
-	
-	//Increase the size of the status buffer
-	for (uint maxSize = nbElem + newChunkSize; nbElem < maxSize; nbElem++)
-	{
-		status[nbElem] = malloc(sizeof(int8_t));
-		statusCache[nbElem] = malloc(sizeof(int8_t));
-		
-		if(status[nbElem] == NULL || statusCache[nbElem] == NULL)
+		if(newElement == NULL || newChunkSize == 0)
 		{
-			uint i = nbElem - (maxSize - newChunkSize) + 1;
-			nbElem = maxSize = newChunkSize;
-			while (i > 0)
-			{
-				free(status[nbElem + --i]);
-				free(statusCache[nbElem + i]);
-			}
+			free(newElement);
+			return;
+		}
+		
+		uint newSize = nbElem + newChunkSize;
+		int8_t **newStatus = realloc(status, newSize * sizeof(int8_t*)), **newStatusCache = realloc(statusCache, newSize * sizeof(int8_t*));
+		uint *newIDToPosition = realloc(IDToPosition, (discardedCount + newChunkSize) * sizeof(uint));
+		
+		//Even if one of them failed, we need to update the pointer of the other
+		if(newStatus == NULL || newStatusCache == NULL || newIDToPosition == NULL)
+		{
+			if(newStatus != NULL)
+				status = newStatus;
+			
+			if(newStatusCache != NULL)
+				statusCache = newStatusCache;
+			
+			if(newIDToPosition != NULL)
+				IDToPosition = newIDToPosition;
 			
 			return;
 		}
 		
-		*status[nbElem] = *statusCache[nbElem] = MDL_CODE_DEFAULT;
-		IDToPosition[discardedCount] = discardedCount;	discardedCount++;
-	}
-	
-	int curPos = nbElem - 1;
-	DATA_LOADED ** newTodoList = realloc(*todoList, nbElem * sizeof(DATA_LOADED *));
-	
-	if(newTodoList == NULL)
-	{
-		for (uint limit = nbElem - newChunkSize; limit < nbElem;)
+		status = newStatus;
+		statusCache = newStatusCache;
+		IDToPosition = newIDToPosition;
+		
+		//Increase the size of the status buffer
+		for (uint maxSize = nbElem + newChunkSize; nbElem < maxSize; nbElem++)
 		{
-			free(status[--nbElem]);
-			free(statusCache[nbElem]);
+			status[nbElem] = malloc(sizeof(int8_t));
+			statusCache[nbElem] = malloc(sizeof(int8_t));
+			
+			if(status[nbElem] == NULL || statusCache[nbElem] == NULL)
+			{
+				uint i = nbElem - (maxSize - newChunkSize) + 1;
+				nbElem = maxSize = newChunkSize;
+				while (i > 0)
+				{
+					free(status[nbElem + --i]);
+					free(statusCache[nbElem + i]);
+				}
+				
+				return;
+			}
+			
+			*status[nbElem] = *statusCache[nbElem] = MDL_CODE_DEFAULT;
+			IDToPosition[discardedCount] = discardedCount;	discardedCount++;
 		}
+		
+		int curPos = nbElem - 1;
+		DATA_LOADED ** newTodoList = realloc(*todoList, nbElem * sizeof(DATA_LOADED *));
+		
+		if(newTodoList == NULL)
+		{
+			for (uint limit = nbElem - newChunkSize; limit < nbElem;)
+			{
+				free(status[--nbElem]);
+				free(statusCache[nbElem]);
+			}
+		}
+		
+		*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, newElement, newChunkSize);
 	}
 	
-	*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, newElement, newChunkSize);
-	
-	if(!partOfBatch)
+	if(!partOfBatch && nbElem)
 	{
 		//Great, the injection is now over... We need to reanimate what needs to be
 		if(!isThreadStillRunning(coreWorker))
@@ -206,6 +205,11 @@
 		//Worker should be at work, now, let's wake the UI up
 		[_tabMDL wakeUp];
 	}
+}
+
+- (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
+{
+	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, *status, nbElem);
 }
 
 - (void) discardElement : (uint) element

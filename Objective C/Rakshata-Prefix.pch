@@ -20,7 +20,6 @@
 
 #include "main.h"
 #include "moduleDL.h"
-#include "interface.h"
 #include "graphics.h"
 #include "constants.h"
 
@@ -46,3 +45,5 @@
 	#import "RakResPath.h"
 
 #endif
+
+#include "interface.h"

@@ -834,7 +834,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
 
 bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem)
 {
-	if(list == NULL || status == NULL)
+	if(list == NULL || status == NULL || !nbElem)
 		return false;
 	else if(element == VALEUR_FIN_STRUCTURE_CHAPITRE)
 		return true;

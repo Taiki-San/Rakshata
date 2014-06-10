@@ -465,17 +465,7 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	NSArray * subviews = [self.superview subviews];
-	if(subviews == nil)
-		return nil;
-	
-	int pos = [subviews indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
-		return [obj isKindOfClass:[MDL class]];
-	}];
-	
-	if(pos != -1)
-		return [subviews objectAtIndex:pos];
-	return nil;
+	return sharedTabMDL;
 }
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame

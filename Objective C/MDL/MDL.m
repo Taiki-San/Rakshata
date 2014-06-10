@@ -73,6 +73,13 @@
 		[controller addElement:data :isTome :newElem :partOfBatch];
 }
 
+- (BOOL) proxyCheckForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
+{
+	if(controller != nil)
+		return [controller checkForCollision:data :isTome :element];
+	return false;
+}
+
 /*Coreview manipulation*/
 
 - (NSRect) getCoreviewFrame : (NSRect) frame

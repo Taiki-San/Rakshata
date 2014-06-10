@@ -40,3 +40,22 @@ void updateRecentSeries()
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakSeriesNeedUpdateContent" object:nil userInfo: @{@"request": [NSNumber numberWithInt:RELOAD_RECENT]}];
 }
+
+/*****************************************
+ **										**
+ **				    MDL					**
+ **										**
+ *****************************************/
+
+bool checkIfElementAlreadyInMDL(MANGAS_DATA data, bool isTome, int element)
+{
+	if(sharedTabMDL == nil)
+		return false;
+	return [(id) sharedTabMDL proxyCheckForCollision:data :isTome :element];
+}
+
+void addElementToMDL(MANGAS_DATA data, bool isTome, int element, bool partOfBatch)
+{
+	if(sharedTabMDL != nil)
+		[(id) sharedTabMDL proxyAddElement:data :isTome :element :partOfBatch];
+}

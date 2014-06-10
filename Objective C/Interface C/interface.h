@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+void * sharedTabMDL;
+
 /*****************************************
  **										**
  **				  ERRORS				**
@@ -51,3 +53,12 @@ void sendToLog(char * string);
  *****************************************/
 
 void updateRecentSeries();
+
+/*****************************************
+ **										**
+ **				    MDL					**
+ **										**
+ *****************************************/
+
+bool checkIfElementAlreadyInMDL(MANGAS_DATA data, bool isTome, int element);
+void addElementToMDL(MANGAS_DATA data, bool isTome, int element, bool partOfBatch);

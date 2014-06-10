@@ -16,6 +16,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 - (void) awakeFromNib
 {
+	sharedTabMDL = NULL;
 	[self validateWindowData:[[self window] frame]];
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
@@ -46,7 +47,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	[tabSerie init:contentView : [context objectAtIndex:0]];
 	[tabCT init:contentView : [context objectAtIndex:1]];
-	[tabMDL init:contentView : [context objectAtIndex:3]];
+	sharedTabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
 	[tabReader init:contentView : [context objectAtIndex:2]];
 	
 	[context release];
