@@ -192,9 +192,14 @@
 
 #pragma mark - Color
 
-- (NSColor *) getFontColor
+- (NSColor *) getFontTopColor
 {
 	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+}
+
+- (NSColor *) getFontClickableColor
+{
+	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
 }
 
 #pragma mark - Loading routines
@@ -571,12 +576,17 @@
 		{
 			rowView = [[RakListDragTextView alloc] init];
 			rowView.identifier = @"StandardLine";
-			[(RakListDragTextView*) rowView setTextColor:[self getFontColor]];
 			
 			if([item isRootItem])
+			{
 				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
+				[(RakListDragTextView*) rowView setTextColor:[self getFontTopColor]];
+			}
 			else
+			{
 				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+				[(RakListDragTextView*) rowView setTextColor:[self getFontClickableColor]];
+			}
 		}
 	}
 	

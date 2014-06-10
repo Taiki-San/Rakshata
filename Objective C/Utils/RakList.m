@@ -194,7 +194,7 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
 }
 
 - (NSColor *) getTextHighlightColor
@@ -436,7 +436,7 @@
 
 - (NSColor *) _dropHighlightColor
 {
-	return [NSColor redColor];
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE];
 }
 
 - (void)setDropRow:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation

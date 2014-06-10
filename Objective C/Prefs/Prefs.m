@@ -88,6 +88,13 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			//output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];	//vert
 			break;
 		}
+			
+		case GET_COLOR_CLICKABLE_TEXT:
+		{
+			output = [NSColor colorWithSRGBRed:227/255.0f green:227/255.0f blue:216/255.0f alpha:1.0];
+			break;
+		}
+			
 		case GET_COLOR_READER_BAR:
 		{
 			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:0.8];

@@ -58,7 +58,8 @@ enum {
 - (void) setFrameOrigin : (NSPoint) newOrigin;
 - (void) resizeAnimation : (NSRect) frame;
 
-- (NSColor *) getFontColor;
+- (NSColor *) getFontTopColor;
+- (NSColor *) getFontClickableColor;
 
 - (void) loadContent;
 - (void) loadRecentFromDB;
