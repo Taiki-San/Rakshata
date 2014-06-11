@@ -169,6 +169,7 @@
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
+		B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6BD7B5A194860A9000A0B73 /* jumpPage.xib */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
@@ -429,6 +430,7 @@
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; };
 		B6B46DB118FB3D7400EB1FE6 /* RakSerieMainList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieMainList.h; path = "Séries/RakSerieMainList.h"; sourceTree = "<group>"; };
 		B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSerieMainList.m; path = "Séries/RakSerieMainList.m"; sourceTree = "<group>"; };
+		B6BD7B5A194860A9000A0B73 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Reader/jumpPage.xib"; sourceTree = "<group>"; };
 		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
 		B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContextRestoration.m; path = Prefs/RakContextRestoration.m; sourceTree = "<group>"; };
 		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -847,6 +849,7 @@
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6002C30189EF15E00466654 /* window.xib */,
+				B6BD7B5A194860A9000A0B73 /* jumpPage.xib */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B66B4627189A7129000354D1 /* C Core */,
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
@@ -1220,6 +1223,7 @@
 				B64A5D4C1941CC0900DA7244 /* theme_1_backback_highlight.png in Resources */,
 				B64A5D691941CC0900DA7244 /* theme_1_first_unavailable@2x.png in Resources */,
 				B64A5D531941CC0900DA7244 /* theme_1_before_focus@2x.png in Resources */,
+				B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */,
 				B64A5D481941CC0900DA7244 /* theme_1_back.png in Resources */,
 				B64A5D641941CC0900DA7244 /* theme_1_first_focus.png in Resources */,
 				B64A5D441941CC0900DA7244 /* theme_1_back_highlight.png in Resources */,

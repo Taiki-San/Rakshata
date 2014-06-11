@@ -10,13 +10,34 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakPageCounter : RakText
+@interface RakPageCounterPopoverController : NSViewController
 {
-	uint currentPage;
-	uint pageMax;
+	IBOutlet NSTextField *mainLabel;
+	IBOutlet NSTextField *textField;
+	IBOutlet NSButton * gotoButton;
+	
+	IBOutlet NSPopover * popover;
+	
+	NSView * _anchor;
+	
+	uint _maxPage;
 }
 
-- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg;
+- (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage;
+
+@end
+
+@interface RakPageCounter : RakText
+{
+	Reader * _target;
+	
+	uint currentPage;
+	uint pageMax;
+	
+	IBOutlet RakPageCounterPopoverController * controller;
+}
+
+- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
 - (void) updateContext;
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;
@@ -25,5 +46,6 @@
 - (NSColor *) getFontColor;
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
+- (void) transmitPageJump : (uint) newPage;
 
 @end

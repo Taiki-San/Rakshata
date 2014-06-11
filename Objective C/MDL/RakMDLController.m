@@ -87,6 +87,11 @@
 	return considerDiscarded ? discardedCount : nbElem;
 }
 
+- (uint) convertRowToPos : (uint) row
+{
+	return (row >= discardedCount) ? -1 : IDToPosition[row];
+}
+
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded
 {
 	if(row >= (considerDiscarded ? discardedCount : nbElem))

@@ -22,7 +22,6 @@
 
 @interface PrefsUI : NSView <NSPopoverDelegate>
 {
-	NSPanel * HUDWindow;
     RakPrefsWindow *viewControllerHUD;
     NSPopover *popover;
 

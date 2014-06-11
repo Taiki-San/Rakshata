@@ -48,7 +48,7 @@
 			initializationStage = INIT_OVER;
 			
 			uint8_t i = 0;
-			for(; i < 2 && ![rootItems[i+i] isMainList]; i++)
+			for(; i < 2 && ![rootItems[i] isMainList]; i++)
 			{
 				if(rootItems[i] != nil && !stateSubLists[i])
 					[content collapseItem:rootItems[i]];

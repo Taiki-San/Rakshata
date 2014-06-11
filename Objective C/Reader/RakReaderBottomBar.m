@@ -88,7 +88,7 @@
 {
 	if(pageCount == nil)
 	{
-		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement : 8 : self.frame.size.width] :newCurrentPage :newPageMax];
+		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement : 8 : self.frame.size.width] :newCurrentPage :newPageMax : (Reader*) self.superview];
 		[self addSubview:pageCount];
 	}
 	else

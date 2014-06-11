@@ -393,6 +393,11 @@
 	[mainImage prevPage];
 }
 
+- (void) jumpPage : (uint) newPage
+{
+	[mainImage jumpToPage:newPage];
+}
+
 - (void) nextPage
 {
 	[mainImage nextPage];

@@ -32,9 +32,6 @@
 	self = [super init];
 	if(self)
 	{
-		HUDWindow = [[NSPanel alloc] initWithContentRect:NSMakeRect(50, 100, 150, 200)
-								   styleMask:NSHUDWindowMask backing:NSBackingStoreBuffered defer:NO];
-		
 		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame:self.window.frame];
 		[self setAnchor:nil];
 	}
@@ -82,43 +79,18 @@
 					preferredEdge:NSMaxYEdge];
 }
 
-// -------------------------------------------------------------------------------
-//  applicationShouldTerminateAfterLastWindowClosed:sender
-//
-//  NSApplication delegate method placed here so the sample conveniently quits
-//  after we close the window.
-// -------------------------------------------------------------------------------
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
-{
-    return YES;
-}
+#pragma mark - NSPopoverDelegate
 
-
-#pragma mark -
-#pragma mark NSPopoverDelegate
-
-// -------------------------------------------------------------------------------
-// Invoked on the delegate when the NSPopoverWillShowNotification notification is sent.
-// This method will also be invoked on the popover. 
-// -------------------------------------------------------------------------------
 - (void)popoverWillShow:(NSNotification *)notification
 {
 	//viewControllerHUD is loaded by now, so set its UI up
 }
 
-// -------------------------------------------------------------------------------
-// Invoked on the delegate when the NSPopoverDidShowNotification notification is sent.
-// This method will also be invoked on the popover. 
-// -------------------------------------------------------------------------------
 - (void)popoverDidShow:(NSNotification *)notification
 {
     // add new code here after the popover has been shown
 }
 
-// -------------------------------------------------------------------------------
-// Invoked on the delegate when the NSPopoverWillCloseNotification notification is sent.
-// This method will also be invoked on the popover. 
-// -------------------------------------------------------------------------------
 - (void)popoverWillClose:(NSNotification *)notification
 {
     NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
@@ -133,24 +105,12 @@
     }
 }
 
-// -------------------------------------------------------------------------------
-// Invoked on the delegate when the NSPopoverDidCloseNotification notification is sent.
-// This method will also be invoked on the popover. 
-// -------------------------------------------------------------------------------
 - (void)popoverDidClose:(NSNotification *)notification
 {
 	//Ajouter des codes à la fermeture
 
     [popover release];
     popover = nil;
-}
-
-// -------------------------------------------------------------------------------
-// Prevent the window to be detachable
-// -------------------------------------------------------------------------------
-- (NSWindow *)detachableWindowForPopover:(NSPopover *)popover
-{
-	return nil;
 }
 
 @end

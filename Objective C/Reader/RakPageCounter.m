@@ -12,15 +12,18 @@
 
 @implementation RakPageCounter
 
-- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg;
+- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
     self = [super initWithText:[superView bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];
     if (self)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superView bounds].size.height : posX];
+		
 		currentPage = currentPageArg+1;
 		pageMax = pageMaxArg+1;
+		_target = target;
+		
 		[self setBackgroundColor:[self getColorBackground]];
     }
     return self;
@@ -113,6 +116,105 @@
 	pageMax = newPageMax + 1;
 	
 	[self updateContext];
+}
+
+#pragma mark - Events
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	[[NSBundle mainBundle] loadNibNamed:@"jumpPage" owner:self topLevelObjects:nil];
+	[controller launchPopover : self : currentPage : pageMax];
+}
+
+- (void) transmitPageJump : (uint) newPage
+{
+	[_target jumpPage:newPage];
+}
+
+@end
+
+@interface RakFormatterNumbersOnly : NSNumberFormatter
+
+@end
+
+@implementation RakFormatterNumbersOnly
+
+- (BOOL)isPartialStringValid:(NSString*)partialString newEditingString:(NSString**)newString errorDescription:(NSString**)error
+{
+	if ([partialString length] == 0)
+		return YES;
+	
+	return [partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location == NSNotFound;
+}
+
+@end
+
+@implementation RakPageCounterPopoverController
+
+- (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage
+{
+	_anchor = anchor;
+	_maxPage = maxPage;
+	
+	if(mainLabel != nil)
+	{
+		[mainLabel setStringValue:@"Aller à:"];
+		[mainLabel sizeToFit];
+		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE]];
+	}
+	
+	if(gotoButton != nil)
+	{
+		[gotoButton setTitle:@"Go"];
+		[gotoButton sizeToFit];
+		[[gotoButton cell] setBackgroundColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		//		[[gotoButton cell] setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT]];
+		[gotoButton setTarget:self];
+		[gotoButton setAction:@selector(jumpTrigered)];
+	}
+	
+	if(textField != nil)
+	{
+		[textField setBackgroundColor:[NSColor blackColor]];
+		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT]];
+		[textField setBezeled:NO];
+
+		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
+		[textField setFormatter:[[RakFormatterNumbersOnly alloc] init]];
+		//		[[textField cell] setPlaceholderString:[NSString stringWithFormat:@"%d", curPage]];
+		
+		//Enter key is pressed
+		[textField setTarget:self];
+		[textField setAction:@selector(jumpTrigered)];
+
+	}
+	
+	if(popover != nil)
+	{
+		[popover setAppearance:NSPopoverAppearanceHUD];
+		[popover setBehavior:NSPopoverBehaviorTransient];
+		[popover showRelativeToRect:[_anchor bounds] ofView:_anchor preferredEdge:NSMinYEdge];
+	}
+}
+
+- (void) jumpTrigered
+{
+	NSInteger value = [[textField stringValue] integerValue];
+	
+	if(value > 0)
+	{
+		if (value >= _maxPage)
+		{
+			[textField setStringValue:[NSString stringWithFormat:@"%d", _maxPage]];
+		}
+		else
+		{
+			if([_anchor class] == [RakPageCounter class])
+				[(RakPageCounter*) _anchor transmitPageJump : value - 1];
+			
+			[popover close];
+		}
+	}
 }
 
 @end

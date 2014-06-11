@@ -35,6 +35,7 @@
 - (void) hideCursor;
 
 - (void) prevPage;
+- (void) jumpPage : (uint) newPage;
 - (void) nextPage;
 - (void) prevChapter;
 - (void) nextChapter;

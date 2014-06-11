@@ -31,7 +31,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     size_t *listSizeDL;
     PROXY_DATA_LOADED todoListTmp;
     DATA_MOD_DL argument;
-    bool isTome = input.todoList->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE;
+    bool isTome = input.todoList->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, DLAborted;
     int i, nombreElement = isTome ? input.todoList->chapitre : 1;
 	uint posTomeInStruct = ERROR_CHECK;
 	
@@ -155,9 +155,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		}
     }
 	
-	MDLDownloadOver(input.selfCode);
+	DLAborted = (input.todoList->downloadSuspended & DLSTATUS_ABORT) != 0;
 	
-    if(*(input.currentState) == MDL_CODE_DL_OVER) //On lance l'installation
+	if(!DLAborted)
+		MDLDownloadOver(input.selfCode);
+	
+    if(!DLAborted && *(input.currentState) == MDL_CODE_DL_OVER) //On lance l'installation
     {
         int error = 0;
         for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_INSTALL; i++);
@@ -201,7 +204,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     if(i != input.statusLength) //une installation a été trouvée
         *(*input.fullStatus)[i] = MDL_CODE_INSTALL;
 	
-    if(!quit)
+    if(!quit && !DLAborted)
         MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 	
     free(listSizeDL);

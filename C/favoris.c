@@ -91,6 +91,7 @@ void updateFavorites()
     }
 }
 
+#warning "Need testing"
 void getNewFavs()
 {
 	bool prevIsTome;

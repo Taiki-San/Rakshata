@@ -274,12 +274,14 @@
 	if(todoList == nil)
 		return;
 	
+	bool wasDownloading = [_controller statusOfID:_row :YES] == MDL_CODE_DL;
+	uint code = [_controller convertRowToPos:_row];
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
 	if(previousStatus == MDL_CODE_INSTALL_OVER)
 	{
 		//Deletion
-		//internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
 	}
 	else if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
 	{
@@ -300,10 +302,13 @@
 	
 	NSInteger row = [(NSTableView*) view rowForView:self];
 	
-    if (row != -1)
+	if (row != -1)	//Mostly for the graphical effect
         [(NSTableView*) view removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:row] withAnimation:NSTableViewAnimationEffectFade];
 	
-	//[(NSTableView *) view reloadData];
+	[(NSTableView *) view reloadData];	//Required to redisctribute row IDs
+	
+	if(wasDownloading)
+		MDLDownloadOver(code);
 	
 	while(view != nil && [view class] != [MDL class])
 	{
