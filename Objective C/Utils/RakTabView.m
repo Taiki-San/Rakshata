@@ -240,7 +240,7 @@
 		
 	if(inReaderMode)
 	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp /*| NSTrackingMouseMoved*/ | NSTrackingEnabledDuringMouseDrag) owner:self userInfo:nil];
 		[self addTrackingArea:trackingArea];
 	}
 }

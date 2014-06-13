@@ -26,7 +26,7 @@ enum {
 
 #import "RakSerieListItem.h"
 
-@interface RakSerieList : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface RakSerieList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination>
 {
 	int initializationStage;
 	BOOL stateSubLists[2];
@@ -46,6 +46,8 @@ enum {
 	RakTreeView * content;
 	RakTableColumn * column;
 	RakSerieMainList * _mainList;
+	
+	RakSerieListItem * currentDraggedItem;
 }
 
 - (id) init : (NSRect) frame : (NSString*) state;

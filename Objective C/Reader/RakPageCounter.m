@@ -180,7 +180,7 @@
 		[textField setBezeled:NO];
 
 		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
-		[textField setFormatter:[[RakFormatterNumbersOnly alloc] init]];
+		[textField setFormatter:[[[RakFormatterNumbersOnly alloc] init] autorelease]];
 		//		[[textField cell] setPlaceholderString:[NSString stringWithFormat:@"%d", curPage]];
 		
 		//Enter key is pressed

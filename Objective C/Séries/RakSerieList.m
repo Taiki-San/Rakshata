@@ -357,10 +357,10 @@
 	
 	//Great, now, export the state of the main list
 	NSString *currentSelection;
-	MANGAS_DATA data = [_mainList getElementAtIndex:[_mainList selectedRow]];
+	MANGAS_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
-	if(data.team != NULL)
-		currentSelection = [NSString stringWithFormat:@"%s\n%s", data.team->URL_depot, data.mangaNameShort];
+	if(project.team != NULL)
+		currentSelection = [NSString stringWithFormat:@"%s\n%s", project.team->URL_depot, project.mangaNameShort];
 	else
 		currentSelection = @"";
 	
@@ -437,14 +437,6 @@
 		return @"Invalid data :(";
 	else
 		return [item getData];
-}
-
-- (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item
-{
-	NSInteger row;
-	if(![item isRootItem] && ![item isMainList] && (row = [outlineView rowForItem:item]) != -1)
-		return (RakListDragTextView *) [outlineView viewAtColumn:0 row:row makeIfNecessary:NO];
-	return nil;
 }
 
 #pragma mark - Delegate to the view
@@ -574,18 +566,18 @@
 		rowView = [outlineView makeViewWithIdentifier:@"StandardLine" owner:nil];
 		if (rowView == nil)
 		{
-			rowView = [[RakListDragTextView alloc] init];
+			rowView = [[RakText alloc] init];
 			rowView.identifier = @"StandardLine";
 			
 			if([item isRootItem])
 			{
-				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
-				[(RakListDragTextView*) rowView setTextColor:[self getFontTopColor]];
+				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
+				[(RakText*) rowView setTextColor:[self getFontTopColor]];
 			}
 			else
 			{
-				[(RakListDragTextView*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
-				[(RakListDragTextView*) rowView setTextColor:[self getFontClickableColor]];
+				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+				[(RakText*) rowView setTextColor:[self getFontClickableColor]];
 			}
 		}
 	}
@@ -672,6 +664,60 @@
 	
 	if(request == RELOAD_MAINLIST || request == RELOAD_BOTH)
 		[self reloadMainList];
+}
+
+#pragma mark - Drag'n Drop
+
+- (uint) getSelfCode
+{
+	return GUI_THREAD_SERIES;
+}
+
+- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+{
+	if(currentDraggedItem != nil)
+	{
+		MANGAS_DATA * project = [currentDraggedItem getRawDataChild];
+		currentDraggedItem = nil;
+		if(project != NULL)
+			return *project;
+	}
+	
+	return [super getProjectDataForDrag:row];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pboard
+{
+	if([items count] != 1 || [(RakSerieListItem *) [items objectAtIndex:0] isRootItem] || [(RakSerieListItem *) [items objectAtIndex:0] isMainList])
+		return NO;
+	
+	[self registerToPasteboard:pboard];
+	return YES;
+}
+
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index
+{
+	return NSDragOperationNone;	//On ne drop pas dans l'outline view
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
+{
+	if ([draggedItems count] != 1)
+		return;
+	
+	currentDraggedItem = [draggedItems objectAtIndex:0];
+	
+	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
+{
+	return NO;
+}
+
+- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
+{
+	return NSDragOperationNone;
 }
 
 @end

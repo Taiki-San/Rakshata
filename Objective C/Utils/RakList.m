@@ -217,13 +217,13 @@
 - (NSView *)tableView:(RakTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     // Get an existing cell with the identifier if it exists
-    RakListDragTextView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
+    RakText *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
 	
     if (result == nil)
 	{
 		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
 		// Note that the height of the frame is not really relevant, because the row height will modify the height.
-		result = [[RakListDragTextView alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
+		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
@@ -262,96 +262,23 @@
 	return YES;
 }
 
-#pragma mark - Drag'n drop configuration
-
-- (BOOL) supportReorder
-{
-	return NO;
-}
-
-- (uint) getSelfCode
-{
-	NSLog(@"Default implementation shouldn't be used!");
-	return GUI_THREAD_MASK;
-}
-
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
-{
-	return NSDragOperationNone;
-}
-
 #pragma mark - Drag'n drop support
 
-- (uint) getOwnerOfTV : (RakTableView *) tableView
-{
-	NSView * view = tableView.superview;
-	
-	while(view != nil && [view superclass] != [RakTabView class])
-		view = view.superview;
-	
-	if(view != nil)
-	{
-		if([view class] == [Series class])
-			return GUI_THREAD_SERIES;
-		else if([view class] == [CTSelec class])
-			return GUI_THREAD_CT;
-		else if([view class] == [MDL class])
-			return GUI_THREAD_MDL;
-	}
-	
-	return 0;
-}
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
-	[pboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType,nil] owner:self];
+	[self registerToPasteboard:pboard];
 	return YES;
 }
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
-	uint tab = [self getOwnerOfTV:[info draggingSource]];
-	
-	if(tab == [self getSelfCode])
-	{
-		if([self supportReorder])
-			return NSDragOperationMove;
-		
-		return NSDragOperationNone;
-	}
-	return [self operationForContext:info :tab :row];
-}
-
-- (NSView *) newDragView
-{
-	NSView * view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 300, 100)];
-	
-	view.wantsLayer = YES;
-	view.layer.backgroundColor = [NSColor redColor].CGColor;
-	
-	return view;
-}
-
-- (NSString *) reorderCode
-{
-	return nil;
+	return [self defineDropAuthorizations:info proposedRow:row];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
-	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
-									   forView:tableView
-									   classes:[NSArray arrayWithObject:[RakListDragTextView class]]
-								 searchOptions:nil
-									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
-	 {
-		 NSView * view = [self newDragView];
-		 [draggingItem setDraggingFrame:NSMakeRect(0, 0, view.frame.size.width, view.frame.size.height) contents:view];
-	 }];
-	
-	NSString * type = [self reorderCode];
-	if(type != nil)
-		[session.draggingPasteboard setData:[NSData data] forType:type];
+	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation

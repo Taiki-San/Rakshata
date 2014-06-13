@@ -24,6 +24,7 @@
 
 		//We check we have valid data
 		isTome = isTomeRequest;
+		projectData = project;	//We don't protect chapter/volumen list but not really a problem as we'll only use it for drag'n drop
 		
 		if(isTome && project.tomesInstalled != NULL)
 		{
@@ -70,7 +71,7 @@
 	return data != NULL;
 }
 
-- (bool) reloadData : (int) nbElem : (void *) newData : (BOOL) resetScroller
+- (bool) reloadData : (MANGAS_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
 {
 	void * newDataBuf = NULL;
 	
@@ -98,6 +99,7 @@
 	free(data);
 	data = newDataBuf;
 	amountData = nbElem;
+	projectData = project;
 	
 	if(resetScroller)
 		[_tableView scrollRowToVisible:0];
@@ -197,5 +199,14 @@
 	return NSDragOperationCopy;
 }
 
+- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+{
+	return projectData;
+}
+
+- (NSString *) contentNameForDrag : (uint) row
+{
+	return [self tableView:nil objectValueForTableColumn:nil row:row];
+}
 
 @end

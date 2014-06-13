@@ -22,5 +22,6 @@
 #import "RakMenuText.h"
 #import "RakProgressCircle.h"
 #import "RakBackButton.h"
+#import "RakDragView.h"
+#import "RakDragResponder.h"
 #import "RakList.h"
-#import "RakDropView.h"

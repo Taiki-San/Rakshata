@@ -14,7 +14,7 @@
 
 + (NSImage *) craftResNameFromContext: (NSString*) baseName : (BOOL) highlighted : (BOOL) available : (uint) themeID
 {
-	NSString * pathPortionHighlighted, *pathPortionAvailable;
+	NSString * pathPortionHighlighted, *pathPortionAvailable, *fullFileName;
 	
 	if(highlighted)
 		pathPortionHighlighted = @"_focus";
@@ -25,17 +25,29 @@
 		pathPortionAvailable = @"_unavailable";
 	else
 		pathPortionAvailable = @"";
+	
+	fullFileName = [NSString stringWithFormat:@"%@%@%@", baseName, pathPortionHighlighted, pathPortionAvailable];
+	
+	NSBundle *bundle = nil;
 
 	if(themeID == 1 || themeID == 2)
 	{
-		NSString * fullFileName = [NSString stringWithFormat:@"theme_%d_%@%@%@", themeID, baseName, pathPortionHighlighted, pathPortionAvailable];
-		return [[NSBundle mainBundle] imageForResource:fullFileName];
+		NSString *path = [[NSBundle mainBundle] pathForResource:fullFileName ofType:@"png" inDirectory:[NSString stringWithFormat:@"theme %d", themeID]];
+		NSRange range = [path rangeOfString:@"/" options: NSBackwardsSearch];
+		
+		bundle = [NSBundle bundleWithPath:[path substringToIndex:range.location+1]];
+		
+		
 	}
 	else
 	{
-		NSLog(@"Unsupported, for now");
-		return nil;
+		bundle = [NSBundle bundleWithPath:@"theme"];
 	}
+	
+	if(bundle == nil)
+		return nil;
+	
+	return [bundle imageForResource:fullFileName];
 }
 
 @end

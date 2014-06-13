@@ -10,9 +10,17 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakDropView : NSView < NSDraggingDestination >
+@interface RakDragView : NSView
 {
-	id _responder;
+	IBOutlet NSImageView * projectImage;
+	
+	IBOutlet NSTextField * projectName;
+	IBOutlet NSTextField * selectionName;
+	
+	IBOutlet NSBox * separationLine;
 }
+
+- (void) setupContent : (MANGAS_DATA) projectData : (NSString *) selectionNameString;
+- (NSImage *) initImage;
 
 @end

@@ -165,4 +165,39 @@
 	return NSDragOperationNone;
 }
 
+- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+{
+	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	
+	if (dataProject == NULL || 	(*dataProject)->datas == NULL)
+		return [super getProjectDataForDrag:row];
+	
+	return *((*dataProject)->datas);
+}
+
+- (NSString *) contentNameForDrag : (uint) row
+{
+	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	
+	if (dataProject == NULL)
+		return nil;
+
+	if((*dataProject)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	{
+		int chapitre = (*dataProject)->chapitre;
+		
+		if(chapitre % 10)
+			return [NSString stringWithFormat: @"Chapitre %d.%d", chapitre / 10, chapitre % 10];
+		return [NSString stringWithFormat:@"Chapitre %d", chapitre / 10];
+	}
+	else
+	{
+		if((*dataProject)->tomeName != NULL && (*dataProject)->tomeName[0] != 0)
+			return [NSString stringWithUTF8String: (char*) (*dataProject)->tomeName];
+		
+		return [NSString stringWithFormat:@"Tome %d", (*dataProject)->partOfTome];
+	}
+}
+
+
 @end

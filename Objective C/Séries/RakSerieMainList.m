@@ -132,6 +132,7 @@
 	{
 		_jumpToInstalled = NULL;
 		_nbElemInstalled = 0;
+		return;
 	}
 	
 	uint * newJumpTable = malloc(positionRawTable * sizeof(uint));
@@ -268,6 +269,11 @@
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
 {
 	return NSDragOperationNone;
+}
+
+- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+{
+	return [self getElementAtIndex:row];
 }
 
 @end

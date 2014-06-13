@@ -22,7 +22,7 @@
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithUTF8String:project.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URL_depot] : [NSString stringWithFormat:@"%s_CT", project.mangaName] : [self bounds]];
 		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -128,7 +128,7 @@
 		[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithUTF8String:data.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URL_depot] : [NSString stringWithFormat:@"%s_CT", data.mangaName] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -160,13 +160,22 @@
 
 @implementation RakCTProjectImageView
 
-- (id) initWithImageName : (NSString *) imageName : (NSRect) superViewFrame
+- (id) initWithImageName : (NSString*) path : (NSString *) imageName : (NSRect) superViewFrame
 {
-	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
+	NSImage * projectImageBase = nil;
+
+	if(path != nil && imageName != nil)
+	{
+		NSBundle * bundle = [NSBundle bundleWithPath: path];
+		if(bundle != nil)
+		{
+			projectImageBase = [bundle imageForResource:[NSString stringWithFormat:@"%@_large", imageName]];
+		}
+	}
 	
 	if(projectImageBase == nil)
 	{
-		projectImageBase = [RakResPath craftResNameFromContext:@"defaultCTBackground" :NO :YES : 1];
+		projectImageBase = [RakResPath craftResNameFromContext:@"defaultCTImage" :NO :YES : 1];
 	}
 	
 	if(projectImageBase != nil)
@@ -465,10 +474,10 @@
 		return;
 
 	getUpdatedChapterList(&data, true);
-	[tableViewControllerChapter reloadData : data.nombreChapitre : data.chapitresInstalled : NO];
+	[tableViewControllerChapter reloadData : data : data.nombreChapitre : data.chapitresInstalled : NO];
 		
 	getUpdatedTomeList(&data, true);
-	[tableViewControllerVolume reloadData : data.nombreTomes : data.tomesInstalled : NO];
+	[tableViewControllerVolume reloadData : data : data.nombreTomes : data.tomesInstalled : NO];
 }
 
 - (void) updateContext : (MANGAS_DATA) newData
@@ -504,7 +513,7 @@
 			[tableViewControllerChapter setSuperView:self];
 		}
 		else
-			[tableViewControllerChapter reloadData : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
+			[tableViewControllerChapter reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
 		
 		[buttons setEnabled:YES forSegment:0];
 	}
@@ -519,7 +528,7 @@
 			[tableViewControllerVolume setSuperView:self];
 		}
 		else
-			[tableViewControllerVolume reloadData : data.nombreTomesInstalled : data.tomesInstalled : YES];
+			[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];
 		
 		[buttons setEnabled:YES forSegment:1];
 	}

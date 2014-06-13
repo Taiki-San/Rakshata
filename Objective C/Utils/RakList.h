@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakListDragTextView.h"
-
 @interface RakListScrollView : NSScrollView
 {
 	NSView* documentViewToResize;
@@ -27,7 +25,7 @@
 
 @end
 
-@interface RakList : NSObject <NSTableViewDelegate, NSTableViewDataSource, NSDraggingDestination>
+@interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource, NSDraggingDestination>
 {
 	void* data;
 	uint amountData;
@@ -60,15 +58,5 @@
 - (NSColor *) getTextColor;
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
-
-#define REORDER_SERIE @"ReorderProjects"
-#define REORDER_MDL @"ReorderMDL"
-
-- (NSString *) reorderCode;
-- (uint) getOwnerOfTV : (NSTableView *) tableView;
-
-- (BOOL) supportReorder;
-- (uint) getSelfCode;
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow;
 
 @end

@@ -67,7 +67,10 @@
 	
 	if((*todoList)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
 	{
-		name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10];
+		if((*todoList)->chapitre % 10)
+			name = [NSString stringWithFormat:@"%s chapitre %d.%d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10, (*todoList)->chapitre % 10];
+		else
+			name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10];
 	}
 	else
 	{
