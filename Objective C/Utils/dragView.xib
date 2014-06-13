@@ -26,7 +26,7 @@
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="nrv-h9-IKe"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ONk-H0-P9T">
-                    <rect key="frame" x="60" y="30" width="86" height="17"/>
+                    <rect key="frame" x="60" y="30" width="142" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Project name" id="Rte-33-Rb6">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -34,7 +34,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gTZ-BG-ne2">
-                    <rect key="frame" x="60" y="4" width="79" height="17"/>
+                    <rect key="frame" x="60" y="4" width="142" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Chapitre 42" id="7jo-eo-fcs">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -54,17 +54,19 @@
                 </box>
             </subviews>
             <constraints>
-                <constraint firstItem="gTZ-BG-ne2" firstAttribute="top" secondItem="85a-ur-Qpp" secondAttribute="bottom" constant="3" id="9R8-bZ-Ivh"/>
                 <constraint firstItem="85a-ur-Qpp" firstAttribute="top" secondItem="ONk-H0-P9T" secondAttribute="bottom" constant="5" id="FqQ-Pi-pwS"/>
                 <constraint firstItem="ONk-H0-P9T" firstAttribute="leading" secondItem="rxB-PO-XWl" secondAttribute="trailing" constant="12" id="KJg-Kl-h71"/>
                 <constraint firstItem="ONk-H0-P9T" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="3" id="LM8-5y-Gfs"/>
                 <constraint firstItem="85a-ur-Qpp" firstAttribute="top" secondItem="ONk-H0-P9T" secondAttribute="bottom" constant="5" id="M4w-mZ-VcW"/>
                 <constraint firstItem="rxB-PO-XWl" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="Qc8-A2-U0h"/>
                 <constraint firstAttribute="trailing" secondItem="85a-ur-Qpp" secondAttribute="trailing" constant="20" id="SwM-HC-Ply"/>
+                <constraint firstAttribute="trailing" secondItem="gTZ-BG-ne2" secondAttribute="trailing" id="XcG-Ch-Cra"/>
+                <constraint firstItem="gTZ-BG-ne2" firstAttribute="leading" secondItem="ONk-H0-P9T" secondAttribute="leading" id="aSC-P1-2ZU"/>
                 <constraint firstItem="rxB-PO-XWl" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="clc-aE-em1"/>
-                <constraint firstItem="gTZ-BG-ne2" firstAttribute="leading" secondItem="rxB-PO-XWl" secondAttribute="trailing" constant="12" id="hyb-W8-mNY"/>
+                <constraint firstItem="gTZ-BG-ne2" firstAttribute="trailing" secondItem="ONk-H0-P9T" secondAttribute="trailing" id="iXX-vO-1YJ"/>
                 <constraint firstItem="85a-ur-Qpp" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="60" id="oY6-Xj-bIP"/>
                 <constraint firstAttribute="bottom" secondItem="rxB-PO-XWl" secondAttribute="bottom" id="qpn-iK-oes"/>
+                <constraint firstItem="gTZ-BG-ne2" firstAttribute="top" secondItem="85a-ur-Qpp" secondAttribute="bottom" constant="3" id="rTD-Bj-4Fa"/>
             </constraints>
             <connections>
                 <outlet property="projectImage" destination="rxB-PO-XWl" id="Xjy-E7-GNM"/>

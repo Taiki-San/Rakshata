@@ -272,8 +272,17 @@
 	
 	[self loadRecentFromDB];
 	
+	if((_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) != posMainList)
+	{
+		int8_t newPos = (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0);
+		rootItems[newPos] = rootItems[posMainList];
+		rootItems[posMainList] = nil;
+		posMainList = newPos;
+	}
+	
 	initializationStage = INIT_FIRST_STAGE;
 	[content reloadData];
+	initializationStage = INIT_OVER;
 	
 	for(uint8_t i = 0; i < posMainList; i++)
 	{
