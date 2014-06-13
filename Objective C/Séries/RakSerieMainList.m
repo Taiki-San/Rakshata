@@ -266,11 +266,6 @@
 	return GUI_THREAD_SERIES;
 }
 
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
-{
-	return NSDragOperationNone;
-}
-
 - (MANGAS_DATA) getProjectDataForDrag : (uint) row
 {
 	return [self getElementAtIndex:row];

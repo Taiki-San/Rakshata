@@ -691,13 +691,8 @@
 	if([items count] != 1 || [(RakSerieListItem *) [items objectAtIndex:0] isRootItem] || [(RakSerieListItem *) [items objectAtIndex:0] isMainList])
 		return NO;
 	
-	[self registerToPasteboard:pboard];
+	[RakDragResponder registerToPasteboard:pboard];
 	return YES;
-}
-
-- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index
-{
-	return NSDragOperationNone;	//On ne drop pas dans l'outline view
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
@@ -713,11 +708,6 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
 {
 	return NO;
-}
-
-- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
-{
-	return NSDragOperationNone;
 }
 
 @end

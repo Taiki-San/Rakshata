@@ -18,7 +18,7 @@ enum {
 	REFRESHVIEWS_NO_CHANGE
 } REFRESHVIEWS_CODE;
 
-@interface RakTabView : NSView
+@interface RakTabView : NSView <NSDraggingDestination>
 {
 	bool noDrag;
 	int flag;
@@ -87,6 +87,7 @@ enum {
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 - (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element;
+- (BOOL) shouldDeployWhenDragComeIn;
 
 @end
 

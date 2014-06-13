@@ -712,6 +712,9 @@
 
 - (void) addPageToView
 {
+	if(page == NULL)
+		return;
+	
 	//We create the view that si going to be displayed
 	NSRect pageViewSize = selfFrame;
 	pageViewSize.size.height += READER_PAGE_BORDERS_HIGH; 
@@ -721,8 +724,8 @@
 		//We reset the scroller first (check commit 5eb6b7fde2db for why this patch is important)
 		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, pageView.frame.size.height, pageView.frame.size.width);
 		NSEvent *theEvent = [NSEvent eventWithCGEvent:cgEvent];
-		CFRelease(cgEvent);
 		[super scrollWheel:theEvent];
+		CFRelease(cgEvent);
 		
 		[pageView setFrame:pageViewSize];
 		[pageView setImage:page];
@@ -776,21 +779,23 @@
 	else
 		alreadyRefreshed = true;
 	
-	MANGAS_DATA localProject;
-	memcpy(&localProject, &project, sizeof(MANGAS_DATA));
+	MANGAS_DATA localProject = getCopyOfProjectData(project);
 	
 	uint nbElemToGrab = checkNewElementInRepo(&localProject, isTome, currentElem);
 	
 	if(!nbElemToGrab)
 		return;
 	
-	RakArgumentToRefreshAlert * argument = [RakArgumentToRefreshAlert alloc];
+	RakArgumentToRefreshAlert * argument = [[RakArgumentToRefreshAlert alloc] autorelease];
 	argument.data = &localProject;
 	argument.nbElem = nbElemToGrab;
 	
 	[self performSelectorOnMainThread:@selector(promptToGetNewElems:) withObject:argument waitUntilDone:YES];
 	
-	[argument release];
+	free(localProject.chapitresFull);
+	free(localProject.chapitresInstalled);
+	freeTomeList(localProject.tomesFull, YES);
+	freeTomeList(localProject.tomesInstalled, YES);
 }
 
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments

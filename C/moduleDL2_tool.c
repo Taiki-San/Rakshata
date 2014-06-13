@@ -832,7 +832,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
         remove(path);
 }
 
-bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem)
+bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
 {
 	if(list == NULL || status == NULL || !nbElem)
 		return false;
@@ -850,7 +850,7 @@ bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DA
 			{
 				if(list[i]->partOfTome == element)
 				{
-					if(status[i] != MDL_CODE_INSTALL_OVER || !checkTomeReadable(projectToTest, element))
+					if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT) || checkTomeReadable(projectToTest, element))
 						return true;
 				}
 			}
@@ -858,7 +858,7 @@ bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DA
 			{
 				if(list[i]->chapitre == element && list[i]->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
 				{
-					if(status[i] != MDL_CODE_INSTALL_OVER || !checkChapterReadable(projectToTest, element))
+					if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkChapterReadable(projectToTest, element))
 						return true;
 				}
 			}

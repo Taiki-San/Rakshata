@@ -108,10 +108,7 @@
 	if(considerDiscarded)
 		row = IDToPosition[row];
 	
-	if(status[row] != NULL)
-		return *(status[row]);
-	
-	return MDL_CODE_INTERNAL_ERROR;
+	return *(status[row]);
 }
 
 - (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
@@ -127,7 +124,7 @@
 		//We need to refresh
 	}
 	
-	if(!nbElem || !MDLisThereCollision(data, isTome, element, *todoList, *status, nbElem))
+	if(!nbElem || !MDLisThereCollision(data, isTome, element, *todoList, status, nbElem))
 	{
 		int newChunkSize;
 		DATA_LOADED ** newElement = MDLCreateElement(&cache[pos], isTome, element, &newChunkSize);
@@ -181,7 +178,7 @@
 			}
 			
 			*status[nbElem] = *statusCache[nbElem] = MDL_CODE_DEFAULT;
-			IDToPosition[discardedCount] = discardedCount;	discardedCount++;
+			IDToPosition[discardedCount++] = nbElem;
 		}
 		
 		int curPos = nbElem - 1;
@@ -199,12 +196,25 @@
 		*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, newElement, newChunkSize);
 	}
 	
-	if(!partOfBatch && nbElem)
+	if(!partOfBatch && discardedCount)
 	{
 		//Great, the injection is now over... We need to reanimate what needs to be
 		if(!isThreadStillRunning(coreWorker))
 		{
 			startMDL(NULL, cache, &coreWorker, &todoList, &status, &statusCache, &nbElem, &quit, self);
+		}
+		else
+		{
+			uint i;
+			for(i = 0; i < discardedCount; i++)
+			{
+				//Anything running?
+				if((*status[IDToPosition[i]]) > MDL_CODE_DEFAULT && (*status[IDToPosition[i]]) < MDL_CODE_INSTALL_OVER)
+					break;
+			}
+			
+			if(i == discardedCount)
+				MDLDownloadOver();
 		}
 		
 		//Worker should be at work, now, let's wake the UI up
@@ -214,7 +224,7 @@
 
 - (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
 {
-	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, *status, nbElem);
+	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
 }
 
 - (void) discardElement : (uint) element

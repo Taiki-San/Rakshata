@@ -158,7 +158,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	DLAborted = (input.todoList->downloadSuspended & DLSTATUS_ABORT) != 0;
 	
 	if(!DLAborted)
-		MDLDownloadOver(input.selfCode);
+		MDLDownloadOver();
+	else
+		*(input.currentState) = MDL_CODE_ABORTED;
 	
     if(!DLAborted && *(input.currentState) == MDL_CODE_DL_OVER) //On lance l'installation
     {

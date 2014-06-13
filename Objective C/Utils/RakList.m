@@ -48,7 +48,6 @@
 	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 	[_tableView setFocusRingType:NSFocusRingTypeNone];
 	[_tableView setAllowsMultipleSelection:NO];
-	[self enableDrop];
 	
 	//End of setup
 	[_tableView addTableColumn:column];
@@ -262,17 +261,22 @@
 	return YES;
 }
 
-#pragma mark - Drag'n drop support
+- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	return YES;
+}
 
+#pragma mark - Drag'n drop support
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
-	[self registerToPasteboard:pboard];
+	[RakDragResponder registerToPasteboard:pboard];
 	return YES;
 }
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
+	//Only used by MDL
 	return [self defineDropAuthorizations:info proposedRow:row];
 }
 
@@ -284,7 +288,7 @@
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
 {
 	//Does the actual work after the drop
-	return YES;
+	return [self acceptDrop:info  row:row dropOperation:operation];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation

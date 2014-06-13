@@ -418,16 +418,16 @@ MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
 	
 	if(data.chapitresFull != NULL)
 	{
-		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(int));
+		newData.chapitresFull = malloc((data.nombreChapitre + 1) * sizeof(int));
 		if(newData.chapitresFull != NULL)
-			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(int));
+			memcpy(newData.chapitresFull, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
 	}
 	
 	if(data.chapitresInstalled != NULL)
 	{
-		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(int));
+		newData.chapitresInstalled = malloc((data.nombreChapitreInstalled + 1) * sizeof(int));
 		if(newData.chapitresInstalled != NULL)
-			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(int));
+			memcpy(newData.chapitresInstalled, data.chapitresInstalled, (data.nombreChapitreInstalled + 1) * sizeof(int));
 	}
 	
 	if(data.tomesFull != NULL)

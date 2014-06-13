@@ -227,11 +227,11 @@ int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
-void MDLDownloadOver(uint selfCode);
+void MDLDownloadOver();
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage);
-bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t * status, uint nbElem);
+bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
 
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);

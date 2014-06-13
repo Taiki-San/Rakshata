@@ -51,6 +51,8 @@
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;
 
+- (void) enableDrop;
+
 - (NSInteger) getSelectedElement;
 - (float) getSliderPos;
 - (NSInteger) selectedRow;

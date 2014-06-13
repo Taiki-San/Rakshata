@@ -41,6 +41,7 @@
 		[self applyContext:frame : -1 : -1];
 		[_tableView setRowHeight:cellHeight];
 		[scrollView setHasHorizontalScroller:NO];
+		[self enableDrop];
 	}
 	
 	return self;

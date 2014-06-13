@@ -18,14 +18,14 @@
 #define REORDER_SERIE @"ReorderProjects"
 #define REORDER_MDL @"ReorderMDL"
 
-- (uint) getOwnerOfTV : (NSTableView *) tableView;
++ (uint) getOwnerOfTV : (NSTableView *) tableView;
 - (BOOL) supportReorder;
 - (uint) getSelfCode;
 - (MANGAS_DATA) getProjectDataForDrag : (uint) row;
 - (NSString *) contentNameForDrag : (uint) row;
 - (NSString *) reorderCode;
 
-- (void) registerToPasteboard : (NSPasteboard *) pboard;
++ (void) registerToPasteboard : (NSPasteboard *) pboard;
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow;
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info proposedRow:(NSInteger)row;
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;

@@ -17,7 +17,6 @@ pthread_cond_t condResumeExecution			= PTHREAD_COND_INITIALIZER;
 THREAD_TYPE *threadID = NULL;
 
 static uint requestID;
-static uint code;		//# of the thread querying us
 
 RakMDLController *	mainTab;
 
@@ -39,8 +38,8 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	MDLUpdateKillState(*quit);
 	
 	//On va lancer le premier élément
-	for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
-	if(dataPos < *nbElemTotal && *(*status)[dataPos] == MDL_CODE_DEFAULT)
+	for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+	if(dataPos < *nbElemTotal && *((*status)[dataPos]) == MDL_CODE_DEFAULT)
 	{
 		MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
 	}
@@ -61,16 +60,16 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		{
 			if(requestID == RID_UPDATE_STATUS)
 			{
-				for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 				
-				if(dataPos < *nbElemTotal && *(*status)[dataPos] == MDL_CODE_DEFAULT)
+				if(dataPos < *nbElemTotal && *((*status)[dataPos]) == MDL_CODE_DEFAULT)
 				{
 					MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
 				}
 				else
 				{
 					//On regarde si on a plus que des éléments qui sont en attente d'une action extérieure
-					for(dataPos = 0; dataPos < *nbElemTotal && *(*status)[dataPos] != MDL_CODE_WAITING_LOGIN && *(*status)[dataPos] != MDL_CODE_WAITING_PAY; dataPos++);
+					for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_WAITING_LOGIN && *((*status)[dataPos]) != MDL_CODE_WAITING_PAY; dataPos++);
 					
 					if(dataPos == *nbElemTotal)	//Non, on se casse
 					{
@@ -123,7 +122,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
             return;
         }
 		
-        *(*status)[posElement] = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
+        *((*status)[posElement]) = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
 
 		MDLUpdateIcons(posElement, todoList[posElement]->rowViewResponsible);
 		
@@ -145,7 +144,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
     }
 }
 
-void MDLDownloadOver(uint selfCode)
+void MDLDownloadOver()
 {
 	if(threadID == NULL || !isThreadStillRunning(*threadID))
 		return;
@@ -153,7 +152,6 @@ void MDLDownloadOver(uint selfCode)
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
 	requestID = RID_UPDATE_STATUS;
-	code = selfCode;
 	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
 	
 	MUTEX_UNLOCK(asynchronousTaskInThreads);

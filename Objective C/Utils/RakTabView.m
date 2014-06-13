@@ -41,6 +41,9 @@
 		resizeAnimationCount = 0;	//activate animation
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
+		
+		//Drag'n drop support
+		[self registerForDraggedTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType, nil]];
 	}
 		
 	return self;
@@ -240,7 +243,7 @@
 		
 	if(inReaderMode)
 	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp /*| NSTrackingMouseMoved*/ | NSTrackingEnabledDuringMouseDrag) owner:self userInfo:nil];
+		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp | NSTrackingMouseMoved) owner:self userInfo:nil];
 		[self addTrackingArea:trackingArea];
 	}
 }
@@ -480,6 +483,19 @@
 - (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element
 {
 	
+}
+
+- (BOOL) shouldDeployWhenDragComeIn
+{
+	return YES;
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+	if([self shouldDeployWhenDragComeIn])
+		[self mouseEntered:nil];
+	
+	return NSDragOperationNone;
 }
 
 @end

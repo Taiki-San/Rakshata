@@ -14,7 +14,7 @@
 
 #pragma mark - Drag'n drop configuration
 
-- (uint) getOwnerOfTV : (NSTableView *) tableView
++ (uint) getOwnerOfTV : (NSTableView *) tableView
 {
 	NSView * view = tableView.superview;
 	
@@ -66,9 +66,9 @@
 
 #pragma mark - Internal code
 
-- (void) registerToPasteboard : (NSPasteboard *) pboard
++ (void) registerToPasteboard : (NSPasteboard *) pboard
 {
-	[pboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType,nil] owner:self];
+	[pboard declareTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType,nil] owner:self];
 }
 
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
@@ -78,7 +78,7 @@
 
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info proposedRow:(NSInteger)row
 {
-	uint tab = [self getOwnerOfTV:[info draggingSource]];
+	uint tab = [RakDragResponder getOwnerOfTV:[info draggingSource]];
 	
 	if(tab == [self getSelfCode])
 	{

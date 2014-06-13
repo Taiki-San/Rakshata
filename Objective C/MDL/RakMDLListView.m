@@ -278,7 +278,6 @@
 		return;
 	
 	bool wasDownloading = [_controller statusOfID:_row :YES] == MDL_CODE_DL;
-	uint code = [_controller convertRowToPos:_row];
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
 	if(previousStatus == MDL_CODE_INSTALL_OVER)
@@ -311,7 +310,7 @@
 	[(NSTableView *) view reloadData];	//Required to redisctribute row IDs
 	
 	if(wasDownloading)
-		MDLDownloadOver(code);
+		MDLDownloadOver();
 	
 	while(view != nil && [view class] != [MDL class])
 	{

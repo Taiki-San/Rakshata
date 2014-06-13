@@ -194,11 +194,6 @@
 	return GUI_THREAD_CT;
 }
 
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
-{
-	return NSDragOperationCopy;
-}
-
 - (MANGAS_DATA) getProjectDataForDrag : (uint) row
 {
 	return projectData;
