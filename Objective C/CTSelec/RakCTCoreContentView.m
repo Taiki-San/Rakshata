@@ -204,4 +204,16 @@
 	return [self tableView:nil objectValueForTableColumn:nil row:row];
 }
 
+- (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
+{
+	int selection;
+	
+	if(isTome)
+		selection = (((META_TOME *) data)[row]).ID;
+	else
+		selection = ((int *) data)[row];
+	
+	[item setDataProject:getCopyOfProjectData(projectData) isTome:isTome element:selection];
+}
+
 @end

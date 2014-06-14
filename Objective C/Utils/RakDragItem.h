@@ -10,25 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakDragResponder : NSObject
-{
-	IBOutlet RakDragView * draggedView;
-}
+#define PROJECT_PASTEBOARD_TYPE @"PasteboardTypeRakshataProject"
 
-#define REORDER_SERIE @"ReorderProjects"
-#define REORDER_MDL @"ReorderMDL"
+@interface RakDragItem : NSObject
 
-+ (uint) getOwnerOfTV : (NSView *) view;
-- (BOOL) supportReorder;
-- (uint) getSelfCode;
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row;
-- (NSString *) contentNameForDrag : (uint) row;
-- (NSString *) reorderCode;
+@property MANGAS_DATA project;
+@property BOOL isTome;
+@property int selection;
 
-+ (void) registerToPasteboard : (NSPasteboard *) pboard;
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow;
-- (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info proposedRow:(NSInteger)row;
-- (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
+- (void) setDataProject : (MANGAS_DATA) project isTome : (BOOL) isTome element : (int) element;
+- (id) initWithData : (NSData *) data;
 
+- (NSData *) getData;
+- (BOOL) defineIsTomePriority : (MANGAS_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
 
 @end

@@ -23,5 +23,6 @@
 #import "RakProgressCircle.h"
 #import "RakBackButton.h"
 #import "RakDragView.h"
+#import "RakDragItem.h"
 #import "RakDragResponder.h"
 #import "RakList.h"

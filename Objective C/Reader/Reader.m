@@ -428,4 +428,14 @@
 	[bottomBar updatePage:newCurrentPage :newPageMax];
 }
 
+#pragma mark - Drop support
+
+- (NSDragOperation) dropOperationForSender : (uint) sender
+{
+	if (sender == GUI_THREAD_CT || sender == GUI_THREAD_MDL)
+		return NSDragOperationCopy;
+	
+	return [super dropOperationForSender:sender];
+}
+
 @end

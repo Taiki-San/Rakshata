@@ -61,4 +61,8 @@
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
 
+- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation;
+- (void) fillDragItemWithData : (RakDragItem*) data : (uint) row
+;
+
 @end

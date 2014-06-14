@@ -88,6 +88,7 @@ enum {
 
 - (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element;
 - (BOOL) shouldDeployWhenDragComeIn;
+- (NSDragOperation) dropOperationForSender : (uint) sender;
 
 @end
 

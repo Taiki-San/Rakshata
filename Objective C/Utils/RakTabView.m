@@ -43,7 +43,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
 		
 		//Drag'n drop support
-		[self registerForDraggedTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType, nil]];
+		[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
 	}
 		
 	return self;
@@ -478,11 +478,13 @@
 	return memcmp(&prevFrame, &newFrame, sizeof(NSRect)) != 0;
 }
 
-#pragma mark - Drag'n Drop support
+#pragma mark - Drop support
+
+//Control
 
 - (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element
 {
-	
+	NSLog(@"Project %s received: istome: %d - element : %d", data.mangaName, isTome, element);
 }
 
 - (BOOL) shouldDeployWhenDragComeIn
@@ -490,12 +492,57 @@
 	return YES;
 }
 
+- (NSDragOperation) dropOperationForSender : (uint) sender
+{
+	return NSDragOperationNone;
+}
+
+- (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender
+{
+	return YES;
+}
+
+//Internal code
+
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
 	if([self shouldDeployWhenDragComeIn])
 		[self mouseEntered:nil];
 	
-	return NSDragOperationNone;
+	return [self dropOperationForSender: [RakDragResponder getOwnerOfTV:[sender draggingSource]]];
+}
+
+//Data import
+
+- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
+{
+	uint startTab = [RakDragResponder getOwnerOfTV:[sender draggingSource]];
+
+	if([self dropOperationForSender: startTab] == NSDragOperationCopy)
+		return [self acceptDrop: startTab : sender];
+
+	return NO;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+	//Import task
+	
+	NSPasteboard * pasteboard = [sender draggingPasteboard];
+	
+	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
+	
+	if (item == nil || [item class] != [RakDragItem class])
+		return NO;
+	
+	[self receiveDrop:item.project :item.isTome :item.selection];
+	
+	return YES;
+}
+
+- (void)concludeDragOperation:(id<NSDraggingInfo>)sender
+{
+	//Should update its UI if required to cleanup from the drop
 }
 
 @end

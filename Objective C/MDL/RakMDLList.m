@@ -200,5 +200,16 @@
 	}
 }
 
+- (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
+{
+	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	
+	if(dataProject == NULL || *dataProject == NULL)
+		return;
+	
+	BOOL isTome = ((*dataProject)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE);
+	
+	[item setDataProject : *(*dataProject)->datas isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
+}
 
 @end

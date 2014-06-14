@@ -162,7 +162,7 @@
 
 - (void) enableDrop
 {
-	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, NSFilenamesPboardType, nil]];
+	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
     [_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 }
@@ -268,10 +268,25 @@
 
 #pragma mark - Drag'n drop support
 
+- (void) fillDragItemWithData : (RakDragItem*) data : (uint) row
+{
+	
+}
+
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
+	if(rowIndexes == nil || [rowIndexes count] != 1)
+		return NO;
+	
 	[RakDragResponder registerToPasteboard:pboard];
-	return YES;
+	RakDragItem * item = [[[RakDragItem alloc] init] autorelease];
+	
+	if(item == nil)
+		return NO;
+	
+	[self fillDragItemWithData : item : [rowIndexes firstIndex]];
+	
+	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation

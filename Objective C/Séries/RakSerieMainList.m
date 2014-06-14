@@ -271,4 +271,12 @@
 	return [self getElementAtIndex:row];
 }
 
+- (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
+{
+	MANGAS_DATA project = [self getElementAtIndex:row];
+	BOOL isTome = [item defineIsTomePriority:&project alreadyRefreshed:NO];
+
+	[item setDataProject:getCopyOfProjectData(project) isTome:isTome element:VALEUR_FIN_STRUCTURE_CHAPITRE];
+}
+
 @end

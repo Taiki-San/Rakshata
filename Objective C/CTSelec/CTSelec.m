@@ -359,4 +359,14 @@
 		[coreView refreshCT : checkIfRequired : ID];
 }
 
+#pragma mark - Drop
+
+- (NSDragOperation) dropOperationForSender : (uint) sender
+{
+	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_MDL)
+		return NSDragOperationCopy;
+	
+	return [super dropOperationForSender:sender];
+}
+
 @end

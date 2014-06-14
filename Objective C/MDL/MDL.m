@@ -295,4 +295,14 @@
 
 }
 
+#pragma mark - Drop support
+
+- (NSDragOperation) dropOperationForSender : (uint) sender
+{
+	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_CT)
+		return NSDragOperationCopy;
+	
+	return [super dropOperationForSender:sender];
+}
+
 @end

@@ -697,11 +697,26 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pboard
 {
-	if([items count] != 1 || [(RakSerieListItem *) [items objectAtIndex:0] isRootItem] || [(RakSerieListItem *) [items objectAtIndex:0] isMainList])
+	if([items count] != 1)
+		return NO;
+	
+	RakSerieListItem * item = [items objectAtIndex:0];
+							  
+	if(item == nil || [item isRootItem] || [item isMainList])
 		return NO;
 	
 	[RakDragResponder registerToPasteboard:pboard];
-	return YES;
+	
+	RakDragItem * pbData = [[[RakDragItem alloc] init] autorelease];
+	
+	if(pbData == nil)
+		return NO;
+	
+	MANGAS_DATA* project = [item getRawDataChild];
+	
+	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:NO]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
+	
+	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
