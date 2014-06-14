@@ -430,6 +430,15 @@
 
 #pragma mark - Drop support
 
+- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+{
+	if(element != VALEUR_FIN_STRUCTURE_CHAPITRE &&
+		(sender != GUI_THREAD_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
+			[self updateContextNotification:data :isTome :element];
+	
+	releaseCTData(data);
+}
+
 - (NSDragOperation) dropOperationForSender : (uint) sender
 {
 	if (sender == GUI_THREAD_CT || sender == GUI_THREAD_MDL)

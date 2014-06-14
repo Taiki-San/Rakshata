@@ -792,10 +792,7 @@
 	
 	[self performSelectorOnMainThread:@selector(promptToGetNewElems:) withObject:argument waitUntilDone:YES];
 	
-	free(localProject.chapitresFull);
-	free(localProject.chapitresInstalled);
-	freeTomeList(localProject.tomesFull, YES);
-	freeTomeList(localProject.tomesInstalled, YES);
+	releaseCTData(localProject);
 }
 
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments

@@ -482,7 +482,7 @@
 
 //Control
 
-- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element
+- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
 	NSLog(@"Project %s received: istome: %d - element : %d", data.mangaName, isTome, element);
 }
@@ -535,7 +535,7 @@
 	if (item == nil || [item class] != [RakDragItem class])
 		return NO;
 	
-	[self receiveDrop:item.project :item.isTome :item.selection];
+	[self receiveDrop:item.project :item.isTome :item.selection :[RakDragResponder getOwnerOfTV:[sender draggingSource]]];
 	
 	return YES;
 }

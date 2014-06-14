@@ -487,7 +487,10 @@
 	if(!memcmp(&newData, &data, sizeof(data)))
 		return;
 	else
+	{
+		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
+	}
 	
 	if(!updateIfRequired(&data, RDB_CTXCT))
 	{

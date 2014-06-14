@@ -714,7 +714,16 @@
 	
 	MANGAS_DATA* project = [item getRawDataChild];
 	
-	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:NO]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
+	getUpdatedChapterList(project, false);
+	getUpdatedTomeList(project, false);
+	
+	MANGAS_DATA localProject = getCopyOfProjectData(*project);
+	
+	changeTo(localProject.mangaName, ' ', '_');
+	checkChapitreValable(&localProject, NULL);
+	checkTomeValable(&localProject, NULL);
+	
+	[pbData setDataProject : localProject isTome: [pbData defineIsTomePriority:&localProject alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

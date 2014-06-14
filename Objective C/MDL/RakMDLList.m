@@ -208,8 +208,12 @@
 		return;
 	
 	BOOL isTome = ((*dataProject)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE);
+	MANGAS_DATA project = getCopyOfProjectData(*(*dataProject)->datas);
 	
-	[item setDataProject : *(*dataProject)->datas isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
+	getUpdatedCTList(&project, true);
+	getUpdatedCTList(&project, false);
+	
+	[item setDataProject : project isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
 }
 
 @end

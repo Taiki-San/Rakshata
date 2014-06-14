@@ -73,8 +73,9 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 	{
 		free(mangaDB->chapitresInstalled);
 		mangaDB->chapitresInstalled = NULL;
-		mangaDB->nombreChapitreInstalled = 0;
 	}
+	
+	mangaDB->nombreChapitreInstalled = 0;
 	
     if(mangaDB->chapitresFull == NULL || mangaDB->chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
 		return;

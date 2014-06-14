@@ -70,3 +70,11 @@ void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
     else
 		internalDeleteChapitre(mangaDB, selection, true);
 }
+
+void releaseCTData(MANGAS_DATA data)
+{
+	free(data.chapitresFull);
+	free(data.chapitresInstalled);
+	freeTomeList(data.tomesFull, true);
+	freeTomeList(data.tomesInstalled, true);
+}

@@ -318,10 +318,7 @@
 					[coreView updateContext:newProject];
 					
 					//Coreview en fait aussi une copie, on doit donc release cette version
-					free(newProject.chapitresFull);
-					free(newProject.chapitresInstalled);
-					freeTomeList(newProject.tomesFull, true);
-					freeTomeList(newProject.tomesInstalled, true);
+					releaseCTData(newProject);
 				}
 				
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
@@ -360,6 +357,14 @@
 }
 
 #pragma mark - Drop
+
+- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+{
+	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE || sender == GUI_THREAD_MDL)
+		[coreView updateContext:data];
+	
+	releaseCTData(data);
+}
 
 - (NSDragOperation) dropOperationForSender : (uint) sender
 {

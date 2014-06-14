@@ -939,9 +939,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
 			if(i == posTeamCollector)
 				collector[posTeamCollector++] = mangaDB[pos].team;
 		}
-        free(mangaDB[pos].chapitres);
-        freeTomeList(mangaDB[pos].tomes, true);
-		
+		releaseCTData(mangaDB[pos]);
     }
 	while (posTeamCollector--)
 		free(collector[posTeamCollector]);
@@ -957,13 +955,7 @@ void freeMangaData(MANGAS_DATA* mangaDB)
         return;
 	
 	size_t pos;
-    for(pos = 0; mangaDB[pos].team != NULL; pos++)
-	{
-		free(mangaDB[pos].chapitresFull);
-		free(mangaDB[pos].chapitresInstalled);
-		freeTomeList(mangaDB[pos].tomesFull, true);
-		freeTomeList(mangaDB[pos].tomesInstalled, true);
-    }
+	for(pos = 0; mangaDB[pos].team != NULL; releaseCTData(mangaDB[pos++]));
     free(mangaDB);
 }
 

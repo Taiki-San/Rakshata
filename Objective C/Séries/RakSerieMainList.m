@@ -154,7 +154,7 @@
 		if (_jumpToInstalled != NULL && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];
 		
-		memcpy(&output, &((MANGAS_DATA*) data)[index], sizeof(output));
+		output = getCopyOfProjectData(((MANGAS_DATA*) data)[index]);
 	}
 	else
 		memset(&output, 0, sizeof(output));
@@ -273,10 +273,15 @@
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
-	MANGAS_DATA project = [self getElementAtIndex:row];
+	MANGAS_DATA project = getCopyOfProjectData([self getElementAtIndex:row]);
+	changeTo(project.mangaName, ' ', '_');
+	
 	BOOL isTome = [item defineIsTomePriority:&project alreadyRefreshed:NO];
-
-	[item setDataProject:getCopyOfProjectData(project) isTome:isTome element:VALEUR_FIN_STRUCTURE_CHAPITRE];
+	
+	getUpdatedCTList(&project, true);
+	getUpdatedCTList(&project, false);
+	
+	[item setDataProject:project isTome:isTome element:VALEUR_FIN_STRUCTURE_CHAPITRE];
 }
 
 @end
