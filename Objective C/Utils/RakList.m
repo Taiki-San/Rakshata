@@ -113,7 +113,7 @@
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
 {
-	
+	NSLog(@"[%@] - Weird constraints detected!", self);
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
@@ -366,9 +366,6 @@
 {
 	[super setFrame:frameRect];
 	
-/*	NSRect contentViewFrame = frameRect;	contentViewFrame.origin = NSMakePoint(0, 0);
-	[self.contentView setFrame:contentViewFrame];*/
-	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
 	{
@@ -380,17 +377,9 @@
 	}
 }
 
-/*- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
-{
-	
-}*/
-
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
-	
-/*	NSRect contentViewFrame = frameRect;	contentViewFrame.origin = NSMakePoint(0, 0);
-	[self.contentView setFrame:contentViewFrame];*/
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)

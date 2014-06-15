@@ -184,7 +184,7 @@
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
 {
-	
+	NSLog(@"[%@] - Weird constraints detected!", self);
 }
 
 - (void) refreshViewSize

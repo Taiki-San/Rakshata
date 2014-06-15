@@ -262,7 +262,7 @@
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
 {
-	
+	NSLog(@"[%@] - Weird constraints detected!", self);
 }
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
