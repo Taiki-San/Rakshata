@@ -80,6 +80,11 @@
 	}
 }
 
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	NSLog(@"Weird constraints detected!");
+}
+
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	[self.animator setFrame : [self getButtonFrame:frameRect]];

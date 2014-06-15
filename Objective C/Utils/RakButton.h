@@ -20,6 +20,7 @@
 @interface RakButtonCell : NSButtonCell
 {
 	bool notAvailable;
+	bool canHighlight;
 	
 	NSImage *nonClicked;
 	NSImage *clicked;
@@ -29,5 +30,8 @@
 - (id) initWithPage : (NSString*) imageName : (short) state;
 - (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
 - (id) copyWithZone:(NSZone *)zone;
+
+- (void) setHighlightAllowed : (BOOL) allowed;
+- (bool) isHighlightAllowed;
 
 @end

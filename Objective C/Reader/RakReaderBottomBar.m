@@ -260,6 +260,11 @@
 	[self setFrameInternal:frameRect :NO];
 }
 
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
+}
+
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	if(!readerMode)

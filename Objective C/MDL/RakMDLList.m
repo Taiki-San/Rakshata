@@ -34,6 +34,7 @@
 		{
 			[pause setBordered:YES];		[read setBordered:YES];			[remove setBordered:YES];
 			[pause setButtonType:NSMomentaryChangeButton];	[read setButtonType:NSMomentaryChangeButton];	[remove setButtonType:NSMomentaryChangeButton];
+			[read.cell setHighlightAllowed:NO];	[remove.cell setHighlightAllowed:NO];
 		}
 		
 		controller = _controller;
@@ -73,7 +74,7 @@
 
 - (void) resizeAnimation: (NSRect) frameRect
 {
-	[scrollView.animator setFrame:[self getTableViewFrame:frameRect]];
+	[scrollView setFrame: [self getTableViewFrame:frameRect]];
 }
 
 - (void) setScrollerHidden : (BOOL) hidden

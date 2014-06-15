@@ -35,7 +35,6 @@
 		frameRect.size.width = self.window.frame.size.width;
 	}
 	
-	
 	[super setFrame:frameRect];
 	
 	if(![self.subviews count])

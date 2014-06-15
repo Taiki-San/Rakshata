@@ -107,9 +107,13 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[_tableView setFrame:scrollView.frame];
-		
 		[_tableView reloadData];
 	}
+}
+
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
@@ -121,8 +125,7 @@
 	
 	if(oldWidth != frameRect.size.width)
 	{
-		[_tableView.animator setFrame:scrollviewFrame];
-		
+		[_tableView setFrame:scrollviewFrame];
 		[_tableView reloadData];
 	}
 }
@@ -346,8 +349,7 @@
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
-		self.autoresizesSubviews =		YES;
-		self.translatesAutoresizingMaskIntoConstraints = NO;
+		//		self.autoresizesSubviews =		NO;
 		
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		
@@ -363,7 +365,9 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	//[self.contentView setFrame:frameRect];
+	
+/*	NSRect contentViewFrame = frameRect;	contentViewFrame.origin = NSMakePoint(0, 0);
+	[self.contentView setFrame:contentViewFrame];*/
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
@@ -376,10 +380,17 @@
 	}
 }
 
+/*- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
+}*/
+
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
-	//[[self.contentView animator] setFrame:frameRect];
+	
+/*	NSRect contentViewFrame = frameRect;	contentViewFrame.origin = NSMakePoint(0, 0);
+	[self.contentView setFrame:contentViewFrame];*/
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)

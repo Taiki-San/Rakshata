@@ -182,6 +182,11 @@
 	}
 }
 
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
+}
+
 - (void) refreshViewSize
 {
 	[self setFrame:[self createFrame]];
@@ -472,9 +477,7 @@
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame
 {
-	NSRect prevFrame = [self frame];
-	
-	return memcmp(&prevFrame, &newFrame, sizeof(NSRect)) != 0;
+	return !NSEqualRects([self frame], newFrame);
 }
 
 #pragma mark - Drop support

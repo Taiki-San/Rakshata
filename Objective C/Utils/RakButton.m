@@ -141,6 +141,7 @@
 		nonClicked	= [[RakResPath craftResNameFromContext:imageName : NO : YES : 1] retain];
 		unAvailable = [[RakResPath craftResNameFromContext:imageName : NO : NO : 1] retain];
 		notAvailable = false;
+		canHighlight = true;
 		
 		if(state == RB_STATE_STANDARD && nonClicked != nil)
 			[self setImage:nonClicked];
@@ -182,7 +183,7 @@
 {
 	notAvailable = false;
 	
-	if(value == RB_STATE_HIGHLIGHTED)
+	if(value == RB_STATE_HIGHLIGHTED && canHighlight)
 		[self setImage:clicked];
 	else if(value == RB_STATE_STANDARD)
 		[self setImage:nonClicked];
@@ -191,6 +192,16 @@
 		[self setImage:unAvailable];
 		notAvailable = true;
 	}
+}
+
+- (void) setHighlightAllowed : (BOOL) allowed
+{
+	canHighlight = allowed;
+}
+
+- (bool) isHighlightAllowed
+{
+	return canHighlight;
 }
 
 - (id) copyWithZone:(NSZone *)zone
@@ -205,14 +216,7 @@
 		return;
 	
 	if (flag)
-	{
-		[self setImage:clicked];
 		self.backgroundColor = [NSColor clearColor];
-	}
-	else
-	{
-		[self setImage:nonClicked];
-	}
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
 }

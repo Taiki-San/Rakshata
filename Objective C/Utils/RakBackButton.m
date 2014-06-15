@@ -22,7 +22,7 @@
     self = [super initWithFrame:frame];
     if (self)
 	{
-		[self setAutoresizingMask:NSViewWidthSizable];
+		[self setAutoresizesSubviews:NO];
 		[self setWantsLayer:true];
 		[self setBordered:NO];
 		[self.layer setCornerRadius:4];
@@ -55,6 +55,11 @@
 	newFrame.origin.x = newFrame.origin.y = 0;
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
+}
+
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
 }
 
 - (void) resizeAnimation : (NSRect) frameRect

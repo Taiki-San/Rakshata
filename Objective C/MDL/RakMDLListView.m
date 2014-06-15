@@ -38,13 +38,13 @@
 		if(statusText != nil)		{		[statusText sizeToFit];		}
 		
 		_pause = [pause copy];
-		if(_pause != nil)	{	[self addSubview:_pause];		[_pause setHidden:YES];	}
+		if(_pause != nil)	{	[self addSubview:_pause];		[_pause setHidden:YES];	[_pause.cell setHighlightAllowed: [pause.cell isHighlightAllowed]];	}
 		
 		_read = [read copy];
-		if(_read != nil)	{	[self addSubview:_read];		[_read setHidden:YES];	}
+		if(_read != nil)	{	[self addSubview:_read];		[_read setHidden:YES];	[_read.cell setHighlightAllowed: [read.cell isHighlightAllowed]];	}
 		
 		_remove = [remove copy];
-		if(_remove != nil)	{	[self addSubview:_remove];		[_remove setHidden:NO]; }
+		if(_remove != nil)	{	[self addSubview:_remove];		[_remove setHidden:NO];	[_remove.cell setHighlightAllowed: [remove.cell isHighlightAllowed]]; }
 		
 		DLprogress = [[RakProgressCircle alloc] initWithRadius:11 : NSMakePoint(0, 0)];
 		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
@@ -201,8 +201,10 @@
 		return;
 	
 	[requestName setStringValue : [self getName]];
+	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
 	
 	previousStatus = MDL_CODE_UNUSED;
+	
 	[self updateContext];
 	
 	[self setPositionsOfStuffs];
@@ -221,10 +223,6 @@
 	if(![_pause isHidden])			[_pause setHidden:YES];
 	if(![_read isHidden])			[_read setHidden:YES];
 	if(![DLprogress isHidden])		[DLprogress setHidden:YES];
-	
-	[_read setState:RB_STATE_STANDARD];
-	[_pause setState:RB_STATE_STANDARD];
-	[_remove setState:RB_STATE_STANDARD];
 	
 	previousStatus = newStatus;
 
@@ -318,9 +316,15 @@
 	if((*todoList)->curlHandler != NULL)
 	{
 		if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED)
+		{
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
+			[_pause.cell setState:RB_STATE_STANDARD];
+		}
 		else
+		{
 			curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_ALL);
+			[_pause.cell setState:RB_STATE_HIGHLIGHTED];
+		}
 		
 		(*todoList)->downloadSuspended ^= DLSTATUS_SUSPENDED;
 	}

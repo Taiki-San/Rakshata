@@ -40,6 +40,11 @@
 	[self setFrameInternalViews:[self bounds]];
 }
 
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	
+}
+
 - (void) resizeAnimation : (NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];

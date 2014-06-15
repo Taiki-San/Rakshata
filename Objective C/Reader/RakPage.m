@@ -40,6 +40,7 @@
 		self.borderType =				NSNoBorder;
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
+		self.autoresizesSubviews =		NO;
 		
 		self.verticalScroller.alphaValue =	0;
 		self.horizontalScroller.alphaValue = 0;
@@ -124,6 +125,11 @@
 	[self setFrameInternal: frameRect : NO];
 }
 
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	NSLog(@"Weird constraints detected!");
+}
+
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	if((frameRect.size.width != frameReader.size.width && readerMode) || frameRect.size.height != frameReader.size.height)
@@ -145,6 +151,9 @@
 		[self.animator setFrame:frameReader];
 	else
 		[super setFrame:frameReader];
+	
+	NSRect frameContentView = frameReader;	frameContentView.origin = NSMakePoint(0, 0);
+	[self.contentView setFrame:frameContentView];
 }
 
 - (void) leaveReaderMode
@@ -743,8 +752,8 @@
 	
 	[self updateScrollerAfterResize];
 	
-	[self setFrameSize:frameReader.size];
-	[self setFrameOrigin:frameReader.origin];
+	[super setFrame:frameReader];
+	[self.contentView setFrame:NSMakeRect(0, 0, frameReader.size.width, frameReader.size.height)];
 }
 
 - (void) updateScrollerAfterResize

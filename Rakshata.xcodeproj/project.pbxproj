@@ -216,7 +216,6 @@
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF07BE1868DD58009B16A3 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B6CF07C11868DD58009B16A3 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		B6CF07C21868DD58009B16A3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B6CF07C31868DD58009B16A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = "Rakshata-Prefix.pch"; path = "Objective C/Rakshata-Prefix.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RakAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -564,7 +563,6 @@
 			isa = PBXGroup;
 			children = (
 				B6CF07C11868DD58009B16A3 /* AppKit.framework */,
-				B6CF07C21868DD58009B16A3 /* CoreData.framework */,
 				B6CF07C31868DD58009B16A3 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
