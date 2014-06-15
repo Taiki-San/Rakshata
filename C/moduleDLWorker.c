@@ -185,7 +185,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 													input.todoList->partOfTome, input.todoList->subFolder, input.isTomeAndLastElem && i == nombreElement-1)) {
                 error++;
             }
-            free(listDL[i]); //Free un ptr null ne pose pas de problèmes
+			if (listDL[i] != NULL)
+			{
+				free(((DATA_DL_OBFS*) listDL[i])->data);
+				free(((DATA_DL_OBFS*) listDL[i])->mask);
+				free(listDL[i]);
+			}
         }
         if(error)
             *(input.currentState) = MDL_CODE_ERROR_INSTALL;

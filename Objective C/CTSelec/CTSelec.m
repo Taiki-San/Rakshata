@@ -358,12 +358,19 @@
 
 #pragma mark - Drop
 
-- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
+	BOOL ret_value = NO;
+	
 	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE || sender == GUI_THREAD_MDL)
+	{
 		[coreView updateContext:data];
+		ret_value = YES;
+	}
 	
 	releaseCTData(data);
+	
+	return ret_value;
 }
 
 - (NSDragOperation) dropOperationForSender : (uint) sender

@@ -25,7 +25,7 @@
 
 @end
 
-@interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource, NSDraggingDestination>
+@interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource>
 {
 	void* data;
 	uint amountData;
@@ -61,8 +61,9 @@
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
 
-- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation;
-- (void) fillDragItemWithData : (RakDragItem*) data : (uint) row
-;
+- (void) fillDragItemWithData : (RakDragItem*) data : (uint) row;
+- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation source:(uint) source;
+- (BOOL) receiveDrop : (MANGAS_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
+
 
 @end

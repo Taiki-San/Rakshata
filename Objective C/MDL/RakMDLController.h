@@ -10,6 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define MDLCTRL_getDataFull(data, index, isTome) (isTome ? (data.tomesFull[index].ID) : data.chapitresFull[index])
+#define MDLCTRL_getDataInstalled(data, index, isTome) (isTome ? (data.tomesInstalled[index].ID) : data.chapitresInstalled[index])
+
 @interface RakMDLController : NSObject
 {
 	MDL* _tabMDL;
@@ -39,8 +42,9 @@
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
 
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
-- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value;
+- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value;
 - (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch;
+- (void) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd;
 - (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
 - (void) discardElement : (uint) element;
 

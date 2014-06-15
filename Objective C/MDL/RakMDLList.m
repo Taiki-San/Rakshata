@@ -33,6 +33,7 @@
 		else
 		{
 			[pause setBordered:YES];		[read setBordered:YES];			[remove setBordered:YES];
+			[pause setButtonType:NSMomentaryChangeButton];	[read setButtonType:NSMomentaryChangeButton];	[remove setButtonType:NSMomentaryChangeButton];
 		}
 		
 		controller = _controller;
@@ -151,20 +152,12 @@
 	
 }
 
-- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row { return NO; }
-
-#pragma mark - Drag'n Drop support
-
-- (BOOL) supportReorder {	 return YES;	}
-- (uint) getSelfCode	{	return GUI_THREAD_MDL;	 }
-
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
+- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
-	if(sourceTab == GUI_THREAD_SERIES || sourceTab == GUI_THREAD_CT)
-		return NSDragOperationCopy;
-
-	return NSDragOperationNone;
+	return NO;
 }
+
+#pragma mark - Drag support
 
 - (MANGAS_DATA) getProjectDataForDrag : (uint) row
 {
@@ -214,6 +207,52 @@
 	getUpdatedCTList(&project, false);
 	
 	[item setDataProject : project isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
+}
+
+#pragma mark - Drop support
+
+- (BOOL) supportReorder
+{
+	return YES;
+}
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
+{
+	NSView * view = _tableView.superview;
+	while (view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
+	
+	if(view != nil)
+		return [(RakTabView *) view dropOperationForSender:sourceTab];
+	
+	return [super operationForContext:item :sourceTab :suggestedRow :operation];
+}
+
+- (uint) getSelfCode
+{
+	return GUI_THREAD_MDL;
+}
+
+- (BOOL) receiveDrop : (MANGAS_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+{
+	if (sender == [self getSelfCode])	//Reorder
+	{
+		if(project.team == NULL || element == VALEUR_FIN_STRUCTURE_CHAPITRE || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+			return NO;
+		
+		#warning "Yeah, reorder code!"
+	}
+	else
+	{
+		if(row == -1)
+		{
+			if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
+				[controller addElement:project :isTome :element:NO];
+			else
+				[controller addBatch:project :isTome :YES];
+		}
+	}
+	
+	return YES;
 }
 
 @end

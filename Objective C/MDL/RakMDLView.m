@@ -125,4 +125,9 @@
 	[MDLList needToQuit];
 }
 
+- (BOOL) proxyReceiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+{
+	return (MDLList != nil && [MDLList receiveDrop:data :isTome :element :sender :-1 :NSTableViewDropOn]);
+}
+
 @end

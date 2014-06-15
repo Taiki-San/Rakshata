@@ -290,41 +290,27 @@
 		curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
 	}
 	
-	[_controller setStatusOfID: _row : MDL_CODE_ABORTED : YES];
+	[_controller setStatusOfID: _row : YES : MDL_CODE_ABORTED];
 	[_controller discardElement: _row];
 	(*todoList)->rowViewResponsible = NULL;
 	
 	NSView * view = self;
-	
 	while (view != nil && [view class] != [RakTableView class])
 		view = view.superview;
 	
 	if(view == nil)
 		return;
 	
-	NSInteger row = [(NSTableView*) view rowForView:self];
-	
-	if (row != -1)	//Mostly for the graphical effect
-        [(NSTableView*) view removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:row] withAnimation:NSTableViewAnimationEffectFade];
-	
-	[(NSTableView *) view reloadData];	//Required to redisctribute row IDs
+	[(NSTableView *) view reloadData];
 	
 	if(wasDownloading)
 		MDLDownloadOver();
 	
 	while(view != nil && [view class] != [MDL class])
-	{
 		view = view.superview;
-	}
 	
-	if(view == nil)
-		return;
-	
-	NSRect newMDLFrame = [(MDL*) view createFrame];
-	if([(MDL*) view wouldFrameChange:newMDLFrame])
-	{
-		[(MDL*) view refreshLevelViews:view.superview :REFRESHVIEWS_NO_CHANGE];
-	}
+	if(view != nil)
+		[view setFrame:[(MDL*) view createFrame]];
 }
 
 - (void) sendPause

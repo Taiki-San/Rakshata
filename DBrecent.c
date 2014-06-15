@@ -69,7 +69,7 @@ bool checkRecentDBValid(sqlite3 * DB)
 
 bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 {
-	bool output = false;
+	bool output = false, haveToUpdate = false;
 	
 	sqlite3 *database = getPtrRecentDB();
 	if(database == NULL)
@@ -93,14 +93,31 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 		sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
-			uint nbOccurence = sqlite3_column_int(request, 0);
-			sqlite3_finalize(request);
-			
 			//We'll inject the data now
+			uint nbOccurence = sqlite3_column_int(request, 0);
+			char requestString[200];
 			time_t timestamp = time(NULL);
 			time_t recentRead = wasItADL ? 0 : timestamp, recentDL = wasItADL ? timestamp : 0;
-			char requestString[100];
+
+			sqlite3_finalize(request);
 			
+			haveToUpdate = true;
+			if (nbOccurence != 0)
+			{
+				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_mangaNameShort)" = ?2 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead);
+				
+				if (sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
+				{
+					sqlite3_bind_text(request, 1, data.team->URL_depot, -1, SQLITE_STATIC);
+					sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
+					
+					if(sqlite3_step(request) == SQLITE_ROW)
+						haveToUpdate = sqlite3_column_int(request, 0) == 0;
+				}
+				
+				sqlite3_finalize(request);
+			}
+
 			//We craft the request
 			if(nbOccurence == 0)
 				snprintf(requestString, sizeof(requestString), "INSERT INTO RakHL3IsALie("DBNAMETOID(RDB_REC_lastRead)", "DBNAMETOID(RDB_REC_lastDL)", "DBNAMETOID(RDB_REC_team)", "DBNAMETOID(RDB_REC_mangaNameShort)") values(?1, ?2, ?3, ?4);");
@@ -130,7 +147,8 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 	sqlite3_finalize(request);
 	sqlite3_close(database);
 	
-	updateRecentSeries();
+	if(haveToUpdate)
+		updateRecentSeries();
 
 	return output;
 }

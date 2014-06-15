@@ -89,4 +89,9 @@
     [self setFrameOrigin:newOrigin];
 }
 
+- (void)visualizeConstraints:(NSArray *)constraints
+{
+	NSLog(@"UI just blown up, sorry :/");
+}
+
 @end

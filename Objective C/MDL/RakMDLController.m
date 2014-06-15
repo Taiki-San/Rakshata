@@ -57,6 +57,7 @@
 		MDLQuit();
 }
 
+#warning "Don't save paused elements"
 - (NSString *) serializeData
 {
 	for(int pos = 0; pos < nbElem; pos++)
@@ -222,6 +223,56 @@
 	}
 }
 
+- (void) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
+{
+	//We assume our data are up-to-date
+	int previousElem = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	uint posFull = 0, posInst = 0, nbFull, nbInst;
+	
+	if (isTome)
+	{
+		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.tomesFull[0].ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+			return;
+		
+		nbFull = data.nombreTomes;
+		nbInst = data.nombreTomesInstalled;
+	}
+	else
+	{
+		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
+			return;
+
+		nbFull = data.nombreChapitre;
+		nbInst = data.nombreChapitreInstalled;
+	}
+	
+	//On choppe les trous
+	for (; posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE && posInst < nbInst && MDLCTRL_getDataInstalled(data, posInst, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE; posFull++)
+	{
+		if (MDLCTRL_getDataFull(data, posFull, isTome) == MDLCTRL_getDataInstalled(data, posInst, isTome))
+			posInst++;
+		else
+		{
+			if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+				[self addElement:data :isTome :previousElem :YES];
+			
+			previousElem = MDLCTRL_getDataFull(data, posFull, isTome);
+		}
+	}
+	
+	//Le burst de fin
+	while (posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	{
+		if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			[self addElement:data :isTome :previousElem :YES];
+		
+		previousElem = MDLCTRL_getDataFull(data, posFull++, isTome);
+	}
+	
+	if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		[self addElement:data :isTome :previousElem : !launchAtTheEnd];
+}
+
 - (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
 {
 	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
@@ -240,7 +291,7 @@
 	}
 }
 
-- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (uint8_t) value
+- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value
 {
 	if(row >= (considerDiscarded ? discardedCount : nbElem) || status == NULL)
 		return;

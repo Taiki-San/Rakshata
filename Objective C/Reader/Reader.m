@@ -275,8 +275,6 @@
 	
 	if(bottomBar != nil)
 		[bottomBar leaveReaderMode];
-	
-	[self setAutoresizesSubviews:NO];
 }
 
 - (void) willOpenReader
@@ -286,8 +284,6 @@
 	
 	if(bottomBar != nil)
 		[bottomBar startReaderMode];
-	
-	[self setAutoresizesSubviews:YES];
 }
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
@@ -430,13 +426,20 @@
 
 #pragma mark - Drop support
 
-- (void) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
+	BOOL ret_value = NO;
+	
 	if(element != VALEUR_FIN_STRUCTURE_CHAPITRE &&
 		(sender != GUI_THREAD_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
-			[self updateContextNotification:data :isTome :element];
+	{
+		[self updateContextNotification:data :isTome :element];
+		ret_value = YES;
+	}
 	
 	releaseCTData(data);
+	
+	return ret_value;
 }
 
 - (NSDragOperation) dropOperationForSender : (uint) sender

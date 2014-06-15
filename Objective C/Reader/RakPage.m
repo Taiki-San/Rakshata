@@ -40,14 +40,11 @@
 		self.borderType =				NSNoBorder;
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
-		self.needsDisplay =				YES;
-		self.autoresizesSubviews =		YES;
 		
 		self.verticalScroller.alphaValue =	0;
 		self.horizontalScroller.alphaValue = 0;
 				
 		[superView addSubview:self];
-		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	}
 	return self;
 }

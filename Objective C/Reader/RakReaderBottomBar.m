@@ -20,8 +20,7 @@
 	
 	if(self != nil)
 	{
-		[self setTranslatesAutoresizingMaskIntoConstraints:NO];
-		[self setAutoresizesSubviews:YES];
+		[self setAutoresizesSubviews:NO];
 		[parent addSubview:self];
 		
 		readerMode = parent->readerMode;

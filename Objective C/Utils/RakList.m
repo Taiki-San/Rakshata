@@ -261,17 +261,35 @@
 	return YES;
 }
 
-- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
-{
-	return YES;
-}
 
-#pragma mark - Drag'n drop support
+#pragma mark - Drag'n drop control
 
 - (void) fillDragItemWithData : (RakDragItem*) data : (uint) row
 {
 	
 }
+
+- (BOOL) receiveDrop : (MANGAS_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+{
+	NSLog(@"Project: %s - isTome: %d - element: %d - sender: %d - row: %ld - operation: %lu", project.mangaName, isTome, element, sender, (long)row, (unsigned long)operation);
+	return YES;
+}
+
+- (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation source:(uint) source
+{
+	//Import task
+	
+	NSPasteboard * pasteboard = [info draggingPasteboard];
+	
+	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
+	
+	if (item == nil || [item class] != [RakDragItem class])
+		return NO;
+	
+	return [self receiveDrop:item.project :item.isTome :item.selection :source :row :operation];
+}
+
+#pragma mark - Drag'n drop support
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
@@ -289,21 +307,9 @@
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
-- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
-{
-	//Only used by MDL
-	return [self defineDropAuthorizations:info proposedRow:row];
-}
-
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
-}
-
-- (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
-{
-	//Does the actual work after the drop
-	return [self acceptDrop:info  row:row dropOperation:operation];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
@@ -311,11 +317,17 @@
 	//Need to cleanup once the drag is over
 }
 
-#pragma mark - NSDraggingDestination support
+//Drop support, only used by MDL for now
 
-- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
+- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
-	return NSDragOperationMove;
+	return [self defineDropAuthorizations:info sender:[RakDragResponder getOwnerOfTV:[info draggingSource]] proposedRow:row operation:operation];
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	//Does the actual work after the drop
+	return [self acceptDrop:info  row:row dropOperation:operation source:[RakDragResponder getOwnerOfTV:[info draggingSource]]];
 }
 
 @end
@@ -337,6 +349,8 @@
 		self.autoresizesSubviews =		YES;
 		self.translatesAutoresizingMaskIntoConstraints = NO;
 		
+		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+		
 		self.verticalScroller.alphaValue =	0;
 		self.horizontalScroller.alphaValue = 0;
 		
@@ -349,6 +363,7 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
+	//[self.contentView setFrame:frameRect];
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
@@ -364,6 +379,7 @@
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
+	//[[self.contentView animator] setFrame:frameRect];
 	
 	NSScroller * scroller = self.verticalScroller;
 	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)

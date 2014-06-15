@@ -69,23 +69,21 @@
 	[pboard declareTypes:[NSArray arrayWithObject: PROJECT_PASTEBOARD_TYPE] owner:self];
 }
 
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
 {
 	return NSDragOperationNone;
 }
 
-- (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info proposedRow:(NSInteger)row
+- (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation
 {
-	uint tab = [RakDragResponder getOwnerOfTV:[info draggingSource]];
-	
-	if(tab == [self getSelfCode])
+	if(sender == [self getSelfCode])
 	{
 		if([self supportReorder])
 			return NSDragOperationMove;
 		
 		return NSDragOperationNone;
 	}
-	return [self operationForContext:info :tab :row];
+	return [self operationForContext:info :sender :row :NSTableViewDropOn];
 }
 
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view

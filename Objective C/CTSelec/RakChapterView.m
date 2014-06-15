@@ -269,8 +269,6 @@
 	
 	if (self != nil)
 	{
-		[self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
 		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
 		[buttons setTarget:self];
 		[buttons setAction:@selector(switchIsTome:)];
@@ -474,10 +472,10 @@
 		return;
 
 	getUpdatedChapterList(&data, true);
-	[tableViewControllerChapter reloadData : data : data.nombreChapitre : data.chapitresInstalled : NO];
+	[tableViewControllerChapter reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : NO];
 		
 	getUpdatedTomeList(&data, true);
-	[tableViewControllerVolume reloadData : data : data.nombreTomes : data.tomesInstalled : NO];
+	[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : NO];
 }
 
 - (void) updateContext : (MANGAS_DATA) newData

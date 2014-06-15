@@ -305,4 +305,9 @@
 	return [super dropOperationForSender:sender];
 }
 
+- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender;
+{
+	return (coreView != nil && [coreView proxyReceiveDrop:data :isTome :element :sender]);
+}
+
 @end

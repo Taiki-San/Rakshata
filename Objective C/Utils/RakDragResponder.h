@@ -26,8 +26,8 @@
 - (NSString *) reorderCode;
 
 + (void) registerToPasteboard : (NSPasteboard *) pboard;
-- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow;
-- (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info proposedRow:(NSInteger)row;
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation;
+- (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation;
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
 
 
