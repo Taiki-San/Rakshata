@@ -292,6 +292,11 @@
 	return [self receiveDrop:item.project :item.isTome :item.selection :source :row :operation];
 }
 
+- (void) cleanupDrag
+{
+	
+}
+
 #pragma mark - Drag'n drop support
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
@@ -318,6 +323,7 @@
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
 	//Need to cleanup once the drag is over
+	[self cleanupDrag];
 }
 
 //Drop support, only used by MDL for now

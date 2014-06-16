@@ -57,7 +57,7 @@
 		MDLQuit();
 }
 
-#warning "Don't save paused elements"
+#warning "Don't save paused elements. Also, should use IDToPosition"
 - (NSString *) serializeData
 {
 	for(int pos = 0; pos < nbElem; pos++)
@@ -223,16 +223,16 @@
 	}
 }
 
-- (void) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
+- (uint) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
 {
 	//We assume our data are up-to-date
 	int previousElem = VALEUR_FIN_STRUCTURE_CHAPITRE;
-	uint posFull = 0, posInst = 0, nbFull, nbInst;
+	uint posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
 	
 	if (isTome)
 	{
 		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.tomesFull[0].ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
-			return;
+			return countInjected;
 		
 		nbFull = data.nombreTomes;
 		nbInst = data.nombreTomesInstalled;
@@ -240,7 +240,7 @@
 	else
 	{
 		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
-			return;
+			return countInjected;
 
 		nbFull = data.nombreChapitre;
 		nbInst = data.nombreChapitreInstalled;
@@ -254,7 +254,10 @@
 		else
 		{
 			if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			{
 				[self addElement:data :isTome :previousElem :YES];
+				countInjected++;
+			}
 			
 			previousElem = MDLCTRL_getDataFull(data, posFull, isTome);
 		}
@@ -264,13 +267,56 @@
 	while (posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE)
 	{
 		if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		{
 			[self addElement:data :isTome :previousElem :YES];
+			countInjected++;
+		}
 		
 		previousElem = MDLCTRL_getDataFull(data, posFull++, isTome);
 	}
 	
 	if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
-		[self addElement:data :isTome :previousElem : !launchAtTheEnd];
+	{
+		[self addElement:data :isTome :previousElem :!launchAtTheEnd];
+		countInjected++;
+	}
+	
+	return countInjected;
+}
+
+- (void) reorderElements : (uint) posStart : (uint) posEnd : (uint) injectionPoint
+{
+	if(IDToPosition == NULL)
+		return;
+	
+	if (posStart > posEnd || posEnd >= discardedCount || (injectionPoint >= posStart && injectionPoint <= posEnd))
+	{
+		NSLog(@"Invalid data");
+		return;
+	}
+	
+	if(injectionPoint == discardedCount)
+		injectionPoint--;
+
+	uint size = (posEnd - posStart + 1);
+	bool isMovingPartBeforeInsertion = posEnd < injectionPoint;
+	uint * movingPart = malloc(size);
+	
+	if (movingPart == NULL)
+	{
+		memoryError(size * sizeof(uint));
+		return;
+	}
+	else
+		memcpy(movingPart, &IDToPosition[posStart], size * sizeof(uint));
+	
+	if(isMovingPartBeforeInsertion)
+		memcpy(&IDToPosition[posStart], &IDToPosition[posStart + size], (--injectionPoint - posStart) * sizeof(uint));
+	else
+		memcpy(&IDToPosition[injectionPoint + size], &IDToPosition[injectionPoint], (posStart - injectionPoint) * sizeof(uint));
+	
+	memcpy(&IDToPosition[injectionPoint], movingPart, size * sizeof(uint));
+	free(movingPart);
 }
 
 - (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element

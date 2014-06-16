@@ -21,6 +21,9 @@
 	RakButton * pause;
 	RakButton * read;
 	RakButton * remove;
+	
+	bool dragInProgress;
+	uint draggedElement;
 }
 
 - (id) init : (NSRect) frame : (RakMDLController *) _controller;

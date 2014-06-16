@@ -39,7 +39,8 @@
 		
 		controller = _controller;
 		cellHeight = MDLLIST_CELL_HEIGHT;
-				
+		dragInProgress = false;
+		
 		[self applyContext:frame : -1 : -1];
 		[_tableView setRowHeight:cellHeight];
 		[scrollView setHasHorizontalScroller:NO];
@@ -208,6 +209,13 @@
 	getUpdatedCTList(&project, false);
 	
 	[item setDataProject : project isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
+	
+	dragInProgress = true;		draggedElement = row;
+}
+
+- (void) cleanupDrag
+{
+	dragInProgress = false;
 }
 
 #pragma mark - Drop support
@@ -240,16 +248,24 @@
 		if(project.team == NULL || element == VALEUR_FIN_STRUCTURE_CHAPITRE || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
-		#warning "Yeah, reorder code!"
+		if(!dragInProgress)
+			return NO;
+		
+		[controller reorderElements:draggedElement :draggedElement :row];
+		[_tableView reloadData];
 	}
 	else
 	{
-		if(row == -1)
+		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
+		if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			[controller addElement:project :isTome :element:NO];
+		else
+			nbElemInjected = [controller addBatch:project :isTome :YES];
+		
+		if(row != -1 && nbElemInjected != 0)
 		{
-			if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
-				[controller addElement:project :isTome :element:NO];
-			else
-				[controller addBatch:project :isTome :YES];
+			nbElemEnd = [controller getNbElem:YES];
+			[controller reorderElements:nbElemStart : nbElemEnd - 1 :row];
 		}
 	}
 	
