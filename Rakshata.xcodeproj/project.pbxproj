@@ -74,7 +74,6 @@
 		B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6EDE77318B02BCC00DB3AFC /* Credits.rtf */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
-		B6F6ECEA18A3001400E3B55B /* affichage.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA318A3001400E3B55B /* affichage.c */; };
 		B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA418A3001400E3B55B /* chapitre.c */; };
 		B6F6ECEC18A3001400E3B55B /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA518A3001400E3B55B /* check.c */; };
 		B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA818A3001400E3B55B /* pbkdf2.c */; };
@@ -240,7 +239,6 @@
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
-		B6F6ECA318A3001400E3B55B /* affichage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = affichage.c; path = C/affichage.c; sourceTree = "<group>"; };
 		B6F6ECA418A3001400E3B55B /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = C/chapitre.c; sourceTree = "<group>"; };
 		B6F6ECA518A3001400E3B55B /* check.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = check.c; path = C/check.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6F6ECA718A3001400E3B55B /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto.h; sourceTree = "<group>"; };
@@ -352,7 +350,6 @@
 		B66B4627189A7129000354D1 /* C Core */ = {
 			isa = PBXGroup;
 			children = (
-				B6F6ECA318A3001400E3B55B /* affichage.c */,
 				B6F6ED1F18A3007F00E3B55B /* Core */,
 				B6F6ED1E18A3007600E3B55B /* DB */,
 				B6F6ED2018A31EF600E3B55B /* Headers */,
@@ -916,7 +913,6 @@
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,
 				B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */,
 				B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */,
-				B6F6ECEA18A3001400E3B55B /* affichage.c in Sources */,
 				B64D1561191058A200B6E47F /* RakMDLController.m in Sources */,
 				B69D61D5186CA2F2003504F9 /* Reader.m in Sources */,
 			);

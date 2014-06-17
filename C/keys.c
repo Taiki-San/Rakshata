@@ -153,7 +153,6 @@ int earlyInit(int argc, char *argv[])
     getToWD(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
-    loadPalette();
     resetUpdateDBCache();
     initializeDNSCache();
 
@@ -178,7 +177,7 @@ int get_compte_infos()
 	if(!loadEmailProfile())
     {
         if(!checkFileExist(SECURE_DATABASE))
-            welcome();
+            firstLaunch();
         if(logon() == PALIER_QUIT)
             return PALIER_QUIT;
         if(!loadEmailProfile())

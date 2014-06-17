@@ -10,11 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-/**Affichage.c**/
-void welcome();
-void raffraichissmenent(bool forced);
-void loadPalette();
-
 /**Chapitre.c**/
 void refreshChaptersList(MANGAS_DATA *mangaDB);
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre);

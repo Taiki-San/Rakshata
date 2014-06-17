@@ -111,7 +111,7 @@ void addRepoByFile()
     if(addRepoByFileInProgress)
     {
         if(ajoutRepo(true) > 0)
-            raffraichissmenent(true);
+            updateDatabase(true);
     }
 	return;
 }

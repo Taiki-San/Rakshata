@@ -12,6 +12,8 @@
 
 void * sharedTabMDL;
 
+void firstLaunch();
+
 /*****************************************
  **										**
  **				  ERRORS				**
