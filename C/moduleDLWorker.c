@@ -34,6 +34,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     bool isTome = input.todoList->listChapitreOfTome != NULL, DLAborted;
     int i, nombreElement = isTome ? input.todoList->nbElemList : 1;
 	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0;
+	bool didElemGotDownloaded[nombreElement];
 	
     argument.todoList = &todoListTmp;
     todoListTmp.datas = input.todoList->datas;
@@ -62,6 +63,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	
     for(i = 0; i < nombreElement; i++)
     {
+		didElemGotDownloaded[i] = false;
         todoListTmp.listChapitreOfTome = NULL;
         todoListTmp.tomeName = NULL;
 		
@@ -89,6 +91,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
 					ouvrirSite(todoListTmp.datas->team->site); //Ouverture du site de la team
 				}
+				
+				didElemGotDownloaded[i] = true;
 				argument.buf = NULL;
 				argument.length = 0;
 				
@@ -183,10 +187,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		
         for(i = 0; i < nombreElement; i++)
         {
-            if(listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
+            if(didElemGotDownloaded[i] && (listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
 											isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
 											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCTURE_CHAPITRE,
-											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1)))
+											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1))))
 			{
                 error++;
             }
