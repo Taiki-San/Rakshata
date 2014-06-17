@@ -61,7 +61,7 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
 			{
 				if(isChapterShared(NULL, mangaDB, tmp))
 				{
-					if(IDRequested%10)
+					if(tmp % 10)
 						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", tmp/10, tmp%10);
 					else
 						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", tmp/10);

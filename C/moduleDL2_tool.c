@@ -461,6 +461,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	
     int length = strlen(tomeDatas->datas->team->teamLong) + strlen(tomeDatas->datas->mangaName) + 100;
     char *bufferDL = NULL;
+	bool mayHaveAlreadyBeenHere = false;
 	
 	if(length < 0)	//overflow
 		return false;
@@ -471,7 +472,8 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
     
 	if(length)
     {
-		bufferDL = malloc(length+1);
+		mayHaveAlreadyBeenHere = true;
+		bufferDL = malloc(length + 1);
 		if(bufferDL == NULL)
 			return NULL;
 
@@ -485,7 +487,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 			return NULL;
 		}
 		else
-			bufferPath[length] = 0;
+			bufferDL[length] = 0;
 	}
     else
     {
@@ -536,8 +538,8 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	//Count the elements in the come
 	nombreEspace = countSpaces(bufferDL);	//We count spaces in the file, there won't be more elements, but maybe less (invalid data)
 	
-	//+2?
-	DATA_LOADED_TOME_DETAILS * output = calloc(nombreEspace + 2, sizeof(DATA_LOADED_TOME_DETAILS));
+	//+ 1 because there is no space after last element
+	DATA_LOADED_TOME_DETAILS * output = calloc(nombreEspace + 1, sizeof(DATA_LOADED_TOME_DETAILS));
 	if(output == NULL)
 	{
 		free(bufferDL);
@@ -596,29 +598,35 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(tomeDatas->datas != NULL && tomeDatas->datas->tomesFull != NULL)
 	{
 		//On cherche notre correspondance dans la structure afin de choper le nom du tome
-		for(i = 0; i < tomeDatas->datas->nombreTomes && tomeDatas->datas->tomesFull[i].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && tomeDatas->datas->tomesFull[i].ID != tomeDatas->identifier; i++);
-		if(tomeDatas->datas->tomesFull[i].ID == tomeDatas->identifier)
+		i = getPosForID(*tomeDatas->datas, false, tomeDatas->identifier);
+		
+		if(i != -1)
 		{
 			if(tomeDatas->datas->tomesFull[i].name[0] != 0)
 				tomeDatas->tomeName = tomeDatas->datas->tomesFull[i].name;
 		}
 	}
 	
-	//On va vérifier si le tome est pas déjà lisible
-	uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + strlen(tomeDatas->datas->mangaName) + 100;
-	char bufferPathTmp[lengthTmp];
-	
-	snprintf(bufferPath, lengthTmp, "manga/%s/%s/Tome_%d/%s", tomeDatas->datas->team->teamLong, tomeDatas->datas->mangaName, tomeDatas->identifier, CONFIGFILETOME);
-	rename(bufferPathTmp, bufferPath);
-	
-	if(checkTomeReadable(*tomeDatas->datas, tomeDatas->identifier)) //Si déjà lisible, on le dégage de la liste
+	if(mayHaveAlreadyBeenHere)
 	{
-		free(tomeDatas->listChapitreOfTome);
-		tomeDatas->listChapitreOfTome = NULL;
-		return false;
-	}
-	else
+		//On va vérifier si le tome est pas déjà lisible
+		uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + strlen(tomeDatas->datas->mangaName) + 100;
+		char bufferPathTmp[lengthTmp];
+		
+		snprintf(bufferPathTmp, lengthTmp, "manga/%s/%s/Tome_%d/%s", tomeDatas->datas->team->teamLong, tomeDatas->datas->mangaName, tomeDatas->identifier, CONFIGFILETOME);
 		rename(bufferPath, bufferPathTmp);
+		
+		refreshTomeList(tomeDatas->datas);
+		
+		if(checkTomeReadable(*tomeDatas->datas, tomeDatas->identifier)) //Si déjà lisible, on le dégage de la liste
+		{
+			free(tomeDatas->listChapitreOfTome);
+			tomeDatas->listChapitreOfTome = NULL;
+			return false;
+		}
+		else
+			rename(bufferPath, bufferPathTmp);
+	}
 	
     free(bufferDL);
     return true;

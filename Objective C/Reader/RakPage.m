@@ -685,7 +685,7 @@
 
 - (void) deleteElement
 {
-	NSAlert * alert = [[NSAlert alloc] init];
+	NSAlert * alert = [[[NSAlert alloc] init] autorelease];
 	
 	[alert setAlertStyle:NSInformationalAlertStyle];
 	[alert setMessageText:[NSString stringWithFormat:@"Suppression d'un %s", isTome ? "tome" : "chapitre"]];
@@ -698,21 +698,18 @@
 	
 	if([alert runModal] == NSAlertFirstButtonReturn)
 	{
-		[alert release];
 		while (cacheBeingBuilt);
 		internalDeleteCT(project, isTome, currentElem);
 		
 		getUpdatedCTList(&project, isTome);
 		
-		if(posElemInStructure != isTome ? project.nombreTomesInstalled : project.nombreChapitreInstalled)
+		if(posElemInStructure != (isTome ? project.nombreTomesInstalled : project.nombreChapitreInstalled))
 			[self nextChapter];
 		else if(posElemInStructure > 0)
 			[self prevChapter];
 		else
 			[self failure];
 	}
-	else
-		[alert release];
 }
 
 - (void) addPageToView

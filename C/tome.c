@@ -153,13 +153,12 @@ void setTomeReadable(MANGAS_DATA mangaDB, int ID)
 //Require the ID of the element in tomeFull
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
-	if(mangaDB.tomesFull == NULL || ID >= mangaDB.nombreTomes)
+	if(mangaDB.tomesFull == NULL)
 		return false;
 	
-	uint pos = 0, nbTomes = mangaDB.nombreTomes, posDetails;
-	for(; pos < nbTomes && mangaDB.tomesFull[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomesFull[pos].ID != ID; pos++);
+	uint pos = getPosForID(mangaDB, false, ID), posDetails;
 	
-	if(mangaDB.tomesFull[pos].ID != ID || mangaDB.tomesFull[pos].details == NULL)
+	if(pos == -1 || mangaDB.tomesFull[pos].ID != ID || mangaDB.tomesFull[pos].details == NULL)
 		return false;
 	
 	CONTENT_TOME * cache = mangaDB.tomesFull[pos].details;
@@ -192,7 +191,7 @@ bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 				snprintf(fullPath, sizeof(fullPath), "%s/%s/shared", basePath, intermediaryDirectory);
 				if(!checkFileExist(fullPath))
 				{
-					MDL_createSharedFile(mangaDB, cache[posDetails].ID, ID);
+					MDL_createSharedFile(mangaDB, cache[posDetails].ID, pos);
 				}
 			}
 		}
@@ -407,7 +406,9 @@ void printTomeDatas(MANGAS_DATA mangaDB, char *bufferDL, int tome)
             if(out == NULL)
                 return;
         }
-        if(fwrite(bufferDL, strlen(bufferDL), 1, out) != 1) //Write data then check if everything went fine
+		
+		uint lengthBufferDL = strlen(bufferDL);
+        if(fwrite(bufferDL, sizeof(char), lengthBufferDL, out) != lengthBufferDL) //Write data then check if everything went fine
         {
             logR("Failed at write tome infos");
 #ifdef DEV_VERSION
@@ -446,7 +447,7 @@ int extractNumFromConfigTome(char *input, int ID)
 
 void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters)
 {
-	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50, position = tomeDelete, limit;
+	uint length = strlen(mangaDB.team->teamLong) + strlen(mangaDB.mangaName) + 50, position;
     char dir[length];
 	
 	if(mangaDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
@@ -457,25 +458,9 @@ void internalDeleteTome(MANGAS_DATA mangaDB, int tomeDelete, bool careAboutLinke
 		return;
 	}
 	
-	if(tomeDelete >= mangaDB.nombreTomesInstalled || mangaDB.tomesInstalled[tomeDelete].ID != tomeDelete)
-	{
-		if(tomeDelete >= mangaDB.nombreTomesInstalled)
-		{
-			position = tomeDelete = mangaDB.nombreTomesInstalled - 1;
-			limit = 0;
-		}
-		else if(mangaDB.tomesInstalled[tomeDelete].ID > tomeDelete)
-			limit = 0;
-		else
-			limit = mangaDB.nombreTomesInstalled;
-		
-		if(limit == 0)
-			for(position++; position > 0 && mangaDB.tomesInstalled[--position].ID > tomeDelete;);	//Gérer l'unsigned
-		else
-			for (; position < limit && mangaDB.tomesInstalled[position].ID < tomeDelete; position++);
-	}
+	position = getPosForID(mangaDB, true, tomeDelete);
 	
-	if(mangaDB.tomesInstalled[position].ID == tomeDelete)
+	if(position != -1 && mangaDB.tomesInstalled[position].details != NULL)
 	{
 		int curID;
 		char basePath[2*LONGUEUR_NOM_MANGA_MAX + 50], dirToChap[2*LONGUEUR_NOM_MANGA_MAX + 100];

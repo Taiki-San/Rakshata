@@ -256,6 +256,8 @@
 	}
 	else
 	{
+		getUpdatedCTList(&project, isTome);
+		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
 		if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
 			[controller addElement:project :isTome :element:NO];

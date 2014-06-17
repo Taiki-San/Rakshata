@@ -42,9 +42,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	
 	if (isTome && todoListTmp.datas->tomesFull != NULL)	//We find the tome position
 	{
-		for(posTomeInStruct = 0; posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && todoListTmp.datas->tomesFull[posTomeInStruct].ID != input.todoList->identifier; posTomeInStruct++);
+		posTomeInStruct = getPosForID(*todoListTmp.datas, false, input.todoList->identifier);
 	
-		if(posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(posTomeInStruct == -1)
 			posTomeInStruct = ERROR_CHECK;
 	}
 	
@@ -145,7 +145,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(isTome)
 				{
-					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, input.todoList->identifier);
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
 				}
 				
 				if(i + 1 == nombreElement && *(input.currentState) == MDL_CODE_DL)
