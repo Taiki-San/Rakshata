@@ -44,11 +44,11 @@ void releaseDNSCache()
 
 /** Chapter download **/
 
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, CURL ** curlHandler)
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler)
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
-	uint downloadSpeed = 0;
+	double percentage;
 	uint64_t prevDLBytes = 0;
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
@@ -70,14 +70,17 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
         {
 			if(prevDLBytes != downloadData.bytesDownloaded)
             {
+#if 0
                 if(!downloadSpeed)
                     downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) / 1024;
                 else
                     downloadSpeed = (downloadSpeed*2 + (downloadData.bytesDownloaded - prevDLBytes) / 1024) / 3;
+#endif
 
                 prevDLBytes = downloadData.bytesDownloaded;
+				percentage = (currentPos * 100 / nbElem) + (downloadData.bytesDownloaded * 100) / (downloadData.totalExpectedSize * nbElem);
 
-				updatePercentage(*rowViewResponsible, downloadData.bytesDownloaded * 100.0f / downloadData.totalExpectedSize);
+				updatePercentage(*rowViewResponsible, percentage);
 
 				usleep(50000);	//100 ms
             }

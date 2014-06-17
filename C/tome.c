@@ -432,6 +432,12 @@ int extractNumFromConfigTome(char *input, int ID)
 		snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
 		if(!strncmp(input, basePath, strlen(basePath)))
 			posDebut = strlen(basePath);
+		else
+		{
+			snprintf(basePath, 100, "Tome_%d/native/Chapitre_", ID);
+			if(!strncmp(input, basePath, strlen(basePath)))
+				posDebut = strlen(basePath);
+		}
 	}
 
     if(posDebut)

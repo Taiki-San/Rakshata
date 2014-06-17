@@ -151,8 +151,8 @@ typedef struct download_data_struct
 } TMP_DL;
 
 typedef struct {
-	uint bytesDownloaded;
-	uint totalExpectedSize;
+	size_t bytesDownloaded;
+	size_t totalExpectedSize;
 	
 	TMP_DL * outputContainer;
 	CURL ** curlHandler;
@@ -209,7 +209,7 @@ extern int WINDOW_SIZE_H_DL;
 extern int WINDOW_SIZE_W_DL;
 
 /**Download.c**/
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, CURL ** curlHandler);
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
 bool startMDL(char *state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElem, bool * quit, void * mainTab);
@@ -245,7 +245,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 
 /**ModuleDLWorker.c**/
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
-bool MDLTelechargement(DATA_MOD_DL* input);
+bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem);
 void MDLUpdateKillState(bool newState);
 bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
 

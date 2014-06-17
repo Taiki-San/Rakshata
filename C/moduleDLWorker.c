@@ -92,7 +92,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				argument.buf = NULL;
 				argument.length = 0;
 				
-				if(MDLTelechargement(&argument))
+				if(MDLTelechargement(&argument, i, nombreElement))
 				{
 					if(i + 1 == nombreElement)
 						*(input.currentState) = MDL_CODE_ERROR_DL;
@@ -252,7 +252,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
  *   	file_not_found
  */
 
-bool MDLTelechargement(DATA_MOD_DL* input)
+bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 {
     bool output = false;
     int ret_value = CODE_RETOUR_OK, i;
@@ -274,7 +274,7 @@ bool MDLTelechargement(DATA_MOD_DL* input)
             dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
 			
 			//La structure est supposée contenir un double pointeur mais ici un triple
-            ret_value = downloadChapter(&dataDL, input->todoList->downloadSuspended, input->todoList->rowViewResponsible, input->todoList->curlHandler);
+            ret_value = downloadChapter(&dataDL, input->todoList->downloadSuspended, input->todoList->rowViewResponsible, currentPos, nbElem, input->todoList->curlHandler);
             free(dataDL.URL);
 			
 			if(ret_value != CODE_RETOUR_OK)
