@@ -65,6 +65,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		}
 			
 		case GET_COLOR_INACTIVE:
+		case GET_COLOR_BORDERS_COREVIEWS:
 		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];

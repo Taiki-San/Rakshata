@@ -19,6 +19,7 @@
 	{
 		flag = GUI_THREAD_MDL;
 		needUpdateMainViews = NO;
+		isForcedToShowUp = NO;
 		self = [self initView: contentView : state];
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
@@ -108,6 +109,42 @@
 	}
 }
 
+/*Drag and drop UI effects*/
+
+- (void) setForcedToShowUp : (BOOL) forced	{	isForcedToShowUp = forced;	}
+- (BOOL) isForcedToShowUp {		return isForcedToShowUp;	}
+
+- (BOOL) isDisplayed
+{
+	return (isForcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
+}
+
+- (void) dragAndDropStarted:(BOOL)started
+{
+	if(started)
+	{
+		if([self isForcedToShowUp])
+			[self setForcedToShowUp:NO];
+		
+		if([self isDisplayed])
+			return;
+		
+		[self setForcedToShowUp:YES];
+		
+		
+	}
+	else if ([self isForcedToShowUp])
+		[self setForcedToShowUp:NO];
+
+	else
+		return;
+	
+	[coreView hideList:[self isForcedToShowUp]];
+	[coreView setFocusDrop:[self isForcedToShowUp]];
+	needUpdateMainViews = YES;
+	[self updateDependingViews];
+}
+
 /*Internal stuffs*/
 
 - (BOOL) isStillCollapsedReaderTab
@@ -121,7 +158,7 @@
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superView];
 	
-	if(coreView != nil)
+	if(coreView != nil && !isForcedToShowUp)
 	{
 		maximumSize.size.height = round(maximumSize.size.height);
 		
@@ -202,6 +239,12 @@
 
 - (BOOL) acceptsFirstMouse:(NSEvent *)theEvent { return NO; }
 - (BOOL) acceptsFirstResponder { return NO; }
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	if(![self isForcedToShowUp])
+		[super mouseEntered:theEvent];
+}
 
 /**	 Get View Size	**/
 

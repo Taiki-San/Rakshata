@@ -13,10 +13,16 @@
 @interface RakTabContentTemplate : NSView
 {
 	uint mainThread;
+	
+	BOOL isFocusDrop;
 }
 
 - (void) setupInternal;
 - (NSString *) getContextToGTFO;
+
+- (void) setFocusDrop : (BOOL) isFocus;
+- (BOOL) isFocusDrop;
+- (void) updateViewForFocusDrop;
 
 - (void) resizeAnimation : (NSRect)frameRect;
 
@@ -26,6 +32,9 @@
 - (void) retainInternalViews;
 - (void) releaseInternalViews;
 
+- (void) drawFocusRing;
+
 - (NSColor*) getBackgroundColor;
+- (NSColor*) getBorderColor;
 
 @end

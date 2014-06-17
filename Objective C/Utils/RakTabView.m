@@ -472,7 +472,9 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	return sharedTabMDL;
+	if(sharedTabMDL != NULL && (!requireAvailable || [(MDL*) sharedTabMDL isDisplayed]))
+		return sharedTabMDL;
+	return nil;
 }
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame
@@ -483,6 +485,11 @@
 #pragma mark - Drop support
 
 //Control
+
+- (void) dragAndDropStarted : (BOOL) started
+{
+	
+}
 
 - (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
 {

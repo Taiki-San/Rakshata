@@ -34,7 +34,7 @@
 
 - (NSColor *) getBarColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS];
 }
 
 - (CGFloat) getFontSize

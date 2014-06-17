@@ -26,6 +26,15 @@
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
 		if(MDLList != nil)			[MDLList setSuperView:self];
+		
+		dropPlaceHolder = [[RakText alloc] initWithText:[self bounds] :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL]];
+		if(dropPlaceHolder != nil)
+		{
+			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];
+			[dropPlaceHolder sizeToFit];
+			[dropPlaceHolder setHidden:YES];
+			[self addSubview:dropPlaceHolder];
+		}
 	}	
 	return self;
 }
@@ -59,12 +68,26 @@
 	return output;
 }
 
+- (NSPoint) getPosDropPlaceHolder : (NSSize) frameSize
+{
+	CGFloat posY;
+	
+	if(headerText != nil)
+		posY = (frameSize.height - headerText.frame.size.height) / 2 - dropPlaceHolder.frame.size.height / 2;
+	else
+		posY = frameSize.height / 2 - dropPlaceHolder.frame.size.height / 2;
+
+	return NSMakePoint(frameSize.width / 2 - dropPlaceHolder.frame.size.width / 2, posY);
+}
+
 /** Proxy work **/
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:newBound];
 	[MDLList setFrame:[self getMainListFrame:newBound]];
+
+	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
 }
 
 - (void) resizeAnimation : (NSRect) frame
@@ -75,6 +98,7 @@
 	
 	[headerText.animator setFrame:[headerText getMenuFrame:frame]];
 	[MDLList resizeAnimation:[self getMainListFrame:frame]];
+	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:frame.size]];
 }
 
 - (void) updateScroller : (BOOL) hidden
@@ -85,7 +109,47 @@
 
 - (void) wakeUp
 {
+	if([MDLList isHidden])
+		[MDLList setHidden:NO];
 	[MDLList wakeUp];
+}
+
+- (void) hideList : (BOOL) hide
+{
+	[MDLList setHidden:hide];
+}
+
+- (void) drawFocusRing
+{
+	if(headerText == nil)
+		return;
+	
+	NSColor * color = [self getBorderColor];
+	NSRect frame = [self bounds];
+	CGFloat radius = self.layer.cornerRadius;
+	
+	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+	CGContextSetLineWidth(contextBorder, 2.0);
+	
+	CGContextBeginPath(contextBorder);
+	CGContextMoveToPoint(contextBorder, 0, frame.size.height - headerText.frame.size.height);
+	CGContextAddLineToPoint(contextBorder, 0, radius);
+	CGContextAddArc(contextBorder, radius, radius, radius, -M_PI, -M_PI_2, 0);
+	CGContextAddLineToPoint(contextBorder, frame.size.width - radius, 0);
+	CGContextAddArc(contextBorder, frame.size.width - radius, radius, radius, -M_PI_2, 0, 0);
+	CGContextAddLineToPoint(contextBorder, frame.size.width, frame.size.height - headerText.frame.size.height);
+	
+	[color setStroke];
+	CGContextStrokePath(contextBorder);
+}
+
+- (void) updateViewForFocusDrop
+{
+	if(dropPlaceHolder == nil)
+		return;
+	
+	if([dropPlaceHolder isHidden] == isFocusDrop)
+		[dropPlaceHolder setHidden:!isFocusDrop];
 }
 
 /** Color **/

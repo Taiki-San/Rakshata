@@ -14,14 +14,18 @@
 {
 	RakMDLHeaderText * headerText;
 	RakMDLList * MDLList;
+	
+	RakText * dropPlaceHolder;
 }
 
 - (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller;
 - (CGFloat) getContentHeight;
 - (NSRect) getMainListFrame : (NSRect) output;
+- (NSPoint) getPosDropPlaceHolder : (NSSize) frameSize;
 
 - (void) updateScroller : (BOOL) hidden;
 - (void) wakeUp;
+- (void) hideList : (BOOL) hide;
 
 - (void) resizeAnimation : (NSRect) frame;
 

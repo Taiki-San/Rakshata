@@ -24,6 +24,7 @@
 	RakMDLController * controller;
 	
 	BOOL needUpdateMainViews;
+	BOOL isForcedToShowUp;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
@@ -35,6 +36,10 @@
 - (BOOL) proxyCheckForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;
+
+- (void) setForcedToShowUp : (BOOL) forced;
+- (BOOL) isForcedToShowUp;
+- (BOOL) isDisplayed;
 
 - (void) updateDependingViews;
 

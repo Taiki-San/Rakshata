@@ -315,14 +315,36 @@
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
+- (void) propagateDragAndDropChangeState : (BOOL) started
+{
+	NSView * view = _tableView.superview;
+	while(view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
+	
+	if(view != nil && view.superview != nil)
+	{
+		NSArray * views = [view.superview subviews];
+		if(views != nil)
+		{
+			for(view in views)
+			{
+				if([view superclass] == [RakTabView class])
+					[(RakTabView *) view dragAndDropStarted:started];
+			}
+		}
+	}
+
+}
+
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
+	[self propagateDragAndDropChangeState:YES];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
 	//Need to cleanup once the drag is over
+	[self propagateDragAndDropChangeState:NO];
 	[self cleanupDrag];
 }
 

@@ -19,6 +19,7 @@
 	[self setWantsLayer:YES];
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	self.layer.cornerRadius = 5.0;
+	isFocusDrop = NO;
 }
 
 - (BOOL) isOpaque
@@ -29,6 +30,24 @@
 - (NSString *) getContextToGTFO
 {
 	return STATE_EMPTY;
+}
+
+#pragma mark - Focus drop
+
+- (void) setFocusDrop : (BOOL) isFocus
+{
+	if(isFocusDrop == isFocus)
+		return;
+	
+	isFocusDrop = isFocus;
+	[self updateViewForFocusDrop];
+}
+
+- (BOOL) isFocusDrop	{	return isFocusDrop;		}
+
+- (void) updateViewForFocusDrop
+{
+	
 }
 
 #pragma mark - Hooks to critical routines
@@ -85,11 +104,29 @@
 	
 }
 
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[super drawRect:dirtyRect];
+	
+	if (isFocusDrop)
+		[self drawFocusRing];
+}
+
+- (void) drawFocusRing
+{
+	
+}
+
 #pragma mark - Color
 
 - (NSColor*) getBackgroundColor
 {
 	return [NSColor clearColor];
+}
+
+- (NSColor*) getBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS];
 }
 
 @end

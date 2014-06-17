@@ -86,6 +86,7 @@ enum {
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
+- (void) dragAndDropStarted : (BOOL) started;
 - (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender;
 - (BOOL) shouldDeployWhenDragComeIn;
 - (NSDragOperation) dropOperationForSender : (uint) sender;
