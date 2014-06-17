@@ -85,6 +85,20 @@ void escapeTomeLineElement(META_TOME *ligne)
         changeTo((char*) ligne->description2, '_', ' ');
 }
 
+int getPosForID(MANGAS_DATA data, bool installed, int ID)
+{
+	if((installed && data.tomesInstalled == NULL) || (!installed && data.tomesFull == NULL))
+		return -1;
+	
+	int pos;
+	uint nbElem = installed ? data.nombreTomesInstalled : data.nombreTomes;
+	META_TOME * list = installed ? data.tomesInstalled : data.tomesFull;
+
+	for(pos = 0; pos < nbElem && list[pos].ID != ID; pos++);
+	
+	return pos == nbElem ? -1 : pos;
+}
+
 void refreshTomeList(MANGAS_DATA *mangaDB)
 {
     if(mangaDB->tomesFull != NULL || mangaDB->tomesInstalled != NULL)

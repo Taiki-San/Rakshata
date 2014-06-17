@@ -150,6 +150,7 @@ int getThreadCount();
 /**Tome.c**/
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void escapeTomeLineElement(META_TOME *ligne);
+int getPosForID(MANGAS_DATA data, bool installed, int ID);
 void refreshTomeList(MANGAS_DATA *mangaDB);
 void setTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
