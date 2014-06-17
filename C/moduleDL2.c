@@ -12,10 +12,10 @@
 
 #include "db.h"
 
-bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
-	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || statusCache == NULL || nbElemTotal == NULL || quit == NULL)
+	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || nbElemTotal == NULL || quit == NULL)
 		return false;
 	
 	if(COMPTE_PRINCIPAL_MAIL[0] == 0 && !loadEmailProfile())	//Pas de compte
@@ -24,7 +24,7 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		return false;
 	}
 	
-    if(*todoList == NULL || **todoList == NULL || *status == NULL || *statusCache == NULL)
+    if(*todoList == NULL || **todoList == NULL || *status == NULL)
 	{
 		*todoList = malloc(sizeof(DATA_LOADED **));
 		
@@ -38,29 +38,23 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 			return true;
 		
 		*status = malloc((*nbElemTotal+1) * sizeof(int8_t*));
-		*statusCache = malloc((*nbElemTotal+1) * sizeof(int8_t*));
 		
-		if(*status == NULL || *statusCache == NULL)
-		{
-			free(*status);		*status = NULL;
-			free(*statusCache);	*statusCache = NULL;
+		if(*status == NULL)
 			return false;
-		}
 		
 		for(i = 0; i < *nbElemTotal; i++)
 		{
 			(*status)[i] = malloc(sizeof(int8_t));
-			(*statusCache)[i] = malloc(sizeof(int8_t));
-			*(*statusCache)[i] = *(*status)[i] = MDL_CODE_DEFAULT;
+			*(*status)[i] = MDL_CODE_DEFAULT;
 		}
 		
-		(*status)[i] = (*statusCache)[i] = NULL;
+		(*status)[i] = NULL;
 	}
 
-	return startWorker(cache, coreWorker, todoList, status, statusCache, nbElemTotal, quit, mainTab);
+	return startWorker(cache, coreWorker, todoList, status, nbElemTotal, quit, mainTab);
 }
 
-bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab)
 {
 	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(50);		}
@@ -87,7 +81,7 @@ bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED ****
 	return false;
 }
 
-void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache)
+void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MANGAS_DATA * cache)
 {
 	uint i;
 
@@ -98,13 +92,11 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_L
 			free((*todoList)[i]->listChapitreOfTome);
         free((*todoList)[i]);
         free(status[i]);
-        free(statusCache[i]);
     }
 
     freeMangaData(cache);
     free(*todoList);
     free(todoList);
-    free(statusCache);		statusCache = NULL;
     free(status);			status = NULL;
 
 #ifdef _WIN32
@@ -125,24 +117,14 @@ char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
         {
             if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] == MDL_CODE_ABORTED || *status[currentPosition] <= MDL_CODE_FIRST_ERROR)
                 continue;
-            else if(todoList[currentPosition]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            else if(todoList[currentPosition]->listChapitreOfTome != NULL)
             {
-                if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
-                {
-                    snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->partOfTome);
-					strlcat(output, buffer, fullSize);
-                    for(int j = currentPosition+1; j < nombreTotal; j++)
-                    {
-                        if(todoList[j] != NULL && todoList[j]->partOfTome == todoList[currentPosition]->partOfTome && todoList[j]->datas == todoList[currentPosition]->datas)
-                        {
-                            todoList[j]->chapitre = VALEUR_FIN_STRUCTURE_CHAPITRE;
-                        }
-                    }
-                }
+				snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
+				strlcat(output, buffer, fullSize);
             }
-            else if(todoList[currentPosition]->chapitre != VALEUR_FIN_STRUCTURE_CHAPITRE)
+            else
             {
-				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->chapitre);
+				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
         }

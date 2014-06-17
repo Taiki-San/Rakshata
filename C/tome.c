@@ -121,16 +121,31 @@ void refreshTomeList(MANGAS_DATA *mangaDB)
     }
 }
 
+void setTomeReadable(MANGAS_DATA mangaDB, int ID)
+{
+	char pathWithTemp[600], pathWithoutTemp[600];
+	
+	snprintf(pathWithTemp, sizeof(pathWithTemp), "manga/%s/%s/Tome_%d/%s.tmp", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
+	snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, ID, CONFIGFILETOME);
+	rename(pathWithTemp, pathWithoutTemp);
+	
+	mangaDB.tomesFull = mangaDB.tomesInstalled = NULL;
+	getUpdatedTomeList(&mangaDB, false);
+	
+	if(!checkTomeReadable(mangaDB, ID))
+		remove(pathWithoutTemp);
+}
+
 //Require the ID of the element in tomeFull
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID)
 {
-	if(mangaDB.tomesFull == NULL || ID >= mangaDB.nombreTomes ||  mangaDB.tomesFull[ID].details == NULL)
+	if(mangaDB.tomesFull == NULL || ID >= mangaDB.nombreTomes)
 		return false;
 	
 	uint pos = 0, nbTomes = mangaDB.nombreTomes, posDetails;
 	for(; pos < nbTomes && mangaDB.tomesFull[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomesFull[pos].ID != ID; pos++);
 	
-	if(mangaDB.tomesFull[pos].ID != ID)
+	if(mangaDB.tomesFull[pos].ID != ID || mangaDB.tomesFull[pos].details == NULL)
 		return false;
 	
 	CONTENT_TOME * cache = mangaDB.tomesFull[pos].details;
@@ -304,10 +319,10 @@ void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu)
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*mangaDB, mangaDB->tomesFull[nbElem].ID))
         {
-            if(mangaDB->tomesInstalled[nbElem].details != NULL)
-				free(mangaDB->tomesInstalled[nbElem].details);
+            if(mangaDB->tomesInstalled[nbElem-deletedItems].details != NULL)
+				free(mangaDB->tomesInstalled[nbElem-deletedItems].details);
 			
-			memcpy(&(mangaDB->tomesInstalled[nbElem-deletedItems]), &(mangaDB->tomesInstalled[nbElem-deletedItems+1]), (mangaDB->nombreTomesInstalled + 1 - nbElem) * sizeof(META_TOME));
+			memcpy(&(mangaDB->tomesInstalled[nbElem-deletedItems]), &(mangaDB->tomesInstalled[nbElem-deletedItems+1]), (mangaDB->nombreTomes - nbElem) * sizeof(META_TOME));
 			mangaDB->nombreTomesInstalled--;
 			deletedItems++;
         }

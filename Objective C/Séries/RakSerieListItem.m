@@ -162,7 +162,7 @@
 	if(_isRootItem && dataRoot != NULL)
 		return dataRoot;
 	else if(!_isRootItem && dataChild != NULL)
-		return [NSString stringWithCString:dataChild->mangaName encoding:NSUTF8StringEncoding];
+		return [[NSString stringWithCString:dataChild->mangaName encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"_" withString:@" "];
 	else
 		return @"Internal error :(";
 }

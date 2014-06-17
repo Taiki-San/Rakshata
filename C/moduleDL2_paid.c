@@ -132,7 +132,7 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
 
 char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 {
-    int pos, length = strlen(COMPTE_PRINCIPAL_MAIL) + 50, compteur;
+    int length = strlen(COMPTE_PRINCIPAL_MAIL) + 50, compteur;
     char *output = NULL, buffer[500];
     void *buf;
 
@@ -144,22 +144,14 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
         snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
 
-        for(pos = compteur = 0; index[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
+        for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
-			checkIfCharToEscapeFromPOST(data[index[pos]]->datas->team->URL_depot, LONGUEUR_URL, bufferURLDepot);
-			checkIfCharToEscapeFromPOST(data[index[pos]]->datas->mangaName, LONGUEUR_NOM_MANGA_MAX, bufferMangaName);
+			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URL_depot, LONGUEUR_URL, bufferURLDepot);
+			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->mangaName, LONGUEUR_NOM_MANGA_MAX, bufferMangaName);
 			
-            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[pos]]->datas->team->URL_depot, compteur, data[index[pos]]->datas->mangaName,
-                                                                                compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE,
-                                                                                compteur, data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? data[index[pos]]->partOfTome : data[index[pos]]->chapitre);
-            if(data[index[pos]]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
-            {
-                int oldPos = pos;
-                while(index[++pos] != VALEUR_FIN_STRUCTURE_CHAPITRE && data[index[oldPos]]->partOfTome == data[index[pos]]->partOfTome);
-            }
-            else
-                pos++;
-
+            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URL_depot, compteur, data[index[compteur]]->datas->mangaName,
+                                                                                compteur, data[index[compteur]]->listChapitreOfTome != NULL,
+                                                                                compteur, data[index[compteur]]->identifier);
             length += strlen(buffer);
             buf = realloc(output, length * sizeof(char));
             if(buf != NULL)

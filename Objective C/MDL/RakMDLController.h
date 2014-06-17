@@ -24,7 +24,6 @@
 	DATA_LOADED *** todoList;
 	uint	* IDToPosition;
 	int8_t ** status;
-	int8_t ** statusCache;
 
 	uint nbElem;
 	uint discardedCount;

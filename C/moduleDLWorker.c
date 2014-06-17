@@ -31,9 +31,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     size_t *listSizeDL;
     PROXY_DATA_LOADED todoListTmp;
     DATA_MOD_DL argument;
-    bool isTome = input.todoList->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, DLAborted;
-    int i, nombreElement = isTome ? input.todoList->chapitre : 1;
-	uint posTomeInStruct = ERROR_CHECK;
+    bool isTome = input.todoList->listChapitreOfTome != NULL, DLAborted;
+    int i, nombreElement = isTome ? input.todoList->nbElemList : 1;
+	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0;
 	
     argument.todoList = &todoListTmp;
     todoListTmp.datas = input.todoList->datas;
@@ -42,7 +42,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	
 	if (isTome && todoListTmp.datas->tomesFull != NULL)	//We find the tome position
 	{
-		for(posTomeInStruct = 0; posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && todoListTmp.datas->tomesFull[posTomeInStruct].ID != input.todoList->partOfTome; posTomeInStruct++);
+		for(posTomeInStruct = 0; posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && todoListTmp.datas->tomesFull[posTomeInStruct].ID != input.todoList->identifier; posTomeInStruct++);
 	
 		if(posTomeInStruct < todoListTmp.datas->nombreTomes && todoListTmp.datas->tomesFull[posTomeInStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
 			posTomeInStruct = ERROR_CHECK;
@@ -60,26 +60,27 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     *(input.currentState) = MDL_CODE_DL;
 	MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 	
-    for(i = 1; i <= nombreElement; i++)
+    for(i = 0; i < nombreElement; i++)
     {
         todoListTmp.listChapitreOfTome = NULL;
         todoListTmp.tomeName = NULL;
+		
         if(!isTome)
 		{
-            todoListTmp.chapitre = input.todoList->chapitre;
+            todoListTmp.chapitre = input.todoList->identifier;
             todoListTmp.subFolder = false;
             todoListTmp.partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
         }
         else
 		{
-            todoListTmp.chapitre = input.todoList->listChapitreOfTome[i-1];
-            todoListTmp.subFolder = true;
-            todoListTmp.partOfTome = input.todoList->partOfTome;
+            todoListTmp.chapitre = input.todoList->listChapitreOfTome[i].element;
+            todoListTmp.subFolder = input.todoList->listChapitreOfTome[i].subFolder;
+            todoListTmp.partOfTome = input.todoList->identifier;
         }
 		
-		todoListTmp.rowViewResponsible = &input.todoList->rowViewResponsible;
-		todoListTmp.curlHandler = &input.todoList->curlHandler;
-		todoListTmp.downloadSuspended = &input.todoList->downloadSuspended;
+		todoListTmp.rowViewResponsible	= &input.todoList->rowViewResponsible;
+		todoListTmp.curlHandler			= &input.todoList->curlHandler;
+		todoListTmp.downloadSuspended	= &input.todoList->downloadSuspended;
 				
 		switch (MDL_isAlreadyInstalled(*todoListTmp.datas, todoListTmp.subFolder, todoListTmp.chapitre, &posTomeInStruct))
 		{
@@ -93,7 +94,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 				if(MDLTelechargement(&argument))
 				{
-					if(i == nombreElement)
+					if(i + 1 == nombreElement)
 						*(input.currentState) = MDL_CODE_ERROR_DL;
 				}
 				else if(quit)
@@ -102,9 +103,11 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				}
 				else
 				{
-					listDL[i-1] = argument.buf;
-					listSizeDL[i-1] = argument.length;
-					if(i == nombreElement)
+					listDL[i] = argument.buf;
+					listSizeDL[i] = argument.length;
+					nbElemToInstall++;
+					
+					if(i + 1 == nombreElement)
 						*(input.currentState) = MDL_CODE_DL_OVER;
 				}
 				break;
@@ -131,7 +134,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
 				}
 				
-				if(i == nombreElement)
+				if(i + 1 == nombreElement && *(input.currentState) == MDL_CODE_DL)
 				{
 					*(input.currentState) = MDL_CODE_INSTALL_OVER;
 				}
@@ -142,10 +145,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(isTome)
 				{
-					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, input.todoList->identifier);
 				}
 				
-				if(i == nombreElement)
+				if(i + 1 == nombreElement && *(input.currentState) == MDL_CODE_DL)
 				{
 					*(input.currentState) = MDL_CODE_INSTALL_OVER;
 				}
@@ -162,7 +165,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	else
 		*(input.currentState) = MDL_CODE_ABORTED;
 	
-    if(!DLAborted && *(input.currentState) == MDL_CODE_DL_OVER) //On lance l'installation
+    if(!DLAborted && nbElemToInstall) //On lance l'installation
     {
         int error = 0;
         for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_INSTALL; i++);
@@ -181,10 +184,13 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         for(i = 0; i < nombreElement; i++)
         {
             if(listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
-													isTome ? input.todoList->listChapitreOfTome[i] : input.todoList->chapitre,
-													input.todoList->partOfTome, input.todoList->subFolder, input.isTomeAndLastElem && i == nombreElement-1)) {
+											isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
+											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCTURE_CHAPITRE,
+											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1)))
+			{
                 error++;
             }
+			
 			if (listDL[i] != NULL)
 			{
 				free(((DATA_DL_OBFS*) listDL[i])->data);
@@ -203,6 +209,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     else
 	{
 		for(i = 0; i < nombreElement; free(listDL[i++]));
+		
+		if (!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
+			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
 	}
 	
 	//On lance les éventuelles installations en attente
@@ -422,17 +431,9 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 		
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
         if(!erreurs && haveToPutTomeAsReadable)
-        {
-            char pathWithTemp[600], pathWithoutTemp[600];
-			
-            snprintf(pathWithTemp, 600, "manga/%s/%s/Tome_%d/%s.tmp", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-            snprintf(pathWithoutTemp, 600, "manga/%s/%s/Tome_%d/%s", mangaDB->team->teamLong, mangaDB->mangaName, tome, CONFIGFILETOME);
-            rename(pathWithTemp, pathWithoutTemp);
-			
-            if(!checkTomeReadable(*mangaDB, tome))
-                remove(pathWithoutTemp);
-        }
-        if(!subFolder)
+			setTomeReadable(*mangaDB, tome);
+
+		if(!subFolder)
         {
             snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
             if(erreurs)

@@ -34,8 +34,8 @@
 		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : @"Terminé" : [Prefs getSystemColor:GET_COLOR_ACTIVE]];
-		if(statusText != nil)		{		[statusText sizeToFit];		}
+		statusText = [[RakText alloc] initWithText:self.bounds : @"Installation" : [Prefs getSystemColor:GET_COLOR_ACTIVE]];
+		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		_pause = [pause copy];
 		if(_pause != nil)	{	[self addSubview:_pause];		[_pause setHidden:YES];	[_pause.cell setHighlightAllowed: [pause.cell isHighlightAllowed]];	}
@@ -65,19 +65,19 @@
 {
 	NSString * name;
 	
-	if((*todoList)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if((*todoList)->listChapitreOfTome == NULL)
 	{
-		if((*todoList)->chapitre % 10)
-			name = [NSString stringWithFormat:@"%s chapitre %d.%d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10, (*todoList)->chapitre % 10];
+		if((*todoList)->identifier % 10)
+			name = [NSString stringWithFormat:@"%s chapitre %d.%d", (*todoList)->datas->mangaName, (*todoList)->identifier / 10, (*todoList)->identifier % 10];
 		else
-			name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->chapitre / 10];
+			name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->identifier / 10];
 	}
 	else
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
 			name = [NSString stringWithFormat:@"%s %s", (*todoList)->datas->mangaName, (*todoList)->tomeName];
 		else
-			name = [NSString stringWithFormat:@"%s tome %d", (*todoList)->datas->mangaName, (*todoList)->partOfTome];
+			name = [NSString stringWithFormat:@"%s tome %d", (*todoList)->datas->mangaName, (*todoList)->identifier];
 	}
 	
 	return [name stringByReplacingOccurrencesOfString:@"_" withString:@" "];
@@ -137,10 +137,7 @@
 		
 		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
 		
-		if(_read == nil)
-		{
-			newPoint.x -= 5 + curFrame.size.width;
-		}
+		if(_read == nil)		newPoint.x -= 5 + curFrame.size.width;
 		
 		[_pause setFrameOrigin:newPoint];
 	}
@@ -159,24 +156,15 @@
 	{
 		if(frame.size.width > 300)
 		{
-			if(previousStatus == MDL_CODE_INSTALL_OVER && isSecondTextHidden)
-			{
-				isSecondTextHidden = NO;
-				[statusText setHidden:NO];
-			}
-			
 			curFrame = statusText.frame;
 			
 			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-			newPoint.x -= curFrame.size.width;
+			newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
 			
 			[statusText setFrameOrigin:newPoint];
 		}
-		else if(!isSecondTextHidden)
-		{
-			isSecondTextHidden = YES;
+		else if([statusText isHidden] == NO)
 			[statusText setHidden:YES];
-		}
 	}
 }
 
@@ -238,7 +226,6 @@
 			
 		case MDL_CODE_INSTALL:
 		{
-			[statusText setStringValue:@"Installation"];
 			[statusText setHidden:NO];
 			[self setPositionsOfStuffs];
 			[statusText display];
@@ -281,7 +268,7 @@
 	if(previousStatus == MDL_CODE_INSTALL_OVER)
 	{
 		//Deletion
-		internalDeleteCT(*(*todoList)->datas, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE, (*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->partOfTome : (*todoList)->chapitre);
+		internalDeleteCT(*(*todoList)->datas, (*todoList)->listChapitreOfTome != NULL, (*todoList)->identifier);
 	}
 	else if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
 	{
@@ -344,7 +331,7 @@
 	
 	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
 
-	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE :(*todoList)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE ? (*todoList)->chapitre : (*todoList)->partOfTome];
+	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 }
 
 @end

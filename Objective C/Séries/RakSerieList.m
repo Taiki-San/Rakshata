@@ -137,6 +137,7 @@
 - (void) dealloc
 {
 	freeMangaData(_cache);
+	[_mainList dealloc];
 	[_data release];
 	[content removeFromSuperview];
 	
@@ -227,10 +228,7 @@
 	if(recent != NULL)
 	{
 		for (; i < _nbElemReadDisplayed; i++)
-		{
-			changeTo(recent[i]->mangaName, '_', ' ');
 			[_data insertPointer:recent[i] atIndex:i];
-		}
 		
 		free(recent);
 	}
@@ -245,10 +243,7 @@
 	if(recent != NULL)
 	{
 		for (; i < _nbElemDLDisplayed; i++)
-		{
-			changeTo(recent[i]->mangaName, '_', ' ');
 			[_data insertPointer:recent[i] atIndex:i + 3];
-		}
 		
 		free(recent);
 	}
@@ -459,11 +454,8 @@
 	
 	if(tmp == NULL)
 		return NO;
-	
-	MANGAS_DATA dataToSend = *tmp;
-	changeTo(dataToSend.mangaName, ' ', '_');
-	
-	[RakTabView broadcastUpdateContext: content : dataToSend : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
+
+	[RakTabView broadcastUpdateContext: content : *tmp : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
 	
 	return YES;
 }
@@ -565,7 +557,7 @@
 		else
 		{
 			if(_mainList == nil)
-				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]];
+				_mainList = [[[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]] retain];
 			
 			rowView = [_mainList getContent];
 		}
@@ -714,16 +706,10 @@
 	
 	MANGAS_DATA* project = [item getRawDataChild];
 	
-	getUpdatedChapterList(project, false);
-	getUpdatedTomeList(project, false);
+	getUpdatedChapterList(project, true);
+	getUpdatedTomeList(project, true);
 	
-	MANGAS_DATA localProject = getCopyOfProjectData(*project);
-	
-	changeTo(localProject.mangaName, ' ', '_');
-	checkChapitreValable(&localProject, NULL);
-	checkTomeValable(&localProject, NULL);
-	
-	[pbData setDataProject : localProject isTome: [pbData defineIsTomePriority:&localProject alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
+	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

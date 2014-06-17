@@ -209,6 +209,11 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	output->favoris = 0;
 	output->contentDownloadable = 0;
 	
+	output->nombreChapitre = 0;
+	output->nombreChapitreInstalled = 0;
+	output->nombreTomes = 0;
+	output->nombreTomesInstalled = 0;
+	
 	output->genre = categorie > 10 ? categorie / 10 : 1;
 	output->status = categorie % 10;
 
@@ -432,14 +437,14 @@ MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
 	
 	if(data.tomesFull != NULL)
 	{
-		newData.tomesFull = malloc(data.nombreTomes * sizeof(META_TOME));
+		newData.tomesFull = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
 		if(newData.tomesFull != NULL)
 			copyTomeList(data.tomesFull, data.nombreTomes, newData.tomesFull);
 	}
 	
 	if(data.tomesInstalled != NULL)
 	{
-		newData.tomesInstalled = malloc(data.nombreTomesInstalled * sizeof(META_TOME));
+		newData.tomesInstalled = malloc((data.nombreTomesInstalled + 1) * sizeof(META_TOME));
 		if(newData.tomesInstalled != NULL)
 			copyTomeList(data.tomesInstalled, data.nombreTomesInstalled, newData.tomesInstalled);
 	}

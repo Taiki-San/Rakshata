@@ -132,10 +132,6 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 		argument->fullStatus = status;
 		argument->statusLength = nbElemTotal;
 		
-		if(todoList[posElement]->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && (posElement+1 >= nbElemTotal || todoList[posElement+1] == NULL || todoList[posElement+1]->datas != todoList[posElement]->datas || todoList[posElement+1]->partOfTome != todoList[posElement]->partOfTome))
-            argument->isTomeAndLastElem = true;
-        else
-            argument->isTomeAndLastElem = false;
         createNewThread(MDLHandleProcess, argument);
     }
     else

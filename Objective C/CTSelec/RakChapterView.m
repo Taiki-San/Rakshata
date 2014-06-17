@@ -259,7 +259,7 @@
 
 - (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
 {
-	if(project.nombreChapitre == 0 && project.nombreTomes == 0)
+	if(project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
 	{
 		[self release];
 		return nil;
@@ -275,14 +275,14 @@
 		
 		data = getCopyOfProjectData(project);
 		
-		if(data.nombreChapitre > 0)
+		if(data.nombreChapitreInstalled > 0)
 		{
 			[buttons setEnabled:true forSegment:0];
 			
 			if(!isTome)
 				[buttons setSelected:true forSegment:0];
 			
-			if(data.nombreChapitre == 1)
+			if(data.nombreChapitreInstalled == 1)
 			{
 				NSString * name = [buttons labelForSegment:0];
 				[buttons setLabel:[name substringToIndex:[name length] - 0] forSegment:0];
@@ -291,14 +291,14 @@
 		else if(!isTome)	//Si on recoit une demande incohérante
 			isTome = true;
 		
-		if(data.nombreTomes > 0)
+		if(data.nombreTomesInstalled > 0)
 		{
 			[buttons setEnabled:true forSegment:1];
 			
 			if(isTome)
 				[buttons setSelected:true forSegment:1];
 			
-			if(data.nombreTomes == 1)
+			if(data.nombreTomesInstalled == 1)
 			{
 				NSString * name = [buttons labelForSegment:1];
 				[buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
@@ -306,7 +306,7 @@
 		}
 		else if(isTome)
 		{
-			if(data.nombreChapitre > 0)
+			if(data.nombreChapitreInstalled > 0)
 			{
 				[buttons setSelected:true forSegment:0];
 				isTome = false;
@@ -320,7 +320,7 @@
 
 		[self addSubview:buttons];
 		
-		if(data.nombreChapitre > 0)
+		if(data.nombreChapitreInstalled > 0)
 		{
 			tableViewControllerChapter = [[[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]] retain];
 			if(tableViewControllerChapter != nil)
@@ -330,7 +330,7 @@
 			}
 		}
 
-		if(data.nombreTomes > 0)
+		if(data.nombreTomesInstalled > 0)
 		{
 			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]] retain];
 			if(tableViewControllerVolume != nil)
@@ -442,9 +442,9 @@
 {
 	int ID;
 	
-	if(isTome && index < data.nombreTomes)
+	if(isTome && index < data.nombreTomesInstalled)
 		ID = data.tomesInstalled[index].ID;
-	else if(!isTome && index < data.nombreChapitre)
+	else if(!isTome && index < data.nombreChapitreInstalled)
 		ID = data.chapitresInstalled[index];
 	else
 		return;
@@ -497,7 +497,7 @@
 	}
 	
 	//No data available
-	if(data.nombreChapitre == 0 && data.nombreTomes == 0)
+	if(data.nombreChapitreInstalled == 0 && data.nombreTomesInstalled == 0)
 	{
 		[tableViewControllerChapter setHidden:YES];
 		[tableViewControllerVolume setHidden:YES];
@@ -506,7 +506,7 @@
 	}
 	
 	//Update views, create them if required
-	if(data.chapitresInstalled != NULL)
+	if(data.nombreChapitreInstalled)
 	{
 		if(tableViewControllerChapter == nil)
 		{
@@ -521,7 +521,7 @@
 	else
 		[buttons setEnabled:NO forSegment:0];
 
-	if(data.tomesInstalled != NULL)
+	if(data.nombreTomesInstalled)
 	{
 		if(tableViewControllerVolume == nil)
 		{
@@ -542,13 +542,13 @@
 	[tableViewControllerVolume setHidden:!isTome];
 	
 	//Update focus
-	if(isTome && data.tomesInstalled == NULL)
+	if(isTome && data.nombreTomesInstalled == 0)
 	{
 		[tableViewControllerChapter setHidden:NO];
 		[tableViewControllerVolume setHidden:YES];
 		[buttons setSelectedSegment:0];
 	}
-	else if(!isTome && data.chapitresInstalled == NULL)
+	else if(!isTome && data.nombreChapitreInstalled == 0)
 	{
 		[tableViewControllerVolume setHidden:NO];
 		if(![tableViewControllerChapter isHidden])

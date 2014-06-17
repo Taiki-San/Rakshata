@@ -88,19 +88,25 @@ enum downloadStatusCodes {
 	DLSTATUS_ABORT		= 0xf0
 };
 
+typedef struct
+{
+	int element;
+	bool subFolder;
+} DATA_LOADED_TOME_DETAILS;
+
 typedef struct data_loaded_from_download_list
 {
 	void * rowViewResponsible;
 	CURL * curlHandler;
 	
     MANGAS_DATA* datas;
-	int *listChapitreOfTome;
 	unsigned char *tomeName;
 	
-	int chapitre;
-    int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
-
-	bool subFolder;
+	DATA_LOADED_TOME_DETAILS *listChapitreOfTome;	//Should be used to differentiate chapters from volumes
+	
+	uint nbElemList;
+	int identifier;
+	
 	uint8_t downloadSuspended;	//Divised in two parts
 } DATA_LOADED;
 
@@ -193,7 +199,6 @@ typedef struct argument_to_MDL_handler
     char ***historiqueTeam;
     
 	DATA_LOADED* todoList;
-    bool isTomeAndLastElem;
 	
 	int8_t *** fullStatus;
 	uint statusLength;
@@ -207,22 +212,22 @@ extern int WINDOW_SIZE_W_DL;
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
-bool startMDL(char *state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElem, bool * quit, void * mainTab);
-bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, int8_t *** statusCache, uint * nbElemTotal, bool * quit, void * mainTab);
-void MDLCleanup(int nbElemTotal, int8_t ** status, int8_t ** statusCache, DATA_LOADED *** todoList, MANGAS_DATA * cache);
+bool startMDL(char *state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElem, bool * quit, void * mainTab);
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab);
+void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MANGAS_DATA * cache);
 char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, char * state);
-DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk, int chunckSize);
-DATA_LOADED ** MDLCreateElement(MANGAS_DATA * data, bool isTome, int element, int * lengthCreated);
+DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
+DATA_LOADED * MDLCreateElement(MANGAS_DATA * data, bool isTome, int element);
 DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
-DATA_LOADED** getTomeDetails(DATA_LOADED tomeDatas, int *outLength);
+bool getTomeDetails(DATA_LOADED *tomeDatas);
 int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);

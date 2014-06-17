@@ -41,11 +41,11 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 			break;
 	}
 	
-	freeMangaData(fullData);
-	
 	//update the database from network (heavy part)
 	updateProjectsFromTeam(fullData, posStart, posEnd, true);
 	syncCacheToDisk(SYNC_PROJECTS);
+	
+	freeMangaData(fullData);
 	
 	free(mangaDB->chapitresFull);		mangaDB->chapitresFull = NULL;
 	free(mangaDB->tomesFull);			mangaDB->tomesFull = NULL;

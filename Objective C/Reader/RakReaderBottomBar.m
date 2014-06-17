@@ -121,6 +121,13 @@
 	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
 
 	trash = [RakButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO :superView :@selector(deleteElement)];
+	
+	if(fullscreen != nil)		[fullscreen.cell setHighlightAllowed:NO];
+	if(prevChapter != nil)		[prevChapter.cell setHighlightAllowed:NO];
+	if(prevPage != nil)			[prevPage.cell setHighlightAllowed:NO];
+	if(nextPage != nil)			[nextPage.cell setHighlightAllowed:NO];
+	if(nextChapter != nil)		[nextChapter.cell setHighlightAllowed:NO];
+	if(trash != nil)			[trash.cell setHighlightAllowed:NO];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

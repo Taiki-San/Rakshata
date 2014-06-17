@@ -178,9 +178,9 @@
 	if (dataProject == NULL)
 		return nil;
 
-	if((*dataProject)->partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if((*dataProject)->listChapitreOfTome == NULL)
 	{
-		int chapitre = (*dataProject)->chapitre;
+		int chapitre = (*dataProject)->identifier;
 		
 		if(chapitre % 10)
 			return [NSString stringWithFormat: @"Chapitre %d.%d", chapitre / 10, chapitre % 10];
@@ -191,7 +191,7 @@
 		if((*dataProject)->tomeName != NULL && (*dataProject)->tomeName[0] != 0)
 			return [NSString stringWithUTF8String: (char*) (*dataProject)->tomeName];
 		
-		return [NSString stringWithFormat:@"Tome %d", (*dataProject)->partOfTome];
+		return [NSString stringWithFormat:@"Tome %d", (*dataProject)->identifier];
 	}
 }
 
@@ -202,13 +202,13 @@
 	if(dataProject == NULL || *dataProject == NULL)
 		return;
 	
-	BOOL isTome = ((*dataProject)->partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE);
+	BOOL isTome = ((*dataProject)->listChapitreOfTome != NULL);
 	MANGAS_DATA project = getCopyOfProjectData(*(*dataProject)->datas);
 	
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, false);
 	
-	[item setDataProject : project isTome: isTome element: (isTome ? (*dataProject)->partOfTome : (*dataProject)->chapitre)];
+	[item setDataProject : project isTome: isTome element: (*dataProject)->identifier];
 	
 	dragInProgress = true;		draggedElement = row;
 }

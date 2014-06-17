@@ -359,9 +359,9 @@
 	cacheBeingBuilt = false;
 	
 	updateIfRequired(&project, RDB_CTXLECTEUR);
-
-	checkChapitreValable(&project, NULL);
-	checkTomeValable(&project, NULL);
+	
+	getUpdatedCTList(&project, true);
+	getUpdatedCTList(&project, false);
 	
 	posElemInStructure = reader_getPosIntoContentIndex(project, currentElem, isTome);
 	if(posElemInStructure == -1)

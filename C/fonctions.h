@@ -156,6 +156,7 @@ int getThreadCount();
 void tomeDBParser(MANGAS_DATA* mangaDB, unsigned char* buffer, size_t size);
 void escapeTomeLineElement(META_TOME *ligne);
 void refreshTomeList(MANGAS_DATA *mangaDB);
+void setTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool checkTomeReadable(MANGAS_DATA mangaDB, int ID);
 bool parseTomeDetails(MANGAS_DATA mangaDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(MANGAS_DATA *mangaDB, int *dernierLu);

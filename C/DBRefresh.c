@@ -185,7 +185,7 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, boo
 			
 			//The fun begins, on a désormais à lire les bundles à la fin du fichier
 			uint posEnd;
-			if(version == 2 && bufferDL[posCur] == '#')
+			while(version == 2 && bufferDL[posCur] == '#')
 			{
 				posCur++;
 				posEnd = getPosOfChar(&bufferDL[posCur], '#', true);
