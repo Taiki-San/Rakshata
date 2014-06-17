@@ -119,10 +119,8 @@ void addRepoByFile()
 int ajoutRepo(bool ajoutParFichier)
 {
     int continuer = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
-    char temp[TAILLE_BUFFER], texteTrad[SIZE_TRAD_ID_14][TRAD_LENGTH];
+    char temp[TAILLE_BUFFER];
     TEAMS_DATA teams;
-
-	loadTrad(texteTrad, 14);
 
 #ifdef IDENTIFY_MISSING_UI
 	#warning "ajoutRepo"

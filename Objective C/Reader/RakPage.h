@@ -55,8 +55,6 @@
 	int currentElem;
 	int posElemInStructure;
 	bool isTome;
-	
-	char texteTrad[SIZE_TRAD_ID_21][TRAD_LENGTH];
 }
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;

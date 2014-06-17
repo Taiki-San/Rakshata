@@ -353,7 +353,6 @@
 	project = getCopyOfProjectData(dataRequest);
 	currentElem = elemRequest;
 	isTome = isTomeRequest;
-	loadTrad(texteTrad, 21);
 	
 	prevPage = pageData = nextPage = nil;
 	cacheBeingBuilt = false;
