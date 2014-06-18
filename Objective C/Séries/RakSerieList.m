@@ -364,7 +364,7 @@
 	MANGAS_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
 	if(project.team != NULL)
-		currentSelection = [NSString stringWithFormat:@"%s\n%s", project.team->URL_depot, project.mangaNameShort];
+		currentSelection = [NSString stringWithFormat:@"%s\n%s", project.team->URLRepo, project.mangaNameShort];
 	else
 		currentSelection = @"";
 	

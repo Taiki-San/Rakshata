@@ -22,7 +22,7 @@
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URL_depot] : [NSString stringWithFormat:@"%s_CT", project.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URLRepo] : [NSString stringWithFormat:@"%s_CT", project.mangaName] : [self bounds]];
 		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -128,7 +128,7 @@
 		[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URL_depot] : [NSString stringWithFormat:@"%s_CT", data.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URLRepo] : [NSString stringWithFormat:@"%s_CT", data.mangaName] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -397,7 +397,7 @@
 	if(data.team == NULL)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%s\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URL_depot, data.mangaNameShort, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
+	return [NSString stringWithFormat:@"%s\n%s\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.mangaNameShort, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
 }
 
 - (id) retain

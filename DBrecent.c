@@ -89,7 +89,7 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 	//We check if the element exist
 	if(sqlite3_prepare_v2(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_mangaNameShort)" = ?2;", -1, &request, NULL) == SQLITE_OK)
 	{
-		sqlite3_bind_text(request, 1, data.team->URL_depot, -1, SQLITE_STATIC);
+		sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
 		sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -108,7 +108,7 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 				
 				if (sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
 				{
-					sqlite3_bind_text(request, 1, data.team->URL_depot, -1, SQLITE_STATIC);
+					sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
 					sqlite3_bind_text(request, 2, data.mangaNameShort, -1, SQLITE_STATIC);
 					
 					if(sqlite3_step(request) == SQLITE_ROW)
@@ -132,7 +132,7 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 				if(!nbOccurence || wasItADL)
 					sqlite3_bind_int64(request, 2, recentDL);
 
-				sqlite3_bind_text(request, 3, data.team->URL_depot, -1, SQLITE_STATIC);
+				sqlite3_bind_text(request, 3, data.team->URLRepo, -1, SQLITE_STATIC);
 				sqlite3_bind_text(request, 4, data.mangaNameShort, -1, SQLITE_STATIC);
 
 				output = sqlite3_step(request) == SQLITE_DONE;
@@ -155,7 +155,7 @@ bool addRecentEntry(MANGAS_DATA data, bool wasItADL)
 
 void removeRecentEntry(MANGAS_DATA data)
 {
-	removeRecentEntryInternal(data.team->URL_depot, data.mangaNameShort);
+	removeRecentEntryInternal(data.team->URLRepo, data.mangaNameShort);
 }
 
 void removeRecentEntryInternal(char * URLRepo, char * mangaNameShort)

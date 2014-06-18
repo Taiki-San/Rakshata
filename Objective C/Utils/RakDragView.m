@@ -16,7 +16,7 @@
 {
 	if(projectImage != nil)
 	{
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", projectData.team->URL_depot]];
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", projectData.team->URLRepo]];
 		if(bundle != nil)
 		{
 			projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%s_small", projectData.mangaNameShort]];

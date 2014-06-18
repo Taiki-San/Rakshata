@@ -46,10 +46,10 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     {
         char passwordInternal[2*SHA256_DIGEST_LENGTH+1];
         passToLoginData(password, passwordInternal);
-        length = 110 + 20 + (strlen(data.datas->team->URL_depot) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
+        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
         if(output != NULL) {
-            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&projectShort=%s&chapter=%d&isTome=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URL_depot, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
+            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&projectShort=%s&chapter=%d&isTome=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URLRepo, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
         }
     }
 
@@ -67,18 +67,18 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     char *output = NULL;
     if (!strcmp(teamData.type, TYPE_DEPOT_1))
     {
-        *length = 60 + 15 + strlen(teamData.URL_depot) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 60 + 15 + strlen(teamData.URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
-            snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URL_depot);
+            snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URLRepo);
     }
 
     else if (!strcmp(teamData.type, TYPE_DEPOT_2))
     {
-        *length = 200 + strlen(teamData.URL_depot) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 200 + strlen(teamData.URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
-            snprintf(output, *length, "http://%s", teamData.URL_depot);
+            snprintf(output, *length, "http://%s", teamData.URLRepo);
     }
 
     return output;
@@ -175,14 +175,14 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
 
             sscanfs(ligne, "%s %s %s %d", URL, LONGUEUR_URL, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
 			
-			if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URL_depot, URL)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
+			if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URLRepo, URL)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
 				currentProject = &mangaDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; mangaDB[posCatalogue].team != NULL && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->URL_depot, URL)); posCatalogue++);
-                if(mangaDB[posCatalogue].team != NULL && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URL_depot, URL))
+                for(posCatalogue = 0; mangaDB[posCatalogue].team != NULL && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->URLRepo, URL)); posCatalogue++);
+                if(mangaDB[posCatalogue].team != NULL && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URLRepo, URL))
                 {
                     currentProject = &mangaDB[posCatalogue];
                 }
@@ -505,10 +505,10 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
         }
         else if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_3))
         {
-            length = 100 + 15 + strlen(tomeDatas->datas->team->URL_depot) + strlen(tomeDatas->datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
+            length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + strlen(tomeDatas->datas->mangaName) + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
             URL = malloc(length);
             if(URL != NULL)
-                snprintf(URL, length, "https://%s/getTomeData.php?ver=%d&target=%s&project=%s&tome=%d&mail=%s", SERVEUR_URL, CURRENTVERSION, tomeDatas->datas->team->URL_depot, tomeDatas->datas->mangaName, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
+                snprintf(URL, length, "https://%s/getTomeData.php?ver=%d&target=%s&project=%s&tome=%d&mail=%s", SERVEUR_URL, CURRENTVERSION, tomeDatas->datas->team->URLRepo, tomeDatas->datas->mangaName, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
         }
 
         if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
@@ -713,11 +713,11 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck)
         /*Génération de l'URL*/
         if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_1))
         {
-            snprintf(URL, 400, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
+            snprintf(URL, 400, "https://dl.dropboxusercontent.com/u/%s/%s/infos.png", mangaToCheck.team->URLRepo, mangaToCheck.mangaName);
         }
         else if (!strcmp(mangaToCheck.team->type, TYPE_DEPOT_2))
         {
-            snprintf(URL, 400, "http://%s/%s/infos.png", mangaToCheck.team->URL_depot, mangaToCheck.mangaName);
+            snprintf(URL, 400, "http://%s/%s/infos.png", mangaToCheck.team->URLRepo, mangaToCheck.mangaName);
         }
         else if(!strcmp(mangaToCheck.team->type, TYPE_DEPOT_3))
         {

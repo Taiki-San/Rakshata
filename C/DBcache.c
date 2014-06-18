@@ -74,7 +74,7 @@ int setupBDDCache()
 		
 		if(internalTeamList[nombreTeam] != NULL)
 		{
-			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URL_depot, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
+			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
 			for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
 			nombreTeam++;
 		}
@@ -253,7 +253,7 @@ void syncCacheToDisk(byte syncCode)
 			{
 				if(teamDB[posStruct] != NULL)
 				{
-					newChar = snprintf(&bufferOut[posOut], MAX_TEAM_LINE_LENGTH, "%s %s %s %s %s %d\n", teamDB[posStruct]->teamLong, teamDB[posStruct]->teamCourt, teamDB[posStruct]->type, teamDB[posStruct]->URL_depot, teamDB[posStruct]->site, teamDB[posStruct]->openSite);
+					newChar = snprintf(&bufferOut[posOut], MAX_TEAM_LINE_LENGTH, "%s %s %s %s %s %d\n", teamDB[posStruct]->teamLong, teamDB[posStruct]->teamCourt, teamDB[posStruct]->type, teamDB[posStruct]->URLRepo, teamDB[posStruct]->site, teamDB[posStruct]->openSite);
 					if(newChar > 0)
 						posOut += newChar;
 				}
@@ -837,7 +837,7 @@ int getIndexOfTeam(char * URL)
 	
 	int output = 0;
 	
-	for(; output < lengthTeam && teamList[output] != NULL && strcmp(URL, teamList[output]->URL_depot); output++);
+	for(; output < lengthTeam && teamList[output] != NULL && strcmp(URL, teamList[output]->URLRepo); output++);
 	
 	if(output == lengthTeam || teamList[output] == NULL)	//Error
 		output = -1;
@@ -903,7 +903,7 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
 			if(data[posToCompareWith] == NULL)
 				continue;
 			
-			if(!strcmp(data[posBase]->URL_depot, data[posToCompareWith]->URL_depot))	//Même URL
+			if(!strcmp(data[posBase]->URLRepo, data[posToCompareWith]->URLRepo))	//Même URL
 			{
 				if(!strcmp(data[posBase]->teamLong, data[posToCompareWith]->teamLong))
 				{

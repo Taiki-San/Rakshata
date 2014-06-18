@@ -146,10 +146,10 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 
         for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
         {
-			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URL_depot, LONGUEUR_URL, bufferURLDepot);
+			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URLRepo, LONGUEUR_URL, bufferURLDepot);
 			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->mangaName, LONGUEUR_NOM_MANGA_MAX, bufferMangaName);
 			
-            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URL_depot, compteur, data[index[compteur]]->datas->mangaName,
+            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->mangaName,
                                                                                 compteur, data[index[compteur]]->listChapitreOfTome != NULL,
                                                                                 compteur, data[index[compteur]]->identifier);
             length += strlen(buffer);

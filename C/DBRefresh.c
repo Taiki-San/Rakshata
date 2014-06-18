@@ -39,13 +39,13 @@ int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
 	do
 	{
         if(!strcmp(teams->type, TYPE_DEPOT_1))
-            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URL_depot, defaultVersion);
+            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URLRepo, defaultVersion);
 		
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URL_depot, defaultVersion);
+            snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URLRepo, defaultVersion);
 		
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 		
         else
         {
@@ -116,13 +116,13 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
     do
 	{
 	    if(!strcmp(teams->type, TYPE_DEPOT_1))
-            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            snprintf(URL, sizeof(URL), "http://%s/rakshata-manga-%d", teams->URL_depot, defaultVersion);
+            snprintf(URL, sizeof(URL), "http://%s/rakshata-manga-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URL_depot, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {

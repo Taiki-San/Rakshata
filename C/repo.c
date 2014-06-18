@@ -143,15 +143,15 @@ int ajoutRepo(bool ajoutParFichier)
             if(!ajoutParFichier)
             {
                 /*On attend l'URL*/
-                crashTemp(teams.URL_depot, LONGUEUR_URL);
+                crashTemp(teams.URLRepo, LONGUEUR_URL);
                 
-                if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URL_depot) == 0)
+                if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URLRepo) == 0)
                     continue;
                 else if(continuer == PALIER_QUIT)
                     return PALIER_QUIT;
 
                 /*Si que des chiffres, DB, sinon, O*/
-                switch(defineTypeRepo(teams.URL_depot))
+                switch(defineTypeRepo(teams.URLRepo))
                 {
                     case 1:
                         ustrcpy(teams.type, TYPE_DEPOT_1); //Dropbox
@@ -170,7 +170,7 @@ int ajoutRepo(bool ajoutParFichier)
             {
                 if(continuer < PALIER_MENU)
                     break;
-                usstrcpy(teams.URL_depot, LONGUEUR_URL, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].URL);
+                usstrcpy(teams.URLRepo, LONGUEUR_URL, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].URL);
                 usstrcpy(teams.type, LONGUEUR_TYPE_TEAM, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].type);
             }
 
@@ -184,9 +184,9 @@ int ajoutRepo(bool ajoutParFichier)
                     do
                     {
                         if(!strcmp(teams.type, TYPE_DEPOT_1))
-                            snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
+                            snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, versionRepo);
                         else if(!strcmp(teams.type, TYPE_DEPOT_2))
-                            snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URL_depot, versionRepo);
+                            snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URLRepo, versionRepo);
 
                         download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
                         versionRepo--;
@@ -195,11 +195,11 @@ int ajoutRepo(bool ajoutParFichier)
                     if(isDownloadValid(bufferDL))
                     {
                         if(versionRepo == 1)
-                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
+                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
                         else
                         {
                             char ID[LONGUEUR_ID_TEAM];
-                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
                             teams.openSite = 1;
                         }
                     }
@@ -207,18 +207,18 @@ int ajoutRepo(bool ajoutParFichier)
 
                 else
                 {
-                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URL_depot);
+                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URLRepo);
                     download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
                     if(isDownloadValid(bufferDL))
                     {
                         int posBuf;
                         for(posBuf = strlen(bufferDL); bufferDL[posBuf] == '#' || bufferDL[posBuf] == '\n' || bufferDL[posBuf] == '\r'; bufferDL[posBuf--] = 0);
                         if(bufferDL[posBuf] >= '0' && bufferDL[posBuf] <= '9') //Ca fini par un chiffe, c'est la v2
-                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
+                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
                         else
                         {
                             char ID[LONGUEUR_ID_TEAM];
-                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URL_depot, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
+                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
                             teams.openSite = 1;
                         }
                     }

@@ -69,7 +69,7 @@
 - (NSString *) getContextToGTFO
 {
 	NSPoint sliders = [[self contentView] bounds].origin;
-	return [NSString stringWithFormat:@"%s\n%s\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URL_depot, project.mangaNameShort, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
+	return [NSString stringWithFormat:@"%s\n%s\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URLRepo, project.mangaNameShort, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/

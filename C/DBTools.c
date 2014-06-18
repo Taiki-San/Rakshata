@@ -48,7 +48,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	else if(version == 1)	//Legacy mode
 	{
 		char uselessID[10];
-		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE);
+		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE);
 		
 		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
 			return false;
@@ -59,7 +59,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	
 	else if(version == 2)
 	{
-		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URL_depot, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
+		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
 		
 		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
 			return false;
