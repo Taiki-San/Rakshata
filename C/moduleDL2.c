@@ -105,26 +105,31 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MAN
 }
 
 /*Final processing*/
-char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, int nombreTotal)
+char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal)
 {
-    int currentPosition;
-	uint sizePerElem = 42;
+	if(IDToPosition == NULL)
+		return NULL;
+	
+	uint sizePerElem = LONGUEUR_URL + LONGUEUR_COURT + 20;
 	size_t fullSize = nombreTotal * sizePerElem;
-	char * output = malloc(fullSize), buffer[sizePerElem];
+	char * output = malloc(fullSize + 1), buffer[sizePerElem];
+	
     if(output != NULL)
     {
-        for(currentPosition = 0; currentPosition < nombreTotal; currentPosition++)
+        for(uint i = 0, currentPosition; i < nombreTotal; i++)
         {
+			currentPosition = IDToPosition[i];
+			
             if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] == MDL_CODE_ABORTED || *status[currentPosition] <= MDL_CODE_FIRST_ERROR)
                 continue;
             else if(todoList[currentPosition]->listChapitreOfTome != NULL)
             {
-				snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->URL_depot, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
             else
             {
-				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->teamCourt, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->URL_depot, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
         }

@@ -57,10 +57,9 @@
 		MDLQuit();
 }
 
-#warning "Don't save paused elements. Also, should use IDToPosition"
 - (NSString *) serializeData
 {
-	char * data = MDLParseFile(*todoList, status, nbElem);
+	char * data = MDLParseFile(*todoList, status, IDToPosition, discardedCount);
 	if(data == NULL)
 		return nil;
 

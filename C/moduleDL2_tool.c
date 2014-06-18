@@ -128,7 +128,7 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
     {
 		uint posLine;
 		int posPtr = 0, chapitreTmp, posCatalogue = 0;
-		char ligne[2*LONGUEUR_COURT + 20], teamCourt[LONGUEUR_COURT], mangaCourt[LONGUEUR_COURT], type[2];
+		char ligne[2*LONGUEUR_COURT + 20], URL[LONGUEUR_URL], mangaCourt[LONGUEUR_COURT], type[2];
 
 		//Create the new structure, initialized at NULL
         DATA_LOADED **newBufferTodo = calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
@@ -148,7 +148,7 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
 			newBufferTodo[posPtr] = NULL;
 			
 			//Load the first line
-			for(posLine = 0; state[pos + posLine] && state[pos + posLine] != '\n' && posLine < 2*LONGUEUR_COURT+19; posLine++)
+			for(posLine = 0; state[pos + posLine] && state[pos + posLine] != '\n' && posLine < LONGUEUR_URL + LONGUEUR_COURT + 19; posLine++)
 				ligne[posLine] = state[pos + posLine];
 			for(ligne[posLine] = 0, pos += posLine; state[pos] == '\n'; pos++);
 
@@ -173,16 +173,16 @@ DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal
 
 			//Grab preliminary data
 
-            sscanfs(ligne, "%s %s %s %d", teamCourt, LONGUEUR_COURT, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
+            sscanfs(ligne, "%s %s %s %d", URL, LONGUEUR_URL, mangaCourt, LONGUEUR_COURT, type, 2, &chapitreTmp);
 			
-			if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
+			if(!strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URL_depot, URL)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
 				currentProject = &mangaDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; mangaDB[posCatalogue].team != NULL && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt)); posCatalogue++);
-                if(mangaDB[posCatalogue].team != NULL && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->teamCourt, teamCourt))
+                for(posCatalogue = 0; mangaDB[posCatalogue].team != NULL && (strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) || strcmp(mangaDB[posCatalogue].team->URL_depot, URL)); posCatalogue++);
+                if(mangaDB[posCatalogue].team != NULL && !strcmp(mangaDB[posCatalogue].mangaNameShort, mangaCourt) && !strcmp(mangaDB[posCatalogue].team->URL_depot, URL))
                 {
                     currentProject = &mangaDB[posCatalogue];
                 }
