@@ -27,12 +27,11 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	
 	if(contentView == nil)
 	{
-		NSLog(@"Couldn't build view structure");
+		NSLog(@"Couldn't build view structure, basically, it's a _very_ early failure, we can't recover from that =/");
 		exit(EXIT_FAILURE);
 	}
 	
 	tabSerie =	[Series alloc];
-	
 	tabCT =		[CTSelec alloc];
 	tabReader =	[Reader alloc];
 	tabMDL =	[MDL alloc];
