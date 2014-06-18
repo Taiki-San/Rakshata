@@ -87,6 +87,7 @@ int libcurlErrorCode(CURLcode code)
             break;
         }
         case CURLE_ABORTED_BY_CALLBACK:
+		case CURLE_WRITE_ERROR:
         {
             ret_value = CODE_RETOUR_DL_CLOSE;
             noLog = true;
