@@ -722,6 +722,12 @@
 	currentDraggedItem = [draggedItems objectAtIndex:0];
 	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
+	[RakList propagateDragAndDropChangeState:outlineView.superview :YES];
+}
+
+- (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
+	[RakList propagateDragAndDropChangeState:outlineView.superview :NO];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
