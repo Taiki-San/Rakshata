@@ -10,24 +10,28 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakProgressCircle
+@implementation RakProgressBar
 
-- (id)initWithRadius:(CGFloat) radius : (NSPoint) origin
+- (id)initWithFrame:(NSRect)frame
 {
-	NSRect frame = NSMakeRect(origin.x, origin.y, (radius + 1) * 2, (radius + 1) * 2);
     self = [super initWithFrame:frame];
     
 	if (self)
 	{
-		_radius = radius;
-		_width = 1;
-		
+		_width = 2;
 		_percentage = 0;
-		_percText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%.0f", _percentage] :[Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		_speed = 0;
 		
-		[self addSubview:_percText];
-		[self centerText];
+		_speedText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]] :[Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		
+		if(_speedText == nil)
+		{
+			[self release];
+			return nil;
+		}
+		
+		[self addSubview:_speedText];	[self centerText];
+
 		slotColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT] retain];
 		progressColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS] retain];
     }
@@ -35,11 +39,21 @@
 	return self;
 }
 
++ (CGFloat) getLeftBorder
+{
+	return 10;
+}
+
++ (CGFloat) getRightBorder
+{
+	return 10;
+}
+
 - (void) dealloc
 {
 	[slotColor release];
 	[progressColor release];
-	[_percText removeFromSuperview];	[_percText release];
+	[_speedText removeFromSuperview];	[_speedText release];
 	
 	[super dealloc];
 }
@@ -63,28 +77,27 @@
 	[progressColor retain];
 }
 
-- (RakText *) getText
-{
-	return _percText;
-}
-
-- (void) updatePercentage : (CGFloat) percentage
+- (void) updatePercentage : (CGFloat) percentage : (size_t) downloadSpeed
 {
 	if(percentage < 0 || percentage > 100 || _percentage == percentage)
 		return;
 	
-	if((int) _percentage != (int) percentage)
+	if(_speed != downloadSpeed)
 	{
-		_percText.stringValue = [NSString stringWithFormat:@"%.0f", percentage];
+		_speed = downloadSpeed;
+		[_speedText setStringValue:[NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]]];
 		[self centerText];
 	}
 	
 	_percentage = percentage;
 }
 
-- (void) updatePercentageProxy : (NSNumber*) percentage
+- (void) updatePercentageProxy : (NSArray*) data
 {
-	[self updatePercentage:[percentage doubleValue]];
+	if([data count] != 2 || [[data objectAtIndex:0] superclass] != [NSNumber class] || [[data objectAtIndex:1] superclass] != [NSNumber class])
+		return;
+	
+	[self updatePercentage:[[data objectAtIndex:0] doubleValue] :[[data objectAtIndex:1] longLongValue]];
 	[self notifyNeedDisplay];
 }
 
@@ -94,38 +107,42 @@
 - (void) notifyNeedDisplay
 {
 	[self setNeedsDisplay:YES];
-	[_percText setNeedsDisplay:YES];
 }
 
 - (void) centerText
 {
-	[_percText sizeToFit];
-	NSRect frame = _percText.frame;
+	[_speedText sizeToFit];
+	NSRect frame = _speedText.frame;
+	
+#warning "Code need update"
 	
 	frame.origin.x = self.frame.size.width / 2 - frame.size.width / 2;
 	frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
 	
-	[_percText setFrameOrigin:frame.origin];
+	[_speedText setFrameOrigin:frame.origin];
 }
 
 - (void) setupPath
 {
-	CGContextRef ctx = [[NSGraphicsContext currentContext] graphicsPort];
-	CGFloat x = self.frame.size.width / 2, y = self.frame.size.height / 2;
+	CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+	
+	CGContextSetLineWidth(context, _width);
 	
 	// "Full" Background Circle:
-    CGContextBeginPath(ctx);
-    CGContextAddArc(ctx, x, y, _radius, 0, 2*M_PI, 0);
-    CGContextSetStrokeColorWithColor(ctx, slotColor.CGColor);
-    CGContextStrokePath(ctx);
+	[slotColor setStroke];
+    CGContextBeginPath(context);
+	CGContextMoveToPoint(context, 0, 0);
+	CGContextAddLineToPoint(context, self.frame.size.width, 0);
+    CGContextStrokePath(context);
     
     // Progress Arc:
 	if(_percentage != 0)
 	{
-		CGContextBeginPath(ctx);
-		CGContextAddArc(ctx, x, y, _radius, M_PI_2, M_PI_2 - (2 * M_PI * _percentage / 100), 1);
-		CGContextSetStrokeColorWithColor(ctx, progressColor.CGColor);
-		CGContextStrokePath(ctx);
+		[progressColor setStroke];
+		CGContextBeginPath(context);
+		CGContextMoveToPoint(context, 0, 0);
+		CGContextAddLineToPoint(context, self.frame.size.width * _percentage / 100, 0);
+		CGContextStrokePath(context);
 	}
 }
 

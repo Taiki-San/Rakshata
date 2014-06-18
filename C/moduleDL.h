@@ -235,7 +235,7 @@ void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void MDLDownloadOver();
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
-void updatePercentage(void * rowViewResponsible, float percentage);
+void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
 bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
 
 /**ModuleDLMainWorker.m**/

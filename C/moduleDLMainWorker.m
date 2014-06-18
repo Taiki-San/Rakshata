@@ -180,10 +180,10 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance)
 	}
 }
 
-void updatePercentage(void * rowViewResponsible, float percentage)
+void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 {
 	if(rowViewResponsible != NULL)
 	{
-		[(RakMDLListView*) rowViewResponsible updatePercentage:percentage];
+		[(RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
 	}
 }

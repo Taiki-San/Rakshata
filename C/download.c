@@ -49,7 +49,8 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
 	double percentage;
-	uint64_t prevDLBytes = 0;
+	uint64_t prevDLBytes = 0, downloadSpeed = 0, delay;
+	struct timeval anchor1, anchor2;
 	
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
@@ -64,23 +65,31 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 	while(isThreadStillRunning(threadData) && !quit && downloadData.totalExpectedSize == 0)
 		usleep(50000);	//0.05s
 	
+	gettimeofday(&anchor1, NULL);
+	
     while(isThreadStillRunning(threadData) && !quit)
     {
         if(rowViewResponsible != NULL && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
         {
 			if(prevDLBytes != downloadData.bytesDownloaded)
             {
-#if 0
-                if(!downloadSpeed)
-                    downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) / 1024;
-                else
-                    downloadSpeed = (downloadSpeed*2 + (downloadData.bytesDownloaded - prevDLBytes) / 1024) / 3;
-#endif
-
-                prevDLBytes = downloadData.bytesDownloaded;
+				gettimeofday(&anchor2, NULL);
+				delay = (anchor2.tv_sec - anchor1.tv_sec) * 1000 + (anchor2.tv_usec - anchor1.tv_usec) / 1000.0;
+				
+				if (delay > 200)
+				{
+					if(delay)
+						downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) * 1000 / delay;
+					else
+						downloadSpeed = 0;
+					
+					prevDLBytes = downloadData.bytesDownloaded;
+					anchor1 = anchor2;
+				}
+				
 				percentage = (currentPos * 100 / nbElem) + (downloadData.bytesDownloaded * 100) / (downloadData.totalExpectedSize * nbElem);
-
-				updatePercentage(*rowViewResponsible, percentage);
+				
+				updatePercentage(*rowViewResponsible, percentage, downloadSpeed);
 
 				usleep(50000);	//100 ms
             }

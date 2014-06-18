@@ -46,7 +46,7 @@
 		_remove = [remove copy];
 		if(_remove != nil)	{	[self addSubview:_remove];		[_remove setHidden:NO];	[_remove.cell setHighlightAllowed: [remove.cell isHighlightAllowed]]; }
 		
-		DLprogress = [[RakProgressCircle alloc] initWithRadius:11 : NSMakePoint(0, 0)];
+		DLprogress = [[RakProgressBar alloc] initWithFrame: NSMakeRect([RakProgressBar getLeftBorder], 0, self.frame.size.width - ([RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder]), self.frame.size.height)];
 		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
 		
 		iconWidth = [_remove frame].size.width;
@@ -144,12 +144,12 @@
 	
 	if(DLprogress != nil)
 	{
-		curFrame = DLprogress.frame;
+		curFrame = frame;
 		
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-		newPoint.x -= curFrame.size.width + 5;
+		curFrame.origin.x = [RakProgressBar getLeftBorder];
+		curFrame.size.width -= [RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder];
 		
-		[DLprogress setFrameOrigin:newPoint];
+		[DLprogress setFrame:curFrame];
 	}
 	
 	if(statusText != nil)
@@ -220,7 +220,7 @@
 		{
 			[_pause setHidden:NO];				[_pause display];
 			[DLprogress setHidden:NO];
-			[DLprogress updatePercentage:0];	[DLprogress display];
+			[DLprogress updatePercentage:0 :0];	[DLprogress display];
 			break;
 		}
 			
@@ -251,10 +251,10 @@
 
 #pragma mark - Proxy
 
-- (void) updatePercentage : (CGFloat) percentage
+- (void) updatePercentage : (CGFloat) percentage : (size_t) speed
 {
 	if(DLprogress != nil)
-		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:[NSNumber numberWithDouble:percentage] waitUntilDone:YES];
+		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[[NSNumber numberWithDouble:percentage], [NSNumber numberWithLongLong:speed]] waitUntilDone:YES];
 }
 
 - (void) sendRemove

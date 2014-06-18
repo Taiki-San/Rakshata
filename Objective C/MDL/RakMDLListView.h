@@ -18,7 +18,7 @@
 	RakButton * _read;
 	RakButton * _remove;
 	
-	RakProgressCircle * DLprogress;
+	RakProgressBar * DLprogress;
 	
 	RakText * requestName;
 	RakText * statusText;
@@ -38,7 +38,7 @@
 - (void) updateContext;
 - (void) requestReloadData : (NSTableView *) tableView;
 
-- (void) updatePercentage : (CGFloat) percentage;
+- (void) updatePercentage : (CGFloat) percentage : (size_t) speed;
 - (void) sendRemove;
 - (void) sendPause;
 - (void) sendRead;

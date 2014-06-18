@@ -10,24 +10,24 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakProgressCircle : NSView
+@interface RakProgressBar : NSView
 {
-	CGFloat _radius;
 	CGFloat _width;
 	
 	CGFloat _percentage;
-	
-	RakText * _percText;
+
+	size_t _speed;
+	RakText * _speedText;
 	
 	NSColor * slotColor;
 	NSColor * progressColor;
 }
 
-- (id)initWithRadius:(CGFloat) radius : (NSPoint) origin;
-- (void) setWidth : (CGFloat) width;
-- (RakText *) getText;
-- (void) updatePercentage : (CGFloat) percentage;
-- (void) updatePercentageProxy : (NSNumber*) percentage;
++ (CGFloat) getLeftBorder;
++ (CGFloat) getRightBorder;
+
+- (void) updatePercentage : (CGFloat) percentage : (size_t) downloadSpeed;
+- (void) updatePercentageProxy : (NSArray*) percentage;
 
 - (void) notifyNeedDisplay;
 

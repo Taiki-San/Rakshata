@@ -20,7 +20,7 @@
 #import "RakCenteredTextFieldCell.h"
 #import "RakTextCell.h"
 #import "RakMenuText.h"
-#import "RakProgressCircle.h"
+#import "RakProgressBar.h"
 #import "RakBackButton.h"
 #import "RakDragView.h"
 #import "RakDragItem.h"
