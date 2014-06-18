@@ -87,7 +87,10 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 					anchor1 = anchor2;
 				}
 				
-				percentage = (currentPos * 100 / nbElem) + (downloadData.bytesDownloaded * 100) / (downloadData.totalExpectedSize * nbElem);
+				if(nbElem != 0 && downloadData.totalExpectedSize != 0)
+					percentage = (currentPos * 100 / nbElem) + (downloadData.bytesDownloaded * 100) / (downloadData.totalExpectedSize * nbElem);
+				else
+					percentage = 0;
 				
 				updatePercentage(*rowViewResponsible, percentage, downloadSpeed);
 

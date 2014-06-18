@@ -148,8 +148,10 @@
 		
 		curFrame.origin.x = [RakProgressBar getLeftBorder];
 		curFrame.size.width -= [RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder];
-		
+
 		[DLprogress setFrame:curFrame];
+		[DLprogress setRightTextBorder: newPoint.x - 10];
+		[DLprogress centerText];
 	}
 	
 	if(statusText != nil)

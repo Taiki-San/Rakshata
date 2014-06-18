@@ -85,7 +85,11 @@
 	if(_speed != downloadSpeed)
 	{
 		_speed = downloadSpeed;
-		[_speedText setStringValue:[NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]]];
+		if(_speed != 0)
+			[_speedText setStringValue:[NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]]];
+		else
+			[_speedText setStringValue:@"0 KB/s"];
+		
 		[self centerText];
 	}
 	
@@ -101,6 +105,10 @@
 	[self notifyNeedDisplay];
 }
 
+- (void) setRightTextBorder : (uint) posX
+{
+	_posX = posX;
+}
 
 #pragma mark - Drawing
 
@@ -114,9 +122,12 @@
 	[_speedText sizeToFit];
 	NSRect frame = _speedText.frame;
 	
-#warning "Code need update"
-	
-	frame.origin.x = self.frame.size.width / 2 - frame.size.width / 2;
+	if(_posX)
+		frame.origin.x = _posX - frame.size.width;
+	else
+	{
+		frame.origin.x = self.frame.size.width * 3 / 4 - frame.size.width / 2;
+	}
 	frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
 	
 	[_speedText setFrameOrigin:frame.origin];

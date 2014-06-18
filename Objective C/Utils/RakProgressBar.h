@@ -21,6 +21,8 @@
 	
 	NSColor * slotColor;
 	NSColor * progressColor;
+	
+	uint _posX;
 }
 
 + (CGFloat) getLeftBorder;
@@ -29,6 +31,9 @@
 - (void) updatePercentage : (CGFloat) percentage : (size_t) downloadSpeed;
 - (void) updatePercentageProxy : (NSArray*) percentage;
 
+- (void) setRightTextBorder : (uint) posX;
+
 - (void) notifyNeedDisplay;
+- (void) centerText;
 
 @end
