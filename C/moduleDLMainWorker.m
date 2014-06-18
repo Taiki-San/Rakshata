@@ -168,7 +168,7 @@ void MDLQuit()
 void MDLUpdateIcons(uint selfCode, void * UIInstance)
 {
 	if(UIInstance != NULL)
-		[(RakMDLListView*) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:YES];
+		[(RakMDLListView*) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
 	
 	else if(mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
