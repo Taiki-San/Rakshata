@@ -116,10 +116,14 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
         }
 	}
 	
-	MUTEX_UNLOCK(mutexStartUIThread);
 	threadID = NULL;
 	for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
 	free(historiqueTeam);
+	
+	pthread_cond_broadcast(&condResumeExecution);
+	pthread_mutex_trylock(&mutexStartUIThread);
+	MUTEX_UNLOCK(mutexStartUIThread);
+
 	quit_thread(0);
 }
 
@@ -159,17 +163,20 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 
 bool MDLSendMessage(uint code)
 {
-	if(threadID == NULL || !isThreadStillRunning(*threadID))
-		return false;
+	bool ret_value = false;
 	
 	MUTEX_LOCK(asynchronousTaskInThreads);
-	
-	requestID = code;
-	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+
+	if(threadID != NULL && isThreadStillRunning(*threadID))
+	{
+		requestID = code;
+		pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+		ret_value = true;
+	}
 	
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 	
-	return true;
+	return ret_value;
 }
 
 void MDLDownloadOver()
