@@ -28,7 +28,7 @@
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 			stateChar = (char *) [state UTF8String];
 		
-		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &nbElem, &quit, self))
+		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, self))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
@@ -171,7 +171,7 @@
 		//Great, the injection is now over... We need to reanimate what needs to be
 		if(!isThreadStillRunning(coreWorker))
 		{
-			startMDL(NULL, cache, &coreWorker, &todoList, &status, &nbElem, &quit, self);
+			startMDL(NULL, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, self);
 		}
 		else
 		{

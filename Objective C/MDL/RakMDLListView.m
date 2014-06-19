@@ -270,6 +270,7 @@
 	if(previousStatus == MDL_CODE_INSTALL_OVER)
 	{
 		//Deletion
+		getUpdatedCTList((*todoList)->datas, (*todoList)->listChapitreOfTome != NULL);
 		internalDeleteCT(*(*todoList)->datas, (*todoList)->listChapitreOfTome != NULL, (*todoList)->identifier);
 	}
 	else if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
