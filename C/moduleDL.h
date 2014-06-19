@@ -80,7 +80,8 @@ enum isInstalledRC {
 
 enum requestIDCodes {
 	RID_DEFAULT					= 0,
-	RID_UPDATE_STATUS			= 1
+	RID_UPDATE_STATUS			= 1,
+	RID_UPDATE_INSTALL			= 2
 };
 
 enum downloadStatusCodes {
@@ -185,6 +186,7 @@ typedef struct argument_to_main_worker
 {
 	DATA_LOADED **** todoList;
 	int8_t *** status;
+	uint ** IDToPosition;
 	uint * nbElemTotal;
 	
 	bool * quit;
@@ -212,8 +214,8 @@ extern int WINDOW_SIZE_W_DL;
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
-bool startMDL(char *state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElem, bool * quit, void * mainTab);
-bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab);
+bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
 void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MANGAS_DATA * cache);
 char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal);
 
@@ -233,6 +235,7 @@ int sortMangasToDownload(const void *a, const void *b);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void MDLDownloadOver();
+void MDLStartNextInstallation();
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);

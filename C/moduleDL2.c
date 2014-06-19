@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
 	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || nbElemTotal == NULL || quit == NULL)
@@ -51,10 +51,10 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		(*status)[i] = NULL;
 	}
 
-	return startWorker(cache, coreWorker, todoList, status, nbElemTotal, quit, mainTab);
+	return startWorker(cache, coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab);
 }
 
-bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
 	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(50);		}
@@ -71,6 +71,7 @@ bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED ****
 			argument->nbElemTotal = nbElemTotal;
 			argument->quit = quit;
 			argument->mainTab = mainTab;
+			argument->IDToPosition = IDToPosition;
 			
 			*coreWorker = createNewThreadRetValue(mainDLProcessing, argument);
 			MDLSetThreadID(coreWorker);

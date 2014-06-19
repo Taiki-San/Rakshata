@@ -29,6 +29,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	mainTab							=	arg->mainTab;
 	int8_t ***			status		=	arg->status;
 	uint *				nbElemTotal =	arg->nbElemTotal;
+	uint **				IDToPosition =	arg->IDToPosition;
 	
 	uint dataPos;
 	char **historiqueTeam = calloc(1, sizeof(char*));
@@ -60,16 +61,19 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		{
 			if(requestID == RID_UPDATE_STATUS)
 			{
-				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+				if(IDToPosition == NULL)
+					break;
+					
+				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 				
-				if(dataPos < *nbElemTotal && *((*status)[dataPos]) == MDL_CODE_DEFAULT)
+				if(dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) == MDL_CODE_DEFAULT)
 				{
-					MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
+					MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status, &historiqueTeam);
 				}
 				else
 				{
 					//On regarde si on a plus que des éléments qui sont en attente d'une action extérieure
-					for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_WAITING_LOGIN && *((*status)[dataPos]) != MDL_CODE_WAITING_PAY; dataPos++);
+					for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_WAITING_LOGIN && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_WAITING_PAY; dataPos++);
 					
 					if(dataPos == *nbElemTotal)	//Non, on se casse
 					{
@@ -80,6 +84,19 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 					}
 				}
 			}
+			else if(requestID == RID_UPDATE_INSTALL)
+			{
+				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_INSTALL; dataPos++);
+
+				if(dataPos == *nbElemTotal)
+				{
+					for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DL_OVER; dataPos++);
+					
+					if(dataPos != *nbElemTotal) //une installation a été trouvée
+						*((*status)[(*IDToPosition)[dataPos]]) = MDL_CODE_INSTALL;
+				}
+			}
+				
 		}
 		
 		pthread_cond_broadcast(&condResumeExecution);	//On a reçu la requête, le thread sera libéré dès que le mutex sera debloqué
@@ -140,17 +157,28 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
     }
 }
 
-void MDLDownloadOver()
+void MDLSendMessage(uint code)
 {
 	if(threadID == NULL || !isThreadStillRunning(*threadID))
 		return;
 	
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
-	requestID = RID_UPDATE_STATUS;
+	requestID = code;
 	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
 	
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
+	
+}
+
+void MDLDownloadOver()
+{
+	MDLSendMessage(RID_UPDATE_STATUS);
+}
+
+void MDLStartNextInstallation()
+{
+	MDLSendMessage(RID_UPDATE_INSTALL);
 }
 
 void MDLQuit()

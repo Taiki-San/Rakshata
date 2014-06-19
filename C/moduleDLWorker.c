@@ -99,7 +99,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				if(MDLTelechargement(&argument, i, nombreElement))
 				{
 					if(i + 1 == nombreElement)
-						*(input.currentState) = MDL_CODE_ERROR_DL;
+						*(input.currentState) = nbElemToInstall ? MDL_CODE_DL_OVER : MDL_CODE_ERROR_DL;
 				}
 				else if(quit)
 				{
@@ -140,7 +140,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 				if(i + 1 == nombreElement && *(input.currentState) == MDL_CODE_DL)
 				{
-					*(input.currentState) = MDL_CODE_INSTALL_OVER;
+					*(input.currentState) = nbElemToInstall ? MDL_CODE_DL_OVER : MDL_CODE_INSTALL_OVER;
 				}
 				break;
 			}
@@ -154,7 +154,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 				
 				if(i + 1 == nombreElement && *(input.currentState) == MDL_CODE_DL)
 				{
-					*(input.currentState) = MDL_CODE_INSTALL_OVER;
+					*(input.currentState) = nbElemToInstall ? MDL_CODE_DL_OVER : MDL_CODE_INSTALL_OVER;
 				}
 				break;
 			}
@@ -172,18 +172,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     if(!DLAborted && nbElemToInstall) //On lance l'installation
     {
         int error = 0;
-        for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_INSTALL; i++);
-        if(i == input.statusLength) //Aucune installation en cours
-        {
-            *(input.currentState) = MDL_CODE_INSTALL;
-            MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
-        }
-        else
-        {
-            MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
-            while(*(input.currentState) != MDL_CODE_INSTALL)
-                usleep(250);
-        }
+		MDLStartNextInstallation();
+		MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+		while(*(input.currentState) != MDL_CODE_INSTALL)
+			usleep(250);
 		
         for(i = 0; i < nombreElement; i++)
         {
@@ -219,10 +211,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	}
 	
 	//On lance les éventuelles installations en attente
-    for(i = 0; i < input.statusLength && *(*input.fullStatus)[i] != MDL_CODE_DL_OVER; i++);
-
-    if(i != input.statusLength) //une installation a été trouvée
-        *(*input.fullStatus)[i] = MDL_CODE_INSTALL;
+	MDLStartNextInstallation();
 	
     if(!quit && !DLAborted)
         MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
