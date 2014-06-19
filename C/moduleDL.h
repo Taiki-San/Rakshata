@@ -235,7 +235,7 @@ int sortMangasToDownload(const void *a, const void *b);
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 void grabInfoPNG(MANGAS_DATA mangaToCheck);
 void MDLDownloadOver();
-void MDLStartNextInstallation();
+bool MDLStartNextInstallation();
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);

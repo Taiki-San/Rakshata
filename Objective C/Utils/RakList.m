@@ -285,16 +285,18 @@
 		return;
 	
 	if(row != -1)
-	{
-		[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 		[self tableView:_tableView shouldSelectRow:row];
-	}
 }
 
 - (void) resetSelection : (NSTableView *) tableView
 {
 	if(tableView == nil)
-		return;
+	{
+		if(_tableView != nil)
+			tableView = _tableView;
+		else
+			return;
+	}
 	
 	if(selectedIndex != -1)
 	{

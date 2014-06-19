@@ -18,14 +18,11 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
         getUpdatedChapterList(mangaDB, true);
 }
 
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data)
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, int data)
 {
     if(isTome)
-    {
-        META_TOME *tome = data;
-        return checkTomeReadable(mangaDB, tome->ID);
-    }
-    return checkChapterReadable(mangaDB, *(int *) data);
+        return checkTomeReadable(mangaDB, data);
+    return checkChapterReadable(mangaDB, data);
 }
 
 bool isAnythingToDownload(MANGAS_DATA mangaDB)

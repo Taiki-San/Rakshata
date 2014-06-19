@@ -750,7 +750,7 @@ bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DA
 		
 		if(projectToTest.cacheDBID == list[i]->datas->cacheDBID && list[i]->identifier == element && (isTome || list[i]->listChapitreOfTome == NULL))
 		{
-			if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkChapterReadable(projectToTest, element))
+			if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkReadable(projectToTest, isTome, element))
 				return true;
 		}
 	}

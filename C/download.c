@@ -100,7 +100,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 				usleep(1000);	//1 ms
         }
         else
-			usleep(17000);	// 1/60 second, ~ 17 ms
+			usleep(67000);	// 4/60 second, ~ 67 ms
     }
 
     if(quit)

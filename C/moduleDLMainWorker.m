@@ -157,10 +157,10 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
     }
 }
 
-void MDLSendMessage(uint code)
+bool MDLSendMessage(uint code)
 {
 	if(threadID == NULL || !isThreadStillRunning(*threadID))
-		return;
+		return false;
 	
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
@@ -169,6 +169,7 @@ void MDLSendMessage(uint code)
 	
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 	
+	return true;
 }
 
 void MDLDownloadOver()
@@ -176,9 +177,9 @@ void MDLDownloadOver()
 	MDLSendMessage(RID_UPDATE_STATUS);
 }
 
-void MDLStartNextInstallation()
+bool MDLStartNextInstallation()
 {
-	MDLSendMessage(RID_UPDATE_INSTALL);
+	return MDLSendMessage(RID_UPDATE_INSTALL);
 }
 
 void MDLQuit()

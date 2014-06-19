@@ -172,7 +172,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     if(!DLAborted && nbElemToInstall) //On lance l'installation
     {
         int error = 0;
-		MDLStartNextInstallation();
+
+		if(!MDLStartNextInstallation())	//Si le controlleur central s'est arrêté, dans le cas où on est les derniers
+			*(input.currentState) = MDL_CODE_INSTALL;
+		   
 		MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 		while(*(input.currentState) != MDL_CODE_INSTALL)
 			usleep(250);

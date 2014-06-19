@@ -260,7 +260,9 @@
 	
 	if (posStart > posEnd || posEnd >= discardedCount || (injectionPoint >= posStart && injectionPoint <= posEnd))
 	{
-		NSLog(@"Invalid data");
+#ifdef DEV_VERSION
+		NSLog(@"Invalid data when reorder: posStart: %d, posEnd: %d, injectionPoint:%d, discardedCount: %d", posStart, posEnd, injectionPoint, discardedCount);
+#endif
 		return;
 	}
 	

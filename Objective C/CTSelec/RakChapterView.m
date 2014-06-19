@@ -275,6 +275,7 @@
 	
 	if (self != nil)
 	{
+		[self setAutoresizesSubviews:NO];
 		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
 		[buttons setTarget:self];
 		[buttons setAction:@selector(switchIsTome:)];
@@ -508,10 +509,16 @@
 {
 	//Some danger of TOCTOU around here, mutexes would be great
 	
-	if(!memcmp(&newData, &data, sizeof(data)))
-		return;
+	if(data.cacheDBID == newData.cacheDBID)
+	{
+		getUpdatedCTList(&data, true);
+		getUpdatedCTList(&data, false);
+	}
 	else
 	{
+		if(tableViewControllerChapter != NULL)	[tableViewControllerChapter resetSelection:nil];
+		if(tableViewControllerVolume != NULL)	[tableViewControllerVolume resetSelection:nil];
+
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
 	}

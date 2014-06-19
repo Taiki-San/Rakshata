@@ -36,7 +36,7 @@ int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, boo
     }
 	
 	//On vérifie que l'entrée est valide
-	if(!checkReadable(mangaDB, isTome, isTome ? (void*) &(mangaDB.tomesInstalled[curPosIntoStruct]) : &currentSelection))
+	if(!checkReadable(mangaDB, isTome, isTome ? mangaDB.tomesInstalled[curPosIntoStruct].ID: currentSelection))
 	{
 		if(!reader_getNextReadableElement(mangaDB, isTome, &curPosIntoStruct))
 		{

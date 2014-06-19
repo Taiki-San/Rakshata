@@ -37,7 +37,7 @@ bool checkPathEscape(char *string, int length);
 
 /**CTCommon.c**/
 void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome);
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, void *data);
+bool checkReadable(MANGAS_DATA mangaDB, bool isTome, int data);
 bool isAnythingToDownload(MANGAS_DATA mangaDB);
 void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection);
 void releaseCTData(MANGAS_DATA data);

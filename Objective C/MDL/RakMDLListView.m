@@ -156,15 +156,13 @@
 	
 	if(statusText != nil)
 	{
-		if(frame.size.width > 300)
-		{
-			curFrame = statusText.frame;
-			
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-			newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
-			
+		curFrame = statusText.frame;
+		
+		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
+		
+		if(requestName == nil || requestName.frame.size.width + requestName.frame.origin.x + 25 < newPoint.x)
 			[statusText setFrameOrigin:newPoint];
-		}
 		else if([statusText isHidden] == NO)
 			[statusText setHidden:YES];
 	}
