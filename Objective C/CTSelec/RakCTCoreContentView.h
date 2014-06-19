@@ -18,5 +18,6 @@
 
 - (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
 - (bool) reloadData : (MANGAS_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+- (void) jumpScrollerToRow : (int) row;
 
 @end

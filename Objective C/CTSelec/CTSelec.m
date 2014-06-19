@@ -356,6 +356,12 @@
 		[coreView refreshCT : checkIfRequired : ID];
 }
 
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+{
+	if(coreView != nil)
+		[coreView selectElem : projectID : isTome : element];
+}
+
 #pragma mark - Drop
 
 - (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender

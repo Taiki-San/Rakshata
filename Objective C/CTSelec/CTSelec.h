@@ -25,5 +25,6 @@
 - (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY;
 
 - (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 
 @end

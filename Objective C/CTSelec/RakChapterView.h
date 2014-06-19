@@ -42,6 +42,7 @@
 - (NSString *) getContextToGTFO;
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (void) updateContext : (MANGAS_DATA) newData;
 
 @end
@@ -57,5 +58,6 @@
 
 - (void) updateContext : (MANGAS_DATA) data;
 - (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 
 @end

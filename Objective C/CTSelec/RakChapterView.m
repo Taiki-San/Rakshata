@@ -147,6 +147,12 @@
 		[coreView refreshCTData : checkIfRequired : ID];
 }
 
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+{
+	if(coreView != nil)
+		[coreView selectElem : projectID : isTome : element];
+}
+
 @end
 
 @implementation RakTextProjectName
@@ -476,6 +482,26 @@
 		
 	getUpdatedTomeList(&data, true);
 	[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : NO];
+}
+
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+{
+	if(data.cacheDBID != projectID)
+		return;
+	
+	RakCTCoreContentView * tab = nil;
+	
+	if(isTome)
+		tab = tableViewControllerVolume;
+	else if(!isTome)
+		tab = tableViewControllerChapter;
+
+	if(tab != nil)
+	{
+		int row = [tab getIndexOfElement:element];
+		[tab selectRow:row];
+		[tab jumpScrollerToRow:row];
+	}
 }
 
 - (void) updateContext : (MANGAS_DATA) newData

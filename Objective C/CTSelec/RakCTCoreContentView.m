@@ -128,7 +128,7 @@
 
 - (NSInteger) getSelectedElement
 {
-	NSInteger row = [_tableView selectedRow];
+	NSInteger row = selectedIndex;
 	
 	if(row < 0 || row > amountData)
 		return -1;
@@ -139,6 +139,12 @@
 		return ((int *) data)[row];
 }
 
+- (void) jumpScrollerToRow : (int) row
+{
+	if(_tableView != nil && row != -1 && row < amountData)
+		[_tableView scrollRowToVisible:row];
+}
+ 
 - (NSInteger) getIndexOfElement : (NSInteger) element
 {
 	if (data == NULL)
@@ -208,11 +214,9 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	uint result = [_tableView selectedRow];
-	
-	if(result < amountData)
+	if(selectedIndex != -1 && selectedIndex < amountData)
 	{
-		[(RakCTContentTabView*) scrollView.superview gotClickedTransmitData: isTome : result];
+		[(RakCTContentTabView*) scrollView.superview gotClickedTransmitData: isTome : selectedIndex];
 	}
 }
 

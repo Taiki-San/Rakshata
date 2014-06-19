@@ -81,9 +81,7 @@
 
 - (NSInteger) selectedRow
 {
-	if(_tableView == nil)
-		return -1;
-	return [_tableView selectedRow];
+	return selectedIndex;
 }
 
 #pragma mark - Data manipulation
@@ -173,12 +171,10 @@
 	if(_tableView == nil)
 		return -1;
 	
-	NSInteger selected = [_tableView selectedRow];
-	
-	if(selected == -1)
+	if(selectedIndex == -1)
 		return -1;
 	
-	MANGAS_DATA project = [self getElementAtIndex:selected];
+	MANGAS_DATA project = [self getElementAtIndex:selectedIndex];
 
 	if(project.team == NULL)
 		return -1;

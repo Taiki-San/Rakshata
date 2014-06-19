@@ -206,7 +206,7 @@
 
 - (NSInteger) selectedRow
 {
-	return [_tableView selectedRow];
+	return selectedIndex;
 }
 
 #pragma mark - Colors
@@ -251,7 +251,7 @@
 	else
 	{
 		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
-		if(row != [tableView selectedRow])
+		if(row != selectedIndex)
 		{
 			[result setTextColor:normal];
 			[result setDrawsBackground:NO];
@@ -270,7 +270,11 @@
     {
 		[element setTextColor: highlight];
 		[element setDrawsBackground:YES];
+		[element setNeedsDisplay];
+		selectedIndex = rowIndex;
     }
+	else
+		selectedIndex = -1;
 	
 	return YES;
 }
@@ -285,8 +289,6 @@
 		[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 		[self tableView:_tableView shouldSelectRow:row];
 	}
-	else
-		[self resetSelection:_tableView];
 }
 
 - (void) resetSelection : (NSTableView *) tableView
@@ -294,17 +296,18 @@
 	if(tableView == nil)
 		return;
 	
-	if([tableView selectedRow] != -1)
+	if(selectedIndex != -1)
 	{
-		uint row = [_tableView selectedRow];
-		RakText * element = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+		RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
 		
 		if(element != nil)
 		{
 			[element setTextColor:normal];
 			[element setDrawsBackground:NO];
+			[element setNeedsDisplay];
 		}
-		[tableView deselectAll:self];
+		[tableView deselectRow:selectedIndex];
+		selectedIndex = -1;
 	}
 }
 

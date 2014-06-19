@@ -540,6 +540,7 @@
 	if(changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
 	{
 		posElemInStructure = newPosIntoStruct;
+		[self updateCTSelection];
 		[self updateContext];
 	}
 }
@@ -558,9 +559,33 @@
 	releaseDataReader(&data);
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
+	{
+		[self updateCTSelection];
 		[self changePage:READER_ETAT_DEFAULT];
+	}
 	
 	addRecentEntry(project, false);
+}
+
+- (void) updateCTSelection
+{
+	NSView * view = self.superview;
+	while (view != nil && [view superclass] != [RakTabView class])
+		view = view.superview;
+	
+	if(view == nil || view.superview == nil)
+		return;
+	
+	NSArray * array = view.superview.subviews;
+	
+	for (uint i = 0, count = [array count]; i < count; i++)
+	{
+		if([[array objectAtIndex:i] class] == [CTSelec class])
+		{
+			[(CTSelec*) [array objectAtIndex:i] selectElem: project.cacheDBID :isTome :currentElem];
+			return;
+		}
+	}
 }
 
 - (void) updateContext
