@@ -75,6 +75,8 @@
 {
 	void * newDataBuf = NULL;
 	
+	NSInteger element = [self getSelectedElement];
+	
 	if(isTome)
 	{
 		newDataBuf = malloc(nbElem * sizeof(META_TOME));
@@ -91,7 +93,6 @@
 			memcpy(newDataBuf, newData, nbElem * sizeof(int));
 		}
 	}
-
 	
 	if(newDataBuf == NULL)
 		return false;
@@ -105,6 +106,9 @@
 		[_tableView scrollRowToVisible:0];
 	
 	[_tableView reloadData];
+	
+	if(element != -1)
+		[self selectRow:[self getIndexOfElement:element]];
 	
 	return true;
 }
@@ -133,6 +137,31 @@
 		return ((META_TOME *) data)[row].ID;
 	else
 		return ((int *) data)[row];
+}
+
+- (NSInteger) getIndexOfElement : (NSInteger) element
+{
+	if (data == NULL)
+		return -1;
+	
+	if (isTome)
+	{
+		for (uint pos = 0; pos < amountData; pos++)
+		{
+			if(((META_TOME *) data)[pos].ID == element)
+				return pos;
+		}
+	}
+	else
+	{
+		for (uint pos = 0; pos < amountData; pos++)
+		{
+			if(((int *) data)[pos] == element)
+				return pos;
+		}
+	}
+	
+	return -1;
 }
 
 #pragma mark - Methods to deal with tableView

@@ -29,6 +29,9 @@
 			[self release];
 			return nil;
 		}
+		else if(_speed == 0)
+			[_speedText setStringValue:@"0 KB/s"];
+
 		
 		[self addSubview:_speedText];	[self centerText];
 

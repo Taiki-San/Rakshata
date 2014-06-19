@@ -14,6 +14,18 @@
 
 #pragma mark - Classical initialization
 
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		selectedIndex = -1;
+	}
+	
+	return self;
+}
+
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition
 {
 	if(![self didInitWentWell])
@@ -177,6 +189,11 @@
 	return -1;
 }
 
+- (NSInteger) getIndexOfElement : (NSInteger) element
+{
+	return -1;
+}
+
 - (float) getSliderPos
 {
 	if([scrollView hasVerticalScroller])
@@ -211,31 +228,34 @@
 
 #pragma mark - Methods to deal with tableView
 
-- (NSInteger)numberOfRowsInTableView:(RakTableView *)aTableView
+- (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
 	return data == NULL ? 0 : amountData;
 }
 
-- (NSView *)tableView:(RakTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
     // Get an existing cell with the identifier if it exists
     RakText *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
 	
     if (result == nil)
 	{
-		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
-		// Note that the height of the frame is not really relevant, because the row height will modify the height.
 		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		
-		result.identifier = @"Mane 6";
+		[result setIdentifier: @"Mane 6"];
 	}
 	else
 	{
-		result.stringValue = [self tableView:tableView objectValueForTableColumn:tableColumn row:row];
+		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
+		if(row != [tableView selectedRow])
+		{
+			[result setTextColor:normal];
+			[result setDrawsBackground:NO];
+		}
 	}
 	
 	return result;
@@ -243,18 +263,9 @@
 
 - (BOOL)tableView:(RakTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
-	RakText* element;
-	if([aTableView selectedRow] != -1)
-	{
-		element = [aTableView viewAtColumn:0 row:[aTableView selectedRow] makeIfNecessary:NO];
-		if (element != nil)
-		{
-			[element setTextColor:normal];
-			[element setDrawsBackground:NO];
-		}
-	}
-	
-	element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
+	[self resetSelection:aTableView];
+
+	RakText* element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
     if (element != nil)
     {
 		[element setTextColor: highlight];
@@ -264,6 +275,38 @@
 	return YES;
 }
 
+- (void) selectRow : (int) row
+{
+	if(_tableView == nil)
+		return;
+	
+	if(row != -1)
+	{
+		[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+		[self tableView:_tableView shouldSelectRow:row];
+	}
+	else
+		[self resetSelection:_tableView];
+}
+
+- (void) resetSelection : (NSTableView *) tableView
+{
+	if(tableView == nil)
+		return;
+	
+	if([tableView selectedRow] != -1)
+	{
+		uint row = [_tableView selectedRow];
+		RakText * element = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+		
+		if(element != nil)
+		{
+			[element setTextColor:normal];
+			[element setDrawsBackground:NO];
+		}
+		[tableView deselectAll:self];
+	}
+}
 
 #pragma mark - Drag'n drop control
 
@@ -331,7 +374,6 @@
 			}
 		}
 	}
-
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes

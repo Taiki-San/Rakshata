@@ -18,7 +18,6 @@
 	
 	if(self != nil)
 	{
-		selectedIndex = -1;
 		_jumpToInstalled = NULL;
 		
 		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &amountData);
@@ -82,7 +81,9 @@
 
 - (NSInteger) selectedRow
 {
-	return selectedIndex;
+	if(_tableView == nil)
+		return -1;
+	return [_tableView selectedRow];
 }
 
 #pragma mark - Data manipulation
@@ -90,6 +91,8 @@
 - (void) reloadData
 {
 	BOOL newData = NO;
+	
+	NSInteger element = [self getSelectedElement];
 	
 	for(uint pos = 0; pos < amountData; pos++)
 	{
@@ -107,6 +110,9 @@
 			[self updateJumpTable];
 
 		[_tableView reloadData];
+		
+		if(element != -1)
+			[self selectRow:[self getIndexOfElement:element]];
 	}
 }
 
@@ -162,6 +168,38 @@
 	return output;
 }
 
+- (NSInteger) getSelectedElement
+{
+	if(_tableView == nil)
+		return -1;
+	
+	NSInteger selected = [_tableView selectedRow];
+	
+	if(selected == -1)
+		return -1;
+	
+	MANGAS_DATA project = [self getElementAtIndex:selected];
+
+	if(project.team == NULL)
+		return -1;
+	
+	return project.cacheDBID;
+}
+
+- (NSInteger) getIndexOfElement : (NSInteger) element
+{
+	if(_jumpToInstalled == NULL)
+		return -1;
+	
+	for (uint pos = 0; pos < _nbElemInstalled; pos++)
+	{
+		if(((MANGAS_DATA*) data)[_jumpToInstalled[pos]].cacheDBID == element)
+			return pos;
+	}
+	
+	return -1;
+}
+
 #pragma mark - Methods to deal with tableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
@@ -197,55 +235,9 @@
 		[element setDrawsBackground:YES];
 		return;
 	}
-	else
-	{
-		[element setTextColor:normal];
-		[element setDrawsBackground:NO];
-	}
-}
-
-- (void) tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
-{
-	if (row == -1)
-		return;
-	
-	RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
-	
-	if(element != nil && element.drawsBackground)
-	{
-		[element setTextColor:normal];
-		[element setDrawsBackground:NO];
-	}
 }
 
 #pragma mark - Get result from NSTableView
-
-//Have to subclass because main trick doesn't work there D:
-- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)rowIndex
-{
-	RakText* element;
-	
-	if(selectedIndex != -1 && selectedIndex != rowIndex)
-	{
-		element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
-		if (element != nil)
-		{
-			[element setTextColor:normal];
-			[element setDrawsBackground:NO];
-		}
-	}
-	
-	element = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
-    if (element != nil)
-    {
-		[element setTextColor: highlight];
-		[element setDrawsBackground:YES];
-    }
-	
-	selectedIndex = rowIndex;
-	
-	return YES;
-}
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {

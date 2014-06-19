@@ -32,6 +32,8 @@
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
 	
+	NSInteger selectedIndex;
+	
 	//Color cache
 	NSColor * normal;
 	NSColor * highlight;
@@ -54,12 +56,16 @@
 - (void) enableDrop;
 
 - (NSInteger) getSelectedElement;
+- (NSInteger) getIndexOfElement : (NSInteger) element;
 - (float) getSliderPos;
 - (NSInteger) selectedRow;
 
 - (NSColor *) getTextColor;
 - (NSColor *) getTextHighlightColor;
 - (NSColor *) getBackgroundHighlightColor;
+
+- (void) selectRow : (int) row;
+- (void) resetSelection : (NSTableView *) tableView;
 
 - (void) fillDragItemWithData : (RakDragItem*) data : (uint) row;
 - (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation source:(uint) source;

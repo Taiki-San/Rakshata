@@ -15,8 +15,6 @@
 	bool* _installed;
 	uint _nbElemInstalled;
 	uint* _jumpToInstalled;
-	
-	NSInteger selectedIndex;
 }
 
 - (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition;
