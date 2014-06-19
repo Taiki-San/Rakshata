@@ -280,23 +280,28 @@
 	[_controller discardElement: _row];
 	(*todoList)->rowViewResponsible = NULL;
 	
-	NSView * view = self;
-	while (view != nil && [view class] != [RakTableView class])
-		view = view.superview;
-	
-	if(view == nil)
-		return;
-	
-	[(NSTableView *) view reloadData];
-	
 	if(wasDownloading)
 		MDLDownloadOver();
 	
-	while(view != nil && [view class] != [MDL class])
+	NSView * view = self;
+	RakTableView * tableView = nil;
+
+	while (view != nil && [view class] != [MDL class])
+	{
+		if([view class] == [RakTableView class])
+			tableView = (RakTableView*) view;
 		view = view.superview;
+	}
 	
+	[self retain];
+	
+	if(tableView != nil)
+		[tableView reloadData];
+
 	if(view != nil)
-		[view setFrame:[(MDL*) view createFrame]];
+		[(MDL*)view setFrame:[(MDL*) view createFrame]];
+	
+	[self release];
 }
 
 - (void) sendPause
