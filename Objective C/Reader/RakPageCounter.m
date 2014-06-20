@@ -168,7 +168,6 @@
 		[gotoButton setTitle:@"Go"];
 		[gotoButton sizeToFit];
 		[[gotoButton cell] setBackgroundColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
-		//		[[gotoButton cell] setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT]];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
 	}
@@ -181,7 +180,6 @@
 
 		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
 		[textField setFormatter:[[[RakFormatterNumbersOnly alloc] init] autorelease]];
-		//		[[textField cell] setPlaceholderString:[NSString stringWithFormat:@"%d", curPage]];
 		
 		//Enter key is pressed
 		[textField setTarget:self];

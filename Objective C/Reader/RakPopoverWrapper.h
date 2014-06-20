@@ -8,43 +8,21 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-/*Included from every files so we better should prevent recursive includes*/
+@interface RakPopoverWrapper : NSObject
+{
+	INPopoverController * _popover;
+}
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdint.h>
+@property NSView * anchor;
+@property INPopoverArrowDirection direction;
 
-#include "main.h"
-#include "moduleDL.h"
-#include "graphics.h"
-#include "constants.h"
- 
-#ifdef __OBJC__
-	#import <Cocoa/Cocoa.h>
-	#import <QuartzCore/QuartzCore.h>
-	#import <Foundation/Foundation.h>
-	#import <INPopoverController/INPopoverController.h>
+- (id) init : (NSView *) contentView;
+- (void) togglePopover;
+- (void) additionalConfiguration : (id) target : (SEL) selector;
+- (void) setDelegate:(id <INPopoverControllerDelegate>) delegate;
 
-	#import "utils.h"
+- (void) clearMemory;
 
-	/* Différentes super-classes de l'interface	*/
-
-	#import "MDL.h"
-
-	#import "Series.h"
-	#import "CTSelec.h"
-	#import "Reader.h"
-
-	#import "RakContentView.h"
-	#import "RakAppDelegate.h"
-
-	#import "Prefs.h"
-	#import "RakResPath.h"
-
-#endif
-
-#include "interface.h"
+@end

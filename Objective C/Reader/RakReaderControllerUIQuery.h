@@ -10,6 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakReaderControllerUIQuery : NSObject
+@interface RakReaderControllerUIQuery : NSView <INPopoverControllerDelegate>
+{
+	MANGAS_DATA _project;
+	BOOL _isTome;
+	int* _arraySelection;
+	uint _sizeArray;
+	MDL* _tabMDL;
+	
+	RakPopoverWrapper * popover;
+}
+
+- (id) initWithFrame : (NSRect) frame : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
 
 @end
