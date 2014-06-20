@@ -145,9 +145,6 @@ int earlyInit(int argc, char *argv[])
 {
 #ifdef _WIN32
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
-    mutexRS = CreateSemaphore (NULL, 1, 1, NULL);
-    mutex_decrypt = CreateSemaphore (NULL, 1, 1, NULL);
-    mutexUI = CreateSemaphore(NULL, 1, 1, NULL);
 #endif
 
     getToWD(&argc, argv);

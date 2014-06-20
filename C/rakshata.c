@@ -22,16 +22,10 @@ char COMPTE_PRINCIPAL_MAIL[100];
 
 #ifndef _WIN32
     MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
-    MUTEX_VAR mutexRS = PTHREAD_MUTEX_INITIALIZER;  //Resize
-    MUTEX_VAR mutex_decrypt = PTHREAD_MUTEX_INITIALIZER;    //One encryption algo imple. isn't thread-safe
-    MUTEX_VAR mutexUI = PTHREAD_MUTEX_INITIALIZER;        //Prevent accessing the GUI in twwo different threads at the same time
 
 	int NSApplicationMain(int argc, const char *argv[]);
 #else
     MUTEX_VAR mutex;
-    MUTEX_VAR mutexRS;
-    MUTEX_VAR mutex_decrypt;
-    MUTEX_VAR mutexUI;
     #ifdef main
         #undef main
     #endif
@@ -49,9 +43,6 @@ int main(int argc, char *argv[])
 
 	flushDB();
     releaseDNSCache();
-    MUTEX_DESTROY(mutex_decrypt);
-    MUTEX_DESTROY(mutexUI);
-    MUTEX_DESTROY(mutexRS);
     MUTEX_DESTROY(mutex);
 
     return ret_value;

@@ -211,14 +211,12 @@ int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size,
     {
         if(checkNameFileZip(filename_inzip[i]))
         {
-            MUTEX_LOCK(mutex_decrypt);
             if(opt_encrypted && password[0] != 0) //Si mot de passe
                 do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, password, pass[i]);
             else if(opt_encrypted)
                 do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, NULL, pass[i]);
             else
                 ret_value = do_extract_onefile(uf, filename_inzip[i], path, opt_do_extract_withoutpath, opt_overwrite, NULL, NULL);
-            MUTEX_UNLOCK(mutex_decrypt);
             nombreFichiersDecompresses++;
 
             if ((i+1) < nombreFichiers)
