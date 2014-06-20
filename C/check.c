@@ -74,8 +74,6 @@ int checkEvnt()
             nbTotal--;
         }
 
-        MUTEX_UNIX_LOCK;
-
         for(nbCurrent = 0; nbCurrent <= nbTotal; nbCurrent++)
         {
             if(!checkFileExist(list[fichiersADL[nbCurrent]])) //On confirme que le fichier est absent
@@ -121,7 +119,6 @@ int checkEvnt()
                 }
             }
         }
-        MUTEX_UNIX_UNLOCK;
     }
     if(get_compte_infos() == PALIER_QUIT)
         return PALIER_QUIT;
