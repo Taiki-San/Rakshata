@@ -19,6 +19,7 @@
 	if(self != nil)
 	{
 		self.anchor = nil;
+		self.anchorFrame = NSZeroRect;
 		self.direction = INPopoverArrowDirectionLeft;
 
 		NSViewController * controller = [[[NSViewController alloc] init] autorelease];
@@ -35,7 +36,12 @@
 	if(_popover.popoverIsVisible)
 		[_popover closePopover:nil];
 	else
-		[_popover presentPopoverFromRect:[self.anchor bounds] inView:self.anchor preferredArrowDirection:self.direction anchorsToPositionView:YES];
+	{
+		if(NSIsEmptyRect(self.anchorFrame))
+			self.anchorFrame = [self.anchor bounds];
+		
+		[_popover presentPopoverFromRect:self.anchorFrame inView:self.anchor preferredArrowDirection:self.direction anchorsToPositionView:YES];
+	}
 }
 
 - (void) additionalConfiguration : (id) target : (SEL) selector

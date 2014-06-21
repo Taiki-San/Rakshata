@@ -21,6 +21,6 @@
 	RakPopoverWrapper * popover;
 }
 
-- (id) initWithFrame : (NSRect) frame : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
 
 @end

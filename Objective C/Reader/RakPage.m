@@ -824,13 +824,13 @@
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments
 {
 	MANGAS_DATA localProject = *arguments.data;
-	uint nbElemToGrab = arguments.nbElem;
+	uint nbElemToGrab = arguments.nbElem, nbElemValidated = 0;
 	
 	if(project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
 		return;
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
-	bool nothingAvailable = true, onlyOneElementAvailable = false;
+	int selection[nbElemToGrab];
 	MDL * tabMDL = sharedTabMDL;
 	
 	if(tabMDL == nil)
@@ -838,85 +838,23 @@
 	
 	if(!isTome)
 	{
-		uint nbElemToGrab2 = localProject.nombreChapitre - nbElemToGrab;
-		for(; localProject.chapitresFull[nbElemToGrab2] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab2++)
+		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab2]])
-			{
-				if(nothingAvailable)
-				{
-					nothingAvailable = false;
-					onlyOneElementAvailable = true;
-				}
-				else
-				{
-					onlyOneElementAvailable = false;
-					break;
-				}
-			}
+			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab]])
+				selection[nbElemValidated++] = localProject.chapitresFull[nbElemToGrab];
 		}
 	}
 	else
 	{
-		uint nbElemToGrab2 = localProject.nombreTomes - nbElemToGrab;
-		for(; localProject.tomesFull[nbElemToGrab2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab2++)
+		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab2]])
-			{
-				if(nothingAvailable)
-				{
-					nothingAvailable = false;
-					onlyOneElementAvailable = true;
-				}
-				else
-				{
-					onlyOneElementAvailable = false;
-					break;
-				}
-			}
+			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.tomesFull[nbElemToGrab].ID])
+				selection[nbElemValidated++] = localProject.tomesFull[nbElemToGrab].ID;
 		}
 	}
 	
 	//We got the data, now, craft the alert
-	
-	if(nothingAvailable)
-		return;
-	
-	char * element = isTome ? "tome" : "chapitre", * particule = onlyOneElementAvailable ? "" : "s";
-	
-	NSAlert * alert = [[[NSAlert alloc] init] retain];
-	
-	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert setMessageText:[NSString stringWithFormat:@"%s %s%s!", onlyOneElementAvailable ? "Un" : "Des", element, onlyOneElementAvailable ? " est disponible" : "s sont disponibles"]];
-	[alert setInformativeText :[NSString stringWithFormat:@"J'ai remarqué qu'il y a %s %s%s non-téléchargé%s après celui-là. Voulez vous que je le%s télécharge pour vous?", onlyOneElementAvailable ? "un" : "quelques", element, particule, particule, particule]];
-	
-	[alert addButtonWithTitle:@"Eyup!"];
-	[alert addButtonWithTitle:@"Nope"];
-	
-	if([alert runModal] == NSAlertFirstButtonReturn)
-	{
-		//We sent the stuffs to the MDL
-		
-		if(!isTome)
-		{
-			nbElemToGrab = localProject.nombreChapitre - nbElemToGrab;
-			for(; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
-			{
-				[tabMDL proxyAddElement:localProject : isTome :localProject.chapitresFull[nbElemToGrab] : localProject.chapitresFull[nbElemToGrab+1] != VALEUR_FIN_STRUCTURE_CHAPITRE];
-			}
-		}
-		else
-		{
-			nbElemToGrab = localProject.nombreTomes - nbElemToGrab;
-			for(; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; nbElemToGrab++)
-			{
-				[tabMDL proxyAddElement:localProject : isTome :localProject.tomesFull[nbElemToGrab].ID : localProject.tomesFull[nbElemToGrab+1].ID != VALEUR_FIN_STRUCTURE_CHAPITRE];
-			}
-		}
-	}
-	
-	[alert release];
-	[alert release];
+	[[RakReaderControllerUIQuery alloc] initWithData :sharedTabMDL : project :isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit

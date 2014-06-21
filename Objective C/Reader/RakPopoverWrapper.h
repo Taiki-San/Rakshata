@@ -16,6 +16,7 @@
 }
 
 @property NSView * anchor;
+@property NSRect anchorFrame;
 @property INPopoverArrowDirection direction;
 
 - (id) init : (NSView *) contentView;

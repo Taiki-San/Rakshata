@@ -12,12 +12,12 @@
 
 @implementation RakReaderControllerUIQuery
 
-- (id) initWithFrame : (NSRect) frame : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
+- (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
 	if(tabMDL == NULL || arraySelection == NULL || sizeArray == 0)
 		return nil;
 	
-	self = [super initWithFrame : frame];
+	self = [super initWithFrame : NSMakeRect(0, 0, 170, 175)];
 	
 	if(self != nil)
 	{
@@ -33,7 +33,7 @@
 		
 		popover = [[RakPopoverWrapper alloc] init:self];
 		popover.anchor = _tabMDL;
-		popover.direction = INPopoverArrowDirectionLeft;
+		popover.direction = INPopoverArrowDirectionDown;
 		[popover additionalConfiguration:self :@selector(configurePopover:)];
 		[popover togglePopover];
 		[popover setDelegate:self];
@@ -62,7 +62,7 @@
 - (void) configurePopover : (INPopoverController*) internalPopover
 {
 	internalPopover.borderColor = internalPopover.color = [[Prefs getSystemColor:GET_COLOR_INACTIVE] colorWithAlphaComponent:0.8];
-	internalPopover.borderWidth = 3.0;
+	internalPopover.borderWidth = 4;
 }
 
 - (void)popoverDidClose:(INPopoverController *)discarded;
@@ -71,4 +71,15 @@
 	[popover release];
 }
 
+#pragma mark - Payload
+
+- (void) confirmed
+{
+	for (uint pos = 0, handledArray = _sizeArray - 1; pos < handledArray; pos++)
+	{
+		[_tabMDL proxyAddElement: _project: _isTome : _arraySelection[pos] : NO];
+	}
+
+	[_tabMDL proxyAddElement: _project: _isTome: _arraySelection[_sizeArray - 1] : NO];
+}
 @end
