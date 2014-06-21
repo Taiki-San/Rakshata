@@ -56,10 +56,10 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 {
 	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
 	
-	saveSerie = [tabSerie byebye];		[tabSerie release];			tabSerie = nil;
-	saveCT =	[tabCT byebye];			[tabCT release];			tabCT = nil;
-	saveReader =[tabReader byebye];		[tabReader release];		tabReader = nil;
-	saveMDL =	[tabMDL byebye];		[tabMDL release];			tabMDL = nil;
+	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];		[tabSerie release];
+	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];		[tabCT release];
+	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];	[tabReader release];
+	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		[tabMDL release];	
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 }

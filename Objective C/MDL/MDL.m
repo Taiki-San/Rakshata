@@ -65,9 +65,7 @@
 		[self release];
 	
 	NSString * output = [controller serializeData];
-	if(output != nil)
-		return output;
-	return [super byebye];
+	return output != nil ? output : [super byebye];
 }
 
 - (void) dealloc
