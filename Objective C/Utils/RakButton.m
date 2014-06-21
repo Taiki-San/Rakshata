@@ -184,11 +184,18 @@
 	notAvailable = false;
 	
 	if(value == RB_STATE_HIGHLIGHTED && canHighlight)
+	{
+		[self.image release];
 		[self setImage:clicked];
+	}
 	else if(value == RB_STATE_STANDARD)
+	{
+		[self.image release];
 		[self setImage:nonClicked];
+	}
 	else if(value == RB_STATE_UNAVAILABLE)
 	{
+		[self.image release];
 		[self setImage:unAvailable];
 		notAvailable = true;
 	}
@@ -226,7 +233,9 @@
 	[clicked release];
 	[nonClicked release];
 	[unAvailable release];
+	NSImage * bak = self.image;
 	[self setImage:nil];
+	[bak release];
 	[super dealloc];
 }
 

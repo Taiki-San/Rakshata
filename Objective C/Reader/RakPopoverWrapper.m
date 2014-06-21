@@ -25,13 +25,13 @@
 		NSViewController * controller = [[[NSViewController alloc] init] autorelease];
 		controller.view = contentView;
 		_popover = [[INPopoverController alloc] initWithContentViewController:controller];
-		_popover.closesWhenApplicationBecomesInactive = YES;
+		_popover.closesWhenApplicationBecomesInactive = NO;//YES;
 	}
 	
 	return self;
 }
 
-- (void) togglePopover
+- (void) togglePopover : (NSRect) frame
 {
 	if(_popover.popoverIsVisible)
 		[_popover closePopover:nil];
@@ -40,7 +40,7 @@
 		if(NSIsEmptyRect(self.anchorFrame))
 			self.anchorFrame = [self.anchor bounds];
 		
-		[_popover presentPopoverFromRect:self.anchorFrame inView:self.anchor preferredArrowDirection:self.direction anchorsToPositionView:YES];
+		[_popover presentPopoverFromRect:(NSEqualRects(frame, NSZeroRect) ? self.anchorFrame : frame) inView:self.anchor preferredArrowDirection:self.direction anchorsToPositionView:YES];
 	}
 }
 

@@ -676,6 +676,9 @@
 		}
 	}
 	
+	if(page != nil)
+		pageView.image = nil; //Somehow, it's enough to dealloc the thing
+	
 	page = [[NSImage alloc] initWithData:pageData];
 	
 	if(page == nil)
@@ -864,6 +867,7 @@
 	while (cacheBeingBuilt);
 	
 	[prevPage release];		prevPage = nil;
+	[pageView setImage:nil];	[page dealloc];
 	[pageData release];		pageData = nil;
 	[nextPage release];		nextPage = nil;
 }
@@ -874,6 +878,7 @@
 	releaseDataReader(&data);
 	[self removeFromSuperview];
 	self.documentView = nil;
+	[pageView release]; pageView = nil;
 }
 
 @end

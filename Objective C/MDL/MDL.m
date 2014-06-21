@@ -38,6 +38,7 @@
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
+		[coreView release];
 		[self setFrame:[self createFrame]];	//Update the size if required
 		needUpdateMainViews = YES;
 		[self updateDependingViews];
@@ -58,12 +59,23 @@
 
 - (NSString *) byebye
 {
-	[coreView needToQuit];
+	[controller needToQuit];
+	
+	if([self retainCount] > 1)
+		[self release];
 	
 	NSString * output = [controller serializeData];
 	if(output != nil)
 		return output;
 	return [super byebye];
+}
+
+- (void) dealloc
+{
+	[controller release];
+	[coreView removeFromSuperview];
+	[coreView release];
+	[super dealloc];
 }
 
 /* Proxy */

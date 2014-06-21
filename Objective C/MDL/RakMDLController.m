@@ -60,12 +60,14 @@
 - (NSString *) serializeData
 {
 	char * data = MDLParseFile(*todoList, status, IDToPosition, discardedCount);
-	if(data == NULL)
-		return nil;
+	NSString * output = nil;
 
-	NSString * output = [NSString stringWithUTF8String: data];
+	if(data != NULL && strlen(data))
+	{
+		output = [NSString stringWithUTF8String: data];
+	}
+
 	free(data);
-	
 	return output;
 }
 		   

@@ -21,6 +21,7 @@
 		
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		[self addSubview:headerText];
+		[headerText release];
 		
 		mainList = [[RakSerieList alloc] init : [self getMainListFrame : [self frame]] : state];
 
@@ -62,7 +63,7 @@
 
 - (void) dealloc
 {
-	NSLog(@"%lu", [mainList retainCount]);
+	headerText = nil;	mainList = nil;
 	[super dealloc];
 }
 

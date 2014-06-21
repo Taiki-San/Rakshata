@@ -98,11 +98,11 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MAN
     freeMangaData(cache);
     free(*todoList);
     free(todoList);
-    free(status);			status = NULL;
+    free(status);
 
 #ifdef _WIN32
     CloseHandle (threadData);
-#endif // _WIN32
+#endif
 }
 
 /*Final processing*/

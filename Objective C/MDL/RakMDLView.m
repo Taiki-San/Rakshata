@@ -21,7 +21,7 @@
 		[self setupInternal];
 		
 		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
-		if(headerText != nil)		[self addSubview:headerText];
+		if(headerText != nil)	{	[self addSubview:headerText];	[headerText release];	}
 		
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
@@ -34,6 +34,7 @@
 			[dropPlaceHolder sizeToFit];
 			[dropPlaceHolder setHidden:YES];
 			[self addSubview:dropPlaceHolder];
+			[dropPlaceHolder release];
 		}
 	}	
 	return self;
@@ -90,15 +91,25 @@
 	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
 }
 
-- (void) resizeAnimation : (NSRect) frame
+- (void) resizeAnimationInternalViews : (NSRect) newBound
 {
-	[self.animator setFrame:frame];
-	
-	frame.origin.x = frame.origin.y = 0;
-	
-	[headerText.animator setFrame:[headerText getMenuFrame:frame]];
-	[MDLList resizeAnimation:[self getMainListFrame:frame]];
-	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:frame.size]];
+	[headerText.animator setFrame:[headerText getMenuFrame:newBound]];
+	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
+	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
+}
+
+- (void) retainInternalViews
+{
+	[headerText retain];
+	[MDLList retain];
+	[dropPlaceHolder retain];
+}
+
+- (void) releaseInternalViews
+{
+	[headerText release];
+	[MDLList release];
+	[dropPlaceHolder release];
 }
 
 - (void) updateScroller : (BOOL) hidden
@@ -182,11 +193,6 @@
 	}
 	
 	return [Prefs getSystemColor:code];
-}
-
-- (void) needToQuit
-{
-	[MDLList needToQuit];
 }
 
 - (BOOL) proxyReceiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender

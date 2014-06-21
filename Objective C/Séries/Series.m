@@ -74,8 +74,8 @@
 
 - (void) dealloc
 {
-	[preferenceButton removeFromSuperview];
-	[coreView removeFromSuperview];
+	[preferenceButton removeFromSuperview];	[preferenceButton release];
+	[coreView removeFromSuperview];			[coreView release];
 
 	[super retain];
 	[self removeFromSuperview];

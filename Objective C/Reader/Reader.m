@@ -126,6 +126,8 @@
 		
 		if(mainImage == nil)	//Failed at initializing, most probably because of unreadable data
 			return;
+		else
+			[mainImage release];
 
 		shouldNotifyBottomBarInitialized = true;
 	}
@@ -144,13 +146,12 @@
 	NSString * output;
 	
 	if (initialized)
-	{
 		output = [mainImage getContextToGTFO];
-	}
 	else
-	{
 		output = [super byebye];
-	}
+	
+	if([self retainCount] > 1)
+		[self release];
 	
 	return output;
 }

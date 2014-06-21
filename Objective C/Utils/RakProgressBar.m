@@ -57,7 +57,6 @@
 	[slotColor release];
 	[progressColor release];
 	[_speedText removeFromSuperview];	[_speedText release];
-	
 	[super dealloc];
 }
 

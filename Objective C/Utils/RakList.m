@@ -155,14 +155,15 @@
 
 - (void) dealloc
 {
+	[_tableView removeFromSuperview];
+	[scrollView setDocumentView:nil];
+	[_tableView dealloc];
+	
 	[scrollView removeFromSuperview];
-	[scrollView release];
+	[scrollView dealloc];
 	
-	[_tableView release];
-	[_tableView release];		//Je dois le retain à quelque chose mais je vois pas, donc on tue sa hiérarchie puis on force à le libérer
-	
-	[normal release];
-	[highlight release];
+	[normal dealloc];	//Retain count de 85 u_u
+	[highlight dealloc];
 	free(data);
 	
 	[super dealloc];
@@ -240,7 +241,7 @@
 	
     if (result == nil)
 	{
-		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
+		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : [normal copy]];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
@@ -253,7 +254,7 @@
 		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
 		if(row != selectedIndex)
 		{
-			[result setTextColor:normal];
+			[result setTextColor:[normal copy]];
 			[result setDrawsBackground:NO];
 		}
 	}
@@ -268,7 +269,7 @@
 	RakText* element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
     if (element != nil)
     {
-		[element setTextColor: highlight];
+		[element setTextColor: [highlight copy]];
 		[element setDrawsBackground:YES];
 		[element setNeedsDisplay];
 		selectedIndex = rowIndex;
@@ -304,7 +305,7 @@
 		
 		if(element != nil)
 		{
-			[element setTextColor:normal];
+			[element setTextColor:[normal copy]];
 			[element setDrawsBackground:NO];
 			[element setNeedsDisplay];
 		}

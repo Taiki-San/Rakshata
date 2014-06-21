@@ -98,4 +98,10 @@
 	[self.animator setFrame: [self getMenuFrame:frameRect]];
 }
 
+- (void) dealloc
+{
+	[self removeFromSuperview];
+	[super dealloc];
+}
+
 @end

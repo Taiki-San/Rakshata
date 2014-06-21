@@ -27,10 +27,6 @@
 - (void) wakeUp;
 - (void) hideList : (BOOL) hide;
 
-- (void) resizeAnimation : (NSRect) frame;
-
-- (void) needToQuit;
-
 - (BOOL) proxyReceiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender;
 
 @end

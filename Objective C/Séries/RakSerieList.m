@@ -137,9 +137,10 @@
 - (void) dealloc
 {
 	freeMangaData(_cache);
-	[_mainList dealloc];
+	[_mainList release];
 	[_data release];
-	[content removeFromSuperview];
+	
+	[content removeFromSuperview];	[content release];
 	
 	for (char i = 0; i < 3; i++)
 	{
@@ -557,7 +558,7 @@
 		else
 		{
 			if(_mainList == nil)
-				_mainList = [[[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]] retain];
+				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]];
 			
 			rowView = [_mainList getContent];
 		}

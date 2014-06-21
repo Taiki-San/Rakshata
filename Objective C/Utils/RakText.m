@@ -72,4 +72,11 @@
 	[self additionalDrawing];
 }
 
+- (void) dealloc
+{
+	if(self.superview != nil)
+		[self removeFromSuperview];
+	[super dealloc];
+}
+
 @end

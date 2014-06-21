@@ -14,17 +14,18 @@
 
 - (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
-	if(tabMDL == NULL || arraySelection == NULL || sizeArray == 0)
+	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
 		return nil;
 	
 	self = [super initWithFrame : NSMakeRect(0, 0, 170, 175)];
 	
 	if(self != nil)
 	{
+		NSRect frame = NSZeroRect;
 		_tabMDL = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
 		
 		[self setWantsLayer:YES];
-		[self.layer setCornerRadius:5];
+		[self.layer setCornerRadius:4];
 		[self.layer setBorderWidth:1];
 		[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor];
 		[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS].CGColor];
@@ -33,9 +34,30 @@
 		
 		popover = [[RakPopoverWrapper alloc] init:self];
 		popover.anchor = _tabMDL;
-		popover.direction = INPopoverArrowDirectionDown;
+		
+		if ([_tabMDL isDisplayed])
+			popover.direction = INPopoverArrowDirectionLeft;
+		else
+		{
+			NSArray *subviews;
+			popover.direction = INPopoverArrowDirectionDown;
+			if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
+			{
+				NSView * view;
+				for(view in subviews)
+				{
+					if([view class] == [Reader class])
+					{
+						frame.size.width = view.frame.origin.x;
+						break;
+					}
+				}
+			}
+		}
+		
+		
 		[popover additionalConfiguration:self :@selector(configurePopover:)];
-		[popover togglePopover];
+		[popover togglePopover : frame];
 		[popover setDelegate:self];
 	}
 	

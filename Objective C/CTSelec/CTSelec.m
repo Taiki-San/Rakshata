@@ -97,11 +97,9 @@
 
 - (void) dealloc
 {
-	[backButton removeFromSuperview];
-	[backButton release];
+	[backButton removeFromSuperview];	[backButton release];	backButton = nil;
 	
-	[coreView removeFromSuperview];
-	[coreView release];
+	[coreView removeFromSuperview];		[coreView release];		coreView = nil;
 	
 	[super dealloc];
 }

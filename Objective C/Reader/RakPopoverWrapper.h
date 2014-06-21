@@ -20,7 +20,7 @@
 @property INPopoverArrowDirection direction;
 
 - (id) init : (NSView *) contentView;
-- (void) togglePopover;
+- (void) togglePopover : (NSRect) frame;
 - (void) additionalConfiguration : (id) target : (SEL) selector;
 - (void) setDelegate:(id <INPopoverControllerDelegate>) delegate;
 

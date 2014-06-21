@@ -425,11 +425,15 @@
 
 - (void) dealloc
 {
-	[buttons removeFromSuperview];
+	[buttons removeFromSuperview];	[buttons release];
+	
 	[[tableViewControllerChapter getContent] removeFromSuperviewWithoutNeedingDisplay];
-	[tableViewControllerChapter release];
+	[[tableViewControllerChapter getContent] release];	[tableViewControllerChapter release];
+	
 	[[tableViewControllerVolume getContent] removeFromSuperviewWithoutNeedingDisplay];
-	[tableViewControllerVolume release];
+	[[tableViewControllerVolume getContent] release];	[tableViewControllerVolume release];
+	
+	releaseCTData(data);
 	
 	[super dealloc];
 }

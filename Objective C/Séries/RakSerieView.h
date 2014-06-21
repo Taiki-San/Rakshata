@@ -13,7 +13,6 @@
 @interface RakSerieView : RakTabContentTemplate
 {
 	RakSRHeaderText* headerText;
-	
 	RakSerieList * mainList;
 }
 

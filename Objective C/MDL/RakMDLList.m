@@ -21,9 +21,9 @@
 	
 	if(self != nil)
 	{
-		pause = [[RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil] retain];
-		read = [[RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil] retain];
-		remove = [[RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil] retain];
+		pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil];
+		read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil];
+		remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil];
 		
 		if(pause == nil || read == nil || remove == nil)
 		{
@@ -37,7 +37,7 @@
 			[read.cell setHighlightAllowed:NO];	[remove.cell setHighlightAllowed:NO];
 		}
 		
-		controller = _controller;
+		[controller = _controller retain];
 		cellHeight = MDLLIST_CELL_HEIGHT;
 		dragInProgress = false;
 		
@@ -48,11 +48,6 @@
 	}
 	
 	return self;
-}
-
-- (void) needToQuit
-{
-	[controller needToQuit];
 }
 
 - (void) wakeUp
@@ -82,6 +77,13 @@
 {
 	if(scrollView != nil)
 		[scrollView setHasVerticalScroller:!hidden];
+}
+
+- (void) dealloc
+{
+	[controller release];
+	[pause release];	[read release];		[remove release];
+	[super dealloc];
 }
 
 - (bool) didInitWentWell

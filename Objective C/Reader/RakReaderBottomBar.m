@@ -22,6 +22,7 @@
 	{
 		[self setAutoresizesSubviews:NO];
 		[parent addSubview:self];
+		[self release];
 		
 		readerMode = parent->readerMode;
 
@@ -68,7 +69,7 @@
 		if(icons[i] != nil)
 		{
 			[icons[i] removeFromSuperview];
-			[icons[i] release];
+			[icons[i] release]; 	[icons[i] release];
 		}
 	}
 
@@ -89,6 +90,7 @@
 	{
 		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement : 8 : self.frame.size.width] :newCurrentPage :newPageMax : (Reader*) self.superview];
 		[self addSubview:pageCount];
+		[pageCount release];
 	}
 	else
 	{
