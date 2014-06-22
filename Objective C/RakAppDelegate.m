@@ -59,7 +59,7 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];		[tabSerie release];
 	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];		[tabCT release];
 	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];	[tabReader release];
-	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		[tabMDL release];	
+	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		[tabMDL release];
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 }

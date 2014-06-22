@@ -19,6 +19,7 @@
 #import "RakText.h"
 #import "RakCenteredTextFieldCell.h"
 #import "RakTextCell.h"
+#import "RakSegmentedButtonCell.h"
 #import "RakMenuText.h"
 #import "RakProgressBar.h"
 #import "RakBackButton.h"

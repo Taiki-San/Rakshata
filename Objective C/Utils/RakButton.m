@@ -169,9 +169,9 @@
 	
 	if(self != nil)
 	{
-		clicked = _clicked;
-		nonClicked = _nonClicked;
-		unAvailable = _unAvailable;
+		clicked = [_clicked retain];
+		nonClicked = [_nonClicked retain];
+		unAvailable = [_unAvailable retain];
 		
 		[self setImage:nonClicked];
 	}

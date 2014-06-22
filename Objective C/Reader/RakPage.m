@@ -833,11 +833,14 @@
 		return;
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
-	int selection[nbElemToGrab];
+	int * selection = calloc(nbElemToGrab, sizeof(int));
 	MDL * tabMDL = sharedTabMDL;
 	
-	if(tabMDL == nil)
+	if(selection == NULL || tabMDL == nil)
+	{
+		free(selection);
 		return;
+	}
 	
 	if(!isTome)
 	{

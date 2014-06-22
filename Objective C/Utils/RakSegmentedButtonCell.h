@@ -10,21 +10,15 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakReaderControllerUIQuery : NSView <INPopoverControllerDelegate>
+@interface RakSegmentedButtonCell : NSSegmentedCell
 {
-	MANGAS_DATA _project;
-	BOOL _isTome;
-	int* _arraySelection;
-	uint _sizeArray;
-	MDL* _tabMDL;
-	
-	RakPopoverWrapper * popover;
+	NSMutableArray * fields;
 }
 
-- (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (void) createCellWithText : (NSString*) string forElem : (uint) cellID;
 
-@end
-
-@interface RakQuerySegmentedControl : NSSegmentedControl
+- (NSColor *) getFontColor : (uint) cellID;
+- (NSTextFieldCell*) getCellForID : (uint) cellID;
+- (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView;
 
 @end

@@ -43,8 +43,7 @@
 			popover.direction = INPopoverArrowDirectionDown;
 			if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
 			{
-				NSView * view;
-				for(view in subviews)
+				for(NSView * view in subviews)
 				{
 					if([view class] == [Reader class])
 					{
@@ -79,6 +78,11 @@
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
+	
+	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height - 10 - contentText.frame.size.height - 10)];
+	[button setTarget:self];
+	[button setAction:@selector(buttonClicked:)];
+	[self addSubview:button];
 }
 
 - (void) configurePopover : (INPopoverController*) internalPopover
@@ -95,6 +99,12 @@
 
 #pragma mark - Payload
 
+- (void) buttonClicked : (RakQuerySegmentedControl*) sender
+{
+	if([sender selectedSegment] == 0)
+		[self confirmed];
+}
+
 - (void) confirmed
 {
 	for (uint pos = 0, handledArray = _sizeArray - 1; pos < handledArray; pos++)
@@ -105,3 +115,72 @@
 	[_tabMDL proxyAddElement: _project: _isTome: _arraySelection[_sizeArray - 1] : NO];
 }
 @end
+
+@implementation RakQuerySegmentedControl
+
+- (id)initWithFrame:(NSRect)frame
+{
+	self = [super initWithFrame:[self getButtonFrame:frame]];
+	
+	if (self != nil)
+	{
+		uint widthButton1 = self.frame.size.width / 2, widthButton2 = self.frame.size.width - widthButton1 - 1;
+		
+		[self setSegmentCount:2];
+		
+		[self setLabel:@"Oui" forSegment:0];
+		[self setWidth:widthButton1 forSegment:0];
+		
+		[self setLabel:@"Non" forSegment:1];
+		[self setWidth:widthButton2 forSegment:1];
+		
+		[self setFrameOrigin:[self getButtonFrame:frame].origin];
+	}
+	
+	return self;
+}
+
+- (NSRect) getButtonFrame : (NSRect) superviewAvailableSpace
+{
+	NSRect frame = self.frame;
+	
+	frame.size.height = CT_READERMODE_HEIGHT_CT_BUTTON;
+	if(frame.size.width > superviewAvailableSpace.size.width || !frame.size.width)
+		frame.size.width = superviewAvailableSpace.size.width * 3 / 4;
+	
+	frame.origin.y = superviewAvailableSpace.size.height / 2 - frame.size.height / 2;
+	frame.origin.x = superviewAvailableSpace.size.width / 2 - frame.size.width / 2;
+	
+	return frame;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	NSRect newFrame = [self getButtonFrame:frameRect];
+	[super setFrame: newFrame];
+	
+	if(newFrame.size.width == frameRect.size.width)
+	{
+		[self sizeToFit];
+		newFrame = [self getButtonFrame:frameRect];
+		[super setFrame: newFrame];
+	}
+}
+
+- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
+{
+	NSLog(@"[%@] - Weird constraints detected!", self);
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : [self getButtonFrame:frameRect]];
+}
+
++ (Class)cellClass
+{
+	return [RakSegmentedButtonCell class];
+}
+
+@end
+
