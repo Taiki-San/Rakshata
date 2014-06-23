@@ -553,7 +553,9 @@
 	{
 		if([item isRootItem])
 		{
-			rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"" : nil];
+			rowView = [outlineView makeViewWithIdentifier:@"RootLineMainList" owner:nil];
+			if(rowView == nil)
+				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList" : nil];
 		}
 		else
 		{
@@ -565,11 +567,12 @@
 	}
 	else
 	{
-		rowView = [outlineView makeViewWithIdentifier:@"StandardLine" owner:nil];
+		NSString * identifier = [item isRootItem] ? @"RootLine" : @"StandardLine";
+		rowView = [outlineView makeViewWithIdentifier:identifier owner:nil];
 		if (rowView == nil)
 		{
 			rowView = [[RakText alloc] init];
-			rowView.identifier = @"StandardLine";
+			rowView.identifier = identifier;
 			
 			if([item isRootItem])
 			{

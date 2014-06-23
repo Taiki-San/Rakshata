@@ -125,11 +125,12 @@
 {
 	for (uint pos = 0, handledArray = _sizeArray - 1; pos < handledArray; pos++)
 	{
-		[_tabMDL proxyAddElement: _project: _isTome : _arraySelection[pos] : NO];
+		[_tabMDL proxyAddElement: _project: _isTome : _arraySelection[pos] : YES];
 	}
 
 	[_tabMDL proxyAddElement: _project: _isTome: _arraySelection[_sizeArray - 1] : NO];
 }
+
 @end
 
 @implementation RakQuerySegmentedControl

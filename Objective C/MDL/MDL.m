@@ -178,6 +178,7 @@
 		{
 			maximumSize.size.height = contentHeight;
 			maximumSize.origin.y = -contentHeight;
+			needUpdateMainViews = YES;
 		}
 		
 		else if(maximumSize.size.height >= contentHeight - 2)
