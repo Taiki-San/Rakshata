@@ -54,6 +54,11 @@
 	[_popover setDelegate:delegate];
 }
 
+- (void) closePopover
+{
+	[_popover closePopover:self];
+}
+
 - (void) clearMemory
 {
 	_popover.contentViewController.view = nil;

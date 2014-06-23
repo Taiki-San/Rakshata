@@ -17,12 +17,13 @@
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
 		return nil;
 	
-	self = [super initWithFrame : NSMakeRect(0, 0, 170, 175)];
+	self = [super initWithFrame : NSMakeRect(0, 0, 170, 190)];
 	
 	if(self != nil)
 	{
 		NSRect frame = NSZeroRect;
 		_tabMDL = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
+		_remind = false;
 		
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:4];
@@ -72,17 +73,23 @@
 	else
 		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nque je les télécharge\npour vous?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE]];
+	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE]] autorelease];
 	[contentText.cell setWraps:YES];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height - 10 - contentText.frame.size.height - 10)];
+	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height - 10 - contentText.frame.size.height - 15)] autorelease];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
+	
+	RakButton * buttonRemind = [[RakButton allocWithText:@"Se souvenir"] autorelease];
+	[buttonRemind setFrame:NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
+	[buttonRemind setTarget:self];
+	[buttonRemind setAction:@selector(remindSwitched:)];
+	[self addSubview:buttonRemind];
 }
 
 - (void) configurePopover : (INPopoverController*) internalPopover
@@ -103,6 +110,15 @@
 {
 	if([sender selectedSegment] == 0)
 		[self confirmed];
+	[popover closePopover];
+}
+
+- (void) remindSwitched : (RakButton*) sender
+{
+	_remind = !_remind;
+	
+	if (sender != nil && [sender class] == [RakButton class] && sender.cell != nil && [sender.cell class] == [RakButtonCell class])
+		((RakButtonCell*)sender.cell).forceHighlight = _remind;
 }
 
 - (void) confirmed
@@ -148,7 +164,7 @@
 	if(frame.size.width > superviewAvailableSpace.size.width || !frame.size.width)
 		frame.size.width = superviewAvailableSpace.size.width * 3 / 4;
 	
-	frame.origin.y = superviewAvailableSpace.size.height / 2 - frame.size.height / 2;
+	frame.origin.y = superviewAvailableSpace.size.height - frame.size.height;
 	frame.origin.x = superviewAvailableSpace.size.width / 2 - frame.size.width / 2;
 	
 	return frame;

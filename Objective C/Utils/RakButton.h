@@ -14,6 +14,7 @@
 
 + (id) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall;
 + (id) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
++ (id) allocWithText : (NSString*) string;
 
 @end
 
@@ -25,7 +26,11 @@
 	NSImage *nonClicked;
 	NSImage *clicked;
 	NSImage *unAvailable;
+	
+	RakCenteredTextFieldCell * textCell;
 }
+
+@property bool forceHighlight;
 
 - (id) initWithPage : (NSString*) imageName : (short) state;
 - (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
@@ -33,5 +38,10 @@
 
 - (void) setHighlightAllowed : (BOOL) allowed;
 - (bool) isHighlightAllowed;
+
+- (id) initWithText : (NSString *) text;
+- (NSColor*) getBorderColor;
+- (NSColor*) getBackgroundColor;
+- (NSColor *) getFontColor;
 
 @end

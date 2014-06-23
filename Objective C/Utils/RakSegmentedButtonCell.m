@@ -90,9 +90,9 @@
 	if(![self isEnabledForSegment:cellID])
 		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE];
 	else if([self isSelectedForSegment:cellID])
-		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_CLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED];
 	else
-		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED];
 }
 
 - (NSTextFieldCell*) getCellForID : (uint) cellID

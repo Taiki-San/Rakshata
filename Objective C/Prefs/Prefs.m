@@ -75,6 +75,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			
 		case GET_COLOR_SURVOL:
 		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
+		case GET_COLOR_FONT_BUTTON_NONCLICKED:
 		{
 			output = [NSColor colorWithSRGBRed:102/255.0f green:149/255.0f blue:176/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];	//vert
@@ -83,6 +84,7 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 			
 		case GET_COLOR_ACTIVE:
 		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
+		case GET_COLOR_FONT_BUTTON_CLICKED:
 		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
 		{
 			output = [NSColor colorWithSRGBRed:159/255.0f green:202/255.0f blue:227/255.0f alpha:1.0];

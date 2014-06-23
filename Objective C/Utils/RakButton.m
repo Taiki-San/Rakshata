@@ -18,41 +18,30 @@
 	
 	if(output != nil)
 	{
-		RakButtonCell * cell = [[[RakButtonCell alloc] initWithPage: imageName : RB_STATE_STANDARD] autorelease];
+		[output.cell initWithPage: imageName : RB_STATE_STANDARD];
 		
-		if(cell != nil)
+		//Update a couple of prefs
+		[output sizeToFit];
+		output.wantsLayer = YES;
+		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
+		output.layer.cornerRadius = 4;
+		[output setBordered:NO];
+		
+		//Set action
+		if(target != nil)
 		{
-			//Set image
-			[output setCell:cell];
-			
-			//Update a couple of prefs
-			[output sizeToFit];
-			output.wantsLayer = YES;
-			output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
-			output.layer.cornerRadius = 4;
-			[output setBordered:NO];
-			
-			//Set action
-			if(target != nil)
-			{
-				[output setTarget:target];
-				[output setAction:selectorToCall];
-			}
-			
-			if(superView != nil)
-			{
-				//Set origin
-				origin.x -= cell.cellSize.width / 2;
-				[output setFrameOrigin: origin];
-				
-				//Add to the superview
-				[superView addSubview:output];
-			}
+			[output setTarget:target];
+			[output setAction:selectorToCall];
 		}
-		else
+		
+		if(superView != nil)
 		{
-			[output release];
-			output = nil;
+			//Set origin
+			origin.x -= ((RakButtonCell*)output.cell).cellSize.width / 2;
+			[output setFrameOrigin: origin];
+			
+			//Add to the superview
+			[superView addSubview:output];
 		}
 	}
 	
@@ -65,40 +54,40 @@
 	
 	if(output != nil)
 	{
-		RakButtonCell * cell = [[RakButtonCell alloc] initWithPage: imageName : stateAtStartup];
+		[output.cell initWithPage: imageName : stateAtStartup];
 		
-		if(cell != nil)
-		{
-			//Set image
-			[output setCell:cell];
-			[cell release];
-			
-			//Update a couple of prefs
-			[output sizeToFit];
-			[output setBordered:NO];
-
-			//Set action
-			[output setTarget:target];
-			[output setAction:selectorToCall];
-			
-			//Set origin
-			NSPoint point;
-			
-			if(posXFromLeftSide)
-				point = NSMakePoint(posX, superView.frame.size.height / 2 - output.frame.size.height / 2);
-			else
-				point = NSMakePoint(posX - output.frame.size.width, superView.frame.size.height / 2 - output.frame.size.height / 2);
-			
-			[output setFrameOrigin: point];
-			
-			//Add to the superview
-			[superView addSubview:output];
-		}
+		//Update a couple of prefs
+		[output sizeToFit];
+		[output setBordered:NO];
+		
+		//Set action
+		[output setTarget:target];
+		[output setAction:selectorToCall];
+		
+		//Set origin
+		NSPoint point;
+		
+		if(posXFromLeftSide)
+			point = NSMakePoint(posX, superView.frame.size.height / 2 - output.frame.size.height / 2);
 		else
-		{
-			[output release];
-			output = nil;
-		}
+			point = NSMakePoint(posX - output.frame.size.width, superView.frame.size.height / 2 - output.frame.size.height / 2);
+		
+		[output setFrameOrigin: point];
+		
+		//Add to the superview
+		[superView addSubview:output];
+	}
+	
+	return output;
+}
+
++ (id) allocWithText : (NSString*) string
+{
+	RakButton * output = [RakButton new];
+	
+	if(output != nil)
+	{
+		[output.cell initWithText:string];
 	}
 	
 	return output;
@@ -119,7 +108,6 @@
 	}
 	
 	return output;
-	
 }
 
 + (Class) cellClass
@@ -131,9 +119,42 @@
 
 @implementation RakButtonCell
 
-- (id) initWithPage : (NSString*) imageName : (short) state
+- (id) init
 {
 	self = [super init];
+	
+	if(self != nil)
+	{
+		textCell = nil;
+	}
+	
+	return self;
+}
+
+- (id) copyWithZone:(NSZone *)zone
+{
+	return textCell ? nil : [[RakButtonCell allocWithZone:zone] initWithRawData:clicked :nonClicked :unAvailable];
+}
+
+- (void) dealloc
+{
+	if(!textCell)
+	{
+		[clicked release];
+		[nonClicked release];
+		[unAvailable release];
+		NSImage * bak = self.image;
+		[self setImage:nil];
+		[bak release];
+	}
+	[super dealloc];
+}
+
+//Image only code
+
+- (id) initWithPage : (NSString*) imageName : (short) state
+{
+	self = [self init];
 	
 	if(self != nil)
 	{
@@ -165,7 +186,7 @@
 
 - (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable
 {
-	self = [super init];
+	self = [self init];
 	
 	if(self != nil)
 	{
@@ -211,32 +232,80 @@
 	return canHighlight;
 }
 
-- (id) copyWithZone:(NSZone *)zone
-{
-	return [[RakButtonCell allocWithZone:zone] initWithRawData:clicked :nonClicked :unAvailable];
-}
-
-
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
-	if(notAvailable)
-		return;
-	
-	if (flag)
-		self.backgroundColor = [NSColor clearColor];
-	
-	[super highlight:flag withFrame:cellFrame inView:controlView];
+	if(textCell)
+	{
+		[super highlight:flag withFrame:cellFrame inView:controlView];
+		[textCell setTextColor:[self getFontColor]];
+	}
+	else if(!notAvailable)
+	{
+		if (flag)
+			self.backgroundColor = [NSColor clearColor];
+		[super highlight:flag withFrame:cellFrame inView:controlView];
+	}
 }
 
-- (void) dealloc
+//Text only code
+
+- (id) initWithText : (NSString *) text
 {
-	[clicked release];
-	[nonClicked release];
-	[unAvailable release];
-	NSImage * bak = self.image;
-	[self setImage:nil];
-	[bak release];
-	[super dealloc];
+	self = [self init];
+	
+	if(self != nil)
+	{
+		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
+		if(textCell != nil)
+		{
+			[textCell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+			[textCell setAlignment:NSCenterTextAlignment];
+			[textCell setTextColor:[self getFontColor]];
+		}
+	}
+	
+	return self;
+}
+
+- (NSColor*) getBorderColor
+{
+	return [NSColor colorWithDeviceWhite:32.0f/255.0f alpha:1.0f];
+}
+
+- (NSColor*) getBackgroundColor
+{
+	return [NSColor colorWithDeviceWhite:39.0f/255.0f alpha:1.0];
+}
+
+- (NSColor *) getFontColor
+{
+	if([self isHighlighted] || self.forceHighlight)
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED];
+	else
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED];
+}
+
+- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+{
+	if(textCell != nil)
+	{
+		[[self getBorderColor] setFill];
+		NSRectFill(cellFrame);
+		
+		NSRect frame = cellFrame;
+		
+		frame.size.width -= 2;	//border
+		frame.size.height -= 2;
+		frame.origin.x++;
+		frame.origin.y++;
+		
+		[[self getBackgroundColor] setFill];
+		NSRectFill(frame);
+		
+		[textCell drawInteriorWithFrame:frame inView:controlView];
+	}
+	else
+		[super drawWithFrame:cellFrame inView:controlView];
 }
 
 @end

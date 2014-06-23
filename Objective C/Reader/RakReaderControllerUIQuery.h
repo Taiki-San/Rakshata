@@ -18,6 +18,8 @@
 	uint _sizeArray;
 	MDL* _tabMDL;
 	
+	bool _remind;
+	
 	RakPopoverWrapper * popover;
 }
 
