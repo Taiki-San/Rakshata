@@ -23,7 +23,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 		[self setExpectedBufferSize];
 		
 		CGFloat dataBuf;
-		uint i;
+		uint8_t i;
 		SEL jumpTable[numberElem];
 		
 		mammouth = creator;

@@ -91,6 +91,8 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 			mangaDB->chapitresInstalled[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
 		return;
     }
+	else
+		return;
 	
     if(dernierLu != NULL)
     {

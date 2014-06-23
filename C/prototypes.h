@@ -54,10 +54,6 @@
     #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
 
     #ifdef __APPLE__
-        #include <openssl/bio.h>
-        #include <openssl/pem.h>
-        #include <openssl/x509.h>
-        #include <openssl/ssl.h>
         #define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
 	#endif
 #endif

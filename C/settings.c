@@ -348,7 +348,6 @@ char * loadPref(char request[3], unsigned int length, char defaultChar)
 	char * output = calloc(length, sizeof(char));
 	if(output != NULL)
 	{
-		int pos = 0;
 		FILE* prefs = fopen("prefs.txt", "r");
 		
 		if(prefs != NULL)
@@ -399,7 +398,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar)
 			fclose(prefs);
 		}
 		
-		for(; pos < length; output[pos++] = defaultChar);	//On remplit la fin
+		for(int pos = 0; pos < length; output[pos++] = defaultChar);	//On remplit la fin
 	}
 	return output;
 }

@@ -336,7 +336,10 @@
 	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 	
 	if (item == nil || [item class] != [RakDragItem class])
+	{
+		[item release];
 		return NO;
+	}
 	
 	return [self receiveDrop:item.project :item.isTome :item.selection :source :row :operation];
 }

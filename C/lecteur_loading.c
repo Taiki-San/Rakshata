@@ -153,7 +153,7 @@ memoryFail:
 					free(dataReader->chapitreTomeCPT);			dataReader->chapitreTomeCPT = NULL;
 
 					if(dataReader->path != NULL)
-						for (int i = 0; i <= nombreTours; free(dataReader->path[i++]));
+						for (int loop = 0; loop <= nombreTours; free(dataReader->path[loop++]));
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}

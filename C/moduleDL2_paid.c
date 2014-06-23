@@ -39,7 +39,8 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
                 snprintf(URL, 200, "https://%s/checkPaid.php", SERVEUR_URL);
                 if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
-                    int prix = -1, pos = 0;
+					int prix = -1;
+					uint pos = 0;
                     sscanfs(bufferOut, "%d %d", &prix, &factureID);
                     if(prix != -1 && factureID != -1)
                     {
@@ -110,15 +111,13 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
                     }
 					else
 					{
-						int pos;
 						for(pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
 					}
 
                 }
                 else
 				{
-					int pos;
-					for(pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
+					for(uint pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
 				}
 				free(bufferOutBak);
             }

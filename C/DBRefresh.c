@@ -184,13 +184,13 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, boo
 			//On a fini de parser la permière partie
 			
 			//The fun begins, on a désormais à lire les bundles à la fin du fichier
-			uint posEnd;
+			uint newPosEnd;
 			while(version == 2 && bufferDL[posCur] == '#')
 			{
 				posCur++;
-				posEnd = getPosOfChar(&bufferDL[posCur], '#', true);
-				parseDetailsBlock(&bufferDL[posCur], dataOutput, globalTeam->teamLong, posEnd);
-				posCur += posEnd;
+				newPosEnd = getPosOfChar(&bufferDL[posCur], '#', true);
+				parseDetailsBlock(&bufferDL[posCur], dataOutput, globalTeam->teamLong, newPosEnd);
+				posCur += newPosEnd;
 				
 			}
 			

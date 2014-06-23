@@ -15,7 +15,7 @@
 @interface RakPrefsDeepData : NSObject
 {
 	Prefs* mammouth;
-	int numberElem;
+	int8_t numberElem;
 	int sizeInputBuffer;
 }
 

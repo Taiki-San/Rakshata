@@ -803,7 +803,7 @@ bool addRepoToDB(TEAMS_DATA newTeam)
 
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 {
-	TEAMS_DATA ** output = malloc(lengthTeam * sizeof(TEAMS_DATA*));
+	TEAMS_DATA ** output = calloc(lengthTeam, sizeof(TEAMS_DATA*));
 	if(output != NULL)
 	{
 		for(int i = 0; i < lengthTeam; i++)

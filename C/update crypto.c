@@ -700,7 +700,9 @@ void decryptPageWorkerLeg(DECRYPT_PAGE_DATA_LEG *data)
 	SERPENT_STATIC_DATA pSer;
 	TwofishInstance pTwoF;
 	
-	memcpy(IV, data->CBC, 2 * CRYPTO_BUFFER_SIZE * sizeof(rawData));
+	memcpy(&IV[0], &data->CBC[0], CRYPTO_BUFFER_SIZE * sizeof(rawData));
+	memcpy(&IV[1], &data->CBC[1], CRYPTO_BUFFER_SIZE * sizeof(rawData));
+	memset(&plaintext, 0, sizeof(plaintext));
 	memcpy(&pSer, &data->serpent, sizeof(SerpentInstance));
 	memcpy(&pTwoF, &data->twofish, sizeof(TwofishInstance));
 	
