@@ -22,6 +22,7 @@
 - (id) init : (NSView *) contentView;
 - (void) togglePopover : (NSRect) frame;
 - (void) additionalConfiguration : (id) target : (SEL) selector;
+- (void) updatePosition : (NSPoint) origin : (BOOL) animated;
 - (void) setDelegate:(id <INPopoverControllerDelegate>) delegate;
 - (void) closePopover;
 

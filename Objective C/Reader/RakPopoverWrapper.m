@@ -25,7 +25,8 @@
 		NSViewController * controller = [[[NSViewController alloc] init] autorelease];
 		controller.view = contentView;
 		_popover = [[INPopoverController alloc] initWithContentViewController:controller];
-		_popover.closesWhenApplicationBecomesInactive = NO;//YES;
+		_popover.closesWhenApplicationBecomesInactive = NO;
+		_popover.closesWhenPopoverResignsKey = NO;
 	}
 	
 	return self;
@@ -47,6 +48,17 @@
 - (void) additionalConfiguration : (id) target : (SEL) selector
 {
 	[target performSelector:selector withObject:_popover];
+}
+
+- (void) updatePosition : (NSPoint) origin : (BOOL) animated
+{
+	if(_popover != nil && _popover.popoverWindow != nil)
+	{
+		NSRect frame = _popover.popoverWindow.frame;	frame.origin.y = origin.y;
+		frame.origin.x = origin.x - frame.size.width / 2;
+		
+		[_popover.popoverWindow setFrame:frame display:YES animate:animated];
+	}
 }
 
 - (void)setDelegate:(id <INPopoverControllerDelegate>) delegate

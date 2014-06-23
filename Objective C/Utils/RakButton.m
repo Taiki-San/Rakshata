@@ -81,13 +81,14 @@
 	return output;
 }
 
-+ (id) allocWithText : (NSString*) string
++ (id) allocWithText : (NSString*) string : (NSRect) frame
 {
 	RakButton * output = [RakButton new];
 	
 	if(output != nil)
 	{
 		[output.cell initWithText:string];
+		[output setFrame:frame];
 	}
 	
 	return output;

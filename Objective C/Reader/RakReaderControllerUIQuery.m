@@ -23,7 +23,7 @@
 	{
 		NSRect frame = NSZeroRect;
 		_tabMDL = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-		_remind = false;
+		_remind = false;	_tabReader = nil;
 		
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:4];
@@ -36,29 +36,25 @@
 		popover = [[RakPopoverWrapper alloc] init:self];
 		popover.anchor = _tabMDL;
 		
-		if ([_tabMDL isDisplayed])
-			popover.direction = INPopoverArrowDirectionLeft;
-		else
+		NSArray *subviews;
+		popover.direction = INPopoverArrowDirectionDown;
+		if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
 		{
-			NSArray *subviews;
-			popover.direction = INPopoverArrowDirectionDown;
-			if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
+			for(NSView * view in subviews)
 			{
-				for(NSView * view in subviews)
+				if([view class] == [Reader class])
 				{
-					if([view class] == [Reader class])
-					{
-						frame.size.width = view.frame.origin.x;
-						break;
-					}
+					_tabReader = (Reader*) view;
+					frame.size.width = view.frame.origin.x;
+					break;
 				}
 			}
 		}
-		
-		
+	
 		[popover additionalConfiguration:self :@selector(configurePopover:)];
 		[popover togglePopover : frame];
 		[popover setDelegate:self];
+		[_tabMDL registerPopoverExistance:self];
 	}
 	
 	return self;
@@ -74,22 +70,34 @@
 		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nque je les télécharge\npour vous?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	
 	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE]] autorelease];
-	[contentText.cell setWraps:YES];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height - 10 - contentText.frame.size.height - 15)] autorelease];
+	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15)] autorelease];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakButton * buttonRemind = [[RakButton allocWithText:@"Se souvenir"] autorelease];
-	[buttonRemind setFrame:NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
+	RakButton * buttonRemind = [[RakButton allocWithText:@"Se souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	[self addSubview:buttonRemind];
+}
+
+- (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
+{
+	NSPoint origin = NSMakePoint(0, MDLFrame.origin.y + MDLFrame.size.height);
+	origin = [_tabMDL convertPoint:origin toView:nil];
+	origin = [_tabMDL.window convertBaseToScreen:origin];
+	
+	if(_tabReader != nil)
+		origin.x += [_tabReader createFrame].origin.x / 2;
+	else
+		origin.x += MDLFrame.size.width / 2;
+	
+	[popover updatePosition:origin :animated];
 }
 
 - (void) configurePopover : (INPopoverController*) internalPopover
@@ -100,6 +108,7 @@
 
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
+	[_tabMDL registerPopoverExistance:nil];
 	[popover clearMemory];
 	[popover release];
 }

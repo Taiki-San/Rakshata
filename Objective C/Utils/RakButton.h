@@ -14,7 +14,7 @@
 
 + (id) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall;
 + (id) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
-+ (id) allocWithText : (NSString*) string;
++ (id) allocWithText : (NSString*) string : (NSRect) frame;
 
 @end
 

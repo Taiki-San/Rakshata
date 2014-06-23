@@ -20,6 +20,7 @@
 		flag = GUI_THREAD_MDL;
 		needUpdateMainViews = NO;
 		isForcedToShowUp = NO;
+		_popover = nil;
 		self = [self initView: contentView : state];
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
@@ -103,20 +104,6 @@
 	output.size.width -= 2 * output.origin.x;
 	
 	return output;
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	if([self wouldFrameChange:frameRect])
-	{
-		[super setFrame:frameRect];
-		
-		if(coreView != nil)
-			[coreView setFrame:[self getCoreviewFrame : frameRect]];
-		
-		if(needUpdateMainViews)
-			[self updateDependingViews];
-	}
 }
 
 /*Drag and drop UI effects*/
@@ -274,6 +261,23 @@
 	return widthWindow * prefData / 100;
 }
 
+- (void) setFrame:(NSRect)frameRect
+{
+	if([self wouldFrameChange:frameRect])
+	{
+		[super setFrame:frameRect];
+		
+		if(coreView != nil)
+			[coreView setFrame:[self getCoreviewFrame : frameRect]];
+		
+		if(_popover != nil)
+			[_popover locationUpdated:frameRect:NO];
+		
+		if(needUpdateMainViews)
+			[self updateDependingViews];
+	}
+}
+
 - (void) resizeAnimation
 {
 	NSRect frame = [self createFrame];
@@ -281,8 +285,12 @@
 	if([self wouldFrameChange:frame])
 	{
 		[self.animator setFrame:frame];
-		[coreView resizeAnimation : [self getCoreviewFrame : frame]];
+		if(coreView != nil)
+			[coreView resizeAnimation : [self getCoreviewFrame : frame]];
 	}
+	
+	if (([self wouldFrameChange:frame] || ![self isDisplayed]) && _popover != nil)
+		[_popover locationUpdated:frame:YES];
 }
 
 - (int) getCodePref : (int) request
@@ -347,6 +355,11 @@
 			[currentView updateContextNotification:data :isTome :element];
 	}
 
+}
+
+- (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover
+{
+	_popover = popover;
 }
 
 #pragma mark - Drop support

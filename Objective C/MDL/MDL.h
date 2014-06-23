@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 @class MDL;
+@class RakReaderControllerUIQuery;
 
 #import "RakMDLRessources.h"
 #import "RakMDLController.h"
@@ -25,6 +26,8 @@
 	
 	BOOL needUpdateMainViews;
 	BOOL isForcedToShowUp;
+	
+	RakReaderControllerUIQuery * _popover;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
@@ -44,5 +47,6 @@
 - (void) updateDependingViews;
 
 - (void) propagateContextUpdate : (MANGAS_DATA) data : (bool) isTome : (int) element;
+- (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
 
 @end

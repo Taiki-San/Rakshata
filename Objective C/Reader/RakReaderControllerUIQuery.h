@@ -16,6 +16,8 @@
 	BOOL _isTome;
 	int* _arraySelection;
 	uint _sizeArray;
+	
+	Reader* _tabReader;
 	MDL* _tabMDL;
 	
 	bool _remind;
@@ -24,6 +26,7 @@
 }
 
 - (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated;
 
 @end
 
