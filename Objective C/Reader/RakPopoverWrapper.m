@@ -57,7 +57,10 @@
 		NSRect frame = _popover.popoverWindow.frame;	frame.origin.y = origin.y;
 		frame.origin.x = origin.x - frame.size.width / 2;
 		
-		[_popover.popoverWindow setFrame:frame display:YES animate:animated];
+		if(animated)
+			[_popover.popoverWindow.animator setFrame:frame display:YES animate:YES];
+		else
+			[_popover.popoverWindow setFrame:frame display:YES animate:NO];
 	}
 }
 

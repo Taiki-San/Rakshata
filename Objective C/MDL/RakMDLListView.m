@@ -254,7 +254,7 @@
 - (void) updatePercentage : (CGFloat) percentage : (size_t) speed
 {
 	if(DLprogress != nil)
-		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[[NSNumber numberWithDouble:percentage], [NSNumber numberWithLongLong:speed]] waitUntilDone:YES];
+		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[[NSNumber numberWithDouble:percentage], [NSNumber numberWithUnsignedLong:speed]] waitUntilDone:YES];
 }
 
 - (void) sendRemove
