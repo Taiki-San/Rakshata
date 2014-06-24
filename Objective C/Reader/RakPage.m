@@ -870,7 +870,7 @@
 	while (cacheBeingBuilt);
 	
 	[prevPage release];		prevPage = nil;
-	[pageView setImage:nil];	[page dealloc];
+	[pageView setImage:nil];page = nil;
 	[pageData release];		pageData = nil;
 	[nextPage release];		nextPage = nil;
 }
