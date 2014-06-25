@@ -46,6 +46,7 @@
 	bool readerMode;
 	bool noDrag;
 	bool alreadyRefreshed;
+	bool dontGiveACrapAboutCTPosUpdate;
 	
 	bool cacheBeingBuilt;
 	

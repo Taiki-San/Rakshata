@@ -21,9 +21,9 @@
 	
 	if(self != nil)
 	{
-		pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil];
-		read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil];
-		remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil];
+		pause = [[RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil] retain];
+		read = [[RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil] retain];
+		remove = [[RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil] retain];
 		
 		if(pause == nil || read == nil || remove == nil)
 		{
@@ -82,7 +82,9 @@
 - (void) dealloc
 {
 	[controller release];
-	[pause release];	[read release];		[remove release];
+	[pause release];	[pause release];
+	[read release];		[read release];
+	[remove release];	[remove release];
 	[super dealloc];
 }
 

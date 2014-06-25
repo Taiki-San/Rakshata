@@ -19,6 +19,7 @@
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	alreadyRefreshed = false;
+	dontGiveACrapAboutCTPosUpdate = false;
 	readerMode = superView->readerMode;
 	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
@@ -547,6 +548,9 @@
 
 - (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
 {
+	if(dontGiveACrapAboutCTPosUpdate)
+		return;
+	
 	if(projectRequest.cacheDBID != project.cacheDBID)
 		alreadyRefreshed = false;
 	else if(elemRequest == currentElem && isTomeRequest == isTome)
@@ -582,7 +586,9 @@
 	{
 		if([[array objectAtIndex:i] class] == [CTSelec class])
 		{
+			dontGiveACrapAboutCTPosUpdate = true;
 			[(CTSelec*) [array objectAtIndex:i] selectElem: project.cacheDBID :isTome :currentElem];
+			dontGiveACrapAboutCTPosUpdate = false;
 			return;
 		}
 	}
@@ -727,6 +733,8 @@
 	{
 		while (cacheBeingBuilt);
 		internalDeleteCT(project, isTome, currentElem);
+		
+#warning "Should notify context update required"
 		
 		getUpdatedCTList(&project, isTome);
 		

@@ -39,10 +39,10 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	MDLUpdateKillState(*quit);
 	
 	//On va lancer le premier élément
-	for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[dataPos]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
-	if(dataPos < *nbElemTotal && *((*status)[dataPos]) == MDL_CODE_DEFAULT)
+	for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
+	if(dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) == MDL_CODE_DEFAULT)
 	{
-		MDLStartHandler(dataPos, *nbElemTotal, **todoList, status, &historiqueTeam);
+		MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status, &historiqueTeam);
 	}
 	
 	while(1)

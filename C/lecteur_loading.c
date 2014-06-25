@@ -15,12 +15,12 @@
 
 bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure)
 {
-	if(isTome)
-	{
-		return *currentPosIntoStructure < mangaDB.nombreTomesInstalled;
-	}
+	uint maxValue = isTome ? mangaDB.nombreTomesInstalled : mangaDB.nombreChapitreInstalled;
+
+	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < mangaDB.nombreTomesInstalled
+										&& !checkReadable(mangaDB, isTome, isTome ? mangaDB.tomesInstalled[*currentPosIntoStructure].ID: mangaDB.chapitresInstalled[*currentPosIntoStructure]);		(*currentPosIntoStructure)++);
 	
-	return *currentPosIntoStructure < mangaDB.nombreChapitreInstalled;	//As-ton trouvé un tome?
+	return *currentPosIntoStructure < maxValue;
 }
 
 /**	Load the reader data	**/
