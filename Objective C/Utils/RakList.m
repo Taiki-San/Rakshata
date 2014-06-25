@@ -299,7 +299,10 @@
 			return;
 	}
 	
-	if(selectedIndex != -1)
+	if(selectedIndex >= amountData)
+		selectedIndex = -1;
+	
+	else if(selectedIndex != -1)
 	{
 		RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
 		

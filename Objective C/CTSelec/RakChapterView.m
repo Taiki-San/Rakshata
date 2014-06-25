@@ -479,7 +479,7 @@
 
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 {
-	if((checkIfRequired && data.cacheDBID != ID) || (!checkIfRequired && !updateIfRequired(&data, RDB_CTXCT)))
+	if((checkIfRequired || data.cacheDBID != ID) && (!checkIfRequired || !updateIfRequired(&data, RDB_CTXCT)))
 		return;
 
 	getUpdatedChapterList(&data, true);

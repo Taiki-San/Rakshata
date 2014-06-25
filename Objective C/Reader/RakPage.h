@@ -85,7 +85,7 @@
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (bool) goToNext;
 - (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
-- (void) updateCTSelection;
+- (void) updateCT : (uint) request;
 - (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
 - (void) deleteElement;

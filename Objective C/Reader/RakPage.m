@@ -14,6 +14,12 @@
 //	#define PERF_ANALYSIS
 #endif
 
+enum
+{
+	COM_CT_SELEC,
+	COM_CT_REFRESH
+};
+
 @implementation RakPage
 
 - (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
@@ -541,7 +547,7 @@
 	if(changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
 	{
 		posElemInStructure = newPosIntoStruct;
-		[self updateCTSelection];
+		[self updateCT : COM_CT_SELEC];
 		[self updateContext];
 	}
 }
@@ -564,14 +570,14 @@
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
-		[self updateCTSelection];
+		[self updateCT : COM_CT_SELEC];
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
 	addRecentEntry(project, false);
 }
 
-- (void) updateCTSelection
+- (void) updateCT : (uint) request
 {
 	NSView * view = self.superview;
 	while (view != nil && [view superclass] != [RakTabView class])
@@ -586,9 +592,16 @@
 	{
 		if([[array objectAtIndex:i] class] == [CTSelec class])
 		{
-			dontGiveACrapAboutCTPosUpdate = true;
-			[(CTSelec*) [array objectAtIndex:i] selectElem: project.cacheDBID :isTome :currentElem];
-			dontGiveACrapAboutCTPosUpdate = false;
+			if(request == COM_CT_SELEC)
+			{
+				dontGiveACrapAboutCTPosUpdate = true;
+				[(CTSelec*) [array objectAtIndex:i] selectElem: project.cacheDBID :isTome :currentElem];
+				dontGiveACrapAboutCTPosUpdate = false;
+			}
+			else if(request == COM_CT_REFRESH)
+			{
+				[(CTSelec*) [array objectAtIndex:i] refreshCT:NO :project.cacheDBID];
+			}
 			return;
 		}
 	}
@@ -734,7 +747,7 @@
 		while (cacheBeingBuilt);
 		internalDeleteCT(project, isTome, currentElem);
 		
-#warning "Should notify context update required"
+		[self updateCT:COM_CT_REFRESH];
 		
 		getUpdatedCTList(&project, isTome);
 		
