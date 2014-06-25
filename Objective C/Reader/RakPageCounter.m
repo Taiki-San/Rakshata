@@ -163,13 +163,14 @@
 		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE]];
 	}
 	
-	if(gotoButton != nil)
+	if(gotoButtonContainer != nil)
 	{
-		[gotoButton setTitle:@"Go"];
+		RakButton * gotoButton = [RakButton allocWithText:@"Go":NSMakeRect(0, 0, 0, 0)];
 		[gotoButton sizeToFit];
-		[[gotoButton cell] setBackgroundColor:[Prefs getSystemColor:GET_COLOR_INACTIVE]];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
+		[gotoButtonContainer addSubview:gotoButton];
+		[gotoButton release];
 	}
 	
 	if(textField != nil)

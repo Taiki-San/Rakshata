@@ -14,7 +14,7 @@
 {
 	IBOutlet NSTextField *mainLabel;
 	IBOutlet NSTextField *textField;
-	IBOutlet NSButton * gotoButton;
+	IBOutlet NSView * gotoButtonContainer;
 	
 	IBOutlet NSPopover * popover;
 	
