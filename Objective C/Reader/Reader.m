@@ -136,7 +136,9 @@
 	
 	if(bottomBar == nil)
 		bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
-	
+
+	[bottomBar favsUpdated:project.favoris];
+
 	if(shouldNotifyBottomBarInitialized)
 		[mainImage bottomBarInitialized];
 }
@@ -383,6 +385,11 @@
 		[self mouseDown:NULL];
 		[self startReading : project : element : isTome : -1];
 	}
+}
+
+- (void) switchFavs
+{
+	[bottomBar favsUpdated:[mainImage switchFavs]];
 }
 
 - (void) prevPage

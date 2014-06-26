@@ -100,11 +100,6 @@
 
 #pragma mark - Buttons
 
-- (void) buttonHitten
-{
-	NSLog(@"Luna shall be our queen");
-}
-
 - (short) numberIconsInBar
 {
 	return 7;
@@ -114,7 +109,7 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(buttonHitten)];
+	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :superView :@selector(switchFavs)];
 	fullscreen = [RakButton allocForReader:self :@"fullscreen" : RB_STATE_STANDARD :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
 	
 	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
@@ -130,6 +125,11 @@
 	if(nextPage != nil)			[nextPage.cell setHighlightAllowed:NO];
 	if(nextChapter != nil)		[nextChapter.cell setHighlightAllowed:NO];
 	if(trash != nil)			[trash.cell setHighlightAllowed:NO];
+}
+
+- (void) favsUpdated : (BOOL) isNewStatedFaved
+{
+	[favorite setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

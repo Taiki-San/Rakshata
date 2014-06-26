@@ -16,7 +16,7 @@ bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
 {
     bool generateOwnCache = false;
     char *favsBak = NULL, *internalCache = NULL;
-	char mangaLong[LONGUEUR_NOM_MANGA_MAX] = {0}, teamLong[LONGUEUR_NOM_MANGA_MAX] = {0};
+	char mangaLong[LONGUEUR_NOM_MANGA_MAX], URLRepo[LONGUEUR_URL];
 
     if(favs == NULL)
     {
@@ -33,72 +33,161 @@ bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
         return 0;
 
     favsBak = *favs;
-    while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->teamLong, teamLong) || strcmp(mangaDB->mangaName, mangaLong)))
+    while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->URLRepo, URLRepo) || strcmp(mangaDB->mangaName, mangaLong)))
     {
-        favsBak += sscanfs(favsBak, "%s %s", teamLong, LONGUEUR_NOM_MANGA_MAX, mangaLong, LONGUEUR_NOM_MANGA_MAX);
+        favsBak += sscanfs(favsBak, "%s %s", URLRepo, sizeof(URLRepo), mangaLong, sizeof(mangaLong));
         for(; favsBak != NULL && *favsBak && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
     }
     if(generateOwnCache)
         free(internalCache);
 
-    if(!strcmp(mangaDB->team->teamLong, teamLong) && !strcmp(mangaDB->mangaName, mangaLong))
-        return true;
-    return false;
+	return !strcmp(mangaDB->team->URLRepo, URLRepo) && !strcmp(mangaDB->mangaName, mangaLong);
+}
+
+bool setFavorite(MANGAS_DATA* mangaDB)
+{
+	if(mangaDB == NULL)
+		return false;
+	
+	bool removing = mangaDB->favoris != 0, elementAlreadyAdded = false, ret_value = false;
+	char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsNew;
+	char line[LONGUEUR_NOM_MANGA_MAX + LONGUEUR_URL + 16], mangaLong[LONGUEUR_NOM_MANGA_MAX], *mangaLongRef = mangaDB->mangaName, URLRepo[LONGUEUR_URL], *URLRepoRef = mangaDB->team->URLRepo;
+	uint nbSpaces, pos = 0, posLine;
+	size_t length = (favs != NULL ? strlen(favs) : 0) + strlen(mangaDB->mangaName) + strlen(mangaDB->team->URLRepo) + 64, posOutput = 0;
+
+	favsNew = malloc(length * sizeof(char));	//Alloc final buffer
+	if(favsNew == NULL)
+	{
+		memoryError(length);
+		goto end;
+	}
+	
+	snprintf(favsNew, length, "<%c>\n", SETTINGS_FAVORITE_FLAG);
+	posOutput = strlen(favsNew);
+
+	for(; favs != NULL && (favs[pos] == '\n' || favs[pos] == '\r'); pos++);	//We drop empty stuffs
+	
+	while(favs != NULL && favs[pos])
+	{
+		//We extract the current line
+		for (posLine = 0; posLine < sizeof(line) - 1 && favs[pos] && favs[pos] != '\n'; line[posLine++] = favs[pos++]);	//We copy the line
+		for(; favs[pos] == '\n' || favs[pos] == '\r'; pos++);	//We drop empty stuffs
+		line[posLine] = 0;
+		
+		//Quick validation
+		for (posLine = nbSpaces = 0; line[posLine] && nbSpaces < 2; posLine++)
+			if(line[posLine] == ' ')	nbSpaces++;
+		
+		if (nbSpaces != 1)
+			continue;
+		
+		//We read the data
+		sscanfs(line, "%s %s", URLRepo, LONGUEUR_URL, mangaLong, LONGUEUR_NOM_MANGA_MAX);
+		
+		//There is a collision
+		if(!strcmp(URLRepo, URLRepoRef) && !strcmp(mangaLong, mangaLongRef))
+		{
+			if (removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
+			{
+				ret_value = true;
+				continue;
+			}
+			else if(!elementAlreadyAdded)
+				elementAlreadyAdded = true;
+			else
+				continue;
+		}
+		
+		//We rewrite the line on the output buffer
+		snprintf(line, sizeof(line), "%s %s\n", URLRepo, mangaLong);
+		strncat(favsNew, line, length - posOutput);
+		posOutput += strlen(line);
+	}
+	
+	//We have to add the element, and there is no duplicate
+	if(!removing && !elementAlreadyAdded)
+	{
+		snprintf(line, sizeof(line), "%s %s\n", URLRepoRef, mangaLongRef);
+		strncat(favsNew, line, length - posOutput);
+		posOutput += strlen(line);
+		ret_value = true;
+	}
+	
+	//Our buffer was too small, shit
+	if(posOutput >= length - strlen("</F>\n"))
+		goto end;
+
+	//We wrote something
+	else if(posOutput > strlen("<F>\n"))
+	{
+		snprintf(line, sizeof(line), "</%c>\n", SETTINGS_FAVORITE_FLAG);
+		strncat(favsNew, line, length - posOutput);
+		updatePrefs(SETTINGS_FAVORITE_FLAG, favsNew);
+	}
+	
+	//Nothing to write
+	else
+		removeFromPref(SETTINGS_FAVORITE_FLAG);
+	
+	mangaDB->favoris = !mangaDB->favoris;
+
+end:
+	
+	free(favsNew);
+	free(favs);
+	
+	return ret_value;
 }
 
 extern bool addRepoByFileInProgress;
 void updateFavorites()
 {
     char *favs = NULL;
-    if(!checkFileExist(INSTALL_DATABASE) && (favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) != NULL && !addRepoByFileInProgress)
-        favorisToDL = 0;
-    else
-        return;
-
-    if(favs != NULL)
-        free(favs);
-
+    if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL || addRepoByFileInProgress)
+	{
+		free(favs);
+		return;
+	}
+	else
+		free(favs);
+	
     updateDatabase(false);
-    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, NULL);
+	
+	uint nbElem, pos;
+    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbElem);
     if(mangaDB == NULL)
         return;
 
-    int i;
-    for(i = 0; mangaDB[i].mangaName[0]; i++)
+    for(pos = 0; pos < nbElem; pos++)
     {
-        if(mangaDB[i].favoris)
+        if(mangaDB[pos].favoris)
         {
-            char temp[2*LONGUEUR_NOM_MANGA_MAX+128];
-            snprintf(temp, 2*LONGUEUR_NOM_MANGA_MAX+128, "manga/%s/%s/Chapitre_%d/%s", mangaDB[i].team->teamLong, mangaDB[i].mangaName, mangaDB[i].lastChapter, CONFIGFILE);
-            if(!checkFileExist(temp))
-            {
-                do	//Fix some issues when synchronous read/write (probably optimized out by the compiler anyway
-                {
-                    favorisToDL = 1;
-                } while(!favorisToDL);
-				
-                break;
-            }
+			if (mangaDB[pos].tomesFull && (mangaDB[pos].tomesInstalled == NULL || !checkReadable(mangaDB[pos], true, mangaDB[pos].tomesInstalled[mangaDB[pos].nombreTomesInstalled-1].ID)))
+			{
+				break;	//Le dernier tome n'est pas installé
+			}
+			
+			if(mangaDB[pos].chapitresFull && (mangaDB[pos].chapitresInstalled == NULL || !checkReadable(mangaDB[pos], false, mangaDB[pos].chapitresInstalled[mangaDB[pos].nombreChapitreInstalled-1])))
+			{
+				break;	//Le dernier chapitre n'est pas installé
+			}
         }
     }
     freeMangaData(mangaDB);
-    if(!favorisToDL)
-    {
-        do	//Fix some issues when synchronous read/write (probably optimized out by the compiler anyway
-		{
-			favorisToDL = -1;
-		} while(favorisToDL != -1);
-    }
+	
+	if(pos != nbElem)
+	{
+		//Something new is available
+	}
 }
 
-#warning "Need testing"
 void getNewFavs()
 {
 	bool prevIsTome;
 	int lastInstalled, prevElem = VALEUR_FIN_STRUCTURE_CHAPITRE;
 	uint posProject, nbProject, prevProjectIndex;
-	size_t posFull;
-    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject);
+	size_t posFull, maxPos;
+    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject), *current;
 
     if(mangaDB == NULL)
         return;
@@ -107,16 +196,21 @@ void getNewFavs()
     {
 		if(mangaDB[posProject].team == NULL)
 			continue;
+		else
+			current = &mangaDB[posProject];
 		
-        if(mangaDB[posProject].favoris)
+        if(current->favoris)
         {
-			getUpdatedChapterList(&mangaDB[posProject], true);
-            if(mangaDB[posProject].chapitresFull != NULL && mangaDB[posProject].nombreChapitre > mangaDB[posProject].nombreChapitreInstalled)
+			getUpdatedChapterList(current, true);
+            if(current->chapitresFull != NULL && current->nombreChapitre > current->nombreChapitreInstalled)
 			{
-				lastInstalled = mangaDB[posProject].chapitresInstalled[mangaDB[posProject].nombreChapitreInstalled];
-				for(posFull = mangaDB[posProject].nombreChapitre - 1; posFull > 0 && mangaDB[posProject].chapitresFull[posFull] > lastInstalled; posFull--)
+				lastInstalled = current->chapitresInstalled[current->nombreChapitreInstalled-1];
+				maxPos = current->nombreChapitre;
+				
+				for (posFull = 0; posFull < maxPos && current->chapitresFull[posFull] <= lastInstalled; posFull++);
+				for(; posFull < maxPos; posFull++)
 				{
-					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], false, mangaDB[posProject].chapitresFull[posFull]))
+					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], false, current->chapitresFull[posFull]))
 					{
 						if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
 						{
@@ -125,19 +219,21 @@ void getNewFavs()
 						
 						prevProjectIndex = posProject;
 						prevIsTome = false;
-						prevElem = mangaDB[posProject].chapitresFull[posFull];
+						prevElem = current->chapitresFull[posFull];
 					}
 				}
 			}
 			
-			getUpdatedTomeList(&mangaDB[posProject], true);
-			if(mangaDB[posProject].tomesFull != NULL && mangaDB[posProject].nombreTomes > mangaDB[posProject].nombreTomesInstalled)
+			getUpdatedTomeList(current, true);
+			if(current->tomesFull != NULL && current->nombreTomes > current->nombreTomesInstalled)
 			{
-				lastInstalled = mangaDB[posProject].tomesInstalled[mangaDB[posProject].nombreTomesInstalled].ID;
-				for(posFull = mangaDB[posProject].nombreTomes - 1; posFull > 0 && mangaDB[posProject].tomesFull[posFull].ID > lastInstalled; posFull--)
+				lastInstalled = current->tomesInstalled[current->nombreTomesInstalled-1].ID;
+				maxPos = current->nombreTomes;
+				
+				for (posFull = 0; posFull < maxPos && current->tomesInstalled[posFull].ID <= lastInstalled; posFull++);
+				for(; posFull < maxPos; posFull++)
 				{
-					
-					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], true, mangaDB[posProject].tomesFull[posFull].ID))
+					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], true, current->tomesFull[posFull].ID))
 					{
 						if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
 						{
@@ -145,17 +241,17 @@ void getNewFavs()
 						}
 						
 						prevProjectIndex = posProject;
-						prevIsTome = false;
-						prevElem = mangaDB[posProject].tomesFull[posFull].ID;
+						prevIsTome = true;
+						prevElem = current->tomesFull[posFull].ID;
 					}
 				}
 			}
         }
     }
 	
-    freeMangaData(mangaDB);
-
 	if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
 		addElementToMDL(mangaDB[prevProjectIndex], prevIsTome, prevElem, false);
+
+	freeMangaData(mangaDB);
 }
 

@@ -71,6 +71,7 @@
 
 - (void) failure;
 
+- (BOOL) switchFavs;
 - (void) nextPage;
 - (void) prevPage;
 - (void) nextChapter;

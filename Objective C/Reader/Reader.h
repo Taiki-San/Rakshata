@@ -34,6 +34,7 @@
 - (void) unhideBothTab;
 - (void) hideCursor;
 
+- (void) switchFavs;
 - (void) prevPage;
 - (void) jumpPage : (uint) newPage;
 - (void) nextPage;

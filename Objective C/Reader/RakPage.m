@@ -275,6 +275,12 @@ enum
 
 #pragma mark - High level API
 
+- (BOOL) switchFavs
+{
+	setFavorite(&project);
+	return project.favoris;
+}
+
 - (void) nextPage
 {
 	[self changePage:READER_ETAT_NEXTPAGE];

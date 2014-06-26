@@ -15,7 +15,6 @@
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
-volatile int favorisToDL = -1;
 char REPERTOIREEXECUTION[350];
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];

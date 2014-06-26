@@ -62,6 +62,7 @@ void memoryError(size_t size);
 
 /**Favoris.c**/
 bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs);
+bool setFavorite(MANGAS_DATA* mangaDB);
 void updateFavorites();
 void getNewFavs();
 
@@ -139,7 +140,6 @@ void updatePrefs(char flag, char *stringToAdd);
 int loadLangueProfile();
 int loadEmailProfile();
 char* loadLargePrefs(char flag);
-void setFavorite(MANGAS_DATA* mangaDB);
 
 /**Thread.c**/
 void createNewThread(void *function, void *arg);

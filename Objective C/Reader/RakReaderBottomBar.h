@@ -40,6 +40,7 @@
 
 - (short) numberIconsInBar;
 - (void) loadIcons : (Reader*) superView;
+- (void) favsUpdated : (BOOL) isNewStatedFaved;
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width;
 
 - (void) resizeAnimation : (NSRect) frameRect;

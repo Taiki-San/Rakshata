@@ -640,7 +640,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 	}
 	
 	output->contentDownloadable = sqlite3_column_int(state, RDB_contentDownloadable-1);
-	output->favoris = sqlite3_column_int(state, RDB_favoris);
+	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
 	
 	return true;
 }

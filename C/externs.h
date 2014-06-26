@@ -17,7 +17,6 @@ extern bool isRetina;
 extern int langue; //Langue
 extern volatile int NETWORK_ACCESS;
 extern int THREAD_COUNT;
-extern volatile int favorisToDL;
 extern char REPERTOIREEXECUTION[350];
 extern char FONTUSED[300];
 extern char LANGUAGE_PATH[NOMBRE_LANGUE][50];
