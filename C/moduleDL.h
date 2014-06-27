@@ -12,26 +12,6 @@
 
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 
-#define HAUTEUR_FENETRE_DL 470
-
-/*Specs Font*/
-#define MDL_SIZE_FONT_USED POLICE_MOYEN
-#define MDL_LARGEUR_FONT 36             //On doit l'utiliser dans une fonction n'écrivant pas de texte, il faut donc utiliser une constante pour des raisons de cohérence
-
-/*Micro-engine*/
-#define MDL_NOMBRE_ELEMENT_COLONNE 6
-#define MDL_NOMBRE_COLONNE 2
-#define MDL_HAUTEUR_DEBUT_CATALOGUE 110
-#define MDL_BORDURE_CATALOGUE 30
-#define MDL_ESPACE_INTERCOLONNE (LARGEUR/2 - MDL_BORDURE_CATALOGUE)
-#define MDL_INTERLIGNE 50
-#define MDL_ICON_SIZE 40
-#define MDL_ICON_POS 350
-
-/*Header*/
-#define HAUTEUR_TEXTE_TELECHARGEMENT 15
-#define HAUTEUR_TEXTE_INSTALLATION 55
-
 /*Codes*/
 #define MDL_CODE_UNPAID				(-5)
 #define MDL_CODE_INTERNAL_ERROR		(-4)
@@ -53,17 +33,6 @@
 #define MDLP_CODE_PAID 1
 #define MDLP_CODE_TO_PAY 2
 #define MDLP_HIGHEST_CODE 2
-
-/*Icones*/
-#define MDL_ICON_ERROR_DEFAULT "data/icon/e.png"
-#define MDL_ICON_ERROR_GENERAL "data/icon/eg.png"
-#define MDL_ICON_ERROR_DOWNLOAD "data/icon/ed.png"
-#define MDL_ICON_ERROR_INSTALL "data/icon/ei.png"
-#define MDL_ICON_DL "data/icon/dl.png"
-#define MDL_ICON_INSTALL "data/icon/i.png"
-#define MDL_ICON_WAIT "data/icon/w.png"
-#define MDL_ICON_OVER "data/icon/o.png"
-#define MDL_ICON_TO_PAY "data/icon/p.png"
 
 /*Divers*/
 

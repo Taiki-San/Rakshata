@@ -166,32 +166,8 @@ void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA
     snprintf(list[11], LONGUEUR_NOMS_DATA, "data/german/acceuil.png");
     snprintf(list[12], LONGUEUR_NOMS_DATA, "data/german/controls.png");
     snprintf(list[13], LONGUEUR_NOMS_DATA, "data/german/localization");
-    snprintf(list[14], LONGUEUR_NOMS_DATA, ICONE_DELETE);
-    snprintf(list[15], LONGUEUR_NOMS_DATA, ICONE_FAVORITED);
-    snprintf(list[16], LONGUEUR_NOMS_DATA, ICONE_FAVORIS_MENU);
-    snprintf(list[17], LONGUEUR_NOMS_DATA, ICONE_NOT_FAVORITED);
-    snprintf(list[18], LONGUEUR_NOMS_DATA, ICONE_FULLSCREEN);
-    snprintf(list[19], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU);
-    snprintf(list[20], LONGUEUR_NOMS_DATA, ICONE_MAIN_MENU_BIG);
-    snprintf(list[21], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_CHAPTER);
-    snprintf(list[22], LONGUEUR_NOMS_DATA, ICONE_PREVIOUS_PAGE);
-    snprintf(list[23], LONGUEUR_NOMS_DATA, ICONE_NEXT_CHAPTER);
-    snprintf(list[24], LONGUEUR_NOMS_DATA, ICONE_NEXT_PAGE);
-    snprintf(list[25], LONGUEUR_NOMS_DATA, ICONE_LOCK);
-    snprintf(list[26], LONGUEUR_NOMS_DATA, ICONE_UNLOCK);
-    snprintf(list[27], LONGUEUR_NOMS_DATA, ICONE_SWITCH_CHAPITRE);
-    snprintf(list[28], LONGUEUR_NOMS_DATA, ICONE_SWITCH_TOME);
-    snprintf(list[29], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DEFAULT);
-    snprintf(list[30], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_GENERAL);
-    snprintf(list[31], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_DOWNLOAD);
-    snprintf(list[32], LONGUEUR_NOMS_DATA, MDL_ICON_ERROR_INSTALL);
-    snprintf(list[33], LONGUEUR_NOMS_DATA, MDL_ICON_DL);
-    snprintf(list[34], LONGUEUR_NOMS_DATA, MDL_ICON_INSTALL);
-    snprintf(list[35], LONGUEUR_NOMS_DATA, MDL_ICON_WAIT);
-    snprintf(list[36], LONGUEUR_NOMS_DATA, MDL_ICON_OVER);
-    snprintf(list[37], LONGUEUR_NOMS_DATA, MDL_ICON_TO_PAY);
-    snprintf(list[38], LONGUEUR_NOMS_DATA, "data/acceuil.png");
-    snprintf(list[39], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
+    snprintf(list[14], LONGUEUR_NOMS_DATA, "data/acceuil.png");
+    snprintf(list[15], LONGUEUR_NOMS_DATA, SECURE_DATABASE);
 }
 
 int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite)

@@ -130,20 +130,6 @@ int erreurReseau()
     return PALIER_MENU;
 }
 
-int showError()
-{
-    char trad[SIZE_TRAD_ID_1][TRAD_LENGTH];
-    
-	/*Remplissage des variables*/
-    loadTrad(trad, 1);
-	
-#ifdef IDENTIFY_MISSING_UI
-	#warning "Missing in showError"
-#endif
-	
-    return PALIER_DEFAULT;
-}
-
 int emptyLibrary()
 {
     int ret_value = 0, output;

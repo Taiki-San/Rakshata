@@ -17,7 +17,7 @@ int mkdirR(char *path)
 #ifdef _WIN32
     return mkdir(path);
 #else
-    return mkdir(path, PERMISSIONS);
+    return mkdir(path, 0755);
 #endif
 }
 

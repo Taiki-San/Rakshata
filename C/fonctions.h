@@ -53,7 +53,6 @@ void logR(char *error);
 void connexionNeededToAllowANewComputer();
 int libcurlErrorCode(CURLcode code);
 int erreurReseau();
-int showError();
 int emptyLibrary();
 void affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);

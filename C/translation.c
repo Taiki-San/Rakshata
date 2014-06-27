@@ -107,10 +107,10 @@ void loadTrad(char trad[][TRAD_LENGTH], int IDTrad)
 
 void setNewLangue(int newLangue)
 {
-	char newPref[LONGUEURTEXTE];
+	char newPref[100];
 	langue = newLangue;
 	removeFromPref(SETTINGS_LANGUE_FLAG);
-	snprintf(newPref, LONGUEURTEXTE, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+	snprintf(newPref, sizeof(newPref), "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
 	addToPref(SETTINGS_LANGUE_FLAG, newPref);
 }
 

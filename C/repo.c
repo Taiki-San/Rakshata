@@ -145,7 +145,7 @@ int ajoutRepo(bool ajoutParFichier)
                 /*On attend l'URL*/
                 crashTemp(teams.URLRepo, LONGUEUR_URL);
                 
-                if(continuer == PALIER_MENU || continuer == PALIER_CHAPTER || strlen(teams.URLRepo) == 0)
+                if(continuer == PALIER_MENU || strlen(teams.URLRepo) == 0)
                     continue;
                 else if(continuer == PALIER_QUIT)
                     return PALIER_QUIT;
