@@ -66,7 +66,6 @@
 #define MDL_ICON_TO_PAY "data/icon/p.png"
 
 /*Divers*/
-#define HAUTEUR_POURCENTAGE WINDOW_SIZE_H_DL - 50
 
 enum isInstalledRC {
 	ERROR_CHECK				= -1,
@@ -206,9 +205,6 @@ typedef struct argument_to_MDL_handler
 	uint statusLength;
 	
 } MDL_HANDLER_ARG;
-
-extern int WINDOW_SIZE_H_DL;
-extern int WINDOW_SIZE_W_DL;
 
 /**Download.c**/
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler);

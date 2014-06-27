@@ -21,26 +21,6 @@ int mkdirR(char *path)
 #endif
 }
 
-void getToWD(int *argc, char** argv)
-{
-#ifndef __APPLE__
-    if(*argc >= 2 && argv[0] != NULL) //Si ouvert depuis un fichier, il faut restaurer le repertoire
-    {
-		size_t length = strlen(argv[0])+1;
-
-        char path[length+1];
-		usstrcpy(path, length, argv[0]);
-		length--;
-		do
-		{
-			for(; length > 0 && path[length] != '/' && path[length] != '\\'; path[length--] = 0);
-		}while(length > 0 && !checkFileExist(path));
-		chdir(path);
-    }
-#endif
-    getcwd(REPERTOIREEXECUTION, sizeof(REPERTOIREEXECUTION));
-}
-
 void strend(char *recepter, size_t length, const char *sender)
 {
     if(recepter && sender)
@@ -300,25 +280,16 @@ void removeFolder(char *path)
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
-    char *name = malloc(strlen(REPERTOIREEXECUTION) + strlen(path) + 2);
-	
-	if(name != NULL)
-		snprintf(name, strlen(REPERTOIREEXECUTION) + strlen(path) + 2, "%s/%s", REPERTOIREEXECUTION, path);
-	else
-		name = path;
-
     /* On ouvre le dossier. */
-    directory = opendir(name);
+    directory = opendir(path);
     if ( directory == NULL )
     {
 #ifdef DEV_VERSION
         char temp[300];
-        snprintf(temp, 300, "Can't open directory %s\n", name);
+        snprintf(temp, 300, "Can't open directory %s\n", path);
         logR(temp);
 #endif
-        remove(name);
-		if(name != path)
-			free(name);
+        remove(path);
         return;
     }
 
@@ -338,14 +309,12 @@ void removeFolder(char *path)
             remove(buffer); //On est sur un fichier, on le supprime.
     }
     closedir(directory);
-    rmdir(name); //Maintenant le dossier doit être vide, on le supprime.
+    rmdir(path); //Maintenant le dossier doit être vide, on le supprime.
 #ifdef DEV_VERSION
     char temp2[300];
-    snprintf(temp2, 300, "Removed: %s\n", name);
+    snprintf(temp2, 300, "Removed: %s\n", path);
     logR(temp2);
 #endif
-	if(name != path)
-		free(name);
 }
 
 void ouvrirSite(char *URL)
@@ -371,87 +340,38 @@ void ouvrirSite(char *URL)
     #endif
 }
 
-int lancementExternalBinary(char cheminDAcces[100])
+void lancementExternalBinary(char cheminDAcces[100])
 {
+	uint j = 0;
     char superTemp[400];
+	char sanitizedDir[2 * 100];
+	
+	//Sanitizer
+	for(uint i = 0; j < sizeof(sanitizedDir) && cheminDAcces[i]; i++)
+	{
+		if(cheminDAcces[i] == '\\' || cheminDAcces[i] == '"')
+			sanitizedDir[j++] = '\\';
+		sanitizedDir[j++] = cheminDAcces[i];
+	}
+	sanitizedDir[MIN(j, sizeof(sanitizedDir) - 1)] = 0;
+
 #ifdef _WIN32
-    int i = 0, j = 0;
-	char temp[250];
-
-	crashTemp(temp, 250);
-    for(i = 0; i < 250 && REPERTOIREEXECUTION[i] != 0; i++)
-    {
-        if(REPERTOIREEXECUTION[i] == '\\')
-            temp[j++] = '\\';
-        temp[j++] = REPERTOIREEXECUTION[i];
-    }
-    snprintf(superTemp, 400, "\"%s/%s\"", temp, cheminDAcces);
-    ShellExecute(NULL, "open", superTemp, NULL, NULL, SW_SHOWDEFAULT);
- #else
+    ShellExecute(NULL, "open", sanitizedDir, NULL, NULL, SW_SHOWDEFAULT);
+#else
     #ifdef __APPLE__
-        snprintf(superTemp, 400, "open -n \"%s/%s\"", REPERTOIREEXECUTION, cheminDAcces);
+        snprintf(superTemp, 400, "open -n \"%s\"", sanitizedDir);
     #else
-        snprintf(superTemp, 400, "\"%s/%s\" &", REPERTOIREEXECUTION, cheminDAcces);
+        snprintf(superTemp, 400, "\"./%s\" &", sanitizedDir);
     #endif
-    system(superTemp);
+
+	system(superTemp);
+
 #endif
-    return 0;
 }
 
-int checkPID(int PID)
+bool checkDirExist(char *dirname)
 {
-#ifndef _WIN32
-
-    char temp[TAILLE_BUFFER];
-    FILE *test = NULL;
-
-    if(!PID)
-        return 1;
-    #ifdef __APPLE__
-    snprintf(temp, TAILLE_BUFFER, "ps %d", PID);
-    test = popen(temp, "r");
-    if(test != NULL)
-    {
-        while(fgetc(test) != '\n' && fgetc(test) != EOF);
-        bool out = fgetc(test) == EOF;
-        fclose(test);
-        return out;
-    }
-    #else
-	snprintf(temp, TAILLE_BUFFER, "proc/%d/cwd", PID);
-    test = fopen(temp, "r");
-    if(test != NULL) //Si le PID existe
-    {
-		int i, j;
-        crashTemp(temp, TAILLE_BUFFER);
-        for(j = 0; (i = fgetc(test)) != EOF && j < TAILLE_BUFFER; j++)
-            temp[j] = i;
-        fclose(test);
-        if(!strcmp(temp, REPERTOIREEXECUTION))
-            return 0;
-    }
-    else //Sinon
-        return 1;
-    #endif
-#endif
-    return 0;
-}
-
-int checkDirExist(char *dirname)
-{
-    DIR *directory = NULL;
-    if(dirname[1] == ':' || dirname[0] == '/')
-        directory = opendir(dirname);
-    else
-    {
-        char *directory_fullname = ralloc(strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128);
-        if(directory_fullname != NULL)
-        {
-            snprintf(directory_fullname, strlen(dirname) + strlen(REPERTOIREEXECUTION) + 128, "%s/%s", REPERTOIREEXECUTION, dirname);
-            directory = opendir(directory_fullname);
-            free(directory_fullname);
-        }
-    }
+    DIR *directory = opendir(dirname);
     if(directory != NULL)
     {
         closedir(directory);

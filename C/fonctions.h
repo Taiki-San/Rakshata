@@ -89,7 +89,6 @@ char ** loadChapterConfigDat(char* input, int *nombrePage);
 
 /**Native.c**/
 int mkdirR(char *path);
-void getToWD(int *argc, char** argv);
 void strend(char *recepter, size_t length, const char *sender);
 char* mergeS(char* input1, char* input2);
 void *ralloc(size_t length);
@@ -102,10 +101,9 @@ void ustrcpy(void* output, const void* input);
 
 void removeFolder(char *path);
 void ouvrirSite(char *URL);
-int lancementExternalBinary(char cheminDAcces[100]);
-int checkPID(int PID);
+void lancementExternalBinary(char cheminDAcces[100]);
 #define checkFileExist(filename) (access(filename, F_OK) != -1)
-int checkDirExist(char *dirname);
+bool checkDirExist(char *dirname);
 
 /**Repo.c**/
 int checkAjoutRepoParFichier(char *argv);

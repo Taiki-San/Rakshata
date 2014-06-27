@@ -147,7 +147,6 @@ int earlyInit(int argc, char *argv[])
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
 #endif
 
-    getToWD(&argc, argv);
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
     crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
     resetUpdateDBCache();

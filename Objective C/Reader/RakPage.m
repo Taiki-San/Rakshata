@@ -353,8 +353,8 @@ enum
 {
 	NSPoint point = [[self contentView] bounds].origin;
 	
-	[self moveSliderY : newPos.y - point.y];
 	[self moveSliderX : newPos.x - point.x];
+	[self moveSliderY : newPos.y - point.y];
 }
 
 /*Active routines*/

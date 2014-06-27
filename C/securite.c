@@ -161,16 +161,12 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 
 void get_file_date(const char *filename, char *date)
 {
-    int length = strlen(filename) + strlen(REPERTOIREEXECUTION) + 5;
-    char input_parsed[length];
 #ifdef _WIN32
-	snprintf(input_parsed, length, "%s/%s", REPERTOIREEXECUTION, filename);
-
     HANDLE hFile;
     FILETIME ftEdit;
     SYSTEMTIME ftTime;
 
-    hFile = CreateFileA(input_parsed,GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
+    hFile = CreateFileA(filename, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
     GetFileTime(hFile, NULL, NULL, &ftEdit);
     CloseHandle(hFile);
 
@@ -178,11 +174,11 @@ void get_file_date(const char *filename, char *date)
 
     snprintf(date, 100, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
 #else
-	strncpy(input_parsed, filename, length);
-
+	
 	struct stat buf;
-    if(!stat(input_parsed, &buf))
+    if(!stat(filename, &buf))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
+
 #endif
 }
 
