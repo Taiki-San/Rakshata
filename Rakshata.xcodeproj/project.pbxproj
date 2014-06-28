@@ -96,7 +96,6 @@
 		B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */; };
 		B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */; };
 		B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC018A3001400E3B55B /* lecteur_tool.c */; };
-		B6F6ED0418A3001400E3B55B /* moduleDL_selec.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */; };
 		B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */; };
 		B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */; };
 		B6F6ED0718A3001400E3B55B /* moduleDL2_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCC18A3001400E3B55B /* moduleDL2_tool.c */; };
@@ -291,8 +290,6 @@
 		B6F6ECC018A3001400E3B55B /* lecteur_tool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_tool.c; path = C/lecteur_tool.c; sourceTree = "<group>"; };
 		B6F6ECC318A3001400E3B55B /* lecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lecteur.h; path = C/lecteur.h; sourceTree = "<group>"; };
 		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
-		B6F6ECC618A3001400E3B55B /* MDLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDLCache.h; path = C/MDLCache.h; sourceTree = "<group>"; };
-		B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL_selec.c; path = C/moduleDL_selec.c; sourceTree = "<group>"; };
 		B6F6ECC918A3001400E3B55B /* moduleDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = moduleDL.h; path = C/moduleDL.h; sourceTree = "<group>"; };
 		B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2_events.c; path = C/moduleDL2_events.c; sourceTree = "<group>"; };
 		B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2_paid.c; path = C/moduleDL2_paid.c; sourceTree = "<group>"; };
@@ -649,7 +646,6 @@
 		B6F6ECA618A3001400E3B55B /* crypto */ = {
 			isa = PBXGroup;
 			children = (
-				B6D24C8018EDE0A100E5960B /* update crypto.c */,
 				B6F6ECA718A3001400E3B55B /* crypto.h */,
 				B6F6ECA818A3001400E3B55B /* pbkdf2.c */,
 				B6F6ECA918A3001400E3B55B /* Rijndael.c */,
@@ -658,6 +654,7 @@
 				B6F6ECAC18A3001400E3B55B /* sha256.c */,
 				B6F6ECAD18A3001400E3B55B /* std_defs.h */,
 				B6F6ECAE18A3001400E3B55B /* Twofish.c */,
+				B6D24C8018EDE0A100E5960B /* update crypto.c */,
 				B6FD250818B1537E0025FE74 /* whirlpool.c */,
 			);
 			name = crypto;
@@ -702,13 +699,11 @@
 		B6F6ED1D18A3006F00E3B55B /* MDL */ = {
 			isa = PBXGroup;
 			children = (
-				B6F6ECC618A3001400E3B55B /* MDLCache.h */,
 				B6F6ECC918A3001400E3B55B /* moduleDL.h */,
 				B6F6ECCE18A3001400E3B55B /* moduleDL2.c */,
 				B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */,
 				B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */,
 				B6F6ECCC18A3001400E3B55B /* moduleDL2_tool.c */,
-				B6F6ECC818A3001400E3B55B /* moduleDL_selec.c */,
 				B61585F71912591F004F1791 /* moduleDLMainWorker.m */,
 				B61585F9191280DF004F1791 /* moduleDLWorker.c */,
 			);
@@ -916,7 +911,6 @@
 				B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */,
 				B6F6ED0D18A3001400E3B55B /* securite.c in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,
-				B6F6ED0418A3001400E3B55B /* moduleDL_selec.c in Sources */,
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
 				B60191C91907D40700D2471C /* DBrecent.c in Sources */,
 				B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */,

@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "MDLCache.h"
-
 void refreshChaptersList(MANGAS_DATA *mangaDB)
 {
     if(mangaDB->chapitresFull != NULL || mangaDB->chapitresInstalled != NULL)
