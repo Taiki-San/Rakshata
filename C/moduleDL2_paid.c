@@ -211,7 +211,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 
     if(!cancel && toPay)
     {
-        if(waitForGetPaid(factureID) == true)
+        if(waitToGetPaid(factureID) == true)
         {
             int i;
             for(i = 0; i < sizeStatusLocal; i++)
@@ -230,7 +230,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     quit_thread(0);
 }
 
-bool waitForGetPaid(unsigned int factureID)
+bool waitToGetPaid(unsigned int factureID)
 {
     do
     {

@@ -240,62 +240,6 @@ DATA_LOADED * MDLCreateElement(MANGAS_DATA * data, bool isTome, int element)
 	return output;
 }
 
-DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal)
-{
-    uint curPos = 0, research, originalSize = *nombreMangaTotal, currentSize = originalSize;
-    for(; curPos < originalSize; curPos++)
-    {
-        if(currentList[curPos] == NULL)
-            continue;
-
-        for(research = curPos+1; research < originalSize; research++)
-        {
-            if(currentList[research] == NULL)
-                continue;
-
-			//Tout est classé par team, si il y a un incohérence, c'est qu'on est plus dans la même team
-            else if(currentList[curPos] == NULL || currentList[research]->datas != currentList[curPos]->datas)
-                break;
-
-            else if(MDLCheckDuplicate(currentList[research], currentList[curPos]))
-            {
-                if(curPos >= beginingNewData && currentList[research]->listChapitreOfTome != NULL)
-                {
-                    if(currentList[curPos]->listChapitreOfTome != NULL)
-                        free(currentList[curPos]->listChapitreOfTome);
-                    free(currentList[curPos]);
-                    currentList[curPos] = NULL;
-                    currentSize--;
-                }
-                else
-                {
-                    if(currentList[research]->listChapitreOfTome != NULL)
-                        free(currentList[research]->listChapitreOfTome);
-                    free(currentList[research]);
-                    currentList[research] = NULL;
-                    currentSize--;
-                }
-            }
-        }
-    }
-    if(currentSize != originalSize) //Duplicats trouvés
-    {
-        DATA_LOADED ** output = calloc(currentSize, sizeof(DATA_LOADED*));
-        if(output != NULL)
-        {
-            *nombreMangaTotal = currentSize;
-            for(curPos = research = 0; curPos < currentSize && research < originalSize; curPos++)
-            {
-                for(; research < originalSize && currentList[research] == NULL; research++);
-                output[curPos] = currentList[research++];
-            }
-            free(currentList);
-            return output;
-        }
-    }
-    return currentList;
-}
-
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)
 {
 	if(IDChap == -1)

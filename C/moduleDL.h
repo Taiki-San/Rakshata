@@ -178,7 +178,6 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
 DATA_LOADED ** MDLLoadDataFromState(MANGAS_DATA* mangaDB, uint* nombreMangaTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(MANGAS_DATA * data, bool isTome, int element);
-DATA_LOADED ** MDLGetRidOfDuplicates(DATA_LOADED ** currentList, int beginingNewData, uint *nombreMangaTotal);
 char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
@@ -205,24 +204,13 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem);
 void MDLUpdateKillState(bool newState);
 bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
 
-/**Module2_event.h**/
-bool MDLisClicOnAValidX(int x, bool twoColumns);
-int MDLisClicOnAValidY(int y, int nombreElement);
-void MDLDealWithClicsOnIcons(DATA_LOADED ***todoList, int ligne, bool isFirstNonDL, bool isLastNonDL);
-
 /**Module2_paid.h**/
 void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length);
 char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
 void MDLPHandlePayProcedure(DATA_PAY * arg);
-bool waitForGetPaid(unsigned int factureID);
+bool waitToGetPaid(unsigned int factureID);
 void MDLPDestroyCache(unsigned int factureID);
 
 bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, int length);
 int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length);
 bool MDLPCheckIfPaid(unsigned int factureID);
-
-void MDLPDispAskToPay(int prix);
-int MDLPWaitEvent();
-
-/**Native.c**/
-THREAD_TYPE createNewThreadRetValue(void *function, void *arg);

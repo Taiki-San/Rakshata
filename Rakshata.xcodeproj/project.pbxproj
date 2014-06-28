@@ -96,7 +96,6 @@
 		B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */; };
 		B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECBF18A3001400E3B55B /* lecteur_loading.c */; };
 		B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECC018A3001400E3B55B /* lecteur_tool.c */; };
-		B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */; };
 		B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */; };
 		B6F6ED0718A3001400E3B55B /* moduleDL2_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCC18A3001400E3B55B /* moduleDL2_tool.c */; };
 		B6F6ED0918A3001400E3B55B /* moduleDL2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECCE18A3001400E3B55B /* moduleDL2.c */; };
@@ -291,7 +290,6 @@
 		B6F6ECC318A3001400E3B55B /* lecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lecteur.h; path = C/lecteur.h; sourceTree = "<group>"; };
 		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
 		B6F6ECC918A3001400E3B55B /* moduleDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = moduleDL.h; path = C/moduleDL.h; sourceTree = "<group>"; };
-		B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2_events.c; path = C/moduleDL2_events.c; sourceTree = "<group>"; };
 		B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2_paid.c; path = C/moduleDL2_paid.c; sourceTree = "<group>"; };
 		B6F6ECCC18A3001400E3B55B /* moduleDL2_tool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2_tool.c; path = C/moduleDL2_tool.c; sourceTree = "<group>"; };
 		B6F6ECCE18A3001400E3B55B /* moduleDL2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDL2.c; path = C/moduleDL2.c; sourceTree = "<group>"; };
@@ -701,7 +699,6 @@
 			children = (
 				B6F6ECC918A3001400E3B55B /* moduleDL.h */,
 				B6F6ECCE18A3001400E3B55B /* moduleDL2.c */,
-				B6F6ECCA18A3001400E3B55B /* moduleDL2_events.c */,
 				B6F6ECCB18A3001400E3B55B /* moduleDL2_paid.c */,
 				B6F6ECCC18A3001400E3B55B /* moduleDL2_tool.c */,
 				B61585F71912591F004F1791 /* moduleDLMainWorker.m */,
@@ -938,7 +935,6 @@
 				B678675118F5EF6F004AA6B4 /* RakSRRessources.m in Sources */,
 				B6F6ECF418A3001400E3B55B /* download.c in Sources */,
 				B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */,
-				B6F6ED0518A3001400E3B55B /* moduleDL2_events.c in Sources */,
 				B6F6ECEF18A3001400E3B55B /* Serpent.c in Sources */,
 				B61A790A18E389F300D8E0E0 /* RakText.m in Sources */,
 				B6F6ED0618A3001400E3B55B /* moduleDL2_paid.c in Sources */,
