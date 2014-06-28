@@ -131,18 +131,6 @@ typedef struct {
 	short retryAttempt;
 } DL_DATA;
 
-typedef struct data_pour_installation
-{
-    MANGAS_DATA *mangaDB;
-    void *downloadedData;
-    size_t length;
-
-    int chapitre;
-    int tome;
-    bool subFolder;
-    bool isLastElemOfTome;
-} DATA_INSTALL;
-
 typedef struct main_data_module_DL
 {
     PROXY_DATA_LOADED* todoList;

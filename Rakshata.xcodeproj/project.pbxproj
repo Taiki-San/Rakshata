@@ -284,7 +284,6 @@
 		B6F6ECB518A3001400E3B55B /* externs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externs.h; path = C/externs.h; sourceTree = "<group>"; };
 		B6F6ECB618A3001400E3B55B /* favoris.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = favoris.c; path = C/favoris.c; sourceTree = "<group>"; };
 		B6F6ECB718A3001400E3B55B /* fonctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fonctions.h; path = C/fonctions.h; sourceTree = "<group>"; };
-		B6F6ECB918A3001400E3B55B /* graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics.h; path = C/graphics.h; sourceTree = "<group>"; };
 		B6F6ECBA18A3001400E3B55B /* interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interface.c; path = C/interface.c; sourceTree = "<group>"; };
 		B6F6ECBC18A3001400E3B55B /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/keys.c; sourceTree = "<group>"; };
 		B6F6ECBD18A3001400E3B55B /* lecteur_check_newElems.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_check_newElems.c; path = C/lecteur_check_newElems.c; sourceTree = "<group>"; };
@@ -761,7 +760,6 @@
 				B6F6ECB118A3001400E3B55B /* defines.h */,
 				B6F6ECB518A3001400E3B55B /* externs.h */,
 				B6F6ECB718A3001400E3B55B /* fonctions.h */,
-				B6F6ECB918A3001400E3B55B /* graphics.h */,
 				B6F6ECC318A3001400E3B55B /* lecteur.h */,
 				B6F6ECC418A3001400E3B55B /* main.h */,
 				B6F6ECD018A3001400E3B55B /* prototypes.h */,
@@ -1100,7 +1098,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/Taiki/Mavy/Rakshata/Ressources,
+					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
 				);
 				LLVM_LTO = NO;
@@ -1165,7 +1163,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/Taiki/Mavy/Rakshata/Ressources,
+					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
 				);
 				LLVM_LTO = YES;
