@@ -45,9 +45,9 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 
 - (NSRect) getAtIndex: (uint8_t) index;
 - (void) setAtIndex: (uint8_t) index : (NSRect) data;
-- (NSRect) getDataTab: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
+- (NSRect) getDataTab: (int) mainThread : (int) stateTabsReader;
 
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader;
+- (uint8_t) getIndexFromInput: (int) mainThread : (int) stateTabsReader;
 - (CGFloat) getFooterHeight;
 - (void) setFooterHeight : (CGFloat) data;
 
@@ -83,7 +83,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	//Prefs propres au MDL
 	CGFloat widthMDLSerie;
 	CGFloat heightMDLReaderFocus;
-	NSRect focusMDLSize;
 }
 
 - (id) init : (Prefs*) creator : (char*) inputData;

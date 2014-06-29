@@ -176,9 +176,9 @@
 	return STATE_READER_TAB_MASK;
 }
 
-- (NSRect) getDataTab: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
+- (NSRect) getDataTab: (int) mainThread : (int) stateTabsReader
 {
-	return [self getAtIndex: [self getIndexFromInput:mainThread :backgroundTabsWhenMDLActive :stateTabsReader]];
+	return [self getAtIndex: [self getIndexFromInput:mainThread :stateTabsReader]];
 }
 
 - (void) reinitAtIndex : (uint8_t) index
@@ -331,7 +331,7 @@
 	}
 }
 
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) backgroundTabsWhenMDLActive : (int) stateTabsReader
+- (uint8_t) getIndexFromInput: (int) mainThread : (int) stateTabsReader
 {
 	uint8_t ret_value = 0xff;
 	
@@ -350,19 +350,6 @@
 		else
 			ret_value = 3;
 		
-	}
-	else if(mainThread & GUI_THREAD_MDL)
-	{
-		if(backgroundTabsWhenMDLActive & GUI_THREAD_SERIES)
-			ret_value = 0;
-		else if(backgroundTabsWhenMDLActive & GUI_THREAD_CT)
-			ret_value = 1;
-		else if(backgroundTabsWhenMDLActive & GUI_THREAD_READER)
-			ret_value = [self getFlagFocus] & STATE_READER_TAB_SERIE_FOCUS ? 4 : 3;
-#ifdef DEV_VERSION
-		else
-			NSLog(@"[%s]: couldn't identify request for MDL: %8x %8x %8x", __PRETTY_FUNCTION__, mainThread, backgroundTabsWhenMDLActive, stateTabsReader);
-#endif
 	}
 	
 	return ret_value;

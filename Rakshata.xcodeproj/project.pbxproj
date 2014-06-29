@@ -425,10 +425,10 @@
 			children = (
 				B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */,
 				B668FBED188344AE00549A3C /* RakPrefsDeepData.m */,
+				B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */,
 				B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */,
 				B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */,
 				B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */,
-				B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */,
 			);
 			name = "Deep Prefs";
 			sourceTree = "<group>";

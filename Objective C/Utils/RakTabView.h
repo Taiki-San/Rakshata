@@ -21,6 +21,7 @@ enum {
 @interface RakTabView : NSView <NSDraggingDestination>
 {
 	bool noDrag;
+	bool canDeploy;
 	int flag;
 	NSTrackingArea * trackingArea;
 	

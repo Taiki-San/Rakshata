@@ -95,7 +95,7 @@ enum FONT_REQUEST {
 + (bool) setPref : (uint) requestID : (uint64) value;
 
 //Semi-public, use of this method should be avoided when possible
-+ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer;
++ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;
 
 //Not public, only called by subprefs
 - (id) init;

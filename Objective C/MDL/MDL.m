@@ -22,6 +22,7 @@
 		isForcedToShowUp = NO;
 		_popover = nil;
 		self = [self initView: contentView : state];
+		canDeploy = false;
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;

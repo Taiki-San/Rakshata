@@ -15,7 +15,6 @@ Prefs* prefsCache;
 // Contexte
 uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
 uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
-uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have focus
 
 @implementation Prefs
 
@@ -222,21 +221,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.width;
+			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].size.width;
 			break;
 		}
 			
@@ -250,21 +249,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_GET_TAB_SERIE_HEIGHT:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.height;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_HEIGHT:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.height;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_HEIGHT:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].size.height;
+			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].size.height;
 			break;
 		}
 		
@@ -278,21 +277,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_GET_TAB_SERIE_POSX:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.x;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.x;
+			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.x;
 			break;
 		}
 			
@@ -306,21 +305,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_GET_TAB_SERIE_POSY:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.y;
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSY:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.y;
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSY:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader].origin.y;
+			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.y;
 			break;
 		}
 			
@@ -355,21 +354,21 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_GET_TAB_SERIE_FRAME:
 		{
 			NSRect * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_FRAME:
 		{
 			NSRect * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader];
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_FRAME:
 		{
 			NSRect * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : backgroundTabsState: stateTabsReader];
+			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader];
 			break;
 		}
 			
@@ -413,10 +412,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		case PREFS_SET_OWNMAINTAB:
 		{
 			ret_value = mainThread != (uint) value;
-			
-			if(value & GUI_THREAD_MDL && !(mainThread & GUI_THREAD_MDL))
-				backgroundTabsState = mainThread;
-			
 			mainThread = value & GUI_THREAD_MASK;
 			[prefsCache refreshFirstResponder];
 			
@@ -479,16 +474,16 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	return ret_value;
 }
 
-+ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (void*) outputContainer
++ (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer
 {
 	if(prefsCache == NULL)
 		[self initCache];
 	
-	[prefsCache directQueryInternal:request :subRequest :mainThreadLocal :stateTabsReaderLocal :backgroundTabsStateLocal :outputContainer];
+	[prefsCache directQueryInternal:request :subRequest :mainThreadLocal :stateTabsReaderLocal :outputContainer];
 	
 }
 
-- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (uint) backgroundTabsStateLocal : (CGFloat*) output
+- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (CGFloat*) output
 {
 	if(output == NULL)
 		return;
@@ -496,8 +491,6 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 		mainThreadLocal = mainThread;
 	if(stateTabsReaderLocal == -1)
 		stateTabsReaderLocal = stateTabsReader;
-	if(backgroundTabsStateLocal == -1)
-		backgroundTabsStateLocal = backgroundTabsState;
 	
 	*output = -1;
 	
@@ -507,17 +500,17 @@ uint backgroundTabsState = GUI_THREAD_SERIES;		//Background tab when MDL have fo
 	{
 		case QUERY_SERIE:
 		{
-			frame = [tabSerieSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			frame = [tabSerieSize getDataTab: mainThreadLocal : stateTabsReaderLocal];
 			break;
 		}
 		case QUERY_CT:
 		{
-			frame = [tabCTSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			frame = [tabCTSize getDataTab: mainThreadLocal : stateTabsReaderLocal];
 			break;
 		}
 		case QUERY_READER:
 		{
-			frame = [tabReaderSize getDataTab: mainThreadLocal : backgroundTabsStateLocal: stateTabsReaderLocal];
+			frame = [tabReaderSize getDataTab: mainThreadLocal : stateTabsReaderLocal];
 			break;
 		}
 		case QUERY_MDL:

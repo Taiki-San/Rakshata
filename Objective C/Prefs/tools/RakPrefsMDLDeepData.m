@@ -33,42 +33,13 @@
 			heightMDLReaderFocus = [self getDefaultFocusReaderHeight];
 		else
 			heightMDLReaderFocus /= 10;
-		
-		focusMDLSize.origin.x	= hex2intPrefs(&inputData[6], 1000);
-		focusMDLSize.origin.y	= hex2intPrefs(&inputData[12], 1000);
-		focusMDLSize.size.height = hex2intPrefs(&inputData[16], 1000);
-		focusMDLSize.size.width	= hex2intPrefs(&inputData[20], 1000);
-		
-		if(focusMDLSize.origin.x == -1 || focusMDLSize.origin.y == -1 || focusMDLSize.size.height == -1 || focusMDLSize.size.width == -1)
-		{
-			NSRect dataDefault = [self getDefaultFocusMDL];
-			
-			if(focusMDLSize.origin.x == -1)
-				focusMDLSize.origin.x = dataDefault.origin.x;
-			
-			if(focusMDLSize.origin.y == -1)
-				focusMDLSize.origin.y = dataDefault.origin.y;
-			
-			if(focusMDLSize.size.height == -1)
-				focusMDLSize.size.height = dataDefault.size.height;
-			
-			if(focusMDLSize.size.width == -1)
-				focusMDLSize.size.width = dataDefault.size.width;
-		}
-		else
-		{
-			focusMDLSize.origin.x	/= 10;
-			focusMDLSize.origin.y	/= 10;
-			focusMDLSize.size.width	/= 10;
-			focusMDLSize.size.height /= 10;
-		}
 	}
 	return self;
 }
 
 - (void) setExpectedBufferSize
 {
-	sizeInputBuffer = 4 + 4 + 4 * 4;
+	sizeInputBuffer = 4 + 4;
 }
 
 - (int) getExpectedBufferSize
@@ -98,21 +69,6 @@
 		
 	snprintf(output, 9, "%04x%04x", (uint) floor(widthMDLSerie * 10 + 0.5), (uint) floor(heightMDLReaderFocus * 10 + 0.5));
 	
-
-	//On a pas de \0 final donc on va faire la conversion dans un buffer intermédiaire puis le copie
-	char buffer[17];
-	NSRect frame = focusMDLSize;
-	
-	frame.origin.x =	floor(frame.origin.x * 10 + 0.5);
-	frame.origin.y =	floor(frame.origin.y * 10 + 0.5);
-	frame.size.width =	floor(frame.size.width * 10 + 0.5);
-	frame.size.height = floor(frame.size.height * 10 + 0.5);
-	
-	snprintf(buffer, 17, "%04x%04x%04x%04x", (uint) frame.origin.x, (uint) frame.origin.y, (uint) frame.size.height, (uint) frame.size.width);
-	
-	for(uint8_t i = 0; i < 16; i++)
-		output[8 + i] = buffer[i];
-	
 	//AAANNNND, We're done :D
 }
 
@@ -135,15 +91,12 @@
 			
 		case GUI_THREAD_READER:
 			return [self getFocusReader:stateTabsReader];
-			
-		case GUI_THREAD_MDL:
-			return focusMDLSize;
 	}
 #ifdef DEV_VERSION
 	NSLog(@"[%s]: Couldn't identify request : %8x", __PRETTY_FUNCTION__, mainThread);
 #endif
 	
-	return focusMDLSize;	//Renvoyer quelque chose...
+	return NSZeroRect;
 }
 
 - (NSRect) getFocusSerie
@@ -167,7 +120,7 @@
 	
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output.origin.x];
 	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output.size.height];
-	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :-1 :&output.size.width];
+	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :&output.size.width];
 	output.origin.y = 0;
 	
 	return output;

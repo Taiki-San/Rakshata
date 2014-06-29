@@ -22,6 +22,8 @@
 	
 	if(self != nil)
 	{
+		canDeploy = true;
+		
 		[superView addSubview:self];
 		[self release];
 		
@@ -359,7 +361,7 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-	if(noDrag && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	if(canDeploy && noDrag && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 
