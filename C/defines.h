@@ -132,6 +132,7 @@
 #define TYPE_DEPOT_3 "P" //Dépôts payants
 #define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
 #define TYPE_DEPOT_5 "MG" //Dépôts MEGA
+#define MAX_TYPE_DEPOT 4
 
 /*Download.c*/
 #define CODE_RETOUR_OK 0

@@ -105,10 +105,10 @@ void lancementExternalBinary(char cheminDAcces[100]);
 bool checkDirExist(char *dirname);
 
 /**Repo.c**/
-int checkAjoutRepoParFichier(char *argv);
-void addRepoByFile();
-int ajoutRepo(bool ajoutParFichier);
-int deleteRepo();
+void checkAjoutRepoParFichier(char *argv);
+bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput);
+TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length);
+bool addRepo(char * URL, char *type);
 int defineTypeRepo(char *URL);
 int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX]);
 

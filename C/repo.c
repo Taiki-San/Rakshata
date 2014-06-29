@@ -12,27 +12,17 @@
 
 #include "db.h"
 
-bool addRepoByFileInProgress;
-
-typedef struct AUTO_ADD_REPO {
-    char type[LONGUEUR_TYPE_TEAM];
-    char URL[LONGUEUR_URL];
-} AUTO_ADD_REPO;
-
-AUTO_ADD_REPO *addRepoData = NULL;
-
-int checkAjoutRepoParFichier(char *argv)
+void checkAjoutRepoParFichier(char *argv)
 {
-    addRepoByFileInProgress = false;
     if(argv == NULL || *argv == '-')
-        return 1;
+        return;
 
     int version = 0;
     size_t size;
     char verification[50] = {0}, *bufferRead = NULL;
     FILE *input = fopen(argv, "r");
     if(input == NULL)
-        return 0;
+        return;
 
     size = getFileSize(argv);
     bufferRead = calloc(size+1, sizeof(char));
@@ -45,7 +35,7 @@ int checkAjoutRepoParFichier(char *argv)
     fclose(input);
 
     if(bufferRead == NULL)
-        return 0;
+        return;
 
     else if(version > CURRENTVERSION)
     {
@@ -54,7 +44,7 @@ int checkAjoutRepoParFichier(char *argv)
         else
             UI_Alert("Automated addition of repository: failure!", "The repository you're trying to install isn't supported by this version of Rakshata: please perform an update by getting a newer build from our website: http://www.rakshata.com/");
         free(bufferRead);
-        return 0;
+        return;
     }
     else if(strcmp(verification, "Repository_for_Rakshata"))
     {
@@ -63,7 +53,7 @@ int checkAjoutRepoParFichier(char *argv)
         else
             UI_Alert("Automated addition of repository: failure!", "Invalid file: please contact the administrator of the website from which you downloaded the file.");
         free(bufferRead);
-        return 0;
+        return;
     }
 
     size_t position, nombreRetourLigne, ligneCourante;
@@ -73,204 +63,107 @@ int checkAjoutRepoParFichier(char *argv)
             nombreRetourLigne++;
     }
 
-    addRepoData = calloc(nombreRetourLigne+1, sizeof(AUTO_ADD_REPO));
-    if(addRepoData != NULL)
-    {
-        position = ligneCourante = 0;
-        while(position < size && ligneCourante < nombreRetourLigne && bufferRead[position])
-        {
-            position += sscanfs(&bufferRead[position], "%s %s", addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM, addRepoData[ligneCourante].URL, LONGUEUR_URL);
-            for(; position < size && bufferRead[position++] != '\n';);
-            for(; position < size && (bufferRead[position] == '\n' || bufferRead[position] == '\r'); position++);
-            if(addRepoData[ligneCourante].URL[0])
-            {
-                int typeExpected = defineTypeRepo(addRepoData[ligneCourante].URL);
-                if((typeExpected == 1 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_1)) //Dropbox
-                   || (typeExpected == 2 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_2)) //Other
-                   || (typeExpected == 3 && !strcmp(addRepoData[ligneCourante].type, TYPE_DEPOT_4))) //Goo.gl
-                {
-                    ligneCourante++;
-                    addRepoByFileInProgress = true;
-                }
-                else
-                {
-                    crashTemp(addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM);
-                    crashTemp(addRepoData[ligneCourante].URL, LONGUEUR_URL);
-                }
-            }
-            else
-                crashTemp(addRepoData[ligneCourante].type, LONGUEUR_TYPE_TEAM);
-        }
-    }
-    free(bufferRead);
-    return addRepoByFileInProgress;
-}
-
-void addRepoByFile()
-{
-    if(addRepoByFileInProgress)
-    {
-        if(ajoutRepo(true) > 0)
-            updateDatabase(true);
-    }
-	return;
-}
-
-int ajoutRepo(bool ajoutParFichier)
-{
-    int continuer = 0, somethingAdded = 0, ajoutFichierDecalageRefuse = 0;
-    char temp[TAILLE_BUFFER];
-    TEAMS_DATA teams;
-
-#ifdef IDENTIFY_MISSING_UI
-	#warning "ajoutRepo"
-#endif
+	bool anySuccess = false;
+	char type[LONGUEUR_TYPE_TEAM], URL[LONGUEUR_URL];
+	position = ligneCourante = 0;
+	while(position < size && ligneCourante < nombreRetourLigne && bufferRead[position])
+	{
+		position += sscanfs(&bufferRead[position], "%s %s", type, LONGUEUR_TYPE_TEAM, URL, LONGUEUR_URL);
+		for(; position < size && bufferRead[position++] != '\n';);
+		for(; position < size && (bufferRead[position] == '\n' || bufferRead[position] == '\r'); position++);
+		if(URL[0])
+			anySuccess |= addRepo(URL, type);
+		
+		crashTemp(type, LONGUEUR_TYPE_TEAM);
+		crashTemp(URL, LONGUEUR_URL);
+	}
 	
-    if(!ajoutParFichier)
-    {
+	if(anySuccess)
+		updateDatabase(true);
+}
 
-    }
-    else
-    {
-        if(addRepoData == NULL)
-            return 0;
-    }
-    if(!checkNetworkState(CONNEXION_DOWN))
+bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput)
+{
+	if(type == 0 || type > MAX_TYPE_DEPOT || repoURL == NULL || output == NULL || !sizeOutput)
+		return false;
+	
+	output[0] = 0;
+	if(type == 1 || type == 2)
+	{
+		short versionRepo = VERSION_REPO;
+		char fullURL[512], *baseURL = type == 1 ? "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d" : "http://%s/rakshata-repo-%d";
+		do
+		{
+			snprintf(fullURL, sizeof(fullURL), baseURL, repoURL, versionRepo);
+			download_mem(fullURL, NULL, output, sizeOutput, type == 1 ? SSL_ON : SSL_OFF);
+			versionRepo--;
+
+		} while(versionRepo > 0 && !isDownloadValid(output));
+	}
+	else
+	{
+		char fullURL[64];
+		snprintf(fullURL, sizeof(fullURL), "http://goo.gl/%s", repoURL);
+		download_mem(fullURL, NULL, output, sizeOutput, SSL_OFF);
+	}
+	
+	return isDownloadValid(output);
+}
+
+TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length)
+{
+	TEAMS_DATA outputData;
+	memset(&outputData, 0, sizeof(TEAMS_DATA));
+	
+	if(remoteData != NULL && length > 0)
+	{
+		length--;
+		
+		if(remoteData[length] >= '0' && remoteData[length] <= '9') //Ca fini par un chiffe, c'est la v2
+		{
+			sscanfs(remoteData, "%s %s %s %s %s %d", outputData.teamLong, LONGUEUR_NOM_MANGA_MAX, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE, &outputData.openSite);
+		}
+		else
+		{
+			char ID[LONGUEUR_ID_TEAM];
+			sscanfs(remoteData, "%s %s %s %s %s %s", ID, sizeof(ID), outputData.teamLong, LONGUEUR_NOM_MANGA_MAX, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE);
+			outputData.openSite = 1;
+		}
+	}
+	
+	return outputData;
+}
+
+#warning "To test"
+bool addRepo(char * URL, char *type)
+{
+    char bufferDL[1000];
+    TEAMS_DATA tmpData;
+	bool success = false;
+
+	if(!checkNetworkState(CONNEXION_DOWN))
     {
         /*Lecture du fichier*/
-        while(!continuer && (!ajoutParFichier || addRepoData[somethingAdded + ajoutFichierDecalageRefuse].type[0]))
-        {
-            if(!ajoutParFichier)
-            {
-                /*On attend l'URL*/
-                crashTemp(teams.URLRepo, LONGUEUR_URL);
-                
-                if(continuer == PALIER_MENU || strlen(teams.URLRepo) == 0)
-                    continue;
-                else if(continuer == PALIER_QUIT)
-                    return PALIER_QUIT;
-
-                /*Si que des chiffres, DB, sinon, O*/
-                switch(defineTypeRepo(teams.URLRepo))
-                {
-                    case 1:
-                        ustrcpy(teams.type, TYPE_DEPOT_1); //Dropbox
-                        break;
-
-                    case 2:
-                        ustrcpy(teams.type, TYPE_DEPOT_2); //Other
-                        break;
-
-                    case 3: //Goo.gl
-                        ustrcpy(teams.type, TYPE_DEPOT_4);
-                        break;
-                }
-            }
-            else
-            {
-                if(continuer < PALIER_MENU)
-                    break;
-                usstrcpy(teams.URLRepo, LONGUEUR_URL, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].URL);
-                usstrcpy(teams.type, LONGUEUR_TYPE_TEAM, addRepoData[somethingAdded + ajoutFichierDecalageRefuse].type);
-            }
-
-            if(!continuer)
-            {
-                int versionRepo = VERSION_REPO;
-                char bufferDL[1000];
-
-                if(strcmp(teams.type, TYPE_DEPOT_4))
-                {
-                    do
-                    {
-                        if(!strcmp(teams.type, TYPE_DEPOT_1))
-                            snprintf(temp, TAILLE_BUFFER, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, versionRepo);
-                        else if(!strcmp(teams.type, TYPE_DEPOT_2))
-                            snprintf(temp, TAILLE_BUFFER, "http://%s/rakshata-repo-%d", teams.URLRepo, versionRepo);
-
-                        download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
-                        versionRepo--;
-                    } while(!isDownloadValid(bufferDL) && versionRepo > 0);
-                    
-                    if(isDownloadValid(bufferDL))
-                    {
-                        if(versionRepo == 1)
-                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
-                        else
-                        {
-                            char ID[LONGUEUR_ID_TEAM];
-                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
-                            teams.openSite = 1;
-                        }
-                    }
-                }
-
-                else
-                {
-                    snprintf(temp, TAILLE_BUFFER, "http://goo.gl/%s", teams.URLRepo);
-                    download_mem(temp, NULL, bufferDL, 1000, !strcmp(teams.type, TYPE_DEPOT_1)?SSL_ON:SSL_OFF);
-                    if(isDownloadValid(bufferDL))
-                    {
-                        int posBuf;
-                        for(posBuf = strlen(bufferDL); bufferDL[posBuf] == '#' || bufferDL[posBuf] == '\n' || bufferDL[posBuf] == '\r'; bufferDL[posBuf--] = 0);
-                        if(bufferDL[posBuf] >= '0' && bufferDL[posBuf] <= '9') //Ca fini par un chiffe, c'est la v2
-                            sscanfs(bufferDL, "%s %s %s %s %s %d", teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE, &teams.openSite);
-                        else
-                        {
-                            char ID[LONGUEUR_ID_TEAM];
-                            sscanfs(bufferDL, "%s %s %s %s %s %s", ID, LONGUEUR_ID_TEAM, teams.teamLong, LONGUEUR_NOM_MANGA_MAX, teams.teamCourt, LONGUEUR_COURT, teams.type, LONGUEUR_TYPE_TEAM, teams.URLRepo, LONGUEUR_URL, teams.site, LONGUEUR_SITE);
-                            teams.openSite = 1;
-                        }
-                    }
-                }
-
-                if(isDownloadValid(bufferDL)) //Si on pointe sur un vrai dépôt
-                {
-                    /*On affiche les infos*/
-                    snprintf(temp, TAILLE_BUFFER, "Team: %s", teams.teamLong);
-                    changeTo(temp, '_', ' ');
-                    
-					snprintf(temp, TAILLE_BUFFER, "Site: %s", teams.site);
-					
-					bool userAgreeToInjection = getRandom() % 2;
-					
-#ifdef IDENTIFY_MISSING_UI
-	#warning "the user _should_ be prompted"
-#endif
-                    
-					if(userAgreeToInjection)
-                    {
-                        addRepoToDB(teams);
-                        somethingAdded++;
-                        if(ajoutParFichier)
-                            continuer = 0;
-                    }
-                    else if(ajoutParFichier && continuer >= PALIER_MENU)
-                        continuer = 0;
-                }
-
-                else if(!ajoutParFichier)
-                {
-                    affichageRepoIconnue();
-                    continuer = 0;
-                }
-                else
-                    ajoutFichierDecalageRefuse++;
-            }
-        }
+		if(type == NULL)
+		{
+			getRepoData(defineTypeRepo(URL), URL, bufferDL, sizeof(bufferDL));
+		}
+		else
+		{
+			usstrcpy(tmpData.URLRepo, LONGUEUR_URL, URL);
+			usstrcpy(tmpData.type, LONGUEUR_TYPE_TEAM, type);
+			getUpdatedRepo(bufferDL, sizeof(bufferDL), tmpData);
+		}
+		
+		if(isDownloadValid(bufferDL))
+		{
+			tmpData = parseRemoteRepoData(bufferDL, sizeof(bufferDL));
+			addRepoToDB(tmpData);
+			success = true;
+		}
     }
 
-
-    if(ajoutParFichier)
-    {
-        free(addRepoData);
-    }
-
-    if(continuer >= PALIER_MENU)
-        continuer = somethingAdded;
-    else if(ajoutParFichier && somethingAdded)
-        return somethingAdded;
-    return continuer;
+	return success;
 }
 
 int defineTypeRepo(char *URL)

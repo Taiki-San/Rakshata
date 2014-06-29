@@ -29,7 +29,7 @@ void updateDatabase(bool forced)
 
 /************** UPDATE REPO	********************/
 
-int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
+int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
 {
 	if(buffer_repo == NULL)
 		return -1;
@@ -38,25 +38,27 @@ int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams)
 	char temp[500];
 	do
 	{
-        if(!strcmp(teams->type, TYPE_DEPOT_1))
-            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams->URLRepo, defaultVersion);
+        if(!strcmp(teams.type, TYPE_DEPOT_1))
+            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
-        else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams->URLRepo, defaultVersion);
 		
-        else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+        else if(!strcmp(teams.type, TYPE_DEPOT_2))
+            snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
+		
+        else if(!strcmp(teams.type, TYPE_DEPOT_3)) //Payant
+            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams.URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 		
         else
         {
-            snprintf(temp, 500, "Failed at understand what is the repo: %s", teams->type);
+            snprintf(temp, 500, "Failed at understand what is the repo: %s", teams.type);
             logR(temp);
             return -1;
         }
 		
         buffer_repo[0] = 0;
-        download_mem(temp, NULL, buffer_repo, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
+        download_mem(temp, NULL, buffer_repo, bufferSize, strcmp(teams.type, TYPE_DEPOT_2) ? SSL_ON : SSL_OFF);
         defaultVersion--;
+		
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
 	return defaultVersion+1;
 }
@@ -97,7 +99,7 @@ void updateRepo()
 		}
 		
 		//Refresh effectif
-		dataVersion = getUpdatedRepo(bufferDL, oldData[posTeam]);
+		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldData[posTeam]);
 		if(parseRemoteRepoLine(bufferDL, oldData[posTeam], dataVersion, &newData))
 			memcpy(oldData[posTeam], &newData, sizeof(TEAMS_DATA));
 

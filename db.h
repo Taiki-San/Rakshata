@@ -75,7 +75,7 @@ MANGAS_DATA getElementByID(uint projectID, uint32_t context);
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
 void resetUpdateDBCache();
-int getUpdatedRepo(char *buffer_repo, TEAMS_DATA* teams);
+int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams);
 void updateRepo();
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
 void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, bool updateDB);
