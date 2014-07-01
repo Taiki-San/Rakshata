@@ -27,7 +27,7 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
 
     nbElem = mangaDB->nombreChapitreSpeciaux + mangaDB->lastChapter - mangaDB->firstChapter + 1;
     mangaDB->chapitresFull = calloc(nbElem+5, sizeof(int));
-    for(i = 0; i < nbElem+5; mangaDB->chapitresFull[i++] = VALEUR_FIN_STRUCTURE_CHAPITRE);
+    for(i = 0; i < nbElem+5; mangaDB->chapitresFull[i++] = VALEUR_FIN_STRUCT);
 
     for(i = 0; i <= mangaDB->lastChapter-mangaDB->firstChapter && i < nbElem; i++)
         mangaDB->chapitresFull[i] = (mangaDB->firstChapter+i)*10;
@@ -50,8 +50,8 @@ void refreshChaptersList(MANGAS_DATA *mangaDB)
 
 bool checkChapterReadable(MANGAS_DATA mangaDB, int chapitre)
 {
-    char pathConfigFile[LONGUEUR_NOM_MANGA_MAX*3+350];
-    char pathInstallFlag[LONGUEUR_NOM_MANGA_MAX*3+350];
+    char pathConfigFile[LENGTH_PROJECT_NAME*3+350];
+    char pathInstallFlag[LENGTH_PROJECT_NAME*3+350];
     if(chapitre%10)
     {
         snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%s/Chapitre_%d.%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, chapitre/10, chapitre%10, CONFIGFILE);
@@ -75,7 +75,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 	
 	mangaDB->nombreChapitreInstalled = 0;
 	
-    if(mangaDB->chapitresFull == NULL || mangaDB->chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(mangaDB->chapitresFull == NULL || mangaDB->chapitresFull[0] == VALEUR_FIN_STRUCT)
 		return;
 	
     char configFilePath[TAILLE_BUFFER*5];
@@ -86,7 +86,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 		mangaDB->chapitresInstalled = malloc(sizeof(int));
 		
 		if(mangaDB->chapitresInstalled != NULL)
-			mangaDB->chapitresInstalled[0] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+			mangaDB->chapitresInstalled[0] = VALEUR_FIN_STRUCT;
 		return;
     }
 	
@@ -94,7 +94,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
     {
 		int i;
 		
-		*dernierLu = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		*dernierLu = VALEUR_FIN_STRUCT;
 		FILE* file = fopen(configFilePath, "r");
 		
 		if(file != NULL)
@@ -116,12 +116,12 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 	if(temporaryInstalledList == NULL)
 		return;
 
-    for(size_t pos = 0; mangaDB->chapitresFull[pos] != VALEUR_FIN_STRUCTURE_CHAPITRE && pos < mangaDB->nombreChapitre; pos++)
+    for(size_t pos = 0; mangaDB->chapitresFull[pos] != VALEUR_FIN_STRUCT && pos < mangaDB->nombreChapitre; pos++)
     {
         if(checkChapterReadable(*mangaDB, mangaDB->chapitresFull[pos]))
             temporaryInstalledList[nbElem++] = mangaDB->chapitresFull[pos];
     }
-	temporaryInstalledList[nbElem] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	temporaryInstalledList[nbElem] = VALEUR_FIN_STRUCT;
 
 	if(nbElem != 0)
 	{
@@ -135,7 +135,7 @@ void checkChapitreValable(MANGAS_DATA *mangaDB, int *dernierLu)
 	
 	free(temporaryInstalledList);
 
-    if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCT)
     {
 		int first = mangaDB->chapitresInstalled[0], end = mangaDB->chapitresInstalled[nbElem-1];
 		
@@ -157,7 +157,7 @@ void getUpdatedChapterList(MANGAS_DATA *mangaDB, bool getInstalled)
 
 void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters)
 {
-    char dir[2*LONGUEUR_NOM_MANGA_MAX + 50], dirCheck[2*LONGUEUR_NOM_MANGA_MAX + 60];
+    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60];
 	
 	if(chapitreDelete % 10)
 		snprintf(dir, sizeof(dir), "manga/%s/%s/Chapitre_%d.%d", mangaDB.team->teamLong, mangaDB.mangaName, chapitreDelete/10, chapitreDelete%10);
@@ -171,13 +171,13 @@ void internalDeleteChapitre(MANGAS_DATA mangaDB, int chapitreDelete, bool careAb
 		FILE * sharedData = fopen(dirCheck, "r");
 		if(sharedData != NULL)	//On arrive à ouvrir le fichier
 		{
-			uint IDTomeLinked = VALEUR_FIN_STRUCTURE_CHAPITRE;
+			uint IDTomeLinked = VALEUR_FIN_STRUCT;
 			fscanfs(sharedData, "%d", &IDTomeLinked);
 			fclose(sharedData);
 
-			if(IDTomeLinked != VALEUR_FIN_STRUCTURE_CHAPITRE)	//On en extrait des données valables
+			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
 			{
-				char dirVol[2*LONGUEUR_NOM_MANGA_MAX + 100];
+				char dirVol[2*LENGTH_PROJECT_NAME + 100];
 				snprintf(dirVol, sizeof(dirVol), "manga/%s/%s/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.mangaName, IDTomeLinked, CONFIGFILETOME);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
@@ -211,9 +211,9 @@ bool isChapterShared(char *path, MANGAS_DATA data, int ID)
 		snprintf(newPath, sizeof(newPath), "%s/shared", path);
 		return checkFileExist(newPath);
 	}
-	else if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	else if(ID != VALEUR_FIN_STRUCT)
 	{
-		char newPath[2*LONGUEUR_NOM_MANGA_MAX + 50];
+		char newPath[2*LENGTH_PROJECT_NAME + 50];
 		if(ID % 10)
 			snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d/shared", data.team->teamLong, data.mangaName, ID / 10, ID % 10);
 		else

@@ -23,7 +23,7 @@ int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, boo
 			logR("Error: failed at loading available content for the project");
 			return -1;
         }
-        for(curPosIntoStruct = 0; mangaDB.chapitresInstalled[curPosIntoStruct] != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; mangaDB.chapitresInstalled[curPosIntoStruct] != VALEUR_FIN_STRUCT && mangaDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
     }
     else
     {
@@ -32,7 +32,7 @@ int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, boo
 			logR("Error: failed at loading available content for the project");
 			return -1;
 		}
-        for(curPosIntoStruct = 0; mangaDB.tomesInstalled[curPosIntoStruct].ID != VALEUR_FIN_STRUCTURE_CHAPITRE && mangaDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; mangaDB.tomesInstalled[curPosIntoStruct].ID != VALEUR_FIN_STRUCT && mangaDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
     }
 	
 	//On vérifie que l'entrée est valide

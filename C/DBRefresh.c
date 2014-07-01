@@ -128,7 +128,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
 
         else
         {
-            char temp[LONGUEUR_NOM_MANGA_MAX + 100];
+            char temp[LENGTH_PROJECT_NAME + 100];
             snprintf(temp, sizeof(temp), "failed at read mode(manga database): %s", teams->type);
             logR(temp);
             return -1;
@@ -228,9 +228,9 @@ void updateProjects()
 extern int curPage; //Too lazy to use an argument
 void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome)
 {
-	if(elemToDel == VALEUR_FIN_STRUCTURE_CHAPITRE)	//On supprime tout
+	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
 	{
-		char path[2*LONGUEUR_NOM_MANGA_MAX + 25];
+		char path[2*LENGTH_PROJECT_NAME + 25];
 		snprintf(path, sizeof(path), "manga/%s/%s", project.team->teamLong, project.mangaName);
 		removeFolder(path);
 	}
@@ -243,13 +243,13 @@ void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome)
 void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre)
 {
 	int i = 0, j = 0;
-	char temp[5*LONGUEUR_NOM_MANGA_MAX];
+	char temp[5*LENGTH_PROJECT_NAME];
 	FILE* fichier = NULL;
 
     if(isTome)
-        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILETOME);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILETOME);
 	else
-        snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
 	if(isTome)
     {
         fichier = fopen(temp, "w+");

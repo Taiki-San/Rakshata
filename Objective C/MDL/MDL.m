@@ -351,7 +351,7 @@
 	for (currentView in subviews)
 	{
 		if([currentView class] == [CTSelec class])
-			[currentView updateContextNotification:data :isTome :VALEUR_FIN_STRUCTURE_CHAPITRE];
+			[currentView updateContextNotification:data :isTome :VALEUR_FIN_STRUCT];
 		else if([currentView class] == [Reader class])
 			[currentView updateContextNotification:data :isTome :element];
 	}

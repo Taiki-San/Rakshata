@@ -46,7 +46,7 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
 			return 1;
 		
 		localBuffer = mangaDB.tomesInstalled[pos].details;
-		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos++);
+		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCT; pos++);
 		nombreToursRequis = pos;
 	}
     else
@@ -207,7 +207,7 @@ memoryFail:
     if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)
     {
         dataReader->IDDisplayed = IDRequested;
-        dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCT;
         dataReader->nomPages[dataReader->nombrePageTotale] = NULL; //On signale la fin de la structure
         dataReader->nombrePageTotale--; //Décallage pour l'utilisation dans le lecteur
     }

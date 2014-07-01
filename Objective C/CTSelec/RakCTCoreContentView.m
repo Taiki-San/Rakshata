@@ -182,12 +182,12 @@
 	if(isTome)
 	{
 		META_TOME element = ((META_TOME *) data)[rowIndex];
-		if(element.ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(element.ID != VALEUR_FIN_STRUCT)
 		{
-			if(element.name[0])
-				output = [NSString stringWithUTF8String:(char*)element.name];
+			if(element.readingName[0])
+				output = [[NSString alloc] initWithBytes:element.readingName length:wstrlen(element.readingName) encoding:NSUTF32StringEncoding];
 			else
-				output = [NSString stringWithFormat:@"Tome %d", element.ID];
+				output = [NSString stringWithFormat:@"Tome %d", element.readingID];
 		}
 		else
 			output = @"Error! Out of bounds D:";
@@ -196,7 +196,7 @@
 	else
 	{
 		int ID = ((int *) data)[rowIndex];
-		if(ID != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(ID != VALEUR_FIN_STRUCT)
 		{
 			if(ID % 10)
 				output = [NSString stringWithFormat:@"Chapitre %d.%d", ID / 10, ID % 10];

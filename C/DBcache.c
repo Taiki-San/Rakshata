@@ -74,7 +74,7 @@ int setupBDDCache()
 		
 		if(internalTeamList[nombreTeam] != NULL)
 		{
-			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
+			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LENGTH_PROJECT_NAME, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
 			for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
 			nombreTeam++;
 		}
@@ -111,7 +111,7 @@ int setupBDDCache()
 		bool isTeamUsed[nombreTeam], begining = true;
 		for(numeroTeam = 0; numeroTeam < nombreTeam; isTeamUsed[numeroTeam++] = false);
 #endif
-		char teamLongBuff[LONGUEUR_NOM_MANGA_MAX], teamsCourtBuff[LONGUEUR_COURT], temp[LONGUEUR_NOM_MANGA_MAX * 5 + 100];
+		char teamLongBuff[LENGTH_PROJECT_NAME], teamsCourtBuff[LONGUEUR_COURT], temp[LENGTH_PROJECT_NAME * 5 + 100];
 		
 		
 		while(*mangaDB != 0)
@@ -126,7 +126,7 @@ int setupBDDCache()
 				
 				if(*mangaDB)
 				{
-					mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LONGUEUR_NOM_MANGA_MAX, teamsCourtBuff, LONGUEUR_COURT);
+					mangaDB += sscanfs(mangaDB, "%s %s", teamLongBuff, LENGTH_PROJECT_NAME, teamsCourtBuff, LONGUEUR_COURT);
 					for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 					
 					for(numeroTeam = 0; numeroTeam < nombreTeam && internalTeamList[numeroTeam] != NULL && (strcmp(internalTeamList[numeroTeam]->teamLong, teamLongBuff) || strcmp(internalTeamList[numeroTeam]->teamCourt, teamsCourtBuff)); numeroTeam++);
@@ -142,10 +142,10 @@ int setupBDDCache()
 			else
 			{
 				categorie = 0;
-				mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas.mangaName, LONGUEUR_NOM_MANGA_MAX, mangas.mangaNameShort, LONGUEUR_COURT, &mangas.firstChapter, &mangas.lastChapter, &mangas.firstTome, &depreciated, &categorie, &mangas.pageInfos, &mangas.nombreChapitreSpeciaux);
+				mangaDB += sscanfs(mangaDB, "%s %s %d %d %d %d %d %d %d", mangas.mangaName, LENGTH_PROJECT_NAME, mangas.mangaNameShort, LONGUEUR_COURT, &mangas.firstChapter, &mangas.lastChapter, &mangas.firstTome, &depreciated, &categorie, &mangas.pageInfos, &mangas.nombreChapitreSpeciaux);
 				for(; *mangaDB == '\r' || *mangaDB == '\n'; mangaDB++);
 				
-				if(mangas.firstChapter > mangas.lastChapter || (mangas.firstChapter == VALEUR_FIN_STRUCTURE_CHAPITRE && mangas.firstTome == VALEUR_FIN_STRUCTURE_CHAPITRE))
+				if(mangas.firstChapter > mangas.lastChapter || (mangas.firstChapter == VALEUR_FIN_STRUCT && mangas.firstTome == VALEUR_FIN_STRUCT))
 					continue;
 				
 				mangas.genre = categorie / 10;
@@ -154,9 +154,9 @@ int setupBDDCache()
 				if(!mangas.genre) //Si pas à jour, c'est par défaut un shonen
 					mangas.genre = 1;
 				
-				snprintf(temp, LONGUEUR_NOM_MANGA_MAX*5+100, "manga/%s/%s/%s", internalTeamList[numeroTeam]->teamLong, mangas.mangaName, CONFIGFILE);
+				snprintf(temp, LENGTH_PROJECT_NAME*5+100, "manga/%s/%s/%s", internalTeamList[numeroTeam]->teamLong, mangas.mangaName, CONFIGFILE);
 				
-				if(checkPathEscape(mangas.mangaName, LONGUEUR_NOM_MANGA_MAX) && checkPathEscape(internalTeamList[numeroTeam]->teamLong, LONGUEUR_NOM_MANGA_MAX))
+				if(checkPathEscape(mangas.mangaName, LENGTH_PROJECT_NAME) && checkPathEscape(internalTeamList[numeroTeam]->teamLong, LENGTH_PROJECT_NAME))
 				{
 #ifndef KEEP_UNUSED_TEAMS
 					isTeamUsed[numeroTeam] = true;
@@ -569,9 +569,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, bool dropChaptersAndTomes, MANGAS
 		return false;
 	
 	length = ustrlen(mangaName);
-	memcpy(output->mangaName, mangaName, (length >= LONGUEUR_NOM_MANGA_MAX ? length : LONGUEUR_NOM_MANGA_MAX) * sizeof(char));
-	if(length >= LONGUEUR_NOM_MANGA_MAX)
-		output->mangaName[LONGUEUR_NOM_MANGA_MAX-1] = 0;
+	memcpy(output->mangaName, mangaName, (length >= LENGTH_PROJECT_NAME ? length : LENGTH_PROJECT_NAME) * sizeof(char));
+	if(length >= LENGTH_PROJECT_NAME)
+		output->mangaName[LENGTH_PROJECT_NAME-1] = 0;
 	
 	//Divers données
 	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD

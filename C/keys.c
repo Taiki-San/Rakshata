@@ -153,10 +153,9 @@ int earlyInit(int argc, char *argv[])
     initializeDNSCache();
 
     loadLangueProfile();
-    if(!checkAjoutRepoParFichier(argv[1]))
-        return 0;
-
-    createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
+	checkAjoutRepoParFichier(argv[1]);
+	
+	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
 #ifndef __APPLE__
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire

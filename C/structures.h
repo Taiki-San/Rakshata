@@ -20,7 +20,7 @@ typedef struct sqlite3_stmt sqlite3_stmt;
 
 typedef struct infos_Team
 {
-    char teamLong[LONGUEUR_NOM_MANGA_MAX];
+    char teamLong[LENGTH_PROJECT_NAME];
     char teamCourt[LONGUEUR_COURT];
     char type[LONGUEUR_TYPE_TEAM];
     char URLRepo[LONGUEUR_URL];
@@ -37,9 +37,9 @@ typedef struct tome_metadata
 {
 	CONTENT_TOME * details;
     int ID;
-    unsigned char name[MAX_TOME_NAME_LENGTH];
-    unsigned char description1[TOME_DESCRIPTION_LENGTH];
-    unsigned char description2[TOME_DESCRIPTION_LENGTH];
+	int readingID;
+	wchar_t readingName[MAX_TOME_NAME_LENGTH];
+    wchar_t description[TOME_DESCRIPTION_LENGTH];
 }META_TOME;
 
 /**********************************************************************************************
@@ -107,7 +107,7 @@ typedef struct dataMangas
 	size_t nombreTomesInstalled;
 	
 	//Padding, 50 + 10 o, 4 o libres
-	char mangaName[LONGUEUR_NOM_MANGA_MAX];
+	char mangaName[LENGTH_PROJECT_NAME];
     char mangaNameShort[LONGUEUR_COURT];
 	
 	//32b récupérés par le cache

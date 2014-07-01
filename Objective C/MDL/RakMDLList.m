@@ -249,7 +249,7 @@
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{
-		if(project.team == NULL || element == VALEUR_FIN_STRUCTURE_CHAPITRE || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+		if(project.team == NULL || element == VALEUR_FIN_STRUCT || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
 		if(!dragInProgress)
@@ -263,7 +263,7 @@
 		getUpdatedCTList(&project, isTome);
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
-		if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(element != VALEUR_FIN_STRUCT)
 			[controller addElement:project :isTome :element:NO];
 		else
 			nbElemInjected = [controller addBatch:project :isTome :YES];

@@ -71,7 +71,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		{
             todoListTmp.chapitre = input.todoList->identifier;
             todoListTmp.subFolder = false;
-            todoListTmp.partOfTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+            todoListTmp.partOfTome = VALEUR_FIN_STRUCT;
         }
         else
 		{
@@ -121,7 +121,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(!isTome && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
 				{
-					char oldPath[2*LONGUEUR_NOM_MANGA_MAX + 384], newPath[2*LONGUEUR_NOM_MANGA_MAX + 256];
+					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256];
 					if(todoListTmp.chapitre % 10)
 					{
 						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
@@ -184,7 +184,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         {
             if(didElemGotDownloaded[i] && (listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
 											isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
-											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCTURE_CHAPITRE,
+											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
 											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1))))
 			{
                 error++;
@@ -368,7 +368,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 	
     /*Récupération des valeurs envoyés*/
 	
-    if(tome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(tome != VALEUR_FIN_STRUCT)
     {
 		if(subFolder)
 		{

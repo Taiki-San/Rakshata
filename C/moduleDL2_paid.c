@@ -29,7 +29,7 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
         if(POSTRequest != NULL)
         {
             char URL[200], *bufferOut, *bufferOutBak;
-            for(sizeIndex = 0; index[sizeIndex] != VALEUR_FIN_STRUCTURE_CHAPITRE; sizeIndex++);
+            for(sizeIndex = 0; index[sizeIndex] != VALEUR_FIN_STRUCT; sizeIndex++);
 
             bufferOut = calloc(sizeIndex*2+10, sizeof(char)); //sizeIndex * 2 pour les espaces suivants les 0/1
             if(bufferOut != NULL)
@@ -138,15 +138,15 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
     output = malloc(length * sizeof(char));
     if(output != NULL)
     {
-		char bufferURLDepot[3*LONGUEUR_URL], bufferMangaName[3*LONGUEUR_NOM_MANGA_MAX], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
+		char bufferURLDepot[3*LONGUEUR_URL], bufferMangaName[3*LENGTH_PROJECT_NAME], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
 		
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
         snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
 
-        for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCTURE_CHAPITRE; compteur++)
+        for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCT; compteur++)
         {
 			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URLRepo, LONGUEUR_URL, bufferURLDepot);
-			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->mangaName, LONGUEUR_NOM_MANGA_MAX, bufferMangaName);
+			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->mangaName, LENGTH_PROJECT_NAME, bufferMangaName);
 			
             snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->mangaName,
                                                                                 compteur, data[index[compteur]]->listChapitreOfTome != NULL,
@@ -276,7 +276,7 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length)
             if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3) && *status[i] == MDL_CODE_DEFAULT)
                 output[posDansOut++] = i;
         }
-        output[posDansOut] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+        output[posDansOut] = VALEUR_FIN_STRUCT;
     }
     return output;
 }

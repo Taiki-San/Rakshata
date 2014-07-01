@@ -243,7 +243,7 @@
 	{
 		changeTo(dataToSend.mangaName, ' ', '_');
 		
-		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
+		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCT];
 	}
 }
 
@@ -269,7 +269,7 @@
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, false);
 	
-	[item setDataProject:project isTome:isTome element:VALEUR_FIN_STRUCTURE_CHAPITRE];
+	[item setDataProject:project isTome:isTome element:VALEUR_FIN_STRUCT];
 }
 
 @end

@@ -16,7 +16,7 @@ bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
 {
     bool generateOwnCache = false;
     char *favsBak = NULL, *internalCache = NULL;
-	char mangaLong[LONGUEUR_NOM_MANGA_MAX], URLRepo[LONGUEUR_URL];
+	char mangaLong[LENGTH_PROJECT_NAME], URLRepo[LONGUEUR_URL];
 
     if(favs == NULL)
     {
@@ -51,7 +51,7 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 	
 	bool removing = mangaDB->favoris != 0, elementAlreadyAdded = false, ret_value = false;
 	char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsNew;
-	char line[LONGUEUR_NOM_MANGA_MAX + LONGUEUR_URL + 16], mangaLong[LONGUEUR_NOM_MANGA_MAX], *mangaLongRef = mangaDB->mangaName, URLRepo[LONGUEUR_URL], *URLRepoRef = mangaDB->team->URLRepo;
+	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], mangaLong[LENGTH_PROJECT_NAME], *mangaLongRef = mangaDB->mangaName, URLRepo[LONGUEUR_URL], *URLRepoRef = mangaDB->team->URLRepo;
 	uint nbSpaces, pos = 0, posLine;
 	size_t length = (favs != NULL ? strlen(favs) : 0) + strlen(mangaDB->mangaName) + strlen(mangaDB->team->URLRepo) + 64, posOutput = 0;
 
@@ -82,7 +82,7 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 			continue;
 		
 		//We read the data
-		sscanfs(line, "%s %s", URLRepo, LONGUEUR_URL, mangaLong, LONGUEUR_NOM_MANGA_MAX);
+		sscanfs(line, "%s %s", URLRepo, LONGUEUR_URL, mangaLong, LENGTH_PROJECT_NAME);
 		
 		//There is a collision
 		if(!strcmp(URLRepo, URLRepoRef) && !strcmp(mangaLong, mangaLongRef))
@@ -139,11 +139,10 @@ end:
 	return ret_value;
 }
 
-extern bool addRepoByFileInProgress;
 void updateFavorites()
 {
     char *favs = NULL;
-    if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL || addRepoByFileInProgress)
+    if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL)
 	{
 		free(favs);
 		return;
@@ -184,7 +183,7 @@ void updateFavorites()
 void getNewFavs()
 {
 	bool prevIsTome;
-	int lastInstalled, prevElem = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
 	uint posProject, nbProject, prevProjectIndex;
 	size_t posFull, maxPos;
     MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject), *current;
@@ -212,7 +211,7 @@ void getNewFavs()
 				{
 					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], false, current->chapitresFull[posFull]))
 					{
-						if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+						if(prevElem != VALEUR_FIN_STRUCT)
 						{
 							addElementToMDL(mangaDB[prevProjectIndex], prevIsTome, prevElem, true);
 						}
@@ -235,7 +234,7 @@ void getNewFavs()
 				{
 					if (!checkIfElementAlreadyInMDL(mangaDB[posProject], true, current->tomesFull[posFull].ID))
 					{
-						if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+						if(prevElem != VALEUR_FIN_STRUCT)
 						{
 							addElementToMDL(mangaDB[prevProjectIndex], prevIsTome, prevElem, true);
 						}
@@ -249,7 +248,7 @@ void getNewFavs()
         }
     }
 	
-	if(prevElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if(prevElem != VALEUR_FIN_STRUCT)
 		addElementToMDL(mangaDB[prevProjectIndex], prevIsTome, prevElem, false);
 
 	freeMangaData(mangaDB);

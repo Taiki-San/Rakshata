@@ -456,7 +456,7 @@
 	if(tmp == NULL)
 		return NO;
 
-	[RakTabView broadcastUpdateContext: content : *tmp : NO : VALEUR_FIN_STRUCTURE_CHAPITRE];
+	[RakTabView broadcastUpdateContext: content : *tmp : NO : VALEUR_FIN_STRUCT];
 	
 	return YES;
 }
@@ -713,7 +713,7 @@
 	getUpdatedChapterList(project, true);
 	getUpdatedTomeList(project, true);
 	
-	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCTURE_CHAPITRE];
+	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

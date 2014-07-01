@@ -348,21 +348,21 @@ void checkHostNonModifie()
 int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurAChecker)
 {
     int i = 0;
-    char temp[LONGUEUR_NOM_MANGA_MAX];
+    char temp[LENGTH_PROJECT_NAME];
     char buffer2[LONGUEUR_COURT];
     FILE *mangas = NULL;
     mangas = fopen(MANGA_DATABASE, "r");
 
     if(mangas != NULL)
     {
-        fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT); //On regarde le nom de la première team, si il ne correspond pas, on lance la boucle
+        fscanfs(mangas, "%s %s", temp, LENGTH_PROJECT_NAME, buffer2, LONGUEUR_COURT); //On regarde le nom de la première team, si il ne correspond pas, on lance la boucle
         while(strcmp(temp, teamLong) != 0)
         {
             while((i = fgetc(mangas)) != '#' && i != EOF);
             if(i == EOF)
                 break;
-            crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
-            fscanfs(mangas, "%s %s", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT);
+            crashTemp(temp, LENGTH_PROJECT_NAME);
+            fscanfs(mangas, "%s %s", temp, LENGTH_PROJECT_NAME, buffer2, LONGUEUR_COURT);
         }
         if(i != EOF) //Nouvelle team pas concernée
         {
@@ -370,9 +370,9 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
             while(strcmp(temp, nomProjet) != 0 && fgetc(mangas) != EOF)
             {
                 fseek(mangas, -1, SEEK_CUR);
-                crashTemp(temp, LONGUEUR_NOM_MANGA_MAX);
+                crashTemp(temp, LENGTH_PROJECT_NAME);
                 crashTemp(buffer2, LONGUEUR_COURT);
-                fscanfs(mangas, "%s %s %d %d %d %d", temp, LONGUEUR_NOM_MANGA_MAX, buffer2, LONGUEUR_COURT, &i, &j, &k, &l);
+                fscanfs(mangas, "%s %s %d %d %d %d", temp, LENGTH_PROJECT_NAME, buffer2, LONGUEUR_COURT, &i, &j, &k, &l);
             }
             fclose(mangas);
             if(valeurAChecker > l)
@@ -386,10 +386,10 @@ int checkInfopngUpdate(char teamLong[100], char nomProjet[100], int valeurACheck
 int checkNewManga(MANGAS_DATA mangasDB)
 {
 	/*Vérifie si le manga est nouveau ou pas (dossiers à créer)*/
-    char buffer[5*LONGUEUR_NOM_MANGA_MAX+100];
+    char buffer[5*LENGTH_PROJECT_NAME+100];
 
     changeTo(mangasDB.mangaName, ' ', '_');
-	snprintf(buffer, 5*LONGUEUR_NOM_MANGA_MAX+100, "manga/%s/%s/Chapitre_%d/%s", mangasDB.team->teamLong, mangasDB.mangaName, mangasDB.lastChapter, CONFIGFILE);
+	snprintf(buffer, 5*LENGTH_PROJECT_NAME+100, "manga/%s/%s/Chapitre_%d/%s", mangasDB.team->teamLong, mangasDB.mangaName, mangasDB.lastChapter, CONFIGFILE);
     changeTo(mangasDB.mangaName, '_', ' ');
 	if(!checkFileExist(buffer))
         return 1;
@@ -399,11 +399,11 @@ int checkNewManga(MANGAS_DATA mangasDB)
 int checkChapitreUnread(MANGAS_DATA mangasDB)
 {
     int i = 0;
-    char temp[5*LONGUEUR_NOM_MANGA_MAX+100];
+    char temp[5*LENGTH_PROJECT_NAME+100];
 	FILE* configDat = NULL;
 
     changeTo(mangasDB.mangaName, ' ', '_');
-    snprintf(temp, 5*LONGUEUR_NOM_MANGA_MAX+100, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
+    snprintf(temp, 5*LENGTH_PROJECT_NAME+100, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
     changeTo(mangasDB.mangaName, '_', ' ');
 
     configDat = fopen(temp, "r");

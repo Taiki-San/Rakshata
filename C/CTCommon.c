@@ -29,7 +29,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 {
 	bool ret_value = false, needFree = false;
 	
-    if(mangaDB.firstChapter != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(mangaDB.firstChapter != VALEUR_FIN_STRUCT)
     {
 		if(mangaDB.chapitresInstalled == NULL)
 		{
@@ -43,7 +43,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 			free(mangaDB.chapitresInstalled);
     }
 	
-    if(mangaDB.firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(mangaDB.firstTome != VALEUR_FIN_STRUCT)
     {
 		if(mangaDB.tomesInstalled == NULL)
 		{

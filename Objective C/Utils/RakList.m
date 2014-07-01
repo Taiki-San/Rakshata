@@ -436,6 +436,7 @@
 		
 		self.verticalScroller.alphaValue =	0;
 		self.horizontalScroller.alphaValue = 0;
+		self.hasHorizontalScroller = NO;
 		
 		[RakScroller updateScrollers:self];
 	}

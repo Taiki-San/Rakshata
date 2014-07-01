@@ -115,11 +115,11 @@
 #define SETTINGS_PASSWORD_FLAG 'P' //Pass de déverrouillage
 
 /*Chapitre*/
-#define VALEUR_FIN_STRUCTURE_CHAPITRE -1
+#define VALEUR_FIN_STRUCT INT_MIN
 
 /*Tome*/
 #define MAX_TOME_NAME_LENGTH 31
-#define TOME_DESCRIPTION_LENGTH 201
+#define TOME_DESCRIPTION_LENGTH 256
 
 /*Check environnement*/
 #define NOMBRE_DE_FICHIER_A_CHECKER 16
@@ -145,7 +145,14 @@
 #define SSL_ON 1
 
 /*Database*/
-#define LONGUEUR_NOM_MANGA_MAX 50
+#define LENGTH_DESCRIPTION 1024
+#define LENGTH_PROJECT_NAME 51
+#define LENGTH_AUTHORS		51
+#define LENGTH_URL			256
+#define	LENGTH_HASH			9
+#define STATUS_MAX			3
+#define TYPE_MAX			3
+
 #define LONGUEUR_COURT 10
 #define LONGUEUR_SITE 100
 #define LONGUEUR_TYPE_TEAM 5

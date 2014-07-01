@@ -84,12 +84,12 @@ void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome
 	    if(!isTome)
         {
 			firstElem = mangaDB.nombreChapitre - firstElem;
-            for(; mangaDB.chapitresFull[firstElem] != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitresFull[firstElem++]));
+            for(; mangaDB.chapitresFull[firstElem] != VALEUR_FIN_STRUCT; fprintf(updateControler, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitresFull[firstElem++]));
         }
         else
         {
 			firstElem = mangaDB.nombreTomes - firstElem;
-            for(; mangaDB.tomesFull[firstElem].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; fprintf(updateControler, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomesFull[firstElem++].ID));
+            for(; mangaDB.tomesFull[firstElem].ID != VALEUR_FIN_STRUCT; fprintf(updateControler, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomesFull[firstElem++].ID));
         }
 		fclose(updateControler);
 	}

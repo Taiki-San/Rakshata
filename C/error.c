@@ -117,54 +117,6 @@ int libcurlErrorCode(CURLcode code)
     return ret_value;
 }
 
-int erreurReseau()
-{
-    char trad[SIZE_TRAD_ID_24][TRAD_LENGTH];
-
-    /*Chargement de la traduction*/
-    loadTrad(trad, 24);
-
-    unescapeLineReturn(trad[1]);
-    if(UI_Alert(trad[0], trad[1]) == -1)
-        return PALIER_QUIT;
-    return PALIER_MENU;
-}
-
-int emptyLibrary()
-{
-    int ret_value = 0, output;
-    char trad[SIZE_TRAD_ID_23][TRAD_LENGTH];
-	loadTrad(trad, 23);
-	unescapeLineReturn(trad[1]);
-
-    
-#ifdef IDENTIFY_MISSING_UI
-	#warning "Missing in emptyLibrary"
-#endif
-	
-    /*On va appeler les fonctions correspondantes, ça serait plus propre de redescendre
-    jusqu'à mainRakshata() mais je ne vois pas de moyen de le faire sans rendre le code infame*/
-
-    if(ret_value == 1) {        //Ajouter un dépôt
-        output = ajoutRepo(false);
-    }
-    else if(ret_value == 2){    //Télécharger manga
-        output = 0;//mainChoixDL();
-    }
-    else
-        output = 0;
-    return output != PALIER_QUIT ? PALIER_MENU : PALIER_QUIT;
-}
-
-void affichageRepoIconnue()
-{
-    /*Initialisateurs graphique*/
-    char trad[SIZE_TRAD_ID_7][TRAD_LENGTH];
-    loadTrad(trad, 7);
-    unescapeLineReturn(trad[1]);
-    UI_Alert(trad[0], trad[1]);
-}
-
 int UI_Alert(char* titre, char* contenu)
 {
 	char charOK[10] = "Ok", charCancel[10] = "Cancel";

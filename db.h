@@ -13,8 +13,8 @@
 #include "sqlite3.h"
 
 #define INITIAL_BUFFER_SIZE			1024
-#define MAX_PROJECT_LINE_LENGTH		(LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + 7 * 11 + 30)		//7 nombres * 10 digits + 30 pour de la marge, les espace, toussa
-#define MAX_TEAM_LINE_LENGTH		(LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT + LONGUEUR_TYPE_TEAM + LONGUEUR_URL + LONGUEUR_SITE + 25)
+#define MAX_PROJECT_LINE_LENGTH		(LENGTH_PROJECT_NAME + LONGUEUR_COURT + 7 * 11 + 30)		//7 nombres * 10 digits + 30 pour de la marge, les espace, toussa
+#define MAX_TEAM_LINE_LENGTH		(LENGTH_PROJECT_NAME + LONGUEUR_COURT + LONGUEUR_TYPE_TEAM + LONGUEUR_URL + LONGUEUR_SITE + 25)
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
 //Options

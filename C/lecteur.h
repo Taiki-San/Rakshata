@@ -64,7 +64,7 @@ bool reader_isLastElem(MANGAS_DATA mangaDB, bool isTome, int currentSelection);
 #define TOLERANCE_CLIC_PAGE 10
 
 /*Limites buffers*/
-#define LONGUEUR_NOM_PAGE LONGUEUR_NOM_MANGA_MAX*2+300
+#define LONGUEUR_NOM_PAGE LENGTH_PROJECT_NAME*2+300
 
 /*Tailles*/
 #define BORDURE_LAT_LECTURE 20

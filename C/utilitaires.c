@@ -23,9 +23,9 @@ void changeTo(char *string, char toFind, char toPut)
 
 int sortNumbers(const void *a, const void *b)
 {
-    if(*(int*)a == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(*(int*)a == VALEUR_FIN_STRUCT)
         return 1;
-    else if(*(int*)b == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    else if(*(int*)b == VALEUR_FIN_STRUCT)
         return -1;
     return ( *(int*)a - *(int*)b );
 }
@@ -47,9 +47,9 @@ int sortTomes(const void *a, const void *b)
     const META_TOME *struc1 = a;
     const META_TOME *struc2 = b;
 
-    if(struc1->ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    if(struc1->ID == VALEUR_FIN_STRUCT)
         return 1;
-    else if(struc2->ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+    else if(struc2->ID == VALEUR_FIN_STRUCT)
         return -1;
 
     return struc1->ID - struc2->ID;
@@ -166,73 +166,6 @@ IMG_DATA* readFile(char * path)
 		}
 	}
 	return output;
-}
-
-void hexToDec(const char *input, unsigned char *output)
-{
-    int i = 0, j = 0;
-	char c = 0, temp = 0;
-    for(; *input; i++)
-    {
-        for(j = 0; j < 2; j++)
-        {
-            c = *input++;
-            if(c >= '0' && c <= '9')
-                temp = c - '0';
-
-            else if(c >= 'a' && c <= 'f')
-                temp = 10 + (c - 'a');
-
-            else if(c >= 'A' && c <= 'F')
-                temp = 10 + (c - 'A');
-
-            else
-                return;
-
-            output[i] = output[i]*16 + temp;
-        }
-    }
-}
-
-void hexToCGFloat(const char *input, uint32_t length, double *output)
-{
-    int i = 0, j = 0;
-	char c = 0, tmp[2];
-	
-    for(*output = 0; *input && i < length; i++)
-    {
-		tmp[0] = tmp[1] = 0;
-		
-        for(j = 0; j < 2; j++)
-        {
-            c = *input++;
-            if(c >= '0' && c <= '9')
-                tmp[j] = c - '0';
-			
-            else if(c >= 'a' && c <= 'f')
-                tmp[j] = 10 + (c - 'a');
-			
-            else if(c >= 'A' && c <= 'F')
-                tmp[j] = 10 + (c - 'A');
-			
-            else
-                break;
-        }
-		*output = *output * 0x100 + tmp[0] * 0x10 + tmp[1];
-    }
-}
-
-void decToHex(const unsigned char *input, size_t length, char *output)
-{
-	char hex[]= "0123456789ABCDEF";
-    
-	for (size_t i = 0; i < length; i++)
-	{
-		output[i * 2 + 0] = hex[input[i] >> 4  ];
-		output[i * 2 + 1] = hex[input[i] & 0x0F];
-	}
-
-	output[length * 2] = '\0';
 }
 
 void MajToMin(char* input)

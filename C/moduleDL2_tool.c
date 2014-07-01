@@ -23,7 +23,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         output = internalCraftBaseURL(*data.datas->team, &length);
         if(output != NULL)
         {
-            if(data.partOfTome == VALEUR_FIN_STRUCTURE_CHAPITRE || data.subFolder == false)
+            if(data.partOfTome == VALEUR_FIN_STRUCT || data.subFolder == false)
             {
                 if(data.chapitre%10)
                     snprintf(output, length, "%s/%s/%s_Chapitre_%d.%d.zip", output, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre/10, data.chapitre%10);
@@ -44,10 +44,10 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     {
         char passwordInternal[2*SHA256_DIGEST_LENGTH+1];
         passToLoginData(password, passwordInternal);
-        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
+        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
         if(output != NULL) {
-            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&projectShort=%s&chapter=%d&isTome=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URLRepo, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCTURE_CHAPITRE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
+            snprintf(output, length, "https://%s/main_controler.php?ver=%d&target=%s&project=%s&projectShort=%s&chapter=%d&isTome=%d&mail=%s&pass=%s", SERVEUR_URL, CURRENTVERSION, data.datas->team->URLRepo, data.datas->mangaName, data.datas->mangaNameShort, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
         }
     }
 
@@ -65,7 +65,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
     char *output = NULL;
     if (!strcmp(teamData.type, TYPE_DEPOT_1))
     {
-        *length = 60 + 15 + strlen(teamData.URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 60 + 15 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
             snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URLRepo);
@@ -73,7 +73,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
 
     else if (!strcmp(teamData.type, TYPE_DEPOT_2))
     {
-        *length = 200 + strlen(teamData.URLRepo) + LONGUEUR_NOM_MANGA_MAX + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 200 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
             snprintf(output, *length, "http://%s", teamData.URLRepo);
@@ -245,9 +245,9 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 	if(IDChap == -1)
 		return ERROR_CHECK;
 	
-	char pathConfig[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
+	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256];
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-	char pathInstall[LONGUEUR_NOM_MANGA_MAX * 2 + 256];
+	char pathInstall[LENGTH_PROJECT_NAME * 2 + 256];
 #endif
 	
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
@@ -257,7 +257,7 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 			return ERROR_CHECK;
 		
 		int IDTome = projectData.tomesFull[*posIndexTome].ID;
-		if (IDTome == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if (IDTome == VALEUR_FIN_STRUCT)
 			return ERROR_CHECK;
 		
 		if(IDChap % 10)
@@ -284,7 +284,7 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 	
 	//Ici, on est dans le cas un peu délicat d'un chapitre normal, il faut vérifier dans le repertoire classique + checker si il appartient pas à un tome
 	
-	char basePath[LONGUEUR_NOM_MANGA_MAX * 2 + 256], nameChapter[256];
+	char basePath[LENGTH_PROJECT_NAME * 2 + 256], nameChapter[256];
 	
 	//Craft les portions constantes du nom
 	snprintf(basePath, sizeof(basePath), "manga/%s/%s", projectData.team->teamLong, projectData.mangaName);
@@ -324,7 +324,7 @@ char MDL_isAlreadyInstalled(MANGAS_DATA projectData, bool isSubpartOfTome, int I
 		if(buf == NULL)
 			return NOT_INSTALLED;
 		
-		for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCTURE_CHAPITRE; pos2++)
+		for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCT; pos2++)
 		{
 			if(buf[pos2].ID == IDChap && buf[pos2].isNative)
 			{
@@ -354,7 +354,7 @@ void MDL_createSharedFile(MANGAS_DATA data, int chapitreID, uint tomeID)
 	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
-	char pathToSharedFile[2*LONGUEUR_NOM_MANGA_MAX + 256];
+	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256];
 	if(chapitreID % 10)
 		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%s/Chapitre_%d.%d/shared", data.team->teamLong, data.mangaName, chapitreID / 10, chapitreID % 10);
 	else
@@ -544,8 +544,8 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		
 		if(i != -1)
 		{
-			if(tomeDatas->datas->tomesFull[i].name[0] != 0)
-				tomeDatas->tomeName = tomeDatas->datas->tomesFull[i].name;
+			if(tomeDatas->datas->tomesFull[i].readingName[0] != 0)
+				tomeDatas->tomeName = tomeDatas->datas->tomesFull[i].readingName;
 		}
 	}
 	
@@ -682,7 +682,7 @@ bool MDLisThereCollision(MANGAS_DATA projectToTest, bool isTome, int element, DA
 {
 	if(list == NULL || status == NULL || !nbElem)
 		return false;
-	else if(element == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	else if(element == VALEUR_FIN_STRUCT)
 		return true;
 	
 	for(uint i = 0; i < nbElem; i++)

@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "encoding.h"
 
 #include "main.h"
 #include "moduleDL.h"

@@ -124,7 +124,7 @@
 		if (tmp != nil)
 			element = [tmp intValue];
 		else
-			element = VALEUR_FIN_STRUCTURE_CHAPITRE;
+			element = VALEUR_FIN_STRUCT;
 		
 		[self updateContextNotification:project :isTome :element];
 	}

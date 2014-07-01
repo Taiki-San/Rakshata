@@ -48,7 +48,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	else if(version == 1)	//Legacy mode
 	{
 		char uselessID[10];
-		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE);
+		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE);
 		
 		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
 			return false;
@@ -59,7 +59,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	
 	else if(version == 2)
 	{
-		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LONGUEUR_NOM_MANGA_MAX, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
+		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
 		
 		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
 			return false;
@@ -106,8 +106,8 @@ bool downloadedProjectListSeemsLegit(char *data, TEAMS_DATA* team)
 	if(data[pos] == '<' || data[pos + 1] == '<' || data[pos + 2] == '<' || data[pos + 3] == '<')
 		return false;
 	
-	char teamName[LONGUEUR_NOM_MANGA_MAX] = {0}, teamNameCourt[LONGUEUR_COURT] = {0};
-	sscanfs(data, "%s %s", teamName, LONGUEUR_NOM_MANGA_MAX, teamNameCourt, LONGUEUR_COURT);
+	char teamName[LENGTH_PROJECT_NAME] = {0}, teamNameCourt[LONGUEUR_COURT] = {0};
+	sscanfs(data, "%s %s", teamName, LENGTH_PROJECT_NAME, teamNameCourt, LONGUEUR_COURT);
 	
 	if(teamName[0] == 0 || teamNameCourt[0] == 0)	//Header malformé
 		return false;
@@ -191,14 +191,14 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	int categorie = 11;
 	if(version == 1)	//Legacy
 	{
-		sscanfs(input, "%s %s %d %d %d %d", output->mangaName, LONGUEUR_NOM_MANGA_MAX, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &categorie, &output->pageInfos);
-		output->firstTome = VALEUR_FIN_STRUCTURE_CHAPITRE;
+		sscanfs(input, "%s %s %d %d %d %d", output->mangaName, LENGTH_PROJECT_NAME, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &categorie, &output->pageInfos);
+		output->firstTome = VALEUR_FIN_STRUCT;
 		output->nombreChapitreSpeciaux = 0;
 	}
 	else if(version == 2)
 	{
 		int depreciated;
-		sscanfs(input, "%s %s %d %d %d %d %d %d %d", output->mangaName, LONGUEUR_NOM_MANGA_MAX, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &output->firstTome, &depreciated, &categorie, &output->pageInfos, &output->nombreChapitreSpeciaux);
+		sscanfs(input, "%s %s %d %d %d %d %d %d %d", output->mangaName, LENGTH_PROJECT_NAME, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &output->firstTome, &depreciated, &categorie, &output->pageInfos, &output->nombreChapitreSpeciaux);
 	}
 	
 	//On met des defaults
@@ -217,15 +217,15 @@ bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
 	output->genre = categorie > 10 ? categorie / 10 : 1;
 	output->status = categorie % 10;
 
-	return checkPathEscape(output->mangaName, LONGUEUR_NOM_MANGA_MAX);
+	return checkPathEscape(output->mangaName, LENGTH_PROJECT_NAME);
 }
 
 void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock)
 {
 	bool isTome;
 	uint index, pos;
-	char projectName[LONGUEUR_NOM_MANGA_MAX];
-	pos = sscanfs(input, "%s", projectName, LONGUEUR_NOM_MANGA_MAX);
+	char projectName[LENGTH_PROJECT_NAME];
+	pos = sscanfs(input, "%s", projectName, LENGTH_PROJECT_NAME);
 	
 	for(index = 0; data[index].team != NULL && strcmp(projectName, data[index].mangaName); index++);
 	
@@ -247,7 +247,7 @@ void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint len
 	
 	//On va créer le fichier et écrire le contenu du bloc
 
-	char path[LONGUEUR_NOM_MANGA_MAX * 2 + 100];
+	char path[LENGTH_PROJECT_NAME * 2 + 100];
 	snprintf(path, sizeof(path), "manga/%s/%s", teamName, projectName);
 	
 	if(!checkDirExist(path))	//La fonction marche aussi pour voir si un dossier existe
@@ -309,7 +309,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 		{
 			removeFromCache(oldData[posOld]);
 #ifdef DELETE_UNLISTED_PROJECT
-			char path[LONGUEUR_NOM_MANGA_MAX * 2 + 10];
+			char path[LENGTH_PROJECT_NAME * 2 + 10];
 			snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
 			removeFolder(path);
 #endif
@@ -339,13 +339,13 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 					{
 						memcpy(newData[posNew].chapitresFull, oldData[posOld].chapitresFull, oldData[posOld].nombreChapitre * sizeof(int));
 						newData[posNew].nombreChapitre = oldData[posOld].nombreChapitre;
-						newData[posNew].chapitresFull[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCTURE_CHAPITRE;
+						newData[posNew].chapitresFull[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCT;
 					}
 					
 					newChapters = false;
 				}
 				
-				if(newData[posNew].firstTome != VALEUR_FIN_STRUCTURE_CHAPITRE)
+				if(newData[posNew].firstTome != VALEUR_FIN_STRUCT)
 					refreshTomeList(&newData[posNew]);
 				else
 					newData[posNew].tomesFull = NULL;
@@ -387,7 +387,7 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 	{
 		removeFromCache(oldData[posOld]);
 #ifdef DELETE_UNLISTED_PROJECT
-		char path[LONGUEUR_NOM_MANGA_MAX * 2 + 10];
+		char path[LENGTH_PROJECT_NAME * 2 + 10];
 		snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
 		removeFolder(path);
 #endif

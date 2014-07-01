@@ -185,18 +185,18 @@ void get_file_date(const char *filename, char *date)
 void KSTriggered(TEAMS_DATA team)
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char temp[LONGUEUR_NOM_MANGA_MAX+10];
-    snprintf(temp, LONGUEUR_NOM_MANGA_MAX+10, "manga/%s", team.teamLong);
+    char temp[LENGTH_PROJECT_NAME+10];
+    snprintf(temp, LENGTH_PROJECT_NAME+10, "manga/%s", team.teamLong);
     removeFolder(temp);
 }
 
-void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis)
+void screenshotSpoted(char team[LENGTH_PROJECT_NAME], char manga[LENGTH_PROJECT_NAME], int chapitreChoisis)
 {
-    char temp[LONGUEUR_NOM_MANGA_MAX*2+50];
+    char temp[LENGTH_PROJECT_NAME*2+50];
     if(chapitreChoisis%10)
-        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
+        snprintf(temp, LENGTH_PROJECT_NAME*2+50, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
     else
-        snprintf(temp, LONGUEUR_NOM_MANGA_MAX*2+50, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
+        snprintf(temp, LENGTH_PROJECT_NAME*2+50, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
     removeFolder(temp);
     logR("Shhhhttt, don't imagine I didn't thought about that...\n");
 }

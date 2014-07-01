@@ -380,7 +380,7 @@
 
 - (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
 {
-	if(element != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if(element != VALEUR_FIN_STRUCT)
 	{
 		[self mouseDown:NULL];
 		[self startReading : project : element : isTome : -1];
@@ -438,7 +438,7 @@
 {
 	BOOL ret_value = NO;
 	
-	if(element != VALEUR_FIN_STRUCTURE_CHAPITRE &&
+	if(element != VALEUR_FIN_STRUCT &&
 		(sender != GUI_THREAD_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
 	{
 		[self updateContextNotification:data :isTome :element];

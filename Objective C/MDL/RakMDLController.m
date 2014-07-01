@@ -109,7 +109,7 @@
 
 - (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
-	if (element == VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if (element == VALEUR_FIN_STRUCT)
 		return;
 	
 	uint pos;
@@ -197,12 +197,12 @@
 - (uint) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
 {
 	//We assume our data are up-to-date
-	int previousElem = VALEUR_FIN_STRUCTURE_CHAPITRE;
+	int previousElem = VALEUR_FIN_STRUCT;
 	uint posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
 	
 	if (isTome)
 	{
-		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.tomesFull[0].ID == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.tomesFull[0].ID == VALEUR_FIN_STRUCT)
 			return countInjected;
 		
 		nbFull = data.nombreTomes;
@@ -210,7 +210,7 @@
 	}
 	else
 	{
-		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCT)
 			return countInjected;
 
 		nbFull = data.nombreChapitre;
@@ -218,13 +218,13 @@
 	}
 	
 	//On choppe les trous
-	for (; posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE && posInst < nbInst && MDLCTRL_getDataInstalled(data, posInst, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE; posFull++)
+	for (; posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCT && posInst < nbInst && MDLCTRL_getDataInstalled(data, posInst, isTome) != VALEUR_FIN_STRUCT; posFull++)
 	{
 		if (MDLCTRL_getDataFull(data, posFull, isTome) == MDLCTRL_getDataInstalled(data, posInst, isTome))
 			posInst++;
 		else
 		{
-			if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+			if(previousElem != VALEUR_FIN_STRUCT)
 			{
 				[self addElement:data :isTome :previousElem :YES];
 				countInjected++;
@@ -235,9 +235,9 @@
 	}
 	
 	//Le burst de fin
-	while (posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	while (posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCT)
 	{
-		if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+		if(previousElem != VALEUR_FIN_STRUCT)
 		{
 			[self addElement:data :isTome :previousElem :YES];
 			countInjected++;
@@ -246,7 +246,7 @@
 		previousElem = MDLCTRL_getDataFull(data, posFull++, isTome);
 	}
 	
-	if(previousElem != VALEUR_FIN_STRUCTURE_CHAPITRE)
+	if(previousElem != VALEUR_FIN_STRUCT)
 	{
 		[self addElement:data :isTome :previousElem :!launchAtTheEnd];
 		countInjected++;

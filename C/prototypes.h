@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <wchar.h>
 #include <time.h>
 #include <curl/curl.h>
 #include <sys/stat.h>

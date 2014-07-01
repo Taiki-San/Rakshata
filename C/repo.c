@@ -121,12 +121,12 @@ TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length)
 		
 		if(remoteData[length] >= '0' && remoteData[length] <= '9') //Ca fini par un chiffe, c'est la v2
 		{
-			sscanfs(remoteData, "%s %s %s %s %s %d", outputData.teamLong, LONGUEUR_NOM_MANGA_MAX, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE, &outputData.openSite);
+			sscanfs(remoteData, "%s %s %s %s %s %d", outputData.teamLong, LENGTH_PROJECT_NAME, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE, &outputData.openSite);
 		}
 		else
 		{
 			char ID[LONGUEUR_ID_TEAM];
-			sscanfs(remoteData, "%s %s %s %s %s %s", ID, sizeof(ID), outputData.teamLong, LONGUEUR_NOM_MANGA_MAX, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE);
+			sscanfs(remoteData, "%s %s %s %s %s %s", ID, sizeof(ID), outputData.teamLong, LENGTH_PROJECT_NAME, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE);
 			outputData.openSite = 1;
 		}
 	}
@@ -180,7 +180,7 @@ int defineTypeRepo(char *URL)
     return 2; //O
 }
 
-int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX])
+int confirmationRepo(char team[LENGTH_PROJECT_NAME])
 {
     int confirme = 0;
 	char trad[SIZE_TRAD_ID_4][TRAD_LENGTH];

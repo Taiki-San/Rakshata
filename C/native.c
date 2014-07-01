@@ -258,6 +258,13 @@ size_t ustrlen(const void *input)
     return (copy-1) - (unsigned char *)input;	//copy -1 pour la dernière itération
 }
 
+size_t wstrlen(const wchar_t * input)
+{
+	size_t output = 0;
+	while (input[output++]);
+	return output - 1;
+}
+
 void usstrcpy(void* output, size_t length, const void* input)
 {
     char *output_char = output;

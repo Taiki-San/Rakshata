@@ -52,9 +52,6 @@ int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 void logR(char *error);
 void connexionNeededToAllowANewComputer();
 int libcurlErrorCode(CURLcode code);
-int erreurReseau();
-int emptyLibrary();
-void affichageRepoIconnue();
 int UI_Alert(char* titre, char* contenu);
 int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 void memoryError(size_t size);
@@ -95,6 +92,7 @@ int charToInt(char *input);
 int fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(const void *input);
+size_t wstrlen(const wchar_t * input);
 void usstrcpy(void* output, size_t length, const void* input);
 void ustrcpy(void* output, const void* input);
 
@@ -110,7 +108,7 @@ bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput);
 TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length);
 bool addRepo(char * URL, char *type);
 int defineTypeRepo(char *URL);
-int confirmationRepo(char team[LONGUEUR_NOM_MANGA_MAX]);
+int confirmationRepo(char team[LENGTH_PROJECT_NAME]);
 
 /**Securite.c**/
 int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB); //Cachés dans crypto/rijndael.c
@@ -121,7 +119,7 @@ void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void KSTriggered(TEAMS_DATA team);
-void screenshotSpoted(char team[LONGUEUR_NOM_MANGA_MAX], char manga[LONGUEUR_NOM_MANGA_MAX], int chapitreChoisis);
+void screenshotSpoted(char team[LENGTH_PROJECT_NAME], char manga[LENGTH_PROJECT_NAME], int chapitreChoisis);
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
 void loadKS(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
@@ -188,9 +186,6 @@ IMG_DATA* readFile(char * path);
 #define isNbr(caract) isdigit(caract)
 #define swapValues(a, b) { uint c; c = b; b = a; a = c; }
 #define MIN(a, b) (a < b ? a : b)
-void hexToDec(const char *input, unsigned char *output);
-void hexToCGFloat(const char *input, uint32_t length, double *output);
-void decToHex(const unsigned char *input, size_t length, char *output);
 void MajToMin(char* input);
 void minToMaj(char* input);
 void unescapeLineReturn(char *input);

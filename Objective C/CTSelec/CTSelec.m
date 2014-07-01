@@ -275,7 +275,7 @@
 
 - (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
 {
-	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE && project.team != NULL)
+	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
 		NSView * superview = self.superview;
 		Reader *readerTab = nil;
@@ -366,7 +366,7 @@
 {
 	BOOL ret_value = NO;
 	
-	if(element == VALEUR_FIN_STRUCTURE_CHAPITRE || sender == GUI_THREAD_MDL)
+	if(element == VALEUR_FIN_STRUCT || sender == GUI_THREAD_MDL)
 	{
 		[coreView updateContext:data];
 		ret_value = YES;
