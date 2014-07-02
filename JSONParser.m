@@ -378,3 +378,66 @@ PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw)
 	
 	return outputData;
 }
+
+NSArray * recoverChapterBloc(int * chapter, uint length)
+{
+	if(chapter == NULL)		return nil;
+	
+	NSMutableArray * output = [[NSMutableArray new] autorelease], *currentDetail = nil, *currentBurst = nil;
+	
+	if(output == nil)		return nil;
+	
+	//We create a diff table
+	uint diff[length-1];
+	for(uint i = 0; i < length-1; i++)
+		diff[i] = chapter[i+1] - chapter[i];
+	
+	//We look for burst
+	int repeatingDiff = diff[0];
+	currentBurst = [NSMutableArray arrayWithObject:@(chapter[0])];
+	uint counter = 1;
+	
+	//1 because the n-1 list in started after the first element
+	for (uint i = 1; i < length; i++)
+	{
+		if(i == length-1 || diff[i] != repeatingDiff)
+		{
+			if(counter > 5)
+			{
+				if(currentDetail != nil && [currentDetail count])
+				{
+					[output addObject:currentDetail];
+					[currentDetail release];		currentDetail = nil;
+				}
+				
+				[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[i - counter]), @(chapter[i]), @(repeatingDiff)] forKeys:@[@"first", @"last", @"jump"]]];
+			}
+			else
+			{
+				if(i == length - 1)		[currentBurst addObject:@(chapter[i])];
+				
+				if(currentDetail == nil)		currentDetail = [NSMutableArray new];
+				
+				[currentDetail addObjectsFromArray:currentBurst];
+			}
+
+			[currentBurst release];		currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
+			repeatingDiff = diff[i];	counter = 1;
+		}
+		else
+		{
+			[currentBurst addObject:@(chapter[i])];
+			counter++;
+		}
+	}
+	
+	if(currentDetail != nil && [currentDetail count])
+	{
+		[output addObject:currentDetail];
+		[currentDetail release];
+	}
+	if(currentBurst != nil)
+		[currentBurst release];
+	
+	return [NSArray arrayWithArray:output];
+}
