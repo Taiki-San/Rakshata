@@ -25,7 +25,7 @@
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
-- (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
+- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
 - (void) willLeaveReader;
 - (void) willOpenReader;
 

@@ -22,7 +22,7 @@ enum
 
 @implementation RakPage
 
-- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (id) init : (Reader*)superView : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	alreadyRefreshed = false;
 	dontGiveACrapAboutCTPosUpdate = false;
@@ -76,7 +76,7 @@ enum
 - (NSString *) getContextToGTFO
 {
 	NSPoint sliders = [[self contentView] bounds].origin;
-	return [NSString stringWithFormat:@"%s\n%s\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URLRepo, project.mangaNameShort, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URLRepo, project.projectID, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -361,7 +361,7 @@ enum
 
 #pragma mark    -   Active routines
 
-- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	project = getCopyOfProjectData(dataRequest);
 	currentElem = elemRequest;
@@ -558,7 +558,7 @@ enum
 	}
 }
 
-- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
+- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
 {
 	if(dontGiveACrapAboutCTPosUpdate)
 		return;
@@ -835,7 +835,7 @@ enum
 	else
 		alreadyRefreshed = true;
 	
-	MANGAS_DATA localProject = getCopyOfProjectData(project);
+	PROJECT_DATA localProject = getCopyOfProjectData(project);
 	
 	uint nbElemToGrab = checkNewElementInRepo(&localProject, isTome, currentElem);
 	
@@ -853,7 +853,7 @@ enum
 
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments
 {
-	MANGAS_DATA localProject = *arguments.data;
+	PROJECT_DATA localProject = *arguments.data;
 	uint nbElemToGrab = arguments.nbElem, nbElemValidated = 0;
 	
 	if(project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
@@ -916,12 +916,12 @@ enum
 //Shitty class only used because performSelectorOnMainThread want a class, an not two perfectly fine arguments
 @implementation RakArgumentToRefreshAlert
 
-- (void) setData : (MANGAS_DATA *) newData
+- (void) setData : (PROJECT_DATA *) newData
 {
 	data = newData;
 }
 
-- (MANGAS_DATA *) data
+- (PROJECT_DATA *) data
 {
 	return data;
 }

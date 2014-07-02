@@ -74,7 +74,7 @@
 
 #pragma mark - Notification code
 
-+ (BOOL) broadcastUpdateContext : (id) sender : (MANGAS_DATA) project : (BOOL) isTome : (int) element
++ (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element
 {
 	//We'll recover the main view by hicking the view hierarchy
 	
@@ -104,7 +104,7 @@
 		NSDictionary *userInfo = [notification userInfo];
 		
 		id tmp;
-		MANGAS_DATA project;
+		PROJECT_DATA project;
 		BOOL isTome;
 		int element;
 		
@@ -130,7 +130,7 @@
 	}
 }
 
-- (void) updateContextNotification : (MANGAS_DATA) project : (BOOL) isTome : (int) element
+- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (int) element
 {
 	
 }
@@ -493,9 +493,9 @@
 	
 }
 
-- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
-	NSLog(@"Project %s received: istome: %d - element : %d", data.mangaName, isTome, element);
+	NSLog(@"Project %@ received: istome: %d - element : %d", [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32StringEncoding], isTome, element);
 	return YES;
 }
 

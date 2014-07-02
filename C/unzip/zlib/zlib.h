@@ -558,7 +558,7 @@ ZEXTERN int ZEXPORT deflateInit2 OF((z_streamp strm,
    compressed data instead of a zlib wrapper.  The gzip header will have no
    file name, no extra data, no comment, no modification time (set to zero), no
    header crc, and the operating system will be set to 255 (unknown).  If a
-   gzip stream is being written, strm->adler is a crc32 instead of an adler32.
+   gzip stream is being written, strm->adler is a _crc32 instead of an adler32.
 
      The memLevel parameter specifies how much memory should be allocated
    for the internal compression state.  memLevel=1 uses minimum memory but is
@@ -798,7 +798,7 @@ ZEXTERN int ZEXPORT inflateInit2 OF((z_streamp strm,
    is for use with other formats that use the deflate compressed data format
    such as zip.  Those formats provide their own check values.  If a custom
    format is developed using the raw deflate format for compressed data, it is
-   recommended that a check value such as an adler32 or a crc32 be applied to
+   recommended that a check value such as an adler32 or a _crc32 be applied to
    the uncompressed data as is done in the zlib, gzip, and zip formats.  For
    most applications, the zlib format should be used as is.  Note that comments
    above on the use in deflateInit2() applies to the magnitude of windowBits.
@@ -807,7 +807,7 @@ ZEXTERN int ZEXPORT inflateInit2 OF((z_streamp strm,
    32 to windowBits to enable zlib and gzip decoding with automatic header
    detection, or add 16 to decode only the gzip format (the zlib format will
    return a Z_DATA_ERROR).  If a gzip stream is being decoded, strm->adler is a
-   crc32 instead of an adler32.
+   _crc32 instead of an adler32.
 
      inflateInit2 returns Z_OK if success, Z_MEM_ERROR if there was not enough
    memory, Z_VERSION_ERROR if the zlib library version is incompatible with the
@@ -1577,7 +1577,7 @@ uLong adler32 (uLong adler, const Bytef *buf, uInt len);
    return the updated checksum.  If buf is Z_NULL, this function returns the
    required initial value for the checksum.
 
-     An Adler-32 checksum is almost as reliable as a CRC32 but can be computed
+     An Adler-32 checksum is almost as reliable as a _crc32 but can be computed
    much faster.
 
    Usage example:
@@ -1611,10 +1611,10 @@ unsigned long crc32(unsigned long crc, const unsigned char *buf, unsigned int le
 
    Usage example:
 
-     uLong crc = crc32(0L, Z_NULL, 0);
+     uLong crc = _crc32(0L, Z_NULL, 0);
 
      while (read_buffer(buffer, length) != EOF) {
-       crc = crc32(crc, buffer, length);
+       crc = _crc32(crc, buffer, length);
      }
      if (crc != original_crc) error();
 */

@@ -12,7 +12,7 @@
 
 @implementation RakReaderControllerUIQuery
 
-- (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
+- (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
 		return nil;

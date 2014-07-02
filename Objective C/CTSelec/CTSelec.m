@@ -46,8 +46,8 @@
 						break;
 					}
 
-					const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
-					MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXCT, false);
+					const uint projectID = [[dataState objectAtIndex:1] unsignedIntValue];
+					PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
 					
 					if(project == NULL)
 					{
@@ -91,7 +91,7 @@
 - (void) noContent
 {
 	long context[4] = {-1, -1, -1, -1};
-	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
+	PROJECT_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
 	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y] : mangaData[21] : false : context];
 }
 
@@ -273,7 +273,7 @@
 
 #pragma mark - Communication with other tabs
 
-- (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
+- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
 {
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
@@ -309,7 +309,7 @@
 
 			} completionHandler:^{
 				
-				MANGAS_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
+				PROJECT_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
 
 				if(newProject.cacheDBID == project.cacheDBID)
 				{
@@ -362,7 +362,7 @@
 
 #pragma mark - Drop
 
-- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
 	BOOL ret_value = NO;
 	

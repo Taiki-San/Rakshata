@@ -14,14 +14,14 @@
 
 @interface RakDragItem : NSObject
 
-@property MANGAS_DATA project;
+@property PROJECT_DATA project;
 @property BOOL isTome;
 @property int selection;
 
-- (void) setDataProject : (MANGAS_DATA) project isTome : (BOOL) isTome element : (int) element;
+- (void) setDataProject : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
 - (id) initWithData : (NSData *) data;
 
 - (NSData *) getData;
-- (BOOL) defineIsTomePriority : (MANGAS_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
+- (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
 
 @end

@@ -47,36 +47,43 @@ typedef struct tome_metadata
 **	Structure optimisée, explication du contenu
 **
 **		Infos générales
-**			-	mangaName				Nom complet du manga
-**			-	mangaNameShort			Nom court du manga, un ID, pas présenté au user
+**			-	projectID				ID unique dans la team pour le projet
+**			-	projectName				Nom complet du projet
+**			-	description				Description du projet
 **			-	team					Pointeur vers la structure de la team
 **			-	status					État du projet (en cours, fini, suspendu, etc...)
-**			-	genre					Type du projet (shonen & co)
-**			-	pageInfos				Version de la page d'info
-**			
+**			-	type					Type du projet (comics/BD/manga/webcomics)
+**			-	category				Catégorie du projet
+**			-	japaneseOrder			Sens de lecture
+**
+**		Page d'info
+**			- URLLarge					URL vers une version de l'image de projet pour le tab CT
+**			- hashLarge					CRC32 de la version courante
+**			- URLSmall					URL vers une version de l'image de projet pour le D&D
+**			- hashSmall					CRC32 de la version courante
+**
 **		Chapitres
-**			-	firstChapter			# du premier chapitre
-**			-	lastChapter				# du dernier chapitre
-**			-	nombreChapitreSpeciaux	nombre de chapitres spéciaux
 **			-	nombreChapitre			nombre de chapitres total
-**			-	chapitres				tableau contenant tous les chapitres classés
+**			-	chapitresFull			tableau contenant tous les chapitres classés
+**			-	nombreChapitreInstalled	nombre de chapitres installés
+**			-	chapitresFullInstalled	tableau contenant tous les chapitres installés classés
 **
 **		Tomes
-**			-	firstTome				# du premier chapitre
-**			-	nombreTomes				nombre de tomes total
-**			-	tomes					tableau contenant tous les tomes classés
+**			-	nombreTomes				nombre de chapitres total
+**			-	tomesFull				tableau contenant tous les chapitres classés
+**			-	nombreTomesInstalled	nombre de chapitres installés
+**			-	tomesFullInstalled		tableau contenant tous les chapitres installés classés
 **
 **		Module DL
 **			-	contentDownloadable		si il y a quelque chose qui n'est pas DL
 **			-	favoris					est-ce que c'est un favoris
 **
 **		Cache
-**
 **			-	cacheDBID				ID utilisé pour accéder très vite à l'élement
 **
 **********************************************************************************************/
 
-typedef struct dataMangas
+typedef struct dataProject
 {
 	//Pointeurs, un bloc chacun (64b)
 	TEAMS_DATA *team;
@@ -84,21 +91,6 @@ typedef struct dataMangas
 	int *chapitresInstalled;
 	META_TOME *tomesFull;
 	META_TOME *tomesInstalled;
-
-	//Un bloc de 64b complet
-	uint16_t status;
-    uint16_t genre;
-    uint16_t pageInfos;
-    bool contentDownloadable;
-    bool favoris;
-	
-	//Un bloc de 64b complet
-	int firstChapter;
-    int lastChapter;
-    
-	//Un bloc de 64b complet
-    uint32_t nombreChapitreSpeciaux;
-    int firstTome;
 	
 	//Un bloc de 64b complet chacun
 	size_t nombreChapitre;
@@ -106,14 +98,68 @@ typedef struct dataMangas
 	size_t nombreTomes;
 	size_t nombreTomesInstalled;
 	
-	//Padding, 50 + 10 o, 4 o libres
-	char mangaName[LENGTH_PROJECT_NAME];
-    char mangaNameShort[LONGUEUR_COURT];
+	wchar_t description[LENGTH_DESCRIPTION];
 	
-	//32b récupérés par le cache
+	//2 x ((51 + 1) x 32b) = 52 x 64b
+	wchar_t projectName[LENGTH_PROJECT_NAME];
+	bool contentDownloadable;
+	wchar_t authorName[LENGTH_AUTHORS];
+	bool favoris;
+	
+	//Un bloc de 64b complet
+	uint8_t status;
+	uint8_t type;
+	uint16_t category;
+	bool japaneseOrder;
+	
+	//Un bloc de 64b
+	uint32_t projectID;
 	uint32_t cacheDBID;
+	
+} PROJECT_DATA;
 
-} MANGAS_DATA;
+typedef struct dataProjectWithExtra
+{
+	//Pointeurs, un bloc chacun (64b)
+	TEAMS_DATA *team;
+	int *chapitresFull;
+	int *chapitresInstalled;
+	META_TOME *tomesFull;
+	META_TOME *tomesInstalled;
+	
+	//Un bloc de 64b complet chacun
+	size_t nombreChapitre;
+	size_t nombreChapitreInstalled;
+	size_t nombreTomes;
+	size_t nombreTomesInstalled;
+	
+	wchar_t description[LENGTH_DESCRIPTION];
+	
+	//2 x ((51 + 1) x 32b) = 52 x 64b
+	wchar_t projectName[LENGTH_PROJECT_NAME];
+	bool contentDownloadable;
+	wchar_t authorName[LENGTH_AUTHORS];
+	bool favoris;
+	
+	//Un bloc de 64b complet
+	uint8_t status;
+	uint8_t type;
+	uint16_t category;
+	bool japaneseOrder;
+	
+	//Un bloc de 64b
+	uint32_t projectID;
+	uint32_t cacheDBID;
+	
+	//2 x 64b
+	char hashLarge[LENGTH_HASH];
+	char hashSmall[LENGTH_HASH];
+	
+	//2 x 256o
+	char URLLarge[LENGTH_URL];
+	char URLSmall[LENGTH_URL];
+	
+} PROJECT_DATA_EXTRA;
 
 typedef struct
 {

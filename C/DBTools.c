@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #include "db.h"
+#include "crypto/crypto.h"
 
 /**********		REFRESH TEAMS		***************/
 
@@ -78,7 +79,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 
 /**********		REFRESH PROJECTS		***********/
 
-uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbElem)
+uint defineBoundsTeamOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem)
 {
 	if(oldData == NULL)
 		return UINT_MAX;
@@ -94,28 +95,10 @@ uint defineBoundsTeamOnProjectDB(MANGAS_DATA * oldData, uint posBase, uint nbEle
 
 bool downloadedProjectListSeemsLegit(char *data, TEAMS_DATA* team)
 {
-	if(strlen(data) < 20)	//Test pourris mais plutôt rapide
-		return false;
+	uint pos = 0;
+	for(; data[pos] && (data[pos] <= ' ' && data[pos] > 127); pos++);
 	
-	int pos = 0;
-	for(; data[pos] && (data[pos] <= ' ' && data[pos] > '~'); pos++);
-	
-	if(!data[pos])
-		return false;
-	
-	if(data[pos] == '<' || data[pos + 1] == '<' || data[pos + 2] == '<' || data[pos + 3] == '<')
-		return false;
-	
-	char teamName[LENGTH_PROJECT_NAME] = {0}, teamNameCourt[LONGUEUR_COURT] = {0};
-	sscanfs(data, "%s %s", teamName, LENGTH_PROJECT_NAME, teamNameCourt, LONGUEUR_COURT);
-	
-	if(teamName[0] == 0 || teamNameCourt[0] == 0)	//Header malformé
-		return false;
-	
-	if(strcmp(team->teamLong, teamName) || strcmp(team->teamCourt, teamNameCourt))
-		return false;
-	
-	return true;
+	return data[pos] == '{';
 }
 
 uint getNumberLineReturn(char *input)
@@ -186,102 +169,144 @@ bool extractCurrentLine(char * input, uint *posInput, char * output, uint length
 	return (rank >= 5 && rank <= 9);
 }
 
-bool parseCurrentProjectLine(char * input, int version, MANGAS_DATA * output)
-{
-	int categorie = 11;
-	if(version == 1)	//Legacy
-	{
-		sscanfs(input, "%s %s %d %d %d %d", output->mangaName, LENGTH_PROJECT_NAME, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &categorie, &output->pageInfos);
-		output->firstTome = VALEUR_FIN_STRUCT;
-		output->nombreChapitreSpeciaux = 0;
-	}
-	else if(version == 2)
-	{
-		int depreciated;
-		sscanfs(input, "%s %s %d %d %d %d %d %d %d", output->mangaName, LENGTH_PROJECT_NAME, output->mangaNameShort, LONGUEUR_COURT, &output->firstChapter, &output->lastChapter, &output->firstTome, &depreciated, &categorie, &output->pageInfos, &output->nombreChapitreSpeciaux);
-	}
-	
-	//On met des defaults
-	output->chapitresFull = NULL;
-	output->chapitresInstalled = NULL;
-	output->tomesFull = NULL;
-	output->tomesInstalled = NULL;
-	output->favoris = 0;
-	output->contentDownloadable = 0;
-	
-	output->nombreChapitre = 0;
-	output->nombreChapitreInstalled = 0;
-	output->nombreTomes = 0;
-	output->nombreTomesInstalled = 0;
-	
-	output->genre = categorie > 10 ? categorie / 10 : 1;
-	output->status = categorie % 10;
-
-	return checkPathEscape(output->mangaName, LENGTH_PROJECT_NAME);
-}
-
-void parseDetailsBlock(char * input, MANGAS_DATA *data, char *teamName, uint lengthOfBlock)
-{
-	bool isTome;
-	uint index, pos;
-	char projectName[LENGTH_PROJECT_NAME];
-	pos = sscanfs(input, "%s", projectName, LENGTH_PROJECT_NAME);
-	
-	for(index = 0; data[index].team != NULL && strcmp(projectName, data[index].mangaName); index++);
-	
-	if(data[index].team == NULL)	//Le bloc n'est pas celui d'un projet
-		return;
-	
-	for(; input[pos] && input[pos] != ' '; pos++);
-	for(; input[pos] == ' '; pos++);
-	
-	//On regarde si on a un truc lisible
-	if(input[pos] == 'C')
-		isTome = false;
-
-	else if(input[pos] == 'T')
-		isTome = true;
-	
-	else
-		return;
-	
-	//On va créer le fichier et écrire le contenu du bloc
-
-	char path[LENGTH_PROJECT_NAME * 2 + 100];
-	snprintf(path, sizeof(path), "manga/%s/%s", teamName, projectName);
-	
-	if(!checkDirExist(path))	//La fonction marche aussi pour voir si un dossier existe
-		createPath(path);
-	
-	snprintf(path, sizeof(path), "manga/%s/%s/%s", teamName, projectName, isTome ? TOME_INDEX : CHAPITRE_INDEX);
-	
-	pos += jumpLine(input);
-	
-	FILE *output = fopen(path, "w+");
-	if(output != NULL)
-	{
-		if(fwrite(&input[pos], sizeof(char), lengthOfBlock - pos, output) != lengthOfBlock - pos)
-		{
-#ifdef DEV_VERSION
-			logR("Something went wrong when parsing project data");
-#endif
-		}
-		fclose(output);
-	}
-}
-
-bool isProjectListSorted(MANGAS_DATA* data, uint length)
+bool isProjectListSorted(PROJECT_DATA* data, uint length)
 {
 	int logData;
 	for(uint i = 1; i < length; i++)
 	{
-		if((logData = sortMangas(&data[i-1], &data[i])) > 0)
+		if((logData = sortProjects(&data[i-1], &data[i])) > 0)
 			return false;
 	}
 	return true;
 }
 
-void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DATA * newData, uint magnitudeNewData)
+#warning "To test"
+void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
+{
+	if(project == NULL || !nbElem)
+		return;
+	
+	FILE * file;
+	bool large;
+	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *image, *URL, *hash;
+	TEAMS_DATA *team;
+	uint size;
+	uint32_t crc;
+	
+	//Recover URLRepo
+	for (uint pos = 0; pos < nbElem; pos++)
+	{
+		if(project[pos].team != NULL)
+		{
+			team = project[pos].team;
+			break;
+		}
+	}
+	
+	if(!URLRepo[0])		return;
+	else
+	{
+		snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", URLRepo);
+		createPath(imagePath);
+	}
+	
+	for (uint pos = 0; pos < nbElem; pos++)
+	{
+		if(project[pos].team == NULL)
+			continue;
+		
+		for(char i = 0; i < 2; i++)
+		{
+			if(i == 0)
+			{
+				if(project[pos].hashLarge[0] != 0 && project[pos].URLLarge[0] != 0)
+				{
+					URL = project[pos].URLLarge;
+					hash = project[pos].hashLarge;
+					large = true;
+				}
+				else
+					continue;
+			}
+			else
+			{
+				if(project[pos].hashSmall[0] != 0 && project[pos].URLSmall[0] != 0)
+				{
+					URL = project[pos].URLSmall;
+					hash = project[pos].hashSmall;
+					large = false;
+				}
+				else
+					continue;
+			}
+			
+			snprintf(imagePath, sizeof(imagePath), "imageCache/%s/%d_%s.png", URLRepo, project[pos].projectID, large ? "CT" : "DD");
+			size = getFileSize(imagePath);
+			
+			if(!size)
+				getPageInfo(*team, URL, project[pos].projectID, large);
+			
+			image = malloc(size + 1);
+			
+			if(image != NULL)
+			{
+				file = fopen(imagePath, "r");
+				if(file != NULL)
+				{
+					fread(image, 1, size, file);
+					fclose(file);
+					
+					crc = _crc32(image, size);
+					snprintf(crcHash, LENGTH_HASH, "%u", crc);
+					
+					if(strncmp(crcHash, hash, LENGTH_HASH))
+						getPageInfo(*team, URL, project[pos].projectID, large);
+				}
+				
+				free(image);
+			}
+		}
+	}
+}
+
+void getPageInfo(TEAMS_DATA team, char * URLImage, uint projectID, bool large)
+{
+	bool ssl = strcmp(team.type, TYPE_DEPOT_2) != 0;
+	char URL[1024], filename[1024], suffix[6] = "CT", buf[5];
+	FILE* file;
+	
+	if(!large)	suffix[0] = suffix[1] = 'D';
+	
+	for(char i = 0; i < 2; i++)
+	{
+		if(!strcmp(team.type, TYPE_DEPOT_1))
+			snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
+		
+		else if(!strcmp(team.type, TYPE_DEPOT_2))
+			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
+		
+		else if(!strcmp(team.type, TYPE_DEPOT_3)) //Payant
+			snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=img&project=%d&type=%s&user=%s", SERVEUR_URL, team.URLRepo, projectID, suffix, COMPTE_PRINCIPAL_MAIL);
+		
+		snprintf(filename, sizeof(filename), "imageCache/%s/%d_%s.png", team.URLRepo, projectID, suffix);
+		download_disk(URL, NULL, filename, ssl);
+		
+		file = fopen(filename, "r");
+		if(file != NULL)
+		{
+			for (char j = 0; j < 5; buf[j++] = fgetc(file));
+			fclose(file);
+			
+			if(!isJPEG(buf) && !isPNG(buf))
+				remove(filename);
+		}
+		
+		if(i == 0)
+			suffix[2] = '@';	suffix[3] = '2';	suffix[4] = 'x';	suffix[5] = '\0';
+	}
+}
+
+void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
 {
 	uint IDTeam = getDBTeamID(oldData[0].team);
 	
@@ -290,21 +315,20 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 	
 	//On commence par reclasser les éléments
 	if(!isProjectListSorted(oldData, magnitudeOldData))
-		qsort(oldData, magnitudeOldData, sizeof(MANGAS_DATA), sortMangas);
+		qsort(oldData, magnitudeOldData, sizeof(PROJECT_DATA), sortProjects);
 	
 	if(!isProjectListSorted(newData, magnitudeNewData))
-		qsort(newData, magnitudeNewData, sizeof(MANGAS_DATA), sortMangas);
+		qsort(newData, magnitudeNewData, sizeof(PROJECT_DATA), sortProjects);
 	
-	bool newChapters;
 	uint posOld = 0, posNew = 0;
 	int outputSort;
-	MANGAS_DATA internalBufferOld, internalBufferNew;
+	PROJECT_DATA internalBufferOld, internalBufferNew;
 	sqlite3_stmt * request = getAddToCacheRequest();
 	
 	while(posOld < magnitudeOldData && posNew < magnitudeNewData)
 	{
-		outputSort = sortMangas(&oldData[posOld], &newData[posNew]);
-
+		outputSort = sortProjects(&oldData[posOld], &newData[posNew]);
+		
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
 			removeFromCache(oldData[posOld]);
@@ -315,51 +339,18 @@ void applyChangesProject(MANGAS_DATA * oldData, uint magnitudeOldData, MANGAS_DA
 #endif
 			posOld++;
 		}
-		
 		else if(outputSort == 0)	//On a trouvé une version mise à jour
 		{
 			internalBufferOld = oldData[posOld];
 			internalBufferNew = newData[posNew];
 			
-			if(internalBufferOld.lastChapter != internalBufferNew.lastChapter || internalBufferOld.firstTome != internalBufferNew.firstTome || internalBufferOld.nombreChapitreSpeciaux != internalBufferNew.nombreChapitreSpeciaux || internalBufferOld.pageInfos != internalBufferNew.pageInfos || internalBufferOld.status != internalBufferNew.status || internalBufferOld.firstChapter != internalBufferNew.firstChapter || strcmp(internalBufferOld.mangaName, internalBufferNew.mangaName) || internalBufferOld.genre != internalBufferNew.genre)	//quelque chose à changé
+			if(!areProjectsIdentical(internalBufferOld, internalBufferNew))	//quelque chose à changé
 			{
 				newData[posNew].cacheDBID = oldData[posOld].cacheDBID;
 				newData[posNew].favoris = oldData[posOld].favoris;
-
-				if(internalBufferOld.firstChapter != internalBufferNew.firstChapter || internalBufferOld.lastChapter != internalBufferNew.lastChapter || internalBufferOld.nombreChapitreSpeciaux != internalBufferNew.nombreChapitreSpeciaux)
-				{
-					refreshChaptersList(&newData[posNew]);
-					newChapters = true;
-				}
-				else
-				{
-					newData[posNew].chapitresFull = malloc((oldData[posOld].nombreChapitre + 1) * sizeof(int));
-					
-					if(newData[posNew].chapitresFull != NULL)
-					{
-						memcpy(newData[posNew].chapitresFull, oldData[posOld].chapitresFull, oldData[posOld].nombreChapitre * sizeof(int));
-						newData[posNew].nombreChapitre = oldData[posOld].nombreChapitre;
-						newData[posNew].chapitresFull[newData[posNew].nombreChapitre] = VALEUR_FIN_STRUCT;
-					}
-					
-					newChapters = false;
-				}
 				
-				if(newData[posNew].firstTome != VALEUR_FIN_STRUCT)
-					refreshTomeList(&newData[posNew]);
-				else
-					newData[posNew].tomesFull = NULL;
-				
-				if(newChapters || newData[posNew].tomesFull != NULL)
-				{
-					newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
-				}
-				else
-				{
-					newData[posNew].contentDownloadable = oldData[posOld].contentDownloadable;
-				}
-				
-				updateCache(newData[posNew], RDB_UPDATE_ID, NULL);
+				newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
+				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
 				
 				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
 				freeTomeList(newData[posNew].tomesFull, true);
@@ -417,9 +408,9 @@ void resetUpdateDBCache()
     alreadyRefreshed = -DB_CACHE_EXPIRENCY;
 }
 
-MANGAS_DATA getCopyOfProjectData(MANGAS_DATA data)
+PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 {
-	MANGAS_DATA newData = data;
+	PROJECT_DATA newData = data;
 	
 	if(data.chapitresFull != NULL)
 	{

@@ -35,7 +35,7 @@ enum {
 	CGFloat _forcedHeight;
 	
 	uint _sizeCache;
-	MANGAS_DATA * _cache;
+	PROJECT_DATA * _cache;
 	
 	uint8_t _nbElemReadDisplayed;
 	uint8_t _nbElemDLDisplayed;

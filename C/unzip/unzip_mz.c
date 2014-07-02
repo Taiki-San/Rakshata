@@ -148,8 +148,8 @@ typedef struct
     ZPOS64_T pos_local_extrafield;   /* position in the local extra field in read*/
     ZPOS64_T total_out_64;
 
-    uLong crc32;                /* crc32 of all data uncompressed */
-    uLong crc32_wait;           /* crc32 we must obtain after decompress all */
+    uLong _crc32;                /* _crc32 of all data uncompressed */
+    uLong crc32_wait;           /* _crc32 we must obtain after decompress all */
     ZPOS64_T rest_read_compressed; /* number of byte to be decompressed */
     ZPOS64_T rest_read_uncompressed;/*number of byte to be obtained after decomp*/
     zlib_filefunc64_32_def z_filefunc;
@@ -1530,7 +1530,7 @@ extern int ZEXPORT unzOpenCurrentFile3 (unzFile file, int* method,
         ;
 #endif
     pfile_in_zip_read_info->crc32_wait=s->cur_file_info.crc;
-    pfile_in_zip_read_info->crc32=0;
+    pfile_in_zip_read_info->_crc32=0;
     pfile_in_zip_read_info->total_out_64=0;
     pfile_in_zip_read_info->compression_method = s->cur_file_info.compression_method;
     pfile_in_zip_read_info->filestream=s->filestream;
@@ -1773,7 +1773,7 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
 
             pfile_in_zip_read_info->total_out_64 = pfile_in_zip_read_info->total_out_64 + uDoCopy;
 
-            pfile_in_zip_read_info->crc32 = crc32(pfile_in_zip_read_info->crc32,
+            pfile_in_zip_read_info->_crc32 = crc32(pfile_in_zip_read_info->_crc32,
                                 pfile_in_zip_read_info->stream.next_out,
                                 uDoCopy);
             pfile_in_zip_read_info->rest_read_uncompressed-=uDoCopy;
@@ -1810,7 +1810,7 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
 
             pfile_in_zip_read_info->total_out_64 = pfile_in_zip_read_info->total_out_64 + uOutThis;
 
-            pfile_in_zip_read_info->crc32 = crc32(pfile_in_zip_read_info->crc32,bufBefore, (uInt)(uOutThis));
+            pfile_in_zip_read_info->_crc32 = _crc32(pfile_in_zip_read_info->_crc32,bufBefore, (uInt)(uOutThis));
             pfile_in_zip_read_info->rest_read_uncompressed -= uOutThis;
             iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
 
@@ -1853,8 +1853,8 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
 
             pfile_in_zip_read_info->total_out_64 = pfile_in_zip_read_info->total_out_64 + uOutThis;
 
-            pfile_in_zip_read_info->crc32 =
-                crc32(pfile_in_zip_read_info->crc32,bufBefore,
+            pfile_in_zip_read_info->_crc32 =
+                crc32(pfile_in_zip_read_info->_crc32,bufBefore,
                         (uInt)(uOutThis));
 
             pfile_in_zip_read_info->rest_read_uncompressed -=
@@ -2011,7 +2011,7 @@ extern int ZEXPORT unzCloseCurrentFile (unzFile file)
     if ((pfile_in_zip_read_info->rest_read_uncompressed == 0) &&
         (!pfile_in_zip_read_info->raw))
     {
-        if (pfile_in_zip_read_info->crc32 != pfile_in_zip_read_info->crc32_wait)
+        if (pfile_in_zip_read_info->_crc32 != pfile_in_zip_read_info->crc32_wait)
             err=UNZ_CRCERROR;
     }
 

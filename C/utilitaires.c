@@ -30,16 +30,16 @@ int sortNumbers(const void *a, const void *b)
     return ( *(int*)a - *(int*)b );
 }
 
-int sortMangas(const void *a, const void *b)
+int sortProjects(const void *a, const void *b)
 {
-    const MANGAS_DATA *struc1 = a;
-    const MANGAS_DATA *struc2 = b;
+    const PROJECT_DATA *struc1 = a;
+    const PROJECT_DATA *struc2 = b;
 
-    if(struc1->mangaName[0] == 0)
+    if(struc1->projectName[0] == 0)
         return 1;
-    else if(struc2->mangaName[0] == 0)
+    else if(struc2->projectName[0] == 0)
         return -1;
-    return strcmp(struc1->mangaName, struc2->mangaName);
+    return wcscmp(struc1->projectName, struc2->projectName);
 }
 
 int sortTomes(const void *a, const void *b)
@@ -55,19 +55,56 @@ int sortTomes(const void *a, const void *b)
     return struc1->ID - struc2->ID;
 }
 
-void versionRak(char *output)
+#warning "to test"
+bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 {
-    int centaine = 0, dizaine = 0, unite = 0;
+	if(a.projectID != b.projectID)
+		return false;
+	
+	if(a.nombreChapitre != b.nombreChapitre || memcmp(a.chapitresFull, b.chapitresFull, a.nombreChapitre * sizeof(int)))
+		return false;
+	
+	if(a.nombreTomes != b.nombreTomes)
+		return false;
+	
+	if(a.tomesFull == NULL ^ b.tomesFull == NULL)
+		return false;
+	
+	if(a.tomesFull != NULL && b.tomesFull != NULL)
+	{
+		for(uint i = 0, j; i < a.nombreTomes; i++)
+		{
+			if(a.tomesFull[i].ID != b.tomesFull[i].ID || a.tomesFull[i].readingID != b.tomesFull[i].readingID || wcscmp(a.tomesFull[i].description, b.tomesFull[i].description) || wcscmp(a.tomesFull[i].readingName, b.tomesFull[i].readingName))
+				return false;
+			
+			if(a.tomesFull[i].details == NULL ^ a.tomesFull[i].details == NULL)
+				return false;
+			
+			if(a.tomesFull[i].details != NULL)
+			{
+				for (j = 0; a.tomesFull[i].details[j].ID != VALEUR_FIN_STRUCT && b.tomesFull[i].details[j].ID != VALEUR_FIN_STRUCT; j++);
+				if(a.tomesFull[i].details[j].ID != b.tomesFull[i].details[j].ID)
+					return false;
+			}
+		}
+	}
+	
+	if(a.status != b.status)
+		return false;
+	
+	if(a.type != b.type)
+		return false;
+	
+	if(a.category != b.category)
+		return false;
+	
+	if(a.japaneseOrder != b.japaneseOrder)
+		return false;
 
-    centaine = CURRENTVERSION / 100;
-    dizaine = CURRENTVERSION / 10 - (CURRENTVERSION / 100 * 10);
-    unite = CURRENTVERSION - (CURRENTVERSION / 10 * 10);
-
-    if(unite)
-        snprintf(output, 10, "%d.%d.%d", centaine, dizaine, unite);
-
-    else
-        snprintf(output, 10, "%d.%d", centaine, dizaine);
+	if(wcscmp(a.projectName, b.projectName) || wcscmp(a.authorName, b.authorName) || wcscmp(a.description, b.description))
+		return false;
+	
+	return true;
 }
 
 uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable)
@@ -133,7 +170,7 @@ void createPath(char *output)
         if(output[longueur_output]) //On est pas au bout du path
         {
             mkdirR(folder);
-            folder[i++] = '/'; //On ajoute un / au path Ã  construire
+            folder[i++] = '/'; //On ajoute un / au path à construire
 			longueur_output++;
 #ifdef _WIN32
             if(output[longueur_output] == '\\')

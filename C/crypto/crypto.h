@@ -74,6 +74,13 @@ u4byte * TwofishSetKey(TwofishInstance *instance, const u4byte in_key[], const u
 void TwofishEncrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[]);
 void TwofishDecrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[4]);
 
+/*****************************************************
+**                                                  **
+**                       CRC32                      **
+**                                                  **
+*****************************************************/
+
+uint32_t _crc32(const void *buf, size_t size);
 
 /*****************************************************
 **                                                  **

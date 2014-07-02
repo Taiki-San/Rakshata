@@ -12,7 +12,7 @@
 
 #include "lecteur.h"
 
-int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, bool isTome)
+int reader_getPosIntoContentIndex(PROJECT_DATA mangaDB, int currentSelection, bool isTome)
 {
 	uint curPosIntoStruct;
 		
@@ -48,7 +48,7 @@ int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, boo
 	return curPosIntoStruct;
 }
 
-bool reader_isLastElem(MANGAS_DATA mangaDB, bool isTome, int currentSelection)
+bool reader_isLastElem(PROJECT_DATA mangaDB, bool isTome, int currentSelection)
 {
 	if(isTome && mangaDB.tomesInstalled != NULL)
 	{

@@ -107,7 +107,7 @@
 	return *(status[row]);
 }
 
-- (void) addElement : (MANGAS_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
+- (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
 	if (element == VALEUR_FIN_STRUCT)
 		return;
@@ -194,7 +194,7 @@
 	}
 }
 
-- (uint) addBatch : (MANGAS_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
+- (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
 {
 	//We assume our data are up-to-date
 	int previousElem = VALEUR_FIN_STRUCT;
@@ -292,7 +292,7 @@
 	free(movingPart);
 }
 
-- (BOOL) checkForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
+- (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
 {
 	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
 }

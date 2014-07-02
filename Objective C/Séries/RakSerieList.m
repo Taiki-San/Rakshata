@@ -92,9 +92,9 @@
 					break;
 				}
 				
-				const char * mangaNameCourt = [[dataState objectAtIndex:3] cStringUsingEncoding:NSASCIIStringEncoding];
+				const uint projectID = [[dataState objectAtIndex:3] unsignedIntValue];
 				
-				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXCT, false);
+				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
 				
 				if(project == NULL || project->team == NULL)
 				{
@@ -224,7 +224,7 @@
 	
 	//Recent read
 	uint8_t i = 0;
-	MANGAS_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
+	PROJECT_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
 	
 	if(recent != NULL)
 	{
@@ -362,10 +362,10 @@
 	
 	//Great, now, export the state of the main list
 	NSString *currentSelection;
-	MANGAS_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
+	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
 	if(project.team != NULL)
-		currentSelection = [NSString stringWithFormat:@"%s\n%s", project.team->URLRepo, project.mangaNameShort];
+		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.team->URLRepo, project.projectID];
 	else
 		currentSelection = @"";
 	
@@ -451,7 +451,7 @@
 	if(item == nil || [item isRootItem] || [item isMainList])
 		return NO;
 	
-	MANGAS_DATA *tmp = [item getRawDataChild];
+	PROJECT_DATA *tmp = [item getRawDataChild];
 	
 	if(tmp == NULL)
 		return NO;
@@ -678,11 +678,11 @@
 	return GUI_THREAD_SERIES;
 }
 
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
 	if(currentDraggedItem != nil)
 	{
-		MANGAS_DATA * project = [currentDraggedItem getRawDataChild];
+		PROJECT_DATA * project = [currentDraggedItem getRawDataChild];
 		currentDraggedItem = nil;
 		if(project != NULL)
 			return *project;
@@ -708,7 +708,7 @@
 	if(pbData == nil)
 		return NO;
 	
-	MANGAS_DATA* project = [item getRawDataChild];
+	PROJECT_DATA* project = [item getRawDataChild];
 	
 	getUpdatedChapterList(project, true);
 	getUpdatedTomeList(project, true);

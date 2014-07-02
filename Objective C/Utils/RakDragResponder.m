@@ -43,9 +43,9 @@
 	return GUI_THREAD_MASK;
 }
 
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
-	MANGAS_DATA returnData;
+	PROJECT_DATA returnData;
 	
 	memset(&returnData, 0, sizeof(returnData));
 	

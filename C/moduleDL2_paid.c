@@ -138,7 +138,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
     output = malloc(length * sizeof(char));
     if(output != NULL)
     {
-		char bufferURLDepot[3*LONGUEUR_URL], bufferMangaName[3*LENGTH_PROJECT_NAME], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
+		char bufferURLDepot[3*LONGUEUR_URL], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
 		
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
         snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
@@ -146,11 +146,8 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
         for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCT; compteur++)
         {
 			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URLRepo, LONGUEUR_URL, bufferURLDepot);
-			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->mangaName, LENGTH_PROJECT_NAME, bufferMangaName);
 			
-            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%s&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->mangaName,
-                                                                                compteur, data[index[compteur]]->listChapitreOfTome != NULL,
-                                                                                compteur, data[index[compteur]]->identifier);
+            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%d&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->projectID, compteur, data[index[compteur]]->listChapitreOfTome != NULL, compteur, data[index[compteur]]->identifier);
             length += strlen(buffer);
             buf = realloc(output, length * sizeof(char));
             if(buf != NULL)
@@ -284,11 +281,6 @@ int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length)
 bool MDLPCheckIfPaid(unsigned int factureID)
 {
     char URL[300], output[50];
-    snprintf(URL, 300, "https://%s/order/%d", SERVEUR_URL, factureID);
-    if(download_mem(URL, NULL, output, 50, SSL_ON) == CODE_RETOUR_OK)
-    {
-        if(output[0] == '1')
-            return true;
-    }
-    return false;
+    snprintf(URL, 300, "https://"STRINGIZE(SERVEUR_URL)"/order/%d", factureID);
+    return download_mem(URL, NULL, output, 50, SSL_ON) == CODE_RETOUR_OK && output[0] == '1';
 }

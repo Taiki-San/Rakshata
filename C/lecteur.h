@@ -36,23 +36,21 @@ void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementE
 
 /** lecteur_check_newElems.c **/
 
-uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT);
-void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome);
+uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT);
 
 /** lecteur_loading.c **/
 
-bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure);
-bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
+bool reader_getNextReadableElement(PROJECT_DATA mangaDB, bool isTome, uint *currentPosIntoStructure);
+bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 void releaseDataReader(DATA_LECTURE *data);
 
-int changementDePage(MANGAS_DATA *mangaDB, DATA_LECTURE* dataReader, bool goToNextPage, int *changementPage, bool isTome, int *chapitreChoisis, int currentPosIntoStructure);
-bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
-bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc);
+bool changeChapter(PROJECT_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
+bool changeChapterAllowed(PROJECT_DATA* mangaDB, bool isTome, int posIntoStruc);
 
 /**	lecteur_tool.c	**/
-int reader_getPosIntoContentIndex(MANGAS_DATA mangaDB, int currentSelection, bool isTome);
-bool reader_isLastElem(MANGAS_DATA mangaDB, bool isTome, int currentSelection);
+int reader_getPosIntoContentIndex(PROJECT_DATA mangaDB, int currentSelection, bool isTome);
+bool reader_isLastElem(PROJECT_DATA mangaDB, bool isTome, int currentSelection);
 
 
 /*Mouvements*/

@@ -62,5 +62,5 @@ void updateRecentSeries();
  **										**
  *****************************************/
 
-bool checkIfElementAlreadyInMDL(MANGAS_DATA data, bool isTome, int element);
-void addElementToMDL(MANGAS_DATA data, bool isTome, int element, bool partOfBatch);
+bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, int element);
+void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBatch);

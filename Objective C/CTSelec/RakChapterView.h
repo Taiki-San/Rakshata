@@ -27,13 +27,13 @@
 
 @interface RakCTContentTabView : NSView
 {
-	MANGAS_DATA data;
+	PROJECT_DATA data;
 	RakCTCoreViewButtons * buttons;
 	RakCTCoreContentView * tableViewControllerChapter;
 	RakCTCoreContentView * tableViewControllerVolume;
 }
 
-- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
+- (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;;
 
@@ -43,7 +43,7 @@
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
-- (void) updateContext : (MANGAS_DATA) newData;
+- (void) updateContext : (PROJECT_DATA) newData;
 
 @end
 
@@ -54,9 +54,9 @@
 	RakCTContentTabView * coreView;
 }
 
-- (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context;
+- (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;
 
-- (void) updateContext : (MANGAS_DATA) data;
+- (void) updateContext : (PROJECT_DATA) data;
 - (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 

@@ -52,14 +52,14 @@ void updateRecentSeries()
  **										**
  *****************************************/
 
-bool checkIfElementAlreadyInMDL(MANGAS_DATA data, bool isTome, int element)
+bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, int element)
 {
 	if(sharedTabMDL == nil)
 		return false;
 	return [(id) sharedTabMDL proxyCheckForCollision:data :isTome :element];
 }
 
-void addElementToMDL(MANGAS_DATA data, bool isTome, int element, bool partOfBatch)
+void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBatch)
 {
 	if(sharedTabMDL != nil)
 		[(id) sharedTabMDL proxyAddElement:data :isTome :element :partOfBatch];

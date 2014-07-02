@@ -27,6 +27,6 @@
 - (void) wakeUp;
 - (void) hideList : (BOOL) hide;
 
-- (BOOL) proxyReceiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender;
+- (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;
 
 @end

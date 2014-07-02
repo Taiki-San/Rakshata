@@ -12,17 +12,17 @@
 
 @implementation RakChapterView
 
-- (id)initContent:(NSRect)frame : (MANGAS_DATA) project : (bool) isTome : (long [4]) context
+- (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context
 {
     self = [super initWithFrame:frame];
     if (self)
 	{
 		[self setupInternal];
 		
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:project.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32StringEncoding] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URLRepo] : [NSString stringWithFormat:@"%s_CT", project.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URLRepo] : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
 		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -114,21 +114,23 @@
 
 #pragma mark - Proxy
 
-- (void) updateContext : (MANGAS_DATA) data
+- (void) updateContext : (PROJECT_DATA) data
 {
+	NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32StringEncoding];
+	
 	if(projectName != nil)
-		[projectName setStringValue : [[NSString stringWithUTF8String: data.mangaName] stringByReplacingOccurrencesOfString:@"_" withString:@" "]];
+		[projectName setStringValue : projectNameString];
 	else
 	{
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [NSString stringWithUTF8String:data.mangaName] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : projectNameString : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
 
 	if(projectImage != nil)
-		[projectImage updateProject:[NSString stringWithUTF8String: data.mangaName]];
+		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URLRepo] : [NSString stringWithFormat:@"%s_CT", data.mangaName] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URLRepo] : [NSString stringWithFormat:@"%d_CT", data.projectID] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -263,7 +265,7 @@
 
 @implementation RakCTContentTabView
 
-- (id) initWithProject : (MANGAS_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
+- (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
 {
 	if(project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
 	{
@@ -404,7 +406,7 @@
 	if(data.team == NULL)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%s\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.mangaNameShort, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.projectID, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
 }
 
 - (id) retain
@@ -509,7 +511,7 @@
 	}
 }
 
-- (void) updateContext : (MANGAS_DATA) newData
+- (void) updateContext : (PROJECT_DATA) newData
 {
 	//Some danger of TOCTOU around here, mutexes would be great
 	

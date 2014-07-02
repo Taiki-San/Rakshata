@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
+void getUpdatedCTList(PROJECT_DATA *mangaDB, bool isTome)
 {
     if(isTome)
         getUpdatedTomeList(mangaDB, true);
@@ -18,18 +18,18 @@ void getUpdatedCTList(MANGAS_DATA *mangaDB, bool isTome)
         getUpdatedChapterList(mangaDB, true);
 }
 
-bool checkReadable(MANGAS_DATA mangaDB, bool isTome, int data)
+bool checkReadable(PROJECT_DATA mangaDB, bool isTome, int data)
 {
     if(isTome)
         return checkTomeReadable(mangaDB, data);
     return checkChapterReadable(mangaDB, data);
 }
 
-bool isAnythingToDownload(MANGAS_DATA mangaDB)
+bool isAnythingToDownload(PROJECT_DATA mangaDB)
 {
 	bool ret_value = false, needFree = false;
 	
-    if(mangaDB.firstChapter != VALEUR_FIN_STRUCT)
+    if(mangaDB.chapitresFull != NULL)
     {
 		if(mangaDB.chapitresInstalled == NULL)
 		{
@@ -43,7 +43,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
 			free(mangaDB.chapitresInstalled);
     }
 	
-    if(mangaDB.firstTome != VALEUR_FIN_STRUCT)
+    if(mangaDB.tomesFull != NULL)
     {
 		if(mangaDB.tomesInstalled == NULL)
 		{
@@ -60,7 +60,7 @@ bool isAnythingToDownload(MANGAS_DATA mangaDB)
     return ret_value;
 }
 
-void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
+void internalDeleteCT(PROJECT_DATA mangaDB, bool isTome, int selection)
 {
     if(isTome)
         internalDeleteTome(mangaDB, selection, true);
@@ -68,7 +68,7 @@ void internalDeleteCT(MANGAS_DATA mangaDB, bool isTome, int selection)
 		internalDeleteChapitre(mangaDB, selection, true);
 }
 
-void releaseCTData(MANGAS_DATA data)
+void releaseCTData(PROJECT_DATA data)
 {
 	free(data.chapitresFull);
 	free(data.chapitresInstalled);

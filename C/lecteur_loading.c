@@ -13,7 +13,7 @@
 
 /**	Set up the evnt	**/
 
-bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *currentPosIntoStructure)
+bool reader_getNextReadableElement(PROJECT_DATA mangaDB, bool isTome, uint *currentPosIntoStructure)
 {
 	uint maxValue = isTome ? mangaDB.nombreTomesInstalled : mangaDB.nombreChapitreInstalled;
 
@@ -25,7 +25,7 @@ bool reader_getNextReadableElement(MANGAS_DATA mangaDB, bool isTome, uint *curre
 
 /**	Load the reader data	**/
 
-bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
+bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
 	uint nombreToursRequis = 1;
@@ -91,7 +91,7 @@ bool configFileLoader(MANGAS_DATA mangaDB, bool isTome, int IDRequested, DATA_LE
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%d/%s/%s", mangaDB.team->teamLong, mangaDB.projectID, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -162,7 +162,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%s/%s", mangaDB.team->teamLong, mangaDB.mangaName, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%d/%s", mangaDB.team->teamLong, mangaDB.projectID, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else
@@ -306,7 +306,7 @@ void releaseDataReader(DATA_LECTURE *data)
 	}
 }
 
-bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
+bool changeChapter(PROJECT_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
 	*posIntoStruc += (goToNextChap ? 1 : -1);
 	
@@ -324,7 +324,7 @@ bool changeChapter(MANGAS_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint
 	return true;
 }
 
-bool changeChapterAllowed(MANGAS_DATA* mangaDB, bool isTome, int posIntoStruc)
+bool changeChapterAllowed(PROJECT_DATA* mangaDB, bool isTome, int posIntoStruc)
 {
 	return (isTome && posIntoStruc < mangaDB->nombreTomesInstalled) || (!isTome && posIntoStruc < mangaDB->nombreChapitreInstalled);
 }

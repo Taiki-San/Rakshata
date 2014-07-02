@@ -21,6 +21,6 @@
 
 - (void) reloadData;
 - (void) updateJumpTable;
-- (MANGAS_DATA) getElementAtIndex : (NSInteger) index;
+- (PROJECT_DATA) getElementAtIndex : (NSInteger) index;
 
 @end

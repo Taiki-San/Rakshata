@@ -20,7 +20,7 @@
 	IBOutlet NSBox * separationLine;
 }
 
-- (void) setupContent : (MANGAS_DATA) projectData : (NSString *) selectionNameString;
+- (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString;
 - (NSImage *) initImage;
 
 @end

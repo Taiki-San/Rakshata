@@ -12,7 +12,7 @@
 
 @interface RakReaderControllerUIQuery : NSView <INPopoverControllerDelegate>
 {
-	MANGAS_DATA _project;
+	PROJECT_DATA _project;
 	BOOL _isTome;
 	int* _arraySelection;
 	uint _sizeArray;
@@ -25,7 +25,7 @@
 	RakPopoverWrapper * popover;
 }
 
-- (id) initWithData : (MDL*) tabMDL : (MANGAS_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated;
 
 @end

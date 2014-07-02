@@ -12,11 +12,11 @@
 
 #include "db.h"
 
-bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
+bool checkIfFaved(PROJECT_DATA* mangaDB, char **favs)
 {
     bool generateOwnCache = false;
-    char *favsBak = NULL, *internalCache = NULL;
-	char mangaLong[LENGTH_PROJECT_NAME], URLRepo[LONGUEUR_URL];
+	uint projectID;
+    char *favsBak = NULL, *internalCache = NULL, URLRepo[LONGUEUR_URL];
 
     if(favs == NULL)
     {
@@ -33,27 +33,28 @@ bool checkIfFaved(MANGAS_DATA* mangaDB, char **favs)
         return 0;
 
     favsBak = *favs;
-    while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->URLRepo, URLRepo) || strcmp(mangaDB->mangaName, mangaLong)))
+    do
     {
-        favsBak += sscanfs(favsBak, "%s %s", URLRepo, sizeof(URLRepo), mangaLong, sizeof(mangaLong));
+        favsBak += sscanfs(favsBak, "%s %d", URLRepo, sizeof(URLRepo), &projectID);
         for(; favsBak != NULL && *favsBak && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
-    }
+	} while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->URLRepo, URLRepo) || mangaDB->projectID != projectID));
+	
     if(generateOwnCache)
         free(internalCache);
 
-	return !strcmp(mangaDB->team->URLRepo, URLRepo) && !strcmp(mangaDB->mangaName, mangaLong);
+	return !strcmp(mangaDB->team->URLRepo, URLRepo) && mangaDB->projectID == projectID;
 }
 
-bool setFavorite(MANGAS_DATA* mangaDB)
+bool setFavorite(PROJECT_DATA* mangaDB)
 {
 	if(mangaDB == NULL)
 		return false;
 	
 	bool removing = mangaDB->favoris != 0, elementAlreadyAdded = false, ret_value = false;
 	char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsNew;
-	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], mangaLong[LENGTH_PROJECT_NAME], *mangaLongRef = mangaDB->mangaName, URLRepo[LONGUEUR_URL], *URLRepoRef = mangaDB->team->URLRepo;
-	uint nbSpaces, pos = 0, posLine;
-	size_t length = (favs != NULL ? strlen(favs) : 0) + strlen(mangaDB->mangaName) + strlen(mangaDB->team->URLRepo) + 64, posOutput = 0;
+	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], URLRepo[LONGUEUR_URL], *URLRepoRef = mangaDB->team->URLRepo;
+	uint nbSpaces, pos = 0, posLine, projectID;
+	size_t length = (favs != NULL ? strlen(favs) : 0) + 10 + strlen(mangaDB->team->URLRepo) + 64, posOutput = 0;
 
 	favsNew = malloc(length * sizeof(char));	//Alloc final buffer
 	if(favsNew == NULL)
@@ -82,10 +83,10 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 			continue;
 		
 		//We read the data
-		sscanfs(line, "%s %s", URLRepo, LONGUEUR_URL, mangaLong, LENGTH_PROJECT_NAME);
+		sscanfs(line, "%s %d", URLRepo, LONGUEUR_URL, &projectID);
 		
 		//There is a collision
-		if(!strcmp(URLRepo, URLRepoRef) && !strcmp(mangaLong, mangaLongRef))
+		if(!strcmp(URLRepo, URLRepoRef) && projectID != mangaDB->projectID)
 		{
 			if (removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
 			{
@@ -99,7 +100,7 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 		}
 		
 		//We rewrite the line on the output buffer
-		snprintf(line, sizeof(line), "%s %s\n", URLRepo, mangaLong);
+		snprintf(line, sizeof(line), "%s %d\n", URLRepo, mangaDB->projectID);
 		strncat(favsNew, line, length - posOutput);
 		posOutput += strlen(line);
 	}
@@ -107,20 +108,20 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 	//We have to add the element, and there is no duplicate
 	if(!removing && !elementAlreadyAdded)
 	{
-		snprintf(line, sizeof(line), "%s %s\n", URLRepoRef, mangaLongRef);
+		snprintf(line, sizeof(line), "%s %d\n", URLRepoRef, mangaDB->projectID);
 		strncat(favsNew, line, length - posOutput);
 		posOutput += strlen(line);
 		ret_value = true;
 	}
 	
 	//Our buffer was too small, shit
-	if(posOutput >= length - strlen("</F>\n"))
+	if(posOutput >= length - strlen("</"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n"))
 		goto end;
 
 	//We wrote something
-	else if(posOutput > strlen("<F>\n"))
+	else if(posOutput > strlen("<"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n"))
 	{
-		snprintf(line, sizeof(line), "</%c>\n", SETTINGS_FAVORITE_FLAG);
+		strncpy(line, "</"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n", sizeof(line));
 		strncat(favsNew, line, length - posOutput);
 		updatePrefs(SETTINGS_FAVORITE_FLAG, favsNew);
 	}
@@ -129,7 +130,11 @@ bool setFavorite(MANGAS_DATA* mangaDB)
 	else
 		removeFromPref(SETTINGS_FAVORITE_FLAG);
 	
-	mangaDB->favoris = !mangaDB->favoris;
+	PROJECT_DATA cacheCopy = getElementByID(mangaDB->cacheDBID, RDB_CTXFAVS);
+	cacheCopy.favoris = mangaDB->favoris = !mangaDB->favoris;
+	updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
+	free(cacheCopy.chapitresFull);	//updateCache en fait une copie
+	freeTomeList(cacheCopy.tomesFull, true);
 
 end:
 	
@@ -153,7 +158,7 @@ void updateFavorites()
     updateDatabase(false);
 	
 	uint nbElem, pos;
-    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbElem);
+    PROJECT_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbElem);
     if(mangaDB == NULL)
         return;
 
@@ -186,7 +191,7 @@ void getNewFavs()
 	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
 	uint posProject, nbProject, prevProjectIndex;
 	size_t posFull, maxPos;
-    MANGAS_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject), *current;
+    PROJECT_DATA *mangaDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject), *current;
 
     if(mangaDB == NULL)
         return;

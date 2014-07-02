@@ -28,13 +28,11 @@
 		{
 			if(selectedDBID != -1 && selectedIndex == -1 && _installed[i])
 			{
-				if (((MANGAS_DATA*)data)[i].cacheDBID == selectedDBID)
+				if (((PROJECT_DATA*)data)[i].cacheDBID == selectedDBID)
 					selectedIndex = positionInInstalled;
 				else
 					positionInInstalled++;
 			}
-			
-			changeTo(((MANGAS_DATA*)data)[i].mangaName, '_', ' ');
 		}
 		
 		if(data == NULL || _installed == NULL)
@@ -94,10 +92,9 @@
 	
 	for(uint pos = 0; pos < amountData; pos++)
 	{
-		if(updateIfRequired(&((MANGAS_DATA*) data)[pos], RDB_CTXSERIES))
+		if(updateIfRequired(&((PROJECT_DATA*) data)[pos], RDB_CTXSERIES))
 		{
-			_installed[pos] = isProjectInstalledInCache(((MANGAS_DATA*)data)[pos].cacheDBID);
-			changeTo(((MANGAS_DATA*)data)[pos].mangaName, '_', ' ');
+			_installed[pos] = isProjectInstalledInCache(((PROJECT_DATA*)data)[pos].cacheDBID);
 			newData = YES;
 		}
 	}
@@ -149,16 +146,16 @@
 	}
 }
 
-- (MANGAS_DATA) getElementAtIndex : (NSInteger) index
+- (PROJECT_DATA) getElementAtIndex : (NSInteger) index
 {
-	MANGAS_DATA output;
+	PROJECT_DATA output;
 	
 	if(index >= 0 && index < amountData)
 	{
 		if (_jumpToInstalled != NULL && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];
 		
-		output = getCopyOfProjectData(((MANGAS_DATA*) data)[index]);
+		output = getCopyOfProjectData(((PROJECT_DATA*) data)[index]);
 	}
 	else
 		memset(&output, 0, sizeof(output));
@@ -174,7 +171,7 @@
 	if(selectedIndex == -1)
 		return -1;
 	
-	MANGAS_DATA project = [self getElementAtIndex:selectedIndex];
+	PROJECT_DATA project = [self getElementAtIndex:selectedIndex];
 
 	if(project.team == NULL)
 		return -1;
@@ -189,7 +186,7 @@
 	
 	for (uint pos = 0; pos < _nbElemInstalled; pos++)
 	{
-		if(((MANGAS_DATA*) data)[_jumpToInstalled[pos]].cacheDBID == element)
+		if(((PROJECT_DATA*) data)[_jumpToInstalled[pos]].cacheDBID == element)
 			return pos;
 	}
 	
@@ -215,7 +212,7 @@
 		if (_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
 			rowIndex = _jumpToInstalled[rowIndex];
 		
-		return [NSString stringWithCString:((MANGAS_DATA*) data)[rowIndex].mangaName encoding:NSUTF8StringEncoding];
+		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) data)[rowIndex].projectName)] encoding:NSUTF32StringEncoding];
 	}
 	else
 		return nil;
@@ -237,14 +234,10 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	MANGAS_DATA dataToSend = [self getElementAtIndex : selectedIndex];
+	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedIndex];
 	
 	if(dataToSend.team != NULL)
-	{
-		changeTo(dataToSend.mangaName, ' ', '_');
-		
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCT];
-	}
 }
 
 #pragma mark - Drag and drop support
@@ -254,15 +247,14 @@
 	return GUI_THREAD_SERIES;
 }
 
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
 	return [self getElementAtIndex:row];
 }
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
-	MANGAS_DATA project = getCopyOfProjectData([self getElementAtIndex:row]);
-	changeTo(project.mangaName, ' ', '_');
+	PROJECT_DATA project = getCopyOfProjectData([self getElementAtIndex:row]);
 	
 	BOOL isTome = [item defineIsTomePriority:&project alreadyRefreshed:NO];
 	

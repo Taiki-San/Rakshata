@@ -14,7 +14,7 @@
 
 #pragma mark - Classical initialization
 
-- (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition
+- (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition
 {
 	self = [super init];
 
@@ -71,7 +71,7 @@
 	return data != NULL;
 }
 
-- (bool) reloadData : (MANGAS_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
+- (bool) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
 {
 	void * newDataBuf = NULL;
 	
@@ -185,7 +185,7 @@
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
 			if(element.readingName[0])
-				output = [[NSString alloc] initWithBytes:element.readingName length:wstrlen(element.readingName) encoding:NSUTF32StringEncoding];
+				output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32StringEncoding];
 			else
 				output = [NSString stringWithFormat:@"Tome %d", element.readingID];
 		}
@@ -227,7 +227,7 @@
 	return GUI_THREAD_CT;
 }
 
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
 	return projectData;
 }

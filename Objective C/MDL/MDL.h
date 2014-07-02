@@ -35,8 +35,8 @@
 - (BOOL) available;
 - (void) wakeUp;
 
-- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch;
-- (BOOL) proxyCheckForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element;
+- (void) proxyAddElement : (PROJECT_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch;
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;
 
@@ -46,7 +46,7 @@
 
 - (void) updateDependingViews;
 
-- (void) propagateContextUpdate : (MANGAS_DATA) data : (bool) isTome : (int) element;
+- (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
 
 @end

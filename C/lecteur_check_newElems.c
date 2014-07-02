@@ -12,10 +12,10 @@
 
 #include "lecteur.h"
 
-uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
+uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT)
 {
 	uint posStart, posEnd, nbElemFullData;
-	MANGAS_DATA * fullData = getCopyCache(SORT_TEAM, &nbElemFullData);
+	PROJECT_DATA * fullData = getCopyCache(SORT_TEAM, &nbElemFullData);
 	
 	if(fullData == NULL)
 		return 0;
@@ -42,7 +42,7 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 	}
 	
 	//update the database from network (heavy part)
-	updateProjectsFromTeam(fullData, posStart, posEnd, true);
+	updateProjectsFromTeam(fullData, posStart, posEnd);
 	syncCacheToDisk(SYNC_PROJECTS);
 	
 	freeMangaData(fullData);
@@ -73,24 +73,4 @@ uint checkNewElementInRepo(MANGAS_DATA *mangaDB, bool isTome, int CT)
 	}
     
     return firstNewElem;
-}
-
-//Unused in the Objective-C codebase
-void addtoDownloadListFromReader(MANGAS_DATA mangaDB, int firstElem, bool isTome)
-{
-    FILE* updateControler = fopen(INSTALL_DATABASE, "a+");
-	if(updateControler != NULL)
-	{
-	    if(!isTome)
-        {
-			firstElem = mangaDB.nombreChapitre - firstElem;
-            for(; mangaDB.chapitresFull[firstElem] != VALEUR_FIN_STRUCT; fprintf(updateControler, "%s %s C %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.chapitresFull[firstElem++]));
-        }
-        else
-        {
-			firstElem = mangaDB.nombreTomes - firstElem;
-            for(; mangaDB.tomesFull[firstElem].ID != VALEUR_FIN_STRUCT; fprintf(updateControler, "%s %s T %d\n", mangaDB.team->teamCourt, mangaDB.mangaNameShort, mangaDB.tomesFull[firstElem++].ID));
-        }
-		fclose(updateControler);
-	}
 }

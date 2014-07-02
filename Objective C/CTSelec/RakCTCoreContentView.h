@@ -13,11 +13,11 @@
 @interface RakCTCoreContentView : RakList
 {
 	bool isTome;
-	MANGAS_DATA projectData;
+	PROJECT_DATA projectData;
 }
 
-- (id) init : (NSRect) frame : (MANGAS_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
-- (bool) reloadData : (MANGAS_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+- (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
+- (bool) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
 - (void) jumpScrollerToRow : (int) row;
 
 @end

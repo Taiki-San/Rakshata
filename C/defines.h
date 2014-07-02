@@ -14,8 +14,7 @@
 
 /*Général*/
 #define TAILLE_BUFFER 500
-
-#define CREATE_WINDOW_FLAG SDL_WINDOW_OPENGL|SDL_WINDOW_ALLOW_HIGHDPI
+#define STRINGIZE(s) "`"#s"`"
 
 /*Thread*/
 #ifdef _WIN32
@@ -71,7 +70,7 @@
 #define CONFIGFILE "config.dat"
 #define CONFIGFILETOME "config.tome.dat"
 #define VERSION_REPO 2
-#define VERSION_MANGA 2
+#define VERSION_PROJECT 1
 
 /**		Flags	   **/
 

@@ -51,9 +51,9 @@
 				
 				//We have a valid index, now, let's query the database to get the project
 				
-				const char * mangaNameCourt = [[dataState objectAtIndex:1] cStringUsingEncoding:NSASCIIStringEncoding];
+				const uint projectID = [[dataState objectAtIndex:1] unsignedIntValue];
 	
-				MANGAS_DATA * project = getDataFromSearch (indexTeam, mangaNameCourt, RDB_CTXLECTEUR, true);
+				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXLECTEUR, true);
 				
 				if(project == NULL)
 				{
@@ -110,11 +110,11 @@
 
 - (void) noContent
 {
-	MANGAS_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
+	PROJECT_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
 	[self startReading: mangaData[21] : 540: false : 0];
 }
 
-- (void) startReading : (MANGAS_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
+- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
 {
 	bool shouldNotifyBottomBarInitialized = false;
 	
@@ -378,7 +378,7 @@
 
 #pragma mark - Proxy work
 
-- (void) updateContextNotification:(MANGAS_DATA)project :(BOOL)isTome :(int)element
+- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
 {
 	if(element != VALEUR_FIN_STRUCT)
 	{
@@ -434,7 +434,7 @@
 
 #pragma mark - Drop support
 
-- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
 	BOOL ret_value = NO;
 	

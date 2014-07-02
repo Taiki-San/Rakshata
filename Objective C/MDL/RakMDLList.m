@@ -165,7 +165,7 @@
 
 #pragma mark - Drag support
 
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
 	
@@ -207,7 +207,7 @@
 		return;
 	
 	BOOL isTome = ((*dataProject)->listChapitreOfTome != NULL);
-	MANGAS_DATA project = getCopyOfProjectData(*(*dataProject)->datas);
+	PROJECT_DATA project = getCopyOfProjectData(*(*dataProject)->datas);
 	
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, false);
@@ -245,7 +245,7 @@
 	return GUI_THREAD_MDL;
 }
 
-- (BOOL) receiveDrop : (MANGAS_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{

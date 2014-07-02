@@ -10,89 +10,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
-typedef struct dataProject
-{
-	//Pointeurs, un bloc chacun (64b)
-	TEAMS_DATA *team;
-	int *chapitresFull;
-	int *chapitresInstalled;
-	META_TOME *tomesFull;
-	META_TOME *tomesInstalled;
-	
-	//Un bloc de 64b complet chacun
-	size_t nombreChapitre;
-	size_t nombreChapitreInstalled;
-	size_t nombreTomes;
-	size_t nombreTomesInstalled;
-	
-	wchar_t description[LENGTH_DESCRIPTION];
-	
-	//2 x ((51 + 1) x 32b) = 52 x 64b
-	wchar_t projectName[LENGTH_PROJECT_NAME];
-	bool contentDownloadable;
-	wchar_t authorName[LENGTH_AUTHORS];
-	bool favoris;
-	
-	//Un bloc de 64b complet
-	uint8_t status;
-	uint8_t type;
-	uint16_t category;
-	bool japaneseOrder;
-	
-	//Un bloc de 64b
-	uint32_t projectID;
-	uint32_t cacheDBID;
-	
-} PROJECT_DATA;
-
-typedef struct dataProjectWithExtra
-{
-	//Pointeurs, un bloc chacun (64b)
-	TEAMS_DATA *team;
-	int *chapitresFull;
-	int *chapitresInstalled;
-	META_TOME *tomesFull;
-	META_TOME *tomesInstalled;
-	
-	//Un bloc de 64b complet chacun
-	size_t nombreChapitre;
-	size_t nombreChapitreInstalled;
-	size_t nombreTomes;
-	size_t nombreTomesInstalled;
-	
-	wchar_t description[LENGTH_DESCRIPTION];
-	
-	//2 x ((51 + 1) x 32b) = 52 x 64b
-	wchar_t projectName[LENGTH_PROJECT_NAME];
-	bool contentDownloadable;
-	wchar_t authorName[LENGTH_AUTHORS];
-	bool favoris;
-	
-	//Un bloc de 64b complet
-	uint8_t status;
-	uint8_t type;
-	uint16_t category;
-	bool japaneseOrder;
-	
-	//Un bloc de 64b
-	uint32_t projectID;
-	uint32_t cacheDBID;
-	
-	//2 x 64b
-	char hashLarge[LENGTH_HASH];
-	char hashSmall[LENGTH_HASH];
-	
-	//2 x 256o
-	char URLLarge[LENGTH_URL];
-	char URLSmall[LENGTH_URL];
-				
-} PROJECT_DATA_EXTRA;
-
 int * getChapters(NSArray * chapterBloc, uint * nbElem);
+NSArray * recoverChapterBloc(int * chapter, uint length);
 META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem);
+NSArray * recoverVolumeBloc(META_TOME * volume, uint length);
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
-PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw);
+void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
 
 int * getChapters(NSArray * chapterBloc, uint * nbElem)
 {
@@ -176,6 +100,69 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 	return output;
 }
 
+NSArray * recoverChapterBloc(int * chapter, uint length)
+{
+	if(chapter == NULL)		return nil;
+	
+	NSMutableArray * output = [[NSMutableArray new] autorelease], *currentDetail = nil, *currentBurst = nil;
+	
+	if(output == nil)		return nil;
+	
+	//We create a diff table
+	uint diff[length-1];
+	for(uint i = 0; i < length-1; i++)
+		diff[i] = chapter[i+1] - chapter[i];
+	
+	//We look for burst
+	int repeatingDiff = diff[0];
+	currentBurst = [NSMutableArray arrayWithObject:@(chapter[0])];
+	uint counter = 1;
+	
+	//1 because the n-1 list in started after the first element
+	for (uint i = 1; i < length; i++)
+	{
+		if(i == length-1 || diff[i] != repeatingDiff)
+		{
+			if(counter > 5)
+			{
+				if(currentDetail != nil && [currentDetail count])
+				{
+					[output addObject:currentDetail];
+					[currentDetail release];		currentDetail = nil;
+				}
+				
+				[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[i - counter]), @(chapter[i]), @(repeatingDiff)] forKeys:@[@"first", @"last", @"jump"]]];
+			}
+			else
+			{
+				if(i == length - 1)		[currentBurst addObject:@(chapter[i])];
+				
+				if(currentDetail == nil)		currentDetail = [NSMutableArray new];
+				
+				[currentDetail addObjectsFromArray:currentBurst];
+			}
+			
+			[currentBurst release];		currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
+			repeatingDiff = diff[i];	counter = 1;
+		}
+		else
+		{
+			[currentBurst addObject:@(chapter[i])];
+			counter++;
+		}
+	}
+	
+	if(currentDetail != nil && [currentDetail count])
+	{
+		[output addObject:currentDetail];
+		[currentDetail release];
+	}
+	if(currentBurst != nil)
+		[currentBurst release];
+	
+	return [NSArray arrayWithArray:output];
+}
+
 META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem)
 {
 	if(nbElem == NULL)
@@ -226,7 +213,6 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem)
 			if(description == nil)			output[cache].description[0] = 0;
 			else							wcsncpy(output[cache].description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], TOME_DESCRIPTION_LENGTH);
 			
-#warning "Need to link this code"
 			output[cache].details = NULL;
 		}
 		
@@ -234,6 +220,38 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem)
 	}
 	
 	return output;
+}
+
+NSArray * recoverVolumeBloc(META_TOME * volume, uint length)
+{
+	if (volume == NULL)
+		return nil;
+	
+	NSMutableArray *output = [NSMutableArray array];
+	NSMutableDictionary * dict;
+	
+	for(uint pos = 0; pos < length; pos++)
+	{
+		if(volume[pos].ID == VALEUR_FIN_STRUCT)
+			break;
+		else if(volume[pos].readingID == VALEUR_FIN_STRUCT && volume[pos].readingName[0] == 0)
+			continue;
+		
+		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:@"Internal ID"];
+		
+		if(volume[pos].description[0])
+			[dict insertValue:[[[NSString alloc] initWithData:[NSData dataWithBytes:volume[pos].description length:sizeof(volume[pos].description)] encoding:NSUTF32StringEncoding]autorelease] inPropertyWithKey:@"description"];
+		
+		if(volume[pos].readingName[0])
+			[dict insertValue:[[[NSString alloc] initWithData:[NSData dataWithBytes:volume[pos].readingName length:sizeof(volume[pos].readingName)] encoding:NSUTF32StringEncoding]autorelease] inPropertyWithKey:@"Reading name"];
+		
+		if(volume[pos].readingID != VALEUR_FIN_STRUCT)
+			[dict insertValue:@(volume[pos].readingID) inPropertyWithKey:@"Reading ID"];
+		
+		[output addObject:dict];
+	}
+	
+	return [NSArray arrayWithArray:output];
 }
 
 PROJECT_DATA parseBloc(NSDictionary * bloc)
@@ -250,7 +268,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSString * projectName = [bloc objectForKey:@"projectName"];
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
-	uint nbChapters, nbVolumes;
+	uint nbChapters = 0, nbVolumes = 0;
 	chapters = getChapters([bloc objectForKey:@"chapters"], &nbChapters);
 	volumes = getVolumes([bloc objectForKey:@"volumes"], &nbVolumes);
 
@@ -268,7 +286,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSNumber * type = [bloc objectForKey:@"type"];
 	if(type == nil || [type superclass] != [NSNumber class])				goto end;
 	
-	NSNumber * asianOrder = [bloc objectForKey:@"asian_order_of_lecture"];
+	NSNumber * asianOrder = [bloc objectForKey:@"asian_order_of_reading"];
 	if(asianOrder == nil || [asianOrder superclass] != [NSNumber class])	goto end;
 	
 	NSNumber * category = [bloc objectForKey:@"category"];
@@ -287,6 +305,12 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	wcsncpy(data.description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
 	wcsncpy(data.authorName, (wchar_t*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
 	
+	if(volumes != nil)
+	{
+		for(uint i = 0; i < nbVolumes; i++)
+			parseTomeDetails(data, volumes[i].ID, &(volumes[i].details));
+	}
+	
 	chapters = NULL;
 	volumes = NULL;
 end:
@@ -294,6 +318,35 @@ end:
 	free(chapters);
 	freeTomeList(volumes, true);
 	return data;
+}
+
+NSDictionary * reverseParseBloc(PROJECT_DATA project)
+{
+	if(project.team == NULL)
+		return nil;
+	
+	id buf;
+	NSMutableDictionary * output = [[NSMutableDictionary dictionary] autorelease];
+	
+	[output insertValue:@(project.projectID) inPropertyWithKey:@"ID"];
+	[output insertValue:[[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32StringEncoding]autorelease] inPropertyWithKey:@"projectName"];
+	
+	buf = recoverChapterBloc(project.chapitresFull, project.nombreChapitre);
+	if(buf != nil)		[output insertValue:buf inPropertyWithKey:@"chapters"];
+	
+	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes);
+	if(buf != nil)		[output insertValue:buf inPropertyWithKey:@"volumes"];
+	
+	[output insertValue:[[[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32StringEncoding]autorelease] inPropertyWithKey:@"description"];
+	
+	[output insertValue:[[[NSString alloc] initWithData:[NSData dataWithBytes:project.authorName length:sizeof(project.authorName)] encoding:NSUTF32StringEncoding]autorelease] inPropertyWithKey:@"author"];
+	
+	[output insertValue:@(project.status) inPropertyWithKey:@"status"];
+	[output insertValue:@(project.type) inPropertyWithKey:@"type"];
+	[output insertValue:@(project.japaneseOrder) inPropertyWithKey:@"asian_order_of_reading"];
+	[output insertValue:@(project.category) inPropertyWithKey:@"category"];
+	
+	return [NSDictionary dictionaryWithDictionary:output];
 }
 
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
@@ -336,25 +389,16 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	return output;
 }
 
-PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw)
+void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
 {
-	PROJECT_DATA_EXTRA * outputData = NULL;
-	NSError * error = nil;
-	NSMutableDictionary * remoteData = [[NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:remoteDataRaw length:ustrlen(remoteDataRaw)] options:0 error:&error] autorelease];
-	
-	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
-		return NULL;
-	
-	id teamName = [remoteData objectForKey:@"teamName"], teamURL = [remoteData objectForKey:@"teamURL"];
+	void * outputData = NULL;
 	NSArray * projects = [remoteData objectForKey:@"projects"];
 	
-	if (teamName == nil || [teamName superclass] != [NSMutableString class] || ![(NSString*) teamName isEqualToString:[NSString stringWithUTF8String:team->teamLong]] ||
-		teamURL == nil || [teamURL superclass] != [NSMutableString class] || ![(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team->URLRepo]] ||
-		projects == nil || [projects superclass] != [NSArray class])
-	{	return NULL;	}
+	if(projects == nil || [projects superclass] != [NSArray class])
+		return NULL;
 	
 	size_t size = [projects count];
-	outputData = malloc(size * sizeof(PROJECT_DATA_EXTRA));
+	outputData = malloc(size * (parseExtra ? sizeof(PROJECT_DATA_EXTRA) : sizeof(PROJECT_DATA)));
 	
 	if (outputData != NULL)
 	{
@@ -369,75 +413,161 @@ PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw)
 			else if([remoteData superclass] != [NSMutableDictionary class])
 				continue;
 			
-			outputData[validElements] = parseBlocExtra(remoteData);
+			if(parseExtra)
+				((PROJECT_DATA_EXTRA*)outputData)[validElements] = parseBlocExtra(remoteData);
+			else
+				((PROJECT_DATA*)outputData)[validElements] = parseBloc(remoteData);
 		
 			if(memcmp(&(outputData[validElements]), &emptySample, sizeof(emptySample)))
-				outputData[validElements++].team = team;
+				((PROJECT_DATA*)outputData)[validElements++].team = team;
 		}
+		
+		if(nbElem != NULL)
+			*nbElem = validElements;
 	}
 	
 	return outputData;
 }
 
-NSArray * recoverChapterBloc(int * chapter, uint length)
+PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uint * nbElem)
 {
-	if(chapter == NULL)		return nil;
+	NSError * error = nil;
+	NSMutableDictionary * remoteData = [[NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:remoteDataRaw length:ustrlen(remoteDataRaw)] options:0 error:&error] autorelease];
 	
-	NSMutableArray * output = [[NSMutableArray new] autorelease], *currentDetail = nil, *currentBurst = nil;
+	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
+		return NULL;
 	
-	if(output == nil)		return nil;
+	id teamName = [remoteData objectForKey:@"authorName"], teamURL = [remoteData objectForKey:@"authorURL"];
+	if (teamName == nil || [teamName superclass] != [NSMutableString class] || ![(NSString*) teamName isEqualToString:[NSString stringWithUTF8String:team->teamLong]] ||
+		teamURL == nil || [teamURL superclass] != [NSMutableString class] || ![(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team->URLRepo]])
+	{	return NULL;	}
 	
-	//We create a diff table
-	uint diff[length-1];
-	for(uint i = 0; i < length-1; i++)
-		diff[i] = chapter[i+1] - chapter[i];
+	PROJECT_DATA_EXTRA * output = parseJSON(team, remoteData, nbElem, true);
+	return output;
+}
+
+PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, char * remoteDataRaw, uint *nbElem)
+{
+	if(team == nil || nbElem == NULL)
+		return NULL;
 	
-	//We look for burst
-	int repeatingDiff = diff[0];
-	currentBurst = [NSMutableArray arrayWithObject:@(chapter[0])];
-	uint counter = 1;
+	NSError * error = nil;
+	NSMutableDictionary * remoteData = [[NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:remoteDataRaw length:ustrlen(remoteDataRaw)] options:0 error:&error] autorelease];
 	
-	//1 because the n-1 list in started after the first element
-	for (uint i = 1; i < length; i++)
+	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
+		return NULL;
+	
+	NSArray * array = [remoteData objectForKey:@"root"];
+	if(array == nil || [array superclass] != [NSMutableArray class])
+		return NULL;
+	
+	uint nbElemPart, posTeam;
+	PROJECT_DATA *output = NULL, *currentPart;
+	id teamName, teamURL;
+	
+	for(NSDictionary * remoteDataPart in array)
 	{
-		if(i == length-1 || diff[i] != repeatingDiff)
+		if([remoteDataPart superclass] == [NSMutableDictionary class])
+			continue;
+		
+		teamName = [remoteData objectForKey:@"teamName"];
+		teamURL = [remoteData objectForKey:@"teamURL"];
+		if (teamName == nil || [teamName superclass] != [NSMutableString class]|| teamURL == nil || [teamURL superclass] != [NSMutableString class])
+			return NULL;
+		
+		for(posTeam = 0; posTeam < nbTeam; posTeam++)
 		{
-			if(counter > 5)
+			if(team[posTeam] == NULL)
+				continue;
+			
+			if(![(NSString*) teamName isEqualToString:[NSString stringWithUTF8String:team[posTeam]->teamLong]] && ![(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team[posTeam]->URLRepo]])
 			{
-				if(currentDetail != nil && [currentDetail count])
+				nbElemPart = 0;
+				currentPart = (PROJECT_DATA*) parseJSON(team[posTeam], remoteDataPart, &nbElemPart, false);
+				
+				if(nbElemPart)
 				{
-					[output addObject:currentDetail];
-					[currentDetail release];		currentDetail = nil;
+					void * buf = realloc(output, (*nbElem + nbElemPart) * sizeof(PROJECT_DATA));
+					if(buf != NULL)
+					{
+						output = buf;
+						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA));
+					}
+					free(currentPart);
 				}
 				
-				[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[i - counter]), @(chapter[i]), @(repeatingDiff)] forKeys:@[@"first", @"last", @"jump"]]];
+				break;
 			}
-			else
-			{
-				if(i == length - 1)		[currentBurst addObject:@(chapter[i])];
-				
-				if(currentDetail == nil)		currentDetail = [NSMutableArray new];
-				
-				[currentDetail addObjectsFromArray:currentBurst];
-			}
+		}
+	}
+	
+	return NULL;
+}
 
-			[currentBurst release];		currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
-			repeatingDiff = diff[i];	counter = 1;
-		}
-		else
-		{
-			[currentBurst addObject:@(chapter[i])];
-			counter++;
-		}
-	}
+char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput)
+{
+	if(data == NULL || team == NULL)
+		return NULL;
 	
-	if(currentDetail != nil && [currentDetail count])
+	uint counters[nbTeam], jumpTable[nbTeam][nbElem];
+	
+	memset(counters, 0, sizeof(counters));
+	
+	//Create a table linking projects to team
+	for(uint pos = 0, posTeam; pos < nbElem; pos++)
 	{
-		[output addObject:currentDetail];
-		[currentDetail release];
+		for (posTeam = 0; posTeam < nbTeam; posTeam++)
+		{
+			if(data[pos].team == team[posTeam])
+			{
+				jumpTable[posTeam][counters[posTeam]] = pos;
+			}
+			
+		}
 	}
-	if(currentBurst != nil)
-		[currentBurst release];
 	
-	return [NSArray arrayWithArray:output];
+	NSMutableArray *root = [NSMutableArray array], *projects;
+	NSDictionary * currentNode;
+	id currentProject;
+	
+	for(uint pos = 0; pos < nbTeam; pos++)
+	{
+		if(!counters[pos])	continue;
+		
+		projects = [NSMutableArray array];
+		
+		for(uint index = 0; index < counters[pos]; index++)
+		{
+			currentProject = reverseParseBloc(data[jumpTable[pos][index]]);
+			if(currentProject != nil)
+				[projects addObject:currentProject];
+		}
+		
+		if([projects count])
+		{
+			currentNode = [NSDictionary dictionaryWithObjects:@[[NSString stringWithUTF8String:team[pos]->teamLong], [NSString stringWithUTF8String:team[pos]->URLRepo], projects] forKeys:@[@"authorName", @"authorURL", @"projects"]];
+			if(currentNode != nil)
+				[root addObject:currentNode];
+		}
+	}
+	
+	if([root count])
+		return NULL;
+	
+	NSError * error = nil;
+	NSData * dataOutput = [[NSJSONSerialization dataWithJSONObject:root options:0 error:&error] autorelease];
+	
+	size_t length = [dataOutput length];
+	void * outputDataC = malloc(length);
+
+	if (dataOutput == NULL)
+		return NULL;
+	
+	[dataOutput getBytes:outputDataC length:length];
+	
+	char * output = base64_encode(outputDataC, length, sizeOutput);
+	
+	free(outputDataC);
+	
+	return output;
 }

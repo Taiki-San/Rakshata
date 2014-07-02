@@ -80,13 +80,13 @@
 
 /* Proxy */
 
-- (void) proxyAddElement : (MANGAS_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch
+- (void) proxyAddElement : (PROJECT_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch
 {
 	if(controller != nil)
 		[controller addElement:data :isTome :newElem :partOfBatch];
 }
 
-- (BOOL) proxyCheckForCollision : (MANGAS_DATA) data : (BOOL) isTome : (int) element
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
 {
 	if(controller != nil)
 		return [controller checkForCollision:data :isTome :element];
@@ -339,7 +339,7 @@
 
 /** Inter-tab communication **/
 
-- (void) propagateContextUpdate : (MANGAS_DATA) data : (bool) isTome : (int) element
+- (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
 {
 	NSArray* subviews = self.superview.subviews;
 	
@@ -373,7 +373,7 @@
 	return [super dropOperationForSender:sender];
 }
 
-- (BOOL) receiveDrop : (MANGAS_DATA) data : (bool) isTome : (int) element : (uint) sender;
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;
 {
 	return (coreView != nil && [coreView proxyReceiveDrop:data :isTome :element :sender]);
 }

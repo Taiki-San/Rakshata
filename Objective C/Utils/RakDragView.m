@@ -12,14 +12,14 @@
 
 @implementation RakDragView
 
-- (void) setupContent : (MANGAS_DATA) projectData : (NSString *) selectionNameString
+- (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString
 {
 	if(projectImage != nil)
 	{
 		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", projectData.team->URLRepo]];
 		if(bundle != nil)
 		{
-			projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%s_small", projectData.mangaNameShort]];
+			projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_DD", projectData.projectID]];
 		}
 		
 		if(projectImage.image == nil)
@@ -30,7 +30,7 @@
 	
 	if (projectName != nil)
 	{
-		[projectName setStringValue:[[NSString stringWithUTF8String:projectData.mangaName] stringByReplacingOccurrencesOfString:@"_" withString:@" "]];
+		[projectName setStringValue:[[NSString alloc] initWithData:[NSData dataWithBytes:projectData.projectName length:sizeof(projectData.projectName)] encoding:NSUTF32StringEncoding]];
 		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE]];
 	}
 	

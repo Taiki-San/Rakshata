@@ -124,13 +124,13 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256];
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
-						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%d/Tome_%d/native/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d.%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%s/Tome_%d/native/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
-						snprintf(newPath, sizeof(newPath), "manga/%s/%s/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->mangaName, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), "manga/%s/%d/Tome_%d/native/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d", todoListTmp.datas->team->teamLong, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
 					}
 					
 					rename(oldPath, newPath);
@@ -360,9 +360,9 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
     return output;
 }
 
-bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
+bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
-    int extremes[2], erreurs = 0, dernierLu = -1;
+    int erreurs = 0;
     char temp[600], basePath[500];
     FILE* ressources = NULL;
 	
@@ -373,37 +373,33 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 		if(subFolder)
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10);
+				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/Chapitre_%d", mangaDB->team->teamLong, mangaDB->projectID, tome, chapitre/10);
 		}
 		else
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/native/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/native/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, "manga/%s/%s/Tome_%d/native/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, tome, chapitre/10);
+				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/native/Chapitre_%d", mangaDB->team->teamLong, mangaDB->projectID, tome, chapitre/10);
 		}
     }
     else
     {
         if(chapitre%10)
-            snprintf(basePath, 500, "manga/%s/%s/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->mangaName, chapitre/10, chapitre%10);
+            snprintf(basePath, 500, "manga/%s/%d/Chapitre_%d.%d", mangaDB->team->teamLong, mangaDB->projectID, chapitre/10, chapitre%10);
         else
-            snprintf(basePath, 500, "manga/%s/%s/Chapitre_%d", mangaDB->team->teamLong, mangaDB->mangaName, chapitre/10);
+            snprintf(basePath, 500, "manga/%s/%d/Chapitre_%d", mangaDB->team->teamLong, mangaDB->projectID, chapitre/10);
     }
 	
     snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
     if(!checkFileExist(temp))
     {
         /*Si le manga existe déjà*/
-        snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-        if(!checkFileExist(temp))
-        {
-            /*Si le dossier du manga n'existe pas*/
-            snprintf(temp, 500, "manga/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName);
-            mkdirR(temp);
-        }
+        snprintf(temp, 500, "manga/%s/%d/", mangaDB->team->teamLong, mangaDB->projectID);
+        if(!checkDirExist(temp))
+			createPath(temp);
 		
         /**Décompression dans le repertoire de destination**/
 		
@@ -431,54 +427,15 @@ bool MDLInstallation(void *buf, size_t sizeBuf, MANGAS_DATA *mangaDB, int chapit
 
 		if(!subFolder)
         {
-            snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
             if(erreurs)
             {
-                snprintf(temp, 500, "Archive Corrompue: %s - %d\n", mangaDB->mangaName, chapitre);
+                snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", mangaDB->team->teamLong, mangaDB->projectID, chapitre);
                 logR(temp);
                 removeFolder(basePath);
             }
-            else if(checkFileExist(temp))
-            {
-                snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-                ressources = fopen(temp, "r+");
-                if(ressources != NULL)
-                {
-                    fscanfs(ressources, "%d %d", &extremes[0], &extremes[1]);
-                    if(fgetc(ressources) != EOF)
-                        fscanfs(ressources, "%d", &dernierLu);
-                    else
-                        dernierLu = -1;
-                    fclose(ressources);
-                }
-                else
-                    extremes[0] = extremes[1] = chapitre;
-				
-                ressources = fopen(temp, "w+");
-                if(extremes[0] > chapitre)
-                    fprintf(ressources, "%d %d", chapitre, extremes[1]);
-				
-                else if(extremes[1] < chapitre)
-                    fprintf(ressources, "%d %d", extremes[0], chapitre);
-				
-                else
-                    fprintf(ressources, "%d %d", extremes[0], extremes[1]);
-                if(dernierLu != -1)
-                    fprintf(ressources, " %d", dernierLu);
-				
-                fclose(ressources);
-            }
-            else
-            {
-                /*Création du config.dat du nouveau manga*/
-                snprintf(temp, 500, "manga/%s/%s/%s", mangaDB->team->teamLong, mangaDB->mangaName, CONFIGFILE);
-                ressources = fopen(temp, "w+");
-                fprintf(ressources, "%d %d", chapitre, chapitre);
-                fclose(ressources);
-            }
         }
     }
-    return erreurs != 0;    //0 ou 1
+    return erreurs != 0;
 }
 
 void MDLUpdateKillState(bool newState)

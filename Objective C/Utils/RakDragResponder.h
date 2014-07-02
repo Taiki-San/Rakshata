@@ -21,7 +21,7 @@
 + (uint) getOwnerOfTV : (NSView *) view;
 - (BOOL) supportReorder;
 - (uint) getSelfCode;
-- (MANGAS_DATA) getProjectDataForDrag : (uint) row;
+- (PROJECT_DATA) getProjectDataForDrag : (uint) row;
 - (NSString *) contentNameForDrag : (uint) row;
 - (NSString *) reorderCode;
 

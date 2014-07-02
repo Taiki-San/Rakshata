@@ -63,24 +63,27 @@
 
 - (NSString *) getName
 {
-	NSString * name;
+	NSString * name, *projectName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32StringEncoding] autorelease];
 	
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
 		if((*todoList)->identifier % 10)
-			name = [NSString stringWithFormat:@"%s chapitre %d.%d", (*todoList)->datas->mangaName, (*todoList)->identifier / 10, (*todoList)->identifier % 10];
+			name = [NSString stringWithFormat:@"%@ chapitre %d.%d", projectName, (*todoList)->identifier / 10, (*todoList)->identifier % 10];
 		else
-			name = [NSString stringWithFormat:@"%s chapitre %d", (*todoList)->datas->mangaName, (*todoList)->identifier / 10];
+			name = [NSString stringWithFormat:@"%@ chapitre %d", projectName, (*todoList)->identifier / 10];
 	}
 	else
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
-			name = [NSString stringWithFormat:@"%s %s", (*todoList)->datas->mangaName, (*todoList)->tomeName];
+		{
+			NSString * tomeName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32StringEncoding] autorelease];
+			name = [NSString stringWithFormat:@"%@ %@", projectName, tomeName];
+		}
 		else
-			name = [NSString stringWithFormat:@"%s tome %d", (*todoList)->datas->mangaName, (*todoList)->identifier];
+			name = [NSString stringWithFormat:@"%@ tome %d", projectName, (*todoList)->identifier];
 	}
 	
-	return [name stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+	return name;
 }
 
 - (void) setFont : (NSFont*) font

@@ -149,7 +149,7 @@
 	return nil;
 }
 
-- (MANGAS_DATA*) getRawDataChild
+- (PROJECT_DATA*) getRawDataChild
 {
 	if (_isRootItem || _isMainList)
 		return NULL;
@@ -162,7 +162,7 @@
 	if(_isRootItem && dataRoot != NULL)
 		return dataRoot;
 	else if(!_isRootItem && dataChild != NULL)
-		return [[NSString stringWithCString:dataChild->mangaName encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+		return [[NSString alloc] initWithData:[NSData dataWithBytes:dataChild->projectName length:sizeof(dataChild->projectName)] encoding:NSUTF32StringEncoding];
 	else
 		return @"Internal error :(";
 }

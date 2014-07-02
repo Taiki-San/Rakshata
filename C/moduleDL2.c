@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startMDL(char * state, PROJECT_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
 	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || nbElemTotal == NULL || quit == NULL)
@@ -51,10 +51,10 @@ bool startMDL(char * state, MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_
 		(*status)[i] = NULL;
 	}
 
-	return startWorker(cache, coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab);
+	return startWorker(coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab);
 }
 
-bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
 	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(50);		}
@@ -82,7 +82,7 @@ bool startWorker(MANGAS_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED ****
 	return false;
 }
 
-void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, MANGAS_DATA * cache)
+void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA * cache)
 {
 	uint i;
 
@@ -125,12 +125,12 @@ char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition,
                 continue;
             else if(todoList[currentPosition]->listChapitreOfTome != NULL)
             {
-				snprintf(buffer, sizePerElem, "%s %s T %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %d T %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
             else
             {
-				snprintf(buffer, sizePerElem, "%s %s C %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->mangaNameShort, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %d C %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
         }

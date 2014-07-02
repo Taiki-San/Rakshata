@@ -14,12 +14,12 @@
 
 @interface RakArgumentToRefreshAlert : NSObject
 {
-	MANGAS_DATA * data;
+	PROJECT_DATA * data;
 	uint nbElem;
 }
 
-- (void) setData : (MANGAS_DATA *) newData;
-- (MANGAS_DATA *) data;
+- (void) setData : (PROJECT_DATA *) newData;
+- (PROJECT_DATA *) data;
 - (void) setNbElem : (uint) newData;
 - (uint) nbElem;
 
@@ -50,7 +50,7 @@
 	
 	bool cacheBeingBuilt;
 	
-	MANGAS_DATA project;
+	PROJECT_DATA project;
 	DATA_LECTURE data;
 	
 	int currentElem;
@@ -58,7 +58,7 @@
 	bool isTome;
 }
 
-- (id) init : (Reader*)superView : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
+- (id) init : (Reader*)superView : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) bottomBarInitialized;
 - (NSString *) getContextToGTFO;
 
@@ -80,12 +80,12 @@
 - (void) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
 
-- (BOOL) initialLoading : (MANGAS_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) buildCache;
 - (void) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (bool) goToNext;
-- (void) changeProject : (MANGAS_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
+- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
 - (void) updateContext;
 - (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;

@@ -41,7 +41,6 @@ int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
         if(!strcmp(teams.type, TYPE_DEPOT_1))
             snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
-		
         else if(!strcmp(teams.type, TYPE_DEPOT_2))
             snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
@@ -113,15 +112,15 @@ void updateRepo()
 
 int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
 {
-	int defaultVersion = VERSION_MANGA;
+	int defaultVersion = VERSION_PROJECT;
 	char URL[500];
     do
 	{
 	    if(!strcmp(teams->type, TYPE_DEPOT_1))
-            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-manga-%d", teams->URLRepo, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_2))
-            snprintf(URL, sizeof(URL), "http://%s/rakshata-manga-%d", teams->URLRepo, defaultVersion);
+            snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
             snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
@@ -129,7 +128,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
         else
         {
             char temp[LENGTH_PROJECT_NAME + 100];
-            snprintf(temp, sizeof(temp), "failed at read mode(manga database): %s", teams->type);
+            snprintf(temp, sizeof(temp), "failed at read mode(project database): %s", teams->type);
             logR(temp);
             return -1;
         }
@@ -143,10 +142,10 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, bool updateDB)
+void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 {
 	TEAMS_DATA *globalTeam = oldData[posBase].team;
-	uint magnitudeInput = posEnd - posBase;
+	uint magnitudeInput = posEnd - posBase, nbElem = 0;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
 	if(bufferDL == NULL)
@@ -156,51 +155,22 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, boo
 	
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, globalTeam))		//On a des données à peu près valide
 	{
-		uint maxNbrLine, posCur, curLine = 0;
-		MANGAS_DATA* dataOutput;
+		PROJECT_DATA_EXTRA * projects = parseRemoteData(globalTeam, bufferDL, &nbElem);
+		updatePageInfoForProjects(projects, nbElem);
 		
-		for (posCur = 0; bufferDL[posCur] == '\n' || bufferDL[posCur] == '\r'; posCur++);		//Si le fichier commençait par des \n, anti DoS
-		maxNbrLine = getNumberLineReturn(&bufferDL[posCur]);									//La première ligne contient le nom de la team, mais il n'y a pas de \n à la fin de la dernière
-		dataOutput = malloc((maxNbrLine + 1) * sizeof(MANGAS_DATA));							//On alloue de quoi tout recevoir
-		
-		if(dataOutput != NULL)
+		//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
+		if(projects != NULL)
 		{
-			const short sizeBufferLine = MAX_PROJECT_LINE_LENGTH;
-			char bufferLine[sizeBufferLine];
-			//la première ligne a déjà étée checkée dans downloadedProjectListSeemsLegit, et on utilise pas la version dispo dans rak-manga-2
-			posCur += jumpLine(&bufferDL[posCur]);
-			
-			//On peut commencer à parser
-			while (curLine < maxNbrLine && extractCurrentLine(bufferDL, &posCur, bufferLine, sizeBufferLine))
+			PROJECT_DATA *projectShort = malloc(nbElem * sizeof(PROJECT_DATA));
+			if(projectShort != NULL)
 			{
-				dataOutput[curLine].team = globalTeam;
-				if(parseCurrentProjectLine(bufferLine, version, &dataOutput[curLine]))
-					curLine++;
-				else
-					memset(&dataOutput[curLine], 0, sizeof(MANGAS_DATA));
-			}
-			
-			dataOutput[curLine].team = NULL;	//On signale la fin dans la chaîne
-			maxNbrLine = curLine;				//On a le nombre exacte de ligne remplie
-			
-			//On a fini de parser la permière partie
-			
-			//The fun begins, on a désormais à lire les bundles à la fin du fichier
-			uint newPosEnd;
-			while(version == 2 && bufferDL[posCur] == '#')
-			{
-				posCur++;
-				newPosEnd = getPosOfChar(&bufferDL[posCur], '#', true);
-				parseDetailsBlock(&bufferDL[posCur], dataOutput, globalTeam->teamLong, newPosEnd);
-				posCur += newPosEnd;
+				for (uint pos = 0; pos < nbElem; pos++)
+					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
 				
+				applyChangesProject(&oldData[posBase], magnitudeInput, projectShort, nbElem);
+				free(projectShort);
 			}
-			
-			//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
-			if(updateDB)
-				applyChangesProject(&oldData[posBase], magnitudeInput, dataOutput, maxNbrLine);
-			
-			free(dataOutput);
+			free(projects);
 		}
 	}
 	
@@ -210,13 +180,13 @@ void updateProjectsFromTeam(MANGAS_DATA* oldData, uint posBase, uint posEnd, boo
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd;
-	MANGAS_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbElem);
+	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbElem);
 	
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
-			updateProjectsFromTeam(oldData, posBase, posEnd, true);
+			updateProjectsFromTeam(oldData, posBase, posEnd);
 		else
 			break;
 
@@ -225,13 +195,12 @@ void updateProjects()
 	freeMangaData(oldData);
 }
 
-extern int curPage; //Too lazy to use an argument
-void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome)
+void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
 	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
 	{
 		char path[2*LENGTH_PROJECT_NAME + 25];
-		snprintf(path, sizeof(path), "manga/%s/%s", project.team->teamLong, project.mangaName);
+		snprintf(path, sizeof(path), "manga/%s/%d", project.team->teamLong, project.projectID);
 		removeFolder(path);
 	}
 	else
@@ -240,36 +209,19 @@ void deleteProject(MANGAS_DATA project, int elemToDel, bool isTome)
 	}
 }
 
-void setLastChapitreLu(MANGAS_DATA mangasDB, bool isTome, int dernierChapitre)
+void setLastChapitreLu(PROJECT_DATA mangasDB, bool isTome, int dernierChapitre)
 {
-	int i = 0, j = 0;
 	char temp[5*LENGTH_PROJECT_NAME];
 	FILE* fichier = NULL;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILETOME);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", mangasDB.team->teamLong, mangasDB.projectID, CONFIGFILETOME);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%s/%s", mangasDB.team->teamLong, mangasDB.mangaName, CONFIGFILE);
-	if(isTome)
-    {
-        fichier = fopen(temp, "w+");
-        fprintf(fichier, "%d", dernierChapitre);
-        fclose(fichier);
-    }
-    else
-    {
-        fichier = fopen(temp, "r");
-        if(fichier == NULL)
-            i = j = dernierChapitre;
-        else
-        {
-            fscanfs(fichier, "%d %d", &i, &j);
-            fclose(fichier);
-        }
-        fichier = fopen(temp, "w+");
-        fprintf(fichier, "%d %d %d", i, j, dernierChapitre);
-        fclose(fichier);
-    }
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", mangasDB.team->teamLong, mangasDB.projectID, CONFIGFILE);
+
+	fichier = fopen(temp, "w+");
+	fprintf(fichier, "%d", dernierChapitre);
+	fclose(fichier);
 }
 
 int databaseVersion(char* mangaDB)
