@@ -212,7 +212,7 @@
 		if (_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
 			rowIndex = _jumpToInstalled[rowIndex];
 		
-		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) data)[rowIndex].projectName)] encoding:NSUTF32StringEncoding];
+		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) data)[rowIndex].projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	}
 	else
 		return nil;

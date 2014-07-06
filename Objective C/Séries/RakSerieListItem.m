@@ -162,7 +162,7 @@
 	if(_isRootItem && dataRoot != NULL)
 		return dataRoot;
 	else if(!_isRootItem && dataChild != NULL)
-		return [[NSString alloc] initWithData:[NSData dataWithBytes:dataChild->projectName length:sizeof(dataChild->projectName)] encoding:NSUTF32StringEncoding];
+		return [[NSString alloc] initWithData:[NSData dataWithBytes:dataChild->projectName length:sizeof(dataChild->projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	else
 		return @"Internal error :(";
 }

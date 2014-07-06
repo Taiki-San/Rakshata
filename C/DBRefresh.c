@@ -45,7 +45,7 @@ int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
             snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
         else if(!strcmp(teams.type, TYPE_DEPOT_3)) //Payant
-            snprintf(temp, 500, "https://%s/ressource.php?editor=%s&request=repo&user=%s&version=%d", SERVEUR_URL, teams.URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(temp, 500, "https://"SERVEUR_URL"/ressource.php?editor=%s&request=repo&user=%s&version=%d", teams.URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 		
         else
         {
@@ -123,7 +123,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
             snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=mangas&user=%s&version=%d", SERVEUR_URL, teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=mangas&user=%s&version=%d", teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {

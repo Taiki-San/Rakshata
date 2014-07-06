@@ -35,7 +35,6 @@ bool checkPathEscape(char *string, int length);
 /**CTCommon.c**/
 void getUpdatedCTList(PROJECT_DATA *mangaDB, bool isTome);
 bool checkReadable(PROJECT_DATA mangaDB, bool isTome, int data);
-bool isAnythingToDownload(PROJECT_DATA mangaDB);
 void internalDeleteCT(PROJECT_DATA mangaDB, bool isTome, int selection);
 void releaseCTData(PROJECT_DATA data);
 
@@ -65,7 +64,7 @@ void checkSectionMessageUpdate();
 
 /**JSONParser.m**/
 PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uint * nbElem);
-PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, char * remoteDataRaw, uint *nbElem);
+PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem);
 char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput);
 
 /**Keys.c**/
@@ -131,12 +130,12 @@ uint getRandom();
 /**Settings.c**/
 int affichageMenuGestion(); //Remplacer gestion par setting
 char *loadPrefFile();
-void addToPref(char flag, char *stringToAdd);
-void removeFromPref(char flag);
-void updatePrefs(char flag, char *stringToAdd);
+void addToPref(char* flag, char *stringToAdd);
+void removeFromPref(char* flag);
+void updatePrefs(char* flag, char *stringToAdd);
 int loadLangueProfile();
 int loadEmailProfile();
-char* loadLargePrefs(char flag);
+char* loadLargePrefs(char* flag);
 
 /**Thread.c**/
 void createNewThread(void *function, void *arg);

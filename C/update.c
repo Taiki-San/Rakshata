@@ -83,15 +83,15 @@ void checkUpdate()
 
                     crashTemp(URL, 500);
 #ifdef DEV_VERSION
-                    snprintf(URL, 500, "https://%s/update/dev/files/%d/%s", SERVEUR_URL, CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://"SERVEUR_URL"/update/dev/files/%d/%s", CURRENTVERSION, files[i]);
 #else
     #ifdef _WIN32
-                    snprintf(URL, 500, "https://%s/update/win32/files/%d/%s", SERVEUR_URL, CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://"SERVEUR_URL"/update/win32/files/%d/%s", CURRENTVERSION, files[i]);
     #else
         #ifdef __APPLE__
-                    snprintf(URL, 500, "https://%s/update/OSX/files/%d/%s", SERVEUR_URL, CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://"SERVEUR_URL"/update/OSX/files/%d/%s", CURRENTVERSION, files[i]);
         #else
-                    snprintf(URL, 500, "https://%s/update/linux/files/%d/%s", SERVEUR_URL, CURRENTVERSION, files[i]);
+                    snprintf(URL, 500, "https://"SERVEUR_URL"/update/linux/files/%d/%s", CURRENTVERSION, files[i]);
         #endif
     #endif
 #endif

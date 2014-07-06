@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32StringEncoding] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URLRepo] : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
@@ -116,7 +116,7 @@
 
 - (void) updateContext : (PROJECT_DATA) data
 {
-	NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32StringEncoding];
+	NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	
 	if(projectName != nil)
 		[projectName setStringValue : projectNameString];

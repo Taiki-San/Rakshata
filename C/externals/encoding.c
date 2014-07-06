@@ -103,7 +103,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 {	
 	*output_length = 4 * ((input_length + 2) / 3);
 	
-	char *encoded_data = malloc(*output_length);
+	char *encoded_data = malloc(*output_length + 1);
 	if (encoded_data == NULL) return NULL;
 	
 	for (int i = 0, j = 0; i < input_length;) {
@@ -123,6 +123,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 	for (int i = 0; i < mod_table[input_length % 3]; i++)
 		encoded_data[*output_length - 1 - i] = '=';
 	
+	encoded_data[*output_length] = 0;
 	return encoded_data;
 }
 
@@ -142,7 +143,7 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 	if (data[input_length - 1] == '=') (*output_length)--;
 	if (data[input_length - 2] == '=') (*output_length)--;
 	
-	unsigned char *decoded_data = malloc(*output_length);
+	unsigned char *decoded_data = malloc(*output_length+1);
 	if (decoded_data == NULL) return NULL;
 	
 	for (int i = 0, j = 0; i < input_length;) {
@@ -162,6 +163,7 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 		if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
 	}
 	
+	decoded_data[*output_length] = 0;
 	return decoded_data;
 }
 

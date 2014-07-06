@@ -47,7 +47,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         length = 110 + 20 + (strlen(data.datas->team->URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
         if(output != NULL) {
-            snprintf(output, length, "https://"STRINGIZE(SERVEUR_URL)"/main_controler.php?ver="STRINGIZE(CURRENTVERSION)"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
+            snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
         }
     }
 
@@ -450,7 +450,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
             length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
             URL = malloc(length);
             if(URL != NULL)
-                snprintf(URL, length, "https://%s/getTomeData.php?ver=%d&target=%s&project=%d&tome=%d&mail=%s", SERVEUR_URL, CURRENTVERSION, tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
+                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver=%d&target=%s&project=%d&tome=%d&mail=%s", CURRENTVERSION, tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
         }
 
         if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)

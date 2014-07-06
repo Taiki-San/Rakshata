@@ -65,7 +65,6 @@
 
 - (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
 {
-	text = [text stringByReplacingOccurrencesOfString:@"_" withString:@" "];
 	self = [super initWithText:[self getMenuFrame:frame] :text : [self getTextColor]];
 	
 	if(self != nil)

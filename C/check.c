@@ -69,7 +69,7 @@ int checkEvnt()
 
         if(cantWrite) //Si police absente
         {
-            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, list[0]);
+            snprintf(temp, 200, "https://"SERVEUR_URL"/rec/%d/%s", CURRENTVERSION, list[0]);
             download_disk(temp, NULL, list[0], SSL_ON);
             nbTotal--;
         }
@@ -81,7 +81,7 @@ int checkEvnt()
 #ifdef IDENTIFY_MISSING_UI
 				#warning "Status given by nbCurrent / nbTotal"
 #endif
-                snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, list[fichiersADL[nbCurrent]]);
+                snprintf(temp, 200, "https://"SERVEUR_URL"/rec/%d/%s", CURRENTVERSION, list[fichiersADL[nbCurrent]]);
                 download_disk(temp, NULL, list[fichiersADL[nbCurrent]], SSL_ON);
 
                 if(fichiersADL[nbCurrent] == 4 || fichiersADL[nbCurrent] == 7 || fichiersADL[nbCurrent] == 10 || fichiersADL[nbCurrent] == 13) //Si c'est un fichier de localization
@@ -207,7 +207,7 @@ void networkAndVersionTest()
     MUTEX_UNLOCK(mutex);
 
     /*Chargement de l'URL*/
-    snprintf(temp, TAILLE_BUFFER, "https://%s/update.php?version=%d&os=%s", SERVEUR_URL, CURRENTVERSION, BUILD);
+    snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
 
     if(download_mem(temp, NULL, bufferDL, 100, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
@@ -241,7 +241,7 @@ void networkAndVersionTest()
             FILE* test = NULL;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
-            snprintf(temp, TAILLE_BUFFER, "https://%s/update/%s/%d", SERVEUR_URL, BUILD, CURRENTVERSION);
+            snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update/%s/%d", BUILD, CURRENTVERSION);
             download_disk(temp, NULL, "data/update", SSL_ON);
 
 			test = fopen("data/update", "r");
@@ -266,7 +266,7 @@ void networkAndVersionTest()
                 quit_thread(0);
             }
 
-			snprintf(temp, TAILLE_BUFFER, "https://%s/checkAccountValid.php?mail=%s", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL);
+			snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
 
             crashTemp(bufferDL, 5);
 			download_mem(temp, NULL, bufferDL, 5, SSL_ON);
@@ -329,8 +329,7 @@ void checkHostNonModifie()
                 while((i = fgetc(host)) != '\n' && i != EOF && i != ' ' && j < 50)
                     temp[j++] = i;
 
-                char * server = SERVEUR_URL;
-                for(i = 0; temp[i] == server[i]; i++);
+                for(i = 0; temp[i] == SERVEUR_URL[i]; i++);
                 if(i >= 15)
                 {
                     fclose(host);

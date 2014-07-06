@@ -54,11 +54,11 @@ char *loadPrefFile()
     return output;
 }
 
-void addToPref(char flag, char *stringToAdd)
+void addToPref(char* flag, char *stringToAdd)
 {
     int i, j, length;
     char setFlag[10], *prefs = NULL, *newPrefs = NULL;
-    snprintf(setFlag, 10, "<%c>", flag);
+    snprintf(setFlag, 10, "<%s>", flag);
 
     prefs = loadPrefFile();
     if(prefs != NULL)
@@ -93,7 +93,7 @@ void addToPref(char flag, char *stringToAdd)
         AESEncrypt(SETTINGS_PASSWORD, stringToAdd, SETTINGS_FILE, INPUT_IN_MEMORY);
 }
 
-void removeFromPref(char flag)
+void removeFromPref(char* flag)
 {
     int i = 0, length = 0;
     char *newPrefs = NULL;
@@ -115,10 +115,10 @@ void removeFromPref(char flag)
 
     while(*prefs && i < length)
     {
-        if(*prefs == '<' && *(prefs+1) == flag && *(prefs+2) == '>')
+        if(*prefs == '<' && *(prefs+1) == flag[0] && *(prefs+2) == '>')
         {
             prefs += 3;
-            while(*prefs && (*(prefs++) != '<' || *prefs != '/' || *(prefs+1) != flag || *(prefs+2) != '>')); //Balise suivante
+            while(*prefs && (*(prefs++) != '<' || *prefs != '/' || *(prefs+1) != flag[0] || *(prefs+2) != '>')); //Balise suivante
             while(*prefs && *(prefs++) != '<'); //Balise suivante
             if(*prefs)
                 prefs--;
@@ -132,7 +132,7 @@ void removeFromPref(char flag)
     free(prefsBak);
 }
 
-void updatePrefs(char flag, char *stringToAdd)
+void updatePrefs(char* flag, char *stringToAdd)
 {
     removeFromPref(flag);
     addToPref(flag, stringToAdd);
@@ -144,8 +144,7 @@ int loadEmailProfile()
     if(prefs != NULL)
     {
 		int i = 0;
-        char flag[10];
-        snprintf(flag, 10, "<%c>", SETTINGS_EMAIL_FLAG);
+		char flag[] = "<"SETTINGS_EMAIL_FLAG">";
         if((i = positionnementApresChar(prefs, flag)))
         {
             sscanfs(&(prefs[i]), "%s", COMPTE_PRINCIPAL_MAIL, 100);
@@ -171,8 +170,7 @@ int loadLangueProfile()
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
-        char flag[10];
-        snprintf(flag, 10, "<%c>", SETTINGS_LANGUE_FLAG);
+        char flag[] = "<"SETTINGS_LANGUE_FLAG">";
         if((i = positionnementApresChar(prefs, flag)))
         {
             sscanfs(prefs+i, "%d", &langue);
@@ -194,12 +192,12 @@ int loadLangueProfile()
         langue = 3;
     else
         langue = LANGUE_PAR_DEFAUT;
-    snprintf(temp, 100, "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+    snprintf(temp, 100, "<%s>\n%d\n</%s>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
     AESEncrypt(SETTINGS_PASSWORD, temp, SETTINGS_FILE, INPUT_IN_MEMORY);
     return 1;
 }
 
-char* loadLargePrefs(char flag)
+char* loadLargePrefs(char* flag)
 {
     char *prefs, *basePtr;
     basePtr = prefs = loadPrefFile();
@@ -208,11 +206,11 @@ char* loadLargePrefs(char flag)
 		int i;
 		size_t bufferSize = 0;
 		char flag_db[10];
-		snprintf(flag_db, 10, "<%c>", flag);
+		snprintf(flag_db, 10, "<%s>", flag);
 		if((i = positionnementApresChar(prefs, flag_db)) && *(prefs+i) != '<' && *(prefs+i+1) != '/')
 		{
 			prefs += i;
-			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag || prefs[bufferSize+3] != '>'));
+			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag[0] || prefs[bufferSize+3] != '>'));
 			char* databaseRAW = ralloc(bufferSize + 5);
 			if(databaseRAW != NULL)
 			{
@@ -225,18 +223,18 @@ char* loadLargePrefs(char flag)
 		}
         free(basePtr);
 	}
-	if (flag == SETTINGS_MANGADB_FLAG || flag == SETTINGS_REPODB_FLAG)
+	if (flag[0] == SETTINGS_MANGADB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
         char temp[200], buffer[65000], buffer2[65100];
         if(flag == SETTINGS_MANGADB_FLAG)
-            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, MANGA_DATABASE);
+            strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"MANGA_DATABASE, 200);
         else
-            snprintf(temp, 200, "https://%s/rec/%d/%s", SERVEUR_URL, CURRENTVERSION, REPO_DATABASE);
+			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_DATABASE, 200);
 
         crashTemp(buffer, 65000);
         download_mem(temp, NULL, buffer, 65000, SSL_ON);
-        snprintf(buffer2, 65100, "<%c>\n%s\n</%c>\n", flag, buffer, flag);
+        snprintf(buffer2, 65100, "<%s>\n%s\n</%s>\n", flag, buffer, flag);
         addToPref(flag, buffer2);
 	}
     return NULL;

@@ -51,7 +51,7 @@
 				
 				//We have a valid index, now, let's query the database to get the project
 				
-				const uint projectID = [[dataState objectAtIndex:1] unsignedIntValue];
+				const uint projectID = [[dataState objectAtIndex:1] longLongValue];
 	
 				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXLECTEUR, true);
 				

@@ -20,7 +20,7 @@ void updateSectionMessage(char messageVersion[5])
     int i = 0, j = 0;
     char URL[200], bufferDL[500], bufferMessage[550];
 
-    snprintf(URL, 200, "https://%s/message.php?OS=%s&version=%d&messageVersion=%s", SERVEUR_URL, BUILD, CURRENTVERSION, messageVersion);
+    snprintf(URL, 200, "https://"SERVEUR_URL"/message.php?OS="BUILD"&version="CURRENTVERSIONSTRING"&messageVersion=%s", messageVersion);
 
     crashTemp(bufferDL, 500);
     download_mem(URL, NULL, bufferDL, 500, SSL_ON);
@@ -30,7 +30,7 @@ void updateSectionMessage(char messageVersion[5])
     if(!bufferDL[i] || (*messageVersion != '0' && bufferDL[i] == ' ' && i > 0))
         return;
 
-    snprintf(bufferMessage, 550, "<%c>\n", SETTINGS_MESSAGE_SECTION_FLAG);
+	strncpy(bufferMessage, "<"SETTINGS_MESSAGE_SECTION_FLAG">\n", 500);
     for(j = strlen(bufferMessage), i = 0; i < 520 && bufferDL[i] != 0; bufferMessage[j++] = bufferDL[i++])
     {
         if(bufferDL[i] == '\r') //I assume the first char isn't a \r
@@ -42,7 +42,7 @@ void updateSectionMessage(char messageVersion[5])
     bufferMessage[j++] = '\n';
     bufferMessage[j++] = '<';
     bufferMessage[j++] = '/';
-    bufferMessage[j++] = SETTINGS_MESSAGE_SECTION_FLAG;
+    bufferMessage[j++] = SETTINGS_MESSAGE_SECTION_FLAG[0];
     bufferMessage[j++] = '>';
     bufferMessage[j++] = '\n';
     bufferMessage[j] = 0;

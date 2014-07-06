@@ -14,7 +14,6 @@
 
 /*Général*/
 #define TAILLE_BUFFER 500
-#define STRINGIZE(s) "`"#s"`"
 
 /*Thread*/
 #ifdef _WIN32
@@ -42,8 +41,6 @@
 #define REPO_DATABASE "data/repo"
 #define MANGA_DATABASE "data/mangas"
 #define INSTALL_DATABASE "data/import.dat"
-#define TOME_INDEX "tomeDB"
-#define CHAPITRE_INDEX "chapDB"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"
@@ -105,13 +102,13 @@
 #define SECURE_DATABASE "data/secure.enc"
 #define SETTINGS_FILE "data/settings"
 #define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr!s36~8713ue68"
-#define SETTINGS_EMAIL_FLAG 'E'
-#define SETTINGS_FAVORITE_FLAG 'F'
-#define SETTINGS_LANGUE_FLAG 'L'
-#define SETTINGS_MESSAGE_SECTION_FLAG 'S'
-#define SETTINGS_MANGADB_FLAG 'M'
-#define SETTINGS_REPODB_FLAG 'R'
-#define SETTINGS_PASSWORD_FLAG 'P' //Pass de déverrouillage
+#define SETTINGS_EMAIL_FLAG "E"
+#define SETTINGS_FAVORITE_FLAG "F"
+#define SETTINGS_LANGUE_FLAG "L"
+#define SETTINGS_MESSAGE_SECTION_FLAG "S"
+#define SETTINGS_MANGADB_FLAG "M"
+#define SETTINGS_REPODB_FLAG "R"
+#define SETTINGS_PASSWORD_FLAG "P" //Pass de déverrouillage
 
 /*Chapitre*/
 #define VALEUR_FIN_STRUCT INT_MIN
@@ -132,6 +129,9 @@
 #define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
 #define TYPE_DEPOT_5 "MG" //Dépôts MEGA
 #define MAX_TYPE_DEPOT 4
+
+/*String macro*/
+#define STRINGIZE(s) "`"#s"`"
 
 /*Download.c*/
 #define CODE_RETOUR_OK 0

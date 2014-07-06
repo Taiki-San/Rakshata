@@ -326,14 +326,15 @@ void getPasswordArchive(char *fileName, char password[300])
     sha256((unsigned char *) buffer, hash);
 
     /*On génére l'URL*/
-    URL = malloc((50 + strlen(SERVEUR_URL) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash)));
+	size_t lengthURL = 50 + strlen(SERVEUR_URL) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash);
+    URL = malloc(lengthURL);
     if(URL == NULL)
     {
-        memoryError(50 + strlen(SERVEUR_URL) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash));
+        memoryError(lengthURL);
         free(fileNameWithoutDirectory);
         return;
     }
-    snprintf(URL, 50+strlen(SERVEUR_URL)+strlen(COMPTE_PRINCIPAL_MAIL)+strlen(fileNameWithoutDirectory)+strlen(hash), "https://%s/get_archive_name.php?account=%s&file=%s&hash=%s", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
+    snprintf(URL, lengthURL, "https://"SERVEUR_URL"/get_archive_name.php?account=%s&file=%s&hash=%s", COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
 
     free(fileNameWithoutDirectory);
 
@@ -369,8 +370,7 @@ void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
 	memset(outputKS, 0, NUMBER_MAX_TEAM_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
 	bufferDL[0] = 0;
 
-    snprintf(temp, 350, "https://%s/killswitch", SERVEUR_URL);
-    download_mem(temp, NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
+    download_mem("https://"SERVEUR_URL"/killswitch", NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;

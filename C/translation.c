@@ -110,7 +110,7 @@ void setNewLangue(int newLangue)
 	char newPref[100];
 	langue = newLangue;
 	removeFromPref(SETTINGS_LANGUE_FLAG);
-	snprintf(newPref, sizeof(newPref), "<%c>\n%d\n</%c>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
+	snprintf(newPref, sizeof(newPref), "<%s>\n%d\n</%s>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
 	addToPref(SETTINGS_LANGUE_FLAG, newPref);
 }
 

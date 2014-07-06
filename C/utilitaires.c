@@ -35,10 +35,12 @@ int sortProjects(const void *a, const void *b)
     const PROJECT_DATA *struc1 = a;
     const PROJECT_DATA *struc2 = b;
 
-    if(struc1->projectName[0] == 0)
+    if(struc1->team == NULL || struc1->projectName[0] == 0)
         return 1;
-    else if(struc2->projectName[0] == 0)
+    else if(struc2->team == NULL || struc2->projectName[0] == 0)
         return -1;
+	else if(!strcmp(struc1->team->URLRepo, struc2->team->URLRepo))
+		return struc1->projectID - struc2->projectID;
     return wcscmp(struc1->projectName, struc2->projectName);
 }
 

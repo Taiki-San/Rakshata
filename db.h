@@ -152,8 +152,7 @@ enum RDB_CODES {
 #define RDB_chapitres					13
 #define RDB_nombreTomes					14
 #define RDB_tomes						15
-#define RDB_contentDownloadable			16
-#define RDB_favoris						17
+#define RDB_favoris						16
 
 #define RDB_REC_lastRead				1
 #define RDB_REC_lastDL					2

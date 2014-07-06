@@ -185,7 +185,7 @@
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
 			if(element.readingName[0])
-				output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32StringEncoding];
+				output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
 			else
 				output = [NSString stringWithFormat:@"Tome %d", element.readingID];
 		}

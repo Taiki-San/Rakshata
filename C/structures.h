@@ -75,7 +75,6 @@ typedef struct tome_metadata
 **			-	tomesFullInstalled		tableau contenant tous les chapitres installés classés
 **
 **		Module DL
-**			-	contentDownloadable		si il y a quelque chose qui n'est pas DL
 **			-	favoris					est-ce que c'est un favoris
 **
 **		Cache
@@ -102,15 +101,14 @@ typedef struct dataProject
 	
 	//2 x ((51 + 1) x 32b) = 52 x 64b
 	wchar_t projectName[LENGTH_PROJECT_NAME];
-	bool contentDownloadable;
-	wchar_t authorName[LENGTH_AUTHORS];
 	bool favoris;
+	wchar_t authorName[LENGTH_AUTHORS];
+	bool japaneseOrder;
 	
 	//Un bloc de 64b complet
 	uint8_t status;
 	uint8_t type;
 	uint16_t category;
-	bool japaneseOrder;
 	
 	//Un bloc de 64b
 	uint32_t projectID;

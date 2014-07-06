@@ -213,7 +213,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	uint projectID;
 	while (*nbElem < 3 && sqlite3_step(request) == SQLITE_ROW)
 	{
-		team =		(char *) sqlite3_column_text(request, 2);
+		team =	(char *) sqlite3_column_text(request, 2);
 		projectID = sqlite3_column_int(request, 3);
 		
 		if(team != NULL)

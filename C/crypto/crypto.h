@@ -81,6 +81,7 @@ void TwofishDecrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte ou
 *****************************************************/
 
 uint32_t _crc32(const void *buf, size_t size);
+uint32_t crc32File(char * filename);
 
 /*****************************************************
 **                                                  **

@@ -89,10 +89,33 @@ static uint32_t crc32_tab[] = {
 uint32_t _crc32(const void *buf, size_t size)
 {
 	const uint8_t *p = buf;
-	uint32_t crc = 0xEDB88320 ^ ~0U;
+	uint32_t crc = ~0U;
 
 	while (size--)
 		crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
 
-	return crc ^ ~0U;
+	return ~crc;
+}
+
+uint32_t crc32File(char * filename)
+{
+	size_t fileSize = getFileSize(filename);
+	uint8_t * content = malloc(fileSize);
+	FILE* file = fopen(filename, "r");
+
+	if(content == NULL || file == NULL)
+	{
+		free(content);
+		if(file != NULL)		fclose(file);
+		return 0;
+	}
+	
+	fread(content, 1, fileSize, file);
+	fclose(file);
+	
+	uint32_t output = _crc32(content, fileSize);
+	
+	free(content);
+	
+	return output;
 }

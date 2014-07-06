@@ -253,6 +253,8 @@ int sscanfs(char *char_input, const char *format, ...)
 
 size_t ustrlen(const void *input)
 {
+	if(input == NULL)	return 0;
+	
     const unsigned char *copy = input;
     while(*(copy++));
     return (copy-1) - (unsigned char *)input;	//copy -1 pour la dernière itération

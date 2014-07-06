@@ -46,7 +46,7 @@
 						break;
 					}
 
-					const uint projectID = [[dataState objectAtIndex:1] unsignedIntValue];
+					uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
 					PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
 					
 					if(project == NULL)

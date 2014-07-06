@@ -63,7 +63,7 @@
 
 - (NSString *) getName
 {
-	NSString * name, *projectName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32StringEncoding] autorelease];
+	NSString * name, *projectName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
 	
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
@@ -76,7 +76,7 @@
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
 		{
-			NSString * tomeName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32StringEncoding] autorelease];
+			NSString * tomeName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
 			name = [NSString stringWithFormat:@"%@ %@", projectName, tomeName];
 		}
 		else

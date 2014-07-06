@@ -186,12 +186,9 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	if(project == NULL || !nbElem)
 		return;
 	
-	FILE * file;
 	bool large;
-	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *image, *URL, *hash;
+	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *URL, *hash;
 	TEAMS_DATA *team;
-	uint size;
-	uint32_t crc;
 	
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
@@ -241,30 +238,11 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			}
 			
 			snprintf(imagePath, sizeof(imagePath), "imageCache/%s/%d_%s.png", URLRepo, project[pos].projectID, large ? "CT" : "DD");
-			size = getFileSize(imagePath);
+			uint32_t crc = crc32File(imagePath);
+			snprintf(crcHash, LENGTH_HASH, "%x", crc);
 			
-			if(!size)
+			if(strncmp(crcHash, hash, LENGTH_HASH))
 				getPageInfo(*team, URL, project[pos].projectID, large);
-			
-			image = malloc(size + 1);
-			
-			if(image != NULL)
-			{
-				file = fopen(imagePath, "r");
-				if(file != NULL)
-				{
-					fread(image, 1, size, file);
-					fclose(file);
-					
-					crc = _crc32(image, size);
-					snprintf(crcHash, LENGTH_HASH, "%u", crc);
-					
-					if(strncmp(crcHash, hash, LENGTH_HASH))
-						getPageInfo(*team, URL, project[pos].projectID, large);
-				}
-				
-				free(image);
-			}
 		}
 	}
 }
@@ -286,7 +264,7 @@ void getPageInfo(TEAMS_DATA team, char * URLImage, uint projectID, bool large)
 			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
 		
 		else if(!strcmp(team.type, TYPE_DEPOT_3)) //Payant
-			snprintf(URL, sizeof(URL), "https://%s/ressource.php?editor=%s&request=img&project=%d&type=%s&user=%s", SERVEUR_URL, team.URLRepo, projectID, suffix, COMPTE_PRINCIPAL_MAIL);
+			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s&user=%s", team.URLRepo, projectID, suffix, COMPTE_PRINCIPAL_MAIL);
 		
 		snprintf(filename, sizeof(filename), "imageCache/%s/%d_%s.png", team.URLRepo, projectID, suffix);
 		download_disk(URL, NULL, filename, ssl);
@@ -349,7 +327,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 				newData[posNew].cacheDBID = oldData[posOld].cacheDBID;
 				newData[posNew].favoris = oldData[posOld].favoris;
 				
-				newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
 				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
 				
 				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
@@ -366,7 +343,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			
 			refreshChaptersList(&newData[posNew]);
 			refreshTomeList(&newData[posNew]);
-			newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
 			
 			addToCache(request, newData[posNew], IDTeam, false);
 			
@@ -391,7 +367,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		
 		refreshChaptersList(&newData[posNew]);
 		refreshTomeList(&newData[posNew]);
-		newData[posNew].contentDownloadable = isAnythingToDownload(newData[posNew]);
 		
 		addToCache(request, newData[posNew], IDTeam, false);
 		

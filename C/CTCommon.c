@@ -25,41 +25,6 @@ bool checkReadable(PROJECT_DATA mangaDB, bool isTome, int data)
     return checkChapterReadable(mangaDB, data);
 }
 
-bool isAnythingToDownload(PROJECT_DATA mangaDB)
-{
-	bool ret_value = false, needFree = false;
-	
-    if(mangaDB.chapitresFull != NULL)
-    {
-		if(mangaDB.chapitresInstalled == NULL)
-		{
-			checkChapitreValable(&mangaDB, NULL);
-			needFree = true;
-		}
-		
-		ret_value = mangaDB.nombreChapitre != mangaDB.nombreChapitreInstalled;
-		
-		if(needFree)
-			free(mangaDB.chapitresInstalled);
-    }
-	
-    if(mangaDB.tomesFull != NULL)
-    {
-		if(mangaDB.tomesInstalled == NULL)
-		{
-			checkTomeValable(&mangaDB, NULL);
-			needFree = true;
-		}
-
-        ret_value |= mangaDB.nombreTomes != mangaDB.nombreTomesInstalled;
-
-		if(needFree)
-			free(mangaDB.tomesInstalled);
-	}
-	
-    return ret_value;
-}
-
 void internalDeleteCT(PROJECT_DATA mangaDB, bool isTome, int selection)
 {
     if(isTome)

@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "db.h"
+#include "crypto/crypto.h"
 
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
@@ -31,10 +32,10 @@ char COMPTE_PRINCIPAL_MAIL[100];
 
 int main(int argc, char *argv[])
 {
-    if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
+	if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
-
-    checkUpdate();
+	
+	checkUpdate();
 	setupBDDCache();
 
     int ret_value = NSApplicationMain(argc, (const char **)argv);

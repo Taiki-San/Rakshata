@@ -275,7 +275,7 @@ int logon()
                                 COMPTE_PRINCIPAL_MAIL[i] = adresseEmail[i];
 
                             removeFromPref(SETTINGS_EMAIL_FLAG);
-                            snprintf(temp, 200, "<%c>\n%s\n</%c>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
+                            snprintf(temp, 200, "<%s>\n%s\n</%s>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
                             addToPref(SETTINGS_EMAIL_FLAG, temp);
                             remove(SECURE_DATABASE);
                             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
@@ -358,7 +358,7 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
 {
     int i = 0, j = 0;
     char temp[100], serverTime[300];
-    snprintf(temp, 100, "https://%s/time.php", SERVEUR_URL); //On salte avec l'heure du serveur
+    snprintf(temp, 100, "https://"SERVEUR_URL"/time.php"); //On salte avec l'heure du serveur
     crashTemp(serverTime, 300);
     download_mem(temp, NULL, serverTime, 300, SSL_ON);
 
@@ -393,7 +393,7 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    snprintf(URL, 300, "https://%s/login.php?request=1&mail=%s", SERVEUR_URL, adresseEmail); //Constitution de l'URL
+    snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
     crashTemp(buffer_output, 500);
     download_mem(URL, NULL, buffer_output, 500, SSL_ON);
@@ -445,7 +445,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    snprintf(URL, 300, "https://%s/login.php?request=%d&mail=%s&pass=%s", SERVEUR_URL, 2+login, adresseEmail, hash2); //Constitution de l'URL
+    snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", 2+login, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
     download_mem(URL, NULL, buffer_output, 500, SSL_ON);
 
@@ -601,7 +601,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     MajToMin(randomKeyHex);
     randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
-    snprintf(temp, 1024, "https://%s/newMK.php?account=%s&key=%s&ver=1", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+    snprintf(temp, 1024, "https://"SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
     crashTemp(buffer_dl, 500);
     download_mem(temp, NULL, buffer_dl, 500, SSL_ON);
@@ -632,7 +632,7 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
             randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
 
-            snprintf(temp, 1024, "https://%s/confirmMK.php?account=%s&key=%s", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+            snprintf(temp, 1024, "https://"SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
             crashTemp(buffer_dl, 500);
             download_mem(temp, NULL, buffer_dl, 500, SSL_ON);
@@ -682,7 +682,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     int i = 0, j = 0;
     char temp[400];
     char buffer_dl[500];
-    snprintf(temp, 400, "https://%s/recoverMK.php?account=%s&ver=1", SERVEUR_URL, COMPTE_PRINCIPAL_MAIL);
+    snprintf(temp, 400, "https://"SERVEUR_URL"/recoverMK.php?account=%s&ver=1", COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);

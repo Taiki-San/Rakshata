@@ -92,7 +92,7 @@
 					break;
 				}
 				
-				const uint projectID = [[dataState objectAtIndex:3] unsignedIntValue];
+				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
 				
 				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
 				

@@ -36,13 +36,13 @@ bool checkIfFaved(PROJECT_DATA* mangaDB, char **favs)
     do
     {
         favsBak += sscanfs(favsBak, "%s %d", URLRepo, sizeof(URLRepo), &projectID);
-        for(; favsBak != NULL && *favsBak && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
+        for(; favsBak != NULL && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
 	} while(favsBak != NULL && *favsBak && (strcmp(mangaDB->team->URLRepo, URLRepo) || mangaDB->projectID != projectID));
 	
     if(generateOwnCache)
         free(internalCache);
 
-	return !strcmp(mangaDB->team->URLRepo, URLRepo) && mangaDB->projectID == projectID;
+	return mangaDB->projectID == projectID && !strcmp(mangaDB->team->URLRepo, URLRepo);
 }
 
 bool setFavorite(PROJECT_DATA* mangaDB)
@@ -63,7 +63,7 @@ bool setFavorite(PROJECT_DATA* mangaDB)
 		goto end;
 	}
 	
-	snprintf(favsNew, length, "<%c>\n", SETTINGS_FAVORITE_FLAG);
+	snprintf(favsNew, length, "<%s>\n", SETTINGS_FAVORITE_FLAG);
 	posOutput = strlen(favsNew);
 
 	for(; favs != NULL && (favs[pos] == '\n' || favs[pos] == '\r'); pos++);	//We drop empty stuffs
@@ -115,13 +115,13 @@ bool setFavorite(PROJECT_DATA* mangaDB)
 	}
 	
 	//Our buffer was too small, shit
-	if(posOutput >= length - strlen("</"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n"))
+	if(posOutput >= length - strlen("</"SETTINGS_FAVORITE_FLAG">\n"))
 		goto end;
 
 	//We wrote something
-	else if(posOutput > strlen("<"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n"))
+	else if(posOutput > strlen("<"SETTINGS_FAVORITE_FLAG">\n"))
 	{
-		strncpy(line, "</"STRINGIZE(SETTINGS_FAVORITE_FLAG)">\n", sizeof(line));
+		strncpy(line, "</"SETTINGS_FAVORITE_FLAG">\n", sizeof(line));
 		strncat(favsNew, line, length - posOutput);
 		updatePrefs(SETTINGS_FAVORITE_FLAG, favsNew);
 	}
