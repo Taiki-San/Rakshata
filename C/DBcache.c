@@ -222,8 +222,8 @@ void syncCacheToDisk(byte syncCode)
 			if(bufferOut != NULL)
 			{
 				strcpy(bufferOut, "<"SETTINGS_MANGADB_FLAG">\n");
-				memcpy(&bufferOut[3], data, dataSize);
-				strcpy(&bufferOut[3+dataSize], "</"SETTINGS_MANGADB_FLAG">\n");
+				memcpy(&bufferOut[4], data, dataSize);
+				strcpy(&bufferOut[4+dataSize], "\n</"SETTINGS_MANGADB_FLAG">\n");
 				updatePrefs(SETTINGS_MANGADB_FLAG, bufferOut);
 				free(bufferOut);
 			}

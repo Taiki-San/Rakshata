@@ -139,7 +139,7 @@ NSArray * recoverChapterBloc(int * chapter, uint length)
 					if(currentDetail != nil && [currentDetail count])
 					{
 						[output addObject:currentDetail];
-						[currentDetail release];		currentDetail = nil;
+						currentDetail = nil;
 					}
 					
 					[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[i - counter]), @(chapter[i]), @(repeatingDiff)] forKeys:@[@"first", @"last", @"jump"]]];
@@ -153,7 +153,7 @@ NSArray * recoverChapterBloc(int * chapter, uint length)
 					[currentDetail addObjectsFromArray:currentBurst];
 				}
 				
-				[currentBurst release];		currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
+				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
 				repeatingDiff = diff[i];	counter = 1;
 			}
 			else
@@ -164,12 +164,7 @@ NSArray * recoverChapterBloc(int * chapter, uint length)
 		}
 		
 		if(currentDetail != nil && [currentDetail count])
-		{
 			[output addObject:currentDetail];
-			[currentDetail release];
-		}
-		if(currentBurst != nil)
-			[currentBurst release];
 	}
 	
 	return [NSArray arrayWithArray:output];

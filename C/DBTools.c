@@ -341,9 +341,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		{
 			newData[posNew].cacheDBID = 0;
 			
-			refreshChaptersList(&newData[posNew]);
-			refreshTomeList(&newData[posNew]);
-			
 			addToCache(request, newData[posNew], IDTeam, false);
 			
 			posNew++;
@@ -364,9 +361,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	while (posNew < magnitudeNewData)
 	{
 		newData[posNew].cacheDBID = 0;
-		
-		refreshChaptersList(&newData[posNew]);
-		refreshTomeList(&newData[posNew]);
 		
 		addToCache(request, newData[posNew], IDTeam, false);
 		

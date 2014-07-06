@@ -123,7 +123,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
             snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
         else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
-            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=mangas&user=%s&version=%d", teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
+            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=project&user=%s&version=%d", teams->URLRepo, COMPTE_PRINCIPAL_MAIL, defaultVersion);
 
         else
         {
@@ -192,6 +192,8 @@ void updateProjects()
 
 		posBase = posEnd;
 	}
+	
+	syncCacheToDisk(SYNC_TEAM | SYNC_PROJECTS);
 	freeMangaData(oldData);
 }
 

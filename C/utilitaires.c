@@ -57,7 +57,6 @@ int sortTomes(const void *a, const void *b)
     return struc1->ID - struc2->ID;
 }
 
-#warning "to test"
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 {
 	if(a.projectID != b.projectID)

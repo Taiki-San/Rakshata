@@ -69,7 +69,7 @@ int checkEvnt()
 
         if(cantWrite) //Si police absente
         {
-            snprintf(temp, 200, "https://"SERVEUR_URL"/rec/%d/%s", CURRENTVERSION, list[0]);
+            snprintf(temp, 200, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/%s", list[0]);
             download_disk(temp, NULL, list[0], SSL_ON);
             nbTotal--;
         }
@@ -81,7 +81,7 @@ int checkEvnt()
 #ifdef IDENTIFY_MISSING_UI
 				#warning "Status given by nbCurrent / nbTotal"
 #endif
-                snprintf(temp, 200, "https://"SERVEUR_URL"/rec/%d/%s", CURRENTVERSION, list[fichiersADL[nbCurrent]]);
+                snprintf(temp, 200, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/%s", list[fichiersADL[nbCurrent]]);
                 download_disk(temp, NULL, list[fichiersADL[nbCurrent]], SSL_ON);
 
                 if(fichiersADL[nbCurrent] == 4 || fichiersADL[nbCurrent] == 7 || fichiersADL[nbCurrent] == 10 || fichiersADL[nbCurrent] == 13) //Si c'est un fichier de localization
