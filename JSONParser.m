@@ -490,7 +490,7 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 		teamName = [remoteDataPart objectForKey:@"authorName"];
 		teamURL = [remoteDataPart objectForKey:@"authorURL"];
 		if (teamName == nil || [teamName superclass] != [NSMutableString class]|| teamURL == nil || [teamURL superclass] != [NSMutableString class])
-			return NULL;
+			continue;
 		
 		for(posTeam = 0; posTeam < nbTeam; posTeam++)
 		{
@@ -511,8 +511,8 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA));
 						*nbElem += nbElemPart;
 					}
-					free(currentPart);
 				}
+				free(currentPart);
 				break;
 			}
 		}
@@ -523,10 +523,11 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 
 char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput)
 {
-	if(data == NULL || team == NULL)
+	if(data == NULL || team == NULL || !nbElem || !nbTeam)
 		return NULL;
 	
 	uint counters[nbTeam], jumpTable[nbTeam][nbElem];
+	bool projectLinkedToTeam = false;
 	
 	memset(counters, 0, sizeof(counters));
 	
@@ -538,10 +539,14 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, u
 			if(data[pos].team == team[posTeam])
 			{
 				jumpTable[posTeam][counters[posTeam]++] = pos;
+				projectLinkedToTeam = true;
+				break;
 			}
-			
 		}
 	}
+	
+	if(!projectLinkedToTeam)
+		return NULL;
 	
 	NSMutableArray *root = [NSMutableArray array], *projects;
 	NSDictionary * currentNode;
