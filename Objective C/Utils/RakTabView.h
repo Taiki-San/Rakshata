@@ -87,10 +87,10 @@ enum {
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
-- (void) dragAndDropStarted : (BOOL) started;
+- (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL;
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;
 - (BOOL) shouldDeployWhenDragComeIn;
-- (NSDragOperation) dropOperationForSender : (uint) sender;
+- (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL;
 - (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender;
 
 @end

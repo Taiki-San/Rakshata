@@ -13,8 +13,9 @@
 typedef struct project_data_for_drag_drop
 {
 	PROJECT_DATA data;
-	bool isTome;
 	int selection;
+	bool isTome;
+	bool canDL;
 } INTERNAL_D_AND_D;
 
 @implementation RakDragItem
@@ -24,6 +25,16 @@ typedef struct project_data_for_drag_drop
 	self.project = project;
 	self.isTome = isTome;
 	self.selection = element;
+	
+	if(element == VALEUR_FIN_STRUCT)
+	{
+		if(isTome)
+			canDL = (project.nombreTomes != VALEUR_FIN_STRUCT && project.nombreTomes != project.nombreTomesInstalled);
+		else
+			canDL = (project.nombreChapitre != VALEUR_FIN_STRUCT && project.nombreChapitre != project.nombreChapitreInstalled);
+	}
+	else
+		canDL = !checkReadable(project, isTome, element);
 }
 
 - (id) initWithData : (NSData *) data
@@ -41,6 +52,7 @@ typedef struct project_data_for_drag_drop
 		self.project = structure.data;
 		self.isTome = structure.isTome;
 		self.selection = structure.selection;
+		canDL = structure.canDL;
 	}
 	
 	return self;
@@ -53,8 +65,27 @@ typedef struct project_data_for_drag_drop
 	structure.data = self.project;
 	structure.isTome = self.isTome;
 	structure.selection = self.selection;
+	structure.canDL = canDL;
 	
 	return [NSData dataWithBytes:&structure length:sizeof(structure)];
+}
+
+- (BOOL) canDL
+{
+	return canDL;
+}
+
++ (BOOL) canDL : (NSPasteboard*) pasteboard
+{
+	if(pasteboard != nil)
+	{
+		RakDragItem * item = [[[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]] autorelease];
+		if(item != nil)
+		{
+			return [item canDL];
+		}
+	}
+	return YES;
 }
 
 - (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed

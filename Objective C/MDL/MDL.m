@@ -117,8 +117,11 @@
 	return (isForcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
 }
 
-- (void) dragAndDropStarted:(BOOL)started
+- (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL
 {
+	if(!canDL)
+		return;
+	
 	if(started)
 	{
 		if([self isForcedToShowUp])
@@ -365,12 +368,14 @@
 
 #pragma mark - Drop support
 
-- (NSDragOperation) dropOperationForSender : (uint) sender
+- (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
+	if(!canDL)
+		return NSDragOperationNone;
 	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_CT)
 		return NSDragOperationCopy;
 	
-	return [super dropOperationForSender:sender];
+	return [super dropOperationForSender:sender:canDL];
 }
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;

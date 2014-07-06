@@ -72,6 +72,6 @@
 - (void) cleanupDrag;
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
 
-+ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started;
++ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started : (BOOL) canDL;
 
 @end

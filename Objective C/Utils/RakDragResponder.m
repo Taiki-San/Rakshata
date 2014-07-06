@@ -39,7 +39,9 @@
 
 - (uint) getSelfCode
 {
+#ifdef DEV_VERSION
 	NSLog(@"Default implementation shouldn't be used!");
+#endif
 	return GUI_THREAD_MASK;
 }
 
@@ -57,11 +59,6 @@
 	return nil;
 }
 
-- (NSString *) reorderCode
-{
-	return nil;
-}
-
 #pragma mark - Internal code
 
 + (void) registerToPasteboard : (NSPasteboard *) pboard
@@ -74,8 +71,24 @@
 	return NSDragOperationNone;
 }
 
+- (BOOL) grantDropAuthorization : (BOOL) canDL
+{
+	return YES;
+}
+
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation
 {
+	NSPasteboard * pasteboard = [info draggingPasteboard];
+	if(pasteboard != nil)
+	{
+		RakDragItem * item = [[[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]] autorelease];
+		if(item != nil)
+		{
+			if(![self grantDropAuthorization : [item canDL]])
+				return NSDragOperationNone;
+		}
+	}
+	
 	if(sender == [self getSelfCode])
 	{
 		if([self supportReorder])
@@ -95,7 +108,7 @@
 	
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
-									   classes:[NSArray arrayWithObjects:[NSPasteboardItem class], [NSStringPboardType class], nil]
+									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
 								 searchOptions:nil
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
@@ -114,10 +127,6 @@
 			 *stop = NO;
 		 }
 	 }];
-	
-	NSString * type = [self reorderCode];
-	if(type != nil)
-		[session.draggingPasteboard setData:[NSData data] forType:type];
 }
 
 @end

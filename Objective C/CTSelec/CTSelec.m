@@ -377,12 +377,12 @@
 	return ret_value;
 }
 
-- (NSDragOperation) dropOperationForSender : (uint) sender
+- (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_MDL)
 		return NSDragOperationCopy;
 	
-	return [super dropOperationForSender:sender];
+	return [super dropOperationForSender:sender:canDL];
 }
 
 @end

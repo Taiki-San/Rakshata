@@ -178,7 +178,7 @@
 
 - (void) enableDrop
 {
-	[_tableView registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
+	[_tableView registerForDraggedTypes:@[PROJECT_PASTEBOARD_TYPE]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
     [_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 }
@@ -370,7 +370,7 @@
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
-+ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started
++ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started : (BOOL) canDL
 {
 	while(view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
 	
@@ -382,7 +382,7 @@
 			for(view in views)
 			{
 				if([view superclass] == [RakTabView class])
-					[(RakTabView *) view dragAndDropStarted:started];
+					[(RakTabView *) view dragAndDropStarted:started:canDL];
 			}
 		}
 	}
@@ -391,13 +391,13 @@
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
-	[RakList propagateDragAndDropChangeState : _tableView.superview : YES];
+	[RakList propagateDragAndDropChangeState : _tableView.superview : YES : [RakDragItem canDL:[session draggingPasteboard]]];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
 	//Need to cleanup once the drag is over
-	[RakList propagateDragAndDropChangeState : _tableView.superview : NO];
+	[RakList propagateDragAndDropChangeState : _tableView.superview : NO : [RakDragItem canDL:[session draggingPasteboard]]];
 	[self cleanupDrag];
 }
 

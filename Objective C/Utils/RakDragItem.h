@@ -13,6 +13,9 @@
 #define PROJECT_PASTEBOARD_TYPE @"PasteboardTypeRakshataProject"
 
 @interface RakDragItem : NSObject
+{
+	BOOL canDL;
+}
 
 @property PROJECT_DATA project;
 @property BOOL isTome;
@@ -22,6 +25,8 @@
 - (id) initWithData : (NSData *) data;
 
 - (NSData *) getData;
+- (BOOL) canDL;
++ (BOOL) canDL : (NSPasteboard*) pasteboard;
 - (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
 
 @end

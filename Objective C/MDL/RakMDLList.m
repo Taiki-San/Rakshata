@@ -229,13 +229,18 @@
 	return YES;
 }
 
+- (BOOL) grantDropAuthorization : (BOOL) canDL
+{
+	return canDL;
+}
+
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
 {
 	NSView * view = _tableView.superview;
 	while (view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
 	
 	if(view != nil)
-		return [(RakTabView *) view dropOperationForSender:sourceTab];
+		return [(RakTabView *) view dropOperationForSender:sourceTab: [RakDragItem canDL:[item draggingPasteboard]]];
 	
 	return [super operationForContext:item :sourceTab :suggestedRow :operation];
 }

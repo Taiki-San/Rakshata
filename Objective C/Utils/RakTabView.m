@@ -488,7 +488,7 @@
 
 //Control
 
-- (void) dragAndDropStarted : (BOOL) started
+- (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL
 {
 	
 }
@@ -504,7 +504,7 @@
 	return YES;
 }
 
-- (NSDragOperation) dropOperationForSender : (uint) sender
+- (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	return NSDragOperationNone;
 }
@@ -521,7 +521,7 @@
 	if([self shouldDeployWhenDragComeIn])
 		[self mouseEntered:nil];
 	
-	return [self dropOperationForSender: [RakDragResponder getOwnerOfTV:[sender draggingSource]]];
+	return [self dropOperationForSender: [RakDragResponder getOwnerOfTV:[sender draggingSource]] : [RakDragItem canDL:[sender draggingPasteboard]]];
 }
 
 //Data import
@@ -530,7 +530,7 @@
 {
 	uint startTab = [RakDragResponder getOwnerOfTV:[sender draggingSource]];
 
-	if([self dropOperationForSender: startTab] == NSDragOperationCopy)
+	if([self dropOperationForSender: startTab : [RakDragItem canDL:[sender draggingPasteboard]]] == NSDragOperationCopy)
 		return [self acceptDrop: startTab : sender];
 
 	return NO;
