@@ -309,8 +309,8 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
+#ifdef DELETE_REMOVED_PROJECT
 			removeFromCache(oldData[posOld]);
-#ifdef DELETE_UNLISTED_PROJECT
 			char path[LENGTH_PROJECT_NAME * 2 + 10];
 			snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
 			removeFolder(path);
@@ -349,8 +349,8 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	while (posOld < magnitudeOldData)
 	{
+#ifdef DELETE_REMOVED_PROJECT
 		removeFromCache(oldData[posOld]);
-#ifdef DELETE_UNLISTED_PROJECT
 		char path[LENGTH_PROJECT_NAME * 2 + 10];
 		snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
 		removeFolder(path);

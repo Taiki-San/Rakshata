@@ -19,7 +19,7 @@
 
 //Options
 #define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
-//#define DELETE_UNLISTED_PROJECT
+//#define DELETE_REMOVED_PROJECT
 
 unsigned long alreadyRefreshed;
 
