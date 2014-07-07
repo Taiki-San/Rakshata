@@ -1013,7 +1013,7 @@ bool isProjectInstalledInCache (uint ID)
 	return output;
 }
 
-PROJECT_DATA getElementByID(uint projectID, uint32_t context)
+PROJECT_DATA getElementByID(uint cacheID, uint32_t context)
 {
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output;
@@ -1023,7 +1023,7 @@ PROJECT_DATA getElementByID(uint projectID, uint32_t context)
 	if(cache != NULL)
 	{
 		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
-		sqlite3_bind_int(request, 1, projectID);
+		sqlite3_bind_int(request, 1, cacheID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -1035,4 +1035,20 @@ PROJECT_DATA getElementByID(uint projectID, uint32_t context)
 	}
 
 	return output;
+}
+
+void setInstalled(uint cacheID)
+{
+	if (cache == NULL)
+		setupBDDCache();
+	
+	sqlite3_stmt * request = NULL;
+
+	if(cache != NULL && sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = ?1 WHERE "DBNAMETOID(RDB_ID)" = ?2", -1, &request, NULL) == SQLITE_OK)
+	{
+		sqlite3_bind_int(request, 1, 1);
+		sqlite3_bind_int(request, 2, cacheID);
+		sqlite3_step(request);
+		sqlite3_finalize(request);
+	}
 }

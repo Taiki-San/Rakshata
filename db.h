@@ -71,7 +71,8 @@ PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context,
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated);
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
-PROJECT_DATA getElementByID(uint projectID, uint32_t context);
+PROJECT_DATA getElementByID(uint cacheID, uint32_t context);
+void setInstalled(uint cacheID);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);

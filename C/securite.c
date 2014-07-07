@@ -290,68 +290,6 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     return output;
 }
 
-void getPasswordArchive(char *fileName, char password[300])
-{
-    int i = 0, j = 0;
-    char *fileNameWithoutDirectory = ralloc(strlen(fileName)+5);
-    char *URL = NULL;
-
-    FILE* zipFile = fopen(fileName, "r");
-
-    if(fileNameWithoutDirectory == NULL || zipFile == NULL)
-    {
-        if(fileNameWithoutDirectory)
-            free(fileNameWithoutDirectory);
-        logR("Failed at allocate memory / find file\n");
-        return;
-    }
-
-    /*On récupére le nom du fichier*/
-    for(i = strlen(fileName); i >= 0 && fileName[i] != '/'; i--);
-    for(j = 0, i++; i < strlen(fileName) && fileName[i] ; fileNameWithoutDirectory[j++] = fileName[i++]);
-
-    /*Pour identifier le fichier, on va hasher ses 1024 premiers caractéres*/
-    unsigned char buffer[1024+1];
-    char hash[SHA256_DIGEST_LENGTH];
-
-    for(i = 0; i < 1024 && (j = fgetc(zipFile)) != EOF; buffer[i++] = j);
-    buffer[i] = 0;
-    sha256((unsigned char *) buffer, hash);
-
-    /*On génére l'URL*/
-	size_t lengthURL = 50 + strlen(SERVEUR_URL) + strlen(COMPTE_PRINCIPAL_MAIL) + strlen(fileNameWithoutDirectory) + strlen(hash);
-    URL = malloc(lengthURL);
-    if(URL == NULL)
-    {
-        memoryError(lengthURL);
-        free(fileNameWithoutDirectory);
-        return;
-    }
-    snprintf(URL, lengthURL, "https://"SERVEUR_URL"/get_archive_name.php?account=%s&file=%s&hash=%s", COMPTE_PRINCIPAL_MAIL, fileNameWithoutDirectory, hash);
-
-    free(fileNameWithoutDirectory);
-
-    /*On prépare le buffer de téléchargement*/
-    char bufferDL[1000];
-    crashTemp(bufferDL, 1000);
-    download_mem(URL, NULL, bufferDL, 1000, SSL_ON); //Téléchargement
-
-    free(URL);
-
-    /*Analyse du buffer*/
-    if(!strcmp(bufferDL, "not_allowed") || !strcmp(bufferDL, "rejected") || strlen(bufferDL) >= 300)
-    {
-        logR("Failed at get password, cancel the installation\n");
-        return;
-    }
-
-    /*On récupére le pass*/
-    unsigned char MK[SHA256_DIGEST_LENGTH];
-    getMasterKey(MK);
-    AESDecrypt(MK, bufferDL, password, EVERYTHING_IN_MEMORY);
-    crashTemp(MK, SHA256_DIGEST_LENGTH);
-}
-
 void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
     if(!checkNetworkState(CONNEXION_OK))

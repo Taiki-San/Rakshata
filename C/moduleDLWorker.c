@@ -207,6 +207,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		{
 			*(input.currentState) = MDL_CODE_INSTALL_OVER;
 			addRecentEntry(*(input.todoList->datas), true);
+			setInstalled(input.todoList->datas->cacheDBID);
 		}
     }
     else
@@ -400,17 +401,16 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
             snprintf(basePath, 500, "manga/%s/%d/Chapitre_%d", encodedTeam, mangaDB->projectID, chapitre/10);
     }
 	
-    snprintf(temp, 600, "%s/%s", basePath, CONFIGFILE);
+    snprintf(temp, 600, "%s/"CONFIGFILE, basePath);
     if(!checkFileExist(temp))
     {
-        /*Si le manga existe déjà*/
-        snprintf(temp, 500, "manga/%s/%d/", encodedTeam, mangaDB->projectID);
-        if(!checkDirExist(temp))
+		//Décompression dans le repertoire de destination
+
+		//Création du répertoire de destination
+		snprintf(temp, 500, "manga/%s/%d/", encodedTeam, mangaDB->projectID);
+		if(!checkDirExist(temp))
 			createPath(temp);
 		
-        /**Décompression dans le repertoire de destination**/
-		
-        //Création du répertoire de destination
         mkdirR(basePath);
         if(!checkDirExist(basePath))
         {
@@ -418,29 +418,26 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
             mkdirR(basePath);
         }
 		
-        //On crée un message pour ne pas lire un chapitre en cours d'installe
-        char temp_path_install[600];
-        snprintf(temp_path_install, 600, "%s/installing", basePath);
-        ressources = fopen(temp_path_install, "w+");
+        //On crée un message pour ne pas lire un chapitre en cours d'install
+        char installingFile[600];
+        snprintf(installingFile, sizeof(installingFile), "%s/installing", basePath);
+        ressources = fopen(installingFile, "w+");
         if(ressources != NULL)
             fclose(ressources);
 		
-        wentFine &= miniunzip(buf, basePath, "", sizeBuf, chapitre / 10);
-        remove(temp_path_install);
+        wentFine &= miniunzip(buf, basePath, NULL, sizeBuf, chapitre / 10);
+
+		remove(installingFile);
 		
-        /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
-        if(wentFine && haveToPutTomeAsReadable)
+		if(wentFine && haveToPutTomeAsReadable)
 			setTomeReadable(*mangaDB, tome);
 
-		if(!subFolder)
-        {
-            if(!wentFine)
-            {
-                snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", mangaDB->team->teamLong, mangaDB->projectID, chapitre);
-                logR(temp);
-                removeFolder(basePath);
-            }
-        }
+		if(!subFolder && !wentFine)
+		{
+			snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", mangaDB->team->teamLong, mangaDB->projectID, chapitre);
+			logR(temp);
+			removeFolder(basePath);
+		}
     }
 
 	free(encodedTeam);

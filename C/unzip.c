@@ -91,16 +91,13 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 		zipFileName = ralloc((strlen(zipInput)+1) *2); //Input
 	}
     zipOutput = ralloc((strlen(outputZip)+1) *2); //Output
-    password = ralloc((strlen(passwordZip)+1) *2);
+	if(passwordZip != NULL)		password = ralloc((strlen(passwordZip)+1) *2);
 
     if((!size && zipFileName == NULL) || zipOutput == NULL || (password == NULL && passwordZip != NULL))
     {
-        if(zipFileName)
-            free(zipFileName);
-        if(zipOutput)
-            free(zipOutput);
-        if(password)
-            free(password);
+        free(zipFileName);
+        free(zipOutput);
+        free(password);
 #ifdef DEV_VERSION
         logR("Failed at allocate memory\n");
 #endif
@@ -129,7 +126,8 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         }
     }
     memcpy(zipOutput, outputZip, strlen(outputZip)+1);
-    if(passwordZip != NULL)
+	
+    if(password != NULL)
         memcpy(password, passwordZip, strlen(passwordZip)+1);
 	
     if(!size)
@@ -199,21 +197,13 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
     {
         if(!encrypted)
             encrypted = FULL_ENCRYPTION;
-        else //chapitre crypté
-        {
-            getPasswordArchive(zipFileName, password);
-            if(!password[0])
-                goto quit;
-        }
     }
     for(uint i = 0; i < nombreFichiers; i++)
     {
         if(checkNameFileZip(filename_inzip[i]))
         {
-            if(encrypted && password[0] != 0) //Si mot de passe
+			if(encrypted)	//password can be NULL
                 ret_value &= do_extract_onefile(uf, filename_inzip[i], path, extractWithoutPath, 1, password, pass[i]);
-            else if(encrypted)
-                ret_value &= do_extract_onefile(uf, filename_inzip[i], path, extractWithoutPath, 1, NULL, pass[i]);
             else
                 ret_value &= do_extract_onefile(uf, filename_inzip[i], path, extractWithoutPath, 1, NULL, NULL);
 			
