@@ -22,7 +22,7 @@
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", project.team->URLRepo] : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
 		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -130,7 +130,7 @@
 		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: [NSString stringWithFormat:@"imageCache/%s/", data.team->URLRepo] : [NSString stringWithFormat:@"%d_CT", data.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.team->URLRepo : [NSString stringWithFormat:@"%d_CT", data.projectID] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -168,9 +168,17 @@
 
 @implementation RakCTProjectImageView
 
-- (id) initWithImageName : (NSString*) path : (NSString *) imageName : (NSRect) superViewFrame
+- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame
 {
 	NSImage * projectImageBase = nil;
+	
+	char * encodedHash = getPathForTeam(URLRepo);
+	
+	if(encodedHash == NULL)
+		return nil;
+	
+	NSString * path = [NSString stringWithFormat:@"imageCache/%s/", encodedHash];
+	free(encodedHash);
 
 	if(path != nil && imageName != nil)
 	{

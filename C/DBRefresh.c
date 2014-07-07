@@ -201,9 +201,14 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
 	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
 	{
-		char path[2*LENGTH_PROJECT_NAME + 25];
-		snprintf(path, sizeof(path), "manga/%s/%d", project.team->teamLong, project.projectID);
-		removeFolder(path);
+		char path[2*LENGTH_PROJECT_NAME + 25], *encodedTeam = getPathForTeam(project.team->URLRepo);
+		
+		if(encodedTeam != NULL)
+		{
+			snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, project.projectID);
+			removeFolder(path);
+		}
+		free(encodedTeam);
 	}
 	else
 	{
@@ -211,15 +216,18 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 	}
 }
 
-void setLastChapitreLu(PROJECT_DATA mangasDB, bool isTome, int dernierChapitre)
+void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 {
-	char temp[5*LENGTH_PROJECT_NAME];
+	char temp[5*LENGTH_PROJECT_NAME], *encodedTeam = getPathForTeam(project.team->URLRepo);
 	FILE* fichier = NULL;
+	
+	if(encodedTeam == NULL)
+		return;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", mangasDB.team->teamLong, mangasDB.projectID, CONFIGFILETOME);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", encodedTeam, project.projectID, CONFIGFILETOME);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", mangasDB.team->teamLong, mangasDB.projectID, CONFIGFILE);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", encodedTeam, project.projectID, CONFIGFILE);
 
 	fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);

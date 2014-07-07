@@ -29,7 +29,7 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
 	uint nombreToursRequis = 1;
-    char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL;
+	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
@@ -37,6 +37,9 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 	
     dataReader->nomPages = dataReader->path = NULL;
     dataReader->pathNumber = dataReader->pageCouranteDuChapitre = dataReader->chapitreTomeCPT = NULL;
+	
+	if(encodedTeam == NULL)
+		return true;
 	
     if(isTome)
     {
@@ -91,7 +94,7 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%d/%s/%s", mangaDB.team->teamLong, mangaDB.projectID, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%d/%s/%s", encodedTeam, mangaDB.projectID, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -162,7 +165,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%d/%s", mangaDB.team->teamLong, mangaDB.projectID, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%d/%s", encodedTeam, mangaDB.projectID, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else
@@ -213,7 +216,9 @@ memoryFail:
     }
     if(dataReader->pageCourante > dataReader->nombrePageTotale)
         dataReader->pageCourante = dataReader->nombrePageTotale;
-    return 0;
+	
+	free(encodedTeam);
+    return false;
 }
 
 char ** loadChapterConfigDat(char* input, int *nombrePage)

@@ -40,15 +40,19 @@ void refreshTomeList(PROJECT_DATA *mangaDB)
 
 void setTomeReadable(PROJECT_DATA mangaDB, int ID)
 {
-	char pathWithTemp[600], pathWithoutTemp[600];
+	char pathWithTemp[600], pathWithoutTemp[600], *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
 	
-	snprintf(pathWithTemp, sizeof(pathWithTemp), "manga/%s/%d/Tome_%d/%s.tmp", mangaDB.team->teamLong, mangaDB.projectID, ID, CONFIGFILETOME);
-	snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), "manga/%s/%d/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.projectID, ID, CONFIGFILETOME);
-	rename(pathWithTemp, pathWithoutTemp);
-	
-	mangaDB.tomesFull = mangaDB.tomesInstalled = NULL;
-	getUpdatedTomeList(&mangaDB, false);
-	
+	if(encodedTeam != NULL)
+	{
+		snprintf(pathWithTemp, sizeof(pathWithTemp), "manga/%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, mangaDB.projectID, ID);
+		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), "manga/%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, mangaDB.projectID, ID);
+		rename(pathWithTemp, pathWithoutTemp);
+		
+		mangaDB.tomesFull = mangaDB.tomesInstalled = NULL;
+		getUpdatedTomeList(&mangaDB, false);
+		free(encodedTeam);
+	}
+
 	if(!checkTomeReadable(mangaDB, ID))
 		remove(pathWithoutTemp);
 }
@@ -65,12 +69,16 @@ bool checkTomeReadable(PROJECT_DATA mangaDB, int ID)
 		return false;
 	
 	CONTENT_TOME * cache = mangaDB.tomesFull[pos].details;
-	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350];
+	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
 	
-	if (cache == NULL)
+	if (cache == NULL || encodedTeam == NULL)
+	{
+		free(encodedTeam);
 		return false;
+	}
 	
-	snprintf(basePath, sizeof(basePath), "manga/%s/%d/", mangaDB.team->teamLong, mangaDB.projectID);
+	snprintf(basePath, sizeof(basePath), "manga/%s/%d/", encodedTeam, mangaDB.projectID);
+	free(encodedTeam);
 	
 	for(posDetails = 0; cache[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
 	{
@@ -131,11 +139,15 @@ bool parseTomeDetails(PROJECT_DATA mangaDB, int ID, CONTENT_TOME ** output)
 	}
 	
 	uint bufferSize, posBuf;
-	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer;
+	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
     FILE* config;
 	
+	if(encodedTeam == NULL)
+		return false;
+	
 	//On charge le fichier dans un buffer en mémoire pour accélérer les IO
-	snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%d/Tome_%d/%s", mangaDB.team->teamLong, mangaDB.projectID, ID, CONFIGFILETOME);
+	snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, mangaDB.projectID, ID);
+	free(encodedTeam);
 	
 	bufferSize = getFileSize(pathConfigFile);
 	
@@ -210,10 +222,14 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	
     if(dernierLu != NULL)
     {
-		char temp[LENGTH_PROJECT_NAME*2+100];
+		char temp[LENGTH_PROJECT_NAME*2+100], *encodedTeam = getPathForTeam(project->team->URLRepo);
 		FILE* config;
 		
-		snprintf(temp, sizeof(temp), "manga/%s/%d/%s", project->team->teamLong, project->projectID, CONFIGFILETOME);
+		if(encodedTeam == NULL)
+			return;
+		
+		snprintf(temp, sizeof(temp), "manga/%s/%d/"CONFIGFILETOME, encodedTeam, project->projectID);
+		free(encodedTeam);
 		if((config = fopen(temp, "r")) != NULL)
 		{
 			*dernierLu = VALEUR_FIN_STRUCT;
@@ -294,33 +310,32 @@ void freeTomeList(META_TOME * data, bool includeDetails)
 
 void printTomeDatas(PROJECT_DATA mangaDB, char *bufferDL, int tome)
 {
-    size_t length = strlen(mangaDB.team->teamLong) + 110;
-    char *bufferPath = malloc(length);
-    FILE* out = NULL;
-    if(bufferPath != NULL)
-    {
-        //I create the path to the file
-        snprintf(bufferPath, length, "manga/%s/%d/Tome_%d/%s.tmp", mangaDB.team->teamLong, mangaDB.projectID, tome, CONFIGFILETOME);
-        out = fopen(bufferPath, "w+");
-        if(out == NULL)
-        {
-            createPath(bufferPath); //If I can't create the file, I try to create its path, then retry
-            out = fopen(bufferPath, "w+");
-            if(out == NULL)
-                return;
-        }
-		
-		uint lengthBufferDL = strlen(bufferDL);
-        if(fwrite(bufferDL, sizeof(char), lengthBufferDL, out) != lengthBufferDL) //Write data then check if everything went fine
-        {
-            logR("Failed at write tome infos");
+    char bufferPath[256], *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
+    FILE* out;
+	
+    if(encodedTeam == NULL)
+		return;
+
+	snprintf(bufferPath, sizeof(bufferPath), "manga/%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, mangaDB.projectID, tome);
+	free(encodedTeam);
+	
+	if((out = fopen(bufferPath, "w+")) == NULL)
+	{
+		createPath(bufferPath); //If I can't create the file, I try to create its path, then retry
+		out = fopen(bufferPath, "w+");
+		if(out == NULL)
+			return;
+	}
+	
+	uint lengthBufferDL = strlen(bufferDL);
+	if(fwrite(bufferDL, sizeof(char), lengthBufferDL, out) != lengthBufferDL) //Write data then check if everything went fine
+	{
+		logR("Failed at write tome infos");
 #ifdef DEV_VERSION
-            logR(bufferDL);
+		logR(bufferDL);
 #endif
-        }
-        fclose(out);
-        free(bufferPath);
-    }
+	}
+	fclose(out);
 }
 
 int extractNumFromConfigTome(char *input, int ID)
@@ -367,6 +382,10 @@ void internalDeleteTome(PROJECT_DATA mangaDB, int tomeDelete, bool careAboutLink
 		return;
 	}
 	
+	char * encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
+	if(encodedTeam == NULL)
+		return;
+	
 	position = getPosForID(mangaDB, true, tomeDelete);
 	
 	if(position != -1 && mangaDB.tomesInstalled[position].details != NULL)
@@ -375,7 +394,7 @@ void internalDeleteTome(PROJECT_DATA mangaDB, int tomeDelete, bool careAboutLink
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];
 		CONTENT_TOME * details = mangaDB.tomesInstalled[position].details;
 		
-		snprintf(basePath, sizeof(basePath), "manga/%s/%d", mangaDB.team->teamLong, mangaDB.projectID);
+		snprintf(basePath, sizeof(basePath), "manga/%s/%d", encodedTeam, mangaDB.projectID);
 		
 		for(uint posDetails = 0; details[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
 		{
@@ -393,6 +412,7 @@ void internalDeleteTome(PROJECT_DATA mangaDB, int tomeDelete, bool careAboutLink
 		}
 	}
 	
-    snprintf(dir, length, "manga/%s/%d/Tome_%d/", mangaDB.team->teamLong, mangaDB.projectID, tomeDelete);
+    snprintf(dir, length, "manga/%s/%d/Tome_%d/", encodedTeam, mangaDB.projectID, tomeDelete);
 	removeFolder(dir);
+	free(encodedTeam);
 }

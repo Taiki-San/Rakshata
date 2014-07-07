@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include "db.h"
+#include "crypto.h"
 
 void checkAjoutRepoParFichier(char *argv)
 {
@@ -164,6 +165,17 @@ bool addRepo(char * URL, char *type)
     }
 
 	return success;
+}
+
+char * getPathForTeam(char *URLRepo)
+{
+	if(URLRepo == NULL)
+		return NULL;
+	
+	size_t length;
+	unsigned char URLRepoHash[SHA256_DIGEST_LENGTH];
+	sha256((unsigned char*)URLRepo, URLRepoHash);
+	return base64_encode(URLRepoHash, SHA256_DIGEST_LENGTH, &length);
 }
 
 int defineTypeRepo(char *URL)

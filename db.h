@@ -33,7 +33,7 @@ uint getNumberLineReturn(char *input);
 bool extractCurrentLine(char * input, uint * posInput, char * output, uint lengthOutput);
 bool isProjectListSorted(PROJECT_DATA* data, uint length);
 void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
-void getPageInfo(TEAMS_DATA team, char * URLImage, uint projectID, bool large);
+void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();
@@ -82,7 +82,7 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
 void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd);
 void updateProjects();
 void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome);
-void setLastChapitreLu(PROJECT_DATA mangasDB, bool isTome, int dernierChapitre);
+void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 int databaseVersion(char* mangaDB);
 
 /**DBRecent.c**/

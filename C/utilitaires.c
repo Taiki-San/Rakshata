@@ -179,7 +179,6 @@ void createPath(char *output)
 #endif
         }
     }
-
 }
 
 IMG_DATA* readFile(char * path)

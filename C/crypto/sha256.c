@@ -261,7 +261,7 @@ static uint8 sha256_padding[64] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void sha256_finish( sha256_context *ctx, uint8 digest[32] )
+void sha256_finish( sha256_context *ctx, uint8 digest[SHA256_DIGEST_LENGTH] )
 {
     uint32 last, padn;
     uint32 high, low;

@@ -16,16 +16,22 @@
 {
 	if(projectImage != nil)
 	{
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", projectData.team->URLRepo]];
-		if(bundle != nil)
-		{
-			projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_DD", projectData.projectID]];
-		}
+		char * encodedHash = getPathForTeam(projectData.team->URLRepo);
 		
-		if(projectImage.image == nil)
+		if(encodedHash != NULL)
 		{
-			projectImage.image = [RakResPath craftResNameFromContext:@"defaultDragImage" :NO :YES : 1];
+			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", encodedHash]];
+			if(bundle != nil)
+			{
+				projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_DD", projectData.projectID]];
+			}
+			
+			if(projectImage.image == nil)
+			{
+				projectImage.image = [RakResPath craftResNameFromContext:@"defaultDragImage" :NO :YES : 1];
+			}
 		}
+		free(encodedHash);
 	}
 	
 	if (projectName != nil)

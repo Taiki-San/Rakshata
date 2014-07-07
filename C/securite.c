@@ -185,20 +185,13 @@ void get_file_date(const char *filename, char *date)
 void KSTriggered(TEAMS_DATA team)
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char temp[LENGTH_PROJECT_NAME+10];
-    snprintf(temp, LENGTH_PROJECT_NAME+10, "manga/%s", team.teamLong);
-    removeFolder(temp);
-}
+    char path[LENGTH_PROJECT_NAME+10], *encodedTeam = getPathForTeam(team.URLRepo);
 
-void screenshotSpoted(char team[LENGTH_PROJECT_NAME], char manga[LENGTH_PROJECT_NAME], int chapitreChoisis)
-{
-    char temp[LENGTH_PROJECT_NAME*2+50];
-    if(chapitreChoisis%10)
-        snprintf(temp, LENGTH_PROJECT_NAME*2+50, "manga/%s/%s/Chapitre_%d.%d", team, manga, chapitreChoisis/10, chapitreChoisis%10);
-    else
-        snprintf(temp, LENGTH_PROJECT_NAME*2+50, "manga/%s/%s/Chapitre_%d", team, manga, chapitreChoisis/10);
-    removeFolder(temp);
-    logR("Shhhhttt, don't imagine I didn't thought about that...\n");
+	if(encodedTeam != NULL)
+	{
+		snprintf(path, sizeof(path), "manga/%s", encodedTeam);
+		removeFolder(path);
+	}
 }
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)

@@ -187,6 +187,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		return;
 	
 	bool large;
+	size_t length;
 	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *URL, *hash;
 	TEAMS_DATA *team;
 	
@@ -196,6 +197,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		if(project[pos].team != NULL)
 		{
 			team = project[pos].team;
+			strncpy(URLRepo, team->URLRepo, sizeof(URLRepo));
 			break;
 		}
 	}
@@ -203,7 +205,10 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	if(!URLRepo[0])		return;
 	else
 	{
-		snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", URLRepo);
+		char * encodedHash = getPathForTeam(URLRepo);
+		if(encodedHash == NULL)		return;
+		
+		length = snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash);
 		createPath(imagePath);
 	}
 	
@@ -216,7 +221,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		{
 			if(i == 0)
 			{
-				if(project[pos].hashLarge[0] != 0 && project[pos].URLLarge[0] != 0)
+				if(project[pos].hashLarge[0] != 0)
 				{
 					URL = project[pos].URLLarge;
 					hash = project[pos].hashLarge;
@@ -227,7 +232,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			}
 			else
 			{
-				if(project[pos].hashSmall[0] != 0 && project[pos].URLSmall[0] != 0)
+				if(project[pos].hashSmall[0] != 0)
 				{
 					URL = project[pos].URLSmall;
 					hash = project[pos].hashSmall;
@@ -237,23 +242,29 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 					continue;
 			}
 			
-			snprintf(imagePath, sizeof(imagePath), "imageCache/%s/%d_%s.png", URLRepo, project[pos].projectID, large ? "CT" : "DD");
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s.png", project[pos].projectID, large ? "CT" : "DD");
 			uint32_t crc = crc32File(imagePath);
 			snprintf(crcHash, LENGTH_HASH, "%x", crc);
 			
 			if(strncmp(crcHash, hash, LENGTH_HASH))
-				getPageInfo(*team, URL, project[pos].projectID, large);
+			{
+				getPageInfo(*team, project[pos].projectID, large, imagePath);
+			}
 		}
 	}
 }
 
-void getPageInfo(TEAMS_DATA team, char * URLImage, uint projectID, bool large)
+void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 {
 	bool ssl = strcmp(team.type, TYPE_DEPOT_2) != 0;
-	char URL[1024], filename[1024], suffix[6] = "CT", buf[5];
+	char URL[1024], filenameTmp[1024+64], suffix[6] = "CT", buf[5];
+	uint pos;
 	FILE* file;
 	
 	if(!large)	suffix[0] = suffix[1] = 'D';
+	
+	strncpy(filenameTmp, filename, sizeof(filenameTmp));
+	pos = strlen(filenameTmp);
 	
 	for(char i = 0; i < 2; i++)
 	{
@@ -266,21 +277,31 @@ void getPageInfo(TEAMS_DATA team, char * URLImage, uint projectID, bool large)
 		else if(!strcmp(team.type, TYPE_DEPOT_3)) //Payant
 			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s&user=%s", team.URLRepo, projectID, suffix, COMPTE_PRINCIPAL_MAIL);
 		
-		snprintf(filename, sizeof(filename), "imageCache/%s/%d_%s.png", team.URLRepo, projectID, suffix);
-		download_disk(URL, NULL, filename, ssl);
+		filenameTmp[pos] = '.';	filenameTmp[pos+1] = 't';	filenameTmp[pos+2] = 'm';	filenameTmp[pos+3] = 'p';	filenameTmp[pos+4] = '\0';
+		download_disk(URL, NULL, filenameTmp, ssl);
 		
-		file = fopen(filename, "r");
+		file = fopen(filenameTmp, "r");
 		if(file != NULL)
 		{
 			for (char j = 0; j < 5; buf[j++] = fgetc(file));
 			fclose(file);
 			
 			if(!isJPEG(buf) && !isPNG(buf))
+				remove(filenameTmp);
+			else
+			{
 				remove(filename);
+				rename(filenameTmp, filename);
+			}
 		}
 		
-		if(i == 0)
+		if(i == 0)	//We add @2x everywhere
+		{
 			suffix[2] = '@';	suffix[3] = '2';	suffix[4] = 'x';	suffix[5] = '\0';
+			filename[pos-4] = '@';		filename[pos-3] = '2';		filename[pos-2] = 'x';		filename[pos-1] = '.';		filename[pos] = 'p';		filename[pos+1] = 'n';		filename[pos+2] = 'g';	filename[pos+3] = '\0';
+			filenameTmp[pos-4] = '@';	filenameTmp[pos-3] = '2';	filenameTmp[pos-2] = 'x';	filenameTmp[pos-1] = '.';	filenameTmp[pos] = 'p';		filenameTmp[pos+1] = 'n';
+			filenameTmp[pos+2] = 'g';	filenameTmp[pos+3] = '.';	filenameTmp[pos+4] = 't';	filenameTmp[pos+5] = 'm';	filenameTmp[pos+6] = 'p';	filenameTmp[pos+7] = '\0';
+		}
 	}
 }
 
@@ -311,9 +332,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		{
 #ifdef DELETE_REMOVED_PROJECT
 			removeFromCache(oldData[posOld]);
-			char path[LENGTH_PROJECT_NAME * 2 + 10];
-			snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
-			removeFolder(path);
+			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
+			if(encodedTeam != NULL)
+			{
+				snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, oldData[posOld].projectID);
+				removeFolder(path);
+			}
+			free(encodedTeam);
 #endif
 			posOld++;
 		}
@@ -351,9 +376,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	{
 #ifdef DELETE_REMOVED_PROJECT
 		removeFromCache(oldData[posOld]);
-		char path[LENGTH_PROJECT_NAME * 2 + 10];
-		snprintf(path, sizeof(path), "manga/%s/%s", oldData[posOld].team->teamLong, oldData[posOld].mangaName);
-		removeFolder(path);
+		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
+		if(encodedTeam != NULL)
+		{
+			snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, oldData[posOld].projectID);
+			removeFolder(path);
+		}
+		free(encodedTeam);
 #endif
 		posOld++;
 	}

@@ -88,6 +88,12 @@ int setupBDDCache()
 		internalTeamList[nombreTeam] = NULL;
 	free(repoBak);
 	
+	char * encodedTeam[nombreTeam];
+	for(uint i = 0; i < nombreTeam; i++)
+	{
+		encodedTeam[i] = internalTeamList[i] == NULL ? NULL : getPathForTeam(internalTeamList[i]->URLRepo);
+	}
+	
 	getRideOfDuplicateInTeam(internalTeamList, &nombreTeam);
 	
 	//On vas parser les mangas
@@ -120,11 +126,15 @@ int setupBDDCache()
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
 				for(teamPos = 0; teamPos < nombreTeam && internalTeamList[teamPos] != projects[pos].team; teamPos++);	//Get team index
-				snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/", projects[pos].team->teamLong, projects[pos].projectID);
-				if(!addToCache(request, projects[pos], teamPos, checkDirExist(pathInstall)))
+				
+				if(encodedTeam[teamPos] != NULL)
 				{
-					free(projects[pos].chapitresFull);
-					freeTomeList(projects[pos].tomesFull, true);
+					snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
+					if(!addToCache(request, projects[pos], teamPos, checkDirExist(pathInstall)))
+					{
+						free(projects[pos].chapitresFull);
+						freeTomeList(projects[pos].tomesFull, true);
+					}
 				}
 			}
 		}
@@ -159,9 +169,13 @@ int setupBDDCache()
 				lengthIsUpdated = nombreManga;
 		}
 		else
+		{
+			for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
 			return 0;
+		}
 	}
 	
+	for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
 	free(cacheFavs);
 	free(mangaDB);
 	

@@ -245,10 +245,13 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	if(IDChap == -1)
 		return ERROR_CHECK;
 	
-	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256];
+	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedTeam = getPathForTeam(projectData.team->URLRepo);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 	char pathInstall[LENGTH_PROJECT_NAME * 2 + 256];
 #endif
+	
+	if(encodedTeam == NULL)
+		return ERROR_CHECK;
 	
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
 	{
@@ -262,18 +265,20 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/%s", projectData.team->teamLong, projectData.projectID, IDTome, IDChap / 10, IDChap % 10,CONFIGFILE);
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/%s", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10,CONFIGFILE);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/installing", projectData.team->teamLong, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d/%s", projectData.team->teamLong, projectData.projectID, IDTome, IDChap / 10, CONFIGFILE);
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d/%s", encodedTeam, projectData.projectID, IDTome, IDChap / 10, CONFIGFILE);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d/installing", projectData.team->teamLong, projectData.projectID, IDTome, IDChap / 10);
+			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10);
 #endif
 		}
+		
+		free(encodedTeam);
 		
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 		return checkFileExist(pathConfig) && !checkFileExist(pathInstall) ? ALREADY_INSTALLED : NOT_INSTALLED;
@@ -287,7 +292,8 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	char basePath[LENGTH_PROJECT_NAME * 2 + 256], nameChapter[256];
 	
 	//Craft les portions constantes du nom
-	snprintf(basePath, sizeof(basePath), "manga/%s/%d", projectData.team->teamLong, projectData.projectID);
+	snprintf(basePath, sizeof(basePath), "manga/%s/%d", encodedTeam, projectData.projectID);
+	free(encodedTeam);
 	
 	if(IDChap % 10)
 		snprintf(nameChapter, sizeof(nameChapter), "Chapitre_%d.%d", IDChap / 10, IDChap % 10);
@@ -354,11 +360,17 @@ void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
-	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256];
+	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedTeam = getPathForTeam(data.team->URLRepo);
+	
+	if(encodedTeam == NULL)
+		return;
+	
 	if(chapitreID % 10)
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d.%d/shared", data.team->teamLong, data.projectID, chapitreID / 10, chapitreID % 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, chapitreID / 10, chapitreID % 10);
 	else
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d/shared", data.team->teamLong, data.projectID, chapitreID / 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, chapitreID / 10);
+	
+	free(encodedTeam);
 	
 	FILE * file = fopen(pathToSharedFile, "w+");
 	if(file != NULL)
@@ -403,40 +415,41 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	
     int length = strlen(tomeDatas->datas->team->teamLong) + 110;
     char *bufferDL = NULL;
-	bool mayHaveAlreadyBeenHere = false;
+	bool mayHaveAlreadyBeenHere = false, ret_value = false;
 	
 	if(length < 0)	//overflow
 		return false;
 
-    char bufferPath[length];
-	snprintf(bufferPath, length, "manga/%s/%d/Tome_%d/%s.tmp", tomeDatas->datas->team->teamLong, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+    char bufferPath[length], *encodedTeam = getPathForTeam(tomeDatas->datas->team->URLRepo);
+	
+	if(encodedTeam == NULL)
+		return false;
+	
+	snprintf(bufferPath, length, "manga/%s/%d/Tome_%d/%s.tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
 	length = getFileSize(bufferPath);
-    
+	
 	if(length)
     {
 		mayHaveAlreadyBeenHere = true;
 		bufferDL = malloc(length + 1);
 		if(bufferDL == NULL)
-			return NULL;
+			goto end;
 
 		FILE * cache = fopen(bufferPath, "rb");
 		length = fread(bufferDL, 1, length, cache);
 		fclose(cache);
 		
-		if(!length)
-		{
-			free(bufferDL);
-			return NULL;
-		}
-		else
+		if(length)
 			bufferDL[length] = 0;
+		else
+			goto end;
 	}
     else
     {
 		char *URL = NULL;
 		bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
 		if(bufferDL == NULL)
-			return false;
+			goto end;
 
         ///Craft URL
         if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_1) || !strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2))
@@ -450,24 +463,20 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
             length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
             URL = malloc(length);
             if(URL != NULL)
-                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver=%d&target=%s&project=%d&tome=%d&mail=%s", CURRENTVERSION, tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
+                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d&mail=%s", tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
         }
 
         if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
 		{
-			free(bufferDL);
 			free(URL);
-			return false;
+			goto end;
 		}
 
 		bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
 		free(URL);
 		
 		if(!isDownloadValid(bufferDL))
-		{
-			free(bufferDL);
-			return false;
-		}
+			goto end;
     }
 
     int i, nombreEspace, posBuf, posStartNbrTmp;
@@ -483,10 +492,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	//+ 1 because there is no space after last element
 	DATA_LOADED_TOME_DETAILS * output = calloc(nombreEspace + 1, sizeof(DATA_LOADED_TOME_DETAILS));
 	if(output == NULL)
-	{
-		free(bufferDL);
-		return false;
-	}
+		goto end;
 	
 	//On parse chaque élément
 	for(posBuf = tomeDatas->nbElemList = 0; bufferDL[posBuf] && tomeDatas->nbElemList <= nombreEspace;)
@@ -555,7 +561,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + 110;
 		char bufferPathTmp[lengthTmp];
 		
-		snprintf(bufferPathTmp, lengthTmp, "manga/%s/%d/Tome_%d/%s", tomeDatas->datas->team->teamLong, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+		snprintf(bufferPathTmp, lengthTmp, "manga/%s/%d/Tome_%d/%s", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
 		rename(bufferPath, bufferPathTmp);
 		
 		refreshTomeList(tomeDatas->datas);
@@ -564,13 +570,18 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		{
 			free(tomeDatas->listChapitreOfTome);
 			tomeDatas->listChapitreOfTome = NULL;
-			return false;
+			goto end;
 		}
 		else
 			rename(bufferPath, bufferPathTmp);
 	}
 	
+	ret_value = true;
+	
+end:
+	
     free(bufferDL);
+	free(encodedTeam);
     return true;
 }
 

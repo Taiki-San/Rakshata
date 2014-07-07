@@ -108,6 +108,7 @@ void checkAjoutRepoParFichier(char *argv);
 bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput);
 TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length);
 bool addRepo(char * URL, char *type);
+char * getPathForTeam(char *URLRepo);
 int defineTypeRepo(char *URL);
 int confirmationRepo(char team[LENGTH_PROJECT_NAME]);
 
@@ -120,7 +121,6 @@ void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date);
 void KSTriggered(TEAMS_DATA team);
-void screenshotSpoted(char team[LENGTH_PROJECT_NAME], char manga[LENGTH_PROJECT_NAME], int chapitreChoisis);
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void getPasswordArchive(char *fileName, char password[300]);
 void loadKS(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
