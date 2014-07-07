@@ -187,7 +187,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	bool large;
 	size_t length;
-	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *hash;
+	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH+1], *hash;
 	TEAMS_DATA *team;
 	
 	//Recover URLRepo
@@ -240,13 +240,10 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			}
 			
 			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s.png", project[pos].projectID, large ? "CT" : "DD");
-			uint32_t crc = crc32File(imagePath);
-			snprintf(crcHash, LENGTH_HASH, "%x", crc);
+			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
 			
 			if(strncmp(crcHash, hash, LENGTH_HASH))
-			{
 				getPageInfo(*team, project[pos].projectID, large, imagePath);
-			}
 		}
 	}
 }
@@ -255,14 +252,12 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 {
 	bool ssl = strcmp(team.type, TYPE_DEPOT_2) != 0;
 	char URL[1024], filenameTmp[1024+64], suffix[6] = "CT", buf[5];
-	uint pos;
+	uint pos = strlen(filename);
 	FILE* file;
 	
 	if(!large)	suffix[0] = suffix[1] = 'D';
 	
 	strncpy(filenameTmp, filename, sizeof(filenameTmp));
-	pos = strlen(filenameTmp);
-	
 	for(char i = 0; i < 2; i++)
 	{
 		if(!strcmp(team.type, TYPE_DEPOT_1))
@@ -295,7 +290,7 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 		if(i == 0)	//We add @2x everywhere
 		{
 			suffix[2] = '@';	suffix[3] = '2';	suffix[4] = 'x';	suffix[5] = '\0';
-			filename[pos-4] = '@';		filename[pos-3] = '2';		filename[pos-2] = 'x';		filename[pos-1] = '.';		filename[pos] = 'p';		filename[pos+1] = 'n';		filename[pos+2] = 'g';	filename[pos+3] = '\0';
+			strncpy(&filename[pos-4], "@2x.png", 1024 - pos + 4);
 
 			for(uint j = pos - 4; j < pos+3; j++)	filenameTmp[j] = filename[j];
 			filenameTmp[pos+3] = '.';	filenameTmp[pos+4] = 't';	filenameTmp[pos+5] = 'm';	filenameTmp[pos+6] = 'p';	filenameTmp[pos+7] = '\0';
