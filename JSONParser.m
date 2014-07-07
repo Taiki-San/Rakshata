@@ -317,15 +317,6 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	else
 		memset(&data.description, 0, sizeof(data.description));
 	
-	if(volumes != nil)
-	{
-		for(uint i = 0; i < nbVolumes; i++)
-		{
-			volumes[i].details = NULL;
-			parseTomeDetails(data, volumes[i].ID, &(volumes[i].details));
-		}
-	}
-	
 	chapters = NULL;
 	volumes = NULL;
 end:
@@ -437,10 +428,22 @@ void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool
 		
 			if(memcmp(&(outputData[validElements]), &emptySample, sizeof(emptySample)))
 			{
+				PROJECT_DATA * project;
+				
 				if(parseExtra)
-					((PROJECT_DATA_EXTRA*)outputData)[validElements++].team = team;
+					project = (PROJECT_DATA*) &((PROJECT_DATA_EXTRA*)outputData)[validElements++];
 				else
-					((PROJECT_DATA*)outputData)[validElements++].team = team;
+					project = &((PROJECT_DATA*)outputData)[validElements++];
+				
+				project->team = team;
+				if(project->tomesFull != NULL)
+				{
+					for(uint i = 0; i < project->nombreTomes; i++)
+					{
+						project->tomesFull[i].details = NULL;
+						parseTomeDetails(*project, project->tomesFull[i].ID, &(project->tomesFull[i].details));
+					}
+				}
 			}
 		}
 		
