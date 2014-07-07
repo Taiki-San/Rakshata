@@ -12,7 +12,7 @@
 		Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
  
 		Major modifications by Taiki
-		Copyright (C) 2011-2013 Taiki ( http://www.taiki.us/ )
+		Copyright (C) 2011-2014 Taiki ( http://www.taiki.us/ )
 */
 
 /*Stuff used by miniunzip*/
@@ -20,7 +20,7 @@
 #include "unzip.h"
 #define MAXFILENAME (256)
 
-int do_extract(unzFile uf, char* input, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password);
-int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const int* popt_extract_without_path, int* popt_overwrite, const char* password, unsigned char* passwordPageCrypted);
-int do_extract_onefile(unzFile uf, char* filename, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password, unsigned char* passwordPageCrypted);
+int do_extract(unzFile uf, char* input, char* output_path, bool extractWithoutPath, bool overwrite, const char* password);
+int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, bool *overwrite, const char* password, unsigned char* passwordPageCrypted);
+bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, bool overwrite, const char* password, unsigned char* passwordPageCrypted);
 

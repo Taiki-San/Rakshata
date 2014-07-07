@@ -65,17 +65,17 @@
 	/*end*/
 #endif
 
-int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const int* popt_extract_without_path, int* popt_overwrite, const char* password, unsigned char* passwordPageCrypted)
+int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, bool* overwrite, const char* password, unsigned char* passwordPageCrypted)
 {
     char* filename_withoutpath;
     char* p;
-    int err=UNZ_OK;
-    FILE *fout=NULL;
+    int err = UNZ_OK;
+    FILE *fout = NULL;
     uInt size_buf;
 
     unz_file_info64 file_info;
     //Si pas de fichier donné
-    err = unzGetCurrentFileInfo64(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
+    err = unzGetCurrentFileInfo64(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 
     if (err!=UNZ_OK)
     {
@@ -94,56 +94,57 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             filename_withoutpath = p+1; //Restreint au nom seul
     }
 
-    if ((*filename_withoutpath)=='\0') //Si on est au bout du nom du fichier (/ final), c'est un dossier
+    if (*filename_withoutpath == 0) //Si on est au bout du nom du fichier (/ final), c'est un dossier
     {
-        if (!(*popt_extract_without_path))
+        if (!*extractWithoutPath)
             mkdirR(filename_inzip);
     }
     else
     {
         char* write_filename = NULL;
-        int skip=0, size;
+        uint size;
 
-        if ((*popt_extract_without_path)==0)
-        {
+        if (*extractWithoutPath)
+		{
+			size = strlen(output_path) + strlen(filename_withoutpath) + 10;
+			write_filename = ralloc(size);
+			
+			if(write_filename == NULL)
+				return UNZ_INTERNALERROR;
+			
+			snprintf(write_filename, size, "%s/%s", output_path, filename_withoutpath);
+		}
+		else
+		{
 			size = strlen(filename_inzip) + strlen(output_path) + 10;
             write_filename = ralloc(size);
-            snprintf(write_filename, size, "%s/%s", output_path, filename_inzip);
+			
+			if(write_filename == NULL)
+				return UNZ_INTERNALERROR;
+			
+			snprintf(write_filename, size, "%s/%s", output_path, filename_inzip);
         }
-        else
-        {
-			size = strlen(output_path) + strlen(filename_withoutpath) + 10;
-            write_filename = ralloc(size);
-            snprintf(write_filename, size, "%s/%s", output_path, filename_withoutpath);
-        }
+		
 		err = unzOpenCurrentFilePassword(uf,password);
 
+#ifdef DEV_VERSION
 		if (err!=UNZ_OK)
         {
-#ifdef DEV_VERSION
-	    char temp[100];
-		snprintf(temp, 100, "error %d with zipfile in 2\n",err);
-		logR(temp);
-#endif
+			char temp[100];
+			snprintf(temp, 100, "error %d with zipfile in 2\n",err);
+			logR(temp);
         }
+#endif
 
-        if (((*popt_overwrite)==0) && (err==UNZ_OK))
-            *popt_overwrite=1;
-
-        if (skip == 0 && err == UNZ_OK)
+        if (err == UNZ_OK)
         {
             fout = fopen(write_filename, "wb");
 
             //some zipfile don't contain directory alone before file
-            if (fout == NULL && *popt_extract_without_path == 0 && strcmp(filename_withoutpath, filename_inzip))
+            if (fout == NULL && !*extractWithoutPath && strcmp(filename_withoutpath, filename_inzip))
             {
-                char c = *(filename_withoutpath - 1);
-                *(filename_withoutpath-1)='\0';
-				
-				mkdirR(write_filename);
-				
-				*(filename_withoutpath-1)=c;
-                fout=fopen(write_filename,"wb");
+				createPath(write_filename);
+                fout = fopen(write_filename,"wb");
             }
 
 #ifdef DEV_VERSION
@@ -155,6 +156,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             }
 #endif
         }
+		free(write_filename);
 
 		rawData *buf_char = malloc((size_buf = WRITEBUFFERSIZE) * sizeof(rawData));
 		rawData *buf_enc = malloc(size_buf * sizeof(rawData));
@@ -167,10 +169,12 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             return UNZ_INTERNALERROR;
         }
 
-        if (fout!=NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: cryptage a la volée
+        if (fout != NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: chiffrement a la volée
         {
-            int posIV;
+            uint posIV, i, j, posDebChunk;
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
+			unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
+			
             SerpentInstance pSer;
 			TwofishInstance pTwoF;
 
@@ -185,51 +189,55 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             do
             {
                 err = unzReadCurrentFile(uf, buf_char, size_buf);
-#ifdef DEV_VERSION
-                if (err<0)
+
+				if (err < 0)
                 {
+#ifdef DEV_VERSION
                     char temp[100];
                     snprintf(temp, 100, "error %d with zipfile in 3\n",err);
                     logR(temp);
+#endif
                     break;
                 }
-#endif
-				if (err > 0)
-                {
-                    int i = 0, j, posDebChunk = 0;
-                    while(i < err)
-                    {
-                        unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
+				
+				i = posDebChunk = 0;
+				while(i < err)
+				{
+					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+					for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
+					
+					if(posIV != -1) //Pas premier passage, IV existante
+						for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
+					
+					serpent_encrypt(&pSer, (uint8_t*) plaintext, (uint8_t*) ciphertext);
+					memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
+					memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
+					
+					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+					for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
+					
+					if(posIV != -1) //Pas premier passage, IV existante
+						for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
+					
+					TwofishEncrypt(&pTwoF, (uint32_t*) plaintext, (uint32_t*) ciphertext);
+					memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
+					memcpy(&buf_enc[posDebChunk+CRYPTO_BUFFER_SIZE], ciphertext, CRYPTO_BUFFER_SIZE);
+					
+					posIV = 0;
+					posDebChunk += 2*CRYPTO_BUFFER_SIZE;
+				}
+				
+				fwrite(buf_enc, 1, posDebChunk, fout);
 
-                        for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
-                        for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
-                        if(posIV != -1) //Pas premier passage, IV existante
-                            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
-                        serpent_encrypt(&pSer, (uint8_t*) plaintext, (uint8_t*) ciphertext);
-                        memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
-                        memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
-
-                        for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
-                        for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
-                        if(posIV != -1) //Pas premier passage, IV existante
-                            for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
-                        TwofishEncrypt(&pTwoF, (uint32_t*) plaintext, (uint32_t*) ciphertext);
-                        memcpy(ciphertext_iv[1], ciphertext, CRYPTO_BUFFER_SIZE);
-                        memcpy(&buf_enc[posDebChunk+CRYPTO_BUFFER_SIZE], ciphertext, CRYPTO_BUFFER_SIZE);
-                        posIV = 0;
-                        posDebChunk+=2*CRYPTO_BUFFER_SIZE;
-                    }
-                    fwrite(buf_enc, posDebChunk, 1, fout);
-                }
-            }while (err > 0);
+			}while (err > 0);
         }
 
-        else if (fout!=NULL) //DÈcompression normale
+        else if (fout != NULL) //Décompression normale
         {
             do
             {
                 err = unzReadCurrentFile(uf, buf_char, size_buf);
-                if (err<0)
+                if (err < 0)
                 {
 #ifdef DEV_VERSION
                     char temp[100];
@@ -239,18 +247,19 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                     break;
                 }
 
-                if (err>0 && fout != NULL && fwrite(buf_char, err, 1, fout)!=1)
+                if (fwrite(buf_char, 1, err, fout) != err)
                 {
 #ifdef DEV_VERSION
                     logR("error in writing extracted file\n");
 #endif
-                    err=UNZ_ERRNO;
+                    err = UNZ_ERRNO;
                     break;
                 }
-            }while (err>0);
+
+			} while (err > 0);
 		}
 
-        if (fout)
+        if (fout != NULL)
             fclose(fout);
 
 		if (err == UNZ_OK)
@@ -260,24 +269,24 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             if (err != UNZ_OK)
             {
                 char temp[100];
-                snprintf(temp, 100, "error %d with zipfile in 5 \n",err);
+                snprintf(temp, 100, "error %d with zipfile in 5\n",err);
                 logR(temp);
             }
 #endif
         }
         else
-            unzCloseCurrentFile(uf); //don't lose the error
+            unzCloseCurrentFile(uf); //keep the most important error: the one that killed the proccess
 
         free(buf_char);
 		free(buf_enc);
     }
+	
     return err;
 }
 
 
-int do_extract(unzFile uf, char *input, char *output_path, int opt_extract_without_path, int opt_overwrite, const char* password)
+int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPath, bool overwrite, const char* password)
 {
-    uLong i;
     unz_global_info64 gi;
     int err;
 
@@ -291,12 +300,12 @@ int do_extract(unzFile uf, char *input, char *output_path, int opt_extract_witho
     }
 #endif
 
-    for (i=0; i < gi.number_entry; i++)
+    for (uint i = 0; i < gi.number_entry; i++)
     {
-        if (do_extract_currentfile(uf,input,output_path, &opt_extract_without_path, &opt_overwrite, NULL, NULL) != UNZ_OK)
+        if (do_extract_currentfile(uf,input,output_path, &extractWithoutPath, &overwrite, NULL, NULL) != UNZ_OK)
             break;
 
-        if (i+1 < gi.number_entry)
+        if (i + 1 < gi.number_entry)
         {
             err = unzGoToNextFile(uf);
             if (err != UNZ_OK)
@@ -314,7 +323,7 @@ int do_extract(unzFile uf, char *input, char *output_path, int opt_extract_witho
     return 0;
 }
 
-int do_extract_onefile(unzFile uf, char* filename, char* output_path, int opt_extract_without_path, int opt_overwrite, const char* password, unsigned char* passwordPageCrypted)
+bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, bool overwrite, const char* password, unsigned char* passwordPageCrypted)
 {
     if (unzLocateFile(uf,filename,CASESENSITIVITY)!=UNZ_OK)
     {
@@ -323,9 +332,9 @@ int do_extract_onefile(unzFile uf, char* filename, char* output_path, int opt_ex
 		snprintf(temp, 256, "404 %s\n", filename); //File not found
 		logR(temp);
 #endif
-        return 2;
+        return false;
     }
 
-    return (do_extract_currentfile(uf,filename,output_path,&opt_extract_without_path, &opt_overwrite, password, passwordPageCrypted) != UNZ_OK);
+    return do_extract_currentfile(uf,filename,output_path,&extractWithoutPath, &overwrite, password, passwordPageCrypted) != UNZ_OK;
 }
 

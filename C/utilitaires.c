@@ -163,10 +163,10 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
 void createPath(char *output)
 {
     int longueur_output = 0, i = 0;
-    char folder[500];
+    char folder[512];
     while(output[longueur_output])
     {
-        for(; output[longueur_output] && output[longueur_output] != '/' && output[longueur_output] != '\\' && i < 500; folder[i++] = output[longueur_output++]);
+        for(; output[longueur_output] && output[longueur_output] != '/' && output[longueur_output] != '\\' && i < sizeof(folder); folder[i++] = output[longueur_output++]);
         folder[i] = 0;
         if(output[longueur_output]) //On est pas au bout du path
         {

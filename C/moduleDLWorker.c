@@ -186,7 +186,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		
         for(i = 0; i < nombreElement; i++)
         {
-            if(didElemGotDownloaded[i] && (listDL[i] == NULL || MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
+            if(didElemGotDownloaded[i] && (listDL[i] == NULL || !MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
 											isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
 											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
 											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1))))
@@ -366,7 +366,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 
 bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
-    int erreurs = 0;
+    bool wentFine = true;
     char temp[600], basePath[500], *encodedTeam = getPathForTeam(mangaDB->team->URLRepo);
     FILE* ressources = NULL;
 	
@@ -425,16 +425,16 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
         if(ressources != NULL)
             fclose(ressources);
 		
-        erreurs = miniunzip (buf, basePath, "", sizeBuf, chapitre/10);
+        wentFine &= miniunzip(buf, basePath, "", sizeBuf, chapitre / 10);
         remove(temp_path_install);
 		
         /*Si c'est pas un nouveau dossier, on modifie config.dat du manga*/
-        if(!erreurs && haveToPutTomeAsReadable)
+        if(wentFine && haveToPutTomeAsReadable)
 			setTomeReadable(*mangaDB, tome);
 
 		if(!subFolder)
         {
-            if(erreurs)
+            if(!wentFine)
             {
                 snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", mangaDB->team->teamLong, mangaDB->projectID, chapitre);
                 logR(temp);
@@ -444,7 +444,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
     }
 
 	free(encodedTeam);
-    return erreurs != 0;
+    return wentFine;
 }
 
 void MDLUpdateKillState(bool newState)

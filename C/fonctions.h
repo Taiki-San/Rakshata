@@ -163,7 +163,7 @@ void setNewLangue(int newLangue);
 int tradAvailable();
 
 /**Unzip.c**/
-int miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);
+bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);
 
 /**Update.c**/
 void checkUpdate();
