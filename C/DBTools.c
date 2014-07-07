@@ -180,7 +180,6 @@ bool isProjectListSorted(PROJECT_DATA* data, uint length)
 	return true;
 }
 
-#warning "To test"
 void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 {
 	if(project == NULL || !nbElem)
@@ -188,7 +187,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	bool large;
 	size_t length;
-	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *URL, *hash;
+	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH], *hash;
 	TEAMS_DATA *team;
 	
 	//Recover URLRepo
@@ -223,7 +222,6 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			{
 				if(project[pos].hashLarge[0] != 0)
 				{
-					URL = project[pos].URLLarge;
 					hash = project[pos].hashLarge;
 					large = true;
 				}
@@ -234,7 +232,6 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			{
 				if(project[pos].hashSmall[0] != 0)
 				{
-					URL = project[pos].URLSmall;
 					hash = project[pos].hashSmall;
 					large = false;
 				}
@@ -299,8 +296,9 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 		{
 			suffix[2] = '@';	suffix[3] = '2';	suffix[4] = 'x';	suffix[5] = '\0';
 			filename[pos-4] = '@';		filename[pos-3] = '2';		filename[pos-2] = 'x';		filename[pos-1] = '.';		filename[pos] = 'p';		filename[pos+1] = 'n';		filename[pos+2] = 'g';	filename[pos+3] = '\0';
-			filenameTmp[pos-4] = '@';	filenameTmp[pos-3] = '2';	filenameTmp[pos-2] = 'x';	filenameTmp[pos-1] = '.';	filenameTmp[pos] = 'p';		filenameTmp[pos+1] = 'n';
-			filenameTmp[pos+2] = 'g';	filenameTmp[pos+3] = '.';	filenameTmp[pos+4] = 't';	filenameTmp[pos+5] = 'm';	filenameTmp[pos+6] = 'p';	filenameTmp[pos+7] = '\0';
+
+			for(uint j = pos - 4; j < pos+3; j++)	filenameTmp[j] = filename[j];
+			filenameTmp[pos+3] = '.';	filenameTmp[pos+4] = 't';	filenameTmp[pos+5] = 'm';	filenameTmp[pos+6] = 'p';	filenameTmp[pos+7] = '\0';
 		}
 	}
 }

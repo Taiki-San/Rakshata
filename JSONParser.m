@@ -367,23 +367,11 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	{
 		memcpy(&output, &shortData, sizeof(shortData));
 		
-		NSString * URLLarge = [bloc objectForKey:@"URL_large_pic"];
-		if(URLLarge != nil && [URLLarge superclass] == [NSMutableString class])
-			strncpy(output.URLLarge, [URLLarge cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_URL);
-		else
-			memset(output.URLLarge, 0, LENGTH_URL);
-		
 		NSString * crcLarge = [bloc objectForKey:@"hash_URL_large_pic"];
 		if(crcLarge != nil && [crcLarge superclass] == [NSMutableString class])
 			strncpy(output.hashLarge, [crcLarge cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
 		else
 			memset(output.hashLarge, 0, LENGTH_HASH);
-		
-		NSString * URLSmall = [bloc objectForKey:@"URL_small_pic"];
-		if(URLSmall != nil && [URLSmall superclass] == [NSMutableString class])
-			strncpy(output.URLSmall, [URLSmall cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_URL);
-		else
-			memset(output.URLSmall, 0, LENGTH_URL);
 		
 		NSString * crcSmall = [bloc objectForKey:@"hash_URL_small_pic"];
 		if(crcSmall != nil && [crcSmall superclass] == [NSMutableString class])

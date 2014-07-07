@@ -57,9 +57,7 @@ typedef struct tome_metadata
 **			-	japaneseOrder			Sens de lecture
 **
 **		Page d'info
-**			- URLLarge					URL vers une version de l'image de projet pour le tab CT
 **			- hashLarge					CRC32 de la version courante
-**			- URLSmall					URL vers une version de l'image de projet pour le D&D
 **			- hashSmall					CRC32 de la version courante
 **
 **		Chapitres
@@ -152,10 +150,6 @@ typedef struct dataProjectWithExtra
 	//2 x 64b
 	char hashLarge[LENGTH_HASH];
 	char hashSmall[LENGTH_HASH];
-	
-	//2 x 256o
-	char URLLarge[LENGTH_URL];
-	char URLSmall[LENGTH_URL];
 	
 } PROJECT_DATA_EXTRA;
 
