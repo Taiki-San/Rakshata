@@ -43,7 +43,7 @@
 		[coreView release];
 		[self setFrame:[self createFrame]];	//Update the size if required
 		needUpdateMainViews = YES;
-		[self updateDependingViews];
+		[self updateDependingViews : NO];
 	}
 }
 
@@ -56,7 +56,7 @@
 {
 	[coreView wakeUp];
 	needUpdateMainViews = YES;
-	[self updateDependingViews];
+	[self updateDependingViews : YES];
 }
 
 - (NSString *) byebye
@@ -143,7 +143,7 @@
 	[coreView hideList:[self isForcedToShowUp]];
 	[coreView setFocusDrop:[self isForcedToShowUp]];
 	needUpdateMainViews = YES;
-	[self updateDependingViews];
+	[self updateDependingViews : YES];
 }
 
 /*Internal stuffs*/
@@ -188,13 +188,24 @@
 	return maximumSize;
 }
 
-- (void) updateDependingViews
+- (void) updateDependingViews : (BOOL) animated
 {
 	if(!needUpdateMainViews)
 		return;
 	
-	[self refreshLevelViewsAnimation : self.superview];
-	
+	if(animated)
+	{
+		[self refreshLevelViewsAnimation : self.superview];
+	}
+	else
+	{
+		for(RakTabView * view in self.superview.subviews)
+		{
+			if([view class] != [self class])
+				[view setFrame:[view createFrame]];
+		}
+	}
+
 	needUpdateMainViews = NO;
 }
 
@@ -220,7 +231,7 @@
 	if([controller getNbElem:YES] != 0)
 	{
 		[super refreshDataAfterAnimation];
-		[self updateDependingViews];
+		[self updateDependingViews : NO];
 	}
 }
 
@@ -278,7 +289,7 @@
 			[_popover locationUpdated:frameRect:NO];
 		
 		if(needUpdateMainViews)
-			[self updateDependingViews];
+			[self updateDependingViews : NO];
 	}
 }
 

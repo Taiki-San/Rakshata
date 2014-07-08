@@ -44,7 +44,7 @@
 - (BOOL) isForcedToShowUp;
 - (BOOL) isDisplayed;
 
-- (void) updateDependingViews;
+- (void) updateDependingViews : (BOOL) animated;
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
