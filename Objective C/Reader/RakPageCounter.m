@@ -144,7 +144,23 @@
 	if ([partialString length] == 0)
 		return YES;
 	
-	return [partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location == NSNotFound;
+	if([partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
+		return NO;
+	
+	NSNumberFormatter * f = [[[NSNumberFormatter alloc] init] autorelease];
+	[f setNumberStyle:NSNumberFormatterDecimalStyle];
+	NSNumber * content = [f numberFromString:partialString];
+	
+	if(content == nil)
+		return NO;
+
+	if(content > [self maximum])
+	{
+		*newString = [NSString stringWithFormat:@"%d", [[self maximum] unsignedIntValue]];
+		return NO;
+	}
+	
+	return YES;
 }
 
 @end
@@ -180,7 +196,12 @@
 		[textField setBezeled:NO];
 
 		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
-		[textField setFormatter:[[[RakFormatterNumbersOnly alloc] init] autorelease]];
+		
+		RakFormatterNumbersOnly * formater = [[[RakFormatterNumbersOnly alloc] init] autorelease];
+		[formater setMinimum:@(1)];
+		[formater setMaximum:@(maxPage)];
+		
+		[textField setFormatter:formater];
 		
 		//Enter key is pressed
 		[textField setTarget:self];
@@ -202,7 +223,7 @@
 	
 	if(value > 0)
 	{
-		if (value >= _maxPage)
+		if (value > _maxPage)
 		{
 			[textField setStringValue:[NSString stringWithFormat:@"%d", _maxPage]];
 		}

@@ -530,7 +530,7 @@ enum
 
 - (void) jumpToPage : (uint) newPage
 {
-	if (newPage == data.pageCourante || newPage >= data.nombrePageTotale)
+	if (newPage == data.pageCourante || newPage > data.nombrePageTotale)
 		return;
 	
 	int pageCourante = data.pageCourante;
