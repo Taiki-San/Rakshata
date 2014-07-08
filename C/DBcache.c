@@ -47,9 +47,9 @@ int setupBDDCache()
 	if(teamList != NULL)	//En principe inutile mais au cas où
 	{
 		for(int i = 0; i < lengthTeam; free(teamList[i++]));
-		free(teamList);
+		free(teamList);		teamList = NULL;
 	}
-	free(isUpdated);
+	free(isUpdated);	isUpdated = NULL;
 	nbElem = lengthTeam = lengthIsUpdated = 0;
 	
 	//On parse les teams
@@ -584,7 +584,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 				continue;
 			
 			if(maskRequest & RDB_CTXMASK)
-				signalProjectRefreshed(output[pos].cacheDBID, (maskRequest & RDB_CTXMASK) >> 8);
+				signalProjectRefreshed(pos, (maskRequest & RDB_CTXMASK) >> 8);
 
 			if(output[pos].team != NULL)
 				pos++;

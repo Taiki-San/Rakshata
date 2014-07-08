@@ -871,7 +871,7 @@ enum
 	
 	if(!isTome)
 	{
-		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; localProject.chapitresFull[nbElemToGrab] != VALEUR_FIN_STRUCT; nbElemToGrab++)
+		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; nbElemToGrab < localProject.nombreChapitre; nbElemToGrab++)
 		{
 			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab]])
 				selection[nbElemValidated++] = localProject.chapitresFull[nbElemToGrab];
@@ -879,7 +879,7 @@ enum
 	}
 	else
 	{
-		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; localProject.tomesFull[nbElemToGrab].ID != VALEUR_FIN_STRUCT; nbElemToGrab++)
+		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; nbElemToGrab < localProject.nombreTomes; nbElemToGrab++)
 		{
 			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.tomesFull[nbElemToGrab].ID])
 				selection[nbElemValidated++] = localProject.tomesFull[nbElemToGrab].ID;

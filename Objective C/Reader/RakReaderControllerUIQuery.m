@@ -17,7 +17,7 @@
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
 		return nil;
 	
-	self = [super initWithFrame : NSMakeRect(0, 0, 170, 190)];
+	self = [super initWithFrame : NSMakeRect(0, 0, 170, 170)];
 	
 	if(self != nil)
 	{
@@ -65,9 +65,9 @@
 	NSString * string = nil, *complement = _isTome ? @"tome" : @"chapitre";
 	
 	if (_sizeArray == 1)
-		string = [NSString stringWithFormat:@" J'ai remarqué %s y a un %@\nnon-téléchargé après\ncelui-là. Voulez vous\nque je le télécharge\npour vous?", _isTome ? "\nqu'il" : "qu'il\n", complement];
+		string = [NSString stringWithFormat:@" J'ai remarqué %s y a un %@\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	else
-		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nque je les télécharge\npour vous?", _isTome ? "\nqu'il" : "qu'il\n", complement];
+		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	
 	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE]] autorelease];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
