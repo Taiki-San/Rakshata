@@ -60,11 +60,6 @@
 					NSLog(@"Couldn't find the project to restore, abort :/");
 					break;
 				}
-				else
-				{
-					getUpdatedCTList(project, true);
-					getUpdatedCTList(project, false);
-				}
 				
 				//Perfect! now, all we have to do is to sanitize last few data :D
 				

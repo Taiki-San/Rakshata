@@ -31,17 +31,17 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
             char URL[200], *bufferOut, *bufferOutBak;
             for(sizeIndex = 0; index[sizeIndex] != VALEUR_FIN_STRUCT; sizeIndex++);
 
-            bufferOut = calloc(sizeIndex*2+10, sizeof(char)); //sizeIndex * 2 pour les espaces suivants les 0/1
+            bufferOut = calloc(sizeIndex * 10 + 32, sizeof(char)); //sizeIndex * 10 pour le prix et l'espace, 32 pour le prix total, les \n et le factureID
             if(bufferOut != NULL)
             {
                 /*Interrogration du serveur*/
                 bufferOutBak = bufferOut;
                 snprintf(URL, 200, "https://"SERVEUR_URL"/checkPaid.php");
-                if(download_mem(URL, POSTRequest, bufferOut, sizeIndex*2+10, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
+                if(download_mem(URL, POSTRequest, bufferOut, sizeIndex * 10 + 32, SSL_ON) == CODE_RETOUR_OK && isNbr(bufferOut[0]))
                 {
 					int prix = -1;
-					uint pos = 0;
-                    sscanfs(bufferOut, "%d %d", &prix, &factureID);
+					uint pos = 0, detail;
+                    bufferOut += sscanfs(bufferOut, "%d\n%d", &prix, &factureID);
                     if(prix != -1 && factureID != -1)
                     {
                         int posStatusLocal = 0;
@@ -56,36 +56,36 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
 
                             while(pos < sizeIndex && *bufferOut)
                             {
-                                for(; *bufferOut && !isNbr(*bufferOut); bufferOut++);
-                                if(*bufferOut - '0' <= MDLP_HIGHEST_CODE)
-                                {
-                                    /*Sachant que la liste peut être réorganisée, on va copier les adresses
-                                    des données dont on a besoin dans un tableau qui sera envoyé au thread*/
+                                for(; *bufferOut && !isNbr(*bufferOut) && *bufferOut != MDLP_CODE_ERROR; bufferOut++);
 
-                                    switch(*bufferOut - '0')
-                                    {
-                                        case MDLP_CODE_ERROR:
-                                        {
-                                            *(*status)[index[pos]] = MDL_CODE_INTERNAL_ERROR;
-                                            break;
-                                        }
-                                        case MDLP_CODE_PAID:
-                                        {
-                                            *(*status)[index[pos]] = MDL_CODE_WAITING_LOGIN;
-                                            statusLocal[posStatusLocal++] = (*status)[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
-                                            needLogin = true;
-                                            break;
-                                        }
-                                        case MDLP_CODE_TO_PAY:
-                                        {
-                                            *(*status)[index[pos]] = MDL_CODE_WAITING_PAY;
-                                            statusLocal[posStatusLocal++] = (*status)[index[pos]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
-                                            needLogin = somethingToPay = true;
-                                            break;
-                                        }
-                                    }
-                                    pos++;
-                                }
+								/*Sachant que la liste peut être réorganisée, on va copier les adresses
+								 des données dont on a besoin dans un tableau qui sera envoyé au thread*/
+								
+								switch(*bufferOut)
+								{
+									case MDLP_CODE_ERROR:
+									{
+										*(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR;
+										break;
+									}
+									case MDLP_CODE_PAID:
+									{
+										*(*status)[index[pos]] = MDL_CODE_WAITING_LOGIN;
+										statusLocal[posStatusLocal++] = (*status)[index[pos++]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+										needLogin = true;
+										break;
+									}
+									default:
+									{
+										bufferOut += sscanf(bufferOut, "%d", &detail);	//If required, the price of the element
+
+										*(*status)[index[pos]] = MDL_CODE_WAITING_PAY;
+										statusLocal[posStatusLocal++] = (*status)[index[pos++]]; //on assume que posStatusLocal <= pos donc check limite supérieure inutile
+										needLogin = somethingToPay = true;
+									}
+								}
+
+								bufferOut++;
                             }
 							
 							for(; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);	//Manque
@@ -141,7 +141,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 		char bufferURLDepot[3*LONGUEUR_URL], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
 		
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
-        snprintf(output, length-1, "ver=%d&mail=%s", CURRENTVERSION, COMPTE_PRINCIPAL_MAIL);
+        snprintf(output, length-1, "ver="CURRENTVERSIONSTRING"&mail=%s", COMPTE_PRINCIPAL_MAIL);
 
         for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCT; compteur++)
         {
@@ -167,9 +167,9 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 	int8_t **statusLocal = arg->statusLocal;
     unsigned int factureID = arg->factureID;
     free(arg);
-
-	prix ++;
-	prix--;
+	
+	if(!prix)	//Impossible, but shut a warning down
+		quit_thread(0);
 
     if(getPassword(GUI_DEFAULT_THREAD, password) == 1)
     {

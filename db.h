@@ -72,6 +72,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated);
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
 PROJECT_DATA getElementByID(uint cacheID, uint32_t context);
+void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData);
 void setInstalled(uint cacheID);
 
 /**DBRefresh.c**/

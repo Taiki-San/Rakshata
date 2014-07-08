@@ -265,7 +265,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
                 for(uint i = 0; nomPage[i]; free(nomPage[i++]));
                 free(nomPage);
             }
-            ret_value = 1;
+            ret_value = false;
             goto quit;
         }
 

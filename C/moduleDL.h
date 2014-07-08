@@ -29,10 +29,10 @@
 #define MDL_CODE_UNUSED				(-6)
 #define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
 
-#define MDLP_CODE_ERROR 0  //En cas de données insuffisante, calloc met directement error aux manquants
-#define MDLP_CODE_PAID 1
-#define MDLP_CODE_TO_PAY 2
-#define MDLP_HIGHEST_CODE 2
+#define MDLP_CODE_ERROR '#'  //En cas de données insuffisante, calloc met directement error aux manquants
+#define MDLP_CODE_PAID '0'
+#define MDLP_CODE_TO_PAY '2'
+#define MDLP_HIGHEST_CODE '2'
 
 /*Divers*/
 

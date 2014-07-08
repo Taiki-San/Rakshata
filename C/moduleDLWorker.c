@@ -215,7 +215,11 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		for(i = 0; i < nombreElement; free(listDL[i++]));
 		
 		if (!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
+		{
 			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
+			addRecentEntry(*(input.todoList->datas), true);
+			setInstalled(input.todoList->datas->cacheDBID);
+		}
 	}
 	
 	//On lance les éventuelles installations en attente

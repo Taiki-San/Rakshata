@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "db.h"
+
 extern char password[100];
 
 /*Loaders divers*/
@@ -265,14 +267,14 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/%s", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10,CONFIGFILE);
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d/%s", encodedTeam, projectData.projectID, IDTome, IDChap / 10, CONFIGFILE);
+			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10);
 #endif
@@ -566,6 +568,15 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		
 		refreshTomeList(tomeDatas->datas);
 		
+		for(uint pos = 0; pos < tomeDatas->datas->nombreTomes; pos++)
+		{
+			if(tomeDatas->datas->tomesFull[pos].ID == tomeDatas->identifier)
+			{
+				parseTomeDetails(*tomeDatas->datas, tomeDatas->identifier, &(tomeDatas->datas->tomesFull[pos].details));
+				break;
+			}
+		}
+		
 		if(checkTomeReadable(*tomeDatas->datas, tomeDatas->identifier)) //Si déjà lisible, on le dégage de la liste
 		{
 			free(tomeDatas->listChapitreOfTome);
@@ -575,14 +586,38 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		else
 			rename(bufferPath, bufferPathTmp);
 	}
-	
+	else
+	{
+		for(uint pos = 0; pos < tomeDatas->datas->nombreTomes; pos++)
+		{
+			if(tomeDatas->datas->tomesFull[pos].ID == tomeDatas->identifier)
+			{
+				CONTENT_TOME ** details = &tomeDatas->datas->tomesFull[pos].details;
+				*details = malloc((tomeDatas->nbElemList + 1) * sizeof(CONTENT_TOME));
+				
+				if(*details != NULL)
+				{
+					for(i = 0; i < tomeDatas->nbElemList; i++)
+					{
+						(*details)[i].ID = tomeDatas->listChapitreOfTome[i].element;
+						(*details)[i].isNative = tomeDatas->listChapitreOfTome[i].subFolder;
+					}
+					
+					(*details)[i].ID = VALEUR_FIN_STRUCT;
+				}
+				break;
+			}
+		}
+	}
+
+	updateTomeDetails(tomeDatas->datas->cacheDBID, tomeDatas->datas->nombreTomes, tomeDatas->datas->tomesFull);
 	ret_value = true;
 	
 end:
 	
     free(bufferDL);
 	free(encodedTeam);
-    return true;
+    return ret_value;
 }
 
 int sortMangasToDownload(const void *a, const void *b)

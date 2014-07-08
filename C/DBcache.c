@@ -1037,6 +1037,34 @@ PROJECT_DATA getElementByID(uint cacheID, uint32_t context)
 	return output;
 }
 
+void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData)
+{
+	if(cache == NULL)
+		setupBDDCache();
+	
+	sqlite3_stmt * request = NULL;
+	
+	if(cache != NULL && sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL) == SQLITE_OK)
+	{
+		sqlite3_bind_int(request, 1, cacheID);
+		if(sqlite3_step(request) == SQLITE_ROW)
+			freeTomeList((void*) sqlite3_column_int64(request, 0), true);
+		
+		int val = sqlite3_finalize(request);
+		if(sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_tomes)" = ?1 WHERE "DBNAMETOID(RDB_ID)" = ?2", -1, &request, NULL) == SQLITE_OK)
+		{
+			void* buffer = malloc((nbTomes + 1) * sizeof(META_TOME));
+			if(buffer != NULL)
+				copyTomeList(tomeData, nbTomes, buffer);
+			
+			val = sqlite3_bind_int64(request, 1, (int64_t) buffer);
+			val = sqlite3_bind_int(request, 2, cacheID);
+			val = sqlite3_step(request);
+			val = sqlite3_finalize(request);
+		}
+	}
+}
+
 void setInstalled(uint cacheID)
 {
 	if (cache == NULL)

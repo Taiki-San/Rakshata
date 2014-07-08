@@ -335,6 +335,6 @@ bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extr
         return false;
     }
 
-    return do_extract_currentfile(uf,filename,output_path,&extractWithoutPath, &overwrite, password, passwordPageCrypted) != UNZ_OK;
+    return do_extract_currentfile(uf,filename,output_path,&extractWithoutPath, &overwrite, password, passwordPageCrypted) == UNZ_OK;
 }
 

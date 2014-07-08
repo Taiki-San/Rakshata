@@ -887,7 +887,8 @@ enum
 	}
 	
 	//We got the data, now, craft the alert
-	[[RakReaderControllerUIQuery alloc] initWithData :sharedTabMDL : project :isTome :selection :nbElemValidated];
+	RakReaderControllerUIQuery *test = [RakReaderControllerUIQuery alloc];
+	[test initWithData :sharedTabMDL : project :isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit
