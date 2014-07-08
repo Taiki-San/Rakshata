@@ -59,7 +59,8 @@
 	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
 	frameRect.origin.y += WIDTH_BORDER_INTERNAL;
 	
-	[self.subviews[2] setFrame:frameRect];
+	for(uint i = 2, count = [self.subviews count]; i < count; i++)
+		[self.subviews[i] setFrame:frameRect];
 }
 
 - (void) setupBorders

@@ -10,22 +10,36 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakWindow.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakCenteredTextFieldCell.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakText.h"
-#import "RakTextCell.h"
-#import "RakSegmentedButtonCell.h"
-#import "RakMenuText.h"
-#import "RakProgressBar.h"
-#import "RakBackButton.h"
-#import "RakDragView.h"
-#import "RakDragItem.h"
-#import "RakDragResponder.h"
-#import "RakList.h"
-#import "RakPopoverWrapper.h"
-#import "RakForegroundView.h"
+@class RakForegroundView;
+
+@interface RakForegroundViewBackgroundView : NSView
+{
+	RakForegroundView * _father;
+}
+
+- (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
+
+@end
+
+@interface RakForegroundViewContentView : NSView
+
+@end
+
+@interface RakForegroundView : NSObject
+{
+	RakForegroundViewBackgroundView * background;
+	RakForegroundViewContentView * coreView;
+	
+	BOOL animationInProgress;
+}
+
+- (id) init : (NSView *) contentView;
+- (RakForegroundViewContentView *) initCoreView : (NSRect) contentViewFrame;
+
+- (void) switchState;
+- (BOOL) isVisible;
+
+- (void) switchOver;
+
+@end
+

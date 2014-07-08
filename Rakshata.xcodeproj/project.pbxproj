@@ -116,6 +116,7 @@
 		B6F6ED1818A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE718A3001400E3B55B /* unzip.c */; };
 		B6F6ED1918A3001400E3B55B /* update.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE818A3001400E3B55B /* update.c */; };
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
+		B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FCB424196C1F8E0026C64C /* RakForegroundView.m */; };
 		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
 		B6FE79E118B903B4004BE38D /* DBcache.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FE79E018B903B4004BE38D /* DBcache.c */; };
 /* End PBXBuildFile section */
@@ -322,6 +323,8 @@
 		B6F6ECE818A3001400E3B55B /* update.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = update.c; path = C/update.c; sourceTree = "<group>"; };
 		B6F6ECE918A3001400E3B55B /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/utilitaires.c; sourceTree = "<group>"; };
 		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = unz_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B6FCB423196C1F8E0026C64C /* RakForegroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakForegroundView.h; path = Utils/RakForegroundView.h; sourceTree = "<group>"; };
+		B6FCB424196C1F8E0026C64C /* RakForegroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakForegroundView.m; path = Utils/RakForegroundView.m; sourceTree = "<group>"; };
 		B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Rakshata.entitlements; sourceTree = "<group>"; };
 		B6FD250718B1245C0025FE74 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = Ressources/sqlite3.h; sourceTree = "<group>"; };
 		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
@@ -543,6 +546,8 @@
 				B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
+				B6FCB424196C1F8E0026C64C /* RakForegroundView.m */,
 				B6B46DAE18FB34FE00EB1FE6 /* RakList.h */,
 				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
@@ -895,6 +900,7 @@
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
 				B6EBD80519538B6B00642EB8 /* RakPopoverWrapper.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
+				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
 				B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,
