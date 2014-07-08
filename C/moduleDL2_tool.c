@@ -600,7 +600,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 					for(i = 0; i < tomeDatas->nbElemList; i++)
 					{
 						(*details)[i].ID = tomeDatas->listChapitreOfTome[i].element;
-						(*details)[i].isNative = tomeDatas->listChapitreOfTome[i].subFolder;
+						(*details)[i].isNative = !tomeDatas->listChapitreOfTome[i].subFolder;
 					}
 					
 					(*details)[i].ID = VALEUR_FIN_STRUCT;

@@ -82,7 +82,7 @@ bool checkTomeReadable(PROJECT_DATA mangaDB, int ID)
 	
 	for(posDetails = 0; cache[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
 	{
-		if(!cache[posDetails].isNative)
+		if(cache[posDetails].isNative)
 		{
 			if(cache[posDetails].ID % 10)
 				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
