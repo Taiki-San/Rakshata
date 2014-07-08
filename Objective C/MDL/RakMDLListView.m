@@ -284,7 +284,7 @@
 	(*todoList)->rowViewResponsible = NULL;
 	
 	if(wasDownloading)
-		MDLDownloadOver();
+		MDLDownloadOver(false);
 	
 	NSView * view = self;
 	RakTableView * tableView = nil;

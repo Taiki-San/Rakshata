@@ -59,6 +59,15 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		
 		else if(requestID != RID_DEFAULT)
 		{
+			if(requestID == RID_UPDATE_STATUS_REANIMATE)
+			{
+				uint i;
+				for(i = 0; i < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DL; i++);
+				
+				if(i == *nbElemTotal)
+					requestID = RID_UPDATE_STATUS;
+			}
+			
 			if(requestID == RID_UPDATE_STATUS)
 			{
 				if(IDToPosition == NULL)
@@ -66,7 +75,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 					
 				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 				
-				if(dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) == MDL_CODE_DEFAULT)
+				if(dataPos < *nbElemTotal)
 				{
 					MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status, &historiqueTeam);
 				}
@@ -179,9 +188,9 @@ bool MDLSendMessage(uint code)
 	return ret_value;
 }
 
-void MDLDownloadOver()
+bool MDLDownloadOver(bool reanimateOnly)
 {
-	MDLSendMessage(RID_UPDATE_STATUS);
+	return MDLSendMessage(reanimateOnly ? RID_UPDATE_STATUS_REANIMATE : RID_UPDATE_STATUS);
 }
 
 bool MDLStartNextInstallation()

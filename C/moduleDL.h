@@ -49,7 +49,8 @@ enum isInstalledRC {
 enum requestIDCodes {
 	RID_DEFAULT					= 0,
 	RID_UPDATE_STATUS			= 1,
-	RID_UPDATE_INSTALL			= 2
+	RID_UPDATE_STATUS_REANIMATE	= 2,
+	RID_UPDATE_INSTALL			= 3
 };
 
 enum downloadStatusCodes {
@@ -185,7 +186,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas);
 int sortMangasToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
-void MDLDownloadOver();
+bool MDLDownloadOver(bool reanimateOnly);
 bool MDLStartNextInstallation();
 void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);

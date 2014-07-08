@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "moduleDL.h"
+
 extern bool quit;
 char password[100];
 
@@ -210,12 +212,12 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
     {
         if(waitToGetPaid(factureID) == true)
         {
-            int i;
-            for(i = 0; i < sizeStatusLocal; i++)
+            for(uint i = 0; i < sizeStatusLocal; i++)
             {
                 if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
                     *statusLocal[i] = MDL_CODE_DEFAULT;
             }
+			MDLDownloadOver(true);
         }
     }
 

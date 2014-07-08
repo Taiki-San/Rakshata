@@ -172,22 +172,9 @@
 	{
 		//Great, the injection is now over... We need to reanimate what needs to be
 		if(!isThreadStillRunning(coreWorker))
-		{
 			startMDL(NULL, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, self);
-		}
 		else
-		{
-			uint i;
-			for(i = 0; i < discardedCount; i++)
-			{
-				//Anything running?
-				if((*status[IDToPosition[i]]) > MDL_CODE_DEFAULT && (*status[IDToPosition[i]]) < MDL_CODE_INSTALL_OVER)
-					break;
-			}
-			
-			if(i == discardedCount)
-				MDLDownloadOver();
-		}
+			MDLDownloadOver(true);
 		
 		//Worker should be at work, now, let's wake the UI up
 		[_tabMDL wakeUp];
