@@ -99,6 +99,7 @@ enum FONT_REQUEST {
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;
 + (NSColor*) getColorDarkTheme : (byte) context;
++ (NSColor*) getColorLightTheme : (byte) context;
 
 + (NSString *) getFontName : (byte) context;
 

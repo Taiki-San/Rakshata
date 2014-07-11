@@ -21,7 +21,8 @@
 	if(self != nil)
 	{
 		isFaved = NO;
-		
+
+		[Prefs getCurrentTheme:self];
 		[self setAutoresizesSubviews:NO];
 		[parent addSubview:self];
 		[self release];
@@ -270,8 +271,6 @@
 	if([object class] != [Prefs class])
 		return;
 
-	[self releaseIcons];
-	[self loadIcons:(Reader*)self.superview];
 	[self setNeedsDisplay:YES];
 }
 

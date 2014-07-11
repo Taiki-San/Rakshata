@@ -23,7 +23,7 @@
 		//Update a couple of prefs
 		[output sizeToFit];
 		output.wantsLayer = YES;
-		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
+		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:output].CGColor;
 		output.layer.cornerRadius = 4;
 		[output setBordered:NO];
 		
@@ -166,6 +166,11 @@
 	if([object class] != [Prefs class])
 		return;
 	
+	if(self.controlView == nil)
+	{
+		
+	}
+	
 	if(_imageName == nil)	//text cell
 	{
 		[textCell setTextColor:[self getFontColor]];
@@ -182,8 +187,6 @@
 		
 		//Free the previous images
 		[clicked release];		[nonClicked release];	[unAvailable release];
-		clicked = self.image;	[self setImage:nil];	[clicked release];
-		
 		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
 	}
 }
@@ -310,7 +313,6 @@
 			[Prefs getCurrentTheme:self];	//Register to changes
 		}
 	}
-	
 	return self;
 }
 

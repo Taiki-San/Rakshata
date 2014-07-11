@@ -81,6 +81,7 @@
 		return;
 	
 	self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : nil].CGColor;
+	[self setNeedsDisplay:YES];
 }
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element

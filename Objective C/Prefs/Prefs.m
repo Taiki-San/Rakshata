@@ -69,6 +69,9 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 	{
 		case THEME_CODE_DARK:
 			return [self getColorDarkTheme : context];
+			
+		case THEME_CODE_LIGHT:
+			return [self getColorLightTheme : context];
 	}
 	return nil;
 }
@@ -218,6 +221,19 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			output = [NSColor colorWithDeviceWhite:15/255.0f alpha:0.7f];
 			break;
 		}
+	}
+	
+	return output;
+}
+
++ (NSColor*) getColorLightTheme : (byte) context
+{
+	NSColor * output = nil;
+	
+	switch (context)
+	{
+		default:
+			output = [NSColor colorWithDeviceWhite:0 alpha:0];
 	}
 	
 	return output;

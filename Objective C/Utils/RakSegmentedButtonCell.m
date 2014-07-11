@@ -122,7 +122,7 @@
 	else
 	{
 		NSColor * expectedColor = [self getFontColor:cellID];
-		
+
 		if(![expectedColor isEqualTo:[cell textColor]])
 			[cell setTextColor:expectedColor];
 		

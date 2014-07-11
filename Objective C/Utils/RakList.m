@@ -239,7 +239,7 @@
 	highlight	= [[self getTextHighlightColor] retain];
 	[_tableView reloadData];
 	
-	[oldNormal dealloc];		[oldHighlight dealloc];
+	[oldNormal release];	[oldHighlight release];
 }
 
 #pragma mark - Methods to deal with tableView
@@ -256,7 +256,7 @@
 	
     if (result == nil)
 	{
-		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : [normal copy]];
+		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
 		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		[result setDrawsBackground:NO];
 
@@ -328,7 +328,7 @@
 		
 		if(element != nil)
 		{
-			[element setTextColor:[normal copy]];
+			[element setTextColor:normal];
 			[element setDrawsBackground:NO];
 			[element setNeedsDisplay];
 		}

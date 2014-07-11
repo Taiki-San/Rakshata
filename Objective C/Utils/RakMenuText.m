@@ -74,22 +74,36 @@
 	
 	if(self != nil)
 	{
+		[Prefs getCurrentTheme:self];	//Register for changes
 		[self setFont:[self getFont]];
-		
-		if([self getBackgroundColor] != nil)
-		{
-			[self setBackgroundColor:[self getBackgroundColor]];
-			[self setDrawsBackground:YES];
-		}
-		else
-		{
-			[self setBackgroundColor:[NSColor clearColor]];
-			[self setDrawsBackground:NO];
-		}
-		
+		[self defineBackgroundColor];
 	}
 	
 	return self;
+}
+
+- (void) defineBackgroundColor
+{
+	if([self getBackgroundColor] != nil)
+	{
+		[self setBackgroundColor:[self getBackgroundColor]];
+		[self setDrawsBackground:YES];
+	}
+	else
+	{
+		[self setBackgroundColor:[NSColor clearColor]];
+		[self setDrawsBackground:NO];
+	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([object class] != [Prefs class])
+		return;
+
+	[self setTextColor:[self getTextColor]];
+	[self defineBackgroundColor];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setFrame:(NSRect)frameRect

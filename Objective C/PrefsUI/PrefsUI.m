@@ -18,9 +18,22 @@
     if (self)
 	{
 		mainView = [[NSView alloc] initWithFrame:frame];
+		
+		RakButton * button = [[RakButton allocWithText:@"Change UI" :frame] retain];
+		[button sizeToFit];
+		[button setTarget:self];
+		[button setAction:@selector(updateUITheme)];
+		[button setFrameOrigin:NSMakePoint(frame.size.width / 2 - button.frame.size.width / 2, frame.size.height / 2 - button.frame.size.height / 2)];
+		[mainView addSubview:button];
+		
 		[self setView:mainView];
 	}
     return self;
+}
+
+- (void) updateUITheme
+{
+	[Prefs setCurrentTheme:[Prefs getCurrentTheme:nil] == THEME_CODE_DARK ? THEME_CODE_LIGHT : THEME_CODE_DARK];
 }
 
 @end
@@ -32,7 +45,7 @@
 	self = [super init];
 	if(self)
 	{
-		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame:self.window.frame];
+		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame:NSMakeRect(0, 0, 150, 150)];
 		[self setAnchor:nil];
 	}
 	return self;

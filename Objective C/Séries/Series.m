@@ -35,11 +35,6 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	[preferenceButton removeFromSuperview];
-	[preferenceButton release];
-	
-	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, RBB_TOP_BORDURE) : self : @selector(gogoWindow)];
-	
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 

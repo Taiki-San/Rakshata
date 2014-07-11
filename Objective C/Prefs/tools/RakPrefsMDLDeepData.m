@@ -59,7 +59,7 @@
 	if(length < sizeInputBuffer)	//Taille du buffer
 	{
 #ifdef DEV_VERSION
-		NSLog(@"[%s]: Not enough room to same prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
+		NSLog(@"[%s]: Not enough room to save prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
 #endif
 		return;
 	}
