@@ -17,6 +17,7 @@
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	[self setAutoresizesSubviews:NO];
 	[self setWantsLayer:YES];
+	[Prefs getCurrentTheme:self];		//register to changes
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	self.layer.cornerRadius = 5.0;
 	isFocusDrop = NO;
@@ -31,6 +32,16 @@
 {
 	return STATE_EMPTY;
 }
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	[self setNeedsDisplay:YES];
+}
+
 
 #pragma mark - Focus drop
 
@@ -126,7 +137,7 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS];
+	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS:nil];
 }
 
 @end

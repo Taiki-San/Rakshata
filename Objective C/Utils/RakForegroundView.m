@@ -135,11 +135,20 @@
 		_father = father;
 		[self setWantsLayer:YES];
 		[self setAutoresizesSubviews:NO];
-		[self.layer setBackgroundColor : [NSColor colorWithDeviceWhite:15/255.0f alpha:0.7f].CGColor];
+		[self.layer setBackgroundColor : [Prefs getSystemColor:GET_COLOR_FILTER_FORGROUND :self].CGColor];
 		[self setAlphaValue:0];
 	}
 	
 	return self;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+	{
+		[self.layer setBackgroundColor : [Prefs getSystemColor:GET_COLOR_FILTER_FORGROUND :nil].CGColor];
+		[self setNeedsDisplay:YES];
+	}
 }
 
 - (void) mouseDown:(NSEvent *)theEvent

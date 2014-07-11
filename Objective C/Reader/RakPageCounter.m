@@ -19,6 +19,7 @@
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superView bounds].size.height : posX];
+		[Prefs getCurrentTheme:self];	//register
 		
 		currentPage = currentPageArg+1;
 		pageMax = pageMaxArg+1;
@@ -73,7 +74,7 @@
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR_PAGE_COUNTER];
+	return [Prefs getSystemColor:GET_COLOR_READER_BAR_PAGE_COUNTER:nil];
 }
 
 - (NSColor *) getBorderColor
@@ -83,7 +84,16 @@
 
 - (NSColor *) getFontColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[self setTextColor:[self getFontColor]];
+	[self setBackgroundColor:[self getColorBackground]];
 }
 
 - (void) drawBorder
@@ -171,17 +181,18 @@
 {
 	_anchor = anchor;
 	_maxPage = maxPage;
+	[Prefs getCurrentTheme:self];
 	
 	if(mainLabel != nil)
 	{
 		[mainLabel setStringValue:@"Aller à:"];
 		[mainLabel sizeToFit];
-		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE]];
+		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 	}
 	
 	if(gotoButtonContainer != nil)
 	{
-		RakButton * gotoButton = [RakButton allocWithText:@"Go":NSMakeRect(0, 0, 0, 0)];
+		RakButton * gotoButton = [RakButton allocWithText:@"Go":NSZeroRect];
 		[gotoButton sizeToFit];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
@@ -192,10 +203,11 @@
 	if(textField != nil)
 	{
 		[textField setBackgroundColor:[NSColor blackColor]];
-		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT]];
+		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
 
-		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
+#warning "Get it to work"
+		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
 		
 		RakFormatterNumbersOnly * formater = [[[RakFormatterNumbersOnly alloc] init] autorelease];
 		[formater setMinimum:@(1)];
@@ -214,6 +226,24 @@
 		[popover setAppearance:NSPopoverAppearanceHUD];
 		[popover setBehavior:NSPopoverBehaviorTransient];
 		[popover showRelativeToRect:[_anchor bounds] ofView:_anchor preferredEdge:NSMinYEdge];
+	}
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	if(mainLabel != nil)
+	{
+		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		[mainLabel setNeedsDisplay:YES];
+	}
+	
+	if(textField != nil)
+	{
+		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[textField setNeedsDisplay:YES];
 	}
 }
 

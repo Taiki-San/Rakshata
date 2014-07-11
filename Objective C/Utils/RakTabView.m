@@ -74,6 +74,15 @@
 
 #pragma mark - Notification code
 
+//Not directly registered because Reader won't use it
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : nil].CGColor;
+}
+
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element
 {
 	//We'll recover the main view by hicking the view hierarchy
@@ -140,7 +149,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 }
 
 - (void) drawContentView: (NSRect) frame

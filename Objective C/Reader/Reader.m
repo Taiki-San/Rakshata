@@ -21,6 +21,7 @@
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
+		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
 		
 		[self initReaderMainView : state];
@@ -296,7 +297,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB : nil];
 }
 
 /**	Events **/

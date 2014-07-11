@@ -23,7 +23,7 @@
 		//Update a couple of prefs
 		[output sizeToFit];
 		output.wantsLayer = YES;
-		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS].CGColor;
+		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
 		output.layer.cornerRadius = 4;
 		[output setBordered:NO];
 		
@@ -111,6 +111,15 @@
 	return output;
 }
 
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
+	[self setNeedsDisplay];
+}
+
 + (Class) cellClass
 {
 	return [RakButtonCell class];
@@ -127,6 +136,7 @@
 	if(self != nil)
 	{
 		textCell = nil;
+		_imageName = nil;
 	}
 	
 	return self;
@@ -134,7 +144,7 @@
 
 - (id) copyWithZone:(NSZone *)zone
 {
-	return textCell ? nil : [[RakButtonCell allocWithZone:zone] initWithRawData:clicked :nonClicked :unAvailable];
+	return textCell ? nil : [[RakButtonCell allocWithZone:zone] initWithRawData: _imageName  :clicked :nonClicked :unAvailable];
 }
 
 - (void) dealloc
@@ -151,6 +161,33 @@
 	[super dealloc];
 }
 
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	if(_imageName == nil)	//text cell
+	{
+		[textCell setTextColor:[self getFontColor]];
+	}
+	else					//img cell
+	{
+		uint state = 0;
+		
+		//We get the previous state to restore it
+		if(self.image == clicked)
+			state = RB_STATE_HIGHLIGHTED;
+		else if(self.image == nonClicked)
+			state = RB_STATE_STANDARD;
+		
+		//Free the previous images
+		[clicked release];		[nonClicked release];	[unAvailable release];
+		clicked = self.image;	[self setImage:nil];	[clicked release];
+		
+		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
+	}
+}
+
 //Image only code
 
 - (id) initWithPage : (NSString*) imageName : (short) state
@@ -159,22 +196,12 @@
 	
 	if(self != nil)
 	{
-		clicked		= [[RakResPath craftResNameFromContext:imageName : YES : YES : 1] retain];
-		nonClicked	= [[RakResPath craftResNameFromContext:imageName : NO : YES : 1] retain];
-		unAvailable = [[RakResPath craftResNameFromContext:imageName : NO : NO : 1] retain];
+		_imageName = [NSString stringWithString:imageName];
+		
 		notAvailable = false;
 		canHighlight = true;
 		
-		if(state == RB_STATE_STANDARD && nonClicked != nil)
-			[self setImage:nonClicked];
-		else if(state == RB_STATE_HIGHLIGHTED && clicked != nil)
-			[self setImage:clicked];
-		else if(unAvailable != nil)
-		{
-			[self setImage:unAvailable];
-			notAvailable = true;
-		}
-		else
+		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
 		{
 			NSLog(@"Failed at create button for icon: %@", imageName);
 			[self release];
@@ -185,12 +212,33 @@
 	return self;
 }
 
-- (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable
+- (BOOL) loadIcon : (short) state : (uint) currentTheme
+{
+	clicked		= [[RakResPath craftResNameFromContext:_imageName : YES : YES : currentTheme] retain];
+	nonClicked	= [[RakResPath craftResNameFromContext:_imageName : NO : YES : currentTheme] retain];
+	unAvailable = [[RakResPath craftResNameFromContext:_imageName : NO : NO : currentTheme] retain];
+	
+	if(state == RB_STATE_STANDARD && nonClicked != nil)
+		[self setImage:nonClicked];
+	else if(state == RB_STATE_HIGHLIGHTED && clicked != nil)
+		[self setImage:clicked];
+	else if(unAvailable != nil)
+	{
+		[self setImage:unAvailable];
+		notAvailable = true;
+	}
+	else
+		return NO;
+	return YES;
+}
+
+- (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable
 {
 	self = [self init];
 	
 	if(self != nil)
 	{
+		_imageName = [imageName copy];
 		clicked = [_clicked retain];
 		nonClicked = [_nonClicked retain];
 		unAvailable = [_unAvailable retain];
@@ -259,6 +307,7 @@
 			[textCell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 			[textCell setAlignment:NSCenterTextAlignment];
 			[textCell setTextColor:[self getFontColor]];
+			[Prefs getCurrentTheme:self];	//Register to changes
 		}
 	}
 	
@@ -267,20 +316,20 @@
 
 - (NSColor*) getBorderColor
 {
-	return [NSColor colorWithDeviceWhite:32.0f/255.0f alpha:1.0f];
+	return [Prefs getSystemColor:GET_COLOR_BORDER_BUTTONS :nil];
 }
 
 - (NSColor*) getBackgroundColor
 {
-	return [NSColor colorWithDeviceWhite:39.0f/255.0f alpha:1.0];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
 }
 
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED : nil];
 	else
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED : nil];
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView

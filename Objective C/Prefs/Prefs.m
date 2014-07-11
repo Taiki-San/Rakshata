@@ -13,8 +13,8 @@
 Prefs* prefsCache;
 
 // Contexte
-uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
-uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
+static uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
+static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
 
 @implementation Prefs
 
@@ -42,9 +42,40 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DE
 	}
 }
 
-+ (NSColor*) getSystemColor : (byte) context
++ (uint) getCurrentTheme : (id) registerForChanges
 {
-	NSColor* output;
+	if(prefsCache == nil)
+		[self initCache];
+	
+	if(registerForChanges != nil)
+	{
+		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
+	}
+	
+	return prefsCache.themeCode;
+}
+
++ (void) setCurrentTheme : (uint) newTheme
+{
+	if(prefsCache == nil)
+		[self initCache];
+	
+	prefsCache.themeCode = newTheme;
+}
+
++ (NSColor*) getSystemColor : (byte) context : (id) senderToRegister
+{
+	switch ([self getCurrentTheme : senderToRegister])
+	{
+		case THEME_CODE_DARK:
+			return [self getColorDarkTheme : context];
+	}
+	return nil;
+}
+
++ (NSColor*) getColorDarkTheme : (byte) context
+{
+	NSColor* output = nil;
 	switch (context)
 	{
 		case GET_COLOR_EXTERNALBORDER_FAREST:
@@ -164,9 +195,28 @@ uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DE
 			break;
 		}
 			
-		default:
+		case GET_COLOR_BORDER_BUTTONS:
 		{
-			return nil;
+			output = [NSColor colorWithDeviceWhite:32.0f/255.0f alpha:1.0f];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_BUTTON_UNSELECTED:
+		{
+			output = [NSColor colorWithDeviceWhite:39.0f/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_BUTTON_SELECTED:
+		{
+			output = [NSColor colorWithDeviceWhite:44.0f/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_FILTER_FORGROUND:
+		{
+			output = [NSColor colorWithDeviceWhite:15/255.0f alpha:0.7f];
+			break;
 		}
 	}
 	
@@ -549,6 +599,8 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	self = [super init];
 	if(self != nil)
 	{
+		self.themeCode = 1;
+		
 		uint expectedSize[] = { [RakSizeSeries getExpectedBufferSizeVirtual], [RakSizeCT getExpectedBufferSizeVirtual], [RakSizeReader getExpectedBufferSizeVirtual], [RakMDLSize getExpectedBufferSizeVirtual] };
 		int bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
 		char *input = loadPref("si", bufferSize, 'f'), recoveryBuffer[bufferSize];

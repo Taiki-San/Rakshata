@@ -20,14 +20,14 @@
 	{
 		[self setupInternal];
 		
-		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement"];
 		if(headerText != nil)	{	[self addSubview:headerText];	[headerText release];	}
 		
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
 		if(MDLList != nil)			[MDLList setSuperView:self];
 		
-		dropPlaceHolder = [[RakText alloc] initWithText:[self bounds] :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL]];
+		dropPlaceHolder = [[RakText alloc] initWithText:[self bounds] :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
 			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];
@@ -79,6 +79,15 @@
 		posY = frameSize.height / 2 - dropPlaceHolder.frame.size.height / 2;
 
 	return NSMakePoint(frameSize.width / 2 - dropPlaceHolder.frame.size.width / 2, posY);
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[dropPlaceHolder setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL : nil]];
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 /** Proxy work **/
@@ -192,7 +201,7 @@
 			return [NSColor clearColor];
 	}
 	
-	return [Prefs getSystemColor:code];
+	return [Prefs getSystemColor: code: nil];
 }
 
 - (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender

@@ -31,7 +31,8 @@
 	int8_t previousStatus;
 }
 
-- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID;
+- (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID;
+- (void) initIcons;
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;
 - (void) updateData : (uint) data : (uint) newCellWidth;

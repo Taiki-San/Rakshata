@@ -18,10 +18,6 @@
 	
 	CGFloat cellHeight;
 	
-	RakButton * pause;
-	RakButton * read;
-	RakButton * remove;
-	
 	bool dragInProgress;
 	uint draggedElement;
 }

@@ -85,4 +85,9 @@
 	return 21;
 }
 
+- (NSColor *) getBackgroundColor
+{
+	return nil;
+}
+
 @end

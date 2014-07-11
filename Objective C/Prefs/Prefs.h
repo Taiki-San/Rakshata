@@ -55,7 +55,11 @@ enum COLOR_REQUEST {
 	GET_COLOR_CLICKABLE_TEXT,
 	GET_COLOR_BORDERS_COREVIEWS,
 	GET_COLOR_FONT_BUTTON_NONCLICKED,
-	GET_COLOR_FONT_BUTTON_CLICKED
+	GET_COLOR_FONT_BUTTON_CLICKED,
+	GET_COLOR_BORDER_BUTTONS,
+	GET_COLOR_BACKGROUND_BUTTON_UNSELECTED,
+	GET_COLOR_BACKGROUND_BUTTON_SELECTED,
+	GET_COLOR_FILTER_FORGROUND
 };
 
 enum FONT_REQUEST {
@@ -84,11 +88,18 @@ enum FONT_REQUEST {
 	
 }
 
+@property uint themeCode;
+
 + (void) initCache;
 + (void) rebuildCache;
 + (void) syncCacheToDisk;
 
-+ (NSColor*) getSystemColor : (byte) context;
++ (uint) getCurrentTheme : (id) registerForChanges;
++ (void) setCurrentTheme : (uint) newTheme;
+
++ (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;
++ (NSColor*) getColorDarkTheme : (byte) context;
+
 + (NSString *) getFontName : (byte) context;
 
 + (void) getPref : (int) requestID : (void*) outputContainer;

@@ -23,6 +23,8 @@
 	bool notAvailable;
 	bool canHighlight;
 	
+	NSString * _imageName;
+	
 	NSImage *nonClicked;
 	NSImage *clicked;
 	NSImage *unAvailable;
@@ -33,7 +35,7 @@
 @property bool forceHighlight;
 
 - (id) initWithPage : (NSString*) imageName : (short) state;
-- (id) initWithRawData : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
+- (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
 - (id) copyWithZone:(NSZone *)zone;
 
 - (void) setHighlightAllowed : (BOOL) allowed;

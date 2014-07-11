@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+//We don't register for color changes as the displayed image is a bitmap of what we're crafting, and the lifespan of the real object is really short
+
 @implementation RakDragView
 
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString
@@ -37,13 +39,13 @@
 	if (projectName != nil)
 	{
 		[projectName setStringValue:[[NSString alloc] initWithData:[NSData dataWithBytes:projectData.projectName length:sizeof(projectData.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
-		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE]];
+		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE:nil]];
 	}
 	
 	if(selectionNameString != nil && selectionName != nil)
 	{
 		[selectionName setStringValue:selectionNameString];
-		[selectionName setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT]];
+		[selectionName setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT:nil]];
 	}
 	else
 	{
@@ -59,7 +61,7 @@
 	
 	if(separationLine != nil)
 	{
-		[separationLine setBorderColor:[Prefs getSystemColor:GET_COLOR_SURVOL]];
+		[separationLine setBorderColor:[Prefs getSystemColor:GET_COLOR_SURVOL:nil]];
 	}
 }
 
@@ -75,7 +77,7 @@
 		return nil;
 	
 	[view setWantsLayer:YES];
-	[view.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB].CGColor];
+	[view.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB:nil].CGColor];
 	[view.layer setCornerRadius:5];
 	
 	[view addSubview:self];

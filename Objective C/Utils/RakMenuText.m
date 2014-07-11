@@ -29,12 +29,17 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE : nil];
 }
 
 - (NSColor *) getBarColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS];
+	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS : nil];
+}
+
+- (NSColor *) getBackgroundColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 }
 
 - (CGFloat) getFontSize
@@ -63,7 +68,7 @@
 	return frame;
 }
 
-- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color
+- (id) initWithText:(NSRect)frame :(NSString *)text
 {
 	self = [super initWithText:[self getMenuFrame:frame] :text : [self getTextColor]];
 	
@@ -71,9 +76,9 @@
 	{
 		[self setFont:[self getFont]];
 		
-		if(color != nil)
+		if([self getBackgroundColor] != nil)
 		{
-			[self setBackgroundColor:color];
+			[self setBackgroundColor:[self getBackgroundColor]];
 			[self setDrawsBackground:YES];
 		}
 		else

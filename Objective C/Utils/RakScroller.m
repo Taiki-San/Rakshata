@@ -20,13 +20,29 @@
 	{
 		incompleteDrawing = NO;
 		
-		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE] retain];
-		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE] retain];
+		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE:self] retain];
+		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE:nil] retain];
 		color = passive;
 		[self setKnobStyle:NSScrollerKnobStyleLight];
 	}
 	
 	return self;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	bool isActive = color == active;
+	
+	[passive release];		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE:nil] retain];
+	[active release];		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE:nil] retain];
+
+	if(isActive)	color = active;
+	else			color = passive;
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag

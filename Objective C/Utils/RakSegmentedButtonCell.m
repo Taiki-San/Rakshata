@@ -18,11 +18,20 @@
 	
 	if(self != nil)
 	{
+		[Prefs getCurrentTheme:self];
 		[self setTrackingMode:NSSegmentSwitchTrackingSelectOne];
 		fields = [[NSMutableArray array] retain];
 	}
 	
 	return self;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	[self.controlView setNeedsDisplay:YES];
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
@@ -72,27 +81,27 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [NSColor colorWithDeviceWhite:32.0f/255.0f alpha:1.0f];
+	return [Prefs getSystemColor:GET_COLOR_BORDER_BUTTONS :nil];
 }
 
 - (NSColor*) getSelectedColor
 {
-	return [NSColor colorWithDeviceWhite:44.0f/255.0f alpha:1.0];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_SELECTED :nil];
 }
 
 - (NSColor*) getUnselectedColor
 {
-	return [NSColor colorWithDeviceWhite:39.0f/255.0f alpha:1.0];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
 }
 
 - (NSColor *) getFontColor : (uint) cellID
 {
 	if(![self isEnabledForSegment:cellID])
-		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE];
+		return [Prefs getSystemColor:GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:nil];
 	else if([self isSelectedForSegment:cellID])
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED:nil];
 	else
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED];
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED:nil];
 }
 
 - (NSTextFieldCell*) getCellForID : (uint) cellID

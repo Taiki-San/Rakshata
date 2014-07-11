@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
@@ -109,7 +109,7 @@
 			return [NSColor clearColor];
 	}
 	
-	return [Prefs getSystemColor:code];
+	return [Prefs getSystemColor:code : nil];
 }
 
 #pragma mark - Proxy
@@ -122,7 +122,7 @@
 		[projectName setStringValue : projectNameString];
 	else
 	{
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : projectNameString : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : projectNameString];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
 

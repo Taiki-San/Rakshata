@@ -65,7 +65,7 @@
 
 - (void) setupBorders
 {
-	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST];
+	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
 	NSRect frame = [self frame];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
@@ -73,7 +73,7 @@
 	frame.origin.x += WIDTH_BORDER_FAREST;
 	frame.origin.y += WIDTH_BORDER_FAREST;
 	
-	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE]];
+	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
 	if (internalRows1 != nil)
 	{
 		[self addSubview:internalRows1];
@@ -85,7 +85,7 @@
 	frame.origin.x += WIDTH_BORDER_MIDDLE;
 	frame.origin.y += WIDTH_BORDER_MIDDLE;
 	
-	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST]];
+	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];
 	if (internalRows2 != nil)
 	{
 		[self addSubview:internalRows2];
@@ -103,6 +103,18 @@
 		[self addSubview:firstResponder];
 		[firstResponder release];
 	}
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
+	[internalRows1 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
+	[internalRows2 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (RakContentView *) getFirstResponder

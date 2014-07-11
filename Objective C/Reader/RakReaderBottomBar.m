@@ -20,6 +20,8 @@
 	
 	if(self != nil)
 	{
+		isFaved = NO;
+		
 		[self setAutoresizesSubviews:NO];
 		[parent addSubview:self];
 		[self release];
@@ -60,7 +62,7 @@
 	readerMode = true;
 }
 
-- (void) dealloc
+- (void) releaseIcons
 {
 	RakButton* icons[] = {favorite, fullscreen, prevChapter, prevPage, nextPage, nextChapter, trash};
 	
@@ -72,6 +74,11 @@
 			[icons[i] release]; 	[icons[i] release];
 		}
 	}
+}
+
+- (void) dealloc
+{
+	[self releaseIcons];
 
 	if(pageCount != nil)
 	{
@@ -119,6 +126,7 @@
 
 	trash = [RakButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO :superView :@selector(deleteElement)];
 	
+	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
 	if(fullscreen != nil)		[fullscreen.cell setHighlightAllowed:NO];
 	if(prevChapter != nil)		[prevChapter.cell setHighlightAllowed:NO];
 	if(prevPage != nil)			[prevPage.cell setHighlightAllowed:NO];
@@ -129,6 +137,7 @@
 
 - (void) favsUpdated : (BOOL) isNewStatedFaved
 {
+	isFaved = isNewStatedFaved;
 	[favorite setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
 }
 
@@ -238,12 +247,12 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR];
+	return [Prefs getSystemColor:GET_COLOR_READER_BAR : nil];
 }
 
 - (NSColor*) getColorFront
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR_FRONT];
+	return [Prefs getSystemColor:GET_COLOR_READER_BAR_FRONT : nil];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -254,6 +263,16 @@
 	[self setupPath];
 	[[self getColorFront] setStroke];
 	CGContextStrokePath(contextBorder);
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	[self releaseIcons];
+	[self loadIcons:(Reader*)self.superview];
+	[self setNeedsDisplay:YES];
 }
 
 /*	Routines à overwrite	*/

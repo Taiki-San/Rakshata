@@ -28,8 +28,8 @@
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:4];
 		[self.layer setBorderWidth:1];
-		[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS].CGColor];
-		[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS].CGColor];
+		[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor];
+		[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil].CGColor];
 		
 		[self setupView];
 		
@@ -69,7 +69,7 @@
 	else
 		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	
-	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE]] autorelease];
+	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]] autorelease];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
@@ -100,9 +100,31 @@
 	[popover updatePosition:origin :animated];
 }
 
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil].CGColor];
+	[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil].CGColor];
+
+	
+	for(RakText * view in self.subviews)
+	{
+		if([view class] == [RakText class])
+		{
+			[view setTextColor:[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
+			break;
+		}
+	}
+	
+	[self setNeedsDisplay:YES];
+	[popover additionalConfiguration:self :@selector(configurePopover:)];
+}
+
 - (void) configurePopover : (INPopoverController*) internalPopover
 {
-	internalPopover.borderColor = internalPopover.color = [[Prefs getSystemColor:GET_COLOR_INACTIVE] colorWithAlphaComponent:0.8];
+	internalPopover.borderColor = internalPopover.color = [[Prefs getSystemColor:GET_COLOR_INACTIVE:nil] colorWithAlphaComponent:0.8];
 	internalPopover.borderWidth = 4;
 }
 

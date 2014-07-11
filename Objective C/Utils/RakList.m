@@ -21,6 +21,7 @@
 	if(self != nil)
 	{
 		selectedIndex = -1;
+		[Prefs getCurrentTheme:self];	//register for changes
 	}
 	
 	return self;
@@ -214,17 +215,31 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
+	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT:nil];
 }
 
 - (NSColor *) getTextHighlightColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
 }
 
 - (NSColor *) getBackgroundHighlightColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL:nil];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	NSColor *oldNormal = normal, *oldHighlight = highlight;
+	
+	normal		= [[self getTextColor] retain];
+	highlight	= [[self getTextHighlightColor] retain];
+	[_tableView reloadData];
+	
+	[oldNormal dealloc];		[oldHighlight dealloc];
 }
 
 #pragma mark - Methods to deal with tableView
@@ -252,10 +267,15 @@
 	else
 	{
 		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
+		[result setBackgroundColor:[self getBackgroundHighlightColor]];
 		if(row != selectedIndex)
 		{
-			[result setTextColor:[normal copy]];
+			[result setTextColor:normal];
 			[result setDrawsBackground:NO];
+		}
+		else
+		{
+			[result setTextColor:highlight];
 		}
 	}
 	
@@ -480,7 +500,7 @@
 
 - (NSColor *) _dropHighlightColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
 }
 
 - (void)setDropRow:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation

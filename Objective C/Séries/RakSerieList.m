@@ -19,6 +19,7 @@
 	if(self != nil)
 	{
 		initializationStage = INIT_FIRST_STAGE;
+		[Prefs getCurrentTheme:self];		//register
 		[self loadContent];
 		[self restoreState:state];
 		
@@ -196,12 +197,20 @@
 
 - (NSColor *) getFontTopColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE];
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE : nil];
 }
 
 - (NSColor *) getFontClickableColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT];
+	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	[content reloadData];
 }
 
 #pragma mark - Loading routines
@@ -555,7 +564,7 @@
 		{
 			rowView = [outlineView makeViewWithIdentifier:@"RootLineMainList" owner:nil];
 			if(rowView == nil)
-				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList" : nil];
+				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList"];
 		}
 		else
 		{
@@ -584,6 +593,13 @@
 				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 				[(RakText*) rowView setTextColor:[self getFontClickableColor]];
 			}
+		}
+		else
+		{
+			if([item isRootItem])
+				[(RakText*) rowView setTextColor:[self getFontTopColor]];
+			else
+				[(RakText*) rowView setTextColor:[self getFontClickableColor]];
 		}
 	}
 	

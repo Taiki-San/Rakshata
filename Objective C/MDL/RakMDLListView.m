@@ -10,9 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#warning "Need a dealloc"
+
 @implementation RakMDLListView
 
-- (id) init : (CGFloat) width : (CGFloat) height : (RakButton *) pause : (RakButton *) read : (RakButton *) remove : (id) controller : (uint) rowID
+- (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID
 {
 	self = [self initWithFrame: NSMakeRect(0, 0, width, height)];
 	
@@ -31,20 +33,13 @@
 		else
 			previousStatus = MDL_CODE_UNUSED;
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
 		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : @"Installation" : [Prefs getSystemColor:GET_COLOR_ACTIVE]];
+		statusText = [[RakText alloc] initWithText:self.bounds : @"Installation" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
-		_pause = [pause copy];
-		if(_pause != nil)	{	[self addSubview:_pause];		[_pause setHidden:YES];	[_pause.cell setHighlightAllowed: [pause.cell isHighlightAllowed]];	}
-		
-		_read = [read copy];
-		if(_read != nil)	{	[self addSubview:_read];		[_read setHidden:YES];	[_read.cell setHighlightAllowed: [read.cell isHighlightAllowed]];	}
-		
-		_remove = [remove copy];
-		if(_remove != nil)	{	[self addSubview:_remove];		[_remove setHidden:NO];	[_remove.cell setHighlightAllowed: [remove.cell isHighlightAllowed]]; }
+		[self initIcons];
 		
 		DLprogress = [[RakProgressBar alloc] initWithFrame: NSMakeRect([RakProgressBar getLeftBorder], 0, self.frame.size.width - ([RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder]), self.frame.size.height)];
 		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
@@ -59,6 +54,38 @@
 	}
 	
 	return self;
+}
+
+- (void) initIcons
+{
+	_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil];
+	if(_pause != nil)
+	{
+		[_pause setBordered:YES];
+		[_pause setButtonType:NSMomentaryChangeButton];
+		[self addSubview:_pause];
+		[_pause setHidden:YES];
+	}
+	
+	_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil];
+	if(_read != nil)
+	{
+		[_read setBordered:YES];
+		[_read setButtonType:NSMomentaryChangeButton];
+		[self addSubview:_read];
+		[_read setHidden:YES];
+		[_read.cell setHighlightAllowed: NO];
+	}
+	
+	_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil];
+	if(_remove != nil)
+	{
+		[_remove setBordered:YES];
+		[_remove setButtonType:NSMomentaryChangeButton];
+		[self addSubview:_remove];
+		[_remove setHidden:NO];
+		[_remove.cell setHighlightAllowed: NO];
+	}
 }
 
 - (NSString *) getName
@@ -90,6 +117,21 @@
 {
 	[requestName setFont:font];
 	[statusText setFont:font];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[requestName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
+	[statusText setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+	
+	[_pause removeFromSuperview];
+	[_read removeFromSuperview];
+	[_remove removeFromSuperview];
+	
+	[self initIcons];
 }
 
 - (void) setPositionsOfStuffs

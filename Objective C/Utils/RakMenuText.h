@@ -16,12 +16,13 @@
 
 - (NSColor *) getTextColor;
 - (NSColor *) getBarColor;
+- (NSColor *) getBackgroundColor;
 - (CGFloat) getFontSize;
 - (NSFont *) getFont;
 
 - (CGFloat) getTextHeight;
 - (NSRect) getMenuFrame : (NSRect) superViewSize;
-- (id) initWithText:(NSRect)frame :(NSString *)text :(NSColor *)color;
+- (id) initWithText:(NSRect)frame :(NSString *)text;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

@@ -28,6 +28,8 @@
 	RakPageCounter * pageCount;
 	
 	CGContextRef contextBorder;
+	
+	bool isFaved;
 }
 
 - (id)init: (BOOL) displayed : (Reader*) parent;
@@ -37,6 +39,8 @@
 
 - (void) leaveReaderMode;
 - (void) startReaderMode;
+
+- (void) releaseIcons;
 
 - (short) numberIconsInBar;
 - (void) loadIcons : (Reader*) superView;

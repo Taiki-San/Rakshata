@@ -20,13 +20,15 @@
 	frame.size.height = RBB_BUTTON_HEIGHT;
 	
     self = [super initWithFrame:frame];
-    if (self)
+    if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
 		[self setWantsLayer:true];
 		[self setBordered:NO];
 		[self.layer setCornerRadius:4];
 		cursorOnMe = false;
+		
+		[Prefs getCurrentTheme:self];	//We register to theme change
 
 		//On initialise la cellule
 		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
@@ -94,12 +96,20 @@
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS : nil];
 }
 
 - (NSColor *) getColorBackgroundSlider
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING : nil];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[self setNeedsDisplay];
 }
 
 #pragma mark - Events

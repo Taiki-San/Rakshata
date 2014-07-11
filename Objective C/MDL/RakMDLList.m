@@ -21,22 +21,6 @@
 	
 	if(self != nil)
 	{
-		pause = [[RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil] retain];
-		read = [[RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil] retain];
-		remove = [[RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil] retain];
-		
-		if(pause == nil || read == nil || remove == nil)
-		{
-			[self release];
-			return nil;
-		}
-		else
-		{
-			[pause setBordered:YES];		[read setBordered:YES];			[remove setBordered:YES];
-			[pause setButtonType:NSMomentaryChangeButton];	[read setButtonType:NSMomentaryChangeButton];	[remove setButtonType:NSMomentaryChangeButton];
-			[read.cell setHighlightAllowed:NO];	[remove.cell setHighlightAllowed:NO];
-		}
-		
 		[controller = _controller retain];
 		cellHeight = MDLLIST_CELL_HEIGHT;
 		dragInProgress = false;
@@ -82,9 +66,6 @@
 - (void) dealloc
 {
 	[controller release];
-	[pause release];	[pause release];
-	[read release];		[read release];
-	[remove release];	[remove release];
 	[super dealloc];
 }
 
@@ -140,9 +121,7 @@
     // There is no existing cell to reuse so create a new one
     if (result == nil)
 	{
-		// Create the new NSTextField with a frame of the {0,0} with the width of the table.
-		// Note that the height of the frame is not really relevant, because the row height will modify the height.
-		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :pause :read :remove : controller : row];
+		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		

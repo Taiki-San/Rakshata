@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries" : [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS]];
+		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries"];
 		[self addSubview:headerText];
 		[headerText release];
 		
@@ -101,7 +101,7 @@
 			return [NSColor clearColor];
 	}
 	
-	return [Prefs getSystemColor:code];
+	return [Prefs getSystemColor:code:nil];
 }
 
 #pragma mark - Frame calcul

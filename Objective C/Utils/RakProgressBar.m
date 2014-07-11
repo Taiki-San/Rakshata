@@ -22,7 +22,7 @@
 		_percentage = 0;
 		_speed = 0;
 		
-		_speedText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]] :[Prefs getSystemColor:GET_COLOR_INACTIVE]];
+		_speedText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]] :[Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
 		
 		if(_speedText == nil)
 		{
@@ -35,8 +35,8 @@
 		
 		[self addSubview:_speedText];	[self centerText];
 
-		slotColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT] retain];
-		progressColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS] retain];
+		slotColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT : nil] retain];
+		progressColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS : nil] retain];
     }
     
 	return self;
@@ -50,6 +50,18 @@
 + (CGFloat) getRightBorder
 {
 	return 10;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[_speedText setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
+	[slotColor release];		slotColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT : nil] retain];
+	[progressColor release];	progressColor = [[Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS : nil] retain];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (void) dealloc
