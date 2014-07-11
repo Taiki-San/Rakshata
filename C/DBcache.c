@@ -1050,17 +1050,17 @@ void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData)
 		if(sqlite3_step(request) == SQLITE_ROW)
 			freeTomeList((void*) sqlite3_column_int64(request, 0), true);
 		
-		int val = sqlite3_finalize(request);
+		sqlite3_finalize(request);
 		if(sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_tomes)" = ?1 WHERE "DBNAMETOID(RDB_ID)" = ?2", -1, &request, NULL) == SQLITE_OK)
 		{
 			void* buffer = malloc((nbTomes + 1) * sizeof(META_TOME));
 			if(buffer != NULL)
 				copyTomeList(tomeData, nbTomes, buffer);
 			
-			val = sqlite3_bind_int64(request, 1, (int64_t) buffer);
-			val = sqlite3_bind_int(request, 2, cacheID);
-			val = sqlite3_step(request);
-			val = sqlite3_finalize(request);
+			sqlite3_bind_int64(request, 1, (int64_t) buffer);
+			sqlite3_bind_int(request, 2, cacheID);
+			sqlite3_step(request);
+			sqlite3_finalize(request);
 		}
 	}
 }

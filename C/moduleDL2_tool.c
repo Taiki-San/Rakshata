@@ -541,6 +541,13 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		output[tomeDatas->nbElemList].subFolder = posStartNbrTmp != 9;
 		tomeDatas->nbElemList++;
 	}
+	
+	if(tomeDatas->nbElemList == 0)
+	{
+		free(output);	output = NULL;
+		goto end;
+	}
+	
 	tomeDatas->listChapitreOfTome = output;
 	printTomeDatas(*tomeDatas->datas, bufferDL, tomeDatas->identifier);
 	
@@ -588,6 +595,9 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	}
 	else
 	{
+		if(tomeDatas->datas->tomesFull == NULL)
+			tomeDatas->datas->nombreTomes = 0;
+		
 		for(uint pos = 0; pos < tomeDatas->datas->nombreTomes; pos++)
 		{
 			if(tomeDatas->datas->tomesFull[pos].ID == tomeDatas->identifier)
