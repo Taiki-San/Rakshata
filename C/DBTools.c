@@ -207,7 +207,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		char * encodedHash = getPathForTeam(URLRepo);
 		if(encodedHash == NULL)		return;
 		
-		length = snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash);
+		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
 		createPath(imagePath);
 	}
 	

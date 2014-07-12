@@ -209,7 +209,7 @@ void syncCacheToDisk(byte syncCode)
 				{
 					newChar = snprintf(&bufferOut[posOut], MAX_TEAM_LINE_LENGTH, "%s %s %s %s %s %d\n", teamDB[posStruct]->teamLong, teamDB[posStruct]->teamCourt, teamDB[posStruct]->type, teamDB[posStruct]->URLRepo, teamDB[posStruct]->site, teamDB[posStruct]->openSite);
 					if(newChar > 0)
-						posOut += newChar;
+						posOut += MIN(newChar, MAX_TEAM_LINE_LENGTH);
 				}
 			}
 			

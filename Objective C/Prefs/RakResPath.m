@@ -36,8 +36,6 @@
 		NSRange range = [path rangeOfString:@"/" options: NSBackwardsSearch];
 		
 		bundle = [NSBundle bundleWithPath:[path substringToIndex:range.location+1]];
-		
-		
 	}
 	else
 	{
