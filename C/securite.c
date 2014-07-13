@@ -223,11 +223,15 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
     internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
 
+#ifndef DEV_VERSION
     crashTemp(key, SHA256_DIGEST_LENGTH);
+#endif
 
     configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
     _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
-    crashTemp(hash, SHA256_DIGEST_LENGTH);
+#ifndef DEV_VERSION
+	crashTemp(hash, SHA256_DIGEST_LENGTH);
+#endif
 
     for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
     if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
@@ -250,7 +254,9 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 	
     if(posInKeyOut != SHA256_DIGEST_LENGTH || (configEnc[curPosInConfigEnc] && configEnc[curPosInConfigEnc] != ' ')) //On vérifie que le parsage est complet
     {
+#ifndef DEV_VERSION
         crashTemp(key, SHA256_DIGEST_LENGTH);
+#endif
         for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
