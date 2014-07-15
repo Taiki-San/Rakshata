@@ -44,7 +44,7 @@ int getMasterKey(unsigned char *input)
         {
             if(createSecurePasswordDB(NULL))
                 return 1;
-			fileInvalid = true;
+			fileInvalid = false;
         }
 		
 		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
@@ -76,10 +76,10 @@ int getMasterKey(unsigned char *input)
     generateFingerPrint(&buffer[250]);	//Buffer < 250 contient la concatenation de la date et de l'email. buffer > 250 contient la fingerprint
 
 	internal_pbkdf2(SHA256_DIGEST_LENGTH, buffer, SHA256_DIGEST_LENGTH, &buffer[250], WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, hash);
-    crashTemp(buffer, 250+SHA256_DIGEST_LENGTH+1);
+    crashTemp(buffer, sizeof(buffer));
 
     int nrounds = rijndaelSetupDecrypt(rijndaelKey, hash, KEYBITS);
-    crashTemp(hash, SHA256_DIGEST_LENGTH);
+    crashTemp(hash, sizeof(hash));
 
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
@@ -327,6 +327,7 @@ int getPassword(int curThread, char password[100])
 
     loadTrad(trad, 26);
 
+	while (checkNetworkState(CONNEXION_TEST_IN_PROGRESS));
 
     while(1)
     {
@@ -344,13 +345,15 @@ int getPassword(int curThread, char password[100])
             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
             return 1;
         }
-        else
+        else if(NETWORK_ACCESS == CONNEXION_OK)
         {
             char contenuUIError[3*TRAD_LENGTH+1];
             snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
             if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
                 return PALIER_QUIT;
         }
+		else
+			return 0;
     }
 }
 

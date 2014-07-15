@@ -138,7 +138,7 @@
 
 - (void) transmitPageJump : (uint) newPage
 {
-	[_target jumpPage:newPage];
+	[_target jumpToPage:newPage];
 }
 
 @end

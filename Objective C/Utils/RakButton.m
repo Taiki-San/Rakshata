@@ -61,21 +61,29 @@
 		[output setBordered:NO];
 		
 		//Set action
-		[output setTarget:target];
-		[output setAction:selectorToCall];
+		if(target != nil)
+		{
+			[output setTarget:target];
+			[output setAction:selectorToCall];
+		}
 		
-		//Set origin
-		NSPoint point;
 		
-		if(posXFromLeftSide)
-			point = NSMakePoint(posX, superView.frame.size.height / 2 - output.frame.size.height / 2);
-		else
-			point = NSMakePoint(posX - output.frame.size.width, superView.frame.size.height / 2 - output.frame.size.height / 2);
+		if(superView != nil)
+		{
+			//Set origin
+
+			NSPoint point;
 		
-		[output setFrameOrigin: point];
-		
-		//Add to the superview
-		[superView addSubview:output];
+			if(posXFromLeftSide)
+				point = NSMakePoint(posX, superView.frame.size.height / 2 - output.frame.size.height / 2);
+			else
+				point = NSMakePoint(posX - output.frame.size.width, superView.frame.size.height / 2 - output.frame.size.height / 2);
+			
+			[output setFrameOrigin: point];
+			
+			//Add to the superview
+			[superView addSubview:output];
+		}
 	}
 	
 	return output;

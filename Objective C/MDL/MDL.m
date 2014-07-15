@@ -167,9 +167,11 @@
 		
 		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here, it's empty
 		{
+			if(_lastFrame.size.height != - _lastFrame.origin.y)
+				needUpdateMainViews = YES;
+
 			maximumSize.size.height = contentHeight;
 			maximumSize.origin.y = -contentHeight;
-			needUpdateMainViews = YES;
 		}
 		
 		else if(maximumSize.size.height >= contentHeight - 2)
@@ -184,7 +186,7 @@
 			[coreView updateScroller:NO];
 	}
 
-	[self updateLastFrame:maximumSize];
+	[self setLastFrame:maximumSize];
 	return maximumSize;
 }
 

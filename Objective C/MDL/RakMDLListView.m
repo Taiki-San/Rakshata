@@ -46,10 +46,6 @@
 		
 		iconWidth = [_remove frame].size.width;
 		
-		[_pause setTarget:self];		[_pause setAction:@selector(sendPause)];
-		[_read setTarget:self];			[_read setAction:@selector(sendRead)];
-		[_remove setTarget:self];		[_remove setAction:@selector(sendRemove)];
-		
 		[self setPositionsOfStuffs];
 	}
 	
@@ -58,18 +54,20 @@
 
 - (void) initIcons
 {
-	_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : nil : nil];
+	_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : self : @selector(sendPause)];
 	if(_pause != nil)
 	{
+		_pause.layer.backgroundColor = [NSColor clearColor].CGColor;
 		[_pause setBordered:YES];
 		[_pause setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_pause];
 		[_pause setHidden:YES];
 	}
 	
-	_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : nil : nil];
+	_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : self : @selector(sendRead)];
 	if(_read != nil)
 	{
+		_read.layer.backgroundColor = [NSColor clearColor].CGColor;
 		[_read setBordered:YES];
 		[_read setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_read];
@@ -77,9 +75,10 @@
 		[_read.cell setHighlightAllowed: NO];
 	}
 	
-	_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : nil : nil];
+	_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : self : @selector(sendRemove)];
 	if(_remove != nil)
 	{
+		_remove.layer.backgroundColor = [NSColor clearColor].CGColor;
 		[_remove setBordered:YES];
 		[_remove setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_remove];

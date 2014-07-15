@@ -149,7 +149,8 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	
+
+	BOOL oldVal;
 	NSView * view;
 	NSArray * subviews = self.subviews;
 	NSInteger i, count = [subviews count];
@@ -158,7 +159,20 @@
 	{
 		view = [subviews objectAtIndex:i];
 		if([view superclass] == [RakTabView class])
+		{
+			if([view class] == [MDL class])
+			{
+				oldVal = ((MDL*) view)->needUpdateMainViews;
+				((MDL*) view)->needUpdateMainViews = NO;
+			}
+
 			[(RakTabView *) view setFrame:[(RakTabView *) view createFrame]];
+			
+			if([view class] == [MDL class])
+			{
+				((MDL*) view)->needUpdateMainViews = oldVal;
+			}
+		}
 	}
 }
 

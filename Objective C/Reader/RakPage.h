@@ -10,8 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "lecteur.h"
-
 @interface RakArgumentToRefreshAlert : NSObject
 {
 	PROJECT_DATA * data;
@@ -25,45 +23,12 @@
 
 @end
 
-@interface RakPage : NSScrollView
-{
-	NSData *prevPage;
-	NSData *pageData;
-	NSImage* page;
-	NSData *nextPage;
-	
-	NSImageView * pageView;
-	
-	NSRect frameReader;
-	NSRect selfFrame;
-	
-	BOOL pageTooLarge;
-	BOOL pageTooHigh;
-	BOOL areSlidersHidden;
-	
-	/*context data*/
-@private
-	bool readerMode;
-	bool noDrag;
-	bool alreadyRefreshed;
-	bool dontGiveACrapAboutCTPosUpdate;
-	
-	bool cacheBeingBuilt;
-	
-	PROJECT_DATA project;
-	DATA_LECTURE data;
-	
-	int currentElem;
-	int posElemInStructure;
-	bool isTome;
-}
+@interface Reader (PageManagement)
 
-- (id) init : (Reader*)superView : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
-- (void) bottomBarInitialized;
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (NSString *) getContextToGTFO;
 
-- (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow;
-- (void) resizeAnimation : (NSRect) frameRect;
+- (void) initialPositionning;
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
 
 - (void) leaveReaderMode;
@@ -71,7 +36,6 @@
 
 - (void) failure;
 
-- (BOOL) switchFavs;
 - (void) nextPage;
 - (void) prevPage;
 - (void) nextChapter;
@@ -88,7 +52,7 @@
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
 - (void) updateContext;
-- (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType;
+- (BOOL) craftPageAndSetupEnv : (byte) switchType;
 - (void) deleteElement;
 - (void) addPageToView;
 - (void) updateScrollerAfterResize;

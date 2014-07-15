@@ -444,20 +444,16 @@
 	
 	if(self != nil)
 	{
+		self.verticalScroller.alphaValue =	0;
 		self.hasVerticalScroller =		YES;
+		self.horizontalScroller.alphaValue = 0;
 		self.hasHorizontalScroller =	NO;
 		self.borderType =				NSNoBorder;
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
-		//		self.autoresizesSubviews =		NO;
 		
 		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-		
-		self.verticalScroller.alphaValue =	0;
-		self.horizontalScroller.alphaValue = 0;
-		self.hasHorizontalScroller = NO;
-		
 		[RakScroller updateScrollers:self];
 	}
 	

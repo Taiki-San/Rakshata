@@ -21,6 +21,7 @@
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
+		_page = nil;
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
 		
@@ -31,8 +32,7 @@
 
 - (void) initReaderMainView : (NSString *) state
 {
-	initialized = false;
-	bool failedInit = true;
+	initialized = pageInitialized = false;
 	
 	if(state != nil && [state caseInsensitiveCompare:STATE_EMPTY] != NSOrderedSame)
 	{
@@ -76,20 +76,14 @@
 				
 				free(project);
 				
-				if(mainImage == nil)
-					break;
+				[self setSliderPos:NSMakePoint([[dataState objectAtIndex:5] intValue], [[dataState objectAtIndex:6] intValue])];
+				pageInitialized = _scrollView != nil;
 				
-				NSPoint sliderPos;
-				sliderPos.x = [[dataState objectAtIndex:5] intValue];
-				sliderPos.y = [[dataState objectAtIndex:6] intValue];
-				[mainImage setSliderPos:sliderPos];
-				
-				failedInit = true;
 			}while (0);
 		}
 	}
 	
-	if(!failedInit)
+	if(!pageInitialized)
 		[self noContent];
 	else
 	{
@@ -116,19 +110,17 @@
 	
 	initialized = true;
 	
-	if(mainImage == nil)
+	if(!pageInitialized)
 	{
-		mainImage = [[RakPage alloc] init: self: project: elemToRead: isTome : startPage];
-		
-		if(mainImage == nil)	//Failed at initializing, most probably because of unreadable data
+		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
 			return;
 		else
-			[mainImage release];
+			pageInitialized = true;
 
 		shouldNotifyBottomBarInitialized = true;
 	}
 	else
-		[mainImage changeProject : project : elemToRead : isTome : startPage];
+		[self changeProject : project : elemToRead : isTome : startPage];
 	
 	if(bottomBar == nil)
 		bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
@@ -136,7 +128,7 @@
 	[bottomBar favsUpdated:project.favoris];
 
 	if(shouldNotifyBottomBarInitialized)
-		[mainImage bottomBarInitialized];
+		[self updatePage:_data.pageCourante : _data.nombrePageTotale];
 }
 
 - (NSString *) byebye
@@ -144,7 +136,7 @@
 	NSString * output;
 	
 	if (initialized)
-		output = [mainImage getContextToGTFO];
+		output = [self getContextToGTFO];
 	else
 		output = [super byebye];
 	
@@ -159,9 +151,7 @@
 	[bottomBar removeFromSuperview];
 	[bottomBar release];
 	
-	[mainImage removeFromSuperview];
-	[mainImage getTheFuckOut];
-	[mainImage release];
+	[self getTheFuckOut];
 	
 	[self removeFromSuperview];	
 	[super dealloc];
@@ -230,7 +220,7 @@
 	NSRect frame = [self createFrame];
 
 	[self.animator setFrame:frame];
-	[mainImage resizeAnimation:frame];
+	[self setFrameInternal: frame : YES];
 	[bottomBar resizeAnimation:frame];
 }
 
@@ -239,7 +229,7 @@
 	if([self wouldFrameChange:frameRect])
 	{
 		[super setFrame:frameRect];
-		[mainImage setFrame:frameRect];
+		[self setFrameInternal: frameRect : NO];
 		[bottomBar setFrame:frameRect];
 	}
 }
@@ -269,8 +259,8 @@
 
 - (void) willLeaveReader
 {
-	if(mainImage != nil)
-		[mainImage leaveReaderMode];
+	if(pageInitialized)
+		[self leaveReaderMode];
 	
 	if(bottomBar != nil)
 		[bottomBar leaveReaderMode];
@@ -278,8 +268,8 @@
 
 - (void) willOpenReader
 {
-	if(mainImage != nil)
-		[mainImage startReaderMode];
+	if(pageInitialized)
+		[self startReaderMode];
 	
 	if(bottomBar != nil)
 		[bottomBar startReaderMode];
@@ -298,12 +288,6 @@
 - (NSColor*) getMainColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB : nil];
-}
-
-/**	Events **/
-- (void) keyDown:(NSEvent *)theEvent
-{
-	[mainImage keyDown:theEvent];
 }
 
 /**	NSTrackingArea	**/
@@ -378,49 +362,21 @@
 {
 	if(element != VALEUR_FIN_STRUCT)
 	{
-		[self mouseDown:NULL];
+		[super mouseDown:NULL];
+		[super mouseUp:NULL];
 		[self startReading : project : element : isTome : -1];
 	}
 }
 
 - (void) switchFavs
 {
-	[bottomBar favsUpdated:[mainImage switchFavs]];
-}
-
-- (void) prevPage
-{
-	[mainImage prevPage];
-}
-
-- (void) jumpPage : (uint) newPage
-{
-	[mainImage jumpToPage:newPage];
-}
-
-- (void) nextPage
-{
-	[mainImage nextPage];
-}
-
-- (void) prevChapter
-{
-	[mainImage prevChapter];
-}
-
-- (void) nextChapter
-{
-	[mainImage nextChapter];
+	setFavorite(&_project);
+	[bottomBar favsUpdated:_project.favoris];
 }
 
 - (void) triggerFullscreen
 {
 	[self.window toggleFullScreen:self];
-}
-
-- (void) deleteElement
-{
-	[mainImage deleteElement];
 }
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax

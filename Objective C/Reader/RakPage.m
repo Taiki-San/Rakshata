@@ -20,47 +20,39 @@ enum
 	COM_CT_REFRESH
 };
 
-@implementation RakPage
+@implementation Reader (PageManagement)
 
-- (id) init : (Reader*)superView : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
-	alreadyRefreshed = false;
-	dontGiveACrapAboutCTPosUpdate = false;
-	readerMode = superView->readerMode;
+	_alreadyRefreshed = false;
+	_dontGiveACrapAboutCTPosUpdate = false;
 	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
-		return nil;
+		return NO;
 	
-	if (![self craftPageAndSetupEnv:superView : READER_ETAT_DEFAULT])
-		return nil;
+	if (![self craftPageAndSetupEnv : READER_ETAT_DEFAULT])
+		return NO;
 
-	//We create the NSScrollview
-	self = [self initWithFrame:frameReader];
-	if(self != nil)
-	{
-		[self addPageToView];
+	//We create the NSscrollView
+	_scrollView = [[NSScrollView alloc] initWithFrame:_scrollViewFrame];
+	if(_scrollView == nil)
+		return NO;
+
+	[self addPageToView];
 		
-		//We set preferences ~
-
-		self.hasVerticalScroller =		pageTooHigh;
-		self.hasHorizontalScroller =	pageTooLarge;
-		self.borderType =				NSNoBorder;
-		self.scrollerStyle =			NSScrollerStyleOverlay;
-		self.drawsBackground =			NO;
-		self.autoresizesSubviews =		NO;
-		
-		self.verticalScroller.alphaValue =	0;
-		self.horizontalScroller.alphaValue = 0;
-				
-		[superView addSubview:self];
-	}
-	return self;
-}
-
-- (void) bottomBarInitialized
-{
-	//And we update the bar with data
-	[(Reader*)[self superview] updatePage:data.pageCourante : data.nombrePageTotale];
+	//We set preferences ~
+	_scrollView.hasVerticalScroller =		_pageTooHigh;
+	_scrollView.verticalScroller.alphaValue =	0;
+	_scrollView.hasHorizontalScroller =		_pageTooLarge;
+	_scrollView.horizontalScroller.alphaValue = 0;
+	_scrollView.borderType =				NSNoBorder;
+	_scrollView.scrollerStyle =				NSScrollerStyleOverlay;
+	_scrollView.drawsBackground =			NO;
+	
+	[self addSubview:_scrollView];
+	[_scrollView release];
+	
+	return YES;
 }
 
 - (BOOL) isEditable
@@ -75,92 +67,77 @@ enum
 
 - (NSString *) getContextToGTFO
 {
-	NSPoint sliders = [[self contentView] bounds].origin;
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", project.team->URLRepo, project.projectID, currentElem, isTome ? 1 : 0, data.pageCourante, sliders.x, sliders.y];
+	NSPoint sliders = [[_scrollView contentView] bounds].origin;
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.team->URLRepo, _project.projectID, _currentElem, _isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/
 
 #pragma mark    -   Position manipulation
 
-- (void) initialPositionning : (BOOL) canIHazSuperview : (NSRect) frameWindow
+- (void) initialPositionning
 {
-	if(canIHazSuperview)
-		frameReader = self.superview.frame;
-	else
-		frameReader = frameWindow;
+	NSRect tabFrame = [self lastFrame];
+	
+	_scrollViewFrame = NSZeroRect;
+
+	if(_pageView == nil)
+	{
+		_pageTooHigh = _pageTooLarge = false;
+		_contentFrame = NSZeroRect;
+		return;
+	}
 	
 	//Hauteur
-	if (selfFrame.size.height > frameReader.size.height - READER_PAGE_BORDERS_HIGH)
+	if (tabFrame.size.height < _pageView.frame.size.height)
 	{
-		pageTooHigh = true;
-		frameReader.size.height = frameReader.size.height;
-		frameReader.origin.y = 0;
+		_pageTooHigh = true;
+		_scrollViewFrame.size.height = tabFrame.size.height;
+		_contentFrame.size.height = _pageView.frame.size.height;
 	}
 	else
 	{
-		pageTooHigh = false;
-		frameReader.origin.y = frameReader.size.height / 2 - selfFrame.size.height / 2;
-		frameReader.size.height = selfFrame.size.height;
+		_pageTooHigh = false;
+		_scrollViewFrame.origin.y = tabFrame.size.height / 2 - _contentFrame.size.height / 2;
+		_scrollViewFrame.size.height = _contentFrame.size.height;
 	}
 	
 	if(!readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
 		return;
 	
 	//Largeur
-	if(selfFrame.size.width > frameReader.size.width - 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
+	if(tabFrame.size.width < _contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
 	{
-		pageTooLarge = true;
-		frameReader.size.width = frameReader.size.width - 2*READER_BORDURE_VERT_PAGE;
-		frameReader.origin.x = READER_BORDURE_VERT_PAGE;
+		_pageTooLarge = true;
+		_scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
+		_scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
 	}
 	else
 	{
-		pageTooLarge = false;
-		frameReader.origin.x = frameReader.size.width / 2 - selfFrame.size.width / 2;
-		frameReader.size.width = selfFrame.size.width;
+		_pageTooLarge = false;
+		_scrollViewFrame.origin.x = tabFrame.size.width / 2 - _contentFrame.size.width / 2;
+		_scrollViewFrame.size.width = _contentFrame.size.width;
 	}
-}
-
-- (void) resizeAnimation : (NSRect) frameRect
-{
-	[self setFrameInternal: frameRect : YES];
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	[self setFrameInternal: frameRect : NO];
-}
-
-- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
-{
-	NSLog(@"[%@] - Weird constraints detected!", self);
 }
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
-	if((frameRect.size.width != frameReader.size.width && readerMode) || frameRect.size.height != frameReader.size.height)
+	if(!readerMode)
 	{
-		if(!readerMode)
-		{
-			frameRect.size.width = self.frame.size.width;
-			frameRect.origin.x = self.frame.origin.x;
-			frameRect.origin.y = self.frame.origin.y;
-		}
-		
-		[self initialPositionning : !isAnimated : frameRect];
-		[self updateScrollerAfterResize];
+		frameRect.size.width = _scrollView.frame.size.width;
+		frameRect.origin.x = _scrollView.frame.origin.x;
+		frameRect.origin.y = _scrollView.frame.origin.y;
 	}
-	else if(!readerMode)
-		return;
+	
+	[self initialPositionning];
+	[self updateScrollerAfterResize];
 	
 	if(isAnimated)
-		[self.animator setFrame:frameReader];
+		[_scrollView.animator setFrame:_scrollViewFrame];
 	else
-		[super setFrame:frameReader];
+		[_scrollView setFrame:_scrollViewFrame];
 	
-	NSRect frameContentView = frameReader;	frameContentView.origin = NSMakePoint(0, 0);
-	[self.contentView setFrame:frameContentView];
+	[_pageView setFrameOrigin:_contentFrame.origin];
 }
 
 - (void) leaveReaderMode
@@ -177,16 +154,6 @@ enum
 
 #pragma mark    -   Events
 
-- (void) mouseDown:(NSEvent *)theEvent
-{
-	noDrag = true;
-}
-
-- (void) mouseDragged:(NSEvent *)theEvent
-{
-	noDrag = false;
-}
-
 - (void)mouseUp:(NSEvent *)theEvent
 {
 	bool fail = false;
@@ -197,25 +164,25 @@ enum
 	{
 		NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 		
-		if(pageTooHigh)
+		if(_pageTooHigh)
 		{
-			mouseLoc.y += [self.contentView documentRect].size.height - [self frame].size.height - [self.contentView documentVisibleRect].origin.y;
-			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) self.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
+			mouseLoc.y += [_scrollView.contentView documentRect].size.height - [_scrollView frame].size.height - [_scrollView.contentView documentVisibleRect].origin.y;
+			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) _scrollView.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
 				fail = true;
 		}
 		
-		if(pageTooLarge)
+		if(_pageTooLarge)
 		{
-			mouseLoc.x += [self.contentView documentRect].size.width - [self frame].size.width - [self.contentView documentVisibleRect].origin.x;
-			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) self.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
+			mouseLoc.x += [_scrollView.contentView documentRect].size.width - [_scrollView frame].size.width - [_scrollView.contentView documentVisibleRect].origin.x;
+			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) _scrollView.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
 				fail = true;
 		}
 	}
 	
 	if(fail)
 	{
-		[self.superview mouseDown:NULL];
-		[self.superview mouseUp:theEvent];
+		[super mouseDown:NULL];
+		[super mouseUp:theEvent];
 	}
 	else
 		[self nextPage];
@@ -225,7 +192,7 @@ enum
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
-	bool isModPressed = [theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask);
+	bool isModPressed = ([theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask)) != 0;
 	
     switch (code)
     {
@@ -254,13 +221,69 @@ enum
         {
             [self nextPage];
             break;
-        }
+		}
+			
+		default:
+		{
+			const char * string = [character cStringUsingEncoding:NSASCIIStringEncoding];
+			char c;
+			
+			if(character == nil || string == nil)
+				break;
+			
+			if(string[0] >= 'A' && string[0] <= 'Z')
+				c = string[0] + 'a' - 'A';
+			else
+				c = string[0];
+
+			switch (c)
+			{
+				case 'a':
+				{
+					[self prevPage];
+					break;
+				}
+					
+				case 'd':
+				{
+					[self nextPage];
+					break;
+				}
+					
+				case 'q':
+				{
+					[self prevChapter];
+					break;
+				}
+					
+				case 'e':
+				{
+					[self nextChapter];
+					break;
+				}
+					
+				case 'w':
+				{
+					[self moveSliderY:PAGE_MOVE];
+					break;
+				}
+					
+				case 's':
+				{
+					[self moveSliderY:-PAGE_MOVE];
+					break;
+				}
+					
+				default:
+					break;
+			}
+		}
     }
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
-    if(pageTooHigh || pageTooLarge)
+	if((_pageTooHigh && [theEvent deltaY]) || (_pageTooLarge && [theEvent deltaX]))
 		[super scrollWheel:theEvent];
 }
 
@@ -274,12 +297,6 @@ enum
 }
 
 #pragma mark - High level API
-
-- (BOOL) switchFavs
-{
-	setFavorite(&project);
-	return project.favoris;
-}
 
 - (void) nextPage
 {
@@ -303,17 +320,17 @@ enum
 
 - (void) moveSliderX : (int) move
 {
-	if(!pageTooLarge)
+	if(!_pageTooLarge)
 		return;
 	
-	NSPoint point = [[self contentView] bounds].origin;
+	NSPoint point = [[_scrollView contentView] bounds].origin;
 	
 	if(move < 0 && point.x < -move)
 		point.x = 0;
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = [self.documentView frame].size.width - self.frame.size.width;
+		CGFloat basePos = [_scrollView.documentView frame].size.width - _scrollView.frame.size.width;
 		if(point.x > basePos - move)
 			point.x = basePos;
 		else
@@ -322,22 +339,22 @@ enum
 	else
 		point.x += move;
 	
-	[self.contentView scrollToPoint:point];
+	[_scrollView.contentView scrollToPoint:point];
 }
 
 - (void) moveSliderY : (int) move
 {
-	if(!pageTooHigh)
+	if(!_pageTooHigh)
 		return;
 	
-	NSPoint point = [[self contentView] bounds].origin;
+	NSPoint point = [[_scrollView contentView] bounds].origin;
 	
 	if(move < 0 && point.y < -move)
 		point.y = 0;
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = [self.documentView frame].size.height - self.frame.size.height;
+		CGFloat basePos = [_scrollView.documentView frame].size.height - _scrollView.frame.size.height;
 		if(point.y > basePos - move)
 			point.y = basePos;
 		else
@@ -346,12 +363,12 @@ enum
 	else
 		point.y += move;
 	
-	[self.contentView scrollToPoint:point];
+	[_scrollView.contentView scrollToPoint:point];
 }
 
 - (void) setSliderPos : (NSPoint) newPos
 {
-	NSPoint point = [[self contentView] bounds].origin;
+	NSPoint point = [[_scrollView contentView] bounds].origin;
 	
 	[self moveSliderX : newPos.x - point.x];
 	[self moveSliderY : newPos.y - point.y];
@@ -363,43 +380,43 @@ enum
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
-	project = getCopyOfProjectData(dataRequest);
-	currentElem = elemRequest;
-	isTome = isTomeRequest;
+	_project = getCopyOfProjectData(dataRequest);
+	_currentElem = elemRequest;
+	_isTome = isTomeRequest;
 	
-	prevPage = pageData = nextPage = nil;
-	cacheBeingBuilt = false;
+	_prevPage = _pageData = _nextPage = nil;
+	_cacheBeingBuilt = false;
 	
-	updateIfRequired(&project, RDB_CTXLECTEUR);
+	updateIfRequired(&_project, RDB_CTXLECTEUR);
 	
-	getUpdatedCTList(&project, true);
-	getUpdatedCTList(&project, false);
+	getUpdatedCTList(&_project, true);
+	getUpdatedCTList(&_project, false);
 	
-	posElemInStructure = reader_getPosIntoContentIndex(project, currentElem, isTome);
-	if(posElemInStructure == -1)
+	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, _isTome);
+	if(_posElemInStructure == -1)
 	{
 		[self failure];
 		return NO;
 	}
 	
-	setLastChapitreLu(project, isTome, currentElem);
-	if(reader_isLastElem(project, isTome, currentElem))
+	setLastChapitreLu(_project, _isTome, _currentElem);
+	if(reader_isLastElem(_project, _isTome, _currentElem))
 	{
 		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	}
 	
-	if(configFileLoader(project, isTome, currentElem, &data))
+	if(configFileLoader(_project, _isTome, _currentElem, &_data))
 	{
 		[self failure];
 		return NO;
 	}
 	
 	if(startPage < 0)
-		data.pageCourante = 0;
-	else if(startPage < data.nombrePageTotale)
-		data.pageCourante = startPage;
+		_data.pageCourante = 0;
+	else if(startPage < _data.nombrePageTotale)
+		_data.pageCourante = startPage;
 	else
-		data.pageCourante = data.nombrePageTotale - 1;
+		_data.pageCourante = _data.nombrePageTotale - 1;
 	
 	return YES;
 }
@@ -410,7 +427,7 @@ enum
 
 - (NSData *) getPage : (uint) posData
 {
-	if(data.path == NULL)
+	if(_data.path == NULL)
 	{
 		[self failure];
 		return nil;
@@ -422,7 +439,7 @@ enum
 	gettimeofday(&t1, NULL);
 #endif
 	
-	IMG_DATA * dataPage = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
+	IMG_DATA * dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
 	
 #ifdef PERF_ANALYSIS
 	gettimeofday(&t2, NULL);
@@ -432,23 +449,22 @@ enum
 	NSLog(@"Loading time: %f", elapsedTime);
 #endif
 	
-	if(dataPage == NULL)
+	if(dataPage == (void*) 0x1)
 	{
 #ifdef DEV_VERSION
-		updateChapter(&data, currentElem);
-		dataPage = loadSecurePage(data.path[data.pathNumber[posData]], data.nomPages[posData], data.chapitreTomeCPT[data.pathNumber[posData]], data.pageCouranteDuChapitre[posData]);
+		updateChapter(&_data, _currentElem);
+		dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
 		
-		if(dataPage == NULL)
-		{
-			[self failure];
-			return NULL;
-		}
-#else
-		[self failure];
-		return NULL;
+		if(dataPage == (void*) 0x1)
+			dataPage = NULL;
 #endif
 	}
 
+	if(dataPage == NULL)
+	{
+		[self failure];
+		return NULL;
+	}
 
 	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
 	
@@ -460,56 +476,56 @@ enum
 
 - (void) buildCache
 {
-	cacheBeingBuilt = true;
+	_cacheBeingBuilt = true;
 	
-	int localCurrentPage = data.pageCourante;
+	int localCurrentPage = _data.pageCourante;
 	
-	if(localCurrentPage < 0 || localCurrentPage >= data.nombrePageTotale)	//Données hors de nos bornes
+	if(localCurrentPage < 0 || localCurrentPage >= _data.nombrePageTotale)	//Données hors de nos bornes
 	{
-		cacheBeingBuilt = false;
+		_cacheBeingBuilt = false;
 		return;
 	}
 	
-	if(nextPage == nil)
+	if(_nextPage == nil)
 	{
-		if (localCurrentPage >= 0 && localCurrentPage < data.nombrePageTotale)
+		if (localCurrentPage >= 0 && localCurrentPage < _data.nombrePageTotale)
 		{
-			nextPage = [self getPage:localCurrentPage+1];
-			[nextPage retain];
+			_nextPage = [self getPage:localCurrentPage+1];
+			[_nextPage retain];
 		}
 	}
 
-	if(prevPage == nil)
+	if(_prevPage == nil)
 	{
 		if(localCurrentPage > 0)
 		{
-			prevPage = [self getPage:localCurrentPage-1];
-			[prevPage retain];
+			_prevPage = [self getPage:localCurrentPage-1];
+			[_prevPage retain];
 		}
 	}
 	
-	cacheBeingBuilt = false;
+	_cacheBeingBuilt = false;
 }
 
 - (void) changePage : (byte) switchType
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
-		if(data.pageCourante+1 > data.nombrePageTotale)
+		if(_data.pageCourante+1 > _data.nombrePageTotale)
 		{
 			[self changeChapter:true];
 			return;
 		}
-		data.pageCourante++;
+		_data.pageCourante++;
 	}
 	else if(switchType == READER_ETAT_PREVPAGE)
 	{
-		if(data.pageCourante < 1)
+		if(_data.pageCourante < 1)
 		{
 			[self changeChapter:false];
 			return;
 		}
-		data.pageCourante--;
+		_data.pageCourante--;
 	}
 	else if(switchType != READER_ETAT_DEFAULT)
 	{
@@ -517,12 +533,12 @@ enum
 		return;
 	}
 	
-	if([self craftPageAndSetupEnv:(Reader *)self.superview : switchType])
+	if([self craftPageAndSetupEnv : switchType])
 	{
 		[self addPageToView];
 		
 		//And we update the bar
-		[(Reader*)[self superview] updatePage:data.pageCourante : data.nombrePageTotale];
+		[self updatePage:_data.pageCourante : _data.nombrePageTotale];
 	}
 	else
 		[self failure];
@@ -530,10 +546,10 @@ enum
 
 - (void) jumpToPage : (uint) newPage
 {
-	if (newPage == data.pageCourante || newPage > data.nombrePageTotale)
+	if (newPage == _data.pageCourante || newPage > _data.nombrePageTotale)
 		return;
 	
-	int pageCourante = data.pageCourante;
+	int pageCourante = _data.pageCourante;
 	
 	if(newPage == pageCourante - 1)
 		[self changePage:READER_ETAT_PREVPAGE];
@@ -541,18 +557,18 @@ enum
 		[self changePage:READER_ETAT_NEXTPAGE];
 	else
 	{
-		data.pageCourante = newPage;
+		_data.pageCourante = newPage;
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 }
 
 - (void) changeChapter : (bool) goToNext
 {
-	uint newPosIntoStruct = posElemInStructure;
+	uint newPosIntoStruct = _posElemInStructure;
 	
-	if(changeChapter(&project, isTome, &currentElem, &newPosIntoStruct, goToNext))
+	if(changeChapter(&_project, _isTome, &_currentElem, &newPosIntoStruct, goToNext))
 	{
-		posElemInStructure = newPosIntoStruct;
+		_posElemInStructure = newPosIntoStruct;
 		[self updateCT : COM_CT_SELEC];
 		[self updateContext];
 	}
@@ -560,19 +576,19 @@ enum
 
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
 {
-	if(dontGiveACrapAboutCTPosUpdate)
+	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
 	
-	if(projectRequest.cacheDBID != project.cacheDBID)
-		alreadyRefreshed = false;
-	else if(elemRequest == currentElem && isTomeRequest == isTome)
+	if(projectRequest.cacheDBID != _project.cacheDBID)
+		_alreadyRefreshed = false;
+	else if(elemRequest == _currentElem && isTomeRequest == _isTome)
 	{
 		[self jumpToPage:startPage];
 		return;
 	}
 	
 	[self flushCache];
-	releaseDataReader(&data);
+	releaseDataReader(&_data);
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
@@ -580,19 +596,12 @@ enum
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
-	addRecentEntry(project, false);
+	addRecentEntry(_project, false);
 }
 
 - (void) updateCT : (uint) request
 {
-	NSView * view = self.superview;
-	while (view != nil && [view superclass] != [RakTabView class])
-		view = view.superview;
-	
-	if(view == nil || view.superview == nil)
-		return;
-	
-	NSArray * array = view.superview.subviews;
+	NSArray * array = self.superview.subviews;
 	
 	for (uint i = 0, count = [array count]; i < count; i++)
 	{
@@ -600,13 +609,13 @@ enum
 		{
 			if(request == COM_CT_SELEC)
 			{
-				dontGiveACrapAboutCTPosUpdate = true;
-				[(CTSelec*) [array objectAtIndex:i] selectElem: project.cacheDBID :isTome :currentElem];
-				dontGiveACrapAboutCTPosUpdate = false;
+				_dontGiveACrapAboutCTPosUpdate = true;
+				[(CTSelec*) [array objectAtIndex:i] selectElem: _project.cacheDBID :_isTome :_currentElem];
+				_dontGiveACrapAboutCTPosUpdate = false;
 			}
 			else if(request == COM_CT_REFRESH)
 			{
-				[(CTSelec*) [array objectAtIndex:i] refreshCT:NO :project.cacheDBID];
+				[(CTSelec*) [array objectAtIndex:i] refreshCT:NO :_project.cacheDBID];
 			}
 			return;
 		}
@@ -616,105 +625,105 @@ enum
 - (void) updateContext
 {
 	[self flushCache];
-	releaseDataReader(&data);
+	releaseDataReader(&_data);
 	
-	if(updateIfRequired(&project, RDB_CTXLECTEUR))
+	if(updateIfRequired(&_project, RDB_CTXLECTEUR))
 	{
-		checkChapitreValable(&project, NULL);
-		checkTomeValable(&project, NULL);
+		checkChapitreValable(&_project, NULL);
+		checkTomeValable(&_project, NULL);
 	}
 	
-	setLastChapitreLu(project, isTome, currentElem);
-	if(reader_isLastElem(project, isTome, currentElem))
+	setLastChapitreLu(_project, _isTome, _currentElem);
+	if(reader_isLastElem(_project, _isTome, _currentElem))
         [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
-	data.pageCourante = 0;
+	_data.pageCourante = 0;
 	
-	if(configFileLoader(project, isTome, currentElem, &data))
+	if(configFileLoader(_project, _isTome, _currentElem, &_data))
 		[self failure];
 	
 	[self changePage:READER_ETAT_DEFAULT];
 }
 
-- (BOOL) craftPageAndSetupEnv : (Reader *) superView : (byte) switchType
+- (BOOL) craftPageAndSetupEnv : (byte) switchType
 {
-	while(cacheBeingBuilt)
+	while(_cacheBeingBuilt)
 		usleep(25);
 	
 	if(switchType == READER_ETAT_DEFAULT)
 	{
 		//We rebuild the cache from scratch
-		if(prevPage != nil)
+		if(_prevPage != nil)
 		{
-			[prevPage release];
-			prevPage = nil;
+			[_prevPage release];
+			_prevPage = nil;
 		}
 		
-		if (pageData != nil)
+		if (_pageData != nil)
 		{
-			[pageData release];
+			[_pageData release];
 		}
 		
-		if(nextPage != nil)
+		if(_nextPage != nil)
 		{
-			[nextPage release];
-			nextPage = nil;
+			[_nextPage release];
+			_nextPage = nil;
 		}
 
-		pageData = [self getPage:data.pageCourante];
-		[pageData retain];
+		_pageData = [self getPage : _data.pageCourante];
+		[_pageData retain];
 	}
 	else if(switchType == READER_ETAT_PREVPAGE)
 	{
-		if(nextPage != nil)
-			[nextPage release];
+		if(_nextPage != nil)
+			[_nextPage release];
 		
-		nextPage = pageData;
+		_nextPage = _pageData;
 		
-		if(prevPage == nil)
+		if(_prevPage == nil)
 		{
-			pageData = [self getPage:data.pageCourante];
-			[pageData retain];
+			_pageData = [self getPage : _data.pageCourante];
+			[_pageData retain];
 		}
 		else
 		{
-			pageData = prevPage;
-			prevPage = nil;
+			_pageData = _prevPage;
+			_prevPage = nil;
 		}
 	}
 	else
 	{
-		if(prevPage != nil)
-			[prevPage release];
+		if(_prevPage != nil)
+			[_prevPage release];
 		
-		prevPage = pageData;
+		_prevPage = _pageData;
 		
-		if(nextPage == nil)
+		if(_nextPage == nil)
 		{
-			pageData = [self getPage:data.pageCourante];
-			[pageData retain];
+			_pageData = [self getPage : _data.pageCourante];
+			[_pageData retain];
 		}
 		else
 		{
-			pageData = nextPage;
-			nextPage = nil;
+			_pageData = _nextPage;
+			_nextPage = nil;
 		}
 	}
 	
-	if(page != nil)
-		pageView.image = nil; //Somehow, it's enough to dealloc the thing
+	if(_page != nil)
+		_pageView.image = nil; //Somehow, it's enough to dealloc the thing
 	
-	page = [[NSImage alloc] initWithData:pageData];
+	_page = [[NSImage alloc] initWithData : _pageData];
 	
-	if(page == nil)
+	if(_page == nil)
 	{
 #ifdef DEV_VERSION
 		FILE * lol = fopen("lol.png", "wb");
-		void * buffer = malloc([pageData length]);
+		void * buffer = malloc([_pageData length]);
 		if(lol != NULL && buffer != NULL)
 		{
-			[pageData getBytes:buffer length:[pageData length]];
-			fwrite(buffer, [pageData length], 1, lol);
+			[_pageData getBytes:buffer length:[_pageData length]];
+			fwrite(buffer, [_pageData length], 1, lol);
 			fclose(lol);
 		}
 		else if(lol != NULL)
@@ -725,12 +734,8 @@ enum
 		return false;
 	}
 	
-	[page setCacheMode:NSImageCacheNever];
+	[_page setCacheMode:NSImageCacheNever];
 	[self performSelectorInBackground:@selector(buildCache) withObject:nil];
-
-	//Work, we now craft the size of this view
-	selfFrame = NSMakeRect(0.0, 0.0, page.size.width, page.size.height);
-	[self initialPositionning:NO:[superView lastFrame]];
 	
 	return true;
 }
@@ -740,8 +745,8 @@ enum
 	NSAlert * alert = [[[NSAlert alloc] init] autorelease];
 	
 	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert setMessageText:[NSString stringWithFormat:@"Suppression d'un %s", isTome ? "tome" : "chapitre"]];
-	[alert setInformativeText :[NSString stringWithFormat:@"Attention: vous vous apprêtez à supprimer définitivement un %s, pour le relire, vous aurez à le télécharger de nouveau, en êtes vous sûr?", isTome ? "tome" : "chapitre"]];
+	[alert setMessageText:[NSString stringWithFormat:@"Suppression d'un %s", _isTome ? "tome" : "chapitre"]];
+	[alert setInformativeText :[NSString stringWithFormat:@"Attention: vous vous apprêtez à supprimer définitivement un %s, pour le relire, vous aurez à le télécharger de nouveau, en êtes vous sûr?", _isTome ? "tome" : "chapitre"]];
 	
 	[alert addButtonWithTitle:@"NON!"];
 	NSButton * firstButton = [[alert buttons] objectAtIndex:0];
@@ -750,16 +755,16 @@ enum
 	
 	if([alert runModal] == NSAlertFirstButtonReturn)
 	{
-		while (cacheBeingBuilt);
-		internalDeleteCT(project, isTome, currentElem);
+		while (_cacheBeingBuilt);
+		internalDeleteCT(_project, _isTome, _currentElem);
 		
 		[self updateCT:COM_CT_REFRESH];
 		
-		getUpdatedCTList(&project, isTome);
+		getUpdatedCTList(&_project, _isTome);
 		
-		if(posElemInStructure != (isTome ? project.nombreTomesInstalled : project.nombreChapitreInstalled))
+		if(_posElemInStructure != (_isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 			[self nextChapter];
-		else if(posElemInStructure > 0)
+		else if(_posElemInStructure > 0)
 			[self prevChapter];
 		else
 			[self failure];
@@ -768,76 +773,80 @@ enum
 
 - (void) addPageToView
 {
-	if(page == NULL)
+	if(_page == nil)
 		return;
 	
+	NSRect frame = NSMakeRect(0, 0, _page.size.width, _page.size.height + READER_PAGE_BORDERS_HIGH);
+
 	//We create the view that si going to be displayed
-	NSRect pageViewSize = selfFrame;
-	pageViewSize.size.height += READER_PAGE_BORDERS_HIGH; 
-	
-	if(pageView != nil)
+	if(_pageView != nil)
 	{
 		//We reset the scroller first (check commit 5eb6b7fde2db for why this patch is important)
-		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, pageView.frame.size.height, pageView.frame.size.width);
+		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, _pageView.frame.size.height, _pageView.frame.size.width);
 		NSEvent *theEvent = [NSEvent eventWithCGEvent:cgEvent];
 		[super scrollWheel:theEvent];
 		CFRelease(cgEvent);
 		
-		[pageView setFrame:pageViewSize];
-		[pageView setImage:page];
+		[_pageView setFrame:frame];
+		[_pageView setImage:_page];
 	}
 	else
 	{
-		pageView = [[NSImageView alloc] initWithFrame:pageViewSize];
-		[pageView setImageAlignment:NSImageAlignCenter];
-		[pageView setImageFrameStyle:NSImageFrameNone];
-		[pageView setImage:page];
+		_pageView = [[NSImageView alloc] initWithFrame:frame];
+		[_pageView setImageAlignment:NSImageAlignCenter];
+		[_pageView setImageFrameStyle:NSImageFrameNone];
+		[_pageView setImage:_page];
 	
-		self.documentView =	pageView;
+		_scrollView.documentView =	_pageView;
 		
-		[pageView release];
+		[_pageView release];
 	}
+	_contentFrame = _pageView.frame;
 	
-	[page release];
+	[_page release];
+	
+	[self initialPositionning];
+	
+	[_scrollView setFrame:_scrollViewFrame];
+	[_pageView setFrameOrigin:_contentFrame.origin];
 	
 	[self updateScrollerAfterResize];
-	
-	[super setFrame:frameReader];
-	[self.contentView setFrame:NSMakeRect(0, 0, frameReader.size.width, frameReader.size.height)];
 }
 
 - (void) updateScrollerAfterResize
 {
 	NSPoint sliderStart;
 	
-	if (pageTooHigh)
-		sliderStart.y = ((NSView*) self.documentView).frame.size.height - frameReader.size.height;
+	if (_pageTooHigh)
+		sliderStart.y = ((NSView*) _scrollView.documentView).frame.size.height - _scrollViewFrame.size.height;
 	else
 		sliderStart.y = READER_PAGE_TOP_BORDER;
 	
-	if(pageTooLarge)
-		sliderStart.x = ((NSView*) self.documentView).frame.size.width - frameReader.size.width;
+	if(_pageTooLarge)
+		sliderStart.x = ((NSView*) _scrollView.documentView).frame.size.width - _scrollViewFrame.size.width;
 	else
 		sliderStart.x = 0;
 	
-	[self setHasHorizontalScroller:pageTooLarge];
-	[self setHasVerticalScroller:pageTooHigh];
+	_scrollView.hasVerticalScroller = _pageTooHigh;
+	_scrollView.verticalScroller.alphaValue =	0;
+	_scrollView.hasHorizontalScroller = _pageTooLarge;
+	_scrollView.horizontalScroller.alphaValue = 0;
 	
-	[self.contentView scrollToPoint:sliderStart];
+	[_scrollView.contentView scrollToPoint:sliderStart];
 }
 
 #pragma mark - Checks if new elements to download
 
 - (void) checkIfNewElements
 {
-	if(alreadyRefreshed)
+	if(_alreadyRefreshed)
 		return;
 	else
-		alreadyRefreshed = true;
+		_alreadyRefreshed = true;
 	
-	PROJECT_DATA localProject = getCopyOfProjectData(project);
+	PROJECT_DATA localProject = getCopyOfProjectData(_project);
 	
-	uint nbElemToGrab = checkNewElementInRepo(&localProject, isTome, currentElem);
+	uint nbElemToGrab = checkNewElementInRepo(&localProject, _isTome, _currentElem);
 	
 	if(!nbElemToGrab)
 		return;
@@ -856,7 +865,7 @@ enum
 	PROJECT_DATA localProject = *arguments.data;
 	uint nbElemToGrab = arguments.nbElem, nbElemValidated = 0;
 	
-	if(project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
+	if(_project.cacheDBID != localProject.cacheDBID)	//The active project changed meanwhile
 		return;
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
@@ -869,11 +878,11 @@ enum
 		return;
 	}
 	
-	if(!isTome)
+	if(!_isTome)
 	{
 		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; nbElemToGrab < localProject.nombreChapitre; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.chapitresFull[nbElemToGrab]])
+			if(![tabMDL proxyCheckForCollision :localProject : _isTome :localProject.chapitresFull[nbElemToGrab]])
 				selection[nbElemValidated++] = localProject.chapitresFull[nbElemToGrab];
 		}
 	}
@@ -881,35 +890,38 @@ enum
 	{
 		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; nbElemToGrab < localProject.nombreTomes; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : isTome :localProject.tomesFull[nbElemToGrab].ID])
+			if(![tabMDL proxyCheckForCollision :localProject : _isTome :localProject.tomesFull[nbElemToGrab].ID])
 				selection[nbElemValidated++] = localProject.tomesFull[nbElemToGrab].ID;
 		}
 	}
 	
 	//We got the data, now, craft the alert
 	RakReaderControllerUIQuery *test = [RakReaderControllerUIQuery alloc];
-	[test initWithData :sharedTabMDL : project :isTome :selection :nbElemValidated];
+	[test initWithData :sharedTabMDL : _project :_isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit
 
 - (void) flushCache
 {
-	while (cacheBeingBuilt);
+	while (_cacheBeingBuilt);
 	
-	[prevPage release];		prevPage = nil;
-	[pageView setImage:nil];page = nil;
-	[pageData release];		pageData = nil;
-	[nextPage release];		nextPage = nil;
+	[_prevPage release];		_prevPage = nil;
+	[_pageView setImage:nil];	_page = nil;
+	[_pageData release];		_pageData = nil;
+	[_nextPage release];		_nextPage = nil;
 }
 
 - (void) getTheFuckOut
 {
 	[self flushCache];
-	releaseDataReader(&data);
-	[self removeFromSuperview];
-	self.documentView = nil;
-	[pageView release]; pageView = nil;
+	releaseDataReader(&_data);
+	
+	[_scrollView removeFromSuperview];
+	_scrollView.documentView = nil;
+	[_scrollView release];
+	
+	[_pageView release];		_pageView = nil;
 }
 
 @end

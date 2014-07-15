@@ -30,10 +30,6 @@ typedef struct data_lecture_tome
     int *chapitreTomeCPT; //Pour la crypto
 } DATA_LECTURE;
 
-/** lecteur_event.c **/
-
-void applyFullscreen(bool *var_fullscreen, bool *redrawScreen, bool *changementEtat);
-
 /** lecteur_check_newElems.c **/
 
 uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT);
@@ -63,36 +59,6 @@ bool reader_isLastElem(PROJECT_DATA mangaDB, bool isTome, int currentSelection);
 
 /*Limites buffers*/
 #define LONGUEUR_NOM_PAGE LENGTH_PROJECT_NAME*2+300
-
-/*Tailles*/
-#define BORDURE_LAT_LECTURE 20
-#define BORDURE_HOR_LECTURE 40
-#define BORDURE_INFERIEURE 25
-#define BORDURE_BUTTON_H 5
-#define BORDURE_BUTTON_W 10
-#define BORDURE_CONTROLE_LECTEUR 100
-#define LARGEUR_CONTROLE_LECTEUR 800
-#define MINIICONE_H 42
-#define MINIICONE_W 42
-#define BIGICONE_H 90
-#define BIGICONE_W 90
-
-/*Positions*/
-#define LARGE_BUTTONS_LECTEUR_PC 30
-#define LARGE_BUTTONS_LECTEUR_PP 185
-#define LARGE_BUTTONS_LECTEUR_NP 510
-#define LARGE_BUTTONS_LECTEUR_NC 665
-
-/*Return values*/
-#define CLIC_SUR_BANDEAU_NONE 0
-#define CLIC_SUR_BANDEAU_PREV_CHAPTER 1
-#define CLIC_SUR_BANDEAU_PREV_PAGE 2
-#define CLIC_SUR_BANDEAU_NEXT_PAGE 3
-#define CLIC_SUR_BANDEAU_NEXT_CHAPTER 4
-#define CLIC_SUR_BANDEAU_FAVORITE 5
-#define CLIC_SUR_BANDEAU_FULLSCREEN 6
-#define CLIC_SUR_BANDEAU_DELETE 7
-#define CLIC_SUR_BANDEAU_MAINMENU 8
 
 /*Status*/
 #define READER_ETAT_DEFAULT 0

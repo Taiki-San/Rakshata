@@ -77,7 +77,6 @@ enum {
 - (BOOL) needToConsiderMDL;
 - (void) setLastFrame : (NSRect) frame;
 - (NSRect) lastFrame;
-- (void) updateLastFrame : (NSRect) newFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
 
 

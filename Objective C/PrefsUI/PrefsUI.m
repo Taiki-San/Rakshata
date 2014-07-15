@@ -18,6 +18,7 @@
     if (self)
 	{
 		mainView = [[NSView alloc] initWithFrame:frame];
+		[self setView:mainView];
 		
 		RakButton * button = [[RakButton allocWithText:@"Change UI" :frame] retain];
 		[button sizeToFit];
@@ -25,8 +26,6 @@
 		[button setAction:@selector(updateUITheme)];
 		[button setFrameOrigin:NSMakePoint(frame.size.width / 2 - button.frame.size.width / 2, frame.size.height / 2 - button.frame.size.height / 2)];
 		[mainView addSubview:button];
-		
-		[self setView:mainView];
 	}
     return self;
 }

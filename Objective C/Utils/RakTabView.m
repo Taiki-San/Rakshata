@@ -448,24 +448,22 @@
 	frame.size.width *= sizeSuperView.width / 100.0f;
 	frame.size.height *= sizeSuperView.height / 100.0f;
 	
-	if([self needToConsiderMDL])
+	if([self class] != [MDL class])
 	{
-		MDL * tabMDL = [self getMDL : YES];
-		if(tabMDL != nil)
+		if([self needToConsiderMDL])
 		{
-			frame.origin.y += [tabMDL lastFrame].size.height;
-			frame.size.height -= [tabMDL lastFrame].size.height;
+			MDL * tabMDL = [self getMDL : YES];
+			if(tabMDL != nil)
+			{
+				frame.origin.y += [tabMDL lastFrame].size.height;
+				frame.size.height -= [tabMDL lastFrame].size.height;
+			}
 		}
+		
+		[self setLastFrame:frame];
 	}
 	
-	[self updateLastFrame:frame];
-	
 	return frame;
-}
-
-- (void) updateLastFrame : (NSRect) newFrame
-{
-	_lastFrame = newFrame;
 }
 
 - (int) getCodePref : (int) request

@@ -238,7 +238,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     {
         logR("Huge fail: database corrupted\n");
         free(configEnc);
-        return NULL;
+		return (void*) 0x1;
     }
 
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
@@ -260,7 +260,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
-        return NULL;
+        return (void*) 0x1;
     }
 	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);	//On écrase le cache
     free(configEnc);

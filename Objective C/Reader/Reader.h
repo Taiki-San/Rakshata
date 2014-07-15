@@ -10,16 +10,48 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#include "lecteur.h"
+
 @class RakReaderBottomBar;
-@class RakPage;
 
 @interface Reader : RakTabView
 {
 	bool initialized;
+	bool pageInitialized;
 	
 	uint gonnaReduceTabs;
 	RakReaderBottomBar * bottomBar;
-	RakPage * mainImage;
+	
+	//Page management
+	NSData *_prevPage;
+	NSData *_pageData;
+	NSImage* _page;
+	NSData *_nextPage;
+	
+	NSImageView * _pageView;
+	NSScrollView * _scrollView;
+	
+	NSRect _scrollViewFrame;
+	NSRect _contentFrame;
+	
+	BOOL _pageTooLarge;
+	BOOL _pageTooHigh;
+	BOOL _areSlidersHidden;
+	
+	/*context data*/
+@private
+	bool _readerMode;
+	bool _alreadyRefreshed;
+	bool _dontGiveACrapAboutCTPosUpdate;
+	
+	bool _cacheBeingBuilt;
+	
+	PROJECT_DATA _project;
+	DATA_LECTURE _data;
+	
+	int _currentElem;
+	int _posElemInStructure;
+	bool _isTome;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
@@ -35,13 +67,7 @@
 - (void) hideCursor;
 
 - (void) switchFavs;
-- (void) prevPage;
-- (void) jumpPage : (uint) newPage;
-- (void) nextPage;
-- (void) prevChapter;
-- (void) nextChapter;
 - (void) triggerFullscreen;
-- (void) deleteElement;
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 
 @end

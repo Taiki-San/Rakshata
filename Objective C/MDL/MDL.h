@@ -24,10 +24,12 @@
 	RakMDLView * coreView;
 	RakMDLController * controller;
 	
-	BOOL needUpdateMainViews;
 	BOOL isForcedToShowUp;
 	
 	RakReaderControllerUIQuery * _popover;
+
+@public
+	int needUpdateMainViews;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
