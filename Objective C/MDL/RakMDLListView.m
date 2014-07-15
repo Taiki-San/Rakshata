@@ -58,7 +58,6 @@
 	if(_pause != nil)
 	{
 		_pause.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_pause setBordered:YES];
 		[_pause setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_pause];
 		[_pause setHidden:YES];
@@ -68,7 +67,6 @@
 	if(_read != nil)
 	{
 		_read.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_read setBordered:YES];
 		[_read setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_read];
 		[_read setHidden:YES];
@@ -79,7 +77,6 @@
 	if(_remove != nil)
 	{
 		_remove.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_remove setBordered:YES];
 		[_remove setButtonType:NSMomentaryChangeButton];
 		[self addSubview:_remove];
 		[_remove setHidden:NO];
