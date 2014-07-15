@@ -36,7 +36,8 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
     dataReader->nombrePageTotale = 1;
 	
     dataReader->nomPages = dataReader->path = NULL;
-    dataReader->pathNumber = dataReader->pageCouranteDuChapitre = dataReader->chapitreTomeCPT = NULL;
+    dataReader->pathNumber = dataReader->chapitreTomeCPT = NULL;
+	dataReader->pageCouranteDuChapitre = NULL;
 	
 	if(encodedTeam == NULL)
 		return true;

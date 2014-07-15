@@ -23,12 +23,12 @@
 
 @end
 
-@interface Reader (PageManagement)
+@interface Reader (PageManagement) <NSPageControllerDelegate>
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (NSString *) getContextToGTFO;
 
-- (void) initialPositionning;
+- (void) initialPositionning : (RakPageScrollView *) scrollView;
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
 
 - (void) leaveReaderMode;
@@ -52,10 +52,10 @@
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
 - (void) updateContext;
-- (BOOL) craftPageAndSetupEnv : (byte) switchType;
+- (NSImage*) craftPageAndSetupEnv : (byte) switchType;
 - (void) deleteElement;
-- (void) addPageToView;
-- (void) updateScrollerAfterResize;
+- (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView;
 
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;

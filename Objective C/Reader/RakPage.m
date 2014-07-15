@@ -30,27 +30,17 @@ enum
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return NO;
 	
-	if (![self craftPageAndSetupEnv : READER_ETAT_DEFAULT])
+	NSImage * curPage = [self craftPageAndSetupEnv : READER_ETAT_DEFAULT];
+	if (curPage == nil)
 		return NO;
 
 	//We create the NSscrollView
-	_scrollView = [[NSScrollView alloc] initWithFrame:_scrollViewFrame];
+	_scrollView = [[[RakPageScrollView alloc] init] autorelease];
 	if(_scrollView == nil)
 		return NO;
 
-	[self addPageToView];
-		
-	//We set preferences ~
-	_scrollView.hasVerticalScroller =		_pageTooHigh;
-	_scrollView.verticalScroller.alphaValue =	0;
-	_scrollView.hasHorizontalScroller =		_pageTooLarge;
-	_scrollView.horizontalScroller.alphaValue = 0;
-	_scrollView.borderType =				NSNoBorder;
-	_scrollView.scrollerStyle =				NSScrollerStyleOverlay;
-	_scrollView.drawsBackground =			NO;
-	
+	[self addPageToView : curPage : _scrollView];
 	[self addSubview:_scrollView];
-	[_scrollView release];
 	
 	return YES;
 }
@@ -75,49 +65,46 @@ enum
 
 #pragma mark    -   Position manipulation
 
-- (void) initialPositionning
+- (void) initialPositionning : (RakPageScrollView *) scrollView
 {
-	NSRect tabFrame = [self lastFrame];
+	NSRect tabFrame = [self lastFrame], scrollViewFrame = scrollView.scrollViewFrame;
 	
-	_scrollViewFrame = NSZeroRect;
+	scrollView.scrollViewFrame = NSZeroRect;
 
-	if(_pageView == nil)
-	{
-		_pageTooHigh = _pageTooLarge = false;
-		_contentFrame = NSZeroRect;
-		return;
-	}
-	
 	//Hauteur
-	if (tabFrame.size.height < _pageView.frame.size.height)
+	if (tabFrame.size.height < scrollView.contentFrame.size.height)
 	{
-		_pageTooHigh = true;
-		_scrollViewFrame.size.height = tabFrame.size.height;
-		_contentFrame.size.height = _pageView.frame.size.height;
+		scrollView.pageTooHigh = YES;
+		scrollViewFrame.size.height = tabFrame.size.height;
 	}
 	else
 	{
-		_pageTooHigh = false;
-		_scrollViewFrame.origin.y = tabFrame.size.height / 2 - _contentFrame.size.height / 2;
-		_scrollViewFrame.size.height = _contentFrame.size.height;
+		scrollView.pageTooHigh = NO;
+		scrollViewFrame.origin.y = tabFrame.size.height / 2 - scrollView.contentFrame.size.height / 2;
+		scrollViewFrame.size.height = scrollView.contentFrame.size.height;
 	}
 	
 	if(!readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
+	{
+		scrollView.scrollViewFrame = scrollViewFrame;
 		return;
+	}
 	
 	//Largeur
-	if(tabFrame.size.width < _contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
+	if(tabFrame.size.width < scrollView.contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
 	{
-		_pageTooLarge = true;
-		_scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
-		_scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
+		scrollView.pageTooLarge = YES;
+		scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
+		scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
 	}
 	else
 	{
-		_pageTooLarge = false;
-		_scrollViewFrame.origin.x = tabFrame.size.width / 2 - _contentFrame.size.width / 2;
-		_scrollViewFrame.size.width = _contentFrame.size.width;
+		scrollView.pageTooLarge = NO;
+		scrollViewFrame.origin.x = tabFrame.size.width / 2 - scrollView.contentFrame.size.width / 2;
+		scrollViewFrame.size.width = scrollView.contentFrame.size.width;
 	}
+	
+	scrollView.scrollViewFrame = scrollViewFrame;
 }
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
@@ -129,15 +116,13 @@ enum
 		frameRect.origin.y = _scrollView.frame.origin.y;
 	}
 	
-	[self initialPositionning];
-	[self updateScrollerAfterResize];
+	[self initialPositionning : _scrollView];
+	[self updateScrollerAfterResize : _scrollView];
 	
 	if(isAnimated)
-		[_scrollView.animator setFrame:_scrollViewFrame];
+		[_scrollView.animator setFrame:_scrollView.scrollViewFrame];
 	else
-		[_scrollView setFrame:_scrollViewFrame];
-	
-	[_pageView setFrameOrigin:_contentFrame.origin];
+		[_scrollView setFrame:_scrollView.scrollViewFrame];
 }
 
 - (void) leaveReaderMode
@@ -164,14 +149,14 @@ enum
 	{
 		NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 		
-		if(_pageTooHigh)
+		if(_scrollView.pageTooHigh)
 		{
 			mouseLoc.y += [_scrollView.contentView documentRect].size.height - [_scrollView frame].size.height - [_scrollView.contentView documentVisibleRect].origin.y;
 			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) _scrollView.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
 				fail = true;
 		}
 		
-		if(_pageTooLarge)
+		if(_scrollView.pageTooLarge)
 		{
 			mouseLoc.x += [_scrollView.contentView documentRect].size.width - [_scrollView frame].size.width - [_scrollView.contentView documentVisibleRect].origin.x;
 			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) _scrollView.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
@@ -283,7 +268,7 @@ enum
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
-	if((_pageTooHigh && [theEvent deltaY]) || (_pageTooLarge && [theEvent deltaX]))
+	if((_scrollView.pageTooHigh && [theEvent deltaY]) || (_scrollView.pageTooLarge && [theEvent deltaX]))
 		[super scrollWheel:theEvent];
 }
 
@@ -320,7 +305,7 @@ enum
 
 - (void) moveSliderX : (int) move
 {
-	if(!_pageTooLarge)
+	if(!_scrollView.pageTooLarge)
 		return;
 	
 	NSPoint point = [[_scrollView contentView] bounds].origin;
@@ -344,7 +329,7 @@ enum
 
 - (void) moveSliderY : (int) move
 {
-	if(!_pageTooHigh)
+	if(!_scrollView.pageTooHigh)
 		return;
 	
 	NSPoint point = [[_scrollView contentView] bounds].origin;
@@ -533,9 +518,10 @@ enum
 		return;
 	}
 	
-	if([self craftPageAndSetupEnv : switchType])
+	NSImage * curPage = [self craftPageAndSetupEnv : switchType];
+	if(curPage != nil)
 	{
-		[self addPageToView];
+		[self addPageToView : curPage : _scrollView];
 		
 		//And we update the bar
 		[self updatePage:_data.pageCourante : _data.nombrePageTotale];
@@ -645,7 +631,7 @@ enum
 	[self changePage:READER_ETAT_DEFAULT];
 }
 
-- (BOOL) craftPageAndSetupEnv : (byte) switchType
+- (NSImage*) craftPageAndSetupEnv : (byte) switchType
 {
 	while(_cacheBeingBuilt)
 		usleep(25);
@@ -710,34 +696,21 @@ enum
 		}
 	}
 	
-	if(_page != nil)
-		_pageView.image = nil; //Somehow, it's enough to dealloc the thing
+	NSImage * page = [[NSImage alloc] initWithData : _pageData];
 	
-	_page = [[NSImage alloc] initWithData : _pageData];
-	
-	if(_page == nil)
+	if(page != nil)
 	{
-#ifdef DEV_VERSION
-		FILE * lol = fopen("lol.png", "wb");
-		void * buffer = malloc([_pageData length]);
-		if(lol != NULL && buffer != NULL)
-		{
-			[_pageData getBytes:buffer length:[_pageData length]];
-			fwrite(buffer, [_pageData length], 1, lol);
-			fclose(lol);
-		}
-		else if(lol != NULL)
-			fclose(lol);
-		else
-			free(buffer);
-#endif
-		return false;
+		[page setCacheMode:NSImageCacheNever];
+		[self performSelectorInBackground:@selector(buildCache) withObject:nil];
 	}
+#ifdef DEV_VERSION
+	else
+	{
+		[_pageData writeToFile:@"lol.png" atomically:NO];
+	}
+#endif
 	
-	[_page setCacheMode:NSImageCacheNever];
-	[self performSelectorInBackground:@selector(buildCache) withObject:nil];
-	
-	return true;
+	return page;
 }
 
 - (void) deleteElement
@@ -771,68 +744,98 @@ enum
 	}
 }
 
-- (void) addPageToView
+- (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView
 {
-	if(_page == nil)
+	if(page == nil || scrollView == nil)
 		return;
 	
-	NSRect frame = NSMakeRect(0, 0, _page.size.width, _page.size.height + READER_PAGE_BORDERS_HIGH);
+	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
 
 	//We create the view that si going to be displayed
-	if(_pageView != nil)
-	{
-		//We reset the scroller first (check commit 5eb6b7fde2db for why this patch is important)
-		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, _pageView.frame.size.height, _pageView.frame.size.width);
-		NSEvent *theEvent = [NSEvent eventWithCGEvent:cgEvent];
-		[super scrollWheel:theEvent];
-		CFRelease(cgEvent);
-		
-		[_pageView setFrame:frame];
-		[_pageView setImage:_page];
-	}
-	else
-	{
-		_pageView = [[NSImageView alloc] initWithFrame:frame];
-		[_pageView setImageAlignment:NSImageAlignCenter];
-		[_pageView setImageFrameStyle:NSImageFrameNone];
-		[_pageView setImage:_page];
+	NSImageView * pageView = [[[NSImageView alloc] initWithFrame: scrollView.contentFrame] autorelease];
+	[pageView setImageAlignment:NSImageAlignCenter];
+	[pageView setImageFrameStyle:NSImageFrameNone];
+	[pageView setImage:page];
 	
-		_scrollView.documentView =	_pageView;
-		
-		[_pageView release];
-	}
-	_contentFrame = _pageView.frame;
+	scrollView.documentView = pageView;
 	
-	[_page release];
+	[page release];
 	
-	[self initialPositionning];
+	[self initialPositionning : scrollView];
 	
-	[_scrollView setFrame:_scrollViewFrame];
-	[_pageView setFrameOrigin:_contentFrame.origin];
-	
-	[self updateScrollerAfterResize];
+	[scrollView setFrame : scrollView.scrollViewFrame];
+	[self updateScrollerAfterResize : scrollView];
 }
 
-- (void) updateScrollerAfterResize
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView
 {
 	NSPoint sliderStart;
 	
-	if (_pageTooHigh)
-		sliderStart.y = ((NSView*) _scrollView.documentView).frame.size.height - _scrollViewFrame.size.height;
+	if (scrollView.pageTooHigh)
+		sliderStart.y = ((NSView*) scrollView.documentView).frame.size.height - scrollView.scrollViewFrame.size.height;
 	else
 		sliderStart.y = READER_PAGE_TOP_BORDER;
 	
-	if(_pageTooLarge)
-		sliderStart.x = ((NSView*) _scrollView.documentView).frame.size.width - _scrollViewFrame.size.width;
+	if(scrollView.pageTooLarge)
+		sliderStart.x = ((NSView*) scrollView.documentView).frame.size.width - scrollView.scrollViewFrame.size.width;
 	else
 		sliderStart.x = 0;
 	
-	_scrollView.hasVerticalScroller = _pageTooHigh;
-	_scrollView.verticalScroller.alphaValue =	0;
-	_scrollView.hasHorizontalScroller = _pageTooLarge;
-	_scrollView.horizontalScroller.alphaValue = 0;
+	[scrollView enforceScrollerPolicy];
+	[scrollView.contentView scrollToPoint:sliderStart];
+}
+
+#pragma mark - NSPageController interface
+
+- (NSString *)pageController:(NSPageController *)pageController identifierForObject:(id)object
+{
+	return @"Indies treasure";
+}
+
+- (NSViewController *)pageController:(NSPageController *)pageController viewControllerForIdentifier:(NSString *)identifier
+{
+	return [[NSViewController alloc] init];
+}
+
+- (void) pageController : (NSPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (NSNumber*) object
+{
+	viewController.view = nil;
 	
-	[_scrollView.contentView scrollToPoint:sliderStart];
+	if([object superclass] != [NSNumber class])
+		return;
+	
+	uint requestedPage = [object unsignedIntValue];
+	
+	if(requestedPage == _data.pageCourante)		//current page
+	{
+		if(_scrollView == nil)
+		{
+			
+		}
+		
+		if(_scrollView != nil)
+			viewController.view = _scrollView;
+	}
+	else if(_data.pageCourante != 0 && requestedPage == _data.pageCourante - 1)		//previous page
+	{
+		if(_prevScrollView == nil)
+		{
+			
+		}
+		
+		if(_prevScrollView != nil)
+			viewController.view = _prevScrollView;
+	}
+	else if(requestedPage < _data.nombrePageTotale - 1 && requestedPage == _data.pageCourante + 1)		//next page
+	{
+		if(_nextScrollView == nil)
+		{
+			
+		}
+		
+		if(_nextScrollView != nil)
+			viewController.view = _nextScrollView;
+	}
 }
 
 #pragma mark - Checks if new elements to download
@@ -907,9 +910,9 @@ enum
 	while (_cacheBeingBuilt);
 	
 	[_prevPage release];		_prevPage = nil;
-	[_pageView setImage:nil];	_page = nil;
 	[_pageData release];		_pageData = nil;
 	[_nextPage release];		_nextPage = nil;
+	[_scrollView releaseData];
 }
 
 - (void) getTheFuckOut
@@ -918,10 +921,8 @@ enum
 	releaseDataReader(&_data);
 	
 	[_scrollView removeFromSuperview];
-	_scrollView.documentView = nil;
+	[_scrollView removeDocumentView];
 	[_scrollView release];
-	
-	[_pageView release];		_pageView = nil;
 }
 
 @end

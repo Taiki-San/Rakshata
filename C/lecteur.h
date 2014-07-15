@@ -18,9 +18,9 @@
 
 typedef struct data_lecture_tome
 {
-    int nombrePageTotale;
-    int pageCourante;
-    int *pageCouranteDuChapitre;
+    uint nombrePageTotale;
+    uint pageCourante;
+    uint *pageCouranteDuChapitre;
 
     int *pathNumber; //Correspondance entre nomPage et path
     char **nomPages;

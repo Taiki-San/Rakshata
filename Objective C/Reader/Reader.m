@@ -21,7 +21,6 @@
 	{
 		flag = GUI_THREAD_READER;
 		gonnaReduceTabs = 0;
-		_page = nil;
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
 		

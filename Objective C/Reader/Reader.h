@@ -11,6 +11,7 @@
  ********************************************************************************************/
 
 #include "lecteur.h"
+#import "RakPageScrollView.h"
 
 @class RakReaderBottomBar;
 
@@ -23,19 +24,14 @@
 	RakReaderBottomBar * bottomBar;
 	
 	//Page management
-	NSData *_prevPage;
-	NSData *_pageData;
-	NSImage* _page;
-	NSData *_nextPage;
+	NSData * _prevPage;
+	NSData * _pageData;
+	NSData * _nextPage;
 	
-	NSImageView * _pageView;
-	NSScrollView * _scrollView;
+	RakPageScrollView * _prevScrollView;
+	RakPageScrollView * _scrollView;
+	RakPageScrollView * _nextScrollView;
 	
-	NSRect _scrollViewFrame;
-	NSRect _contentFrame;
-	
-	BOOL _pageTooLarge;
-	BOOL _pageTooHigh;
 	BOOL _areSlidersHidden;
 	
 	/*context data*/
