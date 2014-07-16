@@ -23,3 +23,16 @@
 - (void) removeDocumentView;
 
 @end
+
+@interface RakGifImageView : NSImageView
+{
+	NSBitmapImageRep *data;
+	NSTimer *animationTimer;
+
+	int currentFrame;
+	int frameCount;
+}
+
+- (void) startAnimation;
+
+@end

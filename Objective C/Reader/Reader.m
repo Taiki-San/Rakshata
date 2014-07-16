@@ -31,7 +31,8 @@
 		if(loadingPlaceholder != nil)
 		{
 			NSBitmapImageRep *gifRep = [[loadingPlaceholder representations] objectAtIndex:0];
-			[gifRep setProperty:NSImageLoopCount withValue:@(1)];
+			[gifRep setProperty:NSImageLoopCount withValue:@(0)];
+			[gifRep setProperty:NSImageCurrentFrameDuration withValue:@(0.1f)];
 		}
 		
 		[self initReaderMainView : state];

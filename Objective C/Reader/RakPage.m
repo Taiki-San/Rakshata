@@ -796,8 +796,6 @@ enum
 
 #pragma mark - NSPageController interface
 
-#define isPageInBounds(page, current, max) (page >= (current == 0 ? 0 : current - 1) && (current == max - 1 ? current : current + 1))
-
 - (NSString *)pageController:(NSPageController *)pageController identifierForObject : (RakPageScrollView*) object
 {
 	return @"yay";
@@ -817,15 +815,21 @@ enum
 	NSView * view = viewController.view;
 	
 	for(NSView * subview in view.subviews)
+	{
 		[subview removeFromSuperview];
+	}
 	
 	[view setFrame : container.frame];
 	
 	if(object == nil || [object class] != [RakPageScrollView class])
 	{
-		NSImageView * placeholder = [[[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, 274, 281)] autorelease];
+		RakGifImageView * placeholder = [[[RakGifImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)] autorelease];
 		[placeholder setImage:loadingPlaceholder];
 		[viewController.view addSubview : placeholder];
+		
+		if(object != nil)
+			[placeholder startAnimation];
+
 		return;
 	}
 	
@@ -840,7 +844,15 @@ enum
 - (NSRect) pageController : (NSPageController *) pageController frameForObject : (RakPageScrollView*) object
 {
 	if(object == nil || [object class] != [RakPageScrollView class])
-		return NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height);
+	{
+		NSRect frame;
+		frame.size = loadingPlaceholder.size;
+		
+		frame.origin.x = container.frame.size.width / 2 - frame.size.width / 2;
+		frame.origin.y = container.frame.size.height / 2 - frame.size.height / 2;
+		
+		return frame;
+	}
 	
 	return container.frame;
 }

@@ -55,3 +55,55 @@
 }
 
 @end
+
+@implementation RakGifImageView
+
+- (void) setImage : (NSImage *) newImage
+{
+	[super setImage:newImage];
+	
+	[self setAnimates:NO];
+
+	[animationTimer invalidate];
+	[animationTimer release];
+	animationTimer = nil;
+	
+	[data release];
+	data = nil;
+}
+
+- (void) startAnimation
+{
+	[data release];		data = [[self.image representations] objectAtIndex:0];
+	currentFrame = 0;
+	
+	frameCount = [[data valueForProperty:NSImageFrameCount] intValue];
+	
+	if(frameCount > 1)
+	{
+		double frameDuration = [[data valueForProperty:NSImageCurrentFrameDuration] doubleValue];
+		if(frameDuration < 0.01)
+			frameDuration = 0.02;
+		
+		[data setProperty:NSImageCurrentFrame withValue:@(0)];
+		
+		animationTimer = [NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES];
+	}
+}
+
+- (void)dealloc
+{
+	[animationTimer invalidate];
+	[super dealloc];
+}
+
+- (void)nextFrame:(NSTimer*)sender
+{
+	currentFrame = ++currentFrame % frameCount;
+	
+	[data setProperty:NSImageCurrentFrame withValue:@(currentFrame)];
+
+	[self setNeedsDisplay];
+}
+
+@end
