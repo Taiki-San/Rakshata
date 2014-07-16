@@ -46,13 +46,13 @@ int getMasterKey(unsigned char *input)
                 return 1;
 			fileInvalid = false;
         }
-		
-		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > 20*SHA256_DIGEST_LENGTH)
+	
+		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > NOMBRE_CLE_MAX_ACCEPTE * SHA256_DIGEST_LENGTH)
         {
             fileInvalid = true;
             remove(SECURE_DATABASE);
         }
-        
+
 		else
             fileInvalid = false;
     
@@ -72,14 +72,20 @@ int getMasterKey(unsigned char *input)
 
     get_file_date(SECURE_DATABASE, date);
 	snprintf((char *) buffer, 249, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+#ifndef DEV_VERSION
     crashTemp(date, 100);
+#endif
     generateFingerPrint(&buffer[250]);	//Buffer < 250 contient la concatenation de la date et de l'email. buffer > 250 contient la fingerprint
 
 	internal_pbkdf2(SHA256_DIGEST_LENGTH, buffer, SHA256_DIGEST_LENGTH, &buffer[250], WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, hash);
+#ifndef DEV_VERSION
     crashTemp(buffer, sizeof(buffer));
+#endif
 
     int nrounds = rijndaelSetupDecrypt(rijndaelKey, hash, KEYBITS);
+#ifndef DEV_VERSION
     crashTemp(hash, sizeof(hash));
+#endif
 
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
@@ -108,6 +114,12 @@ int getMasterKey(unsigned char *input)
             }
             break;
         }
+#ifdef DEV_VERSION
+		else
+		{
+			logR("Invalid key!");
+		}
+#endif
     }
 
     if(!input[0]) //Pas de clée trouvée
@@ -145,6 +157,8 @@ int earlyInit(int argc, char *argv[])
 {
 #ifdef _WIN32
     mutex = CreateSemaphore (NULL, 1, 1, NULL);
+#else
+	pthread_mutex_init(&mutex, NULL);
 #endif
 
     crashTemp(COMPTE_PRINCIPAL_MAIL, 100);

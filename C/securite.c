@@ -122,6 +122,7 @@ void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t
 
 void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 {
+	uint length = 0;
 #ifdef _WIN32
     unsigned char buffer_fingerprint[5000], buf_name[1024];
     SYSTEM_INFO infos_system;
@@ -129,11 +130,13 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 
     GetComputerName((char *)buf_name, &dwCompNameLen);
     GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
-    snprintf((char *)buffer_fingerprint, 5000, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
+    length = snprintf((char *)buffer_fingerprint, 5000, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
             (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
+	
+	length = MIN(length, 5000);
 #else
 	#ifdef __APPLE__
-        int c = 0, i = 0;
+        int c = 0;
         unsigned char buffer_fingerprint[5000];
 		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
 
@@ -141,11 +144,15 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
         for(int j = 0; j < 4; j++)
         {
             system_output = popen(command_line[j], "r");
-            while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
-            fgetc(system_output);
-            for(; (c = fgetc(system_output)) != EOF && c != '\n' && i < 4998; buffer_fingerprint[i++] = c);
-            buffer_fingerprint[i++] = ' ';
-            buffer_fingerprint[i] = 0;
+			
+			while(fgetc(system_output) == EOF); //On attend la fin de l'execution de la commande
+			while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
+			
+			fgetc(system_output);
+			
+			for(; (c = fgetc(system_output)) != EOF && c != '\n' && length < 4998; buffer_fingerprint[length++] = c);
+            buffer_fingerprint[length++] = ' ';
+            buffer_fingerprint[length] = 0;
             pclose(system_output);
         }
 	#else
@@ -155,7 +162,14 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 
 	#endif
 #endif
-    whirlpool(buffer_fingerprint, ustrlen(buffer_fingerprint), (char*) output, false);
+	
+#ifdef DEV_VERSION
+	FILE * file = fopen("fingerprint.txt", "w+");
+	fputs((char*)buffer_fingerprint, file);
+	fclose(file);
+#endif
+	
+    whirlpool(buffer_fingerprint, length, (char*) output, false);
     output[WP_DIGEST_SIZE] = 0;
 }
 
