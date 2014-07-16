@@ -24,6 +24,16 @@
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
 		
+		container = [[NSView alloc] initWithFrame:self.bounds];
+		[self addSubview:container];
+		
+		loadingPlaceholder = [[NSImage alloc] initWithContentsOfFile:@"loading.gif"];
+		if(loadingPlaceholder != nil)
+		{
+			NSBitmapImageRep *gifRep = [[loadingPlaceholder representations] objectAtIndex:0];
+			[gifRep setProperty:NSImageLoopCount withValue:@(1)];
+		}
+		
 		[self initReaderMainView : state];
 	}
     return self;

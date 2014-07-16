@@ -52,7 +52,8 @@
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
 - (void) updateContext;
-- (NSImage*) craftPageAndSetupEnv : (byte) switchType;
+- (void) updateEvnt : (byte) switchType;
+- (RakPageScrollView *) getScrollView : (uint) page;
 - (void) deleteElement;
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView;

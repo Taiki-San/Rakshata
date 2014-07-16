@@ -47,4 +47,11 @@
 	[view release];
 }
 
+- (void) dealloc
+{
+	[self releaseData];
+	[self removeDocumentView];
+	[super dealloc];
+}
+
 @end

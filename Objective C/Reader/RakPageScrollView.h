@@ -16,6 +16,7 @@
 @property NSRect contentFrame;
 @property BOOL pageTooLarge;
 @property BOOL pageTooHigh;
+@property uint page;
 
 - (void) enforceScrollerPolicy;
 - (void) releaseData;

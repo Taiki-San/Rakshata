@@ -30,17 +30,15 @@ enum
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return NO;
 	
-	NSImage * curPage = [self craftPageAndSetupEnv : READER_ETAT_DEFAULT];
-	if (curPage == nil)
-		return NO;
+	mainScroller = [[NSPageController alloc] init];
+	mainScroller.view = container;
+	mainScroller.transitionStyle = dataRequest.japaneseOrder ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
+	mainScroller.delegate = self;
 
-	//We create the NSscrollView
-	_scrollView = [[[RakPageScrollView alloc] init] autorelease];
-	if(_scrollView == nil)
+	[self updateEvnt : READER_ETAT_DEFAULT];
+	
+	if(mainScroller.arrangedObjects[_data.pageCourante] == nil)
 		return NO;
-
-	[self addPageToView : curPage : _scrollView];
-	[self addSubview:_scrollView];
 	
 	return YES;
 }
@@ -116,6 +114,9 @@ enum
 		frameRect.origin.y = _scrollView.frame.origin.y;
 	}
 	
+	[container setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
+	[_scrollView.superview setFrame:container.frame];
+
 	[self initialPositionning : _scrollView];
 	[self updateScrollerAfterResize : _scrollView];
 	
@@ -286,11 +287,13 @@ enum
 - (void) nextPage
 {
 	[self changePage:READER_ETAT_NEXTPAGE];
+	mainScroller.selectedIndex = _data.pageCourante;
 }
 
 - (void) prevPage
 {
 	[self changePage:READER_ETAT_PREVPAGE];
+	mainScroller.selectedIndex = _data.pageCourante;
 }
 
 - (void) nextChapter
@@ -369,7 +372,6 @@ enum
 	_currentElem = elemRequest;
 	_isTome = isTomeRequest;
 	
-	_prevPage = _pageData = _nextPage = nil;
 	_cacheBeingBuilt = false;
 	
 	updateIfRequired(&_project, RDB_CTXLECTEUR);
@@ -463,31 +465,42 @@ enum
 {
 	_cacheBeingBuilt = true;
 	
-	int localCurrentPage = _data.pageCourante;
+	uint localCurrentPage = _data.pageCourante;
 	
-	if(localCurrentPage < 0 || localCurrentPage >= _data.nombrePageTotale)	//Données hors de nos bornes
+	if(localCurrentPage > _data.nombrePageTotale - 1)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = false;
 		return;
 	}
 	
-	if(_nextPage == nil)
+	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+	id object;
+	
+	if (localCurrentPage != _data.nombrePageTotale - 1)
 	{
-		if (localCurrentPage >= 0 && localCurrentPage < _data.nombrePageTotale)
+		if(localCurrentPage + 1 < [data count] && [data objectAtIndex:localCurrentPage + 1] == [NSNull null])
 		{
-			_nextPage = [self getPage:localCurrentPage+1];
-			[_nextPage retain];
+			object = [self getScrollView:localCurrentPage+1];
+			if(object != nil)
+			{
+				data[localCurrentPage + 1] = object;
+			}
 		}
 	}
-
-	if(_prevPage == nil)
+	
+	if (localCurrentPage != 0)
 	{
-		if(localCurrentPage > 0)
+		if(localCurrentPage - 1 < [data count] && [data objectAtIndex:localCurrentPage - 1] == [NSNull null])
 		{
-			_prevPage = [self getPage:localCurrentPage-1];
-			[_prevPage retain];
+			object = [self getScrollView:localCurrentPage-1];
+			if(object != nil)
+			{
+				data[localCurrentPage - 1] = object;
+			}
 		}
 	}
+	
+	mainScroller.arrangedObjects = data;
 	
 	_cacheBeingBuilt = false;
 }
@@ -518,11 +531,10 @@ enum
 		return;
 	}
 	
-	NSImage * curPage = [self craftPageAndSetupEnv : switchType];
-	if(curPage != nil)
+	[self updateEvnt:switchType];
+	
+	if(_scrollView != nil)
 	{
-		[self addPageToView : curPage : _scrollView];
-		
 		//And we update the bar
 		[self updatePage:_data.pageCourante : _data.nombrePageTotale];
 	}
@@ -631,86 +643,83 @@ enum
 	[self changePage:READER_ETAT_DEFAULT];
 }
 
-- (NSImage*) craftPageAndSetupEnv : (byte) switchType
+- (void) updateEvnt : (byte) switchType
 {
 	while(_cacheBeingBuilt)
-		usleep(25);
+		usleep(250);
 	
 	if(switchType == READER_ETAT_DEFAULT)
 	{
 		//We rebuild the cache from scratch
-		if(_prevPage != nil)
+		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+		
+		for(RakPageScrollView * view in array)
 		{
-			[_prevPage release];
-			_prevPage = nil;
+			if([view class] == [RakPageScrollView class])
+				[view release];	//Check how memory management work
 		}
 		
-		if (_pageData != nil)
-		{
-			[_pageData release];
-		}
+		[array removeAllObjects];
 		
-		if(_nextPage != nil)
-		{
-			[_nextPage release];
-			_nextPage = nil;
-		}
-
-		_pageData = [self getPage : _data.pageCourante];
-		[_pageData retain];
-	}
-	else if(switchType == READER_ETAT_PREVPAGE)
-	{
-		if(_nextPage != nil)
-			[_nextPage release];
+		for(uint i = 0; i < _data.nombrePageTotale; i++)
+			[array addObject:[NSNull null]];
 		
-		_nextPage = _pageData;
+		_scrollView = [self getScrollView : _data.pageCourante];
 		
-		if(_prevPage == nil)
-		{
-			_pageData = [self getPage : _data.pageCourante];
-			[_pageData retain];
-		}
-		else
-		{
-			_pageData = _prevPage;
-			_prevPage = nil;
-		}
+		[array replaceObjectAtIndex:_data.pageCourante withObject:(_scrollView == nil ? [NSNull null] : _scrollView)];
+		mainScroller.arrangedObjects = array;
 	}
 	else
 	{
-		if(_prevPage != nil)
-			[_prevPage release];
-		
-		_prevPage = _pageData;
-		
-		if(_nextPage == nil)
+		if(mainScroller.arrangedObjects[_data.pageCourante] == [NSNull null])
 		{
-			_pageData = [self getPage : _data.pageCourante];
-			[_pageData retain];
+			NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+			
+			_scrollView = [self getScrollView : _data.pageCourante];
+			[array replaceObjectAtIndex:_data.pageCourante withObject:(_scrollView == nil ? [NSNull null] : _scrollView)];
+			
+			mainScroller.arrangedObjects = array;
 		}
 		else
 		{
-			_pageData = _nextPage;
-			_nextPage = nil;
+			_scrollView = mainScroller.arrangedObjects[_data.pageCourante];
 		}
 	}
 	
-	NSImage * page = [[NSImage alloc] initWithData : _pageData];
-	
-	if(page != nil)
+	if(_scrollView != nil)
 	{
-		[page setCacheMode:NSImageCacheNever];
 		[self performSelectorInBackground:@selector(buildCache) withObject:nil];
+
+		if(mainScroller != nil)
+			mainScroller.selectedIndex = _data.pageCourante;
 	}
-#ifdef DEV_VERSION
-	else
-	{
-		[_pageData writeToFile:@"lol.png" atomically:NO];
-	}
-#endif
+}
+
+- (RakPageScrollView *) getScrollView : (uint) page
+{
+	NSData * imageData = [self getPage:page];
 	
-	return page;
+	if(imageData == nil)
+		return nil;
+	
+	NSImage * image = [[NSImage alloc] initWithData : imageData];
+	
+#ifdef DEV_VERSION
+	if(image == nil)
+		[imageData writeToFile:@"lol.png" atomically:NO];
+#endif
+
+	if(image == nil)
+		return nil;
+	
+	[image setCacheMode:NSImageCacheNever];
+	
+	RakPageScrollView * output = [[RakPageScrollView alloc] init];
+	
+	[self addPageToView:image :output];
+	output.page = page;
+	
+	return output;
 }
 
 - (void) deleteElement
@@ -787,55 +796,71 @@ enum
 
 #pragma mark - NSPageController interface
 
-- (NSString *)pageController:(NSPageController *)pageController identifierForObject:(id)object
+#define isPageInBounds(page, current, max) (page >= (current == 0 ? 0 : current - 1) && (current == max - 1 ? current : current + 1))
+
+- (NSString *)pageController:(NSPageController *)pageController identifierForObject : (RakPageScrollView*) object
 {
-	return @"Indies treasure";
+	return @"yay";
 }
 
 - (NSViewController *)pageController:(NSPageController *)pageController viewControllerForIdentifier:(NSString *)identifier
 {
-	return [[NSViewController alloc] init];
+	NSViewController * controller = [NSViewController new];
+	
+	controller.view = [[NSView alloc] initWithFrame : container.frame];
+	
+	return controller;
 }
 
-- (void) pageController : (NSPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (NSNumber*) object
+- (void) pageController : (NSPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (RakPageScrollView*) object
 {
-	viewController.view = nil;
+	NSView * view = viewController.view;
 	
-	if([object superclass] != [NSNumber class])
+	for(NSView * subview in view.subviews)
+		[subview removeFromSuperview];
+	
+	[view setFrame : container.frame];
+	
+	if(object == nil || [object class] != [RakPageScrollView class])
+	{
+		NSImageView * placeholder = [[[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, 274, 281)] autorelease];
+		[placeholder setImage:loadingPlaceholder];
+		[viewController.view addSubview : placeholder];
+		return;
+	}
+	
+	[self initialPositionning : object];
+	[self updateScrollerAfterResize : object];
+	[object setFrame:object.scrollViewFrame];
+	
+	[viewController.view addSubview: object];
+	viewController.representedObject = object;
+}
+
+- (NSRect) pageController : (NSPageController *) pageController frameForObject : (RakPageScrollView*) object
+{
+	if(object == nil || [object class] != [RakPageScrollView class])
+		return NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height);
+	
+	return container.frame;
+}
+
+- (void) pageController : (NSPageController *) pageController didTransitionToObject : (RakPageScrollView *) object
+{
+	if(object == nil || [object class] != [RakPageScrollView class])
 		return;
 	
-	uint requestedPage = [object unsignedIntValue];
-	
-	if(requestedPage == _data.pageCourante)		//current page
+	uint requestedPage = object.page;
+	if(requestedPage != _data.pageCourante)
 	{
-		if(_scrollView == nil)
-		{
-			
-		}
-		
-		if(_scrollView != nil)
-			viewController.view = _scrollView;
+		byte move = requestedPage > _data.pageCourante ? READER_ETAT_NEXTPAGE : READER_ETAT_PREVPAGE;
+		[self changePage:move];
 	}
-	else if(_data.pageCourante != 0 && requestedPage == _data.pageCourante - 1)		//previous page
-	{
-		if(_prevScrollView == nil)
-		{
-			
-		}
-		
-		if(_prevScrollView != nil)
-			viewController.view = _prevScrollView;
-	}
-	else if(requestedPage < _data.nombrePageTotale - 1 && requestedPage == _data.pageCourante + 1)		//next page
-	{
-		if(_nextScrollView == nil)
-		{
-			
-		}
-		
-		if(_nextScrollView != nil)
-			viewController.view = _nextScrollView;
-	}
+}
+
+- (void)pageControllerDidEndLiveTransition : (NSPageController *) pageController
+{
+	[pageController completeTransition];
 }
 
 #pragma mark - Checks if new elements to download
@@ -907,22 +932,26 @@ enum
 
 - (void) flushCache
 {
-	while (_cacheBeingBuilt);
+	while (_cacheBeingBuilt) { usleep(10000); };
 	
-	[_prevPage release];		_prevPage = nil;
-	[_pageData release];		_pageData = nil;
-	[_nextPage release];		_nextPage = nil;
-	[_scrollView releaseData];
+	if(mainScroller != nil)
+	{
+		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+		for(id object in array)
+		{
+			if([object class] == [RakPageScrollView class])
+				[object release];	//Check how memory management work
+		}
+		
+		[array removeAllObjects];
+		mainScroller.arrangedObjects = array;
+	}
 }
 
 - (void) getTheFuckOut
 {
 	[self flushCache];
 	releaseDataReader(&_data);
-	
-	[_scrollView removeFromSuperview];
-	[_scrollView removeDocumentView];
-	[_scrollView release];
 }
 
 @end

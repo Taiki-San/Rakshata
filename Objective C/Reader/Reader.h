@@ -21,20 +21,18 @@
 	bool pageInitialized;
 	
 	uint gonnaReduceTabs;
+	NSView * container;
 	RakReaderBottomBar * bottomBar;
 	
 	//Page management
-	NSData * _prevPage;
-	NSData * _pageData;
-	NSData * _nextPage;
-	
 	RakPageScrollView * _prevScrollView;
 	RakPageScrollView * _scrollView;
 	RakPageScrollView * _nextScrollView;
 	
-	BOOL _areSlidersHidden;
+	NSPageController * mainScroller;
+	NSImage * loadingPlaceholder;
 	
-	/*context data*/
+	//Context data
 @private
 	bool _readerMode;
 	bool _alreadyRefreshed;
