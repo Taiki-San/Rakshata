@@ -18,16 +18,14 @@ volatile int NETWORK_ACCESS = CONNEXION_OK;
 int THREAD_COUNT = 0;
 char LANGUAGE_PATH[NOMBRE_LANGUE][50] = {"french", "english", "italian", "german"};
 char COMPTE_PRINCIPAL_MAIL[100];
+MUTEX_VAR mutex;
 
-#ifndef _WIN32
-    MUTEX_VAR mutex = PTHREAD_MUTEX_INITIALIZER;
-
-	int NSApplicationMain(int argc, const char *argv[]);
-#else
-    MUTEX_VAR mutex;
+#ifdef _WIN32
     #ifdef main
         #undef main
     #endif
+#else 
+	int NSApplicationMain(int argc, const char *argv[]);
 #endif
 
 int main(int argc, char *argv[])
