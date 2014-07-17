@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#warning "Need a dealloc"
-
 @implementation RakMDLListView
 
 - (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID
@@ -50,6 +48,19 @@
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+#ifdef DEV_VERSION
+	NSLog(@"flushed ~");
+#endif
+	
+	[_pause removeFromSuperview];		[_pause release];
+	[_read removeFromSuperview];		[_read release];
+	[_remove removeFromSuperview];		[_remove release];
+	
+	[super dealloc];
 }
 
 - (void) initIcons

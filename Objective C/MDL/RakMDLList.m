@@ -121,7 +121,7 @@
     // There is no existing cell to reuse so create a new one
     if (result == nil)
 	{
-		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row];
+		result = [[[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row] autorelease];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		

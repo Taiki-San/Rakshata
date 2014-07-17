@@ -161,9 +161,13 @@
 	[bottomBar removeFromSuperview];
 	[bottomBar release];
 	
-	[self getTheFuckOut];
+	[self deallocInternal];
 	
-	[self removeFromSuperview];	
+	[container removeFromSuperview];
+	[container dealloc];
+	
+	[loadingPlaceholder dealloc];
+	
 	[super dealloc];
 }
 

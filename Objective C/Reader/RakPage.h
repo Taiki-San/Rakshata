@@ -62,6 +62,6 @@
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
 
 - (void) flushCache;
-- (void) getTheFuckOut;
+- (void) deallocInternal;
 
 @end

@@ -64,9 +64,11 @@
 	
 	[self setAnimates:NO];
 
-	[animationTimer invalidate];
-	[animationTimer release];
-	animationTimer = nil;
+	if(animationTimer != nil)
+	{
+		[animationTimer invalidate];
+		animationTimer = nil;
+	}
 	
 	[data release];
 	data = nil;

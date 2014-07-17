@@ -952,18 +952,36 @@ enum
 		for(id object in array)
 		{
 			if([object class] == [RakPageScrollView class])
-				[object release];	//Check how memory management work
+			{
+				[object release];	[object release];
+			}
 		}
 		
 		[array removeAllObjects];
+		[array insertObject:[NSNull null] atIndex:0];
+		
+		mainScroller.selectedIndex = 0;
 		mainScroller.arrangedObjects = array;
 	}
 }
 
-- (void) getTheFuckOut
+- (void) deallocInternal
 {
 	[self flushCache];
 	releaseDataReader(&_data);
+	
+	[mainScroller release];
+
+	for(NSView * view in container.subviews)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
+	{
+		for(NSView * subview in view.subviews)
+		{
+			[subview removeFromSuperview];
+			[subview dealloc];
+		}
+		
+		[view removeFromSuperview];
+	}
 }
 
 @end
