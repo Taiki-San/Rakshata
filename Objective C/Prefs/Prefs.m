@@ -61,6 +61,8 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		[self initCache];
 	
 	prefsCache.themeCode = newTheme;
+	if([mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView class] == [RakContentViewBack class])
+		[(RakContentViewBack*) mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView updateUI];
 }
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister

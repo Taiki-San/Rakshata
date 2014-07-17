@@ -105,11 +105,8 @@
 	}
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void) updateUI
 {
-	if([object class] != [Prefs class])
-		return;
-	
 	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
 	[internalRows1 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
 	[internalRows2 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];

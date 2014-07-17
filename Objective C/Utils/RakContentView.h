@@ -40,6 +40,7 @@
 }
 
 - (void) setupBorders;
+- (void) updateUI;
 - (RakContentView *) getFirstResponder;
 
 @end
