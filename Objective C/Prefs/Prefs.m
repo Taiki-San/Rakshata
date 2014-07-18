@@ -133,6 +133,12 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
+		case GET_COLOR_INSERTION_POINT:
+		{
+			output = [NSColor colorWithDeviceWhite:200/255.0f alpha:1.0];
+			break;
+		}
+			
 		case GET_COLOR_READER_BAR:
 		{
 			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:0.8];

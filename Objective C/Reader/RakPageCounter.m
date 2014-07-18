@@ -206,9 +206,6 @@
 		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
 
-#warning "Get it to work"
-		((NSTextView*) [textField.window fieldEditor:YES forObject:textField]).insertionPointColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
-		
 		RakFormatterNumbersOnly * formater = [[[RakFormatterNumbersOnly alloc] init] autorelease];
 		[formater setMinimum:@(1)];
 		[formater setMaximum:@(maxPage)];
@@ -265,6 +262,19 @@
 			[popover close];
 		}
 	}
+}
+
+@end
+
+@implementation RakPageCounterTextFieldCell
+
+- (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
+{
+	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
+
+	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
+	
+	return output;
 }
 
 @end
