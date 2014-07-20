@@ -20,7 +20,6 @@
 
 - (void) enforceScrollerPolicy;
 - (void) releaseData;
-- (void) removeDocumentView;
 
 @end
 

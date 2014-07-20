@@ -40,17 +40,10 @@
 		((NSImageView*) self.documentView).image = nil;
 }
 
-- (void) removeDocumentView
-{
-	id view = self.documentView;
-	self.documentView = nil;
-	[view release];
-}
-
 - (void) dealloc
 {
 	[self releaseData];
-	[self removeDocumentView];
+	self.documentView = nil;
 	[super dealloc];
 }
 

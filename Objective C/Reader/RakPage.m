@@ -1043,12 +1043,14 @@ enum
 		{
 			if([object class] == [RakPageScrollView class])
 			{
-				[object release];	[object release];
+				[object release];
 			}
 		}
 		
 		[array removeAllObjects];
 		[array insertObject:@(0) atIndex:0];
+		
+		_scrollView = nil;
 		
 		mainScroller.selectedIndex = 0;
 		mainScroller.arrangedObjects = array;
