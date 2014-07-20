@@ -266,7 +266,7 @@
 - (NSRect) lastFrame
 {
 	if(_lastFrame.size.height + _lastFrame.origin.y <= 0)
-		return NSMakeRect(0, 0, 0, 0);
+		return NSZeroRect;
 
 	return [super lastFrame];
 }

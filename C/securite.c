@@ -212,20 +212,33 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 {
     uint curPosInConfigEnc, posInKeyOut, lengthPath = strlen(pathRoot) + 60;
     rawData *configEnc = NULL;
-    char path[lengthPath];
+    char path[lengthPath], *pathPageCopy;
     unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
     size_t size, sizeDBPass;
 
 	snprintf(path, sizeof(path), "%s/config.enc", pathRoot);
+	
+	uint pathPageCopyLength = ustrlen(pathPage) + 5;
+	pathPageCopy = malloc(pathPageCopyLength);
+	if(pathPageCopy == NULL)
+		return NULL;
+	
+	strncpy(pathPageCopy, pathPage, pathPageCopyLength);
     
 	if(!(size = getFileSize(pathPage))) //Si on trouve pas la page
-        return NULL;
+	{
+		free(pathPageCopy);
+		return NULL;
+	}
 
     if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
         size += CRYPTO_BUFFER_SIZE;
 
 	if(!(sizeDBPass = getFileSize(path))) //Si on trouve pas config.enc
+	{
+		free(pathPageCopy);
 		return readFile(pathPage);
+	}
 
     if(getMasterKey(key))
     {
@@ -251,6 +264,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
     {
         logR("Huge fail: database corrupted\n");
+		free(pathPageCopy);
         free(configEnc);
 		return (void*) 0x1;
     }
@@ -272,6 +286,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         crashTemp(key, SHA256_DIGEST_LENGTH);
 #endif
         for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
+		free(pathPageCopy);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
         return (void*) 0x1;
@@ -285,11 +300,13 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 	{
 		void* buf_in = malloc(size + 2 * CRYPTO_BUFFER_SIZE);
 		output->data = malloc((size + 2 * CRYPTO_BUFFER_SIZE) * sizeof(rawData));
-		if(buf_in != NULL && output->data != NULL)
+		
+		FILE* pageFile = fopen(pathPageCopy, "rb");
+		
+		if(buf_in != NULL && output->data != NULL && pageFile != NULL)
 		{
 			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
 
-			FILE* pageFile = fopen(pathPage, "rb");
 			uint unRead = size - fread(buf_in, 1, size, pageFile);
 			fclose(pageFile);
 			
@@ -307,6 +324,8 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		
 		free(buf_in);
 	}
+
+	free(pathPageCopy);
     return output;
 }
 

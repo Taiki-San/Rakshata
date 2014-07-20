@@ -32,6 +32,10 @@
 	NSPageController * mainScroller;
 	NSImage * loadingPlaceholder;
 	
+	MUTEX_VAR cacheMutex;
+	uint cacheSession;
+	byte previousMove;
+	
 	//Context data
 @private
 	bool _readerMode;

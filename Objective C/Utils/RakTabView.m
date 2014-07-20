@@ -348,7 +348,7 @@
 
 - (NSRect) getFrameOfNextTab
 {
-	return NSMakeRect(0, 0, 0, 0);
+	return NSZeroRect;
 }
 
 -(BOOL) mouseOutOfWindow

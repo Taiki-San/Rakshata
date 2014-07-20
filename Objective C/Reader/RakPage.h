@@ -45,14 +45,14 @@
 - (void) setSliderPos : (NSPoint) newPos;
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
-- (void) buildCache;
+- (void) buildCache : (NSNumber *) session;
 - (void) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (bool) goToNext;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
 - (void) updateContext;
-- (void) updateEvnt : (byte) switchType;
+- (void) updateEvnt;
 - (RakPageScrollView *) getScrollView : (uint) page;
 - (void) deleteElement;
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;

@@ -24,7 +24,9 @@
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
 		
-		container = [[NSView alloc] initWithFrame:self.bounds];
+		pthread_mutex_init(&cacheMutex, NULL);
+
+		container = [[[NSView alloc] initWithFrame:self.bounds] autorelease];
 		[self addSubview:container];
 		
 		loadingPlaceholder = [[NSImage alloc] initWithContentsOfFile:@"loading.gif"];
