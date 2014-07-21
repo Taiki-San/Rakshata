@@ -505,10 +505,10 @@ enum
 		}
 		_data.pageCourante--;
 	}
-	else if(switchType != READER_ETAT_DEFAULT)
+	
+	if(switchType != READER_ETAT_DEFAULT)
 	{
-		NSLog(@"Couldn't understand which direction I should move to");
-		return;
+		mainScroller.selectedIndex = _data.pageCourante;
 	}
 	
 	previousMove = switchType;
@@ -523,6 +523,8 @@ enum
 			_scrollView = mainScroller.arrangedObjects[_data.pageCourante];
 		else
 			_scrollView = nil;
+		
+		[self optimizeCache : nil];
 	}
 }
 
@@ -540,7 +542,7 @@ enum
 	else
 	{
 		_data.pageCourante = newPage;
-		[self changePage:READER_ETAT_DEFAULT];
+		[self changePage:READER_ETAT_JUMP];
 	}
 }
 
@@ -750,7 +752,7 @@ enum
 	else
 		sliderStart.x = 0;
 	
-	[scrollView enforceScrollerPolicy];
+	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
 	[scrollView.contentView scrollToPoint:sliderStart];
 }
 
@@ -776,12 +778,7 @@ enum
 		{
 			[self loadPageCache: _data.pageCourante : currentSession : &data];
 		}
-		else if(![self nbEntryRemaining : data])
-		{
-			//On a une limite de pages max dans le cache, il faudrait optimiser le cache (centrer la page courante...)
-			break;
-		}
-		else
+		else if([self nbEntryRemaining : data])
 		{
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
 			uint i, max = _data.nombrePageTotale;
@@ -791,11 +788,12 @@ enum
 				if([data[_data.pageCourante + i * move] class] != [RakPageScrollView class])
 				{
 					[self loadPageCache:_data.pageCourante + i * move :currentSession :&data];
+					move = 0;
 					break;
 				}
 			}
 			
-			if(i != 5)		//If we found something, we go back to the begining of the loop
+			if(!move)		//If we found something, we go back to the begining of the loop
 				continue;
 			
 			//We cache the previous page, in the case the user want to go back
@@ -808,20 +806,29 @@ enum
 			{
 				for (i = _data.pageCourante; i < max; i++)
 				{
-					if([data[_data.pageCourante + i] class] != [RakPageScrollView class])
+					if([data[i] class] != [RakPageScrollView class])
 					{
-						[self loadPageCache:_data.pageCourante + i :currentSession :&data];
+						[self loadPageCache:i :currentSession :&data];
 						break;
 					}
 				}
+				
+				if(i == max)	//Nothing else to load
+				{
+					break;
+				}
 			}
+		}
+		else
+		{
+			break;
 		}
 	}
 	
 	_cacheBeingBuilt = false;
 }
 
-#define NB_ELEM_MAX_IN_CACHE 20	//Must be even
+#define NB_ELEM_MAX_IN_CACHE 30			//5 behind, current, 24 ahead
 
 - (uint) nbEntryRemaining : (NSArray *) data
 {
@@ -841,6 +848,60 @@ enum
 	return count - nbElemCounted;
 }
 
+- (void) optimizeCache : (NSMutableArray *) data
+{
+	uint curPage = _data.pageCourante, objectPage, validFound = 0, invalidFound = 0;
+	
+	NSMutableArray * internalData, *freeList = [NSMutableArray array];
+	RakPageScrollView* object;
+	
+	if(data == nil)
+		internalData = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+	else
+		internalData = data;
+	
+	MUTEX_LOCK(cacheMutex);
+	for(uint pos = 0, max = [internalData count]; pos < max; pos++)
+	{
+		object = [internalData objectAtIndex:pos];
+		
+		if ([object class] == [RakPageScrollView class])
+		{
+			objectPage = object.page;
+			
+			if(objectPage < MAX(curPage, 5) - 5 ||	//Too far behind
+			   objectPage > curPage + 24)			//Too far ahead
+			{
+				[freeList addObject:object];
+				[internalData replaceObjectAtIndex:pos withObject:@(pos)];
+				invalidFound++;
+			}
+			else
+				validFound++;
+		}
+	}
+	
+	if(invalidFound)
+	{
+		mainScroller.arrangedObjects = internalData;
+		MUTEX_UNLOCK(cacheMutex);
+		
+		for(object in freeList)
+		{
+			[object release];
+		}
+	}
+	else
+	{
+		MUTEX_UNLOCK(cacheMutex);
+	}
+	
+	if(validFound != NB_ELEM_MAX_IN_CACHE && !_cacheBeingBuilt)
+	{
+		[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
+	}
+}
+
 - (void) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
 {
 	RakPageScrollView  *view = [self getScrollView:page];
@@ -857,13 +918,13 @@ enum
 		return;
 	}
 	
-	[*data replaceObjectAtIndex:page withObject:view];
-	
 	MUTEX_LOCK(cacheMutex);
-	mainScroller.arrangedObjects = [NSArray arrayWithArray:*data];
-	MUTEX_UNLOCK(cacheMutex);
 	
 	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+	[*data replaceObjectAtIndex:page withObject:view];
+	mainScroller.arrangedObjects = [NSArray arrayWithArray:*data];
+
+	MUTEX_UNLOCK(cacheMutex);
 	
 	if(page == _data.pageCourante)		//If current page, we update the main scrollview pointer (click management)
 	{
@@ -876,6 +937,7 @@ enum
 			[mainScroller.selectedViewController.view addSubview:view];
 		}
 		
+#warning "need proper refresh"
 		[self needsDisplay];
 	}
 }
@@ -945,10 +1007,11 @@ enum
 
 - (void) pageController : (NSPageController *) pageController didTransitionToObject : (RakPageScrollView *) object
 {
-	if(object == nil)
+	if(object == nil || _flushingCache)
 		return;
 	
 	uint requestedPage;
+	
 	if([object superclass] == [NSNumber class])
 		requestedPage = [(NSNumber*) object intValue];
 	else
@@ -1035,6 +1098,7 @@ enum
 - (void) flushCache
 {
 	cacheSession++;		//tell the cache to stop
+	_flushingCache = true;
 	
 	if(mainScroller != nil)
 	{
@@ -1055,6 +1119,8 @@ enum
 		mainScroller.selectedIndex = 0;
 		mainScroller.arrangedObjects = array;
 	}
+	
+	_flushingCache = false;
 }
 
 - (void) deallocInternal

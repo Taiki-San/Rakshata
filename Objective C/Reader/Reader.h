@@ -41,6 +41,7 @@
 	bool _readerMode;
 	bool _alreadyRefreshed;
 	bool _dontGiveACrapAboutCTPosUpdate;
+	bool _flushingCache;
 	
 	bool _cacheBeingBuilt;
 	
