@@ -360,6 +360,12 @@
 }
 
 #warning "Animate transition"
+
+- (void) feedAnimationController : (RakCTAnimationController *) animationController
+{
+	[animationController addCTContent: tableViewControllerChapter : tableViewControllerVolume];
+}
+
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender
 {
 	bool isTome;

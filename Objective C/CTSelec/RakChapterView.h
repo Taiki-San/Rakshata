@@ -19,14 +19,16 @@
 }
 
 - (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
-- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
-- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;;
 
 - (void) resizeAnimation : (NSRect) frameRect;
-
 - (NSString *) getContextToGTFO;
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+
+- (void) feedAnimationController : (RakCTAnimationController *) animationController;
+- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
+
+- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (void) updateContext : (PROJECT_DATA) newData;
 
