@@ -15,7 +15,7 @@
 	INPopoverController * _popover;
 }
 
-@property NSView * anchor;
+@property (assign) NSView * anchor;
 @property NSRect anchorFrame;
 @property INPopoverArrowDirection direction;
 

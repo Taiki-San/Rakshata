@@ -284,12 +284,6 @@ enum
     }
 }
 
-- (void)scrollWheel:(NSEvent *)theEvent
-{
-	if(_scrollView != nil && ((_scrollView.pageTooHigh && [theEvent deltaY]) || (_scrollView.pageTooLarge && [theEvent deltaX])))
-		[super scrollWheel:theEvent];
-}
-
 /*Error management*/
 
 #pragma mark    -   Errors
@@ -427,7 +421,7 @@ enum
 	else if(startPage < _data.nombrePageTotale)
 		_data.pageCourante = startPage;
 	else
-		_data.pageCourante = _data.nombrePageTotale - 1;
+		_data.pageCourante = _data.nombrePageTotale;
 	
 	return YES;
 }
@@ -489,7 +483,7 @@ enum
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
-		if(_data.pageCourante+1 > _data.nombrePageTotale)
+		if(_data.pageCourante + 1 > _data.nombrePageTotale)
 		{
 			[self changeChapter:true];
 			return;
@@ -636,7 +630,7 @@ enum
 	NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	
 	[array removeAllObjects];
-	for(uint i = 0; i < _data.nombrePageTotale; i++)
+	for(uint i = 0; i <= _data.nombrePageTotale; i++)
 		[array addObject:@(i)];
 	
 	_scrollView = [self getScrollView : _data.pageCourante];
@@ -764,7 +758,7 @@ enum
 	
 	uint currentSession = [session unsignedIntValue];
 	
-	if(_data.pageCourante > _data.nombrePageTotale - 1)	//Données hors de nos bornes
+	if(_data.pageCourante > _data.nombrePageTotale)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = false;
 		return;
@@ -783,7 +777,7 @@ enum
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
 			uint i, max = _data.nombrePageTotale;
 
-			for(i = 0; i < 5 && _data.pageCourante + i * move < _data.nombrePageTotale; i++)
+			for(i = 0; i < 5 && _data.pageCourante + i * move <= max; i++)
 			{
 				if([data[_data.pageCourante + i * move] class] != [RakPageScrollView class])
 				{
@@ -918,28 +912,21 @@ enum
 		return;
 	}
 	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
 	MUTEX_LOCK(cacheMutex);
 	
 	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	[*data replaceObjectAtIndex:page withObject:view];
 	mainScroller.arrangedObjects = [NSArray arrayWithArray:*data];
-
+	
 	MUTEX_UNLOCK(cacheMutex);
 	
+	[CATransaction commit];
+	
 	if(page == _data.pageCourante)		//If current page, we update the main scrollview pointer (click management)
-	{
 		_scrollView = view;
-		
-		NSView * subview = mainScroller.selectedViewController.view.subviews[0];
-		if([subview class] != [RakPageScrollView class])
-		{
-			[subview removeFromSuperview];
-			[mainScroller.selectedViewController.view addSubview:view];
-		}
-		
-#warning "need proper refresh"
-		[self needsDisplay];
-	}
 }
 
 #pragma mark - NSPageController interface
@@ -961,10 +948,11 @@ enum
 - (void) pageController : (NSPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (RakPageScrollView*) object
 {
 	NSView * view = viewController.view;
+	NSArray * subviews = [NSArray arrayWithArray:view.subviews];
 	
-	for(NSView * subview in view.subviews)
+	for(NSView * sub in subviews)
 	{
-		[subview removeFromSuperview];
+		[sub removeFromSuperview];
 	}
 	
 	[view setFrame : container.frame];
@@ -977,16 +965,16 @@ enum
 		
 		if(object != nil)
 			[placeholder startAnimation];
-
-		return;
 	}
-	
-	[self initialPositionning : object];
-	[self updateScrollerAfterResize : object];
-	[object setFrame:object.scrollViewFrame];
-	
-	[viewController.view addSubview: object];
-	viewController.representedObject = object;
+	else
+	{
+		[self initialPositionning : object];
+		[self updateScrollerAfterResize : object];
+		[object setFrame:object.scrollViewFrame];
+		
+		[viewController.view addSubview: object];
+		viewController.representedObject = object;
+	}
 }
 
 - (NSRect) pageController : (NSPageController *) pageController frameForObject : (RakPageScrollView*) object
