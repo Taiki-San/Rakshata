@@ -10,13 +10,39 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTCoreViewButtons : NSSegmentedControl
+@interface RakCTAnimationController : NSObject <NSAnimationDelegate>
 {
-	RakCTAnimationController * animationController;
+	RakSegmentedButtonCell * _cell;
+	RakCTCoreContentView * _chapter;
+	RakCTCoreContentView * _volume;
+	
+	NSAnimation * _animation;
+	CGFloat _animationDiff;
+	NSInteger _initialState;
 }
 
+- (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;
+
+- (void) addCTContent : (RakCTCoreContentView*) chapter : (RakCTCoreContentView*) volume;
+- (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
+
+- (void) startAnimation;
+- (void) abortAnimation;
+
+@end
+
+@interface RakTextProjectName : RakMenuText
+
+@end
+
+@interface RakCTProjectImageView : NSImageView
+
+- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame;
+- (void) updateProject : (NSString *) imageName;
+
+- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
+
 - (void) resizeAnimation : (NSRect) frameRect;
-- (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 
 @end
 

@@ -10,21 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakTextProjectName : RakMenuText
-
-@end
-
-@interface RakCTProjectImageView : NSImageView
-
-- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame;
-- (void) updateProject : (NSString *) imageName;
-
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
-
-- (void) resizeAnimation : (NSRect) frameRect;
-
-@end
-
 @interface RakCTContentTabView : NSView
 {
 	PROJECT_DATA data;

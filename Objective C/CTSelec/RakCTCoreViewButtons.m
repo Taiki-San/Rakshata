@@ -87,49 +87,32 @@
 	return [RakSegmentedButtonCell class];
 }
 
+- (void) dealloc
+{
+	[animationController abortAnimation];
+	[animationController release];
+	
+	[super dealloc];
+}
+
 #pragma mark - Animation
 
 - (BOOL) setupTransitionAnimation : (NSNumber *) oldValue : (NSNumber *) newValue
 {
-	if(_animation != nil)
+	NSInteger initialPos = [oldValue integerValue];
+	
+	if(animationController == nil)
 	{
-		[_animation stopAnimation];
-		_animation = nil;
+		animationController = [[[RakCTAnimationController alloc] init: initialPos : [newValue integerValue] - initialPos : self.cell] retain];
+
+		if(animationController == nil)
+			return NO;
 	}
+	else
+		[animationController updateState : initialPos : [newValue integerValue] - initialPos];
 	
-	_animation = [[[NSAnimation alloc] initWithDuration:0.15 animationCurve:NSAnimationEaseInOut] autorelease];
-	[_animation setFrameRate:60];
-	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
-	[_animation setDelegate:self];
-	
-	initialPos = [oldValue integerValue];
-	animationDiff = [newValue integerValue] - initialPos;
-	
-	for (NSAnimationProgress i = 0; i < 1; i += 1 / 9.0f)
-	{
-		[_animation addProgressMark : i];
-	}
-	
-	[_animation startAnimation];
-	
+	[animationController startAnimation];
 	return YES;
-}
-
-- (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
-{
-	[self.cell updateAnimationStatus: YES : initialPos + animationDiff * progress];
-	[self setNeedsDisplay:YES];
-}
-
-- (void)animationDidEnd:(NSAnimation *)animation
-{
-	if(animation == _animation)
-	{
-		[self.cell updateAnimationStatus:NO :1];
-		_animation = nil;
-	}
-
-	[self setNeedsDisplay:YES];
 }
 
 @end

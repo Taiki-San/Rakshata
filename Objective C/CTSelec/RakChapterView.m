@@ -157,120 +157,6 @@
 
 @end
 
-@implementation RakTextProjectName
-
-- (CGFloat) getFontSize
-{
-	return 16;
-}
-
-@end
-
-@implementation RakCTProjectImageView
-
-- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame
-{
-	NSImage * projectImageBase = nil;
-	
-	char * encodedHash = getPathForTeam(URLRepo);
-	
-	if(encodedHash == NULL)
-		return nil;
-	
-	NSString * path = [NSString stringWithFormat:@"imageCache/%s/", encodedHash];
-	free(encodedHash);
-
-	if(path != nil && imageName != nil)
-	{
-		NSBundle * bundle = [NSBundle bundleWithPath: path];
-		if(bundle != nil)
-		{
-			projectImageBase = [bundle imageForResource:[NSString stringWithFormat:@"%@_large", imageName]];
-		}
-	}
-	
-	if(projectImageBase == nil)
-	{
-		projectImageBase = [RakResPath craftResNameFromContext:@"defaultCTImage" :NO :YES : 1];
-	}
-	
-	if(projectImageBase != nil)
-	{
-		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
-		{
-			NSSize imageSize = projectImageBase.size;
-			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
-			
-			imageSize.height *= ratio;
-			imageSize.width *= ratio;
-			
-			[projectImageBase setSize:imageSize];
-		}
-		
-		self = [super initWithFrame:[self getProjectImageSize: superViewFrame : [projectImageBase size] ] ];
-		
-		if(self != nil)
-		{
-			[self setWantsLayer:NO];
-			[self setImageAlignment:NSImageAlignCenter];
-			[self setImageFrameStyle:NSImageFrameNone];
-			[self setImage:projectImageBase];
-		}
-	}
-	else
-	{
-		[self release];
-		self = nil;
-	}
-	
-	return self;
-}
-
-- (void) updateProject : (NSString *) imageName
-{
-	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
-	if(projectImageBase != nil)
-	{
-		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
-		{
-			NSSize imageSize = projectImageBase.size;
-			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
-			
-			imageSize.height *= ratio;
-			imageSize.width *= ratio;
-			
-			[projectImageBase setSize:imageSize];
-		}
-		
-		[self setImage:projectImageBase];
-	}
-}
-
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize
-{
-	NSRect frame;
-	
-	frame.size.height = imageSize.height;
-	frame.size.width = imageSize.width;
-	
-	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
-	frame.origin.y = superViewFrame.size.height - CT_READERMODE_WIDTH_PROJECT_NAME - CT_READERMODE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;
-	
-	return frame;
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	[super setFrame:[self getProjectImageSize:frameRect :[self image].size]];
-}
-
-- (void) resizeAnimation : (NSRect) frameRect
-{
-	[self.animator setFrame : [self getProjectImageSize: frameRect :[self image].size]];
-}
-
-@end
-
 @implementation RakCTContentTabView
 
 - (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
@@ -473,6 +359,7 @@
 	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
 }
 
+#warning "Animate transition"
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender
 {
 	bool isTome;

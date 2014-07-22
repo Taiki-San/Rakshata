@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #import "RakCTCoreContentView.h"
+#import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
 #import "RakChapterView.h"
 
