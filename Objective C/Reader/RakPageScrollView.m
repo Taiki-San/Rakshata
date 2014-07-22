@@ -46,14 +46,21 @@
 - (void) releaseData
 {
 	if(self.documentView != nil && [self.documentView class] == [NSImageView class])
+	{
 		((NSImageView*) self.documentView).image = nil;
+	}
 }
 
 - (void) dealloc
 {
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+
 	[self releaseData];
 	self.documentView = nil;
 	[super dealloc];
+
+	[CATransaction commit];
 }
 
 @end

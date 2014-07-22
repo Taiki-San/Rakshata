@@ -1117,10 +1117,14 @@ enum
 	releaseDataReader(&_data);
 	
 	[mainScroller release];
+	
+	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
 
-	for(NSView * view in container.subviews)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
+	for(NSView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
 	{
-		for(NSView * subview in view.subviews)
+		subArray = [NSArray arrayWithArray:view.subviews];
+		
+		for(NSView * subview in subArray)
 		{
 			[subview removeFromSuperview];
 			[subview dealloc];
