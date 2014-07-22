@@ -44,8 +44,8 @@
 
 - (void) performFromTo : (NSArray*) basePosition
 {
-	int i, count = [_views count];		//	i doit être un int pour récupérer -1 si indexOfObjectPassingTest fail, et count ne devrait pas causer d'overflow
-	RakTabView *__views[count], *currentView;
+	int count = [_views count];		//	i doit être un int pour récupérer -1 si indexOfObjectPassingTest fail, et count ne devrait pas causer d'overflow
+	RakTabView *currentView;
 	haveBasePos = (basePosition != nil && [basePosition count] == count);
 	
 	[NSAnimationContext beginGrouping];
@@ -55,9 +55,6 @@
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[self cleanUpAnimation];
 	}];
-	
-	for(i = 0; i < count; i++)
-		__views[i] = [_views objectAtIndex:i];
 	
 	//Nous devions mettre à jour la frame du MDL en premier
 	//Maj seulement MDL créait un bug vraiment tordu, possiblement lié à Cocoa lui même.
@@ -70,8 +67,11 @@
 		}
 	}
 
-	for(i = 0; i < count; i++)
-		[self resizeView:__views[i] : haveBasePos ? [basePosition objectAtIndex:i] : nil];
+	char pos = 0;
+	for(currentView in _views)
+	{
+		[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:pos++] : nil];
+	}
 	
 	[NSAnimationContext endGrouping];
 }
