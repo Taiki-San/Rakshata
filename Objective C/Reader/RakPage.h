@@ -56,7 +56,7 @@
 - (RakPageScrollView *) getScrollView : (uint) page;
 - (void) deleteElement;
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
-- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView;
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize;
 
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;

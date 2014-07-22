@@ -126,8 +126,10 @@ enum
 		
 		[_scrollView.superview setFrame:container.frame];
 		
+		NSSize oldSize = _scrollView.frame.size;
+		
 		[self initialPositionning : _scrollView];
-		[self updateScrollerAfterResize : _scrollView];
+		[self updateScrollerAfterResize : _scrollView : oldSize];
 		
 		if(isAnimated)
 			[_scrollView.animator setFrame:_scrollView.scrollViewFrame];
@@ -737,22 +739,31 @@ enum
 	[self initialPositionning : scrollView];
 	
 	[scrollView setFrame : scrollView.scrollViewFrame];
-	[self updateScrollerAfterResize : scrollView];
+	[self updateScrollerAfterResize : scrollView : NSZeroSize];
 }
 
-- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
 {
-	NSPoint sliderStart;
+	NSPoint sliderStart = NSMakePoint(0, READER_PAGE_TOP_BORDER);
 	
-	if (scrollView.pageTooHigh)
-		sliderStart.y = ((NSView*) scrollView.documentView).frame.size.height - scrollView.scrollViewFrame.size.height;
+	if(previousSize.height == 0 && previousSize.width == 0)	//NSZeroSize
+	{
+		if (scrollView.pageTooHigh)
+			sliderStart.y = ((NSView*) scrollView.documentView).frame.size.height - scrollView.scrollViewFrame.size.height;
+		
+		if(scrollView.pageTooLarge)
+			sliderStart.x = ((NSView*) scrollView.documentView).frame.size.width - scrollView.scrollViewFrame.size.width;
+	}
 	else
-		sliderStart.y = READER_PAGE_TOP_BORDER;
-	
-	if(scrollView.pageTooLarge)
-		sliderStart.x = ((NSView*) scrollView.documentView).frame.size.width - scrollView.scrollViewFrame.size.width;
-	else
-		sliderStart.x = 0;
+	{
+		sliderStart = [[_scrollView contentView] bounds].origin;
+		
+		if(scrollView.pageTooHigh)
+			sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
+
+		if(scrollView.pageTooLarge)
+			sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
+	}
 	
 	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
 	[scrollView.contentView scrollToPoint:sliderStart];
@@ -977,7 +988,7 @@ enum
 	else
 	{
 		[self initialPositionning : object];
-		[self updateScrollerAfterResize : object];
+		[self updateScrollerAfterResize : object : NSZeroSize];
 		[object setFrame:object.scrollViewFrame];
 		
 		[viewController.view addSubview: object];
