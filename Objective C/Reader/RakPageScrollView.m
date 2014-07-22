@@ -27,14 +27,6 @@
 	return self;
 }
 
-- (void)scrollWheel:(NSEvent *)theEvent
-{
-	if((self.pageTooHigh && [theEvent deltaY]) || (self.pageTooLarge && [theEvent deltaX]))
-		[super scrollWheel:theEvent];
-	else
-		[self.nextResponder scrollWheel:theEvent];
-}
-
 - (void) enforceScrollerPolicy
 {
 	self.hasVerticalScroller = self.pageTooHigh;

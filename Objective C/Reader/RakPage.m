@@ -122,10 +122,7 @@ enum
 	if(_scrollView != nil)
 	{
 		if(!readerMode)
-		{
-			frameRect.origin.x = _scrollView.frame.origin.x;
-			frameRect.origin.y = _scrollView.frame.origin.y;
-		}
+			frameRect.origin = _scrollView.frame.origin;
 		
 		[_scrollView.superview setFrame:container.frame];
 		
@@ -139,7 +136,18 @@ enum
 	}
 	else
 	{
-#warning "move placeholder around"
+		RakGifImageView * view = [mainScroller.selectedViewController.view.subviews objectAtIndex:0];
+		if([view class] == [RakGifImageView class])
+		{
+			NSRect frame = view.frame;		//view is smaller than the smallest possible reader, so its h/w won't change
+			
+			frame.origin.y = frameRect.size.height / 2 - frame.size.height / 2;
+
+			if(readerMode)
+				frame.origin.x = frameRect.size.width / 2 - frame.size.width / 2;
+			
+			[view.superview setFrame:frame];
+		}
 	}
 }
 
