@@ -171,7 +171,7 @@
 
 - (void) startAnimation
 {
-	_animation = [[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear];
+	_animation = [[[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear] autorelease];
 	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
@@ -201,9 +201,6 @@
 		[self.cell setAnimationInProgress:NO];
 		[self performClick:self];
 	}
-	
-	if(animation != nil)
-		[animation release];
 
 	_animation = nil;
 }

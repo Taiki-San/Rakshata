@@ -10,9 +10,15 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTCoreViewButtons : NSSegmentedControl
+@interface RakCTCoreViewButtons : NSSegmentedControl <NSAnimationDelegate>
+{
+	NSAnimation * _animation;
+	CGFloat animationDiff;
+	NSInteger initialPos;
+}
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 
 @end
 

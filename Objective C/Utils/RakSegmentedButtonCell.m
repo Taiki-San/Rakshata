@@ -34,12 +34,38 @@
 	[self.controlView setNeedsDisplay:YES];
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void)setSelectedSegment:(NSInteger)selectedSegment
+{
+	NSInteger oldSelectedSegment = [self selectedSegment];
+	
+	[super setSelectedSegment:selectedSegment];
+
+	NSView* superview = [self controlView];
+	if([superview respondsToSelector:@selector(setupTransitionAnimation::)])
+	{
+		animationToTheLeft = oldSelectedSegment > selectedSegment;
+		animationRunning = (BOOL) [superview performSelector:@selector(setupTransitionAnimation::) withObject:@(oldSelectedSegment) withObject:@(selectedSegment)];
+	}
+}
+
+- (void) updateAnimationStatus : (BOOL) stillRunning : (CGFloat) status
+{
+	if(stillRunning)
+	{
+		animationProgress = status;
+		impactedCell = floor(status);
+		isNextCellImpacted = impactedCell != ceil(status);
+	}
+	else
+		animationRunning = NO;
+}
+
+- (void) drawWithFrame : (NSRect) cellFrame inView : (NSView *) controlView
 {
 	[[self getBackgroundColor] setFill];
 	NSRectFill(cellFrame);
 	
-	NSRect frame = cellFrame;
+	NSRect frame = cellFrame, extraFrame;
 	
 	frame.size.width -= 2;	//border
 	frame.size.height -= 2;
@@ -51,17 +77,47 @@
 		//Draw the cell
 		frame.size.width = [self widthForSegment:i] - 1;
 		
-		if(![self isSelectedForSegment:i])
-			[[self getSelectedColor] setFill];
-		
+		if (animationRunning && (i == impactedCell || (isNextCellImpacted && i == impactedCell + 1)))
+		{
+			NSColor * first, * second;
+			
+			if(i == impactedCell)
+			{
+				first = [self getSelectedColor];
+				second = [self getUnselectedColor];
+			}
+			else
+			{
+				first = [self getUnselectedColor];
+				second = [self getSelectedColor];
+			}
+			
+			extraFrame = frame;
+
+			//First part
+			extraFrame.size.width *= animationProgress;
+			
+			[first setFill];
+			NSRectFill(extraFrame);
+			
+			//Second part
+			extraFrame.origin.x += extraFrame.size.width;
+			extraFrame.size.width = frame.size.width - extraFrame.size.width;
+			
+			[second setFill];
+			NSRectFill(extraFrame);
+		}
 		else
-			[[self getUnselectedColor] setFill];
-		
-		NSRectFill(frame);
-		
+		{
+			if(![self isSelectedForSegment:i])
+				[[self getSelectedColor] setFill];
+			else
+				[[self getUnselectedColor] setFill];
+			
+			NSRectFill(frame);
+		}
 		
 		//Display the text
-		
 		[self drawCell:i inFrame:frame withView:controlView];
 		
 		frame.origin.x += frame.size.width + 1;	//+1 for the separator

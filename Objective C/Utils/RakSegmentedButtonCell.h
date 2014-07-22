@@ -13,7 +13,18 @@
 @interface RakSegmentedButtonCell : NSSegmentedCell
 {
 	NSMutableArray * fields;
+	
+	//Animation
+	BOOL animationRunning;
+	
+	CGFloat animationProgress;
+	uint impactedCell;
+	
+	BOOL isNextCellImpacted;
+	BOOL animationToTheLeft;
 }
+
+- (void) updateAnimationStatus : (BOOL) stillRunning : (CGFloat) status;
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID;
 

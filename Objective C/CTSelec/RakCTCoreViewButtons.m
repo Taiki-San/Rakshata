@@ -87,4 +87,49 @@
 	return [RakSegmentedButtonCell class];
 }
 
+#pragma mark - Animation
+
+- (BOOL) setupTransitionAnimation : (NSNumber *) oldValue : (NSNumber *) newValue
+{
+	if(_animation != nil)
+	{
+		[_animation stopAnimation];
+		_animation = nil;
+	}
+	
+	_animation = [[[NSAnimation alloc] initWithDuration:0.15 animationCurve:NSAnimationEaseInOut] autorelease];
+	[_animation setFrameRate:60];
+	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
+	[_animation setDelegate:self];
+	
+	initialPos = [oldValue integerValue];
+	animationDiff = [newValue integerValue] - initialPos;
+	
+	for (NSAnimationProgress i = 0; i < 1; i += 1 / 9.0f)
+	{
+		[_animation addProgressMark : i];
+	}
+	
+	[_animation startAnimation];
+	
+	return YES;
+}
+
+- (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
+{
+	[self.cell updateAnimationStatus: YES : initialPos + animationDiff * progress];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)animationDidEnd:(NSAnimation *)animation
+{
+	if(animation == _animation)
+	{
+		[self.cell updateAnimationStatus:NO :1];
+		_animation = nil;
+	}
+
+	[self setNeedsDisplay:YES];
+}
+
 @end
