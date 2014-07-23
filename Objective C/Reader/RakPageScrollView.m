@@ -27,6 +27,21 @@
 	return self;
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	[self.nextResponder mouseDown:theEvent];
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	[self.nextResponder mouseUp:theEvent];
+}
+
+- (void) mouseDragged:(NSEvent *)theEvent
+{
+	[self.nextResponder mouseDragged:theEvent];
+}
+
 - (void) enforceScrollerPolicy
 {
 	self.hasVerticalScroller = self.pageTooHigh;
