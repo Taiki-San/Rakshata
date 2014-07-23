@@ -12,6 +12,9 @@
 
 @implementation RakCTAnimationController
 
+#define ANIMATION_DURATION 0.15f
+#define ANIMATION_FRAME	(ANIMATION_DURATION * 60.0f)
+
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell
 {
 	self = [super init];
@@ -21,6 +24,7 @@
 		_initialState = initialPos;
 		_animationDiff = diff;
 		_cell = cell;
+		state = ANIMATION_FRAME;
 	}
 	
 	return self;
@@ -34,6 +38,12 @@
 	_volume = volume;
 }
 
+- (void) addAction : (id) target : (SEL) action
+{
+	postAnimationTarget = target;
+	postAnimationAction = action;
+}
+
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff
 {
 	_initialState = initialPos;
@@ -45,38 +55,59 @@
 - (void) startAnimation
 {
 	if(_animation != nil)
+	{
 		[self abortAnimation];
+	}
 	
-	_animation = [[[NSAnimation alloc] initWithDuration:0.15 animationCurve:NSAnimationEaseInOut] autorelease];
+	//if(state != ANIMATION_FRAME)	state--;
+	
+	state = ANIMATION_FRAME - state;
+	
+	CGFloat duration = ANIMATION_DURATION - state / ANIMATION_FRAME, steps = ANIMATION_FRAME - state;
+	
+	_animation = [[[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut] autorelease];
 	[_animation setFrameRate:60];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
 	
-	for (NSAnimationProgress i = 0; i < 1; i += 1 / 9.0f)
+	for (NSAnimationProgress i = 0; i < 1; i += 1.0f / steps)
 	{
 		[_animation addProgressMark : i];
 	}
 	
 	if(_chapter != nil && _volume != nil)
 	{
-		[_chapter setHidden: NO];	[_volume setHidden: NO];
+		_chapter.hidden = NO;		_volume.hidden = NO;
 		
 		CGFloat width = _chapter.superview.frame.size.width;
-		distanceToCoverPerMark = (width - _chapter.frame.origin.x) / 9.0f;
 		
-		chapOrigin = _chapter.frame.origin;
-		volOrigin = _volume.frame.origin;
+		if(!state)
+		{
+			distanceToCoverPerMark = (width - _chapter.frame.origin.x) / ANIMATION_FRAME;
 
-		if(_initialState == 0)
-		{
-			distanceToCoverPerMark *= -1;
-			volOrigin.x = width;
-			[_volume setFrameOrigin:volOrigin];
+			chapOrigin = _chapter.frame.origin;
+			volOrigin = _volume.frame.origin;
+
+			if(_initialState == 0)
+			{
+				volOrigin.x = width;
+				[_volume setFrameOrigin:volOrigin];
+				distanceToCoverPerMark *= -1;
+			}
+			else
+			{
+				chapOrigin.x = - _chapter.frame.size.width;
+				[_chapter setFrameOrigin : chapOrigin];
+			}
 		}
-		else
+		else	//Aborted
 		{
-			chapOrigin.x = - _chapter.frame.size.width;
-			[_chapter setFrameOrigin : chapOrigin];
+			CGFloat delta = CT_READERMODE_BORDER_TABLEVIEW;
+			
+			if (_initialState == 0)		delta -= volOrigin.x;
+			else						delta -= chapOrigin.x;
+			
+			distanceToCoverPerMark = delta / steps;
 		}
 	}
 	
@@ -98,22 +129,25 @@
 	
 	chapOrigin.x += distanceToCoverPerMark;		[_chapter setFrameOrigin:chapOrigin];
 	volOrigin.x += distanceToCoverPerMark;		[_volume setFrameOrigin:volOrigin];
+	
+	state++;
 }
 
 - (void)animationDidEnd:(NSAnimation *)animation
 {
 	if(animation == _animation)
 	{
-		[_cell updateAnimationStatus:NO :1];
-		
-		NSRect superviewFrame = _chapter.superview.frame;
-		_chapter.frame = superviewFrame;
-		_volume.frame = superviewFrame;
-		
-		if(_initialState == 0)
-			_chapter.hidden = YES;
-		else
-			_volume.hidden = YES;
+		if(state >= ANIMATION_FRAME)
+		{
+			state = ANIMATION_FRAME;
+			[_cell updateAnimationStatus:NO :1];
+			
+			NSRect superviewFrame = _chapter.superview.frame;
+			_chapter.frame = superviewFrame;
+			_volume.frame = superviewFrame;
+			
+			[postAnimationTarget performSelector:postAnimationAction withObject:_cell.controlView];
+		}
 		
 		_animation = nil;
 	}

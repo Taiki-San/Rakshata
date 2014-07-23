@@ -15,6 +15,9 @@
 	RakCTAnimationController * animationController;
 }
 
+@property (assign) id postAnimationTarget;
+@property SEL postAnimationAction;
+
 - (void) resizeAnimation : (NSRect) frameRect;
 - (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 

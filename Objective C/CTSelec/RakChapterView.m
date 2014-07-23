@@ -173,8 +173,6 @@
 	{
 		[self setAutoresizesSubviews:NO];
 		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
-		[buttons setTarget:self];
-		[buttons setAction:@selector(switchIsTome:)];
 		
 		data = getCopyOfProjectData(project);
 		
@@ -359,11 +357,10 @@
 	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
 }
 
-#warning "Animate transition"
-
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
 	[animationController addCTContent: tableViewControllerChapter : tableViewControllerVolume];
+	[animationController addAction:self :@selector(switchIsTome:)];
 }
 
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender

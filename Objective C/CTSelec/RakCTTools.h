@@ -16,7 +16,13 @@
 	RakCTCoreContentView * _chapter;
 	RakCTCoreContentView * _volume;
 	
+	id postAnimationTarget;
+	SEL postAnimationAction;
+
+	
 	NSAnimation * _animation;
+	uint state;
+	
 	CGFloat _animationDiff;
 	NSInteger _initialState;
 	
@@ -28,6 +34,7 @@
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;
 
 - (void) addCTContent : (RakCTCoreContentView*) chapter : (RakCTCoreContentView*) volume;
+- (void) addAction : (id) target : (SEL) action;
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
 
 - (void) startAnimation;
