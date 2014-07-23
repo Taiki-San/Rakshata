@@ -39,16 +39,17 @@
 	NSColor * highlight;
 }
 
+@property (getter=isHidden, setter=setHidden:)				BOOL hidden;
+@property (getter=frame, setter=setFrame:)					NSRect frame;
+@property (assign, getter=superview, setter=setSuperview:)	NSView * superview;
+
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
 - (bool) didInitWentWell;
 - (void) failure;
 
+- (void) setFrameOrigin : (NSPoint) origin;
+
 - (NSScrollView*) getContent;
-- (void) setSuperView : (NSView *) superview;
-- (void) setHidden : (bool) state;
-- (BOOL) isHidden;
-- (NSRect) frame;
-- (void) setFrame : (NSRect) frameRect;
 - (void) resizeAnimation : (NSRect) frameRect;
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame;

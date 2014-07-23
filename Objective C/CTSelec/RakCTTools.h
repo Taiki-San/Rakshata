@@ -19,6 +19,10 @@
 	NSAnimation * _animation;
 	CGFloat _animationDiff;
 	NSInteger _initialState;
+	
+	CGFloat distanceToCoverPerMark;
+	NSPoint chapOrigin;
+	NSPoint volOrigin;
 }
 
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;

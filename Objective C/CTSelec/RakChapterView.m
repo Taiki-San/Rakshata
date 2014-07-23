@@ -228,8 +228,8 @@
 			tableViewControllerChapter = [[[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]] retain];
 			if(tableViewControllerChapter != nil)
 			{
-				[tableViewControllerChapter setHidden:isTome];
-				[tableViewControllerChapter setSuperView:self];
+				tableViewControllerChapter.hidden = isTome;
+				tableViewControllerChapter.superview = self;
 			}
 		}
 
@@ -238,8 +238,8 @@
 			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]] retain];
 			if(tableViewControllerVolume != nil)
 			{
-				[tableViewControllerVolume setHidden:!isTome];
-				[tableViewControllerVolume setSuperView:self];
+				tableViewControllerVolume.hidden = !isTome;
+				tableViewControllerVolume.superview = self;
 			}
 		}
 	}
@@ -375,9 +375,9 @@
 		isTome = true;
 	
 	if(tableViewControllerChapter != nil)
-		[tableViewControllerChapter setHidden:isTome];
+		tableViewControllerChapter.hidden = isTome;
 	if(tableViewControllerVolume != nil)
-		[tableViewControllerVolume setHidden:!isTome];
+		tableViewControllerVolume.hidden = !isTome;
 }
 
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
@@ -439,8 +439,8 @@
 	//No data available
 	if(data.nombreChapitreInstalled == 0 && data.nombreTomesInstalled == 0)
 	{
-		[tableViewControllerChapter setHidden:YES];
-		[tableViewControllerVolume setHidden:YES];
+		tableViewControllerChapter.hidden = YES;
+		tableViewControllerVolume.hidden = YES;
 
 		[self failure];
 	}
@@ -451,7 +451,7 @@
 		if(tableViewControllerChapter == nil)
 		{
 			tableViewControllerChapter =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain] retain];	//Two retains because we, as a subview, will get released at the end of the refresh
-			[tableViewControllerChapter setSuperView:self];
+			tableViewControllerChapter.superview = self;
 		}
 		else
 			[tableViewControllerChapter reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
@@ -466,7 +466,7 @@
 		if(tableViewControllerVolume == nil)
 		{
 			tableViewControllerVolume =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain] retain];
-			[tableViewControllerVolume setSuperView:self];
+			tableViewControllerVolume.superview = self;
 		}
 		else
 			[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];

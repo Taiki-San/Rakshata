@@ -57,6 +57,29 @@
 		[_animation addProgressMark : i];
 	}
 	
+	if(_chapter != nil && _volume != nil)
+	{
+		[_chapter setHidden: NO];	[_volume setHidden: NO];
+		
+		CGFloat width = _chapter.superview.frame.size.width;
+		distanceToCoverPerMark = (width - _chapter.frame.origin.x) / 9.0f;
+		
+		chapOrigin = _chapter.frame.origin;
+		volOrigin = _volume.frame.origin;
+
+		if(_initialState == 0)
+		{
+			distanceToCoverPerMark *= -1;
+			volOrigin.x = width;
+			[_volume setFrameOrigin:volOrigin];
+		}
+		else
+		{
+			chapOrigin.x = - _chapter.frame.size.width;
+			[_chapter setFrameOrigin : chapOrigin];
+		}
+	}
+	
 	[_animation startAnimation];
 }
 
@@ -72,6 +95,9 @@
 {
 	[_cell updateAnimationStatus: YES : _initialState + _animationDiff * progress];
 	[_cell.controlView setNeedsDisplay:YES];
+	
+	chapOrigin.x += distanceToCoverPerMark;		[_chapter setFrameOrigin:chapOrigin];
+	volOrigin.x += distanceToCoverPerMark;		[_volume setFrameOrigin:volOrigin];
 }
 
 - (void)animationDidEnd:(NSAnimation *)animation
@@ -79,6 +105,16 @@
 	if(animation == _animation)
 	{
 		[_cell updateAnimationStatus:NO :1];
+		
+		NSRect superviewFrame = _chapter.superview.frame;
+		_chapter.frame = superviewFrame;
+		_volume.frame = superviewFrame;
+		
+		if(_initialState == 0)
+			_chapter.hidden = YES;
+		else
+			_volume.hidden = YES;
+		
 		_animation = nil;
 	}
 	

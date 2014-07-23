@@ -25,7 +25,7 @@
 		
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
-		if(MDLList != nil)			[MDLList setSuperView:self];
+		if(MDLList != nil)			MDLList.superview = self;
 		
 		dropPlaceHolder = [[RakText alloc] initWithText:[self bounds] :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
 		if(dropPlaceHolder != nil)

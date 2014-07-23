@@ -101,9 +101,14 @@
 	return scrollView;
 }
 
-- (void) setSuperView : (NSView *) superview
+- (void) setSuperview : (NSView *) superview
 {
 	[superview addSubview:scrollView];
+}
+
+- (NSView*) superview
+{
+	return scrollView.superview;
 }
 
 - (NSRect) frame
@@ -122,6 +127,11 @@
 		[_tableView setFrame:scrollView.frame];
 		[_tableView reloadData];
 	}
+}
+
+- (void) setFrameOrigin : (NSPoint) origin
+{
+	[scrollView setFrameOrigin: origin];
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
@@ -143,7 +153,7 @@
 	}
 }
 
-- (void) setHidden : (bool) state
+- (void) setHidden : (BOOL) state
 {
 	if([scrollView isHidden] != state)
 		[scrollView setHidden:state];
