@@ -39,12 +39,15 @@
 	NSInteger oldSelectedSegment = [self selectedSegment];
 	
 	[super setSelectedSegment:selectedSegment];
-
-	NSView* superview = [self controlView];
-	if([superview respondsToSelector:@selector(setupTransitionAnimation::)])
+	
+	if(oldSelectedSegment != selectedSegment)
 	{
-		animationToTheLeft = oldSelectedSegment > selectedSegment;
-		animationRunning = (BOOL) [superview performSelector:@selector(setupTransitionAnimation::) withObject:@(oldSelectedSegment) withObject:@(selectedSegment)];
+		NSView* superview = [self controlView];
+		if([superview respondsToSelector:@selector(setupTransitionAnimation::)])
+		{
+			animationToTheLeft = oldSelectedSegment > selectedSegment;
+			animationRunning = (BOOL) [superview performSelector:@selector(setupTransitionAnimation::) withObject:@(oldSelectedSegment) withObject:@(selectedSegment)];
+		}
 	}
 }
 
