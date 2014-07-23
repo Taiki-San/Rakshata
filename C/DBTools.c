@@ -32,7 +32,7 @@ bool isRemoteRepoLineValid(char * data, int version)
 #ifdef DEV_VERSION
 		uint messageLength = 200 + strlen(data);
 		char logMessage[messageLength];
-		snprintf(logMessage, messageLength, "Incoherent number of spaces in downloaded repo file, dumping data: version = %d, nbrSpaces = %d\ndata: %s", version, nbrSpaces, data);
+		snprintf(logMessage, messageLength, "Incoherent number of spaces in downloaded repo file, dumping data: version = %d, nbrSpaces = %d 'data: %s'", version, nbrSpaces, data);
 		logR(logMessage);
 #endif
 		return false;
