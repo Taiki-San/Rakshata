@@ -25,19 +25,7 @@
 		_tabMDL = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
 		_remind = false;	_tabReader = nil;
 		
-		[self setWantsLayer:YES];
-		[self.layer setCornerRadius:4];
-		[self.layer setBorderWidth:1];
-		[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor];
-		[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil].CGColor];
-		
-		[self setupView];
-		
-		popover = [[RakPopoverWrapper alloc] init:self];
-		popover.anchor = _tabMDL;
-		
 		NSArray *subviews;
-		popover.direction = INPopoverArrowDirectionDown;
 		if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
 		{
 			for(NSView * view in subviews)
@@ -51,9 +39,7 @@
 			}
 		}
 	
-		[popover additionalConfiguration:self :@selector(configurePopover:)];
-		[popover togglePopover : frame];
-		[popover setDelegate:self];
+		[self internalInit : _tabMDL : frame : YES];
 		[_tabMDL registerPopoverExistance:self];
 	}
 	
@@ -86,29 +72,45 @@
 	[self addSubview:buttonRemind];
 }
 
+//Colors
+
+- (NSColor *) popoverBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
+}
+
+- (NSColor *) popoverArrowColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+}
+
+- (NSColor *) borderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil];
+}
+
+- (NSColor *) backgroundColor
+{
+	return 	[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+}
+
+//Toolbox
+
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
 {
 	NSPoint origin = NSMakePoint(0, MDLFrame.origin.y + MDLFrame.size.height);
-	origin = [_tabMDL convertPoint:origin toView:nil];
-	origin = [_tabMDL.window convertBaseToScreen:origin];
+	origin = [_tabMDL.window convertBaseToScreen:[_tabMDL convertPoint:origin toView:nil]];
 	
 	if(_tabReader != nil)
 		origin.x += [_tabReader createFrame].origin.x / 2;
 	else
 		origin.x += MDLFrame.size.width / 2;
 	
-	[popover updatePosition:origin :animated];
+	[self updateOrigin : origin : animated];
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void) additionalUpdateOnThemeChange
 {
-	if([object class] != [Prefs class])
-		return;
-
-	[self.layer setBorderColor:[Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil].CGColor];
-	[self.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil].CGColor];
-
-	
 	for(RakText * view in self.subviews)
 	{
 		if([view class] == [RakText class])
@@ -117,22 +119,12 @@
 			break;
 		}
 	}
-	
-	[self setNeedsDisplay:YES];
-	[popover additionalConfiguration:self :@selector(configurePopover:)];
-}
-
-- (void) configurePopover : (INPopoverController*) internalPopover
-{
-	internalPopover.borderColor = internalPopover.color = [[Prefs getSystemColor:GET_COLOR_INACTIVE:nil] colorWithAlphaComponent:0.8];
-	internalPopover.borderWidth = 4;
 }
 
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
 	[_tabMDL registerPopoverExistance:nil];
-	[popover clearMemory];
-	[popover release];
+	[super popoverDidClose:discarded];
 }
 
 #pragma mark - Payload

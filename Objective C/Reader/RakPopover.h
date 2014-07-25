@@ -29,3 +29,26 @@
 - (void) clearMemory;
 
 @end
+
+@interface RakPopoverView : NSView <INPopoverControllerDelegate>
+{
+	bool additionalConfigRequired;
+	
+	RakPopoverWrapper * popover;
+}
+
+- (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig;
+
+- (void) setupView;
+- (void) configurePopover : (INPopoverController*) internalPopover;
+
+- (NSColor *) popoverBorderColor;
+- (NSColor *) popoverArrowColor;
+- (NSColor *) borderColor;
+- (NSColor *) backgroundColor;
+
+- (void) updateOrigin : (NSPoint) origin : (BOOL) animated;
+- (void) additionalUpdateOnThemeChange;
+- (void) popoverDidClose:(INPopoverController *)discarded;
+
+@end

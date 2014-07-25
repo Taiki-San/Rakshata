@@ -63,6 +63,7 @@
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
+		B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */; };
 		B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6BD7B5A194860A9000A0B73 /* jumpPage.xib */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
@@ -78,7 +79,7 @@
 		B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427C197F2D5B000F268E /* RakCTTools.m */; };
 		B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9D19D190EEF9B007F041C /* RakMDLList.m */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
-		B6EBD80519538B6B00642EB8 /* RakPopoverWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBD80419538B6B00642EB8 /* RakPopoverWrapper.m */; };
+		B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBD80419538B6B00642EB8 /* RakPopover.m */; };
 		B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; };
 		B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC482218E5E03E00288C3B /* RakChapterView.m */; };
@@ -241,6 +242,8 @@
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6B46DB118FB3D7400EB1FE6 /* RakSerieMainList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieMainList.h; path = "Séries/RakSerieMainList.h"; sourceTree = "<group>"; };
 		B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSerieMainList.m; path = "Séries/RakSerieMainList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6B870B91981D5E1005D705E /* RakDeleteConfirm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDeleteConfirm.h; path = Reader/RakDeleteConfirm.h; sourceTree = "<group>"; };
+		B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDeleteConfirm.m; path = Reader/RakDeleteConfirm.m; sourceTree = "<group>"; };
 		B6BD7B5A194860A9000A0B73 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Reader/jumpPage.xib"; sourceTree = "<group>"; };
 		B6C64E57194BB6EB0066A7BD /* RakDragItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragItem.h; path = Utils/RakDragItem.h; sourceTree = "<group>"; };
 		B6C64E58194BB6EB0066A7BD /* RakDragItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragItem.m; path = Utils/RakDragItem.m; sourceTree = "<group>"; };
@@ -271,8 +274,8 @@
 		B6E9D19D190EEF9B007F041C /* RakMDLList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLList.m; path = MDL/RakMDLList.m; sourceTree = "<group>"; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
 		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
-		B6EBD80319538B6B00642EB8 /* RakPopoverWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPopoverWrapper.h; path = Reader/RakPopoverWrapper.h; sourceTree = "<group>"; };
-		B6EBD80419538B6B00642EB8 /* RakPopoverWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPopoverWrapper.m; path = Reader/RakPopoverWrapper.m; sourceTree = "<group>"; };
+		B6EBD80319538B6B00642EB8 /* RakPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPopover.h; path = Reader/RakPopover.h; sourceTree = "<group>"; };
+		B6EBD80419538B6B00642EB8 /* RakPopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPopover.m; path = Reader/RakPopover.m; sourceTree = "<group>"; };
 		B6EBD8091953934600642EB8 /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
 		B6EC482118E5E03E00288C3B /* RakChapterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakChapterView.h; path = CTSelec/RakChapterView.h; sourceTree = "<group>"; };
 		B6EC482218E5E03E00288C3B /* RakChapterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakChapterView.m; path = CTSelec/RakChapterView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -508,12 +511,14 @@
 		B6CC724718723077003A745B /* Reader */ = {
 			isa = PBXGroup;
 			children = (
+				B6B870B91981D5E1005D705E /* RakDeleteConfirm.h */,
+				B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
-				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
-				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
 				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
 				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
+				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
+				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
 				B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */,
 				B668D6AE1953A1B000E3127D /* RakReaderControllerUIQuery.h */,
@@ -564,8 +569,8 @@
 				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
 				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
-				B6EBD80319538B6B00642EB8 /* RakPopoverWrapper.h */,
-				B6EBD80419538B6B00642EB8 /* RakPopoverWrapper.m */,
+				B6EBD80319538B6B00642EB8 /* RakPopover.h */,
+				B6EBD80419538B6B00642EB8 /* RakPopover.m */,
 				B68B5229191AE38D0057F35A /* RakProgressBar.h */,
 				B68B522A191AE38D0057F35A /* RakProgressBar.m */,
 				B68B5223191AE3050057F35A /* RakScroller.h */,
@@ -913,7 +918,7 @@
 				B678D034197717A600D7FE6A /* JSONParser.m in Sources */,
 				B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */,
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
-				B6EBD80519538B6B00642EB8 /* RakPopoverWrapper.m in Sources */,
+				B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
 				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
 				B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */,
@@ -988,6 +993,7 @@
 				B67845A319631311007372C7 /* encoding.c in Sources */,
 				B64C926819571DDF000D60CC /* RakSegmentedButtonCell.m in Sources */,
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
+				B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */,
 				B6F6ED1918A3001400E3B55B /* update.c in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,

@@ -12,7 +12,6 @@
 
 #include "lecteur.h"
 #import "RakPageScrollView.h"
-
 @class RakReaderBottomBar;
 
 @interface Reader : RakTabView
@@ -73,5 +72,6 @@
 
 #import "RakReaderControllerUIQuery.h"
 #import "RakPageCounter.h"
+#import "RakDeleteConfirm.h"
 #import "RakReaderBottomBar.h"
 #import "RakPage.h"

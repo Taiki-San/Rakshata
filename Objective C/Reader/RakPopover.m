@@ -21,7 +21,7 @@
 		self.anchor = nil;
 		self.anchorFrame = NSZeroRect;
 		self.direction = INPopoverArrowDirectionLeft;
-
+		
 		NSViewController * controller = [[[NSViewController alloc] init] autorelease];
 		controller.view = contentView;
 		_popover = [[INPopoverController alloc] initWithContentViewController:controller];
@@ -84,6 +84,116 @@
 {
 	[_popover release];
 	[super dealloc];
+}
+
+@end
+
+@implementation RakPopoverView
+
+- (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig
+{
+	[Prefs getCurrentTheme:self];
+	
+	[self setWantsLayer:YES];
+	[self.layer setCornerRadius:4];
+	[self.layer setBorderWidth:1];
+	
+	NSColor * color;
+	if((color = [self backgroundColor]) != nil)
+		[self.layer setBackgroundColor : color.CGColor];
+	
+	if((color = [self borderColor]) != nil)
+		[self.layer setBorderColor : color.CGColor];
+	
+	[self setupView];
+	
+	popover = [[RakPopoverWrapper alloc] init:self];
+	popover.anchor = anchor;
+	popover.direction = [self arrowDirection];
+	
+	if(wantAdditionalConfig)
+	{
+		additionalConfigRequired = true;
+		[popover additionalConfiguration : self : @selector(configurePopover:)];
+	}
+	
+	[popover togglePopover : baseFrame];
+	[popover setDelegate : self];
+}
+
+#pragma mark - Drawing
+
+- (INPopoverArrowDirection) arrowDirection
+{
+	return INPopoverArrowDirectionDown;
+}
+
+- (void) setupView
+{
+	
+}
+
+- (void) configurePopover : (INPopoverController*) internalPopover
+{
+	internalPopover.borderColor = [[self popoverBorderColor] colorWithAlphaComponent:0.8];
+	internalPopover.color = [self popoverArrowColor];
+	internalPopover.borderWidth = 4;
+}
+
+#pragma mark - Colors
+
+- (NSColor *) popoverBorderColor
+{
+	return [NSColor clearColor];
+}
+
+- (NSColor *) popoverArrowColor
+{
+	return [NSColor clearColor];
+}
+
+- (NSColor *) borderColor
+{
+	return nil;
+}
+
+- (NSColor *) backgroundColor
+{
+	return nil;
+}
+
+#pragma mark - Toolbox
+
+- (void) updateOrigin : (NSPoint) origin : (BOOL) animated
+{
+	[popover updatePosition:origin :animated];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[self.layer setBorderColor:[self popoverBorderColor].CGColor];
+	[self.layer setBackgroundColor:[self popoverArrowColor].CGColor];
+	
+	[self additionalUpdateOnThemeChange];
+	
+	[self setNeedsDisplay:YES];
+	
+	if(additionalConfigRequired)
+		[popover additionalConfiguration:self :@selector(configurePopover:)];
+}
+
+- (void) additionalUpdateOnThemeChange
+{
+	
+}
+
+- (void)popoverDidClose:(INPopoverController *)discarded;
+{
+	[popover clearMemory];
+	[popover release];
 }
 
 @end

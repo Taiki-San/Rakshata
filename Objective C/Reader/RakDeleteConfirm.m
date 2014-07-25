@@ -10,25 +10,20 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakReaderControllerUIQuery : RakPopoverView
-{
-	PROJECT_DATA _project;
-	BOOL _isTome;
-	int* _arraySelection;
-	uint _sizeArray;
-	
-	Reader* _tabReader;
-	MDL* _tabMDL;
-	
-	bool _remind;
+@implementation RakDeleteConfirm
+
+- (instancetype)initWithFrame:(NSRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code here.
+    }
+    return self;
 }
 
-- (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
-
-- (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated;
-
-@end
-
-@interface RakQuerySegmentedControl : NSSegmentedControl
+- (void)drawRect:(NSRect)dirtyRect {
+    [super drawRect:dirtyRect];
+    
+    // Drawing code here.
+}
 
 @end

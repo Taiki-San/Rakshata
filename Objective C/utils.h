@@ -27,5 +27,5 @@
 #import "RakDragItem.h"
 #import "RakDragResponder.h"
 #import "RakList.h"
-#import "RakPopoverWrapper.h"
+#import "RakPopover.h"
 #import "RakForegroundView.h"

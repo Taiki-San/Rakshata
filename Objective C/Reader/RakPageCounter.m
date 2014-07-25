@@ -39,6 +39,17 @@
 	[self setNeedsDisplay:YES];
 }
 
+- (void) updatePopoverFrame : (NSRect) newFrame : (BOOL) animated
+{
+	if(popover != nil)
+		[popover locationUpdated: newFrame : animated];
+}
+
+- (void) removePopover
+{
+	popover = nil;
+}
+
 #pragma mark - Size related
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX
@@ -133,7 +144,7 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	[[NSBundle mainBundle] loadNibNamed:@"jumpPage" owner:self topLevelObjects:nil];
-	[controller launchPopover : self : currentPage : pageMax];
+	[popover launchPopover : self : currentPage : pageMax];
 }
 
 - (void) transmitPageJump : (uint) newPage
@@ -175,7 +186,7 @@
 
 @end
 
-@implementation RakPageCounterPopoverController
+@implementation RakPageCounterPopover
 
 - (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage
 {
@@ -183,6 +194,11 @@
 	_maxPage = maxPage;
 	[Prefs getCurrentTheme:self];
 	
+	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+}
+
+- (void) setupView
+{
 	if(mainLabel != nil)
 	{
 		[mainLabel setStringValue:@"Aller à:"];
@@ -205,32 +221,67 @@
 		[textField setBackgroundColor:[NSColor blackColor]];
 		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
-
+		
 		RakFormatterNumbersOnly * formater = [[[RakFormatterNumbersOnly alloc] init] autorelease];
 		[formater setMinimum:@(1)];
-		[formater setMaximum:@(maxPage)];
+		[formater setMaximum:@(_maxPage)];
 		
 		[textField setFormatter:formater];
 		
 		//Enter key is pressed
 		[textField setTarget:self];
 		[textField setAction:@selector(jumpTrigered)];
-
-	}
-	
-	if(popover != nil)
-	{
-		[popover setAppearance:NSPopoverAppearanceHUD];
-		[popover setBehavior:NSPopoverBehaviorTransient];
-		[popover showRelativeToRect:[_anchor bounds] ofView:_anchor preferredEdge:NSMinYEdge];
+		
 	}
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void) configurePopover:(INPopoverController *)internalPopover
 {
-	if([object class] != [Prefs class])
-		return;
+	[super configurePopover:internalPopover];
+	
+	internalPopover.closesWhenApplicationBecomesInactive = YES;
+	internalPopover.closesWhenPopoverResignsKey = YES;
+}
 
+//Colors
+
+- (NSColor *) popoverBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
+}
+
+- (NSColor *) popoverArrowColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+}
+
+- (NSColor *) borderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil];
+}
+
+- (NSColor *) backgroundColor
+{
+	return 	[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+}
+
+//Toolbox
+
+- (void) locationUpdated : (NSRect) frame : (BOOL) animated
+{
+	[self updateOrigin : frame.origin : animated];
+}
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	//TODO: investigate this bug...
+	
+	if (newSize.width < self.frame.size.height)
+		[super setFrameSize:newSize];
+}
+
+- (void) additionalUpdateOnThemeChange
+{
 	if(mainLabel != nil)
 	{
 		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
@@ -243,6 +294,8 @@
 		[textField setNeedsDisplay:YES];
 	}
 }
+
+#pragma mark - Payload
 
 - (void) jumpTrigered
 {
@@ -259,9 +312,15 @@
 			if([_anchor class] == [RakPageCounter class])
 				[(RakPageCounter*) _anchor transmitPageJump : value - 1];
 			
-			[popover close];
+			[popover closePopover];
 		}
 	}
+}
+
+- (void) popoverWillClose:(INPopoverController *)popover
+{
+	if([_anchor respondsToSelector:@selector(removePopover)])
+		[_anchor performSelector:@selector(removePopover) withObject:nil];
 }
 
 @end

@@ -14,20 +14,20 @@
 
 @end
 
-@interface RakPageCounterPopoverController : NSViewController
+@interface RakPageCounterPopover : RakPopoverView
 {
 	IBOutlet NSTextField *mainLabel;
 	IBOutlet NSTextField *textField;
 	IBOutlet NSView * gotoButtonContainer;
-	
-	IBOutlet NSPopover * popover;
-	
+
 	NSView * _anchor;
 	
 	uint _maxPage;
 }
 
 - (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage;
+
+- (void) locationUpdated : (NSRect) frame : (BOOL) animated;
 
 @end
 
@@ -38,11 +38,13 @@
 	uint currentPage;
 	uint pageMax;
 	
-	IBOutlet RakPageCounterPopoverController * controller;
+	IBOutlet RakPageCounterPopover * popover;
 }
 
-- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
+- (id) init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
 - (void) updateContext;
+- (void) updatePopoverFrame : (NSRect) newFrame : (BOOL) animated;
+- (void) removePopover;
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;
 

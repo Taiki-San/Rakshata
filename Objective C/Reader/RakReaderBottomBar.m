@@ -294,6 +294,12 @@
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
+	NSRect popoverFrame = NSZeroRect;
+	popoverFrame.origin = [pageCount.window convertBaseToScreen : [pageCount convertPoint:NSMakePoint(pageCount.frame.size.width / 2, 0) toView:nil]];
+
+	if(isAnimated)
+		popoverFrame.origin.x += frameRect.origin.x - self.superview.frame.origin.x;
+	
 	if(!readerMode)
 	{
 		frameRect.size.height = [self getRequestedViewHeight:frameRect.size.height];
@@ -309,12 +315,25 @@
 		frameRect = [self createFrameWithSuperView:frameRect];
 	
 	if(isAnimated)
+	{
+		popoverFrame.origin.x += frameRect.origin.x - self.frame.origin.x;
 		[self.animator setFrame:frameRect];
+	}
 	else
 		[super setFrame:frameRect];
 	
 	if(readerMode)
+	{
+		if(isAnimated)
+			popoverFrame.origin.x -= pageCount.frame.origin.x;
+		
 		[self recalculateElementsPosition : isAnimated : frameRect.size.width];
+
+		if(isAnimated)
+			popoverFrame.origin.x += pageCount.frame.origin.x;
+	}
+	
+	[pageCount updatePopoverFrame : popoverFrame : isAnimated];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
