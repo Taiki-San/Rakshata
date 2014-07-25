@@ -34,6 +34,8 @@
 {
 	bool additionalConfigRequired;
 	
+	NSView * _anchor;
+
 	RakPopoverWrapper * popover;
 }
 

@@ -45,9 +45,15 @@
 		[popover locationUpdated: newFrame : animated];
 }
 
-- (void) removePopover
+- (void) stopUsePopover
 {
 	popover = nil;
+	popoverStillAround = YES;
+}
+
+- (void) removePopover
+{
+	popoverStillAround = NO;
 }
 
 #pragma mark - Size related
@@ -143,13 +149,13 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	if(popover == nil)
+	if(popover == nil && !popoverStillAround)
 	{
 		[[NSBundle mainBundle] loadNibNamed:@"jumpPage" owner:self topLevelObjects:nil];
 		[popover launchPopover : self : currentPage : pageMax];
 	}
 	else
-		[popover closePopover];
+		[super mouseDown:theEvent];
 }
 
 - (void) transmitPageJump : (uint) newPage
@@ -320,12 +326,6 @@
 			[popover closePopover];
 		}
 	}
-}
-
-- (void) popoverWillClose:(INPopoverController *)popover
-{
-	if([_anchor respondsToSelector:@selector(removePopover)])
-		[_anchor performSelector:@selector(removePopover) withObject:nil];
 }
 
 @end

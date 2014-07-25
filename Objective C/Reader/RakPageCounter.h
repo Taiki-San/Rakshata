@@ -20,8 +20,6 @@
 	IBOutlet NSTextField *textField;
 	IBOutlet NSView * gotoButtonContainer;
 
-	NSView * _anchor;
-	
 	uint _maxPage;
 }
 
@@ -38,12 +36,15 @@
 	uint currentPage;
 	uint pageMax;
 	
+	BOOL popoverStillAround;
+	
 	IBOutlet RakPageCounterPopover * popover;
 }
 
 - (id) init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
 - (void) updateContext;
 - (void) updatePopoverFrame : (NSRect) newFrame : (BOOL) animated;
+- (void) stopUsePopover;
 - (void) removePopover;
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;

@@ -22,11 +22,11 @@
 	if(self != nil)
 	{
 		NSRect frame = NSZeroRect;
-		_tabMDL = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
+		_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
 		_remind = false;	_tabReader = nil;
 		
 		NSArray *subviews;
-		if(_tabMDL.superview != nil && (subviews = _tabMDL.superview.subviews) != nil)
+		if(_anchor.superview != nil && (subviews = _anchor.superview.subviews) != nil)
 		{
 			for(NSView * view in subviews)
 			{
@@ -39,8 +39,8 @@
 			}
 		}
 	
-		[self internalInit : _tabMDL : frame : YES];
-		[_tabMDL registerPopoverExistance:self];
+		[self internalInit : _anchor : frame : YES];
+		[(MDL*) _anchor registerPopoverExistance:self];
 	}
 	
 	return self;
@@ -99,7 +99,7 @@
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
 {
 	NSPoint origin = NSMakePoint(0, MDLFrame.origin.y + MDLFrame.size.height);
-	origin = [_tabMDL.window convertBaseToScreen:[_tabMDL convertPoint:origin toView:nil]];
+	origin = [_anchor.window convertBaseToScreen:[_anchor convertPoint:origin toView:nil]];
 	
 	if(_tabReader != nil)
 		origin.x += [_tabReader createFrame].origin.x / 2;
@@ -123,7 +123,7 @@
 
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
-	[_tabMDL registerPopoverExistance:nil];
+	[(MDL*) _anchor registerPopoverExistance:nil];
 	[super popoverDidClose:discarded];
 }
 
@@ -148,10 +148,10 @@
 {
 	for (uint pos = 0, handledArray = _sizeArray - 1; pos < handledArray; pos++)
 	{
-		[_tabMDL proxyAddElement: _project: _isTome : _arraySelection[pos] : YES];
+		[(MDL*) _anchor proxyAddElement: _project: _isTome : _arraySelection[pos] : YES];
 	}
 
-	[_tabMDL proxyAddElement: _project: _isTome: _arraySelection[_sizeArray - 1] : NO];
+	[(MDL*) _anchor proxyAddElement: _project: _isTome: _arraySelection[_sizeArray - 1] : NO];
 }
 
 @end

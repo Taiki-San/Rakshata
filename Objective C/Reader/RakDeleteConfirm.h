@@ -16,8 +16,6 @@
 	BOOL _remind;
 	
 	Reader* _receiver;
-
-	NSView * _anchor;
 }
 
 - (instancetype) autoInit;

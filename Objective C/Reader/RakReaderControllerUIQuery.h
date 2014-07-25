@@ -18,7 +18,6 @@
 	uint _sizeArray;
 	
 	Reader* _tabReader;
-	MDL* _tabMDL;
 	
 	bool _remind;
 }

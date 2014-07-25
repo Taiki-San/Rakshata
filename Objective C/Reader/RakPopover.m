@@ -195,6 +195,15 @@
 	[popover closePopover];
 }
 
+- (void) popoverWillClose:(INPopoverController *)popover
+{
+	if([_anchor respondsToSelector : @selector(stopUsePopover)])
+		[_anchor performSelector : @selector(stopUsePopover) withObject : nil];
+	
+	if([_anchor respondsToSelector : @selector(removePopover)])
+		[_anchor performSelectorOnMainThread : @selector(removePopover) withObject : nil waitUntilDone : NO];		//Let the event chain end before signaling a new popover can appear
+}
+
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
 	[popover clearMemory];
