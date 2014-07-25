@@ -120,30 +120,36 @@ void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t
 	while (jobIsDone);
 }
 
+static bool craftedOnce = false;
+static byte _fingerprint[WP_DIGEST_SIZE];
+
 void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 {
-	uint length = 0;
+	if(!craftedOnce)	//We cache the fingerprint to prevent a whirlpool + 4 PID increase (excessively noisy, my laptop reached 60k in less than two days) per page load
+	{
+		uint length = 0;
+
 #ifdef _WIN32
-    unsigned char buffer_fingerprint[5000], buf_name[1024];
-    SYSTEM_INFO infos_system;
-    DWORD dwCompNameLen = 1024;
-
-    GetComputerName((char *)buf_name, &dwCompNameLen);
-    GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
-    length = snprintf((char *)buffer_fingerprint, 5000, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
-            (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
-	
-	length = MIN(length, 5000);
+		unsigned char buffer_fingerprint[5000], buf_name[1024];
+		SYSTEM_INFO infos_system;
+		DWORD dwCompNameLen = 1024;
+		
+		GetComputerName((char *)buf_name, &dwCompNameLen);
+		GetSystemInfo(&infos_system); // Copy the hardware information to the SYSTEM_INFO structure.
+		length = snprintf((char *)buffer_fingerprint, 5000, "%u-%u-%u-0x%x-0x%x-%u-%s", (unsigned int) infos_system.dwNumberOfProcessors, (unsigned int) infos_system.dwPageSize, (unsigned int) infos_system.dwProcessorType,
+						  (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
+		
+		length = MIN(length, 5000);
 #else
-	#ifdef __APPLE__
-        int c = 0;
-        unsigned char buffer_fingerprint[5000];
+#ifdef __APPLE__
+		int c = 0;
+		unsigned char buffer_fingerprint[5000];
 		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
-
-        FILE *system_output;
-        for(int j = 0; j < 4; j++)
-        {
-            system_output = popen(command_line[j], "r");
+		
+		FILE *system_output;
+		for(int j = 0; j < 4; j++)
+		{
+			system_output = popen(command_line[j], "r");
 			
 			while(fgetc(system_output) == EOF); //On attend la fin de l'execution de la commande
 			while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
@@ -151,26 +157,23 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 			fgetc(system_output);
 			
 			for(; (c = fgetc(system_output)) != EOF && c != '\n' && length < 4998; buffer_fingerprint[length++] = c);
-            buffer_fingerprint[length++] = ' ';
-            buffer_fingerprint[length] = 0;
-            pclose(system_output);
-        }
-	#else
-
-    /**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
-    En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
-
-	#endif
+			buffer_fingerprint[length++] = ' ';
+			buffer_fingerprint[length] = 0;
+			pclose(system_output);
+		}
+#else
+		
+		/**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
+		 En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
+		
 #endif
-	
-#ifdef DEV_VERSION
-	FILE * file = fopen("fingerprint.txt", "w+");
-	fputs((char*)buffer_fingerprint, file);
-	fclose(file);
 #endif
+		whirlpool(buffer_fingerprint, length, (char*) _fingerprint, false);
+		craftedOnce = true;
+	}
 	
-    whirlpool(buffer_fingerprint, length, (char*) output, false);
-    output[WP_DIGEST_SIZE] = 0;
+	memcpy(output, _fingerprint, sizeof(_fingerprint));
+	output[WP_DIGEST_SIZE] = 0;
 }
 
 void get_file_date(const char *filename, char *date)
