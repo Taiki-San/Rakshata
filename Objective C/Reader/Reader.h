@@ -49,8 +49,9 @@
 	
 	int _currentElem;
 	int _posElemInStructure;
-	bool _isTome;
 }
+
+@property BOOL isTome;
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;

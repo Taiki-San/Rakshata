@@ -12,9 +12,9 @@
 
 @implementation RakButton
 
-+ (id) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
++ (instancetype) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [RakButton new];
+	RakButton *output = [self new];
 	
 	if(output != nil)
 	{
@@ -48,9 +48,9 @@
 	return output;
 }
 
-+ (id) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (instancetype) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [RakButton new];
+	RakButton* output = [self new];
 	
 	if(output != nil)
 	{
@@ -89,9 +89,9 @@
 	return output;
 }
 
-+ (id) allocWithText : (NSString*) string : (NSRect) frame
++ (instancetype) allocWithText : (NSString*) string : (NSRect) frame
 {
-	RakButton * output = [RakButton new];
+	RakButton* output = [self new];
 	
 	if(output != nil)
 	{
@@ -173,11 +173,6 @@
 {
 	if([object class] != [Prefs class])
 		return;
-	
-	if(self.controlView == nil)
-	{
-		
-	}
 	
 	if(_imageName == nil)	//text cell
 	{

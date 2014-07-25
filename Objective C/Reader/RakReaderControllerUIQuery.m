@@ -61,7 +61,7 @@
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15)] autorelease];
+	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"Oui" : @"Non"] autorelease];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
@@ -158,7 +158,7 @@
 
 @implementation RakQuerySegmentedControl
 
-- (id)initWithFrame:(NSRect)frame
+- (id) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	
@@ -168,10 +168,10 @@
 		
 		[self setSegmentCount:2];
 		
-		[self setLabel:@"Oui" forSegment:0];
+		[self setLabel:agree forSegment:0];
 		[self setWidth:widthButton1 forSegment:0];
 		
-		[self setLabel:@"Non" forSegment:1];
+		[self setLabel:disagree forSegment:1];
 		[self setWidth:widthButton2 forSegment:1];
 		
 		[self setFrameOrigin:[self getButtonFrame:frame].origin];

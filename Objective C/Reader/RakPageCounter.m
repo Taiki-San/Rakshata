@@ -143,8 +143,13 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	[[NSBundle mainBundle] loadNibNamed:@"jumpPage" owner:self topLevelObjects:nil];
-	[popover launchPopover : self : currentPage : pageMax];
+	if(popover == nil)
+	{
+		[[NSBundle mainBundle] loadNibNamed:@"jumpPage" owner:self topLevelObjects:nil];
+		[popover launchPopover : self : currentPage : pageMax];
+	}
+	else
+		[popover closePopover];
 }
 
 - (void) transmitPageJump : (uint) newPage

@@ -229,6 +229,24 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			output = [NSColor colorWithDeviceWhite:15/255.0f alpha:0.7f];
 			break;
 		}
+			
+		case GET_COLOR_DANGER_POPOVER_BORDER:
+		{
+			output = [NSColor colorWithSRGBRed:255/255.0f green:38/255.0f  blue:0 alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_DANGER_POPOVER_TEXT_COLOR:
+		{
+			output = [NSColor colorWithSRGBRed:224/255.0f green:83/255.0f blue:83/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:
+		{
+			output = [NSColor colorWithSRGBRed:255/255.0f green:148/255.0f blue:148/255.0f alpha:1.0];
+			break;
+		}
 	}
 	
 	return output;

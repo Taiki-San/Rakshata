@@ -13,6 +13,7 @@
 @interface RakDeleteConfirm : RakPopoverView
 {
 	BOOL _isTome;
+	BOOL _remind;
 	
 	Reader* _receiver;
 
@@ -20,6 +21,14 @@
 }
 
 - (instancetype) autoInit;
-- (void) launchPopover : (NSView *) anchor : (Reader*) receiver : (BOOL) isTome;
+- (void) launchPopover : (NSView *) anchor : (Reader*) receiver;
+
+@end
+
+@interface RakDeleteSegmentedControl : RakQuerySegmentedControl
+
+@end
+
+@interface RakDeleteButton : RakButton
 
 @end

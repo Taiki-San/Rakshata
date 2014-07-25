@@ -49,6 +49,6 @@
 
 - (void) updateOrigin : (NSPoint) origin : (BOOL) animated;
 - (void) additionalUpdateOnThemeChange;
-- (void) popoverDidClose:(INPopoverController *)discarded;
+- (void) closePopover;
 
 @end

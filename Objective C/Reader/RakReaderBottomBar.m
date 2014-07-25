@@ -144,7 +144,7 @@
 
 - (void) reactToDelete
 {
-	[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview : NO];
+	[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

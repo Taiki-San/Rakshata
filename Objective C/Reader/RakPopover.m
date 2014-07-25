@@ -190,6 +190,11 @@
 	
 }
 
+- (void) closePopover
+{
+	[popover closePopover];
+}
+
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
 	[popover clearMemory];

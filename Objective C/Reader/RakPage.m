@@ -63,7 +63,7 @@ enum
 	if(_scrollView != nil)
 		sliders = [[_scrollView contentView] bounds].origin;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.team->URLRepo, _project.projectID, _currentElem, _isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.team->URLRepo, _project.projectID, _currentElem, self.isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -398,7 +398,7 @@ enum
 {
 	_project = getCopyOfProjectData(dataRequest);
 	_currentElem = elemRequest;
-	_isTome = isTomeRequest;
+	self.isTome = isTomeRequest;
 	
 	_cacheBeingBuilt = false;
 	
@@ -407,20 +407,20 @@ enum
 	getUpdatedCTList(&_project, true);
 	getUpdatedCTList(&_project, false);
 	
-	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, _isTome);
+	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 	if(_posElemInStructure == -1)
 	{
 		[self failure];
 		return NO;
 	}
 	
-	setLastChapitreLu(_project, _isTome, _currentElem);
-	if(reader_isLastElem(_project, _isTome, _currentElem))
+	setLastChapitreLu(_project, self.isTome, _currentElem);
+	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
 		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	}
 	
-	if(configFileLoader(_project, _isTome, _currentElem, &_data))
+	if(configFileLoader(_project, self.isTome, _currentElem, &_data))
 	{
 		[self failure];
 		return NO;
@@ -554,7 +554,7 @@ enum
 {
 	uint newPosIntoStruct = _posElemInStructure;
 	
-	if(changeChapter(&_project, _isTome, &_currentElem, &newPosIntoStruct, goToNext))
+	if(changeChapter(&_project, self.isTome, &_currentElem, &newPosIntoStruct, goToNext))
 	{
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
@@ -570,7 +570,7 @@ enum
 	
 	if(projectRequest.cacheDBID != _project.cacheDBID)
 		_alreadyRefreshed = false;
-	else if(elemRequest == _currentElem && isTomeRequest == _isTome)
+	else if(elemRequest == _currentElem && isTomeRequest == self.isTome)
 	{
 		[self jumpToPage:startPage];
 		return;
@@ -599,7 +599,7 @@ enum
 			if(request == COM_CT_SELEC)
 			{
 				_dontGiveACrapAboutCTPosUpdate = true;
-				[(CTSelec*) [array objectAtIndex:i] selectElem: _project.cacheDBID :_isTome :_currentElem];
+				[(CTSelec*) [array objectAtIndex:i] selectElem: _project.cacheDBID :self.isTome :_currentElem];
 				_dontGiveACrapAboutCTPosUpdate = false;
 			}
 			else if(request == COM_CT_REFRESH)
@@ -622,13 +622,13 @@ enum
 		checkTomeValable(&_project, NULL);
 	}
 	
-	setLastChapitreLu(_project, _isTome, _currentElem);
-	if(reader_isLastElem(_project, _isTome, _currentElem))
+	setLastChapitreLu(_project, self.isTome, _currentElem);
+	if(reader_isLastElem(_project, self.isTome, _currentElem))
         [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
 	_data.pageCourante = 0;
 	
-	if(configFileLoader(_project, _isTome, _currentElem, &_data))
+	if(configFileLoader(_project, self.isTome, _currentElem, &_data))
 		[self failure];
 	
 	[self changePage:READER_ETAT_DEFAULT];
@@ -691,13 +691,13 @@ enum
 	cacheSession++;	//Tell the cache system to stop
 	while (_cacheBeingBuilt);
 	
-	internalDeleteCT(_project, _isTome, _currentElem);
+	internalDeleteCT(_project, self.isTome, _currentElem);
 	
 	[self updateCT:COM_CT_REFRESH];
 	
-	getUpdatedCTList(&_project, _isTome);
+	getUpdatedCTList(&_project, self.isTome);
 	
-	if(_posElemInStructure != (_isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
+	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 		[self nextChapter];
 	else if(_posElemInStructure > 0)
 		[self prevChapter];
@@ -1032,7 +1032,7 @@ enum
 	
 	PROJECT_DATA localProject = getCopyOfProjectData(_project);
 	
-	uint nbElemToGrab = checkNewElementInRepo(&localProject, _isTome, _currentElem);
+	uint nbElemToGrab = checkNewElementInRepo(&localProject, self.isTome, _currentElem);
 	
 	if(!nbElemToGrab)
 		return;
@@ -1064,11 +1064,11 @@ enum
 		return;
 	}
 	
-	if(!_isTome)
+	if(!self.isTome)
 	{
 		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; nbElemToGrab < localProject.nombreChapitre; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : _isTome :localProject.chapitresFull[nbElemToGrab]])
+			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.chapitresFull[nbElemToGrab]])
 				selection[nbElemValidated++] = localProject.chapitresFull[nbElemToGrab];
 		}
 	}
@@ -1076,14 +1076,14 @@ enum
 	{
 		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; nbElemToGrab < localProject.nombreTomes; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : _isTome :localProject.tomesFull[nbElemToGrab].ID])
+			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.tomesFull[nbElemToGrab].ID])
 				selection[nbElemValidated++] = localProject.tomesFull[nbElemToGrab].ID;
 		}
 	}
 	
 	//We got the data, now, craft the alert
 	RakReaderControllerUIQuery *test = [RakReaderControllerUIQuery alloc];
-	[test initWithData :sharedTabMDL : _project :_isTome :selection :nbElemValidated];
+	[test initWithData :sharedTabMDL : _project :self.isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit

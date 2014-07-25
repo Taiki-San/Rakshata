@@ -10,6 +10,10 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@interface RakDeleteButtonCell : RakButtonCell
+
+@end
+
 @implementation RakDeleteConfirm
 
 - (instancetype) autoInit
@@ -17,9 +21,10 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 170, 210)];
 }
 
-- (void) launchPopover : (NSView *) anchor : (Reader*) receiver : (BOOL) isTome
+- (void) launchPopover : (NSView *) anchor : (Reader*) receiver
 {
-	_isTome = isTome;
+	_remind = NO;
+	_isTome = receiver.isTome;
 	_receiver = receiver;
 	_anchor = anchor;
 
@@ -30,22 +35,26 @@
 
 - (void) setupView
 {
-	NSString * string = nil, *complement = _isTome ? @" tome,\n" : @"\nchapitre,";
+	NSString * string = nil;
 	
-	string = [NSString stringWithFormat:@"Attention: vous vous\napprêtez à supprimer\ndéfinitivement un%@pour le relire, vous\naurez à le télécharger\nde nouveau, en\nêtes vous sûr?", complement];
+	if(_isTome)
+		string = @"Attention: vous\nvous apprêtez à\nsupprimer un tome,\npour le relire,\nvous devrez le\nretélécharger.\nEn êtes vous sûr?";
+	else
+		string = @"Attention: vous\nvous apprêtez\nà supprimer un\nchapitre, pour le\nrelire, vous aurez\nà le retélécharger.\nEn êtes vous sûr?";
 	
-	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]] autorelease];
+	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]] autorelease];
+	[contentText setAlignment:NSCenterTextAlignment];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
-	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
+	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15)] autorelease];
+	RakDeleteSegmentedControl * button = [[[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"À MORT" : @"Non..."] autorelease];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakButton * buttonRemind = [[RakButton allocWithText:@"Se souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
+	RakDeleteButton * buttonRemind = [[RakDeleteButton allocWithText:@"Se souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	[self addSubview:buttonRemind];
@@ -59,11 +68,25 @@
 	internalPopover.closesWhenPopoverResignsKey = YES;
 }
 
+- (void) additionalUpdateOnThemeChange
+{
+	[super additionalUpdateOnThemeChange];
+	
+	for(RakText * view in self.subviews)
+	{
+		if([view class] == [RakText class])
+		{
+			[view setTextColor:[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
+			break;
+		}
+	}
+}
+
 //Colors
 
 - (NSColor *) popoverBorderColor
 {
-	return [NSColor colorWithSRGBRed:255/255.0f green:38/255.0f  blue:0 alpha:1];
+	return [Prefs getSystemColor: GET_COLOR_DANGER_POPOVER_BORDER :nil];
 }
 
 - (NSColor *) popoverArrowColor
@@ -100,7 +123,56 @@
 
 - (void) remindSwitched : (RakButton*) sender
 {
+	_remind = !_remind;
+	
+	if (sender != nil && [sender class] == [RakDeleteButton class] && sender.cell != nil && [sender.cell class] == [RakDeleteButtonCell class])
+		((RakButtonCell*)sender.cell).forceHighlight = _remind;
+}
 
+@end
+
+@interface RakDeleteSegmentedControlCell : RakSegmentedButtonCell
+
+@end
+
+@implementation RakDeleteSegmentedControlCell
+
+- (NSColor *) getFontColor : (uint) cellID
+{
+	if([self isSelectedForSegment:cellID])
+		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+	else
+		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+}
+
+@end
+
+@implementation RakDeleteSegmentedControl
+
++ (Class) cellClass
+{
+	return [RakDeleteSegmentedControlCell class];
+}
+
+@end
+
+@implementation RakDeleteButtonCell
+
+- (NSColor *) getFontColor
+{
+	if([self isHighlighted] || self.forceHighlight)
+		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+	else
+		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+}
+
+@end
+
+@implementation RakDeleteButton
+
++ (Class) cellClass
+{
+	return [RakDeleteButtonCell class];
 }
 
 @end

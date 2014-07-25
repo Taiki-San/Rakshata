@@ -31,4 +31,6 @@
 
 @interface RakQuerySegmentedControl : NSSegmentedControl
 
+- (id) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree;
+
 @end
