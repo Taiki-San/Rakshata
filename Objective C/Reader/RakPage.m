@@ -688,35 +688,21 @@ enum
 
 - (void) deleteElement
 {
-	NSAlert * alert = [[[NSAlert alloc] init] autorelease];
+	cacheSession++;	//Tell the cache system to stop
+	while (_cacheBeingBuilt);
 	
-	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert setMessageText:[NSString stringWithFormat:@"Suppression d'un %s", _isTome ? "tome" : "chapitre"]];
-	[alert setInformativeText :[NSString stringWithFormat:@"Attention: vous vous apprêtez à supprimer définitivement un %s, pour le relire, vous aurez à le télécharger de nouveau, en êtes vous sûr?", _isTome ? "tome" : "chapitre"]];
+	internalDeleteCT(_project, _isTome, _currentElem);
 	
-	[alert addButtonWithTitle:@"NON!"];
-	NSButton * firstButton = [[alert buttons] objectAtIndex:0];
-	[firstButton setTitle:@"I want it dead"];
-	[alert addButtonWithTitle:@"NON!"];
+	[self updateCT:COM_CT_REFRESH];
 	
-	if([alert runModal] == NSAlertFirstButtonReturn)
-	{
-		cacheSession++;	//Tell the cache system to stop
-		while (_cacheBeingBuilt);
-
-		internalDeleteCT(_project, _isTome, _currentElem);
-		
-		[self updateCT:COM_CT_REFRESH];
-		
-		getUpdatedCTList(&_project, _isTome);
-		
-		if(_posElemInStructure != (_isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
-			[self nextChapter];
-		else if(_posElemInStructure > 0)
-			[self prevChapter];
-		else
-			[self failure];
-	}
+	getUpdatedCTList(&_project, _isTome);
+	
+	if(_posElemInStructure != (_isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
+		[self nextChapter];
+	else if(_posElemInStructure > 0)
+		[self prevChapter];
+	else
+		[self failure];
 }
 
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView

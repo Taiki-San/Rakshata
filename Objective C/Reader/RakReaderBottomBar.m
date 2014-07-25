@@ -125,7 +125,7 @@
 	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
 	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO :superView :@selector(deleteElement)];
+	trash = [RakButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
 	
 	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
 	if(fullscreen != nil)		[fullscreen.cell setHighlightAllowed:NO];
@@ -140,6 +140,11 @@
 {
 	isFaved = isNewStatedFaved;
 	[favorite setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
+}
+
+- (void) reactToDelete
+{
+	[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview : NO];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

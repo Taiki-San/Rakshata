@@ -463,6 +463,19 @@
 			name = "Deep Prefs";
 			sourceTree = "<group>";
 		};
+		B6B870BC1981D672005D705E /* Popovers */ = {
+			isa = PBXGroup;
+			children = (
+				B6B870B91981D5E1005D705E /* RakDeleteConfirm.h */,
+				B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */,
+				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
+				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
+				B668D6AE1953A1B000E3127D /* RakReaderControllerUIQuery.h */,
+				B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */,
+			);
+			name = Popovers;
+			sourceTree = "<group>";
+		};
 		B6CC724318723044003A745B /* CT */ = {
 			isa = PBXGroup;
 			children = (
@@ -511,18 +524,13 @@
 		B6CC724718723077003A745B /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				B6B870B91981D5E1005D705E /* RakDeleteConfirm.h */,
-				B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */,
+				B6B870BC1981D672005D705E /* Popovers */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
-				B67F92B718F0C2B0002FC657 /* RakPageCounter.h */,
-				B67F92B818F0C2B0002FC657 /* RakPageCounter.m */,
 				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
 				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
 				B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */,
-				B668D6AE1953A1B000E3127D /* RakReaderControllerUIQuery.h */,
-				B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */,
 				B69D61D3186CA2F2003504F9 /* Reader.h */,
 				B69D61D4186CA2F2003504F9 /* Reader.m */,
 			);

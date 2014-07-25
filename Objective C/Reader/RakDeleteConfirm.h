@@ -11,5 +11,15 @@
  ********************************************************************************************/
 
 @interface RakDeleteConfirm : RakPopoverView
+{
+	BOOL _isTome;
+	
+	Reader* _receiver;
+
+	NSView * _anchor;
+}
+
+- (instancetype) autoInit;
+- (void) launchPopover : (NSView *) anchor : (Reader*) receiver : (BOOL) isTome;
 
 @end
