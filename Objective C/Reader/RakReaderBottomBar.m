@@ -125,7 +125,7 @@
 	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
 	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
 
-	trash = [RakButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
+	trash = [RakReaderBBButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
 	
 	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
 	if(fullscreen != nil)		[fullscreen.cell setHighlightAllowed:NO];
@@ -144,7 +144,11 @@
 
 - (void) reactToDelete
 {
-	[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
+	if(!trash.popoverOpened)
+	{
+		[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
+		trash.popoverOpened = YES;
+	}
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width
@@ -384,6 +388,33 @@
 - (CGFloat) getRequestedViewHeight:(CGFloat) heightWindow
 {
 	return RD_CONTROLBAR_HEIGHT;
+}
+
+@end
+
+@implementation RakReaderBBButton
+
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+		self.popoverOpened = NO;
+	
+	return self;
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(self.popoverOpened)
+		[self.nextResponder mouseDown:theEvent];
+	else
+		[super mouseDown:theEvent];
+}
+
+- (void) removePopover
+{
+	self.popoverOpened = NO;
 }
 
 @end

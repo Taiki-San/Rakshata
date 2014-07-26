@@ -66,7 +66,7 @@
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakButton * buttonRemind = [[RakButton allocWithText:@"Se souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
+	RakButton * buttonRemind = [[RakButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	[self addSubview:buttonRemind];
@@ -167,6 +167,19 @@
 		uint widthButton1 = self.frame.size.width / 2, widthButton2 = self.frame.size.width - widthButton1 - 1;
 		
 		[self setSegmentCount:2];
+		
+		NSDictionary * attribute = @{NSFontAttributeName:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]};
+		NSSize sizeFirst = [agree sizeWithAttributes:attribute], sizeSecond = [disagree sizeWithAttributes:attribute];
+		
+		if(sizeFirst.width + 1 > widthButton1 || sizeSecond.width + 1 > widthButton2)	//Fuck, not enough space
+		{
+			if(sizeFirst.width + sizeSecond.width + 2 < self.frame.size.width)	//We can recover
+			{
+				CGFloat delta = self.frame.size.width - (sizeFirst.width + sizeSecond.width);
+				widthButton1 = sizeFirst.width + delta / 2;
+				widthButton2 = self.frame.size.width - widthButton1;
+			}
+		}
 		
 		[self setLabel:agree forSegment:0];
 		[self setWidth:widthButton1 forSegment:0];

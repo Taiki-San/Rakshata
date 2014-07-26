@@ -10,6 +10,14 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@interface RakReaderBBButton : RakButton
+
+@property BOOL popoverOpened;
+
+- (void) removePopover;
+
+@end
+
 @interface RakReaderBottomBar : NSView
 {
 	bool readerMode;
@@ -23,7 +31,7 @@
 	RakButton *nextPage;
 	RakButton *nextChapter;
 	
-	RakButton *trash;
+	RakReaderBBButton *trash;
 	
 	RakPageCounter * pageCount;
 	

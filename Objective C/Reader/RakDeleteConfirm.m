@@ -18,7 +18,7 @@
 
 - (instancetype) autoInit
 {
-	return [self initWithFrame: NSMakeRect(0, 0, 170, 210)];
+	return [self initWithFrame: NSMakeRect(0, 0, 170, 173)];
 }
 
 - (void) launchPopover : (NSView *) anchor : (Reader*) receiver
@@ -38,9 +38,9 @@
 	NSString * string = nil;
 	
 	if(_isTome)
-		string = @"Attention: vous\nvous apprêtez à\nsupprimer un tome,\npour le relire,\nvous devrez le\nretélécharger.\nEn êtes vous sûr?";
+		string = @"Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
 	else
-		string = @"Attention: vous\nvous apprêtez\nà supprimer un\nchapitre, pour le\nrelire, vous aurez\nà le retélécharger.\nEn êtes vous sûr?";
+		string = @"Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
 	
 	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]] autorelease];
 	[contentText setAlignment:NSCenterTextAlignment];
@@ -49,12 +49,12 @@
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakDeleteSegmentedControl * button = [[[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"À MORT" : @"Non..."] autorelease];
+	RakDeleteSegmentedControl * button = [[[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : @"Confirmer" : @"Non"] autorelease];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakDeleteButton * buttonRemind = [[RakDeleteButton allocWithText:@"Se souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
+	RakDeleteButton * buttonRemind = [[RakDeleteButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	[self addSubview:buttonRemind];
