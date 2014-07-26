@@ -279,15 +279,15 @@
 	{
 		NSView * superview = self.superview;
 		Reader *readerTab = nil;
-		MDL * MDLTab = nil;
-		id elem;
+		MDL * MDLTab = sharedTabMDL;
 		
-		for(NSInteger i = 0; i < [superview.subviews count]; i++)
+		for(Reader* view in superview.subviews)
 		{
-			if([(elem = [superview.subviews objectAtIndex:i]) class] == [Reader class])
-				readerTab = elem;
-			else if([elem class] == [MDL class])
-				MDLTab = elem;
+			if([view class] == [Reader class])
+			{
+				readerTab = view;
+				break;
+			}
 		}
 		
 		if(readerTab != nil)

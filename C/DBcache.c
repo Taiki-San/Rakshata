@@ -933,20 +933,33 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated)
 	uint nbElemOut = sqlite3_column_int(request, 0);
 	void * output = NULL;
 	
-	if(wantTome)
+	if(nbElemOut != 0)
 	{
-		output = malloc((nbElemOut + 1) * sizeof(META_TOME));
-		copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
+		if(wantTome)
+		{
+			output = calloc(nbElemOut + 1, sizeof(META_TOME));
+			
+			if(output != NULL)
+			{
+				((META_TOME*)output)[nbElemOut].ID = VALEUR_FIN_STRUCT;
+				copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
+			}
+		}
+		else
+		{
+			output = malloc((nbElemOut + 1) * sizeof(int));
+			if(output != NULL)
+			{
+				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
+				((int*) output)[nbElemOut] = VALEUR_FIN_STRUCT;
+			}
+		}
+		
+		if(output != NULL && nbElemUpdated != NULL)
+			*nbElemUpdated = nbElemOut;
 	}
-	else
-	{
-		output = malloc((nbElemOut + 1) * sizeof(int));
-		if(output != NULL)
-			memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
-	}
-	
-	if(output != NULL && nbElemUpdated != NULL)
-		*nbElemUpdated = nbElemOut;
+	else if(nbElemUpdated != NULL)
+		*nbElemUpdated = 0;
 	
 	return output;
 }
