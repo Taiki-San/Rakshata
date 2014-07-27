@@ -241,8 +241,7 @@ void networkAndVersionTest()
             FILE* test = NULL;
 
             mkdirR("data"); //Au cas où le dossier n'existe pas
-            snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update/%s/%d", BUILD, CURRENTVERSION);
-            download_disk(temp, NULL, "data/update", SSL_ON);
+            download_disk("https://"SERVEUR_URL"/update/"BUILD"/"CURRENTVERSIONSTRING, NULL, "data/update", SSL_ON);
 
 			test = fopen("data/update", "r");
 			if(test)
@@ -253,8 +252,6 @@ void networkAndVersionTest()
                     remove("data/update");
             }
         }
-
-        checkSectionMessageUpdate();
 
         //Nouveau killswitch
         if(loadEmailProfile())
@@ -270,7 +267,7 @@ void networkAndVersionTest()
 
             crashTemp(bufferDL, 5);
 			download_mem(temp, NULL, bufferDL, 5, SSL_ON);
-			if(bufferDL[0] == 0 || bufferDL[0] == '1') //Compte valide
+			if(bufferDL[0] != '0') //Compte valide
             {
                 updateFavorites();
                 quit_thread(0);
