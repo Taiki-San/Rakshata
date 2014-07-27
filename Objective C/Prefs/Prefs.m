@@ -61,8 +61,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		[self initCache];
 	
 	prefsCache.themeCode = newTheme;
-	if([mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView class] == [RakContentViewBack class])
-		[(RakContentViewBack*) mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView updateUI];
+	
+	RakAppDelegate * core = [NSApplication sharedApplication].delegate;
+	if([core class] == [RakAppDelegate class] && [core.window.contentView class] == [RakContentViewBack class])
+		[(RakContentViewBack*) core.window.contentView updateUI];
 }
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister
@@ -102,6 +104,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_INACTIVE:
 		case GET_COLOR_BORDERS_COREVIEWS:
 		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
+		case GET_COLOR_FONT_BUTTON_UNAVAILABLE:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];	//vert
@@ -673,7 +676,10 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		
 		[prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
 		
-		firstResponder = [(RakContentViewBack *) mainWindowShouldNotBeAccessedWithoutReallyGoodReason.contentView getFirstResponder];
+		RakAppDelegate * core = [NSApplication sharedApplication].delegate;
+		if([core class] == [RakAppDelegate class])
+			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
+
 		[self refreshFirstResponder];
 	
 		if(input != recoveryBuffer)

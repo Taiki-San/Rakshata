@@ -79,6 +79,8 @@
 		B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427C197F2D5B000F268E /* RakCTTools.m */; };
 		B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9D19D190EEF9B007F041C /* RakMDLList.m */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
+		B6EB260619841E2500D678B3 /* auth.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6EB260519841E2500D678B3 /* auth.xib */; };
+		B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB260819845E2100D678B3 /* RakAuthController.m */; };
 		B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBD80419538B6B00642EB8 /* RakPopover.m */; };
 		B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; };
 		B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -274,6 +276,9 @@
 		B6E9D19D190EEF9B007F041C /* RakMDLList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLList.m; path = MDL/RakMDLList.m; sourceTree = "<group>"; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
 		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
+		B6EB260519841E2500D678B3 /* auth.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = auth.xib; path = "Objective C/Prefs/auth.xib"; sourceTree = "<group>"; };
+		B6EB260719845E2100D678B3 /* RakAuthController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthController.h; path = Prefs/RakAuthController.h; sourceTree = "<group>"; };
+		B6EB260819845E2100D678B3 /* RakAuthController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAuthController.m; path = Prefs/RakAuthController.m; sourceTree = "<group>"; };
 		B6EBD80319538B6B00642EB8 /* RakPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPopover.h; path = Reader/RakPopover.h; sourceTree = "<group>"; };
 		B6EBD80419538B6B00642EB8 /* RakPopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPopover.m; path = Reader/RakPopover.m; sourceTree = "<group>"; };
 		B6EBD8091953934600642EB8 /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
@@ -369,6 +374,9 @@
 				B67449431876114E00F96DB4 /* Includes */,
 				B62182451873527A008AC5DD /* Prefs.h */,
 				B62182461873527A008AC5DD /* Prefs.m */,
+				B6CC724518723063003A745B /* PrefsUI */,
+				B6EB260719845E2100D678B3 /* RakAuthController.h */,
+				B6EB260819845E2100D678B3 /* RakAuthController.m */,
 				B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */,
 				B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */,
 				B62F1E6318DE4EB0005FF4A5 /* RakResPath.h */,
@@ -425,6 +433,7 @@
 		B66ED18F1949B6D2002A333F /* Interface Builder */ = {
 			isa = PBXGroup;
 			children = (
+				B6EB260519841E2500D678B3 /* auth.xib */,
 				B6BD7B5A194860A9000A0B73 /* jumpPage.xib */,
 				B6002C30189EF15E00466654 /* window.xib */,
 				B66ED1901949B704002A333F /* dragView.xib */,
@@ -540,7 +549,6 @@
 		B6CC72481872307D003A745B /* Series */ = {
 			isa = PBXGroup;
 			children = (
-				B6CC724518723063003A745B /* PrefsUI */,
 				B62E6E7F18F8834C006A0D5F /* RakSerieList.h */,
 				B62E6E8018F8834C006A0D5F /* RakSerieList.m */,
 				B65BC54319071BE4006DA59F /* RakSerieListItem.h */,
@@ -880,6 +888,7 @@
 				B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */,
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,
+				B6EB260619841E2500D678B3 /* auth.xib in Resources */,
 				B66ED1981949EC20002A333F /* theme 1 in Resources */,
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
 				B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */,
@@ -979,6 +988,7 @@
 				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */,
+				B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */,
 				B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
 				B6F6ED0F18A3001400E3B55B /* settings.c in Sources */,

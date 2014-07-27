@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class PrefsUI;
+
 #import "RakSRRessources.h"
 
 @interface Series : RakTabView

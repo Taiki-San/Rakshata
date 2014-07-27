@@ -10,45 +10,32 @@
  **                                                                                         **
  *********************************************************************************************/
 
-/*Included from every files so we better should prevent recursive includes*/
+@implementation RakAuthController
 
-#define FUCK_CONSTRAINT
+- (void) launch
+{
+	RakAppDelegate * core = [NSApp delegate];
+	
+	if([core class] != [RakAppDelegate class])
+	{
+		[self release];
+		return;
+	}
+	
+	self.view.wantsLayer = YES;
+	self.view.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :self].CGColor;
+	self.view.layer.cornerRadius = 4;
+	
+	foreground = [[RakForegroundView alloc] init : [core getContentView] : self.view];
+	
+	RakButton * inactiveConfirm = [RakButton allocWithText:@"Valider" :NSZeroRect];
+	[inactiveConfirm sizeToFit];
+	[inactiveConfirm setEnabled:NO];
+	
+	[inactiveConfirm setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - inactiveConfirm.frame.size.width / 2, 15)];
+	[container addSubview:inactiveConfirm];
+	
+	[foreground switchState];
+}
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include "encoding.h"
-
-#include "main.h"
-#include "moduleDL.h"
-#include "constants.h"
- 
-#ifdef __OBJC__
-	#import <Cocoa/Cocoa.h>
-	#import <QuartzCore/QuartzCore.h>
-	#import <Foundation/Foundation.h>
-	#import <INPopoverController/INPopoverController.h>
-
-	#import "utils.h"
-
-	/* Différentes super-classes de l'interface	*/
-
-	#import "MDL.h"
-
-	#import "Series.h"
-	#import "CTSelec.h"
-	#import "Reader.h"
-
-	#import "RakAuthController.h"
-
-	#import "RakContentView.h"
-	#import "RakAppDelegate.h"
-
-	#import "Prefs.h"
-	#import "RakResPath.h"
-
-#endif
-
-#include "interface.h"
+@end

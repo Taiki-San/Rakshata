@@ -20,10 +20,9 @@
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
-		RakButton * button = [[RakButton allocWithText:@"Change UI" :frame] retain];
-		[button sizeToFit];
+		RakButton * button = [[RakButton allocWithText:@"Change UI" :NSMakeRect(0, 0, 90, 20)] retain];
 		[button setTarget:self];
-		[button setAction:@selector(updateUITheme)];
+		[button setAction:@selector(login)];
 		[button setFrameOrigin:NSMakePoint(frame.size.width / 2 - button.frame.size.width / 2, frame.size.height / 2 - button.frame.size.height / 2)];
 		[mainView addSubview:button];
 	}
@@ -33,6 +32,22 @@
 - (void) updateUITheme
 {
 	[Prefs setCurrentTheme:[Prefs getCurrentTheme:nil] == THEME_CODE_DARK ? THEME_CODE_LIGHT : THEME_CODE_DARK];
+}
+
+- (void) login
+{
+	NSArray * array;
+	
+	[[NSBundle mainBundle] loadNibNamed:@"auth" owner:nil topLevelObjects:&array];
+	
+	for(id object in array)
+	{
+		if([object class] == [RakAuthController class])
+		{
+			[(RakAuthController *) object launch];
+			return;
+		}
+	}
 }
 
 @end

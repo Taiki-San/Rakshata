@@ -28,12 +28,12 @@
 @interface RakForegroundView : NSObject
 {
 	RakForegroundViewBackgroundView * background;
-	RakForegroundViewContentView * coreView;
+	NSView * _coreView;
 	
 	BOOL animationInProgress;
 }
 
-- (id) init : (NSView *) contentView;
+- (id) init : (NSView *) contentView : (NSView *) coreView;
 - (RakForegroundViewContentView *) initCoreView : (NSRect) contentViewFrame;
 
 - (void) switchState;

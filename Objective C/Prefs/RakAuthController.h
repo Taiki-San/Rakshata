@@ -10,45 +10,17 @@
  **                                                                                         **
  *********************************************************************************************/
 
-/*Included from every files so we better should prevent recursive includes*/
+@interface RakAuthController : NSViewController
+{
+	IBOutlet NSView * _placeHolder;
+	IBOutlet NSView * _newAccount;
+	IBOutlet NSView * _login;
+	
+	IBOutlet NSView * container;
+	
+	RakForegroundView * foreground;
+}
 
-#define FUCK_CONSTRAINT
+- (void) launch;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include "encoding.h"
-
-#include "main.h"
-#include "moduleDL.h"
-#include "constants.h"
- 
-#ifdef __OBJC__
-	#import <Cocoa/Cocoa.h>
-	#import <QuartzCore/QuartzCore.h>
-	#import <Foundation/Foundation.h>
-	#import <INPopoverController/INPopoverController.h>
-
-	#import "utils.h"
-
-	/* Différentes super-classes de l'interface	*/
-
-	#import "MDL.h"
-
-	#import "Series.h"
-	#import "CTSelec.h"
-	#import "Reader.h"
-
-	#import "RakAuthController.h"
-
-	#import "RakContentView.h"
-	#import "RakAppDelegate.h"
-
-	#import "Prefs.h"
-	#import "RakResPath.h"
-
-#endif
-
-#include "interface.h"
+@end
