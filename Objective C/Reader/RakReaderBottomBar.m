@@ -296,10 +296,14 @@
 	[self setFrameInternal:frameRect :NO];
 }
 
+#ifdef FUCK_CONSTRAINT
+
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
 {
 	NSLog(@"[%@] - Weird constraints detected!", self);
 }
+
+#endif
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
