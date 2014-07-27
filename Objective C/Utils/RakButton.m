@@ -96,7 +96,9 @@
 	if(output != nil)
 	{
 		[output.cell initWithText:string];
-		[output setFrame:frame];
+		
+		if(!NSEqualRects(frame, NSZeroRect))
+			[output setFrame:frame];
 	}
 	
 	return output;
@@ -326,15 +328,18 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
+	//	if([self isEnabled])
+		return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
 }
 
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED : nil];
-	else
+	else if([self isEnabled])
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED : nil];
+	else
+		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_UNAVAILABLE :nil];
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
