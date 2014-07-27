@@ -52,21 +52,6 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <secureTextField verticalHuggingPriority="750" id="1dR-X5-eco">
-                    <rect key="frame" x="157" y="47" width="247" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="border" drawsBackground="YES" usesSingleLineMode="YES" id="qae-Ji-ebh">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        <allowedInputSourceLocales>
-                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
-                        </allowedInputSourceLocales>
-                    </secureTextFieldCell>
-                    <connections>
-                        <outlet property="nextKeyView" destination="Map-cf-Tjk" id="R0k-RL-bJK"/>
-                    </connections>
-                </secureTextField>
                 <textField verticalHuggingPriority="750" id="Map-cf-Tjk" userLabel="Email input" customClass="RakEmailField">
                     <rect key="frame" x="157" y="85" width="247" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -75,9 +60,15 @@
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
-                    <connections>
-                        <outlet property="nextKeyView" destination="1dR-X5-eco" id="DEL-dH-XvX"/>
-                    </connections>
+                </textField>
+                <textField verticalHuggingPriority="750" id="a5V-Y0-Qb0" userLabel="Pass input" customClass="RakText">
+                    <rect key="frame" x="157" y="46" width="247" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="border" drawsBackground="YES" id="u6J-ej-LgV" customClass="RakPassFieldCell">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
                 </textField>
             </subviews>
             <point key="canvasLocation" x="633" y="342.5"/>
@@ -172,7 +163,7 @@
                 <outlet property="labelMail" destination="br5-86-Qjn" id="Xaj-kW-R0N"/>
                 <outlet property="labelPass" destination="zcQ-CP-SjS" id="c3d-eb-ZeP"/>
                 <outlet property="mailInput" destination="Map-cf-Tjk" id="RnY-bZ-7iG"/>
-                <outlet property="passInput" destination="1dR-X5-eco" id="RYE-w3-eiK"/>
+                <outlet property="passInput" destination="a5V-Y0-Qb0" id="tBe-1a-zrB"/>
                 <outlet property="view" destination="c22-O7-iKe" id="baA-Dz-QqZ"/>
             </connections>
         </viewController>

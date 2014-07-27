@@ -23,3 +23,7 @@
 - (id)initWithText : (NSString *) text : (NSColor *) color;
 
 @end
+
+@interface RakPassFieldCell : NSSecureTextFieldCell
+
+@end

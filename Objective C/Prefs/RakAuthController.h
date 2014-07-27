@@ -51,7 +51,7 @@ enum
 	IBOutlet RakText * labelPass;
 	
 	IBOutlet RakEmailField * mailInput;
-	IBOutlet NSSecureTextField * passInput;
+	IBOutlet RakText * passInput;
 }
 
 - (void) launch;
