@@ -73,7 +73,7 @@ void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 int earlyInit(int argc, char *argv[]);
 int get_compte_infos();
 int logon();
-int check_login(char adresseEmail[100]);
+int checkLogin(const char adresseEmail[100]);
 int getPassword(int curThread, char password[100]);
 void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1]);
 int checkPass(char adresseEmail[100], char password[100], int login);

@@ -238,7 +238,7 @@ int logon()
         {
             if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
                 break;
-            usleep(50);
+            usleep(5000);
         }
 
     }
@@ -260,7 +260,7 @@ int logon()
 		#warning "Get email address"
 #endif
 		
-        login = check_login(adresseEmail);
+        login = checkLogin(adresseEmail);
         while(!validPass)
         {
             switch(login)
@@ -392,10 +392,10 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
     MajToMin(passwordSalted);
 }
 
-int check_login(char adresseEmail[100])
+int checkLogin(const char adresseEmail[100])
 {
-    int i = 0;
-    char URL[300], buffer_output[500];
+    uint i = 0;
+    char URL[200], output[56];
 
     /*On vérifie la validité de la chaîne*/
     for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
@@ -410,28 +410,21 @@ int check_login(char adresseEmail[100])
     if(i != 100)
         return 2;
 
-    snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
+    snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
-    crashTemp(buffer_output, 500);
-    download_mem(URL, NULL, buffer_output, 500, SSL_ON);
+	output[0] = 0;
+	download_mem(URL, NULL, output, sizeof(output), SSL_ON);
 
-    for(i = strlen(buffer_output); i > 0; i--)
-    {
-        if(buffer_output[i] == '\r' || buffer_output[i] == '\n')
-            buffer_output[i] = 0;
-    }
-
-    if(!strcmp(buffer_output, "account_not_found") || !strcmp(buffer_output, "several_results"))
+    if(!strncmp(output, "account_not_found", strlen("account_not_found")))
         return 0;
 
-    else if(!strcmp(buffer_output, "account_exist"))
+    else if(!strncmp(output, "account_exist", strlen("account_exist")))
         return 1;
 
 #ifdef DEV_VERSION
-    snprintf(buffer_output, 500, "%s\n", buffer_output);
-    logR(buffer_output);
+    logR(output);
 #endif
-    return 3;
+    return 2;
 }
 
 int checkPass(char adresseEmail[100], char password[100], int login)
