@@ -941,7 +941,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated)
 			
 			if(output != NULL)
 			{
-				((META_TOME*)output)[nbElemOut].ID = VALEUR_FIN_STRUCT;
+				((META_TOME*)output)[nbElemOut].ID = VALEUR_FIN_STRUCT;		//Whatever copyTomeList may do, the array is valid by now
 				copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
 			}
 		}
@@ -951,7 +951,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated)
 			if(output != NULL)
 			{
 				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
-				((int*) output)[nbElemOut] = VALEUR_FIN_STRUCT;
+				((int*) output)[nbElemOut] = VALEUR_FIN_STRUCT;				//In the case it was missing (kinda like a canary)
 			}
 		}
 		
