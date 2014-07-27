@@ -157,7 +157,10 @@
 {
 	cursorOnMe = false;
 	[self.cell setAnimationInProgress:NO];
+	
 	[_animation stopAnimation];
+	_animation = nil;
+	
 	[self setNeedsDisplay:YES];
 }
 
