@@ -42,6 +42,7 @@
 {
 	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
 	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, RBB_TOP_BORDURE) : self : @selector(gogoWindow)];
+	[preferenceButton.cell setHighlightAllowed:NO];
 	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
