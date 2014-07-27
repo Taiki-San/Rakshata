@@ -31,11 +31,7 @@ void logR(char *error)
 
 void connexionNeededToAllowANewComputer()
 {
-    char trad[SIZE_TRAD_ID_27][TRAD_LENGTH], buffer[2*TRAD_LENGTH+2];
-    loadTrad(trad, 27);
-    snprintf(buffer, 2*TRAD_LENGTH+2, "%s\n%s", trad[1], trad[2]);
-    unescapeLineReturn(buffer);
-	UI_Alert(trad[0], buffer);
+#warning "Objective C error"
 }
 
 int libcurlErrorCode(CURLcode code)

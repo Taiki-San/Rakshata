@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-
 void checkUpdate()
 {
     FILE* test = NULL;
@@ -32,8 +31,7 @@ void checkUpdate()
         ***********************************************************************************/
 
 		int i, ligne = 0;
-        char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], trad[SIZE_TRAD_ID_12][TRAD_LENGTH], temp[TAILLE_BUFFER], URL[500];
-
+        char action[TAILLE_BUFFER][2], files[TAILLE_BUFFER][TAILLE_BUFFER], temp[TAILLE_BUFFER], URL[500];
 
 		remove("Rakshata.exe.old");
 
@@ -52,12 +50,10 @@ void checkUpdate()
         fclose(test);
         remove("data/update"); //Evite des téléchargements en parallèle de l'update
 
-        loadTrad(trad, 12); //Chargement du texte puis écriture
-
         for(i = 0; files[i][0] != 0 && i < ligne; i++)
         {
             /*Téléchargement et affichage des informations*/
-            snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
+			//snprintf(temp, TAILLE_BUFFER, "%s %d %s %d", trad[2], i + 1, trad[3], ligne);
         
 			/*Application du playload*/
             if(action[i][0] == 'D') //Depreciate

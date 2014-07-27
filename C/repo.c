@@ -195,9 +195,7 @@ int defineTypeRepo(char *URL)
 int confirmationRepo(char team[LENGTH_PROJECT_NAME])
 {
     int confirme = 0;
-	char trad[SIZE_TRAD_ID_4][TRAD_LENGTH];
-	loadTrad(trad, 4);
-    
+	
 	//On demande ~
 
     if(confirme == 1 || confirme == PALIER_QUIT) //Confirmé

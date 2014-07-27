@@ -19,10 +19,6 @@ void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careA
 bool isChapterShared(char *path, PROJECT_DATA data, int ID);
 
 /**check.c**/
-int checkEvnt();
-void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA]);
-int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite);
-
 void networkAndVersionTest();
 int checkNetworkState(int state);
 void checkHostNonModifie();
@@ -72,13 +68,12 @@ int getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 int earlyInit(int argc, char *argv[]);
 int get_compte_infos();
-int logon();
-int checkLogin(const char adresseEmail[100]);
+byte checkLogin(const char adresseEmail[100]);
 int getPassword(int curThread, char password[100]);
 void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1]);
-int checkPass(char adresseEmail[100], char password[100], int login);
+int checkPass(char adresseEmail[100], char password[100], bool login);
 int createSecurePasswordDB(unsigned char *key_sent);
-int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
+bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
@@ -157,9 +152,7 @@ int extractNumFromConfigTome(char *input, int ID);
 void internalDeleteTome(PROJECT_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Translation.c**/
-void loadTrad(char trad[][TRAD_LENGTH], int IDTrad);
 void setNewLangue(int newLangue);
-int tradAvailable();
 
 /**Unzip.c**/
 bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);

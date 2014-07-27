@@ -32,6 +32,7 @@ int getMasterKey(unsigned char *input)
 
     if(COMPTE_PRINCIPAL_MAIL[0] == 0)
     {
+#warning "Notify Objective-C interface we need it"
         if(get_compte_infos() == PALIER_QUIT)
             return PALIER_QUIT;
     }
@@ -185,16 +186,7 @@ int get_compte_infos()
     uint i;
 	if(!loadEmailProfile())
     {
-        if(!checkFileExist(SECURE_DATABASE))
-            firstLaunch();
-        if(logon() == PALIER_QUIT)
-            return PALIER_QUIT;
-        if(!loadEmailProfile())
-        {
-            logR("Failed at get email after re-enter it\n");
-            remove(SETTINGS_FILE);
-            return PALIER_QUIT;
-        }
+		return PALIER_QUIT;
     }
 
     /*On vérifie la validité de la chaine*/
@@ -227,119 +219,48 @@ int get_compte_infos()
     return 0;
 }
 
-int logon()
+void logon()
 {
-	bool validEmail = false, validPass = false;
-    char trad[SIZE_TRAD_ID_26][TRAD_LENGTH], adresseEmail[100];
-
-    if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-    {
-        while(1)
-        {
-            if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-                break;
-            usleep(5000);
-        }
-
-    }
-    if(!checkNetworkState(CONNEXION_OK))
-    {
-        connexionNeededToAllowANewComputer();
-        return PALIER_QUIT;
-    }
-
-    loadTrad(trad, 26); //Chargement de la trad
-
-    while (!validEmail)
-    {
+	char* adresseEmail = "taiki@rakshata.com";
+	
+	byte login = checkLogin(adresseEmail);
+	
+	if(login == 0 || login == 1)
+	{
+		char password[100];
+		crashTemp(password, 100);
 		
-		int i = 0, login = 0;
-        crashTemp(adresseEmail, 100);
-
-#ifdef IDENTIFY_MISSING_UI
-		#warning "Get email address"
-#endif
-		
-        login = checkLogin(adresseEmail);
-        while(!validPass)
-        {
-            switch(login)
-            {
-                case 0: //New account
-                case 1: //Account exist
-                {
-                    char password[100];
-                    crashTemp(password, 100);
-                    
-                    switch(checkPass(adresseEmail, password, login))
-                    {
-                        case 0: //Rejected
-                        {
-                            char contenuUIError[3*TRAD_LENGTH+1];
-                            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
-                            if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
-                                return PALIER_QUIT;
-                            break;
-                        }
-                        case 1: //Accepted
-                        {
-                            char temp[200];
-
-                            for(i = 0; i < 100 && adresseEmail[i]; i++)
-                                COMPTE_PRINCIPAL_MAIL[i] = adresseEmail[i];
-
-                            removeFromPref(SETTINGS_EMAIL_FLAG);
-                            snprintf(temp, 200, "<%s>\n%s\n</%s>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
-                            addToPref(SETTINGS_EMAIL_FLAG, temp);
-                            remove(SECURE_DATABASE);
-                            usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
-                            break;
-                        }
-                        default: //Else -> erreure critique, me contacter/check de la connexion/du site
-                        {
-                            char contenuUIError[3*TRAD_LENGTH+1];
-                            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
-                            UI_Alert(trad[13], contenuUIError);
-                            return PALIER_QUIT;
-                        }
-                    }
-                    break;
-                }
-
-                case 2: //Email invalide
-                {
-                    char contenuUIError[3*TRAD_LENGTH+1];
-                    snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[10], trad[11], trad[12]);
-                    if(UI_Alert(trad[9], contenuUIError) == -1) //Error/Quit
-                        return PALIER_QUIT;
-                    break;
-                }
-
-                default: //Error, en principe, login == 3
-                {
-                    char contenuUIError[2*TRAD_LENGTH+1];
-                    snprintf(contenuUIError, 2*TRAD_LENGTH+1, "%s\n%s", trad[18], trad[19]);
-                    if(UI_Alert(trad[17], contenuUIError) == -1) //Error/Quit
-                        return PALIER_QUIT;
-                    break;
-                }
-            }
-        }
-    }
-    return 0;
+		switch(checkPass(adresseEmail, password, login == 0))
+		{
+			case 0: //Rejected
+			{
+				break;
+			}
+			case 1: //Accepted
+			{
+				char temp[200];
+				
+				for(byte i = 0; i < 100 && adresseEmail[i]; i++)
+					COMPTE_PRINCIPAL_MAIL[i] = adresseEmail[i];
+				
+				removeFromPref(SETTINGS_EMAIL_FLAG);
+				snprintf(temp, 200, "<%s>\n%s\n</%s>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
+				addToPref(SETTINGS_EMAIL_FLAG, temp);
+				remove(SECURE_DATABASE);
+				usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
+				break;
+			}
+		}
+	}
 }
 
 int getPassword(int curThread, char password[100])
 {
-    char trad[SIZE_TRAD_ID_26][TRAD_LENGTH];
-
     if(passwordGB[0] != 0)
     {
         ustrcpy(password, passwordGB);
         return 1;
     }
-
-    loadTrad(trad, 26);
 
 	while (checkNetworkState(CONNEXION_TEST_IN_PROGRESS));
 
@@ -354,17 +275,13 @@ int getPassword(int curThread, char password[100])
 #endif
 
 		//Traitement
-        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 1))
+        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 0))
         {
             usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
             return 1;
         }
         else if(NETWORK_ACCESS == CONNEXION_OK)
         {
-            char contenuUIError[3*TRAD_LENGTH+1];
-            snprintf(contenuUIError, 3*TRAD_LENGTH+1, "%s\n%s\n%s", trad[14], trad[15], trad[16]);
-            if(UI_Alert(trad[13], contenuUIError) == -1) //Error/Quit
-                return PALIER_QUIT;
         }
 		else
 			return 0;
@@ -392,7 +309,7 @@ void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LEN
     MajToMin(passwordSalted);
 }
 
-int checkLogin(const char adresseEmail[100])
+byte checkLogin(const char adresseEmail[100])
 {
     uint i = 0;
     char URL[200], output[56];
@@ -427,7 +344,7 @@ int checkLogin(const char adresseEmail[100])
     return 2;
 }
 
-int checkPass(char adresseEmail[100], char password[100], int login)
+int checkPass(char adresseEmail[100], char password[100], bool createAccount)
 {
     int i = 0;
     char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1], hash3[2*SHA256_DIGEST_LENGTH+1];
@@ -455,7 +372,7 @@ int checkPass(char adresseEmail[100], char password[100], int login)
     sha256_legacy(hash1, hash2); //On hash deux fois
     MajToMin(hash2);
 
-    snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", 2+login, adresseEmail, hash2); //Constitution de l'URL
+	snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, hash2); //Constitution de l'URL
     crashTemp(buffer_output, 500);
     download_mem(URL, NULL, buffer_output, 500, SSL_ON);
 
@@ -602,7 +519,7 @@ int createSecurePasswordDB(unsigned char *key_sent)
     return 0;
 }
 
-int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
+bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
 {
     char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
     rawData outputRAW[SHA256_DIGEST_LENGTH+1];
@@ -669,7 +586,6 @@ int createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
     }
     else if(!strcmp(buffer_dl, "account_not_found"))
     {
-        logon();
         return 1;
     }
     else

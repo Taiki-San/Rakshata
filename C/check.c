@@ -120,8 +120,6 @@ int checkEvnt()
             }
         }
     }
-    if(get_compte_infos() == PALIER_QUIT)
-        return PALIER_QUIT;
 
     //On charge les données par défaut si elles n'existent pas encore
     char *buf = loadLargePrefs(SETTINGS_REPODB_FLAG);
