@@ -219,17 +219,17 @@
 	
 	if(gotoButtonContainer != nil)
 	{
-		RakButton * gotoButton = [RakButton allocWithText:@"Go":NSZeroRect];
+		RakButton * gotoButton = [[RakButton allocWithText:@"Go":NSZeroRect] autorelease];
 		[gotoButton sizeToFit];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
 		[gotoButtonContainer addSubview:gotoButton];
-		[gotoButton release];
 	}
 	
 	if(textField != nil)
 	{
-		[textField setBackgroundColor:[NSColor blackColor]];
+		((RakTextCell*)textField.cell).customizedInjectionPoint = YES;
+		[textField setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
 		
@@ -301,6 +301,7 @@
 	
 	if(textField != nil)
 	{
+		[textField setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setNeedsDisplay:YES];
 	}
@@ -326,19 +327,6 @@
 			[popover closePopover];
 		}
 	}
-}
-
-@end
-
-@implementation RakPageCounterTextFieldCell
-
-- (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
-{
-	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
-
-	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
-	
-	return output;
 }
 
 @end

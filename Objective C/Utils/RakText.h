@@ -12,7 +12,14 @@
 
 @interface RakText : NSTextField
 
+@property BOOL wantCustomBorder;
+
 - (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
+
+- (NSColor *) getBorderColor;
 - (void) additionalDrawing;
+
+//Public API
+- (void) underline : (BOOL) underline;
 
 @end

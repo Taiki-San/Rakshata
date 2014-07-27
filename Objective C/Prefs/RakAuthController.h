@@ -10,6 +10,29 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	AUTHEMAIL_STATE_GOOD,
+	AUTHEMAIL_STATE_LOADING,
+	AUTHEMAIL_STATE_NONE,
+	AUTHEMAIL_STATE_INVALID
+};
+
+@class RakAuthController;
+
+@interface RakEmailField : RakText <NSTextFieldDelegate>
+{
+	byte currentStatus;
+	
+	RakAuthController * authController;
+}
+
+@property uint currentEditingSession;
+
+- (void) addController : (RakAuthController *) controller;
+
+@end
+
 @interface RakAuthController : NSViewController
 {
 	IBOutlet NSView * _placeHolder;
@@ -19,8 +42,20 @@
 	IBOutlet NSView * container;
 	
 	RakForegroundView * foreground;
+	
+	//Main view elements
+	IBOutlet RakText * header;
+	IBOutlet RakText * headerDetails;
+	
+	IBOutlet RakText * labelMail;
+	IBOutlet RakText * labelPass;
+	
+	IBOutlet RakEmailField * mailInput;
+	IBOutlet NSSecureTextField * passInput;
 }
 
 - (void) launch;
+
+- (void) validEmail : (BOOL) newAccount : (uint) session;
 
 @end

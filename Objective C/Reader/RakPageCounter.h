@@ -10,10 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakPageCounterTextFieldCell : NSTextFieldCell
-
-@end
-
 @interface RakPageCounterPopover : RakPopoverView
 {
 	IBOutlet NSTextField *mainLabel;

@@ -250,6 +250,12 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			output = [NSColor colorWithSRGBRed:255/255.0f green:148/255.0f blue:148/255.0f alpha:1.0];
 			break;
 		}
+			
+		case GET_COLOR_BACKGROUND_TEXTFIELD:
+		{
+			output = [NSColor blackColor];
+			break;
+		}
 	}
 	
 	return output;

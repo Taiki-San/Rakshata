@@ -16,7 +16,9 @@
 	NSView * mainView;
 }
 
-- (id)initWithFrame:(NSRect)frame;
+@property (assign) NSPopover * popover;
+
+- (instancetype) initWithFrame : (NSRect) frame;
 
 @end
 

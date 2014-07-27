@@ -7,12 +7,12 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner"/>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="c22-O7-iKe" userLabel="Authentification View" customClass="RakForegroundViewContentView">
             <rect key="frame" x="0.0" y="0.0" width="454" height="195"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sTd-He-8nS" userLabel="Main title">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sTd-He-8nS" userLabel="Main title" customClass="RakText">
                     <rect key="frame" x="151" y="158" width="153" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Veuillez vous connecter" id="BuX-zG-tbE">
@@ -21,7 +21,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JeJ-Hu-7aU" userLabel="Details title">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JeJ-Hu-7aU" userLabel="Details title" customClass="RakText">
                     <rect key="frame" x="137" y="133" width="180" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Please? Pretty pretty please?" id="hNi-RL-zq5">
@@ -30,16 +30,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" id="Map-cf-Tjk" userLabel="Email input">
-                    <rect key="frame" x="157" y="86" width="247" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="test@email.fr" drawsBackground="YES" id="pKS-7Z-Ndz">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="br5-86-Qjn" userLabel="Email label">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="br5-86-Qjn" userLabel="Email label" customClass="RakText">
                     <rect key="frame" x="48" y="88" width="96" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Adresse email:" id="H0d-Fb-fJg">
@@ -52,7 +43,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="454" height="49"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </customView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zcQ-CP-SjS" userLabel="Pass label">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zcQ-CP-SjS" userLabel="Pass label" customClass="RakText">
                     <rect key="frame" x="53" y="51" width="91" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Mot de passe:" id="hAX-fq-i22">
@@ -62,9 +53,9 @@
                     </textFieldCell>
                 </textField>
                 <secureTextField verticalHuggingPriority="750" id="1dR-X5-eco">
-                    <rect key="frame" x="157" y="49" width="247" height="22"/>
+                    <rect key="frame" x="157" y="47" width="247" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="qae-Ji-ebh">
+                    <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="border" drawsBackground="YES" usesSingleLineMode="YES" id="qae-Ji-ebh">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -72,7 +63,22 @@
                             <string>NSAllRomanInputSourcesLocaleIdentifier</string>
                         </allowedInputSourceLocales>
                     </secureTextFieldCell>
+                    <connections>
+                        <outlet property="nextKeyView" destination="Map-cf-Tjk" id="R0k-RL-bJK"/>
+                    </connections>
                 </secureTextField>
+                <textField verticalHuggingPriority="750" id="Map-cf-Tjk" userLabel="Email input" customClass="RakEmailField">
+                    <rect key="frame" x="157" y="85" width="247" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="border" placeholderString="test@email.fr" drawsBackground="YES" id="pKS-7Z-Ndz" customClass="RakTextCell">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <outlet property="nextKeyView" destination="1dR-X5-eco" id="DEL-dH-XvX"/>
+                    </connections>
+                </textField>
             </subviews>
             <point key="canvasLocation" x="633" y="342.5"/>
         </customView>
@@ -161,6 +167,12 @@
                 <outlet property="_newAccount" destination="vl0-hR-eih" id="vPM-Nj-qga"/>
                 <outlet property="_placeHolder" destination="mwJ-tp-Kjg" id="Ewn-be-cjn"/>
                 <outlet property="container" destination="zDe-5O-1hg" id="6Ei-Iu-RHg"/>
+                <outlet property="header" destination="sTd-He-8nS" id="1U2-z1-dp7"/>
+                <outlet property="headerDetails" destination="JeJ-Hu-7aU" id="YBj-0j-L7Q"/>
+                <outlet property="labelMail" destination="br5-86-Qjn" id="Xaj-kW-R0N"/>
+                <outlet property="labelPass" destination="zcQ-CP-SjS" id="c3d-eb-ZeP"/>
+                <outlet property="mailInput" destination="Map-cf-Tjk" id="RnY-bZ-7iG"/>
+                <outlet property="passInput" destination="1dR-X5-eco" id="RYE-w3-eiK"/>
                 <outlet property="view" destination="c22-O7-iKe" id="baA-Dz-QqZ"/>
             </connections>
         </viewController>

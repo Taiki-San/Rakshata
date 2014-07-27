@@ -129,13 +129,14 @@
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID
 {
-	NSTextFieldCell * cell = [[RakCenteredTextFieldCell alloc] initTextCell:string];
+	RakCenteredTextFieldCell * cell = [[[RakCenteredTextFieldCell alloc] initTextCell:string] autorelease];
+	
+	cell.centered = YES;
 	
 	[cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[cell setAlignment:NSCenterTextAlignment];
 	
 	[fields insertObject:cell atIndex:cellID];
-	[cell release];
 }
 
 - (NSColor*) getBackgroundColor

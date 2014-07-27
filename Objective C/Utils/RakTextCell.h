@@ -10,7 +10,15 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakCenteredTextFieldCell : NSTextFieldCell
+
+@property BOOL centered;		//Vertically
+
+@end
+
 @interface RakTextCell : RakCenteredTextFieldCell
+
+@property BOOL customizedInjectionPoint;
 
 - (id)initWithText : (NSString *) text : (NSColor *) color;
 

@@ -312,6 +312,7 @@
 		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
 		if(textCell != nil)
 		{
+			textCell.centered = YES;
 			[textCell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 			[textCell setAlignment:NSCenterTextAlignment];
 			[textCell setTextColor:[self getFontColor]];

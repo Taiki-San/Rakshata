@@ -45,7 +45,6 @@
 		B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */; };
 		B678D0321977178A00D7FE6A /* DBrecent.c in Sources */ = {isa = PBXBuildFile; fileRef = B678D0311977178A00D7FE6A /* DBrecent.c */; };
 		B678D034197717A600D7FE6A /* JSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* JSONParser.m */; };
-		B67E079018E765A40007EB44 /* RakCenteredTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */; };
 		B67E079418E7714B0007EB44 /* RakCTCoreContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B68B5225191AE3050057F35A /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5224191AE3050057F35A /* RakScroller.m */; };
@@ -208,8 +207,6 @@
 		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; };
 		B67B35F9193FA1CD0043E5C4 /* Rakshata.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Rakshata.playground; sourceTree = "<group>"; };
-		B67E078E18E765A40007EB44 /* RakCenteredTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCenteredTextFieldCell.h; path = Utils/RakCenteredTextFieldCell.h; sourceTree = "<group>"; };
-		B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCenteredTextFieldCell.m; path = Utils/RakCenteredTextFieldCell.m; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTCoreContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTCoreContentView.h; path = CTSelec/RakCTCoreContentView.h; sourceTree = "<group>"; };
 		B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTCoreContentView.m; path = CTSelec/RakCTCoreContentView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -575,8 +572,6 @@
 				B61DD14C18E23915009D51E3 /* RakBorder.m */,
 				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
-				B67E078E18E765A40007EB44 /* RakCenteredTextFieldCell.h */,
-				B67E078F18E765A40007EB44 /* RakCenteredTextFieldCell.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
 				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
@@ -924,7 +919,6 @@
 				B6F6ED0C18A3001400E3B55B /* repo.c in Sources */,
 				B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */,
 				B6EA520718A4111000A9B16E /* interface.m in Sources */,
-				B67E079018E765A40007EB44 /* RakCenteredTextFieldCell.m in Sources */,
 				B6F6ECF618A3001400E3B55B /* error.c in Sources */,
 				B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */,
 				B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */,
@@ -1126,7 +1120,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = Codesigning;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = NO;
@@ -1189,7 +1183,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = Codesigning;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = YES;

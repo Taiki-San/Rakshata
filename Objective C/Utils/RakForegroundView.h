@@ -28,7 +28,7 @@
 @interface RakForegroundView : NSObject
 {
 	RakForegroundViewBackgroundView * background;
-	NSView * _coreView;
+	RakForegroundViewContentView * _coreView;
 	
 	BOOL animationInProgress;
 }

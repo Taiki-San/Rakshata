@@ -12,26 +12,26 @@
 
 @implementation RakForegroundView
 
-- (id) init : (NSView *) contentView : (NSView *) coreView
+- (id) init : (NSView *) container : (RakForegroundViewContentView *) coreView
 {
 	self = [super init];
 	
 	if(self != nil)
 	{
 		animationInProgress = NO;
-		background = [[RakForegroundViewBackgroundView alloc] initWithFrame:contentView.bounds : self];
+		background = [[RakForegroundViewBackgroundView alloc] initWithFrame:container.bounds : self];
 		if(background != nil)
 		{
-			[contentView addSubview:background];
+			[container addSubview:background];
 		}
 		
 		if(coreView == nil)
-			coreView = [self initCoreView : contentView.bounds];
+			coreView = [self initCoreView : container.bounds];
 		
 		if(coreView != nil)
 		{
-			[coreView setFrameOrigin:NSMakePoint(contentView.frame.size.width / 2 - coreView.frame.size.width / 2, -coreView.frame.size.height)];
-			[contentView addSubview:coreView];
+			[coreView setFrameOrigin:NSMakePoint(container.frame.size.width / 2 - coreView.frame.size.width / 2, -coreView.frame.size.height)];
+			[container addSubview:coreView];
 
 			_coreView = [coreView retain];
 		}
@@ -94,8 +94,8 @@
 		{
 			NSRect frame = _coreView.frame;
 			
-			if(frame.origin.y)
-				frame.origin.y = 0;
+			if(frame.origin.y < 0)
+				frame.origin.y = _coreView.superview.frame.size.height / 2 - _coreView.frame.size.height / 2;
 			else
 				frame.origin.y = -_coreView.frame.size.height;
 			
@@ -164,15 +164,40 @@
 	}
 }
 
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	
+}
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	
+}
+
+- (void) mouseExited:(NSEvent *)theEvent
+{
+	
+}
+
+- (void) mouseMoved:(NSEvent *)theEvent
+{
+	
+}
+
 @end
 
 @implementation RakForegroundViewContentView
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	[self.window makeFirstResponder:nil];
+}
 
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrameSize:NSMakeSize(frameRect.size.width * 3 / 4, frameRect.size.height * 4 / 5)];
 	
-	CGFloat y = self.frame.origin.y > 0 ? self.superview.frame.size.height / 2 - self.frame.size.height / 2 : -self.frame.size.height;
+	CGFloat y = self.frame.origin.y >= 0 ? self.superview.frame.size.height / 2 - self.frame.size.height / 2 : -self.frame.size.height;
 	[super setFrameOrigin:NSMakePoint(self.superview.frame.size.width / 2 - self.frame.size.width / 2, y)];
 }
 

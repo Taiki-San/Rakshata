@@ -12,7 +12,7 @@
 
 @implementation RakPrefsWindow
 
-- (id)initWithFrame:(NSRect)frame
+- (instancetype) initWithFrame : (NSRect) frame
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self)
@@ -45,6 +45,7 @@
 		if([object class] == [RakAuthController class])
 		{
 			[(RakAuthController *) object launch];
+			[self.popover close];
 			return;
 		}
 	}
@@ -59,7 +60,7 @@
 	self = [super init];
 	if(self)
 	{
-		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame:NSMakeRect(0, 0, 150, 150)];
+		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame : NSMakeRect(0, 0, 150, 150)];
 		[self setAnchor:nil];
 	}
 	return self;
@@ -77,7 +78,7 @@
         popover = [[NSPopover alloc] init];
         
 		popover.contentViewController = viewControllerHUD;
-        popover.appearance = 1;
+        popover.appearance = NSPopoverAppearanceHUD;
 		
         popover.animates = YES;
         
@@ -87,6 +88,8 @@
         
         // so we can be notified when the popover appears or closes
         popover.delegate = self;
+
+		viewControllerHUD.popover = popover;
     }
 }
 
@@ -101,9 +104,7 @@
 - (void)showPopover
 {
     [self createPopover];
-	[popover showRelativeToRect:[anchor bounds]
-						   ofView:anchor
-					preferredEdge:NSMaxYEdge];
+	[popover showRelativeToRect:[anchor bounds] ofView:anchor preferredEdge:NSMaxYEdge];
 }
 
 #pragma mark - NSPopoverDelegate
@@ -121,7 +122,8 @@
 - (void)popoverWillClose:(NSNotification *)notification
 {
     NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
-    if (closeReason)
+
+	if (closeReason)
     {
         // closeReason can be:
         //      NSPopoverCloseReasonStandard

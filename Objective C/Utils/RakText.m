@@ -21,6 +21,7 @@
 		self.wantsLayer = NO;
 		self.editable = NO;
 		self.bordered = NO;
+		self.wantCustomBorder = NO;
 		self.drawsBackground = NO;
 		self.backgroundColor = [NSColor clearColor];
 		self.selectable = NO;
@@ -37,6 +38,7 @@
 		self.wantsLayer = NO;
 		self.editable = NO;
 		self.bordered = NO;
+		self.wantCustomBorder = NO;
 		self.drawsBackground = NO;
 		self.backgroundColor = [NSColor clearColor];
 		
@@ -54,9 +56,20 @@
 	return [RakCenteredTextFieldCell class];
 }
 
+- (NSColor *) getBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+}
+
 - (void) additionalDrawing
 {
-	
+	if(self.wantCustomBorder)
+	{
+		NSBezierPath * path = [NSBezierPath bezierPathWithRect : self.bounds];
+		[path setLineWidth:1];
+		[[self getBorderColor] setStroke];
+		[path stroke];
+	}	
 }
 
 - (void) drawRect:(NSRect)dirtyRect
@@ -77,6 +90,20 @@
 	if(self.superview != nil)
 		[self removeFromSuperview];
 	[super dealloc];
+}
+
+#pragma mark - Apply changes
+
+- (void) underline : (BOOL) underline
+{
+	NSMutableAttributedString *string = [[[self attributedStringValue] mutableCopy] autorelease];
+	
+	if(underline)
+		[string addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:NSMakeRange(0, string.length)];
+	else
+		[string removeAttribute:NSUnderlineStyleAttributeName range:NSMakeRange(0, string.length)];
+	
+	[self setAttributedStringValue : string];
 }
 
 @end
