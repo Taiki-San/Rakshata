@@ -974,7 +974,10 @@ enum
 	else
 	{
 		[self initialPositionning : object];
-		[self updateScrollerAfterResize : object : NSZeroSize];
+		
+		if(object.page != _data.pageCourante)
+			[self updateScrollerAfterResize : object : NSZeroSize];
+		
 		[object setFrame:object.scrollViewFrame];
 		
 		[viewController.view addSubview: object];
