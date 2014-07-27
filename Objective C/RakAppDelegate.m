@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
-
 @implementation RakAppDelegate
 
 - (void) awakeFromNib
@@ -40,7 +38,6 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 	[self.window setInitialFirstResponder:contentView];
 	[self.window makeFirstResponder:contentView];
 	
-	mainWindowShouldNotBeAccessedWithoutReallyGoodReason = self.window;
 	[Prefs initCache];
 	NSArray *context = [RakContextRestoration newContext];
 	
@@ -66,15 +63,13 @@ NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 
 - (RakContentView*) getContentView
 {
-	NSView *contentView = [[self window] contentView];
+	for(id view in ((NSView*)self.window.contentView).subviews)
+	{
+		if([view class] == [RakContentView class])
+			return view;
+	}
 	
-	uint count = [contentView.subviews count], i;
-	for(i = 0; i < count && [contentView.subviews[i] class] != [RakContentView class]; i++);
-	
-	if(i == count)
-		return nil;
-	
-	return contentView.subviews[i];
+	return nil;
 }
 
 - (void) validateWindowData : (NSRect) size

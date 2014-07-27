@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-extern NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
-
 @interface RakAppDelegate : NSObject <NSApplicationDelegate>
 {
 	Series * tabSerie;
@@ -21,5 +19,7 @@ extern NSWindow * mainWindowShouldNotBeAccessedWithoutReallyGoodReason;
 }
 
 @property (assign) IBOutlet NSWindow *window;
+
+- (RakContentView*) getContentView;
 
 @end
