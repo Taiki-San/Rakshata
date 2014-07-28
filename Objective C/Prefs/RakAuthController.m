@@ -16,6 +16,8 @@
 {
 	RakAppDelegate * core = [NSApp delegate];
 	
+	[self retain];
+	
 	if([core class] != [RakAppDelegate class])
 	{
 		[self release];
@@ -29,6 +31,7 @@
 	[self updateMainView];
 	
 	foreground = [[RakForegroundView alloc] init : [core getContentView] : self.view];
+	foreground.delegate = self;
 	
 	RakButton * inactiveConfirm = [RakButton allocWithText:@"Valider" :NSZeroRect];
 	[inactiveConfirm sizeToFit];
@@ -59,11 +62,29 @@
 	[mailInput setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 	[mailInput setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
 	[mailInput addController:self];
+
+	[passInput setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
+	[passInput setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 }
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
 {
 	
+}
+
+#pragma mark - Delegate
+
+- (void) switchOver : (NSNumber*) isDisplayed
+{
+	if(isDisplayed != nil && [isDisplayed isKindOfClass:[NSNumber class]] && ![isDisplayed boolValue])
+	{
+		[header removeFromSuperview];			[header release];
+		[headerDetails removeFromSuperview];	[headerDetails release];
+		
+		
+		[foreground release];
+		[self release];
+	}
 }
 
 @end
@@ -137,10 +158,36 @@
 {
 	uint currentSession = self.currentEditingSession;
 	
+	currentStatus = AUTHEMAIL_STATE_LOADING;
+	[self setNeedsDisplay];
+	
+	[self performSelectorInBackground:@selector(checkEmail:) withObject:@(currentSession)];
+}
+
+- (void) checkEmail : (NSNumber *) session
+{
+	if(session == nil || ![session isKindOfClass:[NSNumber class]])
+	{
+		currentStatus = AUTHEMAIL_STATE_INVALID;
+		[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
+		return;
+	}
+
+	uint currentSession = [session unsignedIntValue];
+	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
+	[self checkEmailSub : currentSession];
+	
+	[CATransaction commit];
+	[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
+}
+
+- (void) checkEmailSub : (uint) currentSession
+{
 	if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 	{
-		currentStatus = AUTHEMAIL_STATE_LOADING;
-		
 		while(currentSession == self.currentEditingSession && checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 		{
 			usleep(5000);

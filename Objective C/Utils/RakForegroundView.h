@@ -33,13 +33,15 @@
 	BOOL animationInProgress;
 }
 
+@property (assign) id delegate;
+
 - (id) init : (NSView *) contentView : (NSView *) coreView;
 - (RakForegroundViewContentView *) initCoreView : (NSRect) contentViewFrame;
 
 - (void) switchState;
 - (BOOL) isVisible;
 
-- (void) switchOver;
+- (void) switchOver : (BOOL) isDisplayed;
 
 @end
 

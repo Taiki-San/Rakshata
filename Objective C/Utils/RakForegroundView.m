@@ -82,29 +82,31 @@
 	if(animationInProgress)
 		return;
 	
+	BOOL wasShown = [background alphaValue] == 1;
+	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		[context setDuration:0.2];
 		
 		animationInProgress = YES;
 		
 		if(background != nil)
-			[background.animator setAlphaValue: [background alphaValue] ? 0 : 1.0f];
+			[background.animator setAlphaValue: wasShown ? 0 : 1];
 		
 		if(_coreView != nil)
 		{
 			NSRect frame = _coreView.frame;
 			
-			if(frame.origin.y < 0)
-				frame.origin.y = _coreView.superview.frame.size.height / 2 - _coreView.frame.size.height / 2;
-			else
+			if(wasShown)
 				frame.origin.y = -_coreView.frame.size.height;
+			else
+				frame.origin.y = _coreView.superview.frame.size.height / 2 - _coreView.frame.size.height / 2;
 			
 			[_coreView.animator setFrame:frame];
 		}
 		
 	} completionHandler:^{
 		animationInProgress = NO;
-		[self switchOver];
+		[self switchOver : !wasShown];
 	}];
 }
 
@@ -121,9 +123,10 @@
 
 #pragma mark - Content control
 
-- (void) switchOver
+- (void) switchOver : (BOOL) isDisplayed
 {
-	
+	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(switchOver:)])
+		[self.delegate performSelector:@selector(switchOver:) withObject:@(isDisplayed)];
 }
 	 
 @end
