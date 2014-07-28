@@ -32,6 +32,7 @@
 	
 	foreground = [[RakForegroundView alloc] init : [core getContentView] : self.view];
 	foreground.delegate = self;
+	originalSize = self.view.frame.size;
 	
 	RakButton * inactiveConfirm = [RakButton allocWithText:@"Valider" :NSZeroRect];
 	[inactiveConfirm sizeToFit];
@@ -46,11 +47,10 @@
 - (void) updateMainView
 {
 	[header setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
-	[header setFont:[NSFont boldSystemFontOfSize:13]];
 	[header sizeToFit];
 	[header setFrameOrigin:NSMakePoint(self.view.frame.size.width / 2 - header.frame.size.width / 2, header.frame.origin.y)];
 	
-	[headerDetails setStringValue:@"String placeholder for the time being..."];
+	[headerDetails setStringValue:@"Un compte Rakshata vous donne accès à la création de nombreux artistes professionnels"];
 	[headerDetails setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[headerDetails sizeToFit];
 	[headerDetails setFrameOrigin:NSMakePoint(self.view.frame.size.width / 2 - headerDetails.frame.size.width / 2, headerDetails.frame.origin.y)];
@@ -58,13 +58,15 @@
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-	[mailInput setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-	[mailInput setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
-	[mailInput setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
+	mailInput = [[RakEmailField alloc] initWithFrame:_containerEmail.frame];
+	[self.view addSubview:mailInput];
 	[mailInput addController:self];
 
-	[passInput setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-	[passInput setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+	passInput = [[RakPassField alloc] initWithFrame: _containerPass.frame];
+	[self.view addSubview:passInput];
+	
+	[mailInput setNextKeyView:passInput];	//don't work
+	[passInput setNextKeyView:mailInput];
 }
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
@@ -91,9 +93,9 @@
 
 @implementation RakEmailField
 
-- (instancetype) initWithCoder:(NSCoder *)aDecoder
+- (instancetype) initWithFrame : (NSRect) frameRect
 {
-	self = [super initWithCoder:aDecoder];
+	self = [super initWithFrame:frameRect];
 	
 	if(self != nil)
 	{
@@ -101,7 +103,15 @@
 		
 		((RakTextCell*)self.cell).customizedInjectionPoint = YES;
 		((RakTextCell*)self.cell).centered = YES;
+		
+		[self setBezeled:NO];
+		[self setBordered:YES];
 		self.wantCustomBorder = YES;
+		
+		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[self.cell setPlaceholderString:@"exemple@email.com"];
+		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[self setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
 		
 		[self setDelegate:self];
 	}
@@ -224,6 +234,31 @@
 	
 	if(authController != nil)
 		[authController validEmail : retValue == 0 : currentSession];
+}
+
+@end
+
+@implementation RakPassField
+
+- (instancetype) initWithFrame : (NSRect) frameRect
+{
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+	{
+		[self setBezeled:NO];
+		[self setBordered:YES];
+		
+		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+	}
+	
+	return self;
+}
+
++ (Class) cellClass
+{
+	return [RakPassFieldCell class];
 }
 
 @end

@@ -53,7 +53,7 @@
 
 + (Class) cellClass
 {
-	return [RakCenteredTextFieldCell class];
+	return [RakTextCell class];
 }
 
 - (NSColor *) getBorderColor

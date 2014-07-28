@@ -17,6 +17,9 @@
 @end
 
 @interface RakTextCell : RakCenteredTextFieldCell
+{
+	BOOL clearBackground;
+}
 
 @property BOOL customizedInjectionPoint;
 

@@ -17,18 +17,39 @@
 	NSRect newRect = [super drawingRectForBounds:theRect];	    // Get the parent's idea of where we should draw
 	
 	if(self.centered)
-	{
-		NSSize textSize = [self cellSizeForBounds:theRect];		// Get our ideal size for current text
-		
-		double heightDelta = newRect.size.height - textSize.height;		// Center that in the proposed rect
-		if (heightDelta > 0)
-		{
-			newRect.size.height -= heightDelta;
-			newRect.origin.y += (heightDelta / 2);
-		}
-	}
+		newRect = [self centerCell : newRect];
 	
 	return newRect;
+}
+
+- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
+{
+	if(self.centered)
+		aRect = [self centerCell:aRect];
+	
+	[super selectWithFrame:aRect inView:controlView editor:textObj delegate:anObject start:selStart length:selLength];
+}
+
+- (void) editWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
+{
+	if(self.centered)
+		aRect = [self centerCell:aRect];
+	
+	[super editWithFrame:aRect inView:controlView editor:textObj delegate:anObject event:theEvent];
+}
+
+- (NSRect) centerCell : (NSRect) originalRect
+{
+	NSSize textSize = [self cellSizeForBounds:originalRect];		// Get our ideal size for current text
+	
+	double heightDelta = originalRect.size.height - textSize.height;		// Center that in the proposed rect
+	if (heightDelta > 0)
+	{
+		originalRect.size.height -= heightDelta;
+		originalRect.origin.y += (heightDelta / 2);
+	}
+	
+	return originalRect;
 }
 
 @end
@@ -45,8 +66,6 @@
 		self.centered = YES;
 		self.drawsBackground = NO;
 		self.backgroundColor = [NSColor clearColor];
-		
-		self.font = [NSFont systemFontOfSize:13];
 		self.alignment = NSCenterTextAlignment;
 		
 		if(color != nil)
@@ -58,9 +77,15 @@
     return self;
 }
 
+- (void) setBackgroundColor:(NSColor *)color
+{
+	[super setBackgroundColor:color];
+	clearBackground = [color isEqualTo:[NSColor clearColor]];
+}
+
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
-	if (flag)
+	if (flag && clearBackground)
 		self.backgroundColor = [NSColor clearColor];
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
@@ -84,17 +109,31 @@
 
 - (NSRect)drawingRectForBounds:(NSRect)theRect
 {
-	NSRect newRect = [super drawingRectForBounds:theRect];	    // Get the parent's idea of where we should draw
-	NSSize textSize = [self cellSizeForBounds:theRect];			// Get our ideal size for current text
-	double heightDelta = newRect.size.height - textSize.height;	// Center that in the proposed rect
+	return [self centerCell :[super drawingRectForBounds:theRect]];
+}
+
+- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
+{
+	[super selectWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject start:selStart length:selLength];
+}
+
+- (void) editWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
+{
+	[super editWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject event:theEvent];
+}
+
+- (NSRect) centerCell : (NSRect) originalRect
+{
+	NSSize textSize = [self cellSizeForBounds:originalRect];		// Get our ideal size for current text
 	
+	double heightDelta = originalRect.size.height - textSize.height;		// Center that in the proposed rect
 	if (heightDelta > 0)
 	{
-		newRect.size.height -= heightDelta;
-		newRect.origin.y += (heightDelta / 2);
+		originalRect.size.height -= heightDelta;
+		originalRect.origin.y += (heightDelta / 2);
 	}
 	
-	return newRect;
+	return originalRect;
 }
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView

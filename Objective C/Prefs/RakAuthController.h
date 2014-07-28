@@ -33,13 +33,18 @@ enum
 
 @end
 
+@interface RakPassField : RakText
+
+@end
+
 @interface RakAuthController : NSViewController
 {
-	IBOutlet NSView * _placeHolder;
 	IBOutlet NSView * _newAccount;
 	IBOutlet NSView * _login;
 	
 	IBOutlet NSView * container;
+	IBOutlet NSView * _containerEmail;
+	IBOutlet NSView * _containerPass;
 	
 	RakForegroundView * foreground;
 	
@@ -50,8 +55,11 @@ enum
 	IBOutlet RakText * labelMail;
 	IBOutlet RakText * labelPass;
 	
-	IBOutlet RakEmailField * mailInput;
-	IBOutlet RakText * passInput;
+	RakEmailField * mailInput;
+	RakPassField * passInput;
+	
+	//Data
+	NSSize originalSize;
 }
 
 - (void) launch;

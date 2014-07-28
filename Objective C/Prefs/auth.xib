@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6185.11" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6185.11"/>
     </dependencies>
     <objects>
@@ -8,29 +9,29 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="c22-O7-iKe" userLabel="Authentification View" customClass="RakForegroundViewContentView">
-            <rect key="frame" x="0.0" y="5" width="454" height="206"/>
+            <rect key="frame" x="0.0" y="1" width="500" height="192"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sTd-He-8nS" userLabel="Main title" customClass="RakText">
-                    <rect key="frame" x="151" y="169" width="153" height="17"/>
+                    <rect key="frame" x="129" y="155" width="242" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Veuillez vous connecter" id="BuX-zG-tbE">
-                        <font key="font" metaFont="system"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Veuillez vous connecter à Rakshata" id="BuX-zG-tbE">
+                        <font key="font" metaFont="systemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JeJ-Hu-7aU" userLabel="Details title" customClass="RakText">
-                    <rect key="frame" x="137" y="144" width="180" height="17"/>
+                    <rect key="frame" x="160" y="133" width="180" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Please? Pretty pretty please?" id="hNi-RL-zq5">
-                        <font key="font" metaFont="system"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Please? Pretty pretty please?" id="hNi-RL-zq5">
+                        <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="br5-86-Qjn" userLabel="Email label" customClass="RakText">
-                    <rect key="frame" x="48" y="99" width="96" height="17"/>
+                    <rect key="frame" x="94" y="93" width="96" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Adresse email:" id="H0d-Fb-fJg">
                         <font key="font" metaFont="system"/>
@@ -39,7 +40,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zcQ-CP-SjS" userLabel="Pass label" customClass="RakText">
-                    <rect key="frame" x="53" y="62" width="91" height="17"/>
+                    <rect key="frame" x="99" y="64" width="91" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Mot de passe:" id="hAX-fq-i22">
                         <font key="font" metaFont="system"/>
@@ -47,30 +48,20 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" id="Map-cf-Tjk" userLabel="Email input" customClass="RakEmailField">
-                    <rect key="frame" x="157" y="96" width="247" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="border" placeholderString="test@email.fr" drawsBackground="YES" id="pKS-7Z-Ndz" customClass="RakTextCell">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" id="a5V-Y0-Qb0" userLabel="Pass input" customClass="RakText">
-                    <rect key="frame" x="157" y="57" width="247" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="border" drawsBackground="YES" id="u6J-ej-LgV" customClass="RakPassFieldCell">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <customView id="zDe-5O-1hg" userLabel="Container">
-                    <rect key="frame" x="0.0" y="0.0" width="454" height="49"/>
+                    <rect key="frame" x="0.0" y="0.0" width="500" height="49"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
+                <customView id="51K-fz-wV5" userLabel="Mail Input">
+                    <rect key="frame" x="196" y="90" width="247" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
+                <customView id="sK2-Bv-Wsj" userLabel="Pass Input">
+                    <rect key="frame" x="196" y="61" width="247" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </customView>
             </subviews>
-            <point key="canvasLocation" x="633" y="348"/>
+            <point key="canvasLocation" x="633" y="341"/>
         </customView>
         <customView id="t7E-4A-PRJ" userLabel="Accept">
             <rect key="frame" x="0.0" y="0.0" width="454" height="51"/>
@@ -138,6 +129,8 @@
         </customView>
         <viewController id="CHr-i2-eUd" userLabel="RakAuth" customClass="RakAuthController">
             <connections>
+                <outlet property="_containerEmail" destination="51K-fz-wV5" id="2Hn-k2-mej"/>
+                <outlet property="_containerPass" destination="sK2-Bv-Wsj" id="oio-5j-R0e"/>
                 <outlet property="_login" destination="t7E-4A-PRJ" id="bqe-H5-vcC"/>
                 <outlet property="_newAccount" destination="vl0-hR-eih" id="vPM-Nj-qga"/>
                 <outlet property="container" destination="zDe-5O-1hg" id="6Ei-Iu-RHg"/>
@@ -145,8 +138,6 @@
                 <outlet property="headerDetails" destination="JeJ-Hu-7aU" id="YBj-0j-L7Q"/>
                 <outlet property="labelMail" destination="br5-86-Qjn" id="Xaj-kW-R0N"/>
                 <outlet property="labelPass" destination="zcQ-CP-SjS" id="c3d-eb-ZeP"/>
-                <outlet property="mailInput" destination="Map-cf-Tjk" id="RnY-bZ-7iG"/>
-                <outlet property="passInput" destination="a5V-Y0-Qb0" id="tBe-1a-zrB"/>
                 <outlet property="view" destination="c22-O7-iKe" id="baA-Dz-QqZ"/>
             </connections>
         </viewController>
