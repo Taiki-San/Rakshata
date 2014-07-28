@@ -34,11 +34,11 @@
 	foreground.delegate = self;
 	originalSize = self.view.frame.size;
 	
-	RakButton * inactiveConfirm = [RakButton allocWithText:@"Valider" :NSZeroRect];
+	RakText * inactiveConfirm = [[RakText alloc] initWithText:container.bounds : @"Pas encore de compte? Remplissez, on se charge du reste!\nElle ne sera transmise à aucun tiers" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
+	[inactiveConfirm setAlignment:NSCenterTextAlignment];
 	[inactiveConfirm sizeToFit];
-	[inactiveConfirm setEnabled:NO];
 	
-	[inactiveConfirm setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - inactiveConfirm.frame.size.width / 2, 15)];
+	[inactiveConfirm setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - inactiveConfirm.frame.size.width / 2, 10)];
 	[container addSubview:inactiveConfirm];
 	
 	[foreground switchState];
@@ -50,20 +50,15 @@
 	[header sizeToFit];
 	[header setFrameOrigin:NSMakePoint(self.view.frame.size.width / 2 - header.frame.size.width / 2, header.frame.origin.y)];
 	
-	[headerDetails setStringValue:@"Un compte Rakshata vous donne accès à la création de nombreux artistes professionnels"];
-	[headerDetails setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
-	[headerDetails sizeToFit];
-	[headerDetails setFrameOrigin:NSMakePoint(self.view.frame.size.width / 2 - headerDetails.frame.size.width / 2, headerDetails.frame.origin.y)];
-	
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-	mailInput = [[RakEmailField alloc] initWithFrame:_containerEmail.frame];
-	[self.view addSubview:mailInput];
+	mailInput = [[[RakEmailField alloc] initWithFrame:_containerEmail.frame] autorelease];
+	[self.view addSubview:mailInput];	[_containerEmail removeFromSuperview];	_containerEmail = nil;
 	[mailInput addController:self];
 
-	passInput = [[RakPassField alloc] initWithFrame: _containerPass.frame];
-	[self.view addSubview:passInput];
+	passInput = [[[RakPassField alloc] initWithFrame: _containerPass.frame] autorelease];
+	[self.view addSubview:passInput];	[_containerPass removeFromSuperview];	_containerPass = nil;
 	
 	[mailInput setNextKeyView:passInput];	//don't work
 	[passInput setNextKeyView:mailInput];
@@ -80,11 +75,13 @@
 {
 	if(isDisplayed != nil && [isDisplayed isKindOfClass:[NSNumber class]] && ![isDisplayed boolValue])
 	{
-		[header removeFromSuperview];			[header release];
-		[headerDetails removeFromSuperview];	[headerDetails release];
+		[header removeFromSuperview];
+		[labelMail removeFromSuperview];
+		[mailInput removeFromSuperview];
+		[labelPass removeFromSuperview];
+		[passInput removeFromSuperview];
+		[container removeFromSuperview];
 		
-		
-		[foreground release];
 		[self release];
 	}
 }
@@ -254,7 +251,8 @@
 	{
 		[self setBezeled:NO];
 		[self setBordered:YES];
-		
+		self.wantCustomBorder = YES;
+
 		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 	}

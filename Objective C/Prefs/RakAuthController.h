@@ -50,7 +50,6 @@ enum
 	
 	//Main view elements
 	IBOutlet RakText * header;
-	IBOutlet RakText * headerDetails;
 	
 	IBOutlet RakText * labelMail;
 	IBOutlet RakText * labelPass;

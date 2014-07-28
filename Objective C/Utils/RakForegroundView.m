@@ -187,6 +187,11 @@
 	
 }
 
+- (void) swipeWithEvent:(NSEvent *)event
+{
+	
+}
+
 @end
 
 @implementation RakForegroundViewContentView
