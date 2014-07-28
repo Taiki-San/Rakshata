@@ -330,7 +330,8 @@ byte checkLogin(const char adresseEmail[100])
     snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
 	output[0] = 0;
-	download_mem(URL, NULL, output, sizeof(output), SSL_ON);
+	if(download_mem(URL, NULL, output, sizeof(output), SSL_ON) != CODE_RETOUR_OK)
+		return 2;
 
     if(!strncmp(output, "account_not_found", strlen("account_not_found")))
         return 0;
