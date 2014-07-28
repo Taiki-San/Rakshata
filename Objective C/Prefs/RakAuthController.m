@@ -109,14 +109,20 @@
 		self.wantCustomBorder = YES;
 		
 		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[self.cell setPlaceholderString:@"exemple@email.com"];
 		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[self setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
-		
+		[self.cell setPlaceholderAttributedString : [[[NSAttributedString alloc] initWithString:@"exemple@email.com" attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}] autorelease]];
+
 		[self setDelegate:self];
 	}
 	
 	return self;
+}
+
+- (BOOL) becomeFirstResponder
+{
+	[self.cell setPlaceholderString:@"exemple@email.com"];
+	return [super becomeFirstResponder];
 }
 
 - (void) addController : (RakAuthController *) controller
