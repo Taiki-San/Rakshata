@@ -55,9 +55,9 @@
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-#warning "Add formater to set max length"
 	[mailInput setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 	[mailInput setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+	[mailInput setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
 	[mailInput addController:self];
 }
 

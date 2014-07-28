@@ -23,3 +23,11 @@
 - (void) underline : (BOOL) underline;
 
 @end
+
+@interface RakFormatterLength : NSFormatter
+
+@property uint maxLength;
+
+- (instancetype) init : (uint) length;
+
+@end

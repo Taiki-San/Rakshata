@@ -107,3 +107,32 @@
 }
 
 @end
+
+@implementation RakFormatterLength
+
+- (instancetype) init
+{
+	return [self init : 0];
+}
+
+- (instancetype) init : (uint) length
+{
+	self = [super init];
+	
+	if(self != nil)
+		self.maxLength = length;
+	
+	return self;
+}
+
+- (NSString *) stringForObjectValue : (id) object {	return (NSString *)object;	}
+- (BOOL) getObjectValue : (id *) object forString : (NSString *) string errorDescription : (NSString **) error {	*object = string;	return YES;		}
+- (NSAttributedString *) attributedStringForObjectValue : (id) anObject withDefaultAttributes : (NSDictionary *) attributes {	return nil;		}
+
+- (BOOL)isPartialStringValid:(NSString **)partialStringPtr	proposedSelectedRange:(NSRangePointer)proposedSelRangePtr	originalString:(NSString *)origString	originalSelectedRange:(NSRange)origSelRange	errorDescription:(NSString **)error
+{
+	return self.maxLength == 0 || [*partialStringPtr length] <= self.maxLength;
+}
+
+@end
+
