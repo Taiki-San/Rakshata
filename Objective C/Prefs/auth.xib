@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6185.11" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6185.11"/>
     </dependencies>
     <objects>
@@ -47,7 +46,7 @@
                     <rect key="frame" x="177" y="64" width="247" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </customView>
-                <customView id="zDe-5O-1hg" userLabel="Container">
+                <customView autoresizesSubviews="NO" canDrawConcurrently="YES" id="zDe-5O-1hg" userLabel="Container">
                     <rect key="frame" x="0.0" y="0.0" width="500" height="55"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </customView>
@@ -75,7 +74,7 @@
                     </buttonCell>
                 </button>
             </subviews>
-            <point key="canvasLocation" x="553.5" y="509"/>
+            <point key="canvasLocation" x="632.5" y="383"/>
         </customView>
         <customView id="vl0-hR-eih">
             <rect key="frame" x="0.0" y="0.0" width="454" height="106"/>

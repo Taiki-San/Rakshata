@@ -34,12 +34,14 @@
 	foreground.delegate = self;
 	originalSize = self.view.frame.size;
 	
-	RakText * inactiveConfirm = [[RakText alloc] initWithText:container.bounds : @"Pas encore de compte? Remplissez, on se charge du reste!\nElle ne sera transmise à aucun tiers" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
-	[inactiveConfirm setAlignment:NSCenterTextAlignment];
-	[inactiveConfirm sizeToFit];
+	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!\nElle ne sera transmise à aucun tiers" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
+	[footerPlaceholder setAlignment:NSCenterTextAlignment];
+	[footerPlaceholder setAlphaValue:1];
+	[footerPlaceholder sizeToFit];
 	
-	[inactiveConfirm setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - inactiveConfirm.frame.size.width / 2, 10)];
-	[container addSubview:inactiveConfirm];
+	[footerPlaceholder setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - footerPlaceholder.frame.size.width / 2, 10)];
+	[container addSubview:footerPlaceholder];
+	[container setWantsLayer:YES];
 	
 	[foreground switchState];
 }
@@ -66,7 +68,49 @@
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
 {
+	//For now, we assume we start from an empty state
+	NSRect frame;
+
+	[NSAnimationContext beginGrouping];
 	
+	[[NSAnimationContext currentContext] setDuration:0.2f];
+
+	//We remove the placeholder
+	frame = footerPlaceholder.frame;
+	frame.origin.y = -frame.size.height;
+	[footerPlaceholder.animator setFrame:frame];
+	[footerPlaceholder.animator setAlphaValue:0];
+	
+	[self animateLogin];
+		
+	[NSAnimationContext endGrouping];
+}
+
+#pragma mark - Animation
+
+- (void) animateLogin
+{
+	if(forgottenPass == nil)
+	{
+		forgottenPass = [RakButton allocWithText:@"Mot de passe oublié?" : container.bounds];
+		[forgottenPass sizeToFit];
+		[container addSubview:forgottenPass];
+		[forgottenPass setFrameOrigin:NSMakePoint(0, 13)];
+	}
+	
+	[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
+	[forgottenPass.animator setFrameOrigin:NSMakePoint(14, forgottenPass.frame.origin.y)];
+	
+	if(login == nil)
+	{
+		login = [RakButton allocWithText:@"Connexion" : container.bounds];
+		[login sizeToFit];
+		[container addSubview:login];
+		[login setFrameOrigin:NSMakePoint(0, 13)];
+	}
+	
+	[login setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
+	[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - 14 - login.frame.size.width, login.frame.origin.y)];
 }
 
 #pragma mark - Delegate
@@ -179,21 +223,21 @@
 
 - (void) checkEmail : (NSNumber *) session
 {
-	if(session == nil || ![session isKindOfClass:[NSNumber class]])
+	if(session != nil && [session isKindOfClass:[NSNumber class]])
 	{
-		currentStatus = AUTHEMAIL_STATE_INVALID;
-		[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
-		return;
+		uint currentSession = [session unsignedIntValue];
+		
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+		
+		[self checkEmailSub : currentSession];
+		
+		if(currentStatus != AUTHEMAIL_STATE_GOOD)
+			[CATransaction commit];
 	}
-
-	uint currentSession = [session unsignedIntValue];
+	else
+		currentStatus = AUTHEMAIL_STATE_INVALID;
 	
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
-	
-	[self checkEmailSub : currentSession];
-	
-	[CATransaction commit];
 	[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
 }
 
@@ -236,7 +280,10 @@
 	currentStatus = AUTHEMAIL_STATE_GOOD;
 	
 	if(authController != nil)
+	{
+		[CATransaction commit];
 		[authController validEmail : retValue == 0 : currentSession];
+	}
 }
 
 @end

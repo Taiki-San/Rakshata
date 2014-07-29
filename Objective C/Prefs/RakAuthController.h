@@ -57,6 +57,12 @@ enum
 	RakEmailField * mailInput;
 	RakPassField * passInput;
 	
+	//Container
+	RakText * footerPlaceholder;
+	
+	RakButton * forgottenPass;
+	RakButton * login;
+	
 	//Data
 	NSSize originalSize;
 }
