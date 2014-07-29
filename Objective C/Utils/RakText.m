@@ -85,6 +85,11 @@
 	[self additionalDrawing];
 }
 
+- (BOOL) isFlipped
+{
+	return NO;
+}
+
 - (void) dealloc
 {
 	if(self.superview != nil)

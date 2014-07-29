@@ -82,6 +82,11 @@
 	return self;
 }
 
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
 - (void) defineBackgroundColor
 {
 	if([self getBackgroundColor] != nil)
