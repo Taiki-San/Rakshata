@@ -20,7 +20,8 @@
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
-		RakButton * button = [[RakButton allocWithText:@"Change UI" :NSMakeRect(0, 0, 90, 20)] retain];
+		RakButton * button = [[RakButton allocWithText:@"Change UI" :NSZeroRect] retain];
+		[button sizeToFit];
 		[button setTarget:self];
 		[button setAction:@selector(login)];
 		[button setFrameOrigin:NSMakePoint(frame.size.width / 2 - button.frame.size.width / 2, frame.size.height / 2 - button.frame.size.height / 2)];

@@ -18,6 +18,8 @@
 	
 	if(output != nil)
 	{
+		output.textButton = NO;
+
 		[output.cell initWithPage: imageName : RB_STATE_STANDARD];
 		
 		//Update a couple of prefs
@@ -54,6 +56,8 @@
 	
 	if(output != nil)
 	{
+		output.textButton = NO;
+		
 		[output.cell initWithPage: imageName : stateAtStartup];
 		
 		//Update a couple of prefs
@@ -95,6 +99,8 @@
 	
 	if(output != nil)
 	{
+		output.textButton = YES;
+		
 		[output.cell initWithText:string];
 		
 		if(!NSEqualRects(frame, NSZeroRect))
@@ -128,6 +134,22 @@
 	
 	self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
 	[self setNeedsDisplay];
+}
+
+- (void) sizeToFit
+{
+	if(self.textButton)
+	{
+		NSRect frame = self.frame;
+		
+		frame.size = [self.cell sizeOfTextCell];
+		frame.size.height += 4;
+		frame.size.width += 10;
+		
+		self.frame = frame;
+	}
+	else
+		[super sizeToFit];
 }
 
 + (Class) cellClass
@@ -322,6 +344,14 @@
 	return self;
 }
 
+- (NSSize) sizeOfTextCell
+{
+	if(textCell != nil)
+		return textCell.attributedStringValue.size;
+	
+	return NSZeroSize;
+}
+
 - (NSColor*) getBorderColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BORDER_BUTTONS :nil];
@@ -329,8 +359,7 @@
 
 - (NSColor*) getBackgroundColor
 {
-	//	if([self isEnabled])
-		return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
 }
 
 - (NSColor *) getFontColor
