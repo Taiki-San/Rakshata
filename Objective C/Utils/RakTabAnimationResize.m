@@ -56,16 +56,7 @@
 		[self cleanUpAnimation];
 	}];
 	
-	//Nous devions mettre à jour la frame du MDL en premier
-	//Maj seulement MDL créait un bug vraiment tordu, possiblement lié à Cocoa lui même.
-	for(currentView in _views)
-	{
-		if([currentView class] == [MDL class])
-		{
-			[currentView createFrame];
-			break;
-		}
-	}
+	[(MDL*) sharedTabMDL createFrame];
 
 	char pos = 0;
 	for(currentView in _views)
