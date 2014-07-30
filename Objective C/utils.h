@@ -28,3 +28,5 @@
 #import "RakList.h"
 #import "RakPopover.h"
 #import "RakForegroundView.h"
+
+#define NSCenteredRect(base, content) NSMakePoint(base.bounds.size.width / 2 - content.bounds.size.width / 2, base.bounds.size.height / 2 - content.bounds.size.height / 2)

@@ -44,11 +44,12 @@ enum
 	foreground.delegate = self;
 	originalSize = self.view.frame.size;
 	
-	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!\nElle ne sera transmise à aucun tiers" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
+	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
 	[footerPlaceholder sizeToFit];
 	
-	[footerPlaceholder setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - footerPlaceholder.frame.size.width / 2, 10)];
+	NSPoint origin = NSCenteredRect(container, footerPlaceholder);	origin.y += 5;
+	[footerPlaceholder setFrameOrigin: origin];
 	[container addSubview:footerPlaceholder];
 	
 	[foreground switchState];
