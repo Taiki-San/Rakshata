@@ -541,7 +541,7 @@
 
 - (NSTableRowView *) outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
 {
-	if (![self outlineView:outlineView isGroupItem:item])
+	if (![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakSerieListItem class] || ![(RakSerieListItem*) item isRootItem]))
 		return nil;
 	
 	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:nil];

@@ -33,6 +33,21 @@
 	
 }
 
+-(void)didAddSubview:(NSView *)subview
+{
+	[super didAddSubview:subview];
+	
+	if ([subview isKindOfClass:[NSButton class]])
+	{
+		// This is (presumably) the button holding the outline triangle button.
+		// We set our own images here.
+		
+		uint themeID = [Prefs getCurrentTheme:nil];
+		[(NSButton *)subview setImage:[RakResPath craftResNameFromContext:@"TD->" :NO :YES :themeID]];
+		[(NSButton *)subview  setAlternateImage:[RakResPath craftResNameFromContext:@"TD-v" :NO :YES :themeID]];
+	}
+}
+
 @end
 
 @implementation RakTreeView
