@@ -36,12 +36,10 @@
 	
 	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!\nElle ne sera transmise à aucun tiers" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
-	[footerPlaceholder setAlphaValue:1];
 	[footerPlaceholder sizeToFit];
 	
 	[footerPlaceholder setFrameOrigin: NSMakePoint(container.frame.size.width / 2 - footerPlaceholder.frame.size.width / 2, 10)];
 	[container addSubview:footerPlaceholder];
-	[container setWantsLayer:YES];
 	
 	[foreground switchState];
 }
@@ -81,36 +79,57 @@
 	[footerPlaceholder.animator setFrame:frame];
 	[footerPlaceholder.animator setAlphaValue:0];
 	
-	[self animateLogin];
+	if(newAccount)
+		[self animationSignup : YES];
+	else
+		[self animateLogin : YES];
 		
 	[NSAnimationContext endGrouping];
 }
 
 #pragma mark - Animation
 
-- (void) animateLogin
+- (void) animationSignup : (BOOL) appear
+{
+	
+}
+
+- (void) animateLogin : (BOOL) appear
 {
 	if(forgottenPass == nil)
 	{
 		forgottenPass = [RakButton allocWithText:@"Mot de passe oublié?" : container.bounds];
 		[forgottenPass sizeToFit];
+		[forgottenPass setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
 		[container addSubview:forgottenPass];
-		[forgottenPass setFrameOrigin:NSMakePoint(0, 13)];
 	}
-	
-	[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
-	[forgottenPass.animator setFrameOrigin:NSMakePoint(14, forgottenPass.frame.origin.y)];
 	
 	if(login == nil)
 	{
 		login = [RakButton allocWithText:@"Connexion" : container.bounds];
 		[login sizeToFit];
 		[container addSubview:login];
-		[login setFrameOrigin:NSMakePoint(0, 13)];
+		[login setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - login.frame.size.height / 2 + 3)];
 	}
+
+	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - login.bounds.size.width) / 3;
 	
-	[login setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
-	[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - 14 - login.frame.size.width, login.frame.origin.y)];
+	if(appear)
+	{
+		[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
+		[forgottenPass.animator setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
+		
+		[login setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
+		[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - border - login.frame.size.width, login.frame.origin.y)];
+	}
+	else
+	{
+		[forgottenPass setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
+		[forgottenPass.animator setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
+		
+		[login setFrameOrigin:NSMakePoint(container.bounds.size.width - border - login.frame.size.width, login.frame.origin.y)];
+		[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
+	}
 }
 
 #pragma mark - Delegate

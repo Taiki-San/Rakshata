@@ -40,7 +40,6 @@ enum
 @interface RakAuthController : NSViewController
 {
 	IBOutlet NSView * _newAccount;
-	IBOutlet NSView * _login;
 	
 	IBOutlet NSView * container;
 	IBOutlet NSView * _containerEmail;
