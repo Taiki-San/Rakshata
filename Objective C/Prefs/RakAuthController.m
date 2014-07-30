@@ -10,6 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	AUTH_STATE_GOOD,
+	AUTH_STATE_LOADING,
+	AUTH_STATE_NONE,
+	AUTH_STATE_INVALID
+};
+
+//Arbitrary frames come from IB
+
 @implementation RakAuthController
 
 - (void) launch
@@ -53,22 +63,33 @@
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-	mailInput = [[[RakEmailField alloc] initWithFrame:_containerEmail.frame] autorelease];
-	[self.view addSubview:mailInput];	[_containerEmail removeFromSuperview];	_containerEmail = nil;
+	mailInput = [[[RakEmailField alloc] initWithFrame:_containerMail.bounds] autorelease];
+	[_containerMail addSubview:mailInput];
 	[mailInput addController:self];
 
-	passInput = [[[RakPassField alloc] initWithFrame: _containerPass.frame] autorelease];
-	[self.view addSubview:passInput];	[_containerPass removeFromSuperview];	_containerPass = nil;
+	passInput = [[[RakPassField alloc] initWithFrame:_containerPass.bounds] autorelease];
+	[_containerPass addSubview:passInput];
 	
 	[mailInput setNextKeyView:passInput];	//don't work
 	[passInput setNextKeyView:mailInput];
+}
+
+- (void) wakePassUp
+{
+	passInput.wantCustomBorder = YES;
+	passInput.currentStatus = AUTH_STATE_NONE;
+	
+	if([NSThread isMainThread])
+		[passInput setNeedsDisplay:YES];
+	else
+		[passInput performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
 }
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
 {
 	//For now, we assume we start from an empty state
 	NSRect frame;
-
+	
 	[NSAnimationContext beginGrouping];
 	
 	[[NSAnimationContext currentContext] setDuration:0.2f];
@@ -83,7 +104,7 @@
 		[self animationSignup : YES];
 	else
 		[self animateLogin : YES];
-		
+	
 	[NSAnimationContext endGrouping];
 }
 
@@ -91,26 +112,106 @@
 
 - (void) animationSignup : (BOOL) appear
 {
+	if(privacy == nil)
+	{
+		privacy = [[[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_SURVOL :nil]] autorelease];
+		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
+		
+		privacy.URL = @"https://www.rakshata.com/privacy";
+		[container addSubview:privacy];
+	}
+	else if(privacy.isHidden)
+		[privacy setHidden:NO];
 	
+	if(terms == nil)
+	{
+		terms = [[[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_SURVOL :nil]] autorelease];
+		[terms setFrameOrigin:NSMakePoint(0, 49)];
+		
+		terms.URL = @"https://www.rakshata.com/terms";
+		[container addSubview:terms];
+	}
+	else if(terms.isHidden)
+		[terms setHidden:NO];
+	
+	if(accept == nil)
+	{
+		accept = [[NSButton alloc] initWithFrame : container.bounds];
+		[accept setButtonType:NSSwitchButton];
+		[accept setImagePosition:NSImageOnly];
+		[accept sizeToFit];
+		
+		[accept setFrameOrigin:NSMakePoint(0, 49 + terms.bounds.size.height / 2 - accept.bounds.size.height / 2)];
+		[container addSubview:accept];
+	}
+	else if(accept.isHidden)
+		[accept setHidden:NO];
+	
+	if(confirm == nil)
+	{
+		confirm = [[RakButton allocWithText:@"Créer un compte" : container.bounds] autorelease];
+		[confirm sizeToFit];
+		[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
+		[container addSubview:confirm];
+	}
+	else if(confirm.isHidden)
+		[confirm setHidden:NO];
+	
+	if(appear)
+	{
+		//Resize main view
+		NSRect frame = self.view.frame;
+		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - originalSize.height / 2 - 51, frame.size.width, frame.size.height +  51)];
+		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, container.bounds.size.height + 51)];
+		
+		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
+		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
+		
+		[accept setFrameOrigin:NSMakePoint(container.bounds.size.width, accept.frame.origin.y)];
+		[accept.animator setFrameOrigin:NSMakePoint(NSMaxX(terms.frame) + 10, accept.frame.origin.y)];
+		
+		[terms setFrameOrigin:NSMakePoint(-terms.bounds.size.width, terms.frame.origin.y)];
+		[terms.animator setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)]; 	//32 = border + button width
+		
+		[confirm setAlphaValue:0];
+		[confirm.animator setAlphaValue:1];
+		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
+		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
+	}
+}
+
+- (void) postAnimationWorkSignup : (BOOL) appear
+{
+	if(!appear)
+	{
+		[privacy setHidden:YES];
+		[terms setHidden:YES];
+		[accept setHidden:YES];
+		[confirm setHidden:YES];
+	}
 }
 
 - (void) animateLogin : (BOOL) appear
 {
 	if(forgottenPass == nil)
 	{
-		forgottenPass = [RakButton allocWithText:@"Mot de passe oublié?" : container.bounds];
+		forgottenPass = [[RakButton allocWithText:@"Mot de passe oublié?" : container.bounds] autorelease];
 		[forgottenPass sizeToFit];
 		[forgottenPass setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
 		[container addSubview:forgottenPass];
 	}
+	else if(forgottenPass.isHidden)
+		[forgottenPass setHidden:NO];
 	
 	if(login == nil)
 	{
-		login = [RakButton allocWithText:@"Connexion" : container.bounds];
+		login = [[RakButton allocWithText:@"Connexion" : container.bounds] autorelease];
 		[login sizeToFit];
 		[container addSubview:login];
 		[login setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - login.frame.size.height / 2 + 3)];
 	}
+	else if(login.isHidden)
+		[login setHidden:NO];
 
 	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - login.bounds.size.width) / 3;
 	
@@ -129,6 +230,15 @@
 		
 		[login setFrameOrigin:NSMakePoint(container.bounds.size.width - border - login.frame.size.width, login.frame.origin.y)];
 		[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
+	}
+}
+
+- (void) postAnimationWorkLogin : (BOOL) appear
+{
+	if(!appear)
+	{
+		[forgottenPass setHidden:YES];
+		[login setHidden:YES];
 	}
 }
 
@@ -159,7 +269,7 @@
 	
 	if(self != nil)
 	{
-		currentStatus = AUTHEMAIL_STATE_NONE;
+		currentStatus = AUTH_STATE_NONE;
 		
 		((RakTextCell*)self.cell).customizedInjectionPoint = YES;
 		((RakTextCell*)self.cell).centered = YES;
@@ -192,29 +302,29 @@
 
 - (NSColor *) getBorderColor
 {
-	if(currentStatus != AUTHEMAIL_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+	if(currentStatus != AUTH_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 	{
-		currentStatus = AUTHEMAIL_STATE_INVALID;
+		currentStatus = AUTH_STATE_INVALID;
 	}
 	
 	switch (currentStatus)
 	{
-		case AUTHEMAIL_STATE_GOOD:
+		case AUTH_STATE_GOOD:
 		{
 			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];;
 		}
 			
-		case AUTHEMAIL_STATE_INVALID:
+		case AUTH_STATE_INVALID:
 		{
 			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];;
 		}
 			
-		case AUTHEMAIL_STATE_LOADING:
+		case AUTH_STATE_LOADING:
 		{
 			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];;
 		}
 			
-		case AUTHEMAIL_STATE_NONE:
+		case AUTH_STATE_NONE:
 		default:
 		{
 			return [super getBorderColor];
@@ -227,18 +337,20 @@
 - (void)textDidBeginEditing:(NSNotification *)aNotification
 {
 	self.currentEditingSession++;
-	currentStatus = AUTHEMAIL_STATE_NONE;
+	currentStatus = AUTH_STATE_NONE;
 }
 
 - (void)textDidEndEditing:(NSNotification *)aNotification
 {
 	uint currentSession = self.currentEditingSession;
 	
-	currentStatus = AUTHEMAIL_STATE_LOADING;
+	currentStatus = AUTH_STATE_LOADING;
 	[self setNeedsDisplay];
 	
 	[self performSelectorInBackground:@selector(checkEmail:) withObject:@(currentSession)];
 }
+
+#pragma mark - Core
 
 - (void) checkEmail : (NSNumber *) session
 {
@@ -251,11 +363,11 @@
 		
 		[self checkEmailSub : currentSession];
 		
-		if(currentStatus != AUTHEMAIL_STATE_GOOD)
+		if(currentStatus != AUTH_STATE_GOOD)
 			[CATransaction commit];
 	}
 	else
-		currentStatus = AUTHEMAIL_STATE_INVALID;
+		currentStatus = AUTH_STATE_INVALID;
 	
 	[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
 }
@@ -272,13 +384,13 @@
 	
 	if(currentSession == self.currentEditingSession && !checkNetworkState(CONNEXION_OK))
 	{
-		currentStatus = AUTHEMAIL_STATE_INVALID;
+		currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
 	if([self.stringValue length] > 100)
 	{
-		currentStatus = AUTHEMAIL_STATE_INVALID;
+		currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
@@ -292,14 +404,15 @@
 	
 	if(retValue == 2)
 	{
-		currentStatus = AUTHEMAIL_STATE_INVALID;
+		currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
-	currentStatus = AUTHEMAIL_STATE_GOOD;
+	currentStatus = AUTH_STATE_GOOD;
 	
 	if(authController != nil)
 	{
+		[authController wakePassUp];
 		[CATransaction commit];
 		[authController validEmail : retValue == 0 : currentSession];
 	}
@@ -317,13 +430,47 @@
 	{
 		[self setBezeled:NO];
 		[self setBordered:YES];
-		self.wantCustomBorder = YES;
+		self.wantCustomBorder = NO;
+		[self setDelegate:self];
 
 		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 	}
 	
 	return self;
+}
+
+- (NSColor *) getBorderColor
+{
+	switch (self.currentStatus)
+	{
+		case AUTH_STATE_GOOD:
+		{
+			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];;
+		}
+			
+		case AUTH_STATE_INVALID:
+		{
+			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];;
+		}
+			
+		case AUTH_STATE_LOADING:
+		{
+			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];;
+		}
+			
+		case AUTH_STATE_NONE:
+		default:
+		{
+			return [super getBorderColor];
+		}
+	}
+}
+
+- (void)textDidEndEditing:(NSNotification *)aNotification
+{
+	self.currentStatus = AUTH_STATE_LOADING;
+	[self setNeedsDisplay];
 }
 
 + (Class) cellClass

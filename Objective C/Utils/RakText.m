@@ -97,20 +97,6 @@
 	[super dealloc];
 }
 
-#pragma mark - Apply changes
-
-- (void) underline : (BOOL) underline
-{
-	NSMutableAttributedString *string = [[[self attributedStringValue] mutableCopy] autorelease];
-	
-	if(underline)
-		[string addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:NSMakeRange(0, string.length)];
-	else
-		[string removeAttribute:NSUnderlineStyleAttributeName range:NSMakeRange(0, string.length)];
-	
-	[self setAttributedStringValue : string];
-}
-
 @end
 
 @implementation RakFormatterLength
@@ -141,3 +127,56 @@
 
 @end
 
+#define RADIUS 2
+
+@implementation RakTextClickable
+
+- (id) initWithText : (NSRect)frame : (NSString *) text : (NSColor *) color;
+{
+	self = [self initWithFrame:frame];
+	
+	if(self != nil)
+	{
+		RakText * content = [[[RakText alloc] initWithText : frame : text : color] autorelease];
+		[content sizeToFit];
+		
+		[self setFrameSize:NSMakeSize(content.bounds.size.width + 2 * RADIUS, content.bounds.size.height + 2 * RADIUS)];
+		[content setFrameOrigin:NSMakePoint(RADIUS, RADIUS)];
+
+		[self addSubview:content];
+	}
+	
+	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	[self.subviews[0] setFrame:NSInsetRect(frameRect, RADIUS, RADIUS)];
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(backgroundColor == nil)
+		backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED : self];
+	
+	[backgroundColor setFill];
+	[[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:RADIUS yRadius:RADIUS] fill];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] == [Prefs class])
+	{
+		backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED : nil];
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	if(self.URL != nil)
+		[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:self.URL]];
+}
+
+@end

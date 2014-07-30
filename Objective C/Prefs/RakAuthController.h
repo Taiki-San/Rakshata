@@ -10,14 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	AUTHEMAIL_STATE_GOOD,
-	AUTHEMAIL_STATE_LOADING,
-	AUTHEMAIL_STATE_NONE,
-	AUTHEMAIL_STATE_INVALID
-};
-
 @class RakAuthController;
 
 @interface RakEmailField : RakText <NSTextFieldDelegate>
@@ -33,16 +25,16 @@ enum
 
 @end
 
-@interface RakPassField : RakText
+@interface RakPassField : RakText <NSTextFieldDelegate>
+
+@property byte currentStatus;
 
 @end
 
 @interface RakAuthController : NSViewController
 {
-	IBOutlet NSView * _newAccount;
-	
 	IBOutlet NSView * container;
-	IBOutlet NSView * _containerEmail;
+	IBOutlet NSView * _containerMail;
 	IBOutlet NSView * _containerPass;
 	
 	RakForegroundView * foreground;
@@ -59,8 +51,16 @@ enum
 	//Container
 	RakText * footerPlaceholder;
 	
+		//Login
 	RakButton * forgottenPass;
 	RakButton * login;
+	
+		//Signup
+	RakTextClickable * privacy;
+	RakTextClickable * terms;
+	NSButton * accept;
+	RakButton * confirm;
+	
 	
 	//Data
 	NSSize originalSize;

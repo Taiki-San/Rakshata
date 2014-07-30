@@ -316,7 +316,7 @@ byte checkLogin(const char adresseEmail[100])
 
     /*On vérifie la validité de la chaîne*/
     for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
-    if(i == 100) //on a pas de @
+    if(i == 0 || i == 100) //on a pas de @, ou rien avant
         return 2;
 
     for(; i < 100 && adresseEmail[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)

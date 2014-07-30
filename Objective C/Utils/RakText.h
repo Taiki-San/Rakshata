@@ -19,9 +19,6 @@
 - (NSColor *) getBorderColor;
 - (void) additionalDrawing;
 
-//Public API
-- (void) underline : (BOOL) underline;
-
 @end
 
 @interface RakFormatterLength : NSFormatter
@@ -29,5 +26,16 @@
 @property uint maxLength;
 
 - (instancetype) init : (uint) length;
+
+@end
+
+@interface RakTextClickable : NSView
+{
+	NSColor * backgroundColor;
+}
+
+@property (retain) NSString * URL;
+
+- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 
 @end
