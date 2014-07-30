@@ -24,7 +24,7 @@
 		[button sizeToFit];
 		[button setTarget:self];
 		[button setAction:@selector(login)];
-		[button setFrameOrigin:NSMakePoint(frame.size.width / 2 - button.frame.size.width / 2, frame.size.height / 2 - button.frame.size.height / 2)];
+		[button setFrameOrigin:NSCenteredRect(frame, button.bounds)];
 		[mainView addSubview:button];
 	}
     return self;

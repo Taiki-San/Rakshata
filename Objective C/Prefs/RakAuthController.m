@@ -48,7 +48,7 @@ enum
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
 	[footerPlaceholder sizeToFit];
 	
-	NSPoint origin = NSCenteredRect(container, footerPlaceholder);	origin.y += 5;
+	NSPoint origin = NSCenteredViews(container, footerPlaceholder);	origin.y += 5;
 	[footerPlaceholder setFrameOrigin: origin];
 	[container addSubview:footerPlaceholder];
 	
