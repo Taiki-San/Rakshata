@@ -170,8 +170,9 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 	
 	if(!prix)	//Impossible, but shut a warning down
 		quit_thread(0);
-
-    if(getPassword(GUI_DEFAULT_THREAD, password) == 1)
+	
+#warning "Need to call the login window"
+    if(rand() % 2 == 1)
     {
         int i = 0;
         for(; i < sizeStatusLocal; i++)

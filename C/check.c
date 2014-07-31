@@ -252,10 +252,9 @@ void networkAndVersionTest()
         }
 
         //Nouveau killswitch
-        if(loadEmailProfile())
+        if(loadEmailProfile() && COMPTE_PRINCIPAL_MAIL != NULL)
 		{
-			for(i = strlen(COMPTE_PRINCIPAL_MAIL)-1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie que c'est une adresse email
-			if(!i)
+			if(!validateEmail(COMPTE_PRINCIPAL_MAIL))
             {
                 remove(SECURE_DATABASE);
                 quit_thread(0);

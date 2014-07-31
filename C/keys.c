@@ -15,27 +15,33 @@
 
 #define NB_ROUNDS_MK	512
 
-static char passwordGB[2*SHA256_DIGEST_LENGTH+1];
+static char passwordGB[2*SHA256_DIGEST_LENGTH];
 
+// Cette fonction a pour but de récupérer la clée de chiffrement principale (cf RSP)
 int getMasterKey(unsigned char *input)
 {
-    /**Cette fonction a pour but de récupérer la clée de cryptage (cf prototole)**/
-    int nombreCle, i, j;
-	bool fileInvalid;
-	char date[100];
-    unsigned char buffer[250 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
-    size_t size;
-	FILE* bdd = NULL;
-	
-    *input = 0;
-	memset(bufferLoad, 0, sizeof(bufferLoad));
-
-    if(COMPTE_PRINCIPAL_MAIL[0] == 0)
+    if(COMPTE_PRINCIPAL_MAIL == NULL)
     {
 #warning "Notify Objective-C interface we need it"
         if(get_compte_infos() == PALIER_QUIT)
             return PALIER_QUIT;
     }
+	
+	int nombreCle, i, j;
+	uint addressLength = ustrlen(COMPTE_PRINCIPAL_MAIL);
+	bool fileInvalid;
+	char date[100];
+	unsigned char buffer[addressLength + 101 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+	size_t size;
+	FILE* bdd = NULL;
+	
+	if(addressLength + 101 + WP_DIGEST_SIZE + 1 < WP_DIGEST_SIZE + 102)
+		return PALIER_QUIT;
+	else
+		buffer[addressLength+100] = 0;
+	
+	*input = 0;
+	memset(bufferLoad, 0, sizeof(bufferLoad));
 
     do
     {
@@ -72,13 +78,14 @@ int getMasterKey(unsigned char *input)
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
     get_file_date(SECURE_DATABASE, date);
-	snprintf((char *) buffer, 249, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+	snprintf((char *) buffer, addressLength + 100, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+	
 #ifndef DEV_VERSION
     crashTemp(date, 100);
 #endif
-    generateFingerPrint(&buffer[250]);	//Buffer < 250 contient la concatenation de la date et de l'email. buffer > 250 contient la fingerprint
+    generateFingerPrint(&buffer[addressLength + 101]);	//Buffer < contient la concatenation de la date et de l'email. buffer > contient la fingerprint
 
-	internal_pbkdf2(SHA256_DIGEST_LENGTH, buffer, SHA256_DIGEST_LENGTH, &buffer[250], WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, hash);
+	internal_pbkdf2(SHA256_DIGEST_LENGTH, buffer, ustrlen(buffer), &buffer[addressLength + 101], WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, hash);
 #ifndef DEV_VERSION
     crashTemp(buffer, sizeof(buffer));
 #endif
@@ -162,8 +169,7 @@ int earlyInit(int argc, char *argv[])
 	pthread_mutex_init(&mutex, NULL);
 #endif
 
-    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-    crashTemp(passwordGB, 2*SHA256_DIGEST_LENGTH+1);
+	COMPTE_PRINCIPAL_MAIL = NULL;	passwordGB[0] = 0;
     resetUpdateDBCache();
     initializeDNSCache();
 
@@ -183,150 +189,103 @@ int earlyInit(int argc, char *argv[])
 
 int get_compte_infos()
 {
-    uint i;
-	if(!loadEmailProfile())
-    {
+	if(!loadEmailProfile() || COMPTE_PRINCIPAL_MAIL == NULL)
 		return PALIER_QUIT;
-    }
 
-    /*On vérifie la validité de la chaine*/
-    for(i = strlen(COMPTE_PRINCIPAL_MAIL) - 1; i > 0 && COMPTE_PRINCIPAL_MAIL[i] != '@'; i--); //On vérifie l'@
-    if(!i) //on a pas de @
-    {
-        removeFromPref(SETTINGS_EMAIL_FLAG);
-        logR("Pas d'arobase\n");
-        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-        exit(-1);
-    }
+    if(!validateEmail(COMPTE_PRINCIPAL_MAIL))
+		exit(-1);
 
-    for(; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
-    if(i == 100) //on a pas de point aprés l'arobase
-    {
-        removeFromPref(SETTINGS_EMAIL_FLAG);
-        logR("Pas de point après l'arobase\n");
-        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-        exit(-1);
-    }
-
-    for(i = 0; i < 100 && COMPTE_PRINCIPAL_MAIL[i] != '\'' && COMPTE_PRINCIPAL_MAIL[i] != '\"'; i++);
-    if(i != 100)
-    {
-        removeFromPref(SETTINGS_EMAIL_FLAG);
-        logR("Overfl0w et/ou injection SQL\n");
-        crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-        exit(-1);
-    }
-    return 0;
+	return 0;
 }
 
-void logon()
+bool validateEmail(const char* adresseEmail)
 {
-	char* adresseEmail = "taiki@rakshata.com";
+	uint pos;
 	
-	byte login = checkLogin(adresseEmail);
+	for(pos = 0; adresseEmail[pos] && adresseEmail[pos] != '@'; pos++);
 	
-	if(login == 0 || login == 1)
+	if(pos == 0 || adresseEmail[pos] == 0)
+		return false;
+	
+	for(; adresseEmail[pos] && adresseEmail[pos] != '.'; pos++);
+	
+	if(adresseEmail[pos] == 0 || adresseEmail[pos + 1] == 0)
+		return false;
+	return true;
+}
+
+void updateEmail(char * email)
+{
+	uint length = strlen(email);
+	
+	if(length + 1 == 0)		//Overflow, 4GB, we're messing with us
+		return;
+	
+	free(COMPTE_PRINCIPAL_MAIL);
+	COMPTE_PRINCIPAL_MAIL = malloc((length + 1) * sizeof(char));
+	
+	if(COMPTE_PRINCIPAL_MAIL == NULL)
+		return;
+	
+	memcpy(COMPTE_PRINCIPAL_MAIL, email, length * sizeof(char));
+	COMPTE_PRINCIPAL_MAIL[length] = 0;
+	
+	char * prefs = malloc((length + 30) * sizeof(char));
+	
+	if(prefs == NULL)
+		return;
+	
+	snprintf(prefs, length + 30, "<"SETTINGS_EMAIL_FLAG">\n%s\n</"SETTINGS_EMAIL_FLAG">\n", email);
+	updatePrefs(SETTINGS_EMAIL_FLAG, prefs);
+	free(prefs);
+	
+	remove(SECURE_DATABASE);
+}
+
+void addPassToCache(char * hashedPassword)
+{
+	usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH, hashedPassword);
+}
+
+bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1])
+{
+	if(!passwordGB[0])
+		return false;
+	
+	usstrcpy(pass, 2*SHA256_DIGEST_LENGTH, passwordGB);
+	pass[2*SHA256_DIGEST_LENGTH] = 0;
+	return true;
+}
+
+void passToLoginData(char passwordIn[100], char passwordSalted[2*SHA256_DIGEST_LENGTH+1])
+{
+    uint posRemote, posPass;
+    char pass[100 + 15], serverTime[300];
+
+	if(download_mem("https://"SERVEUR_URL"/time.php", NULL, serverTime, sizeof(serverTime), SSL_ON) != CODE_RETOUR_OK)
 	{
-		char password[100];
-		crashTemp(password, 100);
-		
-		switch(checkPass(adresseEmail, password, login == 0))
-		{
-			case 0: //Rejected
-			{
-				break;
-			}
-			case 1: //Accepted
-			{
-				char temp[200];
-				
-				for(byte i = 0; i < 100 && adresseEmail[i]; i++)
-					COMPTE_PRINCIPAL_MAIL[i] = adresseEmail[i];
-				
-				removeFromPref(SETTINGS_EMAIL_FLAG);
-				snprintf(temp, 200, "<%s>\n%s\n</%s>\n", SETTINGS_EMAIL_FLAG, COMPTE_PRINCIPAL_MAIL, SETTINGS_EMAIL_FLAG);
-				addToPref(SETTINGS_EMAIL_FLAG, temp);
-				remove(SECURE_DATABASE);
-				usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
-				break;
-			}
-		}
+		crashTemp(passwordSalted, 2 * SHA256_DIGEST_LENGTH + 1);
+		return;
 	}
-}
 
-int getPassword(int curThread, char password[100])
-{
-    if(passwordGB[0] != 0)
-    {
-        ustrcpy(password, passwordGB);
-        return 1;
-    }
+	for(posRemote = strlen(serverTime); posRemote > 0 && serverTime[posRemote] != ' '; posRemote--); //On veut la dernière donnée
 
-	while (checkNetworkState(CONNEXION_TEST_IN_PROGRESS));
-
-    while(1)
-    {
-		//Get Pass
-#ifdef DEV_VERSION
-		strncpy(password, "YuW7Nr8|<7543|*d", strlen("YuW7Nr8|<7543|*d"));
-		password[strlen("YuW7Nr8|<7543|*d")] = 0;
-#else
-		#warning "Lolnope"
-#endif
-
-		//Traitement
-        if(checkPass(COMPTE_PRINCIPAL_MAIL, password, 0))
-        {
-            usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH+1, password);
-            return 1;
-        }
-        else if(NETWORK_ACCESS == CONNEXION_OK)
-        {
-        }
-		else
-			return 0;
-    }
-}
-
-void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1])
-{
-    int i = 0, j = 0;
-    char temp[100], serverTime[300];
-    snprintf(temp, 100, "https://"SERVEUR_URL"/time.php"); //On salte avec l'heure du serveur
-    crashTemp(serverTime, 300);
-    download_mem(temp, NULL, serverTime, 300, SSL_ON);
-
-    for(i = strlen(serverTime); i > 0 && serverTime[i] != ' '; i--) //On veut la dernière donnée
-    {
-        if(serverTime[i] == '\r' || serverTime[i] == '\n')
-            serverTime[i] = 0;
-    }
-    ustrcpy(temp, passwordIn);
-    for(j = strlen(temp), i++; j < 100 && serverTime[i]; temp[j++] = serverTime[i++]); //On salte
-    temp[j<99 ? j : 99] = 0;
-    passwordSalted[2*SHA256_DIGEST_LENGTH] = 0;
-    sha256_legacy(temp, passwordSalted);
-    MajToMin(passwordSalted);
+	strncpy(pass, passwordIn, sizeof(pass));
+	
+	for(posPass = strlen(pass), posRemote++; isNbr(serverTime[posRemote]) && posPass < sizeof(pass) - 1; pass[posPass++] = serverTime[posRemote++]); //On salte
+	pass[posPass] = 0;
+	
+    sha256_legacy(pass, passwordSalted);
 }
 
 byte checkLogin(const char adresseEmail[100])
 {
-    uint i = 0;
     char URL[200], output[56];
 
-    /*On vérifie la validité de la chaîne*/
-    for(i = 0; i < 100 && adresseEmail[i] != '@'; i++); //On vérifie l'@
-    if(i == 0 || i == 100) //on a pas de @, ou rien avant
-        return 2;
+	if(!validateEmail(adresseEmail))
+		return 2;
 
-    for(; i < 100 && adresseEmail[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
-    if(i == 100) //on a pas de point aprés l'arobase
-        return 2;
-
-    for(i = 0; i < 100 && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
-    if(i != 100)
-        return 2;
-
+#warning "Encode email, or pass on POST"
     snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
 	output[0] = 0;
@@ -345,49 +304,29 @@ byte checkLogin(const char adresseEmail[100])
     return 2;
 }
 
-int checkPass(char adresseEmail[100], char password[100], bool createAccount)
+#warning "Messed around, need test"
+int login(char adresseEmail[100], char password[256], bool createAccount)
 {
-    int i = 0;
-    char URL[300], buffer_output[500], hash1[2*SHA256_DIGEST_LENGTH+1], hash2[2*SHA256_DIGEST_LENGTH+1], hash3[2*SHA256_DIGEST_LENGTH+1];
+    char passHashed[2*SHA256_DIGEST_LENGTH+1], URL[300], downloadedData[500], dataCheck[2*SHA256_DIGEST_LENGTH+1];
 
-    /*On vérifie la validité de la chaîne*/
-    for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '@'; i++); //On vérifie l'@
-    if(adresseEmail[i] != '@') //on a pas de @
-        return 2;
-
-    for(; i < 100 && adresseEmail[i] && adresseEmail[i] != '.'; i++); // . aprés l'arobase (.com/.co.uk/.fr)
-    if(adresseEmail[i] != '.') //on a pas de point aprés l'arobase
-        return 2;
-
-    for(i = 0; i < 100 && adresseEmail[i] && adresseEmail[i] != '\'' && adresseEmail[i] != '\"'; i++); // Injection SQL
-    if(adresseEmail[i] == '\'' || adresseEmail[i] == '\"')
-        return 2;
-
-	if(password[0] == 0)
+	if(!validateEmail(adresseEmail))
 		return 2;
 
-    crashTemp(hash1, 2*SHA256_DIGEST_LENGTH+1);
-    sha256_legacy(password, hash1);
-    MajToMin(hash1);
-    crashTemp(hash2, 2*SHA256_DIGEST_LENGTH+1);
-    sha256_legacy(hash1, hash2); //On hash deux fois
-    MajToMin(hash2);
+	//Double SHA-256
+    sha256_legacy(password, passHashed);
+    sha256_legacy(passHashed, passHashed);
 
-	snprintf(URL, 300, "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, hash2); //Constitution de l'URL
-    crashTemp(buffer_output, 500);
-    download_mem(URL, NULL, buffer_output, 500, SSL_ON);
+	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
+    download_mem(URL, NULL, downloadedData, sizeof(downloadedData), SSL_ON);
 
-    minToMaj(buffer_output);
-    snprintf(URL, 300, "%s-access_granted", hash2);
-    sha256_legacy(URL, hash3);
-    hash3[2*SHA256_DIGEST_LENGTH] = 0;
+    snprintf(URL, sizeof(URL), "%s-access_granted", passHashed);
+    sha256_legacy(URL, dataCheck);
 
-    if(!strcmp(buffer_output, hash3)) //access granted
-    {
-        usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, hash2);
-        return 1;
-    }
-    return 0;
+    if(strncmp(downloadedData, dataCheck, sizeof(dataCheck) - 1)) //access denied
+		return 0;
+
+	usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, passHashed);
+	return 1;
 }
 
 int createSecurePasswordDB(unsigned char *key_sent)
@@ -399,10 +338,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
     if(key_sent == NULL)
     {
-        int ret_value = getPassword(GUI_DEFAULT_THREAD, password);
-        if(ret_value < 0)
-            return ret_value;
-        bdd = fopen(SECURE_DATABASE, "w+");
+#warning "Need to call the login window"
+		password[0] = 0;
+		bdd = fopen(SECURE_DATABASE, "w+");
     }
     else
         bdd = fopen(SECURE_DATABASE, "r+");
@@ -520,14 +458,13 @@ int createSecurePasswordDB(unsigned char *key_sent)
     return 0;
 }
 
-bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
+bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 {
     char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
     rawData outputRAW[SHA256_DIGEST_LENGTH+1];
 
     generateRandomKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
-    MajToMin(randomKeyHex);
     randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
     snprintf(temp, 1024, "https://"SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
@@ -557,8 +494,9 @@ bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH])
             internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, strlen(password), 2048, PBKDF2_OUTPUT_LENGTH, passDer);
             _AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY, 1);
-            decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
-            randomKeyHex[SHA256_DIGEST_LENGTH*2] = 0;
+
+			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
+			minToMaj(randomKeyHex);
 
             snprintf(temp, 1024, "https://"SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 

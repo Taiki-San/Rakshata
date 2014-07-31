@@ -68,7 +68,7 @@ void hexToCGFloat(const char *input, uint32_t length, double *output)
 
 void decToHex(const unsigned char *input, size_t length, char *output)
 {
-	char hex[]= "0123456789ABCDEF";
+	char hex[]= "0123456789abcdef";
 	
 	for (size_t i = 0; i < length; i++)
 	{

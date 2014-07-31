@@ -382,8 +382,11 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
         outputData.buf = buffer_out;
         outputData.length = buffer_length;
         outputData.current_pos = 0;
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
+
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
+		
+		buffer_out[0] = 0;
     }
 
     res = curl_easy_perform(curl);

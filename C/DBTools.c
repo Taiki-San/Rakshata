@@ -267,7 +267,7 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
 		
 		else if(!strcmp(team.type, TYPE_DEPOT_3)) //Payant
-			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s&user=%s", team.URLRepo, projectID, suffix, COMPTE_PRINCIPAL_MAIL);
+			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s", team.URLRepo, projectID, suffix);
 		
 		filenameTmp[pos] = '.';	filenameTmp[pos+1] = 't';	filenameTmp[pos+2] = 'm';	filenameTmp[pos+3] = 'p';	filenameTmp[pos+4] = '\0';
 		download_disk(URL, NULL, filenameTmp, ssl);

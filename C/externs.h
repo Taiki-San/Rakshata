@@ -13,6 +13,6 @@
 extern int langue; //Langue
 extern volatile int NETWORK_ACCESS;
 extern uint THREAD_COUNT;
-extern char COMPTE_PRINCIPAL_MAIL[100];
+extern char* COMPTE_PRINCIPAL_MAIL;
 
 extern MUTEX_VAR mutex;

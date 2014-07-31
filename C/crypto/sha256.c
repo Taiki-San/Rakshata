@@ -294,9 +294,9 @@ int sha256(unsigned char* input, void* output)
 {
     sha256_context ctx;
 
-    sha256_starts( &ctx );
+    sha256_starts(&ctx);
     sha256_update(&ctx, (uint8 *) input, ustrlen(input));
-    sha256_finish( &ctx, output);
+    sha256_finish(&ctx, output);
 
     return 0;
 }
@@ -304,13 +304,13 @@ int sha256(unsigned char* input, void* output)
 int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1])
 {
     sha256_context ctx;
-    unsigned char sha256sum[32];
+    unsigned char sha256sum[SHA256_DIGEST_LENGTH];
 
-    sha256_starts( &ctx );
+    sha256_starts(&ctx);
     sha256_update(&ctx, (uint8 *) input, strlen(input));
-    sha256_finish( &ctx, sha256sum );
+    sha256_finish(&ctx, sha256sum);
 
-    decToHex(sha256sum, 32, output);
+    decToHex(sha256sum, SHA256_DIGEST_LENGTH, output);
     return 0;
 }
 
