@@ -200,6 +200,9 @@ int get_compte_infos()
 
 bool validateEmail(const char* adresseEmail)
 {
+	if(adresseEmail == NULL)
+		return false;
+	
 	uint pos;
 	
 	for(pos = 0; adresseEmail[pos] && adresseEmail[pos] != '@'; pos++);
@@ -333,15 +336,16 @@ int createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
     unsigned char fingerPrint[WP_DIGEST_SIZE+1];
-    char password[100], date[200], temp[300];
+    char password[100], date[200], *filePass;
     FILE* bdd = NULL;
+	
+	if(COMPTE_PRINCIPAL_MAIL == NULL || (key_sent == NULL && !getPassFromCache(password)))
+	{
+		#warning "Need to call the login window"
+	}
 
     if(key_sent == NULL)
-    {
-#warning "Need to call the login window"
-		password[0] = 0;
 		bdd = fopen(SECURE_DATABASE, "w+");
-    }
     else
         bdd = fopen(SECURE_DATABASE, "r+");
 
@@ -379,15 +383,22 @@ int createSecurePasswordDB(unsigned char *key_sent)
         return 1;
     }
 #endif
-    snprintf(temp, 300, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
+	
+	uint length = ustrlen(COMPTE_PRINCIPAL_MAIL) + 100;
+	filePass = malloc(length);
+	
+	if(filePass == NULL)
+		return 1;
+	
+    snprintf(filePass, length, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
     unsigned char key[SHA256_DIGEST_LENGTH+1];
     key[SHA256_DIGEST_LENGTH] = 0;
 	
-	internal_pbkdf2(SHA256_DIGEST_LENGTH, (void*)temp, SHA256_DIGEST_LENGTH, fingerPrint, WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, key);
+	internal_pbkdf2(SHA256_DIGEST_LENGTH, (void*)filePass, strlen(filePass), fingerPrint, WP_DIGEST_SIZE, NB_ROUNDS_MK, PBKDF2_OUTPUT_LENGTH, key);
     crashTemp(fingerPrint, SHA256_DIGEST_LENGTH);
-    crashTemp(temp, 300);
-
+	crashTemp(filePass, length);	free(filePass);
+	
     RK_KEY rk[RKLENGTH(KEYBITS)];
     int nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
 
@@ -431,8 +442,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
         fclose(bdd);
     }
 
-	get_file_date(SECURE_DATABASE, temp);
-    if(strcmp(temp, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
+	char newDate[200];
+	get_file_date(SECURE_DATABASE, newDate);
+    if(strcmp(newDate, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
         hFile = CreateFileA(SECURE_DATABASE, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
@@ -462,6 +474,9 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 {
     char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
     rawData outputRAW[SHA256_DIGEST_LENGTH+1];
+
+	if(COMPTE_PRINCIPAL_MAIL == NULL)
+		return 1;
 
     generateRandomKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
@@ -541,7 +556,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 
 void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 {
-    if(!checkNetworkState(CONNEXION_OK))
+    if(COMPTE_PRINCIPAL_MAIL == NULL || !checkNetworkState(CONNEXION_OK))
         return;
 
     int i = 0, j = 0;

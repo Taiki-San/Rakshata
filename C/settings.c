@@ -138,26 +138,33 @@ void updatePrefs(char* flag, char *stringToAdd)
     addToPref(flag, stringToAdd);
 }
 
-int loadEmailProfile()
+bool loadEmailProfile()
 {
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
-		int i = 0;
-		char flag[] = "<"SETTINGS_EMAIL_FLAG">";
-        if((i = positionnementApresChar(prefs, flag)))
+		uint start, end, delta;
+		if((start = positionnementApresChar(prefs, "<"SETTINGS_EMAIL_FLAG">")) && (end = positionnementApresChar(prefs, "</"SETTINGS_EMAIL_FLAG">")))
         {
-            sscanfs(&(prefs[i]), "%s", COMPTE_PRINCIPAL_MAIL, 100);
-            free(prefs);
-            for(i = 0; COMPTE_PRINCIPAL_MAIL[i] && COMPTE_PRINCIPAL_MAIL[i] != '@'; i++);
-            if(COMPTE_PRINCIPAL_MAIL[i] && i != 0)
-                return 1;
+			delta = end - start;
+
+			COMPTE_PRINCIPAL_MAIL = malloc((delta + 1) * sizeof(char));
+			if(COMPTE_PRINCIPAL_MAIL != NULL)
+			{
+				memcpy(COMPTE_PRINCIPAL_MAIL, &(prefs[start]), delta);
+				COMPTE_PRINCIPAL_MAIL[delta] = 0;
+				free(prefs);
+				
+				if(validateEmail(COMPTE_PRINCIPAL_MAIL))
+					return true;
+			}
         }
-        else
-            free(prefs);
+		free(prefs);
     }
-    crashTemp(COMPTE_PRINCIPAL_MAIL, 100);
-    return 0;
+
+	free(COMPTE_PRINCIPAL_MAIL);
+	COMPTE_PRINCIPAL_MAIL = NULL;
+	return false;
 }
 
 int loadLangueProfile()

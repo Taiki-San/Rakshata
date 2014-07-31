@@ -131,17 +131,21 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
 
 char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
 {
-    int length = strlen(COMPTE_PRINCIPAL_MAIL) + 50, compteur;
-    char *output = NULL, buffer[500];
+	if(COMPTE_PRINCIPAL_MAIL == NULL)
+		return NULL;
+	
+    int emailLength = strlen(COMPTE_PRINCIPAL_MAIL), length = 3 * emailLength + 50, compteur;
+    char *output = NULL, *bufferEmail, buffer[500];
     void *buf;
 
     output = malloc(length * sizeof(char));
-    if(output != NULL)
+	bufferEmail = malloc(length * sizeof(char));
+    if(output != NULL && bufferEmail != NULL)
     {
-		char bufferURLDepot[3*LONGUEUR_URL], bufferEmail[3*sizeof(COMPTE_PRINCIPAL_MAIL)];
+		char bufferURLDepot[3*LONGUEUR_URL];
 		
-		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, sizeof(COMPTE_PRINCIPAL_MAIL), bufferEmail);
-        snprintf(output, length-1, "ver="CURRENTVERSIONSTRING"&mail=%s", COMPTE_PRINCIPAL_MAIL);
+		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, emailLength, bufferEmail);
+        snprintf(output, length - 1, "ver="CURRENTVERSIONSTRING"&mail=%s", bufferEmail);
 
         for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCT; compteur++)
         {
@@ -157,6 +161,13 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
             }
         }
     }
+	else
+	{
+		free(output);		output = NULL;
+	}
+	
+	free(bufferEmail);	bufferEmail = NULL;
+	
     return output;
 }
 
@@ -198,9 +209,15 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
             }
             else
             {
-                char URLStore[300];
-                snprintf(URLStore, 300, "http://store.rakshata.com/?mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-                ouvrirSite(URLStore);
+				uint length = strlen(COMPTE_PRINCIPAL_MAIL);
+                char *URLStore = malloc((length + 50) * sizeof(char));
+				
+				if(URLStore != NULL)
+				{
+					snprintf(URLStore, length + 50, "http://store.rakshata.com/?mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
+					ouvrirSite(URLStore);
+					free(URLStore);
+				}
             }
         }
     }
@@ -242,11 +259,18 @@ bool waitToGetPaid(unsigned int factureID)
 
 void MDLPDestroyCache(unsigned int factureID)
 {
-    char output[100], URL[0x100], POST[120];
+	uint length = strlen(COMPTE_PRINCIPAL_MAIL);
+    char output[100], URL[0x100], *POST;
 
     snprintf(URL, 0x100, "https://"SERVEUR_URL"/cancelOrder.php");
-    snprintf(POST, 120, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-    download_mem(URL, POST, output, 100, SSL_ON);
+
+	POST = malloc((length + 100) * sizeof(char));
+	if(POST != NULL)
+	{
+		snprintf(POST, length + 100, "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
+		download_mem(URL, POST, output, 100, SSL_ON);
+		free(POST);
+	}
 }
 
 /** Checks **/

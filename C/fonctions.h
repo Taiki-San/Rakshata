@@ -130,7 +130,7 @@ void addToPref(char* flag, char *stringToAdd);
 void removeFromPref(char* flag);
 void updatePrefs(char* flag, char *stringToAdd);
 int loadLangueProfile();
-int loadEmailProfile();
+bool loadEmailProfile();
 char* loadLargePrefs(char* flag);
 
 /**Thread.c**/
