@@ -176,8 +176,10 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 	output[WP_DIGEST_SIZE] = 0;
 }
 
-void get_file_date(const char *filename, char *date)
+void get_file_date(const char *filename, char *date, void* internalData)
 {
+	date[0] = 0;
+	
 #ifdef _WIN32
     HANDLE hFile;
     FILETIME ftEdit;
@@ -190,12 +192,19 @@ void get_file_date(const char *filename, char *date)
     FileTimeToSystemTime(&ftEdit, &ftTime);
 
     snprintf(date, 100, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+	
+	if(internalData != NULL)
+	{
+		*((uint64_t*)internalData) = ftEdit.dwHighDateTime << 32 | ftEdit.dwLowDateTime;
+	}
 #else
 	
 	struct stat buf;
     if(!stat(filename, &buf))
         strftime(date, 100, "%Y - %S - %m - %w - %M - %d - %H", localtime(&buf.st_mtime));
 
+	if(internalData != NULL)
+		memcpy(internalData, &buf, sizeof(buf));
 #endif
 }
 

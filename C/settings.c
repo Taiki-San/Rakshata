@@ -146,6 +146,7 @@ bool loadEmailProfile()
 		uint start, end, delta;
 		if((start = positionnementApresChar(prefs, "<"SETTINGS_EMAIL_FLAG">")) && (end = positionnementApresChar(prefs, "</"SETTINGS_EMAIL_FLAG">")))
         {
+			end -= 6;
 			delta = end - start;
 
 			COMPTE_PRINCIPAL_MAIL = malloc((delta + 1) * sizeof(char));

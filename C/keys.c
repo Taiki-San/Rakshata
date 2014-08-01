@@ -23,7 +23,7 @@ int getMasterKey(unsigned char *input)
     if(COMPTE_PRINCIPAL_MAIL == NULL)
     {
 #warning "Notify Objective-C interface we need it"
-        if(get_compte_infos() == PALIER_QUIT)
+        if(get_compte_infos())
             return PALIER_QUIT;
     }
 	
@@ -77,7 +77,7 @@ int getMasterKey(unsigned char *input)
     RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
-    get_file_date(SECURE_DATABASE, date);
+    get_file_date(SECURE_DATABASE, date, NULL);
 	snprintf((char *) buffer, addressLength + 100, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 	
 #ifndef DEV_VERSION
@@ -189,13 +189,7 @@ int earlyInit(int argc, char *argv[])
 
 int get_compte_infos()
 {
-	if(!loadEmailProfile() || COMPTE_PRINCIPAL_MAIL == NULL)
-		return PALIER_QUIT;
-
-    if(!validateEmail(COMPTE_PRINCIPAL_MAIL))
-		exit(-1);
-
-	return 0;
+	return loadEmailProfile() ? 0 : -1;
 }
 
 bool validateEmail(const char* adresseEmail)
@@ -217,7 +211,7 @@ bool validateEmail(const char* adresseEmail)
 	return true;
 }
 
-void updateEmail(char * email)
+void updateEmail(const char * email)
 {
 	uint length = strlen(email);
 	
@@ -245,7 +239,7 @@ void updateEmail(char * email)
 	remove(SECURE_DATABASE);
 }
 
-void addPassToCache(char * hashedPassword)
+void addPassToCache(const char * hashedPassword)
 {
 	usstrcpy(passwordGB, 2*SHA256_DIGEST_LENGTH, hashedPassword);
 }
@@ -281,19 +275,28 @@ void passToLoginData(char passwordIn[100], char passwordSalted[2*SHA256_DIGEST_L
     sha256_legacy(pass, passwordSalted);
 }
 
-byte checkLogin(const char adresseEmail[100])
+byte checkLogin(const char *adresseEmail)
 {
-    char URL[200], output[56];
-
 	if(!validateEmail(adresseEmail))
 		return 2;
 
-#warning "Encode email, or pass on POST"
-    snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
-
-	output[0] = 0;
-	if(download_mem(URL, NULL, output, sizeof(output), SSL_ON) != CODE_RETOUR_OK)
+	uint length = strlen(adresseEmail);
+	char *URL = malloc(length + 150), output[56];
+	
+	if(URL == NULL)
 		return 2;
+	else
+		length += 150;
+
+#warning "Encode email, or pass on POST"
+    snprintf(URL, length, "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
+
+	if(download_mem(URL, NULL, output, sizeof(output), SSL_ON) != CODE_RETOUR_OK)
+	{
+		free(URL);
+		return 2;
+	}
+	free(URL);
 
     if(!strncmp(output, "account_not_found", strlen("account_not_found")))
         return 0;
@@ -308,27 +311,36 @@ byte checkLogin(const char adresseEmail[100])
 }
 
 #warning "Messed around, need test"
-int login(char adresseEmail[100], char password[256], bool createAccount)
+int login(const char * adresseEmail, const char * password, bool createAccount)
 {
-    char passHashed[2*SHA256_DIGEST_LENGTH+1], URL[300], downloadedData[500], dataCheck[2*SHA256_DIGEST_LENGTH+1];
+    char passHashed[2*SHA256_DIGEST_LENGTH+1], *URL, downloadedData[500], dataCheck[2*SHA256_DIGEST_LENGTH+1];
 
 	if(!validateEmail(adresseEmail))
 		return 2;
+	
+	uint length = strlen(adresseEmail);
+	URL = malloc(length + 150);
+	
+	if(URL == NULL)
+		return 2;
+	else
+		length += 150;
 
 	//Double SHA-256
     sha256_legacy(password, passHashed);
     sha256_legacy(passHashed, passHashed);
 
-	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
+	snprintf(URL, length, "https://"SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
     download_mem(URL, NULL, downloadedData, sizeof(downloadedData), SSL_ON);
 
-    snprintf(URL, sizeof(URL), "%s-access_granted", passHashed);
+    snprintf(URL, length, "%s-access_granted", passHashed);
     sha256_legacy(URL, dataCheck);
+	free(URL);
 
     if(strncmp(downloadedData, dataCheck, sizeof(dataCheck) - 1)) //access denied
 		return 0;
 
-	usstrcpy(password, 2*SHA256_DIGEST_LENGTH+1, passHashed);
+	addPassToCache(passHashed);
 	return 1;
 }
 
@@ -344,45 +356,31 @@ int createSecurePasswordDB(unsigned char *key_sent)
 		#warning "Need to call the login window"
 	}
 
-    if(key_sent == NULL)
-		bdd = fopen(SECURE_DATABASE, "w+");
-    else
-        bdd = fopen(SECURE_DATABASE, "r+");
-
-    if(bdd == NULL)
+	bdd = fopen(SECURE_DATABASE, "r+");
+	
+	if(bdd == NULL)
     {
         logR("Write error");
         return 1;
     }
-    fclose(bdd);
+
+	fclose(bdd);
 
     generateFingerPrint(fingerPrint);
-#ifdef _WIN32 //On cherche l'heure de la derniére modif
-    HANDLE hFile;
-    FILETIME ftLastEdit;
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-    SYSTEMTIME ftTime;
-    hFile = CreateFileA(SECURE_DATABASE, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-    GetFileTime(hFile, NULL, NULL, &ftLastEdit); //On récupére pas le dernier argument pour faire chier celui qui essaierai de comprendre
-
-    dwLowDateTime = ftLastEdit.dwLowDateTime;
-    dwHighDateTime = ftLastEdit.dwHighDateTime;
-
-    CloseHandle(hFile); //Fermeture
-    FileTimeToSystemTime(&ftLastEdit, &ftTime);
-
-    snprintf(date, 200, "%04d - %02d - %02d - %01d - %02d - %02d - %02d", ftTime.wYear, ftTime.wSecond, ftTime.wMonth, ftTime.wDayOfWeek, ftTime.wMinute, ftTime.wDay, ftTime.wHour);
+	
+#ifdef _WIN32
+	uint64_t structure_time;
 #else
-    struct stat structure_time;
-    if(!stat(SECURE_DATABASE, &structure_time))
-        strftime(date, 200, "%Y - %S - %m - %w - %M - %d - %H", localtime(&structure_time.st_mtime));
-    else
-    {
+	struct stat structure_time;
+#endif
+	
+	get_file_date(SECURE_DATABASE, date, &structure_time);
+	
+	if(date[0] == 0)
+	{
         logR("Read error\n");
         return 1;
     }
-#endif
 	
 	uint length = ustrlen(COMPTE_PRINCIPAL_MAIL) + 100;
 	filePass = malloc(length);
@@ -443,23 +441,15 @@ int createSecurePasswordDB(unsigned char *key_sent)
     }
 
 	char newDate[200];
-	get_file_date(SECURE_DATABASE, newDate);
+	get_file_date(SECURE_DATABASE, newDate, NULL);
     if(strcmp(newDate, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
         hFile = CreateFileA(SECURE_DATABASE, GENERIC_READ | GENERIC_WRITE, 0,NULL,OPEN_EXISTING,0,NULL);
-        ftLastEdit.dwLowDateTime = dwLowDateTime;
-        ftLastEdit.dwHighDateTime = dwHighDateTime;
+        ftLastEdit.dwLowDateTime = structure_time & 0xFFFFFFFF;
+		ftLastEdit.dwHighDateTime = structure_time >> 32;
         SetFileTime(hFile, NULL, NULL, &ftLastEdit); //On applique les modifs
         CloseHandle(hFile); //Fermeture
-
-        get_file_date(SECURE_DATABASE, temp);
-        if(strcmp(temp, date))
-        {
-            logR("Read error");
-            remove(SECURE_DATABASE);
-            return 1;
-        }
 #else
         struct utimbuf ut;
         ut.actime = structure_time.st_atime;
@@ -472,23 +462,30 @@ int createSecurePasswordDB(unsigned char *key_sent)
 
 bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 {
-    char temp[1024], buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
+    char *URL, buffer_dl[500], randomKeyHex[2*SHA256_DIGEST_LENGTH+1];
+	uint length;
     rawData outputRAW[SHA256_DIGEST_LENGTH+1];
 
 	if(COMPTE_PRINCIPAL_MAIL == NULL)
 		return 1;
+	else
+		length = strlen(COMPTE_PRINCIPAL_MAIL);
 
     generateRandomKey(outputRAW);
     decToHex(outputRAW, SHA256_DIGEST_LENGTH, randomKeyHex);
     randomKeyHex[2*SHA256_DIGEST_LENGTH] = 0;
-    snprintf(temp, 1024, "https://"SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+	
+	URL = malloc((length + 512) * sizeof(char));
+	
+	if(URL == NULL)
+		return 1;
+	
+    snprintf(URL, length + 512, "https://"SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
     crashTemp(buffer_dl, 500);
-    download_mem(temp, NULL, buffer_dl, 500, SSL_ON);
+    download_mem(URL, NULL, buffer_dl, 500, SSL_ON);
 
-    crashTemp(temp, 1024);
-    sscanfs(buffer_dl, "%s", temp, 100);
-    if(!strcmp(temp, "success")) //Si ça s'est bien passé
+    if(!strncmp(buffer_dl, "success", 7) && password != NULL) //Si ça s'est bien passé
     {
         int bufferDL_pos = 0;
         while(buffer_dl[bufferDL_pos++] != ' ' && buffer_dl[bufferDL_pos]);
@@ -513,42 +510,51 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
 			minToMaj(randomKeyHex);
 
-            snprintf(temp, 1024, "https://"SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+            snprintf(URL, length + 512, "https://"SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
             crashTemp(buffer_dl, 500);
-            download_mem(temp, NULL, buffer_dl, 500, SSL_ON);
+            download_mem(URL, NULL, buffer_dl, 500, SSL_ON);
+			free(URL);
+			
             if(buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
                 internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key);
             else
             {
-                snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+				char temp[1024];
+                snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
                 logR(temp);
                 return 1;
             }
         }
         else
         {
-            snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+			char temp[1024];
+			snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
             logR(temp);
+			free(URL);
             return 1;
         }
     }
     else if(!strcmp(buffer_dl, "old_key_found"))
     {
         recoverPassFromServ(key);
+		free(URL);
         return 1;
     }
     else if(!strcmp(buffer_dl, "account_not_found"))
     {
+		free(URL);
         return 1;
     }
     else
     {
-        snprintf(temp, 1024, "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+		char temp[1024];
+		snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
         logR(temp);
 #ifdef DEV_VERSION
         logR(randomKeyHex);
 #endif
+		free(URL);
         return 1;
     }
     return 0;
@@ -559,17 +565,20 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     if(COMPTE_PRINCIPAL_MAIL == NULL || !checkNetworkState(CONNEXION_OK))
         return;
 
-    int i = 0, j = 0;
-    char temp[400];
+	uint length = strlen(COMPTE_PRINCIPAL_MAIL) + 256, j;
     char buffer_dl[500];
-    snprintf(temp, 400, "https://"SERVEUR_URL"/recoverMK.php?account=%s&ver=1", COMPTE_PRINCIPAL_MAIL);
+	char *URL = malloc((length) * sizeof(char));
+	
+	if(URL == NULL)
+		return;
+	
+    snprintf(URL, length, "https://"SERVEUR_URL"/recoverMK.php?account=%s&ver=1", COMPTE_PRINCIPAL_MAIL);
 
     crashTemp(key, SHA256_DIGEST_LENGTH);
     crashTemp(buffer_dl, 500);
 
-    download_mem(temp, NULL, buffer_dl, 500, SSL_ON);
-
-    crashTemp(temp, 400);
+    download_mem(URL, NULL, buffer_dl, 500, SSL_ON);
+	free(URL);
 
     if(!strcmp(buffer_dl, "fail"))
     {
@@ -578,8 +587,8 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     }
 
     unsigned char derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
-    for(i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
-    for(i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
+    for(uint i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
+    for(uint i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
     internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, tmp);
     memcpy(key, tmp, SHA256_DIGEST_LENGTH);
     return;

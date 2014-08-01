@@ -252,30 +252,31 @@ void networkAndVersionTest()
         }
 
         //Nouveau killswitch
-        if(loadEmailProfile() && COMPTE_PRINCIPAL_MAIL != NULL)
+        if(loadEmailProfile())
 		{
-			if(!validateEmail(COMPTE_PRINCIPAL_MAIL))
-            {
-                remove(SECURE_DATABASE);
-                quit_thread(0);
-            }
-
-			snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
-
-            crashTemp(bufferDL, 5);
-			download_mem(temp, NULL, bufferDL, 5, SSL_ON);
-			if(bufferDL[0] != '0') //Compte valide
-            {
-                updateFavorites();
-                quit_thread(0);
-            }
-
-			/*A partir d'ici, le compte est killswitche*/
-			remove(SECURE_DATABASE);
-			removeFolder("manga");
-			removeFolder("data");
-			logR("Ugh, you did wrong things =/");
-			exit(0);
+			uint length = strlen(COMPTE_PRINCIPAL_MAIL);
+			char * URL = malloc((length + 100) * sizeof(char));
+			
+			if(URL != NULL)
+			{
+				snprintf(URL, length + 100, "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
+				if(download_mem(URL, NULL, bufferDL, 5, SSL_ON) != CODE_RETOUR_OK || bufferDL[0] != '0') //Compte valide
+				{
+					free(URL);
+					updateFavorites();
+					quit_thread(0);
+				}
+				
+				/*A partir d'ici, le compte est killswitche*/
+				remove(SECURE_DATABASE);
+				removeFolder("manga");
+				removeFolder("data");
+				logR("Ugh, you did wrong things =/");
+				free(URL);
+				exit(0);
+			}
+			else
+				updateFavorites();
 		}
 		else
             remove(SECURE_DATABASE);

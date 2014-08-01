@@ -301,7 +301,7 @@ int sha256(unsigned char* input, void* output)
     return 0;
 }
 
-int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1])
+int sha256_legacy(const char input[], char output[2*SHA256_DIGEST_LENGTH+1])
 {
     sha256_context ctx;
     unsigned char sha256sum[SHA256_DIGEST_LENGTH];

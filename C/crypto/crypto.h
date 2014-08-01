@@ -100,7 +100,7 @@ void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
 *****************************************************/
 
 int sha256(unsigned char* input, void* output);
-int sha256_legacy(char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
+int sha256_legacy(const char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
 void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output);
 
 
