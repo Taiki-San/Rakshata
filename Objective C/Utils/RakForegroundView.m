@@ -125,10 +125,13 @@
 
 - (void) switchOver : (BOOL) isDisplayed
 {
+	if(![self isVisible])
+		[background setHidden:YES];
+
 	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(switchOver:)])
 		[self.delegate performSelector:@selector(switchOver:) withObject:@(isDisplayed)];
 }
-	 
+
 @end
 
 @implementation RakForegroundViewBackgroundView

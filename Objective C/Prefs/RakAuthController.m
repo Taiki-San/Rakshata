@@ -18,6 +18,13 @@ enum
 	AUTH_STATE_INVALID
 };
 
+enum
+{
+	AUTH_MODE_DEFAULT,
+	AUTH_MODE_NEW_ACCOUNT,
+	AUTH_MODE_LOGIN,
+};
+
 //Arbitrary frames come from IB
 
 @implementation RakAuthController
@@ -38,11 +45,12 @@ enum
 	self.view.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :self].CGColor;
 	self.view.layer.cornerRadius = 4;
 	
+	currentMode = AUTH_MODE_DEFAULT;
+	
 	[self updateMainView];
 	
 	foreground = [[RakForegroundView alloc] init : [core getContentView] : self.view];
 	foreground.delegate = self;
-	originalSize = self.view.frame.size;
 	
 	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
@@ -74,6 +82,8 @@ enum
 	[mailInput setNextKeyView:passInput];	//don't work
 	[passInput setNextKeyView:mailInput];
 }
+
+#pragma mark - Communication with internal elements
 
 - (void) wakePassUp
 {
@@ -107,6 +117,78 @@ enum
 		[self animateLogin : YES];
 	
 	[NSAnimationContext endGrouping];
+	
+	currentMode = newAccount ? AUTH_MODE_NEW_ACCOUNT : AUTH_MODE_LOGIN;
+}
+
+- (void) clickedLogin
+{
+	if([self isMailValid] && [self isPassValid])
+		[self clickedConfirm:NO];
+}
+
+- (void) clickedSignup
+{
+	if([self isMailValid] && [self isPassValid] && [self isTermAccepted])
+		[self clickedConfirm:YES];
+}
+
+- (void) clickedConfirm : (BOOL) signup
+{
+	const char * email = [mailInput.stringValue cStringUsingEncoding:NSASCIIStringEncoding], * pass = [passInput.stringValue cStringUsingEncoding:NSUTF8StringEncoding];
+	
+	switch (login((char*) email, (char*) pass, signup))
+	{
+		case 1:
+		{
+			passInput.currentStatus = AUTH_STATE_GOOD;
+			[passInput display];
+			
+			if(COMPTE_PRINCIPAL_MAIL == NULL || strcmp(email, COMPTE_PRINCIPAL_MAIL))
+			{
+				updateEmail(email);
+				createSecurePasswordDB(NULL);
+			}
+			break;
+		}
+			
+		case 0:
+		{
+			passInput.currentStatus = AUTH_STATE_INVALID;
+			[passInput setNeedsDisplay];
+			break;
+		}
+			
+		case 2:
+		{
+			break;
+		}
+	}
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [foreground switchState]; });
+}
+
+#pragma mark - Check
+
+- (BOOL) isMailValid
+{
+	return mailInput.currentStatus == AUTH_STATE_GOOD;
+}
+
+- (BOOL) isPassValid
+{
+	if([passInput.stringValue length] == 0)
+	{
+		passInput.currentStatus = AUTH_STATE_INVALID;
+		[passInput setNeedsDisplay];
+		return NO;
+	}
+	return YES;
+}
+
+- (BOOL) isTermAccepted
+{
+	return accept.state == NSOnState;
 }
 
 #pragma mark - Animation
@@ -115,7 +197,7 @@ enum
 {
 	if(privacy == nil)
 	{
-		privacy = [[[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_SURVOL :nil]] autorelease];
+		privacy = [[[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]] autorelease];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -126,8 +208,8 @@ enum
 	
 	if(terms == nil)
 	{
-		terms = [[[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_SURVOL :nil]] autorelease];
-		[terms setFrameOrigin:NSMakePoint(0, 49)];
+		terms = [[[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]] autorelease];
+		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";
 		[container addSubview:terms];
@@ -154,6 +236,8 @@ enum
 		[confirm sizeToFit];
 		[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
 		[container addSubview:confirm];
+		[confirm setTarget:self];
+		[confirm setAction:@selector(clickedSignup)];
 	}
 	else if(confirm.isHidden)
 		[confirm setHidden:NO];
@@ -162,7 +246,7 @@ enum
 	{
 		//Resize main view
 		NSRect frame = self.view.frame;
-		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - originalSize.height / 2 - 51, frame.size.width, frame.size.height +  51)];
+		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, frame.size.height +  51)];
 		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, container.bounds.size.height + 51)];
 		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
@@ -204,33 +288,35 @@ enum
 	else if(forgottenPass.isHidden)
 		[forgottenPass setHidden:NO];
 	
-	if(login == nil)
+	if(_login == nil)
 	{
-		login = [[RakButton allocWithText:@"Connexion" : container.bounds] autorelease];
-		[login sizeToFit];
-		[container addSubview:login];
-		[login setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - login.frame.size.height / 2 + 3)];
+		_login = [[RakButton allocWithText:@"Connexion" : container.bounds] autorelease];
+		[_login sizeToFit];
+		[_login setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - _login.frame.size.height / 2 + 3)];
+		[container addSubview:_login];
+		[_login setTarget:self];
+		[_login setAction:@selector(clickedLogin)];
 	}
-	else if(login.isHidden)
-		[login setHidden:NO];
+	else if(_login.isHidden)
+		[_login setHidden:NO];
 
-	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - login.bounds.size.width) / 3;
+	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - _login.bounds.size.width) / 3;
 	
 	if(appear)
 	{
 		[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
 		[forgottenPass.animator setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
 		
-		[login setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
-		[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - border - login.frame.size.width, login.frame.origin.y)];
+		[_login setFrameOrigin:NSMakePoint(container.bounds.size.width, _login.frame.origin.y)];
+		[_login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
 	}
 	else
 	{
 		[forgottenPass setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
 		[forgottenPass.animator setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
 		
-		[login setFrameOrigin:NSMakePoint(container.bounds.size.width - border - login.frame.size.width, login.frame.origin.y)];
-		[login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, login.frame.origin.y)];
+		[_login setFrameOrigin:NSMakePoint(container.bounds.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
+		[_login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, _login.frame.origin.y)];
 	}
 }
 
@@ -239,7 +325,7 @@ enum
 	if(!appear)
 	{
 		[forgottenPass setHidden:YES];
-		[login setHidden:YES];
+		[_login setHidden:YES];
 	}
 }
 
@@ -270,7 +356,7 @@ enum
 	
 	if(self != nil)
 	{
-		currentStatus = AUTH_STATE_NONE;
+		self.currentStatus = AUTH_STATE_NONE;
 		
 		((RakTextCell*)self.cell).customizedInjectionPoint = YES;
 		((RakTextCell*)self.cell).centered = YES;
@@ -303,12 +389,12 @@ enum
 
 - (NSColor *) getBorderColor
 {
-	if(currentStatus != AUTH_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+	if(self.currentStatus != AUTH_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 	{
-		currentStatus = AUTH_STATE_INVALID;
+		self.currentStatus = AUTH_STATE_INVALID;
 	}
 	
-	switch (currentStatus)
+	switch (self.currentStatus)
 	{
 		case AUTH_STATE_GOOD:
 		{
@@ -337,15 +423,15 @@ enum
 
 - (void)textDidBeginEditing:(NSNotification *)aNotification
 {
-	self.currentEditingSession++;
-	currentStatus = AUTH_STATE_NONE;
+	currentEditingSession++;
+	self.currentStatus = AUTH_STATE_NONE;
 }
 
 - (void)textDidEndEditing:(NSNotification *)aNotification
 {
-	uint currentSession = self.currentEditingSession;
+	uint currentSession = currentEditingSession;
 	
-	currentStatus = AUTH_STATE_LOADING;
+	self.currentStatus = AUTH_STATE_LOADING;
 	[self setNeedsDisplay];
 	
 	[self performSelectorInBackground:@selector(checkEmail:) withObject:@(currentSession)];
@@ -364,11 +450,11 @@ enum
 		
 		[self checkEmailSub : currentSession];
 		
-		if(currentStatus != AUTH_STATE_GOOD)
+		if(self.currentStatus != AUTH_STATE_GOOD)
 			[CATransaction commit];
 	}
 	else
-		currentStatus = AUTH_STATE_INVALID;
+		self.currentStatus = AUTH_STATE_INVALID;
 	
 	[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
 }
@@ -377,21 +463,21 @@ enum
 {
 	if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 	{
-		while(currentSession == self.currentEditingSession && checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
+		while(currentSession == currentEditingSession && checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 		{
 			usleep(5000);
 		}
 	}
 	
-	if(currentSession == self.currentEditingSession && !checkNetworkState(CONNEXION_OK))
+	if(currentSession == currentEditingSession && !checkNetworkState(CONNEXION_OK))
 	{
-		currentStatus = AUTH_STATE_INVALID;
+		self.currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
 	if([self.stringValue length] > 100)
 	{
-		currentStatus = AUTH_STATE_INVALID;
+		self.currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
@@ -400,16 +486,16 @@ enum
 	
 	byte retValue = checkLogin(data);
 	
-	if(currentSession != self.currentEditingSession)
+	if(currentSession != currentEditingSession)
 		return;
 	
 	if(retValue == 2)
 	{
-		currentStatus = AUTH_STATE_INVALID;
+		self.currentStatus = AUTH_STATE_INVALID;
 		return;
 	}
 	
-	currentStatus = AUTH_STATE_GOOD;
+	self.currentStatus = AUTH_STATE_GOOD;
 	
 	if(authController != nil)
 	{

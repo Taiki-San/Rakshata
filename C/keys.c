@@ -310,7 +310,6 @@ byte checkLogin(const char *adresseEmail)
     return 2;
 }
 
-#warning "Messed around, need test"
 int login(const char * adresseEmail, const char * password, bool createAccount)
 {
     char passHashed[2*SHA256_DIGEST_LENGTH+1], *URL, downloadedData[500], dataCheck[2*SHA256_DIGEST_LENGTH+1];

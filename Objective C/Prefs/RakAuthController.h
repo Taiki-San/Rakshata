@@ -14,12 +14,12 @@
 
 @interface RakEmailField : RakText <NSTextFieldDelegate>
 {
-	byte currentStatus;
-	
+	uint currentEditingSession;
+
 	RakAuthController * authController;
 }
 
-@property uint currentEditingSession;
+@property byte currentStatus;
 
 - (void) addController : (RakAuthController *) controller;
 
@@ -53,7 +53,7 @@
 	
 		//Login
 	RakButton * forgottenPass;
-	RakButton * login;
+	RakButton * _login;
 	
 		//Signup
 	RakTextClickable * privacy;
@@ -61,9 +61,8 @@
 	NSButton * accept;
 	RakButton * confirm;
 	
-	
 	//Data
-	NSSize originalSize;
+	byte currentMode;
 }
 
 - (void) launch;
