@@ -173,37 +173,13 @@
 #define WP_DIGEST_SIZE	64
 #define PBKDF2_OUTPUT_LENGTH 32
 
-/*Trad*/
-#define TRAD_LENGTH 200
-#define NOMBRE_TRAD_ID_MAX 31
-#define SIZE_TRAD_ID_1 6    //Erreur page illisible
-#define SIZE_TRAD_ID_2 5    //Initialisation du module de sélection de téléchargement
-#define SIZE_TRAD_ID_3 7    //Préférences
-#define SIZE_TRAD_ID_4 2    //Confirmation suppression de dépôt (fonction indé)
-#define SIZE_TRAD_ID_5 1    //Raffraichissement en cours
-#define SIZE_TRAD_ID_6 2    //Lancement du module de DL
-#define SIZE_TRAD_ID_7 2    //Dépôt inconnu
-#define SIZE_TRAD_ID_8 1    //Chargement
-#define SIZE_TRAD_ID_9 5    //Welcome
-#define SIZE_TRAD_ID_10 2   //Header infos.png
-#define SIZE_TRAD_ID_11 16  //Engine
-#define SIZE_TRAD_ID_12 4   //Module de mise à jour
-#define SIZE_TRAD_ID_13 6   //Changement langue
-#define SIZE_TRAD_ID_14 4   //Ajout de dépôt
-#define SIZE_TRAD_ID_15 1   //Suppression de dépôt
-#define SIZE_TRAD_ID_16 35  //Pop-up dans le module de DL
-#define SIZE_TRAD_ID_17 5   //Menu principal
-#define SIZE_TRAD_ID_18 2   //Selection de manga
-#define SIZE_TRAD_ID_19 17  //Selection chapitre/tome
-#define SIZE_TRAD_ID_20 7   //Partie DL du module de DL
-#define SIZE_TRAD_ID_21 10  //Lecteur
-#define SIZE_TRAD_ID_22 18  //Module de DL
-#define SIZE_TRAD_ID_23 5   //Aucun manga disponible
-#define SIZE_TRAD_ID_24 2   //Erreur connexion internet
-#define SIZE_TRAD_ID_25 3   //Nom fenêtre
-#define SIZE_TRAD_ID_26 20  //Authentification
-#define SIZE_TRAD_ID_27 3   //Impossible de récupérer la MK
-#define SIZE_TRAD_ID_28 2   //Obtention du mot de passe
-#define SIZE_TRAD_ID_29 4   //Patch du registre
-#define SIZE_TRAD_ID_30 11  //Nouveaux éléments détéctés à DL dans le lecteur
-#define SIZE_TRAD_ID_31 6   //Interactions pour le DL de chapitre payants
+enum
+{
+	GMK_RETVAL_OK,
+	GMK_RETVAL_NEED_CREDENTIALS,
+	GMK_RETVAL_INTERNALERROR
+};
+
+#define IMGLOAD_NODATA NULL
+#define IMGLOAD_INCORRECT_DECRYPTION ((void*) 0x1)
+#define IMGLOAD_NEED_CREDENTIALS ((void*) 0x2)

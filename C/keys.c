@@ -18,13 +18,11 @@
 static char passwordGB[2*SHA256_DIGEST_LENGTH];
 
 // Cette fonction a pour but de récupérer la clée de chiffrement principale (cf RSP)
-int getMasterKey(unsigned char *input)
+byte getMasterKey(unsigned char *input)
 {
     if(COMPTE_PRINCIPAL_MAIL == NULL)
     {
-#warning "Notify Objective-C interface we need it"
-        if(get_compte_infos())
-            return PALIER_QUIT;
+		return GMK_RETVAL_NEED_CREDENTIALS;
     }
 	
 	int nombreCle, i, j;
@@ -36,7 +34,7 @@ int getMasterKey(unsigned char *input)
 	FILE* bdd = NULL;
 	
 	if(addressLength + 101 + WP_DIGEST_SIZE + 1 < WP_DIGEST_SIZE + 102)
-		return PALIER_QUIT;
+		return GMK_RETVAL_INTERNALERROR;
 	else
 		buffer[addressLength+100] = 0;
 	
@@ -49,12 +47,14 @@ int getMasterKey(unsigned char *input)
 
         if(size == 0)
         {
-            if(createSecurePasswordDB(NULL))
-                return 1;
-			fileInvalid = false;
+			byte retVal;
+            if((retVal = createSecurePasswordDB(NULL)) != GMK_RETVAL_OK)
+                return retVal;
+
+			break;
         }
 	
-		else if(!size || size % SHA256_DIGEST_LENGTH != 0 || size > NOMBRE_CLE_MAX_ACCEPTE * SHA256_DIGEST_LENGTH)
+		else if(size % SHA256_DIGEST_LENGTH != 0 || size > NOMBRE_CLE_MAX_ACCEPTE * SHA256_DIGEST_LENGTH)
         {
             fileInvalid = true;
             remove(SECURE_DATABASE);
@@ -133,12 +133,16 @@ int getMasterKey(unsigned char *input)
     if(!input[0]) //Pas de clée trouvée
     {
         unsigned char key[SHA256_DIGEST_LENGTH];
-        recoverPassFromServ(key);
+		
+		if(!recoverPassFromServ(key))
+			return GMK_RETVAL_INTERNALERROR;
+		
         memcpy(input, key, SHA256_DIGEST_LENGTH);
         crashTemp(key, SHA256_DIGEST_LENGTH);
-        createSecurePasswordDB(input);
+		
+		return createSecurePasswordDB(input);
     }
-    return 0;
+    return GMK_RETVAL_OK;
 }
 
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
@@ -185,11 +189,6 @@ int earlyInit(int argc, char *argv[])
 	checkJustUpdated();
 
     return 1;
-}
-
-int get_compte_infos()
-{
-	return loadEmailProfile() ? 0 : -1;
 }
 
 bool validateEmail(const char* adresseEmail)
@@ -288,7 +287,6 @@ byte checkLogin(const char *adresseEmail)
 	else
 		length += 150;
 
-#warning "Encode email, or pass on POST"
     snprintf(URL, length, "https://"SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
 	if(download_mem(URL, NULL, output, sizeof(output), SSL_ON) != CODE_RETOUR_OK)
@@ -343,7 +341,7 @@ int login(const char * adresseEmail, const char * password, bool createAccount)
 	return 1;
 }
 
-int createSecurePasswordDB(unsigned char *key_sent)
+byte createSecurePasswordDB(unsigned char *key_sent)
 {
     int i = 0;
     unsigned char fingerPrint[WP_DIGEST_SIZE+1];
@@ -352,15 +350,17 @@ int createSecurePasswordDB(unsigned char *key_sent)
 	
 	if(COMPTE_PRINCIPAL_MAIL == NULL || (key_sent == NULL && !getPassFromCache(password)))
 	{
-		#warning "Need to call the login window"
+		return GMK_RETVAL_NEED_CREDENTIALS;
 	}
 
 	bdd = fopen(SECURE_DATABASE, "r+");
 	
 	if(bdd == NULL)
     {
-        logR("Write error");
-        return 1;
+#ifdef DEV_VERSION
+		logR("Couldn't write in our directory");
+#endif
+        return GMK_RETVAL_INTERNALERROR;
     }
 
 	fclose(bdd);
@@ -377,15 +377,22 @@ int createSecurePasswordDB(unsigned char *key_sent)
 	
 	if(date[0] == 0)
 	{
-        logR("Read error\n");
-        return 1;
+#ifdef DEV_VERSION
+        logR("Couldn't get date of file\n");
+#endif
+        return GMK_RETVAL_INTERNALERROR;
     }
 	
 	uint length = ustrlen(COMPTE_PRINCIPAL_MAIL) + 100;
 	filePass = malloc(length);
 	
 	if(filePass == NULL)
-		return 1;
+	{
+#ifdef DEV_VERSION
+		memoryError(length);
+#endif
+		return GMK_RETVAL_INTERNALERROR;
+	}
 	
     snprintf(filePass, length, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 
@@ -438,6 +445,13 @@ int createSecurePasswordDB(unsigned char *key_sent)
         fwrite(ciphertext, 16, 1, bdd);
         fclose(bdd);
     }
+	else
+	{
+#ifdef DEV_VERSION
+		logR("Couldn't write MK");
+#endif
+		return GMK_RETVAL_INTERNALERROR;
+	}
 
 	char newDate[200];
 	get_file_date(SECURE_DATABASE, newDate, NULL);
@@ -455,8 +469,9 @@ int createSecurePasswordDB(unsigned char *key_sent)
         ut.modtime = structure_time.st_mtime;
         utime(SECURE_DATABASE,&ut);
 #endif
-    }
-    return 0;
+	}
+	
+    return GMK_RETVAL_OK;
 }
 
 bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
@@ -559,17 +574,17 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
     return 0;
 }
 
-void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
+bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 {
     if(COMPTE_PRINCIPAL_MAIL == NULL || !checkNetworkState(CONNEXION_OK))
-        return;
+        return false;
 
 	uint length = strlen(COMPTE_PRINCIPAL_MAIL) + 256, j;
     char buffer_dl[500];
 	char *URL = malloc((length) * sizeof(char));
 	
 	if(URL == NULL)
-		return;
+		return false;
 	
     snprintf(URL, length, "https://"SERVEUR_URL"/recoverMK.php?account=%s&ver=1", COMPTE_PRINCIPAL_MAIL);
 
@@ -581,8 +596,10 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 
     if(!strcmp(buffer_dl, "fail"))
     {
-        logR("Failed at get password from server");
-        exit(0);
+#ifdef DEV_VERSION
+        logR("Failed at get MK from server");
+#endif
+		return false;
     }
 
     unsigned char derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
@@ -590,6 +607,7 @@ void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
     for(uint i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
     internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, tmp);
     memcpy(key, tmp, SHA256_DIGEST_LENGTH);
-    return;
+
+	return true;
 }
 

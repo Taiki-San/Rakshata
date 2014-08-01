@@ -42,10 +42,8 @@ int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 
 /**Error.c**/
 void logR(char *error);
-void connexionNeededToAllowANewComputer();
 int libcurlErrorCode(CURLcode code);
 int UI_Alert(char* titre, char* contenu);
-int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH]);
 void memoryError(size_t size);
 
 /**Favoris.c**/
@@ -64,10 +62,9 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput);
 
 /**Keys.c**/
-int getMasterKey(unsigned char *input);
+byte getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 int earlyInit(int argc, char *argv[]);
-int get_compte_infos();
 void updateEmail(const char * email);
 void addPassToCache(const char * hashedPassword);
 bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1]);
@@ -75,9 +72,9 @@ bool validateEmail(const char* adresseEmail);
 byte checkLogin(const char adresseEmail[100]);
 int login(const char * adresseEmail, const char * password, bool createAccount);
 void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1]);
-int createSecurePasswordDB(unsigned char *key_sent);
+byte createSecurePasswordDB(unsigned char *key_sent);
 bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
-void recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
+bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
 char ** loadChapterConfigDat(char* input, int *nombrePage);

@@ -126,25 +126,6 @@ int checkEvnt()
     if(buf != NULL)
         free(buf);
 
-    FILE * test = fopen(SECURE_DATABASE, "r");
-    if(test == NULL || fgetc(test) == EOF)
-    {
-        if(test != NULL)
-            fclose(test);
-        createSecurePasswordDB(NULL);
-        test = fopen(SECURE_DATABASE, "r");
-        if(test == NULL || fgetc(test) == EOF)
-        {
-            if(test != NULL)
-                fclose(test);
-            logR("Failed at recreate a correct secure database");
-            remove(SECURE_DATABASE);
-            exit(0);
-        }
-    }
-    if(test != NULL)
-        fclose(test);
-
     return 0;
 }
 
@@ -252,7 +233,7 @@ void networkAndVersionTest()
         }
 
         //Nouveau killswitch
-        if(loadEmailProfile())
+        if(COMPTE_PRINCIPAL_MAIL != NULL)
 		{
 			uint length = strlen(COMPTE_PRINCIPAL_MAIL);
 			char * URL = malloc((length + 100) * sizeof(char));
@@ -275,11 +256,9 @@ void networkAndVersionTest()
 				free(URL);
 				exit(0);
 			}
-			else
-				updateFavorites();
 		}
-		else
-            remove(SECURE_DATABASE);
+		
+		updateFavorites();
     }
     quit_thread(0);
 }

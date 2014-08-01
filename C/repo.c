@@ -140,7 +140,6 @@ bool addRepo(char * URL, char *type)
 {
     char bufferDL[1000];
     TEAMS_DATA tmpData;
-	bool success = false;
 
 	if(!checkNetworkState(CONNEXION_DOWN))
     {
@@ -160,11 +159,11 @@ bool addRepo(char * URL, char *type)
 		{
 			tmpData = parseRemoteRepoData(bufferDL, sizeof(bufferDL));
 			addRepoToDB(tmpData);
-			success = true;
+			return true;
 		}
     }
 
-	return success;
+	return false;
 }
 
 char * getPathForTeam(char *URLRepo)

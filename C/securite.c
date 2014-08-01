@@ -222,6 +222,7 @@ void KSTriggered(TEAMS_DATA team)
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
+	byte retValue;
     uint curPosInConfigEnc, posInKeyOut, lengthPath = strlen(pathRoot) + 60;
     rawData *configEnc = NULL;
     char path[lengthPath], *pathPageCopy;
@@ -233,14 +234,14 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 	uint pathPageCopyLength = ustrlen(pathPage) + 5;
 	pathPageCopy = malloc(pathPageCopyLength);
 	if(pathPageCopy == NULL)
-		return NULL;
+		return IMGLOAD_NODATA;
 	
 	strncpy(pathPageCopy, pathPage, pathPageCopyLength);
     
 	if(!(size = getFileSize(pathPage))) //Si on trouve pas la page
 	{
 		free(pathPageCopy);
-		return NULL;
+		return IMGLOAD_NODATA;
 	}
 
     if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
@@ -252,11 +253,15 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		return readFile(pathPage);
 	}
 
-    if(getMasterKey(key))
+    if((retValue = getMasterKey(key)) == GMK_RETVAL_INTERNALERROR)
     {
         logR("Huge fail: database corrupted\n");
-        exit(-1);
+		return IMGLOAD_NODATA;
     }
+	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS)
+	{
+		return IMGLOAD_NEED_CREDENTIALS;
+	}
 
 	unsigned char numChapitreChar[10];
     snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
@@ -278,7 +283,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         logR("Huge fail: database corrupted\n");
 		free(pathPageCopy);
         free(configEnc);
-		return (void*) 0x1;
+		return IMGLOAD_INCORRECT_DECRYPTION;
     }
 
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
@@ -301,7 +306,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		free(pathPageCopy);
         free(configEnc);
         logR("Huge fail: database corrupted\n");
-        return (void*) 0x1;
+        return IMGLOAD_INCORRECT_DECRYPTION;
     }
 	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);	//On écrase le cache
     free(configEnc);
@@ -331,11 +336,13 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		{
 			free(output->data);
 			free(output);
-			output = NULL;
+			output = IMGLOAD_NODATA;
 		}
 		
 		free(buf_in);
 	}
+	else
+		output = IMGLOAD_NODATA;
 
 	free(pathPageCopy);
     return output;

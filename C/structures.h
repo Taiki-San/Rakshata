@@ -155,25 +155,6 @@ typedef struct dataProjectWithExtra
 
 typedef struct
 {
-    char r;
-    char g;
-    char b;
-} PALETTE_RGB;
-
-typedef PALETTE_RGB Rak_Color;
-
-typedef struct
-{
-    PALETTE_RGB fond;               //Background
-    PALETTE_RGB police;             //Police normale
-    PALETTE_RGB police_new;         //Police nouveau manga (rouge)
-    PALETTE_RGB police_unread;      //Police non-lu (vert)
-    PALETTE_RGB police_actif;       //Police pour menus actifs (rouge)
-    PALETTE_RGB police_indispo;     //Police pour menus indisponibles (gris)
-} PALETTE_GLOBALE;
-
-typedef struct
-{
 	void* data;
 	size_t length;
 } IMG_DATA;

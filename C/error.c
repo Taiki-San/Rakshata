@@ -29,11 +29,6 @@ void logR(char *error)
 #endif
 }
 
-void connexionNeededToAllowANewComputer()
-{
-#warning "Objective C error"
-}
-
 int libcurlErrorCode(CURLcode code)
 {
     bool noLog = false;
@@ -129,13 +124,6 @@ int UI_Alert(char* titre, char* contenu)
 	buttonCancel.next = NULL;
 	
     return internalUIAlert(titre, contenu, &buttonOK);
-}
-
-int errorEmptyCTList(int contexte, char trad[SIZE_TRAD_ID_19][TRAD_LENGTH])
-{
-    if(contexte == CONTEXTE_DL)
-        UI_Alert(trad[15], trad[16]);
-    return PALIER_MENU;
 }
 
 void memoryError(size_t size)

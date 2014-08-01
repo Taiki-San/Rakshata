@@ -183,7 +183,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 		quit_thread(0);
 	
 #warning "Need to call the login window"
-    if(rand() % 2 == 1)
+    if(COMPTE_PRINCIPAL_MAIL != NULL)
     {
         int i = 0;
         for(; i < sizeStatusLocal; i++)
@@ -259,6 +259,9 @@ bool waitToGetPaid(unsigned int factureID)
 
 void MDLPDestroyCache(unsigned int factureID)
 {
+	if(COMPTE_PRINCIPAL_MAIL == NULL)	//Order couldn't be created in this case
+		return;
+	
 	uint length = strlen(COMPTE_PRINCIPAL_MAIL);
     char output[100], URL[0x100], *POST;
 

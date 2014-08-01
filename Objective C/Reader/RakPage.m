@@ -464,7 +464,7 @@ enum
 	NSLog(@"Loading time: %f", elapsedTime);
 #endif
 	
-	if(dataPage == (void*) 0x1)
+	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
 	{
 #ifdef DEV_VERSION
 		updateChapter(&_data, _currentElem);
@@ -474,8 +474,11 @@ enum
 			dataPage = NULL;
 #endif
 	}
-
-	if(dataPage == NULL)
+	else if(dataPage == IMGLOAD_NEED_CREDENTIALS)
+	{
+#warning "Open filter and ask login"
+	}
+	else if(dataPage == IMGLOAD_NODATA)
 	{
 		[self failure];
 		return NULL;

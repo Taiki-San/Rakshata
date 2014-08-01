@@ -864,7 +864,7 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 		return;
     }
 	
-    if(getMasterKey(key))
+    if(getMasterKey(key) != GMK_RETVAL_OK)
     {
         logR("Huge fail: database corrupted\n");
         free(path);

@@ -335,7 +335,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 			hugeBuffer[j] = 0;
         }
 
-        if(!getMasterKey(temp))
+        if(getMasterKey(temp) == GMK_RETVAL_OK)
         {
             uint8_t hash[SHA256_DIGEST_LENGTH], chapter[15];
 #ifndef __APPLE__
