@@ -37,11 +37,11 @@ enum
 
 	[self updateEvnt];
 	
-	if(mainScroller.arrangedObjects[_data.pageCourante] == nil)
+/*	if(mainScroller.arrangedObjects[_data.pageCourante])
 	{
 		[self failure];
 		return NO;
-	}
+	}*/
 	
 	return YES;
 }
@@ -474,9 +474,26 @@ enum
 			dataPage = NULL;
 #endif
 	}
-	else if(dataPage == IMGLOAD_NEED_CREDENTIALS)
+	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
-#warning "Open filter and ask login"
+		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
+			_needPassword = true;
+		
+		MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
+		MUTEX_LOCK(lock);
+		
+		[self performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
+		
+		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
+		{
+			pthread_cond_wait([[NSApp delegate] sharedLoginLock], &lock);
+		}
+		
+		[self performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(false) waitUntilDone:NO];
+		
+		MUTEX_DESTROY(lock);
+		
+		return [self getPage : posData];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 	{
@@ -646,9 +663,9 @@ enum
 	for(uint i = 0; i <= _data.nombrePageTotale; i++)
 		[array addObject:@(i)];
 	
-	_scrollView = [self getScrollView : _data.pageCourante];
+	_scrollView = nil;
 	
-	[array replaceObjectAtIndex:_data.pageCourante withObject:(_scrollView == nil ? @(_data.pageCourante) : _scrollView)];
+	[array replaceObjectAtIndex:_data.pageCourante withObject:@(_data.pageCourante)];
 	mainScroller.arrangedObjects = array;
 	
 	if(mainScroller != nil)
@@ -658,8 +675,7 @@ enum
 		MUTEX_UNLOCK(cacheMutex);
 	}
 
-	if(_scrollView != nil)
-		[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
+	[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
 }
 
 - (RakPageScrollView *) getScrollView : (uint) page

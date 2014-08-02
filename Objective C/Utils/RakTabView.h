@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakTabViewTools.h"
+
 #define STATE_EMPTY @"Luna is bored"
 
 enum {
@@ -26,11 +28,18 @@ enum {
 	NSTrackingArea * trackingArea;
 	
 	NSRect _lastFrame;
+
+	//Login request
+	bool _waitingLogin;
+	bool _needPassword;
+	RakTabForegroundView * foregroundView;
 	
 @public
 	bool readerMode;
 	uint resizeAnimationCount;
 }
+
+@property bool waitingLogin;
 
 #define CREATE_CUSTOM_VIEW_TAB_SERIE	1
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
@@ -39,7 +48,6 @@ enum {
 - (id) initView: (NSView *)superView : (NSString *) state;
 - (void) endOfInitialization;
 - (NSString *) byebye;
-- (void) noContent;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
 - (void) contextChanged : (NSNotification*) notification;
@@ -79,7 +87,6 @@ enum {
 - (NSRect) lastFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superView;
 
-
 - (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
@@ -91,19 +98,5 @@ enum {
 - (BOOL) shouldDeployWhenDragComeIn;
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL;
 - (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender;
-
-@end
-
-@interface RakTabAnimationResize : NSObject
-{
-	BOOL readerMode;
-	BOOL haveBasePos;
-	NSArray* _views;
-}
-- (id) init : (NSArray*)views;
-- (void) setUpViews;
-- (void) performTo;
-- (void) performFromTo : (NSArray*) basePosition;
-- (void) resizeView : (RakTabView *) view : (id) basePos;
 
 @end

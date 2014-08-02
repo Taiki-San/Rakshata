@@ -22,6 +22,7 @@
 	
 	if(self != nil)
 	{
+		_waitingLogin = NO;
 		canDeploy = true;
 		
 		[superView addSubview:self];
@@ -65,11 +66,6 @@
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
-}
-
-- (void) noContent
-{
-	
 }
 
 #pragma mark - Notification code
@@ -190,6 +186,7 @@
 	if([self wouldFrameChange:frameRect])
 	{
 		[super setFrame:frameRect];
+		[foregroundView setFrame:frameRect];
 		[self resizeReaderCatchArea : readerMode];
 	}
 }
@@ -206,6 +203,7 @@
 - (void) refreshViewSize
 {
 	[self setFrame:[self createFrame]];
+	[foregroundView setFrame:self.bounds];
 	[self refreshDataAfterAnimation];
 }
 
@@ -213,7 +211,9 @@
 
 - (void) resizeAnimation
 {
-	[self.animator setFrame:[self createFrame]];
+	NSRect frame = [self createFrame];
+	[self.animator setFrame : frame];
+	[foregroundView resizeAnimation:frame];
 }
 
 #pragma mark - Tab opening notification
@@ -416,11 +416,6 @@
 	return YES;
 }
 
-- (void) resizeWithAnimation
-{
-	[self.animator setFrame:[self createFrame]];
-}
-
 - (NSRect) createFrame
 {
 	return [self createFrameWithSuperView:[self superview]];
@@ -480,6 +475,60 @@
 	CGFloat prefData;
 	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH]:&prefData];
 	return widthWindow * prefData / 100;
+}
+
+#pragma mark - Wait for login
+
+- (void) setWaitingLogin : (bool) waitingLogin
+{
+	if(waitingLogin == _waitingLogin)
+		return;
+	
+	if(waitingLogin)
+	{
+		foregroundView = [[[RakTabForegroundView alloc] initWithFrame:self.bounds : self : @"lolololololololololol\nlolololololololololol\nlolololololololololol"] autorelease];
+		[self addSubview:foregroundView];
+	}
+	else if(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
+	{
+		return;	//Condition not met to close the foreground filter
+	}
+
+	[self performSelectorOnMainThread:@selector(animateForgroundView:) withObject:@(waitingLogin) waitUntilDone:NO];
+	
+	_waitingLogin = waitingLogin;
+}
+
+- (void) animateForgroundView : (NSNumber*) waitingLogin
+{
+	if(waitingLogin == nil)
+		return;
+	
+	BOOL value = [waitingLogin boolValue];
+	
+	[NSAnimationContext beginGrouping];
+	[[NSAnimationContext currentContext] setDuration : 0.2f];
+
+	if(value)
+	{
+		[foregroundView.animator setAlphaValue:1];
+	}
+	else
+	{
+		[foregroundView.animator setAlphaValue:0];
+		
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+			[foregroundView removeFromSuperview];
+			foregroundView = nil;
+		}];
+	}
+	
+	[NSAnimationContext endGrouping];
+}
+
+- (bool) waitingLogin
+{
+	return _waitingLogin;
 }
 
 #pragma mark - Utilities

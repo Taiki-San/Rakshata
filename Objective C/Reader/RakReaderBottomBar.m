@@ -24,8 +24,6 @@
 
 		[Prefs getCurrentTheme:self];
 		[self setAutoresizesSubviews:NO];
-		[parent addSubview:self];
-		[self release];
 		
 		readerMode = parent->readerMode;
 

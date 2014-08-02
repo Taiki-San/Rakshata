@@ -14,6 +14,7 @@
 
 - (void) awakeFromNib
 {
+	loginPromptOpen = NO;
 	sharedTabMDL = NULL;
 
 	[self.window.contentView setupBorders];
@@ -28,6 +29,8 @@
 		NSLog(@"Couldn't build view structure, basically, it's a _very_ early failure, we can't recover from that =/");
 		exit(EXIT_FAILURE);
 	}
+	
+	pthread_cond_init(&loginMutex, NULL);
 	
 	tabSerie =	[Series alloc];
 	tabCT =		[CTSelec alloc];
@@ -49,6 +52,62 @@
 	[context release];
 }
 
+- (RakContentView*) getContentView
+{
+	for(id view in ((NSView*)self.window.contentView).subviews)
+	{
+		if([view class] == [RakContentView class])
+			return view;
+	}
+	
+	return nil;
+}
+
+#pragma mark - Login
+
+- (pthread_cond_t*) sharedLoginLock
+{
+	return &loginMutex;
+}
+
+- (BOOL) loginPromptOpen
+{
+	return loginPromptOpen;
+}
+
+- (void) openLoginPrompt
+{
+	if(loginPromptOpen)
+		return;
+	else
+		loginPromptOpen = YES;
+	
+	NSArray * array;
+	
+	[[NSBundle mainBundle] loadNibNamed:@"auth" owner:nil topLevelObjects:&array];
+	
+	for(RakAuthController * object in array)
+	{
+		if([object class] == [RakAuthController class])
+		{
+			[object launch];
+			return;
+		}
+	}
+}
+
+- (void) loginPromptClosed
+{
+	loginPromptOpen = NO;
+	
+	if(COMPTE_PRINCIPAL_MAIL != NULL)
+	{
+		pthread_cond_broadcast(&loginMutex);
+	}
+}
+
+#pragma mark - Delegate
+
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
 	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
@@ -59,17 +118,6 @@
 	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		sharedTabMDL = NULL;	[tabMDL release];
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
-}
-
-- (RakContentView*) getContentView
-{
-	for(id view in ((NSView*)self.window.contentView).subviews)
-	{
-		if([view class] == [RakContentView class])
-			return view;
-	}
-	
-	return nil;
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

@@ -16,7 +16,7 @@
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 uint THREAD_COUNT = 0;
-char *COMPTE_PRINCIPAL_MAIL;
+char *COMPTE_PRINCIPAL_MAIL = NULL;
 MUTEX_VAR mutex;
 
 #ifdef _WIN32

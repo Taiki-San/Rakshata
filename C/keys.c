@@ -15,14 +15,14 @@
 
 #define NB_ROUNDS_MK	512
 
-static char passwordGB[2*SHA256_DIGEST_LENGTH];
+static char passwordGB[2*SHA256_DIGEST_LENGTH] = {0};
 
 // Cette fonction a pour but de récupérer la clée de chiffrement principale (cf RSP)
 byte getMasterKey(unsigned char *input)
 {
     if(COMPTE_PRINCIPAL_MAIL == NULL)
     {
-		return GMK_RETVAL_NEED_CREDENTIALS;
+		return GMK_RETVAL_NEED_CREDENTIALS_MAIL;
     }
 	
 	int nombreCle, i, j;
@@ -173,7 +173,7 @@ int earlyInit(int argc, char *argv[])
 	pthread_mutex_init(&mutex, NULL);
 #endif
 
-	COMPTE_PRINCIPAL_MAIL = NULL;	passwordGB[0] = 0;
+	loadEmailProfile();
     resetUpdateDBCache();
     initializeDNSCache();
 
@@ -234,8 +234,6 @@ void updateEmail(const char * email)
 	snprintf(prefs, length + 30, "<"SETTINGS_EMAIL_FLAG">\n%s\n</"SETTINGS_EMAIL_FLAG">\n", email);
 	updatePrefs(SETTINGS_EMAIL_FLAG, prefs);
 	free(prefs);
-	
-	remove(SECURE_DATABASE);
 }
 
 void addPassToCache(const char * hashedPassword)
@@ -248,8 +246,11 @@ bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1])
 	if(!passwordGB[0])
 		return false;
 	
-	usstrcpy(pass, 2*SHA256_DIGEST_LENGTH, passwordGB);
-	pass[2*SHA256_DIGEST_LENGTH] = 0;
+	if(pass != NULL)
+	{
+		usstrcpy(pass, 2*SHA256_DIGEST_LENGTH, passwordGB);
+		pass[2*SHA256_DIGEST_LENGTH] = 0;
+	}
 	return true;
 }
 
@@ -343,18 +344,17 @@ int login(const char * adresseEmail, const char * password, bool createAccount)
 
 byte createSecurePasswordDB(unsigned char *key_sent)
 {
-    int i = 0;
+	int i = 0;
     unsigned char fingerPrint[WP_DIGEST_SIZE+1];
-    char password[100], date[200], *filePass;
-    FILE* bdd = NULL;
+    char password[2 * SHA256_DIGEST_LENGTH + 1], date[200], *filePass;
 	
-	if(COMPTE_PRINCIPAL_MAIL == NULL || (key_sent == NULL && !getPassFromCache(password)))
-	{
-		return GMK_RETVAL_NEED_CREDENTIALS;
-	}
-
-	bdd = fopen(SECURE_DATABASE, "r+");
+	if(COMPTE_PRINCIPAL_MAIL == NULL)
+		return GMK_RETVAL_NEED_CREDENTIALS_MAIL;
 	
+	else if(key_sent == NULL && !getPassFromCache(password))
+		return GMK_RETVAL_NEED_CREDENTIALS_PASS;
+	
+	FILE* bdd = fopen(SECURE_DATABASE, "r+");
 	if(bdd == NULL)
     {
 #ifdef DEV_VERSION
@@ -481,7 +481,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
     rawData outputRAW[SHA256_DIGEST_LENGTH+1];
 
 	if(COMPTE_PRINCIPAL_MAIL == NULL)
-		return 1;
+		return false;
 	else
 		length = strlen(COMPTE_PRINCIPAL_MAIL);
 
@@ -492,7 +492,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 	URL = malloc((length + 512) * sizeof(char));
 	
 	if(URL == NULL)
-		return 1;
+		return false;
 	
     snprintf(URL, length + 512, "https://"SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
@@ -505,7 +505,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
         while(buffer_dl[bufferDL_pos++] != ' ' && buffer_dl[bufferDL_pos]);
         if(buffer_dl[bufferDL_pos-1] == ' ')
         {
-            int i = 0;
+			byte i = 0;
             unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
             crashTemp(seed, SHA256_DIGEST_LENGTH);
 
@@ -518,7 +518,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
             //On a désormais le seed
             generateRandomKey(derivation);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
-            internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, strlen(password), 2048, PBKDF2_OUTPUT_LENGTH, passDer);
+            internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, 2 * SHA256_DIGEST_LENGTH + 1, 2048, PBKDF2_OUTPUT_LENGTH, passDer);
             _AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY, 1);
 
 			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
@@ -537,7 +537,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 				char temp[1024];
                 snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
                 logR(temp);
-                return 1;
+                return false;
             }
         }
         else
@@ -546,19 +546,19 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 			snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
             logR(temp);
 			free(URL);
-            return 1;
+            return false;
         }
     }
     else if(!strcmp(buffer_dl, "old_key_found"))
     {
         recoverPassFromServ(key);
 		free(URL);
-        return 1;
+        return true;
     }
     else if(!strcmp(buffer_dl, "account_not_found"))
     {
 		free(URL);
-        return 1;
+        return false;
     }
     else
     {
@@ -569,9 +569,9 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
         logR(randomKeyHex);
 #endif
 		free(URL);
-        return 1;
+        return false;
     }
-    return 0;
+    return true;
 }
 
 bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])

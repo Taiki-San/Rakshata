@@ -89,31 +89,19 @@
 				free(project);
 				
 				[self setSliderPos:NSMakePoint([[dataState objectAtIndex:5] intValue], [[dataState objectAtIndex:6] intValue])];
-				pageInitialized = _scrollView != nil;
 				
 			}while (0);
 		}
 	}
 	
-	if(!pageInitialized)
-		[self noContent];
-	else
-	{
-		resizeAnimationCount = -1;	//Disable animation
-		[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
-		resizeAnimationCount = 0;
-	}
+	resizeAnimationCount = -1;	//Disable animation
+	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
+	resizeAnimationCount = 0;
 }
 
 - (void) endOfInitialization
 {
 	
-}
-
-- (void) noContent
-{
-	PROJECT_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
-	[self startReading: mangaData[21] : 540: false : 0];
 }
 
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
@@ -135,7 +123,14 @@
 		[self changeProject : project : elemToRead : isTome : startPage];
 	
 	if(bottomBar == nil)
-		bottomBar = [[RakReaderBottomBar alloc] init: readerMode: self];
+	{
+		bottomBar = [[[RakReaderBottomBar alloc] init: readerMode: self] autorelease];
+	
+		if(foregroundView.superview == self)
+			[self addSubview:bottomBar positioned:NSWindowBelow relativeTo:foregroundView];
+		else
+			[self addSubview:bottomBar];
+	}
 
 	[bottomBar favsUpdated:project.favoris];
 
@@ -238,6 +233,7 @@
 	[self.animator setFrame:frame];
 	[self setFrameInternal: frame : YES];
 	[bottomBar resizeAnimation:frame];
+	[foregroundView resizeAnimation:frame];
 }
 
 - (void) setFrame:(NSRect)frameRect

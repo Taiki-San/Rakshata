@@ -10,23 +10,31 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate>
+@class RakTabView;
+
+@interface RakTabForegroundView : RakForegroundViewBackgroundView
 {
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
+	RakText * head;
+	RakText * main;
 	
-	BOOL loginPromptOpen;
-	pthread_cond_t loginMutex;
+	RakTabView * tabView;
 }
 
-@property (assign) IBOutlet NSWindow *window;
+- (id) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail;
+- (void) resizeAnimation : (NSRect) frameRect;
 
-- (RakContentView*) getContentView;
+@end
 
-- (pthread_cond_t*) sharedLoginLock;
-- (void) openLoginPrompt;
-- (void) loginPromptClosed;
+@interface RakTabAnimationResize : NSObject
+{
+	BOOL readerMode;
+	BOOL haveBasePos;
+	NSArray* _views;
+}
+- (id) init : (NSArray*)views;
+- (void) setUpViews;
+- (void) performTo;
+- (void) performFromTo : (NSArray*) basePosition;
+- (void) resizeView : (RakTabView *) view : (id) basePos;
 
 @end

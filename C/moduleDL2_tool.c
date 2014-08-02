@@ -462,10 +462,10 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
         }
         else if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_3))
         {
-            length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + strlen(COMPTE_PRINCIPAL_MAIL) + 64; //Core URL + numbers + elements
+            length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + 64; //Core URL + numbers + elements
             URL = malloc(length);
             if(URL != NULL)
-                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d&mail=%s", tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier, COMPTE_PRINCIPAL_MAIL);
+                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d", tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
         }
 
         if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)

@@ -18,6 +18,7 @@
 }
 
 - (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
+- (NSColor *) getBackgroundColor;
 
 @end
 

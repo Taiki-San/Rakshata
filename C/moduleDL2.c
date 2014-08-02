@@ -19,10 +19,11 @@ bool startMDL(char * state, PROJECT_DATA * cache, THREAD_TYPE * coreWorker, DATA
 		return false;
 	
 #warning "Improve check, only P project, or DRM protected need account"
-	if(COMPTE_PRINCIPAL_MAIL == NULL && !loadEmailProfile())	//Pas de compte
+	if(COMPTE_PRINCIPAL_MAIL == NULL)	//Pas de compte
 	{
-		*todoList = NULL;
-		return false;
+		*nbElemTotal = 0;
+		*todoList = malloc(sizeof(DATA_LOADED **));
+		return true;
 	}
 	
     if(*todoList == NULL || **todoList == NULL || *status == NULL)

@@ -258,9 +258,13 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         logR("Huge fail: database corrupted\n");
 		return IMGLOAD_NODATA;
     }
-	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS)
+	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_MAIL)
 	{
-		return IMGLOAD_NEED_CREDENTIALS;
+		return IMGLOAD_NEED_CREDENTIALS_MAIL;
+	}
+	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_PASS)
+	{
+		return IMGLOAD_NEED_CREDENTIALS_PASS;
 	}
 
 	unsigned char numChapitreChar[10];

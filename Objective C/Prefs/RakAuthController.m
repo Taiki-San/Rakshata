@@ -342,6 +342,7 @@ enum
 		[passInput removeFromSuperview];
 		[container removeFromSuperview];
 		
+		[[NSApp delegate] loginPromptClosed];
 		[self release];
 	}
 }

@@ -113,7 +113,10 @@
 - (BOOL) isVisible
 {
 	if(background != nil)
+	{
+		NSLog(@"%f", background.alphaValue);
 		return background.alphaValue != 0;
+	}
 	
 	else if(_coreView != nil)
 		return _coreView.frame.origin.y > 0;
@@ -129,7 +132,7 @@
 		[background setHidden:YES];
 
 	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(switchOver:)])
-		[self.delegate performSelector:@selector(switchOver:) withObject:@(isDisplayed)];
+		[self.delegate performSelectorOnMainThread:@selector(switchOver:) withObject:@(isDisplayed) waitUntilDone:NO];
 }
 
 @end
@@ -145,8 +148,9 @@
 		_father = father;
 		[self setWantsLayer:YES];
 		[self setAutoresizesSubviews:NO];
-		[self.layer setBackgroundColor : [Prefs getSystemColor:GET_COLOR_FILTER_FORGROUND :self].CGColor];
+		[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
 		[self setAlphaValue:0];
+		[Prefs getCurrentTheme:self];
 	}
 	
 	return self;
@@ -156,18 +160,25 @@
 {
 	if([object class] != [Prefs class])
 	{
-		[self.layer setBackgroundColor : [Prefs getSystemColor:GET_COLOR_FILTER_FORGROUND :nil].CGColor];
+		[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
 		[self setNeedsDisplay:YES];
 	}
 }
 
+- (NSColor *) getBackgroundColor
+{
+	return [Prefs getSystemColor:GET_COLOR_FILTER_FORGROUND :nil];
+}
+
 - (void) mouseDown:(NSEvent *)theEvent
 {
+	NSLog(@"In FV");
 	if([_father isVisible])
 	{
 		[_father switchState];
 		[_father release];
 	}
+	NSLog(@"Out FV");
 }
 
 - (void) mouseUp:(NSEvent *)theEvent
@@ -191,6 +202,11 @@
 }
 
 - (void) swipeWithEvent:(NSEvent *)event
+{
+	
+}
+
+- (void) scrollWheel:(NSEvent *)theEvent
 {
 	
 }
