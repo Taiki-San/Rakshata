@@ -29,7 +29,7 @@
 		container = [[[NSView alloc] initWithFrame:self.bounds] autorelease];
 		[self addSubview:container];
 		
-		loadingPlaceholder = [[NSImage alloc] initWithContentsOfFile:@"loading.gif"];
+		loadingPlaceholder = [NSImage imageNamed:@"loading.gif"];
 		if(loadingPlaceholder != nil)
 		{
 			NSBitmapImageRep *gifRep = [[loadingPlaceholder representations] objectAtIndex:0];
