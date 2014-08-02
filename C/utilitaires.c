@@ -120,26 +120,25 @@ uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable)
 
 int positionnementApresChar(char* input, char *stringToFind)
 {
-    int i = 0;
+    uint i = 0, lengthToFind = strlen(stringToFind);
     while(input[i])
     {
         for(; input[i] != stringToFind[0] && input[i]; i++);
         if(input[i] == stringToFind[0])
         {
             int j = 0;
-            for(; j < strlen(stringToFind) && input[j+i] && stringToFind[j] && input[j+i] == stringToFind[j]; j++);
+            for(; j < lengthToFind && input[j+i] && stringToFind[j] && input[j+i] == stringToFind[j]; j++);
             if(stringToFind[j] == 0)
             {
                 i += j;
                 for(; input[i] == '\r' || input[i] == '\n'; i++);
-                break;
+                return i;
             }
             i++;
         }
     }
-    if(!input[i])
-        return 0;
-    return i;
+
+	return 0;
 }
 
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
