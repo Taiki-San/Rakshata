@@ -12,8 +12,7 @@
 
 void checkUpdate()
 {
-    FILE* test = NULL;
-    test = fopen("data/update", "r");
+    FILE* test = fopen("update_token", "r");
     if(test != NULL)
     {
         /**********************************************************************************
@@ -135,7 +134,7 @@ void checkJustUpdated()
     if(checkFileExist("Rakshata.exe.old"))
     {
         remove("Rakshata.exe.old");
-        remove("data/update");
+        remove("update_token");
     }
 }
 

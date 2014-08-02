@@ -283,7 +283,7 @@ void addToRegistry(bool firstStart)
     if(!firstStart)
         return;
     else
-        remove("data/firstLaunchAddRegistry");
+        remove("firstLaunchAddRegistry");
 
     HKEY hkey;
 

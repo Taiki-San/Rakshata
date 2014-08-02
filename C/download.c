@@ -133,7 +133,7 @@ static void downloadChapterCore(DL_DATA *data)
 	//Check if a proxy is configured
     bool isProxyConfigured = false;
 	char IPProxy[40]; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
-    FILE *proxyFile = fopen("data/proxy", "r"); //Check proxy
+    FILE *proxyFile = fopen("proxy", "r"); //Check proxy
     if(proxyFile != NULL)
     {
         char lengthProxy = 0, c = 0, pos;

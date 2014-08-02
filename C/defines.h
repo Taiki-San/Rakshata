@@ -40,7 +40,6 @@
 
 #define REPO_DATABASE "data/repo"
 #define MANGA_DATABASE "data/mangas"
-#define INSTALL_DATABASE "data/import.dat"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"
@@ -99,8 +98,8 @@
 #define LANGUE_PAR_DEFAUT 2
 
 /*Settings*/
-#define SECURE_DATABASE "data/secure.enc"
-#define SETTINGS_FILE "data/settings"
+#define SECURE_DATABASE "secure.enc"
+#define SETTINGS_FILE "settings"
 #define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr!s36~8713ue68"
 #define SETTINGS_EMAIL_FLAG "E"
 #define SETTINGS_FAVORITE_FLAG "F"
