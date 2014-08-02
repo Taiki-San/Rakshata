@@ -11,7 +11,7 @@
  *********************************************************************************************/
 
 pthread_mutex_t asynchronousTaskInThreads	= PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexStartUIThread			= PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexLockMainThread			= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condResumeExecution			= PTHREAD_COND_INITIALIZER;
 
 THREAD_TYPE *threadID = NULL;
@@ -22,7 +22,7 @@ RakMDLController *	mainTab;
 
 void mainDLProcessing(MDL_MWORKER_ARG * arg)
 {
-	pthread_mutex_trylock(&mutexStartUIThread);
+	pthread_mutex_trylock(&mutexLockMainThread);
 	
 	DATA_LOADED ****	todoList	=	arg->todoList;
 	bool *				quit		=	arg->quit;
@@ -47,13 +47,13 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	
 	while(1)
 	{
-		MUTEX_LOCK(mutexStartUIThread); //Ce seconde lock bloque l'execution jusqu'à que pthread_cond le débloque
+		MUTEX_LOCK(mutexLockMainThread); //Ce seconde lock bloque l'execution jusqu'à que pthread_cond le débloque
 		
 		if(*quit)
 		{
 			MDLUpdateKillState(*quit);
 			pthread_cond_broadcast(&condResumeExecution);
-			MUTEX_UNLOCK(mutexStartUIThread);
+			MUTEX_UNLOCK(mutexLockMainThread);
 			break;
 		}
 		
@@ -87,7 +87,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 					if(dataPos == *nbElemTotal)	//Non, on se casse
 					{
 						pthread_cond_broadcast(&condResumeExecution);
-						MUTEX_UNLOCK(mutexStartUIThread);
+						MUTEX_UNLOCK(mutexLockMainThread);
 						
 						break;
 					}
@@ -109,14 +109,14 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 		}
 		
 		pthread_cond_broadcast(&condResumeExecution);	//On a reçu la requête, le thread sera libéré dès que le mutex sera debloqué
-		MUTEX_UNLOCK(mutexStartUIThread);
+		MUTEX_UNLOCK(mutexLockMainThread);
 		
 		if(!*quit)
 		{
 			usleep(5);
-			while(!pthread_mutex_trylock(&mutexStartUIThread))   //On attend le lock
+			while(!pthread_mutex_trylock(&mutexLockMainThread))   //On attend le lock
 			{
-				MUTEX_UNLOCK(mutexStartUIThread);
+				MUTEX_UNLOCK(mutexLockMainThread);
 				if(requestID != RID_DEFAULT)	//Si nouvelle requête reçue
 					break;
 				else
@@ -130,8 +130,8 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	free(historiqueTeam);
 	
 	pthread_cond_broadcast(&condResumeExecution);
-	pthread_mutex_trylock(&mutexStartUIThread);
-	MUTEX_UNLOCK(mutexStartUIThread);
+	pthread_mutex_trylock(&mutexLockMainThread);
+	MUTEX_UNLOCK(mutexLockMainThread);
 
 	quit_thread(0);
 }
@@ -179,7 +179,7 @@ bool MDLSendMessage(uint code)
 	if(threadID != NULL && isThreadStillRunning(*threadID))
 	{
 		requestID = code;
-		pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+		pthread_cond_wait(&condResumeExecution, &mutexLockMainThread);
 		ret_value = true;
 	}
 	
@@ -205,7 +205,7 @@ void MDLQuit()
 		
 	MUTEX_LOCK(asynchronousTaskInThreads);
 	
-	pthread_cond_wait(&condResumeExecution, &mutexStartUIThread);
+	pthread_cond_wait(&condResumeExecution, &mutexLockMainThread);
 	
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 }
