@@ -205,7 +205,7 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 		
 		if(encodedTeam != NULL)
 		{
-			snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, project.projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, project.projectID);
 			removeFolder(path);
 		}
 		free(encodedTeam);
@@ -225,9 +225,9 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 		return;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", encodedTeam, project.projectID, CONFIGFILETOME);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/%s", encodedTeam, project.projectID, CONFIGFILETOME);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, "manga/%s/%d/%s", encodedTeam, project.projectID, CONFIGFILE);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/%s", encodedTeam, project.projectID, CONFIGFILE);
 
 	fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);

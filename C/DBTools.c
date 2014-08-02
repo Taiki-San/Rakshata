@@ -328,7 +328,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
 			if(encodedTeam != NULL)
 			{
-				snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, oldData[posOld].projectID);
+				snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, oldData[posOld].projectID);
 				removeFolder(path);
 			}
 			free(encodedTeam);
@@ -372,7 +372,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
 		if(encodedTeam != NULL)
 		{
-			snprintf(path, sizeof(path), "manga/%s/%d", encodedTeam, oldData[posOld].projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, oldData[posOld].projectID);
 			removeFolder(path);
 		}
 		free(encodedTeam);

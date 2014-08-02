@@ -129,7 +129,7 @@ int setupBDDCache()
 				
 				if(encodedTeam[teamPos] != NULL)
 				{
-					snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
+					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
 					if(!addToCache(request, projects[pos], teamPos, checkDirExist(pathInstall)))
 					{
 						free(projects[pos].chapitresFull);

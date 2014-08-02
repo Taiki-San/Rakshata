@@ -95,7 +95,7 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, "manga/%s/%d/%s/%s", encodedTeam, mangaDB.projectID, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedTeam, mangaDB.projectID, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -166,7 +166,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, "manga/%s/%d/%s", encodedTeam, mangaDB.projectID, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedTeam, mangaDB.projectID, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else

@@ -40,6 +40,7 @@
 
 #define REPO_DATABASE "data/repo"
 #define MANGA_DATABASE "data/mangas"
+#define PROJECT_ROOT "project/"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"

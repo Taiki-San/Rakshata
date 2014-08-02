@@ -35,13 +35,13 @@ bool checkChapterReadable(PROJECT_DATA mangaDB, int chapitre)
 
 	if(chapitre%10)
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), "manga/%s/%d/Chapitre_%d.%d/installing", encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
     }
     else
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), "manga/%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), "manga/%s/%d/Chapitre_%d/installing", encodedHash, mangaDB.projectID, chapitre/10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, mangaDB.projectID, chapitre/10);
     }
 	
 	free(encodedHash);
@@ -67,7 +67,7 @@ void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu)
 	if(encodedHash == NULL)
 		return;
 
-    snprintf(configFilePath, sizeof(configFilePath), "manga/%s/%d/"CONFIGFILE, encodedHash, mangaDB->projectID);
+    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedHash, mangaDB->projectID);
 	free(encodedHash);
 	
     if(!checkFileExist(configFilePath))
@@ -144,9 +144,9 @@ void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careA
 		return;
 	
 	if(chapitreDelete % 10)
-		snprintf(dir, sizeof(dir), "manga/%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB.projectID, chapitreDelete/10, chapitreDelete%10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB.projectID, chapitreDelete/10, chapitreDelete%10);
 	else
-		snprintf(dir, sizeof(dir), "manga/%s/%d/Chapitre_%d", encodedTeam, mangaDB.projectID, chapitreDelete/10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, mangaDB.projectID, chapitreDelete/10);
 	
 	snprintf(dirCheck, sizeof(dirCheck), "%s/shared", dir);
 	
@@ -162,15 +162,15 @@ void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careA
 			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
-				snprintf(dirVol, sizeof(dirVol), "manga/%s/%d/Tome_%d/%s", encodedTeam, mangaDB.projectID, IDTomeLinked, CONFIGFILETOME);
+				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, mangaDB.projectID, IDTomeLinked, CONFIGFILETOME);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
 					//On crée le dossier
-					snprintf(dirVol, sizeof(dirVol), "manga/%s/%d/Tome_%d/native", encodedTeam, mangaDB.projectID, IDTomeLinked);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native", encodedTeam, mangaDB.projectID, IDTomeLinked);
 					mkdirR(dirVol);
 					
 					//On craft le nouveau nom
-					snprintf(dirVol, sizeof(dirVol), "manga/%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB.projectID, IDTomeLinked, chapitreDelete);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB.projectID, IDTomeLinked, chapitreDelete);
 					rename(dir, dirVol);
 					
 					//On supprime le fichier shared
@@ -205,9 +205,9 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID)
 			return false;
 		
 		if(ID % 10)
-			snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, ID / 10, ID % 10);
+			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, ID / 10, ID % 10);
 		else
-			snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, ID / 10);
+			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, ID / 10);
 		
 		free(encodedTeam);
 		return checkFileExist(newPath);

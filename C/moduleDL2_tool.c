@@ -267,16 +267,16 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), "manga/%s/%d/Tome_%d/Chapitre_%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), "manga/%s/%d/Tome_%d/Chapitre_%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10);
 #endif
 		}
 		
@@ -294,7 +294,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	char basePath[LENGTH_PROJECT_NAME * 2 + 256], nameChapter[256];
 	
 	//Craft les portions constantes du nom
-	snprintf(basePath, sizeof(basePath), "manga/%s/%d", encodedTeam, projectData.projectID);
+	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedTeam, projectData.projectID);
 	free(encodedTeam);
 	
 	if(IDChap % 10)
@@ -368,9 +368,9 @@ void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 		return;
 	
 	if(chapitreID % 10)
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, chapitreID / 10, chapitreID % 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, chapitreID / 10, chapitreID % 10);
 	else
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), "manga/%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, chapitreID / 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, chapitreID / 10);
 	
 	free(encodedTeam);
 	
@@ -427,7 +427,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(encodedTeam == NULL)
 		return false;
 	
-	snprintf(bufferPath, length, "manga/%s/%d/Tome_%d/%s.tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/%s.tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
 	length = getFileSize(bufferPath);
 	
 	if(length)
@@ -570,7 +570,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + 110;
 		char bufferPathTmp[lengthTmp];
 		
-		snprintf(bufferPathTmp, lengthTmp, "manga/%s/%d/Tome_%d/%s", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
 		rename(bufferPath, bufferPathTmp);
 		
 		refreshTomeList(tomeDatas->datas);

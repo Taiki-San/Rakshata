@@ -215,7 +215,7 @@ void KSTriggered(TEAMS_DATA team)
 
 	if(encodedTeam != NULL)
 	{
-		snprintf(path, sizeof(path), "manga/%s", encodedTeam);
+		snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedTeam);
 		removeFolder(path);
 	}
 }

@@ -127,13 +127,13 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
-						snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), "manga/%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
-						snprintf(newPath, sizeof(newPath), "manga/%s/%d/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
 					}
 					free(encodedTeam);
 					
@@ -385,24 +385,24 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
 		if(subFolder)
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
 		}
 		else
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, "manga/%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
 		}
     }
     else
     {
         if(chapitre%10)
-            snprintf(basePath, 500, "manga/%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, chapitre/10, chapitre%10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, chapitre/10, chapitre%10);
         else
-            snprintf(basePath, 500, "manga/%s/%d/Chapitre_%d", encodedTeam, mangaDB->projectID, chapitre/10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, mangaDB->projectID, chapitre/10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);
@@ -411,7 +411,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
 		//Décompression dans le repertoire de destination
 
 		//Création du répertoire de destination
-		snprintf(temp, 500, "manga/%s/%d/", encodedTeam, mangaDB->projectID);
+		snprintf(temp, 500, PROJECT_ROOT"%s/%d/", encodedTeam, mangaDB->projectID);
 		if(!checkDirExist(temp))
 			createPath(temp);
 		
