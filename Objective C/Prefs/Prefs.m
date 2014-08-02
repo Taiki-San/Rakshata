@@ -183,7 +183,8 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING:
 		{
-			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
+			//output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
+			output = [NSColor colorWithSRGBRed:104/255.0f green:150/255.0f blue:176/255.0f alpha:1.0];
 			break;
 		}
 			
