@@ -52,10 +52,6 @@ bool setFavorite(PROJECT_DATA* mangaDB);
 void updateFavorites();
 void getNewFavs();
 
-/**Interface.c**/
-void updateSectionMessage(char messageVersion[5]);
-void checkSectionMessageUpdate();
-
 /**JSONParser.m**/
 PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uint * nbElem);
 PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem);
