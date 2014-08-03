@@ -479,6 +479,11 @@
 
 #pragma mark - Wait for login
 
+- (NSString *) waitingLoginMessage
+{
+	return @"";
+}
+
 - (void) setWaitingLogin : (bool) waitingLogin
 {
 	if(waitingLogin == _waitingLogin)
@@ -486,7 +491,7 @@
 	
 	if(waitingLogin)
 	{
-		foregroundView = [[[RakTabForegroundView alloc] initWithFrame:self.bounds : self : @"lolololololololololol\nlolololololololololol\nlolololololololololol"] autorelease];
+		foregroundView = [[[RakTabForegroundView alloc] initWithFrame:self.bounds : self : [self waitingLoginMessage]] autorelease];
 		[self addSubview:foregroundView];
 	}
 	else if(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))

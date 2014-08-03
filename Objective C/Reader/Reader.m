@@ -396,6 +396,13 @@
 	[bottomBar updatePage:newCurrentPage :newPageMax];
 }
 
+#pragma mark - Waiting login
+
+- (NSString*) waitingLoginMessage
+{
+	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", [[[NSString alloc] initWithData:[NSData dataWithBytes:_project.projectName length:sizeof(_project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease], _isTome ? @"tome" : @"chapitre"];
+}
+
 #pragma mark - Drop support
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender

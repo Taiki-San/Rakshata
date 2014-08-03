@@ -90,6 +90,8 @@ enum {
 - (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
+- (NSString *) waitingLoginMessage;
+
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 

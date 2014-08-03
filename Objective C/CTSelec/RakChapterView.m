@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
+		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
