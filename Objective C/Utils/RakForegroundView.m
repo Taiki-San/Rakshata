@@ -113,10 +113,7 @@
 - (BOOL) isVisible
 {
 	if(background != nil)
-	{
-		NSLog(@"%f", background.alphaValue);
 		return background.alphaValue != 0;
-	}
 	
 	else if(_coreView != nil)
 		return _coreView.frame.origin.y > 0;
@@ -172,13 +169,11 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	NSLog(@"In FV");
 	if([_father isVisible])
 	{
 		[_father switchState];
 		[_father release];
 	}
-	NSLog(@"Out FV");
 }
 
 - (void) mouseUp:(NSEvent *)theEvent
