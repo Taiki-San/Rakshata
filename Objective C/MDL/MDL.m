@@ -357,21 +357,8 @@
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
 {
-	NSArray* subviews = self.superview.subviews;
-	
-	if (subviews == nil)
-		return;
-	
-	RakTabView * currentView;
-	
-	for (currentView in subviews)
-	{
-		if([currentView class] == [CTSelec class])
-			[currentView updateContextNotification:data :isTome :VALEUR_FIN_STRUCT];
-		else if([currentView class] == [Reader class])
-			[currentView updateContextNotification:data :isTome :element];
-	}
-
+	[[[NSApp delegate] CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
+	[[[NSApp delegate] reader]	updateContextNotification : data : isTome : element];
 }
 
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover

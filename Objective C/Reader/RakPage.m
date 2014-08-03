@@ -610,24 +610,17 @@ enum
 
 - (void) updateCT : (uint) request
 {
-	NSArray * array = self.superview.subviews;
+	CTSelec * tabCT = [[NSApp delegate] CT];
 	
-	for (uint i = 0, count = [array count]; i < count; i++)
+	if(request == COM_CT_SELEC)
 	{
-		if([[array objectAtIndex:i] class] == [CTSelec class])
-		{
-			if(request == COM_CT_SELEC)
-			{
-				_dontGiveACrapAboutCTPosUpdate = true;
-				[(CTSelec*) [array objectAtIndex:i] selectElem: _project.cacheDBID :self.isTome :_currentElem];
-				_dontGiveACrapAboutCTPosUpdate = false;
-			}
-			else if(request == COM_CT_REFRESH)
-			{
-				[(CTSelec*) [array objectAtIndex:i] refreshCT:NO :_project.cacheDBID];
-			}
-			return;
-		}
+		_dontGiveACrapAboutCTPosUpdate = true;
+		[tabCT selectElem: _project.cacheDBID :self.isTome :_currentElem];
+		_dontGiveACrapAboutCTPosUpdate = false;
+	}
+	else if(request == COM_CT_REFRESH)
+	{
+		[tabCT refreshCT:NO :_project.cacheDBID];
 	}
 }
 
@@ -1078,7 +1071,7 @@ enum
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
 	int * selection = calloc(nbElemToGrab, sizeof(int));
-	MDL * tabMDL = sharedTabMDL;
+	MDL * tabMDL = [[NSApp delegate] MDL];
 	
 	if(selection == NULL || tabMDL == nil)
 	{
@@ -1105,7 +1098,7 @@ enum
 	
 	//We got the data, now, craft the alert
 	RakReaderControllerUIQuery *test = [RakReaderControllerUIQuery alloc];
-	[test initWithData :sharedTabMDL : _project :self.isTome :selection :nbElemValidated];
+	[test initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit

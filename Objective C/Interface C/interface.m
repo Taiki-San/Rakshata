@@ -54,13 +54,15 @@ void updateRecentSeries()
 
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, int element)
 {
-	if(sharedTabMDL == nil)
-		return false;
-	return [(id) sharedTabMDL proxyCheckForCollision:data :isTome :element];
+	MDL * tabMDL = [[NSApp delegate] MDL];
+
+	return tabMDL == nil ? [tabMDL proxyCheckForCollision:data :isTome :element] : false;
 }
 
 void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBatch)
 {
-	if(sharedTabMDL != nil)
-		[(id) sharedTabMDL proxyAddElement:data :isTome :element :partOfBatch];
+	MDL * tabMDL = [[NSApp delegate] MDL];
+	
+	if(tabMDL != nil)
+		[tabMDL proxyAddElement:data :isTome :element :partOfBatch];
 }

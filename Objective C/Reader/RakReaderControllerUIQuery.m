@@ -23,22 +23,11 @@
 	{
 		NSRect frame = NSZeroRect;
 		_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-		_remind = false;	_tabReader = nil;
+		_remind = false;	_tabReader = [[NSApp delegate] reader];
 		
-		NSArray *subviews;
-		if(_anchor.superview != nil && (subviews = _anchor.superview.subviews) != nil)
-		{
-			for(NSView * view in subviews)
-			{
-				if([view class] == [Reader class])
-				{
-					_tabReader = (Reader*) view;
-					frame.size.width = view.frame.origin.x;
-					break;
-				}
-			}
-		}
-	
+		if(_tabReader != nil)
+			frame.size.width = _tabReader.frame.origin.x;
+		
 		[self internalInit : _anchor : frame : YES];
 		[(MDL*) _anchor registerPopoverExistance:self];
 	}

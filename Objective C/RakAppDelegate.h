@@ -29,4 +29,10 @@
 - (void) openLoginPrompt;
 - (void) loginPromptClosed;
 
+- (Series *)	serie;
+- (CTSelec *)	CT;
+- (MDL *)		MDL;
+- (Reader *)	reader;
+
+
 @end

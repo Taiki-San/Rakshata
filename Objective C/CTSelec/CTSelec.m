@@ -278,17 +278,8 @@
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
 		NSView * superview = self.superview;
-		Reader *readerTab = nil;
-		MDL * MDLTab = sharedTabMDL;
-		
-		for(Reader* view in superview.subviews)
-		{
-			if([view class] == [Reader class])
-			{
-				readerTab = view;
-				break;
-			}
-		}
+		Reader *readerTab = [[NSApp delegate] reader];
+		MDL * MDLTab = [[NSApp delegate] MDL];
 		
 		if(readerTab != nil)
 		{

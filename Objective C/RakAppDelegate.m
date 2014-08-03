@@ -15,7 +15,6 @@
 - (void) awakeFromNib
 {
 	loginPromptOpen = NO;
-	sharedTabMDL = NULL;
 
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
@@ -46,7 +45,7 @@
 	
 	[tabSerie init:contentView : [context objectAtIndex:0]];
 	[tabCT init:contentView : [context objectAtIndex:1]];
-	sharedTabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
+	[tabMDL init:contentView : [context objectAtIndex:3]];
 	[tabReader init:contentView : [context objectAtIndex:2]];
 	
 	[context release];
@@ -106,16 +105,23 @@
 	}
 }
 
+#pragma mark - Access to tabs
+
+- (Series *)	serie	{	return tabSerie;	}
+- (CTSelec *)	CT		{	return tabCT;		}
+- (MDL *)		MDL		{	return tabMDL;		}
+- (Reader *)	reader	{	return tabReader;	}
+
 #pragma mark - Delegate
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
 	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
 	
-	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];		[tabSerie release];
-	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];		[tabCT release];
-	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];	[tabReader release];
-	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		sharedTabMDL = NULL;	[tabMDL release];
+	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];		[tabSerie release];		tabSerie = nil;
+	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];		[tabCT release];		tabCT = nil;
+	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];	[tabReader release];	tabReader = nil;
+	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		[tabMDL release];		tabMDL = nil;
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 }

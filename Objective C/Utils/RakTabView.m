@@ -540,8 +540,11 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	if(sharedTabMDL != NULL && (!requireAvailable || [(MDL*) sharedTabMDL isDisplayed]))
+	MDL * sharedTabMDL = [[NSApp delegate] MDL];
+	
+	if(sharedTabMDL != nil && (!requireAvailable || [sharedTabMDL isDisplayed]))
 		return sharedTabMDL;
+
 	return nil;
 }
 

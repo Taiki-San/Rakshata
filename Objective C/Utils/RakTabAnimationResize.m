@@ -56,7 +56,7 @@
 		[self cleanUpAnimation];
 	}];
 	
-	[(MDL*) sharedTabMDL createFrame];
+	[[[NSApp delegate] MDL] createFrame];
 
 	char pos = 0;
 	for(currentView in _views)

@@ -12,6 +12,8 @@
 
 @implementation RakMDLController
 
+#pragma mark - Controller internal
+
 - (id) init : (MDL *) tabMDL : (NSString *) state
 {
 	self = [super init];
@@ -78,6 +80,8 @@
 	[super dealloc];
 }
 
+#pragma mark - Get data about download list
+
 - (uint) getNbElem : (BOOL) considerDiscarded
 {
 	return considerDiscarded ? discardedCount : nbElem;
@@ -106,6 +110,13 @@
 	
 	return *(status[row]);
 }
+
+- (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
+{
+	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
+}
+
+#pragma mark - Tools
 
 - (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
@@ -279,11 +290,6 @@
 	free(movingPart);
 }
 
-- (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
-{
-	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
-}
-
 - (void) discardElement : (uint) element
 {
 	discardedCount--;	//If decrement sent in the if, won't work for last element
@@ -309,20 +315,15 @@
 		*(status[row]) = value;
 }
 
+#pragma mark - Main view control
+
 - (void) refreshCT : (uint) row
 {
 	DATA_LOADED ** data = [self getData:row :YES];
 	
 	if(data != NULL && *data != NULL)
 	{
-		for(NSView* view in _tabMDL.superview.subviews)
-		{
-			if([view class] == [CTSelec class])
-			{
-				[(CTSelec *) view refreshCT:YES :(*data)->datas->cacheDBID];
-				break;
-			}
-		}
+		[[[NSApp delegate] CT] refreshCT : YES : (*data)->datas->cacheDBID];
 	}
 }
 
