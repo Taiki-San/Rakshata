@@ -277,7 +277,6 @@
 {
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
-		NSView * superview = self.superview;
 		Reader *readerTab = [[NSApp delegate] reader];
 		MDL * MDLTab = [[NSApp delegate] MDL];
 		

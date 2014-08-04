@@ -300,7 +300,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 				firstTwentyBytesOfArchive[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
 			firstTwentyBytesOfArchive[i] = 0;
 			
-            if(dataDL.length < 50 && dataDL.buf != NULL && !strcmp(input->todoList->datas->team->type, TYPE_DEPOT_3))
+            if(dataDL.length < 50 && dataDL.buf != NULL && isPaidProject(*input->todoList->datas))
             {
                 /*Output du RSP, à gérer*/
 #ifdef DEV_VERSION

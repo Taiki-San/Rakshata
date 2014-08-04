@@ -67,7 +67,7 @@ bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1]);
 bool validateEmail(const char* adresseEmail);
 byte checkLogin(const char adresseEmail[100]);
 int login(const char * adresseEmail, const char * password, bool createAccount);
-void passToLoginData(char passwordIn[100], char passwordSalted[SHA256_DIGEST_LENGTH*2+1]);
+void saltPassword(char passwordSalted[2*SHA256_DIGEST_LENGTH+1]);
 byte createSecurePasswordDB(unsigned char *key_sent);
 bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);

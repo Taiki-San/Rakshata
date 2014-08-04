@@ -38,6 +38,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 
 void resetUpdateDBCache();
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
+bool isPaidProject(PROJECT_DATA projectData);
 
 /**DBCache.c**/
 int setupBDDCache();

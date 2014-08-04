@@ -327,4 +327,19 @@
 	}
 }
 
+- (void) requestCredentials : (BOOL) purchase
+{
+	requestForPurchase = purchase;
+}
+
+- (BOOL) areCredentialsComplete
+{
+	return COMPTE_PRINCIPAL_MAIL != NULL && (!requestForPurchase || getPassFromCache(NULL));
+}
+
+- (void) setWaitingLogin : (NSNumber *) request
+{
+	[_tabMDL setWaitingLoginWrapper : request];
+}
+
 @end

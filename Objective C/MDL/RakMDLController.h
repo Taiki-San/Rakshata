@@ -29,6 +29,9 @@
 	uint discardedCount;
 
 	bool quit;
+	
+	//Credential request
+	BOOL requestForPurchase;
 }
 
 - (id) init : (MDL *) tabMDL : (NSString *) state;
@@ -49,5 +52,7 @@
 - (void) discardElement : (uint) element;
 
 - (void) refreshCT : (uint) ID;
+- (void) requestCredentials : (BOOL) purchase;
+- (BOOL) areCredentialsComplete;
 
 @end

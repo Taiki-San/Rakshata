@@ -13,13 +13,22 @@
 extern bool quit;
 char password[100];
 
-void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
+bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uint length)
 {
-    int *index = NULL;
-    if(!MDLPCheckAnythingPayable(data, *status, length))
-        return;
+    uint *index = NULL;
+	
+#warning "Improve check, only DRM protected need account"
+	
+	if(COMPTE_PRINCIPAL_MAIL == NULL)	//For now, everything require the email
+		return false;
+	
+	else if(!MDLPCheckAnythingPayable(data, *status, IDToPosition, length))
+        return true;
+	
+	else if(!getPassFromCache(NULL))
+		return false;
 
-    index = MDLPGeneratePaidIndex(data, *status, length);
+    index = MDLPGeneratePaidIndex(data, *status, IDToPosition, length);
     if(index != NULL)
     {
         int sizeIndex;
@@ -126,10 +135,10 @@ void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length)
         free(index);
     }
 
-    return;
+    return true;
 }
 
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index)
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
 {
 	if(COMPTE_PRINCIPAL_MAIL == NULL)
 		return NULL;
@@ -181,8 +190,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 	
 	if(!prix)	//Impossible, but shut a warning down
 		quit_thread(0);
-	
-#warning "Need to call the login window"
+
     if(COMPTE_PRINCIPAL_MAIL != NULL)
     {
         int i = 0;
@@ -236,6 +244,14 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 			MDLDownloadOver(true);
         }
     }
+	else if(cancel)
+	{
+		for(uint i = 0; i < sizeStatusLocal; i++)
+		{
+			if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
+				*statusLocal[i] = MDL_CODE_ABORTED;
+		}
+	}
 
     free(statusLocal);
 
@@ -278,28 +294,30 @@ void MDLPDestroyCache(unsigned int factureID)
 
 /** Checks **/
 
-bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, int length)
+bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length)
 {
-    int i;
-    for(i = 0; i < length; i++)
+    for(uint i = 0, pos; i < length; i++)
     {
-        if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3) && *status[i] == MDL_CODE_DEFAULT)
+		pos = IDToPosition[i];
+        if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_3) && *status[pos] == MDL_CODE_DEFAULT)
             return true;
     }
     return false;
 }
 
-int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length)
+uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length)
 {
     /*Optimisation possible: réduire la taille du tableau alloué*/
-    int * output = malloc((length +1) * sizeof(int));
+    uint * output = malloc((length +1) * sizeof(uint));
     if(output != NULL)
     {
-        int i, posDansOut;
+        uint i, posDansOut, pos;
         for(i = posDansOut = 0; i < length; i++)
         {
-            if(data[i] != NULL && data[i]->datas != NULL && data[i]->datas->team != NULL && !strcmp(data[i]->datas->team->type, TYPE_DEPOT_3) && *status[i] == MDL_CODE_DEFAULT)
-                output[posDansOut++] = i;
+			pos = IDToPosition[i];
+			
+            if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_3) && *status[pos] == MDL_CODE_DEFAULT)
+                output[posDansOut++] = pos;
         }
         output[posDansOut] = VALEUR_FIN_STRUCT;
     }

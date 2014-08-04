@@ -91,6 +91,7 @@ enum {
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
 
 - (NSString *) waitingLoginMessage;
+- (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
 
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;

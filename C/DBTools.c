@@ -433,3 +433,8 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	return newData;
 }
+
+bool isPaidProject(PROJECT_DATA projectData)
+{
+	return projectData.team != NULL && !strcmp(projectData.team->type, TYPE_DEPOT_3);
+}

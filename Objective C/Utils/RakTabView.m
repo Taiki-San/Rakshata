@@ -484,6 +484,14 @@
 	return @"";
 }
 
+- (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin
+{
+	if(objWaitingLogin == nil)
+		return;
+	
+	[self setWaitingLogin : [objWaitingLogin boolValue]];
+}
+
 - (void) setWaitingLogin : (bool) waitingLogin
 {
 	if(waitingLogin == _waitingLogin)

@@ -126,7 +126,7 @@ TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length)
 		}
 		else
 		{
-			char ID[LONGUEUR_ID_TEAM];
+			char ID[10];
 			sscanfs(remoteData, "%s %s %s %s %s %s", ID, sizeof(ID), outputData.teamLong, LENGTH_PROJECT_NAME, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE);
 			outputData.openSite = 1;
 		}

@@ -31,6 +31,8 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	uint *				nbElemTotal =	arg->nbElemTotal;
 	uint **				IDToPosition =	arg->IDToPosition;
 	
+	free(arg);
+	
 	uint dataPos;
 	char **historiqueTeam = calloc(1, sizeof(char*));
 	
@@ -230,5 +232,61 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 	if(rowViewResponsible != NULL)
 	{
 		[(RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
+	}
+}
+
+void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController)
+{
+	bool all = COMPTE_PRINCIPAL_MAIL == NULL;
+	
+	for(uint pos = 0, index; pos < length; pos++)
+	{
+		index = IDToPosition[pos];
+		
+		if(all || (data[index] != NULL && data[index]->datas != NULL && isPaidProject(*data[index]->datas)))
+		{
+			*(status[index]) = MDL_CODE_WAITING_LOGIN;
+		}
+	}
+	
+	RakMDLController * controller = mainTabController;
+	
+	[controller requestCredentials : !all];
+}
+
+//We recycle the MDL_MWORKER_ARG structure
+void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
+{
+	bool *				quit		=	arg->quit;
+	RakMDLController *	_mainTab	=	arg->mainTab;
+	int8_t ***			status		=	arg->status;
+	uint *				nbElemTotal =	arg->nbElemTotal;
+	uint **				IDToPosition =	arg->IDToPosition;
+	
+	MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
+	MUTEX_LOCK(lock);
+	
+	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
+	
+	while([mainTab areCredentialsComplete])
+	{
+		pthread_cond_wait([[NSApp delegate] sharedLoginLock], &lock);
+	}
+	
+	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(false) waitUntilDone:NO];
+	
+	MUTEX_DESTROY(lock);
+	
+	if(!*quit)
+	{
+		for(uint pos = 0, index; pos < *nbElemTotal; pos++)
+		{
+			index = (*IDToPosition)[pos];
+			
+			if(*(*status)[index] == MDL_CODE_WAITING_LOGIN)
+				*(*status)[index] = MDL_CODE_DEFAULT;
+		}
+		
+		MDLDownloadOver(true);
 	}
 }

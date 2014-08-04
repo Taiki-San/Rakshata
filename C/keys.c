@@ -254,25 +254,22 @@ bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1])
 	return true;
 }
 
-void passToLoginData(char passwordIn[100], char passwordSalted[2*SHA256_DIGEST_LENGTH+1])
+void saltPassword(char passwordSalted[2*SHA256_DIGEST_LENGTH+1])
 {
-    uint posRemote, posPass;
-    char pass[100 + 15], serverTime[300];
-
-	if(download_mem("https://"SERVEUR_URL"/time.php", NULL, serverTime, sizeof(serverTime), SSL_ON) != CODE_RETOUR_OK)
+    uint posRemote, posPass = 2 * SHA256_DIGEST_LENGTH + 1;
+    char password[2 * SHA256_DIGEST_LENGTH + 16], serverTime[300];
+	
+	if(!getPassFromCache(password) || download_mem("https://"SERVEUR_URL"/time.php", NULL, serverTime, sizeof(serverTime), SSL_ON) != CODE_RETOUR_OK)
 	{
-		crashTemp(passwordSalted, 2 * SHA256_DIGEST_LENGTH + 1);
+		passwordSalted[0] = 0;
 		return;
 	}
 
 	for(posRemote = strlen(serverTime); posRemote > 0 && serverTime[posRemote] != ' '; posRemote--); //On veut la dernière donnée
+	for(posRemote++; isNbr(serverTime[posRemote]) && posPass < sizeof(password) - 1; password[posPass++] = serverTime[posRemote++]); //On salte
 
-	strncpy(pass, passwordIn, sizeof(pass));
-	
-	for(posPass = strlen(pass), posRemote++; isNbr(serverTime[posRemote]) && posPass < sizeof(pass) - 1; pass[posPass++] = serverTime[posRemote++]); //On salte
-	pass[posPass] = 0;
-	
-    sha256_legacy(pass, passwordSalted);
+	password[posPass] = 0;
+	sha256_legacy(password, passwordSalted);
 }
 
 byte checkLogin(const char *adresseEmail)

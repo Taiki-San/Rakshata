@@ -482,14 +482,14 @@ enum
 		MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
 		MUTEX_LOCK(lock);
 		
-		[self performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(true) waitUntilDone:NO];
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
 			pthread_cond_wait([[NSApp delegate] sharedLoginLock], &lock);
 		}
 		
-		[self performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(false) waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(false) waitUntilDone:NO];
 		
 		MUTEX_DESTROY(lock);
 		

@@ -12,13 +12,11 @@
 
 #include "db.h"
 
-extern char password[100];
-
 /*Loaders divers*/
 
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 {
-    int length;
+    uint length;
     char *output = NULL;
     if (!strcmp(data.datas->team->type, TYPE_DEPOT_1) || !strcmp(data.datas->team->type, TYPE_DEPOT_2))
     {
@@ -42,14 +40,18 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         }
     }
 
-    else if (!strcmp(data.datas->team->type, TYPE_DEPOT_3)) //DL Payant
+    else if (isPaidProject(*data.datas)) //DL Payant
     {
-        char passwordInternal[2*SHA256_DIGEST_LENGTH+1];
-        passToLoginData(password, passwordInternal);
-        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
+        char saltedPass[2*SHA256_DIGEST_LENGTH+1];
+        saltPassword(saltedPass);
+		
+		if(saltedPass[0] == 0)
+			return NULL;
+		
+        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + 10 + 10) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
         if(output != NULL) {
-            snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, passwordInternal);
+            snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
         }
     }
 
@@ -62,7 +64,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     return output;
 }
 
-char* internalCraftBaseURL(TEAMS_DATA teamData, int* length)
+char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length)
 {
     char *output = NULL;
     if (!strcmp(teamData.type, TYPE_DEPOT_1))
@@ -415,11 +417,11 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(tomeDatas == NULL || tomeDatas->datas == NULL)
 		return false;
 	
-    int length = strlen(tomeDatas->datas->team->teamLong) + 110;
+    uint length = strlen(tomeDatas->datas->team->teamLong) + 110;
     char *bufferDL = NULL;
 	bool mayHaveAlreadyBeenHere = false, ret_value = false;
 	
-	if(length < 0)	//overflow
+	if(length < 110)	//overflow
 		return false;
 
     char bufferPath[length], *encodedTeam = getPathForTeam(tomeDatas->datas->team->URLRepo);
@@ -460,7 +462,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
             if(URL != NULL)
                 snprintf(URL, length, "%s/%d/Tome_%d.dat", URL, tomeDatas->datas->projectID, tomeDatas->identifier);
         }
-        else if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_3))
+        else if (isPaidProject(*tomeDatas->datas))
         {
             length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + 64; //Core URL + numbers + elements
             URL = malloc(length);
@@ -673,9 +675,10 @@ int sortMangasToDownload(const void *a, const void *b)
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 {
-    int i;
     if(teamToCheck.openSite)
     {
+		uint i;
+		
         for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
         if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
         {

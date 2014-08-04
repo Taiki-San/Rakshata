@@ -121,7 +121,6 @@
 #define LONGUEUR_NOMS_DATA 100
 
 /*Ajout repo*/
-#define LONGUEUR_ID_TEAM 10																	////UNUSED
 #define TYPE_DEPOT_1 "DB" //Dépôt dropbox
 #define TYPE_DEPOT_2 "O" //Dépôt classique
 #define TYPE_DEPOT_3 "P" //Dépôts payants

@@ -18,15 +18,7 @@ bool startMDL(char * state, PROJECT_DATA * cache, THREAD_TYPE * coreWorker, DATA
 	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || nbElemTotal == NULL || quit == NULL)
 		return false;
 	
-#warning "Improve check, only P project, or DRM protected need account"
-	if(COMPTE_PRINCIPAL_MAIL == NULL)	//Pas de compte
-	{
-		*nbElemTotal = 0;
-		*todoList = malloc(sizeof(DATA_LOADED **));
-		return true;
-	}
-	
-    if(*todoList == NULL || **todoList == NULL || *status == NULL)
+	if(*todoList == NULL || **todoList == NULL || *status == NULL)
 	{
 		*todoList = malloc(sizeof(DATA_LOADED **));
 		
@@ -63,7 +55,10 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 	
     if(!checkNetworkState(CONNEXION_DOWN))
 	{
-		MDLPHandle(**todoList, status, *nbElemTotal);
+		if(!MDLPHandle(**todoList, status, *IDToPosition, *nbElemTotal))	//We need to login, fuck
+		{
+			dataRequireLogin(**todoList, *status, *IDToPosition, *nbElemTotal, mainTab);
+		}
 		
 		MDL_MWORKER_ARG * argument = malloc(sizeof(MDL_MWORKER_ARG));
 		if(argument != NULL)

@@ -175,7 +175,7 @@ char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, 
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
-char* internalCraftBaseURL(TEAMS_DATA teamData, int* length);
+char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length);
 DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
@@ -192,6 +192,7 @@ void MDLQuit();
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
+void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTab);
 
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);
@@ -205,12 +206,12 @@ void MDLUpdateKillState(bool newState);
 bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
 
 /**Module2_paid.h**/
-void MDLPHandle(DATA_LOADED ** data, int8_t *** status, int length);
-char *MDLPCraftPOSTRequest(DATA_LOADED ** data, int *index);
+bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uint length);
+char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index);
 void MDLPHandlePayProcedure(DATA_PAY * arg);
 bool waitToGetPaid(unsigned int factureID);
 void MDLPDestroyCache(unsigned int factureID);
 
-bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, int length);
-int * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, int length);
+bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length);
+uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length);
 bool MDLPCheckIfPaid(unsigned int factureID);
