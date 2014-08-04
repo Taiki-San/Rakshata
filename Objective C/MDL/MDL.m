@@ -366,7 +366,7 @@
 	}
 	else
 	{
-		return @"Suite à la politique des détenteurs des droits\nd'une partie de votre séléction, vous connecter\nest requis pour démarrer le téléchargement.";
+		return @"Suite à la politique des détenteurs des droits\nd'une partie de votre sélection, vous connecter\nest requis pour démarrer le téléchargement.";
 	}
 }
 

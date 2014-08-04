@@ -46,6 +46,7 @@ enum
 	self.view.layer.cornerRadius = 4;
 	
 	currentMode = AUTH_MODE_DEFAULT;
+	self.postProcessing = false;
 	
 	[self updateMainView];
 	
@@ -78,6 +79,7 @@ enum
 
 	passInput = [[[RakPassField alloc] initWithFrame:_containerPass.bounds] autorelease];
 	[_containerPass addSubview:passInput];
+	[passInput addController : self];
 	
 	[mailInput setNextKeyView:passInput];	//don't work
 	[passInput setNextKeyView:mailInput];
@@ -123,13 +125,13 @@ enum
 
 - (void) clickedLogin
 {
-	if([self isMailValid] && [self isPassValid])
+	if(!self.postProcessing && [self isMailValid] && [self isPassValid])
 		[self clickedConfirm:NO];
 }
 
 - (void) clickedSignup
 {
-	if([self isMailValid] && [self isPassValid] && [self isTermAccepted])
+	if(!self.postProcessing && [self isMailValid] && [self isPassValid] && [self isTermAccepted])
 		[self clickedConfirm:YES];
 }
 
@@ -144,10 +146,17 @@ enum
 			passInput.currentStatus = AUTH_STATE_GOOD;
 			[passInput display];
 			
+			self.postProcessing = true;
+			
 			if(COMPTE_PRINCIPAL_MAIL == NULL || strcmp(email, COMPTE_PRINCIPAL_MAIL))
 			{
 				updateEmail(email);
-				createSecurePasswordDB(NULL);
+				[self.view.window makeFirstResponder:self.view];
+				[self performSelectorInBackground:@selector(loginPostProcessing) withObject:nil];
+			}
+			else
+			{
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [foreground switchState]; });
 			}
 			break;
 		}
@@ -164,8 +173,12 @@ enum
 			break;
 		}
 	}
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [foreground switchState]; });
+}
+
+- (void) loginPostProcessing
+{
+	createSecurePasswordDB(NULL);
+	[foreground performSelectorOnMainThread:@selector(switchState) withObject:nil waitUntilDone:NO];
 }
 
 #pragma mark - Check
@@ -422,6 +435,11 @@ enum
 
 #pragma mark - Delegate
 
+- (BOOL) textShouldBeginEditing:(NSText *)textObject
+{
+	return authController == NULL || !authController.postProcessing;
+}
+
 - (void)textDidBeginEditing:(NSNotification *)aNotification
 {
 	currentEditingSession++;
@@ -553,6 +571,16 @@ enum
 			return [super getBorderColor];
 		}
 	}
+}
+
+- (void) addController : (RakAuthController *) controller
+{
+	authController = controller;
+}
+
+- (BOOL) textShouldBeginEditing:(NSText *)textObject
+{
+	return authController == nil || !authController.postProcessing;
 }
 
 - (void)textDidEndEditing:(NSNotification *)aNotification

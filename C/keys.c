@@ -351,7 +351,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	else if(key_sent == NULL && !getPassFromCache(password))
 		return GMK_RETVAL_NEED_CREDENTIALS_PASS;
 	
-	FILE* bdd = fopen(SECURE_DATABASE, "r+");
+	FILE* bdd = fopen(SECURE_DATABASE, "a");
 	if(bdd == NULL)
     {
 #ifdef DEV_VERSION

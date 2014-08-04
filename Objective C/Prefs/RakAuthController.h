@@ -26,6 +26,11 @@
 @end
 
 @interface RakPassField : RakText <NSTextFieldDelegate>
+{
+	RakAuthController * authController;
+}
+
+- (void) addController : (RakAuthController *) controller;
 
 @property byte currentStatus;
 
@@ -64,6 +69,8 @@
 	//Data
 	byte currentMode;
 }
+
+@property BOOL postProcessing;
 
 - (void) launch;
 
