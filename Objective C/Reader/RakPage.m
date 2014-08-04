@@ -479,19 +479,18 @@ enum
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 			_needPassword = true;
 		
-		MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
-		MUTEX_LOCK(lock);
+		MUTEX_VAR * lock = [[NSApp delegate] sharedLoginMutex : YES];
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(true) waitUntilDone:NO];
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
-			pthread_cond_wait([[NSApp delegate] sharedLoginLock], &lock);
+			pthread_cond_wait([[NSApp delegate] sharedLoginLock], lock);
 		}
 		
+		pthread_mutex_unlock(lock);
+
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(false) waitUntilDone:NO];
-		
-		MUTEX_DESTROY(lock);
 		
 		return [self getPage : posData];
 	}

@@ -20,6 +20,9 @@
 - (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
 - (NSColor *) getBackgroundColor;
 
+- (void) mouseEnteredForced : (NSEvent *) theEvent;
+- (void) mouseExitedForced:(NSEvent *)theEvent;
+
 @end
 
 @interface RakForegroundViewContentView : NSView

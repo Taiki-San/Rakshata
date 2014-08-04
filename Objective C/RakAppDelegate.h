@@ -18,7 +18,8 @@
 	MDL * tabMDL;
 	
 	BOOL loginPromptOpen;
-	pthread_cond_t loginMutex;
+	pthread_cond_t loginLock;
+	MUTEX_VAR loginMutex;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -26,6 +27,8 @@
 - (RakContentView*) getContentView;
 
 - (pthread_cond_t*) sharedLoginLock;
+- (MUTEX_VAR *) sharedLoginMutex : (BOOL) locked;
+
 - (void) openLoginPrompt;
 - (void) loginPromptClosed;
 

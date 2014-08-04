@@ -29,7 +29,8 @@
 		exit(EXIT_FAILURE);
 	}
 	
-	pthread_cond_init(&loginMutex, NULL);
+	pthread_cond_init(&loginLock, NULL);
+	pthread_mutex_init(&loginMutex, NULL);
 	
 	tabSerie =	[Series alloc];
 	tabCT =		[CTSelec alloc];
@@ -66,6 +67,14 @@
 
 - (pthread_cond_t*) sharedLoginLock
 {
+	return &loginLock;
+}
+
+- (MUTEX_VAR *) sharedLoginMutex : (BOOL) locked
+{
+	if(locked)
+		pthread_mutex_trylock(&loginMutex);
+	
 	return &loginMutex;
 }
 
@@ -101,7 +110,7 @@
 	
 	if(COMPTE_PRINCIPAL_MAIL != NULL)
 	{
-		pthread_cond_broadcast(&loginMutex);
+		pthread_cond_broadcast(&loginLock);
 	}
 }
 

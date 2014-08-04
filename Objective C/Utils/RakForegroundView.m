@@ -176,35 +176,16 @@
 	}
 }
 
-- (void) mouseUp:(NSEvent *)theEvent
-{
-	
-}
+- (void) mouseUp:(NSEvent *)theEvent		{	}
+- (void) mouseEntered:(NSEvent *)theEvent	{	}
+- (void) mouseEnteredForced : (NSEvent *) theEvent	{	[super mouseEntered: theEvent];	}
 
-- (void) mouseEntered:(NSEvent *)theEvent
-{
-	
-}
+- (void) mouseExited:(NSEvent *)theEvent	{	}
+- (void) mouseExitedForced:(NSEvent *)theEvent		{	[super mouseExited: theEvent];	}
 
-- (void) mouseExited:(NSEvent *)theEvent
-{
-	
-}
-
-- (void) mouseMoved:(NSEvent *)theEvent
-{
-	
-}
-
-- (void) swipeWithEvent:(NSEvent *)event
-{
-	
-}
-
-- (void) scrollWheel:(NSEvent *)theEvent
-{
-	
-}
+- (void) mouseMoved:(NSEvent *)theEvent		{	}
+- (void) swipeWithEvent:(NSEvent *)event	{	}
+- (void) scrollWheel:(NSEvent *)theEvent	{	}
 
 @end
 
@@ -212,7 +193,7 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	[self.window makeFirstResponder:nil];
+	[self.window makeFirstResponder : self];
 }
 
 - (void) setFrame:(NSRect)frameRect

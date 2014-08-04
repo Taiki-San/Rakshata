@@ -201,11 +201,11 @@
 	}
 	else
 	{
-		for(RakTabView * view in self.superview.subviews)
-		{
-			if([view class] != [self class])
-				[view setFrame:[view createFrame]];
-		}
+		RakAppDelegate * delegate = [NSApp delegate];
+		
+		[[delegate serie]	createFrame];
+		[[delegate CT]		createFrame];
+		[[delegate reader]	createFrame];
 	}
 
 	needUpdateMainViews = NO;
@@ -283,6 +283,7 @@
 	if([self wouldFrameChange:frameRect])
 	{
 		[super setFrame:frameRect];
+		[foregroundView setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
 		
 		if(coreView != nil)
 			[coreView setFrame:[self getCoreviewFrame : frameRect]];
@@ -302,6 +303,8 @@
 	if([self wouldFrameChange:frame])
 	{
 		[self.animator setFrame:frame];
+		[foregroundView resizeAnimation:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
+		
 		if(coreView != nil)
 			[coreView resizeAnimation : [self getCoreviewFrame : frame]];
 	}
@@ -353,7 +356,21 @@
 	return output;
 }
 
-/** Inter-tab communication **/
+#pragma mark - Login request
+
+- (NSString *) waitingLoginMessage
+{
+	if(controller != NULL && controller.requestCredentials)
+	{
+		return @"Votre sélection contient des éléments payants,\nveuillez vous connecter afin de démarrer la transaction.";
+	}
+	else
+	{
+		return @"Suite à la politique des détenteurs des droits\nd'une partie de votre séléction, vous connecter\nest requis pour démarrer le téléchargement.";
+	}
+}
+
+#pragma mark - Intertab communication
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
 {

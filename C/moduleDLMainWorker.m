@@ -251,7 +251,7 @@ void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 	
 	RakMDLController * controller = mainTabController;
 	
-	[controller requestCredentials : !all];
+	controller.requestCredentials = !all;
 }
 
 //We recycle the MDL_MWORKER_ARG structure
@@ -265,19 +265,18 @@ void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
 	
 	free(arg);
 	
-	MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
-	MUTEX_LOCK(lock);
+	MUTEX_VAR * lock = [[NSApp delegate] sharedLoginMutex : YES];
 	
 	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
 	
-	while([mainTab areCredentialsComplete])
+	while(![mainTab areCredentialsComplete])
 	{
-		pthread_cond_wait([[NSApp delegate] sharedLoginLock], &lock);
+		pthread_cond_wait([[NSApp delegate] sharedLoginLock], lock);
 	}
 	
-	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(false) waitUntilDone:NO];
+	pthread_mutex_unlock(lock);
 	
-	MUTEX_DESTROY(lock);
+	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(false) waitUntilDone:NO];
 	
 	if(!*quit)
 	{

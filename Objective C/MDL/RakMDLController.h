@@ -34,6 +34,8 @@
 	BOOL requestForPurchase;
 }
 
+@property BOOL requestCredentials;
+
 - (id) init : (MDL *) tabMDL : (NSString *) state;
 
 - (void) needToQuit;
@@ -52,7 +54,7 @@
 - (void) discardElement : (uint) element;
 
 - (void) refreshCT : (uint) ID;
-- (void) requestCredentials : (BOOL) purchase;
 - (BOOL) areCredentialsComplete;
+- (void) setWaitingLogin : (NSNumber *) request;
 
 @end

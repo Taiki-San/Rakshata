@@ -327,14 +327,9 @@
 	}
 }
 
-- (void) requestCredentials : (BOOL) purchase
-{
-	requestForPurchase = purchase;
-}
-
 - (BOOL) areCredentialsComplete
 {
-	return COMPTE_PRINCIPAL_MAIL != NULL && (!requestForPurchase || getPassFromCache(NULL));
+	return COMPTE_PRINCIPAL_MAIL != NULL && (!self.requestCredentials || getPassFromCache(NULL));
 }
 
 - (void) setWaitingLogin : (NSNumber *) request

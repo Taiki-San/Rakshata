@@ -51,7 +51,7 @@ bool startMDL(char * state, PROJECT_DATA * cache, THREAD_TYPE * coreWorker, DATA
 bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
 	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
-    while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(50);		}
+    while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(5000);		}
 	
     if(!checkNetworkState(CONNEXION_DOWN))
 	{
@@ -78,6 +78,7 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 				MDL_MWORKER_ARG * watcherArg = malloc(sizeof(MDL_MWORKER_ARG));
 				if(watcherArg != NULL)
 				{
+					memcpy(watcherArg, argument, sizeof(MDL_MWORKER_ARG));
 					createNewThread(watcherForLoginRequest, watcherArg);
 				}
 			}

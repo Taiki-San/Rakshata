@@ -100,7 +100,8 @@
 	if(output != nil)
 	{
 		output.textButton = YES;
-		
+		output.wantsLayer = YES;
+
 		[output.cell initWithText:string];
 		
 		if(!NSEqualRects(frame, NSZeroRect))
