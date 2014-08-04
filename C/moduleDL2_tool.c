@@ -175,7 +175,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 
 			//Grab preliminary data
 
-            sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, LONGUEUR_COURT, type, 2, &chapitreTmp);
+            sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
 			
 			if(mangaDB[posCatalogue].projectID != projectID && !strcmp(mangaDB[posCatalogue].team->URLRepo, URL)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
             {
