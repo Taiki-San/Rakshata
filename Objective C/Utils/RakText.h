@@ -13,6 +13,7 @@
 @interface RakText : NSTextField
 
 @property BOOL wantCustomBorder;
+@property CGFloat forcedOffset;
 
 - (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 

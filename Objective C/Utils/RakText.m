@@ -72,6 +72,26 @@
 	}	
 }
 
+- (void) setFrameSize:(NSSize)newSize
+{
+	if(self.forcedOffset)
+	{
+		newSize.height += self.forcedOffset;
+	}
+	
+	[super setFrameSize:newSize];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin
+{
+	if(self.forcedOffset)
+	{
+		newOrigin.y -= self.forcedOffset;
+	}
+	
+	[super setFrameOrigin:newOrigin];
+}
+
 - (void) drawRect:(NSRect)dirtyRect
 {
 	if(self.drawsBackground)

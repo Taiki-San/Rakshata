@@ -510,10 +510,10 @@
 		{
 			CGFloat p = [outlineView intercellSpacing].height;	//Padding
 			
-			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (25 + p) + [rootItems[0] isExpanded] * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (25 + p) + [rootItems[1] isExpanded] * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (25 + p) + p);
+			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (21 + p) + [rootItems[0] isExpanded] * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (21 + p) + [rootItems[1] isExpanded] * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (21 + p) + p);
 			
-			if(output < 25)
-				output = 25;
+			if(output < 21)
+				output = 21;
 			
 			[item setMainListHeight:output];
 		}
@@ -585,8 +585,9 @@
 			
 			if([item isRootItem])
 			{
-				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:13]];
+				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:14]];
 				[(RakText*) rowView setTextColor:[self getFontTopColor]];
+				((RakText*) rowView).forcedOffset = 7;
 			}
 			else
 			{
@@ -647,7 +648,7 @@
 		
 		if([item isRootItem])
 		{
-			height += 25 + padding;
+			height += 21 + padding;
 			currentPortionExpanded = [item isExpanded];
 		}
 		

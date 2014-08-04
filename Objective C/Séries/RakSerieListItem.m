@@ -109,7 +109,7 @@
 - (CGFloat) getHeight
 {
 	if([self isRootItem])
-		return 25;
+		return 21;
 	else if([self isMainList] && _mainListHeight)
 		return _mainListHeight;
 	

@@ -56,6 +56,19 @@
 
 @implementation RakTextCell
 
+- (id) init
+{
+	self = [super init];
+	
+	if(self != nil)
+	{
+		self.centered = YES;
+		self.customizedInjectionPoint = NO;
+	}
+	
+	return self;
+}
+
 - (id)initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [self initTextCell:text];
