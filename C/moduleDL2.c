@@ -55,9 +55,12 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 	
     if(!checkNetworkState(CONNEXION_DOWN))
 	{
+		bool startWatcher = false;
+		
 		if(!MDLPHandle(**todoList, status, *IDToPosition, *nbElemTotal))	//We need to login, fuck
 		{
 			dataRequireLogin(**todoList, *status, *IDToPosition, *nbElemTotal, mainTab);
+			startWatcher = true;
 		}
 		
 		MDL_MWORKER_ARG * argument = malloc(sizeof(MDL_MWORKER_ARG));
@@ -69,6 +72,15 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 			argument->quit = quit;
 			argument->mainTab = mainTab;
 			argument->IDToPosition = IDToPosition;
+			
+			if(startWatcher)
+			{
+				MDL_MWORKER_ARG * watcherArg = malloc(sizeof(MDL_MWORKER_ARG));
+				if(watcherArg != NULL)
+				{
+					createNewThread(watcherForLoginRequest, watcherArg);
+				}
+			}
 			
 			*coreWorker = createNewThreadRetValue(mainDLProcessing, argument);
 			MDLSetThreadID(coreWorker);

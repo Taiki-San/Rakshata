@@ -263,6 +263,8 @@ void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
 	uint *				nbElemTotal =	arg->nbElemTotal;
 	uint **				IDToPosition =	arg->IDToPosition;
 	
+	free(arg);
+	
 	MUTEX_VAR lock = PTHREAD_MUTEX_INITIALIZER;
 	MUTEX_LOCK(lock);
 	
@@ -289,4 +291,6 @@ void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
 		
 		MDLDownloadOver(true);
 	}
+	
+	quit_thread(0);
 }
