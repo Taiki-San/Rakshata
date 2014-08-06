@@ -11,6 +11,7 @@
 *********************************************************************************************/
 
 #include <locale.h> //Pour définir la langue
+#include "db.h"
 
 char *loadPrefFile()
 {
@@ -190,7 +191,6 @@ int loadLangueProfile()
         else
             free(prefs);
     }
-    mkdirR("data");
     char temp[100];
 
     char *langue_char = setlocale(LC_ALL, "");
@@ -235,10 +235,10 @@ char* loadLargePrefs(char* flag)
     {
         removeFromPref(flag);
         char temp[200], buffer[65000], buffer2[65100];
-        if(flag == SETTINGS_MANGADB_FLAG)
-            strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"MANGA_DATABASE, 200);
+        if(flag[0] == SETTINGS_MANGADB_FLAG[0])
+            strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
         else
-			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_DATABASE, 200);
+			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
 
         crashTemp(buffer, 65000);
         download_mem(temp, NULL, buffer, 65000, SSL_ON);

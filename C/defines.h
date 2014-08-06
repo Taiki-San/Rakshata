@@ -38,8 +38,8 @@
 #define SERVEUR_URL "rsp.rakshata.com"
 #define BACKUP_INTERNET_CHECK "http://www.apple.com/library/test/success.html"
 
-#define REPO_DATABASE "data/repo"
-#define MANGA_DATABASE "data/mangas"
+#define REPO_REC_NAME "repo"
+#define PROJECT_REC_NAME "projects"
 #define PROJECT_ROOT "project/"
 
 #ifdef DEV_VERSION

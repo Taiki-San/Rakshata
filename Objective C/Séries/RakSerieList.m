@@ -61,7 +61,10 @@
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateContent:) name:@"RakSeriesNeedUpdateContent" object:nil];
 		}
 		else
+		{
 			[self release];
+			self = nil;
+		}
 	}
 	
 	return self;

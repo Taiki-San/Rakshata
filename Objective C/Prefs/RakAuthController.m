@@ -89,13 +89,23 @@ enum
 
 - (void) wakePassUp
 {
+	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
+	{
+		NSLog(@"WUT");
+	}
+	
 	passInput.wantCustomBorder = YES;
 	passInput.currentStatus = AUTH_STATE_NONE;
 	
 	if([NSThread isMainThread])
 		[passInput setNeedsDisplay:YES];
 	else
-		[passInput performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
+		[passInput performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:YES];
+	
+	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
+	{
+		NSLog(@"WUT");
+	}
 }
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
@@ -103,9 +113,19 @@ enum
 	//For now, we assume we start from an empty state
 	NSRect frame;
 	
+	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
+	{
+		NSLog(@"WUT");
+	}
+	
 	[NSAnimationContext beginGrouping];
 	
 	[[NSAnimationContext currentContext] setDuration:0.2f];
+	
+	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
+	{
+		NSLog(@"WUT");
+	}
 
 	//We remove the placeholder
 	frame = footerPlaceholder.frame;
@@ -291,11 +311,20 @@ enum
 
 - (void) animateLogin : (BOOL) appear
 {
+	NSRect frame = container.bounds;	frame.origin = NSZeroPoint;
+	
+	if(container.bounds.origin.y == NAN)
+		NSLog(@"WUT");
+	
 	if(forgottenPass == nil)
 	{
-		forgottenPass = [[RakButton allocWithText:@"Mot de passe oublié?" : container.bounds] autorelease];
+		forgottenPass = [[RakButton allocWithText:@"Mot de passe oublié?" : frame] autorelease];
 		[forgottenPass sizeToFit];
-		[forgottenPass setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
+		[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
+	
+		if(container.bounds.origin.y == NAN)
+			NSLog(@"WUT");
+		
 		[container addSubview:forgottenPass];
 	}
 	else if(forgottenPass.isHidden)
@@ -303,9 +332,9 @@ enum
 	
 	if(_login == nil)
 	{
-		_login = [[RakButton allocWithText:@"Connexion" : container.bounds] autorelease];
+		_login = [[RakButton allocWithText:@"Connexion" : frame] autorelease];
 		[_login sizeToFit];
-		[_login setFrameOrigin:NSMakePoint(0, container.bounds.size.height / 2 - _login.frame.size.height / 2 + 3)];
+		[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
 		[container addSubview:_login];
 		[_login setTarget:self];
 		[_login setAction:@selector(clickedLogin)];
@@ -320,16 +349,16 @@ enum
 		[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
 		[forgottenPass.animator setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
 		
-		[_login setFrameOrigin:NSMakePoint(container.bounds.size.width, _login.frame.origin.y)];
-		[_login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
+		[_login setFrameOrigin:NSMakePoint(frame.size.width, _login.frame.origin.y)];
+		[_login.animator setFrameOrigin:NSMakePoint(frame.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
 	}
 	else
 	{
 		[forgottenPass setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
 		[forgottenPass.animator setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
 		
-		[_login setFrameOrigin:NSMakePoint(container.bounds.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
-		[_login.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, _login.frame.origin.y)];
+		[_login setFrameOrigin:NSMakePoint(frame.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
+		[_login.animator setFrameOrigin:NSMakePoint(frame.size.width, _login.frame.origin.y)];
 	}
 }
 

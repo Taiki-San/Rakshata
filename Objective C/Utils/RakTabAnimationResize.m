@@ -19,7 +19,14 @@
 	self = [super init];
 	if(self != nil)
 	{
-		_views = views;
+		NSMutableArray * validatedViews = [NSMutableArray array];
+		
+		[views enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if([obj isKindOfClass:[RakTabView class]])
+				[validatedViews addObject:obj];
+		}];
+		
+		_views = [validatedViews copy];
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
 	}
 	return self;

@@ -91,7 +91,7 @@
 - (void) noContent
 {
 	long context[4] = {-1, -1, -1, -1};
-	PROJECT_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);	//17 = Fairy tail
+	PROJECT_DATA *mangaData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
 	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y] : mangaData[21] : false : context];
 }
 

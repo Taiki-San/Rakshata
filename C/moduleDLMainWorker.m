@@ -241,7 +241,7 @@ void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 	
 	for(uint pos = 0, index; pos < length; pos++)
 	{
-		index = IDToPosition[pos];
+		index = IDToPosition == NULL ? pos : IDToPosition[pos];
 		
 		if(all || (data[index] != NULL && data[index]->datas != NULL && isPaidProject(*data[index]->datas)))
 		{

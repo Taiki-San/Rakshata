@@ -15,6 +15,8 @@
 - (void) awakeFromNib
 {
 	loginPromptOpen = NO;
+	
+	[[[NSThread alloc] initWithTarget:self selector:@selector(activateThreads) object:nil] autorelease];
 
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
@@ -51,6 +53,8 @@
 	
 	[context release];
 }
+
+- (void) activateThreads {}
 
 - (RakContentView*) getContentView
 {

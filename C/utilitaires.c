@@ -78,7 +78,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 			if(a.tomesFull[i].ID != b.tomesFull[i].ID || a.tomesFull[i].readingID != b.tomesFull[i].readingID || wcscmp(a.tomesFull[i].description, b.tomesFull[i].description) || wcscmp(a.tomesFull[i].readingName, b.tomesFull[i].readingName))
 				return false;
 			
-			if(a.tomesFull[i].details == NULL ^ a.tomesFull[i].details == NULL)
+			if(a.tomesFull[i].details == NULL ^ b.tomesFull[i].details == NULL)
 				return false;
 			
 			if(a.tomesFull[i].details != NULL)

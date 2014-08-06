@@ -59,6 +59,7 @@ bool updateIfRequired(PROJECT_DATA *data, short context);
 //Teams
 uint getDBTeamID(TEAMS_DATA * team);
 bool addRepoToDB(TEAMS_DATA newTeam);
+TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam);
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);
 void freeTeam(TEAMS_DATA **data);
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);

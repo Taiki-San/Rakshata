@@ -25,13 +25,11 @@ static uint lengthIsUpdated = 0;
 
 int setupBDDCache()
 {
-    void *buf;
-	uint nombreTeam, nombreManga = 0, currentBufferSize;
-    char *repoDB, *repoBak, *mangaDB, *cacheFavs = NULL;
+	uint nombreTeam, nombreManga = 0;
+    char *repoDB, *mangaDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
-    TEAMS_DATA **internalTeamList = NULL;
 	
-    repoBak = repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
+    repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
     mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG);
 	
 	if(repoDB == NULL || mangaDB == NULL)
@@ -53,40 +51,12 @@ int setupBDDCache()
 	nbElem = lengthTeam = lengthIsUpdated = 0;
 	
 	//On parse les teams
-	internalTeamList = malloc(INITIAL_BUFFER_SIZE * sizeof(TEAMS_DATA*));
-	if(internalTeamList == NULL)
-		return 0;
+	TEAMS_DATA ** internalTeamList = loadTeams(repoDB, &nombreTeam);
 	
-	for(nombreTeam = 0, currentBufferSize = INITIAL_BUFFER_SIZE; *repoDB != 0;) //Tant qu'on a pas fini de lire le fichier de base de données
-    {
-		if(nombreTeam + 2 > currentBufferSize)	//The current + one empty to show the end of the list
-        {
-			currentBufferSize *= 2;
-			buf = realloc(internalTeamList, currentBufferSize * sizeof(TEAMS_DATA*));
-			if(buf != NULL)
-				internalTeamList = buf;
-			else
-				break;
-		}
-        
-		internalTeamList[nombreTeam] = (TEAMS_DATA*) calloc(1, sizeof(TEAMS_DATA));
-		
-		if(internalTeamList[nombreTeam] != NULL)
-		{
-			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LENGTH_PROJECT_NAME, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
-			for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
-			nombreTeam++;
-		}
-    }
+	free(repoDB);
 	
-	if(nombreTeam == 0)	//Aucune team lue
-	{
-		free(internalTeamList);
+	if(internalTeamList == NULL || nombreTeam == 0)
 		return 0;
-	}
-	else
-		internalTeamList[nombreTeam] = NULL;
-	free(repoBak);
 	
 	char * encodedTeam[nombreTeam];
 	for(uint i = 0; i < nombreTeam; i++)
@@ -702,6 +672,64 @@ bool addRepoToDB(TEAMS_DATA newTeam)
 	free(newData);
 	
 	return true;
+}
+
+TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam)
+{
+	if(nbTeam != NULL)
+		*nbTeam = 0;
+	
+	if(repoDB == NULL)
+		return NULL;
+	
+	uint nombreTeam, currentBufferSize = INITIAL_BUFFER_SIZE;
+	void * buf;
+	TEAMS_DATA ** internalTeamList = malloc(INITIAL_BUFFER_SIZE * sizeof(TEAMS_DATA*));
+	
+	if(internalTeamList == NULL)
+		return 0;
+	
+	for(nombreTeam = 0, currentBufferSize = INITIAL_BUFFER_SIZE; *repoDB != 0;) //Tant qu'on a pas fini de lire le fichier de base de données
+	{
+		if(nombreTeam + 2 > currentBufferSize)	//The current + one empty to show the end of the list
+		{
+			currentBufferSize *= 2;
+			buf = realloc(internalTeamList, currentBufferSize * sizeof(TEAMS_DATA*));
+			if(buf != NULL)
+				internalTeamList = buf;
+			else
+				break;
+		}
+		
+		internalTeamList[nombreTeam] = (TEAMS_DATA*) calloc(1, sizeof(TEAMS_DATA));
+		
+		if(internalTeamList[nombreTeam] != NULL)
+		{
+			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LENGTH_PROJECT_NAME, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
+			for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
+			nombreTeam++;
+		}
+	}
+	
+	if(nombreTeam == 0)	//Aucune team lue
+	{
+		free(internalTeamList);
+		return NULL;
+	}
+	else
+	{
+		void * real = realloc(internalTeamList, (nombreTeam + 1) * sizeof(TEAMS_DATA*));
+		
+		if(real != NULL)
+			internalTeamList = real;
+		
+		internalTeamList[nombreTeam] = NULL;
+	}
+	
+	if(nbTeam != NULL)
+		*nbTeam = nombreTeam;
+	
+	return internalTeamList;
 }
 
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)

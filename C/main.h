@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#undef DEBUG
+
 #ifdef DEBUG
     #define DEV_VERSION
     #define PROJECT_NAME "[DEV_BUILD] Rakshata"
