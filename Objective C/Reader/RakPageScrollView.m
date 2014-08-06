@@ -105,13 +105,14 @@
 		
 		[data setProperty:NSImageCurrentFrame withValue:@(0)];
 		
-		animationTimer = [NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES];
+		animationTimer = [[NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES] retain];
 	}
 }
 
 - (void)dealloc
 {
 	[animationTimer invalidate];
+	[animationTimer release];
 	[super dealloc];
 }
 
