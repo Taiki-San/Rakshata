@@ -18,10 +18,10 @@
 	
 	if(self != nil)
 	{
-		animationInProgress = NO;
 		background = [[RakForegroundViewBackgroundView alloc] initWithFrame:container.bounds : self];
 		if(background != nil)
 		{
+			background.animationInProgress = NO;
 			[container addSubview:background];
 		}
 		
@@ -79,7 +79,7 @@
 
 - (void) switchState
 {
-	if(animationInProgress)
+	if(background.animationInProgress)
 		return;
 	
 	BOOL wasShown = [background alphaValue] == 1;
@@ -87,7 +87,7 @@
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		[context setDuration:0.2];
 		
-		animationInProgress = YES;
+		background.animationInProgress = YES;
 		
 		if(background != nil)
 			[background.animator setAlphaValue: wasShown ? 0 : 1];
@@ -105,7 +105,7 @@
 		}
 		
 	} completionHandler:^{
-		animationInProgress = NO;
+		background.animationInProgress = NO;
 		[self switchOver : !wasShown];
 	}];
 }
@@ -193,6 +193,19 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
+	NSPoint click = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	
+	[self.subviews enumerateObjectsUsingBlock:^(NSView *subview, NSUInteger idx, BOOL *stop)
+	{
+		if([subview class] == [NSView class] && [subview.subviews count] && [subview.subviews[0] class] == [RakPassField class])
+		{
+			if(NSPointInRect(click, subview.frame))
+				[self.window makeFirstResponder : subview.subviews[0]];
+			
+			*stop = YES;
+		}
+	}];
+	
 	[self.window makeFirstResponder : self];
 }
 

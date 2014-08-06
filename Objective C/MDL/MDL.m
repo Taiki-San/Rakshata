@@ -19,7 +19,7 @@
 	{
 		flag = GUI_THREAD_MDL;
 		needUpdateMainViews = NO;
-		isForcedToShowUp = NO;
+		self.forcedToShowUp = NO;
 		_popover = nil;
 		self = [self initView: contentView : state];
 		canDeploy = false;
@@ -109,39 +109,34 @@
 
 /*Drag and drop UI effects*/
 
-- (void) setForcedToShowUp : (BOOL) forced	{	isForcedToShowUp = forced;	}
-- (BOOL) isForcedToShowUp {		return isForcedToShowUp;	}
-
 - (BOOL) isDisplayed
 {
-	return (isForcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
+	return (self.forcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
 }
 
-- (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL
+- (void) dragAndDropStarted : (BOOL)started : (BOOL) canDL
 {
 	if(!canDL)
 		return;
 	
 	if(started)
 	{
-		if([self isForcedToShowUp])
-			[self setForcedToShowUp:NO];
+		if(self.forcedToShowUp)
+			self.forcedToShowUp = NO;
 		
-		if([self isDisplayed])
+		if([self isDisplayed] && !self.waitingLogin)
 			return;
 		
-		[self setForcedToShowUp:YES];
-		
-		
+		self.forcedToShowUp = YES;
 	}
-	else if ([self isForcedToShowUp])
-		[self setForcedToShowUp:NO];
+	else if (self.forcedToShowUp)
+		self.forcedToShowUp = NO;
 
 	else
 		return;
 	
-	[coreView hideList:[self isForcedToShowUp]];
-	[coreView setFocusDrop:[self isForcedToShowUp]];
+	[coreView hideList: self.forcedToShowUp];
+	[coreView setFocusDrop : self.forcedToShowUp];
 	needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
 }
@@ -159,7 +154,7 @@
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superView];
 	
-	if(coreView != nil && !isForcedToShowUp)
+	if(coreView != nil && !self.forcedToShowUp)
 	{
 		maximumSize.size.height = round(maximumSize.size.height);
 		
@@ -257,7 +252,7 @@
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	if(![self isForcedToShowUp])
+	if(!self.forcedToShowUp)
 		[super mouseEntered:theEvent];
 }
 
@@ -362,7 +357,7 @@
 {
 	if(controller != NULL && controller.requestCredentials)
 	{
-		return @"Votre sélection contient des éléments payants,\nveuillez vous connecter afin de démarrer la transaction.";
+		return @"Votre sélection contient des éléments payants,\nveuillez vous connecter pour lancer la transaction.";
 	}
 	else
 	{

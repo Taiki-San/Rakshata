@@ -513,9 +513,13 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 	{
 		case PREFS_SET_OWNMAINTAB:
 		{
+#ifdef DEV_VERSION
 			ret_value = mainThread != (uint) value;
 			mainThread = value & GUI_THREAD_MASK;
 			[prefsCache refreshFirstResponder];
+#else
+			ret_value = false;
+#endif
 			
 			break;
 		}

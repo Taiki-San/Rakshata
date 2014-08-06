@@ -332,6 +332,11 @@
 	return COMPTE_PRINCIPAL_MAIL != NULL && (!self.requestCredentials || getPassFromCache(NULL));
 }
 
+- (RakTabForegroundView *) getForegroundView
+{
+	return [_tabMDL getForgroundView];
+}
+
 - (void) setWaitingLogin : (NSNumber *) request
 {
 	[_tabMDL setWaitingLoginWrapper : request];

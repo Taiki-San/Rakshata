@@ -18,11 +18,11 @@
 	
     if (self)
 	{
+		_controller = controller;
 		[self setupInternal];
 		
 		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement"];
 		if(headerText != nil)	{	[self addSubview:headerText];	[headerText release];	}
-		
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
@@ -169,7 +169,49 @@
 		return;
 	
 	if([dropPlaceHolder isHidden] == isFocusDrop)
-		[dropPlaceHolder setHidden:!isFocusDrop];
+	{
+		RakTabForegroundView * foregroundView;
+		
+		[dropPlaceHolder setAlphaValue:!isFocusDrop];
+		
+		if(dropPlaceHolder.isHidden)
+			[dropPlaceHolder setHidden : NO];
+		
+		[NSAnimationContext beginGrouping];
+		
+		[[NSAnimationContext currentContext] setDuration:0.1f];
+		[dropPlaceHolder.animator setAlphaValue:isFocusDrop];
+		
+		foregroundView = [_controller getForegroundView];
+		if(foregroundView != nil)
+		{
+			if(foregroundView.animationInProgress)
+			{
+				do	{	usleep(500);	}	while(foregroundView.animationInProgress);
+				foregroundView = [_controller getForegroundView];
+			}
+			
+			if(foregroundView != nil)
+			{
+				[foregroundView setAlphaValue:isFocusDrop];
+
+				if(foregroundView.isHidden)
+					[foregroundView setHidden:NO];
+
+				[foregroundView.animator setAlphaValue:!isFocusDrop];
+			}
+		}
+		
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+
+			if(!isFocusDrop)
+				[dropPlaceHolder setHidden : YES];
+			else if(foregroundView != nil)
+				[foregroundView setHidden : YES];
+		}];
+		
+		[NSAnimationContext endGrouping];
+	}
 }
 
 /** Color **/

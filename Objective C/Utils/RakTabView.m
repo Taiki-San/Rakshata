@@ -544,6 +544,11 @@
 	return _waitingLogin;
 }
 
+- (RakTabForegroundView *) getForgroundView
+{
+	return foregroundView;
+}
+
 #pragma mark - Utilities
 
 - (MDL*) getMDL : (BOOL) requireAvailable

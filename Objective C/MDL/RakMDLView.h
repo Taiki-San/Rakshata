@@ -16,6 +16,8 @@
 	RakMDLList * MDLList;
 	
 	RakText * dropPlaceHolder;
+	
+	RakMDLController* _controller;
 }
 
 - (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller;

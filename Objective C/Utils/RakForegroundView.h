@@ -17,6 +17,8 @@
 	RakForegroundView * _father;
 }
 
+@property (atomic) BOOL animationInProgress;
+
 - (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
 - (NSColor *) getBackgroundColor;
 
@@ -33,8 +35,6 @@
 {
 	RakForegroundViewBackgroundView * background;
 	RakForegroundViewContentView * _coreView;
-	
-	BOOL animationInProgress;
 }
 
 @property (assign) id delegate;

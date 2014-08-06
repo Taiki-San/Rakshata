@@ -24,13 +24,13 @@
 	RakMDLView * coreView;
 	RakMDLController * controller;
 	
-	BOOL isForcedToShowUp;
-	
 	RakReaderControllerUIQuery * _popover;
 
 @public
 	int needUpdateMainViews;
 }
+
+@property BOOL forcedToShowUp;
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initContent : (NSString *) state;
@@ -42,8 +42,6 @@
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;
 
-- (void) setForcedToShowUp : (BOOL) forced;
-- (BOOL) isForcedToShowUp;
 - (BOOL) isDisplayed;
 
 - (void) updateDependingViews : (BOOL) animated;

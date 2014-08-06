@@ -55,6 +55,7 @@
 
 - (void) refreshCT : (uint) ID;
 - (BOOL) areCredentialsComplete;
+- (RakTabForegroundView *) getForegroundView;
 - (void) setWaitingLogin : (NSNumber *) request;
 
 @end

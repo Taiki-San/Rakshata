@@ -92,6 +92,7 @@ enum {
 
 - (NSString *) waitingLoginMessage;
 - (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
+- (RakTabForegroundView *) getForgroundView;
 
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
