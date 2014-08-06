@@ -86,7 +86,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length)
     return output;
 }
 
-DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTotal, char * state)
+DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProjectTotal, char * state)
 {
     uint pos;
 	uint8_t nombreEspace = 0;
@@ -107,7 +107,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 			else if(state[pos] == '\n')
 			{
 				if(nombreEspace == 3 && !dernierEspace)
-					(*nombreMangaTotal)++;
+					(*nombreProjectTotal)++;
 				nombreEspace = 0;
 				dernierEspace = true;
 			}
@@ -124,20 +124,20 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 		}
 	}
 	else
-		*nombreMangaTotal = 0;
+		*nombreProjectTotal = 0;
 
-    if(*nombreMangaTotal)
+    if(*nombreProjectTotal)
     {
 		uint posLine, projectID;
 		int posPtr = 0, chapitreTmp, posCatalogue = 0;
 		char ligne[2*LONGUEUR_COURT + 20], URL[LONGUEUR_URL], type[2];
 
 		//Create the new structure, initialized at NULL
-        DATA_LOADED **newBufferTodo = calloc(*nombreMangaTotal, sizeof(DATA_LOADED*));
+        DATA_LOADED **newBufferTodo = calloc(*nombreProjectTotal, sizeof(DATA_LOADED*));
 		
 		if(newBufferTodo == NULL)
 		{
-			*nombreMangaTotal = 0;
+			*nombreProjectTotal = 0;
 			return NULL;
 		}
 
@@ -145,7 +145,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 		DATA_LOADED * newChunk;
 		PROJECT_DATA * currentProject;
 		
-		for(pos = 0; state[pos] && posPtr < *nombreMangaTotal;) //On incrémente pas posPtr si la ligne est rejeté
+		for(pos = 0; state[pos] && posPtr < *nombreProjectTotal;) //On incrémente pas posPtr si la ligne est rejeté
         {
 			newBufferTodo[posPtr] = NULL;
 			
@@ -177,20 +177,20 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 
             sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
 			
-			if(mangaDB[posCatalogue].projectID != projectID && !strcmp(mangaDB[posCatalogue].team->URLRepo, URL)) //On vérifie si c'est pas le même manga, pour éviter de se retapper toute la liste
+			if(projectDB[posCatalogue].projectID != projectID && !strcmp(projectDB[posCatalogue].team->URLRepo, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
             {
-				currentProject = &mangaDB[posCatalogue];
+				currentProject = &projectDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; mangaDB[posCatalogue].team != NULL && (mangaDB[posCatalogue].projectID != projectID || strcmp(mangaDB[posCatalogue].team->URLRepo, URL)); posCatalogue++);
-                if(mangaDB[posCatalogue].team != NULL && projectID != mangaDB[posCatalogue].projectID && !strcmp(mangaDB[posCatalogue].team->URLRepo, URL))
+                for(posCatalogue = 0; projectDB[posCatalogue].team != NULL && (projectDB[posCatalogue].projectID != projectID || strcmp(projectDB[posCatalogue].team->URLRepo, URL)); posCatalogue++);
+                if(projectDB[posCatalogue].team != NULL && projectID != projectDB[posCatalogue].projectID && !strcmp(projectDB[posCatalogue].team->URLRepo, URL))
                 {
-                    currentProject = &mangaDB[posCatalogue];
+                    currentProject = &projectDB[posCatalogue];
                 }
                 else //Couldn't find the project, discard it
 				{
-					(*nombreMangaTotal)--;
+					(*nombreProjectTotal)--;
 					continue;
 				}
             }
@@ -199,11 +199,11 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTota
 			newChunk = MDLCreateElement(currentProject, type[0] == 'T', chapitreTmp);
 			
 			//Merge the new data structure to the main one
-			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreMangaTotal, &posPtr, &newChunk);
+			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreProjectTotal, &posPtr, &newChunk);
 
         }
         if(posPtr > 1)
-            qsort(newBufferTodo, *nombreMangaTotal, sizeof(DATA_LOADED*), sortMangasToDownload);
+            qsort(newBufferTodo, *nombreProjectTotal, sizeof(DATA_LOADED*), sortProjectsToDownload);
 
 		return newBufferTodo;
     }
@@ -632,7 +632,7 @@ end:
     return ret_value;
 }
 
-int sortMangasToDownload(const void *a, const void *b)
+int sortProjectsToDownload(const void *a, const void *b)
 {
     int ptsA = 0, ptsB = 0;
     const DATA_LOADED *struc1 = *(DATA_LOADED**) a;
@@ -644,7 +644,7 @@ int sortMangasToDownload(const void *a, const void *b)
     else if(struc2 == NULL)
         return -1;
 
-    if(struc1->datas == struc2->datas) //Si même manga, ils pointent vers la même structure, pas besoin de compter les points
+    if(struc1->datas == struc2->datas) //Si même projet, ils pointent vers la même structure, pas besoin de compter les points
     {
         if(struc1->listChapitreOfTome != NULL)
             return -1;

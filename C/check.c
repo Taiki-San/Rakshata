@@ -250,8 +250,7 @@ void networkAndVersionTest()
 				
 				/*A partir d'ici, le compte est killswitche*/
 				remove(SECURE_DATABASE);
-				removeFolder("manga");
-				removeFolder("data");
+				removeFolder(PROJECT_ROOT);
 				logR("Ugh, you did wrong things =/");
 				free(URL);
 				exit(0);

@@ -11,11 +11,11 @@
 *********************************************************************************************/
 
 /**Chapitre.c**/
-void refreshChaptersList(PROJECT_DATA *mangaDB);
-bool checkChapterReadable(PROJECT_DATA mangaDB, int chapitre);
-void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu);
-void getUpdatedChapterList(PROJECT_DATA *mangaDB, bool getInstalled);
-void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters);
+void refreshChaptersList(PROJECT_DATA *projectDB);
+bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre);
+void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu);
+void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled);
+void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters);
 bool isChapterShared(char *path, PROJECT_DATA data, int ID);
 
 /**check.c**/
@@ -29,9 +29,9 @@ int checkNameFileZip(char fileToTest[256]);
 bool checkPathEscape(char *string, int length);
 
 /**CTCommon.c**/
-void getUpdatedCTList(PROJECT_DATA *mangaDB, bool isTome);
-bool checkReadable(PROJECT_DATA mangaDB, bool isTome, int data);
-void internalDeleteCT(PROJECT_DATA mangaDB, bool isTome, int selection);
+void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
+bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
+void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
 void releaseCTData(PROJECT_DATA data);
 
 /**Donwload.c**/
@@ -47,8 +47,8 @@ int UI_Alert(char* titre, char* contenu);
 void memoryError(size_t size);
 
 /**Favoris.c**/
-bool checkIfFaved(PROJECT_DATA* mangaDB, char **favs);
-bool setFavorite(PROJECT_DATA* mangaDB);
+bool checkIfFaved(PROJECT_DATA* projectDB, char **favs);
+bool setFavorite(PROJECT_DATA* projectDB);
 void updateFavorites();
 void getNewFavs();
 
@@ -135,17 +135,17 @@ int getThreadCount();
 
 /**Tome.c**/
 int getPosForID(PROJECT_DATA data, bool installed, int ID);
-void refreshTomeList(PROJECT_DATA *mangaDB);
-void setTomeReadable(PROJECT_DATA mangaDB, int ID);
-bool checkTomeReadable(PROJECT_DATA mangaDB, int ID);
-bool parseTomeDetails(PROJECT_DATA mangaDB, int ID, CONTENT_TOME ** output);
+void refreshTomeList(PROJECT_DATA *projectDB);
+void setTomeReadable(PROJECT_DATA projectDB, int ID);
+bool checkTomeReadable(PROJECT_DATA projectDB, int ID);
+bool parseTomeDetails(PROJECT_DATA projectDB, int ID, CONTENT_TOME ** output);
 void checkTomeValable(PROJECT_DATA *project, int *dernierLu);
-void getUpdatedTomeList(PROJECT_DATA *mangaDB, bool getInstalled);
+void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, bool includeDetails);
-void printTomeDatas(PROJECT_DATA mangaDB, char *bufferDL, int tome);
+void printTomeDatas(PROJECT_DATA projectDB, char *bufferDL, int tome);
 int extractNumFromConfigTome(char *input, int ID);
-void internalDeleteTome(PROJECT_DATA mangaDB, int tomeDelete, bool careAboutLinkedChapters);
+void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Translation.c**/
 void setNewLangue(int newLangue);

@@ -12,70 +12,70 @@
 
 #include "db.h"
 
-void refreshChaptersList(PROJECT_DATA *mangaDB)
+void refreshChaptersList(PROJECT_DATA *projectDB)
 {
-    if(mangaDB->chapitresFull != NULL || mangaDB->chapitresInstalled != NULL)
+    if(projectDB->chapitresFull != NULL || projectDB->chapitresInstalled != NULL)
 	{
-		free(mangaDB->chapitresFull);		mangaDB->chapitresFull = NULL;
-		free(mangaDB->chapitresInstalled);	mangaDB->chapitresInstalled = NULL;
-		mangaDB->nombreChapitre = mangaDB->nombreChapitreInstalled = 0;
+		free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
+		free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
+		projectDB->nombreChapitre = projectDB->nombreChapitreInstalled = 0;
 	}
 
-    mangaDB->chapitresFull = getUpdatedCTForID(mangaDB->cacheDBID, false, &(mangaDB->nombreChapitre));
+    projectDB->chapitresFull = getUpdatedCTForID(projectDB->cacheDBID, false, &(projectDB->nombreChapitre));
 }
 
-bool checkChapterReadable(PROJECT_DATA mangaDB, int chapitre)
+bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)
 {
     char pathConfigFile[LENGTH_PROJECT_NAME*3+350];
     char pathInstallFlag[LENGTH_PROJECT_NAME*3+350];
 	
-	char * encodedHash = getPathForTeam(mangaDB.team->URLRepo);
+	char * encodedHash = getPathForTeam(projectDB.team->URLRepo);
 	
 	if(encodedHash == NULL)		return false;
 
 	if(chapitre%10)
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, mangaDB.projectID, chapitre/10, chapitre%10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre/10, chapitre%10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, projectDB.projectID, chapitre/10, chapitre%10);
     }
     else
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, mangaDB.projectID, chapitre/10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, mangaDB.projectID, chapitre/10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre/10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, projectDB.projectID, chapitre/10);
     }
 	
 	free(encodedHash);
     return checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag);
 }
 
-void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu)
+void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 {
-	if(mangaDB->chapitresInstalled != NULL)
+	if(projectDB->chapitresInstalled != NULL)
 	{
-		free(mangaDB->chapitresInstalled);
-		mangaDB->chapitresInstalled = NULL;
+		free(projectDB->chapitresInstalled);
+		projectDB->chapitresInstalled = NULL;
 	}
 	
-	mangaDB->nombreChapitreInstalled = 0;
+	projectDB->nombreChapitreInstalled = 0;
 	
-    if(mangaDB->chapitresFull == NULL || mangaDB->chapitresFull[0] == VALEUR_FIN_STRUCT)
+    if(projectDB->chapitresFull == NULL || projectDB->chapitresFull[0] == VALEUR_FIN_STRUCT)
 		return;
 	
     char configFilePath[TAILLE_BUFFER*5];
-	char * encodedHash = getPathForTeam(mangaDB->team->URLRepo);
+	char * encodedHash = getPathForTeam(projectDB->team->URLRepo);
 	
 	if(encodedHash == NULL)
 		return;
 
-    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedHash, mangaDB->projectID);
+    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedHash, projectDB->projectID);
 	free(encodedHash);
 	
     if(!checkFileExist(configFilePath))
     {
-		mangaDB->chapitresInstalled = malloc(sizeof(int));
+		projectDB->chapitresInstalled = malloc(sizeof(int));
 		
-		if(mangaDB->chapitresInstalled != NULL)
-			mangaDB->chapitresInstalled[0] = VALEUR_FIN_STRUCT;
+		if(projectDB->chapitresInstalled != NULL)
+			projectDB->chapitresInstalled[0] = VALEUR_FIN_STRUCT;
 		return;
     }
 	
@@ -91,26 +91,26 @@ void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu)
 		}
     }
 	
-	int *temporaryInstalledList = malloc((mangaDB->nombreChapitre + 1) * sizeof(int));
+	int *temporaryInstalledList = malloc((projectDB->nombreChapitre + 1) * sizeof(int));
 	size_t nbElem = 0;
 	
 	if(temporaryInstalledList == NULL)
 		return;
 
-    for(size_t pos = 0; mangaDB->chapitresFull[pos] != VALEUR_FIN_STRUCT && pos < mangaDB->nombreChapitre; pos++)
+    for(size_t pos = 0; projectDB->chapitresFull[pos] != VALEUR_FIN_STRUCT && pos < projectDB->nombreChapitre; pos++)
     {
-        if(checkChapterReadable(*mangaDB, mangaDB->chapitresFull[pos]))
-            temporaryInstalledList[nbElem++] = mangaDB->chapitresFull[pos];
+        if(checkChapterReadable(*projectDB, projectDB->chapitresFull[pos]))
+            temporaryInstalledList[nbElem++] = projectDB->chapitresFull[pos];
     }
 	temporaryInstalledList[nbElem] = VALEUR_FIN_STRUCT;
 
 	if(nbElem != 0)
 	{
-		mangaDB->chapitresInstalled = malloc((nbElem + 1) * sizeof(int));
-		if(mangaDB->chapitresInstalled != NULL)
+		projectDB->chapitresInstalled = malloc((nbElem + 1) * sizeof(int));
+		if(projectDB->chapitresInstalled != NULL)
 		{
-			memcpy(mangaDB->chapitresInstalled, temporaryInstalledList, (nbElem + 1) * sizeof(int));
-			mangaDB->nombreChapitreInstalled = nbElem;
+			memcpy(projectDB->chapitresInstalled, temporaryInstalledList, (nbElem + 1) * sizeof(int));
+			projectDB->nombreChapitreInstalled = nbElem;
 		}
 	}
 	
@@ -118,7 +118,7 @@ void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu)
 
     if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCT)
     {
-		int first = mangaDB->chapitresInstalled[0], end = mangaDB->chapitresInstalled[nbElem-1];
+		int first = projectDB->chapitresInstalled[0], end = projectDB->chapitresInstalled[nbElem-1];
 		
 		if(*dernierLu < first)
 			*dernierLu = first;
@@ -128,25 +128,25 @@ void checkChapitreValable(PROJECT_DATA *mangaDB, int *dernierLu)
 	}
 }
 
-void getUpdatedChapterList(PROJECT_DATA *mangaDB, bool getInstalled)
+void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
 {
-    refreshChaptersList(mangaDB);
+    refreshChaptersList(projectDB);
 
 	if(getInstalled)
-		checkChapitreValable(mangaDB, NULL);
+		checkChapitreValable(projectDB, NULL);
 }
 
-void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careAboutLinkedChapters)
+void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters)
 {
-    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
+    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
 	
 	if(encodedTeam == NULL)
 		return;
 	
 	if(chapitreDelete % 10)
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB.projectID, chapitreDelete/10, chapitreDelete%10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, projectDB.projectID, chapitreDelete/10, chapitreDelete%10);
 	else
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, mangaDB.projectID, chapitreDelete/10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, projectDB.projectID, chapitreDelete/10);
 	
 	snprintf(dirCheck, sizeof(dirCheck), "%s/shared", dir);
 	
@@ -162,15 +162,15 @@ void internalDeleteChapitre(PROJECT_DATA mangaDB, int chapitreDelete, bool careA
 			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
-				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, mangaDB.projectID, IDTomeLinked, CONFIGFILETOME);
+				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, projectDB.projectID, IDTomeLinked, CONFIGFILETOME);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
 					//On crée le dossier
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native", encodedTeam, mangaDB.projectID, IDTomeLinked);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native", encodedTeam, projectDB.projectID, IDTomeLinked);
 					mkdirR(dirVol);
 					
 					//On craft le nouveau nom
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB.projectID, IDTomeLinked, chapitreDelete);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, projectDB.projectID, IDTomeLinked, chapitreDelete);
 					rename(dir, dirVol);
 					
 					//On supprime le fichier shared

@@ -105,7 +105,7 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PRO
         free(status[i]);
     }
 
-    freeMangaData(cache);
+    freeProjectData(cache);
     free(*todoList);
     free(todoList);
     free(status);

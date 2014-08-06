@@ -13,23 +13,23 @@
 
 /**	Set up the evnt	**/
 
-bool reader_getNextReadableElement(PROJECT_DATA mangaDB, bool isTome, uint *currentPosIntoStructure)
+bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure)
 {
-	uint maxValue = isTome ? mangaDB.nombreTomesInstalled : mangaDB.nombreChapitreInstalled;
+	uint maxValue = isTome ? projectDB.nombreTomesInstalled : projectDB.nombreChapitreInstalled;
 
-	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < mangaDB.nombreTomesInstalled
-										&& !checkReadable(mangaDB, isTome, isTome ? mangaDB.tomesInstalled[*currentPosIntoStructure].ID: mangaDB.chapitresInstalled[*currentPosIntoStructure]);		(*currentPosIntoStructure)++);
+	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < projectDB.nombreTomesInstalled
+										&& !checkReadable(projectDB, isTome, isTome ? projectDB.tomesInstalled[*currentPosIntoStructure].ID: projectDB.chapitresInstalled[*currentPosIntoStructure]);		(*currentPosIntoStructure)++);
 	
 	return *currentPosIntoStructure < maxValue;
 }
 
 /**	Load the reader data	**/
 
-bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
+bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
 	uint nombreToursRequis = 1;
-	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedTeam = getPathForTeam(mangaDB.team->URLRepo);
+	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
@@ -45,11 +45,11 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
     if(isTome)
     {
 		uint pos;
-		for(pos = 0; pos < mangaDB.nombreTomesInstalled && mangaDB.tomesInstalled[pos].ID != IDRequested; pos++);
-		if(pos >= mangaDB.nombreTomesInstalled)
+		for(pos = 0; pos < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[pos].ID != IDRequested; pos++);
+		if(pos >= projectDB.nombreTomesInstalled)
 			return 1;
 		
-		localBuffer = mangaDB.tomesInstalled[pos].details;
+		localBuffer = projectDB.tomesInstalled[pos].details;
 		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCT; pos++);
 		nombreToursRequis = pos;
 	}
@@ -63,7 +63,7 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 			tmp = localBuffer[nombreTours].ID;
 			if(localBuffer[nombreTours].isNative)
 			{
-				if(isChapterShared(NULL, mangaDB, tmp))
+				if(isChapterShared(NULL, projectDB, tmp))
 				{
 					if(tmp % 10)
 						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", tmp/10, tmp%10);
@@ -95,7 +95,7 @@ bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int IDRequested, DATA_L
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedTeam, mangaDB.projectID, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedTeam, projectDB.projectID, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -166,7 +166,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedTeam, mangaDB.projectID, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedTeam, projectDB.projectID, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else
@@ -312,26 +312,26 @@ void releaseDataReader(DATA_LECTURE *data)
 	}
 }
 
-bool changeChapter(PROJECT_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
+bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
 	*posIntoStruc += (goToNextChap ? 1 : -1);
 	
-	if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
+	if(!changeChapterAllowed(projectDB, isTome, *posIntoStruc))
 	{
-		getUpdatedCTList(mangaDB, isTome);
+		getUpdatedCTList(projectDB, isTome);
 		
-		if(!changeChapterAllowed(mangaDB, isTome, *posIntoStruc))
+		if(!changeChapterAllowed(projectDB, isTome, *posIntoStruc))
 			return false;
 	}
 	if(isTome)
-		*ptrToSelectedID = mangaDB->tomesInstalled[*posIntoStruc].ID;
+		*ptrToSelectedID = projectDB->tomesInstalled[*posIntoStruc].ID;
 	else
-		*ptrToSelectedID = mangaDB->chapitresInstalled[*posIntoStruc];
+		*ptrToSelectedID = projectDB->chapitresInstalled[*posIntoStruc];
 	return true;
 }
 
-bool changeChapterAllowed(PROJECT_DATA* mangaDB, bool isTome, int posIntoStruc)
+bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, int posIntoStruc)
 {
-	return (isTome && posIntoStruc < mangaDB->nombreTomesInstalled) || (!isTome && posIntoStruc < mangaDB->nombreChapitreInstalled);
+	return (isTome && posIntoStruc < projectDB->nombreTomesInstalled) || (!isTome && posIntoStruc < projectDB->nombreChapitreInstalled);
 }
 

@@ -12,7 +12,7 @@
 
 #include "lecteur.h"
 
-uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT)
+uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {
 	uint posStart, posEnd, nbElemFullData;
 	PROJECT_DATA * fullData = getCopyCache(SORT_TEAM, &nbElemFullData);
@@ -23,21 +23,21 @@ uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT)
 	//Find the beginning of the team area
 	for (posStart = 0; posStart < nbElemFullData; posStart++)
 	{
-		if (fullData[posStart].team != NULL && !strcmp(mangaDB->team->teamCourt, fullData[posStart].team->teamCourt) && !strcmp(mangaDB->team->teamLong, fullData[posStart].team->teamLong))
+		if (fullData[posStart].team != NULL && !strcmp(projectDB->team->teamCourt, fullData[posStart].team->teamCourt) && !strcmp(projectDB->team->teamLong, fullData[posStart].team->teamLong))
 			break;
 	}
 	
 	//Couldn't find it
 	if(posStart == nbElemFullData)
 	{
-		freeMangaData(fullData);
+		freeProjectData(fullData);
 		return false;
 	}
 	
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if (fullData[posEnd].team == NULL || strcmp(mangaDB->team->teamCourt, fullData[posEnd].team->teamCourt) || strcmp(mangaDB->team->teamLong, fullData[posEnd].team->teamLong))
+		if (fullData[posEnd].team == NULL || strcmp(projectDB->team->teamCourt, fullData[posEnd].team->teamCourt) || strcmp(projectDB->team->teamLong, fullData[posEnd].team->teamLong))
 			break;
 	}
 	
@@ -45,31 +45,31 @@ uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT)
 	updateProjectsFromTeam(fullData, posStart, posEnd);
 	syncCacheToDisk(SYNC_PROJECTS);
 	
-	freeMangaData(fullData);
+	freeProjectData(fullData);
 	
-	free(mangaDB->chapitresFull);		mangaDB->chapitresFull = NULL;
-	free(mangaDB->tomesFull);			mangaDB->tomesFull = NULL;
-	free(mangaDB->chapitresInstalled);	mangaDB->chapitresInstalled = NULL;
-	free(mangaDB->tomesInstalled);		mangaDB->tomesInstalled = NULL;
+	free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
+	free(projectDB->tomesFull);			projectDB->tomesFull = NULL;
+	free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
+	free(projectDB->tomesInstalled);		projectDB->tomesInstalled = NULL;
 	
-    if(!updateIfRequired(mangaDB, RDB_CTXLECTEUR))
+    if(!updateIfRequired(projectDB, RDB_CTXLECTEUR))
 	{
-		getUpdatedChapterList(mangaDB, true);
-		getUpdatedTomeList(mangaDB, true);
+		getUpdatedChapterList(projectDB, true);
+		getUpdatedTomeList(projectDB, true);
 	}
 
     uint firstNewElem;
     
 	if(isTome)
 	{
-		for(firstNewElem = mangaDB->nombreTomes-1; firstNewElem > 0 && mangaDB->tomesFull[firstNewElem].ID > CT; firstNewElem--);
-		firstNewElem = mangaDB->nombreTomes - 1 - firstNewElem;
+		for(firstNewElem = projectDB->nombreTomes-1; firstNewElem > 0 && projectDB->tomesFull[firstNewElem].ID > CT; firstNewElem--);
+		firstNewElem = projectDB->nombreTomes - 1 - firstNewElem;
 	}
 
     else
 	{
-        for(firstNewElem = mangaDB->nombreChapitre-1; firstNewElem > 0 && mangaDB->chapitresFull[firstNewElem] > CT; firstNewElem--);
-		firstNewElem = mangaDB->nombreChapitre - 1 - firstNewElem;
+        for(firstNewElem = projectDB->nombreChapitre-1; firstNewElem > 0 && projectDB->chapitresFull[firstNewElem] > CT; firstNewElem--);
+		firstNewElem = projectDB->nombreChapitre - 1 - firstNewElem;
 	}
     
     return firstNewElem;

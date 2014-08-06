@@ -369,10 +369,10 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
     return output;
 }
 
-bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
+bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
     bool wentFine = true;
-    char temp[600], basePath[500], *encodedTeam = getPathForTeam(mangaDB->team->URLRepo);
+    char temp[600], basePath[500], *encodedTeam = getPathForTeam(projectDB->team->URLRepo);
     FILE* ressources = NULL;
 	
 	if(encodedTeam == NULL)
@@ -385,24 +385,24 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
 		if(subFolder)
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d", encodedTeam, projectDB->projectID, tome, chapitre/10);
 		}
 		else
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, mangaDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, projectDB->projectID, tome, chapitre/10);
 		}
     }
     else
     {
         if(chapitre%10)
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, mangaDB->projectID, chapitre/10, chapitre%10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, projectDB->projectID, chapitre/10, chapitre%10);
         else
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, mangaDB->projectID, chapitre/10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, projectDB->projectID, chapitre/10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);
@@ -411,7 +411,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
 		//Décompression dans le repertoire de destination
 
 		//Création du répertoire de destination
-		snprintf(temp, 500, PROJECT_ROOT"%s/%d/", encodedTeam, mangaDB->projectID);
+		snprintf(temp, 500, PROJECT_ROOT"%s/%d/", encodedTeam, projectDB->projectID);
 		if(!checkDirExist(temp))
 			createPath(temp);
 		
@@ -434,11 +434,11 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapi
 		remove(installingFile);
 		
 		if(wentFine && haveToPutTomeAsReadable)
-			setTomeReadable(*mangaDB, tome);
+			setTomeReadable(*projectDB, tome);
 
 		if(!subFolder && !wentFine)
 		{
-			snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", mangaDB->team->teamLong, mangaDB->projectID, chapitre);
+			snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", projectDB->team->teamLong, projectDB->projectID, chapitre);
 			logR(temp);
 			removeFolder(basePath);
 		}

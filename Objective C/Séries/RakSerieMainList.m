@@ -39,7 +39,7 @@
 		{
 			NSLog(@"Failed at initialize RakSerieMainList, most probably a memory problem :(");
 
-			freeMangaData(data); //Seul _cache peut ne pas être null dans cette branche
+			freeProjectData(data); //Seul _cache peut ne pas être null dans cette branche
 		}
 		
 		[self applyContext:frame : selectedIndex : scrollPosition];

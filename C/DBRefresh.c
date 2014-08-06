@@ -110,7 +110,7 @@ void updateRepo()
 
 /******************* UPDATE PROJECTS ****************************/
 
-int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
+int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
 {
 	int defaultVersion = VERSION_PROJECT;
 	char URL[500];
@@ -133,11 +133,11 @@ int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams)
             return -1;
         }
 		
-        buffer_manga[0] = 0;
-        download_mem(URL, NULL, buffer_manga, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
+        projectBuf[0] = 0;
+        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
         defaultVersion--;
 		
-	} while(defaultVersion > 0 && !isDownloadValid(buffer_manga));
+	} while(defaultVersion > 0 && !isDownloadValid(projectBuf));
 
     return defaultVersion+1;
 }
@@ -194,7 +194,7 @@ void updateProjects()
 	}
 	
 	syncCacheToDisk(SYNC_TEAM | SYNC_PROJECTS);
-	freeMangaData(oldData);
+	freeProjectData(oldData);
 }
 
 void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
@@ -234,15 +234,15 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 	fclose(fichier);
 }
 
-int databaseVersion(char* mangaDB)
+int databaseVersion(char* projectDB)
 {
-    if(*mangaDB == ' ' && *(mangaDB+1) >= '0' && *(mangaDB+1) <= '9')
+    if(*projectDB == ' ' && *(projectDB+1) >= '0' && *(projectDB+1) <= '9')
     {
-        mangaDB++;
+        projectDB++;
         char buffer[10];
         int i = 0;
-        for(; i < 9 && *mangaDB >= '0' && *mangaDB <= '9'; mangaDB++)
-            buffer[i++] = *mangaDB;
+        for(; i < 9 && *projectDB >= '0' && *projectDB <= '9'; projectDB++)
+            buffer[i++] = *projectDB;
         buffer[i] = 0;
         return charToInt(buffer);
     }

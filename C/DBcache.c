@@ -25,14 +25,14 @@ static uint lengthIsUpdated = 0;
 
 int setupBDDCache()
 {
-	uint nombreTeam, nombreManga = 0;
-    char *repoDB, *mangaDB, *cacheFavs = NULL;
+	uint nombreTeam, nombreProject = 0;
+    char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 	
     repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
-    mangaDB = loadLargePrefs(SETTINGS_MANGADB_FLAG);
+    projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
 	
-	if(repoDB == NULL || mangaDB == NULL)
+	if(repoDB == NULL || projectDB == NULL)
 		return 0;
 	
 	//On détruit le cache
@@ -66,7 +66,7 @@ int setupBDDCache()
 	
 	getRideOfDuplicateInTeam(internalTeamList, &nombreTeam);
 	
-	//On vas parser les mangas
+	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
 		
 	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_team)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" BLOB NOT NULL, "DBNAMETOID(RDB_description)" BLOB, "DBNAMETOID(RDB_authors)" BLOB, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
@@ -86,12 +86,12 @@ int setupBDDCache()
 #endif
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
 		size_t decodedLength;
-		unsigned char * decodedProject = base64_decode(mangaDB, strlen(mangaDB) - 1, &decodedLength);
-		PROJECT_DATA * projects = parseLocalData(internalTeamList, nombreTeam, decodedProject, &nombreManga);
+		unsigned char * decodedProject = base64_decode(projectDB, strlen(projectDB) - 1, &decodedLength);
+		PROJECT_DATA * projects = parseLocalData(internalTeamList, nombreTeam, decodedProject, &nombreProject);
 		
 		if(projects != NULL)
 		{
-			for(uint pos = 0, teamPos; pos < nombreManga; pos++)
+			for(uint pos = 0, teamPos; pos < nombreProject; pos++)
 			{
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
@@ -123,20 +123,20 @@ int setupBDDCache()
 		}
 #endif
 
-		if(nombreManga)
+		if(nombreProject)
 		{
 			if(cache != NULL)
 				flushDB();
 			
 			cache = internalDB;
-			nbElem = nombreManga;
+			nbElem = nombreProject;
 			
 			teamList = internalTeamList;
 			lengthTeam = nombreTeam;
 			
-			isUpdated = calloc(nombreManga, sizeof(char));
+			isUpdated = calloc(nombreProject, sizeof(char));
 			if(isUpdated)
-				lengthIsUpdated = nombreManga;
+				lengthIsUpdated = nombreProject;
 		}
 		else
 		{
@@ -147,9 +147,9 @@ int setupBDDCache()
 	
 	for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
 	free(cacheFavs);
-	free(mangaDB);
+	free(projectDB);
 	
-	return nombreManga;
+	return nombreProject;
 }
 
 void syncCacheToDisk(byte syncCode)
@@ -157,11 +157,11 @@ void syncCacheToDisk(byte syncCode)
 	uint posStruct, posOut = 0, nbProject, nbTeam = 0;
 	int newChar;
 	char *bufferOut;
-	PROJECT_DATA *mangaDB = NULL;
+	PROJECT_DATA *projectDB = NULL;
 	TEAMS_DATA **teamDB = getCopyKnownTeams(&nbTeam);
 	
 	if(syncCode & SYNC_PROJECTS)
-		mangaDB = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbProject);
+		projectDB = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbProject);
 	else
 		nbProject = 0;
 	
@@ -198,17 +198,17 @@ void syncCacheToDisk(byte syncCode)
 	if(syncCode & SYNC_PROJECTS)
 	{
 		size_t dataSize = 0;
-		char * data = reversedParseData(mangaDB, nbProject, teamList, lengthTeam, &dataSize);
+		char * data = reversedParseData(projectDB, nbProject, teamList, lengthTeam, &dataSize);
 		
 		if(data != NULL)
 		{
 			bufferOut = malloc(dataSize + 50);
 			if(bufferOut != NULL)
 			{
-				strncpy(bufferOut, "<"SETTINGS_MANGADB_FLAG">\n", 10);
+				strncpy(bufferOut, "<"SETTINGS_PROJECTDB_FLAG">\n", 10);
 				memcpy(&bufferOut[4], data, dataSize);
-				strncpy(&bufferOut[4+dataSize], "\n</"SETTINGS_MANGADB_FLAG">\n", 10);
-				updatePrefs(SETTINGS_MANGADB_FLAG, bufferOut);
+				strncpy(&bufferOut[4+dataSize], "\n</"SETTINGS_PROJECTDB_FLAG">\n", 10);
+				updatePrefs(SETTINGS_PROJECTDB_FLAG, bufferOut);
 				free(bufferOut);
 			}
 			free(data);
@@ -216,7 +216,7 @@ void syncCacheToDisk(byte syncCode)
 		else
 			logR("Sync failed");
 		
-		free(mangaDB);
+		free(projectDB);
 	}
 	
 	if(teamDB != NULL)
@@ -854,40 +854,40 @@ void freeTeam(TEAMS_DATA **data)
 
 #ifdef TEAM_COPIED_TO_INSTANCE
 
-void freeMangaData(PROJECT_DATA* mangaDB)
+void freeProjectData(PROJECT_DATA* projectDB)
 {
-    if(mangaDB == NULL)
+    if(projectDB == NULL)
         return;
 	
     size_t pos = 0, posTeamCollector = 0, i;
 	void* collector[lengthTeam];
     
-	for(; mangaDB[pos].team != NULL; pos++)
+	for(; projectDB[pos].team != NULL; pos++)
     {
-        if(mangaDB[pos].team != NULL)
+        if(projectDB[pos].team != NULL)
 		{
-			for(i = 0; i < posTeamCollector && mangaDB[pos].team != collector[i]; i++);
+			for(i = 0; i < posTeamCollector && projectDB[pos].team != collector[i]; i++);
 			if(i == posTeamCollector)
-				collector[posTeamCollector++] = mangaDB[pos].team;
+				collector[posTeamCollector++] = projectDB[pos].team;
 		}
-		releaseCTData(mangaDB[pos]);
+		releaseCTData(projectDB[pos]);
     }
 	while (posTeamCollector--)
 		free(collector[posTeamCollector]);
 	
-    free(mangaDB);
+    free(projectDB);
 }
 
 #else
 
-void freeMangaData(PROJECT_DATA* mangaDB)
+void freeProjectData(PROJECT_DATA* projectDB)
 {
-    if(mangaDB == NULL)
+    if(projectDB == NULL)
         return;
 	
 	size_t pos;
-	for(pos = 0; mangaDB[pos].team != NULL; releaseCTData(mangaDB[pos++]));
-    free(mangaDB);
+	for(pos = 0; projectDB[pos].team != NULL; releaseCTData(projectDB[pos++]));
+    free(projectDB);
 }
 
 #endif

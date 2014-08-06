@@ -10,27 +10,27 @@
 **                                                                                          **
 *********************************************************************************************/
 
-void getUpdatedCTList(PROJECT_DATA *mangaDB, bool isTome)
+void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
 {
     if(isTome)
-        getUpdatedTomeList(mangaDB, true);
+        getUpdatedTomeList(projectDB, true);
     else
-        getUpdatedChapterList(mangaDB, true);
+        getUpdatedChapterList(projectDB, true);
 }
 
-bool checkReadable(PROJECT_DATA mangaDB, bool isTome, int data)
+bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data)
 {
     if(isTome)
-        return checkTomeReadable(mangaDB, data);
-    return checkChapterReadable(mangaDB, data);
+        return checkTomeReadable(projectDB, data);
+    return checkChapterReadable(projectDB, data);
 }
 
-void internalDeleteCT(PROJECT_DATA mangaDB, bool isTome, int selection)
+void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 {
     if(isTome)
-        internalDeleteTome(mangaDB, selection, true);
+        internalDeleteTome(projectDB, selection, true);
     else
-		internalDeleteChapitre(mangaDB, selection, true);
+		internalDeleteChapitre(projectDB, selection, true);
 }
 
 void releaseCTData(PROJECT_DATA data)

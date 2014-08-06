@@ -231,11 +231,11 @@ char* loadLargePrefs(char* flag)
 		}
         free(basePtr);
 	}
-	if (flag[0] == SETTINGS_MANGADB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
+	if (flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
         char temp[200], buffer[65000], buffer2[65100];
-        if(flag[0] == SETTINGS_MANGADB_FLAG[0])
+        if(flag[0] == SETTINGS_PROJECTDB_FLAG[0])
             strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
         else
 			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));

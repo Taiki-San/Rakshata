@@ -12,33 +12,33 @@
 
 #include "lecteur.h"
 
-int reader_getPosIntoContentIndex(PROJECT_DATA mangaDB, int currentSelection, bool isTome)
+int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome)
 {
 	uint curPosIntoStruct;
 		
 	if(!isTome)
     {
-        if(mangaDB.chapitresInstalled == NULL)
+        if(projectDB.chapitresInstalled == NULL)
         {
 			logR("Error: failed at loading available content for the project");
 			return -1;
         }
-        for(curPosIntoStruct = 0; mangaDB.chapitresInstalled[curPosIntoStruct] != VALEUR_FIN_STRUCT && mangaDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; projectDB.chapitresInstalled[curPosIntoStruct] != VALEUR_FIN_STRUCT && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
     }
     else
     {
-        if(mangaDB.tomesInstalled == NULL)
+        if(projectDB.tomesInstalled == NULL)
         {
 			logR("Error: failed at loading available content for the project");
 			return -1;
 		}
-        for(curPosIntoStruct = 0; mangaDB.tomesInstalled[curPosIntoStruct].ID != VALEUR_FIN_STRUCT && mangaDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; projectDB.tomesInstalled[curPosIntoStruct].ID != VALEUR_FIN_STRUCT && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
     }
 	
 	//On vérifie que l'entrée est valide
-	if(!checkReadable(mangaDB, isTome, isTome ? mangaDB.tomesInstalled[curPosIntoStruct].ID: currentSelection))
+	if(!checkReadable(projectDB, isTome, isTome ? projectDB.tomesInstalled[curPosIntoStruct].ID: currentSelection))
 	{
-		if(!reader_getNextReadableElement(mangaDB, isTome, &curPosIntoStruct))
+		if(!reader_getNextReadableElement(projectDB, isTome, &curPosIntoStruct))
 		{
 			logR("Error: failed at finding an acceptable project");
 			return -1;
@@ -48,16 +48,16 @@ int reader_getPosIntoContentIndex(PROJECT_DATA mangaDB, int currentSelection, bo
 	return curPosIntoStruct;
 }
 
-bool reader_isLastElem(PROJECT_DATA mangaDB, bool isTome, int currentSelection)
+bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, int currentSelection)
 {
-	if(isTome && mangaDB.tomesInstalled != NULL)
+	if(isTome && projectDB.tomesInstalled != NULL)
 	{
-		return currentSelection == mangaDB.tomesInstalled[mangaDB.nombreTomesInstalled-1].ID;
+		return currentSelection == projectDB.tomesInstalled[projectDB.nombreTomesInstalled-1].ID;
 	}
 	
-	else if(!isTome && mangaDB.chapitresInstalled == NULL)
+	else if(!isTome && projectDB.chapitresInstalled == NULL)
 		return true;
 	
 	//Else
-	return currentSelection == mangaDB.chapitresInstalled[mangaDB.nombreChapitreInstalled-1];
+	return currentSelection == projectDB.chapitresInstalled[projectDB.nombreChapitreInstalled-1];
 }

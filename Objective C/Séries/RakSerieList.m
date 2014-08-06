@@ -140,7 +140,7 @@
 
 - (void) dealloc
 {
-	freeMangaData(_cache);
+	freeProjectData(_cache);
 	[_mainList release];
 	[_data release];
 	

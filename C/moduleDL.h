@@ -176,14 +176,14 @@ char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length);
-DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* mangaDB, uint* nombreMangaTotal, char * state);
+DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProjectTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
 char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 bool getTomeDetails(DATA_LOADED *tomeDatas);
-int sortMangasToDownload(const void *a, const void *b);
+int sortProjectsToDownload(const void *a, const void *b);
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool MDLDownloadOver(bool reanimateOnly);
@@ -204,7 +204,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
 bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem);
 void MDLUpdateKillState(bool newState);
-bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *mangaDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
+bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
 
 /**Module2_paid.h**/
 bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uint length);

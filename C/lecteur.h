@@ -32,21 +32,21 @@ typedef struct data_lecture_tome
 
 /** lecteur_check_newElems.c **/
 
-uint checkNewElementInRepo(PROJECT_DATA *mangaDB, bool isTome, int CT);
+uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT);
 
 /** lecteur_loading.c **/
 
-bool reader_getNextReadableElement(PROJECT_DATA mangaDB, bool isTome, uint *currentPosIntoStructure);
-bool configFileLoader(PROJECT_DATA mangaDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
+bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure);
+bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
 char ** loadChapterConfigDat(char* input, int *nombrePage);
 void releaseDataReader(DATA_LECTURE *data);
 
-bool changeChapter(PROJECT_DATA* mangaDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
-bool changeChapterAllowed(PROJECT_DATA* mangaDB, bool isTome, int posIntoStruc);
+bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
+bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, int posIntoStruc);
 
 /**	lecteur_tool.c	**/
-int reader_getPosIntoContentIndex(PROJECT_DATA mangaDB, int currentSelection, bool isTome);
-bool reader_isLastElem(PROJECT_DATA mangaDB, bool isTome, int currentSelection);
+int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome);
+bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, int currentSelection);
 
 
 /*Mouvements*/

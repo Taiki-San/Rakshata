@@ -18,7 +18,7 @@
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
 //Options
-#define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their manga DB will be updated, so bad idea for now
+#define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
 //#define DELETE_REMOVED_PROJECT
 
 unsigned long alreadyRefreshed;
@@ -66,7 +66,7 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
 int getIndexOfTeam(char * URL);
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
 
-void freeMangaData(PROJECT_DATA* mangaDB);
+void freeProjectData(PROJECT_DATA* projectDB);
 
 //Searches
 PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context, bool installed);
@@ -82,12 +82,12 @@ void updateDatabase(bool forced);
 void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams);
 void updateRepo();
-int getUpdatedProjectOfTeam(char *buffer_manga, TEAMS_DATA* teams);
+int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams);
 void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd);
 void updateProjects();
 void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome);
 void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
-int databaseVersion(char* mangaDB);
+int databaseVersion(char* projectDB);
 
 /**DBRecent.c**/
 sqlite3* getPtrRecentDB();
