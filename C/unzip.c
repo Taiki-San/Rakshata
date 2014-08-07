@@ -217,28 +217,28 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         }
         else
         {
-            if (filename_inzip[0] && filename_inzip[i][strlen(filename_inzip[i])-1] != '/' && (i+1) < nombreFichiers)
+            if (filename_inzip[i][0] && filename_inzip[i][strlen(filename_inzip[i])-1] != '/' && i + 1 < nombreFichiers)
             {
                 if (unzGoToNextFile(uf) != UNZ_OK)
                     break;
             }
-            for(uint j = 0; j < 256; filename_inzip[i][j++] = 0);
+			memcpy(&filename_inzip[i], &filename_inzip[i+1], (nombreFichiers - i - 1) * sizeof(filename_inzip[0]));
+
+			nombreFichiers--;
+			i--;
         }
     }
 
     if(encrypted)
     {
         /*On va écrire les clées dans un config.enc
-          Pour ça, on va classer les clées avec la longueur des clées
-          il est un peu 3h du mat donc je vais pas m'attarder*/
+          Pour ça, on va classer les clées avec la longueur des clées, les nettoyer et les chiffrer*/
 		
         int nombreFichierDansConfigFile = 0;
         char **nomPage = NULL;
 		unsigned char temp[256], *hugeBuffer = NULL;
-
-        nombreFichiers--;
-
-        for(uint i = 0, j, k = 0; i < NOMBRE_PAGE_MAX; i++) //On vire les paths des noms de fichiers
+		
+		for(uint i = 0, j, k; i < nombreFichiers; i++) //On vire les paths des noms de fichiers
         {
             if(!filename_inzip[i][0])
                 continue;
@@ -247,14 +247,25 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
             for(; j > 0 && filename_inzip[i][j] != '/'; j--);
             if(j)
 			{
-				for(j++; filename_inzip[i][j] != 0 && j < 256; filename_inzip[i][k++] = filename_inzip[i][j++]);
-				for(; k < 256; filename_inzip[i][k++] = 0);
+				for(k = 0, j++; filename_inzip[i][j] != 0 && j < 256; filename_inzip[i][k++] = filename_inzip[i][j++]);
+				filename_inzip[i][k] = 0;
 			}
         }
 
+		for(uint i = 0; i < nombreFichiers; i++)
+		{
+			if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
+			{
+				memcpy(&filename_inzip[i], &filename_inzip[i+1], (nombreFichiers - i - 1) * sizeof(filename_inzip[0]));
+				memcpy(&pass[i], &pass[i+1], (nombreFichiers - i - 1) * sizeof(pass[0]));
+				nombreFichiers--;
+				break;
+			}
+		}
+		
         /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 du Ã  l'optimisation pour le lecteur
+        if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 due à l'optimisation pour le lecteur
         {
 #ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
@@ -268,38 +279,9 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
             ret_value = false;
             goto quit;
         }
-
-        for(uint i = 0; i < NOMBRE_PAGE_MAX; i++)
-		{
-			if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
-			{
-				for(uint j = 0; filename_inzip[i][j] && j < 256; filename_inzip[i][j++] = 0);
-				for(uint j = 0; j < SHA256_DIGEST_LENGTH; pass[i][j++] = 0);
-			}
-		}
-
-		nombreFichiers--;
-
-        for(uint j = 0, i = 0; i < NOMBRE_PAGE_MAX; i++, j++) //on consolide la liste des noms (fichiers invalides dégagés)
-        {
-            MajToMin(filename_inzip[i]);
-            if(filename_inzip[i][0] < ' ')//Fichier manquant
-            {
-                for(; filename_inzip[i][0] < ' ' && i < NOMBRE_PAGE_MAX; i++);
-
-				if(i >= NOMBRE_PAGE_MAX)
-                    break;
-				
-				MajToMin(filename_inzip[i]);
-                ustrcpy(filename_inzip[j], filename_inzip[i]);
-                crashTemp(filename_inzip[i], 256);
-                memcpy(pass[j], pass[i], SHA256_DIGEST_LENGTH);
-                crashTemp(pass[i], SHA256_DIGEST_LENGTH);
-                i--;
-            }
-        }
-
-        for(uint j,  i = 0; i <= nombreFichiers && filename_inzip[i][0] != 0; i++)
+		
+		//Classement
+		for(uint j, i = 0; i <= nombreFichiers && filename_inzip[i][0] != 0; i++)
         {
             MajToMin(nomPage[i]);
             for(j = 0; strcmp(nomPage[i], filename_inzip[j]) && filename_inzip[j][0] && j < nombreFichiers; j++);
@@ -318,7 +300,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         }
         free(nomPage);
 		
-        hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1) * (nombreFichiers + 1) + 15) * sizeof(unsigned char));
+		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1) * (nombreFichiers + 1) + 15) * sizeof(byte));
         if(hugeBuffer == NULL)
         {
 #ifdef DEV_VERSION
@@ -329,9 +311,8 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         sprintf((char *) hugeBuffer, "%d", nombreFichiers);
         for(uint i = 0, j = ustrlen(hugeBuffer); i <= nombreFichiers; i++) //Write config.enc
         {
-            int k = 0;
             hugeBuffer[j++] = ' ';
-            for(; k < SHA256_DIGEST_LENGTH; hugeBuffer[j++] = pass[i][k++]);
+            for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[j++] = pass[i][keyPos++]);
 			hugeBuffer[j] = 0;
         }
 
