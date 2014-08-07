@@ -52,9 +52,9 @@
 
 - (void) dealloc
 {
-	[_pause removeFromSuperview];		[_pause release];
-	[_read removeFromSuperview];		[_read release];
-	[_remove removeFromSuperview];		[_remove release];
+	[_pause removeFromSuperview];
+	[_read removeFromSuperview];
+	[_remove removeFromSuperview];
 	
 	[super dealloc];
 }
