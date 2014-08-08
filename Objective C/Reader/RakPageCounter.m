@@ -219,8 +219,7 @@
 	
 	if(gotoButtonContainer != nil)
 	{
-		RakButton * gotoButton = [[RakButton allocWithText:@"Go":NSZeroRect] autorelease];
-		[gotoButton sizeToFit];
+		RakButton * gotoButton = [[RakButton allocWithText:@"Go":gotoButtonContainer.bounds] autorelease];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
 		[gotoButtonContainer addSubview:gotoButton];
