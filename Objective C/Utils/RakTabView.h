@@ -57,6 +57,7 @@ enum {
 - (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superView : (byte) context;
 - (void) refreshLevelViewsAnimation : (NSView*) superView;
+- (void) fastAnimatedRefreshLevel : (NSView*) superView;
 - (void) refreshViewSize;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 

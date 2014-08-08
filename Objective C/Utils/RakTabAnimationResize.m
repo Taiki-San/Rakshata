@@ -10,11 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define ANIMATION_DURATION 0.2
-
 @implementation RakTabAnimationResize
 
-- (id) init : (NSArray*)views
+- (id) init : (NSArray*) views : (BOOL) fastAnimation
 {
 	self = [super init];
 	if(self != nil)
@@ -26,8 +24,9 @@
 				[validatedViews addObject:obj];
 		}];
 		
-		_views = [validatedViews copy];
+		_views = [[NSArray arrayWithArray:validatedViews] retain];
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
+		animationDuration = fastAnimation ? 0.1 : 0.2;
 	}
 	return self;
 }
@@ -57,7 +56,7 @@
 	
 	[NSAnimationContext beginGrouping];
 	
-	[[NSAnimationContext currentContext] setDuration:ANIMATION_DURATION];
+	[[NSAnimationContext currentContext] setDuration:animationDuration];
 	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[self cleanUpAnimation];
@@ -65,7 +64,7 @@
 	
 	[[[NSApp delegate] MDL] createFrame];
 
-	char pos = 0;
+	byte pos = 0;
 	for(currentView in _views)
 	{
 		[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:pos++] : nil];
@@ -111,6 +110,8 @@
 		
 		currentView->resizeAnimationCount--;
 	}
+	
+	[_views release];
 }
 
 @end

@@ -30,8 +30,11 @@
 	BOOL readerMode;
 	BOOL haveBasePos;
 	NSArray* _views;
+	
+	CGFloat animationDuration;
 }
-- (id) init : (NSArray*)views;
+
+- (id) init : (NSArray*) views : (BOOL) fastAnimation;
 - (void) setUpViews;
 - (void) performTo;
 - (void) performFromTo : (NSArray*) basePosition;

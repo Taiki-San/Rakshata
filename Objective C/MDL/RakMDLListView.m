@@ -331,23 +331,26 @@
 	if(wasDownloading)
 		MDLDownloadOver(false);
 	
-	NSView * view = self;
-	RakTableView * tableView = nil;
+	NSView * tableView = self;
 
-	while (view != nil && [view class] != [MDL class])
-	{
-		if([view class] == [RakTableView class])
-			tableView = (RakTableView*) view;
-		view = view.superview;
-	}
+	while (tableView != nil && [tableView class] != [RakTableView class])
+		tableView = tableView.superview;
 	
 	[self retain];
 	
 	if(tableView != nil)
-		[tableView reloadData];
+		[(RakTableView*) tableView reloadData];
 
-	if(view != nil)
-		[(MDL*)view setFrame:[(MDL*) view createFrame]];
+	MDL * tabMDL = [[NSApp delegate] MDL];
+	if(tabMDL != nil)
+	{
+		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
+		
+		if(!NSEqualRects(lastFrame, newFrame))
+		{
+			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
+		}
+	}
 	
 	[self release];
 }

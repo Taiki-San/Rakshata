@@ -229,11 +229,14 @@
 - (void) resizeAnimation
 {
 	NSRect frame = [self createFrame];
-
-	[self.animator setFrame:frame];
-	[self setFrameInternal: frame : YES];
-	[bottomBar resizeAnimation:frame];
-	[foregroundView resizeAnimation:frame];
+	
+	if ([self wouldFrameChange:frame])
+	{
+		[self.animator setFrame:frame];
+		[self setFrameInternal: frame : YES];
+		[bottomBar resizeAnimation:frame];
+		[foregroundView resizeAnimation:frame];
+	}
 }
 
 - (void) setFrame:(NSRect)frameRect

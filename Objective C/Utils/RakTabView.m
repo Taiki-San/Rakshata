@@ -173,10 +173,15 @@
 {
 	[self.window makeFirstResponder:[self.window initialFirstResponder]];
 	
-	NSArray *subView = [superView subviews];
-	
 	//Variable to set up the animation
-	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: subView] autorelease];
+	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: [superView subviews] : NO] autorelease];
+	[animation setUpViews];
+	[animation performTo];
+}
+
+- (void) fastAnimatedRefreshLevel : (NSView*) superView
+{
+	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: [superView subviews] : YES] autorelease];
 	[animation setUpViews];
 	[animation performTo];
 }
