@@ -117,7 +117,7 @@ void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t
 
 	decryptPageWorker(&data);
 
-	while (jobIsDone);
+	while (jobIsDone)	{ usleep(250);	}
 }
 
 static bool craftedOnce = false;

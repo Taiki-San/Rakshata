@@ -513,7 +513,9 @@ enum
 	
 	if(switchType != READER_ETAT_DEFAULT)
 	{
+		MUTEX_LOCK(cacheMutex);
 		mainScroller.selectedIndex = _data.pageCourante;
+		MUTEX_UNLOCK(cacheMutex);
 	}
 	
 	previousMove = switchType;
