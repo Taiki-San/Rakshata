@@ -853,7 +853,7 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 	
 	path = malloc(strlen(dataLecteur->path[0]) + 60);
 	if(path != NULL)
-        snprintf(path, strlen(dataLecteur->path[0]) + 60, "%s/config.enc", dataLecteur->path[0]);
+        snprintf(path, strlen(dataLecteur->path[0]) + 60, "%s/"DRM_FILE, dataLecteur->path[0]);
     else
         return;
 	

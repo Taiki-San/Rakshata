@@ -100,6 +100,7 @@
 
 /*Settings*/
 #define SECURE_DATABASE "secure.enc"
+#define DRM_FILE	".config.enc"
 #define SETTINGS_FILE "settings"
 #define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr!s36~8713ue68"
 #define SETTINGS_EMAIL_FLAG "E"

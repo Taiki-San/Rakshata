@@ -328,7 +328,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 			internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
 
             crashTemp(temp, 256);
-            snprintf(pathToConfigFile, strlen(path) + 50, "%s/config.enc", path);
+            snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
             _AESEncrypt(hash, hugeBuffer, pathToConfigFile, INPUT_IN_MEMORY, 1);
             crashTemp(hash, SHA256_DIGEST_LENGTH);
             crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*(nombreFichiers+1) + 15); //On écrase pour que ça soit plus chiant à lire

@@ -229,7 +229,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
     size_t size, sizeDBPass;
 
-	snprintf(path, sizeof(path), "%s/config.enc", pathRoot);
+	snprintf(path, sizeof(path), "%s/"DRM_FILE, pathRoot);
 	
 	uint pathPageCopyLength = ustrlen(pathPage) + 5;
 	pathPageCopy = malloc(pathPageCopyLength);
