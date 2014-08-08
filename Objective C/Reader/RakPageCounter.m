@@ -205,7 +205,7 @@
 	_maxPage = maxPage;
 	[Prefs getCurrentTheme:self];
 	
-	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, _anchor.frame.size.height) : YES];
 }
 
 - (void) setupView
