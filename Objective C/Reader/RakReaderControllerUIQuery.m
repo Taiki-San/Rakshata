@@ -46,6 +46,7 @@
 	
 	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]] autorelease];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+	[contentText setAlignment:NSCenterTextAlignment];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
@@ -59,28 +60,6 @@
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	[self addSubview:buttonRemind];
-}
-
-//Colors
-
-- (NSColor *) popoverBorderColor
-{
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
-}
-
-- (NSColor *) popoverArrowColor
-{
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
-}
-
-- (NSColor *) borderColor
-{
-	return [Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil];
-}
-
-- (NSColor *) backgroundColor
-{
-	return 	[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
 }
 
 //Toolbox

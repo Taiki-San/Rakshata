@@ -178,7 +178,7 @@ void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int i = 0, hostNotReached = 0;
-    char temp[TAILLE_BUFFER], bufferDL[100];
+	char temp[TAILLE_BUFFER], bufferDL[100] = {0};
 
     MUTEX_LOCK(mutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;

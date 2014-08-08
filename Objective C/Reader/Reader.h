@@ -73,6 +73,7 @@
 
 #import "RakReaderControllerUIQuery.h"
 #import "RakPageCounter.h"
+#import "RakFavsInfo.h"
 #import "RakDeleteConfirm.h"
 #import "RakReaderBottomBar.h"
 #import "RakPage.h"

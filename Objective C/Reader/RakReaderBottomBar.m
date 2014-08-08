@@ -115,7 +115,7 @@
 {
 	NSView * superview = self.superview;
 	
-	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :superView :@selector(switchFavs)];
+	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(switchFavs)];
 	fullscreen = [RakButton allocForReader:self :@"fullscreen" : RB_STATE_STANDARD :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
 	
 	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
@@ -138,6 +138,22 @@
 {
 	isFaved = isNewStatedFaved;
 	[favorite setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
+}
+
+- (void) switchFavs
+{
+	if(!isFaved)
+	{
+		void * ptr;
+		free(ptr = loadLargePrefs(SETTINGS_FAVORITE_FLAG));
+		
+		if(ptr == NULL)
+		{
+			[[[[RakFavsInfo alloc] autoInit] autorelease] launchPopover : favorite];
+		}
+	}
+	
+	[(Reader*) self.superview switchFavs];
 }
 
 - (void) reactToDelete

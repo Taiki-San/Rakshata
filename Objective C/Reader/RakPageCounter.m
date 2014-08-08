@@ -253,28 +253,6 @@
 	internalPopover.closesWhenPopoverResignsKey = YES;
 }
 
-//Colors
-
-- (NSColor *) popoverBorderColor
-{
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
-}
-
-- (NSColor *) popoverArrowColor
-{
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
-}
-
-- (NSColor *) borderColor
-{
-	return [Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil];
-}
-
-- (NSColor *) backgroundColor
-{
-	return 	[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
-}
-
 //Toolbox
 
 - (void) locationUpdated : (NSRect) frame : (BOOL) animated
