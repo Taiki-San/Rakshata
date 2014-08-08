@@ -10,10 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#ifdef DEV_VERSION
-//	#define PERF_ANALYSIS
-#endif
-
 enum
 {
 	COM_CT_SELEC,
@@ -448,21 +444,7 @@ enum
 		return nil;
 	}
 	
-#ifdef PERF_ANALYSIS
-	struct timeval t1, t2;
-    double elapsedTime;
-	gettimeofday(&t1, NULL);
-#endif
-	
 	IMG_DATA * dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
-	
-#ifdef PERF_ANALYSIS
-	gettimeofday(&t2, NULL);
-	
-    // compute and print the elapsed time in millisec
-    elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000 + (t2.tv_usec - t1.tv_usec) / 1000.0;
-	NSLog(@"Loading time: %f", elapsedTime);
-#endif
 	
 	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
 	{
