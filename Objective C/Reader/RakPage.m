@@ -1138,27 +1138,6 @@ enum
 
 @end
 
-//Shitty class only used because performSelectorOnMainThread want a class, an not two perfectly fine arguments
 @implementation RakArgumentToRefreshAlert
-
-- (void) setData : (PROJECT_DATA *) newData
-{
-	data = newData;
-}
-
-- (PROJECT_DATA *) data
-{
-	return data;
-}
-
-- (void) setNbElem : (uint) newData
-{
-	nbElem = newData;
-}
-
-- (uint) nbElem
-{
-	return nbElem;
-}
-
 @end
+

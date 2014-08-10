@@ -11,15 +11,9 @@
  ********************************************************************************************/
 
 @interface RakArgumentToRefreshAlert : NSObject
-{
-	PROJECT_DATA * data;
-	uint nbElem;
-}
 
-- (void) setData : (PROJECT_DATA *) newData;
-- (PROJECT_DATA *) data;
-- (void) setNbElem : (uint) newData;
-- (uint) nbElem;
+@property PROJECT_DATA * data;
+@property uint nbElem;
 
 @end
 
