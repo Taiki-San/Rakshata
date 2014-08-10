@@ -147,7 +147,7 @@
 {
 	[super setFrame:frameRect];
 
-	BOOL oldVal;
+	BOOL oldVal = NO;
 	NSView * view;
 	NSArray * subviews = self.subviews;
 	NSInteger i, count = [subviews count];

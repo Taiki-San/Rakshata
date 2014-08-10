@@ -41,11 +41,17 @@
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getTableViewFrame:frame]];
 	_tableView = [[RakTableView alloc] initWithFrame:scrollView.contentView.bounds];
+
 	if(scrollView == nil || _tableView == nil)
 	{
 		NSLog(@"Luna refused to allocate this memory to us D:");
 		[self release];
 		return;
+	}
+	else
+	{
+		_tableView.wantsLayer = NO;
+		_tableView.autoresizesSubviews = NO;
 	}
 	
 	[scrollView setDocumentView:_tableView];
@@ -261,6 +267,16 @@
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
 	return data == NULL ? 0 : amountData;
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+	NSTableRowView * output = [[NSTableRowView alloc] init];
+	
+	output.autoresizesSubviews = NO;
+	output.wantsLayer = NO;
+	
+	return output;
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row

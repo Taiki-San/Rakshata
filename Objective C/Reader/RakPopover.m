@@ -107,7 +107,7 @@
 	
 	[self setupView];
 	
-	popover = [[RakPopoverWrapper alloc] init:self];
+	popover = [[[RakPopoverWrapper alloc] init:self] retain];
 	popover.anchor = anchor;
 	popover.direction = [self arrowDirection];
 	

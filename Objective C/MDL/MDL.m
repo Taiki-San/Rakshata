@@ -169,7 +169,7 @@
 			maximumSize.origin.y = -contentHeight;
 		}
 		
-		else if(maximumSize.size.height >= contentHeight - 2)
+		else if(maximumSize.size.height > contentHeight - 1)
 		{
 			maximumSize.size.height = contentHeight;
 			

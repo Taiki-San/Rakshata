@@ -31,8 +31,10 @@
 		else
 			previousStatus = MDL_CODE_UNUSED;
 		
+		self.autoresizesSubviews = NO;
+		
 		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
-		if(requestName != nil)		{		[requestName sizeToFit];		[self addSubview:requestName];		}
+		if(requestName != nil)		{		[requestName sizeToFit];		[requestName setFrameSize:NSMakeSize(self.bounds.size.width - 50, requestName.bounds.size.height)];		[self addSubview:requestName];		}
 		
 		statusText = [[RakText alloc] initWithText:self.bounds : @"Installation" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
@@ -237,7 +239,10 @@
 		return;
 	
 	[requestName setStringValue : [self getName]];
+	[requestName setNeedsDisplay : YES];
+
 	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
+	[_pause setNeedsDisplay : YES];
 	
 	previousStatus = MDL_CODE_UNUSED;
 	
