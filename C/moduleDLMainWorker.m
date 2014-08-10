@@ -64,7 +64,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 			if(requestID == RID_UPDATE_STATUS_REANIMATE)
 			{
 				uint i;
-				for(i = 0; i < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DL; i++);
+				for(i = 0; i < *nbElemTotal && *((*status)[(*IDToPosition)[i]]) != MDL_CODE_DL; i++);
 				
 				if(i == *nbElemTotal)
 					requestID = RID_UPDATE_STATUS;
