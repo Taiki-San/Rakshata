@@ -451,10 +451,8 @@ enum
 #ifdef DEV_VERSION
 		updateChapter(&_data, _currentElem);
 		dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
-		
-		if(dataPage == (void*) 0x1)
-			dataPage = NULL;
 #endif
+		return NULL;
 	}
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
@@ -482,11 +480,12 @@ enum
 		return NULL;
 	}
 
-	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
 	
+	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
+		
 	free(dataPage->data);
 	free(dataPage);
-
+	
 	return output;
 }
 
