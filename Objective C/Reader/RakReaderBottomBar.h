@@ -51,7 +51,7 @@
 - (void) releaseIcons;
 
 - (short) numberIconsInBar;
-- (void) loadIcons : (Reader*) superView;
+- (void) loadIcons : (Reader*) superview;
 - (void) favsUpdated : (BOOL) isNewStatedFaved;
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width;
 

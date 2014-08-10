@@ -111,10 +111,8 @@
 	return 7;
 }
 
-- (void) loadIcons : (Reader*) superView
+- (void) loadIcons : (Reader*) superview
 {
-	NSView * superview = self.superview;
-	
 	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(switchFavs)];
 	fullscreen = [RakButton allocForReader:self :@"fullscreen" : RB_STATE_STANDARD :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
 	

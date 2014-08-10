@@ -71,7 +71,6 @@
 			[output setAction:selectorToCall];
 		}
 		
-		
 		if(superView != nil)
 		{
 			//Set origin
