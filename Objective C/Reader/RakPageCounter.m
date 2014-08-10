@@ -206,6 +206,8 @@
 	[Prefs getCurrentTheme:self];
 	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, _anchor.frame.size.height) : YES];
+	
+	[self.window makeFirstResponder : textField];
 }
 
 - (void) setupView
