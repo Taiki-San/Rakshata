@@ -85,7 +85,9 @@
 	if([view respondsToSelector:@selector(resizeAnimation)])
 	{
 		[view resizeAnimation];
-		view->resizeAnimationCount++;
+		
+		if([view isKindOfClass:[RakTabView class]])
+			view->resizeAnimationCount++;
 	}
 }
 
@@ -99,7 +101,7 @@
 		
 		//resizeAnimationCount == 1 => dernière animation en cours
 		//Post mortem: no idea why, de mémoire un crash mais repose sur un contexte qu'on utilise plus pour l'instant, donc on laisse en place pour l'instant
-		if(currentView->resizeAnimationCount == 1)
+		if([currentView isKindOfClass:[RakTabView class]] && currentView->resizeAnimationCount == 1)
 		{
 			if(haveBasePos)	//si on a qqchose à libérer
 				[[currentView.animations objectForKey:@"frame"] release];
@@ -108,7 +110,8 @@
 		if([currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
 			[currentView refreshDataAfterAnimation];
 		
-		currentView->resizeAnimationCount--;
+		if([currentView isKindOfClass:[RakTabView class]])
+			currentView->resizeAnimationCount--;
 	}
 	
 	[_views release];
