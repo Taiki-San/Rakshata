@@ -134,7 +134,7 @@ int setupBDDCache()
 			teamList = internalTeamList;
 			lengthTeam = nombreTeam;
 			
-			isUpdated = calloc(nombreProject, sizeof(char));
+			isUpdated = calloc(nombreProject + 1, sizeof(char));
 			if(isUpdated)
 				lengthIsUpdated = nombreProject;
 		}

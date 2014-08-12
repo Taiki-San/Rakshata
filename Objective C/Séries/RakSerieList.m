@@ -20,6 +20,9 @@
 	{
 		initializationStage = INIT_FIRST_STAGE;
 		[Prefs getCurrentTheme:self];		//register
+		
+		rootItems[0] = rootItems[1] = rootItems[2] = nil;
+		
 		[self loadContent];
 		[self restoreState:state];
 		
@@ -146,10 +149,13 @@
 	
 	[content removeFromSuperview];	[content release];
 	
-	for (char i = 0; i < 3; i++)
+	for (byte i = 0; i < 3; i++)
 	{
 		if(rootItems[i] != nil)
+		{
 			[rootItems[i] release];
+			break;
+		}
 	}
 	
 	[super dealloc];
@@ -162,11 +168,15 @@
 	[content setFrame:frame];
 	
 	[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
-	char i;
-	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
-
-	if(i < 3)
-		[rootItems[i] resetMainListHeight];
+	
+	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
+	{
+		if([rootItems[i] isMainList])
+		{
+			[rootItems[i] resetMainListHeight];
+			break;
+		}
+	}
 	
 	[content reloadData];
 }
@@ -182,11 +192,14 @@
 	
 	[_mainList resizeAnimation:[self getMainListFrame:frame:content]];
 
-	char i;
-	for(i = 0; i < 3 && rootItems[i] != nil && ![rootItems[i] isMainList]; i++);
-	
-	if(i < 3)
-		[rootItems[i] resetMainListHeight];
+	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
+	{
+		if([rootItems[i] isMainList])
+		{
+			[rootItems[i] resetMainListHeight];
+			break;
+		}
+	}
 	
 	[content reloadData];
 }
@@ -299,7 +312,7 @@
 		[items[i] release];
 	}
 	
-	for(int i = 0; i < 6; i++)
+	for(byte i = 0; i < 6; i++)
 		free(collector[i]);
 	
 	[rootItems[posMainList] release];
