@@ -362,8 +362,11 @@
 			[element setDrawsBackground:NO];
 			[element setNeedsDisplay];
 		}
-		[tableView deselectRow:selectedIndex];
-		selectedIndex = -1;
+		
+		CGFloat rowToDeselect = selectedIndex;
+		selectedIndex = -1;	//Prevent any notification
+		
+		[tableView deselectRow : rowToDeselect];
 	}
 }
 

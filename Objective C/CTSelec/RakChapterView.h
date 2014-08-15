@@ -18,6 +18,8 @@
 	RakCTCoreContentView * tableViewControllerVolume;
 }
 
+@property BOOL dontNotify;
+
 - (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 
 - (void) resizeAnimation : (NSRect) frameRect;

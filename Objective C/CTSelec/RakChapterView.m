@@ -345,6 +345,9 @@
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index
 {
+	if(self.dontNotify)
+		return;
+		
 	int ID;
 	
 	if(isTome && index < data.nombreTomesInstalled)
@@ -354,7 +357,11 @@
 	else
 		return;
 	
+	self.dontNotify = YES;
+
 	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
+	
+	self.dontNotify = NO;
 }
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
