@@ -95,9 +95,7 @@
 	
 	//Ladies and gentlemen, your eyes are about to burn
 	
-	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[[[NSData alloc] initWithBytes:&project length:sizeof(project)] autorelease],
-																	[NSNumber numberWithBool:isTome], [NSNumber numberWithInt:element], nil]
-								forKeys:[NSArray arrayWithObjects:@"project", @"selectionType",@"selection",nil]];
+	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[[NSData alloc] initWithBytes:&project length:sizeof(project)] autorelease], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"RakNotificationContextUpdated" object:sender userInfo:userInfo];
 	
 	return YES;
@@ -132,7 +130,7 @@
 		else
 			element = VALEUR_FIN_STRUCT;
 		
-		[self updateContextNotification:project :isTome :element];
+		[self updateContextNotification : project : isTome : element];
 	}
 }
 
