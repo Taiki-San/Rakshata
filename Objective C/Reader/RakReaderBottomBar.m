@@ -135,7 +135,7 @@
 - (void) favsUpdated : (BOOL) isNewStatedFaved
 {
 	isFaved = isNewStatedFaved;
-	[favorite setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
+	[favorite.cell setState: isNewStatedFaved ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
 }
 
 - (void) switchFavs

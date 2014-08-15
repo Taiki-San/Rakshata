@@ -279,7 +279,7 @@
 	return self;
 }
 
-- (void) setState:(NSInteger)value
+- (void) setState : (NSInteger)value
 {
 	notAvailable = false;
 	
