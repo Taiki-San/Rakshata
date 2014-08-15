@@ -275,7 +275,7 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	viewFrame.origin.x = viewFrame.origin.y = 0;
+	viewFrame.origin = NSZeroPoint;
 	return viewFrame;
 }
 
@@ -446,11 +446,7 @@
 	NSRect frame;
 	NSSize sizeSuperView = [superView frame].size;
 	
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_FRAME] :&frame];
-	frame.origin.x *= sizeSuperView.width / 100.0f;
-	frame.origin.y *= sizeSuperView.height / 100.0f;
-	frame.size.width *= sizeSuperView.width / 100.0f;
-	frame.size.height *= sizeSuperView.height / 100.0f;
+	[Prefs getPref : [self getCodePref:CONVERT_CODE_FRAME] : &frame : &sizeSuperView];
 	
 	if([self class] != [MDL class])
 	{
@@ -478,8 +474,9 @@
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
 {
 	CGFloat prefData;
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH]:&prefData];
-	return widthWindow * prefData / 100;
+	NSSize size = NSMakeSize(widthWindow, 0);
+	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH] : &prefData : &size];
+	return prefData;
 }
 
 #pragma mark - Wait for login

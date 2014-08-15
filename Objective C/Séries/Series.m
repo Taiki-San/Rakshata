@@ -270,8 +270,9 @@
 {
 	CGFloat var;
 	NSRect frame = viewFrame;
-	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&var];
-	frame.size.width = var * self.superview.frame.size.width / 100;
+	NSSize svSize = self.superview.frame.size;
+	
+	[Prefs getPref:PREFS_GET_TAB_CT_POSX : &(frame.size.width) : &svSize];
 	frame.origin.x = 0;
 	
 	MDL * tabMDL = [self getMDL : YES];

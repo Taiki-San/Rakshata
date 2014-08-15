@@ -183,19 +183,17 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	CGFloat posCT, posReader, MDLHeight;
 	NSRect frame = viewFrame;
-	[Prefs getPref:PREFS_GET_TAB_CT_POSX :&posCT];
-	[Prefs getPref:PREFS_GET_TAB_READER_POSX :&posReader];
-	frame.size.width = (posReader - posCT) * self.superview.frame.size.width / 100;
-	
+	NSSize svSize = self.superview.bounds.size;
+	[Prefs getPref:PREFS_GET_TAB_READER_POSX : &frame.size.width : &svSize];
+	frame.size.width -= _lastFrame.origin.x;
 	frame.origin.x = 0;
 	
 	MDL * tabMDL = [self getMDL : YES];
 	
 	if(tabMDL != nil)
 	{
-		MDLHeight = [tabMDL lastFrame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
+		CGFloat MDLHeight = [tabMDL lastFrame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
 		
 		if(MDLHeight > 0)
 		{
@@ -259,14 +257,8 @@
 - (NSRect) getFrameOfNextTab
 {
 	NSRect output;
-	[Prefs getPref:PREFS_GET_TAB_READER_FRAME :&output];
-	
-	NSSize sizeSuperView = [self.superview frame].size;
-	
-	output.origin.x *= sizeSuperView.width / 100.0f;
-	output.origin.y *= sizeSuperView.height / 100.0f;
-	output.size.width *= sizeSuperView.width / 100.0f;
-	output.size.height *= sizeSuperView.height / 100.0f;
+	NSSize sizeSuperview = self.superview.bounds.size;
+	[Prefs getPref : PREFS_GET_TAB_READER_FRAME : &output : &sizeSuperview];
 	
 	return output;
 }

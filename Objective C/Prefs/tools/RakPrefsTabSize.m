@@ -21,7 +21,7 @@
 
 - (NSRect) getDefaultFocusSerie
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 
 	output.size.width = TAB_SERIE_ACTIVE;
 	output.size.height = 100;
@@ -31,7 +31,7 @@
 
 - (NSRect) getDefaultFocusCT
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.size.width = TAB_SERIE_INACTIVE_CT;
 	output.size.height = 100;
@@ -47,7 +47,7 @@
 
 - (NSRect) getDefaultFocusReader
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.y = 0;
 	output.size.width = TAB_SERIE_INACTIVE_LECTEUR;
@@ -68,7 +68,7 @@
 
 - (NSRect) getDefaultFocusReaderDFMode
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.y = 0;
 	output.size.width = TAB_SERIE_INACTIVE_DISTRACTION_FREE;
@@ -108,7 +108,7 @@
 
 - (NSRect) getDefaultFocusSerie
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_ACTIVE;
 	output.size.width = TAB_CT_INACTIVE_SERIE;
@@ -119,7 +119,7 @@
 
 - (NSRect) getDefaultFocusCT
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_CT;
 	output.size.width = TAB_CT_ACTIVE;
@@ -130,7 +130,7 @@
 
 - (NSRect) getDefaultFocusReaderOneCollapsed
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.y =  0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR;
@@ -147,7 +147,7 @@
 
 - (NSRect) getDefaultFocusReaderAllCollapsed
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.y =  0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
@@ -159,7 +159,7 @@
 
 - (NSRect) getDefaultFocusReaderMainTab
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.y = 0;
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
@@ -171,7 +171,7 @@
 
 - (NSRect) getDefaultFocusReaderDFMode
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_DISTRACTION_FREE;
 	output.size.width = TAB_CT_INACTIVE_DISTRACTION_FREE;
@@ -211,7 +211,7 @@
 
 - (NSRect) getDefaultFocusSerie
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_ACTIVE+TAB_CT_INACTIVE_SERIE;
 	output.size.width = TAB_READER_INACTIVE_SERIE;
@@ -222,7 +222,7 @@
 
 - (NSRect) getDefaultFocusCT
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_CT+TAB_CT_ACTIVE;
 	output.size.width = TAB_READER_INACTIVE_CT;
@@ -233,10 +233,9 @@
 
 - (NSRect) getDefaultFocusReaderOneCollapsed
 {
-	NSRect output;
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED + TAB_CT_INACTIVE_LECTEUR;
-	output.origin.y = 0;
 	output.size.width = TAB_READER_ACTIVE_PARTIAL;
 	output.size.height = 100;
 	
@@ -255,7 +254,7 @@
 
 - (NSRect) getDefaultFocusReaderMainTab
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED + TAB_CT_INACTIVE_LECTEUR_REDUCED;
 	output.size.width = TAB_READER_ACTIVE;
@@ -266,7 +265,7 @@
 
 - (NSRect) getDefaultFocusReaderDFMode
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_SERIE_INACTIVE_DISTRACTION_FREE + TAB_CT_INACTIVE_DISTRACTION_FREE;
 	output.size.width = TAB_READER_ACTIVE_DISTRACTION_FREE;

@@ -16,6 +16,8 @@ Prefs* prefsCache;
 static uint mainThread = GUI_THREAD_READER;				//Default : GUI_THREAD_SERIES
 static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
 
+#define READERMODE_MAX_WIDTH_WHEN_INACTIVE 320
+
 @implementation Prefs
 
 + (void) initCache
@@ -303,14 +305,22 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 
 + (void) getPref : (int) requestID : (void*) outputContainer
 {
+	[self getPref : requestID : outputContainer : NULL];
+}
+
++ (void) getPref : (int) requestID : (void*) outputContainer : (void*) additionalData
+{
 	if(prefsCache == NULL)
 		[self initCache];
 	
-	[prefsCache getPrefInternal : requestID : outputContainer];
+	[prefsCache getPrefInternal : requestID : outputContainer : additionalData];
 }
 
-- (void) getPrefInternal : (int) requestID : (void*) outputContainer
+- (void) getPrefInternal : (int) requestID : (void*) outputContainer : (void*) additionalData
 {
+	if (outputContainer == NULL)
+		return;
+	
 	switch(requestID)
 	{
 		case PREFS_GET_MAIN_THREAD:
@@ -323,21 +333,33 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width;
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width * (additionalData == NULL ? 1 : (((NSSize*) additionalData)->width / 100));
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread != GUI_THREAD_SERIES ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
+			
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width;
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width * (additionalData == NULL ? 1 : (((NSSize*) additionalData)->width / 100));
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread != GUI_THREAD_CT ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
+			
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_WIDTH:
 		{
-			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].size.width;
+			[self getPrefInternal: PREFS_GET_TAB_READER_POSX : outputContainer : additionalData];
+			*(CGFloat *) outputContainer = (*(NSSize *) additionalData).width - *(CGFloat *) outputContainer;
+			
+			if(*(CGFloat *) outputContainer < 0)
+				*(CGFloat *) outputContainer = 0;
+			
 			break;
 		}
 			
@@ -345,6 +367,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.width;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread == GUI_THREAD_READER ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
+
 			break;
 		}
 			
@@ -352,6 +378,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.height;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -359,6 +389,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.height;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -366,6 +400,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].size.height;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 		
@@ -373,6 +411,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.height;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -380,20 +422,66 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.x;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
+			
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
-			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.x;
+			if(mainThread == GUI_THREAD_READER && stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
+			{
+				[self getPrefInternal:PREFS_GET_TAB_SERIE_WIDTH :outputContainer :additionalData];
+			}
+			else
+			{
+				CGFloat * output = outputContainer;
+				*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.x;
+				
+				if(additionalData != NULL)
+					*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
+			}
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_POSX:
 		{
+			//Classical code
 			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.x;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
+			
+			//Reader position is highly dependant of the width of either SER/CT tabs, we need to check we're not impacted if they were maximized
+			if(mainThread == GUI_THREAD_READER && stateTabsReader & STATE_READER_NONE_COLLAPSED)
+			{
+				CGFloat data, percentage;
+				
+				if(stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
+				{
+					[self getPrefInternal:PREFS_GET_TAB_SERIE_WIDTH : &data : additionalData];
+					if(data == READERMODE_MAX_WIDTH_WHEN_INACTIVE)	//Maximized
+					{
+						[self getPrefInternal : PREFS_GET_TAB_SERIE_WIDTH : &percentage : NULL];	//We get the real percentage
+						*output -= percToSize(percentage, (*(NSSize *) additionalData).width, -1) - data;	//We reduced our base position by the diff between the real width, and the minimized
+					}
+				}
+				
+				//The same code for CT tab
+				if(stateTabsReader & STATE_READER_TAB_CT_FOCUS)
+				{
+					[self getPrefInternal:PREFS_GET_TAB_CT_WIDTH : &data : additionalData];
+					if(data == READERMODE_MAX_WIDTH_WHEN_INACTIVE)	//Maximized
+					{
+						[self getPrefInternal : PREFS_GET_TAB_CT_WIDTH : &percentage : NULL];
+						*output -= percToSize(percentage, (*(NSSize *) additionalData).width, -1) - data;
+					}
+				}
+			}
+			
 			break;
 		}
 			
@@ -401,6 +489,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
+			
 			break;
 		}
 			
@@ -408,6 +500,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.y;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -415,6 +511,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.y;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -422,6 +522,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.y;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -429,6 +533,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat * output = outputContainer;
 			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.y;
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -436,6 +544,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat *output = outputContainer;
 			*output = [tabSerieSize getFooterHeight];
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -443,6 +555,10 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat *output = outputContainer;
 			*output = [tabCTSize getFooterHeight];
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
@@ -450,34 +566,56 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		{
 			CGFloat *output = outputContainer;
 			*output = [tabReaderSize getFooterHeight];
+			
+			if(additionalData != NULL)
+				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
+			
 			break;
 		}
 			
 		case PREFS_GET_TAB_SERIE_FRAME:
 		{
-			NSRect * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabSerieSize getDataTab: mainThread : stateTabsReader];
+			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
+			
+			if(mainThread == GUI_THREAD_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
+				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
+
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_FRAME:
 		{
-			NSRect * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabCTSize getDataTab: mainThread : stateTabsReader];
+			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
+			
+			if(mainThread == GUI_THREAD_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
+			{
+				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
+				[self getPrefInternal : PREFS_GET_TAB_CT_POSX : &(((NSRect *)outputContainer)->origin.x) : additionalData];
+			}
+			
 			break;
 		}
 			
 		case PREFS_GET_TAB_READER_FRAME:
 		{
-			NSRect * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabReaderSize getDataTab: mainThread : stateTabsReader];
+			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
+			
+			[self getPrefInternal: PREFS_GET_TAB_READER_POSX : &(((NSRect *) outputContainer)->origin.x) : additionalData];
+			
 			break;
 		}
 			
 		case PREFS_GET_MDL_FRAME:
 		{
-			NSRect * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader];
+			NSRect data = [prefsPosMDL getData: mainThread : stateTabsReader];
+			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
+			
+			if(mainThread == GUI_THREAD_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
+				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
+			
 			break;
 		}
 			

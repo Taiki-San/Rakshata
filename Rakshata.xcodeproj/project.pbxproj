@@ -13,6 +13,7 @@
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
 		B6033BD218E4617000750226 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCD18E4617000750226 /* libssl.a */; };
 		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
+		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
 		B61585F81912591F004F1791 /* moduleDLMainWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = B61585F71912591F004F1791 /* moduleDLMainWorker.m */; };
 		B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = B61585F9191280DF004F1791 /* moduleDLWorker.c */; };
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
@@ -149,6 +150,8 @@
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
 		B6033BCD18E4617000750226 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
 		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
+		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
+		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
 		B61585F71912591F004F1791 /* moduleDLMainWorker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = moduleDLMainWorker.m; path = C/moduleDLMainWorker.m; sourceTree = "<group>"; };
 		B61585F9191280DF004F1791 /* moduleDLWorker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = moduleDLWorker.c; path = C/moduleDLWorker.c; sourceTree = "<group>"; };
 		B61A790818E389F300D8E0E0 /* RakText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakText.h; path = Utils/RakText.h; sourceTree = "<group>"; };
@@ -381,6 +384,8 @@
 				B6EB260819845E2100D678B3 /* RakAuthController.m */,
 				B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */,
 				B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */,
+				B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */,
+				B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */,
 				B62F1E6318DE4EB0005FF4A5 /* RakResPath.h */,
 				B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */,
 			);
@@ -946,6 +951,7 @@
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,
 				B67845A519634C83007372C7 /* crc32.c in Sources */,
+				B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */,
 				B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */,
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,

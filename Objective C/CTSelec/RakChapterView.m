@@ -172,7 +172,7 @@
 	if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
-		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
+		buttons = [[[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]] retain];
 		
 		data = getCopyOfProjectData(project);
 		
