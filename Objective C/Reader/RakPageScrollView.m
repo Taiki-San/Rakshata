@@ -109,10 +109,10 @@
 	}
 }
 
-- (void)dealloc
+- (void) dealloc
 {
 	[animationTimer invalidate];
-	[animationTimer release];
+	[animationTimer dealloc];
 	[super dealloc];
 }
 
