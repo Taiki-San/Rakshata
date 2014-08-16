@@ -41,9 +41,14 @@ enum
 		return;
 	}
 	
+	initialAnimation = YES;
+	
 	self.view.wantsLayer = YES;
 	self.view.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :self].CGColor;
 	self.view.layer.cornerRadius = 4;
+	
+	baseHeight = self.view.bounds.size.height;
+	baseContainerHeight = container.bounds.size.height;
 	
 	currentMode = AUTH_MODE_DEFAULT;
 	self.postProcessing = false;
@@ -89,11 +94,6 @@ enum
 
 - (void) wakePassUp
 {
-	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
-	{
-		NSLog(@"WUT");
-	}
-	
 	passInput.wantCustomBorder = YES;
 	passInput.currentStatus = AUTH_STATE_NONE;
 	
@@ -101,11 +101,6 @@ enum
 		[passInput setNeedsDisplay:YES];
 	else
 		[passInput performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:YES];
-	
-	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
-	{
-		NSLog(@"WUT");
-	}
 }
 
 - (void) validEmail : (BOOL) newAccount : (uint) session
@@ -113,30 +108,45 @@ enum
 	//For now, we assume we start from an empty state
 	NSRect frame;
 	
-	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
-	{
-		NSLog(@"WUT");
-	}
-	
 	[NSAnimationContext beginGrouping];
-	
 	[[NSAnimationContext currentContext] setDuration:0.2f];
 	
-	if(container.bounds.origin.y == NAN || container.bounds.origin.x == NAN)
+	if (initialAnimation)	//We remove the placeholder
 	{
-		NSLog(@"WUT");
+		frame = footerPlaceholder.frame;
+		frame.origin.y = -frame.size.height;
+		[footerPlaceholder.animator setFrame:frame];
+		[footerPlaceholder.animator setAlphaValue:0];
+		initialAnimation = NO;
 	}
-
-	//We remove the placeholder
-	frame = footerPlaceholder.frame;
-	frame.origin.y = -frame.size.height;
-	[footerPlaceholder.animator setFrame:frame];
-	[footerPlaceholder.animator setAlphaValue:0];
+	else if(newAccount && currentMode == AUTH_MODE_LOGIN)
+		[self animateLogin : NO];
+	
+	else if(!newAccount && currentMode == AUTH_MODE_NEW_ACCOUNT)
+		[self animationSignup : NO];
 	
 	if(newAccount)
+	{
 		[self animationSignup : YES];
+		
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+			[self postAnimationWorkSignup:YES];
+
+			if(currentMode == AUTH_MODE_LOGIN)
+				[self postAnimationWorkLogin:NO];
+		}];
+	}
 	else
+	{
 		[self animateLogin : YES];
+
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+			[self postAnimationWorkLogin:YES];
+			
+			if(currentMode == AUTH_MODE_LOGIN)
+				[self postAnimationWorkSignup:NO];
+		}];
+	}
 	
 	[NSAnimationContext endGrouping];
 	
@@ -275,12 +285,12 @@ enum
 	else if(confirm.isHidden)
 		[confirm setHidden:NO];
 	
+	NSRect frame = self.view.frame;
 	if(appear)
 	{
 		//Resize main view
-		NSRect frame = self.view.frame;
-		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, frame.size.height +  51)];
-		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, container.bounds.size.height + 51)];
+		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, baseHeight +  51)];
+		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight + 51)];
 		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
 		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
@@ -296,6 +306,25 @@ enum
 		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
 		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
 	}
+	else
+	{
+		[self.view.animator setFrame : NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2, frame.size.width, baseHeight)];
+		[container.animator setFrame : NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight)];
+
+		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
+		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
+		
+		[accept setFrameOrigin:NSMakePoint(NSMaxX(terms.frame) + 10, accept.frame.origin.y)];
+		[accept.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, accept.frame.origin.y)];
+		
+		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)];
+		[terms.animator setFrameOrigin:NSMakePoint(-terms.bounds.size.width, terms.frame.origin.y)];
+		
+		[confirm setAlphaValue:1];
+		[confirm.animator setAlphaValue:0];
+		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
+		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
+	}
 }
 
 - (void) postAnimationWorkSignup : (BOOL) appear
@@ -304,6 +333,7 @@ enum
 	{
 		[privacy setHidden:YES];
 		[terms setHidden:YES];
+		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)];
 		[accept setHidden:YES];
 		[confirm setHidden:YES];
 	}
@@ -313,18 +343,12 @@ enum
 {
 	NSRect frame = container.bounds;	frame.origin = NSZeroPoint;
 	
-	if(container.bounds.origin.y == NAN)
-		NSLog(@"WUT");
-	
 	if(forgottenPass == nil)
 	{
 		forgottenPass = [[RakButton allocWithText:@"Mot de passe oublié?" : frame] autorelease];
 		[forgottenPass sizeToFit];
 		[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
 	
-		if(container.bounds.origin.y == NAN)
-			NSLog(@"WUT");
-		
 		[container addSubview:forgottenPass];
 	}
 	else if(forgottenPass.isHidden)

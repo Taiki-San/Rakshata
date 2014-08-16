@@ -68,6 +68,10 @@
 	
 	//Data
 	byte currentMode;
+	BOOL initialAnimation;
+	
+	CGFloat baseHeight;
+	CGFloat baseContainerHeight;
 }
 
 @property BOOL postProcessing;
