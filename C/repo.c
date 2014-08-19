@@ -171,10 +171,9 @@ char * getPathForTeam(char *URLRepo)
 	if(URLRepo == NULL)
 		return NULL;
 	
-	size_t length;
 	unsigned char URLRepoHash[SHA256_DIGEST_LENGTH];
 	sha256((unsigned char*)URLRepo, URLRepoHash);
-	return base64_encode(URLRepoHash, SHA256_DIGEST_LENGTH, &length);
+	return base64_encode(URLRepoHash, SHA256_DIGEST_LENGTH, NULL);
 }
 
 int defineTypeRepo(char *URL)

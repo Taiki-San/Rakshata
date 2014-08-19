@@ -33,12 +33,6 @@ enum
 
 	[self updateEvnt];
 	
-/*	if(mainScroller.arrangedObjects[_data.pageCourante])
-	{
-		[self failure];
-		return NO;
-	}*/
-	
 	return YES;
 }
 
@@ -232,6 +226,24 @@ enum
             break;
 		}
 			
+		case NSPageUpFunctionKey:
+		{
+			if(_scrollView != nil)
+				[self updateScrollerAfterResize: _scrollView : NSZeroSize];
+			
+			break;
+		}
+			
+		case NSPageDownFunctionKey:
+		{
+			if(_scrollView != nil)
+			{
+				[_scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
+				[_scrollView.contentView scrollToPoint:NSMakePoint([[_scrollView contentView] bounds].origin.x, 0)];
+			}
+			break;
+		}
+			
 		default:
 		{
 			const char * string = [character cStringUsingEncoding:NSASCIIStringEncoding];
@@ -280,6 +292,12 @@ enum
 				case 's':
 				{
 					[self moveSliderY:-PAGE_MOVE];
+					break;
+				}
+					
+				case ' ':
+				{
+					[self jumpPressed : isModPressed];
 					break;
 				}
 					
@@ -747,6 +765,12 @@ enum
 	
 	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
 	[scrollView.contentView scrollToPoint:sliderStart];
+}
+
+- (void) jumpPressed : (BOOL) withShift
+{
+#warning "lol"
+	CGFloat height = self.bounds.size.height;
 }
 
 #pragma mark - Cache generation

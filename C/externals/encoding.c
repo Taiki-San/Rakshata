@@ -95,24 +95,25 @@ static int mod_table[] = {0, 2, 1};
 char * base64_encode_wchar(const wchar_t *data, size_t input_length, size_t *output_length)
 {
 	unsigned char utf8Data[4 * input_length];
-	size_t length = wchar_to_utf8(data, input_length, (char*) utf8Data, sizeof(utf8Data), 0);
+	size_t length = wchar_to_utf8(data, input_length, (char *) utf8Data, sizeof(utf8Data), 0);
 	return base64_encode(utf8Data, length, output_length);
 }
 
 char *base64_encode(const unsigned char *data, size_t input_length, size_t *output_length)
 {	
-	*output_length = 4 * ((input_length + 2) / 3);
+	size_t local_output_length = 4 * ((input_length + 2) / 3);
 	
-	char *encoded_data = malloc(*output_length + 1);
+	char *encoded_data = malloc(local_output_length + 1);
 	if (encoded_data == NULL) return NULL;
 	
-	for (int i = 0, j = 0; i < input_length;) {
+	for (int i = 0, j = 0; i < input_length;)
+	{
 		
-		uint32_t octet_a = i < input_length ? (unsigned char)data[i++] : 0;
-		uint32_t octet_b = i < input_length ? (unsigned char)data[i++] : 0;
-		uint32_t octet_c = i < input_length ? (unsigned char)data[i++] : 0;
+		uint32_t byteA = i < input_length ? (unsigned char)data[i++] : 0;
+		uint32_t byteB = i < input_length ? (unsigned char)data[i++] : 0;
+		uint32_t byteC = i < input_length ? (unsigned char)data[i++] : 0;
 		
-		uint32_t triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
+		uint32_t triple = (byteA << 0x10) + (byteB << 0x08) + byteC;
 		
 		encoded_data[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
 		encoded_data[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
@@ -120,10 +121,14 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 		encoded_data[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
 	}
 	
-	for (int i = 0; i < mod_table[input_length % 3]; i++)
-		encoded_data[*output_length - 1 - i] = '=';
+	for (byte i = 0; i < mod_table[input_length % 3]; i++)
+		encoded_data[local_output_length - 1 - i] = '=';
 	
-	encoded_data[*output_length] = 0;
+	encoded_data[local_output_length] = 0;
+	
+	if(output_length != NULL)
+		*output_length = local_output_length;
+	
 	return encoded_data;
 }
 

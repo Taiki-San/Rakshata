@@ -155,10 +155,12 @@ bool loadEmailProfile()
 			{
 				memcpy(COMPTE_PRINCIPAL_MAIL, &(prefs[start]), delta);
 				COMPTE_PRINCIPAL_MAIL[delta] = 0;
-				free(prefs);
 				
 				if(validateEmail(COMPTE_PRINCIPAL_MAIL))
+				{
+					free(prefs);
 					return true;
+				}
 			}
         }
 		free(prefs);

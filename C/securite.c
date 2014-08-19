@@ -255,15 +255,17 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 
     if((retValue = getMasterKey(key)) == GMK_RETVAL_INTERNALERROR)
     {
-        logR("Huge fail: database corrupted\n");
+		free(pathPageCopy);
 		return IMGLOAD_NODATA;
     }
 	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_MAIL)
 	{
+		free(pathPageCopy);
 		return IMGLOAD_NEED_CREDENTIALS_MAIL;
 	}
 	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_PASS)
 	{
+		free(pathPageCopy);
 		return IMGLOAD_NEED_CREDENTIALS_PASS;
 	}
 

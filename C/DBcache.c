@@ -97,7 +97,7 @@ int setupBDDCache()
 				
 				for(teamPos = 0; teamPos < nombreTeam && internalTeamList[teamPos] != projects[pos].team; teamPos++);	//Get team index
 				
-				if(encodedTeam[teamPos] != NULL)
+				if(teamPos < nombreTeam && encodedTeam[teamPos] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
 					if(!addToCache(request, projects[pos], teamPos, checkDirExist(pathInstall)))
