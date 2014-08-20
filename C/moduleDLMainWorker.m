@@ -212,7 +212,17 @@ void MDLQuit()
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 }
 
+void MDLInstallOver(uint selfCode, void * UIInstance)
+{
+	MDLCommunicateOC(REQ_VIEW_INSTALL_OVER, selfCode, UIInstance);
+}
+
 void MDLUpdateIcons(uint selfCode, void * UIInstance)
+{
+	MDLCommunicateOC(REQ_VIEW_UPDATE_ICONS, selfCode, UIInstance);
+}
+
+void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
 {
 	if(UIInstance != NULL)
 		[(RakMDLListView*) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
@@ -222,7 +232,14 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance)
 		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
 		if(todoList != NULL && *todoList != NULL && (*todoList)->rowViewResponsible != NULL)
 		{
-			[(RakMDLListView *) (*todoList)->rowViewResponsible performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:YES];
+			SEL selector = nil;
+			
+			if(request == REQ_VIEW_UPDATE_ICONS)
+				selector = @selector(updateContext);
+			else if(request == REQ_VIEW_INSTALL_OVER)
+				selector = @selector(installOver);
+			
+			[(RakMDLListView *) (*todoList)->rowViewResponsible performSelectorOnMainThread:selector withObject:nil waitUntilDone:YES];
 		}
 	}
 }

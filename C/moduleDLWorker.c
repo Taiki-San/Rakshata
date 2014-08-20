@@ -187,9 +187,10 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         for(i = 0; i < nombreElement; i++)
         {
             if(didElemGotDownloaded[i] && (listDL[i] == NULL || !MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
-											isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
-											isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
-											isTome ? input.todoList->listChapitreOfTome[i].subFolder : false, (input.todoList->listChapitreOfTome != NULL && i == nombreElement-1))))
+																	isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
+																	isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
+																	isTome ? input.todoList->listChapitreOfTome[i].subFolder : false,
+																	(input.todoList->listChapitreOfTome != NULL && i == nombreElement-1)) ) )
 			{
                 error++;
             }
@@ -219,6 +220,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
 			addRecentEntry(*(input.todoList->datas), true);
 			setInstalled(input.todoList->datas->cacheDBID);
+			MDLInstallOver(input.selfCode, input.todoList->rowViewResponsible);
 		}
 	}
 	

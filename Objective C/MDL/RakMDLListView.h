@@ -43,5 +43,6 @@
 - (void) sendRemove;
 - (void) sendPause;
 - (void) sendRead;
+- (void) installOver;
 
 @end

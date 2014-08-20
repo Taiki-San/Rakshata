@@ -396,4 +396,9 @@
 	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 }
 
+- (void) installOver
+{
+	[[[NSApp delegate] CT] refreshCT : YES :(*todoList)->datas->cacheDBID];
+}
+
 @end

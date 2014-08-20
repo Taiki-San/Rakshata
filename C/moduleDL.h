@@ -53,6 +53,11 @@ enum requestIDCodes {
 	RID_UPDATE_INSTALL			= 3
 };
 
+enum MDLRequestView {
+	REQ_VIEW_UPDATE_ICONS = 0,
+	REQ_VIEW_INSTALL_OVER = 1
+};
+
 enum downloadStatusCodes {
 	DLSTATUS_SUSPENDED	= 0x0f,
 	DLSTATUS_ABORT		= 0xf0
@@ -189,7 +194,9 @@ bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 bool MDLDownloadOver(bool reanimateOnly);
 bool MDLStartNextInstallation();
 void MDLQuit();
+void MDLInstallOver(uint selfCode, void * UIInstance);
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
+void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
 void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTab);
