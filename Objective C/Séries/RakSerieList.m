@@ -711,18 +711,25 @@
 
 - (void) RakSeriesNeedUpdateContent : (NSNotification *) notification
 {
-	NSNumber *requestObj = [notification.userInfo objectForKey:@"request"];
-	
-	if(requestObj == nil)
-		return;
-	
-	int request = [requestObj intValue];
-	
-	if(request == RELOAD_RECENT || request == RELOAD_BOTH)
-		[self reloadContent];
-	
-	if(request == RELOAD_MAINLIST || request == RELOAD_BOTH)
-		[self reloadMainList];
+	if([NSThread isMainThread])
+	{
+		NSNumber *requestObj = [notification.userInfo objectForKey:@"request"];
+		
+		if(requestObj == nil)
+			return;
+		
+		int request = [requestObj intValue];
+		
+		if(request == RELOAD_RECENT || request == RELOAD_BOTH)
+			[self reloadContent];
+		
+		if(request == RELOAD_MAINLIST || request == RELOAD_BOTH)
+			[self reloadMainList];
+	}
+	else
+	{
+		[self performSelectorOnMainThread:@selector(RakSeriesNeedUpdateContent:) withObject:notification waitUntilDone:YES];
+	}
 }
 
 #pragma mark - Drag'n Drop
