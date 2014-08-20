@@ -247,6 +247,22 @@
 	if(_data == nil)
 		return;
 	
+	else if([_data count])	//Empty _data if required
+	{
+		[_data compact];
+		
+		uint8_t nbElem = [_data count];
+		
+		if(nbElem)
+		{
+			while (nbElem-- > 0)
+			{
+				free([_data pointerAtIndex:nbElem]);
+				[_data removePointerAtIndex:nbElem];
+			}
+		}
+	}
+	
 	//Recent read
 	uint8_t i = 0;
 	PROJECT_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
@@ -280,43 +296,48 @@
 
 - (void) reloadContent
 {
-	void * collector[6];
-	for(int i = 0; i < 6; i++)
-		collector[i] = [_data pointerAtIndex:i];
-	
-	RakSerieListItem *items[3] = {rootItems[0], rootItems[1], rootItems[2]};
-	
 	uint8_t posMainList = 0;
-	for(; posMainList < 2 && rootItems[posMainList+1] != nil; rootItems[posMainList++] = nil);
-	[rootItems[posMainList] retain];
-	[_mainList retain];
+	for(; posMainList < 3 && ![rootItems[posMainList] isMainList]; posMainList++);
 	
 	[self loadRecentFromDB];
 	
-	if((_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) != posMainList)
+	//We remove/add sections, to reflect what we just loaded
+	uint8_t data[2] = {_nbElemReadDisplayed, _nbElemDLDisplayed};
+	SEL actions[2] = {@selector(isRecentList), @selector(isDLList)};
+	
+	for(uint8_t currentPos = 0, i = 0; i < 2; i++)
 	{
-		int8_t newPos = (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0);
-		rootItems[newPos] = rootItems[posMainList];
-		rootItems[posMainList] = nil;
-		posMainList = newPos;
+		BOOL isExpected = (BOOL) [rootItems[currentPos] performSelector:actions[i] withObject:nil];
+		
+		//Test moves
+		if(data[i] != 0 && !isExpected)
+		{
+			//	[ D (cP) | G (pML) | 0 ], posMainList < 2 (or rootItems full)
+			memmove(&(rootItems[currentPos+1]), &(rootItems[currentPos]), (posMainList - currentPos) * sizeof(rootItems));
+			rootItems[currentPos++] = nil;
+		}
+		else if(data[i] == 0 && isExpected)
+		{
+			//	[ G (cP) | D (cP + 1) | ? ]
+			[rootItems[currentPos] release];
+			memmove(&(rootItems[currentPos]), &(rootItems[currentPos+1]), (posMainList + 1 - currentPos) * sizeof(rootItems));
+			rootItems[posMainList--] = nil;
+		}
+		else
+			currentPos++;
 	}
 	
+	//We get the system to complete the holes we introduced
 	initializationStage = INIT_FIRST_STAGE;
 	[content reloadData];
 	initializationStage = INIT_OVER;
-	
+
+	//We expand items wanted so
 	for(uint8_t i = 0; i < posMainList; i++)
 	{
-		if(items[i] != nil && [items[i] isExpanded])
+		if(rootItems[i] != nil && [rootItems[i] isExpanded])
 			[content expandItem:rootItems[i]];
-		[items[i] release];
 	}
-	
-	for(byte i = 0; i < 6; i++)
-		free(collector[i]);
-	
-	[rootItems[posMainList] release];
-	[_mainList release];
 }
 
 - (void) reloadMainList
