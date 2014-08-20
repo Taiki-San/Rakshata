@@ -208,11 +208,10 @@
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
 {
-	CGFloat posReader;
 	NSSize svSize = self.superview.frame.size;
 	NSRect frame = viewFrame;
 	
-	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &posReader : &svSize];
+	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &(frame.size.width) : &svSize];
 	frame.origin.x = frame.origin.y = 0;
 	
 	return frame;
