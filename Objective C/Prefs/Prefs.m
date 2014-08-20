@@ -613,8 +613,15 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			NSRect data = [prefsPosMDL getData: mainThread : stateTabsReader];
 			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
 			
-			if(mainThread == GUI_THREAD_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
-				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
+			if(mainThread == GUI_THREAD_READER && additionalData != NULL)
+			{
+				CGFloat maxWidth = 0;
+				[self getPrefInternal: PREFS_GET_TAB_READER_POSX : &maxWidth : additionalData];
+				maxWidth = MAX(READERMODE_MAX_WIDTH_WHEN_INACTIVE, maxWidth);
+				
+				if(((NSRect*) outputContainer)->size.width < maxWidth)
+					((NSRect*) outputContainer)->size.width = maxWidth;
+			}
 			
 			break;
 		}
