@@ -378,10 +378,10 @@
 - (NSRect) createFrameWithSuperView : (NSRect) superviewRect
 {
 	NSSize size = superviewRect.size;
-	return NSMakeRect([self getRequestedViewPosX:size.width], [self getRequestedViewPosY:size.height], [self getRequestedViewWidth:size.width], [self getRequestedViewHeight:size.height]);
+	return NSMakeRect([self getRequestedViewPosX : size.width], [self getRequestedViewPosY : size.height], [self getRequestedViewWidth:size.width], [self getRequestedViewHeight:size.height]);
 }
 
-- (CGFloat) getRequestedViewPosX:(CGFloat) widthWindow
+- (CGFloat) getRequestedViewPosX : (CGFloat) widthWindow
 {
 	return widthWindow / 2 - [self getRequestedViewWidth : widthWindow] / 2;
 }

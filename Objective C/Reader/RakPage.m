@@ -345,20 +345,25 @@ enum
 	[self changeChapter:false];
 }
 
-- (void) moveSliderX : (int) move
+//Did the scroll succeed, or were we alredy at the bottom
+- (BOOL) moveSliderX : (int) move
 {
 	if(_scrollView == nil || !_scrollView.pageTooLarge)
-		return;
+		return NO;
 	
 	NSPoint point = [[_scrollView contentView] bounds].origin;
 	
-	if(move < 0 && point.x < -move)
+	if(move < 0 && point.x == 0)
+		return NO;
+	else if(move < 0 && point.x < -move)
 		point.x = 0;
 	
 	else if(move > 0)
 	{
 		CGFloat basePos = [_scrollView.documentView frame].size.width - _scrollView.frame.size.width;
-		if(point.x > basePos - move)
+		if(point.x == basePos)
+			return NO;
+		else if(point.x > basePos - move)
 			point.x = basePos;
 		else
 			point.x += move;
@@ -367,22 +372,27 @@ enum
 		point.x += move;
 	
 	[_scrollView.contentView scrollToPoint:point];
+	return YES;
 }
 
-- (void) moveSliderY : (int) move
+- (BOOL) moveSliderY : (int) move
 {
 	if(_scrollView == nil || !_scrollView.pageTooHigh)
-		return;
+		return NO;
 	
-	NSPoint point = [[_scrollView contentView] bounds].origin;
+	NSPoint point = _scrollView.contentView.bounds.origin;
 	
-	if(move < 0 && point.y < -move)
+	if(move < 0 && point.y == 0)
+		return NO;
+	else if(move < 0 && point.y < -move)
 		point.y = 0;
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = [_scrollView.documentView frame].size.height - _scrollView.frame.size.height;
-		if(point.y > basePos - move)
+		CGFloat basePos = [_scrollView.documentView frame].size.height - _scrollView.bounds.size.height;
+		if(point.y == basePos)
+			return NO;
+		else if(point.y > basePos - move)
 			point.y = basePos;
 		else
 			point.y += move;
@@ -391,6 +401,7 @@ enum
 		point.y += move;
 	
 	[_scrollView.contentView scrollToPoint:point];
+	return YES;
 }
 
 - (void) setSliderPos : (NSPoint) newPos
@@ -769,8 +780,35 @@ enum
 
 - (void) jumpPressed : (BOOL) withShift
 {
-#warning "lol"
-	CGFloat height = self.bounds.size.height;
+	CGFloat height = self.bounds.size.height, delta = height - READER_PAGE_BOTTOM_BORDER;
+	
+	if(!withShift)
+		delta *= -1;
+	
+	if(![self moveSliderY : delta])
+	{
+		CGFloat width = self.bounds.size.width;
+		delta = width - 2 * READER_BORDURE_VERT_PAGE;
+		
+		if(withShift ^ !_project.japaneseOrder)
+			delta *= -1;
+		
+		
+		if(![self moveSliderX:delta])
+		{
+			if(withShift)
+				[self prevPage];
+			else
+				[self nextPage];
+		}
+		else
+		{
+			height = [_scrollView.documentView frame].size.height;
+			if(withShift)	height *= -1;
+
+			[self moveSliderY : height];
+		}
+	}
 }
 
 #pragma mark - Cache generation

@@ -34,8 +34,8 @@
 - (void) prevPage;
 - (void) nextChapter;
 - (void) prevChapter;
-- (void) moveSliderX : (int) move;
-- (void) moveSliderY : (int) move;
+- (BOOL) moveSliderX : (int) move;
+- (BOOL) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
