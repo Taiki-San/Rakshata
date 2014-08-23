@@ -619,7 +619,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 				[self getPrefInternal: PREFS_GET_TAB_READER_POSX : &maxWidth : additionalData];
 				maxWidth = MAX(READERMODE_MAX_WIDTH_WHEN_INACTIVE, maxWidth);
 				
-				if(((NSRect*) outputContainer)->size.width < maxWidth)
+				if(((NSRect*) outputContainer)->size.width > maxWidth)
 					((NSRect*) outputContainer)->size.width = maxWidth;
 			}
 			

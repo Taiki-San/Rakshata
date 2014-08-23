@@ -442,7 +442,7 @@
 - (NSRect) createFrameWithSuperView : (NSView*) superView
 {
 	NSRect frame;
-	NSSize sizeSuperView = [superView frame].size;
+	NSSize sizeSuperView = superView.bounds.size;
 	
 	[Prefs getPref : [self getCodePref:CONVERT_CODE_FRAME] : &frame : &sizeSuperView];
 	
