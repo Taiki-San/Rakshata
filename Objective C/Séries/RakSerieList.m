@@ -312,26 +312,28 @@
 		//Test moves
 		if(data[i] != 0 && !isExpected)
 		{
-			//	[ D (cP) | G (pML) | 0 ], posMainList < 2 (or rootItems full)
-			memmove(&(rootItems[currentPos+1]), &(rootItems[currentPos]), (posMainList - currentPos) * sizeof(rootItems));
-			rootItems[currentPos++] = nil;
+			//We move the data (backward to prevent replicating the first element
+			for(uint8_t pos = ++posMainList; pos > currentPos; rootItems[pos] = rootItems[pos - 1], pos--);
+			
+			//We create the new item
+			rootItems[currentPos] = [[RakSerieListItem alloc] init : NULL : YES : i == 0 ? INIT_FIRST_STAGE : INIT_SECOND_STAGE : i == 0 ? _nbElemReadDisplayed : _nbElemDLDisplayed];
+			
+			//We animate the insertion
+			[content insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:currentPos++] inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
 		}
 		else if(data[i] == 0 && isExpected)
 		{
-			//	[ G (cP) | D (cP + 1) | ? ]
 			[rootItems[currentPos] release];
-			memmove(&(rootItems[currentPos]), &(rootItems[currentPos+1]), (posMainList + 1 - currentPos) * sizeof(rootItems));
+			
+			for(uint8_t pos = currentPos; pos < posMainList; rootItems[pos] = rootItems[pos + 1], pos++);
 			rootItems[posMainList--] = nil;
+			
+			[content removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:currentPos] inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
 		}
-		else
+		else if(data[i] != 0)
 			currentPos++;
 	}
 	
-	//We get the system to complete the holes we introduced
-	initializationStage = INIT_FIRST_STAGE;
-	[content reloadData];
-	initializationStage = INIT_OVER;
-
 	//We expand items wanted so
 	for(uint8_t i = 0; i < posMainList; i++)
 	{
@@ -359,21 +361,21 @@
 	{
 		if(_nbElemReadDisplayed)
 			return _nbElemReadDisplayed;
-		initializationStage++;
+		[self goToNextInitStage];
 	}
 	
 	if(initializationStage == INIT_SECOND_STAGE)
 	{
 		if(_nbElemDLDisplayed)
 			return _nbElemDLDisplayed;
-		initializationStage++;
+		[self goToNextInitStage];
 	}
 	
 	if(initializationStage == INIT_THIRD_STAGE)
 	{
 		if(_sizeCache)
 			return 1;
-		initializationStage++;
+		[self goToNextInitStage];
 	}
 	
 	return 0;
@@ -455,7 +457,7 @@
 			rootItems[index] = [[RakSerieListItem alloc] init : NULL : YES : initializationStage : nbChildren];
 			
 			if(initializationStage != INIT_OVER)
-				initializationStage++;
+				[self goToNextInitStage];
 		}
 		
 		output = rootItems[index];
