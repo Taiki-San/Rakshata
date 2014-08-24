@@ -68,7 +68,7 @@
 					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
-					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : self.frame.size.height - backButton.frame.origin.y -  backButton.frame.size.height] : *project : isTome : context];
+					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
 					free(project);
 					
 				} while (0);
@@ -90,16 +90,14 @@
 
 - (void) noContent
 {
-	long context[4] = {-1, -1, -1, -1};
-	PROJECT_DATA *projectData = getCopyCache(RDB_LOADALL | SORT_NAME, NULL);
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y] : projectData[21] : false : context];
+
 }
 
 - (void) dealloc
 {
 	[backButton removeFromSuperview];	[backButton release];	backButton = nil;
 	
-	[coreView removeFromSuperview];		[coreView release];		coreView = nil;
+	if(coreView != nil)	{	[coreView removeFromSuperview];		[coreView release];		coreView = nil;		}
 	
 	[super dealloc];
 }
@@ -161,6 +159,7 @@
 - (NSString *) byebye
 {
 	NSString * string;
+	
 	if(coreView == nil || (string = [coreView getContextToGTFO]) == nil)
 	{
 		return [super byebye];
@@ -211,11 +210,11 @@
 
 #pragma mark - Self code used in reader mode
 
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY
+- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY
 {
 	CGFloat previousHeight = frame.size.height;
 	
-	frame.size.height -= 2 * (frame.size.height - backButtonY) - backButton.frame.size.height + CT_READERMODE_BOTTOMBAR_WIDTH;
+	frame.size.height -= backButtonLowestY + RBB_TOP_BORDURE + CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 	frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
 	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
@@ -236,7 +235,10 @@
 		
 		frameRect.origin.x = frameRect.origin.y = 0;
 		[backButton setFrame:frameRect];
-		[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : frameRect.size.height - backButton.frame.origin.y -  backButton.frame.size.height]];
+		if (coreView != nil)
+		{
+			[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
+		}
 	}
 }
 
@@ -250,7 +252,11 @@
 
 		frame.origin.x = frame.origin.y = 0;
 		[backButton resizeAnimation:frame];
-		[coreView resizeAnimation:[self calculateContentViewSize : frame : frame.size.height - RBB_TOP_BORDURE - RBB_BUTTON_HEIGHT]];
+
+		if(coreView)
+		{
+			[coreView resizeAnimation:[self calculateContentViewSize : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
+		}
 	}
 }
 
@@ -295,7 +301,15 @@
 
 				if(newProject.cacheDBID == project.cacheDBID)
 				{
-					[coreView updateContext:newProject];
+					if(coreView != nil)
+						[coreView updateContext:newProject];
+					else
+					{
+						coreView = [[[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}] autorelease];
+						
+						if(coreView != nil)
+							[self addSubview:coreView];
+					}
 					
 					//Coreview en fait aussi une copie, on doit donc release cette version
 					releaseCTData(newProject);

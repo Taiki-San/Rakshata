@@ -23,7 +23,7 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonY;
+- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY;
 
 - (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
