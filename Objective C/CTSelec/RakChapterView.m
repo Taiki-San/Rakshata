@@ -135,7 +135,10 @@
 	}
 	
 	if(coreView != nil)
-		[coreView updateContext:data];
+	{
+		if(![coreView updateContext:data])
+			coreView = nil;
+	}
 	else
 	{
 		coreView = [[RakCTContentTabView alloc] initWithProject : data : false : [self bounds] : (long [4]) {-1, -1, -1, -1}];
@@ -290,7 +293,9 @@
 {
 	NSLog(@"Got crappy data D:");
 	[buttons removeFromSuperview];
-	[self release];
+	
+	if(self.superview != nil)
+		[self removeFromSuperview];
 }
 
 - (NSString *) getContextToGTFO
@@ -416,7 +421,7 @@
 	}
 }
 
-- (void) updateContext : (PROJECT_DATA) newData
+- (BOOL) updateContext : (PROJECT_DATA) newData
 {
 	//Some danger of TOCTOU around here, mutexes would be great
 	
@@ -447,6 +452,7 @@
 		tableViewControllerVolume.hidden = YES;
 
 		[self failure];
+		return NO;
 	}
 	
 	//Update views, create them if required
@@ -463,7 +469,9 @@
 		[buttons setEnabled:YES forSegment:0];
 	}
 	else
+	{
 		[buttons setEnabled:NO forSegment:0];
+	}
 
 	if(data.nombreTomesInstalled)
 	{
@@ -478,7 +486,9 @@
 		[buttons setEnabled:YES forSegment:1];
 	}
 	else
+	{
 		[buttons setEnabled:NO forSegment:1];
+	}
 	
 	BOOL isTome = [buttons selectedSegment] == 1;
 	
@@ -499,6 +509,8 @@
 			[tableViewControllerChapter setHidden:YES];
 		[buttons setSelectedSegment:1];
 	}
+	
+	return YES;
 }
 
 @end

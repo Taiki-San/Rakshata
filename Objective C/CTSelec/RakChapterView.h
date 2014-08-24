@@ -32,7 +32,7 @@
 
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
-- (void) updateContext : (PROJECT_DATA) newData;
+- (BOOL) updateContext : (PROJECT_DATA) newData;
 
 @end
 
