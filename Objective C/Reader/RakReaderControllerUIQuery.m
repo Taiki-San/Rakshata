@@ -99,8 +99,20 @@
 
 - (void) buttonClicked : (RakQuerySegmentedControl*) sender
 {
+	BOOL output = NO;
+	
 	if([sender selectedSegment] == 0)
+	{
+		output = YES;
 		[self confirmed];
+	}
+	
+	if(_remind)
+		[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_AUTODL : output];
+	else
+		[RakPrefsRemindPopover removeValueReminded : PREFS_REMIND_AUTODL];
+
+	
 	[popover closePopover];
 }
 

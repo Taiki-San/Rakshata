@@ -115,8 +115,17 @@
 
 - (void) buttonClicked : (RakQuerySegmentedControl*) sender
 {
+	BOOL output = NO;
 	if([sender selectedSegment] == 0)
+	{
 		[_receiver deleteElement];
+		output = YES;
+	}
+	
+	if(_remind)
+		[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_DELETE : output];
+	else
+		[RakPrefsRemindPopover removeValueReminded : PREFS_REMIND_DELETE];
 	
 	[popover closePopover];
 }

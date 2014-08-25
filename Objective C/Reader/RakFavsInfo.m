@@ -24,6 +24,8 @@
 	[Prefs getCurrentTheme:self];
 	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+	
+	[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_FAVS : YES];
 }
 
 - (void) setupView

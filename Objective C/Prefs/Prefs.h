@@ -129,3 +129,5 @@ enum FONT_REQUEST {
 #include "prefsSetters.h"
 #include "prefsMagic.h"
 #import "PrefsUI.h"
+#import "RakPrefsRemindPopover.h"
+
