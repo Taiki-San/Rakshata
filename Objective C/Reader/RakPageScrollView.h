@@ -23,7 +23,7 @@
 
 @end
 
-@interface RakGifImageView : NSImageView
+@interface RakImageView : NSImageView
 {
 	NSBitmapImageRep *data;
 	NSTimer *animationTimer;

@@ -30,6 +30,7 @@
 	
 	NSPageController * mainScroller;
 	NSImage * loadingPlaceholder;
+	NSImage * loadingFailedPlaceholder;
 	
 	MUTEX_VAR cacheMutex;
 	uint cacheSession;

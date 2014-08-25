@@ -62,6 +62,8 @@
 		B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36718F9E92F001D1F8E /* RakWindow.m */; };
 		B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
 		B6A2C44219958FA6007D9DEB /* RakFavsInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */; };
+		B6ABCAE719AAB1FA000929D0 /* failed_loading.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ABCAE519AAB1FA000929D0 /* failed_loading.png */; };
+		B6ABCAE819AAB1FA000929D0 /* failed_loading@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ABCAE619AAB1FA000929D0 /* failed_loading@2x.png */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
@@ -244,6 +246,8 @@
 		B6A1F59C1975684100A3AACD /* RakPageScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageScrollView.m; path = Reader/RakPageScrollView.m; sourceTree = "<group>"; };
 		B6A2C44019958FA6007D9DEB /* RakFavsInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakFavsInfo.h; path = Reader/RakFavsInfo.h; sourceTree = "<group>"; };
 		B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakFavsInfo.m; path = Reader/RakFavsInfo.m; sourceTree = "<group>"; };
+		B6ABCAE519AAB1FA000929D0 /* failed_loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = failed_loading.png; sourceTree = "<group>"; };
+		B6ABCAE619AAB1FA000929D0 /* failed_loading@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "failed_loading@2x.png"; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
 		B6B46DAE18FB34FE00EB1FE6 /* RakList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakList.h; path = Utils/RakList.h; sourceTree = "<group>"; };
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -686,6 +690,8 @@
 			isa = PBXGroup;
 			children = (
 				B6BAD72F198D22DF00447A7D /* loading.gif */,
+				B6ABCAE519AAB1FA000929D0 /* failed_loading.png */,
+				B6ABCAE619AAB1FA000929D0 /* failed_loading@2x.png */,
 				B6EDE77318B02BCC00DB3AFC /* Credits.rtf */,
 				B66ED1971949EC20002A333F /* theme 1 */,
 				B6E09697197C9DCE0084873C /* theme 2 */,
@@ -896,11 +902,13 @@
 				B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */,
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,
+				B6ABCAE819AAB1FA000929D0 /* failed_loading@2x.png in Resources */,
 				B6EB260619841E2500D678B3 /* auth.xib in Resources */,
 				B66ED1981949EC20002A333F /* theme 1 in Resources */,
 				B6BAD730198D22DF00447A7D /* loading.gif in Resources */,
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
 				B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */,
+				B6ABCAE719AAB1FA000929D0 /* failed_loading.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

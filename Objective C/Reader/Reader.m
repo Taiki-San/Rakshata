@@ -36,6 +36,7 @@
 			[gifRep setProperty:NSImageLoopCount withValue:@(0)];
 			[gifRep setProperty:NSImageCurrentFrameDuration withValue:@(0.1f)];
 		}
+		loadingFailedPlaceholder = [NSImage imageNamed:@"failed_loading"];
 		
 		[self initReaderMainView : state];
 	}
@@ -164,6 +165,7 @@
 	[container dealloc];
 	
 	[loadingPlaceholder dealloc];
+	[loadingFailedPlaceholder dealloc];
 	
 	[super dealloc];
 }

@@ -128,8 +128,8 @@ enum
 	}
 	else
 	{
-		RakGifImageView * view = [mainScroller.selectedViewController.view.subviews objectAtIndex:0];
-		if([view class] == [RakGifImageView class])
+		RakImageView * view = [mainScroller.selectedViewController.view.subviews objectAtIndex:0];
+		if([view class] == [RakImageView class])
 		{
 			NSRect frame = view.frame;		//view is smaller than the smallest possible reader, so its h/w won't change
 			
@@ -314,7 +314,30 @@ enum
 
 - (void) failure
 {
+	[self failure : UINT32_MAX : nil];
+}
+
+- (void) failure : (uint) page : (NSMutableArray**) data
+{
 	NSLog(@"Something went wrong delete?");
+	
+	if(page != UINT32_MAX)
+	{
+		NSRect frame = NSZeroRect;
+		frame.size = loadingFailedPlaceholder.size;
+		
+		RakImageView * image = [[[RakImageView alloc] initWithFrame : frame] autorelease];
+		[image setImage : loadingFailedPlaceholder];
+		
+		if(image != nil)
+		{
+			void * bak;
+			if(data == nil)
+				data = (NSMutableArray**) &bak;
+			
+			[self updatePCState : data : page : image];
+		}
+	}
 }
 
 #pragma mark - High level API
@@ -468,10 +491,7 @@ enum
 - (NSData *) getPage : (uint) posData
 {
 	if(_data.path == NULL)
-	{
-		[self failure];
 		return nil;
-	}
 	
 	IMG_DATA * dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
 	
@@ -481,7 +501,7 @@ enum
 		updateChapter(&_data, _currentElem);
 		dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
 #endif
-		return NULL;
+		return nil;
 	}
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
@@ -504,10 +524,7 @@ enum
 		return [self getPage : posData];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
-	{
-		[self failure];
-		return NULL;
-	}
+		return nil;
 
 	
 	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
@@ -653,7 +670,10 @@ enum
 	_data.pageCourante = 0;
 	
 	if(configFileLoader(_project, self.isTome, _currentElem, &_data))
-		[self failure];
+	{
+		_data.nombrePageTotale = 1;
+		[self failure : 0 : nil];
+	}
 	
 	[self changePage:READER_ETAT_DEFAULT];
 }
@@ -725,7 +745,12 @@ enum
 	else if(_posElemInStructure > 0)
 		[self prevChapter];
 	else
-		[self failure];
+	{
+		_data.pageCourante = 0;
+		_data.nombrePageTotale = 1;
+		[self failure : 0 : nil];
+		mainScroller.selectedIndex = 0;
+	}
 }
 
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView
@@ -829,7 +854,7 @@ enum
 	
 	while (currentSession == cacheSession)	//While the active chapter is still the same
 	{
-		if([data[_data.pageCourante] class] != [RakPageScrollView class])
+		if([data[_data.pageCourante] class] != [RakPageScrollView class] && [data[_data.pageCourante] class] != [RakImageView class])
 		{
 			[self loadPageCache: _data.pageCourante : currentSession : &data];
 		}
@@ -840,7 +865,7 @@ enum
 
 			for(i = 0; i < 5 && _data.pageCourante + i * move <= max; i++)
 			{
-				if([data[_data.pageCourante + i * move] class] != [RakPageScrollView class])
+				if([data[_data.pageCourante + i * move] class] != [RakPageScrollView class] && [data[_data.pageCourante + i * move] class] != [RakImageView class])
 				{
 					[self loadPageCache:_data.pageCourante + i * move :currentSession :&data];
 					move = 0;
@@ -852,7 +877,7 @@ enum
 				continue;
 			
 			//We cache the previous page, in the case the user want to go back
-			if(_data.pageCourante - move < max && [data[_data.pageCourante - move] class] != [RakPageScrollView class])
+			if(_data.pageCourante - move < max && [data[_data.pageCourante - move] class] != [RakPageScrollView class] && [data[_data.pageCourante - move] class] != [RakImageView class])
 			{
 				[self loadPageCache:_data.pageCourante - move : currentSession : &data];
 			}
@@ -861,7 +886,7 @@ enum
 			{
 				for (i = _data.pageCourante; i < max; i++)
 				{
-					if([data[i] class] != [RakPageScrollView class])
+					if([data[i] class] != [RakPageScrollView class] && [data[i] class] != [RakImageView class])
 					{
 						[self loadPageCache:i :currentSession :&data];
 						break;
@@ -869,15 +894,11 @@ enum
 				}
 				
 				if(i == max)	//Nothing else to load
-				{
 					break;
-				}
 			}
 		}
 		else
-		{
 			break;
-		}
 	}
 	
 	_cacheBeingBuilt = false;
@@ -957,22 +978,34 @@ enum
 	}
 }
 
-- (void) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
+- (BOOL) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
 {
-	RakPageScrollView  *view = [self getScrollView:page];
+	RakPageScrollView *view = nil;//[self getScrollView:page];
 	
-	if(view == nil)			//Loading faillure
+	if(view == nil)			//Loading failure
 	{
-		[self failure];
-		return;
+		[self failure : page : data];
+		return NO;
 	}
 	
 	if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
 	{
 		[view release];
-		return;
+		return NO;
 	}
 	
+	[self updatePCState : data : page : view];
+	
+	if(page == _data.pageCourante)		//If current page, we update the main scrollview pointer (click management)
+		_scrollView = view;
+	
+	return YES;
+}
+
+#pragma mark - NSPageController interface
+
+- (void) updatePCState : (NSMutableArray **) data : (uint) page : (NSView *) view
+{
 	[CATransaction begin];
 	[CATransaction setDisableActions:YES];
 	
@@ -985,12 +1018,7 @@ enum
 	MUTEX_UNLOCK(cacheMutex);
 	
 	[CATransaction commit];
-	
-	if(page == _data.pageCourante)		//If current page, we update the main scrollview pointer (click management)
-		_scrollView = view;
 }
-
-#pragma mark - NSPageController interface
 
 - (NSString *)pageController:(NSPageController *)pageController identifierForObject : (RakPageScrollView*) object
 {
@@ -1018,16 +1046,16 @@ enum
 	
 	[view setFrame : container.frame];
 	
-	if(object == nil || [object class] != [RakPageScrollView class])
+	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
-		RakGifImageView * placeholder = [[[RakGifImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)] autorelease];
+		RakImageView * placeholder = [[[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)] autorelease];
 		[placeholder setImage:loadingPlaceholder];
 		[viewController.view addSubview : placeholder];
 		
 		if(object != nil)
 			[placeholder startAnimation];
 	}
-	else
+	else if([object class] == [RakPageScrollView class])
 	{
 		[self initialPositionning : object];
 		
@@ -1039,6 +1067,10 @@ enum
 		[viewController.view addSubview: object];
 		viewController.representedObject = object;
 	}
+	else
+	{
+		[viewController.view addSubview : object];
+	}
 }
 
 - (NSRect) pageController : (NSPageController *) pageController frameForObject : (RakPageScrollView*) object
@@ -1046,7 +1078,11 @@ enum
 	if(object == nil || [object class] != [RakPageScrollView class])
 	{
 		NSRect frame;
-		frame.size = loadingPlaceholder.size;
+		
+		if([object class] == [RakImageView class])
+			frame.size = object.frame.size;
+		else
+			frame.size = loadingPlaceholder.size;
 		
 		frame.origin.x = container.frame.size.width / 2 - frame.size.width / 2;
 		frame.origin.y = container.frame.size.height / 2 - frame.size.height / 2;

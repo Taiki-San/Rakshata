@@ -72,7 +72,7 @@
 
 @end
 
-@implementation RakGifImageView
+@implementation RakImageView
 
 - (void) setImage : (NSImage *) newImage
 {
@@ -111,8 +111,11 @@
 
 - (void) dealloc
 {
-	[animationTimer invalidate];
-	[animationTimer dealloc];
+	if(animationTimer != nil)
+	{
+		[animationTimer invalidate];
+		[animationTimer dealloc];
+	}
 	[super dealloc];
 }
 
