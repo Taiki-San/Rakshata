@@ -980,7 +980,7 @@ enum
 
 - (BOOL) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
 {
-	RakPageScrollView *view = nil;//[self getScrollView:page];
+	RakPageScrollView *view = [self getScrollView:page];
 	
 	if(view == nil)			//Loading failure
 	{
