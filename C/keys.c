@@ -122,12 +122,6 @@ byte getMasterKey(unsigned char *input)
             }
             break;
         }
-#ifdef DEV_VERSION
-		else
-		{
-			logR("Invalid key!");
-		}
-#endif
     }
 
     if(!input[0]) //Pas de clée trouvée
