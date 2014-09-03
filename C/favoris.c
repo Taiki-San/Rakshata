@@ -86,7 +86,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		sscanfs(line, "%s %d", URLRepo, LONGUEUR_URL, &projectID);
 		
 		//There is a collision
-		if(!strcmp(URLRepo, URLRepoRef) && projectID != projectDB->projectID)
+		if(!strcmp(URLRepo, URLRepoRef) && projectID == projectDB->projectID)
 		{
 			if (removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
 			{
