@@ -997,30 +997,55 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 	if(data == NULL || sizeData == 0)
 		return NULL;
 	
-	bool * output = malloc(sizeData * sizeof(bool));
+	bool * output = calloc(sizeData, sizeof(bool));
 	
 	if(output != NULL)
 	{
-		uint pos = 0;
+		bool canUseOptimization = true;		//Can we assume cacheDBID is sorted?
+		uint pos = 0, ID = 0;
+		
+		while(pos < sizeData)
+		{
+			if(data[pos].cacheDBID < ID)	//There is holes, but numbers are still growing
+				ID++;
+			
+			else if(data[pos].cacheDBID == ID)	//Standard case
+				pos++;
+			
+			else							//We're not sorted
+			{
+				canUseOptimization = false;
+				break;
+			}
+		}
+		
+		
 		sqlite3_stmt* request = NULL;
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_projectName)" ASC", -1, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", -1, &request, NULL);
 		
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
-			while(pos < nbElem && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
+			if(canUseOptimization)
 			{
-				output[pos++] = false;
+				while(pos < nbElem && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
+					pos++;
+				
+				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
+					output[pos++] = true;
+				
+				else if(pos < nbElem)		//Élément supprimé
+					continue;
+				
+				else
+					break;
 			}
-			
-			if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
-				output[pos++] = true;
-
-			else if(pos < nbElem)		//Élément supprimé
-				output[pos++] = false;
-			
 			else
-				break;
-			
+			{
+				for(pos = 0; pos < nbElem && data[pos].cacheDBID != sqlite3_column_int(request, RDB_ID-1); pos++);
+				
+				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
+					output[pos++] = true;
+			}
 		}
 		
 		for(; pos < nbElem; output[pos++] = false);
