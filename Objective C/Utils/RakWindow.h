@@ -16,6 +16,13 @@
 	NSPoint initialLocation;
 }
 
+//Event data
+@property BOOL shiftPressed;
+@property BOOL optionPressed;
+@property BOOL controlPressed;
+@property BOOL functionPressed;
+
+
 - (BOOL) isFullscreen;
 - (void) stopDrag;
 

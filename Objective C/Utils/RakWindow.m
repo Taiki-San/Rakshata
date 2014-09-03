@@ -49,6 +49,18 @@
 	[super sendEvent:event];
 }
 
+- (void) flagsChanged:(NSEvent *)theEvent
+{
+	uint flags = [theEvent modifierFlags];
+	
+	self.shiftPressed		= (flags & NSShiftKeyMask) != 0;
+	self.optionPressed		= (flags & NSAlternateKeyMask) != 0;
+	self.controlPressed		= (flags & NSControlKeyMask) != 0;
+	self.functionPressed	= (flags & NSFunctionKeyMask) != 0;
+	
+	[super flagsChanged:theEvent];
+}
+
 - (void) stopDrag
 {
 	dragInProgress = false;

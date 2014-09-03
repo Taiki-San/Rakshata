@@ -195,7 +195,7 @@ enum
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
-	bool isModPressed = ([theEvent modifierFlags] & (NSAlternateKeyMask | NSShiftKeyMask)) != 0;
+	bool isModPressed = ([theEvent modifierFlags] & NSShiftKeyMask) != 0;
 	
     switch (code)
     {
@@ -799,8 +799,13 @@ enum
 			sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
 	}
 	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
 	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
 	[scrollView.contentView scrollToPoint:sliderStart];
+	
+	[CATransaction commit];
 }
 
 - (void) jumpPressed : (BOOL) withShift

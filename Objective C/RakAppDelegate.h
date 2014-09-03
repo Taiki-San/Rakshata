@@ -22,7 +22,7 @@
 	MUTEX_VAR loginMutex;
 }
 
-@property (assign) IBOutlet NSWindow *window;
+@property (assign) IBOutlet RakWindow *window;
 
 - (RakContentView*) getContentView;
 
