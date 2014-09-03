@@ -289,7 +289,6 @@ void removeFolder(char *path)
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
-    /* On ouvre le dossier. */
     directory = opendir(path);
     if ( directory == NULL )
     {
@@ -302,8 +301,7 @@ void removeFolder(char *path)
         return;
     }
 
-    /* On boucle sur les entrées du dossier. */
-    while ( (entry = readdir(directory)) != NULL )
+    while ((entry = readdir(directory)) != NULL)
     {
         if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
             continue;

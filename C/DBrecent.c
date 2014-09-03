@@ -69,6 +69,11 @@ bool checkRecentDBValid(sqlite3 * DB)
 
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL)
 {
+	return updateRecentEntry(data, time(NULL), wasItADL);
+}
+
+bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
+{
 	bool output = false, haveToUpdate = false;
 	
 	sqlite3 *database = getPtrRecentDB();
@@ -96,7 +101,6 @@ bool addRecentEntry(PROJECT_DATA data, bool wasItADL)
 			//We'll inject the data now
 			uint nbOccurence = sqlite3_column_int(request, 0);
 			char requestString[200];
-			time_t timestamp = time(NULL);
 			time_t recentRead = wasItADL ? 0 : timestamp, recentDL = wasItADL ? timestamp : 0;
 
 			sqlite3_finalize(request);
@@ -227,15 +231,22 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					(*nbElem)++;
 				else
 				{
+					//We craft a PROJECT_DATA structure for updateRecentEntry
 					uint lengthTeam = strlen(team) + 1;
-					char teamBak[lengthTeam];
+					PROJECT_DATA tmpProject;
+					TEAMS_DATA tmpTeam;
+					memset(&tmpProject, 0, sizeof(tmpProject));
+					memset(&tmpTeam, 0, sizeof(tmpTeam));
+
+					strncpy(tmpTeam.URLRepo, team, lengthTeam);
+					tmpProject.team = &tmpTeam;
+					tmpProject.projectID = projectID;
 					
-					strncpy(teamBak, team, lengthTeam);
+					sqlite3_finalize(request);	//Will release team, so must be called after strncpy
 					
-					sqlite3_finalize(request);
+					updateRecentEntry(tmpProject, 0, wantDL);
 					
-					removeRecentEntryInternal(teamBak, projectID);
-					
+					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
 					if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
 						break;
 				}

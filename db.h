@@ -39,6 +39,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 void resetUpdateDBCache();
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
 bool isPaidProject(PROJECT_DATA projectData);
+bool isInstalled(char * basePath);
 
 /**DBCache.c**/
 int setupBDDCache();
@@ -94,11 +95,10 @@ sqlite3* getPtrRecentDB();
 bool checkRecentDBValid(sqlite3 * DB);
 
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
+bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
 void removeRecentEntryInternal(char * URLRepo, uint projectID);
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
-
-
 
 /*Database*/
 

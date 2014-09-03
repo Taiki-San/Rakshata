@@ -438,3 +438,31 @@ bool isPaidProject(PROJECT_DATA projectData)
 {
 	return projectData.team != NULL && !strcmp(projectData.team->type, TYPE_DEPOT_3);
 }
+
+bool isInstalled(char * basePath)
+{
+	if(!checkDirExist(basePath))
+		return false;
+	
+	DIR * directory = opendir(basePath);
+	if(directory == NULL)
+		return false;
+	
+	bool retValue = false;
+	struct dirent *entry;
+	
+	while((entry = readdir(directory)) != NULL)
+	{
+		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+			continue;
+		
+		if((!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9) || (!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5))
+		{
+			retValue = true;
+			break;
+		}
+	}
+	
+	closedir(directory);
+	return retValue;
+}

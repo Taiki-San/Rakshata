@@ -100,7 +100,7 @@ int setupBDDCache()
 				if(teamPos < nombreTeam && encodedTeam[teamPos] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
-					if(!addToCache(request, projects[pos], teamPos, checkDirExist(pathInstall)))
+					if(!addToCache(request, projects[pos], teamPos, isInstalled(pathInstall)))
 					{
 						free(projects[pos].chapitresFull);
 						freeTomeList(projects[pos].tomesFull, true);
