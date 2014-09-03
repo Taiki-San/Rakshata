@@ -243,6 +243,7 @@
 
 	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
 	[_pause setNeedsDisplay : YES];
+	[_remove.cell setState:RB_STATE_STANDARD];
 	
 	previousStatus = MDL_CODE_UNUSED;
 	
