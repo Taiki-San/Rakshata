@@ -44,6 +44,7 @@
 - (bool) isHighlightAllowed;
 
 - (id) initWithText : (NSString *) text;
+- (void) reloadFontColor;
 - (NSSize) sizeOfTextCell;
 - (NSColor*) getBorderColor;
 - (NSColor*) getBackgroundColor;

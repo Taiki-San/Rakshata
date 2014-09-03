@@ -344,6 +344,12 @@
 	return self;
 }
 
+- (void) reloadFontColor
+{
+	if(textCell != nil)
+		[textCell setTextColor:[self getFontColor]];
+}
+
 - (NSSize) sizeOfTextCell
 {
 	if(textCell != nil)

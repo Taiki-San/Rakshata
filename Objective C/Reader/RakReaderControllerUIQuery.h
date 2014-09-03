@@ -19,7 +19,7 @@
 	
 	Reader* _tabReader;
 	
-	bool _remind;
+	BOOL _remind;
 }
 
 - (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;

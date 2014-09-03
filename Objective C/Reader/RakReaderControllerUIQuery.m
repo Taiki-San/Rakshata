@@ -15,16 +15,33 @@
 - (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
+	{
+		[self release];
 		return nil;
+	}
+	
+	_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
+	_tabReader = [[NSApp delegate] reader];
+	
+	//We check if the user asked not to be annoyed again
+	BOOL data = NO;
+	_remind = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_AUTODL : &data];
+	if(_remind && ![(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	{
+		if(data)
+			[self confirmed];
+
+		[self release];
+		return nil;
+	}
+
 	
 	self = [super initWithFrame : NSMakeRect(0, 0, 170, 170)];
 	
 	if(self != nil)
 	{
 		NSRect frame = NSZeroRect;
-		_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-		_remind = false;	_tabReader = [[NSApp delegate] reader];
-		
+
 		if(_tabReader != nil)
 			frame.size.width = _tabReader.frame.origin.x;
 		
@@ -59,6 +76,9 @@
 	RakButton * buttonRemind = [[RakButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
+	((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
+	[((RakButtonCell*)buttonRemind.cell) reloadFontColor];
+
 	[self addSubview:buttonRemind];
 }
 

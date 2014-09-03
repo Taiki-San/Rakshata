@@ -19,7 +19,7 @@
 }
 
 - (instancetype) autoInit;
-- (void) launchPopover : (NSView *) anchor : (Reader*) receiver;
+- (BOOL) launchPopover : (NSView *) anchor : (Reader*) receiver;
 
 @end
 

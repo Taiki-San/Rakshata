@@ -19,13 +19,20 @@
 
 - (void) launchPopover : (NSView *) anchor
 {
-	_anchor = anchor;
-	
-	[Prefs getCurrentTheme:self];
-	
-	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
-	
-	[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_FAVS : YES];
+	//We check if the user asked not to be annoyed again
+	BOOL alreadyAsked, answer = NO;
+	alreadyAsked = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_FAVS : &answer];
+	if(!alreadyAsked || !answer || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	{
+		_anchor = anchor;
+		
+		[Prefs getCurrentTheme:self];
+		
+		[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+		
+		if(!alreadyAsked)
+			[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_FAVS : YES];
+	}
 }
 
 - (void) setupView

@@ -142,13 +142,7 @@
 {
 	if(!isFaved)
 	{
-		void * ptr;
-		free(ptr = loadLargePrefs(SETTINGS_FAVORITE_FLAG));
-		
-		if(ptr == NULL)
-		{
-			[[[[RakFavsInfo alloc] autoInit] autorelease] launchPopover : favorite];
-		}
+		[[[[RakFavsInfo alloc] autoInit] autorelease] launchPopover : favorite];
 	}
 	
 	[(Reader*) self.superview switchFavs];
@@ -157,10 +151,7 @@
 - (void) reactToDelete
 {
 	if(!trash.popoverOpened)
-	{
-		[[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
-		trash.popoverOpened = YES;
-	}
+		trash.popoverOpened = [[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

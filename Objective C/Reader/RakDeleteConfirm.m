@@ -21,9 +21,22 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 170, 173)];
 }
 
-- (void) launchPopover : (NSView *) anchor : (Reader*) receiver
+//We return if the popover is opened or was aborted, because of the `remind` feature
+
+- (BOOL) launchPopover : (NSView *) anchor : (Reader*) receiver
 {
-	_remind = NO;
+	//We check if the user asked not to be annoyed again
+	BOOL alreadyAsked, answer = NO;
+	alreadyAsked = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_DELETE : &answer];
+	if(alreadyAsked && ![(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	{
+		if(answer)
+			[receiver deleteElement];
+		
+		return NO;
+	}
+	
+	_remind = alreadyAsked;
 	_isTome = receiver.isTome;
 	_receiver = receiver;
 	_anchor = anchor;
@@ -31,6 +44,8 @@
 	[Prefs getCurrentTheme:self];
 	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+
+	return YES;
 }
 
 - (void) setupView
@@ -57,6 +72,10 @@
 	RakDeleteButton * buttonRemind = [[RakDeleteButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
+	
+	((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
+	[((RakButtonCell*)buttonRemind.cell) reloadFontColor];
+	
 	[self addSubview:buttonRemind];
 }
 
