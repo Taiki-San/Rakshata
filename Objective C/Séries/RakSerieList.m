@@ -331,7 +331,15 @@
 			[content removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:currentPos] inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
 		}
 		else if(data[i] != 0)
+		{
+			if([rootItems[currentPos] getNbChildren] != data[i])
+			{
+				[rootItems[currentPos] setNbChildren:data[i] : YES];
+				[content reloadItem : rootItems[currentPos] reloadChildren:YES];
+			}
+			
 			currentPos++;
+		}
 	}
 	
 	//We expand items wanted so
@@ -440,7 +448,6 @@
 {
 	return item == nil ? YES : [item isRootItem];
 }
-
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {

@@ -126,6 +126,19 @@
 	return _expanded;
 }
 
+- (void) setNbChildren : (uint) nbChildren : (BOOL) flush
+{
+	_nbChildren = nbChildren;
+	
+	if(flush)
+	{
+		for (NSObject * item in children)
+			[item release];
+		
+		[children removeAllObjects];
+	}
+}
+
 - (uint) getNbChildren
 {
 	if([self isRootItem])

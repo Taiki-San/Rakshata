@@ -42,6 +42,7 @@
 - (void) setExpaded : (BOOL) expanded;
 - (BOOL) isExpanded;
 
+- (void) setNbChildren : (uint) nbChildren : (BOOL) flush;
 - (uint) getNbChildren;
 
 - (void) setChild : (id) child atIndex : (NSInteger) index;
