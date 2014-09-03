@@ -101,6 +101,11 @@
     [self setFrameOrigin:newOrigin];
 }
 
+- (void) keyDown:(NSEvent *)theEvent
+{
+	[self.contentView keyDown:theEvent];
+}
+
 - (void)visualizeConstraints:(NSArray *)constraints
 {
 	NSLog(@"UI just blown up, sorry :/");

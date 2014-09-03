@@ -119,6 +119,11 @@
 	return firstResponder;
 }
 
+- (void) keyDown:(NSEvent *)theEvent
+{
+	[firstResponder keyDown:theEvent];
+}
+
 - (void) dealloc
 {
 	[internalRows1 removeFromSuperview];
