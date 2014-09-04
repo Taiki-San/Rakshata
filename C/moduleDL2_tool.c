@@ -675,7 +675,7 @@ int sortProjectsToDownload(const void *a, const void *b)
 
 bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
 {
-    if(teamToCheck.openSite)
+    if(teamToCheck.openSite && *historiqueTeam != NULL)
     {
 		uint i;
 		
