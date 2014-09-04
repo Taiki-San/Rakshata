@@ -17,6 +17,8 @@
 	uint* _jumpToInstalled;
 }
 
+@property (setter=setInstallOnly:, getter=installOnlyMode) BOOL installOnlyMode;
+
 - (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition;
 
 - (void) reloadData;

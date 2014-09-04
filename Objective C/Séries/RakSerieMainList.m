@@ -22,11 +22,13 @@
 		
 		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &amountData);
 		_installed = getInstalledFromData(data, amountData);
-		[self updateJumpTable];
+		
+		if(self.installOnlyMode)
+			[self updateJumpTable];
 		
 		for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
 		{
-			if(selectedDBID != -1 && selectedIndex == -1 && _installed[i])
+			if(selectedDBID != -1 && selectedIndex == -1 && (!self.installOnlyMode || _installed[i]))
 			{
 				if (((PROJECT_DATA*)data)[i].cacheDBID == selectedDBID)
 					selectedIndex = positionInInstalled;
@@ -35,7 +37,7 @@
 			}
 		}
 		
-		if(data == NULL || _installed == NULL)
+		if(data == NULL || (self.installOnlyMode && _installed == NULL))
 		{
 			NSLog(@"Failed at initialize RakSerieMainList, most probably a memory problem :(");
 
@@ -49,7 +51,7 @@
 
 - (bool) didInitWentWell
 {
-	return data != NULL && _installed != NULL;
+	return data != NULL && (!self.installOnlyMode || _installed != NULL);
 }
 
 - (BOOL) installOnlyMode
@@ -101,7 +103,7 @@
 	
 	if(newData)
 	{
-		if(_jumpToInstalled != NULL)
+		if(self.installOnlyMode)
 			[self updateJumpTable];
 
 		[_tableView reloadData];
@@ -152,7 +154,7 @@
 	
 	if(index >= 0 && index < amountData)
 	{
-		if (_jumpToInstalled != NULL && index < _nbElemInstalled)
+		if(self.installOnlyMode && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];
 		
 		output = getCopyOfProjectData(((PROJECT_DATA*) data)[index]);
@@ -199,7 +201,7 @@
 {
 	if(data == NULL)
 		return 0;
-	else if(_jumpToInstalled == NULL)
+	else if(!self.installOnlyMode)
 		return amountData;
 	else
 		return _nbElemInstalled;
