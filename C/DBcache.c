@@ -936,7 +936,9 @@ PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context,
 	{
 		free(output);
 		output = NULL;
-		logR("[Error]: Request not found, something went wrong when parsing so data :/");
+		
+		if(!installed)
+			logR("[Error]: Request not found, something went wrong when parsing the data :/");
 	}
 	
 	sqlite3_finalize(request);
