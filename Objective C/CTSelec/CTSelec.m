@@ -170,6 +170,25 @@
 	return string;
 }
 
+- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element
+{
+	PROJECT_DATA newProject = getCopyOfProjectData(project);	//Isole le tab des données
+	updateIfRequired(&newProject, RDB_CTXCT);
+	
+	if(coreView != nil)
+		[coreView updateContext:newProject];
+	else
+	{
+		coreView = [[[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}] autorelease];
+		
+		if(coreView != nil)
+			[self addSubview:coreView];
+	}
+	
+	//Coreview en fait aussi une copie, on doit donc release cette version
+	releaseCTData(newProject);
+}
+
 #pragma mark - Reader code
 /**		Reader		**/
 
@@ -271,7 +290,7 @@
 
 #pragma mark - Communication with other tabs
 
-- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
+- (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
@@ -297,23 +316,7 @@
 
 			} completionHandler:^{
 				
-				PROJECT_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
-
-				if(newProject.cacheDBID == project.cacheDBID)
-				{
-					if(coreView != nil)
-						[coreView updateContext:newProject];
-					else
-					{
-						coreView = [[[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}] autorelease];
-						
-						if(coreView != nil)
-							[self addSubview:coreView];
-					}
-					
-					//Coreview en fait aussi une copie, on doit donc release cette version
-					releaseCTData(newProject);
-				}
+				[self updateProject : project : isTome : element];
 				
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
@@ -344,10 +347,13 @@
 
 #pragma mark - Proxy
 
-- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID
+//Return NO some class were not instantiated
+- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID
 {
 	if(coreView != nil)
-		[coreView refreshCT : checkIfRequired : ID];
+		return [coreView refreshCT : checkIfRequired : ID];
+
+	return NO;
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

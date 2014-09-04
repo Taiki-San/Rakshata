@@ -224,23 +224,24 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance)
 
 void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
 {
-	if(UIInstance != NULL)
-		[(RakMDLListView*) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
-	
-	else if(mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
+	//If we have to recover UIInstance
+	if(UIInstance == NULL && mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
 		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
 		if(todoList != NULL && *todoList != NULL && (*todoList)->rowViewResponsible != NULL)
-		{
-			SEL selector = nil;
-			
-			if(request == REQ_VIEW_UPDATE_ICONS)
-				selector = @selector(updateContext);
-			else if(request == REQ_VIEW_INSTALL_OVER)
-				selector = @selector(installOver);
-			
-			[(RakMDLListView *) (*todoList)->rowViewResponsible performSelectorOnMainThread:selector withObject:nil waitUntilDone:YES];
-		}
+			UIInstance = (*todoList)->rowViewResponsible;
+	}
+	
+	if(UIInstance != nil)
+	{
+		SEL selector = nil;
+		
+		if(request == REQ_VIEW_UPDATE_ICONS)
+			selector = @selector(updateContext);
+		else if(request == REQ_VIEW_INSTALL_OVER)
+			selector = @selector(installOver);
+		
+		[(RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:YES];
 	}
 }
 

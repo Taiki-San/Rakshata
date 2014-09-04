@@ -67,10 +67,10 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 	if(encodedHash == NULL)
 		return;
 
-    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedHash, projectDB->projectID);
+    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/", encodedHash, projectDB->projectID);
 	free(encodedHash);
 	
-    if(!checkFileExist(configFilePath))
+    if(!isInstalled(configFilePath))
     {
 		projectDB->chapitresInstalled = malloc(sizeof(int));
 		
@@ -82,6 +82,8 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
     if(dernierLu != NULL)
     {
 		*dernierLu = VALEUR_FIN_STRUCT;
+
+		strlcat(configFilePath, CONFIGFILE, sizeof(configFilePath));
 		FILE* file = fopen(configFilePath, "r");
 		
 		if(file != NULL)

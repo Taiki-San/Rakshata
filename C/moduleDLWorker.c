@@ -207,8 +207,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         else
 		{
 			*(input.currentState) = MDL_CODE_INSTALL_OVER;
-			addRecentEntry(*(input.todoList->datas), true);
 			setInstalled(input.todoList->datas->cacheDBID);
+			addRecentEntry(*(input.todoList->datas), true);
+			MDLInstallOver(input.selfCode, input.todoList->rowViewResponsible);
 		}
     }
     else
@@ -218,8 +219,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		if (!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
 		{
 			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
-			addRecentEntry(*(input.todoList->datas), true);
 			setInstalled(input.todoList->datas->cacheDBID);
+			addRecentEntry(*(input.todoList->datas), true);
 			MDLInstallOver(input.selfCode, input.todoList->rowViewResponsible);
 		}
 	}

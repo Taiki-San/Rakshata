@@ -399,7 +399,16 @@
 
 - (void) installOver
 {
-	[[[NSApp delegate] CT] refreshCT : YES :(*todoList)->datas->cacheDBID];
+	if(![[[NSApp delegate] CT] refreshCT : YES : (*todoList)->datas->cacheDBID])
+	{
+		//Some instance were not instantiated, we need to get them created
+		
+		//We first refresh data, as CT won't do it in this scenario
+		getUpdatedChapterList((*todoList)->datas, true);
+		getUpdatedTomeList((*todoList)->datas, true);
+	
+		[[[NSApp delegate] CT] updateProject : *(*todoList)->datas : YES : VALEUR_FIN_STRUCT];
+	}
 }
 
 @end

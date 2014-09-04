@@ -146,10 +146,15 @@
 	}
 }
 
-- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 {
 	if (coreView != nil)
+	{
 		[coreView refreshCTData : checkIfRequired : ID];
+		return YES;
+	}
+	
+	return NO;
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

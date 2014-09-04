@@ -46,7 +46,7 @@
 - (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;
 
 - (void) updateContext : (PROJECT_DATA) data;
-- (void) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 
 @end
