@@ -18,13 +18,7 @@
 	
 	if(self != nil)
 	{
-		self.wantsLayer = NO;
-		self.editable = NO;
-		self.bordered = NO;
-		self.wantCustomBorder = NO;
-		self.drawsBackground = NO;
-		self.backgroundColor = [NSColor clearColor];
-		self.selectable = NO;
+		[self internalInit];
 	}
 	
 	return self;
@@ -35,20 +29,25 @@
     self = [self initWithFrame:frame];
     if (self)
 	{
-		self.wantsLayer = NO;
-		self.editable = NO;
-		self.bordered = NO;
-		self.wantCustomBorder = NO;
-		self.drawsBackground = NO;
-		self.backgroundColor = [NSColor clearColor];
+		[self internalInit];
+		self.stringValue = text;
 		
 		if(color != nil)
 			self.textColor = color;
-		
-		self.stringValue = text;
-		self.selectable = NO;
     }
     return self;
+}
+
+- (void) internalInit
+{
+	self.wantsLayer = NO;
+	self.editable = NO;
+	self.bordered = NO;
+	self.wantCustomBorder = NO;
+	self.forcedOffset = 0;
+	self.drawsBackground = NO;
+	self.backgroundColor = [NSColor clearColor];
+	self.selectable = NO;
 }
 
 + (Class) cellClass
