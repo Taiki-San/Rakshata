@@ -63,33 +63,42 @@
 
 - (void) initIcons
 {
-	_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : self : @selector(sendPause)];
-	if(_pause != nil)
+	if(_pause == nil)
 	{
-		_pause.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_pause setButtonType:NSMomentaryChangeButton];
-		[self addSubview:_pause];
-		[_pause setHidden:YES];
+		_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : self : @selector(sendPause)];
+		if(_pause != nil)
+		{
+			_pause.layer.backgroundColor = [NSColor clearColor].CGColor;
+			[_pause setButtonType:NSMomentaryChangeButton];
+			[self addSubview:_pause];
+			[_pause setHidden:YES];
+		}
 	}
 	
-	_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : self : @selector(sendRead)];
-	if(_read != nil)
+	if(_read == nil)
 	{
-		_read.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_read setButtonType:NSMomentaryChangeButton];
-		[self addSubview:_read];
-		[_read setHidden:YES];
-		[_read.cell setHighlightAllowed: NO];
+		_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : self : @selector(sendRead)];
+		if(_read != nil)
+		{
+			_read.layer.backgroundColor = [NSColor clearColor].CGColor;
+			[_read setButtonType:NSMomentaryChangeButton];
+			[self addSubview:_read];
+			[_read setHidden:YES];
+			[_read.cell setHighlightAllowed: NO];
+		}
 	}
 	
-	_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : self : @selector(sendRemove)];
-	if(_remove != nil)
+	if(_remove == nil)
 	{
-		_remove.layer.backgroundColor = [NSColor clearColor].CGColor;
-		[_remove setButtonType:NSMomentaryChangeButton];
-		[self addSubview:_remove];
-		[_remove setHidden:NO];
-		[_remove.cell setHighlightAllowed: NO];
+		_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : self : @selector(sendRemove)];
+		if(_remove != nil)
+		{
+			_remove.layer.backgroundColor = [NSColor clearColor].CGColor;
+			[_remove setButtonType:NSMomentaryChangeButton];
+			[self addSubview:_remove];
+			[_remove setHidden:NO];
+			[_remove.cell setHighlightAllowed: NO];
+		}
 	}
 }
 
@@ -132,9 +141,9 @@
 	[requestName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
 	[statusText setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 	
-	[_pause removeFromSuperview];
-	[_read removeFromSuperview];
-	[_remove removeFromSuperview];
+	[_pause removeFromSuperview];	_pause = nil;
+	[_read removeFromSuperview];	_read = nil;
+	[_remove removeFromSuperview];	_remove = nil;
 	
 	[self initIcons];
 }
@@ -294,8 +303,13 @@
 			break;
 		}
 	}
+
+	//Force them to refresh, otherwise, we may end up with an outdated, pressed button
+	[_remove setNeedsDisplay];
+	[_read setNeedsDisplay];
+	[_pause setNeedsDisplay];
 	
-	[self display];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) requestReloadData : (NSTableView *) tableView
