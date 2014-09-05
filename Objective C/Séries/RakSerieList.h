@@ -73,4 +73,6 @@ enum {
 - (void) updateMainListSizePadding;
 - (void) RakSeriesNeedUpdateContent : (NSNotification *) notification;
 
++ (NSString *) contentNameForDrag : (PROJECT_DATA) project;
+
 @end

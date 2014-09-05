@@ -88,7 +88,7 @@ typedef struct project_data_for_drag_drop
 	return YES;
 }
 
-- (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed
++ (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed
 {
 	if(project == NULL)
 		return NO;

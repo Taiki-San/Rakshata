@@ -753,7 +753,6 @@
 	if(currentDraggedItem != nil)
 	{
 		PROJECT_DATA * project = [currentDraggedItem getRawDataChild];
-		currentDraggedItem = nil;
 		if(project != NULL)
 			return *project;
 	}
@@ -761,6 +760,42 @@
 	return [super getProjectDataForDrag:row];
 }
 
+- (NSString *) contentNameForDrag : (uint) row
+{
+	if(currentDraggedItem != nil)
+	{
+		PROJECT_DATA * project = [currentDraggedItem getRawDataChild];
+		if(project != NULL)
+			return [[self class] contentNameForDrag:*project];
+	}
+	
+	return [super contentNameForDrag:row];
+}
+
++ (NSString *) contentNameForDrag : (PROJECT_DATA) project
+{
+	BOOL shouldUseVols = [RakDragItem defineIsTomePriority:&project alreadyRefreshed:YES];
+	uint delta;
+	NSString * output;
+	
+	if(shouldUseVols)
+	{
+		delta = project.nombreTomes - project.nombreTomesInstalled;
+		output = [NSString stringWithFormat:@"%d Tome%c", delta, delta > 1 ? 's' : '\0'];
+	}
+	else
+	{
+		delta = project.nombreChapitre - project.nombreChapitreInstalled;
+		output = [NSString stringWithFormat:@"%d Chapitre%c", delta, delta > 1 ? 's' : '\0'];
+	}
+	
+	if(delta != 0)
+		return output;
+	
+	return nil;
+}
+
+//Ran first, so afterward, we can assume project was refreshed
 - (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pboard
 {
 	if([items count] != 1)
@@ -783,7 +818,7 @@
 	getUpdatedChapterList(project, true);
 	getUpdatedTomeList(project, true);
 	
-	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [pbData defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
+	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [[pbData class] defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
@@ -797,6 +832,8 @@
 	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
 	[RakList propagateDragAndDropChangeState:outlineView.superview :YES : [RakDragItem canDL:[session draggingPasteboard]]];
+	
+	currentDraggedItem = nil;
 }
 
 - (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation

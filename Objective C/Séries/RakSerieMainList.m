@@ -254,11 +254,24 @@
 	return [self getElementAtIndex:row];
 }
 
+- (NSString *) contentNameForDrag : (uint) row
+{
+	PROJECT_DATA project = [self getElementAtIndex:row], empty;
+	
+	memset(&empty, 0, sizeof(empty));
+	
+	if(memcmp(&project, &empty, sizeof(empty)))
+		return [RakSerieList contentNameForDrag : project];
+
+	else
+		return [super contentNameForDrag:row];
+}
+
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	PROJECT_DATA project = getCopyOfProjectData([self getElementAtIndex:row]);
 	
-	BOOL isTome = [item defineIsTomePriority:&project alreadyRefreshed:NO];
+	BOOL isTome = [[item class] defineIsTomePriority:&project alreadyRefreshed:NO];
 	
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, false);
