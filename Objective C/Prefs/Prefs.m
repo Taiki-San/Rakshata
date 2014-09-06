@@ -679,6 +679,21 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
+		case PREFS_SET_READER_DISTRACTION_FREE:
+		{
+			if(value && stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
+			{
+				stateTabsReader = STATE_READER_TAB_DISTRACTION_FREE;
+				ret_value = true;
+			}
+			else if(!value && stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
+			{
+				stateTabsReader = STATE_READER_TAB_ALL_COLLAPSED;
+				ret_value = true;
+			}
+			break;
+		}
+			
 		case PREFS_SET_READER_TABS_STATE_FROM_CALLER:
 		{
 			int newValue = -1;
@@ -704,20 +719,27 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 					newValue = STATE_READER_TAB_ALL_COLLAPSED;
 					break;
 				}
+					
+				case TAB_READER_DF:
+				{
+					newValue = STATE_READER_TAB_DISTRACTION_FREE;
+					break;
+				}
 			}
-			if(newValue == -1)
+			if(newValue != -1)
 			{
-				ret_value = false;
-#ifdef DEV_VERSION
-				NSLog(@"[%s]: Couldn't identify thread :%llu", __PRETTY_FUNCTION__, value);
-#endif
+				if(stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
+				{
+					ret_value = stateTabsReader != (uint) newValue;
+					stateTabsReader = newValue;
+				}
 			}
+#ifdef DEV_VERSION
 			else
 			{
-				ret_value = stateTabsReader != (uint) newValue;
-				stateTabsReader = newValue;
+				NSLog(@"[%s]: Couldn't identify thread :%llu", __PRETTY_FUNCTION__, value);
 			}
-			
+#endif
 			break;
 		}
 

@@ -62,14 +62,6 @@
 #define VERSION_REPO 2
 #define VERSION_PROJECT 1
 
-/**		Flags	   **/
-
-#define TAB_READER				0x0001
-#define TAB_CT					0x0002
-#define TAB_MDL					0x0004
-#define TAB_SERIES				0x0008
-#define TAB_MASK				0xFFFF
-
 /*Réseau*/
 #define CONNEXION_TEST_IN_PROGRESS -1
 #define CONNEXION_OK 0

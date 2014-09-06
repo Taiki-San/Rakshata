@@ -195,7 +195,7 @@ enum
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
-	bool isModPressed = ([theEvent modifierFlags] & NSShiftKeyMask) != 0;
+	bool isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
 	
     switch (code)
     {
@@ -267,7 +267,14 @@ enum
 					
 				case 'd':
 				{
-					[self nextPage];
+					if(isModPressed && ((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					{
+						[self switchDistractionFree];
+					}
+					else
+					{
+						[self nextPage];
+					}
 					break;
 				}
 					

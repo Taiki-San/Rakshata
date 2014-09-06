@@ -173,7 +173,7 @@
 {
 	NSRect output = NSZeroRect;
 	
-	output.origin.x = TAB_SERIE_INACTIVE_DISTRACTION_FREE;
+	output.origin.x = TAB_SERIE_INACTIVE_LECTEUR_REDUCED;
 	output.size.width = TAB_CT_INACTIVE_DISTRACTION_FREE;
 	output.size.height = 100;
 	
@@ -267,7 +267,7 @@
 {
 	NSRect output = NSZeroRect;
 	
-	output.origin.x = TAB_SERIE_INACTIVE_DISTRACTION_FREE + TAB_CT_INACTIVE_DISTRACTION_FREE;
+	output.origin.x = 0;
 	output.size.width = TAB_READER_ACTIVE_DISTRACTION_FREE;
 	output.size.height = 100;
 	

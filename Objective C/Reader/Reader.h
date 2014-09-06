@@ -36,8 +36,11 @@
 	uint cacheSession;
 	byte previousMove;
 	
+	BOOL distractionFree;
+	
 	//Context data
 @private
+	
 	bool _readerMode;
 	bool _alreadyRefreshed;
 	bool _dontGiveACrapAboutCTPosUpdate;
@@ -65,6 +68,8 @@
 - (void) hideBothTab;
 - (void) unhideBothTab;
 - (void) hideCursor;
+
+- (void) switchDistractionFree;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;
