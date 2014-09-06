@@ -21,6 +21,7 @@
 @property BOOL optionPressed;
 @property BOOL controlPressed;
 @property BOOL functionPressed;
+@property BOOL commandPressed;
 
 
 - (BOOL) isFullscreen;

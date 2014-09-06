@@ -57,6 +57,7 @@
 	self.optionPressed		= (flags & NSAlternateKeyMask) != 0;
 	self.controlPressed		= (flags & NSControlKeyMask) != 0;
 	self.functionPressed	= (flags & NSFunctionKeyMask) != 0;
+	self.commandPressed		= (flags & NSCommandKeyMask) != 0;
 	
 	[super flagsChanged:theEvent];
 }
