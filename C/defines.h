@@ -56,13 +56,6 @@
     #endif
 #endif
 
-/*Contextes*/
-#define CONTEXTE_LECTURE 1
-#define CONTEXTE_DL 2
-#define CONTEXTE_SUPPRESSION 3
-#define CONTEXTE_CHAPITRE 4
-#define CONTEXTE_TOME 5
-
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
 #define CONFIGFILETOME "config.tome.dat"
@@ -125,7 +118,6 @@
 #define TYPE_DEPOT_2 "O" //Dépôt classique
 #define TYPE_DEPOT_3 "P" //Dépôts payants
 #define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
-#define TYPE_DEPOT_5 "MG" //Dépôts MEGA
 #define MAX_TYPE_DEPOT 4
 
 /*String macro*/
