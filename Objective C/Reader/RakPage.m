@@ -79,7 +79,7 @@ enum
 		scrollViewFrame.size.height = scrollView.contentFrame.size.height;
 	}
 	
-	if(!readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
+	if(!self.readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
 	{
 		scrollView.scrollViewFrame = scrollViewFrame;
 		return;
@@ -104,14 +104,14 @@ enum
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
-	if(!readerMode)
+	if(!self.readerMode)
 		frameRect.size.width = container.frame.size.width;
 	
 	[container setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
 	
 	if(_scrollView != nil)
 	{
-		if(!readerMode)
+		if(!self.readerMode)
 			frameRect.origin = _scrollView.frame.origin;
 		
 		[_scrollView.superview setFrame:container.frame];
@@ -135,7 +135,7 @@ enum
 			
 			frame.origin.y = frameRect.size.height / 2 - frame.size.height / 2;
 
-			if(readerMode)
+			if(self.readerMode)
 				frame.origin.x = frameRect.size.width / 2 - frame.size.width / 2;
 			
 			[view.superview setFrame:frame];
@@ -145,12 +145,12 @@ enum
 
 - (void) leaveReaderMode
 {
-	readerMode = false;
+	self.readerMode = false;
 }
 
 - (void) startReaderMode
 {
-	readerMode = true;
+	self.readerMode = true;
 }
 
 /*Event handling*/
@@ -161,7 +161,7 @@ enum
 {
 	bool fail = false;
 
-	if(!readerMode || !noDrag || _scrollView == nil)
+	if(!self.readerMode || !noDrag || _scrollView == nil)
 		fail = true;
 	else
 	{

@@ -25,7 +25,8 @@
 		[Prefs getCurrentTheme:self];
 		[self setAutoresizesSubviews:NO];
 		
-		readerMode = parent->readerMode;
+		_parent = parent;
+		readerMode = parent.readerMode;
 
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:RADIUS_BORDERS];

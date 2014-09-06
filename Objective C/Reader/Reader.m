@@ -95,9 +95,9 @@
 		}
 	}
 	
-	resizeAnimationCount = -1;	//Disable animation
+	self.resizeAnimationCount = -1;	//Disable animation
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
-	resizeAnimationCount = 0;
+	self.resizeAnimationCount = 0;
 }
 
 - (void) endOfInitialization
@@ -125,7 +125,7 @@
 	
 	if(bottomBar == nil)
 	{
-		bottomBar = [[[RakReaderBottomBar alloc] init: readerMode: self] autorelease];
+		bottomBar = [[[RakReaderBottomBar alloc] init: self.readerMode: self] autorelease];
 	
 		if(foregroundView.superview == self)
 			[self addSubview:bottomBar positioned:NSWindowBelow relativeTo:foregroundView];
@@ -294,9 +294,9 @@
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
 {
-	if(newReaderMode && !readerMode)
+	if(newReaderMode && !self.readerMode)
 		[self willOpenReader];
-	else if(!newReaderMode && readerMode)
+	else if(!newReaderMode && self.readerMode)
 		[self willLeaveReader];
 }
 

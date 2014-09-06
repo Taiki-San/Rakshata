@@ -33,12 +33,10 @@ enum {
 	bool _waitingLogin;
 	bool _needPassword;
 	RakTabForegroundView * foregroundView;
-	
-@public
-	bool readerMode;
-	uint resizeAnimationCount;
 }
 
+@property bool readerMode;
+@property uint resizeAnimationCount;
 @property bool waitingLogin;
 
 #define CREATE_CUSTOM_VIEW_TAB_SERIE	1

@@ -36,11 +36,11 @@
 		
 		int mainThread;
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		readerMode = (mainThread & TAB_READER) != 0;
+		self.readerMode = (mainThread & TAB_READER) != 0;
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
-		resizeAnimationCount = 0;	//activate animation
+		self.resizeAnimationCount = 0;	//activate animation
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
 		
@@ -53,7 +53,7 @@
 
 - (void) endOfInitialization
 {
-	[self resizeReaderCatchArea : readerMode];
+	[self resizeReaderCatchArea : self.readerMode];
 }
 
 - (NSString *) byebye
@@ -190,7 +190,7 @@
 	{
 		[super setFrame:frameRect];
 		[foregroundView setFrame:frameRect];
-		[self resizeReaderCatchArea : readerMode];
+		[self resizeReaderCatchArea : self.readerMode];
 	}
 }
 
@@ -281,9 +281,9 @@
 {
 	bool isReaderMode;
 	[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
-	readerMode = isReaderMode;
+	self.readerMode = isReaderMode;
 	
-	[self resizeReaderCatchArea : readerMode];
+	[self resizeReaderCatchArea : self.readerMode];
 }
 
 - (BOOL) isStillCollapsedReaderTab
@@ -318,7 +318,7 @@
 {
 	NSRect frame = [self bounds];
 	
-	if(readerMode && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
+	if(self.readerMode && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 	{
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
 	}
@@ -396,7 +396,7 @@
 	if(![(RakWindow*) self.window isFullscreen] && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(readerMode && [self mouseOutOfWindow])
+			if(self.readerMode && [self mouseOutOfWindow])
 			{
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
