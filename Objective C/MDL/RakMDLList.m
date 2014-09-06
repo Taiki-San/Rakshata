@@ -226,7 +226,7 @@
 
 - (uint) getSelfCode
 {
-	return GUI_THREAD_MDL;
+	return TAB_MDL;
 }
 
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation

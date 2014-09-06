@@ -71,12 +71,11 @@
 
 /**		Flags	   **/
 
-#define GUI_THREAD_READER			0x0001
-#define GUI_THREAD_CT				0x0002
-#define GUI_THREAD_MDL				0x0004
-#define GUI_THREAD_SERIES			0x0008
-#define GUI_DEFAULT_THREAD			0x1000
-#define GUI_THREAD_MASK				0xFFFF
+#define TAB_READER				0x0001
+#define TAB_CT					0x0002
+#define TAB_MDL					0x0004
+#define TAB_SERIES				0x0008
+#define TAB_MASK				0xFFFF
 
 /*Réseau*/
 #define CONNEXION_TEST_IN_PROGRESS -1

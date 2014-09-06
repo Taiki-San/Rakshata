@@ -36,7 +36,7 @@
 		
 		int mainThread;
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		readerMode = (mainThread & GUI_THREAD_READER) != 0;
+		readerMode = (mainThread & TAB_READER) != 0;
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
@@ -223,13 +223,13 @@
 
 - (void) animationIsOver : (uint) mainThread : (byte) context
 {
-	if(mainThread & GUI_THREAD_READER)
+	if(mainThread & TAB_READER)
 		[self readerIsOpening : context];
-	else if (mainThread & GUI_THREAD_SERIES)
+	else if (mainThread & TAB_SERIES)
 		[self seriesIsOpening : context];
-	else if(mainThread & GUI_THREAD_CT)
+	else if(mainThread & TAB_CT)
 		[self CTIsOpening : context];
-	else if(mainThread & GUI_THREAD_MDL)
+	else if(mainThread & TAB_MDL)
 		[self MDLIsOpening : context];
 }
 

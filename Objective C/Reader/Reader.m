@@ -19,7 +19,7 @@
     self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_READER;
+		flag = TAB_READER;
 		gonnaReduceTabs = 0;
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
@@ -415,7 +415,7 @@
 	BOOL ret_value = NO;
 	
 	if(element != VALEUR_FIN_STRUCT &&
-		(sender != GUI_THREAD_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
+		(sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
 	{
 		[self updateContextNotification:data :isTome :element];
 		ret_value = YES;
@@ -428,7 +428,7 @@
 
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
-	if (sender == GUI_THREAD_CT || sender == GUI_THREAD_MDL)
+	if (sender == TAB_CT || sender == TAB_MDL)
 		return canDL ? NSDragOperationNone : NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

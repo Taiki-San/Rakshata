@@ -17,7 +17,7 @@
     self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_MDL;
+		flag = TAB_MDL;
 		needUpdateMainViews = NO;
 		self.forcedToShowUp = NO;
 		_popover = nil;
@@ -379,7 +379,7 @@
 {
 	if(!canDL)
 		return NSDragOperationNone;
-	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_CT)
+	if (sender == TAB_SERIES || sender == TAB_CT)
 		return NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

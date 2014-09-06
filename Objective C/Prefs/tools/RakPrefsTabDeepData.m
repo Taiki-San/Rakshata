@@ -335,11 +335,11 @@
 {
 	uint8_t ret_value = 0xff;
 	
-	if(mainThread & GUI_THREAD_SERIES)
+	if(mainThread & TAB_SERIES)
 		ret_value = 0;
-	else if(mainThread & GUI_THREAD_CT)
+	else if(mainThread & TAB_CT)
 		ret_value = 1;
-	else if(mainThread & GUI_THREAD_READER)
+	else if(mainThread & TAB_READER)
 	{
 		if(stateTabsReader & STATE_READER_TAB_DISTRACTION_FREE)
 			ret_value = 6;

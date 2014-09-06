@@ -17,7 +17,7 @@
     self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_SERIES;
+		flag = TAB_SERIES;
 		prefsUIIsOpen = false;
 		
 		self = [self initView:contentView : state];

@@ -17,7 +17,7 @@
     self = [super init];
     if (self)
 	{
-		flag = GUI_THREAD_CT;
+		flag = TAB_CT;
 		self = [self initView:contentView : state];
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
@@ -368,7 +368,7 @@
 {
 	BOOL ret_value = NO;
 	
-	if(element == VALEUR_FIN_STRUCT || sender == GUI_THREAD_MDL)
+	if(element == VALEUR_FIN_STRUCT || sender == TAB_MDL)
 	{
 		[coreView updateContext:data];
 		ret_value = YES;
@@ -381,7 +381,7 @@
 
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
-	if (sender == GUI_THREAD_SERIES || sender == GUI_THREAD_MDL)
+	if (sender == TAB_SERIES || sender == TAB_MDL)
 		return NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

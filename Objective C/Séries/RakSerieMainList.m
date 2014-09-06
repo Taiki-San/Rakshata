@@ -246,7 +246,7 @@
 
 - (uint) getSelfCode
 {
-	return GUI_THREAD_SERIES;
+	return TAB_SERIES;
 }
 
 - (PROJECT_DATA) getProjectDataForDrag : (uint) row

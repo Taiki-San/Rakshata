@@ -85,21 +85,21 @@
 - (NSColor*) getBackgroundColor
 {
 	byte code;
-	switch (mainThread & GUI_THREAD_MASK)
+	switch (mainThread & TAB_MASK)
 	{
-		case GUI_THREAD_READER:
+		case TAB_READER:
 		{
 			code = GET_COLOR_BACKGROUD_CT_READERMODE;
 			break;
 		}
 			
-		case GUI_THREAD_CT:
+		case TAB_CT:
 		{
 			code = GET_COLOR_BACKGROUD_CT_READERMODE;
 			break;
 		}
 			
-		case GUI_THREAD_SERIES:
+		case TAB_SERIES:
 		{
 			code = GET_COLOR_BACKGROUD_CT_READERMODE;
 			break;

@@ -22,11 +22,11 @@
 	if(view != nil)
 	{
 		if([view class] == [Series class])
-			return GUI_THREAD_SERIES;
+			return TAB_SERIES;
 		else if([view class] == [CTSelec class])
-			return GUI_THREAD_CT;
+			return TAB_CT;
 		else if([view class] == [MDL class])
-			return GUI_THREAD_MDL;
+			return TAB_MDL;
 	}
 	
 	return 0;
@@ -42,7 +42,7 @@
 #ifdef DEV_VERSION
 	NSLog(@"Default implementation shouldn't be used!");
 #endif
-	return GUI_THREAD_MASK;
+	return TAB_MASK;
 }
 
 - (PROJECT_DATA) getProjectDataForDrag : (uint) row

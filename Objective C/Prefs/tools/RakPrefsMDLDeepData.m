@@ -83,13 +83,13 @@
 {
 	switch (mainThread)
 	{
-		case GUI_THREAD_SERIES:
+		case TAB_SERIES:
 			return [self getFocusSerie];
 			
-		case GUI_THREAD_CT:
+		case TAB_CT:
 			return [self getFocusCT];
 			
-		case GUI_THREAD_READER:
+		case TAB_READER:
 			return [self getFocusReader:stateTabsReader];
 	}
 #ifdef DEV_VERSION
@@ -120,7 +120,7 @@
 	
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output.origin.x];
 	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output.size.height];
-	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :GUI_THREAD_CT :-1 :&output.size.width];
+	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :TAB_CT :-1 :&output.size.width];
 	output.origin.y = 0;
 	
 	return output;

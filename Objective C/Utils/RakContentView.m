@@ -196,25 +196,25 @@
 {
 	switch (_mainThread)
 	{
-		case GUI_THREAD_SERIES:
+		case TAB_SERIES:
 		{
 			[_tabSerie keyDown:theEvent];
 			break;
 		}
 			
-		case GUI_THREAD_CT:
+		case TAB_CT:
 		{
 			[_tabCT keyDown:theEvent];
 			break;
 		}
 			
-		case GUI_THREAD_MDL:
+		case TAB_MDL:
 		{
 			[_tabMDL keyDown:theEvent];
 			break;
 		}
 			
-		case GUI_THREAD_READER:
+		case TAB_READER:
 		{
 			[_tabReader keyDown:theEvent];
 			break;
