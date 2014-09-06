@@ -18,6 +18,7 @@
 	
 	[[[NSThread alloc] initWithTarget:self selector:@selector(activateThreads) object:nil] autorelease];
 
+	[self.window setDelegate:self.window];
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
 	[self.window setMovable:YES];

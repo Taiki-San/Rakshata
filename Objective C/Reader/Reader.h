@@ -70,6 +70,7 @@
 - (void) hideCursor;
 
 - (void) switchDistractionFree;
+- (void) shouldLeaveDistractionFreeMode;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;

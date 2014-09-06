@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakWindow : NSWindow
+@interface RakWindow : NSWindow <NSWindowDelegate>
 {
 	bool dragInProgress;
 	NSPoint initialLocation;

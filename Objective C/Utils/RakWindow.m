@@ -112,4 +112,11 @@
 	NSLog(@"UI just blown up, sorry :/");
 }
 
+#pragma mark - Delegate
+
+- (void) windowWillExitFullScreen:(NSNotification *)notification
+{
+	[[[NSApp delegate] reader] shouldLeaveDistractionFreeMode];
+}
+
 @end

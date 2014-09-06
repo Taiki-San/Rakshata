@@ -383,12 +383,15 @@
 		distractionFree = NO;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0])
 		{
-			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+			[bottomBar.animator setAlphaValue:1];
 		}
+		else
+			return;
 	}
 	else if(distractionFree)	//We were out of sync, but now, we're in DF mode
 	{
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+		[bottomBar setAlphaValue:1];
 	}
 	
 	//We have to get into the DF mode
@@ -397,8 +400,24 @@
 		distractionFree = YES;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
 		{
-			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+			[bottomBar.animator setAlphaValue:0.5];
 		}
+		else
+			return;
+	}
+	
+	if(distractionFree && ![(RakWindow*) self.window isFullscreen])
+		[self.window toggleFullScreen:self];
+	else
+		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+}
+
+- (void) shouldLeaveDistractionFreeMode
+{
+	if(distractionFree)
+	{
+		distractionFree = NO;
+		[Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0];
 	}
 }
 
