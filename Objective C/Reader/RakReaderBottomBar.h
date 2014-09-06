@@ -18,6 +18,10 @@
 
 @end
 
+#define READER_DELAY_CURSOR_FADE	2
+#define READER_BB_ALPHA_DF			0.5f
+#define READER_BB_ALPHA_DF_STATIC	0.1f
+
 @interface RakReaderBottomBar : NSView
 {
 	bool readerMode;
@@ -38,6 +42,9 @@
 	CGContextRef contextBorder;
 	
 	bool isFaved;
+	
+	//Used for distraction free mode
+	Reader * _parent;
 }
 
 - (id)init: (BOOL) displayed : (Reader*) parent;

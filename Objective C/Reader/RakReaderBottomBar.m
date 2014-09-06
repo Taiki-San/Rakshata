@@ -364,6 +364,28 @@
 	//Prevent a clic on the bar to end up on the page
 }
 
+#pragma mark - Distraction free mode
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	if(_parent.distractionFree && self.alphaValue != 1.0f)
+	{
+		[_parent fadeBottomBar:1.0f];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
+	}
+	
+	[super mouseEntered:theEvent];
+}
+
+- (void) mouseExited:(NSEvent *)theEvent
+{
+	if(_parent.distractionFree)
+	{
+		[_parent fadeBottomBar:READER_BB_ALPHA_DF];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
+	}
+	
+	[super mouseExited:theEvent];
+}
+
 /*Constraints routines*/
 #pragma mark - Data about bar position
 

@@ -319,12 +319,27 @@
 - (void) resizeReaderCatchArea
 {
 	if([self isStillCollapsedReaderTab])
-		[super resizeReaderCatchArea : readerMode];
+		[super resizeReaderCatchArea : self.readerMode];
+}
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	if(delaySinceLastMove != nil)
+	{
+		[delaySinceLastMove invalidate];
+		delaySinceLastMove = nil;
+	}
+	
+	[super mouseEntered:theEvent];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	
+	if(delaySinceLastMove != nil)
+	{
+		[delaySinceLastMove invalidate];
+		delaySinceLastMove = nil;
+	}
 }
 
 /**	Hide stuffs	**/
@@ -368,27 +383,23 @@
 	}
 }
 
-- (void) hideCursor
-{
-	[NSCursor setHiddenUntilMouseMoves:YES];
-}
-
 #pragma mark - Distraction Free mode
 
 - (void) switchDistractionFree
 {
+	bottomBarHidden = NO;	//We reset it
+
 	//We have to leave distraction-free mode
-	if(distractionFree && ![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
+	if(self.distractionFree && ![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
 	{
-		distractionFree = NO;
+		self.distractionFree = NO;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0])
-		{
-			[bottomBar.animator setAlphaValue:1];
-		}
+			[self fadeBottomBar : 1];
+
 		else
 			return;
 	}
-	else if(distractionFree)	//We were out of sync, but now, we're in DF mode
+	else if(self.distractionFree)	//We were out of sync, but now, we're in DF mode
 	{
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 		[bottomBar setAlphaValue:1];
@@ -397,28 +408,84 @@
 	//We have to get into the DF mode
 	else
 	{
-		distractionFree = YES;
+		self.distractionFree = YES;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
-		{
-			[bottomBar.animator setAlphaValue:0.5];
-		}
+			[self fadeBottomBar : READER_BB_ALPHA_DF];
+		
 		else
 			return;
 	}
 	
-	if(distractionFree && ![(RakWindow*) self.window isFullscreen])
+	//Do we have to switch to fullscreen, or can we animate
+	if(self.distractionFree && ![(RakWindow*) self.window isFullscreen])
 		[self.window toggleFullScreen:self];
+
 	else
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
 - (void) shouldLeaveDistractionFreeMode
 {
-	if(distractionFree)
+	if(self.distractionFree)
 	{
-		distractionFree = NO;
+		self.distractionFree = NO;
 		[Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0];
+		[bottomBar.animator setAlphaValue:1];
 	}
+}
+
+//The following code fade out the bottom bar if the cursor stay static for more than two seconds
+//We fire a timer each time the cursor move (and abort the previous one) for two seconds
+//If the timer end, we fade the bottom bar to 0.1, and hide the cursor
+
+- (void) mouseMoved:(NSEvent *)theEvent
+{
+	if(self.distractionFree)
+	{
+		if(delaySinceLastMove != nil)
+		{
+			[delaySinceLastMove invalidate];
+			delaySinceLastMove = nil;
+		}
+		
+		cursorPosBeforeLastMove = [theEvent locationInWindow];
+		delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
+		
+		if(bottomBarHidden)
+		{
+			bottomBarHidden = NO;
+			[self fadeBottomBar : READER_BB_ALPHA_DF];
+		}
+	}
+	
+	[super mouseMoved:theEvent];
+}
+
+- (void) cursorShouldFadeAway
+{
+	delaySinceLastMove = nil;
+	
+	NSPoint point = [NSEvent mouseLocation];
+	if(cursorPosBeforeLastMove.x == point.x && cursorPosBeforeLastMove.y == point.y)
+	{
+		bottomBarHidden = YES;
+		[self fadeBottomBar: READER_BB_ALPHA_DF_STATIC];
+		[NSCursor setHiddenUntilMouseMoves:YES];
+	}
+}
+
+- (void) fadeBottomBar : (CGFloat) alpha
+{
+	if(bottomBar == nil)
+		return;
+	
+	[NSAnimationContext beginGrouping];
+	[[NSAnimationContext currentContext] setDuration:0.1f];
+	
+	[bottomBar.animator setAlphaValue:alpha];
+	
+	[NSAnimationContext endGrouping];
+	
 }
 
 #pragma mark - Proxy work

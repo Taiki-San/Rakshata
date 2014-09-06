@@ -36,7 +36,9 @@
 	uint cacheSession;
 	byte previousMove;
 	
-	BOOL distractionFree;
+	BOOL bottomBarHidden;
+	NSTimer * delaySinceLastMove;
+	NSPoint cursorPosBeforeLastMove;
 	
 	//Context data
 @private
@@ -55,6 +57,7 @@
 	int _posElemInStructure;
 }
 
+@property BOOL distractionFree;
 @property BOOL isTome;
 
 - (id)init : (NSView*)contentView : (NSString *) state;
@@ -67,10 +70,11 @@
 - (void) collapseAllTabs : (bool) forced;
 - (void) hideBothTab;
 - (void) unhideBothTab;
-- (void) hideCursor;
 
 - (void) switchDistractionFree;
 - (void) shouldLeaveDistractionFreeMode;
+- (void) cursorShouldFadeAway;
+- (void) fadeBottomBar : (CGFloat) alpha;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;
