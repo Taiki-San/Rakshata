@@ -333,7 +333,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width * (additionalData == NULL ? 1 : (((NSSize*) additionalData)->width / 100));
+			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width;
 			
 			if(additionalData != NULL)
 				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread != TAB_SERIES ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
@@ -344,7 +344,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width * (additionalData == NULL ? 1 : (((NSSize*) additionalData)->width / 100));
+			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width;
 			
 			if(additionalData != NULL)
 				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread != TAB_CT ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
