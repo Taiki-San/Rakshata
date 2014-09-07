@@ -322,24 +322,9 @@
 		[super resizeReaderCatchArea : self.readerMode];
 }
 
-- (void) mouseEntered:(NSEvent *)theEvent
-{
-	if(delaySinceLastMove != nil)
-	{
-		[delaySinceLastMove invalidate];
-		delaySinceLastMove = nil;
-	}
-	
-	[super mouseEntered:theEvent];
-}
-
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if(delaySinceLastMove != nil)
-	{
-		[delaySinceLastMove invalidate];
-		delaySinceLastMove = nil;
-	}
+	[self abordFadeTimer];
 }
 
 /**	Hide stuffs	**/
@@ -402,7 +387,7 @@
 	else if(self.distractionFree)	//We were out of sync, but now, we're in DF mode
 	{
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
-		[
+		[self startFadeTimer:[NSEvent mouseLocation]];
 		[bottomBar setAlphaValue:1];
 	}
 	
@@ -411,7 +396,10 @@
 	{
 		self.distractionFree = YES;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
+		{
 			[self fadeBottomBar : READER_BB_ALPHA_DF];
+			[self startFadeTimer:[NSEvent mouseLocation]];
+		}
 		
 		else
 			return;
@@ -442,24 +430,32 @@
 - (void) mouseMoved:(NSEvent *)theEvent
 {
 	if(self.distractionFree && !bottomBar.highjackedMouseEvents)
-	{
-		if(delaySinceLastMove != nil)
-		{
-			[delaySinceLastMove invalidate];
-			delaySinceLastMove = nil;
-		}
-		
-		cursorPosBeforeLastMove = [theEvent locationInWindow];
-		delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
-		
-		if(bottomBarHidden)
-		{
-			bottomBarHidden = NO;
-			[self fadeBottomBar : READER_BB_ALPHA_DF];
-		}
-	}
+		[self startFadeTimer:[theEvent locationInWindow]];
 	
 	[super mouseMoved:theEvent];
+}
+
+- (void) startFadeTimer : (NSPoint) cursorPosition
+{
+	[self abordFadeTimer];
+	
+	cursorPosBeforeLastMove = cursorPosition;
+	delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
+	
+	if(bottomBarHidden)
+	{
+		bottomBarHidden = NO;
+		[self fadeBottomBar : READER_BB_ALPHA_DF];
+	}
+}
+
+- (void) abordFadeTimer
+{
+	if(delaySinceLastMove != nil)
+	{
+		[delaySinceLastMove invalidate];
+		delaySinceLastMove = nil;
+	}
 }
 
 - (void) cursorShouldFadeAway
@@ -467,6 +463,7 @@
 	delaySinceLastMove = nil;
 	
 	NSPoint point = [NSEvent mouseLocation];
+
 	if(cursorPosBeforeLastMove.x == point.x && cursorPosBeforeLastMove.y == point.y)
 	{
 		bottomBarHidden = YES;
@@ -486,7 +483,6 @@
 	[bottomBar.animator setAlphaValue:alpha];
 	
 	[NSAnimationContext endGrouping];
-	
 }
 
 #pragma mark - Proxy work
