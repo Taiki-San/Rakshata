@@ -402,6 +402,7 @@
 	else if(self.distractionFree)	//We were out of sync, but now, we're in DF mode
 	{
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+		[
 		[bottomBar setAlphaValue:1];
 	}
 	
@@ -440,7 +441,7 @@
 
 - (void) mouseMoved:(NSEvent *)theEvent
 {
-	if(self.distractionFree)
+	if(self.distractionFree && !bottomBar.highjackedMouseEvents)
 	{
 		if(delaySinceLastMove != nil)
 		{

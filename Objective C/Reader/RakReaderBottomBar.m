@@ -35,6 +35,9 @@
 		
 		if(!displayed)
 			[self setHidden:![self isHidden]];
+		
+		trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+		[self addTrackingArea:trackingArea];
 	}
 
 	return self;
@@ -370,10 +373,10 @@
 {
 	if(_parent.distractionFree && self.alphaValue != 1.0f)
 	{
+		[_parent mouseExited:nil];
+		self.highjackedMouseEvents = YES;
 		[_parent fadeBottomBar:1.0f];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
 	}
-	
-	[super mouseEntered:theEvent];
 }
 
 - (void) mouseExited:(NSEvent *)theEvent
@@ -383,7 +386,8 @@
 		[_parent fadeBottomBar:READER_BB_ALPHA_DF];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
 	}
 	
-	[super mouseExited:theEvent];
+	self.highjackedMouseEvents = NO;
+	[_parent mouseEntered:nil];
 }
 
 /*Constraints routines*/

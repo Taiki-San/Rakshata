@@ -45,7 +45,10 @@
 	
 	//Used for distraction free mode
 	Reader * _parent;
+	NSTrackingArea * trackingArea;
 }
+
+@property BOOL highjackedMouseEvents;
 
 - (id)init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;
