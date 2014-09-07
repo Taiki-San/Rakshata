@@ -157,7 +157,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_READER_BAR_PAGE_COUNTER:
 		{
-			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:1];
+			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:0.3f];
 			break;
 		}
 			

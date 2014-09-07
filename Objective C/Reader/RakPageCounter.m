@@ -25,6 +25,7 @@
 		pageMax = pageMaxArg+1;
 		_target = target;
 		
+		self.drawsBackground = YES;
 		[self setBackgroundColor:[self getColorBackground]];
     }
     return self;
