@@ -20,7 +20,7 @@
 
 #define READER_DELAY_CURSOR_FADE	2
 #define READER_BB_ALPHA_DF			0.5f
-#define READER_BB_ALPHA_DF_STATIC	0.1f
+#define READER_BB_ALPHA_DF_STATIC	0
 
 @interface RakReaderBottomBar : NSView
 {
