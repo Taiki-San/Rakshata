@@ -353,7 +353,7 @@ enum
 {
 	[self changePage:READER_ETAT_NEXTPAGE];
 	MUTEX_LOCK(cacheMutex);
-	mainScroller.selectedIndex = _data.pageCourante;
+	mainScroller.selectedIndex = _data.pageCourante + 1;
 	MUTEX_UNLOCK(cacheMutex);
 }
 
@@ -361,18 +361,18 @@ enum
 {
 	[self changePage:READER_ETAT_PREVPAGE];
 	MUTEX_LOCK(cacheMutex);
-	mainScroller.selectedIndex = _data.pageCourante;
+	mainScroller.selectedIndex = _data.pageCourante + 1;
 	MUTEX_UNLOCK(cacheMutex);
 }
 
 - (void) nextChapter
 {
-	[self changeChapter:true];
+	[self changeChapter : true];
 }
 
 - (void) prevChapter
 {
-	[self changeChapter:false];
+	[self changeChapter : false];
 }
 
 //Did the scroll succeed, or were we alredy at the bottom
@@ -495,18 +495,18 @@ enum
 	void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
 #endif
 
-- (NSData *) getPage : (uint) posData
+- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
 {
 	if(_data.path == NULL)
 		return nil;
 	
-	IMG_DATA * dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
+	IMG_DATA * dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
 	
 	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
 	{
 #ifdef DEV_VERSION
-		updateChapter(&_data, _currentElem);
-		dataPage = loadSecurePage(_data.path[_data.pathNumber[posData]], _data.nomPages[posData], _data.chapitreTomeCPT[_data.pathNumber[posData]], _data.pageCouranteDuChapitre[posData]);
+		updateChapter(data, _currentElem);
+		dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
 #endif
 		return nil;
 	}
@@ -528,7 +528,7 @@ enum
 
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(false) waitUntilDone:NO];
 		
-		return [self getPage : posData];
+		return [self getPage : posData : data];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 		return nil;
@@ -548,7 +548,7 @@ enum
 	{
 		if(_data.pageCourante + 1 > _data.nombrePageTotale)
 		{
-			[self changeChapter:true];
+			[self changeChapter : true];
 			return;
 		}
 		_data.pageCourante++;
@@ -557,7 +557,7 @@ enum
 	{
 		if(_data.pageCourante < 1)
 		{
-			[self changeChapter:false];
+			[self changeChapter : false];
 			return;
 		}
 		_data.pageCourante--;
@@ -566,7 +566,7 @@ enum
 	if(switchType != READER_ETAT_DEFAULT)
 	{
 		MUTEX_LOCK(cacheMutex);
-		mainScroller.selectedIndex = _data.pageCourante;
+		mainScroller.selectedIndex = _data.pageCourante + 1;
 		MUTEX_UNLOCK(cacheMutex);
 	}
 	
@@ -578,8 +578,8 @@ enum
 		[self updateEvnt];
 	else
 	{
-		if([mainScroller.arrangedObjects[_data.pageCourante] class] == [RakPageScrollView class])
-			_scrollView = mainScroller.arrangedObjects[_data.pageCourante];
+		if([mainScroller.arrangedObjects[_data.pageCourante + 1] class] == [RakPageScrollView class])
+			_scrollView = mainScroller.arrangedObjects[_data.pageCourante + 1];
 		else
 			_scrollView = nil;
 		
@@ -613,8 +613,57 @@ enum
 	{
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
+		
 		[self updateCT : COM_CT_SELEC];
-		[self updateContext];
+		
+		if((goToNext && nextDataLoaded) || (!goToNext && previousDataLoaded))
+		{
+			uint currentPage;
+			
+			if(goToNext)
+			{
+				releaseDataReader(&_previousData);
+				currentPage = _data.nombrePageTotale + 2;
+
+				memcpy(&_previousData, &_data, sizeof(DATA_LECTURE));
+				previousDataLoaded = dataLoaded;
+				
+				memcpy(&_data, &_nextData, sizeof(DATA_LECTURE));
+				_data.pageCourante = 0;
+				dataLoaded = nextDataLoaded;
+
+				nextDataLoaded = NO;
+				
+			}
+			else
+			{
+				releaseDataReader(&_nextData);
+				currentPage = 0;
+
+				memcpy(&_nextData, &_data, sizeof(DATA_LECTURE));
+				nextDataLoaded = dataLoaded;
+				
+				memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
+				_data.pageCourante = _data.nombrePageTotale;
+				dataLoaded = previousDataLoaded;
+				
+				previousDataLoaded = NO;
+			}
+			
+			id currentPageView = mainScroller.arrangedObjects[currentPage];
+			
+			[currentPageView retain];	//This view will get released inside updateContext, so we must increment the retain count
+			
+			[self updateContext : YES];
+			
+			//We inject the page we already loaded inside mainScroller
+			NSMutableArray * array = [[mainScroller.arrangedObjects mutableCopy] autorelease];
+			
+			[array replaceObjectAtIndex:1 withObject:currentPageView];
+			mainScroller.arrangedObjects = [NSArray arrayWithArray:array];
+		}
+		else
+			[self updateContext : NO];
 	}
 }
 
@@ -659,10 +708,15 @@ enum
 	}
 }
 
-- (void) updateContext
+- (void) updateContext : (BOOL) dataAlreadyLoaded
 {
 	[self flushCache];
-	releaseDataReader(&_data);
+	
+	if(dataAlreadyLoaded)
+	{
+		releaseDataReader(&_data);
+		dataLoaded = NO;
+	}
 	
 	if(updateIfRequired(&_project, RDB_CTXLECTEUR))
 	{
@@ -676,7 +730,7 @@ enum
 	
 	_data.pageCourante = 0;
 	
-	if(configFileLoader(_project, self.isTome, _currentElem, &_data))
+	if(!dataLoaded && configFileLoader(_project, self.isTome, _currentElem, &_data))
 	{
 		_data.nombrePageTotale = 1;
 		[self failure : 0 : nil];
@@ -691,8 +745,13 @@ enum
 	NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	
 	[array removeAllObjects];
+	
+	[array addObject:@(-1)];	//Placeholder for last page of previous chapter
+	
 	for(uint i = 0; i <= _data.nombrePageTotale; i++)
 		[array addObject:@(i)];
+	
+	[array addObject:@(-2)];	//Placeholder for first page of next chapter
 	
 	_scrollView = nil;
 	
@@ -702,16 +761,16 @@ enum
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
-		mainScroller.selectedIndex = _data.pageCourante;
+		mainScroller.selectedIndex = _data.pageCourante + 1;
 		MUTEX_UNLOCK(cacheMutex);
 	}
 
 	[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
 }
 
-- (RakPageScrollView *) getScrollView : (uint) page
+- (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
 {
-	NSData * imageData = [self getPage:page];
+	NSData * imageData = [self getPage : page : data];
 	
 	if(imageData == nil)
 		return nil;
@@ -756,7 +815,7 @@ enum
 		_data.pageCourante = 0;
 		_data.nombrePageTotale = 1;
 		[self failure : 0 : nil];
-		mainScroller.selectedIndex = 0;
+		mainScroller.selectedIndex = 1;
 	}
 }
 
@@ -862,22 +921,29 @@ enum
 		return;
 	}
 	
+	[self retain];	//Prevent getting deallocated before exiting properly
+	
 	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	
 	while (currentSession == cacheSession)	//While the active chapter is still the same
 	{
-		if([data[_data.pageCourante] class] != [RakPageScrollView class] && [data[_data.pageCourante] class] != [RakImageView class])
+		//Page courante
+		if(![self entryValid : data : _data.pageCourante + 1])
 		{
+			
 			[self loadPageCache: _data.pageCourante : currentSession : &data];
 		}
+		
+		//Encore de la place dans le cache
 		else if([self nbEntryRemaining : data])
 		{
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
 			uint i, max = _data.nombrePageTotale;
 
+			//_data.pageCourante + i * move is unsigned, so it should work just fine
 			for(i = 0; i < 5 && _data.pageCourante + i * move <= max; i++)
 			{
-				if([data[_data.pageCourante + i * move] class] != [RakPageScrollView class] && [data[_data.pageCourante + i * move] class] != [RakImageView class])
+				if(![self entryValid : data : _data.pageCourante + 1 + i * move])
 				{
 					[self loadPageCache:_data.pageCourante + i * move :currentSession :&data];
 					move = 0;
@@ -888,24 +954,53 @@ enum
 			if(!move)		//If we found something, we go back to the begining of the loop
 				continue;
 			
+			else if(i != 5)	//We hit the max
+			{
+				int nextElement;
+				uint nextElementPos = _posElemInStructure;
+				
+				//Check if next CT is readable
+				if(changeChapter(&_project, self.isTome, &nextElement, &nextElementPos, move == 1))
+				{
+					//Load next CT data
+					if((move == 1 && nextDataLoaded) || (move == -1 && previousDataLoaded) || !configFileLoader(_project, self.isTome, nextElement, (move == 1 ? &_nextData : &_previousData)))
+					{
+						if(move == 1 && ![self entryValid : data : _data.nombrePageTotale + 2])
+						{
+							nextDataLoaded = YES;
+							[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePageTotale + 2 : &data];
+
+							continue;
+						}
+						else if(move == -1 && ![self entryValid : data : 0])
+						{
+							previousDataLoaded = YES;
+							[self loadPageCache : _previousData.nombrePageTotale : &_previousData : currentSession : 0 : &data];
+							
+							continue;
+						}
+					}
+				}
+			}
+			
 			//We cache the previous page, in the case the user want to go back
-			if(_data.pageCourante - move < max && [data[_data.pageCourante - move] class] != [RakPageScrollView class] && [data[_data.pageCourante - move] class] != [RakImageView class])
+			if(_data.pageCourante - move <= max && ![self entryValid : data :_data.pageCourante + 1 - move])
 			{
 				[self loadPageCache:_data.pageCourante - move : currentSession : &data];
 			}
 
 			else	//Ok then, we cache everythin after
 			{
-				for (i = _data.pageCourante; i < max; i++)
+				for (i = _data.pageCourante + 1; i <= max; i++)
 				{
-					if([data[i] class] != [RakPageScrollView class] && [data[i] class] != [RakImageView class])
+					if(![self entryValid : data : i])
 					{
 						[self loadPageCache:i :currentSession :&data];
 						break;
 					}
 				}
 				
-				if(i == max)	//Nothing else to load
+				if(i == max + 1)	//Nothing else to load
 					break;
 			}
 		}
@@ -914,6 +1009,8 @@ enum
 	}
 	
 	_cacheBeingBuilt = false;
+	
+	[self release];
 }
 
 #define NB_ELEM_MAX_IN_CACHE 30			//5 behind, current, 24 ahead
@@ -936,9 +1033,16 @@ enum
 	return count - nbElemCounted;
 }
 
+- (BOOL) entryValid : (NSArray*) data : (uint) index
+{
+	Class class = [data[index] class];
+
+	return class == [RakPageScrollView class] || class == [RakImageView class];
+}
+
 - (void) optimizeCache : (NSMutableArray *) data
 {
-	uint curPage = _data.pageCourante, objectPage, validFound = 0, invalidFound = 0;
+	uint curPage = _data.pageCourante + 1, objectPage, validFound = 0, invalidFound = 0;
 	
 	NSMutableArray * internalData, *freeList = [NSMutableArray array];
 	RakPageScrollView* object;
@@ -992,7 +1096,12 @@ enum
 
 - (BOOL) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
 {
-	RakPageScrollView *view = [self getScrollView:page];
+	return [self loadPageCache: page : &_data : currentSession : page + 1 : data];
+}
+
+- (BOOL) loadPageCache : (uint) page : (DATA_LECTURE*) dataLecture : (uint) currentSession : (uint) position : (NSMutableArray **) data
+{
+	RakPageScrollView *view = [self getScrollView : page : dataLecture];
 	
 	if(view == nil)			//Loading failure
 	{
@@ -1006,9 +1115,9 @@ enum
 		return NO;
 	}
 	
-	[self updatePCState : data : page : view];
+	[self updatePCState : data : position : view];
 	
-	if(page == _data.pageCourante)		//If current page, we update the main scrollview pointer (click management)
+	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
 		_scrollView = view;
 	
 	return YES;
@@ -1110,16 +1219,30 @@ enum
 	if(object == nil || _flushingCache)
 		return;
 	
-	uint requestedPage;
+	//We are to an adjacent chapter page
+	uint index = pageController.selectedIndex;
 	
-	if([object superclass] == [NSNumber class])
-		requestedPage = [(NSNumber*) object intValue];
-	else
-		requestedPage = object.page;
-	
-	if(requestedPage != _data.pageCourante)
+	if(index == 0)
 	{
-		[self changePage : requestedPage > _data.pageCourante ? READER_ETAT_NEXTPAGE : READER_ETAT_PREVPAGE];
+		[self changeChapter : false];
+	}
+	else if(index == _data.nombrePageTotale + 2)
+	{
+		[self changeChapter : true];
+	}
+	else
+	{
+		uint requestedPage;
+		
+		if([object superclass] == [NSNumber class])
+			requestedPage = [(NSNumber*) object intValue];
+		else
+			requestedPage = object.page;
+		
+		if(requestedPage != _data.pageCourante)
+		{
+			[self changePage : requestedPage > _data.pageCourante ? READER_ETAT_NEXTPAGE : READER_ETAT_PREVPAGE];
+		}
 	}
 }
 

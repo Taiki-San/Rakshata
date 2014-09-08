@@ -51,10 +51,17 @@
 	bool _cacheBeingBuilt;
 	
 	PROJECT_DATA _project;
+	BOOL dataLoaded;
 	DATA_LECTURE _data;
 	
 	int _currentElem;
 	int _posElemInStructure;
+	
+	//Cache data
+	BOOL previousDataLoaded;
+	DATA_LECTURE _previousData;
+	BOOL nextDataLoaded;
+	DATA_LECTURE _nextData;
 }
 
 @property BOOL distractionFree;

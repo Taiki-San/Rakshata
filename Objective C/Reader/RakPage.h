@@ -44,11 +44,11 @@
 - (void) changeChapter : (bool) goToNext;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCT : (uint) request;
-- (void) updateContext;
+- (void) updateContext : (BOOL) dataAlreadyLoaded;
 - (void) updateEvnt;
 - (void) deleteElement;
 
-- (RakPageScrollView *) getScrollView : (uint) page;
+- (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data;
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
 - (void) buildCache : (NSNumber *) session;
 - (void) updatePCState : (NSMutableArray **) data : (uint) page : (NSView *) view;
