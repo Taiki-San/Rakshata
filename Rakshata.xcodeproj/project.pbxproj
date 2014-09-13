@@ -153,6 +153,7 @@
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
 		B6033BCD18E4617000750226 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
 		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
+		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = "Objective C/Utils/JSONParser.h"; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
 		B61585F71912591F004F1791 /* moduleDLMainWorker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = moduleDLMainWorker.m; path = C/moduleDLMainWorker.m; sourceTree = "<group>"; };
@@ -793,6 +794,7 @@
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
 				B62C9EF218BD73D500CE910F /* DBTools.c */,
 				B678D033197717A600D7FE6A /* JSONParser.m */,
+				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
 				B6F6ECD218A3001400E3B55B /* repo.c */,
 				B6F6ECD818A3001400E3B55B /* tome.c */,
 			);

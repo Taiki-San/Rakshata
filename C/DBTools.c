@@ -41,6 +41,8 @@ bool isRemoteRepoLineValid(char * data, int version)
 	return true;
 }
 
+#define REPO_DEFAULT_OPEN_WEBSITE 0
+
 bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output)
 {
 	if(version == -1 || !isRemoteRepoLineValid(data, version))
@@ -54,7 +56,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
 			return false;
 		
-		output->openSite = (previousData == NULL) ? 1 : previousData->openSite;
+		output->openSite = (previousData == NULL) ? REPO_DEFAULT_OPEN_WEBSITE : previousData->openSite;
 		return true;
 	}
 	
