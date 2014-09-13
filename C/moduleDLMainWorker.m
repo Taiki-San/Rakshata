@@ -241,7 +241,7 @@ void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
 		else if(request == REQ_VIEW_INSTALL_OVER)
 			selector = @selector(installOver);
 		
-		[(RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:YES];
+		[(RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:NO];
 	}
 }
 

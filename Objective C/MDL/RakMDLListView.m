@@ -386,6 +386,8 @@
 	
 	if(wasDownloading)
 		MDLDownloadOver(false);
+	
+	[self removeRowFromList];
 }
 
 - (void) sendPause
@@ -422,6 +424,8 @@
 	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
 
 	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
+
+	[self removeRowFromList];
 }
 
 - (void) installOver
