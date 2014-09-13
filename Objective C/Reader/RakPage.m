@@ -342,9 +342,13 @@ enum
 			if(data == nil)
 				data = (NSMutableArray**) &bak;
 			
-			[self updatePCState : data : page : image];
+			image.page = page;
+			
+			[self updatePCState : data : page + 1 : image];
 		}
 	}
+	
+	cacheSession++;
 }
 
 #pragma mark - High level API
@@ -352,17 +356,11 @@ enum
 - (void) nextPage
 {
 	[self changePage:READER_ETAT_NEXTPAGE];
-	MUTEX_LOCK(cacheMutex);
-	mainScroller.selectedIndex = _data.pageCourante + 1;
-	MUTEX_UNLOCK(cacheMutex);
 }
 
 - (void) prevPage
 {
 	[self changePage:READER_ETAT_PREVPAGE];
-	MUTEX_LOCK(cacheMutex);
-	mainScroller.selectedIndex = _data.pageCourante + 1;
-	MUTEX_UNLOCK(cacheMutex);
 }
 
 - (void) nextChapter
@@ -563,10 +561,12 @@ enum
 		_data.pageCourante--;
 	}
 	
-	if(switchType != READER_ETAT_DEFAULT)
+	if(switchType != READER_ETAT_DEFAULT && mainScroller.selectedIndex != _data.pageCourante + 1)
 	{
 		MUTEX_LOCK(cacheMutex);
+	
 		mainScroller.selectedIndex = _data.pageCourante + 1;
+		
 		MUTEX_UNLOCK(cacheMutex);
 	}
 	
@@ -660,7 +660,7 @@ enum
 			NSMutableArray * array = [[mainScroller.arrangedObjects mutableCopy] autorelease];
 			
 			[array replaceObjectAtIndex:1 withObject:currentPageView];
-			mainScroller.arrangedObjects = [NSArray arrayWithArray:array];
+			mainScroller.arrangedObjects = array;
 		}
 		else
 			[self updateContext : NO];
@@ -761,7 +761,9 @@ enum
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
+	
 		mainScroller.selectedIndex = _data.pageCourante + 1;
+		
 		MUTEX_UNLOCK(cacheMutex);
 	}
 
@@ -930,7 +932,6 @@ enum
 		//Page courante
 		if(![self entryValid : data : _data.pageCourante + 1])
 		{
-			
 			[self loadPageCache: _data.pageCourante : currentSession : &data];
 		}
 		
@@ -1053,6 +1054,7 @@ enum
 		internalData = data;
 	
 	MUTEX_LOCK(cacheMutex);
+
 	for(uint pos = 0, max = [internalData count]; pos < max; pos++)
 	{
 		object = [internalData objectAtIndex:pos];
@@ -1076,6 +1078,7 @@ enum
 	if(invalidFound)
 	{
 		mainScroller.arrangedObjects = internalData;
+		
 		MUTEX_UNLOCK(cacheMutex);
 		
 		for(object in freeList)
@@ -1134,9 +1137,11 @@ enum
 	
 	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	[*data replaceObjectAtIndex:page withObject:view];
-	mainScroller.arrangedObjects = [NSArray arrayWithArray:*data];
+	mainScroller.arrangedObjects = *data;
 	
+	NSLog(@"Unlocking");
 	MUTEX_UNLOCK(cacheMutex);
+	NSLog(@"Unlocked at %s", __PRETTY_FUNCTION__);
 	
 	[CATransaction commit];
 }
@@ -1163,6 +1168,9 @@ enum
 	for(NSView * sub in subviews)
 	{
 		[sub removeFromSuperview];
+		
+		if([sub class] == [RakImageView class])
+			[(RakImageView*) sub stopAnimation];
 	}
 	
 	[view setFrame : container.frame];
@@ -1171,6 +1179,12 @@ enum
 	{
 		RakImageView * placeholder = [[[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)] autorelease];
 		[placeholder setImage:loadingPlaceholder];
+
+		if([object isKindOfClass:[NSNumber class]])
+			placeholder.page = [(NSNumber *) object unsignedIntValue];
+		else
+			placeholder.page = UINT_MAX;
+		
 		[viewController.view addSubview : placeholder];
 		
 		if(object != nil)

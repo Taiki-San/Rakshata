@@ -32,6 +32,9 @@
 	int frameCount;
 }
 
+@property uint page;
+
 - (void) startAnimation;
+- (void) stopAnimation;
 
 @end

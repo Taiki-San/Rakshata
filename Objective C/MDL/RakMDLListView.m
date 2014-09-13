@@ -59,6 +59,8 @@
 	[_read removeFromSuperview];
 	[_remove removeFromSuperview];
 	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
 	[super dealloc];
 }
 

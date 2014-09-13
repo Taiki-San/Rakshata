@@ -109,23 +109,37 @@
 	}
 }
 
-- (void) dealloc
+- (void) stopAnimation
 {
 	if(animationTimer != nil)
 	{
 		[animationTimer invalidate];
-		[animationTimer dealloc];
+		[animationTimer release];
+		animationTimer = nil;
 	}
+}
+
+- (void) dealloc
+{
+	[self stopAnimation];
 	[super dealloc];
 }
 
 - (void)nextFrame:(NSTimer*)sender
 {
-	currentFrame = ++currentFrame % frameCount;
-	
-	[data setProperty:NSImageCurrentFrame withValue:@(currentFrame)];
-
-	[self setNeedsDisplay];
+	if(self.superview == nil)
+	{
+		[self stopAnimation];
+		[self release];
+	}
+	else
+	{
+		currentFrame = ++currentFrame % frameCount;
+		
+		[data setProperty:NSImageCurrentFrame withValue:@(currentFrame)];
+		
+		[self setNeedsDisplay];
+	}
 }
 
 @end
