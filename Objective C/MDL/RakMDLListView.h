@@ -36,6 +36,8 @@
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;
 - (void) updateData : (uint) data : (uint) newCellWidth;
+- (void) rowDeleted : (NSNotification *) notification;
+
 - (void) updateContext;
 - (void) requestReloadData : (NSTableView *) tableView;
 

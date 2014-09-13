@@ -47,6 +47,7 @@
 		iconWidth = [_remove frame].size.width;
 		
 		[self setPositionsOfStuffs];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rowDeleted:) name:@"RakMDLListViewRowDeleted" object:nil];
 	}
 	
 	return self;
@@ -261,6 +262,45 @@
 	[self setPositionsOfStuffs];
 }
 
+#pragma mark - Delete row
+
+- (void) removeRowFromList
+{
+	NSView * tableView = self;
+	while (tableView != nil && [tableView class] != [RakTableView class])
+		tableView = tableView.superview;
+	
+	[self retain];
+	
+	if(tableView != nil)
+		[(RakTableView*) tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex : _row] withAnimation:NSTableViewAnimationSlideLeft];
+	
+	MDL * tabMDL = [[NSApp delegate] MDL];
+	if(tabMDL != nil)
+	{
+		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
+		
+		if(!NSEqualRects(lastFrame, newFrame))
+			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
+	}
+	
+	[self release];
+	
+	//Now, we can send a notification to update _row counters
+	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[@(_row)] forKeys : @[@"deletedRow"]];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:userInfo];
+}
+
+- (void) rowDeleted : (NSNotification *) notification
+{
+	NSDictionary *userInfo = [notification userInfo];
+
+	NSNumber * deletedRow = [userInfo objectForKey:@"deletedRow"];
+
+	if(deletedRow != nil && _row > [deletedRow unsignedIntValue])
+		_row--;
+}
+
 #pragma mark - View management
 
 - (void) updateContext
@@ -325,6 +365,8 @@
 		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[[NSNumber numberWithDouble:percentage], [NSNumber numberWithUnsignedLong:speed]] waitUntilDone:YES];
 }
 
+//We will abort the download, notify the controller, notify the main dispatcher, and diseapear from the table
+//If we were already installed, we won't uninstall
 - (void) sendRemove
 {
 	if(todoList == nil)
@@ -332,14 +374,8 @@
 	
 	bool wasDownloading = [_controller statusOfID:_row :YES] == MDL_CODE_DL;
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
-	
-	if(previousStatus == MDL_CODE_INSTALL_OVER)
-	{
-		//Deletion
-		getUpdatedCTList((*todoList)->datas, (*todoList)->listChapitreOfTome != NULL);
-		internalDeleteCT(*(*todoList)->datas, (*todoList)->listChapitreOfTome != NULL, (*todoList)->identifier);
-	}
-	else if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
+
+	if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
 	{
 		curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
 	}
@@ -350,29 +386,6 @@
 	
 	if(wasDownloading)
 		MDLDownloadOver(false);
-	
-	NSView * tableView = self;
-
-	while (tableView != nil && [tableView class] != [RakTableView class])
-		tableView = tableView.superview;
-	
-	[self retain];
-	
-	if(tableView != nil)
-		[(RakTableView*) tableView reloadData];
-
-	MDL * tabMDL = [[NSApp delegate] MDL];
-	if(tabMDL != nil)
-	{
-		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
-		
-		if(!NSEqualRects(lastFrame, newFrame))
-		{
-			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
-		}
-	}
-	
-	[self release];
 }
 
 - (void) sendPause
