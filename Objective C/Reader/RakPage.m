@@ -344,7 +344,7 @@ enum
 			
 			image.page = page;
 			
-			[self updatePCState : data : page + 1 : image];
+			[self updatePCState : data : page : image];
 		}
 	}
 	
@@ -1108,7 +1108,7 @@ enum
 	
 	if(view == nil)			//Loading failure
 	{
-		[self failure : page : data];
+		[self failure : position : data];
 		return NO;
 	}
 	
@@ -1139,9 +1139,7 @@ enum
 	[*data replaceObjectAtIndex:page withObject:view];
 	mainScroller.arrangedObjects = *data;
 	
-	NSLog(@"Unlocking");
 	MUTEX_UNLOCK(cacheMutex);
-	NSLog(@"Unlocked at %s", __PRETTY_FUNCTION__);
 	
 	[CATransaction commit];
 }

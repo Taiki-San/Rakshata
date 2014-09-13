@@ -168,7 +168,7 @@ bool addRepo(char * URL, char *type)
 
 char * getPathForTeam(char *URLRepo)
 {
-	if(URLRepo == NULL)
+	if(URLRepo < (char*) sizeof(TEAMS_DATA))	//In case the base pointer was NULL
 		return NULL;
 	
 	unsigned char URLRepoHash[SHA256_DIGEST_LENGTH];

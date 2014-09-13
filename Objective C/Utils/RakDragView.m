@@ -32,8 +32,8 @@
 			{
 				projectImage.image = [RakResPath craftResNameFromContext:@"defaultDragImage" :NO :YES : 1];
 			}
+			free(encodedHash);
 		}
-		free(encodedHash);
 	}
 	
 	if (projectName != nil)

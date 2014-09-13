@@ -129,6 +129,9 @@
 {
 	if(self.superview == nil)
 	{
+#ifdef DEV_VERSION
+		NSLog(@"WTH, we're not supposed to get called...\n%@", [NSThread callStackSymbols]);
+#endif
 		[self stopAnimation];
 		[self release];
 	}
