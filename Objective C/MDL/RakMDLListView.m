@@ -412,20 +412,11 @@
 
 - (void) sendRead
 {
-	NSView * view = self;
-	
-	while (view != nil && [view class] != [MDL class])
-	{
-		view = view.superview;
-	}
-	
-	if(view == nil)
-		return;
-	
 	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
 
-	[(MDL*) view propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
+	[[[NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 
+	[_controller discardElement: _row];
 	[self removeRowFromList];
 }
 

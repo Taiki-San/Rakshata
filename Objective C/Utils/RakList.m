@@ -154,7 +154,7 @@
 	CGFloat oldWidth = _tableView.frame.size.width;
 	NSRect scrollviewFrame = [self getTableViewFrame:frameRect];
 	
-	[scrollView resizeAnimation:scrollviewFrame];
+	[scrollView.animator resizeAnimation:scrollviewFrame];
 	
 	if(oldWidth != frameRect.size.width)
 	{
