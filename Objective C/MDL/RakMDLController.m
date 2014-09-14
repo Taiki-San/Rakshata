@@ -292,10 +292,10 @@
 
 - (void) discardElement : (uint) element
 {
-	discardedCount--;	//If decrement sent in the if, won't work for last element
-
-	if(element <= discardedCount)
+	if(element < discardedCount)
 	{
+		discardedCount--;
+		
 		for (uint posDiscarded = element; posDiscarded < discardedCount; posDiscarded++)
 		{
 			IDToPosition[posDiscarded] = IDToPosition[posDiscarded+1];
