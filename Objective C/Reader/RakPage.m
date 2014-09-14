@@ -530,7 +530,6 @@ enum
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 		return nil;
-
 	
 	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
 		
@@ -994,9 +993,9 @@ enum
 			{
 				for (i = _data.pageCourante + 1; i <= max; i++)
 				{
-					if(![self entryValid : data : i])
+					if(![self entryValid : data : i + 1])
 					{
-						[self loadPageCache:i :currentSession :&data];
+						[self loadPageCache : i :currentSession :&data];
 						break;
 					}
 				}

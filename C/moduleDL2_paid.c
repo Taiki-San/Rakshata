@@ -298,7 +298,11 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, uint * IDTo
 {
     for(uint i = 0, pos; i < length; i++)
     {
-		pos = IDToPosition[i];
+		if(IDToPosition != NULL)
+			pos = IDToPosition[i];
+		else
+			pos = i;
+		
         if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_3) && *status[pos] == MDL_CODE_DEFAULT)
             return true;
     }

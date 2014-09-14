@@ -104,7 +104,7 @@
 {
 	[headerText.animator setFrame:[headerText getMenuFrame:newBound]];
 	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
-	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
+	[dropPlaceHolder.animator setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
 }
 
 - (void) retainInternalViews
