@@ -16,7 +16,7 @@
 
 #define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
 
-static bool do_list(unzFile uf, bool *encrypted, char filename_inzip[NOMBRE_PAGE_MAX][256])
+static bool do_list(unzFile uf, bool *encrypted, char filenameInzip[NOMBRE_PAGE_MAX][256])
 {
     unz_global_info64 gi;
     int err;
@@ -48,7 +48,7 @@ static bool do_list(unzFile uf, bool *encrypted, char filename_inzip[NOMBRE_PAGE
             break;
         }
 
-        ustrcpy(filename_inzip[i], filename);
+        ustrcpy(filenameInzip[i], filename);
 
         if ((file_info.flag & 1) != 0) //Si chiffré
             *encrypted = true;
@@ -80,8 +80,8 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 
 	char *path = NULL;
 
-	int nombreFichiers = 0, nombreFichiersDecompresses = 0;
-    char filename_inzip[NOMBRE_PAGE_MAX][256]; //Recevra la liste de tous les fichiers
+	uint nombreFichiers = 0, nombreFichiersDecompresses = 0;
+    char filename[NOMBRE_PAGE_MAX][256]; //Recevra la liste de tous les fichiers
 
     if(size) //Si extraction d'un chapitre
         extractWithoutPath = true;
@@ -179,19 +179,18 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
     if(checkFileExist(pathToConfigFile))
         goto quit;
 
-    for(uint i = 0; i < NOMBRE_PAGE_MAX; i++) //Réinitialise les noms de page
-        for(uint j = 0; j < 256; filename_inzip[i][j++] = 0);
+	crashTemp(filename, sizeof(filename));
+	
+	//List files
+    ret_value &= do_list(uf, &encrypted, filename);
+	if(!ret_value)		goto quit;
 
-    ret_value &= do_list(uf, &encrypted, filename_inzip); //On lit l'archive
-	if(!ret_value)
-		goto quit;
+	//Count files inside archive
+    for(nombreFichiers = 0; nombreFichiers < NOMBRE_PAGE_MAX && filename[nombreFichiers][0] != 0; nombreFichiers++);
 
-    for(nombreFichiers = 0; nombreFichiers < NOMBRE_PAGE_MAX && filename_inzip[nombreFichiers][0] != 0; nombreFichiers++); //Nombre de fichier dans l'archive ZIP
-
-    unsigned char pass[NOMBRE_PAGE_MAX][SHA256_DIGEST_LENGTH]; //Les pass des fichiers
-
-    for(uint i = 0; i < NOMBRE_PAGE_MAX; i++)
-        for(uint j = 0; j < SHA256_DIGEST_LENGTH; pass[i][j++] = 0);
+	//Passes
+    unsigned char pass[NOMBRE_PAGE_MAX][SHA256_DIGEST_LENGTH];
+	crashTemp(pass, sizeof(pass));
 
     if(size)
     {
@@ -200,12 +199,12 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
     }
     for(uint i = 0; i < nombreFichiers; i++)
     {
-        if(checkNameFileZip(filename_inzip[i]))
+        if(checkNameFileZip(filename[i]))
         {
 			if(encrypted)	//password can be NULL
-                ret_value &= do_extract_onefile(uf, filename_inzip[i], path, extractWithoutPath, 1, password, pass[i]);
+                ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, password, pass[i]);
             else
-                ret_value &= do_extract_onefile(uf, filename_inzip[i], path, extractWithoutPath, 1, NULL, NULL);
+                ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, NULL, NULL);
 			
             nombreFichiersDecompresses++;
 
@@ -217,12 +216,12 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         }
         else
         {
-            if (filename_inzip[i][0] && filename_inzip[i][strlen(filename_inzip[i])-1] != '/' && i + 1 < nombreFichiers)
+            if (filename[i][0] && filename[i][strlen(filename[i])-1] != '/' && i + 1 < nombreFichiers)
             {
                 if (unzGoToNextFile(uf) != UNZ_OK)
                     break;
             }
-			memcpy(&filename_inzip[i], &filename_inzip[i+1], (nombreFichiers - i - 1) * sizeof(filename_inzip[0]));
+			memcpy(&filename[i], &filename[i+1], (nombreFichiers - i - 1) * sizeof(filename[0]));
 
 			nombreFichiers--;
 			i--;
@@ -240,23 +239,23 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 		
 		for(uint i = 0, j, k; i < nombreFichiers; i++) //On vire les paths des noms de fichiers
         {
-            if(!filename_inzip[i][0])
+            if(!filename[i][0])
                 continue;
 			
-			j = strlen(filename_inzip[i]);
-            for(; j > 0 && filename_inzip[i][j] != '/'; j--);
+			j = strlen(filename[i]);
+            for(; j > 0 && filename[i][j] != '/'; j--);
             if(j)
 			{
-				for(k = 0, j++; filename_inzip[i][j] != 0 && j < 256; filename_inzip[i][k++] = filename_inzip[i][j++]);
-				filename_inzip[i][k] = 0;
+				for(k = 0, j++; filename[i][j] != 0 && j < 256; filename[i][k++] = filename[i][j++]);
+				filename[i][k] = 0;
 			}
         }
 
 		for(uint i = 0; i < nombreFichiers; i++)
 		{
-			if(!strcmp(filename_inzip[i], CONFIGFILE)) //On vire les clées du config.dat
+			if(!strcmp(filename[i], CONFIGFILE)) //On vire les clées du config.dat
 			{
-				memcpy(&filename_inzip[i], &filename_inzip[i+1], (nombreFichiers - i - 1) * sizeof(filename_inzip[0]));
+				memcpy(&filename[i], &filename[i+1], (nombreFichiers - i - 1) * sizeof(filename[0]));
 				memcpy(&pass[i], &pass[i+1], (nombreFichiers - i - 1) * sizeof(pass[0]));
 				nombreFichiers--;
 				break;
@@ -270,7 +269,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 #ifdef DEV_VERSION
             logR("config.dat invalid: encryption aborted.\n");
 #endif
-            for(uint i = 0; filename_inzip[i][0]; remove(filename_inzip[i++])); //On fais le ménage
+            for(uint i = 0; filename[i][0]; remove(filename[i++])); //On fais le ménage
             if(nomPage != NULL)
             {
                 for(uint i = 0; nomPage[i]; free(nomPage[i++]));
@@ -280,17 +279,23 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
             goto quit;
         }
 		
+#ifdef MAINTAIN_SUPER_LEGACY_COMPATIBILITY
+		//Some legacy archive contain complexe file name, so we have to decapitalize them
+		for(uint i = 0; filename[i][0]; MajToMin(filename[i++]));
+#endif
+		
 		//Classement
-		for(uint j, i = 0; i <= nombreFichiers && filename_inzip[i][0] != 0; i++)
+		for(uint j, i = 0; i <= nombreFichiers && filename[i][0] != 0; i++)
         {
-            MajToMin(nomPage[i]);
-            for(j = 0; strcmp(nomPage[i], filename_inzip[j]) && filename_inzip[j][0] && j < nombreFichiers; j++);
+			MajToMin(nomPage[i]);
 
-            if(j != i && !strcmp(nomPage[i], filename_inzip[j])) //Mauvais classement
+			for(j = 0; strcmp(nomPage[i], filename[j]) && filename[j][0] && j < nombreFichiers; j++);
+
+            if(j != i && !strcmp(nomPage[i], filename[j])) //Mauvais classement
             {
-				strncpy((char*) temp, filename_inzip[i], sizeof(temp)); //On déplace les noms
-                strncpy(filename_inzip[i], filename_inzip[j], sizeof(filename_inzip[i]));
-				strncpy(filename_inzip[j], (char*) temp, sizeof(filename_inzip[j])); //On déplace les noms
+				strncpy((char*) temp, filename[i], sizeof(temp)); //On déplace les noms
+                strncpy(filename[i], filename[j], sizeof(filename[i]));
+				strncpy(filename[j], (char*) temp, sizeof(filename[j])); //On déplace les noms
 
                 memcpy(temp, pass[i], SHA256_DIGEST_LENGTH); //On déplace les clées
                 memcpy(pass[i], pass[j], SHA256_DIGEST_LENGTH);
@@ -335,7 +340,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
         }
 		else //delete chapter
 		{
-			for(uint i = 0; filename_inzip[i][0]; remove(filename_inzip[i++]));
+			for(uint i = 0; filename[i][0]; remove(filename[i++]));
 		}
 		
         free(hugeBuffer);

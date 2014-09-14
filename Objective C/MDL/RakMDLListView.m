@@ -339,7 +339,6 @@
 			
 		case MDL_CODE_INSTALL_OVER:
 		{
-			[_controller refreshCT:_row];
 			[_read setHidden:NO];
 			[_read display];
 			break;
@@ -432,7 +431,7 @@
 
 - (void) installOver
 {
-	if(![[[NSApp delegate] CT] refreshCT : YES : (*todoList)->datas->cacheDBID])
+	if(![[[NSApp delegate] CT] refreshCT : NO : (*todoList)->datas->cacheDBID])
 	{
 		//Some instance were not instantiated, we need to get them created
 		

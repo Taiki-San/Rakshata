@@ -376,7 +376,6 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 {
     bool wentFine = true;
     char temp[600], basePath[500], *encodedTeam = getPathForTeam(projectDB->team->URLRepo);
-    FILE* ressources = NULL;
 	
 	if(encodedTeam == NULL)
 		return true;
@@ -388,48 +387,41 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 		if(subFolder)
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d", encodedTeam, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedTeam, projectDB->projectID, tome, chapitre/10);
 		}
 		else
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedTeam, projectDB->projectID, tome, chapitre/10);
 		}
     }
     else
     {
         if(chapitre%10)
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, projectDB->projectID, chapitre/10, chapitre%10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, chapitre/10, chapitre%10);
         else
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, projectDB->projectID, chapitre/10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedTeam, projectDB->projectID, chapitre/10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);
     if(!checkFileExist(temp))
     {
 		//Décompression dans le repertoire de destination
-
-		//Création du répertoire de destination
-		snprintf(temp, 500, PROJECT_ROOT"%s/%d/", encodedTeam, projectDB->projectID);
-		if(!checkDirExist(temp))
-			createPath(temp);
 		
         mkdirR(basePath);
         if(!checkDirExist(basePath))
-        {
             createPath(basePath);
-            mkdirR(basePath);
-        }
 		
         //On crée un message pour ne pas lire un chapitre en cours d'install
         char installingFile[600];
-        snprintf(installingFile, sizeof(installingFile), "%s/installing", basePath);
-        ressources = fopen(installingFile, "w+");
-        if(ressources != NULL)
+        snprintf(installingFile, sizeof(installingFile), "%sinstalling", basePath);
+        FILE* ressources = fopen(installingFile, "w+");
+
+		if(ressources != NULL)
             fclose(ressources);
 		
         wentFine &= miniunzip(buf, basePath, NULL, sizeBuf, chapitre / 10);

@@ -27,7 +27,7 @@ void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 	byte posIV;
 	size_t length = data->length;
 
-	if(length > 1000 && data->depth < 2)	// > 1000 * 2 * 16o
+	if(length > 10000 && data->depth < 2)	// > 10000 * 2 * 16o ≈ 320ko
 	{
 		DECRYPT_PAGE_DATA *dataThread = malloc(sizeof(DECRYPT_PAGE_DATA));
 		if(dataThread != NULL)
@@ -50,7 +50,7 @@ void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 			createNewThread(decryptPageWorker, dataThread);
 		}
 	}
-	
+
 	rawData ciphertext[CRYPTO_BUFFER_SIZE], plaintext[CRYPTO_BUFFER_SIZE];
 	rawData *buffer_in = data->bufIn, *buffer_out = data->bufOut;
 	rawData IV[2][CRYPTO_BUFFER_SIZE];

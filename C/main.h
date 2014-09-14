@@ -27,6 +27,8 @@
 	#define refreshRendererIfBuggy(var);
 #endif
 
+#define MAINTAIN_SUPER_LEGACY_COMPATIBILITY
+
 #include "defines.h"
 #include "prototypes.h"
 #include "structures.h"

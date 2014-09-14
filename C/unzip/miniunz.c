@@ -67,8 +67,7 @@
 
 int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, bool* overwrite, const char* password, unsigned char* passwordPageCrypted)
 {
-    char* filename_withoutpath;
-    char* p;
+    char* filename_withoutpath, *p;
     int err = UNZ_OK;
     FILE *fout = NULL;
     uInt size_buf;
@@ -87,11 +86,10 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
         return err;
     }
 
-    p = filename_withoutpath = filename_inzip;
-    for(;(*p) != '\0'; p++)
+    for(p = filename_withoutpath = filename_inzip; *p != '\0'; p++)
     {
-        if (((*p)=='/') || ((*p)=='\\'))
-            filename_withoutpath = p+1; //Restreint au nom seul
+        if (*p == '/' || *p == '\\')
+            filename_withoutpath = p + 1; //Restreint au nom seul
     }
 
     if (*filename_withoutpath == 0) //Si on est au bout du nom du fichier (/ final), c'est un dossier
@@ -171,7 +169,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 
         if (fout != NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: chiffrement a la volée
         {
-            uint posIV, i, j, posDebChunk;
+            uint posIV = -1, i, j, posDebChunk;
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
 			unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
 			
@@ -179,12 +177,10 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 			TwofishInstance pTwoF;
 
             generateRandomKey(passwordPageCrypted);
-            for (posIV = 0; posIV < sizeof(key); posIV++)
-                key[posIV] = *passwordPageCrypted!= 0 ? *passwordPageCrypted++ : 0;
+			memcpy(key, passwordPageCrypted, sizeof(key));
 
             TwofishSetKey(&pTwoF, (u4byte*) key, KEYBITS);
             serpent_set_key((uint8_t*) key, KEYLENGTH(KEYBITS), &pSer);
-            posIV = -1;
 
             do
             {
@@ -325,7 +321,7 @@ int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPa
 
 bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, bool overwrite, const char* password, unsigned char* passwordPageCrypted)
 {
-    if (unzLocateFile(uf,filename,CASESENSITIVITY)!=UNZ_OK)
+    if (unzLocateFile(uf, filename, CASESENSITIVITY) != UNZ_OK)
     {
 #ifdef DEV_VERSION
 		char temp[256];
@@ -335,6 +331,6 @@ bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extr
         return false;
     }
 
-    return do_extract_currentfile(uf,filename,output_path,&extractWithoutPath, &overwrite, password, passwordPageCrypted) == UNZ_OK;
+    return do_extract_currentfile(uf, filename, output_path, &extractWithoutPath, &overwrite, password, passwordPageCrypted) == UNZ_OK;
 }
 

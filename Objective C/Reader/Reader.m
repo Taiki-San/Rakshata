@@ -23,6 +23,7 @@
 		gonnaReduceTabs = 0;
 		[Prefs getCurrentTheme:self];		//register for changes
 		self = [self initView : contentView : state];
+		self.layer.cornerRadius = 0;
 		
 		pthread_mutex_init(&cacheMutex, NULL);
 

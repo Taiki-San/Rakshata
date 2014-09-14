@@ -783,10 +783,6 @@ void decryptPageLeg(void *password, rawData *buffer_in, rawData *buffer_out, siz
 	decryptPageWorkerLeg(&data);
 	
 	while (jobIsDone);
-	
-	FILE* file = fopen("lol.png", "wb");
-	fwrite(buffer_out, length * 2 * CRYPTO_BUFFER_SIZE, 1, file);
-	fclose(file);
 }
 
 void encryptPage(void *password, rawData *buffer_in, char * pathOut, size_t length)
