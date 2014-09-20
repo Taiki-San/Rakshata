@@ -10,21 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	AUTH_STATE_GOOD,
-	AUTH_STATE_LOADING,
-	AUTH_STATE_NONE,
-	AUTH_STATE_INVALID
-};
-
-enum
-{
-	AUTH_MODE_DEFAULT,
-	AUTH_MODE_NEW_ACCOUNT,
-	AUTH_MODE_LOGIN,
-};
-
 //Arbitrary frames come from IB
 
 @implementation RakAuthController
@@ -78,16 +63,15 @@ enum
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-	mailInput = [[[RakEmailField alloc] initWithFrame:_containerMail.bounds] autorelease];
-	[_containerMail addSubview:mailInput];
+	mailInput = [[[RakEmailField alloc] initWithFrame:_containerMail.frame] autorelease];
+	[self.view addSubview:mailInput];
+	[_containerMail removeFromSuperview];
 	[mailInput addController:self];
 
-	passInput = [[[RakPassField alloc] initWithFrame:_containerPass.bounds] autorelease];
-	[_containerPass addSubview:passInput];
+	passInput = [[[RakPassField alloc] initWithFrame:_containerPass.frame] autorelease];
+	[self.view addSubview:passInput];
+	[_containerPass removeFromSuperview];
 	[passInput addController : self];
-	
-	[mailInput setNextKeyView:passInput];	//don't work
-	[passInput setNextKeyView:mailInput];
 }
 
 #pragma mark - Communication with internal elements
@@ -262,10 +246,11 @@ enum
 	
 	if(accept == nil)
 	{
-		accept = [[NSButton alloc] initWithFrame : container.bounds];
+		accept = [[RakAuthTermsButton alloc] initWithFrame : container.bounds];
 		[accept setButtonType:NSSwitchButton];
 		[accept setImagePosition:NSImageOnly];
 		[accept sizeToFit];
+		accept.controller = self;
 		
 		[accept setFrameOrigin:NSMakePoint(0, 49 + terms.bounds.size.height / 2 - accept.bounds.size.height / 2)];
 		[container addSubview:accept];
@@ -286,10 +271,14 @@ enum
 		[confirm setHidden:NO];
 	
 	NSRect frame = self.view.frame;
-	if(appear)
+	if(appear && !self.offseted)
 	{
 		//Resize main view
 		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, baseHeight +  51)];
+		
+		[mailInput.animator setFrameOrigin:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y + 51)];
+		[passInput.animator setFrameOrigin:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y + 51)];
+		
 		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight + 51)];
 		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
@@ -305,10 +294,16 @@ enum
 		[confirm.animator setAlphaValue:1];
 		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
 		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
+		
+		self.offseted = YES;
 	}
-	else
+	else if(!appear && self.offseted)
 	{
 		[self.view.animator setFrame : NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2, frame.size.width, baseHeight)];
+		
+		[mailInput.animator setFrameOrigin:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y - 51)];
+		[passInput.animator setFrameOrigin:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y - 51)];
+
 		[container.animator setFrame : NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight)];
 
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
@@ -324,6 +319,8 @@ enum
 		[confirm.animator setAlphaValue:0];
 		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
 		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
+		
+		self.offseted = NO;
 	}
 }
 
@@ -399,252 +396,85 @@ enum
 
 - (void) switchOver : (NSNumber*) isDisplayed
 {
-	if(isDisplayed != nil && [isDisplayed isKindOfClass:[NSNumber class]] && ![isDisplayed boolValue])
+	if(isDisplayed != nil && [isDisplayed isKindOfClass:[NSNumber class]])
 	{
-		[header removeFromSuperview];
-		[labelMail removeFromSuperview];
-		[mailInput removeFromSuperview];
-		[labelPass removeFromSuperview];
-		[passInput removeFromSuperview];
-		[container removeFromSuperview];
+		if([isDisplayed boolValue])
+		{
+			[self.view.window makeFirstResponder : mailInput];
+		}
+		else
+		{
+			[header removeFromSuperview];
+			[labelMail removeFromSuperview];
+			[mailInput removeFromSuperview];
+			[labelPass removeFromSuperview];
+			[passInput removeFromSuperview];
+			[container removeFromSuperview];
+			
+			[[NSApp delegate] loginPromptClosed];
+			[self release];
+		}
+	}
+}
+
+- (void) focusLeft : (id) caller : (NSUInteger) flag
+{
+	char offset = 1;
+	switch (flag)
+	{
+		case NSReturnTextMovement:
+		{
+			[self enterPressed];
+			break;
+		}
+			
+		case NSBacktabTextMovement:
+		{
+			offset = -1;
+		}
+		case NSTabTextMovement:
+		{
+			id tab[3] = {mailInput, passInput, accept};
+			byte nbElem = currentMode == AUTH_MODE_NEW_ACCOUNT ? 3 : 2;
+			
+			for(byte i = 0; i < nbElem; i++)
+			{
+				if(tab[i] == caller)
+				{
+					[self.view.window makeFirstResponder: tab[(i + offset) % nbElem]];
+					break;
+				}
+			}
+
+			break;
+		}
+	}
+}
+
+- (void) enterPressed
+{
+	if(mailInput.currentStatus != AUTH_STATE_GOOD)
+		[self.view.window makeFirstResponder:mailInput];
+	else if([[passInput stringValue] length] == 0)
+		[self.view.window makeFirstResponder:passInput];
+
+	else if(currentMode == AUTH_MODE_NEW_ACCOUNT)
+	{
+		if(accept.state == NSOnState)
+		{
+			[confirm performClick:self];
+			[self clickedSignup];
+		}
+		else
+			[self.view.window makeFirstResponder:accept];
 		
-		[[NSApp delegate] loginPromptClosed];
-		[self release];
+	}
+	else if(currentMode == AUTH_MODE_LOGIN)
+	{
+		[_login performClick:self];
+		[self clickedLogin];
 	}
 }
 
 @end
 
-@implementation RakEmailField
-
-- (instancetype) initWithFrame : (NSRect) frameRect
-{
-	self = [super initWithFrame:frameRect];
-	
-	if(self != nil)
-	{
-		self.currentStatus = AUTH_STATE_NONE;
-		
-		((RakTextCell*)self.cell).customizedInjectionPoint = YES;
-		((RakTextCell*)self.cell).centered = YES;
-		
-		[self setBezeled:NO];
-		[self setBordered:YES];
-		self.wantCustomBorder = YES;
-		
-		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
-		[self setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
-		[self.cell setPlaceholderAttributedString : [[[NSAttributedString alloc] initWithString:@"exemple@email.com" attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}] autorelease]];
-
-		[self setDelegate:self];
-	}
-	
-	return self;
-}
-
-- (BOOL) becomeFirstResponder
-{
-	[self.cell setPlaceholderString:@"exemple@email.com"];
-	return [super becomeFirstResponder];
-}
-
-- (void) addController : (RakAuthController *) controller
-{
-	authController = controller;
-}
-
-- (NSColor *) getBorderColor
-{
-	if(self.currentStatus != AUTH_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-	{
-		self.currentStatus = AUTH_STATE_INVALID;
-	}
-	
-	switch (self.currentStatus)
-	{
-		case AUTH_STATE_GOOD:
-		{
-			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_INVALID:
-		{
-			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_LOADING:
-		{
-			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_NONE:
-		default:
-		{
-			return [super getBorderColor];
-		}
-	}
-}
-
-#pragma mark - Delegate
-
-- (BOOL) textShouldBeginEditing:(NSText *)textObject
-{
-	return authController == NULL || !authController.postProcessing;
-}
-
-- (void)textDidBeginEditing:(NSNotification *)aNotification
-{
-	currentEditingSession++;
-	self.currentStatus = AUTH_STATE_NONE;
-}
-
-- (void)textDidEndEditing:(NSNotification *)aNotification
-{
-	uint currentSession = currentEditingSession;
-	
-	self.currentStatus = AUTH_STATE_LOADING;
-	[self setNeedsDisplay];
-	
-	[self performSelectorInBackground:@selector(checkEmail:) withObject:@(currentSession)];
-}
-
-#pragma mark - Core
-
-- (void) checkEmail : (NSNumber *) session
-{
-	if(session != nil && [session isKindOfClass:[NSNumber class]])
-	{
-		uint currentSession = [session unsignedIntValue];
-		
-		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
-		
-		[self checkEmailSub : currentSession];
-		
-		if(self.currentStatus != AUTH_STATE_GOOD)
-			[CATransaction commit];
-	}
-	else
-		self.currentStatus = AUTH_STATE_INVALID;
-	
-	[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
-}
-
-- (void) checkEmailSub : (uint) currentSession
-{
-	if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-	{
-		while(currentSession == currentEditingSession && checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
-		{
-			usleep(5000);
-		}
-	}
-	
-	if(currentSession == currentEditingSession && !checkNetworkState(CONNEXION_OK))
-	{
-		self.currentStatus = AUTH_STATE_INVALID;
-		return;
-	}
-	
-	if([self.stringValue length] > 100)
-	{
-		self.currentStatus = AUTH_STATE_INVALID;
-		return;
-	}
-	
-	NSString * string = [[[self stringValue] copy] autorelease];
-	const char * data = [string cStringUsingEncoding:NSASCIIStringEncoding];
-	
-	byte retValue = checkLogin(data);
-	
-	if(currentSession != currentEditingSession)
-		return;
-	
-	if(retValue == 2)
-	{
-		self.currentStatus = AUTH_STATE_INVALID;
-		return;
-	}
-	
-	self.currentStatus = AUTH_STATE_GOOD;
-	
-	if(authController != nil)
-	{
-		[authController wakePassUp];
-		[CATransaction commit];
-		[authController validEmail : retValue == 0 : currentSession];
-	}
-}
-
-@end
-
-@implementation RakPassField
-
-- (instancetype) initWithFrame : (NSRect) frameRect
-{
-	self = [super initWithFrame:frameRect];
-	
-	if(self != nil)
-	{
-		[self setBezeled:NO];
-		[self setBordered:YES];
-		self.wantCustomBorder = NO;
-		[self setDelegate:self];
-
-		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
-	}
-	
-	return self;
-}
-
-- (NSColor *) getBorderColor
-{
-	switch (self.currentStatus)
-	{
-		case AUTH_STATE_GOOD:
-		{
-			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_INVALID:
-		{
-			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_LOADING:
-		{
-			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];;
-		}
-			
-		case AUTH_STATE_NONE:
-		default:
-		{
-			return [super getBorderColor];
-		}
-	}
-}
-
-- (void) addController : (RakAuthController *) controller
-{
-	authController = controller;
-}
-
-- (BOOL) textShouldBeginEditing:(NSText *)textObject
-{
-	return authController == nil || !authController.postProcessing;
-}
-
-- (void)textDidEndEditing:(NSNotification *)aNotification
-{
-	self.currentStatus = AUTH_STATE_LOADING;
-	[self setNeedsDisplay];
-}
-
-+ (Class) cellClass
-{
-	return [RakPassFieldCell class];
-}
-
-@end

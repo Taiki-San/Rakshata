@@ -93,6 +93,7 @@
 		B6EDE77518B02BCC00DB3AFC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6EDE77318B02BCC00DB3AFC /* Credits.rtf */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
+		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
 		B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA418A3001400E3B55B /* chapitre.c */; };
 		B6F6ECEC18A3001400E3B55B /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA518A3001400E3B55B /* check.c */; };
 		B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA818A3001400E3B55B /* pbkdf2.c */; };
@@ -301,6 +302,8 @@
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
+		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
+		B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAuthTools.m; path = Prefs/RakAuthTools.m; sourceTree = "<group>"; };
 		B6F6ECA418A3001400E3B55B /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = C/chapitre.c; sourceTree = "<group>"; };
 		B6F6ECA518A3001400E3B55B /* check.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = check.c; path = C/check.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6F6ECA718A3001400E3B55B /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto.h; sourceTree = "<group>"; };
@@ -388,8 +391,7 @@
 				B62182451873527A008AC5DD /* Prefs.h */,
 				B62182461873527A008AC5DD /* Prefs.m */,
 				B6CC724518723063003A745B /* PrefsUI */,
-				B6EB260719845E2100D678B3 /* RakAuthController.h */,
-				B6EB260819845E2100D678B3 /* RakAuthController.m */,
+				B6F2F7B319CE2C830044A69C /* RakAuth */,
 				B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */,
 				B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */,
 				B6E8E1B019ABAE6200930E6D /* RakPrefsRemindPopover.h */,
@@ -717,6 +719,17 @@
 			name = "Lecteur Core";
 			sourceTree = "<group>";
 		};
+		B6F2F7B319CE2C830044A69C /* RakAuth */ = {
+			isa = PBXGroup;
+			children = (
+				B6EB260719845E2100D678B3 /* RakAuthController.h */,
+				B6EB260819845E2100D678B3 /* RakAuthController.m */,
+				B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */,
+				B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */,
+			);
+			name = RakAuth;
+			sourceTree = "<group>";
+		};
 		B6F6ECA618A3001400E3B55B /* crypto */ = {
 			isa = PBXGroup;
 			children = (
@@ -869,7 +882,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Rak;
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
 					B6CF07BA1868DD58009B16A3 = {
@@ -977,6 +990,7 @@
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
 				B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */,
+				B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
 				B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */,
 				B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */,
@@ -1138,7 +1152,6 @@
 		B6CF07ED1868DD58009B16A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
 				CLANG_ANALYZER_OBJC_RETAIN_COUNT = NO;
@@ -1204,7 +1217,6 @@
 		B6CF07EE1868DD58009B16A3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
 				CLANG_ANALYZER_OBJC_RETAIN_COUNT = NO;
