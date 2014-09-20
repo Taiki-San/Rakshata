@@ -139,12 +139,16 @@
 
 - (void) clickedLogin
 {
+	[self.view.window makeFirstResponder:self.view];
+
 	if(!self.postProcessing && [self isMailValid] && [self isPassValid])
 		[self clickedConfirm:NO];
 }
 
 - (void) clickedSignup
 {
+	[self.view.window makeFirstResponder:self.view];
+
 	if(!self.postProcessing && [self isMailValid] && [self isPassValid] && [self isTermAccepted])
 		[self clickedConfirm:YES];
 }
@@ -460,7 +464,7 @@
 
 	else if(currentMode == AUTH_MODE_NEW_ACCOUNT)
 	{
-		if(accept.state == NSOnState)
+		if([self isTermAccepted])
 		{
 			[confirm performClick:self];
 			[self clickedSignup];
