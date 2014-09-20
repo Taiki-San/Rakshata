@@ -23,6 +23,8 @@
 @property BOOL functionPressed;
 @property BOOL commandPressed;
 
+@property (assign) NSView* defaultDispatcher;
+
 
 - (BOOL) isFullscreen;
 - (void) stopDrag;
