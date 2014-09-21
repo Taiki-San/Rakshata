@@ -563,8 +563,10 @@ enum
 	if(switchType != READER_ETAT_DEFAULT && mainScroller.selectedIndex != _data.pageCourante + 1)
 	{
 		MUTEX_LOCK(cacheMutex);
-	
+		
+		self.preventRecursion = YES;
 		mainScroller.selectedIndex = _data.pageCourante + 1;
+		self.preventRecursion = NO;
 		
 		MUTEX_UNLOCK(cacheMutex);
 	}
@@ -1250,7 +1252,7 @@ enum
 		else
 			requestedPage = object.page;
 		
-		if(requestedPage != _data.pageCourante)
+		if(requestedPage != _data.pageCourante && !self.preventRecursion)
 		{
 			[self changePage : requestedPage > _data.pageCourante ? READER_ETAT_NEXTPAGE : READER_ETAT_PREVPAGE];
 		}

@@ -66,6 +66,7 @@
 
 @property BOOL distractionFree;
 @property BOOL isTome;
+@property BOOL preventRecursion;
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
