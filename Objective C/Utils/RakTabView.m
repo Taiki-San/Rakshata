@@ -169,7 +169,8 @@
 
 - (void) refreshLevelViewsAnimation : (NSView*) superView
 {
-	[self.window makeFirstResponder:[self.window initialFirstResponder]];
+	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
+		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
 	
 	//Variable to set up the animation
 	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: [superView subviews] : NO] autorelease];
