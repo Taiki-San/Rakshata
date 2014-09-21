@@ -94,6 +94,8 @@
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
 		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
+		B6F6615D19CF3A8B00DC6B40 /* project_large.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F6615B19CF3A8B00DC6B40 /* project_large.png */; };
+		B6F6615E19CF3A8B00DC6B40 /* project_large@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F6615C19CF3A8B00DC6B40 /* project_large@2x.png */; };
 		B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA418A3001400E3B55B /* chapitre.c */; };
 		B6F6ECEC18A3001400E3B55B /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA518A3001400E3B55B /* check.c */; };
 		B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA818A3001400E3B55B /* pbkdf2.c */; };
@@ -304,6 +306,8 @@
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
 		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
 		B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAuthTools.m; path = Prefs/RakAuthTools.m; sourceTree = "<group>"; };
+		B6F6615B19CF3A8B00DC6B40 /* project_large.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = project_large.png; sourceTree = "<group>"; };
+		B6F6615C19CF3A8B00DC6B40 /* project_large@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "project_large@2x.png"; sourceTree = "<group>"; };
 		B6F6ECA418A3001400E3B55B /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = C/chapitre.c; sourceTree = "<group>"; };
 		B6F6ECA518A3001400E3B55B /* check.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = check.c; path = C/check.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6F6ECA718A3001400E3B55B /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto.h; sourceTree = "<group>"; };
@@ -700,6 +704,8 @@
 				B6BAD72F198D22DF00447A7D /* loading.gif */,
 				B6FBCB9919AABC8200FE1240 /* failed_loading.png */,
 				B6ABCAE619AAB1FA000929D0 /* failed_loading@2x.png */,
+				B6F6615B19CF3A8B00DC6B40 /* project_large.png */,
+				B6F6615C19CF3A8B00DC6B40 /* project_large@2x.png */,
 				B6EDE77318B02BCC00DB3AFC /* Credits.rtf */,
 				B66ED1971949EC20002A333F /* theme 1 */,
 				B6E09697197C9DCE0084873C /* theme 2 */,
@@ -923,12 +929,14 @@
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,
 				B6ABCAE819AAB1FA000929D0 /* failed_loading@2x.png in Resources */,
+				B6F6615D19CF3A8B00DC6B40 /* project_large.png in Resources */,
 				B6EB260619841E2500D678B3 /* auth.xib in Resources */,
 				B66ED1981949EC20002A333F /* theme 1 in Resources */,
 				B6BAD730198D22DF00447A7D /* loading.gif in Resources */,
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
 				B6FBCB9A19AABC8200FE1240 /* failed_loading.png in Resources */,
 				B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */,
+				B6F6615E19CF3A8B00DC6B40 /* project_large@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
