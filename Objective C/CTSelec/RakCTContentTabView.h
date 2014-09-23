@@ -10,19 +10,29 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "RakCTContentTabView.h"
-
-@interface RakChapterView : RakTabContentTemplate
+@interface RakCTContentTabView : NSView
 {
-	RakTextProjectName *projectName;
-	RakCTProjectImageView * projectImage;
-	RakCTContentTabView * coreView;
+	PROJECT_DATA data;
+	RakCTCoreViewButtons * buttons;
+	RakCTCoreContentView * tableViewControllerChapter;
+	RakCTCoreContentView * tableViewControllerVolume;
 }
 
-- (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;
+@property BOOL dontNotify;
 
-- (void) updateContext : (PROJECT_DATA) data;
-- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+- (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
+
+- (void) resizeAnimation : (NSRect) frameRect;
+- (NSString *) getContextToGTFO;
+
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+
+- (void) feedAnimationController : (RakCTAnimationController *) animationController;
+- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
+
+- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+- (BOOL) updateContext : (PROJECT_DATA) newData;
 
 @end
+

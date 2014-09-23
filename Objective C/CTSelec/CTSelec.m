@@ -23,12 +23,11 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
 		
-		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
+		backButton = [[[RakBackButton alloc] initWithFrame:[self bounds]: true] autorelease];
 		[backButton setTarget:self];
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!self.readerMode];
 		[self addSubview:backButton];
-		[backButton release];
 
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 		{

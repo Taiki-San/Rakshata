@@ -21,6 +21,7 @@
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
+		B621988D19D16BC800001092 /* RakCTContentTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621988C19D16BC800001092 /* RakCTContentTabView.m */; };
 		B623390A18DBB7F800FC188A /* RakContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B623390918DBB7F800FC188A /* RakContentView.m */; };
 		B62C9EF318BD73D500CE910F /* DBTools.c in Sources */ = {isa = PBXBuildFile; fileRef = B62C9EF218BD73D500CE910F /* DBTools.c */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
@@ -170,6 +171,8 @@
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
+		B621988B19D16BC800001092 /* RakCTContentTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTContentTabView.h; path = CTSelec/RakCTContentTabView.h; sourceTree = "<group>"; };
+		B621988C19D16BC800001092 /* RakCTContentTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTContentTabView.m; path = CTSelec/RakCTContentTabView.m; sourceTree = "<group>"; };
 		B623390818DBB7F800FC188A /* RakContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContentView.h; path = Utils/RakContentView.h; sourceTree = "<group>"; };
 		B623390918DBB7F800FC188A /* RakContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContentView.m; path = Utils/RakContentView.m; sourceTree = "<group>"; };
 		B62C9EF218BD73D500CE910F /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/DBTools.c; sourceTree = "<group>"; };
@@ -518,6 +521,8 @@
 				B6E89388189EF39700ACAF36 /* CTSelec.m */,
 				B6EC482118E5E03E00288C3B /* RakChapterView.h */,
 				B6EC482218E5E03E00288C3B /* RakChapterView.m */,
+				B621988B19D16BC800001092 /* RakCTContentTabView.h */,
+				B621988C19D16BC800001092 /* RakCTContentTabView.m */,
 				B67E079218E7714B0007EB44 /* RakCTCoreContentView.h */,
 				B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */,
 				B6D43D7018E70E780030B7FF /* RakCTCoreViewButtons.h */,
@@ -989,6 +994,7 @@
 				B67845A519634C83007372C7 /* crc32.c in Sources */,
 				B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */,
 				B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */,
+				B621988D19D16BC800001092 /* RakCTContentTabView.m in Sources */,
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6E8E1B219ABAE6200930E6D /* RakPrefsRemindPopover.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
