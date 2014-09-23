@@ -10,28 +10,33 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakCTHeader
+@implementation RakCTHImage
 
-- (id) initWithData : (NSRect) frame : (PROJECT_DATA) data
+- (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
 {
-	self = [self initWithFrame:[self frameByParent:frame]];
+	if(data.team == NULL)
+		return nil;
+	
+	self = [self initWithFrame : parentFrame];
 	
 	if(self != nil)
 	{
-		_background = [[RakCTHImage alloc] initWithProject : self.bounds : data];
+		char * teamPath = getPathForTeam(data.team->URLRepo);
+		
+		if(teamPath == NULL)
+		{
+			[self release];
+			return nil;
+		}
+		
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
+		if(bundle != nil)
+		{
+			self.image = [[bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]] autorelease];
+		}
 	}
 	
 	return self;
-}
-
-- (NSRect) frameByParent : (NSRect) parentFrame
-{
-	//We take half of the width, and the top 40% of the view
-	parentFrame.size.width /= 2;
-	parentFrame.origin.y = parentFrame.size.height * 2 / 5;
-	parentFrame.size.height -= parentFrame.origin.y;
-
-	return parentFrame;
 }
 
 @end

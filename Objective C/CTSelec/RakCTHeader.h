@@ -10,9 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class RakCTHeader;
+
+#import "RakCTHImage.h"
+
 @interface RakCTHeader : NSView
 {
 	PROJECT_DATA _data;
+	
+	//Elements
+	RakCTHImage * _background;
 }
 
 @end

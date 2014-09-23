@@ -25,7 +25,7 @@
 			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", encodedHash]];
 			if(bundle != nil)
 			{
-				projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_DD", projectData.projectID]];
+				projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_DD, projectData.projectID]];
 			}
 			
 			if(projectImage.image == nil)

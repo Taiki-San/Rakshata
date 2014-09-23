@@ -22,7 +22,7 @@
 		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease]];
 		if(projectName != nil)	[self addSubview:projectName];
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_CT", project.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
 		if(projectImage != nil)	[self addSubview:projectImage];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
@@ -130,7 +130,7 @@
 		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.team->URLRepo : [NSString stringWithFormat:@"%d_CT", data.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	

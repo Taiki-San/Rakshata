@@ -71,6 +71,7 @@
 		B6BAD730198D22DF00447A7D /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = B6BAD72F198D22DF00447A7D /* loading.gif */; };
 		B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6BD7B5A194860A9000A0B73 /* jumpPage.xib */; };
 		B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */; };
+		B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
@@ -267,6 +268,8 @@
 		B6BD7B5A194860A9000A0B73 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Reader/jumpPage.xib"; sourceTree = "<group>"; };
 		B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeader.h; path = CTSelec/RakCTHeader.h; sourceTree = "<group>"; };
 		B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
+		B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHImage.h; path = CTSelec/RakCTHImage.h; sourceTree = "<group>"; };
+		B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHImage.m; path = CTSelec/RakCTHImage.m; sourceTree = "<group>"; };
 		B6C64E57194BB6EB0066A7BD /* RakDragItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragItem.h; path = Utils/RakDragItem.h; sourceTree = "<group>"; };
 		B6C64E58194BB6EB0066A7BD /* RakDragItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragItem.m; path = Utils/RakDragItem.m; sourceTree = "<group>"; };
 		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
@@ -522,6 +525,8 @@
 			children = (
 				B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */,
 				B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */,
+				B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */,
+				B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */,
 			);
 			name = "CT Header";
 			sourceTree = "<group>";
@@ -1009,6 +1014,7 @@
 				B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */,
 				B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */,
 				B621988D19D16BC800001092 /* RakCTContentTabView.m in Sources */,
+				B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */,
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6E8E1B219ABAE6200930E6D /* RakPrefsRemindPopover.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
