@@ -301,7 +301,7 @@ void releaseDataReader(DATA_LECTURE *data)
 	
 	if (data->nomPages != NULL)
 	{
-		for (int i = data->nombrePageTotale; i > 0; free(data->nomPages[--i]));
+		for (int i = data->nombrePageTotale; i >= 0; free(data->nomPages[i--]));
 		free(data->nomPages);					data->nomPages = NULL;
 	}
 	
