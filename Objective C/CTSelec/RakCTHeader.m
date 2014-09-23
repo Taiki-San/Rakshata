@@ -10,25 +10,23 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakCTCoreContentView.h"
-#import "RakCTTools.h"
-#import "RakCTCoreViewButtons.h"
-#import "RakChapterView.h"
-#import "RakCTHeader.h"
+@implementation RakCTHeader
 
-@interface CTSelec : RakTabView
+- (id) initWithData : (NSRect) frame : (PROJECT_DATA) data
 {
-	RakBackButton *backButton;
-	RakChapterView * coreView;
+	self = [self initWithFrame:[self frameByParent:frame]];
+	
+	if(self != nil)
+	{
+		
+	}
+	
+	return self;
 }
 
-- (id)init : (NSView*)contentView : (NSString *) state;
-
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY;
-
-- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
-
-- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+- (NSRect) frameByParent : (NSRect) parentFrame
+{
+	return parentFrame;
+}
 
 @end

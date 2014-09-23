@@ -70,6 +70,7 @@
 		B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */; };
 		B6BAD730198D22DF00447A7D /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = B6BAD72F198D22DF00447A7D /* loading.gif */; };
 		B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6BD7B5A194860A9000A0B73 /* jumpPage.xib */; };
+		B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CF07BF1868DD58009B16A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CF07BE1868DD58009B16A3 /* Cocoa.framework */; };
@@ -264,6 +265,8 @@
 		B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDeleteConfirm.m; path = Reader/RakDeleteConfirm.m; sourceTree = "<group>"; };
 		B6BAD72F198D22DF00447A7D /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		B6BD7B5A194860A9000A0B73 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Reader/jumpPage.xib"; sourceTree = "<group>"; };
+		B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeader.h; path = CTSelec/RakCTHeader.h; sourceTree = "<group>"; };
+		B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
 		B6C64E57194BB6EB0066A7BD /* RakDragItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragItem.h; path = Utils/RakDragItem.h; sourceTree = "<group>"; };
 		B6C64E58194BB6EB0066A7BD /* RakDragItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragItem.m; path = Utils/RakDragItem.m; sourceTree = "<group>"; };
 		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
@@ -514,9 +517,19 @@
 			name = Popovers;
 			sourceTree = "<group>";
 		};
+		B6BF49D919D18E5700A2AAC9 /* CT Header */ = {
+			isa = PBXGroup;
+			children = (
+				B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */,
+				B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */,
+			);
+			name = "CT Header";
+			sourceTree = "<group>";
+		};
 		B6CC724318723044003A745B /* CT */ = {
 			isa = PBXGroup;
 			children = (
+				B6BF49D919D18E5700A2AAC9 /* CT Header */,
 				B6E89387189EF39700ACAF36 /* CTSelec.h */,
 				B6E89388189EF39700ACAF36 /* CTSelec.m */,
 				B6EC482118E5E03E00288C3B /* RakChapterView.h */,
@@ -987,6 +1000,7 @@
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
 				B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
+				B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */,
 				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
 				B6976686190D9C4D00B0A266 /* RakMDLRessources.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,

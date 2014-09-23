@@ -17,6 +17,12 @@
 #define MAX_TEAM_LINE_LENGTH		(LENGTH_PROJECT_NAME + LONGUEUR_COURT + LONGUEUR_TYPE_TEAM + LONGUEUR_URL + LONGUEUR_SITE + 25)
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
+//Image cache suffixes
+#define PROJ_IMG_SUFFIX_CT		"CT"		//CT miniature in the reduced CT tab (reader mode)
+#define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
+#define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
+
+
 //Options
 #define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
 //#define DELETE_REMOVED_PROJECT

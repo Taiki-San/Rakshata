@@ -241,7 +241,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 					continue;
 			}
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s.png", project[pos].projectID, large ? "CT" : "DD");
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s.png", project[pos].projectID, large ? PROJ_IMG_SUFFIX_CT : PROJ_IMG_SUFFIX_DD);
 			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
 			
 			if(strncmp(crcHash, hash, LENGTH_HASH))
@@ -253,11 +253,11 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 {
 	bool ssl = strcmp(team.type, TYPE_DEPOT_2) != 0;
-	char URL[1024], filenameTmp[1024+64], suffix[6] = "CT", buf[5];
+	char URL[1024], filenameTmp[1024+64], suffix[6] = PROJ_IMG_SUFFIX_CT, buf[5];
 	uint pos = strlen(filename);
 	FILE* file;
 	
-	if(!large)	suffix[0] = suffix[1] = 'D';
+	if(!large)	{	suffix[0] = PROJ_IMG_SUFFIX_DD[0];	suffix[1] = PROJ_IMG_SUFFIX_DD[1]; }
 	
 	strncpy(filenameTmp, filename, sizeof(filenameTmp));
 	for(char i = 0; i < 2; i++)
