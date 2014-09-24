@@ -11,6 +11,9 @@
  *********************************************************************************************/
 
 @interface RakCTHImage : NSImageView
+{
+	NSImage * defaultImage;
+}
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;
 
