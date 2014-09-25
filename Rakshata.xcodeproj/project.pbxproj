@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* window.xib */; };
+		B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6012BBA19D41AA000E12BED /* RakCTHContainer.m */; };
 		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
 		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
@@ -154,6 +155,8 @@
 
 /* Begin PBXFileReference section */
 		B6002C30189EF15E00466654 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = Ressources/window.xib; sourceTree = "<group>"; };
+		B6012BB919D41AA000E12BED /* RakCTHContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHContainer.h; path = CTSelec/RakCTHContainer.h; sourceTree = "<group>"; };
+		B6012BBA19D41AA000E12BED /* RakCTHContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHContainer.m; path = CTSelec/RakCTHContainer.m; sourceTree = "<group>"; };
 		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
 		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
@@ -525,6 +528,8 @@
 			children = (
 				B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */,
 				B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */,
+				B6012BB919D41AA000E12BED /* RakCTHContainer.h */,
+				B6012BBA19D41AA000E12BED /* RakCTHContainer.m */,
 				B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */,
 				B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */,
 			);
@@ -1088,6 +1093,7 @@
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */,
 				B6F6ED1918A3001400E3B55B /* update.c in Sources */,
+				B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,
 				B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */,

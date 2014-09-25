@@ -16,5 +16,6 @@
 }
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;
+- (BOOL) loadProject : (PROJECT_DATA) data;
 
 @end

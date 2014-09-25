@@ -21,32 +21,40 @@
 	
 	if(self != nil)
 	{
-		char * teamPath = getPathForTeam(data.team->URLRepo);
-		
-		if(teamPath == NULL)
+		if(![self loadProject : data])
 		{
 			[self release];
 			return nil;
 		}
-		
-		NSImage * image = nil;
-		
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
-		if(bundle != nil)
-			image = [[bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]] autorelease];
-		
-		if(image == nil)
-		{
-			if(defaultImage == nil)
-				defaultImage = [[NSImage imageNamed:@"project_large"] retain];
-			
-			image = defaultImage;
-		}
-		
-		self.image = image;
 	}
 	
 	return self;
+}
+
+- (BOOL) loadProject : (PROJECT_DATA) data
+{
+	char * teamPath = getPathForTeam(data.team->URLRepo);
+	
+	if(teamPath == NULL)
+		return NO;
+	
+	NSImage * image = nil;
+
+	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
+	if(bundle != nil)
+		image = [[bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]] autorelease];
+	
+	if(image == nil)
+	{
+		if(defaultImage == nil)
+			defaultImage = [[NSImage imageNamed:@"project_large"] retain];
+		
+		image = defaultImage;
+	}
+	
+	self.image = image;
+	free(teamPath);
+	return YES;
 }
 
 - (void) dealloc

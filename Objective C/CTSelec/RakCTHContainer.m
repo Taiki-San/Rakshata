@@ -10,25 +10,53 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakCTHeader;
+@implementation RakCTHContainer
 
-#import "RakCTHImage.h"
-#import "RakCTHContainer.h"
-
-@interface RakCTHeader : NSView
+- (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project
 {
-	uint projectCacheID;
-	PROJECT_DATA _data;
+	self = [self initWithFrame:frame];
 	
-	//Elements
-	RakCTHImage * _background;
-	RakCTHContainer * _container;
+	if(self != nil)
+	{
+		[Prefs getCurrentTheme:self];
+		[self updateGradient];
+		[self loadProject : project];
+	}
 	
-	//Cached drawing ressources
-	NSColor * parentBackground;
-	NSGradient * gradient;
+	return self;
 }
 
-- (void) updateGradient;
+- (void) dealloc
+{
+	[gradient release];
+	
+	[super dealloc];
+}
+
+#pragma mark - Interface
+
+- (void) loadProject : (PROJECT_DATA) project
+{
+	_data = project;
+	
+}
+
+#pragma mark - UI routines
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[gradient drawInRect : self.bounds angle : 270];
+
+	[super drawRect:dirtyRect];
+}
+
+#pragma mark - UI utilities
+
+- (void) updateGradient
+{
+	[gradient release];
+	gradient = [[NSGradient alloc] initWithStartingColor : [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO] endingColor : [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO]];
+}
+
 
 @end
