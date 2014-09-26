@@ -24,8 +24,6 @@
 
 @interface RakReaderBottomBar : NSView
 {
-	bool readerMode;
-	
 	/** Images of different icons **/
 	RakButton *favorite;
 	RakButton *fullscreen;
@@ -48,15 +46,13 @@
 	NSTrackingArea * trackingArea;
 }
 
+@property BOOL readerMode;
 @property BOOL highjackedMouseEvents;
 
 - (id)init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
-
-- (void) leaveReaderMode;
-- (void) startReaderMode;
 
 - (void) releaseIcons;
 

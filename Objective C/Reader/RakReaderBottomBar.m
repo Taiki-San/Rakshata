@@ -26,7 +26,7 @@
 		[self setAutoresizesSubviews:NO];
 		
 		_parent = parent;
-		readerMode = parent.readerMode;
+		self.readerMode = parent.readerMode;
 
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:RADIUS_BORDERS];
@@ -53,16 +53,6 @@
 	CGContextAddArc(contextBorder, RADIUS_BORDERS, selfSize.height / 2, RADIUS_BORDERS, -5 * M_PI_2 / 3, M_PI_2, 1);
 	CGContextAddLineToPoint(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height);
 	CGContextAddArc(contextBorder, selfSize.width - RADIUS_BORDERS, selfSize.height/2, RADIUS_BORDERS, M_PI_2, M_PI_2 / 3, 1);
-}
-
-- (void) leaveReaderMode
-{
-	readerMode = false;
-}
-
-- (void) startReaderMode
-{
-	readerMode = true;
 }
 
 - (void) releaseIcons
@@ -295,6 +285,9 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
+	if(self.readerMode && self.isHidden)
+		[self.animator setHidden:NO];
+	
 	[self setFrameInternal:frameRect :YES];
 }
 
@@ -320,7 +313,7 @@
 	if(isAnimated)
 		popoverFrame.origin.x += frameRect.origin.x - self.superview.frame.origin.x;
 	
-	if(!readerMode)
+	if(!self.readerMode)
 	{
 		frameRect.size.height = [self getRequestedViewHeight:frameRect.size.height];
 		
@@ -342,7 +335,7 @@
 	else
 		[super setFrame:frameRect];
 	
-	if(readerMode)
+	if(self.readerMode)
 	{
 		if(isAnimated)
 			popoverFrame.origin.x -= pageCount.frame.origin.x;
@@ -358,7 +351,7 @@
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
 {
-	if(readerMode)
+	if(self.readerMode)
 		[super setFrameOrigin:newOrigin];
 }
 
