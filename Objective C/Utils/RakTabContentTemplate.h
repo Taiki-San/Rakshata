@@ -15,7 +15,11 @@
 	uint mainThread;
 	
 	BOOL isFocusDrop;
+	
+	BOOL _readerViewHidden;
 }
+
+@property BOOL readerViewHidden;
 
 - (void) setupInternal;
 - (NSString *) getContextToGTFO;
@@ -36,5 +40,7 @@
 
 - (NSColor*) getBackgroundColor;
 - (NSColor*) getBorderColor;
+
+- (void) focusViewChanged : (uint) newMainThread;
 
 @end

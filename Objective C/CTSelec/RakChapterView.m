@@ -19,11 +19,9 @@
 	{
 		[self setupInternal];
 		
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease]];
-		if(projectName != nil)	[self addSubview:projectName];
+		BOOL readerMode = [[NSApp delegate] CT].readerMode;
 		
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
-		if(projectImage != nil)	[self addSubview:projectImage];
+		[self initReaderView : project : readerMode];
 		
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
 		if(coreView != nil)		[self addSubview:coreView];
@@ -78,6 +76,44 @@
 	[coreView release];
 	
 	[super dealloc];
+}
+
+#pragma mark - UI Initializers
+
+- (void) initCTView : (PROJECT_DATA) project : (BOOL) readerMode
+{
+	
+}
+
+- (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
+{
+	projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease]];
+	if(projectName != nil)	[self addSubview:projectName];
+	
+	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
+	if(projectImage != nil)	[self addSubview:projectImage];
+	
+	self.readerViewHidden = !readerMode;
+}
+
+- (void) setReaderViewHidden : (BOOL) readerViewHidden
+{
+	if(readerViewHidden)
+	{
+		if(!projectImage.isHidden)
+			[projectName setHidden:YES];
+		if(!projectImage.isHidden)
+			[projectImage setHidden:YES];
+	}
+	else
+	{
+		if(projectImage.isHidden)
+			[projectName setHidden:NO];
+		if(projectImage.isHidden)
+			[projectImage setHidden:NO];
+	}
+	
+	[super setReaderViewHidden:readerViewHidden];
 }
 
 #pragma mark - Color

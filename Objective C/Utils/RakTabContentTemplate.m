@@ -145,4 +145,21 @@
 	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS:nil];
 }
 
+#pragma mark - Behavior when leaving a focus
+
+- (void) focusViewChanged : (uint) newMainThread
+{
+	self.readerViewHidden = (newMainThread & TAB_READER) == 0;
+}
+
+- (void) setReaderViewHidden : (BOOL) readerViewHidden
+{
+	_readerViewHidden = readerViewHidden;
+}
+
+- (BOOL) readerViewHidden
+{
+	return _readerViewHidden;
+}
+
 @end
