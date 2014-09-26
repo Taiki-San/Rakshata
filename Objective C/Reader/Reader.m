@@ -256,7 +256,7 @@
 
 - (void) readerIsOpening : (byte) context
 {
-	if(context == REFRESHVIEWS_CHANGE_MT)
+	if(context == REFRESHVIEWS_CHANGE_MT && self.readerMode)
 	{
 		uint copy;
 		do
@@ -269,7 +269,7 @@
 #endif
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(gonnaReduceTabs == copy)
+			if(gonnaReduceTabs == copy && self.readerMode)
 			{
 				[self collapseAllTabs : false];
 			}
