@@ -150,9 +150,10 @@
 	return output;
 }
 
-- (void) setUpViewForAnimation : (BOOL) reader
+- (void) setUpViewForAnimation : (BOOL) newReaderMode
 {
-	[backButton setHidden:!reader];
+	[backButton setHidden:!newReaderMode];
+	[super setUpViewForAnimation:newReaderMode];
 }
 
 - (NSString *) byebye
@@ -230,12 +231,17 @@
 
 - (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY
 {
-	CGFloat previousHeight = frame.size.height;
-	
-	frame.size.height -= backButtonLowestY + RBB_TOP_BORDURE + CT_READERMODE_BOTTOMBAR_WIDTH;
-	frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
-	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+	if(self.readerMode)
+	{
+		CGFloat previousHeight = frame.size.height;
+		
+		frame.size.height -= backButtonLowestY + RBB_TOP_BORDURE + CT_READERMODE_BOTTOMBAR_WIDTH;
+		frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+		frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
+		frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+	}
+	else
+		frame.origin = NSZeroPoint;
 
 	return frame;
 }

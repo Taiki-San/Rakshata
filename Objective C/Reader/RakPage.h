@@ -25,9 +25,6 @@
 - (void) initialPositionning : (RakPageScrollView *) scrollView;
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
 
-- (void) leaveReaderMode;
-- (void) startReaderMode;
-
 - (void) failure;
 
 - (void) nextPage;

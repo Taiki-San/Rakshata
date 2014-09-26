@@ -143,16 +143,6 @@ enum
 	}
 }
 
-- (void) leaveReaderMode
-{
-	self.readerMode = false;
-}
-
-- (void) startReaderMode
-{
-	self.readerMode = true;
-}
-
 /*Event handling*/
 
 #pragma mark    -   Events

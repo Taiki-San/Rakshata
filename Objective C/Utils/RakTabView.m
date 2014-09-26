@@ -34,9 +34,9 @@
 		
 		[self.layer setCornerRadius:7.5];
 		
-		int mainThread;
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		self.readerMode = (mainThread & TAB_READER) != 0;
+		bool readerMode;
+		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
+		self.readerMode = readerMode;
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
@@ -207,6 +207,7 @@
 - (void) refreshViewSize
 {
 	[self setFrame:[self createFrame]];
+
 	[foregroundView setFrame:self.bounds];
 	[self refreshDataAfterAnimation];
 }
@@ -280,10 +281,6 @@
 
 - (void) refreshDataAfterAnimation
 {
-	bool isReaderMode;
-	[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
-	self.readerMode = isReaderMode;
-	
 	[self resizeReaderCatchArea : self.readerMode];
 }
 
@@ -309,7 +306,7 @@
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
 {
-	
+	self.readerMode = newReaderMode;
 }
 
 #pragma mark - Events

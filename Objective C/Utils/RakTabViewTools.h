@@ -38,6 +38,5 @@
 - (void) setUpViews;
 - (void) performTo;
 - (void) performFromTo : (NSArray*) basePosition;
-- (void) resizeView : (RakTabView *) view : (id) basePos;
 
 @end

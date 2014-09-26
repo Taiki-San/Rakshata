@@ -237,7 +237,9 @@
 	{
 		[self.animator setFrame:frame];
 		[self setFrameInternal: frame : YES];
+		
 		[bottomBar resizeAnimation:frame];
+		
 		[foregroundView resizeAnimation:frame];
 	}
 }
@@ -278,19 +280,19 @@
 - (void) willLeaveReader
 {
 	if(pageInitialized)
-		[self leaveReaderMode];
+		self.readerMode = NO;
 	
 	if(bottomBar != nil)
-		[bottomBar leaveReaderMode];
+		bottomBar.readerMode = NO;
 }
 
 - (void) willOpenReader
 {
 	if(pageInitialized)
-		[self startReaderMode];
+		self.readerMode = YES;
 	
 	if(bottomBar != nil)
-		[bottomBar startReaderMode];
+		bottomBar.readerMode = YES;
 }
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
@@ -299,6 +301,8 @@
 		[self willOpenReader];
 	else if(!newReaderMode && self.readerMode)
 		[self willLeaveReader];
+	
+	[super setUpViewForAnimation:newReaderMode];
 }
 
 /**	Drawing	**/
@@ -482,6 +486,19 @@
 	[[NSAnimationContext currentContext] setDuration:0.1f];
 	
 	[bottomBar.animator setAlphaValue:alpha];
+	
+	if(alpha == 0 && !bottomBar.isHidden)
+	{
+		[[NSAnimationContext currentContext] setCompletionHandler : ^{
+			[bottomBar setHidden:YES];
+		}];
+	}
+	
+	else if(alpha != 0 && bottomBar.isHidden)
+	{
+		[bottomBar setAlphaValue:0];
+		[bottomBar setHidden:NO];
+	}
 	
 	[NSAnimationContext endGrouping];
 }
