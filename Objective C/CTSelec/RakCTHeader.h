@@ -15,7 +15,7 @@
 #import "RakCTHImage.h"
 #import "RakCTHContainer.h"
 
-@interface RakCTHeader : NSView
+@interface RakCTHeader : RakGradientView
 {
 	uint projectCacheID;
 	PROJECT_DATA _data;
@@ -24,11 +24,6 @@
 	RakCTHImage * _background;
 	RakCTHContainer * _container;
 	
-	//Cached drawing ressources
-	NSColor * parentBackground;
-	NSGradient * gradient;
 }
-
-- (void) updateGradient;
 
 @end

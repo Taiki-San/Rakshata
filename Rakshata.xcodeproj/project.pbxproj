@@ -28,6 +28,7 @@
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
 		B62F1E6518DE4EB0005FF4A5 /* RakResPath.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
+		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */ = {isa = PBXBuildFile; fileRef = B646EA7918A6EEFF00F96F8A /* errors.m */; };
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
@@ -187,6 +188,8 @@
 		B62F1E6318DE4EB0005FF4A5 /* RakResPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakResPath.h; path = Prefs/RakResPath.h; sourceTree = "<group>"; };
 		B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakResPath.m; path = Prefs/RakResPath.m; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
+		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
+		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B64640D71870DBD2005705E7 /* PrefsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = PrefsUI.m; path = PrefsUI/PrefsUI.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B646EA7918A6EEFF00F96F8A /* errors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = errors.m; path = "Objective C/Interface C/errors.m"; sourceTree = "<group>"; };
@@ -633,6 +636,8 @@
 				B623390918DBB7F800FC188A /* RakContentView.m */,
 				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
 				B6FCB424196C1F8E0026C64C /* RakForegroundView.m */,
+				B642480919D57DF000679D78 /* RakGradientView.h */,
+				B642480A19D57DF000679D78 /* RakGradientView.m */,
 				B6B46DAE18FB34FE00EB1FE6 /* RakList.h */,
 				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
@@ -1044,6 +1049,7 @@
 				B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */,
 				B678675418F5F407004AA6B4 /* RakSerieView.m in Sources */,
 				B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */,
+				B642480B19D57DF000679D78 /* RakGradientView.m in Sources */,
 				B62C9EF318BD73D500CE910F /* DBTools.c in Sources */,
 				B6F6ECF718A3001400E3B55B /* favoris.c in Sources */,
 				B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */,

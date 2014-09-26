@@ -18,21 +18,12 @@
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
-		[self updateGradient];
-
+		[self initGradient];
+		self.angle = 0;
 		[self updateHeaderProjectInternal : project : NO];
 	}
 	
 	return self;
-}
-
-- (void) dealloc
-{
-	[parentBackground release];
-	[gradient release];
-	
-	[super dealloc];
 }
 
 #pragma mark - Interface
@@ -69,26 +60,17 @@
 	return YES;
 }
 
-#pragma mark - UI routines
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return;
-	
-	[self updateGradient];
-}
-
-- (void) drawRect:(NSRect)dirtyRect
-{
-	[super drawRect:dirtyRect];
-	
-	//We add a gradient at the extreme right
-	CGFloat width = self.bounds.size.width, drawnWidth = MIN(60, width * 0.05f);
-	[gradient drawInRect : NSMakeRect(width - drawnWidth, 0, drawnWidth, self.bounds.size.height) angle:0];
-}
-
 #pragma mark - UI utilities
+
+- (NSColor *) startColor
+{
+	return [[[[NSApp delegate] CT] getMainColor] retain];
+}
+
+- (NSColor *) endColor : (NSColor *) startColor
+{
+	return [[startColor colorWithAlphaComponent:0] retain];
+}
 
 - (NSRect) frameByParent : (NSRect) parentFrame
 {
@@ -98,15 +80,6 @@
 	parentFrame.size.height -= parentFrame.origin.y;
 	
 	return parentFrame;
-}
-
-- (void) updateGradient
-{
-	[parentBackground release];
-	[gradient release];
-	
-	parentBackground = [[[[NSApp delegate] CT] getMainColor] retain];
-	gradient = [[NSGradient alloc] initWithStartingColor : [parentBackground colorWithAlphaComponent:0] endingColor : parentBackground];
 }
 
 @end

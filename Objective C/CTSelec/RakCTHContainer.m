@@ -18,19 +18,13 @@
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
-		[self updateGradient];
+		[self initGradient];
+		self.angle = 270;
+
 		[self loadProject : project];
 	}
 	
 	return self;
-}
-
-- (void) dealloc
-{
-	[gradient release];
-	
-	[super dealloc];
 }
 
 #pragma mark - Interface
@@ -41,22 +35,16 @@
 	
 }
 
-#pragma mark - UI routines
-
-- (void) drawRect:(NSRect)dirtyRect
-{
-	[gradient drawInRect : self.bounds angle : 270];
-
-	[super drawRect:dirtyRect];
-}
-
 #pragma mark - UI utilities
 
-- (void) updateGradient
+- (NSColor *) startColor
 {
-	[gradient release];
-	gradient = [[NSGradient alloc] initWithStartingColor : [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO] endingColor : [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO]];
+	return [[Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO] retain];
 }
 
+- (NSColor *) endColor : (const NSColor *) startColor
+{
+	return [[Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO] retain];
+}
 
 @end

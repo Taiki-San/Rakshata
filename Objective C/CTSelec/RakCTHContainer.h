@@ -10,12 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTHContainer : NSView
+@interface RakCTHContainer : RakGradientView
 {
 	PROJECT_DATA _data;
-	
-	//Cached drawing ressources
-	NSGradient * gradient;
 }
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;

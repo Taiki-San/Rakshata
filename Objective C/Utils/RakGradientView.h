@@ -10,27 +10,22 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakWindow.h"
+@interface RakGradientView : NSView
+{
+	//Cached drawing ressources
+	NSColor * _startColor;
+	NSColor * _endColor;
+	NSGradient * gradient;
+}
 
-#import "RakTextCell.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakText.h"
-#import "RakSegmentedButtonCell.h"
-#import "RakMenuText.h"
-#import "RakProgressBar.h"
-#import "RakBackButton.h"
-#import "RakPopover.h"
+@property CGFloat angle;
 
-#import "RakForegroundView.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakDragView.h"
-#import "RakDragItem.h"
-#import "RakDragResponder.h"
-#import "RakList.h"
-#import "RakGradientView.h"
+- (void) initGradient;
 
-#define NSCenteredRect(base, content) NSMakePoint(base.size.width / 2 - content.size.width / 2, base.size.height / 2 - content.size.height / 2)
-#define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)
+- (void) updateTheme;
+- (void) updateGradient;
+
+- (NSColor *) startColor;
+- (NSColor *) endColor : (NSColor *) startColor;
+
+@end
