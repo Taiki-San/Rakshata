@@ -15,6 +15,7 @@
 - (void) setupInternal
 {
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+	
 	[self setAutoresizesSubviews:NO];
 	[self setWantsLayer:YES];
 	[Prefs getCurrentTheme:self];		//register to changes

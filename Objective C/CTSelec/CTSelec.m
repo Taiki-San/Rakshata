@@ -27,6 +27,7 @@
 		[backButton setTarget:self];
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!self.readerMode];
+		
 		[self addSubview:backButton];
 
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
@@ -152,7 +153,11 @@
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
 {
-	[backButton setHidden:!newReaderMode];
+	
+	uint _mainThread;
+	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
+	[backButton setHidden: _mainThread == TAB_SERIES];
+	
 	[super setUpViewForAnimation:newReaderMode];
 }
 

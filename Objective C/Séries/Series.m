@@ -119,7 +119,11 @@
 	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame]: false];
 	[backButton setTarget:self];
 	[backButton setAction:@selector(backButtonClicked)];
-	[backButton setHidden:!self.readerMode];
+	
+	uint _mainThread;
+	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
+	[backButton setHidden: _mainThread == TAB_SERIES];
+	
 	[self addSubview:backButton];
 }
 
