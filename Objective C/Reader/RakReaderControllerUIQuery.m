@@ -109,6 +109,7 @@
 {
 	[(MDL*) _anchor registerPopoverExistance:nil];
 	[super popoverDidClose:discarded];
+	[popover setDelegate:nil];
 }
 
 #pragma mark - Payload
