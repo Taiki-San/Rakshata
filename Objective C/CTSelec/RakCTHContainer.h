@@ -13,6 +13,9 @@
 @interface RakCTHContainer : RakGradientView
 {
 	PROJECT_DATA _data;
+	
+	RakText * projectName;
+	RakText * authorName;
 }
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;

@@ -43,6 +43,55 @@
 {
 	_data = project;
 	
+	NSString * currentElem = [[[NSString alloc] initWithData:[NSData dataWithBytes:_data.projectName length:sizeof(_data.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	
+	//Project name
+	if(projectName == nil)
+	{
+		projectName = [[RakText alloc] initWithText : self.frame : currentElem : [NSColor whiteColor]];
+		if(projectName)
+		{
+			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
+			[projectName setFrameOrigin : [self projectNamePos]];
+			[projectName sizeToFit];
+		
+			[self addSubview: projectName];
+		}
+	}
+	else
+		[projectName setStringValue : currentElem];
+	
+	currentElem = [[[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+
+	//Author name
+	if(authorName == nil)
+	{
+		authorName = [[RakText alloc] initWithText : self.frame : currentElem : [NSColor whiteColor]];
+		if(authorName)
+		{
+			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
+																	traits:NSItalicFontMask weight:0 size: 13]];
+
+			[authorName setFrameOrigin : [self authorNamePos]];
+			[authorName sizeToFit];
+			
+			[self addSubview: authorName];
+		}
+	}
+	else
+		[authorName setStringValue : currentElem];
+}
+
+#pragma mark - Elements positions
+
+- (NSPoint) projectNamePos
+{
+	return NSMakePoint(26, self.bounds.size.height * 11 / 20);
+}
+
+- (NSPoint) authorNamePos
+{
+	return NSMakePoint(35, self.bounds.size.height * 5 / 20);
 }
 
 #pragma mark - UI utilities
