@@ -124,7 +124,7 @@ enum FONT_REQUEST {
 - (char*) dumpPrefs;
 - (void) refreshFirstResponder;
 - (void) flushMemory : (bool) memoryError;
-- (NSArray *) initExecuteConsistencyChecks : (uint8) request;
+- (NSArray *) setupExecuteConsistencyChecks : (uint8) request;
 @end
 
 #include "prefsRequest.h"

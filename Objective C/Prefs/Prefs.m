@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-Prefs* prefsCache;
+__strong Prefs* prefsCache;
 
 // Contexte
 static uint mainThread = TAB_CT;				//Default : TAB_SERIES
@@ -22,11 +22,8 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 
 + (void) initCache
 {
-	prefsCache = [Prefs alloc];
-	if(prefsCache != NULL)
-	{
-		[prefsCache init];
-	}
+	prefsCache = [[Prefs alloc] init];
+
 	//We'll have to cache the old encrypted prefs /!\ prefs de crypto à protéger!!!
 	//Also, need to get the open prefs including tabs size, theme and various stuffs
 }
@@ -855,9 +852,9 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(tabSerieSize == NULL || tabCTSize == NULL || tabReaderSize == NULL)
 			[self flushMemory:YES];
 		
-		[tabSerieSize init: prefsCache: input];
-		[tabCTSize init: prefsCache: &input[expectedSize[0]]];
-		[tabReaderSize init: prefsCache: &input[expectedSize[0] + expectedSize[1]]];
+		tabSerieSize = [tabSerieSize init: prefsCache: input];
+		tabCTSize = [tabCTSize init: prefsCache: &input[expectedSize[0]]];
+		tabReaderSize = [tabReaderSize init: prefsCache: &input[expectedSize[0] + expectedSize[1]]];
 		
 		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
 		
@@ -866,7 +863,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(prefsPosMDL == NULL)
 			[self flushMemory:YES];
 		
-		[prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
+		prefsPosMDL = [prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
 		
 		RakAppDelegate * core = [NSApplication sharedApplication].delegate;
 		if([core class] == [RakAppDelegate class])
@@ -905,19 +902,6 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (void) flushMemory : (bool) memoryError
 {
-	if(tabSerieSize != NULL)
-		[tabSerieSize release];
-	
-	if(tabCTSize != NULL)
-		[tabCTSize release];
-	
-	if(tabReaderSize != NULL)
-		[tabReaderSize release];
-	
-	if(prefsPosMDL != NULL)
-		[prefsPosMDL release];
-	
-	[prefsCache release];
 	prefsCache = NULL;
 	
 	if(memoryError)
@@ -925,7 +909,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 							 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
 }
 
-- (NSArray *) initExecuteConsistencyChecks : (uint8) request
+- (NSArray *) setupExecuteConsistencyChecks : (uint8) request
 {
 	NSArray *array = [NSArray alloc];
 	if(array == nil)
@@ -943,7 +927,6 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 #ifdef DEV_VERSION
 			NSLog(@"WTF! %s couldn't identify request: %d", __PRETTY_FUNCTION__, request);
 #endif
-			[array release];
 			array = nil;
 			break;
 		}

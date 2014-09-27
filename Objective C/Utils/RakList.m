@@ -34,7 +34,6 @@
 #ifdef DEV_VERSION
 		NSLog(@"Invalid request");
 #endif
-		[self release];
 		return;
 	}
 	
@@ -45,7 +44,6 @@
 	if(scrollView == nil || _tableView == nil)
 	{
 		NSLog(@"Luna refused to allocate this memory to us D:");
-		[self release];
 		return;
 	}
 	else
@@ -56,12 +54,12 @@
 	
 	[scrollView setDocumentView:_tableView];
 	
-	NSTableColumn * column = [[[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"] autorelease];
+	NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"];
 	[column setWidth:_tableView.frame.size.width];
 	
 	//Customisation
-	normal		= [[self getTextColor] retain];
-	highlight	= [[self getTextHighlightColor] retain];
+	normal		= [self getTextColor];
+	highlight	= [self getTextHighlightColor];
 	[_tableView setHeaderView:nil];
 	[_tableView setBackgroundColor:[NSColor clearColor]];
 	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -178,16 +176,10 @@
 {
 	[_tableView removeFromSuperview];
 	[scrollView setDocumentView:nil];
-	[_tableView dealloc];
 	
 	[scrollView removeFromSuperview];
-	[scrollView dealloc];
 	
-	[normal dealloc];	//Retain count de 85 u_u
-	[highlight dealloc];
 	free(data);
-	
-	[super dealloc];
 }
 
 - (NSRect) getTableViewFrame : (NSRect) superViewFrame
@@ -253,13 +245,9 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	NSColor *oldNormal = normal, *oldHighlight = highlight;
-	
-	normal		= [[self getTextColor] retain];
-	highlight	= [[self getTextHighlightColor] retain];
+	normal		= [self getTextColor];
+	highlight	= [self getTextHighlightColor];
 	[_tableView reloadData];
-	
-	[oldNormal release];	[oldHighlight release];
 }
 
 #pragma mark - Methods to deal with tableView
@@ -392,10 +380,7 @@
 	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 	
 	if (item == nil || [item class] != [RakDragItem class])
-	{
-		[item release];
 		return NO;
-	}
 	
 	return [self receiveDrop:item.project :item.isTome :item.selection :source :row :operation];
 }
@@ -413,7 +398,7 @@
 		return NO;
 	
 	[RakDragResponder registerToPasteboard:pboard];
-	RakDragItem * item = [[[RakDragItem alloc] init] autorelease];
+	RakDragItem * item = [[RakDragItem alloc] init];
 	
 	if(item == nil)
 		return NO;

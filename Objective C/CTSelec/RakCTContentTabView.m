@@ -15,17 +15,14 @@
 - (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
 {
 	if(project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
-	{
-		[self release];
 		return nil;
-	}
 	
 	self = [super initWithFrame:[self getSizeOfCoreView:frame]];
 	
 	if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
-		buttons = [[[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]] retain];
+		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
 		
 		data = getCopyOfProjectData(project);
 		
@@ -76,7 +73,7 @@
 		
 		if(data.nombreChapitreInstalled > 0)
 		{
-			tableViewControllerChapter = [[[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]] retain];
+			tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
 			if(tableViewControllerChapter != nil)
 			{
 				tableViewControllerChapter.hidden = isTome;
@@ -86,7 +83,7 @@
 		
 		if(data.nombreTomesInstalled > 0)
 		{
-			tableViewControllerVolume =  [[[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]] retain];
+			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
 			if(tableViewControllerVolume != nil)
 			{
 				tableViewControllerVolume.hidden = !isTome;
@@ -156,35 +153,15 @@
 	return [NSString stringWithFormat:@"%s\n%d\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.projectID, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
 }
 
-- (id) retain
-{
-	[buttons retain];
-	[tableViewControllerChapter retain];
-	[tableViewControllerVolume retain];
-	return [super retain];
-}
-
-- (oneway void) release
-{
-	[buttons release];
-	[tableViewControllerChapter release];
-	[tableViewControllerVolume release];
-	[super release];
-}
-
 - (void) dealloc
 {
-	[buttons removeFromSuperview];	[buttons release];
+	[buttons removeFromSuperview];	
 	
 	[[tableViewControllerChapter getContent] removeFromSuperviewWithoutNeedingDisplay];
-	[[tableViewControllerChapter getContent] release];	[tableViewControllerChapter release];
 	
 	[[tableViewControllerVolume getContent] removeFromSuperviewWithoutNeedingDisplay];
-	[[tableViewControllerVolume getContent] release];	[tableViewControllerVolume release];
 	
 	releaseCTData(data);
-	
-	[super dealloc];
 }
 
 - (NSRect) getSizeOfCoreView : (NSRect) superViewFrame
@@ -222,7 +199,7 @@
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
 	[animationController addCTContent: tableViewControllerChapter : tableViewControllerVolume];
-	[animationController addAction:self :@selector(switchIsTome:)];
+	[animationController addAction : self : @selector(switchIsTome:)];
 }
 
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender
@@ -310,7 +287,7 @@
 	{
 		if(tableViewControllerChapter == nil)
 		{
-			tableViewControllerChapter =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1] retain] retain];	//Two retains because we, as a subview, will get released at the end of the refresh
+			tableViewControllerChapter =  [[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
 			tableViewControllerChapter.superview = self;
 		}
 		else
@@ -327,7 +304,7 @@
 	{
 		if(tableViewControllerVolume == nil)
 		{
-			tableViewControllerVolume =  [[[[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1] retain] retain];
+			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1];
 			tableViewControllerVolume.superview = self;
 		}
 		else

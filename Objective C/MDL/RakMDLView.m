@@ -22,7 +22,7 @@
 		[self setupInternal];
 		
 		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement"];
-		if(headerText != nil)	{	[self addSubview:headerText];	[headerText release];	}
+		if(headerText != nil)	{	[self addSubview:headerText];		}
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
@@ -34,7 +34,6 @@
 			[dropPlaceHolder sizeToFit];
 			[dropPlaceHolder setHidden:YES];
 			[self addSubview:dropPlaceHolder];
-			[dropPlaceHolder release];
 		}
 	}	
 	return self;
@@ -105,20 +104,6 @@
 	[headerText.animator setFrame:[headerText getMenuFrame:newBound]];
 	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
 	[dropPlaceHolder.animator setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
-}
-
-- (void) retainInternalViews
-{
-	[headerText retain];
-	[MDLList retain];
-	[dropPlaceHolder retain];
-}
-
-- (void) releaseInternalViews
-{
-	[headerText release];
-	[MDLList release];
-	[dropPlaceHolder release];
 }
 
 - (void) updateScroller : (BOOL) hidden

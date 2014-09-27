@@ -35,7 +35,7 @@
 	NSColor * backgroundColor;
 }
 
-@property (retain) NSString * URL;
+@property (strong) NSString * URL;
 
 - (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 

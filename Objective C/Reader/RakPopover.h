@@ -15,13 +15,13 @@
 	INPopoverController * _popover;
 }
 
-@property (assign) NSView * anchor;
+@property (weak) NSView * anchor;
 @property NSRect anchorFrame;
 @property INPopoverArrowDirection direction;
 
 - (id) init : (NSView *) contentView;
 - (void) togglePopover : (NSRect) frame;
-- (void) additionalConfiguration : (id) target : (SEL) selector;
+- (void) additionalConfiguration : (id) target;
 - (void) updatePosition : (NSPoint) origin : (BOOL) animated;
 - (void) setDelegate:(id <INPopoverControllerDelegate>) delegate;
 - (void) closePopover;

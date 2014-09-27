@@ -94,9 +94,6 @@
 - (void) dealloc
 {
 	[animationController abortAnimation];
-	[animationController release];
-	
-	[super dealloc];
 }
 
 #pragma mark - Animation
@@ -107,7 +104,7 @@
 	
 	if(animationController == nil)
 	{
-		animationController = [[[RakCTAnimationController alloc] init: initialPos : [newValue integerValue] - initialPos : self.cell] retain];
+		animationController = [[RakCTAnimationController alloc] init: initialPos : [newValue integerValue] - initialPos : self.cell];
 
 		if(animationController == nil)
 			return NO;

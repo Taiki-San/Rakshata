@@ -26,7 +26,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	
 	DATA_LOADED ****	todoList	=	arg->todoList;
 	bool *				quit		=	arg->quit;
-	mainTab							=	arg->mainTab;
+	mainTab							=	(__bridge RakMDLController *)(arg->mainTab);
 	int8_t ***			status		=	arg->status;
 	uint *				nbElemTotal =	arg->nbElemTotal;
 	uint **				IDToPosition =	arg->IDToPosition;
@@ -241,7 +241,7 @@ void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
 		else if(request == REQ_VIEW_INSTALL_OVER)
 			selector = @selector(installOver);
 		
-		[(RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:NO];
+		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:NO];
 	}
 }
 
@@ -249,7 +249,7 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 {
 	if(rowViewResponsible != NULL)
 	{
-		[(RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
+		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
 	}
 }
 
@@ -267,7 +267,7 @@ void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 		}
 	}
 	
-	RakMDLController * controller = mainTabController;
+	RakMDLController * controller = (__bridge RakMDLController *)(mainTabController);
 	
 	controller.requestCredentials = !all;
 }
@@ -276,20 +276,20 @@ void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
 {
 	bool *				quit		=	arg->quit;
-	RakMDLController *	_mainTab	=	arg->mainTab;
+	RakMDLController *	_mainTab	=	(__bridge RakMDLController *)(arg->mainTab);
 	int8_t ***			status		=	arg->status;
 	uint *				nbElemTotal =	arg->nbElemTotal;
 	uint **				IDToPosition =	arg->IDToPosition;
 	
 	free(arg);
 	
-	MUTEX_VAR * lock = [[NSApp delegate] sharedLoginMutex : YES];
+	MUTEX_VAR * lock = [(RakAppDelegate*) [NSApp delegate]sharedLoginMutex : YES];
 	
 	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
 	
 	while(![mainTab areCredentialsComplete])
 	{
-		pthread_cond_wait([[NSApp delegate] sharedLoginLock], lock);
+		pthread_cond_wait([(RakAppDelegate*) [NSApp delegate]sharedLoginLock], lock);
 	}
 	
 	pthread_mutex_unlock(lock);

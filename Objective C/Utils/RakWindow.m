@@ -116,7 +116,7 @@
 
 - (void) windowWillExitFullScreen:(NSNotification *)notification
 {
-	[[[NSApp delegate] reader] shouldLeaveDistractionFreeMode];
+	[[(RakAppDelegate*) [NSApp delegate]reader] shouldLeaveDistractionFreeMode];
 }
 
 @end

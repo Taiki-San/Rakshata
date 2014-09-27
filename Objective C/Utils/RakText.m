@@ -113,7 +113,6 @@
 {
 	if(self.superview != nil)
 		[self removeFromSuperview];
-	[super dealloc];
 }
 
 @end
@@ -156,7 +155,7 @@
 	
 	if(self != nil)
 	{
-		RakText * content = [[[RakText alloc] initWithText : frame : text : color] autorelease];
+		RakText * content = [[RakText alloc] initWithText : frame : text : color];
 		[content sizeToFit];
 		
 		[self setFrameSize:NSMakeSize(content.bounds.size.width + 2 * RADIUS, content.bounds.size.height + 2 * RADIUS)];

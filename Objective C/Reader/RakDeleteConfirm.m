@@ -57,19 +57,19 @@
 	else
 		string = @"Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
 	
-	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]] autorelease];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 	[contentText setAlignment:NSCenterTextAlignment];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakDeleteSegmentedControl * button = [[[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : @"Confirmer" : @"Non"] autorelease];
+	RakDeleteSegmentedControl * button = [[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : @"Confirmer" : @"Non"];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakDeleteButton * buttonRemind = [[RakDeleteButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
+	RakDeleteButton * buttonRemind = [RakDeleteButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	

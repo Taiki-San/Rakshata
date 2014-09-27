@@ -88,34 +88,12 @@
 	[self resizeAnimationInternalViews:frameRect];
 }
 
-- (id) retain
-{
-	[self retainInternalViews];
-	return [super retain];
-}
-
-- (oneway void) release
-{
-	[self releaseInternalViews];
-	[super release];
-}
-
 - (void) setFrameInternalViews : (NSRect) newBound
 {
 	
 }
 
 - (void) resizeAnimationInternalViews : (NSRect) newBound
-{
-	
-}
-
-- (void) retainInternalViews
-{
-	
-}
-
-- (void) releaseInternalViews
 {
 	
 }

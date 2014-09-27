@@ -180,7 +180,7 @@
 	if([partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
 		return NO;
 	
-	NSNumberFormatter * f = [[[NSNumberFormatter alloc] init] autorelease];
+	NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
 	[f setNumberStyle:NSNumberFormatterDecimalStyle];
 	NSNumber * content = [f numberFromString:partialString];
 	
@@ -222,7 +222,7 @@
 	
 	if(gotoButtonContainer != nil)
 	{
-		RakButton * gotoButton = [[RakButton allocWithText:@"Go":gotoButtonContainer.bounds] autorelease];
+		RakButton * gotoButton = [RakButton allocWithText:@"Go":gotoButtonContainer.bounds];
 		[gotoButton setTarget:self];
 		[gotoButton setAction:@selector(jumpTrigered)];
 		[gotoButtonContainer addSubview:gotoButton];
@@ -235,7 +235,7 @@
 		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
 		
-		RakFormatterNumbersOnly * formater = [[[RakFormatterNumbersOnly alloc] init] autorelease];
+		RakFormatterNumbersOnly * formater = [[RakFormatterNumbersOnly alloc] init];
 		[formater setMinimum:@(1)];
 		[formater setMaximum:@(_maxPage)];
 		

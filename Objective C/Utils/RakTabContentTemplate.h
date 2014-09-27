@@ -35,9 +35,6 @@
 - (void) setFrameInternalViews : (NSRect) newBound;
 - (void) resizeAnimationInternalViews : (NSRect) newBound;
 
-- (void) retainInternalViews;
-- (void) releaseInternalViews;
-
 - (void) drawFocusRing;
 
 - (NSColor*) getBackgroundColor;

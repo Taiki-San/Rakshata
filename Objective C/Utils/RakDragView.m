@@ -68,10 +68,10 @@
 #define DRAGVIEW_BORDURE_VERT 7
 #define DRAGVIEW_BORDURE_HORIZ 7
 
-- (NSImage *) initImage
+- (NSImage *) createImage
 {
 	NSRect frame = NSMakeRect(0, 0, self.frame.size.width + 2 * DRAGVIEW_BORDURE_VERT, self.frame.size.height + 2 * DRAGVIEW_BORDURE_HORIZ);
-	NSView * view = [[[NSView alloc] initWithFrame:frame] autorelease];
+	NSView * view = [[NSView alloc] initWithFrame:frame];
 	
 	if(view == nil)
 		return nil;

@@ -65,7 +65,6 @@
 
 	[self releaseData];
 	self.documentView = nil;
-	[super dealloc];
 
 	[CATransaction commit];
 }
@@ -86,13 +85,12 @@
 		animationTimer = nil;
 	}
 	
-	[data release];
 	data = nil;
 }
 
 - (void) startAnimation
 {
-	[data release];		data = [[self.image representations] objectAtIndex:0];
+	data = [[self.image representations] objectAtIndex:0];
 	currentFrame = 0;
 	
 	frameCount = [[data valueForProperty:NSImageFrameCount] intValue];
@@ -105,8 +103,7 @@
 		
 		[data setProperty:NSImageCurrentFrame withValue:@(0)];
 		
-		animationTimer = [[NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES] retain];
-		NSLog(@"Animation: %p", animationTimer);
+		animationTimer = [NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES];
 	}
 }
 
@@ -115,7 +112,6 @@
 	if(animationTimer != nil)
 	{
 		[animationTimer invalidate];
-		[animationTimer release];
 		animationTimer = nil;
 	}
 }
@@ -123,7 +119,6 @@
 - (void) dealloc
 {
 	[self stopAnimation];
-	[super dealloc];
 }
 
 - (void)nextFrame:(NSTimer*)sender
@@ -134,7 +129,6 @@
 		NSLog(@"WTH, we're not supposed to get called...\n%@", [NSThread callStackSymbols]);
 #endif
 		[self stopAnimation];
-		[self release];
 	}
 	else
 	{

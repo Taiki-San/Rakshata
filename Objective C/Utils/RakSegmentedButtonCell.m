@@ -20,7 +20,7 @@
 	{
 		[Prefs getCurrentTheme:self];
 		[self setTrackingMode:NSSegmentSwitchTrackingSelectOne];
-		fields = [[NSMutableArray array] retain];
+		fields = [NSMutableArray array];
 	}
 	
 	return self;
@@ -129,7 +129,7 @@
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID
 {
-	RakCenteredTextFieldCell * cell = [[[RakCenteredTextFieldCell alloc] initTextCell:string] autorelease];
+	RakCenteredTextFieldCell * cell = [[RakCenteredTextFieldCell alloc] initTextCell:string];
 	
 	cell.centered = YES;
 	
@@ -193,8 +193,6 @@
 - (void) dealloc
 {
 	[fields removeAllObjects];
-	[fields release];
-	[super dealloc];
 }
 
 @end

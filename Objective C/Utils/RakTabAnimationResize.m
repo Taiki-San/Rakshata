@@ -24,7 +24,7 @@
 				[validatedViews addObject:obj];
 		}];
 		
-		_views = [[NSArray arrayWithArray:validatedViews] retain];
+		_views = [NSArray arrayWithArray:validatedViews];
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
 		animationDuration = fastAnimation ? 0.1 : 0.2;
 	}
@@ -62,7 +62,7 @@
 		[self cleanUpAnimation];
 	}];
 	
-	[[[NSApp delegate] MDL] createFrame];
+	[[(RakAppDelegate*) [NSApp delegate]MDL] createFrame];
 
 	byte pos = 0;
 	for(currentView in _views)
@@ -104,7 +104,7 @@
 		if([currentView isKindOfClass:[RakTabView class]] && currentView.resizeAnimationCount == 1)
 		{
 			if(haveBasePos)	//si on a qqchose à libérer
-				[[currentView.animations objectForKey:@"frame"] release];
+				[currentView.animations objectForKey:@"frame"];
 		}
 
 		if([currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
@@ -113,8 +113,6 @@
 		if([currentView isKindOfClass:[RakTabView class]])
 			currentView.resizeAnimationCount--;
 	}
-	
-	[_views release];
 }
 
 @end

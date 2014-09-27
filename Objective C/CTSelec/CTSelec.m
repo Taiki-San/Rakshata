@@ -23,7 +23,7 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
 		
-		backButton = [[[RakBackButton alloc] initWithFrame:[self bounds]: true] autorelease];
+		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
 		[backButton setTarget:self];
 		[backButton setAction:@selector(backButtonClicked)];
 		[backButton setHidden:!self.readerMode];
@@ -82,7 +82,6 @@
 		if(coreView != nil)
 		{
 			[self addSubview:coreView];
-			[coreView release];
 		}
 	}
     return self;
@@ -95,11 +94,10 @@
 
 - (void) dealloc
 {
-	[backButton removeFromSuperview];	[backButton release];	backButton = nil;
+	[backButton removeFromSuperview];		backButton = nil;
 	
-	if(coreView != nil)	{	[coreView removeFromSuperview];		[coreView release];		coreView = nil;		}
+	if(coreView != nil)	{	[coreView removeFromSuperview];				coreView = nil;		}
 	
-	[super dealloc];
 }
 
 - (void) backButtonClicked
@@ -185,7 +183,7 @@
 		[coreView updateContext:newProject];
 	else
 	{
-		coreView = [[[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}] autorelease];
+		coreView = [[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}];
 		
 		if(coreView != nil)
 			[self addSubview:coreView];
@@ -305,8 +303,8 @@
 {
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
-		Reader *readerTab = [[NSApp delegate] reader];
-		MDL * MDLTab = [[NSApp delegate] MDL];
+		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate]reader];
+		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate]MDL];
 		
 		if(readerTab != nil)
 		{

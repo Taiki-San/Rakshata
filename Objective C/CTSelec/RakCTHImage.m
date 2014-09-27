@@ -22,10 +22,7 @@
 	if(self != nil)
 	{
 		if(![self loadProject : data])
-		{
-			[self release];
 			return nil;
-		}
 		
 		[self setImageScaling:NSImageScaleProportionallyUpOrDown];
 	}
@@ -44,12 +41,12 @@
 
 	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
 	if(bundle != nil)
-		image = [[bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]] autorelease];
+		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]];
 	
 	if(image == nil)
 	{
 		if(defaultImage == nil)
-			defaultImage = [[NSImage imageNamed:@"project_large"] retain];
+			defaultImage = [NSImage imageNamed:@"project_large"];
 		
 		image = defaultImage;
 	}
@@ -79,12 +76,7 @@
 - (void) dealloc
 {
 	self.image = nil;
-	[defaultImage release];
-	
 	[gradient removeFromSuperview];
-	[gradient release];
-	
-	[super dealloc];
 }
 
 - (void) setFrame:(NSRect)frameRect
@@ -99,12 +91,12 @@
 
 - (NSColor *) startColor
 {
-	return [[Prefs getSystemColor : GET_COLOR_BACKGROUND_TABS : nil] retain];
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUND_TABS : nil];
 }
 
 - (NSColor *) endColor : (NSColor *) startColor
 {
-	return [[startColor colorWithAlphaComponent:0] retain];
+	return [startColor colorWithAlphaComponent:0];
 }
 
 @end

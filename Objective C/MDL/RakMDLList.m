@@ -21,7 +21,7 @@
 	
 	if(self != nil)
 	{
-		[controller = _controller retain];
+		controller = _controller;
 		cellHeight = MDLLIST_CELL_HEIGHT;
 		dragInProgress = false;
 		
@@ -63,12 +63,6 @@
 		[scrollView setHasVerticalScroller:!hidden];
 }
 
-- (void) dealloc
-{
-	[controller release];
-	[super dealloc];
-}
-
 - (bool) didInitWentWell
 {
 	return true;
@@ -95,8 +89,8 @@
 
 	if(todoList != NULL && *todoList != NULL)
 	{
-		(*todoList)->rowViewResponsible = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
-		[(RakMDLListView*) (*todoList)->rowViewResponsible updateContext];
+		(*todoList)->rowViewResponsible = (__bridge void *)([tableView viewAtColumn:0 row:row makeIfNecessary:NO]);
+		[(__bridge RakMDLListView*) (*todoList)->rowViewResponsible updateContext];
 	}
 }
 
@@ -121,7 +115,7 @@
     // There is no existing cell to reuse so create a new one
     if (result == nil)
 	{
-		result = [[[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row] autorelease];
+		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		

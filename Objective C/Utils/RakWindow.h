@@ -23,7 +23,7 @@
 @property BOOL functionPressed;
 @property BOOL commandPressed;
 
-@property (assign) NSView* defaultDispatcher;
+@property (weak) NSView* defaultDispatcher;
 
 
 - (BOOL) isFullscreen;

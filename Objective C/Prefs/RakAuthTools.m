@@ -29,8 +29,8 @@
 		
 		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
-		[self setFormatter:[[[RakFormatterLength alloc] init : 100] autorelease]];
-		[self.cell setPlaceholderAttributedString : [[[NSAttributedString alloc] initWithString:@"exemple@email.com" attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}] autorelease]];
+		[self setFormatter:[[RakFormatterLength alloc] init : 100]];
+		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:@"exemple@email.com" attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
 		
 		[self setDelegate:self];
 	}
@@ -153,7 +153,7 @@
 		return;
 	}
 	
-	NSString * string = [[[self stringValue] copy] autorelease];
+	NSString * string = [[self stringValue] copy];
 	const char * data = [string cStringUsingEncoding:NSASCIIStringEncoding];
 	
 	byte retValue = checkLogin(data);

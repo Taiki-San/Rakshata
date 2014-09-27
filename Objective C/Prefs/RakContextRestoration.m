@@ -87,7 +87,7 @@
 			
 			NSMutableString * recovery = [NSMutableString stringWithString:buffer];
 			[recovery insertString:@"0" atIndex:0];
-			buffer = [[recovery copy] autorelease];
+			buffer = [recovery copy];
 		}
 		
 		bufferC = [buffer cStringUsingEncoding : NSASCIIStringEncoding];

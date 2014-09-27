@@ -44,7 +44,6 @@
 			[content setDataSource:self];
 			[content addTableColumn:column];
 			[content setOutlineTableColumn:column];
-			[column release];
 			
 			//We need some tweaks to be sure everything is properly deployed
 			[content expandItem:nil expandChildren:YES];
@@ -64,10 +63,7 @@
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateContent:) name:@"RakSeriesNeedUpdateContent" object:nil];
 		}
 		else
-		{
-			[self release];
 			self = nil;
-		}
 	}
 	
 	return self;
@@ -129,36 +125,10 @@
 	return content;
 }
 
-- (id) retain
-{
-	[content retain];
-	return [super retain];
-}
-
-- (oneway void) release
-{
-	[content release];
-	[super release];
-}
-
 - (void) dealloc
 {
 	freeProjectData(_cache);
-	[_mainList release];
-	[_data release];
-	
-	[content removeFromSuperview];	[content release];
-	
-	for (byte i = 0; i < 3; i++)
-	{
-		if(rootItems[i] != nil)
-		{
-			[rootItems[i] release];
-			break;
-		}
-	}
-	
-	[super dealloc];
+	[content removeFromSuperview];
 }
 
 - (void) setFrame: (NSRect) frame
@@ -303,11 +273,15 @@
 	
 	//We remove/add sections, to reflect what we just loaded
 	uint8_t data[2] = {_nbElemReadDisplayed, _nbElemDLDisplayed};
-	SEL actions[2] = {@selector(isRecentList), @selector(isDLList)};
 	
 	for(uint8_t currentPos = 0, i = 0; i < 2; i++)
 	{
-		BOOL isExpected = (BOOL) [rootItems[currentPos] performSelector:actions[i] withObject:nil];
+		BOOL isExpected;
+		
+		if(i == 0)
+			isExpected = [rootItems[currentPos] isRecentList];
+		else
+			isExpected = [rootItems[currentPos] isDLList];
 		
 		//Test moves
 		if(data[i] != 0 && !isExpected)
@@ -323,8 +297,6 @@
 		}
 		else if(data[i] == 0 && isExpected)
 		{
-			[rootItems[currentPos] release];
-			
 			for(uint8_t pos = currentPos; pos < posMainList; rootItems[pos] = rootItems[pos + 1], pos++);
 			rootItems[posMainList--] = nil;
 			
@@ -808,7 +780,7 @@
 	
 	[RakDragResponder registerToPasteboard:pboard];
 	
-	RakDragItem * pbData = [[[RakDragItem alloc] init] autorelease];
+	RakDragItem * pbData = [[RakDragItem alloc] init];
 	
 	if(pbData == nil)
 		return NO;

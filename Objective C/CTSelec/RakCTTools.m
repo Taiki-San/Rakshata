@@ -65,7 +65,7 @@
 	
 	CGFloat duration = ANIMATION_DURATION - state / ANIMATION_FRAME, steps = ANIMATION_FRAME - state;
 	
-	_animation = [[[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut] autorelease];
+	_animation = [[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut];
 	[_animation setFrameRate:60];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
@@ -146,7 +146,9 @@
 			_chapter.frame = superviewFrame;
 			_volume.frame = superviewFrame;
 			
-			[postAnimationTarget performSelector:postAnimationAction withObject:_cell.controlView];
+			IMP imp = [postAnimationTarget methodForSelector:postAnimationAction];
+			void (*func)(id, SEL, id) = (void *)imp;
+			func(postAnimationTarget, postAnimationAction, _cell.controlView);
 		}
 		
 		_animation = nil;
@@ -218,10 +220,7 @@
 		}
 	}
 	else
-	{
-		[self release];
 		self = nil;
-	}
 	
 	return self;
 }

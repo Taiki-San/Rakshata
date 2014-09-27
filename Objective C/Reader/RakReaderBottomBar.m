@@ -64,7 +64,6 @@
 		if(icons[i] != nil)
 		{
 			[icons[i] removeFromSuperview];
-			[icons[i] release]; 	[icons[i] release];
 		}
 	}
 }
@@ -76,10 +75,8 @@
 	if(pageCount != nil)
 	{
 		[pageCount removeFromSuperview];
-		[pageCount release];
 	}
 	
-	[super dealloc];
 }
 
 #pragma mark - Update page counter
@@ -90,7 +87,6 @@
 	{
 		pageCount = [[RakPageCounter alloc] init: self : [self getPosXElement : 8 : self.frame.size.width] :newCurrentPage :newPageMax : (Reader*) self.superview];
 		[self addSubview:pageCount];
-		[pageCount release];
 	}
 	else
 	{
@@ -136,7 +132,7 @@
 {
 	if(!isFaved)
 	{
-		[[[[RakFavsInfo alloc] autoInit] autorelease] launchPopover : favorite];
+		[[[RakFavsInfo alloc] autoInit] launchPopover : favorite];
 	}
 	
 	[(Reader*) self.superview switchFavs];
@@ -145,7 +141,7 @@
 - (void) reactToDelete
 {
 	if(!trash.popoverOpened)
-		trash.popoverOpened = [[[[RakDeleteConfirm alloc] autoInit] autorelease] launchPopover: trash : (id) self.superview];
+		trash.popoverOpened = [[[RakDeleteConfirm alloc] autoInit] launchPopover: trash : (id) self.superview];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

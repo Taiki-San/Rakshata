@@ -26,21 +26,21 @@
 		}
 		
 		if(coreView == nil)
-			coreView = [self initCoreView : container.bounds];
+			coreView = [self craftCoreView : container.bounds];
 		
 		if(coreView != nil)
 		{
 			[coreView setFrameOrigin:NSMakePoint(container.frame.size.width / 2 - coreView.frame.size.width / 2, -coreView.frame.size.height)];
 			[container addSubview:coreView];
 
-			_coreView = [coreView retain];
+			_coreView = coreView;
 		}
 	}
 	
 	return self;
 }
 
-- (RakForegroundViewContentView *) initCoreView : (NSRect) contentViewFrame
+- (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame
 {
 	RakForegroundViewContentView * view = [[RakForegroundViewContentView alloc] initWithFrame:NSMakeRect(0, 0, contentViewFrame.size.width * 3 / 4, contentViewFrame.size.height * 4 / 5)];
 	
@@ -54,25 +54,10 @@
 	return view;
 }
 
-- (id) retain
-{
-	[background retain];
-	[_coreView retain];
-	return [super retain];
-}
-
-- (oneway void) release
-{
-	[background release];
-	[_coreView release];
-	[super release];
-}
-
 - (void) dealloc
 {
 	[background removeFromSuperview];	background = nil;
 	[_coreView removeFromSuperview];	_coreView = nil;
-	[super dealloc];
 }
 
 #pragma mark - Animations
@@ -172,7 +157,6 @@
 	if([_father isVisible])
 	{
 		[_father switchState];
-		[_father release];
 	}
 }
 

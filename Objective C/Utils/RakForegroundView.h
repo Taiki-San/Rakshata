@@ -37,10 +37,10 @@
 	RakForegroundViewContentView * _coreView;
 }
 
-@property (assign) id delegate;
+@property (unsafe_unretained) id delegate;
 
 - (id) init : (NSView *) contentView : (NSView *) coreView;
-- (RakForegroundViewContentView *) initCoreView : (NSRect) contentViewFrame;
+- (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame;
 
 - (void) switchState;
 - (BOOL) isVisible;

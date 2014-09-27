@@ -26,7 +26,6 @@
 		canDeploy = true;
 		
 		[superView addSubview:self];
-		[self release];
 		
 		[self setAutoresizesSubviews:NO];
 		[self setNeedsDisplay:YES];
@@ -65,7 +64,6 @@
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[super dealloc];
 }
 
 #pragma mark - Notification code
@@ -95,7 +93,7 @@
 	
 	//Ladies and gentlemen, your eyes are about to burn
 	
-	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[[NSData alloc] initWithBytes:&project length:sizeof(project)] autorelease], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
+	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[NSData alloc] initWithBytes:&project length:sizeof(project)], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"RakNotificationContextUpdated" object:sender userInfo:userInfo];
 	
 	return YES;
@@ -173,14 +171,14 @@
 		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
 	
 	//Variable to set up the animation
-	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: [superView subviews] : NO] autorelease];
+	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superView subviews] : NO];
 	[animation setUpViews];
 	[animation performTo];
 }
 
 - (void) fastAnimatedRefreshLevel : (NSView*) superView
 {
-	RakTabAnimationResize *animation = [[[RakTabAnimationResize alloc] init: [superView subviews] : YES] autorelease];
+	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superView subviews] : YES];
 	[animation setUpViews];
 	[animation performTo];
 }
@@ -299,7 +297,6 @@
 	if(trackingArea != NULL)
 	{
 		[self removeTrackingArea:trackingArea];
-		[trackingArea release];
 		trackingArea = NULL;
 	}
 }
@@ -497,7 +494,7 @@
 	
 	if(waitingLogin)
 	{
-		foregroundView = [[[RakTabForegroundView alloc] initWithFrame:self.bounds : self : [self waitingLoginMessage]] autorelease];
+		foregroundView = [[RakTabForegroundView alloc] initWithFrame:self.bounds : self : [self waitingLoginMessage]];
 		[self addSubview:foregroundView];
 	}
 	else if(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
@@ -551,7 +548,7 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	MDL * sharedTabMDL = [[NSApp delegate] MDL];
+	MDL * sharedTabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
 	
 	if(sharedTabMDL != nil && (!requireAvailable || [sharedTabMDL isDisplayed]))
 		return sharedTabMDL;

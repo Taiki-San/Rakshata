@@ -21,15 +21,6 @@
 	[self updateGradient];
 }
 
-- (void) dealloc
-{
-	[_startColor release];
-	[_endColor release];
-	[gradient release];
-	
-	[super dealloc];
-}
-
 #pragma mark - UI routines
 
 - (void) updateTheme
@@ -75,10 +66,6 @@
 
 - (void) updateGradient
 {
-	[_startColor release];
-	[_endColor release];
-	[gradient release];
-	
 	_startColor = [self startColor];
 	_endColor = [self endColor: _startColor];
 	gradient = [[NSGradient alloc] initWithStartingColor : _startColor endingColor : _endColor];

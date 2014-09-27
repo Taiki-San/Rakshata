@@ -373,7 +373,7 @@
 + (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError
 {
 	BOOL ret_value = true;
-	NSArray * array = [mainInstance initExecuteConsistencyChecks: 1];
+	NSArray * array = [mainInstance setupExecuteConsistencyChecks: 1];
 	
 	if(array == nil)
 		return false;
@@ -404,7 +404,6 @@
 			}
 		}
 	}
-	[array release];
 	return ret_value;
 }
 
