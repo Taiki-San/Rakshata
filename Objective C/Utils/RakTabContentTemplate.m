@@ -149,6 +149,9 @@
 
 - (void) focusViewChanged : (uint) newMainThread
 {
+	mainThread = newMainThread;
+	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	
 	self.CTViewHidden		= (newMainThread & TAB_CT) == 0;
 	self.readerViewHidden	= (newMainThread & TAB_READER) == 0;
 }
