@@ -16,9 +16,6 @@
 {
 	loginPromptOpen = NO;
 	
-	NSThread * thread = [NSThread alloc];
-	thread = [thread initWithTarget:self selector:@selector(activateThreads) object:nil];
-
 	[self.window setDelegate:self.window];
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
@@ -53,8 +50,6 @@
 	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
 	tabReader = [tabReader init:contentView : [context objectAtIndex:2]];
 }
-
-- (void) activateThreads {}
 
 - (RakContentView*) getContentView
 {
