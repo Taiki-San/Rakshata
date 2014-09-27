@@ -106,6 +106,7 @@
 		[data setProperty:NSImageCurrentFrame withValue:@(0)];
 		
 		animationTimer = [[NSTimer scheduledTimerWithTimeInterval:frameDuration target:self selector:@selector(nextFrame:) userInfo:nil repeats:YES] retain];
+		NSLog(@"Animation: %p", animationTimer);
 	}
 }
 

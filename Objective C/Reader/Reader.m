@@ -446,6 +446,7 @@
 	
 	cursorPosBeforeLastMove = cursorPosition;
 	delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
+	NSLog(@"Delay: %p", delaySinceLastMove);
 	
 	if(bottomBarHidden)
 	{

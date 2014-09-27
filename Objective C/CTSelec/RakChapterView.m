@@ -20,11 +20,12 @@
 		[self setupInternal];
 		
 		BOOL readerMode = [[NSApp delegate] CT].readerMode;
-		
-		[self initReaderView : project : readerMode];
-		
+
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
 		if(coreView != nil)		[self addSubview:coreView];
+		
+		[self initCTView : project : readerMode];
+		[self initReaderView : project : readerMode];
     }
     return self;
 }
@@ -82,7 +83,11 @@
 
 - (void) initCTView : (PROJECT_DATA) project : (BOOL) readerMode
 {
+	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
+	if(header != nil)
+		[self addSubview:header];
 	
+	self.CTViewHidden = readerMode;
 }
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
@@ -96,6 +101,22 @@
 	self.readerViewHidden = !readerMode;
 }
 
+- (void) setCTViewHidden : (BOOL) CTViewHidden
+{
+	if(CTViewHidden)
+	{
+		if(!header.isHidden)
+			[header setHidden:YES];
+	}
+	else
+	{
+		if(header.isHidden)
+			[header setHidden:NO];
+	}
+	
+	[super setCTViewHidden:CTViewHidden];
+}
+
 - (void) setReaderViewHidden : (BOOL) readerViewHidden
 {
 	if(readerViewHidden)
@@ -104,6 +125,8 @@
 			[projectName setHidden:YES];
 		if(!projectImage.isHidden)
 			[projectImage setHidden:YES];
+		if(!coreView.isHidden)
+			[coreView setHidden:YES];
 	}
 	else
 	{
@@ -111,6 +134,8 @@
 			[projectName setHidden:NO];
 		if(projectImage.isHidden)
 			[projectImage setHidden:NO];
+		if(coreView.isHidden)
+			[coreView setHidden:NO];
 	}
 	
 	[super setReaderViewHidden:readerViewHidden];
@@ -131,7 +156,7 @@
 			
 		case TAB_CT:
 		{
-			code = GET_COLOR_BACKGROUD_CT_READERMODE;
+			code = GET_COLOR_BACKGROUND_TABS;
 			break;
 		}
 			

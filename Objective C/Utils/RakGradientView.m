@@ -14,6 +14,9 @@
 
 - (void) initGradient
 {
+	self.gradientWidth = 0.1f;
+	self.gradientMaxWidth = 60;
+	
 	[Prefs getCurrentTheme:self];
 	[self updateGradient];
 }
@@ -48,11 +51,17 @@
 	[super drawRect:dirtyRect];
 	
 	//We add a gradient at the extreme right
-	CGFloat width = self.bounds.size.width, drawnWidth = MIN(60, width * 0.05f);
-	[gradient drawInRect : NSMakeRect(width - drawnWidth, 0, drawnWidth, self.bounds.size.height) angle:self.angle];
+	[gradient drawInRect : [self grandientBounds] angle : self.angle];
 }
 
 #pragma mark - UI utilities
+
+- (NSRect) grandientBounds
+{
+	CGFloat width = self.bounds.size.width, drawnWidth = MIN(self.gradientMaxWidth, width * self.gradientWidth);
+	
+	return NSMakeRect(width - drawnWidth, 0, drawnWidth, self.bounds.size.height);
+}
 
 - (NSColor *) startColor
 {

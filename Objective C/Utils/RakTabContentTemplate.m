@@ -149,17 +149,14 @@
 
 - (void) focusViewChanged : (uint) newMainThread
 {
-	self.readerViewHidden = (newMainThread & TAB_READER) == 0;
+	self.CTViewHidden		= (newMainThread & TAB_CT) == 0;
+	self.readerViewHidden	= (newMainThread & TAB_READER) == 0;
 }
 
-- (void) setReaderViewHidden : (BOOL) readerViewHidden
-{
-	_readerViewHidden = readerViewHidden;
-}
+- (void) setCTViewHidden : (BOOL) CTViewHidden	{	_CTViewHidden = CTViewHidden;	}
+- (BOOL) CTViewHidden	{	return _CTViewHidden;	}
 
-- (BOOL) readerViewHidden
-{
-	return _readerViewHidden;
-}
+- (void) setReaderViewHidden : (BOOL) readerViewHidden	{	_readerViewHidden = readerViewHidden;	}
+- (BOOL) readerViewHidden	{	return _readerViewHidden;	}
 
 @end

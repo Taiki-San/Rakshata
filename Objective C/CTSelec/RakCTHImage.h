@@ -10,12 +10,19 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakCTHImageGradient : RakGradientView
+
+@end
+
 @interface RakCTHImage : NSImageView
 {
+	RakCTHImageGradient * gradient;
 	NSImage * defaultImage;
 }
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;
 - (BOOL) loadProject : (PROJECT_DATA) data;
+
+- (RakCTHImageGradient *) gradientView;
 
 @end

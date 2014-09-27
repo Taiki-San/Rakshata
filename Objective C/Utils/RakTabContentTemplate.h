@@ -16,9 +16,11 @@
 	
 	BOOL isFocusDrop;
 	
+	BOOL _CTViewHidden;
 	BOOL _readerViewHidden;
 }
 
+@property BOOL CTViewHidden;
 @property BOOL readerViewHidden;
 
 - (void) setupInternal;

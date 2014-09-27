@@ -26,6 +26,8 @@
 			[self release];
 			return nil;
 		}
+		
+		[self setImageScaling:NSImageScaleProportionallyUpOrDown];
 	}
 	
 	return self;
@@ -54,14 +56,55 @@
 	
 	self.image = image;
 	free(teamPath);
+	
 	return YES;
+}
+
+- (RakCTHImageGradient *) gradientView
+{
+	if(gradient == nil)
+	{
+		gradient = [[RakCTHImageGradient alloc] initWithFrame:self.frame];
+		if(gradient != nil)
+		{
+			gradient.gradientMaxWidth = 200;
+			gradient.gradientWidth = 0.2;
+			gradient.angle = 180;
+			[gradient initGradient];
+		}
+	}
+	return gradient;
 }
 
 - (void) dealloc
 {
 	self.image = nil;
 	[defaultImage release];
+	
+	[gradient removeFromSuperview];
+	[gradient release];
+	
 	[super dealloc];
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame : frameRect];
+	[gradient setFrame : frameRect];
+}
+
+@end
+
+@implementation RakCTHImageGradient
+
+- (NSColor *) startColor
+{
+	return [[Prefs getSystemColor : GET_COLOR_BACKGROUND_TABS : nil] retain];
+}
+
+- (NSColor *) endColor : (NSColor *) startColor
+{
+	return [[startColor colorWithAlphaComponent:0] retain];
 }
 
 @end

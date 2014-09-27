@@ -18,12 +18,23 @@
 	
 	if(self != nil)
 	{
-		[self initGradient];
-		self.angle = 0;
 		[self updateHeaderProjectInternal : project : NO];
+		
+		if(_background != nil)	//We may need to update our frame
+			[self setFrame: [self frameByParent: frame]];
 	}
 	
 	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame : frameRect];
+	
+	frameRect.origin = NSZeroPoint;
+	
+	[_background setFrame : frameRect];
+	[_container setFrame : frameRect];
 }
 
 #pragma mark - Interface
@@ -38,6 +49,7 @@
 	if(checkReloadNeeded && project.cacheDBID == projectCacheID)
 		return NO;
 	
+	BOOL needAddBackgroundGradient = NO;
 	projectCacheID = project.cacheDBID;
 	
 	//Update background image
@@ -45,6 +57,8 @@
 	{
 		_background = [[RakCTHImage alloc] initWithProject : self.bounds : project];
 		[self addSubview:_background];
+		
+		needAddBackgroundGradient = YES;
 	}
 	else
 		[_background loadProject : project];
@@ -53,31 +67,51 @@
 	{
 		_container = [[RakCTHContainer alloc] initWithProject: self.bounds : project];
 		[self addSubview:_container];
+		
+		needAddBackgroundGradient = YES;
 	}
 	else
 		[_container loadProject : project];
+	
+	if(needAddBackgroundGradient)
+	{
+		NSView * backgroundGradient = [_background gradientView];
+		if(backgroundGradient != nil)
+			[self addSubview:backgroundGradient];	//Add subview may just reorder is needed
+	}
 	
 	return YES;
 }
 
 #pragma mark - UI utilities
 
-- (NSColor *) startColor
-{
-	return [[[[NSApp delegate] CT] getMainColor] retain];
-}
-
-- (NSColor *) endColor : (NSColor *) startColor
-{
-	return [[startColor colorWithAlphaComponent:0] retain];
-}
-
 - (NSRect) frameByParent : (NSRect) parentFrame
 {
 	//We take half of the width, and the top 40% of the view
 	parentFrame.size.width /= 2;
-	parentFrame.origin.y = parentFrame.size.height * 2 / 5;
-	parentFrame.size.height -= parentFrame.origin.y;
+	
+	//We'll adapt our size to image's
+	if(_background != nil && _background.image != nil)
+	{
+		NSSize size = _background.image.size;
+		CGFloat ratio = parentFrame.size.width / size.width;
+		
+		//Make the thing bigger is to wide, and no high enough
+		if(size.height * ratio < CT_HEADER_MIN_HEIGHT)
+			ratio = parentFrame.size.height / CT_HEADER_MIN_HEIGHT;
+		
+		//We scale everything
+		size.height = round(size.height * ratio);
+		size.width = round(size.width * ratio);
+		
+		parentFrame.origin.y = parentFrame.size.height - size.height;
+		parentFrame.size = size;
+	}
+	else
+	{
+		parentFrame.origin.y = parentFrame.size.height * 3 / 5;
+		parentFrame.size.height -= parentFrame.origin.y;
+	}
 	
 	return parentFrame;
 }

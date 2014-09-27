@@ -10,12 +10,14 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define CT_HEADER_MIN_HEIGHT 200
+
 @class RakCTHeader;
 
 #import "RakCTHImage.h"
 #import "RakCTHContainer.h"
 
-@interface RakCTHeader : RakGradientView
+@interface RakCTHeader : NSView
 {
 	uint projectCacheID;
 	PROJECT_DATA _data;
@@ -25,5 +27,8 @@
 	RakCTHContainer * _container;
 	
 }
+
+- (id) initWithData : (NSRect) frame : (PROJECT_DATA) project;
+- (BOOL) updateHeaderProject : (PROJECT_DATA) project;
 
 @end

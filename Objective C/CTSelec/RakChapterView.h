@@ -14,8 +14,13 @@
 
 @interface RakChapterView : RakTabContentTemplate
 {
-	RakTextProjectName *projectName;
+	//CT mode only
+	RakCTHeader * header;
+	
+	//Reader mode only
+	RakTextProjectName * projectName;
 	RakCTProjectImageView * projectImage;
+
 	RakCTContentTabView * coreView;
 }
 

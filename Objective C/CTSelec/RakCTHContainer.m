@@ -14,17 +14,27 @@
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project
 {
-	self = [self initWithFrame:frame];
+	self = [self initWithFrame : [self frameFromParent : frame]];
 	
 	if(self != nil)
 	{
 		[self initGradient];
+		self.gradientMaxWidth = frame.size.height;
+		self.gradientWidth = 100;
 		self.angle = 270;
 
 		[self loadProject : project];
 	}
 	
 	return self;
+}
+
+- (void) setFrame : (NSRect) frameRect
+{
+	frameRect = [self frameFromParent : frameRect];
+
+	[super setFrame : frameRect];
+	self.gradientMaxWidth = frameRect.size.height;
 }
 
 #pragma mark - Interface
@@ -36,6 +46,19 @@
 }
 
 #pragma mark - UI utilities
+
+- (NSRect) frameFromParent : (NSRect) parentFrame
+{
+	parentFrame.size.height *= 0.4f;
+	
+	return parentFrame;
+}
+
+- (NSRect) grandientBounds
+{
+	CGFloat height  = MIN(self.gradientMaxWidth, self.bounds.size.height * self.gradientWidth);
+	return NSMakeRect(0, 0, self.bounds.size.width, height);
+}
 
 - (NSColor *) startColor
 {

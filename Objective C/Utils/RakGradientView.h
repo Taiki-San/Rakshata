@@ -18,6 +18,8 @@
 	NSGradient * gradient;
 }
 
+@property CGFloat gradientMaxWidth;
+@property CGFloat gradientWidth;
 @property CGFloat angle;
 
 - (void) initGradient;
@@ -25,6 +27,7 @@
 - (void) updateTheme;
 - (void) updateGradient;
 
+- (NSRect) grandientBounds;
 - (NSColor *) startColor;
 - (NSColor *) endColor : (NSColor *) startColor;
 

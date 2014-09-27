@@ -262,7 +262,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_CTHEADER_GRADIENT_START:
 		{
-			output = [NSColor colorWithDeviceWhite:0 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:0 alpha:0.7f];
 			break;
 		}
 			
