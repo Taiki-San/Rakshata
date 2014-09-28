@@ -14,7 +14,7 @@
 
 - (id) initWithData : (NSRect) frame : (PROJECT_DATA) project
 {
-	self = [self initWithFrame:[self frameByParent:frame]];
+	self = [self initWithFrame : [self frameByParent:frame]];
 	
 	if(self != nil)
 	{
@@ -29,7 +29,8 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame : frameRect];
+	frameRect = [self frameByParent:frameRect];
+	[super setFrame :  frameRect];
 	
 	frameRect.origin = NSZeroPoint;
 	

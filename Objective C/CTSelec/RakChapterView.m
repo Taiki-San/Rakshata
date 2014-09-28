@@ -39,8 +39,11 @@
 
 - (void) setFrameInternalViews : (NSRect) newBound
 {
+	[header setFrame:newBound];
+	
 	[projectName setFrame:newBound];
 	[projectImage setFrame:newBound];
+
 	[coreView setFrame:newBound];
 }
 
