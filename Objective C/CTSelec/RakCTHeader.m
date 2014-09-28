@@ -21,7 +21,7 @@
 		[self updateHeaderProjectInternal : project : NO];
 		
 		if(_background != nil)	//We may need to update our frame
-			[self setFrame: [self frameByParent: frame]];
+			[self setFrame: frame];
 	}
 	
 	return self;
