@@ -79,7 +79,7 @@ typedef struct project_data_for_drag_drop
 {
 	if(pasteboard != nil)
 	{
-		RakDragItem * item = [[[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]] autorelease];
+		RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 		if(item != nil)
 		{
 			return [item canDL];

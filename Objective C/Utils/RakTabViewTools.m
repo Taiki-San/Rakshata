@@ -22,11 +22,11 @@
 		
 		NSColor * textColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
 
-		head = [[[RakText alloc] initWithText:frameRect :@"Connexion requise" : textColor] autorelease];
+		head = [[RakText alloc] initWithText:frameRect :@"Connexion requise" : textColor];
 		[head setFont:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]]];
 		[head sizeToFit];
 		
-		main = [[[RakText alloc] initWithText:frameRect : detail : textColor] autorelease];
+		main = [[RakText alloc] initWithText:frameRect : detail : textColor];
 		[main setAlignment:NSCenterTextAlignment];
 		[main sizeToFit];
 		[main setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - main.bounds.size.width / 2, frameRect.size.height / 2 - main.bounds.size.height / 2 -  head.bounds.size.height * 0.75)];
@@ -43,7 +43,6 @@
 {
 	[head removeFromSuperview];
 	[main removeFromSuperview];
-	[super dealloc];
 }
 
 - (void) setFrame : (NSRect)frameRect
@@ -82,7 +81,7 @@
 
 - (void) mouseDown : (NSEvent*) theEvent
 {
-	[[NSApp delegate] openLoginPrompt];
+	[(RakAppDelegate*) [NSApp delegate]openLoginPrompt];
 }
 
 @end

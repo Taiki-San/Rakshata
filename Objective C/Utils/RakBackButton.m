@@ -178,7 +178,7 @@
 
 - (void) startAnimation
 {
-	_animation = [[[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear] autorelease];
+	_animation = [[NSAnimation alloc] initWithDuration:1 animationCurve:NSAnimationLinear];
 	[_animation setFrameRate:60.0];
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
@@ -218,9 +218,9 @@
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state
 {
-	clicked		= [[RakResPath craftResNameFromContext:imageName : YES : YES : 1] retain];
-	nonClicked	= [[RakResPath craftResNameFromContext:imageName : NO : YES : 1] retain];
-	unAvailable = [[RakResPath craftResNameFromContext:imageName : NO : NO : 1] retain];
+	clicked		= [RakResPath craftResNameFromContext:imageName : YES : YES : 1];
+	nonClicked	= [RakResPath craftResNameFromContext:imageName : NO : YES : 1];
+	unAvailable = [RakResPath craftResNameFromContext:imageName : NO : NO : 1];
 	
 	notAvailable = false;
 	

@@ -20,7 +20,7 @@
 	{
 		output.textButton = NO;
 
-		[output.cell initWithPage: imageName : RB_STATE_STANDARD];
+		output.cell = [output.cell initWithPage: imageName : RB_STATE_STANDARD];
 		
 		//Update a couple of prefs
 		[output sizeToFit];
@@ -58,7 +58,7 @@
 	{
 		output.textButton = NO;
 		
-		[output.cell initWithPage: imageName : stateAtStartup];
+		output.cell = [output.cell initWithPage: imageName : stateAtStartup];
 		
 		//Update a couple of prefs
 		[output sizeToFit];
@@ -101,7 +101,7 @@
 		output.textButton = YES;
 		output.wantsLayer = YES;
 
-		[output.cell initWithText:string];
+		output.cell = [output.cell initWithText:string];
 		
 		if(!NSEqualRects(frame, NSZeroRect))
 			[output setFrame:frame];
@@ -118,7 +118,6 @@
 	{
 		NSCell * cell = [self.cell copy];
 		[output setCell:cell];
-		[cell release];
 		
 		[output sizeToFit];
 		[output setBordered:NO];
@@ -182,15 +181,7 @@
 - (void) dealloc
 {
 	if(!textCell)
-	{
-		[clicked release];
-		[nonClicked release];
-		[unAvailable release];
-		NSImage * bak = self.image;
 		[self setImage:nil];
-		[bak release];
-	}
-	[super dealloc];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -213,7 +204,6 @@
 			state = RB_STATE_STANDARD;
 		
 		//Free the previous images
-		[clicked release];		[nonClicked release];	[unAvailable release];
 		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
 	}
 }
@@ -234,7 +224,6 @@
 		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
 		{
 			NSLog(@"Failed at create button for icon: %@", imageName);
-			[self release];
 			return nil;
 		}
 	}
@@ -244,9 +233,9 @@
 
 - (BOOL) loadIcon : (short) state : (uint) currentTheme
 {
-	clicked		= [[RakResPath craftResNameFromContext:_imageName : YES : YES : currentTheme] retain];
-	nonClicked	= [[RakResPath craftResNameFromContext:_imageName : NO : YES : currentTheme] retain];
-	unAvailable = [[RakResPath craftResNameFromContext:_imageName : NO : NO : currentTheme] retain];
+	clicked		= [RakResPath craftResNameFromContext:_imageName : YES : YES : currentTheme];
+	nonClicked	= [RakResPath craftResNameFromContext:_imageName : NO : YES : currentTheme];
+	unAvailable = [RakResPath craftResNameFromContext:_imageName : NO : NO : currentTheme];
 	
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 		[self setImage:nonClicked];
@@ -269,9 +258,9 @@
 	if(self != nil)
 	{
 		_imageName = [imageName copy];
-		clicked = [_clicked retain];
-		nonClicked = [_nonClicked retain];
-		unAvailable = [_unAvailable retain];
+		clicked = _clicked;
+		nonClicked = _nonClicked;
+		unAvailable = _unAvailable;
 		
 		[self setImage:nonClicked];
 	}

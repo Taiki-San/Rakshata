@@ -124,7 +124,6 @@
 - (void) dealloc
 {
 	[self removeFromSuperview];
-	[super dealloc];
 }
 
 @end

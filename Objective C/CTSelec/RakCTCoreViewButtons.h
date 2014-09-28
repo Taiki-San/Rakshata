@@ -15,7 +15,7 @@
 	RakCTAnimationController * animationController;
 }
 
-@property (assign) id postAnimationTarget;
+@property (unsafe_unretained) id postAnimationTarget;
 @property SEL postAnimationAction;
 
 - (void) resizeAnimation : (NSRect) frameRect;

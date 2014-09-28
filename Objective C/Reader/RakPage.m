@@ -323,14 +323,14 @@ enum
 		NSRect frame = NSZeroRect;
 		frame.size = loadingFailedPlaceholder.size;
 		
-		RakImageView * image = [[[RakImageView alloc] initWithFrame : frame] autorelease];
+		RakImageView * image = [[RakImageView alloc] initWithFrame : frame];
 		[image setImage : loadingFailedPlaceholder];
 		
 		if(image != nil)
 		{
-			void * bak;
+			__autoreleasing NSMutableArray* bak = nil;
 			if(data == nil)
-				data = (NSMutableArray**) &bak;
+				data = &bak;
 			
 			image.page = page;
 			
@@ -503,13 +503,13 @@ enum
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 			_needPassword = true;
 		
-		MUTEX_VAR * lock = [[NSApp delegate] sharedLoginMutex : YES];
+		MUTEX_VAR * lock = [(RakAppDelegate*) [NSApp delegate]sharedLoginMutex : YES];
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(true) waitUntilDone:NO];
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
-			pthread_cond_wait([[NSApp delegate] sharedLoginLock], lock);
+			pthread_cond_wait([(RakAppDelegate*) [NSApp delegate]sharedLoginLock], lock);
 		}
 		
 		pthread_mutex_unlock(lock);
@@ -643,12 +643,10 @@ enum
 			
 			id currentPageView = mainScroller.arrangedObjects[currentPage];
 			
-			[currentPageView retain];	//This view will get released inside updateContext, so we must increment the retain count
-			
 			[self updateContext : YES];
 			
 			//We inject the page we already loaded inside mainScroller
-			NSMutableArray * array = [[mainScroller.arrangedObjects mutableCopy] autorelease];
+			NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
 			
 			[array replaceObjectAtIndex:1 withObject:currentPageView];
 			mainScroller.arrangedObjects = array;
@@ -685,7 +683,7 @@ enum
 
 - (void) updateCT : (uint) request
 {
-	CTSelec * tabCT = [[NSApp delegate] CT];
+	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate]CT];
 	
 	if(request == COM_CT_SELEC)
 	{
@@ -820,14 +818,12 @@ enum
 	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
 
 	//We create the view that si going to be displayed
-	NSImageView * pageView = [[[NSImageView alloc] initWithFrame: scrollView.contentFrame] autorelease];
+	NSImageView * pageView = [[NSImageView alloc] initWithFrame: scrollView.contentFrame];
 	[pageView setImageAlignment:NSImageAlignCenter];
 	[pageView setImageFrameStyle:NSImageFrameNone];
 	[pageView setImage:page];
 	
 	scrollView.documentView = pageView;
-	
-	[page release];
 	
 	[self initialPositionning : scrollView];
 	
@@ -914,8 +910,6 @@ enum
 		return;
 	}
 	
-	[self retain];	//Prevent getting deallocated before exiting properly
-	
 	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	
 	while (currentSession == cacheSession)	//While the active chapter is still the same
@@ -1001,8 +995,6 @@ enum
 	}
 	
 	_cacheBeingBuilt = false;
-	
-	[self release];
 }
 
 #define NB_ELEM_MAX_IN_CACHE 30			//5 behind, current, 24 ahead
@@ -1071,11 +1063,6 @@ enum
 		mainScroller.arrangedObjects = internalData;
 		
 		MUTEX_UNLOCK(cacheMutex);
-		
-		for(object in freeList)
-		{
-			[object release];
-		}
 	}
 	else
 	{
@@ -1104,10 +1091,7 @@ enum
 	}
 	
 	if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
-	{
-		[view release];
 		return NO;
-	}
 	
 	[self updatePCState : data : position : view];
 	
@@ -1166,7 +1150,7 @@ enum
 	
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
-		RakImageView * placeholder = [[[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)] autorelease];
+		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)];
 		[placeholder setImage:loadingPlaceholder];
 
 		if([object isKindOfClass:[NSNumber class]])
@@ -1270,7 +1254,7 @@ enum
 	if(!nbElemToGrab)
 		return;
 	
-	RakArgumentToRefreshAlert * argument = [[RakArgumentToRefreshAlert alloc] autorelease];
+	RakArgumentToRefreshAlert * argument = [RakArgumentToRefreshAlert alloc];
 	argument.data = &localProject;
 	argument.nbElem = nbElemToGrab;
 	
@@ -1289,7 +1273,7 @@ enum
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
 	int * selection = calloc(nbElemToGrab, sizeof(int));
-	MDL * tabMDL = [[NSApp delegate] MDL];
+	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate]MDL];
 	
 	if(selection == NULL || tabMDL == nil)
 	{
@@ -1315,8 +1299,8 @@ enum
 	}
 	
 	//We got the data, now, craft the alert
-	RakReaderControllerUIQuery *test = [RakReaderControllerUIQuery alloc];
-	[test initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
+	RakReaderControllerUIQuery *letItRun = [RakReaderControllerUIQuery alloc];
+	letItRun = [letItRun initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit
@@ -1329,13 +1313,6 @@ enum
 	if(mainScroller != nil)
 	{
 		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-		for(id object in array)
-		{
-			if([object class] == [RakPageScrollView class])
-			{
-				[object release];
-			}
-		}
 		
 		[array removeAllObjects];
 		[array insertObject:@(0) atIndex:0];
@@ -1354,8 +1331,6 @@ enum
 	[self flushCache];
 	releaseDataReader(&_data);
 	
-	[mainScroller release];
-	
 	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
 
 	for(NSView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
@@ -1365,7 +1340,6 @@ enum
 		for(NSView * subview in subArray)
 		{
 			[subview removeFromSuperview];
-			[subview dealloc];
 		}
 		
 		[view removeFromSuperview];

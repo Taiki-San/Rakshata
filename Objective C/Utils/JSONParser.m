@@ -264,10 +264,14 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	int * chapters = NULL;
 	META_TOME * volumes = NULL;
 	
-	NSNumber * ID = objectForKey(bloc, JSON_RP_ID, @"ID");
+	//We create all variable first, otherwise ARC complain
+	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *category = nil;
+	NSString * projectName = nil, *description = nil, *authors = nil;
+	
+	ID = objectForKey(bloc, JSON_RP_ID, @"ID");
 	if (ID == nil || [ID superclass] != [NSNumber class])					goto end;
 	
-	NSString * projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
+	projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
 	uint nbChapters = 0, nbVolumes = 0;
@@ -276,22 +280,22 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 
 	if(nbChapters == 0 && nbVolumes == 0)									goto end;
 	
-	NSString * description = objectForKey(bloc, JSON_RP_DESCRIPTION, @"description");
+	description = objectForKey(bloc, JSON_RP_DESCRIPTION, @"description");
 	if(description == nil || [description superclass] != [NSMutableString class])	description = nil;
 	
-	NSString * authors = objectForKey(bloc, JSON_RP_AUTHOR , @"author");
+	authors = objectForKey(bloc, JSON_RP_AUTHOR , @"author");
 	if(authors == nil || [authors superclass] != [NSMutableString class])			goto end;
 	
-	NSNumber * status = objectForKey(bloc, JSON_RP_STATUS , @"status");
+	status = objectForKey(bloc, JSON_RP_STATUS , @"status");
 	if(status == nil || [status superclass] != [NSNumber class])			goto end;
 	
-	NSNumber * type = objectForKey(bloc, JSON_RP_TYPE , @"type");
+	type = objectForKey(bloc, JSON_RP_TYPE , @"type");
 	if(type == nil || [type superclass] != [NSNumber class])				goto end;
 	
-	NSNumber * asianOrder = objectForKey(bloc, JSON_RP_ASIAN_ORDER , @"asian_order_of_reading");
+	asianOrder = objectForKey(bloc, JSON_RP_ASIAN_ORDER , @"asian_order_of_reading");
 	if(asianOrder == nil || [asianOrder superclass] != [NSNumber class])	goto end;
 	
-	NSNumber * category = objectForKey(bloc, JSON_RP_CATEGORY , @"category");
+	category = objectForKey(bloc, JSON_RP_CATEGORY , @"category");
 	if(category == nil || [category superclass] != [NSNumber class])		goto end;
 	
 	data.projectID = [ID unsignedIntValue];

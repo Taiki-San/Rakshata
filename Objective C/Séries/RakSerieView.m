@@ -21,7 +21,6 @@
 		
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries"];
 		[self addSubview:headerText];
-		[headerText release];
 		
 		mainList = [[RakSerieList alloc] init : [self getMainListFrame : [self frame]] : state];
 
@@ -44,18 +43,6 @@
 	[mainList resizeAnimation:[self getMainListFrame : newBound]];
 }
 
-- (void) retainInternalViews
-{
-	[headerText retain];
-	[mainList retain];
-}
-
-- (void) releaseInternalViews
-{
-	[headerText release];
-	[mainList release];
-}
-
 - (NSString *) getContextToGTFO
 {
 	return [mainList getContextToGTFO];
@@ -64,7 +51,6 @@
 - (void) dealloc
 {
 	headerText = nil;	mainList = nil;
-	[super dealloc];
 }
 
 - (BOOL)isFlipped

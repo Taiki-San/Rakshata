@@ -27,7 +27,7 @@
 		
 		pthread_mutex_init(&cacheMutex, NULL);
 
-		container = [[[NSView alloc] initWithFrame:self.bounds] autorelease];
+		container = [[NSView alloc] initWithFrame:self.bounds];
 		[self addSubview:container];
 		
 		loadingPlaceholder = [NSImage imageNamed:@"loading.gif"];
@@ -126,7 +126,7 @@
 	
 	if(bottomBar == nil)
 	{
-		bottomBar = [[[RakReaderBottomBar alloc] init: self.readerMode: self] autorelease];
+		bottomBar = [[RakReaderBottomBar alloc] init: self.readerMode: self];
 	
 		if(foregroundView.superview == self)
 			[self addSubview:bottomBar positioned:NSWindowBelow relativeTo:foregroundView];
@@ -149,26 +149,16 @@
 	else
 		output = [super byebye];
 	
-	if([self retainCount] > 1)
-		[self release];
-	
 	return output;
 }
 
 - (void) dealloc
 {
 	[bottomBar removeFromSuperview];
-	[bottomBar release];
 	
 	[self deallocInternal];
 	
 	[container removeFromSuperview];
-	[container dealloc];
-	
-	[loadingPlaceholder dealloc];
-	[loadingFailedPlaceholder dealloc];
-	
-	[super dealloc];
 }
 
 - (int) getCodePref : (int) request
@@ -446,7 +436,6 @@
 	
 	cursorPosBeforeLastMove = cursorPosition;
 	delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
-	NSLog(@"Delay: %p", delaySinceLastMove);
 	
 	if(bottomBarHidden)
 	{
@@ -536,7 +525,7 @@
 
 - (NSString*) waitingLoginMessage
 {
-	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", [[[NSString alloc] initWithData:[NSData dataWithBytes:_project.projectName length:sizeof(_project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease], _isTome ? @"tome" : @"chapitre"];
+	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", [[NSString alloc] initWithData:[NSData dataWithBytes:_project.projectName length:sizeof(_project.projectName)] encoding:NSUTF32LittleEndianStringEncoding], _isTome ? @"tome" : @"chapitre"];
 }
 
 #pragma mark - Drop support

@@ -30,7 +30,7 @@
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 			stateChar = (char *) [state UTF8String];
 		
-		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, self))
+		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, (__bridge void *)(self)))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
@@ -39,14 +39,10 @@
 					IDToPosition[discardedCount] = discardedCount;
 			}
 			else
-			{
-				[self release];			self = nil;
-			}
+				self = nil;
 		}
 		else
-		{
-			[self release];			self = nil;
-		}
+			self = nil;
 	}
 	
 	return self;
@@ -77,7 +73,6 @@
 {
 	MDLCleanup(nbElem, status, todoList, cache);
 	free(IDToPosition);
-	[super dealloc];
 }
 
 #pragma mark - Get data about download list
@@ -183,7 +178,7 @@
 	{
 		//Great, the injection is now over... We need to reanimate what needs to be
 		if(!isThreadStillRunning(coreWorker))
-			startMDL(NULL, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, self);
+			startMDL(NULL, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, (__bridge void *)(self));
 		else
 			MDLDownloadOver(true);
 		
@@ -323,7 +318,7 @@
 	
 	if(data != NULL && *data != NULL)
 	{
-		[[[NSApp delegate] CT] refreshCT : YES : (*data)->datas->cacheDBID];
+		[[(RakAppDelegate*) [NSApp delegate]CT] refreshCT : YES : (*data)->datas->cacheDBID];
 	}
 }
 

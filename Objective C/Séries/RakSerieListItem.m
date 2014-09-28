@@ -131,12 +131,7 @@
 	_nbChildren = nbChildren;
 	
 	if(flush)
-	{
-		for (NSObject * item in children)
-			[item release];
-		
 		[children removeAllObjects];
-	}
 }
 
 - (uint) getNbChildren

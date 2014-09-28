@@ -16,8 +16,6 @@
 {
 	loginPromptOpen = NO;
 	
-	[[[NSThread alloc] initWithTarget:self selector:@selector(activateThreads) object:nil] autorelease];
-
 	[self.window setDelegate:self.window];
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
@@ -47,15 +45,11 @@
 	[Prefs initCache];
 	NSArray *context = [RakContextRestoration newContext];
 	
-	[tabSerie init:contentView : [context objectAtIndex:0]];
-	[tabCT init:contentView : [context objectAtIndex:1]];
-	[tabMDL init:contentView : [context objectAtIndex:3]];
-	[tabReader init:contentView : [context objectAtIndex:2]];
-	
-	[context release];
+	tabSerie = [tabSerie init:contentView : [context objectAtIndex:0]];
+	tabCT = [tabCT init:contentView : [context objectAtIndex:1]];
+	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
+	tabReader = [tabReader init:contentView : [context objectAtIndex:2]];
 }
-
-- (void) activateThreads {}
 
 - (RakContentView*) getContentView
 {
@@ -132,10 +126,10 @@
 {
 	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
 	
-	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];		[tabSerie release];		tabSerie = nil;
-	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];		[tabCT release];		tabCT = nil;
-	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];	[tabReader release];	tabReader = nil;
-	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];		[tabMDL release];		tabMDL = nil;
+	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
+	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
+	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];		tabReader = nil;
+	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
 	
 	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
 }

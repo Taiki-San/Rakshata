@@ -16,7 +16,7 @@
 	NSView * mainView;
 }
 
-@property (assign) NSPopover * popover;
+@property (weak) NSPopover * popover;
 
 - (instancetype) initWithFrame : (NSRect) frame;
 

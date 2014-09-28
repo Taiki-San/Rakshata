@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		BOOL readerMode = [[NSApp delegate] CT].readerMode;
+		BOOL readerMode = [(RakAppDelegate*) [NSApp delegate]CT].readerMode;
 
 		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
 		if(coreView != nil)		[self addSubview:coreView];
@@ -54,32 +54,13 @@
 	[coreView resizeAnimation:newBound];
 }
 
-- (void) retainInternalViews
-{
-	[projectName retain];
-	[projectImage retain];
-	[coreView retain];
-}
-
-- (void) releaseInternalViews
-{
-	[projectName release];
-	[projectImage release];
-	[coreView release];
-}
-
 - (void) dealloc
 {
 	[projectName removeFromSuperview];
-	[projectName release];
-	
+
 	[projectImage removeFromSuperview];
-	[projectImage release];
 	
 	[coreView removeFromSuperview];
-	[coreView release];
-	
-	[super dealloc];
 }
 
 #pragma mark - UI Initializers
@@ -95,7 +76,7 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease]];
+	projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];

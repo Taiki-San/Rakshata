@@ -24,12 +24,9 @@
 		
 		todoList = [_controller getData: _row : YES];
 		if(todoList == NULL)
-		{
-			[self release];
 			return nil;
-		}
-		else
-			previousStatus = MDL_CODE_UNUSED;
+
+		previousStatus = MDL_CODE_UNUSED;
 		
 		self.autoresizesSubviews = NO;
 		
@@ -60,8 +57,6 @@
 	[_remove removeFromSuperview];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-	[super dealloc];
 }
 
 - (void) initIcons
@@ -107,7 +102,7 @@
 
 - (NSString *) getName
 {
-	NSString * name, *projectName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSString * name, *projectName = [[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
@@ -120,7 +115,7 @@
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
 		{
-			NSString * tomeName = [[[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+			NSString * tomeName = [[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32LittleEndianStringEncoding];
 			name = [NSString stringWithFormat:@"%@ %@", projectName, tomeName];
 		}
 		else
@@ -272,12 +267,10 @@
 	while (tableView != nil && [tableView class] != [RakTableView class])
 		tableView = tableView.superview;
 	
-	[self retain];
-	
 	if(tableView != nil)
 		[(RakTableView*) tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex : _row] withAnimation:NSTableViewAnimationSlideLeft];
 	
-	MDL * tabMDL = [[NSApp delegate] MDL];
+	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
 	if(tabMDL != nil)
 	{
 		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
@@ -285,8 +278,6 @@
 		if(!NSEqualRects(lastFrame, newFrame))
 			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
 	}
-	
-	[self release];
 	
 	//Now, we can send a notification to update _row counters
 	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[@(_row)] forKeys : @[@"deletedRow"]];
@@ -414,7 +405,7 @@
 {
 	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
 
-	[[[NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
+	[[(RakAppDelegate*) [NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 
 	[_controller discardElement: _row];
 	[self removeRowFromList];
@@ -422,7 +413,7 @@
 
 - (void) installOver
 {
-	if(![[[NSApp delegate] CT] refreshCT : NO : (*todoList)->datas->cacheDBID])
+	if(![[(RakAppDelegate*) [NSApp delegate]CT] refreshCT : NO : (*todoList)->datas->cacheDBID])
 	{
 		//Some instance were not instantiated, we need to get them created
 		
@@ -430,7 +421,7 @@
 		getUpdatedChapterList((*todoList)->datas, true);
 		getUpdatedTomeList((*todoList)->datas, true);
 	
-		[[[NSApp delegate] CT] updateProject : *(*todoList)->datas : YES : VALEUR_FIN_STRUCT];
+		[[(RakAppDelegate*) [NSApp delegate]CT] updateProject : *(*todoList)->datas : YES : VALEUR_FIN_STRUCT];
 	}
 }
 

@@ -65,31 +65,12 @@
 	return output;
 }
 
-- (id) retain
-{
-	[preferenceButton retain];
-	[coreView retain];
-	
-	return [super retain];
-}
-
-- (oneway void) release
-{
-	[preferenceButton release];
-	[coreView release];
-	
-	[super release];
-}
-
 - (void) dealloc
 {
-	[preferenceButton removeFromSuperview];	[preferenceButton release];
-	[coreView removeFromSuperview];			[coreView release];
+	[preferenceButton removeFromSuperview];	
+	[coreView removeFromSuperview];			
 
-	[super retain];
 	[self removeFromSuperview];
-	
-	[super dealloc];
 }
 
 /**		Pref UI		**/

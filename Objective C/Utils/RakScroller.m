@@ -20,8 +20,8 @@
 	{
 		incompleteDrawing = NO;
 		
-		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE:self] retain];
-		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE:nil] retain];
+		passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:self];
+		active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
 		color = passive;
 		[self setKnobStyle:NSScrollerKnobStyleLight];
 	}
@@ -36,8 +36,8 @@
 
 	bool isActive = color == active;
 	
-	[passive release];		passive = [[Prefs getSystemColor:GET_COLOR_INACTIVE:nil] retain];
-	[active release];		active = [[Prefs getSystemColor:GET_COLOR_ACTIVE:nil] retain];
+	passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
+	active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
 
 	if(isActive)	color = active;
 	else			color = passive;
@@ -127,10 +127,10 @@
 	NSRect verticalScrollerFrame = [[view verticalScroller] frame];
 	
 	if ([view verticalScroller] != nil && ![[view verticalScroller] isKindOfClass:[RakScroller class]])
-		[view setVerticalScroller:[[[RakScroller alloc] initWithFrame:verticalScrollerFrame] autorelease]];
+		[view setVerticalScroller:[[RakScroller alloc] initWithFrame:verticalScrollerFrame]];
 	
 	if ([view horizontalScroller] != nil && ![[view horizontalScroller] isKindOfClass:[RakScroller class]])
-		[view setHorizontalScroller:[[[RakScroller alloc] initWithFrame:horizontalScrollerFrame] autorelease]];
+		[view setHorizontalScroller:[[RakScroller alloc] initWithFrame:horizontalScrollerFrame]];
 }
 
 /*

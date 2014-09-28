@@ -21,6 +21,6 @@
 }
 
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString;
-- (NSImage *) initImage;
+- (NSImage *) createImage;
 
 @end

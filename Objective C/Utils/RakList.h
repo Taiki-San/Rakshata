@@ -41,7 +41,7 @@
 
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 @property (getter=frame, setter=setFrame:)					NSRect frame;
-@property (assign, getter=superview, setter=setSuperview:)	NSView * superview;
+@property (weak, getter=superview, setter=setSuperview:)	NSView * superview;
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
 - (bool) didInitWentWell;

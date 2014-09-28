@@ -37,14 +37,14 @@
 
 - (void) setupView
 {
-	RakText * contentText = [[[RakText alloc] initWithText:self.frame :@"Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie" :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]] autorelease];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :@"Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie" :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
 	[contentText setAlignment:NSCenterTextAlignment];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakButton * button = [[RakButton allocWithText:@"Ok" : self.bounds] autorelease];
+	RakButton * button = [RakButton allocWithText:@"Ok" : self.bounds];
 	[button sizeToFit];
 	[button setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
 	[button setTarget:self];

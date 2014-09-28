@@ -18,13 +18,8 @@
 {
 	RakAppDelegate * core = [NSApp delegate];
 	
-	[self retain];
-	
 	if([core class] != [RakAppDelegate class])
-	{
-		[self release];
 		return;
-	}
 	
 	initialAnimation = YES;
 	
@@ -63,12 +58,12 @@
 	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
 	
-	mailInput = [[[RakEmailField alloc] initWithFrame:_containerMail.frame] autorelease];
+	mailInput = [[RakEmailField alloc] initWithFrame:_containerMail.frame];
 	[self.view addSubview:mailInput];
 	[_containerMail removeFromSuperview];
 	[mailInput addController:self];
 
-	passInput = [[[RakPassField alloc] initWithFrame:_containerPass.frame] autorelease];
+	passInput = [[RakPassField alloc] initWithFrame:_containerPass.frame];
 	[self.view addSubview:passInput];
 	[_containerPass removeFromSuperview];
 	[passInput addController : self];
@@ -228,7 +223,7 @@
 {
 	if(privacy == nil)
 	{
-		privacy = [[[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas, hors obligation légale, transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]] autorelease];
+		privacy = [[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas, hors obligation légale, transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -239,7 +234,7 @@
 	
 	if(terms == nil)
 	{
-		terms = [[[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]] autorelease];
+		terms = [[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";
@@ -264,7 +259,7 @@
 	
 	if(confirm == nil)
 	{
-		confirm = [[RakButton allocWithText:@"Créer un compte" : container.bounds] autorelease];
+		confirm = [RakButton allocWithText:@"Créer un compte" : container.bounds];
 		[confirm sizeToFit];
 		[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
 		[container addSubview:confirm];
@@ -346,7 +341,7 @@
 	
 	if(forgottenPass == nil)
 	{
-		forgottenPass = [[RakButton allocWithText:@"Mot de passe oublié?" : frame] autorelease];
+		forgottenPass = [RakButton allocWithText:@"Mot de passe oublié?" : frame];
 		[forgottenPass sizeToFit];
 		[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
 	
@@ -357,7 +352,7 @@
 	
 	if(_login == nil)
 	{
-		_login = [[RakButton allocWithText:@"Connexion" : frame] autorelease];
+		_login = [RakButton allocWithText:@"Connexion" : frame];
 		[_login sizeToFit];
 		[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
 		[container addSubview:_login];
@@ -415,8 +410,7 @@
 			[passInput removeFromSuperview];
 			[container removeFromSuperview];
 			
-			[[NSApp delegate] loginPromptClosed];
-			[self release];
+			[(RakAppDelegate*) [NSApp delegate]loginPromptClosed];
 		}
 	}
 }

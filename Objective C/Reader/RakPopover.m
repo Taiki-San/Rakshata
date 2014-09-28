@@ -22,7 +22,7 @@
 		self.anchorFrame = NSZeroRect;
 		self.direction = INPopoverArrowDirectionLeft;
 		
-		NSViewController * controller = [[[NSViewController alloc] init] autorelease];
+		NSViewController * controller = [[NSViewController alloc] init];
 		controller.view = contentView;
 		_popover = [[INPopoverController alloc] initWithContentViewController:controller];
 		_popover.closesWhenApplicationBecomesInactive = NO;
@@ -45,9 +45,9 @@
 	}
 }
 
-- (void) additionalConfiguration : (id) target : (SEL) selector
+- (void) additionalConfiguration : (id) target
 {
-	[target performSelector:selector withObject:_popover];
+	[target performSelector:@selector(configurePopover:) withObject:_popover];
 }
 
 - (void) updatePosition : (NSPoint) origin : (BOOL) animated
@@ -80,12 +80,6 @@
 	_popover.contentViewController = nil;
 }
 
-- (void) dealloc
-{
-	[_popover release];
-	[super dealloc];
-}
-
 @end
 
 @implementation RakPopoverView
@@ -107,14 +101,14 @@
 	
 	[self setupView];
 	
-	popover = [[[RakPopoverWrapper alloc] init:self] retain];
+	popover = [[RakPopoverWrapper alloc] init : self];
 	popover.anchor = anchor;
 	popover.direction = [self arrowDirection];
 	
 	if(wantAdditionalConfig)
 	{
 		additionalConfigRequired = true;
-		[popover additionalConfiguration : self : @selector(configurePopover:)];
+		[popover additionalConfiguration : self];
 	}
 	
 	[popover togglePopover : baseFrame];
@@ -182,7 +176,7 @@
 	[self setNeedsDisplay:YES];
 	
 	if(additionalConfigRequired)
-		[popover additionalConfiguration:self :@selector(configurePopover:)];
+		[popover additionalConfiguration:self];
 }
 
 - (void) additionalUpdateOnThemeChange
@@ -207,7 +201,6 @@
 - (void)popoverDidClose:(INPopoverController *)discarded;
 {
 	[popover clearMemory];
-	[popover release];
 }
 
 @end

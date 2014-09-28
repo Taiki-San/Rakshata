@@ -43,7 +43,7 @@
 {
 	_data = project;
 	
-	NSString * currentElem = [[[NSString alloc] initWithData:[NSData dataWithBytes:_data.projectName length:sizeof(_data.projectName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSString * currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.projectName length:sizeof(_data.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	
 	//Project name
 	if(projectName == nil)
@@ -61,7 +61,7 @@
 	else
 		[projectName setStringValue : currentElem];
 	
-	currentElem = [[[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding];
 
 	//Author name
 	if(authorName == nil)
@@ -111,12 +111,12 @@
 
 - (NSColor *) startColor
 {
-	return [[Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO] retain];
+	return [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO];
 }
 
 - (NSColor *) endColor : (const NSColor *) startColor
 {
-	return [[Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO] retain];
+	return [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO];
 }
 
 @end

@@ -81,7 +81,7 @@
 	NSPasteboard * pasteboard = [info draggingPasteboard];
 	if(pasteboard != nil)
 	{
-		RakDragItem * item = [[[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]] autorelease];
+		RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 		if(item != nil)
 		{
 			if(![self grantDropAuthorization : [item canDL]])
@@ -118,7 +118,7 @@
 		 {
 			 [draggedView setupContent:[self getProjectDataForDrag : row] :[self contentNameForDrag : row]];
 			 
-			 NSImage * image = [draggedView initImage];
+			 NSImage * image = [draggedView createImage];
 			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x + draggingItem.draggingFrame.size.width / 2 - image.size.width / 2,
 									   draggingItem.draggingFrame.origin.y + draggingItem.draggingFrame.size.height / 2 - image.size.height / 2,
 									   image.size.width, image.size.height);

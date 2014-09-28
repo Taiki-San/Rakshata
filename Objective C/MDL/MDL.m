@@ -40,7 +40,6 @@
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
-		[coreView release];
 		[self setFrame:[self createFrame]];	//Update the size if required
 		needUpdateMainViews = YES;
 		[self updateDependingViews : NO];
@@ -63,19 +62,13 @@
 {
 	[controller needToQuit];
 	
-	if([self retainCount] > 1)
-		[self release];
-	
 	NSString * output = [controller serializeData];
 	return output != nil ? output : [super byebye];
 }
 
 - (void) dealloc
 {
-	[controller release];
 	[coreView removeFromSuperview];
-	[coreView release];
-	[super dealloc];
 }
 
 /* Proxy */
@@ -364,8 +357,8 @@
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
 {
-	[[[NSApp delegate] CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
-	[[[NSApp delegate] reader]	updateContextNotification : data : isTome : element];
+	[[(RakAppDelegate*) [NSApp delegate]CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
+	[[(RakAppDelegate*) [NSApp delegate]reader]	updateContextNotification : data : isTome : element];
 }
 
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover

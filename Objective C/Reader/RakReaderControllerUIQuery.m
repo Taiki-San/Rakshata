@@ -15,13 +15,10 @@
 - (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
-	{
-		[self release];
 		return nil;
-	}
 	
 	_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-	_tabReader = [[NSApp delegate] reader];
+	_tabReader = [(RakAppDelegate*) [NSApp delegate]reader];
 	
 	//We check if the user asked not to be annoyed again
 	BOOL data = NO;
@@ -31,7 +28,6 @@
 		if(data)
 			[self confirmed];
 
-		[self release];
 		return nil;
 	}
 
@@ -61,19 +57,19 @@
 	else
 		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
 	
-	RakText * contentText = [[[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]] autorelease];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
 	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 	[contentText setAlignment:NSCenterTextAlignment];
 	[contentText sizeToFit];
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakQuerySegmentedControl * button = [[[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"Oui" : @"Non"] autorelease];
+	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"Oui" : @"Non"];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakButton * buttonRemind = [[RakButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)] autorelease];
+	RakButton * buttonRemind = [RakButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
@@ -113,6 +109,7 @@
 {
 	[(MDL*) _anchor registerPopoverExistance:nil];
 	[super popoverDidClose:discarded];
+	[popover setDelegate:nil];
 }
 
 #pragma mark - Payload

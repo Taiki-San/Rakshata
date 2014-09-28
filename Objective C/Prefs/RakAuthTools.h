@@ -51,7 +51,7 @@ enum
 
 @interface RakAuthTermsButton : NSButton
 
-@property (assign) RakAuthController* controller;
+@property (weak) RakAuthController* controller;
 
 @end
 

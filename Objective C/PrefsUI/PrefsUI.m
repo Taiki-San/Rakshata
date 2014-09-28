@@ -20,7 +20,7 @@
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
-		RakButton * button = [[RakButton allocWithText:@"Change UI" :NSZeroRect] retain];
+		RakButton * button = [RakButton allocWithText:@"Change UI" :NSZeroRect];
 		[button sizeToFit];
 		[button setTarget:self];
 		[button setAction:@selector(updateUITheme)];
@@ -77,14 +77,6 @@
     }
 }
 
-- (void)dealloc
-{
-	if(anchor == nil)
-		[anchor release];
-    [popover release];
-    [super dealloc];
-}
-
 - (void)showPopover
 {
     [self createPopover];
@@ -121,8 +113,6 @@
 - (void)popoverDidClose:(NSNotification *)notification
 {
 	//Ajouter des codes à la fermeture
-
-    [popover release];
     popover = nil;
 }
 
