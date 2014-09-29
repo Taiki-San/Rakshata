@@ -37,6 +37,14 @@
 	self.gradientMaxWidth = frameRect.size.height;
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	frameRect = [self frameFromParent : frameRect];
+	
+	[self.animator setFrame : frameRect];
+	self.gradientMaxWidth = frameRect.size.height;
+}
+
 #pragma mark - Interface
 
 - (void) loadProject : (PROJECT_DATA) project

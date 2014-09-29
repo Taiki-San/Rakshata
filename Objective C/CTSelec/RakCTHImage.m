@@ -85,6 +85,12 @@
 	[gradient setFrame : frameRect];
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : frameRect];
+	[gradient.animator setFrame : frameRect];
+}
+
 @end
 
 @implementation RakCTHImageGradient

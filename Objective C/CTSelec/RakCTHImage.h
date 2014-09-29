@@ -25,4 +25,6 @@
 
 - (RakCTHImageGradient *) gradientView;
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end

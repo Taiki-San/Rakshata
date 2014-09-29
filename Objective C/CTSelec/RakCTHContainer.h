@@ -20,6 +20,8 @@
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 - (void) loadProject : (PROJECT_DATA) project;
 
 @end

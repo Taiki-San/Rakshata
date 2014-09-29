@@ -49,15 +49,19 @@
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
+	[header resizeAnimation:newBound];
+	
 	[projectName resizeAnimation:newBound];
 	[projectImage resizeAnimation:newBound];
+
 	[coreView resizeAnimation:newBound];
 }
 
 - (void) dealloc
 {
+	[header removeFromSuperview];
+	
 	[projectName removeFromSuperview];
-
 	[projectImage removeFromSuperview];
 	
 	[coreView removeFromSuperview];

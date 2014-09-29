@@ -38,6 +38,17 @@
 	[_container setFrame : frameRect];
 }
 
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	frameRect = [self frameByParent:frameRect];
+	[self.animator setFrame :  frameRect];
+	
+	frameRect.origin = NSZeroPoint;
+	
+	[_background resizeAnimation : frameRect];
+	[_container.animator setFrame : frameRect];
+}
+
 #pragma mark - Interface
 
 - (BOOL) updateHeaderProject : (PROJECT_DATA) project
