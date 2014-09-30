@@ -101,7 +101,7 @@
 		output[pos] = [NSString stringWithFormat:@"%s", decodedString];
 	}
 	
-	return [[NSArray alloc] initWithObjects:output count:4];;
+	return [[NSArray alloc] initWithObjects:output count:4];
 }
 
 @end
