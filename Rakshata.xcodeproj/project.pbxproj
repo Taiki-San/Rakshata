@@ -231,7 +231,6 @@
 		B678D033197717A600D7FE6A /* JSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONParser.m; path = "Objective C/Utils/JSONParser.m"; sourceTree = "<group>"; };
 		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; };
-		B67B35F9193FA1CD0043E5C4 /* Rakshata.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Rakshata.playground; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTCoreContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTCoreContentView.h; path = CTSelec/RakCTCoreContentView.h; sourceTree = "<group>"; };
 		B67E079318E7714B0007EB44 /* RakCTCoreContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTCoreContentView.m; path = CTSelec/RakCTCoreContentView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -679,7 +678,6 @@
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
-				B67B35F9193FA1CD0043E5C4 /* Rakshata.playground */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
 			);
