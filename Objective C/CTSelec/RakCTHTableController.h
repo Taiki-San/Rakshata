@@ -10,28 +10,39 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define CT_HEADER_MIN_HEIGHT 200
+#define RCTH_TITLE_ID @"CTHProperty"
+#define RCTH_DETAILS_ID @"CTHData"
 
-@class RakCTHeader;
+/*Data are organized as the following:
+	- Release date
+	- Number of chapters
+	- Number of volumes
+	- Paid content
+	- DRM
+ */
 
-#import "RakCTHImage.h"
-#import "RakCTHTableController.h"
-#import "RakCTHContainer.h"
 
-@interface RakCTHeader : NSView
+@interface RakCTHTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
 {
-	uint projectCacheID;
-	PROJECT_DATA _data;
+	RakListScrollView * _scrollView;
+	NSTableView * _tableView;
 	
-	//Elements
-	RakCTHImage * _background;
-	RakCTHContainer * _container;
+	uint cacheID;
 	
+	//Context data
+	uint numberOfRows;
+	
+	uint numberOfChapters;
+	uint numberOfChaptersInstalled;
+	uint numberOfVolumes;
+	uint numberOfVolumesInstalled;
+	
+	uint status;
+	uint type;
+	uint category;
+	
+	BOOL paidContent;
+	BOOL DRM;
 }
-
-- (id) initWithData : (NSRect) frame : (PROJECT_DATA) project;
-- (BOOL) updateHeaderProject : (PROJECT_DATA) project;
-
-- (void) resizeAnimation : (NSRect) frameRect;
 
 @end

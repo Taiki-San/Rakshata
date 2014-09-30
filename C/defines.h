@@ -68,12 +68,6 @@
 #define CONNEXION_SERVEUR_DOWN 1
 #define CONNEXION_DOWN 2
 
-/*Genre*/
-#define GENRE_SHONEN 1
-#define GENRE_SHOJO 2
-#define GENRE_SEINEN 3
-#define GENRE_HENTAI 4
-
 /*Structure principale -> paliers*/
 #define PALIER_MENU -3
 #define PALIER_QUIT -4
@@ -125,14 +119,42 @@
 #define SSL_OFF 0
 #define SSL_ON 1
 
+/*Status*/
+enum
+{
+	STATUS_OVER = 1,
+	STATUS_CANCELED,
+	STATUS_SUSPENDED,
+	STATUS_WIP,
+	STATUS_ANOUNCED,
+};
+
+/*Genre*/
+enum
+{
+	GENRE_SHONEN = 1,
+	GENRE_SHOJO,
+	GENRE_SEINEN,
+	GENRE_HENTAI
+};
+
+/*Type*/
+enum
+{
+	TYPE_MANGA = 1,
+	TYPE_COMIC,
+	TYPE_BD,
+	TYPE_MANWA
+};
+
 /*Database*/
 #define LENGTH_DESCRIPTION 1024
 #define LENGTH_PROJECT_NAME 51
 #define LENGTH_AUTHORS		51
 #define LENGTH_URL			256
 #define	LENGTH_HASH			9
-#define STATUS_MAX			3
-#define TYPE_MAX			3
+#define STATUS_MAX			5
+#define TYPE_MAX			4
 
 #define LONGUEUR_COURT 10
 #define LONGUEUR_SITE 100
