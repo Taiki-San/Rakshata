@@ -494,7 +494,7 @@ enum
 	{
 #ifdef DEV_VERSION
 		updateChapter(data, _currentElem);
-		dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
+		loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
 #endif
 		return nil;
 	}
@@ -1298,7 +1298,7 @@ enum
 		}
 	}
 	
-	//We got the data, now, craft the alert
+	//We got the data, now, craft the alert. ARC will complain if we don't put it in a var...
 	RakReaderControllerUIQuery *letItRun = [RakReaderControllerUIQuery alloc];
 	letItRun = [letItRun initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
 }

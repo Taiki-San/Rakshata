@@ -138,11 +138,6 @@ int setupBDDCache()
 			if(isUpdated)
 				lengthIsUpdated = nombreProject;
 		}
-		else
-		{
-			for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
-			return 0;
-		}
 	}
 	
 	for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));

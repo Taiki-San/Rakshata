@@ -120,13 +120,18 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 
     if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCT)
     {
-		int first = projectDB->chapitresInstalled[0], end = projectDB->chapitresInstalled[nbElem-1];
-		
-		if(*dernierLu < first)
-			*dernierLu = first;
-		
-		else if(*dernierLu > end)
-			*dernierLu = end;
+		if(projectDB->chapitresInstalled != NULL)
+		{
+			int first = projectDB->chapitresInstalled[0], end = projectDB->chapitresInstalled[nbElem-1];
+			
+			if(*dernierLu < first)
+				*dernierLu = first;
+			
+			else if(*dernierLu > end)
+				*dernierLu = end;
+		}
+		else
+			*dernierLu = VALEUR_FIN_STRUCT;
 	}
 }
 

@@ -41,8 +41,6 @@
 	NSPoint cursorPosBeforeLastMove;
 	
 	//Context data
-@private
-	
 	bool _readerMode;
 	bool _alreadyRefreshed;
 	bool _dontGiveACrapAboutCTPosUpdate;

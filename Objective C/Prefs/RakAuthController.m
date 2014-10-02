@@ -439,7 +439,7 @@
 			{
 				if(tab[i] == caller)
 				{
-					[self.view.window makeFirstResponder: tab[(i + offset) % nbElem]];
+					[self.view.window makeFirstResponder: tab[(nbElem + i + offset) % nbElem]];
 					break;
 				}
 			}

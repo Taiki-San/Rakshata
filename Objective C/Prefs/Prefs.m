@@ -460,9 +460,11 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			//Classical code
 			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.x;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
+
+			if(additionalData == NULL)
+				break;
+		
+			*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
 			
 			//Reader position is highly dependant of the width of either SER/CT tabs, we need to check we're not impacted if they were maximized
 			if(mainThread == TAB_READER && stateTabsReader & STATE_READER_NONE_COLLAPSED)
