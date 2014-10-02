@@ -24,7 +24,6 @@
 
 @interface RakCTHTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
 {
-	RakListScrollView * _scrollView;
 	NSTableView * _tableView;
 	
 	uint cacheID;
@@ -44,5 +43,15 @@
 	BOOL paidContent;
 	BOOL DRM;
 }
+
+@property (strong) RakListScrollView * scrollView;
+
+- (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame;
+- (void) updateProject : (PROJECT_DATA) projectID;
+
+- (void) setFrame : (NSRect) frameRect;
+- (void) resizeAnimation : (NSRect) frameRect;
+
+- (void) craftTableView : (NSRect) frame;
 
 @end

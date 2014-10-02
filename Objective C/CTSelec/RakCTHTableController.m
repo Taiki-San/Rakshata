@@ -27,12 +27,18 @@
 
 #pragma mark - Interface
 
-- (void) updateProject : (uint) projectID
+- (void) updateProjectWithID : (uint) projectID
 {
 	PROJECT_DATA project = getElementByID(projectID, RDB_CTXCT);
-	[self analyseCurrentProject : project];
+	
+	[self updateProject : project];
+	
 	releaseCTData(project);
+}
 
+- (void) updateProject : (PROJECT_DATA) project
+{
+	[self analyseCurrentProject : project];
 	[_tableView reloadData];
 }
 
@@ -55,28 +61,49 @@
 	paidContent = !strcmp(project.team->type, TYPE_DEPOT_3);
 	DRM = YES;
 	
-	numberOfRows = 5 + numberOfChapters != 0 + numberOfVolumes != 0;
+	numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);
+}
+
+- (void) setFrame : (NSRect) frameRect
+{
+	frameRect = [self frameFromParent:frameRect];
+	
+	[self.scrollView setFrame:frameRect];
+	
+	[[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID] setWidth : frameRect.size.width * 2 / 5];
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	NSRect newFrame = [self frameFromParent:frameRect];
+	
+	[self.scrollView.animator setFrame:newFrame];
 }
 
 #pragma mark - UI tools
 
-- (RakListScrollView *) craftTableView : (NSRect) frame
+- (void) craftTableView : (NSRect) frame
 {
-	if(_scrollView != nil)
-		return _scrollView;
+	if(self.scrollView != nil)
+		return;
 	
-	_scrollView = [[RakListScrollView alloc] initWithFrame: [self frameFromParent:frame]];
-	if(_scrollView == nil)
-		return nil;
+	self.scrollView = [[RakListScrollView alloc] initWithFrame: [self frameFromParent:frame]];
+	if(self.scrollView == nil)
+		return;
 	
-	_tableView = [[NSTableView alloc] initWithFrame:_scrollView.contentView.bounds];
+	self.scrollView.hasVerticalScroller = NO;
+	
+	_tableView = [[NSTableView alloc] initWithFrame:self.scrollView.contentView.bounds];
 	if(_tableView == nil)
-		return nil;
+	{
+		self.scrollView = nil;
+		return;
+	}
 
 	//View configuration
 	_tableView.wantsLayer = NO;
 	_tableView.autoresizesSubviews = NO;
-	[_scrollView setDocumentView:_tableView];
+	[self.scrollView setDocumentView:_tableView];
 	
 	//Tableview configuration
 	[_tableView setHeaderView:nil];
@@ -87,6 +114,7 @@
 	
 	//TableView columns init
 	NSTableColumn * titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_TITLE_ID];
+	[titles setWidth:_tableView.frame.size.width * 2 / 5];
 	[_tableView addTableColumn:titles];
 	titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_DETAILS_ID];
 	[_tableView addTableColumn:titles];
@@ -96,14 +124,17 @@
 	[_tableView setDataSource:self];
 	[_tableView reloadData];
 	[_tableView scrollRowToVisible:0];
-	
-	return _scrollView;
 }
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
 {
 	parentBounds.origin.y = 0;
-	parentBounds.origin.x = parentBounds.size.width * 6 / 10;
+	
+	if(parentBounds.size.width < 400)
+		parentBounds.origin.x = parentBounds.size.width * 9 / 20;
+	else
+		parentBounds.origin.x = parentBounds.size.width / 2;
+	
 	parentBounds.size.width -= parentBounds.origin.x;
 	
 	return parentBounds;
@@ -111,7 +142,8 @@
 
 - (NSColor *) textColor : (BOOL) title
 {
-	return [NSColor grayColor];
+#warning "To improve + KVO"
+	return [NSColor whiteColor];
 }
 
 - (BOOL) isTitleColumn : (NSTableColumn *) column
@@ -139,7 +171,7 @@
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
-	// Get an existing cell with the identifier if it exists
+	// Get an existing view with the identifier if it exists
 	RakText *result = [tableView makeViewWithIdentifier:@"PFUDOR" owner:self];
 	
 	if (result == nil)
@@ -175,7 +207,7 @@
 		case 0:
 		{
 			if(titleColumn)
-				ret_value = [NSString stringWithFormat:@"Nombre de chapitre%c", numberOfChapters == 1 ? '\0' : 's'];
+				ret_value = [NSString stringWithFormat:@"Chapitre%c", numberOfChapters == 1 ? '\0' : 's'];
 			else
 			{
 				if(numberOfChaptersInstalled == 0)
@@ -189,7 +221,7 @@
 		case 1:
 		{
 			if(titleColumn)
-				ret_value = [NSString stringWithFormat:@"Nombre de tomes%c", numberOfVolumes == 1 ? '\0' : 's'];
+				ret_value = [NSString stringWithFormat:@"Tomes%c", numberOfVolumes == 1 ? '\0' : 's'];
 			else
 			{
 				if(numberOfVolumesInstalled == 0)
@@ -251,7 +283,7 @@
 		case 5:
 		{
 			if(titleColumn)
-				ret_value = @"Contenu payant";
+				ret_value = @"Payant";
 			else
 				ret_value = paidContent ? @"Oui" : @"Non";
 			
@@ -261,7 +293,7 @@
 		case 6:
 		{
 			if(titleColumn)
-				ret_value = @"Export disponible";
+				ret_value = @"Exportable";
 			else
 				ret_value = DRM ? @"Non" : @"Oui";
 

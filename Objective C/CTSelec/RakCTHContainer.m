@@ -35,6 +35,11 @@
 
 	[super setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
+	
+	[projectName setFrameOrigin:[self projectNamePos : self.bounds.size.height]];
+	[authorName setFrameOrigin:[self authorNamePos : self.bounds.size.height]];
+
+	[_tableController setFrame : self.bounds];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
@@ -43,6 +48,11 @@
 	
 	[self.animator setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
+
+	[projectName.animator setFrameOrigin:[self projectNamePos : self.bounds.size.height]];
+	[authorName.animator setFrameOrigin:[self authorNamePos : self.bounds.size.height]];
+	
+	[_tableController resizeAnimation : self.bounds];
 }
 
 #pragma mark - Interface
@@ -60,7 +70,7 @@
 		if(projectName)
 		{
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
-			[projectName setFrameOrigin : [self projectNamePos]];
+			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size.height]];
 			[projectName sizeToFit];
 		
 			[self addSubview: projectName];
@@ -80,7 +90,7 @@
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
 																	traits:NSItalicFontMask weight:0 size: 13]];
 
-			[authorName setFrameOrigin : [self authorNamePos]];
+			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size.height]];
 			[authorName sizeToFit];
 			
 			[self addSubview: authorName];
@@ -88,18 +98,35 @@
 	}
 	else
 		[authorName setStringValue : currentElem];
+	
+	if(_tableController == nil)
+	{
+		_tableController = [[RakCTHTableController alloc] initWithProject : _data frame : self.bounds];
+		
+		if(_tableController != nil)
+		{
+			if(_tableController.scrollView != nil)
+				[self addSubview:_tableController.scrollView];
+			else
+				_tableController = nil;
+		}
+	}
+	else
+	{
+		[_tableController updateProject:_data];
+	}
 }
 
 #pragma mark - Elements positions
 
-- (NSPoint) projectNamePos
+- (NSPoint) projectNamePos : (CGFloat) height
 {
-	return NSMakePoint(26, self.bounds.size.height * 11 / 20);
+	return NSMakePoint(26, height * 11 / 20);
 }
 
-- (NSPoint) authorNamePos
+- (NSPoint) authorNamePos : (CGFloat) height
 {
-	return NSMakePoint(35, self.bounds.size.height * 5 / 20);
+	return NSMakePoint(35, height * 5 / 20);
 }
 
 #pragma mark - UI utilities

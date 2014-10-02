@@ -16,6 +16,8 @@
 	
 	RakText * projectName;
 	RakText * authorName;
+	
+	RakCTHTableController * _tableController;
 }
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;

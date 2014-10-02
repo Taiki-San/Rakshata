@@ -108,9 +108,9 @@
 		NSSize size = _background.image.size;
 		CGFloat ratio = parentFrame.size.width / size.width;
 		
-		//Make the thing bigger is to wide, and no high enough
+		//Make the thing bigger is too wide, and no high enough
 		if(size.height * ratio < CT_HEADER_MIN_HEIGHT)
-			ratio = parentFrame.size.height / CT_HEADER_MIN_HEIGHT;
+			ratio = CT_HEADER_MIN_HEIGHT / size.height;
 		
 		//We scale everything
 		size.height = round(size.height * ratio);
