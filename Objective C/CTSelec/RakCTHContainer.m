@@ -66,7 +66,7 @@
 	//Project name
 	if(projectName == nil)
 	{
-		projectName = [[RakText alloc] initWithText : self.frame : currentElem : [NSColor whiteColor]];
+		projectName = [[RakText alloc] initWithText : self.frame : currentElem : [self textColor]];
 		if(projectName)
 		{
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
@@ -84,7 +84,7 @@
 	//Author name
 	if(authorName == nil)
 	{
-		authorName = [[RakText alloc] initWithText : self.frame : currentElem : [NSColor whiteColor]];
+		authorName = [[RakText alloc] initWithText : self.frame : currentElem : [self textColor]];
 		if(authorName)
 		{
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
@@ -152,6 +152,23 @@
 - (NSColor *) endColor : (const NSColor *) startColor
 {
 	return [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	if(projectName != nil)
+		[projectName setTextColor:[self textColor]];
+	
+	if(authorName != nil)
+		[authorName setTextColor:[self textColor]];
+}
+
+- (NSColor *) textColor
+{
+	return [Prefs getSystemColor:GET_COLOR_CTHEADER_FONT : nil];
 }
 
 @end

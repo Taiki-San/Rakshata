@@ -268,6 +268,12 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			output = [NSColor colorWithDeviceWhite:0 alpha:0.4f];
 			break;
 		}
+			
+		case GET_COLOR_CTHEADER_FONT:
+		{
+			output = [NSColor colorWithDeviceWhite:1 alpha:1];
+			break;
+		}
 	}
 	
 	return output;
