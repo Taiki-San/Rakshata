@@ -183,6 +183,15 @@
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
+	if(header != nil)
+		[header updateHeaderProject:data];
+	else
+	{
+		header = [[RakCTHeader alloc] initWithData:self.bounds :data];
+		if(header != nil)
+			[self addSubview:header];
+	}
+	
 	if(coreView != nil)
 	{
 		if(![coreView updateContext:data])

@@ -173,6 +173,11 @@
 	return frame;
 }
 
+- (PROJECT_DATA) currentProject
+{
+	return data;
+}
+
 #pragma mark - Proxy
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index

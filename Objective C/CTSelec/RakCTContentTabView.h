@@ -19,6 +19,7 @@
 }
 
 @property BOOL dontNotify;
+@property (readonly) PROJECT_DATA currentProject;
 
 - (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 

@@ -20,6 +20,7 @@
 	{
 		[self analyseCurrentProject : project];
 		[self craftTableView:frame];
+		[Prefs getCurrentTheme:self];
 	}
 	
 	return self;
@@ -142,8 +143,15 @@
 
 - (NSColor *) textColor : (BOOL) title
 {
-#warning "To improve + KVO"
-	return [NSColor whiteColor];
+	return [Prefs getSystemColor:GET_COLOR_CTHEADER_FONT : nil];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	[_tableView reloadData];
 }
 
 - (BOOL) isTitleColumn : (NSTableColumn *) column
@@ -221,7 +229,7 @@
 		case 1:
 		{
 			if(titleColumn)
-				ret_value = [NSString stringWithFormat:@"Tomes%c", numberOfVolumes == 1 ? '\0' : 's'];
+				ret_value = [NSString stringWithFormat:@"Tome%c", numberOfVolumes == 1 ? '\0' : 's'];
 			else
 			{
 				if(numberOfVolumesInstalled == 0)

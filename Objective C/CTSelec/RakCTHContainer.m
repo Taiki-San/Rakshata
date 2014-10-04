@@ -22,6 +22,7 @@
 		self.gradientMaxWidth = frame.size.height;
 		self.gradientWidth = 100;
 		self.angle = 270;
+		self.autoresizesSubviews = NO;
 
 		[self loadProject : project];
 	}
@@ -49,10 +50,12 @@
 	[self.animator setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
 
-	[projectName.animator setFrameOrigin:[self projectNamePos : self.bounds.size.height]];
-	[authorName.animator setFrameOrigin:[self authorNamePos : self.bounds.size.height]];
+	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size.height]];
+	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size.height]];
 	
-	[_tableController resizeAnimation : self.bounds];
+	frameRect.origin = NSZeroPoint;
+	
+	[_tableController resizeAnimation : frameRect];
 }
 
 #pragma mark - Interface
@@ -77,7 +80,10 @@
 		}
 	}
 	else
+	{
 		[projectName setStringValue : currentElem];
+		[projectName sizeToFit];
+	}
 	
 	currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding];
 
@@ -97,7 +103,10 @@
 		}
 	}
 	else
+	{
 		[authorName setStringValue : currentElem];
+		[projectName sizeToFit];
+	}
 	
 	if(_tableController == nil)
 	{
@@ -133,7 +142,7 @@
 
 - (NSRect) frameFromParent : (NSRect) parentFrame
 {
-	parentFrame.size.height *= 0.4f;
+	parentFrame.size.height *= 0.45f;
 	
 	return parentFrame;
 }
