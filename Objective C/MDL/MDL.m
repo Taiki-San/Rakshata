@@ -189,7 +189,7 @@
 	}
 	else
 	{
-		RakAppDelegate * delegate = [NSApp delegate];
+		RakAppDelegate * delegate = (RakAppDelegate *) [NSApp delegate];
 		
 		[[delegate serie]	createFrame];
 		[[delegate CT]		createFrame];

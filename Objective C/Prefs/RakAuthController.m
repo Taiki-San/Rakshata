@@ -16,9 +16,7 @@
 
 - (void) launch
 {
-	RakAppDelegate * core = [NSApp delegate];
-	
-	if([core class] != [RakAppDelegate class])
+	if([[NSApp delegate] class] != [RakAppDelegate class])
 		return;
 	
 	initialAnimation = YES;
@@ -35,7 +33,7 @@
 	
 	[self updateMainView];
 	
-	foreground = [[RakForegroundView alloc] init : [core getContentView] : self.view];
+	foreground = [[RakForegroundView alloc] init : [(RakAppDelegate*)[NSApp delegate] getContentView] : self.view];
 	foreground.delegate = self;
 	
 	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
