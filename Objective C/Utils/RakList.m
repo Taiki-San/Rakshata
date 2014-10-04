@@ -508,6 +508,14 @@
 	}
 }
 
+- (void) scrollWheel:(NSEvent *)event
+{
+	if(self.scrollingDisabled)
+		[self.nextResponder scrollWheel:event];
+	else
+		[super scrollWheel:event];
+}
+
 @end
 
 @implementation RakTableView

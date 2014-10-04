@@ -123,6 +123,7 @@
 	else
 	{
 		[_tableController updateProject:_data];
+		[_tableController setFrame:self.bounds];	//We refresh scrollview size
 	}
 }
 

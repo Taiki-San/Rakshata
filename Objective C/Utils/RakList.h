@@ -15,6 +15,8 @@
 	NSView* documentViewToResize;
 }
 
+@property BOOL scrollingDisabled;
+
 - (void) resizeAnimation : (NSRect) frameRect;
 
 @end

@@ -63,22 +63,41 @@
 	DRM = YES;
 	
 	numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);
+	
+	if(_tableView != nil)
+		[_tableView reloadData];
 }
 
 - (void) setFrame : (NSRect) frameRect
 {
-	frameRect = [self frameFromParent:frameRect];
-	
-	[self.scrollView setFrame:frameRect];
-	
-	[[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID] setWidth : frameRect.size.width * 2 / 5];
+	[self resizeScrollView : [self frameFromParent:frameRect] : NO];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	NSRect newFrame = [self frameFromParent:frameRect];
+	[self resizeScrollView : [self frameFromParent:frameRect] : YES];
+}
+
+- (void) resizeScrollView : (NSRect) newFrame : (BOOL) animated
+{
+	CGFloat tableHeight = _tableView.bounds.size.height;
+
+	if(tableHeight < newFrame.size.height)
+	{
+		self.scrollView.scrollingDisabled = YES;
+		
+		newFrame.origin.y = newFrame.size.height / 2 - tableHeight / 2;
+		newFrame.size.height = tableHeight;
+	}
+	else
+		self.scrollView.scrollingDisabled = NO;
 	
-	[self.scrollView.animator setFrame:newFrame];
+	if(animated)
+		[self.scrollView.animator setFrame : newFrame];
+	else
+		[self.scrollView setFrame : newFrame];
+	
+	[[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID] setWidth : newFrame.size.width * 2 / 5];
 }
 
 #pragma mark - UI tools
@@ -88,13 +107,16 @@
 	if(self.scrollView != nil)
 		return;
 	
-	self.scrollView = [[RakListScrollView alloc] initWithFrame: [self frameFromParent:frame]];
+	frame = [self frameFromParent:frame];
+	
+	//Init at height = 1 in order to be sure that tableview height is not related to scrollview height 
+	self.scrollView = [[RakListScrollView alloc] initWithFrame: NSMakeRect(0, 0, frame.size.width, 1)];
 	if(self.scrollView == nil)
 		return;
 	
 	self.scrollView.hasVerticalScroller = NO;
 	
-	_tableView = [[NSTableView alloc] initWithFrame:self.scrollView.contentView.bounds];
+	_tableView = [[NSTableView alloc] init];
 	if(_tableView == nil)
 	{
 		self.scrollView = nil;
@@ -125,6 +147,8 @@
 	[_tableView setDataSource:self];
 	[_tableView reloadData];
 	[_tableView scrollRowToVisible:0];
+	
+	[self setFrame:frame];
 }
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
