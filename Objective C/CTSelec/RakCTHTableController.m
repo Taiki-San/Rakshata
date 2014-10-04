@@ -133,8 +133,10 @@
 	
 	if(parentBounds.size.width < 400)
 		parentBounds.origin.x = parentBounds.size.width * 9 / 20;
-	else
+	else if(parentBounds.size.width >= 500)
 		parentBounds.origin.x = parentBounds.size.width / 2;
+	else	//Progressive transition between the two regimes, as neither is great is opposite extreme cases
+		parentBounds.origin.x = parentBounds.size.width * (0.45f + (parentBounds.size.width - 400) / 100.0f * 0.05f);
 	
 	parentBounds.size.width -= parentBounds.origin.x;
 	
