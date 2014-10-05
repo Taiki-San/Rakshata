@@ -18,7 +18,7 @@
 	RakCTHeader * header;
 	
 	//Reader mode only
-	RakTextProjectName * projectName;
+	RakMenuText * projectName;
 	RakCTProjectImageView * projectImage;
 
 	RakCTContentTabView * coreView;

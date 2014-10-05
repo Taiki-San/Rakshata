@@ -19,11 +19,6 @@
 	return superViewSize;
 }
 
-- (CGFloat) getFontSize
-{
-	return 16;
-}
-
 @end
 
 @implementation RakTableRowView

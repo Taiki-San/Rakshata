@@ -159,15 +159,6 @@
 
 @end
 
-@implementation RakTextProjectName
-
-- (CGFloat) getFontSize
-{
-	return 16;
-}
-
-@end
-
 @implementation RakCTProjectImageView
 
 - (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame

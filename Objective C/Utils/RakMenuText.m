@@ -44,7 +44,7 @@
 
 - (CGFloat) getFontSize
 {
-	return [NSFont systemFontSize];
+	return 16;
 }
 
 - (NSFont *) getFont

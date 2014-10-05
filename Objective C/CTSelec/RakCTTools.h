@@ -42,10 +42,6 @@
 
 @end
 
-@interface RakTextProjectName : RakMenuText
-
-@end
-
 @interface RakCTProjectImageView : NSImageView
 
 - (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame;

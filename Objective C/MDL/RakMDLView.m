@@ -21,7 +21,7 @@
 		_controller = controller;
 		[self setupInternal];
 		
-		headerText = [[RakMDLHeaderText alloc] initWithText:[self bounds] : @"Téléchargement"];
+		headerText = [[RakMenuText alloc] initWithText:[self bounds] : @"Téléchargement"];
 		if(headerText != nil)	{	[self addSubview:headerText];		}
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];

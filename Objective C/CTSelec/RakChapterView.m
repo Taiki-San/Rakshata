@@ -171,7 +171,7 @@
 		[projectName setStringValue : projectNameString];
 	else
 	{
-		projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : projectNameString];
+		projectName = [[RakMenuText alloc] initWithText:[self bounds] : projectNameString];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
 

@@ -12,7 +12,7 @@
 
 @interface RakMDLView : RakTabContentTemplate
 {
-	RakMDLHeaderText * headerText;
+	RakMenuText * headerText;
 	RakMDLList * MDLList;
 	
 	RakText * dropPlaceHolder;
