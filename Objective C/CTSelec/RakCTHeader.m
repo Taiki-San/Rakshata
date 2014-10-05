@@ -109,8 +109,8 @@
 		CGFloat ratio = parentFrame.size.width / size.width;
 		
 		//Make the thing bigger is too wide, and no high enough
-		if(size.height * ratio < CT_HEADER_MIN_HEIGHT)
-			ratio = CT_HEADER_MIN_HEIGHT / size.height;
+		if(size.height * ratio > parentFrame.size.height / 2)
+			ratio = (parentFrame.size.height / 2) / size.height;
 		
 		//We scale everything
 		size.height = round(size.height * ratio);
