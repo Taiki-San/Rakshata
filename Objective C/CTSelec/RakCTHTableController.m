@@ -98,6 +98,7 @@
 		[self.scrollView setFrame : newFrame];
 	
 	[[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID] setWidth : newFrame.size.width * 2 / 5];
+	[[_tableView tableColumnWithIdentifier : RCTH_DETAILS_ID] setWidth : newFrame.size.width * 1 / 2];
 }
 
 #pragma mark - UI tools
@@ -140,6 +141,7 @@
 	[titles setWidth:_tableView.frame.size.width * 2 / 5];
 	[_tableView addTableColumn:titles];
 	titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_DETAILS_ID];
+	[titles setWidth:_tableView.frame.size.width * 1 / 2];
 	[_tableView addTableColumn:titles];
 
 	//End of setup
@@ -207,20 +209,19 @@
 {
 	// Get an existing view with the identifier if it exists
 	RakText *result = [tableView makeViewWithIdentifier:@"PFUDOR" owner:self];
+	BOOL isTitleColumn = [self isTitleColumn:tableColumn];
 	
 	if (result == nil)
 	{
-		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : [self textColor : [self isTitleColumn:tableColumn]]];
-	
+		result = [[RakText alloc] init];
+		[result setFrame:NSMakeRect(0, 0, tableColumn.width, 35)];
+		
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		[result setIdentifier: @"PFUDOR"];
 	}
-	else
-	{
-		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
-		[result setTextColor : [self textColor : [self isTitleColumn:tableColumn]]];
-	}
-	
+
+	[result setTextColor : [self textColor : isTitleColumn]];
+	[result setAlignment : isTitleColumn ? NSLeftTextAlignment : NSRightTextAlignment];
 	[result setDrawsBackground:NO];
 
 	return result;
@@ -243,12 +244,7 @@
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:@"Chapitre%c", numberOfChapters == 1 ? '\0' : 's'];
 			else
-			{
-				if(numberOfChaptersInstalled == 0)
-					ret_value = [NSString stringWithFormat:@"%d", numberOfChapters];
-				else
-					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfChapters, numberOfChaptersInstalled, numberOfChaptersInstalled == 1 ? ")" : "s)"];
-			}
+				ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfChapters, numberOfChaptersInstalled, numberOfChaptersInstalled <= 1 ? ")" : "s)"];
 			break;
 		}
 
@@ -257,12 +253,7 @@
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:@"Tome%c", numberOfVolumes == 1 ? '\0' : 's'];
 			else
-			{
-				if(numberOfVolumesInstalled == 0)
-					ret_value = [NSString stringWithFormat:@"%d", numberOfVolumes];
-				else
-					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfVolumes, numberOfVolumesInstalled, numberOfVolumesInstalled == 1 ? ")" : "s)"];
-			}
+				ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfVolumes, numberOfVolumesInstalled, numberOfVolumesInstalled <= 1 ? ")" : "s)"];
 			break;
 		}
 
