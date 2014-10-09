@@ -89,6 +89,11 @@
 
 @implementation RakSRSubMenu
 
+- (CGFloat) getFontSize
+{
+	return [NSFont systemFontSize];
+}
+
 - (CGFloat) getTextHeight
 {
 	return 21;

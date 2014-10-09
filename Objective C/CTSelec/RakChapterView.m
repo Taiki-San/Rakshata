@@ -80,7 +80,7 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakTextProjectName alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
+	projectName = [[RakMenuText alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
