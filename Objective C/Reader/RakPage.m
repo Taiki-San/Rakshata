@@ -36,16 +36,6 @@ enum
 	return YES;
 }
 
-- (BOOL) isEditable
-{
-	return NO;
-}
-
-- (BOOL) allowsCutCopyPaste
-{
-	return NO;
-}
-
 - (NSString *) getContextToGTFO
 {
 	NSPoint sliders = NSZeroPoint;
@@ -355,12 +345,12 @@ enum
 
 - (void) nextChapter
 {
-	[self changeChapter : true];
+	[self changeChapter : true : NO];
 }
 
 - (void) prevChapter
 {
-	[self changeChapter : false];
+	[self changeChapter : false : NO];
 }
 
 //Did the scroll succeed, or were we alredy at the bottom
@@ -535,7 +525,7 @@ enum
 	{
 		if(_data.pageCourante + 1 > _data.nombrePageTotale)
 		{
-			[self changeChapter : true];
+			[self changeChapter : true : YES];
 			return;
 		}
 		_data.pageCourante++;
@@ -544,7 +534,7 @@ enum
 	{
 		if(_data.pageCourante < 1)
 		{
-			[self changeChapter : false];
+			[self changeChapter : false : YES];
 			return;
 		}
 		_data.pageCourante--;
@@ -596,7 +586,7 @@ enum
 	}
 }
 
-- (void) changeChapter : (bool) goToNext
+- (void) changeChapter : (bool) goToNext : (BOOL) byChangingPage
 {
 	uint newPosIntoStruct = _posElemInStructure;
 	
@@ -640,6 +630,9 @@ enum
 				
 				previousDataLoaded = NO;
 			}
+			
+			if(!byChangingPage)
+				_data.pageCourante = 0;
 			
 			id currentPageView = mainScroller.arrangedObjects[currentPage];
 			
@@ -700,13 +693,7 @@ enum
 - (void) updateContext : (BOOL) dataAlreadyLoaded
 {
 	[self flushCache];
-	
-	if(dataAlreadyLoaded)
-	{
-		releaseDataReader(&_data);
-		dataLoaded = NO;
-	}
-	
+		
 	if(updateIfRequired(&_project, RDB_CTXLECTEUR))
 	{
 		checkChapitreValable(&_project, NULL);
@@ -717,13 +704,16 @@ enum
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
         [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
-	_data.pageCourante = 0;
-	
-	if(!dataLoaded && configFileLoader(_project, self.isTome, _currentElem, &_data))
+	if(dataLoaded)
 	{
-		_data.nombrePageTotale = 1;
-		[self failure : 0 : nil];
+		if(configFileLoader(_project, self.isTome, _currentElem, &_data))
+		{
+			_data.nombrePageTotale = 1;
+			[self failure : 0 : nil];
+		}
 	}
+	else
+		_data.pageCourante = 0;
 	
 	[self changePage:READER_ETAT_DEFAULT];
 }
@@ -956,12 +946,18 @@ enum
 							nextDataLoaded = YES;
 							[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePageTotale + 2 : &data];
 
+							//We want to see if we can load in the other direction. Especially important if we were at the first page, but didn't went left
+							//In this case, the last page of the previous chapter wouldn't have been loaded, and scrolling left would have shown the loading image
+							move = -1;
+							
 							continue;
 						}
 						else if(move == -1 && ![self entryValid : data : 0])
 						{
 							previousDataLoaded = YES;
 							[self loadPageCache : _previousData.nombrePageTotale : &_previousData : currentSession : 0 : &data];
+							
+							move = 1;
 							
 							continue;
 						}
@@ -1211,11 +1207,11 @@ enum
 	
 	if(index == 0)
 	{
-		[self changeChapter : false];
+		[self changeChapter : false : YES];
 	}
 	else if(index == _data.nombrePageTotale + 2)
 	{
-		[self changeChapter : true];
+		[self changeChapter : true : YES];
 	}
 	else
 	{
