@@ -582,7 +582,10 @@
 		{
 			rowView = [outlineView makeViewWithIdentifier:@"RootLineMainList" owner:nil];
 			if(rowView == nil)
+			{
 				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList"];
+				rowView.identifier = @"RootLineMainList";
+			}
 		}
 		else
 		{
