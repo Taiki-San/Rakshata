@@ -78,6 +78,11 @@
 	[self resizeScrollView : [self frameFromParent:frameRect] : YES];
 }
 
+- (void) refreshLayout
+{
+	[self resizeScrollView : self.scrollView.frame : NO];
+}
+
 - (void) resizeScrollView : (NSRect) newFrame : (BOOL) animated
 {
 	CGFloat tableHeight = _tableView.bounds.size.height;
@@ -90,7 +95,10 @@
 		newFrame.size.height = tableHeight;
 	}
 	else
+	{
+		[_tableView scrollRowToVisible:0];
 		self.scrollView.scrollingDisabled = NO;
+	}
 	
 	if(animated)
 		[self.scrollView.animator setFrame : newFrame];
@@ -115,7 +123,7 @@
 	if(self.scrollView == nil)
 		return;
 	
-	self.scrollView.hasVerticalScroller = NO;
+	[self.scrollView.verticalScroller setAlphaValue:0];
 	
 	_tableView = [[NSTableView alloc] init];
 	if(_tableView == nil)
@@ -150,7 +158,8 @@
 	[_tableView reloadData];
 	[_tableView scrollRowToVisible:0];
 	
-	[self setFrame:frame];
+	//Update positions once the table was populated
+	[self performSelectorOnMainThread:@selector(refreshLayout) withObject:nil waitUntilDone:NO];
 }
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
