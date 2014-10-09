@@ -605,7 +605,7 @@ enum
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
 		
-		[self updateCT : COM_CT_SELEC];
+		[self updateCTTab : COM_CT_SELEC];
 		
 		if((goToNext && nextDataLoaded) || (!goToNext && previousDataLoaded))
 		{
@@ -674,14 +674,14 @@ enum
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
-		[self updateCT : COM_CT_SELEC];
+		[self updateCTTab : COM_CT_SELEC];
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
 	addRecentEntry(_project, false);
 }
 
-- (void) updateCT : (uint) request
+- (void) updateCTTab : (uint) request
 {
 	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate]CT];
 	
@@ -793,7 +793,7 @@ enum
 	
 	internalDeleteCT(_project, self.isTome, _currentElem);
 	
-	[self updateCT:COM_CT_REFRESH];
+	[self updateCTTab:COM_CT_REFRESH];
 	
 	getUpdatedCTList(&_project, self.isTome);
 	
