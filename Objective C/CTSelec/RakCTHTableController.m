@@ -253,7 +253,19 @@
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:@"Chapitre%c", numberOfChapters == 1 ? '\0' : 's'];
 			else
-				ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfChapters, numberOfChaptersInstalled, numberOfChaptersInstalled <= 1 ? ")" : "s)"];
+			{
+				if(numberOfChapters == numberOfChaptersInstalled)
+				{
+					if(numberOfChaptersInstalled == 0)
+						ret_value = [NSString stringWithFormat:@"%d (aucun installé)", numberOfChapters];
+					else if(numberOfChaptersInstalled == 1)
+						ret_value = [NSString stringWithFormat:@"%d (installé)", numberOfChapters];
+					else
+						ret_value = [NSString stringWithFormat:@"%d (tous installés)", numberOfChapters];
+				}
+				else
+					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfChapters, numberOfChaptersInstalled, numberOfChaptersInstalled <= 1 ? ")" : "s)"];
+			}
 			break;
 		}
 
@@ -262,7 +274,19 @@
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:@"Tome%c", numberOfVolumes == 1 ? '\0' : 's'];
 			else
-				ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfVolumes, numberOfVolumesInstalled, numberOfVolumesInstalled <= 1 ? ")" : "s)"];
+			{
+				if(numberOfVolumes == numberOfVolumesInstalled)
+				{
+					if(numberOfVolumesInstalled == 0)
+						ret_value = [NSString stringWithFormat:@"%d (aucun installé)", numberOfVolumes];
+					else if(numberOfVolumesInstalled == 1)
+						ret_value = [NSString stringWithFormat:@"%d (installé)", numberOfVolumes];
+					else
+						ret_value = [NSString stringWithFormat:@"%d (tous installés)", numberOfVolumes];
+				}
+				else
+					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfVolumes, numberOfVolumesInstalled, numberOfVolumesInstalled <= 1 ? ")" : "s)"];
+			}
 			break;
 		}
 
