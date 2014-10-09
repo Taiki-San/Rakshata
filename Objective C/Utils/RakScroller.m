@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+//#define SMALL_BORDERS
+
 @implementation RakScroller
 
 - (id) initWithFrame:(NSRect)frameRect
@@ -47,8 +49,13 @@
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
+#ifdef SMALL_BORDERS
+	slotRect.origin.x += slotRect.size.width / 3;
+	slotRect.size.width /= 3;
+#else
 	slotRect.origin.x += slotRect.size.width / 4;
 	slotRect.size.width /= 2;
+#endif
 	
 	slotRect.size.height -= 20;
 	slotRect.origin.y += 10;
@@ -62,7 +69,12 @@
 	incompleteDrawing = !incompleteDrawing;
 }
 
+#ifdef SMALL_BORDERS
+#define RADIUS_BORDERS	5.0f
+#else
 #define RADIUS_BORDERS	6.5f
+#endif
+
 #define BAR_WIDTH		(2 * RADIUS_BORDERS)
 
 - (void) setupPath : (NSRect) selfRect : (CGFloat) barWidth : (CGFloat) radius
