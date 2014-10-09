@@ -33,5 +33,6 @@
 - (BOOL) updateHeaderProject : (PROJECT_DATA) project;
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (NSRect) frameByParent : (NSRect) parentFrame;
 
 @end

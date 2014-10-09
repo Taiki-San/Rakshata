@@ -40,6 +40,7 @@
 - (void) setFrameInternalViews : (NSRect) newBound
 {
 	[header setFrame:newBound];
+	[synopsis setFrame : newBound : header.bounds.size];
 	
 	[projectName setFrame:newBound];
 	[projectImage setFrame:newBound];
@@ -47,9 +48,10 @@
 	[coreView setFrame:newBound];
 }
 
-- (void) resizeAnimationInternalViews:(NSRect)newBound
+- (void) resizeAnimationInternalViews : (NSRect) newBound
 {
 	[header resizeAnimation:newBound];
+	[synopsis resizeAnimation : newBound : [header frameByParent : newBound].size];
 	
 	[projectName resizeAnimation:newBound];
 	[projectImage resizeAnimation:newBound];
@@ -59,12 +61,13 @@
 
 - (void) dealloc
 {
-	[header removeFromSuperview];
+	[header removeFromSuperview];		header = nil;
+	[synopsis removeFromSuperview];		synopsis = nil;
 	
-	[projectName removeFromSuperview];
-	[projectImage removeFromSuperview];
+	[projectName removeFromSuperview];	projectName = nil;
+	[projectImage removeFromSuperview];	projectImage = nil;
 	
-	[coreView removeFromSuperview];
+	[coreView removeFromSuperview];		coreView = nil;
 }
 
 #pragma mark - UI Initializers
@@ -74,6 +77,10 @@
 	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
 	if(header != nil)
 		[self addSubview:header];
+	
+	synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : self.bounds : header.bounds.size];
+	if(synopsis != nil)
+		[self addSubview:synopsis];
 	
 	self.CTViewHidden = readerMode;
 }
@@ -95,11 +102,15 @@
 	{
 		if(!header.isHidden)
 			[header setHidden:YES];
+		if(!synopsis.isHidden)
+			[synopsis setHidden:YES];
 	}
 	else
 	{
 		if(header.isHidden)
 			[header setHidden:NO];
+		if(synopsis.isHidden)
+			[synopsis setHidden:NO];
 	}
 	
 	[super setCTViewHidden:CTViewHidden];

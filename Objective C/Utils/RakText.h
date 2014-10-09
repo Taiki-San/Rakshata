@@ -11,9 +11,15 @@
  *********************************************************************************************/
 
 @interface RakText : NSTextField
+{
+	BOOL haveFixedWidth;
+	CGFloat _fixedWidth;
+}
 
 @property BOOL wantCustomBorder;
 @property CGFloat forcedOffset;
+
+@property CGFloat fixedWidth;
 
 - (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 

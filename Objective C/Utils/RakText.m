@@ -115,6 +115,45 @@
 		[self removeFromSuperview];
 }
 
+#pragma mark - Handle wrap lines properly
+
+- (void) setFixedWidth:(CGFloat)fixedWidth
+{
+	haveFixedWidth = fixedWidth != 0;
+	_fixedWidth = fixedWidth;
+}
+
+- (CGFloat) fixedWidth
+{
+	return _fixedWidth;
+}
+
+- (NSSize) intrinsicContentSize
+{
+	if (![self.cell wraps])
+		return [super intrinsicContentSize];
+	
+	NSRect frame = [self frame];
+	
+	if(haveFixedWidth)
+		frame.size.width = _fixedWidth;
+	
+	// Make the frame very high, while keeping the width
+	frame.size.height = CGFLOAT_MAX;
+	
+	// Calculate new height within the frame with practically infinite height.
+	CGFloat height = [self.cell cellSizeForBounds: frame].height;
+	
+	return NSMakeSize(frame.size.width, height);
+}
+
+// you need to invalidate the layout on text change, else it wouldn't grow by changing the text
+- (void)textDidChange:(NSNotification *)notification
+{
+	[super textDidChange:notification];
+	[self invalidateIntrinsicContentSize];
+}
+
 @end
 
 @implementation RakFormatterLength

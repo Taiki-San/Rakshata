@@ -18,8 +18,8 @@
 {
 	NSRect frame = self.bounds;
 	
-	frame.origin.y = frame.size.height - 2;
-	frame.size.height = 2;
+	frame.origin.y = frame.size.height - self.barWidth;
+	frame.size.height = self.barWidth;
 	
 	[[self getBarColor] setFill];
 	NSRectFill(frame);
@@ -52,6 +52,25 @@
 	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:[self getFontSize]];
 }
 
+#pragma mark - barWidth
+
+- (void) setBarWidth : (CGFloat) barWidth
+{
+	_barWidthInitialized = YES;
+	_barWidth = barWidth;
+}
+
+- (CGFloat) barWidth
+{
+	if(!_barWidthInitialized)
+	{
+		_barWidthInitialized = YES;
+		_barWidth = 2;
+	}
+	
+	return _barWidth;
+}
+
 #pragma mark - Controller
 
 - (CGFloat) getTextHeight
@@ -59,11 +78,14 @@
 	return CT_READERMODE_WIDTH_PROJECT_NAME;
 }
 
-- (NSRect) getMenuFrame : (NSRect) superViewSize
+- (NSRect) getMenuFrame : (NSRect) parentFrame
 {
-	NSRect frame = superViewSize;
+	if(self.ignoreInternalFrameMagic)
+		return parentFrame;
+	
+	NSRect frame = parentFrame;
 	frame.size.height = [self getTextHeight];
-	frame.origin.y = superViewSize.size.height - frame.size.height;
+	frame.origin.y = parentFrame.size.height - frame.size.height;
 	
 	return frame;
 }

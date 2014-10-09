@@ -49,7 +49,12 @@
 
 - (NSRect) grandientBounds
 {
-	CGFloat width = self.bounds.size.width, drawnWidth = MIN(self.gradientMaxWidth, width * self.gradientWidth);
+	CGFloat width = self.bounds.size.width, drawnWidth;
+	
+	if(self.gradientMaxWidth == 0)
+		drawnWidth = width * self.gradientWidth;
+	else
+		drawnWidth = MIN(self.gradientMaxWidth, width * self.gradientWidth);
 	
 	return NSMakeRect(width - drawnWidth, 0, drawnWidth, self.bounds.size.height);
 }

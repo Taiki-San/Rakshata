@@ -14,6 +14,7 @@
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"
+#import "RakCTProjectSynopsis.h"
 #import "RakChapterView.h"
 
 @interface CTSelec : RakTabView

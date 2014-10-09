@@ -16,6 +16,7 @@
 {
 	//CT mode only
 	RakCTHeader * header;
+	RakCTProjectSynopsis * synopsis;
 	
 	//Reader mode only
 	RakMenuText * projectName;

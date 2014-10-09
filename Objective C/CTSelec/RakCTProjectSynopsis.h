@@ -10,28 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakMenuText : RakText
+@interface RakCTProjectSynopsis : NSView
 {
-	BOOL _barWidthInitialized;
-	CGFloat _barWidth;
+	RakMenuText * _title;
+	RakCTHImageGradient * _titleGradient;
+	
+	RakText * _synopsis;
 }
 
-@property CGFloat barWidth;
-@property BOOL ignoreInternalFrameMagic;
+- (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize;
 
-- (void) additionalDrawing;
-
-- (NSColor *) getTextColor;
-- (NSColor *) getBarColor;
-- (NSColor *) getBackgroundColor;
-- (CGFloat) getFontSize;
-- (NSFont *) getFont;
-
-- (CGFloat) getTextHeight;
-- (NSRect) getMenuFrame : (NSRect) superViewSize;
-- (id) initWithText : (NSRect)frame : (NSString *)text;
-- (void) defineBackgroundColor;
-
-- (void) resizeAnimation : (NSRect) frameRect;
+- (void) setFrame : (NSRect) frameRect : (NSSize) headerSize;
+- (void) resizeAnimation : (NSRect) frameRect : (NSSize) headerSize;
 
 @end
