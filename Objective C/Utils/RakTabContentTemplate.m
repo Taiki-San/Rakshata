@@ -24,11 +24,6 @@
 	isFocusDrop = NO;
 }
 
-- (BOOL) isOpaque
-{
-	return YES;
-}
-
 - (NSString *) getContextToGTFO
 {
 	return STATE_EMPTY;
