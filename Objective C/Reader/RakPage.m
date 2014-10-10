@@ -900,7 +900,7 @@ enum
 		return;
 	}
 	
-	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+	NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
 	
 	while (currentSession == cacheSession)	//While the active chapter is still the same
 	{
@@ -932,65 +932,75 @@ enum
 			
 			else if(i != 5)	//We hit the max
 			{
-				int nextElement;
-				uint nextElementPos = _posElemInStructure;
-				
-				//Check if next CT is readable
-				if(changeChapter(&_project, self.isTome, &nextElement, &nextElementPos, move == 1))
-				{
-					//Load next CT data
-					if((move == 1 && nextDataLoaded) || (move == -1 && previousDataLoaded) || !configFileLoader(_project, self.isTome, nextElement, (move == 1 ? &_nextData : &_previousData)))
-					{
-						if(move == 1 && ![self entryValid : data : _data.nombrePageTotale + 2])
-						{
-							nextDataLoaded = YES;
-							[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePageTotale + 2 : &data];
-
-							//We want to see if we can load in the other direction. Especially important if we were at the first page, but didn't went left
-							//In this case, the last page of the previous chapter wouldn't have been loaded, and scrolling left would have shown the loading image
-							move = -1;
-							
-							continue;
-						}
-						else if(move == -1 && ![self entryValid : data : 0])
-						{
-							previousDataLoaded = YES;
-							[self loadPageCache : _previousData.nombrePageTotale : &_previousData : currentSession : 0 : &data];
-							
-							move = 1;
-							
-							continue;
-						}
-					}
-				}
+				if([self loadAdjacentChapter : move == 1 : &data : currentSession])
+					continue;
 			}
 			
 			//We cache the previous page, in the case the user want to go back
-			if(_data.pageCourante - move <= max && ![self entryValid : data :_data.pageCourante + 1 - move])
+			//First, we check if we are in the general case
+			if(_data.pageCourante - move <= max)
 			{
-				[self loadPageCache:_data.pageCourante - move : currentSession : &data];
-			}
-
-			else	//Ok then, we cache everythin after
-			{
-				for (i = _data.pageCourante + 1; i <= max; i++)
+				if(![self entryValid : data :_data.pageCourante + 1 - move])
 				{
-					if(![self entryValid : data : i + 1])
-					{
-						[self loadPageCache : i :currentSession :&data];
-						break;
-					}
+					[self loadPageCache:_data.pageCourante - move : currentSession : &data];
+					continue;
 				}
-				
-				if(i == max + 1)	//Nothing else to load
-					break;
 			}
+			else	//We are at the begining/end of the chapter
+			{
+				if([self loadAdjacentChapter : move == -1 : &data : currentSession])
+					continue;
+			}
+			
+			//Ok then, we cache everythin after
+			for (i = _data.pageCourante + 1; i <= max; i++)
+			{
+				if(![self entryValid : data : i + 1])
+				{
+					[self loadPageCache : i :currentSession :&data];
+					break;
+				}
+			}
+			
+			if(i == max + 1)	//Nothing else to load
+				break;
 		}
 		else
 			break;
 	}
 	
 	_cacheBeingBuilt = false;
+}
+
+- (BOOL) loadAdjacentChapter : (BOOL) loadNext : (NSMutableArray **) data : (uint) currentSession
+{
+	int nextElement;
+	uint nextElementPos = _posElemInStructure;
+	
+	//Check if next CT is readable
+	if(changeChapter(&_project, self.isTome, &nextElement, &nextElementPos, loadNext))
+	{
+		//Load next CT data
+		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || !configFileLoader(_project, self.isTome, nextElement, (loadNext ? &_nextData : &_previousData)))
+		{
+			if(loadNext && ![self entryValid : *data : _data.nombrePageTotale + 2])
+			{
+				nextDataLoaded = YES;
+				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePageTotale + 2 : data];
+				
+				return YES;
+			}
+			else if(!loadNext && ![self entryValid : *data : 0])
+			{
+				previousDataLoaded = YES;
+				[self loadPageCache : _previousData.nombrePageTotale : &_previousData : currentSession : 0 : data];
+				
+				return YES;
+			}
+		}
+	}
+
+	return NO;
 }
 
 #define NB_ELEM_MAX_IN_CACHE 30			//5 behind, current, 24 ahead
