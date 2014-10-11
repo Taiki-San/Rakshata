@@ -129,7 +129,6 @@
 	NSRect mainFrame = [self frameFromParent:frame : headerSize];
 	const CGFloat titleHeight = _title.bounds.size.height;
 	
-	//We now get the 'clever height', trying to limit our footprint height
 	if(_synopsis != nil)
 	{
 		const CGFloat newSynopsisWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
@@ -193,8 +192,8 @@
 	parentFrame.origin.x = headerSize.width;
 	parentFrame.size.width -= parentFrame.origin.x;
 	
-	parentFrame.origin.y = headerSize.height;
-	parentFrame.size.height -= parentFrame.origin.y;
+	parentFrame.origin.y = parentFrame.size.height - headerSize.height;
+	parentFrame.size.height = headerSize.height;
 	
 	return parentFrame;
 }
