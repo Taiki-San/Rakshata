@@ -16,7 +16,11 @@
 	RakCTCoreViewButtons * buttons;
 	RakCTCoreContentView * tableViewControllerChapter;
 	RakCTCoreContentView * tableViewControllerVolume;
+	
+	uint _currentContext;
 }
+
+@property uint currentContext;
 
 @property BOOL dontNotify;
 @property (readonly) PROJECT_DATA currentProject;

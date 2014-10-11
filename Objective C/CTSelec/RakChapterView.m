@@ -39,22 +39,34 @@
 
 - (void) setFrameInternalViews : (NSRect) newBound
 {
-	[header setFrame:newBound];
-	[synopsis setFrame : newBound : header.bounds.size];
-	
-	[projectName setFrame:newBound];
-	[projectImage setFrame:newBound];
+	if(!self.CTViewHidden)
+	{
+		[header setFrame:newBound];
+		[synopsis setFrame : newBound : header.bounds.size];
+	}
+
+	if(!self.readerViewHidden)
+	{
+		[projectName setFrame:newBound];
+		[projectImage setFrame:newBound];
+	}
 
 	[coreView setFrame:newBound];
 }
 
 - (void) resizeAnimationInternalViews : (NSRect) newBound
 {
-	[header resizeAnimation:newBound];
-	[synopsis resizeAnimation : newBound : [header frameByParent : newBound].size];
+	if(!self.CTViewHidden)
+	{
+		[header resizeAnimation:newBound];
+		[synopsis resizeAnimation : newBound : [header frameByParent : newBound].size];
+	}
 	
-	[projectName resizeAnimation:newBound];
-	[projectImage resizeAnimation:newBound];
+	if(!self.readerViewHidden)
+	{
+		[projectName resizeAnimation:newBound];
+		[projectImage resizeAnimation:newBound];
+	}
 
 	[coreView resizeAnimation:newBound];
 }
@@ -111,6 +123,8 @@
 			[header setHidden:NO];
 		if(synopsis.isHidden)
 			[synopsis setHidden:NO];
+		
+		coreView.currentContext = TAB_CT;
 	}
 	
 	[super setCTViewHidden:CTViewHidden];
@@ -124,8 +138,6 @@
 			[projectName setHidden:YES];
 		if(!projectImage.isHidden)
 			[projectImage setHidden:YES];
-		if(!coreView.isHidden)
-			[coreView setHidden:YES];
 	}
 	else
 	{
@@ -133,8 +145,8 @@
 			[projectName setHidden:NO];
 		if(projectImage.isHidden)
 			[projectImage setHidden:NO];
-		if(coreView.isHidden)
-			[coreView setHidden:NO];
+		
+		coreView.currentContext = TAB_READER;
 	}
 	
 	[super setReaderViewHidden:readerViewHidden];

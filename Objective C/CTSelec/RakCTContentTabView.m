@@ -173,9 +173,21 @@
 	return frame;
 }
 
+#pragma mark - Properties
+
 - (PROJECT_DATA) currentProject
 {
 	return data;
+}
+
+- (void) setCurrentContext : (uint) currentContext
+{
+	_currentContext = currentContext;
+}
+
+- (uint) currentContext
+{
+	return _currentContext;
 }
 
 #pragma mark - Proxy
