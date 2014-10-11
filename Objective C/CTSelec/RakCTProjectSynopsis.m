@@ -87,7 +87,20 @@
 - (void) updateFrame : (NSRect) frame : (NSSize) headerSize : (BOOL) animated
 {
 	NSRect mainFrame = [self frameFromParent:frame : headerSize];
-	_synopsis.fixedWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
+	const CGFloat titleHeight = _title.bounds.size.height;
+	
+	//We now get the 'clever height', trying to limit our footprint height
+	if(_synopsis != nil)
+	{
+		_synopsis.fixedWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
+		const CGFloat limitedHeight = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH + [_synopsis intrinsicContentSize].height;
+		
+		if(mainFrame.size.height > limitedHeight)
+		{
+			mainFrame.origin.y -= limitedHeight - mainFrame.size.height;
+			mainFrame.size.height = limitedHeight;
+		}
+	}
 
 	//Update main frame
 	if(animated)
@@ -98,7 +111,6 @@
 	//Set up new frames
 	mainFrame.origin = NSZeroPoint;
 	
-	const CGFloat titleHeight = _title.bounds.size.height;
 	const NSRect titleFrame =	[self frameForTitle : mainFrame : titleHeight];
 	const NSRect gradientFrame = NSMakeRect(0, titleFrame.size.height - _title.barWidth, titleFrame.size.width / 5, _title.barWidth);
 
@@ -124,9 +136,10 @@
 - (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) headerSize
 {
 	parentFrame.origin.x = headerSize.width;
+	parentFrame.size.width -= parentFrame.origin.x;
+	
 	parentFrame.origin.y = headerSize.height;
 	parentFrame.size.height -= parentFrame.origin.y;
-	parentFrame.size.width -= parentFrame.origin.x;
 	
 	return parentFrame;
 }
@@ -136,8 +149,8 @@
 	mainBounds.origin.y = TOP_BORDER_WIDTH;
 	mainBounds.size.height = height;
 	
-	mainBounds.origin.x = 15;
-	mainBounds.size.width -= 2 * mainBounds.origin.x;
+	mainBounds.origin.x = SYNOPSIS_BORDER;
+	mainBounds.size.width -= 2 * SYNOPSIS_BORDER;
 	return mainBounds;
 }
 
@@ -153,7 +166,7 @@
 	else
 		mainBounds.size = [_synopsis intrinsicContentSize];
 	
-	mainBounds.origin.y = TOP_BORDER_WIDTH + titleHeight + 5;
+	mainBounds.origin.y = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH;
 
 	return mainBounds;
 }
