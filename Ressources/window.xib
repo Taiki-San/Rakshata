@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6206.9" systemVersion="14A343f" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6249" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6206.9"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -103,11 +104,11 @@
         <window title="Rakshata" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" id="371" customClass="RakWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
-            <rect key="contentRect" x="192" y="186" width="1150" height="550"/>
+            <rect key="contentRect" x="192" y="186" width="1175" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
-            <value key="minSize" type="size" width="900" height="550"/>
+            <value key="minSize" type="size" width="1175" height="550"/>
             <view key="contentView" wantsLayer="YES" id="372" customClass="RakContentViewBack">
-                <rect key="frame" x="0.0" y="0.0" width="1150" height="550"/>
+                <rect key="frame" x="0.0" y="0.0" width="1175" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>
             <connections>
