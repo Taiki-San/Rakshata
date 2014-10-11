@@ -11,6 +11,7 @@
  ********************************************************************************************/
 
 #define TOP_BORDER_WIDTH 5
+#define SPACING	5
 #define SYNOPSIS_BORDER 20
 #define MAIN_TEXT_BORDER 10
 
@@ -71,31 +72,54 @@
 {
 	BOOL needPostProcessing = NO;
 	
+	//Create _synopsis object
 	if(_synopsis == nil)
 	{
 		needPostProcessing = YES;
+		placeholderString = NO;
+
 		_synopsis = [[RakText alloc] init];
 		if(_synopsis == nil)
 			return NO;
 		
 		_synopsis.fixedWidth = self.bounds.size.width - 2 * MAIN_TEXT_BORDER;
-		[_synopsis.cell setWraps:YES];
+		[_synopsis setFrameOrigin : NSZeroPoint];
+
 		[_synopsis setAlignment:NSJustifiedTextAlignment];
+		[_synopsis.cell setWraps:YES];
 		
-		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : self]];
+		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 	}
 	
+	//Update text
 	if(project.description[0] != 0)
+	{
+		placeholderString = NO;
+		
 		[_synopsis setStringValue : [[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32LittleEndianStringEncoding]];
+	}
 	else
-		[_synopsis setStringValue:@"\nAucun résumé disponible.\n\n"];
+	{
+		placeholderString = YES;
+		if(_placeholder == nil)
+		{
+			_placeholder = [[RakText alloc] initWithText:self.bounds : @"Aucun résumé disponible" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+			if(_placeholder != nil)
+				[_placeholder sizeToFit];
+		}
+	}
 	
+	//Hide the unused view
+	if(_synopsis != nil && _synopsis.isHidden != placeholderString)
+		[_synopsis setHidden : placeholderString];
+	
+	if(_placeholder != nil && _placeholder.isHidden == placeholderString)
+		[_placeholder setHidden: !placeholderString];
+
+	//Postprocessing around the scrollview
 	const CGFloat titleHeight = _title != nil ? _title.bounds.size.height : 0;
-	
 	if(needPostProcessing)
 	{
-		[_synopsis setFrameOrigin : NSZeroPoint];
-		
 		_scrollview = [[RakListScrollView alloc] initWithFrame:[self frameForContent : self.bounds : titleHeight]];
 		if(_scrollview == nil)
 		{
@@ -107,12 +131,34 @@
 		_scrollview.documentView = _synopsis;
 		[self addSubview:_scrollview];
 	}
-	else
-		[_scrollview setFrame : [self frameForContent : self.bounds : titleHeight]];
+	
+	//Update the placeholder string
+	if(placeholderString)
+	{
+		if(_placeholder.superview == nil)
+			[_scrollview addSubview:_placeholder];
+
+		[_placeholder setFrameOrigin : [self placeholderOrigin : _scrollview.bounds]];
+	}
 	
 	[self updateScrollViewState];
 	
 	return YES;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
+	
+	if(_synopsis != nil)
+		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+	
+	if(_placeholder != nil)
+		[_placeholder setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+
 }
 
 - (BOOL) isFlipped	{	return YES;	}
@@ -155,19 +201,26 @@
 	const NSRect gradientFrame = NSMakeRect(0, titleFrame.size.height - _title.barWidth, titleFrame.size.width / 5, _title.barWidth);
 
 	//Update content frames
+	NSRect scrollviewRect = [self frameForContent : mainFrame : titleHeight];
+
 	if(animated)
 	{
 		[_title.animator setFrame:titleFrame];
 		[_titleGradient.animator setFrame:gradientFrame];
 
-		[_scrollview.animator setFrame: [self frameForContent : mainFrame : titleHeight]];
+		
+		[_scrollview.animator setFrame: scrollviewRect];
+		if(placeholderString)
+			[_synopsis.animator setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
 	}
 	else
 	{
 		[_title setFrame:titleFrame];
 		[_titleGradient setFrame:gradientFrame];
 
-		[_scrollview setFrame: [self frameForContent : mainFrame : titleHeight]];
+		[_scrollview setFrame: scrollviewRect];
+		if(placeholderString)
+			[_synopsis setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
 	}
 
 	[self updateScrollViewState];
@@ -175,7 +228,7 @@
 
 - (void) updateScrollViewState
 {
-	if(_synopsis.bounds.size.height != _scrollview.bounds.size.height)
+	if(!placeholderString && _synopsis.bounds.size.height > _scrollview.bounds.size.height)
 		_scrollview.scrollingDisabled = NO;
 
 	else
@@ -189,7 +242,7 @@
 	parentFrame.origin.x = headerSize.width + SYNOPSIS_BORDER;
 	parentFrame.size.width -= parentFrame.origin.x + SYNOPSIS_BORDER;
 	
-	parentFrame.origin.y = parentFrame.size.height - headerSize.height - TOP_BORDER_WIDTH;
+	parentFrame.origin.y = parentFrame.size.height - headerSize.height;
 	parentFrame.size.height = headerSize.height - TOP_BORDER_WIDTH;
 	
 	return parentFrame;
@@ -205,8 +258,8 @@
 - (NSRect) frameForContent : (NSRect) mainBounds : (CGFloat) titleHeight
 {
 	mainBounds.origin.x = MAIN_TEXT_BORDER;
-	mainBounds.origin.y = titleHeight + TOP_BORDER_WIDTH;
-	mainBounds.size.height -= mainBounds.origin.y + TOP_BORDER_WIDTH;
+	mainBounds.origin.y = titleHeight + SPACING;
+	mainBounds.size.height -= mainBounds.origin.y + SPACING;
 	
 	if(_synopsis == nil)
 		mainBounds.size.width -= 2 * MAIN_TEXT_BORDER;
@@ -216,6 +269,15 @@
 	mainBounds.size.width += 30;	//Scroller width
 	
 	return mainBounds;
+}
+
+- (NSPoint) placeholderOrigin : (NSRect) scrollviewBounds
+{
+	NSPoint origin = NSCenteredRect(scrollviewBounds, _placeholder.bounds);
+	
+	origin.x -= MAIN_TEXT_BORDER / 2 + 15;
+	
+	return origin;
 }
 
 @end

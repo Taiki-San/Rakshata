@@ -17,6 +17,9 @@
 	
 	RakListScrollView * _scrollview;
 	RakText * _synopsis;
+	RakText * _placeholder;
+	
+	BOOL placeholderString;
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize;
