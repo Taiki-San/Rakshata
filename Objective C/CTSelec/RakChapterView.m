@@ -203,6 +203,15 @@
 			[self addSubview:header];
 	}
 	
+	if(synopsis != nil)
+		[synopsis updateProject : data];
+	else
+	{
+		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : data : self.bounds : header.bounds.size];
+		if(synopsis != nil)
+			[self addSubview:synopsis];
+	}
+	
 	if(coreView != nil)
 	{
 		if(![coreView updateContext:data])
