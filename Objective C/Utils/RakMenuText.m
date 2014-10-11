@@ -90,9 +90,9 @@
 	return frame;
 }
 
-- (id) initWithText:(NSRect)frame :(NSString *)text
+- (id) initWithText : (NSRect) frame : (NSString *) text
 {
-	self = [super initWithText:[self getMenuFrame:frame] :text : [self getTextColor]];
+	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
 	
 	if(self != nil)
 	{

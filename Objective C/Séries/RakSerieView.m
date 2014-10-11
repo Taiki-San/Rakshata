@@ -20,10 +20,10 @@
 		[self setupInternal];
 		
 		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries"];
-		[self addSubview:headerText];
+		if(headerText != nil)
+			[self addSubview:headerText];
 		
-		mainList = [[RakSerieList alloc] init : [self getMainListFrame : [self frame]] : state];
-
+		mainList = [[RakSerieList alloc] init : [self getMainListFrame : self.bounds] : state];
 		if(mainList != nil)
 			[self addSubview:[mainList getContent]];
 	}
@@ -34,7 +34,7 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:[self bounds]];
-	[mainList setFrame:[self getMainListFrame : [self frame]]];
+	[mainList setFrame:[self getMainListFrame : self.bounds]];
 }
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
@@ -87,7 +87,7 @@
 			return [NSColor clearColor];
 	}
 	
-	return [Prefs getSystemColor:code:nil];
+	return [Prefs getSystemColor : code : nil];
 }
 
 #pragma mark - Frame calcul
