@@ -657,6 +657,11 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
+		case PREFS_GET_SCROLLER_STYLE:
+		{
+			*(byte*) outputContainer = SCROLLER_STYLE_LARGE;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);

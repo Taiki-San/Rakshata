@@ -18,6 +18,9 @@
 	NSColor *active;
 	
 	CGContextRef contextBorder;
+
+	byte scrollerStyle;
+	CGFloat _radiusBorders;
 	
 	BOOL incompleteDrawing;
 }
