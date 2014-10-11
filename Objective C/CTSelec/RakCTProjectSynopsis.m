@@ -48,26 +48,66 @@
 			}
 		}
 		
-		_synopsis = [[RakText alloc] init];
-		if(_synopsis != nil)
+		if([self setStringToSynopsis : project])
 		{
-			_synopsis.fixedWidth = self.bounds.size.width - 2 * SYNOPSIS_BORDER;
-			[_synopsis.cell setWraps:YES];
-			[_synopsis setAlignment:NSJustifiedTextAlignment];
-
-			[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : self]];
-			
-			if(project.description[0] != 0)
-				[_synopsis setStringValue : [[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32LittleEndianStringEncoding]];
-			else
-				[_synopsis setStringValue:@"	But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"];//@"Aucun résumé disponible."];
-			
-			[_synopsis setFrame : [self frameForContent : self.bounds : _title != nil ? _title.bounds.size.height : 0]];
-			[self addSubview:_synopsis];
+			[self updateFrame : frame : headerSize : NO];
 		}
 	}
 	
 	return self;
+}
+
+- (void) updateProject : (PROJECT_DATA) newProject
+{
+	[self setStringToSynopsis : newProject];
+}
+
+- (BOOL) setStringToSynopsis : (PROJECT_DATA) project
+{
+	BOOL needPostProcessing = NO;
+	
+	if(_synopsis == nil)
+	{
+		needPostProcessing = YES;
+		_synopsis = [[RakText alloc] init];
+		if(_synopsis == nil)
+			return NO;
+		
+		_synopsis.fixedWidth = self.bounds.size.width - 2 * SYNOPSIS_BORDER;
+		[_synopsis.cell setWraps:YES];
+		[_synopsis setAlignment:NSJustifiedTextAlignment];
+		
+		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : self]];
+	}
+	
+	if(project.description[0] != 0)
+		[_synopsis setStringValue : [[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32LittleEndianStringEncoding]];
+	else
+		[_synopsis setStringValue:@"	But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.\nNo one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.\nNor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.\nTo take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it?\nBut who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"];//@"Aucun résumé disponible."];
+	
+	const CGFloat titleHeight = _title != nil ? _title.bounds.size.height : 0;
+	
+	if(needPostProcessing)
+	{
+		[_synopsis setFrameOrigin : NSZeroPoint];
+		
+		_scrollview = [[RakListScrollView alloc] initWithFrame:[self frameForContent : self.bounds : titleHeight]];
+		if(_scrollview == nil)
+		{
+			_synopsis = nil;
+			return NO;
+		}
+
+		_scrollview.verticalScroller.alphaValue = 0;
+		_scrollview.documentView = _synopsis;
+		[self addSubview:_scrollview];
+	}
+	else
+		[_scrollview setFrame : [self frameForContent : self.bounds : titleHeight]];
+	
+	[self updateScrollViewState];
+	
+	return YES;
 }
 
 - (BOOL) isFlipped	{	return YES;	}
@@ -92,7 +132,11 @@
 	//We now get the 'clever height', trying to limit our footprint height
 	if(_synopsis != nil)
 	{
-		_synopsis.fixedWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
+		const CGFloat newSynopsisWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
+		
+		if(_synopsis.fixedWidth != newSynopsisWidth)
+			_synopsis.fixedWidth = newSynopsisWidth;
+
 		const CGFloat limitedHeight = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH + [_synopsis intrinsicContentSize].height;
 		
 		if(mainFrame.size.height > limitedHeight)
@@ -120,15 +164,26 @@
 		[_title.animator setFrame:titleFrame];
 		[_titleGradient.animator setFrame:gradientFrame];
 
-		[_synopsis.animator setFrame: [self frameForContent : mainFrame : titleHeight]];
+		[_scrollview.animator setFrame: [self frameForContent : mainFrame : titleHeight]];
 	}
 	else
 	{
 		[_title setFrame:titleFrame];
 		[_titleGradient setFrame:gradientFrame];
 
-		[_synopsis setFrame: [self frameForContent : mainFrame : titleHeight]];
+		[_scrollview setFrame: [self frameForContent : mainFrame : titleHeight]];
 	}
+
+	[self updateScrollViewState];
+}
+
+- (void) updateScrollViewState
+{
+	if(_synopsis.bounds.size.height != _scrollview.bounds.size.height)
+		_scrollview.scrollingDisabled = NO;
+
+	else
+		_scrollview.scrollingDisabled = YES;
 }
 
 #pragma mark - Position routines
@@ -157,6 +212,7 @@
 - (NSRect) frameForContent : (NSRect) mainBounds : (CGFloat) titleHeight
 {
 	mainBounds.origin.x = SYNOPSIS_BORDER;
+	mainBounds.origin.y = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH;
 	
 	if(_synopsis == nil)
 	{
@@ -164,10 +220,13 @@
 		mainBounds.size.height -= mainBounds.origin.y;
 	}
 	else
-		mainBounds.size = [_synopsis intrinsicContentSize];
+	{
+		mainBounds.size.width = _synopsis.fixedWidth;
+		mainBounds.size.height -= mainBounds.origin.y;
+	}
 	
-	mainBounds.origin.y = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH;
-
+	mainBounds.size.width += 30;	//Scroller width
+	
 	return mainBounds;
 }
 
