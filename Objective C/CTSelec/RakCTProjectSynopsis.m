@@ -12,6 +12,7 @@
 
 #define TOP_BORDER_WIDTH 5
 #define SYNOPSIS_BORDER 20
+#define MAIN_TEXT_BORDER 10
 
 @implementation RakCTProjectSynopsis
 
@@ -21,6 +22,10 @@
 	
 	if(self != nil)
 	{
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE :self].CGColor;
+		self.layer.cornerRadius = 4;
+		
 		_title = [[RakMenuText alloc] initWithText : self.bounds : @"Résumé"];
 		if(_title != nil)
 		{
@@ -73,7 +78,7 @@
 		if(_synopsis == nil)
 			return NO;
 		
-		_synopsis.fixedWidth = self.bounds.size.width - 2 * SYNOPSIS_BORDER;
+		_synopsis.fixedWidth = self.bounds.size.width - 2 * MAIN_TEXT_BORDER;
 		[_synopsis.cell setWraps:YES];
 		[_synopsis setAlignment:NSJustifiedTextAlignment];
 		
@@ -135,14 +140,6 @@
 		
 		if(_synopsis.fixedWidth != newSynopsisWidth)
 			_synopsis.fixedWidth = newSynopsisWidth;
-
-		const CGFloat limitedHeight = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH + [_synopsis intrinsicContentSize].height;
-		
-		if(mainFrame.size.height > limitedHeight)
-		{
-			mainFrame.origin.y -= limitedHeight - mainFrame.size.height;
-			mainFrame.size.height = limitedHeight;
-		}
 	}
 
 	//Update main frame
@@ -189,40 +186,32 @@
 
 - (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) headerSize
 {
-	parentFrame.origin.x = headerSize.width;
-	parentFrame.size.width -= parentFrame.origin.x;
+	parentFrame.origin.x = headerSize.width + SYNOPSIS_BORDER;
+	parentFrame.size.width -= parentFrame.origin.x + SYNOPSIS_BORDER;
 	
-	parentFrame.origin.y = parentFrame.size.height - headerSize.height;
-	parentFrame.size.height = headerSize.height;
+	parentFrame.origin.y = parentFrame.size.height - headerSize.height - TOP_BORDER_WIDTH;
+	parentFrame.size.height = headerSize.height - TOP_BORDER_WIDTH;
 	
 	return parentFrame;
 }
 
 - (NSRect) frameForTitle : (NSRect) mainBounds : (CGFloat) height
 {
-	mainBounds.origin.y = TOP_BORDER_WIDTH;
 	mainBounds.size.height = height;
 	
-	mainBounds.origin.x = SYNOPSIS_BORDER;
-	mainBounds.size.width -= 2 * SYNOPSIS_BORDER;
 	return mainBounds;
 }
 
 - (NSRect) frameForContent : (NSRect) mainBounds : (CGFloat) titleHeight
 {
-	mainBounds.origin.x = SYNOPSIS_BORDER;
-	mainBounds.origin.y = TOP_BORDER_WIDTH + titleHeight + TOP_BORDER_WIDTH;
+	mainBounds.origin.x = MAIN_TEXT_BORDER;
+	mainBounds.origin.y = titleHeight + TOP_BORDER_WIDTH;
+	mainBounds.size.height -= mainBounds.origin.y + TOP_BORDER_WIDTH;
 	
 	if(_synopsis == nil)
-	{
-		mainBounds.size.width -= SYNOPSIS_BORDER + 5;
-		mainBounds.size.height -= mainBounds.origin.y;
-	}
+		mainBounds.size.width -= 2 * MAIN_TEXT_BORDER;
 	else
-	{
 		mainBounds.size.width = _synopsis.fixedWidth;
-		mainBounds.size.height -= mainBounds.origin.y;
-	}
 	
 	mainBounds.size.width += 30;	//Scroller width
 	
