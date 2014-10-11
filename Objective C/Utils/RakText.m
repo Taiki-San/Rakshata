@@ -104,9 +104,12 @@
 	[self additionalDrawing];
 }
 
-- (BOOL) isFlipped
+- (void) setStringValue : (NSString *)aString
 {
-	return NO;
+	[super setStringValue : aString];
+	
+	if ([self.cell wraps])
+		[self setFrameSize:[self intrinsicContentSize]];
 }
 
 - (void) dealloc
@@ -120,7 +123,13 @@
 - (void) setFixedWidth:(CGFloat)fixedWidth
 {
 	haveFixedWidth = fixedWidth != 0;
-	_fixedWidth = fixedWidth;
+	if(_fixedWidth != fixedWidth)
+	{
+		_fixedWidth = fixedWidth;
+		
+		if ([self.cell wraps] && ![self.stringValue isEqualToString:@""])
+			[self setFrameSize:[self intrinsicContentSize]];
+	}
 }
 
 - (CGFloat) fixedWidth
@@ -145,13 +154,6 @@
 	CGFloat height = [self.cell cellSizeForBounds: frame].height;
 	
 	return NSMakeSize(frame.size.width, height);
-}
-
-// you need to invalidate the layout on text change, else it wouldn't grow by changing the text
-- (void)textDidChange:(NSNotification *)notification
-{
-	[super textDidChange:notification];
-	[self invalidateIntrinsicContentSize];
 }
 
 @end

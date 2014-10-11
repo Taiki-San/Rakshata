@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakText : NSTextField
+@interface RakText : NSTextField <NSTextFieldDelegate>
 {
 	BOOL haveFixedWidth;
 	CGFloat _fixedWidth;
