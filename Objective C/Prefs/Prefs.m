@@ -660,6 +660,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case PREFS_GET_SCROLLER_STYLE:
 		{
 			*(byte*) outputContainer = SCROLLER_STYLE_LARGE;
+			break;
 		}
 			
 		default:
