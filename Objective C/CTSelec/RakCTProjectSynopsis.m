@@ -83,7 +83,7 @@
 	if(project.description[0] != 0)
 		[_synopsis setStringValue : [[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32LittleEndianStringEncoding]];
 	else
-		[_synopsis setStringValue:@"Aucun résumé disponible."];
+		[_synopsis setStringValue:@"\nAucun résumé disponible.\n\n"];
 	
 	const CGFloat titleHeight = _title != nil ? _title.bounds.size.height : 0;
 	
