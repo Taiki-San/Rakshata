@@ -35,4 +35,9 @@
 	return self;
 }
 
+- (BOOL) isOpaque
+{
+	return YES;
+}
+
 @end
