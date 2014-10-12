@@ -10,14 +10,15 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTContentTabView : NSView
+@interface RakCTSelection : NSView
 {
 	PROJECT_DATA data;
 	RakCTCoreViewButtons * _buttons;
-	RakCTCoreContentView * _chapterView;
-	RakCTCoreContentView * _volView;
+	RakCTSelectionList * _chapterView;
+	RakCTSelectionList * _volView;
 	
 	uint _currentContext;
+	uint _cachedHeaderHeight;
 }
 
 @property uint currentContext;

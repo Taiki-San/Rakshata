@@ -32,7 +32,7 @@
 
 #pragma mark - Context update
 
-- (void) addCTContent : (RakCTCoreContentView*) chapter : (RakCTCoreContentView*) volume
+- (void) addCTContent : (RakCTSelectionList*) chapter : (RakCTSelectionList*) volume
 {
 	_chapter = chapter;
 	_volume = volume;

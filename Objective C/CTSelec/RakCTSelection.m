@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@implementation RakCTContentTabView
+@implementation RakCTSelection
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context
 {
@@ -31,7 +31,7 @@
 		
 		if(data.nombreChapitreInstalled > 0)
 		{
-			_chapterView = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
+			_chapterView = [[RakCTSelectionList alloc] init : self.frame : data :false : context[0] : context[1]];
 			if(_chapterView != nil)
 			{
 				_chapterView.hidden = isTome;
@@ -41,7 +41,7 @@
 		
 		if(data.nombreTomesInstalled > 0)
 		{
-			_volView =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
+			_volView =  [[RakCTSelectionList alloc] init : self.frame : data : true : context[2] : context[3]];
 			if(_volView != nil)
 			{
 				_volView.hidden = !isTome;
@@ -51,32 +51,6 @@
 	}
 	
 	return self;
-}
-
-- (void) setFrame : (NSRect) parentFrame : (CGFloat) headerHeight
-{
-	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
-
-	[_buttons setFrame : self.bounds];
-	[_chapterView setFrame : self.bounds];
-	[_volView setFrame : self.bounds];
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	
-}
-
-- (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
-{
-	NSRect frame = [self frameFromParent : parentFrame : headerHeight];
-	[self.animator setFrame:frame];
-	
-	frame.origin = NSZeroPoint;
-	
-	[_buttons resizeAnimation : frame];
-	[_chapterView resizeAnimation : frame];
-	[_volView resizeAnimation : frame];
 }
 
 - (void) failure
@@ -98,13 +72,49 @@
 
 - (void) dealloc
 {
-	[_buttons removeFromSuperview];	
+	[_buttons removeFromSuperview];
 	
 	[[_chapterView getContent] removeFromSuperviewWithoutNeedingDisplay];
 	
-	[[_volView getContent] removeFromSuperviewWithoutNeedingDisplay];
+	[[_volView getContent ] removeFromSuperviewWithoutNeedingDisplay];
 	
 	releaseCTData(data);
+}
+
+#pragma mark - Size management
+
+- (void) setFrame : (NSRect) parentFrame : (CGFloat) headerHeight
+{
+	_cachedHeaderHeight = headerHeight;
+	
+	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
+
+	[_buttons setFrame : self.bounds];
+	[_chapterView setFrame : self.bounds];
+	[_volView setFrame : self.bounds];
+}
+
+- (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
+{
+	_cachedHeaderHeight = headerHeight;
+
+	NSRect frame = [self frameFromParent : parentFrame : headerHeight];
+	[self.animator setFrame:frame];
+	
+	frame.origin = NSZeroPoint;
+	
+	[_buttons resizeAnimation : frame];
+	[_chapterView resizeAnimation : frame];
+	[_volView resizeAnimation : frame];
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+#ifdef DEV_VERSION
+	NSLog(@"Shouldn't have been called");
+#endif
+	
+	[self setFrame : frameRect : _cachedHeaderHeight];
 }
 
 - (NSRect) frameFromParent : (NSRect) parentBounds : (CGFloat) headerHeight
@@ -164,6 +174,9 @@
 			return NO;
 		}
 	}
+	
+	if(_currentContext != TAB_READER)
+		[_buttons setHidden : YES];
 	
 	[self addSubview:_buttons];
 	return YES;
@@ -258,7 +271,7 @@
 	if(data.cacheDBID != projectID)
 		return;
 	
-	RakCTCoreContentView * tab = nil;
+	RakCTSelectionList * tab = nil;
 	
 	if(isTome)
 		tab = _volView;
@@ -312,7 +325,7 @@
 	{
 		if(_chapterView == nil)
 		{
-			_chapterView =  [[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
+			_chapterView =  [[RakCTSelectionList alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
 			_chapterView.superview = self;
 		}
 		else
@@ -329,7 +342,7 @@
 	{
 		if(_volView == nil)
 		{
-			_volView =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1];
+			_volView =  [[RakCTSelectionList alloc] init:[self frame] : data : true : -1 : -1];
 			_volView.superview = self;
 		}
 		else

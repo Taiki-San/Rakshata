@@ -24,7 +24,7 @@
 		[self initCTView : project : readerMode];
 		[self initReaderView : project : readerMode];
 
-		coreview = [[RakCTContentTabView alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context];
+		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context];
 		if(coreview != nil)
 			[self addSubview:coreview];
     }
@@ -238,7 +238,7 @@
 	}
 	else
 	{
-		coreview = [[RakCTContentTabView alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1}];
+		coreview = [[RakCTSelection alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1}];
 		if(coreview != nil)
 			[self addSubview:coreview];
 	}

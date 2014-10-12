@@ -15,6 +15,7 @@
 	NSView* documentViewToResize;
 }
 
+@property BOOL horizontalScrollingEnabled;
 @property BOOL scrollingDisabled;
 
 - (void) resizeAnimation : (NSRect) frameRect;
@@ -54,7 +55,7 @@
 - (NSScrollView*) getContent;
 - (void) resizeAnimation : (NSRect) frameRect;
 
-- (NSRect) getTableViewFrame : (NSRect) superViewFrame;
+- (NSRect) getFrameFromParent : (NSRect) superViewFrame;
 
 - (void) enableDrop;
 

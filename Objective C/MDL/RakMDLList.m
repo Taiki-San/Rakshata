@@ -54,7 +54,7 @@
 
 - (void) resizeAnimation: (NSRect) frameRect
 {
-	[scrollView.animator setFrame: [self getTableViewFrame:frameRect]];
+	[scrollView.animator setFrame: [self getFrameFromParent:frameRect]];
 }
 
 - (void) setScrollerHidden : (BOOL) hidden

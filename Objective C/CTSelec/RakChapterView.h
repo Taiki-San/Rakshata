@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "RakCTContentTabView.h"
+#include "RakCTSelection.h"
 
 @interface RakChapterView : RakTabContentTemplate
 {
@@ -22,7 +22,7 @@
 	RakMenuText * projectName;
 	RakCTProjectImageView * projectImage;
 
-	RakCTContentTabView * coreview;
+	RakCTSelection * coreview;
 }
 
 - (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;

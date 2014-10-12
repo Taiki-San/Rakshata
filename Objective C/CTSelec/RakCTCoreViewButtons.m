@@ -112,7 +112,7 @@
 	else
 		[animationController updateState : initialPos : [newValue integerValue] - initialPos];
 	
-	[(RakCTContentTabView*) self.superview feedAnimationController:animationController];
+	[(RakCTSelection*) self.superview feedAnimationController:animationController];
 	[animationController startAnimation];
 
 	return YES;

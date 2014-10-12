@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakCTCoreContentView
+@implementation RakCTSelectionList
 
 #pragma mark - Classical initialization
 
@@ -62,7 +62,12 @@
 		}
 		
 		[self applyContext:frame :row :scrollerPosition];
+		
+		scrollView.wantsLayer = YES;
+		scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
+		scrollView.layer.cornerRadius = 4;
 	}
+	
 	return self;
 }
 
@@ -71,7 +76,7 @@
 	return data != NULL;
 }
 
-- (bool) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
+- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
 {
 	void * newDataBuf = NULL;
 	
@@ -95,7 +100,7 @@
 	}
 	
 	if(newDataBuf == NULL)
-		return false;
+		return NO;
 		
 	free(data);
 	data = newDataBuf;
@@ -110,18 +115,17 @@
 	if(element != -1)
 		[self selectRow:[self getIndexOfElement:element]];
 	
-	return true;
+	return YES;
 }
 
-- (NSRect) getTableViewFrame : (NSRect) superViewFrame
+- (NSRect) getFrameFromParent : (NSRect) parentFrame
 {
-	NSRect frame = superViewFrame;
+	parentFrame.origin.x = CT_READERMODE_BORDER_TABLEVIEW;
+	parentFrame.origin.y = 0;
+	parentFrame.size.width -= 2 * CT_READERMODE_BORDER_TABLEVIEW;
+	parentFrame.size.height -= CT_READERMODE_HEIGHT_CT_BUTTON + CT_READERMODE_HEIGHT_BORDER_TABLEVIEW;
 	
-	frame.origin.x = CT_READERMODE_BORDER_TABLEVIEW;
-	frame.size.width -= 2 * CT_READERMODE_BORDER_TABLEVIEW;
-	frame.size.height -= CT_READERMODE_HEIGHT_CT_BUTTON + CT_READERMODE_HEIGHT_BORDER_TABLEVIEW;
-	
-	return frame;
+	return parentFrame;
 }
 
 #pragma mark - Backup routine
@@ -216,7 +220,7 @@
 {
 	if(selectedIndex != -1 && selectedIndex < amountData)
 	{
-		[(RakCTContentTabView*) scrollView.superview gotClickedTransmitData: isTome : selectedIndex];
+		[(RakCTSelection*) scrollView.superview gotClickedTransmitData: isTome : selectedIndex];
 	}
 }
 

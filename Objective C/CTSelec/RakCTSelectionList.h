@@ -10,14 +10,15 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTCoreContentView : RakList
+@interface RakCTSelectionList : RakList
 {
 	bool isTome;
 	PROJECT_DATA projectData;
 }
 
 - (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
-- (bool) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+
 - (void) jumpScrollerToRow : (int) row;
 
 @end

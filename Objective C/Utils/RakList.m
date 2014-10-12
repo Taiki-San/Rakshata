@@ -38,7 +38,7 @@
 	}
 	
 	//Let the fun begin
-	scrollView = [[RakListScrollView alloc] initWithFrame:[self getTableViewFrame:frame]];
+	scrollView = [[RakListScrollView alloc] initWithFrame:[self getFrameFromParent:frame]];
 	_tableView = [[RakTableView alloc] initWithFrame:scrollView.contentView.bounds];
 
 	if(scrollView == nil || _tableView == nil)
@@ -124,7 +124,7 @@
 {
 	CGFloat oldWidth = _tableView.frame.size.width;
 
-	[scrollView setFrame:[self getTableViewFrame:frameRect]];
+	[scrollView setFrame:[self getFrameFromParent:frameRect]];
 	
 	if(oldWidth != frameRect.size.width)
 	{
@@ -150,7 +150,7 @@
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	CGFloat oldWidth = _tableView.frame.size.width;
-	NSRect scrollviewFrame = [self getTableViewFrame:frameRect];
+	NSRect scrollviewFrame = [self getFrameFromParent:frameRect];
 	
 	[scrollView.animator resizeAnimation:scrollviewFrame];
 	
@@ -182,7 +182,7 @@
 	free(data);
 }
 
-- (NSRect) getTableViewFrame : (NSRect) superViewFrame
+- (NSRect) getFrameFromParent : (NSRect) superViewFrame
 {
 	return superViewFrame;
 }
@@ -512,8 +512,14 @@
 {
 	if(self.scrollingDisabled)
 		[self.nextResponder scrollWheel:event];
-	else
+	
+	else if(self.horizontalScrollingEnabled || ![event scrollingDeltaX])
 		[super scrollWheel:event];
+	
+	else if([event scrollingDeltaY])
+	{
+		
+	}
 }
 
 @end
