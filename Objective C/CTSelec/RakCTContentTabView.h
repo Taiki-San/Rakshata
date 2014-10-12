@@ -13,9 +13,9 @@
 @interface RakCTContentTabView : NSView
 {
 	PROJECT_DATA data;
-	RakCTCoreViewButtons * buttons;
-	RakCTCoreContentView * tableViewControllerChapter;
-	RakCTCoreContentView * tableViewControllerVolume;
+	RakCTCoreViewButtons * _buttons;
+	RakCTCoreContentView * _chapterView;
+	RakCTCoreContentView * _volView;
 	
 	uint _currentContext;
 }
@@ -25,9 +25,12 @@
 @property BOOL dontNotify;
 @property (readonly) PROJECT_DATA currentProject;
 
-- (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context;
 
-- (void) resizeAnimation : (NSRect) frameRect;
+- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context;
+
+- (void) setFrame : (NSRect) parentFrame : (CGFloat) headerHeight;
+- (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight;
+
 - (NSString *) getContextToGTFO;
 
 - (void) gotClickedTransmitData : (bool) isTome : (uint) index;

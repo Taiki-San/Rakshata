@@ -12,82 +12,40 @@
 
 @implementation RakCTContentTabView
 
-- (id) initWithProject : (PROJECT_DATA) project : (bool) isTome : (NSRect) frame : (long [4]) context
+- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context
 {
-	if(project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
+	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_currentContext];
+
+	if(_currentContext == TAB_READER && project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
 		return nil;
 	
-	self = [super initWithFrame:[self getSizeOfCoreView:frame]];
-	
+	self = [super initWithFrame : [self frameFromParent : parentBounds : headerHeight]];
 	if (self != nil)
 	{
-		[self setAutoresizesSubviews:NO];
-		buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
+		self.autoresizesSubviews = NO;
 		
 		data = getCopyOfProjectData(project);
 		
-		if(data.nombreChapitreInstalled > 0)
-		{
-			[buttons setEnabled:true forSegment:0];
-			
-			if(!isTome)
-				[buttons setSelected:true forSegment:0];
-			
-			if(data.nombreChapitreInstalled == 1)
-			{
-				NSString * name = [buttons labelForSegment:0];
-				[buttons setLabel:[name substringToIndex:[name length] - 0] forSegment:0];
-			}
-		}
-		else if(!isTome)	//Si on recoit une demande incohérante
-			isTome = true;
-		
-		if(data.nombreTomesInstalled > 0)
-		{
-			[buttons setEnabled:true forSegment:1];
-			
-			if(isTome)
-				[buttons setSelected:true forSegment:1];
-			
-			if(data.nombreTomesInstalled == 1)
-			{
-				NSString * name = [buttons labelForSegment:1];
-				[buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
-			}
-		}
-		else if(isTome)
-		{
-			if(data.nombreChapitreInstalled > 0)
-			{
-				[buttons setSelected:true forSegment:0];
-				isTome = false;
-			}
-			else	//Projet illisible
-			{
-				[self failure];
-				return nil;
-			}
-		}
-		
-		[self addSubview:buttons];
+		if(![self setupButtons:&isTome])
+			return nil;
 		
 		if(data.nombreChapitreInstalled > 0)
 		{
-			tableViewControllerChapter = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
-			if(tableViewControllerChapter != nil)
+			_chapterView = [[RakCTCoreContentView alloc] init:[self frame] : data :false : context[0] : context[1]];
+			if(_chapterView != nil)
 			{
-				tableViewControllerChapter.hidden = isTome;
-				tableViewControllerChapter.superview = self;
+				_chapterView.hidden = isTome;
+				_chapterView.superview = self;
 			}
 		}
 		
 		if(data.nombreTomesInstalled > 0)
 		{
-			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
-			if(tableViewControllerVolume != nil)
+			_volView =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : context[2] : context[3]];
+			if(_volView != nil)
 			{
-				tableViewControllerVolume.hidden = !isTome;
-				tableViewControllerVolume.superview = self;
+				_volView.hidden = !isTome;
+				_volView.superview = self;
 			}
 		}
 	}
@@ -95,51 +53,36 @@
 	return self;
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) setFrame : (NSRect) parentFrame : (CGFloat) headerHeight
 {
-	NSRect coreView = [self getSizeOfCoreView:frameRect], bounds = self.bounds;
-	
-	if(NSEqualRects(self.frame, coreView))
-		return;
-	
-	[super setFrame:coreView];
-	coreView.origin.x = coreView.origin.y = 0;
-	
-	if(NSEqualRects(coreView, bounds))
-		return;
-	
-	[buttons setFrame:[self bounds]];
-	
-	[self refreshCTData : NO : 0];
-	
-	[tableViewControllerChapter setFrame:[self bounds]];
-	[tableViewControllerVolume setFrame:[self bounds]];
+	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
+
+	[_buttons setFrame : self.bounds];
+	[_chapterView setFrame : self.bounds];
+	[_volView setFrame : self.bounds];
 }
 
-- (void) resizeAnimation : (NSRect) frameRect
+- (void) setFrame:(NSRect)frameRect
 {
-	NSRect coreView = [self getSizeOfCoreView:frameRect], bounds = self.bounds;
 	
-	if(NSEqualRects(self.frame, coreView))
-		return;
+}
+
+- (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
+{
+	NSRect frame = [self frameFromParent : parentFrame : headerHeight];
+	[self.animator setFrame:frame];
 	
-	[self.animator setFrame:coreView];
+	frame.origin = NSZeroPoint;
 	
-	if(NSEqualRects(self.bounds, bounds))
-		return;
-	
-	[buttons resizeAnimation:coreView];
-	
-	[self refreshCTData : NO : 0];
-	
-	[tableViewControllerChapter resizeAnimation:coreView];
-	[tableViewControllerVolume resizeAnimation:coreView];
+	[_buttons resizeAnimation : frame];
+	[_chapterView resizeAnimation : frame];
+	[_volView resizeAnimation : frame];
 }
 
 - (void) failure
 {
 	NSLog(@"Got crappy data D:");
-	[buttons removeFromSuperview];
+	[_buttons removeFromSuperview];
 	
 	if(self.superview != nil)
 		[self removeFromSuperview];
@@ -150,27 +93,80 @@
 	if(data.team == NULL)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.projectID, [buttons selectedSegment] == 1 ? 1 : 0, (long)[tableViewControllerChapter getSelectedElement], [tableViewControllerChapter getSliderPos], (long)[tableViewControllerVolume getSelectedElement], [tableViewControllerVolume getSliderPos]];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%ld\n%.0f\n%ld\n%.0f", data.team->URLRepo, data.projectID, [_buttons selectedSegment] == 1 ? 1 : 0, (long)[_chapterView getSelectedElement], [_chapterView getSliderPos], (long)[_volView getSelectedElement], [_volView getSliderPos]];
 }
 
 - (void) dealloc
 {
-	[buttons removeFromSuperview];	
+	[_buttons removeFromSuperview];	
 	
-	[[tableViewControllerChapter getContent] removeFromSuperviewWithoutNeedingDisplay];
+	[[_chapterView getContent] removeFromSuperviewWithoutNeedingDisplay];
 	
-	[[tableViewControllerVolume getContent] removeFromSuperviewWithoutNeedingDisplay];
+	[[_volView getContent] removeFromSuperviewWithoutNeedingDisplay];
 	
 	releaseCTData(data);
 }
 
-- (NSRect) getSizeOfCoreView : (NSRect) superViewFrame
+- (NSRect) frameFromParent : (NSRect) parentBounds : (CGFloat) headerHeight
 {
-	NSRect frame = superViewFrame;
+	if(_currentContext == TAB_READER)
+		parentBounds.size.height -= CT_READERMODE_HEIGHT_HEADER_TAB;
+	else
+		parentBounds.size.height -= headerHeight;
 	
-	frame.size.height -= CT_READERMODE_HEIGHT_HEADER_TAB;
+	return parentBounds;
+}
+
+#pragma mark - Buttons management
+
+- (BOOL) setupButtons : (BOOL*) isTome
+{
+	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
+	if(data.nombreChapitreInstalled > 0)
+	{
+		[_buttons setEnabled : YES forSegment:0];
+		
+		if(!*isTome)
+			[_buttons setSelected : YES forSegment:0];
+		
+		if(data.nombreChapitreInstalled == 1)
+		{
+			NSString * name = [_buttons labelForSegment:0];
+			[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:0];
+		}
+	}
+	else if(!*isTome)	//Si on recoit une demande incohérante
+		*isTome = YES;
 	
-	return frame;
+	if(data.nombreTomesInstalled > 0)
+	{
+		[_buttons setEnabled:YES forSegment:1];
+		
+		if(*isTome)
+			[_buttons setSelected:YES forSegment:1];
+		
+		if(data.nombreTomesInstalled == 1)
+		{
+			NSString * name = [_buttons labelForSegment:1];
+			[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
+		}
+	}
+	else if(*isTome)
+	{
+		if(data.nombreChapitreInstalled > 0)
+		{
+			[_buttons setSelected:YES forSegment:0];
+			*isTome = NO;
+		}
+		else	//Projet illisible
+		{
+			[self failure];
+			return NO;
+		}
+	}
+	
+	[self addSubview:_buttons];
+	return YES;
 }
 
 #pragma mark - Properties
@@ -183,6 +179,18 @@
 - (void) setCurrentContext : (uint) currentContext
 {
 	_currentContext = currentContext;
+	
+	if(currentContext == TAB_READER)
+	{
+		if(_buttons != nil && _buttons.isHidden)
+			[_buttons setHidden:NO];
+	}
+	else
+	{
+		if(_buttons != nil && !_buttons.isHidden)
+			[_buttons setHidden:YES];
+	}
+	
 }
 
 - (uint) currentContext
@@ -215,7 +223,7 @@
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
-	[animationController addCTContent: tableViewControllerChapter : tableViewControllerVolume];
+	[animationController addCTContent: _chapterView : _volView];
 	[animationController addAction : self : @selector(switchIsTome:)];
 }
 
@@ -227,10 +235,10 @@
 	else
 		isTome = true;
 	
-	if(tableViewControllerChapter != nil)
-		tableViewControllerChapter.hidden = isTome;
-	if(tableViewControllerVolume != nil)
-		tableViewControllerVolume.hidden = !isTome;
+	if(_chapterView != nil)
+		_chapterView.hidden = isTome;
+	if(_volView != nil)
+		_volView.hidden = !isTome;
 }
 
 - (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
@@ -239,10 +247,10 @@
 		return;
 	
 	getUpdatedChapterList(&data, true);
-	[tableViewControllerChapter reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : NO];
+	[_chapterView reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : NO];
 	
 	getUpdatedTomeList(&data, true);
-	[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : NO];
+	[_volView reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : NO];
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
@@ -253,9 +261,9 @@
 	RakCTCoreContentView * tab = nil;
 	
 	if(isTome)
-		tab = tableViewControllerVolume;
+		tab = _volView;
 	else if(!isTome)
-		tab = tableViewControllerChapter;
+		tab = _chapterView;
 	
 	if(tab != nil)
 	{
@@ -276,8 +284,8 @@
 	}
 	else
 	{
-		if(tableViewControllerChapter != NULL)	[tableViewControllerChapter resetSelection:nil];
-		if(tableViewControllerVolume != NULL)	[tableViewControllerVolume resetSelection:nil];
+		if(_chapterView != NULL)	[_chapterView resetSelection:nil];
+		if(_volView != NULL)	[_volView resetSelection:nil];
 		
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
@@ -292,8 +300,8 @@
 	//No data available
 	if(data.nombreChapitreInstalled == 0 && data.nombreTomesInstalled == 0)
 	{
-		tableViewControllerChapter.hidden = YES;
-		tableViewControllerVolume.hidden = YES;
+		_chapterView.hidden = YES;
+		_volView.hidden = YES;
 		
 		[self failure];
 		return NO;
@@ -302,56 +310,56 @@
 	//Update views, create them if required
 	if(data.nombreChapitreInstalled)
 	{
-		if(tableViewControllerChapter == nil)
+		if(_chapterView == nil)
 		{
-			tableViewControllerChapter =  [[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
-			tableViewControllerChapter.superview = self;
+			_chapterView =  [[RakCTCoreContentView alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
+			_chapterView.superview = self;
 		}
 		else
-			[tableViewControllerChapter reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
+			[_chapterView reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
 		
-		[buttons setEnabled:YES forSegment:0];
+		[_buttons setEnabled:YES forSegment:0];
 	}
 	else
 	{
-		[buttons setEnabled:NO forSegment:0];
+		[_buttons setEnabled:NO forSegment:0];
 	}
 	
 	if(data.nombreTomesInstalled)
 	{
-		if(tableViewControllerVolume == nil)
+		if(_volView == nil)
 		{
-			tableViewControllerVolume =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1];
-			tableViewControllerVolume.superview = self;
+			_volView =  [[RakCTCoreContentView alloc] init:[self frame] : data : true : -1 : -1];
+			_volView.superview = self;
 		}
 		else
-			[tableViewControllerVolume reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];
+			[_volView reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];
 		
-		[buttons setEnabled:YES forSegment:1];
+		[_buttons setEnabled:YES forSegment:1];
 	}
 	else
 	{
-		[buttons setEnabled:NO forSegment:1];
+		[_buttons setEnabled:NO forSegment:1];
 	}
 	
-	BOOL isTome = [buttons selectedSegment] == 1;
+	BOOL isTome = [_buttons selectedSegment] == 1;
 	
-	[tableViewControllerChapter setHidden:isTome];
-	[tableViewControllerVolume setHidden:!isTome];
+	[_chapterView setHidden:isTome];
+	[_volView setHidden:!isTome];
 	
 	//Update focus
 	if(isTome && data.nombreTomesInstalled == 0)
 	{
-		[tableViewControllerChapter setHidden:NO];
-		[tableViewControllerVolume setHidden:YES];
-		[buttons setSelectedSegment:0];
+		[_chapterView setHidden:NO];
+		[_volView setHidden:YES];
+		[_buttons setSelectedSegment:0];
 	}
 	else if(!isTome && data.nombreChapitreInstalled == 0)
 	{
-		[tableViewControllerVolume setHidden:NO];
-		if(![tableViewControllerChapter isHidden])
-			[tableViewControllerChapter setHidden:YES];
-		[buttons setSelectedSegment:1];
+		[_volView setHidden:NO];
+		if(![_chapterView isHidden])
+			[_chapterView setHidden:YES];
+		[_buttons setSelectedSegment:1];
 	}
 	
 	return YES;

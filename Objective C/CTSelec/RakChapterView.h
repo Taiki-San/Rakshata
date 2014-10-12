@@ -22,7 +22,7 @@
 	RakMenuText * projectName;
 	RakCTProjectImageView * projectImage;
 
-	RakCTContentTabView * coreView;
+	RakCTContentTabView * coreview;
 }
 
 - (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;

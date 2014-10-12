@@ -21,20 +21,21 @@
 		
 		BOOL readerMode = [(RakAppDelegate*) [NSApp delegate]CT].readerMode;
 
-		coreView = [[RakCTContentTabView alloc] initWithProject : project : isTome : [self bounds] : context];
-		if(coreView != nil)		[self addSubview:coreView];
-		
 		[self initCTView : project : readerMode];
 		[self initReaderView : project : readerMode];
+
+		coreview = [[RakCTContentTabView alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context];
+		if(coreview != nil)
+			[self addSubview:coreview];
     }
     return self;
 }
 
 - (NSString *) getContextToGTFO
 {
-	if (coreView == nil)
+	if (coreview == nil)
 		return nil;
-	return [coreView getContextToGTFO];
+	return [coreview getContextToGTFO];
 }
 
 - (void) setFrameInternalViews : (NSRect) newBound
@@ -51,15 +52,21 @@
 		[projectImage setFrame:newBound];
 	}
 
-	[coreView setFrame:newBound];
+	[coreview setFrame : newBound : (header != nil ? header.bounds.size.height : 0)];
 }
 
 - (void) resizeAnimationInternalViews : (NSRect) newBound
 {
+	CGFloat headerHeight = 0;
+	
 	if(!self.CTViewHidden)
 	{
+		NSSize headerSize = [header frameByParent : newBound].size;
+		
 		[header resizeAnimation:newBound];
-		[synopsis resizeAnimation : newBound : [header frameByParent : newBound].size];
+		[synopsis resizeAnimation : newBound : headerSize];
+		
+		headerHeight = headerSize.height;
 	}
 	
 	if(!self.readerViewHidden)
@@ -68,7 +75,7 @@
 		[projectImage resizeAnimation:newBound];
 	}
 
-	[coreView resizeAnimation:newBound];
+	[coreview resizeAnimation : newBound : headerHeight];
 }
 
 - (void) dealloc
@@ -79,7 +86,7 @@
 	[projectName removeFromSuperview];	projectName = nil;
 	[projectImage removeFromSuperview];	projectImage = nil;
 	
-	[coreView removeFromSuperview];		coreView = nil;
+	[coreview removeFromSuperview];		coreview = nil;
 }
 
 #pragma mark - UI Initializers
@@ -124,7 +131,7 @@
 		if(synopsis.isHidden)
 			[synopsis setHidden:NO];
 		
-		coreView.currentContext = TAB_CT;
+		coreview.currentContext = TAB_CT;
 	}
 	
 	[super setCTViewHidden:CTViewHidden];
@@ -146,7 +153,7 @@
 		if(projectImage.isHidden)
 			[projectImage setHidden:NO];
 		
-		coreView.currentContext = TAB_READER;
+		coreview.currentContext = TAB_READER;
 	}
 	
 	[super setReaderViewHidden:readerViewHidden];
@@ -210,7 +217,7 @@
 		[header updateHeaderProject:data];
 	else
 	{
-		header = [[RakCTHeader alloc] initWithData:self.bounds :data];
+		header = [[RakCTHeader alloc] initWithData : self.bounds :data];
 		if(header != nil)
 			[self addSubview:header];
 	}
@@ -224,23 +231,24 @@
 			[self addSubview:synopsis];
 	}
 	
-	if(coreView != nil)
+	if(coreview != nil)
 	{
-		if(![coreView updateContext:data])
-			coreView = nil;
+		if(![coreview updateContext : data])
+			coreview = nil;
 	}
 	else
 	{
-		coreView = [[RakCTContentTabView alloc] initWithProject : data : false : [self bounds] : (long [4]) {-1, -1, -1, -1}];
-		if(coreView != nil)			[self addSubview:coreView];
+		coreview = [[RakCTContentTabView alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1}];
+		if(coreview != nil)
+			[self addSubview:coreview];
 	}
 }
 
 - (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 {
-	if (coreView != nil)
+	if (coreview != nil)
 	{
-		[coreView refreshCTData : checkIfRequired : ID];
+		[coreview refreshCTData : checkIfRequired : ID];
 		return YES;
 	}
 	
@@ -249,8 +257,8 @@
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
 {
-	if(coreView != nil)
-		[coreView selectElem : projectID : isTome : element];
+	if(coreview != nil)
+		[coreview selectElem : projectID : isTome : element];
 }
 
 @end
