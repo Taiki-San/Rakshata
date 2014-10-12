@@ -13,8 +13,8 @@
 @interface RakCTAnimationController : NSObject <NSAnimationDelegate>
 {
 	RakSegmentedButtonCell * _cell;
-	RakCTSelectionList * _chapter;
-	RakCTSelectionList * _volume;
+	RakCTSelectionListContainer * _chapter;
+	RakCTSelectionListContainer * _volume;
 	
 	id postAnimationTarget;
 	SEL postAnimationAction;
@@ -33,7 +33,7 @@
 
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;
 
-- (void) addCTContent : (RakCTSelectionList*) chapter : (RakCTSelectionList*) volume;
+- (void) addCTContent : (RakCTSelectionListContainer*) chapter : (RakCTSelectionListContainer*) volume;
 - (void) addAction : (id) target : (SEL) action;
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
 

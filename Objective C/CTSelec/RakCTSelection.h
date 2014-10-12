@@ -14,8 +14,8 @@
 {
 	PROJECT_DATA data;
 	RakCTCoreViewButtons * _buttons;
-	RakCTSelectionList * _chapterView;
-	RakCTSelectionList * _volView;
+	RakCTSelectionListContainer * _chapterView;
+	RakCTSelectionListContainer * _volView;
 	
 	uint _currentContext;
 	uint _cachedHeaderHeight;

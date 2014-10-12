@@ -32,7 +32,7 @@
 
 #pragma mark - Context update
 
-- (void) addCTContent : (RakCTSelectionList*) chapter : (RakCTSelectionList*) volume
+- (void) addCTContent : (RakCTSelectionListContainer*) chapter : (RakCTSelectionListContainer*) volume
 {
 	_chapter = chapter;
 	_volume = volume;
@@ -58,8 +58,6 @@
 	{
 		[self abortAnimation];
 	}
-	
-	//if(state != ANIMATION_FRAME)	state--;
 	
 	state = ANIMATION_FRAME - state;
 	

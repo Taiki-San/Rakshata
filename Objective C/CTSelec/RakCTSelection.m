@@ -29,23 +29,37 @@
 		if(![self setupButtons:&isTome])
 			return nil;
 		
+		RakCTSelectionList * view;
+		
 		if(data.nombreChapitreInstalled > 0)
 		{
-			_chapterView = [[RakCTSelectionList alloc] init : self.frame : data :false : context[0] : context[1]];
-			if(_chapterView != nil)
+			view = [[RakCTSelectionList alloc] init : self.frame : data :false : context[0] : context[1]];
+			if(view != nil)
 			{
-				_chapterView.hidden = isTome;
-				_chapterView.superview = self;
+				_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
+				if(_chapterView != nil)
+				{
+					_chapterView.hidden = isTome;
+					[self addSubview : _chapterView];
+				}
+				
+				view = nil;
 			}
 		}
 		
 		if(data.nombreTomesInstalled > 0)
 		{
-			_volView =  [[RakCTSelectionList alloc] init : self.frame : data : true : context[2] : context[3]];
-			if(_volView != nil)
+			view = [[RakCTSelectionList alloc] init : self.frame : data : true : context[2] : context[3]];
+			if(view != nil)
 			{
-				_volView.hidden = !isTome;
-				_volView.superview = self;
+				_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
+				if(_volView != nil)
+				{
+					_volView.hidden = !isTome;
+					[self addSubview: _volView];
+				}
+
+				view = nil;
 			}
 		}
 	}
@@ -204,6 +218,11 @@
 			[_buttons setHidden:YES];
 	}
 	
+	if(_chapterView != nil)
+		_chapterView.compactMode = currentContext != TAB_CT;
+	
+	if(_volView != nil)
+		_volView.compactMode = currentContext != TAB_CT;
 }
 
 - (uint) currentContext
@@ -271,7 +290,7 @@
 	if(data.cacheDBID != projectID)
 		return;
 	
-	RakCTSelectionList * tab = nil;
+	RakCTSelectionListContainer * tab = nil;
 	
 	if(isTome)
 		tab = _volView;
@@ -321,12 +340,21 @@
 	}
 	
 	//Update views, create them if required
+	RakCTSelectionList * view;
+	
 	if(data.nombreChapitreInstalled)
 	{
 		if(_chapterView == nil)
 		{
-			_chapterView =  [[RakCTSelectionList alloc] init:[self frame] : data : false : -1 : -1];	//Two retains because we, as a subview, will get released at the end of the refresh
-			_chapterView.superview = self;
+			view = [[RakCTSelectionList alloc] init:self.frame : data : false : -1 : -1];
+			if(view != nil)
+			{
+				_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
+				if(_chapterView != nil)
+					[self addSubview : _chapterView];
+				
+				view = nil;
+			}
 		}
 		else
 			[_chapterView reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
@@ -342,8 +370,17 @@
 	{
 		if(_volView == nil)
 		{
-			_volView =  [[RakCTSelectionList alloc] init:[self frame] : data : true : -1 : -1];
-			_volView.superview = self;
+			view = [[RakCTSelectionList alloc] init:self.frame : data : true : -1 : -1];
+			if(view != nil)
+			{
+				_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
+				if(_volView != nil)
+				{
+					[self addSubview: _volView];
+				}
+				
+				view = nil;
+			}
 		}
 		else
 			[_volView reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];

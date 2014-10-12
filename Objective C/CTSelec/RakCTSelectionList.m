@@ -23,10 +23,10 @@
 		NSInteger row = -1, tmpRow = 0;
 
 		//We check we have valid data
-		isTome = isTomeRequest;
+		self.isTome = isTomeRequest;
 		projectData = project;	//We don't protect chapter/volumen list but not really a problem as we'll only use it for drag'n drop
 		
-		if(isTome && project.tomesInstalled != NULL)
+		if(self.isTome && project.tomesInstalled != NULL)
 		{
 			amountData = project.nombreTomesInstalled;
 			data = malloc(amountData * sizeof(META_TOME));
@@ -43,7 +43,7 @@
 				}
 			}
 		}
-		else if(!isTome && project.chapitresInstalled != NULL)
+		else if(!self.isTome && project.chapitresInstalled != NULL)
 		{
 			amountData = project.nombreChapitreInstalled;
 			data = malloc(amountData * sizeof(int));
@@ -82,7 +82,7 @@
 	
 	NSInteger element = [self getSelectedElement];
 	
-	if(isTome)
+	if(self.isTome)
 	{
 		newDataBuf = malloc(nbElem * sizeof(META_TOME));
 		if(newDataBuf != NULL)
@@ -118,16 +118,6 @@
 	return YES;
 }
 
-- (NSRect) getFrameFromParent : (NSRect) parentFrame
-{
-	parentFrame.origin.x = CT_READERMODE_BORDER_TABLEVIEW;
-	parentFrame.origin.y = 0;
-	parentFrame.size.width -= 2 * CT_READERMODE_BORDER_TABLEVIEW;
-	parentFrame.size.height -= CT_READERMODE_HEIGHT_CT_BUTTON + CT_READERMODE_HEIGHT_BORDER_TABLEVIEW;
-	
-	return parentFrame;
-}
-
 #pragma mark - Backup routine
 
 - (NSInteger) getSelectedElement
@@ -137,7 +127,7 @@
 	if(row < 0 || row > amountData)
 		return -1;
 	
-	if(isTome)
+	if(self.isTome)
 		return ((META_TOME *) data)[row].ID;
 	else
 		return ((int *) data)[row];
@@ -154,7 +144,7 @@
 	if (data == NULL)
 		return -1;
 	
-	if (isTome)
+	if (self.isTome)
 	{
 		for (uint pos = 0; pos < amountData; pos++)
 		{
@@ -183,7 +173,7 @@
 	
 	NSString * output;
 	
-	if(isTome)
+	if(self.isTome)
 	{
 		META_TOME element = ((META_TOME *) data)[rowIndex];
 		if(element.ID != VALEUR_FIN_STRUCT)
@@ -220,7 +210,7 @@
 {
 	if(selectedIndex != -1 && selectedIndex < amountData)
 	{
-		[(RakCTSelection*) scrollView.superview gotClickedTransmitData: isTome : selectedIndex];
+		[(RakCTSelection*) scrollView.superview gotClickedTransmitData: self.isTome : selectedIndex];
 	}
 }
 
@@ -245,12 +235,150 @@
 {
 	int selection;
 	
-	if(isTome)
+	if(self.isTome)
 		selection = (((META_TOME *) data)[row]).ID;
 	else
 		selection = ((int *) data)[row];
 	
-	[item setDataProject:getCopyOfProjectData(projectData) isTome:isTome element:selection];
+	[item setDataProject:getCopyOfProjectData(projectData) isTome:self.isTome element:selection];
 }
+
+@end
+
+@implementation RakCTSelectionListContainer
+
+- (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content
+{
+	if(content == nil)
+		return nil;
+	
+	_isCompact = isCompact;
+	_content = content;
+	
+	self = [self initWithFrame : [self frameFromParent:parentFrame]];
+	
+	if(self != nil)
+	{
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [self getBackgroundColor];
+		self.layer.cornerRadius = isCompact ? 0 : 4.0;
+		
+		[Prefs getCurrentTheme:self];
+		[content setSuperview:self];
+	}
+	
+	return self;
+}
+
+#pragma mark - Properties
+
+- (void) setCompactMode : (BOOL) compactMode
+{
+	_isCompact = compactMode;
+	
+	if(compactMode)
+		self.layer.cornerRadius = 0;
+	else
+		self.layer.cornerRadius = 4.0f;
+	
+	self.layer.backgroundColor = [self getBackgroundColor];
+}
+
+- (BOOL) compactMode
+{
+	return _isCompact;
+}
+
+- (void) setHidden : (BOOL) hidden
+{
+	if(self.isHidden != hidden)
+		[super setHidden : hidden];
+}
+
+- (BOOL) hidden
+{
+	return self.isHidden;
+}
+
+#pragma mark - Sizing
+
+- (NSRect) frameFromParent : (NSRect) parentFrame
+{
+	if(self.compactMode)
+	{
+		parentFrame.origin.x = CT_READERMODE_BORDER_TABLEVIEW;
+		parentFrame.origin.y = 0;
+		parentFrame.size.width -= 2 * CT_READERMODE_BORDER_TABLEVIEW;
+		parentFrame.size.height -= CT_READERMODE_HEIGHT_CT_BUTTON + CT_READERMODE_HEIGHT_BORDER_TABLEVIEW;
+	}
+	else
+	{
+		parentFrame.origin.x = 10;
+		parentFrame.size.height -= 20 + 8;
+
+		parentFrame.size.width /= 2;
+		parentFrame.size.width -= 20;
+		
+		if(_content.isTome)
+			parentFrame.origin.y = parentFrame.size.width + 20;
+		else
+			parentFrame.origin.y = 10;
+	}
+	
+	return parentFrame;
+}
+
+- (void) setFrame : (NSRect) parentFrame
+{
+	[super setFrame : [self frameFromParent:parentFrame]];
+	
+	[_content setFrame : self.bounds];
+}
+
+- (void) resizeAnimation : (NSRect) parentFrame
+{
+	NSRect frame = [self frameFromParent:parentFrame];
+	[self.animator setFrame : frame];
+	
+	frame.origin = NSZeroPoint;
+	
+	[_content resizeAnimation : frame];
+}
+
+#pragma mark - Color
+
+- (CGColorRef) getBackgroundColor
+{
+	if(self.compactMode)
+		return [NSColor clearColor].CGColor;
+	
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] == [Prefs class])
+		return;
+	
+	self.layer.backgroundColor = [self getBackgroundColor];
+}
+
+#pragma mark - Proxy
+
+- (NSScrollView*) getContent	{	return [_content getContent];	}
+
+- (NSInteger) getSelectedElement	{	return [_content getSelectedElement];	}
+- (float) getSliderPos	{	return [_content getSliderPos];		}
+
+- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+{
+	return [_content reloadData : project : nbElem : newData : resetScroller];
+}
+
+- (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}
+- (void) selectRow : (int) row	{	[_content selectRow:row];	}
+- (void) jumpScrollerToRow : (int) row	{	[_content jumpScrollerToRow:row];	}
+
+- (void) resetSelection : (NSTableView *) tableView	{	[_content resetSelection:tableView];	}
 
 @end
