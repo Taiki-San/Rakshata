@@ -274,12 +274,21 @@
 
 - (void) setCompactMode : (BOOL) compactMode
 {
-	_isCompact = compactMode;
-	
 	if(compactMode)
+	{
+		_isCompact = compactMode;
+		[self setHidden:_wasHidden];
+		
 		self.layer.cornerRadius = 0;
+	}
 	else
+	{
+		_wasHidden = self.isHidden;
+		[self setHidden:NO];
+		_isCompact = compactMode;
+
 		self.layer.cornerRadius = 4.0f;
+	}
 	
 	self.layer.backgroundColor = [self getBackgroundColor];
 }
@@ -291,13 +300,11 @@
 
 - (void) setHidden : (BOOL) hidden
 {
-	if(self.isHidden != hidden)
-		[super setHidden : hidden];
-}
+	if(!_isCompact)
+		_wasHidden = hidden;
 
-- (BOOL) hidden
-{
-	return self.isHidden;
+	else if(self.isHidden != hidden)
+		[super setHidden : hidden];
 }
 
 #pragma mark - Sizing
@@ -313,16 +320,16 @@
 	}
 	else
 	{
-		parentFrame.origin.x = 10;
+		parentFrame.origin.y = 10;
 		parentFrame.size.height -= 20 + 8;
 
 		parentFrame.size.width /= 2;
 		parentFrame.size.width -= 20;
 		
 		if(_content.isTome)
-			parentFrame.origin.y = parentFrame.size.width + 20;
+			parentFrame.origin.x = parentFrame.size.width + 20;
 		else
-			parentFrame.origin.y = 10;
+			parentFrame.origin.x = 10;
 	}
 	
 	return parentFrame;

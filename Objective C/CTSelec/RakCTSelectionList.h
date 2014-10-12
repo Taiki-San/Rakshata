@@ -29,10 +29,10 @@
 	RakCTSelectionList * _content;
 	
 	BOOL _isCompact;
+	BOOL _wasHidden;
 }
 
 @property BOOL compactMode;
-@property BOOL hidden;
 
 - (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content;
 
