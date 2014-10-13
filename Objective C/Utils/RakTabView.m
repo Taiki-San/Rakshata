@@ -14,9 +14,9 @@
 
 #pragma mark - Core view management
 
-- (id) initView: (NSView *)superView : (NSString *) state
+- (id) initView: (NSView *)superview : (NSString *) state
 {
-	NSRect frame = [self createFrameWithSuperView:superView];
+	NSRect frame = [self createFrameWithSuperView:superview];
 	
 	self = [super initWithFrame:frame];
 	
@@ -25,7 +25,7 @@
 		_waitingLogin = NO;
 		canDeploy = true;
 		
-		[superView addSubview:self];
+		[superview addSubview:self];
 		
 		[self setAutoresizesSubviews:NO];
 		[self setNeedsDisplay:YES];
@@ -156,29 +156,29 @@
 	[self drawContentView:dirtyRect];
 }
 
-- (void) refreshLevelViews : (NSView*) superView : (byte) context
+- (void) refreshLevelViews : (NSView*) superview : (byte) context
 {
-	[self refreshLevelViewsAnimation:superView];
+	[self refreshLevelViewsAnimation:superview];
 	
 	uint mainThread;
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	[self animationIsOver : mainThread : context];
 }
 
-- (void) refreshLevelViewsAnimation : (NSView*) superView
+- (void) refreshLevelViewsAnimation : (NSView*) superview
 {
 	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
 		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
 	
 	//Variable to set up the animation
-	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superView subviews] : NO];
+	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superview subviews] : NO];
 	[animation setUpViews];
 	[animation performTo];
 }
 
-- (void) fastAnimatedRefreshLevel : (NSView*) superView
+- (void) fastAnimatedRefreshLevel : (NSView*) superview
 {
-	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superView subviews] : YES];
+	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superview subviews] : YES];
 	[animation setUpViews];
 	[animation performTo];
 }
@@ -434,10 +434,10 @@
 	return _lastFrame;
 }
 
-- (NSRect) createFrameWithSuperView : (NSView*) superView
+- (NSRect) createFrameWithSuperView : (NSView*) superview
 {
 	NSRect frame;
-	NSSize sizeSuperView = superView.bounds.size;
+	NSSize sizeSuperView = superview.bounds.size;
 	
 	[Prefs getPref : [self getCodePref:CONVERT_CODE_FRAME] : &frame : &sizeSuperView];
 	

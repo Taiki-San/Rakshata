@@ -159,7 +159,7 @@
 
 @implementation RakCTProjectImageView
 
-- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame
+- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superviewFrame
 {
 	NSImage * projectImageBase = nil;
 	
@@ -198,7 +198,7 @@
 			[projectImageBase setSize:imageSize];
 		}
 		
-		self = [super initWithFrame:[self getProjectImageSize: superViewFrame : [projectImageBase size] ] ];
+		self = [super initWithFrame:[self getProjectImageSize: superviewFrame : [projectImageBase size] ] ];
 		
 		if(self != nil)
 		{
@@ -234,15 +234,15 @@
 	}
 }
 
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize
+- (NSRect) getProjectImageSize : (NSRect) superviewFrame : (NSSize) imageSize
 {
 	NSRect frame;
 	
 	frame.size.height = imageSize.height;
 	frame.size.width = imageSize.width;
 	
-	frame.origin.x = superViewFrame.size.width / 2 - frame.size.width / 2;
-	frame.origin.y = superViewFrame.size.height - CT_READERMODE_WIDTH_PROJECT_NAME - CT_READERMODE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;
+	frame.origin.x = superviewFrame.size.width / 2 - frame.size.width / 2;
+	frame.origin.y = superviewFrame.size.height - CT_READERMODE_WIDTH_PROJECT_NAME - CT_READERMODE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;
 	
 	return frame;
 }

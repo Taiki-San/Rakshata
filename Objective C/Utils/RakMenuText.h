@@ -28,7 +28,7 @@
 - (NSFont *) getFont;
 
 - (CGFloat) getTextHeight;
-- (NSRect) getMenuFrame : (NSRect) superViewSize;
+- (NSRect) getMenuFrame : (NSRect) superviewSize;
 - (id) initWithText : (NSRect)frame : (NSString *)text;
 - (void) defineBackgroundColor;
 

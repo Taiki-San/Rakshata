@@ -12,7 +12,7 @@
 
 @implementation RakButton
 
-+ (instancetype) allocForSeries : (NSView*) superView : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
++ (instancetype) allocForSeries : (NSView*) superview : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
 {
 	RakButton *output = [self new];
 	
@@ -36,21 +36,21 @@
 			[output setAction:selectorToCall];
 		}
 		
-		if(superView != nil)
+		if(superview != nil)
 		{
 			//Set origin
 			origin.x -= ((RakButtonCell*)output.cell).cellSize.width / 2;
 			[output setFrameOrigin: origin];
 			
 			//Add to the superview
-			[superView addSubview:output];
+			[superview addSubview:output];
 		}
 	}
 	
 	return output;
 }
 
-+ (instancetype) allocForReader : (NSView*) superView : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
 	RakButton* output = [self new];
 	
@@ -71,21 +71,21 @@
 			[output setAction:selectorToCall];
 		}
 		
-		if(superView != nil)
+		if(superview != nil)
 		{
 			//Set origin
 
 			NSPoint point;
 		
 			if(posXFromLeftSide)
-				point = NSMakePoint(posX, superView.frame.size.height / 2 - output.frame.size.height / 2);
+				point = NSMakePoint(posX, superview.frame.size.height / 2 - output.frame.size.height / 2);
 			else
-				point = NSMakePoint(posX - output.frame.size.width, superView.frame.size.height / 2 - output.frame.size.height / 2);
+				point = NSMakePoint(posX - output.frame.size.width, superview.frame.size.height / 2 - output.frame.size.height / 2);
 			
 			[output setFrameOrigin: point];
 			
 			//Add to the superview
-			[superView addSubview:output];
+			[superview addSubview:output];
 		}
 	}
 	

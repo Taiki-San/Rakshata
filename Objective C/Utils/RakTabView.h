@@ -43,7 +43,7 @@ enum {
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
-- (id) initView: (NSView *)superView : (NSString *) state;
+- (id) initView: (NSView *)superview : (NSString *) state;
 - (void) endOfInitialization;
 - (NSString *) byebye;
 
@@ -53,9 +53,9 @@ enum {
 
 - (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
-- (void) refreshLevelViews : (NSView*) superView : (byte) context;
-- (void) refreshLevelViewsAnimation : (NSView*) superView;
-- (void) fastAnimatedRefreshLevel : (NSView*) superView;
+- (void) refreshLevelViews : (NSView*) superview : (byte) context;
+- (void) refreshLevelViewsAnimation : (NSView*) superview;
+- (void) fastAnimatedRefreshLevel : (NSView*) superview;
 - (void) refreshViewSize;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 
@@ -84,7 +84,7 @@ enum {
 - (BOOL) needToConsiderMDL;
 - (void) setLastFrame : (NSRect) frame;
 - (NSRect) lastFrame;
-- (NSRect) createFrameWithSuperView : (NSView*) superView;
+- (NSRect) createFrameWithSuperView : (NSView*) superview;
 
 - (int) getCodePref : (int) request;
 - (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;

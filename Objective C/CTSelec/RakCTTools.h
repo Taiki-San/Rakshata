@@ -44,10 +44,10 @@
 
 @interface RakCTProjectImageView : NSImageView
 
-- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superViewFrame;
+- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superviewFrame;
 - (void) updateProject : (NSString *) imageName;
 
-- (NSRect) getProjectImageSize : (NSRect) superViewFrame : (NSSize) imageSize;
+- (NSRect) getProjectImageSize : (NSRect) superviewFrame : (NSSize) imageSize;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

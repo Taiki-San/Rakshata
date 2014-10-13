@@ -143,9 +143,9 @@
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
 }
 
-- (NSRect) createFrameWithSuperView : (NSView*) superView
+- (NSRect) createFrameWithSuperView : (NSView*) superview
 {
-	NSRect maximumSize = [super createFrameWithSuperView:superView];
+	NSRect maximumSize = [super createFrameWithSuperView:superview];
 	
 	if(coreView != nil && !self.forcedToShowUp)
 	{

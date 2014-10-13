@@ -12,11 +12,11 @@
 
 @implementation RakSRHeaderText
 
-- (NSRect) getMenuFrame : (NSRect) superViewSize
+- (NSRect) getMenuFrame : (NSRect) superviewSize
 {
-	superViewSize.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
+	superviewSize.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
 	
-	return superViewSize;
+	return superviewSize;
 }
 
 @end

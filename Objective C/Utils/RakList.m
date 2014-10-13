@@ -182,9 +182,9 @@
 	free(data);
 }
 
-- (NSRect) getFrameFromParent : (NSRect) superViewFrame
+- (NSRect) getFrameFromParent : (NSRect) superviewFrame
 {
-	return superViewFrame;
+	return superviewFrame;
 }
 
 #pragma mark - Drag'n drop routines

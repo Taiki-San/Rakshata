@@ -55,7 +55,7 @@
 - (NSScrollView*) getContent;
 - (void) resizeAnimation : (NSRect) frameRect;
 
-- (NSRect) getFrameFromParent : (NSRect) superViewFrame;
+- (NSRect) getFrameFromParent : (NSRect) superviewFrame;
 
 - (void) enableDrop;
 

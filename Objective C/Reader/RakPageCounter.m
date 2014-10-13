@@ -12,13 +12,13 @@
 
 @implementation RakPageCounter
 
-- (id)init: (NSView*) superView : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
+- (id)init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
-    self = [super initWithText:[superView bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];
+    self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];
     if (self)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
-		[self updateSize:[superView bounds].size.height : posX];
+		[self updateSize:[superview bounds].size.height : posX];
 		[Prefs getCurrentTheme:self];	//register
 		
 		currentPage = currentPageArg+1;
