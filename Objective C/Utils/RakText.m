@@ -12,7 +12,7 @@
 
 @implementation RakText
 
-- (id) init
+- (instancetype) init
 {
 	self = [super init];
 	
@@ -24,10 +24,10 @@
 	return self;
 }
 
-- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
+- (instancetype) initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
 {
-    self = [self initWithFrame:frame];
-    if (self)
+    self = [self initWithFrame : frame];
+    if (self != nil)
 	{
 		[self internalInit];
 		self.stringValue = text;
@@ -48,6 +48,8 @@
 	self.drawsBackground = NO;
 	self.backgroundColor = [NSColor clearColor];
 	self.selectable = NO;
+	
+	[self.cell setWraps : NO];
 }
 
 + (Class) cellClass

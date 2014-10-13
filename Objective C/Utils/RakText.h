@@ -21,7 +21,7 @@
 
 @property CGFloat fixedWidth;
 
-- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
+- (instancetype)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 
 - (NSColor *) getBorderColor;
 - (void) additionalDrawing;

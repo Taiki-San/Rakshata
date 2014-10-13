@@ -19,7 +19,7 @@
 	{
 		[self setupInternal];
 		
-		headerText = [[RakSRHeaderText alloc] initWithText:[self bounds] : @"Vos séries"];
+		headerText = [[RakSRHeaderText alloc] initWithText : self.bounds : @"Vos séries"];
 		if(headerText != nil)
 			[self addSubview:headerText];
 		
