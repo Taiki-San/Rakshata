@@ -584,6 +584,7 @@
 			if(rowView == nil)
 			{
 				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList"];
+				((RakSRSubMenu*)rowView).barWidth = 1;
 				rowView.identifier = @"RootLineMainList";
 			}
 		}
