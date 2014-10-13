@@ -16,6 +16,7 @@
 }
 
 @property BOOL isTome;
+@property (readonly) uint nbElem;
 
 - (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
 - (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;

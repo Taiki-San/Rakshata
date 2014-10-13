@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define BORDERS_CONTENT 5
+
 @implementation RakCTSelectionListContainer
 
 - (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content
@@ -30,6 +32,23 @@
 		
 		[Prefs getCurrentTheme:self];
 		[content setSuperview:self];
+		
+		NSString * string = [NSString stringWithFormat : @"%s%c", (content.isTome ? "Tome" : "Chapitre"), (content.nbElem > 1 ? 's' : '\0')];
+		_title = [[RakMenuText alloc] initWithText : self.bounds : string];
+		if(_title != nil)
+		{
+			_title.ignoreInternalFrameMagic = YES;
+			_title.barWidth = 1;
+			[_title sizeToFit];
+			
+			[_title setFrame : [self frameForTitle : self.bounds]];			
+			[self addSubview:_title];
+		}
+
+		[content setFrame:[self frameForContent : self.bounds]];
+	
+		if(self.compactMode)
+			[_title setHidden:YES];
 	}
 	
 	return self;
@@ -45,6 +64,9 @@
 		[self setHidden:_wasHidden];
 		
 		self.layer.cornerRadius = 0;
+		
+		if(_title != nil && !_title.isHidden)
+			[_title setHidden:YES];
 	}
 	else
 	{
@@ -53,6 +75,9 @@
 		_isCompact = compactMode;
 		
 		self.layer.cornerRadius = 4.0f;
+
+		if(_title != nil && _title.isHidden)
+			[_title setHidden:NO];
 	}
 	
 	self.layer.backgroundColor = [self getBackgroundColor];
@@ -100,11 +125,39 @@
 	return parentFrame;
 }
 
+- (NSRect) frameForTitle : (NSRect) parentFrame
+{
+	parentFrame.origin.y = parentFrame.size.height;
+	
+	if(_title != nil)
+		parentFrame.size.height = _title.bounds.size.height;
+
+	parentFrame.origin.y -= parentFrame.size.height;
+	
+	return parentFrame;
+}
+
+- (NSRect) frameForContent : (NSRect) parentFrame
+{
+	if(!self.compactMode)
+	{
+		parentFrame.origin.x = BORDERS_CONTENT;
+		parentFrame.origin.y = BORDERS_CONTENT;
+		
+		parentFrame.size.height -= _title.bounds.size.height + 2 * BORDERS_CONTENT;
+		parentFrame.size.width -= 2 * BORDERS_CONTENT;
+	}
+
+	return parentFrame;
+}
+
 - (void) setFrame : (NSRect) parentFrame
 {
 	[super setFrame : [self frameFromParent:parentFrame]];
 	
-	[_content setFrame : self.bounds];
+	[_title setFrame : [self frameForTitle : self.bounds]];
+	
+	[_content setFrame : [self frameForContent : self.bounds]];
 }
 
 - (void) resizeAnimation : (NSRect) parentFrame
@@ -114,7 +167,8 @@
 	
 	frame.origin = NSZeroPoint;
 	
-	[_content resizeAnimation : frame];
+	[_title resizeAnimation : [self frameForTitle : frame]];
+	[_content resizeAnimation : [self frameForContent : frame]];
 }
 
 #pragma mark - Color

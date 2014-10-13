@@ -118,6 +118,13 @@
 	return YES;
 }
 
+#pragma mark - Data retrieval
+
+- (uint) nbElem
+{
+	return amountData;
+}
+
 #pragma mark - Backup routine
 
 - (NSInteger) getSelectedElement

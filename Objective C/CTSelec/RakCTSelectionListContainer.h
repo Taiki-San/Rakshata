@@ -12,6 +12,7 @@
 
 @interface RakCTSelectionListContainer : NSView
 {
+	RakMenuText * _title;
 	RakCTSelectionList * _content;
 	
 	BOOL _isCompact;
