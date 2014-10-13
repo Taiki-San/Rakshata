@@ -8,20 +8,34 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakCTSelectionList : RakList
+@interface RakCTSelectionListContainer : NSView
 {
-	PROJECT_DATA projectData;
+	RakCTSelectionList * _content;
+	
+	BOOL _isCompact;
+	BOOL _wasHidden;
 }
 
-@property BOOL isTome;
+@property BOOL compactMode;
 
-- (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
+- (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content;
+
+- (void) resizeAnimation : (NSRect) parentFrame;
+
+//Proxy
+- (NSScrollView*) getContent;
+
+- (NSInteger) getSelectedElement;
+- (float) getSliderPos;
+
 - (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
 
+- (NSInteger) getIndexOfElement : (NSInteger) element;
+- (void) selectRow : (int) row;
 - (void) jumpScrollerToRow : (int) row;
 
-@end
+- (void) resetSelection : (NSTableView *) tableView;
 
-#import "RakCTSelectionListContainer.h"
+@end

@@ -20,6 +20,7 @@
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
 		B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */; };
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
+		B61EBE7319EC699400EE6837 /* RakCTSelectionListContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
 		B621988D19D16BC800001092 /* RakCTSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = B621988C19D16BC800001092 /* RakCTSelection.m */; };
@@ -175,6 +176,8 @@
 		B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBackButton.m; path = Utils/RakBackButton.m; sourceTree = "<group>"; };
 		B61DD14B18E23915009D51E3 /* RakBorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakBorder.h; path = Utils/RakBorder.h; sourceTree = "<group>"; };
 		B61DD14C18E23915009D51E3 /* RakBorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBorder.m; path = Utils/RakBorder.m; sourceTree = "<group>"; };
+		B61EBE7119EC699400EE6837 /* RakCTSelectionListContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSelectionListContainer.h; path = CTSelec/RakCTSelectionListContainer.h; sourceTree = "<group>"; };
+		B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSelectionListContainer.m; path = CTSelec/RakCTSelectionListContainer.m; sourceTree = "<group>"; };
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
@@ -428,12 +431,14 @@
 		B62808B119EB00FF0067EE82 /* CT List */ = {
 			isa = PBXGroup;
 			children = (
+				B6D43D7018E70E780030B7FF /* RakCTCoreViewButtons.h */,
+				B6D43D7118E70E780030B7FF /* RakCTCoreViewButtons.m */,
 				B621988B19D16BC800001092 /* RakCTSelection.h */,
 				B621988C19D16BC800001092 /* RakCTSelection.m */,
 				B67E079218E7714B0007EB44 /* RakCTSelectionList.h */,
 				B67E079318E7714B0007EB44 /* RakCTSelectionList.m */,
-				B6D43D7018E70E780030B7FF /* RakCTCoreViewButtons.h */,
-				B6D43D7118E70E780030B7FF /* RakCTCoreViewButtons.m */,
+				B61EBE7119EC699400EE6837 /* RakCTSelectionListContainer.h */,
+				B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */,
 			);
 			name = "CT List";
 			sourceTree = "<group>";
@@ -1024,6 +1029,7 @@
 				B678D034197717A600D7FE6A /* JSONParser.m in Sources */,
 				B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */,
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
+				B61EBE7319EC699400EE6837 /* RakCTSelectionListContainer.m in Sources */,
 				B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
 				B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */,
