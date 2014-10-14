@@ -19,6 +19,11 @@
 @property CGFloat barWidth;
 @property BOOL ignoreInternalFrameMagic;
 
+- (instancetype) initWithText : (NSRect)frame : (NSString *)text;
+- (void) resizeAnimation : (NSRect) frameRect;
+- (NSRect) getMenuFrame : (NSRect) superviewSize;
+- (CGFloat) getTextHeight;
+
 - (void) additionalDrawing;
 
 - (NSColor *) getTextColor;
@@ -27,11 +32,7 @@
 - (CGFloat) getFontSize;
 - (NSFont *) getFont;
 
-- (CGFloat) getTextHeight;
-- (NSRect) getMenuFrame : (NSRect) superviewSize;
-- (id) initWithText : (NSRect)frame : (NSString *)text;
 - (void) defineBackgroundColor;
 
-- (void) resizeAnimation : (NSRect) frameRect;
 
 @end

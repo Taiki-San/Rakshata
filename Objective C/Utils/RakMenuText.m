@@ -12,6 +12,57 @@
 
 @implementation RakMenuText
 
+- (instancetype) initWithText : (NSRect) frame : (NSString *) text
+{
+	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
+	
+	if(self != nil)
+	{
+		[Prefs getCurrentTheme:self];	//Register for changes
+		[self setFont:[self getFont]];
+		[self defineBackgroundColor];
+	}
+	
+	return self;
+}
+
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
+- (CGFloat) getTextHeight
+{
+	return CT_READERMODE_WIDTH_PROJECT_NAME;
+}
+
+- (NSRect) getMenuFrame : (NSRect) parentFrame
+{
+	if(self.ignoreInternalFrameMagic)
+		return parentFrame;
+	
+	NSRect frame = parentFrame;
+	frame.size.height = [self getTextHeight];
+	frame.origin.y = parentFrame.size.height - frame.size.height;
+	
+	return frame;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:[self getMenuFrame:frameRect]];
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame: [self getMenuFrame:frameRect]];
+}
+
+- (void) dealloc
+{
+	[self removeFromSuperview];
+}
+
 #pragma mark - Drawing
 
 - (void) additionalDrawing
@@ -52,63 +103,6 @@
 	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:[self getFontSize]];
 }
 
-#pragma mark - barWidth
-
-- (void) setBarWidth : (CGFloat) barWidth
-{
-	_barWidthInitialized = YES;
-	_barWidth = barWidth;
-}
-
-- (CGFloat) barWidth
-{
-	if(!_barWidthInitialized)
-	{
-		_barWidthInitialized = YES;
-		_barWidth = 2;
-	}
-	
-	return _barWidth;
-}
-
-#pragma mark - Controller
-
-- (CGFloat) getTextHeight
-{
-	return CT_READERMODE_WIDTH_PROJECT_NAME;
-}
-
-- (NSRect) getMenuFrame : (NSRect) parentFrame
-{
-	if(self.ignoreInternalFrameMagic)
-		return parentFrame;
-	
-	NSRect frame = parentFrame;
-	frame.size.height = [self getTextHeight];
-	frame.origin.y = parentFrame.size.height - frame.size.height;
-	
-	return frame;
-}
-
-- (id) initWithText : (NSRect) frame : (NSString *) text
-{
-	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
-	
-	if(self != nil)
-	{
-		[Prefs getCurrentTheme:self];	//Register for changes
-		[self setFont:[self getFont]];
-		[self defineBackgroundColor];
-	}
-	
-	return self;
-}
-
-- (BOOL) isFlipped
-{
-	return YES;
-}
-
 - (void) defineBackgroundColor
 {
 	if([self getBackgroundColor] != nil)
@@ -127,25 +121,29 @@
 {
 	if ([object class] != [Prefs class])
 		return;
-
+	
 	[self setTextColor:[self getTextColor]];
 	[self defineBackgroundColor];
 	[self setNeedsDisplay:YES];
 }
 
-- (void) setFrame:(NSRect)frameRect
+#pragma mark - barWidth
+
+- (void) setBarWidth : (CGFloat) barWidth
 {
-	[super setFrame:[self getMenuFrame:frameRect]];
+	_barWidthInitialized = YES;
+	_barWidth = barWidth;
 }
 
-- (void) resizeAnimation : (NSRect) frameRect
+- (CGFloat) barWidth
 {
-	[self.animator setFrame: [self getMenuFrame:frameRect]];
-}
-
-- (void) dealloc
-{
-	[self removeFromSuperview];
+	if(!_barWidthInitialized)
+	{
+		_barWidthInitialized = YES;
+		_barWidth = 2;
+	}
+	
+	return _barWidth;
 }
 
 @end
