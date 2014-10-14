@@ -41,7 +41,10 @@
 			_title.barWidth = 1;
 			[_title sizeToFit];
 			
-			[_title setFrame : [self frameForTitle : self.bounds]];			
+			[_title setFrame : [self frameForTitle : self.bounds]];
+			
+			_title.drawGradient = YES;
+			
 			[self addSubview:_title];
 		}
 

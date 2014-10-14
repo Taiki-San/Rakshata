@@ -13,7 +13,6 @@
 @interface RakCTProjectSynopsis : NSView
 {
 	RakMenuText * _title;
-	RakCTHImageGradient * _titleGradient;
 	
 	RakListScrollView * _scrollview;
 	RakText * _synopsis;

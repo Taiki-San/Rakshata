@@ -14,10 +14,13 @@
 
 - (instancetype) initWithText : (NSRect) frame : (NSString *) text
 {
+	_widthGradient = 2 / 3.0f;
+
 	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
-	
 	if(self != nil)
 	{
+		self.drawGradient = NO;
+		
 		[Prefs getCurrentTheme:self];	//Register for changes
 		[self setFont:[self getFont]];
 		[self defineBackgroundColor];
@@ -50,12 +53,16 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self getMenuFrame:frameRect]];
+	[super setFrame : [self getMenuFrame:frameRect]];
+	[self updateGradientOrigin : self.bounds.size.width];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame: [self getMenuFrame:frameRect]];
+	NSRect frame = [self getMenuFrame:frameRect];
+	
+	[self.animator setFrame: frame];
+	[self updateGradientOrigin : frame.size.width];
 }
 
 - (void) dealloc
@@ -74,6 +81,78 @@
 	
 	[[self getBarColor] setFill];
 	NSRectFill(frame);
+	
+	if(_drawGradient)
+	{
+		frame.size.width /= 3;
+		frame.origin.x += _gradientXOrigin;
+		[_gradient drawInRect : frame angle : _gradientAngle];
+	}
+}
+
+#pragma mark - Gradient
+
+- (BOOL) drawGradient
+{
+	return _drawGradient;
+}
+
+- (void) updateGradientOrigin : (CGFloat) width
+{
+	if(_drawGradient)
+	{
+		if(self.alignment != NSRightTextAlignment)
+		{
+			_gradientXOrigin = width * _widthGradient;
+			_gradientAngle = 0;
+		}
+		else
+		{
+			_gradientXOrigin = 0;
+			_gradientAngle = 180;
+		}
+	}
+}
+
+- (void) setDrawGradient : (BOOL) drawGradient
+{
+	if(drawGradient == _drawGradient)
+		return;
+	
+	_drawGradient = drawGradient;
+	
+	if(drawGradient)
+	{
+		[self updateGradientOrigin : self.bounds.size.width];
+		[self generateGradient];
+	}
+	else
+	{
+		_gradientBackgroundColor = nil;
+		_gradient = nil;
+	}
+}
+
+- (void) generateGradient
+{
+	_gradient = [[NSGradient alloc] initWithStartingColor : [NSColor clearColor] endingColor : [self getGradientBackgroundColor]];
+}
+
+- (void) setAlignment:(NSTextAlignment)mode
+{
+	[super setAlignment:mode];
+	[self updateGradientOrigin : self.bounds.size.width];
+}
+
+- (CGFloat) widthGradient
+{
+	return _widthGradient;
+}
+
+- (void) setWidthGradient : (CGFloat) widthGradient
+{
+	_widthGradient = widthGradient;
+	[self updateGradientOrigin : self.bounds.size.width];
 }
 
 #pragma mark - Color
@@ -91,6 +170,11 @@
 - (NSColor *) getBackgroundColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+}
+
+- (NSColor *) getGradientBackgroundColor
+{
+	return [self getBackgroundColor];
 }
 
 - (CGFloat) getFontSize
@@ -125,6 +209,7 @@
 	[self setTextColor:[self getTextColor]];
 	[self defineBackgroundColor];
 	[self setNeedsDisplay:YES];
+	[self generateGradient];
 }
 
 #pragma mark - barWidth

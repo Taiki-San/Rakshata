@@ -32,26 +32,17 @@
 		{
 			[_title sizeToFit];
 			_title.ignoreInternalFrameMagic = YES;
+			_title.drawGradient = YES;
 			_title.barWidth = 1;
+			_title.widthGradient = 0.4f;
 
 			NSRect titleFrame = [self frameForTitle:self.bounds : _title.bounds.size.height];
 			
 			[_title setFrame : titleFrame];
 
+
 			[_title setAlignment : NSRightTextAlignment];
 			[self addSubview:_title];
-			
-			_titleGradient = [[RakCTHImageGradient alloc] init];
-			if(_titleGradient)
-			{
-				_titleGradient.gradientWidth = 1.0f;
-				[_titleGradient setFrame:NSMakeRect(0, titleFrame.size.height - _title.barWidth, titleFrame.size.width / 4, _title.barWidth)];
-
-				[Prefs getCurrentTheme:_titleGradient];
-				[_titleGradient updateGradient];
-				
-				[_title addSubview:_titleGradient];
-			}
 		}
 		
 		if([self setStringToSynopsis : project])
@@ -198,7 +189,6 @@
 	mainFrame.origin = NSZeroPoint;
 	
 	const NSRect titleFrame =	[self frameForTitle : mainFrame : titleHeight];
-	const NSRect gradientFrame = NSMakeRect(0, titleFrame.size.height - _title.barWidth, titleFrame.size.width / 5, _title.barWidth);
 
 	//Update content frames
 	NSRect scrollviewRect = [self frameForContent : mainFrame : titleHeight];
@@ -206,21 +196,20 @@
 	if(animated)
 	{
 		[_title.animator setFrame:titleFrame];
-		[_titleGradient.animator setFrame:gradientFrame];
-
 		
 		[_scrollview.animator setFrame: scrollviewRect];
 		if(placeholderString)
-			[_synopsis.animator setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
+			[_placeholder.animator setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
 	}
 	else
 	{
 		[_title setFrame:titleFrame];
-		[_titleGradient setFrame:gradientFrame];
 
 		[_scrollview setFrame: scrollviewRect];
 		if(placeholderString)
-			[_synopsis setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
+		{
+			[_placeholder setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
+		}
 	}
 
 	[self updateScrollViewState];

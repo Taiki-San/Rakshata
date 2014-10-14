@@ -14,10 +14,23 @@
 {
 	BOOL _barWidthInitialized;
 	CGFloat _barWidth;
+	
+	//Gradient stuffs
+	BOOL _drawGradient;
+	CGFloat _widthGradient;
+	
+	CGFloat _gradientXOrigin;
+	CGFloat _gradientAngle;
+	
+	NSColor * _gradientBackgroundColor;
+	NSGradient * _gradient;
 }
 
 @property CGFloat barWidth;
 @property BOOL ignoreInternalFrameMagic;
+
+@property BOOL drawGradient;
+@property CGFloat widthGradient;
 
 - (instancetype) initWithText : (NSRect)frame : (NSString *)text;
 - (void) resizeAnimation : (NSRect) frameRect;
@@ -29,6 +42,7 @@
 - (NSColor *) getTextColor;
 - (NSColor *) getBarColor;
 - (NSColor *) getBackgroundColor;
+- (NSColor *) getGradientBackgroundColor;
 - (CGFloat) getFontSize;
 - (NSFont *) getFont;
 
