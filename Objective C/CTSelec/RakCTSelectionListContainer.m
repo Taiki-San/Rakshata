@@ -39,11 +39,10 @@
 		{
 			_title.ignoreInternalFrameMagic = YES;
 			_title.barWidth = 1;
-			[_title sizeToFit];
-			
-			[_title setFrame : [self frameForTitle : self.bounds]];
-			
 			_title.drawGradient = YES;
+			
+			[_title sizeToFit];
+			[_title setFrame : [self frameForTitle : self.bounds]];
 			
 			[self addSubview:_title];
 		}
