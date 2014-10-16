@@ -18,8 +18,10 @@
 @property BOOL isTome;
 @property (readonly) uint nbElem;
 
-- (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition;
-- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+@property BOOL compactMode;
+
+- (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (bool) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition;
+- (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 
 - (void) jumpScrollerToRow : (int) row;
 

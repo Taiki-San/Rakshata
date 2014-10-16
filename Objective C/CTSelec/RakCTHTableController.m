@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define BOTTOM_BORDER 5
+
 @implementation RakCTHTableController
 
 - (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame
@@ -40,7 +42,7 @@
 - (void) updateProject : (PROJECT_DATA) project
 {
 	[self analyseCurrentProject : project];
-	[_tableView reloadData];
+	[self refreshLayout];
 }
 
 #pragma mark - Data tools
@@ -80,7 +82,12 @@
 
 - (void) refreshLayout
 {
-	[self resizeScrollView : self.scrollView.frame : NO];
+	NSRect frame = self.scrollView.frame;
+	
+	//From time to time, reloadData may increase our y coordinate
+	frame.origin.y = BOTTOM_BORDER;
+	
+	[self resizeScrollView : frame : NO];
 }
 
 - (void) resizeScrollView : (NSRect) newFrame : (BOOL) animated
@@ -164,11 +171,11 @@
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
 {
-	parentBounds.origin.y = 5;
+	parentBounds.origin.y = BOTTOM_BORDER;
 	parentBounds.origin.x = parentBounds.size.width / 2;
 	
 	parentBounds.size.width -= parentBounds.origin.x;
-	parentBounds.size.height -= 10;
+	parentBounds.size.height -= 2 * BOTTOM_BORDER;
 	
 	return parentBounds;
 }

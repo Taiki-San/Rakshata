@@ -105,7 +105,7 @@
 	else
 	{
 		[authorName setStringValue : currentElem];
-		[projectName sizeToFit];
+		[authorName sizeToFit];
 	}
 	
 	if(_tableController == nil)

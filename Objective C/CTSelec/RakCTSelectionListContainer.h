@@ -20,6 +20,7 @@
 }
 
 @property BOOL compactMode;
+@property (readonly) uint nbElem;
 
 - (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content;
 
@@ -31,7 +32,7 @@
 - (NSInteger) getSelectedElement;
 - (float) getSliderPos;
 
-- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+- (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 
 - (NSInteger) getIndexOfElement : (NSInteger) element;
 - (void) selectRow : (int) row;

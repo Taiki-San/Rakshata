@@ -60,6 +60,11 @@
 
 - (void) setCompactMode : (BOOL) compactMode
 {
+	if(compactMode == _isCompact)
+		return;
+	
+	_content.compactMode = compactMode;
+	
 	if(compactMode)
 	{
 		_isCompact = compactMode;
@@ -197,10 +202,11 @@
 
 - (NSInteger) getSelectedElement	{	return [_content getSelectedElement];	}
 - (float) getSliderPos	{	return [_content getSliderPos];		}
+- (uint) nbElem	{	return _content.nbElem;	}
 
-- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller;
+- (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 {
-	return [_content reloadData : project : nbElem : newData : resetScroller];
+	return [_content reloadData : project : resetScroller];
 }
 
 - (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}

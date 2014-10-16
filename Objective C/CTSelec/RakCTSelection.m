@@ -28,39 +28,34 @@
 		
 		if(![self setupButtons:&isTome])
 			return nil;
+
+		BOOL isCompact = _currentContext != TAB_CT;
 		
-		RakCTSelectionList * view;
-		
-		if(data.nombreChapitreInstalled > 0)
+		//We create views even if there is no content for them
+		RakCTSelectionList * view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:false selection:context[0] scrollerPos:context[1]];
+		if(view != nil)
 		{
-			view = [[RakCTSelectionList alloc] init : self.frame : data :false : context[0] : context[1]];
-			if(view != nil)
+			_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
+			if(_chapterView != nil)
 			{
-				_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
-				if(_chapterView != nil)
-				{
-					_chapterView.hidden = isTome;
-					[self addSubview : _chapterView];
-				}
-				
-				view = nil;
+				_chapterView.hidden = isTome && isCompact;
+				[self addSubview : _chapterView];
 			}
+			
+			view = nil;
 		}
 		
-		if(data.nombreTomesInstalled > 0)
+		view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:true selection:context[2] scrollerPos:context[3]];
+		if(view != nil)
 		{
-			view = [[RakCTSelectionList alloc] init : self.frame : data : true : context[2] : context[3]];
-			if(view != nil)
+			_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
+			if(_volView != nil)
 			{
-				_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
-				if(_volView != nil)
-				{
-					_volView.hidden = !isTome;
-					[self addSubview: _volView];
-				}
-
-				view = nil;
+				_volView.hidden = !isTome && isCompact;
+				[self addSubview: _volView];
 			}
+			
+			view = nil;
 		}
 	}
 	
@@ -145,7 +140,8 @@
 
 - (BOOL) setupButtons : (BOOL*) isTome
 {
-	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:[self bounds]];
+	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:self.bounds];
+
 	if(data.nombreChapitreInstalled > 0)
 	{
 		[_buttons setEnabled : YES forSegment:0];
@@ -205,12 +201,19 @@
 
 - (void) setCurrentContext : (uint) currentContext
 {
+	if(_currentContext == currentContext)
+		return;
+	
 	_currentContext = currentContext;
+	BOOL isTome = [_buttons selectedSegment] == 1;
 	
 	if(currentContext == TAB_READER)
 	{
 		if(_buttons != nil && _buttons.isHidden)
 			[_buttons setHidden:NO];
+		
+		[_chapterView setHidden:isTome];
+		[_volView setHidden:!isTome];
 	}
 	else
 	{
@@ -219,10 +222,16 @@
 	}
 	
 	if(_chapterView != nil)
+	{
 		_chapterView.compactMode = currentContext != TAB_CT;
+		[_chapterView reloadData:data :NO];
+	}
 	
 	if(_volView != nil)
+	{
 		_volView.compactMode = currentContext != TAB_CT;
+		[_volView reloadData:data :NO];
+	}
 }
 
 - (uint) currentContext
@@ -279,10 +288,10 @@
 		return;
 	
 	getUpdatedChapterList(&data, true);
-	[_chapterView reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : NO];
+	[_chapterView reloadData : data : NO];
 	
 	getUpdatedTomeList(&data, true);
-	[_volView reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : NO];
+	[_volView reloadData : data : NO];
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
@@ -321,97 +330,35 @@
 		
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
+		updateIfRequired(&data, RDB_CTXCT);
 	}
 	
-	if(!updateIfRequired(&data, RDB_CTXCT))
-	{
-		getUpdatedChapterList(&data, true);
-		getUpdatedTomeList(&data, true);
-	}
+	//Update views
+	BOOL isCompact = _currentContext != TAB_CT, isTome = [_buttons selectedSegment] == 1;
 	
-	//No data available
-	if(data.nombreChapitreInstalled == 0 && data.nombreTomesInstalled == 0)
+	[_chapterView reloadData : data : YES];
+	[_volView reloadData : data : YES];
+	
+	if(isCompact)
 	{
-		_chapterView.hidden = YES;
-		_volView.hidden = YES;
+		[_buttons setEnabled:(newData.nombreChapitreInstalled > 0) forSegment:0];
+		[_buttons setEnabled:(newData.nombreTomesInstalled > 0) forSegment:1];
 		
-		[self failure];
-		return NO;
-	}
-	
-	//Update views, create them if required
-	RakCTSelectionList * view;
-	
-	if(data.nombreChapitreInstalled)
-	{
-		if(_chapterView == nil)
+		//Update focus
+		if(isTome && data.nombreTomesInstalled == 0)
 		{
-			view = [[RakCTSelectionList alloc] init:self.frame : data : false : -1 : -1];
-			if(view != nil)
-			{
-				_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
-				if(_chapterView != nil)
-					[self addSubview : _chapterView];
-				
-				view = nil;
-			}
+			[_chapterView setHidden:NO];
+			[_volView setHidden:YES];
+			[_buttons setSelectedSegment:0];
 		}
-		else
-			[_chapterView reloadData : data : data.nombreChapitreInstalled : data.chapitresInstalled : YES];
-		
-		[_buttons setEnabled:YES forSegment:0];
-	}
-	else
-	{
-		[_buttons setEnabled:NO forSegment:0];
-	}
-	
-	if(data.nombreTomesInstalled)
-	{
-		if(_volView == nil)
+		else if(!isTome && data.nombreChapitreInstalled == 0)
 		{
-			view = [[RakCTSelectionList alloc] init:self.frame : data : true : -1 : -1];
-			if(view != nil)
-			{
-				_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : _currentContext != TAB_CT : view];
-				if(_volView != nil)
-				{
-					[self addSubview: _volView];
-				}
-				
-				view = nil;
-			}
-		}
-		else
-			[_volView reloadData : data : data.nombreTomesInstalled : data.tomesInstalled : YES];
-		
-		[_buttons setEnabled:YES forSegment:1];
-	}
-	else
-	{
-		[_buttons setEnabled:NO forSegment:1];
-	}
-	
-	BOOL isTome = [_buttons selectedSegment] == 1;
-	
-	[_chapterView setHidden:isTome];
-	[_volView setHidden:!isTome];
-	
-	//Update focus
-	if(isTome && data.nombreTomesInstalled == 0)
-	{
-		[_chapterView setHidden:NO];
-		[_volView setHidden:YES];
-		[_buttons setSelectedSegment:0];
-	}
-	else if(!isTome && data.nombreChapitreInstalled == 0)
-	{
-		[_volView setHidden:NO];
-		if(![_chapterView isHidden])
+			[_volView setHidden:NO];
 			[_chapterView setHidden:YES];
-		[_buttons setSelectedSegment:1];
+			[_buttons setSelectedSegment:1];
+		}
 	}
-	
+
 	return YES;
 }
 

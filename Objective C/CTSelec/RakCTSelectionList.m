@@ -14,26 +14,27 @@
 
 #pragma mark - Classical initialization
 
-- (id) init : (NSRect) frame : (PROJECT_DATA) project : (bool) isTomeRequest : (long) elemSelected : (long) scrollerPosition
+- (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (bool) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition
 {
-	self = [super init];
+	self = [self init];
 
 	if(self != nil)
 	{
 		NSInteger row = -1, tmpRow = 0;
 
 		//We check we have valid data
+		self.compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		projectData = project;	//We don't protect chapter/volumen list but not really a problem as we'll only use it for drag'n drop
 		
-		if(self.isTome && project.tomesInstalled != NULL)
+		if(self.isTome && ((isCompact && project.tomesInstalled != NULL) || (!isCompact && project.tomesFull != NULL)))
 		{
-			amountData = project.nombreTomesInstalled;
+			amountData = isCompact ? project.nombreTomesInstalled : project.nombreTomes;
 			data = malloc(amountData * sizeof(META_TOME));
 			
 			if(data != NULL)
 			{
-				memcpy(data, project.tomesInstalled, amountData * sizeof(META_TOME));
+				memcpy(data, (isCompact ? project.tomesInstalled : project.tomesFull), amountData * sizeof(META_TOME));
 				if(elemSelected != -1)
 				{
 					for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
@@ -43,14 +44,14 @@
 				}
 			}
 		}
-		else if(!self.isTome && project.chapitresInstalled != NULL)
+		else if(!self.isTome && ((isCompact && project.chapitresInstalled != NULL) || (!isCompact && project.chapitresFull != NULL)))
 		{
-			amountData = project.nombreChapitreInstalled;
+			amountData = isCompact ? project.nombreChapitreInstalled : project.nombreChapitre;
 			data = malloc(amountData * sizeof(int));
 			
 			if(data != NULL)
 			{
-				memcpy(data, project.chapitresInstalled, amountData * sizeof(int));
+				memcpy(data, (isCompact ? project.chapitresInstalled : project.chapitresFull), amountData * sizeof(int));
 				if(elemSelected != -1)
 				{
 					for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);
@@ -61,7 +62,7 @@
 			}
 		}
 		
-		[self applyContext:frame :row :scrollerPosition];
+		[self applyContext : frame : row :scrollerPosition];
 		
 		scrollView.wantsLayer = YES;
 		scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
@@ -76,32 +77,50 @@
 	return data != NULL;
 }
 
-- (BOOL) reloadData : (PROJECT_DATA) project : (int) nbElem : (void *) newData : (BOOL) resetScroller
+- (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
-	void * newDataBuf = NULL;
+	void * newDataBuf = NULL, *newData;
+	uint nbElem, allocSize;
 	
 	NSInteger element = [self getSelectedElement];
 	
 	if(self.isTome)
 	{
-		newDataBuf = malloc(nbElem * sizeof(META_TOME));
-		if(newDataBuf != NULL)
+		allocSize = sizeof(META_TOME);
+		
+		if(self.compactMode)
 		{
-			memcpy(newDataBuf, newData, nbElem * sizeof(META_TOME));
+			nbElem = project.nombreTomesInstalled;
+			newData = project.tomesInstalled;
+		}
+		else
+		{
+			nbElem = project.nombreTomes;
+			newData = project.tomesFull;
 		}
 	}
 	else
 	{
-		newDataBuf = malloc(nbElem * sizeof(int));
-		if(newDataBuf != NULL)
+		allocSize = sizeof(int);
+		
+		if(self.compactMode)
 		{
-			memcpy(newDataBuf, newData, nbElem * sizeof(int));
+			nbElem = project.nombreChapitreInstalled;
+			newData = project.chapitresInstalled;
+		}
+		else
+		{
+			nbElem = project.nombreChapitre;
+			newData = project.chapitresFull;
 		}
 	}
 	
+	newDataBuf = malloc(nbElem * allocSize);
 	if(newDataBuf == NULL)
 		return NO;
-		
+	
+	memcpy(newDataBuf, newData, nbElem * allocSize);
+	
 	free(data);
 	data = newDataBuf;
 	amountData = nbElem;
@@ -118,7 +137,7 @@
 	return YES;
 }
 
-#pragma mark - Data retrieval
+#pragma mark - Properties
 
 - (uint) nbElem
 {
