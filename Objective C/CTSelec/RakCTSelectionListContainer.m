@@ -33,8 +33,7 @@
 		[Prefs getCurrentTheme:self];
 		[content setSuperview:self];
 		
-		NSString * string = [NSString stringWithFormat : @"%s%c", (content.isTome ? "Tome" : "Chapitre"), (content.nbElem > 1 ? 's' : '\0')];
-		_title = [[RakMenuText alloc] initWithText : self.bounds : string];
+		_title = [[RakMenuText alloc] initWithText : self.bounds : [self titleString]];
 		if(_title != nil)
 		{
 			_title.ignoreInternalFrameMagic = YES;
@@ -47,7 +46,7 @@
 			[self addSubview:_title];
 		}
 
-		_placeholder = [[RakText alloc] initWithText: self.bounds :[NSString stringWithFormat:@"Aucun %s\ndisponible", content.isTome ? "tome" : "chapitre"] :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		_placeholder = [[RakText alloc] initWithText: self.bounds :[NSString stringWithFormat:@"Aucun %s\ndisponible", _content.isTome ? "tome" : "chapitre"] :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 		if(_placeholder != nil)
 		{
 			[_placeholder setAlignment:NSCenterTextAlignment];
@@ -67,6 +66,11 @@
 	}
 	
 	return self;
+}
+
+- (NSString *) titleString
+{
+	return [NSString stringWithFormat : @"%s%c", (_content.isTome ? "Tome" : "Chapitre"), (_content.nbElem > 1 ? 's' : '\0')];
 }
 
 #pragma mark - Properties
@@ -226,12 +230,14 @@
 {
 	BOOL retValue = [_content reloadData : project : resetScroller];
 	
-	if(_placeholderActive != _content.nbElem == 0)
+	if(_placeholderActive != (_content.nbElem == 0))
 	{
-		_placeholderActive = _content.nbElem == 0;
+		_placeholderActive = !_placeholderActive;
 		[_content setHidden : _placeholderActive];
 		[_placeholder setHidden : !_placeholderActive];
 	}
+	
+	_title.stringValue = [self titleString];
 	
 	return retValue;
 }
