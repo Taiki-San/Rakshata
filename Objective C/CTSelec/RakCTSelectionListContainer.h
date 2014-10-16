@@ -14,7 +14,9 @@
 {
 	RakMenuText * _title;
 	RakCTSelectionList * _content;
+	RakText * _placeholder;
 	
+	BOOL _placeholderActive;
 	BOOL _isCompact;
 	BOOL _wasHidden;
 }

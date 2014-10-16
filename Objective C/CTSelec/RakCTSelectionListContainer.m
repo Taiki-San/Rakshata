@@ -47,8 +47,21 @@
 			[self addSubview:_title];
 		}
 
+		_placeholder = [[RakText alloc] initWithText: self.bounds :[NSString stringWithFormat:@"Aucun %s\ndisponible", content.isTome ? "tome" : "chapitre"] :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		if(_placeholder != nil)
+		{
+			[_placeholder setAlignment:NSCenterTextAlignment];
+			[_placeholder sizeToFit];
+			[self addSubview:_placeholder];
+		}
+		
+		_placeholderActive = content.nbElem == 0;
+		[content setHidden : _placeholderActive];
+		[_placeholder setHidden : !_placeholderActive];
+		
 		[content setFrame:[self frameForContent : self.bounds]];
-	
+		[_placeholder setFrameOrigin : NSCenteredRect(content.frame, _placeholder.bounds)];
+		
 		if(self.compactMode)
 			[_title setHidden:YES];
 	}
@@ -165,17 +178,22 @@
 	[_title setFrame : [self frameForTitle : self.bounds]];
 	
 	[_content setFrame : [self frameForContent : self.bounds]];
+	[_placeholder setFrameOrigin : NSCenteredRect(_content.frame, _placeholder.bounds)];
 }
 
 - (void) resizeAnimation : (NSRect) parentFrame
 {
 	NSRect frame = [self frameFromParent:parentFrame];
 	[self.animator setFrame : frame];
-	
 	frame.origin = NSZeroPoint;
 	
 	[_title resizeAnimation : [self frameForTitle : frame]];
-	[_content resizeAnimation : [self frameForContent : frame]];
+	
+	frame = [self frameForContent : frame];
+	[_content resizeAnimation : frame];
+	
+	if(_placeholderActive)
+		[_placeholder setFrameOrigin : NSCenteredRect(frame, _placeholder.bounds)];
 }
 
 #pragma mark - Color
@@ -206,7 +224,16 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 {
-	return [_content reloadData : project : resetScroller];
+	BOOL retValue = [_content reloadData : project : resetScroller];
+	
+	if(_placeholderActive != _content.nbElem == 0)
+	{
+		_placeholderActive = _content.nbElem == 0;
+		[_content setHidden : _placeholderActive];
+		[_placeholder setHidden : !_placeholderActive];
+	}
+	
+	return retValue;
 }
 
 - (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}
