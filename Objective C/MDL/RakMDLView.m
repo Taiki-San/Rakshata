@@ -158,9 +158,7 @@
 		RakTabForegroundView * foregroundView;
 		
 		[dropPlaceHolder setAlphaValue:!isFocusDrop];
-		
-		if(dropPlaceHolder.isHidden)
-			[dropPlaceHolder setHidden : NO];
+		[dropPlaceHolder setHidden : NO];
 		
 		[NSAnimationContext beginGrouping];
 		
@@ -179,9 +177,7 @@
 			if(foregroundView != nil)
 			{
 				[foregroundView setAlphaValue:isFocusDrop];
-
-				if(foregroundView.isHidden)
-					[foregroundView setHidden:NO];
+				[foregroundView setHidden:NO];
 
 				[foregroundView.animator setAlphaValue:!isFocusDrop];
 			}

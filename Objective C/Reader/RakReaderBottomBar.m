@@ -281,7 +281,7 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	if(self.readerMode && self.isHidden)
+	if(self.readerMode)
 		[self.animator setHidden:NO];
 	
 	[self setFrameInternal:frameRect :YES];

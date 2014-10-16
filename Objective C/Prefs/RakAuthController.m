@@ -227,7 +227,7 @@
 		privacy.URL = @"https://www.rakshata.com/privacy";
 		[container addSubview:privacy];
 	}
-	else if(privacy.isHidden)
+	else
 		[privacy setHidden:NO];
 	
 	if(terms == nil)
@@ -238,7 +238,7 @@
 		terms.URL = @"https://www.rakshata.com/terms";
 		[container addSubview:terms];
 	}
-	else if(terms.isHidden)
+	else
 		[terms setHidden:NO];
 	
 	if(accept == nil)
@@ -252,7 +252,7 @@
 		[accept setFrameOrigin:NSMakePoint(0, 49 + terms.bounds.size.height / 2 - accept.bounds.size.height / 2)];
 		[container addSubview:accept];
 	}
-	else if(accept.isHidden)
+	else
 		[accept setHidden:NO];
 	
 	if(confirm == nil)
@@ -264,7 +264,7 @@
 		[confirm setTarget:self];
 		[confirm setAction:@selector(clickedSignup)];
 	}
-	else if(confirm.isHidden)
+	else
 		[confirm setHidden:NO];
 	
 	NSRect frame = self.view.frame;
@@ -345,7 +345,7 @@
 	
 		[container addSubview:forgottenPass];
 	}
-	else if(forgottenPass.isHidden)
+	else
 		[forgottenPass setHidden:NO];
 	
 	if(_login == nil)
@@ -357,7 +357,7 @@
 		[_login setTarget:self];
 		[_login setAction:@selector(clickedLogin)];
 	}
-	else if(_login.isHidden)
+	else
 		[_login setHidden:NO];
 
 	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - _login.bounds.size.width) / 3;

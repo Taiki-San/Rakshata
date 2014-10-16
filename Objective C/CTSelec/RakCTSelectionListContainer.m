@@ -72,7 +72,7 @@
 		
 		self.layer.cornerRadius = 0;
 		
-		if(_title != nil && !_title.isHidden)
+		if(_title != nil)
 			[_title setHidden:YES];
 	}
 	else
@@ -83,7 +83,7 @@
 		
 		self.layer.cornerRadius = 4.0f;
 
-		if(_title != nil && _title.isHidden)
+		if(_title != nil)
 			[_title setHidden:NO];
 	}
 	
@@ -100,7 +100,7 @@
 	if(!_isCompact)
 		_wasHidden = hidden;
 	
-	else if(self.isHidden != hidden)
+	else
 		[super setHidden : hidden];
 }
 

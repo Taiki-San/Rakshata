@@ -477,14 +477,14 @@
 	
 	[bottomBar.animator setAlphaValue:alpha];
 	
-	if(alpha == 0 && !bottomBar.isHidden)
+	if(alpha == 0)
 	{
 		[[NSAnimationContext currentContext] setCompletionHandler : ^{
 			[bottomBar setHidden:YES];
 		}];
 	}
 	
-	else if(alpha != 0 && bottomBar.isHidden)
+	else
 	{
 		[bottomBar setAlphaValue:0];
 		[bottomBar setHidden:NO];

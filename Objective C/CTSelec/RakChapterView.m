@@ -119,17 +119,13 @@
 {
 	if(CTViewHidden)
 	{
-		if(!header.isHidden)
-			[header setHidden:YES];
-		if(!synopsis.isHidden)
-			[synopsis setHidden:YES];
+		[header setHidden:YES];
+		[synopsis setHidden:YES];
 	}
 	else
 	{
-		if(header.isHidden)
-			[header setHidden:NO];
-		if(synopsis.isHidden)
-			[synopsis setHidden:NO];
+		[header setHidden:NO];
+		[synopsis setHidden:NO];
 		
 		coreview.currentContext = TAB_CT;
 	}
@@ -141,17 +137,13 @@
 {
 	if(readerViewHidden)
 	{
-		if(!projectImage.isHidden)
-			[projectName setHidden:YES];
-		if(!projectImage.isHidden)
-			[projectImage setHidden:YES];
+		[projectName setHidden:YES];
+		[projectImage setHidden:YES];
 	}
 	else
 	{
-		if(projectImage.isHidden)
-			[projectName setHidden:NO];
-		if(projectImage.isHidden)
-			[projectImage setHidden:NO];
+		[projectName setHidden:NO];
+		[projectImage setHidden:NO];
 		
 		coreview.currentContext = TAB_READER;
 	}

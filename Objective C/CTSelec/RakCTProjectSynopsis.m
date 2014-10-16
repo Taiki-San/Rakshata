@@ -101,10 +101,10 @@
 	}
 	
 	//Hide the unused view
-	if(_synopsis != nil && _synopsis.isHidden != placeholderString)
+	if(_synopsis != nil)
 		[_synopsis setHidden : placeholderString];
 	
-	if(_placeholder != nil && _placeholder.isHidden == placeholderString)
+	if(_placeholder != nil)
 		[_placeholder setHidden: !placeholderString];
 
 	//Postprocessing around the scrollview
@@ -262,6 +262,8 @@
 
 - (NSPoint) placeholderOrigin : (NSRect) scrollviewBounds
 {
+	scrollviewBounds.origin = NSZeroPoint;
+	
 	NSPoint origin = NSCenteredRect(scrollviewBounds, _placeholder.bounds);
 	
 	origin.x -= MAIN_TEXT_BORDER / 2 + 15;

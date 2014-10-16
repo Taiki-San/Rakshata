@@ -32,5 +32,5 @@
 #import "RakList.h"
 #import "RakGradientView.h"
 
-#define NSCenteredRect(base, content) NSMakePoint(base.size.width / 2 - content.size.width / 2, base.size.height / 2 - content.size.height / 2)
+#define NSCenteredRect(base, content) NSMakePoint(base.origin.x + base.size.width / 2 - content.size.width / 2, base.origin.y + base.size.height / 2 - content.size.height / 2)
 #define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)

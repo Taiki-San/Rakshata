@@ -209,7 +209,7 @@
 	
 	if(currentContext == TAB_READER)
 	{
-		if(_buttons != nil && _buttons.isHidden)
+		if(_buttons != nil)
 			[_buttons setHidden:NO];
 		
 		[_chapterView setHidden:isTome];
@@ -217,7 +217,7 @@
 	}
 	else
 	{
-		if(_buttons != nil && !_buttons.isHidden)
+		if(_buttons != nil)
 			[_buttons setHidden:YES];
 	}
 	

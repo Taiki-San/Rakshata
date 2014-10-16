@@ -21,11 +21,17 @@
 		[self setView:mainView];
 		
 		RakButton * button = [RakButton allocWithText:@"Change UI" :NSZeroRect];
-		[button sizeToFit];
-		[button setTarget:self];
-		[button setAction:@selector(updateUITheme)];
-		[button setFrameOrigin:NSCenteredRect(frame, button.bounds)];
-		[mainView addSubview:button];
+		if(button)
+		{
+			[button sizeToFit];
+			[button setTarget:self];
+			[button setAction:@selector(updateUITheme)];
+
+			frame.origin = NSZeroPoint;
+			[button setFrameOrigin:NSCenteredRect(frame, button.bounds)];
+
+			[mainView addSubview:button];
+		}
 	}
     return self;
 }
