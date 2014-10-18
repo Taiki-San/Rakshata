@@ -10,10 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-int * getChapters(NSArray * chapterBloc, uint * nbElem);
-NSArray * recoverChapterBloc(int * chapter, uint length);
-META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem);
-NSArray * recoverVolumeBloc(META_TOME * volume, uint length);
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
 void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
@@ -44,3 +40,4 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName);
 #define JSON_RP_CATEGORY @"18"
 #define JSON_RP_HASH_URL_LARGE @"19"
 #define JSON_RP_HASH_URL_SMALL @"20"
+#define JSON_RP_PRICE @"21"

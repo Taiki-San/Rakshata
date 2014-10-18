@@ -38,6 +38,7 @@ typedef struct tome_metadata
 	CONTENT_TOME * details;
     int ID;
 	int readingID;
+	uint price;
 	wchar_t readingName[MAX_TOME_NAME_LENGTH];
     wchar_t description[TOME_DESCRIPTION_LENGTH];
 }META_TOME;
@@ -55,6 +56,7 @@ typedef struct tome_metadata
 **			-	type					Type du projet (comics/BD/manga/webcomics)
 **			-	category				Catégorie du projet
 **			-	japaneseOrder			Sens de lecture
+**			-	isPaid					Contenus payants disponibles
 **
 **		Page d'info
 **			- hashLarge					CRC32 de la version courante
@@ -63,6 +65,7 @@ typedef struct tome_metadata
 **		Chapitres
 **			-	nombreChapitre			nombre de chapitres total
 **			-	chapitresFull			tableau contenant tous les chapitres classés
+**			-	chapitresPrix			tableau contenant le prix des chapitres
 **			-	nombreChapitreInstalled	nombre de chapitres installés
 **			-	chapitresFullInstalled	tableau contenant tous les chapitres installés classés
 **
@@ -85,6 +88,7 @@ typedef struct dataProject
 	//Pointeurs, un bloc chacun (64b)
 	TEAMS_DATA *team;
 	int *chapitresFull;
+	uint *chapitresPrix;
 	int *chapitresInstalled;
 	META_TOME *tomesFull;
 	META_TOME *tomesInstalled;
@@ -111,6 +115,8 @@ typedef struct dataProject
 	//Un bloc de 64b
 	uint32_t projectID;
 	uint32_t cacheDBID;
+	
+	bool isPaid;
 	
 } PROJECT_DATA;
 

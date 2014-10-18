@@ -12,18 +12,21 @@
 
 #include "JSONParser.h"
 
-int * getChapters(NSArray * chapterBloc, uint * nbElem)
+int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint ** chaptersPrice)
 {
 	if(nbElem != NULL)
 		*nbElem = 0;
 	
 	if (chapterBloc == NULL)
 		return NULL;
+
+	if(paidContent && chaptersPrice == NULL)
+		return NULL;
 	
 	int * output = NULL;
-	uint counterVar = 0, *counter, pos = 0;
+	uint counterVar = 0, *counter, pos = 0, pricePos = 0;
 	size_t nbSubBloc = [chapterBloc count];
-	
+
 	if (nbSubBloc == 0)
 	{
 		output = malloc(sizeof(int));
@@ -32,7 +35,7 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 	}
 	else
 	{
-		id entry1;
+		id entry1, entry2;
 		int jump, first, last, sum;
 		void* tmp;
 		
@@ -44,6 +47,8 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 			if([dictionary superclass] != [NSMutableDictionary class])	continue;
 			
 			entry1 = objectForKey(dictionary, JSON_RP_CHAP_DETAILS, @"details");
+			entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"price");
+			
 			if(entry1 != nil && [(NSObject*)entry1 superclass] == [NSArray class])	//This is a special chunck
 			{
 				*counter += [(NSArray*) entry1 count];
@@ -55,15 +60,38 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 				{
 					output = tmp;
 					
-					for(NSNumber * entry2 in entry1)
+					if(paidContent && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
 					{
-						if([entry2 superclass] != [NSNumber class])
+						*chaptersPrice = tmp;
+						
+						if(entry2 == nil)
+							memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
+						else
+						{
+							uint count = *counter;
+							for(NSNumber * entry3 in entry2)
+							{
+								if(pricePos > count)
+									break;
+								
+								if([entry3 superclass] != [NSNumber class])
+									continue;
+								
+								(*chaptersPrice)[pricePos++] = [entry3 unsignedIntValue];
+							}
+						}
+					}
+
+					for(NSNumber * entry3 in entry1)
+					{
+						if([entry3 superclass] != [NSNumber class])
 							continue;
 						
-						output[pos++] = [entry2 integerValue];
+						output[pos++] = [entry3 integerValue];
 					}
 					
 					output[pos] = VALEUR_FIN_STRUCT;
+
 				}
 			}
 			else
@@ -84,8 +112,25 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 				if((tmp = realloc(output, (*counter + 1) * sizeof(int))) != NULL)
 				{
 					output = tmp;
-					for (output[pos++] = first; pos < *counter; pos++) {	output[pos] = output[pos-1] + jump;		}
+			
+					for (output[pos++] = first; pos < *counter; pos++)
+						output[pos] = output[pos-1] + jump;
+						
 					output[pos] = VALEUR_FIN_STRUCT;
+				}
+				
+				if(paidContent && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+				{
+					if([entry2 isKindOfClass:[NSNumber class]])
+					{
+						*chaptersPrice = tmp;
+						uint price = [entry2 unsignedIntValue];
+						
+						while(pricePos < *counter)
+							(*chaptersPrice)[pricePos++] = price;
+					}
+					else
+						memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
 				}
 			}
 		}
@@ -94,11 +139,11 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem)
 	return output;
 }
 
-NSArray * recoverChapterBloc(int * chapter, uint length)
+NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 {
 	if(chapter == NULL)		return nil;
 	
-	NSMutableArray * output = [NSMutableArray new], *currentDetail = nil, *currentBurst = nil;
+	NSMutableArray * output = [NSMutableArray new], *currentDetail = nil, *currentBurst = nil, *pricesInBurst, *priceDetail = nil;
 	
 	if(output == nil)		return nil;
 	
@@ -108,7 +153,17 @@ NSArray * recoverChapterBloc(int * chapter, uint length)
 		
 		for(uint i = 0; i < length; [currentDetail addObject:@(chapter[i++])]);
 		
-		[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+		if(chapterPrices != NULL)
+		{
+			NSMutableArray * prices = [NSMutableArray array];
+			
+			for(uint i = 0; i < length; [prices addObject:@(chapterPrices[i++])]);
+			
+			[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, prices] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+		}
+		else
+			[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+		
 		currentDetail = nil;
 	}
 	else
@@ -121,50 +176,94 @@ NSArray * recoverChapterBloc(int * chapter, uint length)
 		//We look for burst
 		int repeatingDiff = diff[0];
 		currentBurst = [NSMutableArray arrayWithObject:@(chapter[0])];
-		uint counter = 1;
 		
-		//1 because the n-1 list in started after the first element
-		for (uint i = 1; i < length; i++)
+		bool pricesValid = chapterPrices != NULL;
+		
+		if(pricesValid)
 		{
-			if(i == length-1 || diff[i] != repeatingDiff)
+			pricesInBurst = [NSMutableArray arrayWithObject:@(chapterPrices[0])];
+
+			if(chapterPrices[0] != chapterPrices[1])
+			{
+				currentDetail = [NSMutableArray arrayWithObject:@(chapter[0])];
+				currentBurst = [NSMutableArray new];
+				priceDetail = [NSMutableArray arrayWithObject:@(chapterPrices[0])];
+				pricesInBurst = [NSMutableArray new];
+			}
+		}
+		
+		for (uint pos = 1, counter = 1; pos < length; pos++)
+		{
+			if(pos == length-1 || diff[pos] != repeatingDiff || (pricesValid && chapterPrices[pos] != chapterPrices[pos + 1]))
 			{
 				if(counter > 5)
 				{
 					if(currentDetail != nil && [currentDetail count])
 					{
-						[output addObject:currentDetail];
+						if(pricesValid)
+							[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, priceDetail] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+						else
+							[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+
 						currentDetail = nil;
 					}
 					
-					[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[i - counter]), @(chapter[i]), @(repeatingDiff)] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP]]];
+					//Because diff tell us how far is the next element, a != diff mean the next element break the chain, so the last one of the burst is the current one
+					[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP, JSON_RP_PRICE]]];
 				}
 				else
 				{
-					if(i == length - 1)		[currentBurst addObject:@(chapter[i])];
+					if(pos == length - 1)
+					{
+						[currentBurst addObject:@(chapter[pos])];
+						if(pricesValid)
+							[pricesInBurst addObject:@(chapterPrices[pos])];
+					}
 					
-					if(currentDetail == nil)		currentDetail = [NSMutableArray new];
+					if(currentDetail == nil)
+					{
+						currentDetail = [NSMutableArray new];
+						
+						if(pricesValid)
+							priceDetail = [NSMutableArray new];
+					}
 					
 					[currentDetail addObjectsFromArray:currentBurst];
+
+					if(pricesValid)
+						[priceDetail addObjectsFromArray:pricesInBurst];
 				}
 				
-				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[i])];
-				repeatingDiff = diff[i];	counter = 1;
+				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[pos])];
+				if(pricesValid)
+					pricesInBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapterPrices[pos])];
+
+				repeatingDiff = diff[pos];	counter = 1;
 			}
 			else
 			{
-				[currentBurst addObject:@(chapter[i])];
+				[currentBurst addObject:@(chapter[pos])];
+				
+				if(pricesValid)
+					[pricesInBurst addObject:@(chapterPrices[pos+1])];
+				
 				counter++;
 			}
 		}
 		
 		if(currentDetail != nil && [currentDetail count])
-			[output addObject:currentDetail];
+		{
+			if(pricesValid)
+				[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, pricesInBurst] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+			else
+				[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+		}
 	}
 	
 	return [NSArray arrayWithArray:output];
 }
 
-META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem)
+META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 {
 	if(nbElem == NULL)
 		return NULL;
@@ -224,7 +323,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem)
 	return output;
 }
 
-NSArray * recoverVolumeBloc(META_TOME * volume, uint length)
+NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 {
 	if (volume == NULL)
 		return nil;
@@ -262,10 +361,11 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	memset(&data, 0, sizeof(data));
 	
 	int * chapters = NULL;
+	uint * chaptersPrices = NULL;
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *category = nil;
+	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *category = nil, *paidContent = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_RP_ID, @"ID");
@@ -274,9 +374,14 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
+	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"price");
+	if(![paidContent isKindOfClass:[NSNumber class]])						goto end;
+		 
+	BOOL isPaidContent = [paidContent boolValue];
+	
 	uint nbChapters = 0, nbVolumes = 0;
-	chapters = getChapters(objectForKey(bloc, JSON_RP_CHAPTERS, @"chapters"), &nbChapters);
-	volumes = getVolumes(objectForKey(bloc, JSON_RP_VOLUMES, @"volumes"), &nbVolumes);
+	chapters = getChapters(objectForKey(bloc, JSON_RP_CHAPTERS, @"chapters"), &nbChapters, isPaidContent, &chaptersPrices);
+	volumes = getVolumes(objectForKey(bloc, JSON_RP_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
 
 	if(nbChapters == 0 && nbVolumes == 0)									goto end;
 	
@@ -299,6 +404,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	if(category == nil || [category superclass] != [NSNumber class])		goto end;
 	
 	data.projectID = [ID unsignedIntValue];
+	data.isPaid = isPaidContent;
 	data.chapitresFull = chapters;		data.chapitresInstalled = NULL;		data.nombreChapitre = nbChapters;	data.nombreChapitreInstalled = 0;
 	data.tomesFull = volumes;			data.tomesInstalled = NULL;			data.nombreTomes = nbVolumes;		data.nombreTomesInstalled = 0;
 	data.status = [status unsignedCharValue];
@@ -335,10 +441,10 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.projectID) forKey:JSON_RP_ID];
 	[output setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:wstrlen(project.projectName) * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_PROJECT_NAME];
 	
-	buf = recoverChapterBloc(project.chapitresFull, project.nombreChapitre);
+	buf = recoverChapterBloc(project.chapitresFull, project.chapitresPrix, project.nombreChapitre);
 	if(buf != nil)		[output setObject:buf forKey:JSON_RP_CHAPTERS];
 	
-	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes);
+	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes, project.isPaid);
 	if(buf != nil)		[output setObject:buf forKey:JSON_RP_VOLUMES];
 	
 	if(project.description[0])
