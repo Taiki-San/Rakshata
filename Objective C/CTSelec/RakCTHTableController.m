@@ -61,7 +61,7 @@
 	type = project.type;
 	category = project.category;
 
-	paidContent = !strcmp(project.team->type, TYPE_DEPOT_3);
+	paidContent = project.isPaid;
 	DRM = YES;
 	
 	numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);

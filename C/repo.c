@@ -143,7 +143,6 @@ bool addRepo(char * URL, char *type)
 
 	if(!checkNetworkState(CONNEXION_DOWN))
     {
-        /*Lecture du fichier*/
 		if(type == NULL)
 		{
 			getRepoData(defineTypeRepo(URL), URL, bufferDL, sizeof(bufferDL));
