@@ -37,6 +37,7 @@ void releaseCTData(PROJECT_DATA data)
 {
 	free(data.chapitresFull);
 	free(data.chapitresInstalled);
+	free(data.chapitresPrix);
 	freeTomeList(data.tomesFull, true);
 	freeTomeList(data.tomesInstalled, true);
 }

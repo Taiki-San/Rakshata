@@ -14,14 +14,15 @@
 
 void refreshChaptersList(PROJECT_DATA *projectDB)
 {
-    if(projectDB->chapitresFull != NULL || projectDB->chapitresInstalled != NULL)
+    if(projectDB->chapitresFull != NULL || projectDB->chapitresPrix != NULL || projectDB->chapitresInstalled != NULL)
 	{
 		free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
+		free(projectDB->chapitresPrix);		projectDB->chapitresPrix = NULL;
 		free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
 		projectDB->nombreChapitre = projectDB->nombreChapitreInstalled = 0;
 	}
 
-    projectDB->chapitresFull = getUpdatedCTForID(projectDB->cacheDBID, false, &(projectDB->nombreChapitre));
+    projectDB->chapitresFull = getUpdatedCTForID(projectDB->cacheDBID, false, &(projectDB->nombreChapitre), &(projectDB->chapitresPrix));
 }
 
 bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)

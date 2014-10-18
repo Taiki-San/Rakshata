@@ -350,6 +350,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
 				
 				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
+				free(newData[posNew].chapitresPrix);
 				freeTomeList(newData[posNew].tomesFull, true);
 			}
 			
@@ -410,6 +411,13 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 		newData.chapitresFull = malloc((data.nombreChapitre + 1) * sizeof(int));
 		if(newData.chapitresFull != NULL)
 			memcpy(newData.chapitresFull, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
+	}
+	
+	if(data.chapitresPrix != NULL)
+	{
+		newData.chapitresPrix = malloc(data.nombreChapitre * sizeof(int));
+		if(newData.chapitresPrix != NULL)
+			memcpy(newData.chapitresPrix, data.chapitresPrix, data.nombreChapitre * sizeof(int));
 	}
 	
 	if(data.chapitresInstalled != NULL)

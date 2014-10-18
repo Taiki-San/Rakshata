@@ -35,7 +35,7 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 	}
 	else
 	{
-		id entry1, entry2;
+		id entry1, entry2 = nil;
 		int jump, first, last, sum;
 		void* tmp;
 		
@@ -47,7 +47,8 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 			if([dictionary superclass] != [NSMutableDictionary class])	continue;
 			
 			entry1 = objectForKey(dictionary, JSON_RP_CHAP_DETAILS, @"details");
-			entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"price");
+			if(paidContent)
+				entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"Price");
 			
 			if(entry1 != nil && [(NSObject*)entry1 superclass] == [NSArray class])	//This is a special chunck
 			{
@@ -209,7 +210,10 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 					}
 					
 					//Because diff tell us how far is the next element, a != diff mean the next element break the chain, so the last one of the burst is the current one
-					[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP, JSON_RP_PRICE]]];
+					if(pricesValid)
+						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP, JSON_RP_PRICE]]];
+					else
+						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff)] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP]]];
 				}
 				else
 				{
@@ -281,7 +285,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		uint cache = 0;
 		NSDictionary * dict;
 		NSString *description, *readingName;
-		NSNumber *readingID, *internalID;
+		NSNumber *readingID, *internalID, *priceObj;
 
 		for(dict in volumeBloc)
 		{
@@ -304,6 +308,9 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			
 			description = objectForKey(dict, JSON_RP_VOL_DESCRIPTION, @"Description");
 			
+			if(paidContent)
+				priceObj = objectForKey(dict, JSON_RP_PRICE, @"Price");
+			
 			output[cache].ID = [internalID intValue];
 			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
 			
@@ -313,6 +320,9 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			if(description == nil)			output[cache].description[0] = 0;
 			else							wcsncpy(output[cache].description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], TOME_DESCRIPTION_LENGTH);
 			
+			if(priceObj == nil || ![priceObj isKindOfClass:[NSNumber class]])	output[cache].price = UINT_MAX;
+			else							output[cache].price = [priceObj unsignedIntValue];
+		
 			output[cache++].details = NULL;
 		}
 		
@@ -349,6 +359,9 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		if(volume[pos].readingID != VALEUR_FIN_STRUCT)
 			[dict setObject:@(volume[pos].readingID) forKey:JSON_RP_VOL_READING_ID];
 		
+		if(paidContent && volume[pos].price != UINT_MAX)
+			[dict setObject:@(volume[pos].price) forKey:JSON_RP_PRICE];
+		
 		[output addObject:dict];
 	}
 	
@@ -374,10 +387,10 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
-	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"price");
-	if(![paidContent isKindOfClass:[NSNumber class]])						goto end;
+	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"Price");
+	if(paidContent != nil && [paidContent superclass] != [NSNumber class])	goto end;
 		 
-	BOOL isPaidContent = [paidContent boolValue];
+	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	uint nbChapters = 0, nbVolumes = 0;
 	chapters = getChapters(objectForKey(bloc, JSON_RP_CHAPTERS, @"chapters"), &nbChapters, isPaidContent, &chaptersPrices);
@@ -405,6 +418,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
+	data.chapitresPrix = chaptersPrices;
 	data.chapitresFull = chapters;		data.chapitresInstalled = NULL;		data.nombreChapitre = nbChapters;	data.nombreChapitreInstalled = 0;
 	data.tomesFull = volumes;			data.tomesInstalled = NULL;			data.nombreTomes = nbVolumes;		data.nombreTomesInstalled = 0;
 	data.status = [status unsignedCharValue];
@@ -422,10 +436,12 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		memset(&data.description, 0, sizeof(data.description));
 	
 	chapters = NULL;
+	chaptersPrices = NULL;
 	volumes = NULL;
 end:
 	
 	free(chapters);
+	free(chaptersPrices);
 	freeTomeList(volumes, true);
 	return data;
 }
@@ -457,6 +473,9 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.type) forKey:JSON_RP_TYPE];
 	[output setObject:@(project.japaneseOrder) forKey:JSON_RP_ASIAN_ORDER];
 	[output setObject:@(project.category) forKey:JSON_RP_CATEGORY];
+	
+	if(project.isPaid)
+		[output setObject:@(YES) forKey:JSON_RP_PRICE];
 	
 	return [NSDictionary dictionaryWithDictionary:output];
 }

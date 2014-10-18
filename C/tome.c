@@ -35,7 +35,7 @@ void refreshTomeList(PROJECT_DATA *projectDB)
 	}
 	projectDB->nombreTomes = projectDB->nombreTomesInstalled = 0;
 	
-	projectDB->tomesFull = getUpdatedCTForID(projectDB->cacheDBID, true, &(projectDB->nombreTomes));
+	projectDB->tomesFull = getUpdatedCTForID(projectDB->cacheDBID, true, &(projectDB->nombreTomes), NULL);
 }
 
 void setTomeReadable(PROJECT_DATA projectDB, int ID)

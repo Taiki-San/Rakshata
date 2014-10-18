@@ -69,7 +69,7 @@ int setupBDDCache()
 	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
 		
-	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_team)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" BLOB NOT NULL, "DBNAMETOID(RDB_description)" BLOB, "DBNAMETOID(RDB_authors)" BLOB, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_team)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" BLOB NOT NULL, "DBNAMETOID(RDB_description)" BLOB, "DBNAMETOID(RDB_authors)" BLOB, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitresPrice)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		//abort, couldn't setup DB
 		sqlite3_finalize(request);
@@ -78,7 +78,7 @@ int setupBDDCache()
 	sqlite3_finalize(request);
 	
 	//On est bon, let's go
-    if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
+    if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
 	{
 #ifndef KEEP_UNUSED_TEAMS
 		bool isTeamUsed[nombreTeam], begining = true;
@@ -103,6 +103,7 @@ int setupBDDCache()
 					if(!addToCache(request, projects[pos], teamPos, isInstalled(pathInstall)))
 					{
 						free(projects[pos].chapitresFull);
+						free(projects[pos].chapitresPrix);
 						freeTomeList(projects[pos].tomesFull, true);
 					}
 				}
@@ -224,12 +225,13 @@ void syncCacheToDisk(byte syncCode)
 void flushDB()
 {
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL);
 	
 	while(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
+		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 	}
 	
 	sqlite3_finalize(request);
@@ -251,7 +253,7 @@ sqlite3_stmt * getAddToCacheRequest()
 {
 	sqlite3_stmt * request = NULL;
 	
-	sqlite3_prepare_v2(cache, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15);", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL);
 	
 	return request;
 }
@@ -276,12 +278,14 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint posTeamIndex, boo
 	sqlite3_bind_int(internalRequest, 7, data.status);
 	sqlite3_bind_int(internalRequest, 8, data.type);
 	sqlite3_bind_int(internalRequest, 9, data.japaneseOrder);
-	sqlite3_bind_int(internalRequest, 10, data.category);
-	sqlite3_bind_int(internalRequest, 11, data.nombreChapitre);
-	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.chapitresFull);
-	sqlite3_bind_int(internalRequest, 13, data.nombreTomes);
-	sqlite3_bind_int64(internalRequest, 14, (int64_t) data.tomesFull);
-	sqlite3_bind_int(internalRequest, 15, data.favoris);
+	sqlite3_bind_int(internalRequest, 10, data.isPaid);
+	sqlite3_bind_int(internalRequest, 11, data.category);
+	sqlite3_bind_int(internalRequest, 12, data.nombreChapitre);
+	sqlite3_bind_int64(internalRequest, 13, (int64_t) data.chapitresFull);
+	sqlite3_bind_int64(internalRequest, 14, (int64_t) data.chapitresPrix);
+	sqlite3_bind_int(internalRequest, 15, data.nombreTomes);
+	sqlite3_bind_int64(internalRequest, 16, (int64_t) data.tomesFull);
+	sqlite3_bind_int(internalRequest, 17, data.favoris);
 	
 	output = sqlite3_step(internalRequest) == SQLITE_DONE;
 	
@@ -303,13 +307,13 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	//On libère la mémoire des éléments remplacés
 	if(whatCanIUse == RDB_UPDATE_ID)
 	{
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 		sqlite3_bind_int(request, 1, data.cacheDBID);
 		DBID = data.cacheDBID;
 	}
 	else
 	{
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
 		sqlite3_bind_int64(request, 1, (uint64_t) data.team);
 		sqlite3_bind_int(request, 2, projectID);
 	}
@@ -317,7 +321,8 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
+		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 2);
@@ -331,7 +336,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_finalize(request);
 
 	//On pratique le remplacement effectif
-	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_type)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_category)" = ?7, "DBNAMETOID(RDB_nombreChapitre)" = ?8, "DBNAMETOID(RDB_chapitres)" = ?9, "DBNAMETOID(RDB_nombreTomes)" = ?10, "DBNAMETOID(RDB_tomes)" = ?11, "DBNAMETOID(RDB_favoris)" = ?12 WHERE "DBNAMETOID(RDB_ID)" = ?13", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_type)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_category)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_chapitresPrice)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_favoris)" = ?14 WHERE "DBNAMETOID(RDB_ID)" = ?15", -1, &request, NULL);
 	
 	sqlite3_bind_blob(request, 1, data.projectName, sizeof(data.projectName), SQLITE_STATIC);
 	sqlite3_bind_blob(request, 2, data.description, sizeof(data.description), SQLITE_STATIC);
@@ -339,8 +344,9 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 4, data.status);
 	sqlite3_bind_int(request, 5, data.type);
 	sqlite3_bind_int(request, 6, data.japaneseOrder);
-	sqlite3_bind_int(request, 7, data.category);
-	sqlite3_bind_int(request, 8, data.nombreChapitre);
+	sqlite3_bind_int(request, 7, data.isPaid);
+	sqlite3_bind_int(request, 8, data.category);
+	sqlite3_bind_int(request, 9, data.nombreChapitre);
 
 	if(data.chapitresFull != NULL)
 	{
@@ -348,13 +354,24 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 		if(buffer != NULL)
 			memcpy(buffer, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
 		
-		sqlite3_bind_int64(request, 9, (int64_t) buffer);
+		sqlite3_bind_int64(request, 10, (int64_t) buffer);
 	}
 	else
-		sqlite3_bind_int64(request, 9, 0x0);
+		sqlite3_bind_int64(request, 10, 0x0);
+	
+	if(data.chapitresPrix != NULL)
+	{
+		buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
+		if(buffer != NULL)
+			memcpy(buffer, data.chapitresPrix, (data.nombreChapitre + 1) * sizeof(int));
+		
+		sqlite3_bind_int64(request, 11, (int64_t) buffer);
+	}
+	else
+		sqlite3_bind_int64(request, 11, 0x0);
 	
 
-	sqlite3_bind_int(request, 10, data.nombreTomes);
+	sqlite3_bind_int(request, 12, data.nombreTomes);
 	
 	if(data.tomesFull != NULL)
 	{
@@ -362,14 +379,14 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 		if(buffer != NULL)
 			copyTomeList(data.tomesFull, data.nombreTomes, buffer);
 		
-		sqlite3_bind_int64(request, 11, (int64_t) buffer);
+		sqlite3_bind_int64(request, 13, (int64_t) buffer);
 	}
 	else
-		sqlite3_bind_int64(request, 11, 0x0);
+		sqlite3_bind_int64(request, 13, 0x0);
 	
-	sqlite3_bind_int(request, 12, data.favoris);
+	sqlite3_bind_int(request, 14, data.favoris);
 	
-	sqlite3_bind_int(request, 13, DBID);	//WHERE
+	sqlite3_bind_int(request, 15, DBID);	//WHERE
 	
 	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
 		return false;
@@ -387,13 +404,14 @@ void removeFromCache(PROJECT_DATA data)
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 	sqlite3_bind_int(request, 1, data.cacheDBID);
 
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
-		freeTomeList((void*) sqlite3_column_int64(request, 1), true);
+		free((void*) sqlite3_column_int64(request, 1));
+		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 	}
 	sqlite3_finalize(request);
 	
@@ -460,9 +478,22 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD
 	output->type = sqlite3_column_int(state, RDB_type-1);
 	output->japaneseOrder = sqlite3_column_int(state, RDB_asianOrder-1);
+	output->isPaid = sqlite3_column_int(state, RDB_isPaid-1);
 	output->category = sqlite3_column_int(state, RDB_category-1);
 	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
+	buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
+	if(buffer != NULL)
+	{
+		output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(int));
+		if(output->chapitresPrix != NULL)
+			memcpy(output->chapitresPrix, buffer, (output->nombreChapitre + 1) * sizeof(int));
+		else
+			output->chapitresPrix = NULL;
+	}
+	else
+		output->chapitresPrix = NULL;
+
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 	if(buffer != NULL)
 	{
@@ -481,6 +512,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 		output->chapitresFull = NULL;
 		output->chapitresInstalled = NULL;
 		output->nombreChapitreInstalled = 0;
+
+		free(output->chapitresPrix);
+		output->chapitresPrix = NULL;
 	}
 	
 	output->nombreTomes = sqlite3_column_int(state, RDB_nombreTomes-1);
@@ -603,6 +637,7 @@ bool updateIfRequired(PROJECT_DATA *data, short context)
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
 			free(data->chapitresFull);
+			free(data->chapitresPrix);
 			free(data->tomesFull);
 			copyOutputDBToStruct(request, data);
 			
@@ -941,14 +976,14 @@ PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context,
 	return output;
 }
 
-void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated)
+void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price)
 {
 	sqlite3_stmt* request = NULL;
 	
 	if(wantTome)
 		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 	else
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 	
 	sqlite3_bind_int(request, 1, cacheID);
 
@@ -977,6 +1012,21 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated)
 			{
 				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
 				((int*) output)[nbElemOut] = VALEUR_FIN_STRUCT;				//In the case it was missing (kinda like a canary)
+			}
+			
+			if(price != NULL)
+			{
+				void * data = (int*) sqlite3_column_int64(request, 2);
+				if(data != NULL)
+				{
+					*price = malloc(nbElemOut * sizeof(int));
+					if(*price != NULL)
+					{
+						memcpy(*price, data, nbElemOut * sizeof(int));
+					}
+				}
+				else
+					*price = NULL;
 			}
 		}
 		

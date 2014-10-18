@@ -133,7 +133,9 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	PROJECT_DATA cacheCopy = getElementByID(projectDB->cacheDBID, RDB_CTXFAVS);
 	cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
 	updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
+	
 	free(cacheCopy.chapitresFull);	//updateCache en fait une copie
+	free(cacheCopy.chapitresPrix);
 	freeTomeList(cacheCopy.tomesFull, true);
 
 end:

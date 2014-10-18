@@ -48,6 +48,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	freeProjectData(fullData);
 	
 	free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
+	free(projectDB->chapitresPrix);		projectDB->chapitresPrix = NULL;
 	free(projectDB->tomesFull);			projectDB->tomesFull = NULL;
 	free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
 	free(projectDB->tomesInstalled);		projectDB->tomesInstalled = NULL;

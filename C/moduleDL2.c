@@ -106,8 +106,12 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PRO
     }
 
     freeProjectData(cache);
-    free(*todoList);
-    free(todoList);
+	
+	if(todoList != NULL)
+	{
+		free(*todoList);
+		free(todoList);
+	}
     free(status);
 
 #ifdef _WIN32

@@ -77,7 +77,7 @@ void freeProjectData(PROJECT_DATA* projectDB);
 
 //Searches
 PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context, bool installed);
-void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated);
+void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
 PROJECT_DATA getElementByID(uint cacheID, uint32_t context);
@@ -147,22 +147,27 @@ enum RDB_CODES {
 
 //========= Obfuscation	==========//
 
-#define RDB_ID							1
-#define RDB_team						2
-#define RDB_projectID					3
-#define RDB_isInstalled					4
-#define RDB_projectName					5
-#define RDB_description					6
-#define RDB_authors						7
-#define RDB_status						8
-#define RDB_type						9
-#define RDB_asianOrder					10
-#define RDB_category					11
-#define RDB_nombreChapitre				12
-#define RDB_chapitres					13
-#define RDB_nombreTomes					14
-#define RDB_tomes						15
-#define RDB_favoris						16
+enum
+{
+	RDB_ID = 1,
+	RDB_team,
+	RDB_projectID,
+	RDB_isInstalled,
+	RDB_projectName,
+	RDB_description,
+	RDB_authors,
+	RDB_status,
+	RDB_type,
+	RDB_asianOrder,
+	RDB_isPaid,
+	RDB_category,
+	RDB_nombreChapitre,
+	RDB_chapitres,
+	RDB_chapitresPrice,
+	RDB_nombreTomes,
+	RDB_tomes,
+	RDB_favoris
+};
 
 #define RDB_REC_lastRead				1
 #define RDB_REC_lastDL					2
