@@ -39,6 +39,7 @@
     #define MUTEX_DESTROY(a) CloseHandle(a)
 #else
     #include <pthread.h>
+	#include <errno.h>
     #include <utime.h>
     #include <unistd.h>
 

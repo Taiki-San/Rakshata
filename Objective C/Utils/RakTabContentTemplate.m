@@ -16,11 +16,12 @@
 {
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	
-	[self setAutoresizesSubviews:NO];
-	[self setWantsLayer:YES];
-	[Prefs getCurrentTheme:self];		//register to changes
+	self.autoresizesSubviews = NO;
+	self.wantsLayer = YES;
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	self.layer.cornerRadius = 5.0;
+	
+	[Prefs getCurrentTheme:self];		//register to changes
 	isFocusDrop = NO;
 }
 

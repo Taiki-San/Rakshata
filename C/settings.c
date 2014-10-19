@@ -246,6 +246,15 @@ char* loadLargePrefs(char* flag)
         download_mem(temp, NULL, buffer, 65000, SSL_ON);
         snprintf(buffer2, 65100, "<%s>\n%s\n</%s>\n", flag, buffer, flag);
         addToPref(flag, buffer2);
+		
+		uint length = strlen(buffer);
+		char * output = malloc(length + 1);
+		if(output != NULL)
+		{
+			memcpy(output, buffer, length);
+			output[length] = 0;
+			return output;
+		}
 	}
     return NULL;
 }

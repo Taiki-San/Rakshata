@@ -21,6 +21,9 @@ static uint lengthTeam = 0;
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
 
+bool mutexInitialized;
+MUTEX_VAR cacheMutex;
+
 //Routines génériques
 
 int setupBDDCache()
@@ -29,16 +32,33 @@ int setupBDDCache()
     char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 	
-    repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
+	if(!mutexInitialized)
+		pthread_mutex_init(&cacheMutex, NULL);
+	
+	MUTEX_LOCK(cacheMutex);
+
+	if(cache != NULL)
+	{
+		MUTEX_UNLOCK(cacheMutex);
+		return 0;
+	}
+
+	repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
     projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
 	
 	if(repoDB == NULL || projectDB == NULL)
+	{
+		free(repoDB);
+		free(projectDB);
+		MUTEX_UNLOCK(cacheMutex);
 		return 0;
+	}
 	
 	//On détruit le cache
 	if(sqlite3_open(":memory:", &internalDB) != SQLITE_OK)
 	{
 		logR("Couldn't setup cache DB\n");
+		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}
 	
@@ -56,8 +76,10 @@ int setupBDDCache()
 	free(repoDB);
 	
 	if(internalTeamList == NULL || nombreTeam == 0)
+	{
+		MUTEX_UNLOCK(cacheMutex);
 		return 0;
-	
+	}
 	char * encodedTeam[nombreTeam];
 	for(uint i = 0; i < nombreTeam; i++)
 	{
@@ -89,6 +111,7 @@ int setupBDDCache()
 		unsigned char * decodedProject = base64_decode(projectDB, strlen(projectDB) - 1, &decodedLength);
 		PROJECT_DATA * projects = parseLocalData(internalTeamList, nombreTeam, decodedProject, &nombreProject);
 		
+		free(decodedProject);
 		if(projects != NULL)
 		{
 			for(uint pos = 0, teamPos; pos < nombreProject; pos++)
@@ -140,6 +163,8 @@ int setupBDDCache()
 				lengthIsUpdated = nombreProject;
 		}
 	}
+	
+	MUTEX_UNLOCK(cacheMutex);
 	
 	for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
 	free(cacheFavs);
@@ -224,6 +249,8 @@ void syncCacheToDisk(byte syncCode)
 
 void flushDB()
 {
+	MUTEX_LOCK(cacheMutex);
+
 	sqlite3_stmt* request = NULL;
 	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL);
 	
@@ -247,6 +274,15 @@ void flushDB()
 	free(isUpdated);
 	isUpdated = NULL;
 	lengthIsUpdated = 0;
+	
+	mutexInitialized = false;
+	MUTEX_UNLOCK(cacheMutex);
+	
+	while(MUTEX_DESTROY(cacheMutex) == EBUSY)
+	{
+		MUTEX_LOCK(cacheMutex);
+		MUTEX_UNLOCK(cacheMutex);
+	}
 }
 
 sqlite3_stmt * getAddToCacheRequest()

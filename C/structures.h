@@ -125,6 +125,7 @@ typedef struct dataProjectWithExtra
 	//Pointeurs, un bloc chacun (64b)
 	TEAMS_DATA *team;
 	int *chapitresFull;
+	uint *chapitresPrix;
 	int *chapitresInstalled;
 	META_TOME *tomesFull;
 	META_TOME *tomesInstalled;
@@ -153,6 +154,8 @@ typedef struct dataProjectWithExtra
 	uint32_t projectID;
 	uint32_t cacheDBID;
 	
+	bool isPaid;
+
 	//2 x 64b
 	char hashLarge[LENGTH_HASH];
 	char hashSmall[LENGTH_HASH];

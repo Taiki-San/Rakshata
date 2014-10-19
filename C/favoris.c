@@ -150,10 +150,7 @@ void updateFavorites()
 {
     char *favs = NULL;
     if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL)
-	{
-		free(favs);
 		return;
-	}
 	else
 		free(favs);
 	

@@ -371,7 +371,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 PROJECT_DATA parseBloc(NSDictionary * bloc)
 {
 	PROJECT_DATA data;
-	memset(&data, 0, sizeof(data));
+	memset(&data, 0, sizeof(PROJECT_DATA));
 	
 	int * chapters = NULL;
 	uint * chaptersPrices = NULL;
