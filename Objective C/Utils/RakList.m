@@ -518,7 +518,10 @@
 	
 	else if([event scrollingDeltaY])
 	{
-		
+		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 1, [event scrollingDeltaY], 0);
+		event = [NSEvent eventWithCGEvent:cgEvent];
+		CFRelease(cgEvent);
+		[super scrollWheel:event];
 	}
 }
 
