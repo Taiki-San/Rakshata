@@ -259,3 +259,19 @@
 
 @end
 
+NSString * priceString(uint price)
+{
+	if(price != 0)
+	{
+		NSNumberFormatter * formater = [[NSNumberFormatter alloc] init];
+		
+		formater.numberStyle = NSNumberFormatterCurrencyStyle;
+		formater.usesSignificantDigits = YES;
+		formater.minimumSignificantDigits = formater.maximumSignificantDigits = 2;
+		
+		return [formater stringFromNumber:@(price / 100.0f)];
+	}
+	
+	return @"Gratuit";
+}
+

@@ -53,3 +53,4 @@
 
 @end
 
+NSString * priceString(uint price);
