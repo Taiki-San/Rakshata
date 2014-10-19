@@ -23,7 +23,7 @@
 		if(headerText != nil)
 			[self addSubview:headerText];
 		
-		mainList = [[RakSerieList alloc] init : [self getMainListFrame : self.bounds] : state];
+		mainList = [[RakSerieList alloc] init : [self getMainListFrame : self.bounds] : mainThread == TAB_READER : state];
 		if(mainList != nil)
 			[self addSubview:[mainList getContent]];
 	}
@@ -103,5 +103,24 @@
 	
 	return frame;
 }
+
+#pragma mark - Context change
+
+- (void) setCTViewHidden : (BOOL) CTViewHidden
+{
+	if(!CTViewHidden && mainList != nil)
+		mainList.installOnly = NO;
+	
+	[super setCTViewHidden:CTViewHidden];
+}
+
+- (void) setReaderViewHidden : (BOOL) readerViewHidden
+{
+	if(!readerViewHidden && mainList != nil)
+		mainList.installOnly = YES;
+		
+	[super setReaderViewHidden:readerViewHidden];
+}
+
 
 @end

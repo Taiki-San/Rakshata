@@ -844,13 +844,18 @@ enum
 			sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
 	}
 	
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+	{
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+	}
 	
 	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
 	[scrollView.contentView scrollToPoint:sliderStart];
 	
-	[CATransaction commit];
+	if(!mainThread)
+		[CATransaction commit];
 }
 
 - (void) jumpPressed : (BOOL) withShift

@@ -60,13 +60,18 @@
 
 - (void) dealloc
 {
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+	{
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+	}
 
 	[self releaseData];
 	self.documentView = nil;
 
-	[CATransaction commit];
+	if(!mainThread)
+		[CATransaction commit];
 }
 
 @end

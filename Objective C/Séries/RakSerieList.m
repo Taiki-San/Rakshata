@@ -12,7 +12,7 @@
 
 @implementation RakSerieList
 
-- (id) init : (NSRect) frame : (NSString*) state
+- (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state
 {
 	self = [super init];
 	
@@ -22,6 +22,7 @@
 		[Prefs getCurrentTheme:self];		//register
 		
 		rootItems[0] = rootItems[1] = rootItems[2] = nil;
+		readerMode = _readerMode;
 		
 		[self loadContent];
 		[self restoreState:state];
@@ -401,6 +402,21 @@
 	return [NSString stringWithFormat:@"%d\n%d\n%@\n%.0f", isTabReadOpen ? 1 : 0, isTabDLOpen ? 1 : 0, currentSelection, scrollerPosition];
 }
 
+#pragma mark - Context change
+
+- (BOOL) installOnly
+{
+	return _mainList != NULL ? _mainList.installOnlyMode : NO;
+}
+
+- (void) setInstallOnly : (BOOL) installOnly
+{
+	readerMode = installOnly;
+	
+	if(_mainList != nil)
+		_mainList.installOnlyMode = installOnly;
+}
+
 #pragma mark - Data source to the view
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
@@ -591,7 +607,7 @@
 		else
 		{
 			if(_mainList == nil)
-				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1]];
+				_mainList = [[RakSerieMainList alloc] init: [self getMainListFrame : [outlineView bounds] : outlineView] : stateMainList[0] : stateMainList[1] : readerMode];
 			
 			rowView = [_mainList getContent];
 		}

@@ -48,9 +48,13 @@ enum {
 	RakSerieMainList * _mainList;
 	
 	RakSerieListItem * currentDraggedItem;
+	
+	BOOL readerMode;
 }
 
-- (id) init : (NSRect) frame : (NSString*) state;
+@property BOOL installOnly;
+
+- (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state;
 - (void) restoreState : (NSString *) state;
 
 - (RakTreeView *) getContent;

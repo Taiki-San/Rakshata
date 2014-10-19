@@ -12,6 +12,7 @@
 
 @interface RakSerieMainList : RakList
 {
+	uint _nbElemFull;
 	bool* _installed;
 	uint _nbElemInstalled;
 	uint* _jumpToInstalled;
@@ -19,7 +20,7 @@
 
 @property (setter=setInstallOnly:, getter=installOnlyMode) BOOL installOnlyMode;
 
-- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition;
+- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly;
 
 - (void) reloadData;
 - (void) updateJumpTable;

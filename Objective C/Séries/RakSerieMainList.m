@@ -12,7 +12,7 @@
 
 @implementation RakSerieMainList
 
-- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition
+- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly
 {
 	self = [super init];
 	
@@ -20,20 +20,31 @@
 	{
 		_jumpToInstalled = NULL;
 		
-		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &amountData);
-		_installed = getInstalledFromData(data, amountData);
+		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &_nbElemFull);
+		_installed = getInstalledFromData(data, _nbElemFull);
 		
-		if(self.installOnlyMode)
-			[self updateJumpTable];
-		
-		for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
+		if(installOnly)
 		{
-			if(selectedDBID != -1 && selectedIndex == -1 && (!self.installOnlyMode || _installed[i]))
+			[self updateJumpTable];
+			amountData = _nbElemInstalled;
+		}
+		else
+			amountData = _nbElemFull;
+		
+		if(selectedDBID != -1)
+		{
+			for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
 			{
-				if (((PROJECT_DATA*)data)[i].cacheDBID == selectedDBID)
-					selectedIndex = positionInInstalled;
-				else
+				if(!installOnly || _installed[i])
+				{
+					if(((PROJECT_DATA*)data)[i].cacheDBID == selectedDBID)
+					{
+						selectedIndex = positionInInstalled;
+						break;
+					}
+					
 					positionInInstalled++;
+				}
 			}
 		}
 		
@@ -64,9 +75,12 @@
 	if((installedOnly && _jumpToInstalled != NULL) || (!installedOnly && _jumpToInstalled == NULL))
 		return;
 	
+	NSMutableIndexSet * index = [[NSMutableIndexSet alloc] init];
+	
 	if(installedOnly)
 	{
 		[self updateJumpTable];
+		amountData = _nbElemInstalled;
 	}
 	else
 	{
@@ -76,7 +90,22 @@
 		_nbElemInstalled = 0;
 		
 		free(tmp);
+		amountData = _nbElemFull;
 	}
+
+	//Gather rows that will have to be removed/inserted
+	for(uint pos = 0; pos < amountData; pos++)
+	{
+		if(_installed[pos] ^ installedOnly)
+		{
+			[index addIndex:pos];
+		}
+	}
+	
+	if(installedOnly)
+		[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+	else
+		[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
 }
 
 - (NSInteger) selectedRow
@@ -115,7 +144,7 @@
 
 - (void) updateJumpTable
 {
-	if(amountData == 0)
+	if(_nbElemFull == 0)
 		return;
 	
 	if(_jumpToInstalled != NULL)
@@ -123,9 +152,9 @@
 	
 	_jumpToInstalled = NULL;
 	
-	uint rawJumpTable[amountData], positionRawTable, positionInstalled;
+	uint rawJumpTable[_nbElemFull], positionRawTable, positionInstalled;
 	
-	for (positionInstalled = positionRawTable = 0; positionInstalled < amountData; positionInstalled++)
+	for (positionInstalled = positionRawTable = 0; positionInstalled < _nbElemFull; positionInstalled++)
 	{
 		if(_installed[positionInstalled])
 			rawJumpTable[positionRawTable++] = positionInstalled;
@@ -199,12 +228,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	if(data == NULL)
-		return 0;
-	else if(!self.installOnlyMode)
-		return amountData;
-	else
-		return _nbElemInstalled;
+	return data == NULL ? 0 : amountData;
 }
 
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex

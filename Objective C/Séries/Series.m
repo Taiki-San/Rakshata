@@ -144,7 +144,16 @@
 	return frame;
 }
 
-/**			Other		**/
+- (void) setUpViewForAnimation : (BOOL) newReaderMode
+{
+	uint _mainThread;
+	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
+	
+	[coreView focusViewChanged : _mainThread];
+	
+	[super setUpViewForAnimation:newReaderMode];
+}
+
 #pragma mark - RakTabView routines
 
 - (BOOL) needToConsiderMDL

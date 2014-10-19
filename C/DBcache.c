@@ -1127,11 +1127,9 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 				for(pos = 0; pos < nbElem && data[pos].cacheDBID != sqlite3_column_int(request, RDB_ID-1); pos++);
 				
 				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
-					output[pos++] = true;
+					output[pos] = true;
 			}
 		}
-		
-		for(; pos < nbElem; output[pos++] = false);
 		
 		sqlite3_finalize(request);
 	}
