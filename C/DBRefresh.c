@@ -151,6 +151,9 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 	if(bufferDL == NULL)
 		return;
 
+#ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
+	bool paidTeam = !strcmp(globalTeam->type, TYPE_DEPOT_3);
+#endif
 	int version = getUpdatedProjectOfTeam(bufferDL, globalTeam);
 	
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, globalTeam))		//On a des données à peu près valide
@@ -166,6 +169,15 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 			{
 				for (uint pos = 0; pos < nbElem; pos++)
 					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
+				
+#ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
+				if(projectShort->isPaid && !paidTeam)
+				{
+					projectShort->isPaid = false;
+					free(projectShort->chapitresPrix);
+					projectShort->chapitresPrix = NULL;
+				}
+#endif
 				
 				applyChangesProject(&oldData[posBase], magnitudeInput, projectShort, nbElem);
 				free(projectShort);

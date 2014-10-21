@@ -41,8 +41,6 @@ bool isRemoteRepoLineValid(char * data, int version)
 	return true;
 }
 
-#define REPO_DEFAULT_OPEN_WEBSITE 0
-
 bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output)
 {
 	if(version == -1 || !isRemoteRepoLineValid(data, version))

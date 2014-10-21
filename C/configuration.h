@@ -5,24 +5,18 @@
 **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
 **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
 **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
-**                                                                                          **
+**																							**
 **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
-**                                                                                          **
+**																							**
 *********************************************************************************************/
 
-#ifdef DEBUG
-    #define DEV_VERSION
-    #define PROJECT_NAME "[DEV_BUILD] Rakshata"
-#else
-    #define PROJECT_NAME "Rakshata"
-#endif
+#define MAINTAIN_SUPER_LEGACY_COMPATIBILITY
+//#define INSTALLING_CONSIDERED_AS_INSTALLED
 
-#define CURRENTVERSION 200
-#define CURRENTVERSIONSTRING "200"
+//DB configuration
+#define PAID_CONTENT_ONLY_FOR_PAID_REPO
+#define KEEP_UNUSED_TEAMS					//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
+//#define DELETE_REMOVED_PROJECT
 
-#include "configuration.h"
-#include "defines.h"
-#include "prototypes.h"
-#include "structures.h"
-#include "externs.h"
-#include "fonctions.h"
+#define REPO_DEFAULT_OPEN_WEBSITE 0
+

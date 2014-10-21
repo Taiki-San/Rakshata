@@ -22,11 +22,6 @@
 #define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
 #define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
 
-
-//Options
-#define KEEP_UNUSED_TEAMS				//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
-//#define DELETE_REMOVED_PROJECT
-
 unsigned long alreadyRefreshed;
 
 /******		DBTools.c	  ******/

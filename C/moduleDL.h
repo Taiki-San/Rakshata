@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-//#define INSTALLING_CONSIDERED_AS_INSTALLED
-
 /*Codes*/
 #define MDL_CODE_UNPAID				(-5)
 #define MDL_CODE_INTERNAL_ERROR		(-4)
