@@ -51,7 +51,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 		char uselessID[10];
 		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE);
 		
-		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
+		if(strcmp(output->type, TYPE_DEPOT_PAID) && strcmp(output->type, TYPE_DEPOT_OTHER) && strcmp(output->type, TYPE_DEPOT_DB))
 			return false;
 		
 		output->openSite = (previousData == NULL) ? REPO_DEFAULT_OPEN_WEBSITE : previousData->openSite;
@@ -62,7 +62,7 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 	{
 		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
 		
-		if(strcmp(output->type, TYPE_DEPOT_3) && strcmp(output->type, TYPE_DEPOT_2) && strcmp(output->type, TYPE_DEPOT_1))
+		if(strcmp(output->type, TYPE_DEPOT_PAID) && strcmp(output->type, TYPE_DEPOT_OTHER) && strcmp(output->type, TYPE_DEPOT_DB))
 			return false;
 		
 		return true;
@@ -250,7 +250,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 
 void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 {
-	bool ssl = strcmp(team.type, TYPE_DEPOT_2) != 0;
+	bool ssl = strcmp(team.type, TYPE_DEPOT_OTHER) != 0;
 	char URL[1024], filenameTmp[1024+64], suffix[6] = PROJ_IMG_SUFFIX_CT, buf[5];
 	uint pos = strlen(filename);
 	FILE* file;
@@ -260,13 +260,13 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 	strncpy(filenameTmp, filename, sizeof(filenameTmp));
 	for(char i = 0; i < 2; i++)
 	{
-		if(!strcmp(team.type, TYPE_DEPOT_1))
+		if(!strcmp(team.type, TYPE_DEPOT_DB))
 			snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
 		
-		else if(!strcmp(team.type, TYPE_DEPOT_2))
+		else if(!strcmp(team.type, TYPE_DEPOT_OTHER))
 			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
 		
-		else if(!strcmp(team.type, TYPE_DEPOT_3)) //Payant
+		else if(!strcmp(team.type, TYPE_DEPOT_PAID)) //Payant
 			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s", team.URLRepo, projectID, suffix);
 		
 		filenameTmp[pos] = '.';	filenameTmp[pos+1] = 't';	filenameTmp[pos+2] = 'm';	filenameTmp[pos+3] = 'p';	filenameTmp[pos+4] = '\0';
@@ -444,7 +444,7 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 
 bool isPaidProject(PROJECT_DATA projectData)
 {
-	return projectData.team != NULL && !strcmp(projectData.team->type, TYPE_DEPOT_3);
+	return projectData.team != NULL && !strcmp(projectData.team->type, TYPE_DEPOT_PAID);
 }
 
 bool isInstalled(char * basePath)

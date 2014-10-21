@@ -38,13 +38,13 @@ int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
 	char temp[500];
 	do
 	{
-        if(!strcmp(teams.type, TYPE_DEPOT_1))
+        if(!strcmp(teams.type, TYPE_DEPOT_DB))
             snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
-        else if(!strcmp(teams.type, TYPE_DEPOT_2))
+        else if(!strcmp(teams.type, TYPE_DEPOT_OTHER))
             snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
 		
-        else if(!strcmp(teams.type, TYPE_DEPOT_3)) //Payant
+        else if(!strcmp(teams.type, TYPE_DEPOT_PAID)) //Payant
             snprintf(temp, 500, "https://"SERVEUR_URL"/ressource.php?editor=%s&request=repo&version=%d", teams.URLRepo, defaultVersion);
 		
         else
@@ -55,7 +55,7 @@ int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
         }
 		
         buffer_repo[0] = 0;
-        download_mem(temp, NULL, buffer_repo, bufferSize, strcmp(teams.type, TYPE_DEPOT_2) ? SSL_ON : SSL_OFF);
+        download_mem(temp, NULL, buffer_repo, bufferSize, strcmp(teams.type, TYPE_DEPOT_OTHER) ? SSL_ON : SSL_OFF);
         defaultVersion--;
 		
 	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
@@ -116,13 +116,13 @@ int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
 	char URL[500];
     do
 	{
-	    if(!strcmp(teams->type, TYPE_DEPOT_1))
+	    if(!strcmp(teams->type, TYPE_DEPOT_DB))
             snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
-        else if(!strcmp(teams->type, TYPE_DEPOT_2))
+        else if(!strcmp(teams->type, TYPE_DEPOT_OTHER))
             snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
 
-        else if(!strcmp(teams->type, TYPE_DEPOT_3)) //Payant
+        else if(!strcmp(teams->type, TYPE_DEPOT_PAID)) //Payant
             snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=project&version=%d", teams->URLRepo, defaultVersion);
 
         else
@@ -134,7 +134,7 @@ int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
         }
 		
         projectBuf[0] = 0;
-        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF);
+        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_OTHER)?SSL_ON:SSL_OFF);
         defaultVersion--;
 		
 	} while(defaultVersion > 0 && !isDownloadValid(projectBuf));
@@ -152,7 +152,7 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 		return;
 
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
-	bool paidTeam = !strcmp(globalTeam->type, TYPE_DEPOT_3);
+	bool paidTeam = !strcmp(globalTeam->type, TYPE_DEPOT_PAID);
 #endif
 	int version = getUpdatedProjectOfTeam(bufferDL, globalTeam);
 	

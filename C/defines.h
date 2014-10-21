@@ -100,10 +100,10 @@
 #define LONGUEUR_NOMS_DATA 100
 
 /*Ajout repo*/
-#define TYPE_DEPOT_1 "DB" //Dépôt dropbox
-#define TYPE_DEPOT_2 "O" //Dépôt classique
-#define TYPE_DEPOT_3 "P" //Dépôts payants
-#define TYPE_DEPOT_4 "GOO" //Raccourcis pour acceder au dépôt
+#define TYPE_DEPOT_DB "DB"
+#define TYPE_DEPOT_OTHER "O"	//Dépôt arbitraire
+#define TYPE_DEPOT_PAID "P"
+#define TYPE_DEPOT_4			//Raccourcis goo.gl pour acceder au dépôt, reservé, mais
 #define MAX_TYPE_DEPOT 4
 
 /*String macro*/

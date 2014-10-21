@@ -303,7 +303,7 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, uint * IDTo
 		else
 			pos = i;
 		
-        if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_3) && *status[pos] == MDL_CODE_DEFAULT)
+        if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_PAID) && *status[pos] == MDL_CODE_DEFAULT)
             return true;
     }
     return false;
@@ -320,7 +320,7 @@ uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToP
         {
 			pos = IDToPosition[i];
 			
-            if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_3) && *status[pos] == MDL_CODE_DEFAULT)
+            if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->team != NULL && !strcmp(data[pos]->datas->team->type, TYPE_DEPOT_PAID) && *status[pos] == MDL_CODE_DEFAULT)
                 output[posDansOut++] = pos;
         }
         output[posDansOut] = VALEUR_FIN_STRUCT;

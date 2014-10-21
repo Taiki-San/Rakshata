@@ -18,7 +18,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 {
     uint length;
     char *output = NULL;
-    if (!strcmp(data.datas->team->type, TYPE_DEPOT_1) || !strcmp(data.datas->team->type, TYPE_DEPOT_2))
+    if (!strcmp(data.datas->team->type, TYPE_DEPOT_DB) || !strcmp(data.datas->team->type, TYPE_DEPOT_OTHER))
     {
         output = internalCraftBaseURL(*data.datas->team, &length);
         if(output != NULL)
@@ -67,7 +67,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length)
 {
     char *output = NULL;
-    if (!strcmp(teamData.type, TYPE_DEPOT_1))
+    if (!strcmp(teamData.type, TYPE_DEPOT_DB))
     {
         *length = 60 + 15 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
@@ -75,7 +75,7 @@ char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length)
             snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URLRepo);
     }
 
-    else if (!strcmp(teamData.type, TYPE_DEPOT_2))
+    else if (!strcmp(teamData.type, TYPE_DEPOT_OTHER))
     {
         *length = 200 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
@@ -456,7 +456,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 			goto end;
 
         ///Craft URL
-        if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_1) || !strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2))
+        if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_DB) || !strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_OTHER))
         {
             URL = internalCraftBaseURL(*tomeDatas->datas->team, &length);
             if(URL != NULL)
@@ -470,7 +470,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
                 snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d", tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
         }
 
-        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_2)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
+        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_OTHER)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
 		{
 			free(URL);
 			goto end;
@@ -656,12 +656,12 @@ int sortProjectsToDownload(const void *a, const void *b)
     //Projets différents, on les classe
     if(struc1->datas->favoris)
         ptsA = 2;
-    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_3))
+    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_PAID))
         ptsA += 1;
 
     if(struc2->datas->favoris)
         ptsB = 2;
-    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_3))
+    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_PAID))
         ptsB += 1;
 
     if(ptsA > ptsB)
