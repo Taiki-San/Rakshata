@@ -510,7 +510,8 @@
 
 - (void) scrollWheel:(NSEvent *)event
 {
-	if(self.scrollingDisabled)
+	//The second part bloc moves when there is no scroller on this direction
+	if(self.scrollingDisabled || ((event.scrollingDeltaX == 0 || !self.hasHorizontalScroller) && (event.scrollingDeltaY == 0 || !self.hasVerticalScroller)))
 		[self.nextResponder scrollWheel:event];
 	
 	else if(self.horizontalScrollingEnabled || ![event scrollingDeltaX])
