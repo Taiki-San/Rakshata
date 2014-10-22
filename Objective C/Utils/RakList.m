@@ -234,9 +234,19 @@
 	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT:nil];
 }
 
+- (NSColor *) getTextColor : (uint) column : (uint) row
+{
+	return nil;
+}
+
 - (NSColor *) getTextHighlightColor
 {
 	return [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
+}
+
+- (NSColor *) getTextHighlightColor : (uint) column : (uint) row
+{
+	return nil;
 }
 
 - (NSColor *) getBackgroundHighlightColor
@@ -251,7 +261,31 @@
 	
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
-	[_tableView reloadData];
+
+	[self updateTableElementsColor];
+}
+
+- (void) updateTableElementsColor
+{
+	RakText * element;
+	NSColor * backgroundColor = [self getBackgroundHighlightColor];
+	
+	for(uint column = 0, count = [_tableView.tableColumns count]; column < count; column++)
+	{
+		for(uint row = 0; row < amountData; row++)
+		{
+			element = [_tableView viewAtColumn:column row:row makeIfNecessary:NO];
+			if(element != nil)
+			{
+				if(row == selectedIndex)
+					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column :row];
+				else
+					element.textColor = normal != nil ? normal : [self getTextColor:column :row];
+				
+				element.backgroundColor = backgroundColor;
+			}
+		}
+	}
 }
 
 #pragma mark - Methods to deal with tableView
@@ -284,7 +318,7 @@
 		result.identifier = _identifier;
 	}
 	
-	result.textColor = selectedRow ? highlight : normal;
+	result.textColor = selectedRow ? (highlight != nil ? highlight : [self getTextHighlightColor:0 :row]) : (normal != nil ? normal : [self getTextColor:0 :row]);
 	result.drawsBackground = selectedRow;
 	result.backgroundColor = [self getBackgroundHighlightColor];
 	

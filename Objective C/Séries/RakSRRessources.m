@@ -36,7 +36,7 @@
 {
 	id view = [super makeViewWithIdentifier:identifier owner:owner];
 	
-	if ([identifier isEqualToString:@"NSOutlineViewDisclosureButtonKey"])	//NSOutlineViewDisclosureButtonKey isn't exported before 10.9
+	if ([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
 	{
 		uint themeID = [Prefs getCurrentTheme:nil];
 		[(NSButton *)view setImage:[RakResPath craftResNameFromContext:@"TD->" :NO :YES :themeID]];
