@@ -31,7 +31,7 @@
 		{
 			content = [[RakTreeView alloc] initWithFrame:frame];
 			[content setFrame:frame];
-			column = [[RakTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
+			column = [[NSTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
 			[column setWidth:content.frame.size.width];
 			
 			//Customisation
@@ -134,7 +134,7 @@
 
 - (void) setFrame: (NSRect) frame
 {
-	[column setFixedWidth:frame.size.width];
+	[column setWidth:frame.size.width];
 
 	[content setFrame:frame];
 	
@@ -154,7 +154,7 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
-	[column setFixedWidth:frame.size.width];
+	[column setWidth:frame.size.width];
 	
 	[content.animator setFrame:frame];
 	[content setDefaultFrame:frame];

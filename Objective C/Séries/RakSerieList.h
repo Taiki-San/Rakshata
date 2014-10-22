@@ -44,7 +44,7 @@ enum {
 	RakSerieListItem* rootItems[3];
 	
 	RakTreeView * content;
-	RakTableColumn * column;
+	NSTableColumn * column;
 	RakSerieMainList * _mainList;
 	
 	RakSerieListItem * currentDraggedItem;

@@ -18,15 +18,6 @@
 
 @end
 
-@interface RakTableColumn : NSTableColumn
-{
-	CGFloat _fixedWidth;
-}
-
-- (void) setFixedWidth : (CGFloat) fixedWidth;
-
-@end
-
 @interface RakTreeView : NSOutlineView
 {
 	NSRect _defaultFrame;

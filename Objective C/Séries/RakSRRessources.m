@@ -67,26 +67,6 @@
 
 @end
 
-@implementation RakTableColumn
-
-- (void) setFixedWidth : (CGFloat) fixedWidth
-{
-	if(_fixedWidth != fixedWidth)
-		[super setWidth:fixedWidth];
-	
-	_fixedWidth = fixedWidth;
-}
-
-- (void) setWidth:(CGFloat)width
-{
-	if(!_fixedWidth)
-		_fixedWidth = width;
-	
-	[super setWidth:_fixedWidth];
-}
-
-@end
-
 @implementation RakSRSubMenu
 
 - (CGFloat) getFontSize
