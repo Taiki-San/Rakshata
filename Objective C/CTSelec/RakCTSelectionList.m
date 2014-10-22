@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define IDENTIFIER_PRICE @"RakCTSelectionListPrice"
+
 @implementation RakCTSelectionList
 
 #pragma mark - Classical initialization
@@ -23,50 +25,52 @@
 		NSInteger row = -1, tmpRow = 0;
 
 		//We check we have valid data
-		self.compactMode = isCompact;
+		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		projectData = project;	//We don't protect chapter/volumen list but not really a problem as we'll only use it for drag'n drop
+		chapterPrice = NULL;
 		
-		if(self.isTome && ((isCompact && project.tomesInstalled != NULL) || (!isCompact && project.tomesFull != NULL)))
+		if(![self reloadData:projectData :NO])
 		{
-			amountData = isCompact ? project.nombreTomesInstalled : project.nombreTomes;
-			data = malloc(amountData * sizeof(META_TOME));
-			
-			if(data != NULL)
-			{
-				memcpy(data, (isCompact ? project.tomesInstalled : project.tomesFull), amountData * sizeof(META_TOME));
-				if(elemSelected != -1)
-				{
-					for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
-
-					if(tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID == elemSelected)
-						row = tmpRow;
-				}
-			}
+			self = nil;
+			return nil;
 		}
-		else if(!self.isTome && ((isCompact && project.chapitresInstalled != NULL) || (!isCompact && project.chapitresFull != NULL)))
+		
+		if(elemSelected != -1)
 		{
-			amountData = isCompact ? project.nombreChapitreInstalled : project.nombreChapitre;
-			data = malloc(amountData * sizeof(int));
-			
-			if(data != NULL)
+			if(self.isTome)
 			{
-				memcpy(data, (isCompact ? project.chapitresInstalled : project.chapitresFull), amountData * sizeof(int));
-				if(elemSelected != -1)
-				{
-					for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);
-					
-					if(tmpRow < amountData && ((int*)data)[tmpRow] == elemSelected)
-						row = tmpRow;
-				}
+				for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
+				
+				if(tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID == elemSelected)
+					row = tmpRow;
+			}
+			else if(!self.isTome)
+			{
+				for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);
+				
+				if(tmpRow < amountData && ((int*)data)[tmpRow] == elemSelected)
+					row = tmpRow;
 			}
 		}
 		
 		[self applyContext : frame : row :scrollerPosition];
 		
-		scrollView.wantsLayer = YES;
-		scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
-		scrollView.layer.cornerRadius = 4;
+		if(_tableView != nil && scrollView != nil)
+		{
+			_mainColumn = _tableView.tableColumns[0];
+			[self updateColumnPrice : _compactMode];
+			
+			scrollView.wantsLayer = YES;
+			scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
+			scrollView.layer.cornerRadius = 4;
+		}
+		else
+		{
+			free(data);
+			free(chapterPrice);
+			self = nil;
+		}
 	}
 	
 	return self;
@@ -79,10 +83,10 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
-	void * newDataBuf = NULL, *newData;
+	void * newDataBuf = NULL, *newData, *newPrices = NULL;
 	uint nbElem, allocSize;
 	
-	NSInteger element = [self getSelectedElement];
+	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
 	
 	if(self.isTome)
 	{
@@ -98,6 +102,8 @@
 			nbElem = project.nombreTomes;
 			newData = project.tomesFull;
 		}
+		
+		_nbChapterPrice = UINT_MAX;
 	}
 	else
 	{
@@ -113,11 +119,30 @@
 			nbElem = project.nombreChapitre;
 			newData = project.chapitresFull;
 		}
+		
+		if(projectData.isPaid && projectData.chapitresPrix != NULL)
+		{
+			newPrices = calloc(projectData.nombreChapitre, sizeof(uint));
+			if(newPrices != NULL)
+			{
+				_nbChapterPrice = projectData.nombreChapitre;
+				memcpy(newPrices, projectData.chapitresPrix, _nbChapterPrice * sizeof(uint));
+			}
+		}
+	}
+	
+	if(newData == NULL)
+	{
+		free(newPrices);
+		return NO;
 	}
 	
 	newDataBuf = malloc(nbElem * allocSize);
 	if(newDataBuf == NULL)
+	{
+		free(newPrices);
 		return NO;
+	}
 	
 	memcpy(newDataBuf, newData, nbElem * allocSize);
 	
@@ -126,13 +151,19 @@
 	amountData = nbElem;
 	projectData = project;
 	
-	if(resetScroller)
-		[_tableView scrollRowToVisible:0];
+	free(chapterPrice);
+	chapterPrice = newPrices;
 	
-	[_tableView reloadData];
-	
-	if(element != -1)
-		[self selectRow:[self getIndexOfElement:element]];
+	if(_tableView != nil)
+	{
+		if(resetScroller)
+			[_tableView scrollRowToVisible:0];
+		
+		[_tableView reloadData];
+		
+		if(element != -1)
+			[self selectRow:[self getIndexOfElement:element]];
+	}
 	
 	return YES;
 }
@@ -190,24 +221,93 @@
 	return -1;
 }
 
+#pragma mark - Switch state
+
+- (BOOL) compactMode
+{
+	return _compactMode;
+}
+
+- (void) setCompactMode : (BOOL) compactMode
+{
+	if(compactMode != _compactMode)
+	{
+		[self updateColumnPrice:compactMode];
+		_compactMode = compactMode;
+	}
+}
+
+- (void) updateColumnPrice : (BOOL) isCompact
+{
+	if(isCompact)
+	{
+		[_tableView removeTableColumn:_detailColumn];
+		_detailColumn = nil;
+	}
+	else
+	{
+		if(projectData.isPaid && (self.isTome || chapterPrice != NULL))
+		{
+			_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+			[_tableView addTableColumn:_detailColumn];
+
+			_mainColumn.width -= _detailColumn.width;
+		}
+	}
+}
+
 #pragma mark - Methods to deal with tableView
+
+- (void) additionalResizing : (NSSize) newSize
+{
+	_detailColumn.width = _detailWidth;
+	_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 25 : 0);
+}
+
+- (NSView*) tableView : (NSTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+{
+	RakText * output = (RakText *) [super tableView:tableView viewForTableColumn:tableColumn row:row];
+	
+	if(tableColumn == _detailColumn)
+	{
+		output.alignment = NSRightTextAlignment;
+
+		output.stringValue = [self tableView:tableView objectValueForTableColumn:tableColumn row:row];
+		[output sizeToFit];
+		
+		if(output.bounds.size.width > _detailWidth)
+		{
+			_detailWidth = output.bounds.size.width;
+			[self additionalResizing : _tableView.bounds.size];
+		}
+	}
+	else
+		output.alignment = NSLeftTextAlignment;
+
+	return output;
+}
 
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if(rowIndex >= amountData)
-		return nil;
+	NSString * output = @"Error :(";
 	
-	NSString * output;
+	if(rowIndex >= amountData)
+		return output;
 	
 	if(self.isTome)
 	{
 		META_TOME element = ((META_TOME *) data)[rowIndex];
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
-			if(element.readingName[0])
-				output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
+			if(aTableColumn != _detailColumn)
+			{
+				if(element.readingName[0])
+					output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
+				else
+					output = [NSString stringWithFormat:@"Tome %d", element.readingID];
+			}
 			else
-				output = [NSString stringWithFormat:@"Tome %d", element.readingID];
+				output = priceString(element.price);
 		}
 		else
 			output = @"Error! Out of bounds D:";
@@ -215,16 +315,21 @@
 	}
 	else
 	{
-		int ID = ((int *) data)[rowIndex];
-		if(ID != VALEUR_FIN_STRUCT)
+		if(aTableColumn != _detailColumn)
 		{
-			if(ID % 10)
-				output = [NSString stringWithFormat:@"Chapitre %d.%d", ID / 10, ID % 10];
+			int ID = ((int *) data)[rowIndex];
+			if(ID != VALEUR_FIN_STRUCT)
+			{
+				if(ID % 10)
+					output = [NSString stringWithFormat:@"Chapitre %d.%d", ID / 10, ID % 10];
+				else
+					output = [NSString stringWithFormat:@"Chapitre %d", ID / 10];
+			}
 			else
-				output = [NSString stringWithFormat:@"Chapitre %d", ID / 10];
+				output = @"Error! Out of bounds D:";
 		}
-		else
-			output = @"Error! Out of bounds D:";
+		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice)
+			output = priceString(chapterPrice[rowIndex] + (arc4random() % 2 ? arc4random() % 100000 : 0));
 	}
 	
 	return output;

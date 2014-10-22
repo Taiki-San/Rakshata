@@ -40,6 +40,8 @@
 	//Color cache
 	NSColor * normal;
 	NSColor * highlight;
+	
+	NSString * _identifier;
 }
 
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;

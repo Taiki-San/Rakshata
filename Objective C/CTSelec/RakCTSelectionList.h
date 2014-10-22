@@ -13,6 +13,17 @@
 @interface RakCTSelectionList : RakList
 {
 	PROJECT_DATA projectData;
+	
+	BOOL _compactMode;
+	
+	uint _counter;
+	
+	NSTableColumn * _mainColumn;
+	NSTableColumn * _detailColumn;
+	uint _detailWidth;
+	
+	uint _nbChapterPrice;
+	uint * chapterPrice;
 }
 
 @property BOOL isTome;

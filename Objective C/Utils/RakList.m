@@ -21,7 +21,8 @@
 	if(self != nil)
 	{
 		selectedIndex = -1;
-		[Prefs getCurrentTheme:self];	//register for changes
+		[Prefs getCurrentTheme:self];	//register for change
+		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
 	}
 	
 	return self;
@@ -46,28 +47,27 @@
 		NSLog(@"Luna refused to allocate this memory to us D:");
 		return;
 	}
-	else
-	{
-		_tableView.wantsLayer = NO;
-		_tableView.autoresizesSubviews = NO;
-	}
-	
-	[scrollView setDocumentView:_tableView];
+
+	_tableView.wantsLayer = NO;
+	_tableView.autoresizesSubviews = NO;
+	scrollView.documentView = _tableView;
 	
 	NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"];
-	[column setWidth:_tableView.frame.size.width];
 	
 	//Customisation
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
-	[_tableView setHeaderView:nil];
-	[_tableView setBackgroundColor:[NSColor clearColor]];
-	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
-	[_tableView setFocusRingType:NSFocusRingTypeNone];
-	[_tableView setAllowsMultipleSelection:NO];
+
+	_tableView.headerView = nil;
+	_tableView.backgroundColor = [NSColor clearColor];
+	_tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone;
+	_tableView.focusRingType = NSFocusRingTypeNone;
+	_tableView.allowsMultipleSelection = NO;
+	_tableView.intercellSpacing = NSMakeSize(0, _tableView.intercellSpacing.height);
 	
 	//End of setup
 	[_tableView addTableColumn:column];
+	[_tableView sizeLastColumnToFit];
 	[_tableView setDelegate:self];
 	[_tableView setDataSource:self];
 	[_tableView reloadData];
@@ -129,13 +129,18 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[_tableView setFrame:scrollView.frame];
-		[_tableView reloadData];
+		[self additionalResizing : scrollView.bounds.size];
 	}
 }
 
 - (void) setFrameOrigin : (NSPoint) origin
 {
 	[scrollView setFrameOrigin: origin];
+}
+
+- (void) additionalResizing : (NSSize) newSize
+{
+	
 }
 
 #ifdef FUCK_CONSTRAINT
@@ -157,14 +162,13 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[_tableView setFrame:scrollviewFrame];
-		[_tableView reloadData];
+		[self additionalResizing:scrollviewFrame.size];
 	}
 }
 
 - (void) setHidden : (BOOL) state
 {
-	if([scrollView isHidden] != state)
-		[scrollView setHidden:state];
+	[scrollView setHidden:state];
 }
 
 - (BOOL) isHidden
@@ -269,51 +273,46 @@
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
+	BOOL selectedRow = row == selectedIndex;
     // Get an existing cell with the identifier if it exists
-    RakText *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
+    RakText *result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	
     if (result == nil)
 	{
-		result = [[RakText alloc] initWithText:NSMakeRect(0, 0, _tableView.frame.size.width, 35) : [self tableView:tableView objectValueForTableColumn:tableColumn row:row] : normal];
-		[result setBackgroundColor:[self getBackgroundHighlightColor]];
-		[result setDrawsBackground:NO];
-
-		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
-		
-		[result setIdentifier: @"Mane 6"];
+		result = [[RakText alloc] init];
+		result.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
+		result.identifier = _identifier;
 	}
-	else
-	{
-		[result setStringValue : [self tableView:tableView objectValueForTableColumn:tableColumn row:row]];
-		[result setBackgroundColor:[self getBackgroundHighlightColor]];
-		if(row != selectedIndex)
-		{
-			[result setTextColor:normal];
-			[result setDrawsBackground:NO];
-		}
-		else
-		{
-			[result setTextColor:highlight];
-		}
-	}
+	
+	result.textColor = selectedRow ? highlight : normal;
+	result.drawsBackground = selectedRow;
+	result.backgroundColor = [self getBackgroundHighlightColor];
 	
 	return result;
 }
 
-- (BOOL)tableView:(RakTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
+- (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	[self resetSelection:aTableView];
+	[self resetSelection:tableView];
 
-	RakText* element = [aTableView viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
-    if (element != nil)
-    {
-		[element setTextColor: [highlight copy]];
-		[element setDrawsBackground:YES];
-		[element setNeedsDisplay];
-		selectedIndex = rowIndex;
-    }
-	else
-		selectedIndex = -1;
+	selectedIndex = -1;
+	
+	RakText* element;
+	BOOL firstEncounter = YES;
+	for(uint count = [tableView.tableColumns count]; count > 0;)
+	{
+		element = [tableView viewAtColumn:--count row:rowIndex makeIfNecessary:YES];
+		
+		if(element != nil)
+		{
+			element.textColor =  [highlight copy];
+			element.drawsBackground = YES;
+			[element setNeedsDisplay];
+			
+			selectedIndex = rowIndex;
+			firstEncounter = NO;
+		}
+	}
 	
 	return YES;
 }
@@ -471,7 +470,6 @@
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
 		
-		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[RakScroller updateScrollers:self];
 	}
 	

@@ -267,7 +267,7 @@ NSString * priceString(uint price)
 		
 		formater.numberStyle = NSNumberFormatterCurrencyStyle;
 		formater.usesSignificantDigits = YES;
-		formater.minimumSignificantDigits = formater.maximumSignificantDigits = 2;
+		formater.minimumSignificantDigits = 2;
 		
 		return [formater stringFromNumber:@(price / 100.0f)];
 	}
