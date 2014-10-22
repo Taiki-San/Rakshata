@@ -246,6 +246,11 @@
 - (void) selectRow : (int) row	{	[_content selectRow:row];	}
 - (void) jumpScrollerToRow : (int) row	{	[_content jumpScrollerToRow:row];	}
 
+- (void) gotClickedTransmitData : (bool) isTome : (uint) index
+{
+	[(RakCTSelection*) self.superview gotClickedTransmitData:isTome :index];
+}
+
 - (void) resetSelection : (NSTableView *) tableView	{	[_content resetSelection:tableView];	}
 
 @end

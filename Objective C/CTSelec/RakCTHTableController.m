@@ -98,7 +98,7 @@
 	{
 		self.scrollView.scrollingDisabled = YES;
 		
-		newFrame.origin.y = newFrame.size.height / 2 - tableHeight / 2;
+		newFrame.origin.y += newFrame.size.height / 2 - tableHeight / 2;
 		newFrame.size.height = tableHeight;
 	}
 	else

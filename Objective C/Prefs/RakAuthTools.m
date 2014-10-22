@@ -153,7 +153,7 @@
 		return;
 	}
 	
-	NSString * string = [[self stringValue] copy];
+	NSString * string = [self.stringValue copy];
 	const char * data = [string cStringUsingEncoding:NSASCIIStringEncoding];
 	
 	byte retValue = checkLogin(data);

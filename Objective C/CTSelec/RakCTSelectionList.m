@@ -232,8 +232,8 @@
 {
 	if(compactMode != _compactMode)
 	{
-		[self updateColumnPrice:compactMode];
 		_compactMode = compactMode;
+		[self updateColumnPrice:compactMode];
 	}
 }
 
@@ -250,10 +250,10 @@
 		{
 			_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
 			[_tableView addTableColumn:_detailColumn];
-
-			_mainColumn.width -= _detailColumn.width;
 		}
 	}
+	
+	[self additionalResizing : _tableView.bounds.size];
 }
 
 #pragma mark - Methods to deal with tableView
@@ -266,8 +266,24 @@
 
 - (void) additionalResizing : (NSSize) newSize
 {
-	_detailColumn.width = _detailWidth;
-	_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 10 : 0);
+	if(self.compactMode)
+	{
+		_mainColumn.width = newSize.width;
+	}
+	else
+	{
+		_detailColumn.width = _detailWidth;
+		_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 15 : 0);
+		
+		//We update every view size
+		RakText * element;
+		for(uint i = 0; i < amountData; i++)
+		{
+			element = [_tableView viewAtColumn:1 row:i makeIfNecessary:NO];
+			if(element != nil && element.bounds.size.width != _detailWidth)
+				[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
+		}
+	}
 }
 
 - (NSView*) tableView : (NSTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
@@ -290,6 +306,10 @@
 				_resizingQueued = YES;
 				[self performSelectorOnMainThread:@selector(additionalResizingProxy) withObject:nil waitUntilDone:NO];
 			}
+		}
+		else
+		{
+			[output setFrameSize:NSMakeSize(_detailWidth, output.bounds.size.height)];
 		}
 	}
 	else
@@ -352,7 +372,7 @@
 {
 	if(selectedIndex != -1 && selectedIndex < amountData)
 	{
-		[(RakCTSelection*) scrollView.superview gotClickedTransmitData: self.isTome : selectedIndex];
+		[(RakCTSelectionListContainer*) scrollView.superview gotClickedTransmitData: self.isTome : selectedIndex];
 	}
 }
 
