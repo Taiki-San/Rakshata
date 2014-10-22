@@ -486,31 +486,18 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	
-	NSScroller * scroller = self.verticalScroller;
-	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
-	{
-		[scroller setHidden:YES];
-	}
-	else if([scroller isHidden])
-	{
-		[scroller setHidden:NO];
-	}
+	[self updateScrollerState:frameRect];
 }
 
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
-	
-	NSScroller * scroller = self.verticalScroller;
-	if(![scroller isHidden] && ((RakTableView *)self.documentView).bounds.size.height <= frameRect.size.height)
-	{
-		[scroller setHidden:YES];
-	}
-	else if([scroller isHidden])
-	{
-		[scroller setHidden:NO];
-	}
+	[self updateScrollerState:frameRect];
+}
+
+- (void) updateScrollerState : (NSRect) frame
+{
+	self.hasVerticalScroller = ((NSView *) self.documentView).bounds.size.height > frame.size.height;
 }
 
 - (void) scrollWheel:(NSEvent *)event
@@ -518,7 +505,8 @@
 	//The second part bloc moves when there is no scroller on this direction
 	if(self.scrollingDisabled || ((event.scrollingDeltaX == 0 || !self.hasHorizontalScroller) && (event.scrollingDeltaY == 0 || !self.hasVerticalScroller)))
 		[self.nextResponder scrollWheel:event];
-	
+
+#if 0
 	else if(self.horizontalScrollingEnabled || ![event scrollingDeltaX])
 		[super scrollWheel:event];
 	
@@ -529,6 +517,10 @@
 		CFRelease(cgEvent);
 		[super scrollWheel:event];
 	}
+#else
+	else
+		[super scrollWheel:event];
+#endif
 }
 
 @end

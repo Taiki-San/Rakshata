@@ -160,6 +160,7 @@
 			[_tableView scrollRowToVisible:0];
 		
 		[_tableView reloadData];
+		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != -1)
 			[self selectRow:[self getIndexOfElement:element]];

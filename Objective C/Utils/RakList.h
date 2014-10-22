@@ -19,6 +19,7 @@
 @property BOOL scrollingDisabled;
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (void) updateScrollerState : (NSRect) frame;
 
 @end
 

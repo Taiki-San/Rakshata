@@ -96,16 +96,16 @@
 	//Gather rows that will have to be removed/inserted
 	for(uint pos = 0; pos < amountData; pos++)
 	{
-		if(_installed[pos] ^ installedOnly)
-		{
+		if(!_installed[pos])
 			[index addIndex:pos];
-		}
 	}
 	
 	if(installedOnly)
 		[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
 	else
 		[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+	
+	[scrollView updateScrollerState : scrollView.bounds];
 }
 
 - (NSInteger) selectedRow
@@ -241,7 +241,7 @@
 		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) data)[rowIndex].projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	}
 	else
-		return nil;
+		return @"Error D:";
 }
 
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
