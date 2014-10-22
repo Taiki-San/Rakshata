@@ -48,7 +48,7 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 			
 			entry1 = objectForKey(dictionary, JSON_RP_CHAP_DETAILS, @"details");
 			if(paidContent)
-				entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"Price");
+				entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"price");
 			
 			if(entry1 != nil && [(NSObject*)entry1 superclass] == [NSArray class])	//This is a special chunck
 			{
@@ -61,7 +61,7 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 				{
 					output = tmp;
 					
-					if(paidContent && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+					if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
 					{
 						*chaptersPrice = tmp;
 						
@@ -120,9 +120,11 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 					output[pos] = VALEUR_FIN_STRUCT;
 				}
 				
-				if(paidContent && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+				if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
 				{
-					if([entry2 isKindOfClass:[NSNumber class]])
+					*chaptersPrice = tmp;
+					
+					if([entry2 superclass] == [NSNumber class])
 					{
 						*chaptersPrice = tmp;
 						uint price = [entry2 unsignedIntValue];
@@ -309,7 +311,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			description = objectForKey(dict, JSON_RP_VOL_DESCRIPTION, @"Description");
 			
 			if(paidContent)
-				priceObj = objectForKey(dict, JSON_RP_PRICE, @"Price");
+				priceObj = objectForKey(dict, JSON_RP_PRICE, @"price");
 			
 			output[cache].ID = [internalID intValue];
 			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
@@ -387,7 +389,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
-	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"Price");
+	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"price");
 	if(paidContent != nil && [paidContent superclass] != [NSNumber class])	goto end;
 		 
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];

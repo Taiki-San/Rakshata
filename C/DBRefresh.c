@@ -168,17 +168,19 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 			if(projectShort != NULL)
 			{
 				for (uint pos = 0; pos < nbElem; pos++)
-					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
-				
-#ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
-				if(projectShort->isPaid && !paidTeam)
 				{
-					projectShort->isPaid = false;
-					free(projectShort->chapitresPrix);
-					projectShort->chapitresPrix = NULL;
-				}
+					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
+					
+#ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
+					if(projectShort[pos].isPaid && !paidTeam)
+					{
+						projectShort[pos].isPaid = false;
+						free(projectShort[pos].chapitresPrix);
+						projectShort[pos].chapitresPrix = NULL;
+					}
 #endif
-				
+				}
+			
 				applyChangesProject(&oldData[posBase], magnitudeInput, projectShort, nbElem);
 				free(projectShort);
 			}

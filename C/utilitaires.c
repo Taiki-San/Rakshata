@@ -75,6 +75,9 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	{
 		for(uint i = 0, j; i < a.nombreTomes; i++)
 		{
+			if(a.tomesFull[i].price != b.tomesFull[i].price)
+				return false;
+			
 			if(a.tomesFull[i].ID != b.tomesFull[i].ID || a.tomesFull[i].readingID != b.tomesFull[i].readingID || wcscmp(a.tomesFull[i].description, b.tomesFull[i].description) || wcscmp(a.tomesFull[i].readingName, b.tomesFull[i].readingName))
 				return false;
 			
@@ -100,6 +103,12 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 		return false;
 	
 	if(a.japaneseOrder != b.japaneseOrder)
+		return false;
+	
+	if(a.isPaid != b.isPaid)
+		return false;
+	
+	if(a.chapitresPrix == NULL ^ b.chapitresPrix == NULL)
 		return false;
 
 	if(wcscmp(a.projectName, b.projectName) || wcscmp(a.authorName, b.authorName) || wcscmp(a.description, b.description))
