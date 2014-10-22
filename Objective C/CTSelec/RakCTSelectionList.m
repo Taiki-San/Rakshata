@@ -258,10 +258,16 @@
 
 #pragma mark - Methods to deal with tableView
 
+- (void) additionalResizingProxy
+{
+	[self additionalResizing : _tableView.bounds.size];
+	_resizingQueued = NO;
+}
+
 - (void) additionalResizing : (NSSize) newSize
 {
 	_detailColumn.width = _detailWidth;
-	_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 25 : 0);
+	_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 10 : 0);
 }
 
 - (NSView*) tableView : (NSTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
@@ -278,7 +284,12 @@
 		if(output.bounds.size.width > _detailWidth)
 		{
 			_detailWidth = output.bounds.size.width;
-			[self additionalResizing : _tableView.bounds.size];
+			
+			if(!_resizingQueued)
+			{
+				_resizingQueued = YES;
+				[self performSelectorOnMainThread:@selector(additionalResizingProxy) withObject:nil waitUntilDone:NO];
+			}
 		}
 	}
 	else
@@ -329,7 +340,7 @@
 				output = @"Error! Out of bounds D:";
 		}
 		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice)
-			output = priceString(chapterPrice[rowIndex] + (arc4random() % 2 ? arc4random() % 100000 : 0));
+			output = priceString(chapterPrice[rowIndex]);
 	}
 	
 	return output;

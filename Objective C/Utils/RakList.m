@@ -305,7 +305,7 @@
 		
 		if(element != nil)
 		{
-			element.textColor =  [highlight copy];
+			element.textColor = highlight;
 			element.drawsBackground = YES;
 			[element setNeedsDisplay];
 			
@@ -341,13 +341,18 @@
 	
 	else if(selectedIndex != -1)
 	{
-		RakText * element = [tableView viewAtColumn:0 row:selectedIndex makeIfNecessary:NO];
+		RakText * element;
 		
-		if(element != nil)
+		for(uint count = [tableView.tableColumns count]; count > 0;)
 		{
-			[element setTextColor:normal];
-			[element setDrawsBackground:NO];
-			[element setNeedsDisplay];
+			element = [tableView viewAtColumn:--count row:selectedIndex makeIfNecessary:YES];
+			
+			if(element != nil)
+			{
+				element.textColor =  normal;
+				element.drawsBackground = NO;
+				[element setNeedsDisplay];
+			}
 		}
 		
 		CGFloat rowToDeselect = selectedIndex;
@@ -366,7 +371,9 @@
 
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
+#ifdef DEV_VERSION
 	NSLog(@"Project: %@- isTome: %d - element: %d - sender: %d - row: %ld - operation: %lu", [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding], isTome, element, sender, (long)row, (unsigned long)operation);
+#endif
 	return YES;
 }
 
@@ -515,7 +522,7 @@
 	else if(self.horizontalScrollingEnabled || ![event scrollingDeltaX])
 		[super scrollWheel:event];
 	
-	else if([event scrollingDeltaY])
+	else if([event scrollingDeltaY] >= 1)
 	{
 		CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 1, [event scrollingDeltaY], 0);
 		event = [NSEvent eventWithCGEvent:cgEvent];

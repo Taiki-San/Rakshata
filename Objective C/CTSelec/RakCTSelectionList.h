@@ -15,8 +15,7 @@
 	PROJECT_DATA projectData;
 	
 	BOOL _compactMode;
-	
-	uint _counter;
+	BOOL _resizingQueued;
 	
 	NSTableColumn * _mainColumn;
 	NSTableColumn * _detailColumn;
