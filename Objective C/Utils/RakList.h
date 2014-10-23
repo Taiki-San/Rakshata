@@ -76,7 +76,9 @@
 - (NSInteger) selectedRow;
 
 - (NSColor *) getTextColor;
+- (NSColor *) getTextColor : (uint) column : (uint) row;
 - (NSColor *) getTextHighlightColor;
+- (NSColor *) getTextHighlightColor : (uint) column : (uint) row;
 - (NSColor *) getBackgroundHighlightColor;
 
 - (void) selectRow : (int) row;

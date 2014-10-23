@@ -431,6 +431,32 @@
 	return output;
 }
 
+- (NSColor *) getTextColor
+{
+	return nil;
+}
+
+- (NSColor *) getTextHighlightColor
+{
+	return nil;
+}
+
+- (NSColor*) getTextColor:(uint)column :(uint)row
+{
+	if(row >= _nbElem)
+		return nil;
+	
+	if(_installedTable[row])
+		return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
+
+	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
+}
+
+- (NSColor *) getTextHighlightColor:(uint)column :(uint)row
+{
+	return [Prefs getSystemColor : GET_COLOR_ACTIVE : nil];
+}
+
 #pragma mark - Get result from NSTableView
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;

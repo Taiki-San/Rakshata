@@ -345,6 +345,7 @@
 
 	selectedIndex = -1;
 	
+	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
 	RakText* element;
 	BOOL firstEncounter = YES;
 	for(uint count = [tableView.tableColumns count]; count > 0;)
@@ -353,7 +354,7 @@
 		
 		if(element != nil)
 		{
-			element.textColor = highlight;
+			element.textColor = highlightColor;
 			element.drawsBackground = YES;
 			[element setNeedsDisplay];
 			

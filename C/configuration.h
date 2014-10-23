@@ -14,9 +14,12 @@
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 
 //DB configuration
-#define PAID_CONTENT_ONLY_FOR_PAID_REPO
 #define KEEP_UNUSED_TEAMS					//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
 //#define DELETE_REMOVED_PROJECT
+
+#ifndef DEV_VERSION
+#define PAID_CONTENT_ONLY_FOR_PAID_REPO
+#endif
 
 #define REPO_DEFAULT_OPEN_WEBSITE 0
 
