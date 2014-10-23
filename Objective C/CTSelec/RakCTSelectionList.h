@@ -21,8 +21,16 @@
 	NSTableColumn * _detailColumn;
 	uint _detailWidth;
 	
+	
+	//Various data
+	//Chapter only
 	uint _nbChapterPrice;
 	uint * chapterPrice;
+	
+	uint _nbElem;
+	uint _nbInstalled;
+	uint * _installedJumpTable;		//Give the position in the main array of installed elements
+	BOOL * _installedTable;			//Tell if an element of the main array is installed
 }
 
 @property BOOL isTome;

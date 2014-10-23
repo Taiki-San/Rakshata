@@ -224,13 +224,11 @@
 	if(_chapterView != nil)
 	{
 		_chapterView.compactMode = currentContext != TAB_CT;
-		[_chapterView reloadData:data :NO];
 	}
 	
 	if(_volView != nil)
 	{
 		_volView.compactMode = currentContext != TAB_CT;
-		[_volView reloadData:data :NO];
 	}
 }
 

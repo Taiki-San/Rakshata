@@ -83,8 +83,9 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
-	void * newDataBuf = NULL, *newData, *newPrices = NULL;
-	uint nbElem, allocSize;
+	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL;
+	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL;
+	BOOL *installedTable = NULL;
 	
 	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
 	
@@ -92,68 +93,104 @@
 	{
 		allocSize = sizeof(META_TOME);
 		
-		if(self.compactMode)
-		{
-			nbElem = project.nombreTomesInstalled;
-			newData = project.tomesInstalled;
-		}
-		else
-		{
-			nbElem = project.nombreTomes;
-			newData = project.tomesFull;
-		}
+		nbElem = project.nombreTomes;
+		newData = project.tomesFull;
+		installedData = project.tomesInstalled;
+		nbInstalledData = project.nombreTomesInstalled;
 		
-		_nbChapterPrice = UINT_MAX;
+		if(newData == NULL)
+			return NO;
 	}
 	else
 	{
 		allocSize = sizeof(int);
 		
-		if(self.compactMode)
-		{
-			nbElem = project.nombreChapitreInstalled;
-			newData = project.chapitresInstalled;
-		}
-		else
-		{
-			nbElem = project.nombreChapitre;
-			newData = project.chapitresFull;
-		}
+		nbElem = project.nombreChapitre;
+		newData = project.chapitresFull;
+		installedData = project.chapitresInstalled;
+		nbInstalledData = project.nombreChapitreInstalled;
 		
+		if(newData == NULL)
+			return NO;
+		
+		//Price table
 		if(projectData.isPaid && projectData.chapitresPrix != NULL)
 		{
 			newPrices = calloc(projectData.nombreChapitre, sizeof(uint));
 			if(newPrices != NULL)
 			{
-				_nbChapterPrice = projectData.nombreChapitre;
-				memcpy(newPrices, projectData.chapitresPrix, _nbChapterPrice * sizeof(uint));
+				nbChapterPrice = projectData.nombreChapitre;
+				memcpy(newPrices, projectData.chapitresPrix, nbChapterPrice * sizeof(uint));
+				
 			}
 		}
 	}
 	
-	if(newData == NULL)
-	{
-		free(newPrices);
-		return NO;
-	}
-	
+	//Post-processing
+	//Create newDataBuf
 	newDataBuf = malloc(nbElem * allocSize);
 	if(newDataBuf == NULL)
 	{
 		free(newPrices);
 		return NO;
 	}
-	
 	memcpy(newDataBuf, newData, nbElem * allocSize);
 	
+	//Set up table of installed
+	if(newData != NULL && installedData != NULL)
+	{
+		installedTable = calloc(nbElem, sizeof(BOOL));
+		installedJumpTable = malloc(nbInstalledData * sizeof(uint));
+		
+		if(installedTable != NULL && installedJumpTable != NULL)
+		{
+			uint posInst = 0;
+			BOOL isTome = self.isTome;
+			
+			for(uint posFull = 0; posFull < nbElem && posInst < nbInstalledData; posFull++)
+			{
+				if((isTome && ((META_TOME*)newDataBuf)[posFull].ID == ((META_TOME*)installedData)[posInst].ID) || (!isTome && ((int*)newDataBuf)[posFull] == ((int*)installedData)[posInst]))
+				{
+					installedTable[posFull] = YES;
+					installedJumpTable[posInst++] = posFull;
+				}
+			}
+			
+			if(posInst < nbInstalledData)
+			{
+				nbInstalledData = posInst;
+				void * tmp = realloc(installedJumpTable, posInst * sizeof(uint));
+				if(tmp != NULL)
+					installedJumpTable = tmp;
+			}
+		}
+		else
+		{
+			free(installedTable);		installedTable = NULL;
+			free(installedJumpTable);	installedJumpTable = NULL;
+		}
+	}
+	
+	//Update the main data list
 	free(data);
 	data = newDataBuf;
-	amountData = nbElem;
+	_nbElem = nbElem;
+	amountData = self.compactMode ? _nbInstalled : nbElem;
 	projectData = project;
 	
+	//Update installed list
+	free(_installedTable);
+	_installedTable = installedTable;
+	free(_installedJumpTable);
+	_installedJumpTable = installedJumpTable;
+	_nbInstalled = nbInstalledData;
+	
+	//Update chapter price
 	free(chapterPrice);
 	chapterPrice = newPrices;
+	_nbChapterPrice = nbChapterPrice;
 	
+	//Tell the view to update
 	if(_tableView != nil)
 	{
 		if(resetScroller)
@@ -173,7 +210,7 @@
 
 - (uint) nbElem
 {
-	return amountData;
+	return self.compactMode ? _nbInstalled : _nbElem;
 }
 
 #pragma mark - Backup routine
@@ -234,6 +271,9 @@
 	if(compactMode != _compactMode)
 	{
 		_compactMode = compactMode;
+		
+		amountData = [self nbElem];
+		[_tableView reloadData];
 		[self updateColumnPrice:compactMode];
 	}
 }
@@ -245,13 +285,10 @@
 		[_tableView removeTableColumn:_detailColumn];
 		_detailColumn = nil;
 	}
-	else
+	else if(projectData.isPaid && (self.isTome || chapterPrice != NULL))
 	{
-		if(projectData.isPaid && (self.isTome || chapterPrice != NULL))
-		{
-			_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
-			[_tableView addTableColumn:_detailColumn];
-		}
+		_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+		[_tableView addTableColumn:_detailColumn];
 	}
 	
 	[self additionalResizing : _tableView.bounds.size];
@@ -336,10 +373,18 @@
 
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	NSString * output = @"Error :(";
+	NSString * output;
+	
+	if(self.compactMode)
+	{
+		if(_installedJumpTable != NULL && rowIndex < _nbInstalled)
+			rowIndex = _installedJumpTable[rowIndex];
+		else
+			rowIndex = amountData;	//Will trigger an error
+	}
 	
 	if(rowIndex >= amountData)
-		return output;
+		return @"Error :(";
 	
 	if(self.isTome)
 	{
@@ -353,8 +398,10 @@
 				else
 					output = [NSString stringWithFormat:@"Tome %d", element.readingID];
 			}
-			else
+			else if(_installedTable == NULL || !_installedTable[rowIndex])
 				output = priceString(element.price);
+			else
+				output = @"";
 		}
 		else
 			output = @"Error! Out of bounds D:";
@@ -375,8 +422,10 @@
 			else
 				output = @"Error! Out of bounds D:";
 		}
-		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice)
+		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice && (_installedTable == NULL || !_installedTable[rowIndex]))
 			output = priceString(chapterPrice[rowIndex]);
+		else
+			output = @"";
 	}
 	
 	return output;
@@ -414,11 +463,24 @@
 	int selection;
 	
 	if(self.isTome)
+	{
 		selection = (((META_TOME *) data)[row]).ID;
+		item.price = (((META_TOME *) data)[row]).price;
+	}
 	else
+	{
 		selection = ((int *) data)[row];
+		
+		if(chapterPrice != NULL && row < _nbChapterPrice)
+			item.price = chapterPrice[row];
+	}
 	
 	[item setDataProject:getCopyOfProjectData(projectData) isTome:self.isTome element:selection];
+}
+
+- (void) additionalDrawing : (RakDragView *) draggedView
+{
+	
 }
 
 @end
