@@ -259,6 +259,11 @@
 
 #pragma mark - Methods to deal with tableView
 
+- (void) resizeProcessingBeforeTableView
+{
+	_tableViewRightBorder = scrollView.hasVerticalScroller ? 15 : 0;
+}
+
 - (void) additionalResizingProxy
 {
 	[self additionalResizing : _tableView.bounds.size];
@@ -267,17 +272,29 @@
 
 - (void) additionalResizing : (NSSize) newSize
 {
+	RakText * element;
+	
 	if(self.compactMode)
 	{
 		_mainColumn.width = newSize.width;
+		for(uint i = 0; i < amountData; i++)
+		{
+			element = [_tableView viewAtColumn:0 row:i makeIfNecessary:NO];
+			if(element != nil)
+			{
+				if(element.bounds.size.width != newSize.width)
+					[element setFrameSize:NSMakeSize(newSize.width, element.bounds.size.height)];
+				if(element.frame.origin.x < 0)
+					[element setFrameOrigin:NSMakePoint(0, element.frame.origin.y)];
+			}
+		}
 	}
 	else
 	{
 		_detailColumn.width = _detailWidth;
-		_mainColumn.width = newSize.width - _detailWidth - (scrollView.hasVerticalScroller ? 15 : 0);
+		_mainColumn.width = newSize.width - _detailWidth;
 		
 		//We update every view size
-		RakText * element;
 		for(uint i = 0; i < amountData; i++)
 		{
 			element = [_tableView viewAtColumn:1 row:i makeIfNecessary:NO];

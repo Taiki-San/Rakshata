@@ -20,6 +20,7 @@
 	
 	if(self != nil)
 	{
+		_tableViewRightBorder = 0;
 		selectedIndex = -1;
 		[Prefs getCurrentTheme:self];	//register for change
 		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
@@ -120,27 +121,9 @@
 	return [scrollView frame];
 }
 
-- (void) setFrame : (NSRect) frameRect
-{
-	CGFloat oldWidth = _tableView.frame.size.width;
-
-	[scrollView setFrame:[self getFrameFromParent:frameRect]];
-	
-	if(oldWidth != frameRect.size.width)
-	{
-		[_tableView setFrame:scrollView.frame];
-		[self additionalResizing : scrollView.bounds.size];
-	}
-}
-
 - (void) setFrameOrigin : (NSPoint) origin
 {
 	[scrollView setFrameOrigin: origin];
-}
-
-- (void) additionalResizing : (NSSize) newSize
-{
-	
 }
 
 #ifdef FUCK_CONSTRAINT
@@ -151,20 +134,6 @@
 }
 
 #endif
-
-- (void) resizeAnimation : (NSRect) frameRect
-{
-	CGFloat oldWidth = _tableView.frame.size.width;
-	NSRect scrollviewFrame = [self getFrameFromParent:frameRect];
-	
-	[scrollView.animator resizeAnimation:scrollviewFrame];
-	
-	if(oldWidth != frameRect.size.width)
-	{
-		[_tableView setFrame:scrollviewFrame];
-		[self additionalResizing:scrollviewFrame.size];
-	}
-}
 
 - (void) setHidden : (BOOL) state
 {
@@ -184,6 +153,51 @@
 	[scrollView removeFromSuperview];
 	
 	free(data);
+}
+
+#pragma mark - Resizing
+
+- (void) setFrame : (NSRect) frameRect
+{
+	[self _resize:frameRect :NO];
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self _resize:frameRect :YES];
+}
+
+- (void) _resize : (NSRect) frame : (BOOL) animate
+{
+	CGFloat oldWidth = _tableView.frame.size.width;
+	NSRect scrollviewFrame = [self getFrameFromParent : frame];
+	
+	if(animate)
+		[scrollView resizeAnimation:scrollviewFrame];
+	else
+		[scrollView resizeAnimation:scrollviewFrame];
+	
+	[self resizeProcessingBeforeTableView];
+	
+	oldWidth += _tableViewRightBorder;
+	
+	if(oldWidth != scrollviewFrame.size.width)
+	{
+		
+		scrollviewFrame.size.width -= _tableViewRightBorder;
+		[_tableView setFrame : scrollviewFrame];
+		[self additionalResizing : scrollviewFrame.size];
+	}
+}
+
+- (void) resizeProcessingBeforeTableView
+{
+	
+}
+
+- (void) additionalResizing : (NSSize) newSize
+{
+	
 }
 
 - (NSRect) getFrameFromParent : (NSRect) superviewFrame
