@@ -282,8 +282,6 @@
 			element = [_tableView viewAtColumn:0 row:i makeIfNecessary:NO];
 			if(element != nil)
 			{
-				if(element.bounds.size.width != newSize.width)
-					[element setFrameSize:NSMakeSize(newSize.width, element.bounds.size.height)];
 				if(element.frame.origin.x < 0)
 					[element setFrameOrigin:NSMakePoint(0, element.frame.origin.y)];
 			}
