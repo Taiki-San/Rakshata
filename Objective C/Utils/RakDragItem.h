@@ -20,6 +20,7 @@
 @property PROJECT_DATA project;
 @property BOOL isTome;
 @property int selection;
+@property uint price;
 
 - (void) setDataProject : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
 - (id) initWithData : (NSData *) data;

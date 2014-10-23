@@ -159,6 +159,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		}
 			
 		case GET_COLOR_BACKGROUND_READER_INTAB:
+		case GET_COLOR_BACKGROUND_DRAG_AND_DROP:
 		{
 			output = [NSColor colorWithDeviceWhite:42/255.0f alpha:1.0];
 			break;

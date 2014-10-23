@@ -77,7 +77,7 @@
 		return nil;
 	
 	[view setWantsLayer:YES];
-	[view.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB:nil].CGColor];
+	[view.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_DRAG_AND_DROP:nil].CGColor];
 	[view.layer setCornerRadius:5];
 	
 	[view addSubview:self];

@@ -16,6 +16,7 @@ typedef struct project_data_for_drag_drop
 	int selection;
 	bool isTome;
 	bool canDL;
+	uint price;
 } INTERNAL_D_AND_D;
 
 @implementation RakDragItem
@@ -52,6 +53,7 @@ typedef struct project_data_for_drag_drop
 		self.project = structure.data;
 		self.isTome = structure.isTome;
 		self.selection = structure.selection;
+		self.price = structure.price;
 		canDL = structure.canDL;
 	}
 	
@@ -65,6 +67,7 @@ typedef struct project_data_for_drag_drop
 	structure.data = self.project;
 	structure.isTome = self.isTome;
 	structure.selection = self.selection;
+	structure.price = self.price;
 	structure.canDL = canDL;
 	
 	return [NSData dataWithBytes:&structure length:sizeof(structure)];
