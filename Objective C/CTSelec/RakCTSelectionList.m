@@ -295,7 +295,29 @@
 		_compactMode = compactMode;
 		
 		amountData = [self nbElem];
-		[_tableView reloadData];
+		
+		if(selectedIndex != -1 && _installedJumpTable != NULL)
+		{
+			if(compactMode)	//We go from full to installed only
+			{
+				uint pos = 0;
+				for(; pos < _nbInstalled && _installedJumpTable[pos] != selectedIndex; pos++);
+				
+				if(pos < _nbInstalled)
+					selectedIndex = pos;
+				else
+					selectedIndex = -1;
+			}
+			else
+			{
+				if(_installedJumpTable != NULL && selectedIndex < _nbInstalled)
+					selectedIndex = _installedJumpTable[selectedIndex];
+			}
+		}
+		else
+			selectedIndex = -1;
+		
+		[self triggerInstallOnlyAnimate : compactMode];
 		[self updateColumnPrice:compactMode];
 	}
 }
@@ -477,6 +499,88 @@
 - (NSColor *) getTextHighlightColor:(uint)column :(uint)row
 {
 	return [Prefs getSystemColor : GET_COLOR_ACTIVE : nil];
+}
+
+#pragma mark - Smart reloading
+
+//Ceci est l'algorithme naif en O(n^2)
+//Il est viable sur < 1000 données, mais pourrait poser des problèmes à l'avenir
+//Un algo alternatif, en O(n*log(n)) serait de faire des copies de _oldData et de _newData
+//Les trier (avec un introsort (cf implé de g++), qsort est en n^2 dans notre cas générique)
+//Retirer les doublons (vérifier que les positions collent, un déplacement doit être detecté)
+//Regarder les positions de ce qu'il reste et voilà
+- (void) smartReload : (void*) oldData : (uint) nbElemOld : (void*) newData : (uint) nbElemNew
+{
+	if(_tableView != nil)
+		return;
+	
+	NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
+	uint newElem = 0, oldElem = 0;
+
+	if(oldData == NULL)
+	{
+		while(newElem < nbElemNew)
+			[new addIndex : newElem++];
+	}
+	else if(newData == NULL)
+	{
+		while(oldElem < nbElemOld)
+			[old addIndex : oldElem++];
+	}
+	else
+	{
+		BOOL isTome = self.isTome;
+		int current;
+		
+		for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
+		{
+			i = posOld;
+			
+			if(isTome)
+				for(current = ((META_TOME*)newData)[posNew].ID; i < nbElemOld && ((META_TOME*)oldData)[i].ID != current; i++);
+			else
+				for(current = ((int*)newData)[posNew]; i < nbElemOld && ((int*)oldData)[i] != current; i++);
+			
+			if(i < nbElemOld)
+			{
+				for(; posOld < i; oldElem++)
+					[old addIndex : posOld++];
+			}
+			else
+			{
+				[new addIndex:posNew];
+				newElem++;
+			}
+		}
+	}
+	
+	if(oldElem)
+		[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+	if(newElem)
+		[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideLeft];
+}
+
+- (void) triggerInstallOnlyAnimate : (BOOL) enter
+{
+	BOOL foundOne = NO;
+	NSMutableIndexSet * index = [NSMutableIndexSet new];
+
+	for(uint i = 0; i < _nbElem; i++)
+	{
+		if(!_installedTable[i])
+		{
+			[index addIndex:i];
+			foundOne = YES;
+		}
+	}
+	
+	if(foundOne)
+	{
+		if(enter)
+			[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+		else
+			[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+	}
 }
 
 #pragma mark - Get result from NSTableView
