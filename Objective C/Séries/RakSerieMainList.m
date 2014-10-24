@@ -250,7 +250,7 @@
 	
 	if (row == selectedIndex)
 	{
-		[element setTextColor:highlight];
+		[element setTextColor : highlight != nil ? highlight : [self getTextHighlightColor:0 :row]];
 		[element setDrawsBackground:YES];
 		return;
 	}
