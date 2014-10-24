@@ -75,7 +75,8 @@
 
 - (void) setFrameSize:(NSSize)newSize
 {
-	if(self.forcedOffset)
+	//Fix an issue when resizing with an animation
+	if(self.forcedOffset && newSize.height != self.bounds.size.height)
 	{
 		newSize.height += self.forcedOffset;
 	}

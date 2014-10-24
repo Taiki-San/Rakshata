@@ -205,7 +205,7 @@
 	NSRect frame = viewFrame;
 	
 	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &(frame.size.width) : &svSize];
-	frame.origin.x = frame.origin.y = 0;
+	frame.origin = NSZeroPoint;
 	
 	return frame;
 }

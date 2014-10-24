@@ -159,7 +159,7 @@
 	[content.animator setFrame:frame];
 	[content setDefaultFrame:frame];
 	
-	frame.origin.x = frame.origin.y = 0;
+	frame.origin = NSZeroPoint;
 	
 	[_mainList resizeAnimation:[self getMainListFrame:frame:content]];
 

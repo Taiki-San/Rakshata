@@ -278,7 +278,7 @@
 	{
 		[self.animator setFrame:frame];
 
-		frame.origin.x = frame.origin.y = 0;
+		frame.origin = NSZeroPoint;
 		[backButton resizeAnimation:frame];
 
 		if(coreView)
