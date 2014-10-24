@@ -251,6 +251,6 @@
 	[(RakCTSelection*) self.superview gotClickedTransmitData:isTome :index];
 }
 
-- (void) resetSelection : (NSTableView *) tableView	{	[_content resetSelection:tableView];	}
+- (void) resetSelection	{	[_content resetSelection:nil];	}
 
 @end
