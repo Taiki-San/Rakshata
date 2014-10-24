@@ -27,6 +27,65 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+		[CATransaction begin];
+	
+	self.documentView = nil;
+	
+	if(!mainThread)
+		[CATransaction commit];
+}
+
+#pragma mark - Size and position manipulation
+
+- (void) setFrameSize : (NSSize) newSize
+{
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+		[CATransaction begin];
+	
+	[super setFrameSize:newSize];
+	
+	if(!mainThread)
+		[CATransaction commit];
+}
+
+- (void) scrollToBeginningOfDocument
+{
+	NSPoint sliderStart = NSMakePoint(0, READER_PAGE_TOP_BORDER);
+	NSSize documentViewSize = ((NSView*)self.documentView).frame.size;
+	
+	if(_pageTooHigh)
+		sliderStart.y = documentViewSize.height - self.scrollViewFrame.size.height;
+	
+	if(_pageTooLarge)
+		sliderStart.x = documentViewSize.width - self.scrollViewFrame.size.width;
+
+	[self scrollToPoint:sliderStart];
+}
+
+- (void) scrollToEndOfDocument
+{
+	[self scrollToPoint:NSMakePoint(self.contentView.bounds.origin.x, 0)];
+}
+
+- (void) scrollToPoint : (NSPoint) origin
+{
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+		[CATransaction begin];
+
+	[self.contentView scrollToPoint:origin];
+	
+	if(!mainThread)
+		[CATransaction commit];
+}
+
+#pragma mark - Mouse events
+
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	[self.nextResponder mouseDown:theEvent];
@@ -42,34 +101,40 @@
 	[self.nextResponder mouseDragged:theEvent];
 }
 
-- (void) enforceScrollerPolicy
+#pragma mark - Properties
+
+- (BOOL) pageTooHigh
 {
-	self.hasVerticalScroller = self.pageTooHigh;
-	self.verticalScroller.alphaValue =	0;
-	self.hasHorizontalScroller = self.pageTooLarge;
-	self.horizontalScroller.alphaValue = 0;
+	return _pageTooHigh;
 }
 
-- (void) releaseData
-{
-	if(self.documentView != nil && [self.documentView class] == [NSImageView class])
-	{
-		((NSImageView*) self.documentView).image = nil;
-	}
-}
-
-- (void) dealloc
+- (void) setPageTooHigh : (BOOL) pageTooHigh
 {
 	BOOL mainThread = [NSThread isMainThread];
 	if(!mainThread)
-	{
 		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
-	}
 
-	[self releaseData];
-	self.documentView = nil;
+	self.hasVerticalScroller = _pageTooHigh = pageTooHigh;
+	self.verticalScroller.alphaValue =	0;
 
+	if(!mainThread)
+		[CATransaction commit];
+}
+
+- (BOOL) pageTooLarge
+{
+	return _pageTooLarge;
+}
+
+- (void) setPageTooLarge : (BOOL) pageTooLarge
+{
+	BOOL mainThread = [NSThread isMainThread];
+	if(!mainThread)
+		[CATransaction begin];
+	
+	self.hasHorizontalScroller = _pageTooLarge = pageTooLarge;
+	self.horizontalScroller.alphaValue = 0;
+	
 	if(!mainThread)
 		[CATransaction commit];
 }

@@ -208,19 +208,13 @@ enum
 			
 		case NSPageUpFunctionKey:
 		{
-			if(_scrollView != nil)
-				[self updateScrollerAfterResize: _scrollView : NSZeroSize];
-			
+			[self scrollToExtreme : _scrollView : YES];
 			break;
 		}
 			
 		case NSPageDownFunctionKey:
 		{
-			if(_scrollView != nil)
-			{
-				[_scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
-				[_scrollView.contentView scrollToPoint:NSMakePoint([[_scrollView contentView] bounds].origin.x, 0)];
-			}
+			[self scrollToExtreme : _scrollView : NO];
 			break;
 		}
 			
@@ -335,17 +329,27 @@ enum
 
 - (void) nextPage
 {
-	[self changePage:READER_ETAT_NEXTPAGE];
+	[self nextPage:NO];
+}
+
+- (void) nextPage : (BOOL) animated
+{
+	[self changePage:READER_ETAT_NEXTPAGE:animated];
 }
 
 - (void) prevPage
 {
-	[self changePage:READER_ETAT_PREVPAGE];
+	[self prevPage:NO];
+}
+
+- (void) prevPage : (BOOL) animated
+{
+	[self changePage:READER_ETAT_PREVPAGE : animated];
 }
 
 - (void) nextChapter
 {
-	[self changeChapter : true : NO];
+	[self changeChapter : YES : NO];
 }
 
 - (void) prevChapter
@@ -355,6 +359,11 @@ enum
 
 //Did the scroll succeed, or were we alredy at the bottom
 - (BOOL) moveSliderX : (int) move
+{
+	return [self _moveSliderX:move : NO : NO];
+}
+
+- (BOOL) _moveSliderX : (int) move : (BOOL) animated : (BOOL) contextExist
 {
 	if(_scrollView == nil || !_scrollView.pageTooLarge)
 		return NO;
@@ -379,11 +388,30 @@ enum
 	else
 		point.x += move;
 	
-	[_scrollView.contentView scrollToPoint:point];
+	if(animated)
+	{
+		if(!contextExist)
+		{
+			[NSAnimationContext beginGrouping];
+			[[NSAnimationContext currentContext] setDuration:0.3];
+		}
+		
+		[_scrollView.contentView.animator setBoundsOrigin:point];
+		
+		if(!contextExist)
+			[NSAnimationContext endGrouping];
+	}
+	else
+		[_scrollView scrollToPoint:point];
 	return YES;
 }
 
 - (BOOL) moveSliderY : (int) move
+{
+	return [self _moveSliderY:move :NO :NO];
+}
+
+- (BOOL) _moveSliderY : (int) move : (BOOL) animated : (BOOL) contextExist
 {
 	if(_scrollView == nil || !_scrollView.pageTooHigh)
 		return NO;
@@ -397,7 +425,7 @@ enum
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = [_scrollView.documentView frame].size.height - _scrollView.bounds.size.height;
+		CGFloat basePos = round([_scrollView.documentView frame].size.height - _scrollView.bounds.size.height);
 		if(point.y == basePos)
 			return NO;
 		else if(point.y > basePos - move)
@@ -408,8 +436,33 @@ enum
 	else
 		point.y += move;
 	
-	[_scrollView.contentView scrollToPoint:point];
+	if(animated)
+	{
+		if(!contextExist)
+		{
+			[NSAnimationContext beginGrouping];
+			[[NSAnimationContext currentContext] setDuration:0.2];
+		}
+		
+		[_scrollView.contentView.animator setBoundsOrigin:point];
+		
+		if(!contextExist)
+			[NSAnimationContext endGrouping];
+	}
+	else
+		[_scrollView scrollToPoint:point];
 	return YES;
+}
+
+- (void) scrollToExtreme : (RakPageScrollView *) scrollview : (BOOL) toTheTop
+{
+	if(scrollview != nil && [scrollview class] == [RakPageScrollView class])
+	{
+		if(toTheTop)
+			[scrollview scrollToBeginningOfDocument];
+		else
+			[scrollview scrollToEndOfDocument];
+	}
 }
 
 - (void) setSliderPos : (NSPoint) newPos
@@ -521,6 +574,11 @@ enum
 
 - (void) changePage : (byte) switchType
 {
+	[self changePage:switchType :NO];
+}
+
+- (void) changePage : (byte) switchType : (BOOL) animated
+{
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
 		if(_data.pageCourante + 1 > _data.nombrePageTotale)
@@ -545,7 +603,18 @@ enum
 		MUTEX_LOCK(cacheMutex);
 		
 		self.preventRecursion = YES;
-		mainScroller.selectedIndex = _data.pageCourante + 1;
+		
+		if(animated)
+		{
+			if(switchType == READER_ETAT_NEXTPAGE)
+				[mainScroller navigateForward:self];
+			else
+				[mainScroller navigateBack:self];
+		}
+		else
+		{
+			mainScroller.selectedIndex = _data.pageCourante + 1;
+		}
 		self.preventRecursion = NO;
 		
 		MUTEX_UNLOCK(cacheMutex);
@@ -818,44 +887,21 @@ enum
 	[self initialPositionning : scrollView];
 	
 	[scrollView setFrame : scrollView.scrollViewFrame];
-	[self updateScrollerAfterResize : scrollView : NSZeroSize];
+	[scrollView scrollToBeginningOfDocument];
+
 }
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
 {
-	NSPoint sliderStart = NSMakePoint(0, READER_PAGE_TOP_BORDER);
-	
-	if(previousSize.height == 0 && previousSize.width == 0)	//NSZeroSize
-	{
-		if (scrollView.pageTooHigh)
-			sliderStart.y = ((NSView*) scrollView.documentView).frame.size.height - scrollView.scrollViewFrame.size.height;
+	NSPoint sliderStart = [[_scrollView contentView] bounds].origin;
 		
-		if(scrollView.pageTooLarge)
-			sliderStart.x = ((NSView*) scrollView.documentView).frame.size.width - scrollView.scrollViewFrame.size.width;
-	}
-	else
-	{
-		sliderStart = [[_scrollView contentView] bounds].origin;
-		
-		if(scrollView.pageTooHigh)
-			sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
-
-		if(scrollView.pageTooLarge)
-			sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
-	}
+	if(scrollView.pageTooHigh)
+		sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
 	
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-	{
-		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
-	}
+	if(scrollView.pageTooLarge)
+		sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
 	
-	[scrollView performSelectorOnMainThread:@selector(enforceScrollerPolicy) withObject:nil waitUntilDone:NO];
-	[scrollView.contentView scrollToPoint:sliderStart];
-	
-	if(!mainThread)
-		[CATransaction commit];
+	[scrollView scrollToPoint:sliderStart];
 }
 
 - (void) jumpPressed : (BOOL) withShift
@@ -865,7 +911,7 @@ enum
 	if(!withShift)
 		delta *= -1;
 	
-	if(![self moveSliderY : delta])
+	if(![self _moveSliderY : delta : YES : NO])
 	{
 		CGFloat width = self.bounds.size.width;
 		delta = width - 2 * READER_BORDURE_VERT_PAGE;
@@ -874,12 +920,22 @@ enum
 			delta *= -1;
 		
 		
-		if(![self moveSliderX:delta])
+		if(![self _moveSliderX : delta : YES : NO])
 		{
 			if(withShift)
-				[self prevPage];
+			{
+				//arrangedObjects est offset d'un rang vers la droite (+1), du coup, _data.pageCourante correspond à l'index de la page précédante
+				[CATransaction begin];
+				[self scrollToExtreme : mainScroller.arrangedObjects[_data.pageCourante] : NO];
+				[CATransaction commit];
+				
+				[self prevPage : YES];
+			}
 			else
-				[self nextPage];
+			{
+				[self nextPage : YES];
+				[self scrollToExtreme : _scrollView : YES];
+			}
 		}
 		else
 		{
@@ -1117,7 +1173,6 @@ enum
 - (void) updatePCState : (NSMutableArray **) data : (uint) page : (NSView *) view
 {
 	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
 	
 	MUTEX_LOCK(cacheMutex);
 	
@@ -1179,7 +1234,7 @@ enum
 		[self initialPositionning : object];
 		
 		if(object.page != _data.pageCourante)
-			[self updateScrollerAfterResize : object : NSZeroSize];
+			[object scrollToBeginningOfDocument];
 		
 		[object setFrame:object.scrollViewFrame];
 		

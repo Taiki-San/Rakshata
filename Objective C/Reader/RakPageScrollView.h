@@ -11,6 +11,10 @@
  ********************************************************************************************/
 
 @interface RakPageScrollView : NSScrollView
+{
+	BOOL _pageTooLarge;
+	BOOL _pageTooHigh;
+}
 
 @property NSRect scrollViewFrame;
 @property NSRect contentFrame;
@@ -18,8 +22,10 @@
 @property BOOL pageTooHigh;
 @property uint page;
 
-- (void) enforceScrollerPolicy;
-- (void) releaseData;
+- (void) scrollToBeginningOfDocument;
+- (void) scrollToEndOfDocument;
+
+- (void) scrollToPoint : (NSPoint) origin;
 
 @end
 
