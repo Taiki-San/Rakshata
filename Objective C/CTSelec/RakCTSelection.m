@@ -245,16 +245,44 @@
 		return;
 	
 	int ID;
-	
-	if(isTome && index < data.nombreTomesInstalled)
-		ID = data.tomesInstalled[index].ID;
-	else if(!isTome && index < data.nombreChapitreInstalled)
-		ID = data.chapitresInstalled[index];
+	if(_currentContext == TAB_READER)
+	{
+		if(isTome && index < data.nombreTomesInstalled)
+			ID = data.tomesInstalled[index].ID;
+		else if(!isTome && index < data.nombreChapitreInstalled)
+			ID = data.chapitresInstalled[index];
+		else
+			return;
+	}
 	else
-		return;
+	{
+		if(isTome && index < data.nombreTomes)
+			ID = data.tomesFull[index].ID;
+		else if(!isTome && index < data.nombreChapitre)
+			ID = data.chapitresFull[index];
+		else
+			return;
+	}
 	
 	self.dontNotify = YES;
 	
+	if(_currentContext != TAB_READER)	//not compact mode, but soon to be
+	{
+		if(isTome)
+		{
+			_buttons.selectedSegment = 1;
+			[_chapterView resetSelection];
+		}
+		else
+		{
+			_buttons.selectedSegment = 0;
+			[_volView resetSelection];
+		}
+		
+		_chapterView.compactMode = YES;
+		_volView.compactMode = YES;
+	}
+
 	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
 	
 	self.dontNotify = NO;
@@ -294,7 +322,7 @@
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
 {
-	if(data.cacheDBID != projectID)
+	if(data.cacheDBID != projectID || self.dontNotify)
 		return;
 	
 	RakCTSelectionListContainer * tab = nil;
@@ -323,8 +351,8 @@
 	}
 	else
 	{
-		if(_chapterView != NULL)	[_chapterView resetSelection:nil];
-		if(_volView != NULL)	[_volView resetSelection:nil];
+		if(_chapterView != NULL)	[_chapterView resetSelection];
+		if(_volView != NULL)	[_volView resetSelection];
 		
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);

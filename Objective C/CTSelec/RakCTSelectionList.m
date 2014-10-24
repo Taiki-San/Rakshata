@@ -236,23 +236,45 @@
  
 - (NSInteger) getIndexOfElement : (NSInteger) element
 {
-	if (data == NULL)
+	if (data == NULL || (self.compactMode && _installedJumpTable == NULL))
 		return -1;
 	
 	if (self.isTome)
 	{
-		for (uint pos = 0; pos < amountData; pos++)
+		if(self.compactMode)
 		{
-			if(((META_TOME *) data)[pos].ID == element)
-				return pos;
+			for (uint pos = 0; pos < _nbInstalled; pos++)
+			{
+				if(((META_TOME *) data)[_installedJumpTable[pos]].ID == element)
+					return pos;
+			}
+		}
+		else
+		{
+			for (uint pos = 0; pos < _nbElem; pos++)
+			{
+				if(((META_TOME *) data)[pos].ID == element)
+					return pos;
+			}
 		}
 	}
 	else
 	{
-		for (uint pos = 0; pos < amountData; pos++)
+		if(self.compactMode)
 		{
-			if(((int *) data)[pos] == element)
-				return pos;
+			for (uint pos = 0; pos < _nbInstalled; pos++)
+			{
+				if(((int*) data)[_installedJumpTable[pos]] == element)
+					return pos;
+			}
+		}
+		else
+		{
+			for (uint pos = 0; pos < _nbElem; pos++)
+			{
+				if(((int *) data)[pos] == element)
+					return pos;
+			}
 		}
 	}
 	
@@ -375,6 +397,9 @@
 {
 	NSString * output;
 	
+	if(rowIndex >= amountData)
+		return @"Error :(";
+	
 	if(self.compactMode)
 	{
 		if(_installedJumpTable != NULL && rowIndex < _nbInstalled)
@@ -382,9 +407,6 @@
 		else
 			rowIndex = amountData;	//Will trigger an error
 	}
-	
-	if(rowIndex >= amountData)
-		return @"Error :(";
 	
 	if(self.isTome)
 	{
@@ -443,10 +465,10 @@
 
 - (NSColor*) getTextColor:(uint)column :(uint)row
 {
-	if(row >= _nbElem)
+	if(row >= amountData)
 		return nil;
 	
-	if(_installedTable[row])
+	if(self.compactMode || _installedTable[row])
 		return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
 
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
