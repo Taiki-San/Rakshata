@@ -578,7 +578,7 @@
 	if (![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakSerieListItem class] || ![(RakSerieListItem*) item isRootItem]))
 		return nil;
 	
-	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:nil];
+	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
 	if (!rowView)
 	{
 		rowView = [[RakTableRowView alloc] init];
@@ -596,7 +596,7 @@
 	{
 		if([item isRootItem])
 		{
-			rowView = [outlineView makeViewWithIdentifier:@"RootLineMainList" owner:nil];
+			rowView = [outlineView makeViewWithIdentifier:@"RootLineMainList" owner:self];
 			if(rowView == nil)
 			{
 				rowView = [[RakSRSubMenu alloc] initWithText:outlineView.bounds :@"RootLineMainList"];
@@ -615,7 +615,7 @@
 	else
 	{
 		NSString * identifier = [item isRootItem] ? @"RootLine" : @"StandardLine";
-		rowView = [outlineView makeViewWithIdentifier:identifier owner:nil];
+		rowView = [outlineView makeViewWithIdentifier:identifier owner:self];
 		if (rowView == nil)
 		{
 			rowView = [[RakText alloc] init];
