@@ -12,8 +12,6 @@
 
 /*Included from every files so we better should prevent recursive includes*/
 
-#define FUCK_CONSTRAINT
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

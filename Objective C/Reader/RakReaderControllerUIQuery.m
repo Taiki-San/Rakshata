@@ -217,15 +217,6 @@
 	}
 }
 
-#ifdef FUCK_CONSTRAINT
-
-- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
-{
-	NSLog(@"[%@] - Weird constraints detected!", self);
-}
-
-#endif
-
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	[self.animator setFrame : [self getButtonFrame:frameRect]];

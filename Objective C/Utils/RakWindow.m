@@ -107,9 +107,9 @@
 	[self.contentView keyDown:theEvent];
 }
 
-- (void)visualizeConstraints:(NSArray *)constraints
+- (void) layoutIfNeeded
 {
-	NSLog(@"UI just blown up, sorry :/");
+	
 }
 
 #pragma mark - Delegate

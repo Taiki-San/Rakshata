@@ -59,15 +59,6 @@
 	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
 
-#ifdef FUCK_CONSTRAINT
-
-- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
-{
-	NSLog(@"[%@] - Weird constraints detected!", self);
-}
-
-#endif
-
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	NSRect newFrame = [self createFrameFromSuperFrame:frameRect];
