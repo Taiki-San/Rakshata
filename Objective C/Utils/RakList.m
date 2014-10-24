@@ -273,21 +273,24 @@
 {
 	RakText * element;
 	NSColor * backgroundColor = [self getBackgroundHighlightColor];
+	NSView * rowView;
 	
-	for(uint column = 0, count = [_tableView.tableColumns count]; column < count; column++)
+	for(uint rowIndex = 0, column; rowIndex < amountData; rowIndex++)
 	{
-		for(uint row = 0; row < amountData; row++)
+		rowView = [_tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
+		column = 0;
+		for(element in rowView.subviews)
 		{
-			element = [_tableView viewAtColumn:column row:row makeIfNecessary:NO];
-			if(element != nil)
+			if(element != nil && [element class] == [RakText class])
 			{
-				if(row == selectedIndex)
-					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column :row];
+				if(rowIndex == selectedIndex)
+					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column :rowIndex];
 				else
-					element.textColor = normal != nil ? normal : [self getTextColor:column :row];
+					element.textColor = normal != nil ? normal : [self getTextColor:column :rowIndex];
 				
 				element.backgroundColor = backgroundColor;
 			}
+			column++;
 		}
 	}
 }
@@ -336,22 +339,18 @@
 	selectedIndex = -1;
 	
 	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
-	RakText* element;
-	BOOL firstEncounter = YES;
-	for(uint count = [tableView.tableColumns count]; count > 0;)
+	
+	NSView * rowView = [tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
+	for(RakText * view in rowView.subviews)
 	{
-		element = [tableView viewAtColumn:--count row:rowIndex makeIfNecessary:YES];
-		
-		if(element != nil)
+		if([view class] == [RakText class])
 		{
-			element.textColor = highlightColor;
-			element.drawsBackground = YES;
-			[element setNeedsDisplay];
-			
-			selectedIndex = rowIndex;
-			firstEncounter = NO;
+			view.textColor = highlightColor;
+			view.drawsBackground = YES;
+			[view setNeedsDisplay];
 		}
 	}
+	selectedIndex = rowIndex;
 	
 	return YES;
 }
@@ -380,17 +379,16 @@
 	
 	else if(selectedIndex != -1)
 	{
-		RakText * element;
+		NSColor * normalColor = normal != nil ? normal : [self getTextColor:0 :selectedIndex];
 		
-		for(uint count = [tableView.tableColumns count]; count > 0;)
+		NSView * rowView = [tableView rowViewAtRow:selectedIndex makeIfNecessary:NO];
+		for(RakText * view in rowView.subviews)
 		{
-			element = [tableView viewAtColumn:--count row:selectedIndex makeIfNecessary:YES];
-			
-			if(element != nil)
+			if([view class] == [RakText class])
 			{
-				element.textColor =  normal;
-				element.drawsBackground = NO;
-				[element setNeedsDisplay];
+				view.textColor =  normalColor;
+				view.drawsBackground = NO;
+				[view setNeedsDisplay];
 			}
 		}
 		
