@@ -166,7 +166,7 @@
 	if(animate)
 		[scrollView resizeAnimation:scrollviewFrame];
 	else
-		[scrollView resizeAnimation:scrollviewFrame];
+		[scrollView setFrame:scrollviewFrame];
 	
 	[self resizeProcessingBeforeTableView];
 	
@@ -174,7 +174,6 @@
 	
 	if(oldWidth != scrollviewFrame.size.width)
 	{
-		
 		scrollviewFrame.size.width -= _tableViewRightBorder;
 		[_tableView setFrame : scrollviewFrame];
 		[self additionalResizing : scrollviewFrame.size];
