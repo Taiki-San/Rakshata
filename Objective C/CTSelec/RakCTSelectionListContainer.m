@@ -49,6 +49,9 @@
 		_placeholder = [[RakText alloc] initWithText: self.bounds :[NSString stringWithFormat:@"Aucun %s\ndisponible", _content.isTome ? "tome" : "chapitre"] :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 		if(_placeholder != nil)
 		{
+#ifdef LARGE_FONT_FOR_PLACEHOLDERS
+			[_placeholder setFont: [NSFont systemFontOfSize:15]];
+#endif
 			[_placeholder setAlignment:NSCenterTextAlignment];
 			[_placeholder sizeToFit];
 			[self addSubview:_placeholder];
@@ -240,7 +243,7 @@
 {
 	BOOL retValue = [_content reloadData : project : resetScroller];
 	
-	if(_placeholderActive != (_content.nbElem == 0))
+	if(_placeholderActive == retValue)
 	{
 		_placeholderActive = !_placeholderActive;
 		[_content setHidden : _placeholderActive];

@@ -96,7 +96,12 @@
 		{
 			_placeholder = [[RakText alloc] initWithText:self.bounds : @"Aucun résumé disponible" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 			if(_placeholder != nil)
+			{
+#ifdef LARGE_FONT_FOR_PLACEHOLDERS
+				[_placeholder setFont: [NSFont systemFontOfSize:15]];
+#endif
 				[_placeholder sizeToFit];
+			}
 		}
 	}
 	

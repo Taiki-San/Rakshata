@@ -23,3 +23,5 @@
 
 #define REPO_DEFAULT_OPEN_WEBSITE 0
 
+//UI configuration
+#define LARGE_FONT_FOR_PLACEHOLDERS
