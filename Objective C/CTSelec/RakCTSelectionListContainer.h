@@ -40,7 +40,6 @@
 - (void) selectRow : (int) row;
 - (void) jumpScrollerToRow : (int) row;
 
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
 - (void) resetSelection;
 
 @end

@@ -34,7 +34,7 @@
 
 - (NSString *) getContextToGTFO;
 
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index;
+- (void) gotClickedTransmitData : (NSNotification*) notification;
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;

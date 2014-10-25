@@ -57,6 +57,7 @@
 			
 			view = nil;
 		}
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotClickedTransmitData:) name:@"RakCTSelectedManually" object:nil];
 	}
 	
 	return self;
@@ -239,12 +240,20 @@
 
 #pragma mark - Proxy
 
-- (void) gotClickedTransmitData : (bool) isTome : (uint) index
+- (void) gotClickedTransmitData : (NSNotification *) notification
 {
 	if(self.dontNotify)
 		return;
 	
 	int ID;
+	NSNumber * _index = [notification.userInfo objectForKey:@"index"], *_isTome = [notification.userInfo objectForKey:@"isTome"], * _installed = [notification.userInfo objectForKey:@"isInstalled"];
+
+	if(_index == nil || _isTome == nil || _installed == nil)
+		return;
+
+	uint index = [_index unsignedIntValue];
+	BOOL isTome = [_isTome boolValue], installed = [_installed boolValue];
+	
 	if(_currentContext == TAB_READER)
 	{
 		if(isTome && index < data.nombreTomesInstalled)
@@ -266,7 +275,7 @@
 	
 	self.dontNotify = YES;
 	
-	if(_currentContext != TAB_READER)	//not compact mode, but soon to be
+	if(_currentContext != TAB_READER)	//We have to update the context in the case we moved to compact mode
 	{
 		if(isTome)
 		{
@@ -278,12 +287,16 @@
 			_buttons.selectedSegment = 0;
 			[_volView resetSelection];
 		}
-		
-		_chapterView.compactMode = YES;
-		_volView.compactMode = YES;
 	}
 
-	[RakTabView broadcastUpdateContext:self :data :isTome :ID];
+	if(installed)
+	{
+		_chapterView.compactMode = YES;
+		_volView.compactMode = YES;
+		[RakTabView broadcastUpdateContext:self :data :isTome :ID];
+	}
+	else
+		[[[NSApp delegate] MDL] proxyAddElement:data isTome:isTome element:ID partOfBatch:NO];
 	
 	self.dontNotify = NO;
 }

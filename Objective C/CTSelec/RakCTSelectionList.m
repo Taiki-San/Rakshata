@@ -589,7 +589,9 @@
 {
 	if(selectedIndex != -1 && selectedIndex < amountData)
 	{
-		[(RakCTSelectionListContainer*) scrollView.superview gotClickedTransmitData: self.isTome : selectedIndex];
+		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[selectedIndex]);
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(selectedIndex), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }
 
