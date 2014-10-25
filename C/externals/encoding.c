@@ -81,7 +81,7 @@ void decToHex(const unsigned char *input, size_t length, char *output)
 
 //base-64
 
-static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+const static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 	'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
 	'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
 	'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -90,7 +90,7 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 	'w', 'x', 'y', 'z', '0', '1', '2', '3',
 	'4', '5', '6', '7', '8', '9', '+', '-'};
 static char decoding_table[256] = {-1};
-static int mod_table[] = {0, 2, 1};
+const static int mod_table[] = {0, 2, 1};
 
 char * base64_encode_wchar(const wchar_t *data, size_t input_length, size_t *output_length)
 {

@@ -71,7 +71,7 @@
 {
 	[self.animator setFrame:frameRect];
 	
-	frameRect.origin.x = frameRect.origin.y = 0;
+	frameRect.origin = NSZeroPoint;
 	[self resizeAnimationInternalViews:frameRect];
 }
 

@@ -187,7 +187,7 @@ void networkAndVersionTest()
     /*Chargement de l'URL*/
     snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
 
-    if(download_mem(temp, NULL, bufferDL, 100, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(temp, NULL, bufferDL, sizeof(bufferDL), SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.

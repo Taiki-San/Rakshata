@@ -279,8 +279,7 @@
 #endif
 		}
 	}
-	NSRect outputFailure = {{0, 0}, {0, 0}};
-	return outputFailure;
+	return NSZeroRect;
 }
 
 - (void) setAtIndex: (uint8_t) index : (NSRect) data

@@ -161,7 +161,7 @@
 	
 	frame.origin = NSZeroPoint;
 	
-	[_mainList resizeAnimation:[self getMainListFrame:frame:content]];
+	[_mainList resizeAnimation:[self getMainListFrame : frame : content]];
 
 	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
 	{
@@ -647,7 +647,7 @@
 
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
-	frame.size.width -= 2 * [outlineView indentationPerLevel];
+	frame.size.width -= 2 * outlineView.indentationPerLevel;
 	
 	return frame;
 }

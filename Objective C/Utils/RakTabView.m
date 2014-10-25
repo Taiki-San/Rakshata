@@ -412,7 +412,7 @@
 
 - (BOOL) needToConsiderMDL
 {
-	return false;
+	return NO;
 }
 
 - (void) setLastFrame : (NSRect) frame
@@ -539,7 +539,7 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	MDL * sharedTabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * sharedTabMDL = [self class] == [MDL class] ? (MDL*) self : [(RakAppDelegate*) [NSApp delegate] MDL];
 	
 	if(sharedTabMDL != nil && (!requireAvailable || [sharedTabMDL isDisplayed]))
 		return sharedTabMDL;
