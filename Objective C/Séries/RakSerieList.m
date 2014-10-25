@@ -32,7 +32,7 @@
 			content = [[RakTreeView alloc] initWithFrame:frame];
 			[content setFrame:frame];
 			column = [[NSTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
-			[column setWidth:content.frame.size.width];
+			column.width = column.maxWidth = column.minWidth = content.frame.size.width;	//Lock the width
 			
 			//Customisation
 			[content setIndentationPerLevel:[content indentationPerLevel] / 2];
@@ -134,7 +134,7 @@
 
 - (void) setFrame: (NSRect) frame
 {
-	[column setWidth:frame.size.width];
+	column.width = column.maxWidth = column.minWidth = frame.size.width;
 
 	[content setFrame:frame];
 	
@@ -154,7 +154,7 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
-	[column setWidth:frame.size.width];
+	column.width = column.maxWidth = column.minWidth = frame.size.width;
 	
 	[content.animator setFrame:frame];
 	[content setDefaultFrame:frame];
