@@ -55,10 +55,10 @@
 			}
 			else
 			{
-				dataBuf.origin.x	/= 10;
-				dataBuf.origin.y	/= 10;
-				dataBuf.size.width	/= 10;
-				dataBuf.size.height /= 10;
+				dataBuf.origin.x	/= 10.0f;
+				dataBuf.origin.y	/= 10.0f;
+				dataBuf.size.width	/= 10.0f;
+				dataBuf.size.height /= 10.0f;
 			}
 			[self setAtIndex:i :dataBuf];
 		}

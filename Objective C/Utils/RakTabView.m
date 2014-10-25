@@ -407,7 +407,7 @@
 
 - (NSRect) createFrame
 {
-	return [self createFrameWithSuperView:[self superview]];
+	return [self createFrameWithSuperView : self.superview];
 }
 
 - (BOOL) needToConsiderMDL

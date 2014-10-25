@@ -101,7 +101,7 @@
 
 - (NSRect) getFocusSerie
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.size.width = widthMDLSerie;			//Pref modifiable
 
@@ -116,7 +116,7 @@
 
 - (NSRect) getFocusCT
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output.origin.x];
 	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output.size.height];
@@ -131,7 +131,7 @@
 
 - (NSRect) getFocusReader : (int) stateTabsReader
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = 0;
 	output.origin.y = 0;
@@ -147,7 +147,7 @@
 
 - (NSRect) getDefaultFocusMDL
 {
-	NSRect output = { {0, 0}, {0, 0}};
+	NSRect output = NSZeroRect;
 	
 	output.origin.x = TAB_MDL_POSX;
 	output.origin.y = TAB_MDL_POSY;
