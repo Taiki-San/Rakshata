@@ -71,7 +71,7 @@
 	[coreView removeFromSuperview];
 }
 
-/* Proxy */
+#pragma mark - Proxy
 
 - (void) proxyAddElement : (PROJECT_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch
 {
@@ -86,7 +86,7 @@
 	return false;
 }
 
-/*Coreview manipulation*/
+#pragma mark - View sizing manipulation
 
 - (NSRect) getCoreviewFrame : (NSRect) frame
 {
@@ -100,41 +100,58 @@
 	return output;
 }
 
-/*Drag and drop UI effects*/
-
-- (BOOL) isDisplayed
+- (NSRect) lastFrame
 {
-	return (self.forcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
+	if(_lastFrame.size.height + _lastFrame.origin.y <= 0)
+		return NSZeroRect;
+	
+	return [super lastFrame];
 }
 
-- (void) dragAndDropStarted : (BOOL)started : (BOOL) canDL
+- (CGFloat) getRequestedViewWidth: (CGFloat) widthWindow
 {
-	if(!canDL)
-		return;
-	
-	if(started)
+	CGFloat prefData;
+	NSSize size = NSMakeSize(widthWindow, 0);
+	[Prefs getPref : PREFS_GET_MDL_WIDTH : &prefData : &size];
+	return prefData;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	if([self wouldFrameChange:frameRect])
 	{
-		if(self.forcedToShowUp)
-			self.forcedToShowUp = NO;
+		[super setFrame:frameRect];
+		[foregroundView setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
 		
-		if([self isDisplayed] && !self.waitingLogin)
-			return;
+		if(coreView != nil)
+			[coreView setFrame:[self getCoreviewFrame : frameRect]];
 		
-		self.forcedToShowUp = YES;
+		if(_popover != nil)
+			[_popover locationUpdated:frameRect:NO];
+		
+		if(needUpdateMainViews)
+			[self updateDependingViews : NO];
 	}
-	else if (self.forcedToShowUp)
-		self.forcedToShowUp = NO;
-
-	else
-		return;
-	
-	[coreView hideList: self.forcedToShowUp];
-	[coreView setFocusDrop : self.forcedToShowUp];
-	needUpdateMainViews = YES;
-	[self updateDependingViews : YES];
 }
 
-/*Internal stuffs*/
+- (void) resizeAnimation
+{
+	NSRect frame = [self createFrame];
+	
+	if([self wouldFrameChange:frame])
+	{
+		[self.animator setFrame:frame];
+		[foregroundView resizeAnimation:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
+		
+		if(coreView != nil)
+			[coreView resizeAnimation : [self getCoreviewFrame : frame]];
+	}
+	
+	if (([self wouldFrameChange:frame] || ![self isDisplayed]) && _popover != nil)
+		[_popover locationUpdated:frame:YES];
+}
+
+#pragma mark - Subclassing
 
 - (BOOL) isStillCollapsedReaderTab
 {
@@ -243,59 +260,6 @@
 		[super mouseEntered:theEvent];
 }
 
-/**	 Get View Size	**/
-
-- (NSRect) lastFrame
-{
-	if(_lastFrame.size.height + _lastFrame.origin.y <= 0)
-		return NSZeroRect;
-
-	return [super lastFrame];
-}
-
-- (CGFloat) getRequestedViewWidth: (CGFloat) widthWindow
-{
-	CGFloat prefData;
-	NSSize size = NSMakeSize(widthWindow, 0);
-	[Prefs getPref : PREFS_GET_MDL_WIDTH : &prefData : &size];
-	return prefData;
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	if([self wouldFrameChange:frameRect])
-	{
-		[super setFrame:frameRect];
-		[foregroundView setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
-		
-		if(coreView != nil)
-			[coreView setFrame:[self getCoreviewFrame : frameRect]];
-		
-		if(_popover != nil)
-			[_popover locationUpdated:frameRect:NO];
-		
-		if(needUpdateMainViews)
-			[self updateDependingViews : NO];
-	}
-}
-
-- (void) resizeAnimation
-{
-	NSRect frame = [self createFrame];
-	
-	if([self wouldFrameChange:frame])
-	{
-		[self.animator setFrame:frame];
-		[foregroundView resizeAnimation:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
-		
-		if(coreView != nil)
-			[coreView resizeAnimation : [self getCoreviewFrame : frame]];
-	}
-	
-	if (([self wouldFrameChange:frame] || ![self isDisplayed]) && _popover != nil)
-		[_popover locationUpdated:frame:YES];
-}
-
 - (int) getCodePref : (int) request
 {
 	int output;
@@ -364,6 +328,40 @@
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover
 {
 	_popover = popover;
+}
+
+#pragma mark - Drag and drop UI effects
+
+- (BOOL) isDisplayed
+{
+	return (self.forcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
+}
+
+- (void) dragAndDropStarted : (BOOL)started : (BOOL) canDL
+{
+	if(!canDL)
+		return;
+	
+	if(started)
+	{
+		if(self.forcedToShowUp)
+			self.forcedToShowUp = NO;
+		
+		if([self isDisplayed] && !self.waitingLogin)
+			return;
+		
+		self.forcedToShowUp = YES;
+	}
+	else if (self.forcedToShowUp)
+		self.forcedToShowUp = NO;
+	
+	else
+		return;
+	
+	[coreView hideList: self.forcedToShowUp];
+	[coreView setFocusDrop : self.forcedToShowUp];
+	needUpdateMainViews = YES;
+	[self updateDependingViews : YES];
 }
 
 #pragma mark - Drop support
