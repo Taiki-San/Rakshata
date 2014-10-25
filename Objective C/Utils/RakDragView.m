@@ -16,6 +16,8 @@
 
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString
 {
+	CGFloat originalWidth = self.bounds.size.width;
+	
 	if(projectImage != nil)
 	{
 		char * encodedHash = getPathForTeam(projectData.team->URLRepo);
@@ -40,12 +42,14 @@
 	{
 		[projectName setStringValue:[[NSString alloc] initWithData:[NSData dataWithBytes:projectData.projectName length:sizeof(projectData.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
 		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE:nil]];
+		[self optimizeWidth : projectName];
 	}
 	
 	if(selectionNameString != nil && selectionName != nil)
 	{
 		[selectionName setStringValue:selectionNameString];
 		[selectionName setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT:nil]];
+		[self optimizeWidth : selectionName];
 	}
 	else
 	{
@@ -62,6 +66,38 @@
 	if(separationLine != nil)
 	{
 		[separationLine setBorderColor:[Prefs getSystemColor:GET_COLOR_SURVOL:nil]];
+		
+		if(self.bounds.size.width > originalWidth)
+		{
+			NSRect frame = separationLine.frame;
+			frame.size.width = self.bounds.size.width - frame.origin.x - 20;
+			[separationLine setFrame : frame];
+		}
+	}
+}
+
+- (void) optimizeWidth : (NSTextField *) element
+{
+	NSRect oldFrame = element.frame;
+	
+	[element sizeToFit];
+	
+	NSRect newFrame = element.bounds;
+	newFrame.origin = oldFrame.origin;
+	
+	//We recenter on the y axis
+	if(newFrame.size.height != oldFrame.size.height)
+	{
+		newFrame.origin.y += (newFrame.size.height - oldFrame.size.height) / 2;
+		[element setFrameOrigin:newFrame.origin];
+	}
+
+	//We check if we need to increse the full width
+	if(newFrame.origin.x + newFrame.size.width > self.bounds.size.width)
+	{
+		NSSize size = self.bounds.size;
+		size.width = newFrame.origin.x + newFrame.size.width + 5;
+		[self setFrameSize:size];
 	}
 }
 
