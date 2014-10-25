@@ -64,5 +64,5 @@ void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBat
 	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
 	
 	if(tabMDL != nil)
-		[tabMDL proxyAddElement:data :isTome :element :partOfBatch];
+		[tabMDL proxyAddElement:data isTome:isTome element:element partOfBatch:partOfBatch];
 }

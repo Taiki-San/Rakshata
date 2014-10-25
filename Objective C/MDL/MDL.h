@@ -36,7 +36,7 @@
 - (BOOL) available;
 - (void) wakeUp;
 
-- (void) proxyAddElement : (PROJECT_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch;
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (bool) isTome element : (int) newElem  partOfBatch : (bool) partOfBatch;
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
 
 - (NSRect) getCoreviewFrame : (NSRect) frame;

@@ -73,7 +73,7 @@
 
 #pragma mark - Proxy
 
-- (void) proxyAddElement : (PROJECT_DATA) data : (bool) isTome : (int) newElem : (bool) partOfBatch
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (bool) isTome element : (int) newElem  partOfBatch : (bool) partOfBatch
 {
 	if(controller != nil)
 		[controller addElement:data :isTome :newElem :partOfBatch];
@@ -83,7 +83,7 @@
 {
 	if(controller != nil)
 		return [controller checkForCollision:data :isTome :element];
-	return false;
+	return NO;
 }
 
 #pragma mark - View sizing manipulation
