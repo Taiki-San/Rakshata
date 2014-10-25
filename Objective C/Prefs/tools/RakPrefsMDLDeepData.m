@@ -123,6 +123,9 @@
 	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :TAB_CT :-1 :&output.size.width];
 	output.origin.y = 0;
 	
+	output.origin.x += floor(output.size.width / 2);
+	output.size.width = ceil(output.size.width / 2);
+	
 	return output;
 }
 

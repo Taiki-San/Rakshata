@@ -158,7 +158,10 @@
 
 - (BOOL) needToConsiderMDL
 {
-	return YES;
+	BOOL isReader;
+	[Prefs getPref : PREFS_GET_IS_READER_MT : &isReader];
+	
+	return isReader;
 }
 
 - (void) setFrame:(NSRect)frameRect
