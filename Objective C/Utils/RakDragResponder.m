@@ -120,8 +120,8 @@
 			 [self additionalDrawing : draggedView];
 			 
 			 NSImage * image = [draggedView createImage];
-			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x + draggingItem.draggingFrame.size.width / 2 - image.size.width / 2,
-									   draggingItem.draggingFrame.origin.y + draggingItem.draggingFrame.size.height / 2 - image.size.height / 2,
+			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
+									   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
 									   image.size.width, image.size.height);
 			 
 			 [draggingItem setDraggingFrame:frame contents:image];
