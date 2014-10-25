@@ -163,10 +163,7 @@ enum
 	}
 	
 	if(fail)
-	{
-		[super mouseDown:NULL];
 		[super mouseUp:theEvent];
-	}
 	else
 		[self nextPage];
 }
