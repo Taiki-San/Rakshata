@@ -99,6 +99,8 @@
 
 - (NSRect) frameByParent : (NSRect) parentFrame
 {
+	parentFrame.origin.x += 1;
+
 	//We take half of the width, and the top 40% of the view
 	parentFrame.size.width /= 2;
 	

@@ -53,7 +53,12 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame : [self getMenuFrame:frameRect]];
+	NSRect frame = [self getMenuFrame:frameRect];
+
+	frame.origin.x -= 1;	//On retina display, sometimes, 1 pixel wide borders may appear
+	frame.size.width += 2;
+	
+	[super setFrame : frame];
 	[self updateGradientOrigin : self.bounds.size.width];
 }
 
@@ -61,6 +66,9 @@
 {
 	NSRect frame = [self getMenuFrame:frameRect];
 	
+	frame.origin.x -= 1;
+	frame.size.width += 2;
+
 	[self.animator setFrame: frame];
 	[self updateGradientOrigin : frame.size.width];
 }
