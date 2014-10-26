@@ -73,6 +73,9 @@
 	[_tableView setDataSource:self];
 	[_tableView reloadData];
 	
+	//We call our complex resizing routine to update everything
+	[self _resize : frame :NO];
+	
 	if(activeRow != -1)
 	{
 		[self tableView:_tableView shouldSelectRow:activeRow];		//Apply graphic changes
