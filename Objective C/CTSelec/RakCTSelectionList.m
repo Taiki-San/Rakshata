@@ -343,6 +343,7 @@
 - (void) additionalResizingProxy
 {
 	[self additionalResizing : _tableView.bounds.size];
+	[self reloadSize];
 	_resizingQueued = NO;
 }
 
@@ -485,7 +486,7 @@
 	if(row >= amountData)
 		return nil;
 	
-	if(self.compactMode || _installedTable[row])
+	if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
 		return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
 
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];

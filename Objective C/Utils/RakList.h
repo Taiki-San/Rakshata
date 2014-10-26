@@ -57,6 +57,7 @@
 
 - (NSScrollView*) getContent;
 - (void) resizeAnimation : (NSRect) frameRect;
+- (void) reloadSize;
 
 //Overwrite only
 - (void) additionalResizing : (NSSize) newSize;

@@ -74,7 +74,7 @@
 	[_tableView reloadData];
 	
 	//We call our complex resizing routine to update everything
-	[self _resize : frame :NO];
+	[self reloadSize];
 	
 	if(activeRow != -1)
 	{
@@ -153,18 +153,23 @@
 
 - (void) setFrame : (NSRect) frameRect
 {
-	[self _resize:frameRect :NO];
+	[self _resize:frameRect :NO : YES];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self _resize:frameRect :YES];
+	[self _resize:frameRect :YES : YES];
 }
 
-- (void) _resize : (NSRect) frame : (BOOL) animate
+- (void) reloadSize
+{
+	[self _resize:scrollView.frame :NO :NO];
+}
+
+- (void) _resize : (NSRect) frame : (BOOL) animate : (BOOL) inmatureFrame
 {
 	NSSize oldTableviewSize = _tableView.bounds.size;
-	NSRect scrollviewFrame = [self getFrameFromParent : frame];
+	NSRect scrollviewFrame = inmatureFrame ? [self getFrameFromParent : frame] : frame;
 	
 	if(animate)
 		[scrollView resizeAnimation:scrollviewFrame];
