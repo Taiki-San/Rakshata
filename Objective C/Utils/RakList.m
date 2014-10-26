@@ -10,6 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define SCROLLER_WIDTH 15
 @implementation RakList
 
 #pragma mark - Classical initialization
@@ -20,7 +21,6 @@
 	
 	if(self != nil)
 	{
-		_tableViewRightBorder = 0;
 		selectedIndex = -1;
 		[Prefs getCurrentTheme:self];	//register for change
 		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
@@ -41,7 +41,7 @@
 	
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getFrameFromParent:frame]];
-	_tableView = [[RakTableView alloc] initWithFrame:scrollView.contentView.bounds];
+	_tableView = [[RakTableView alloc] initWithFrame : scrollView.contentView.bounds];
 
 	if(scrollView == nil || _tableView == nil)
 	{
@@ -160,7 +160,7 @@
 
 - (void) _resize : (NSRect) frame : (BOOL) animate
 {
-	CGFloat oldWidth = _tableView.frame.size.width;
+	NSSize oldTableviewSize = _tableView.bounds.size;
 	NSRect scrollviewFrame = [self getFrameFromParent : frame];
 	
 	if(animate)
@@ -168,21 +168,18 @@
 	else
 		[scrollView setFrame:scrollviewFrame];
 	
-	[self resizeProcessingBeforeTableView];
+	scrollviewFrame.origin = NSZeroPoint;
 	
-	oldWidth += _tableViewRightBorder;
-	
-	if(oldWidth != scrollviewFrame.size.width)
+	CGFloat scrollerWidth = scrollView.hasVerticalScroller ? SCROLLER_WIDTH : 0;
+	if(floor(oldTableviewSize.width) + scrollerWidth != floor(scrollviewFrame.size.width))
 	{
-		scrollviewFrame.size.width -= _tableViewRightBorder;
-		[_tableView setFrame : scrollviewFrame];
+		scrollviewFrame.size.width -= scrollerWidth;
+		oldTableviewSize.width = scrollviewFrame.size.width;
+		
+		[_tableView setFrameSize : oldTableviewSize];
+		
 		[self additionalResizing : scrollviewFrame.size];
 	}
-}
-
-- (void) resizeProcessingBeforeTableView
-{
-	
 }
 
 - (void) additionalResizing : (NSSize) newSize
@@ -220,7 +217,7 @@
 {
 	if([scrollView hasVerticalScroller])
 	{
-		return (float) [[scrollView contentView] bounds].origin.y;
+		return (float) scrollView.contentView.bounds.origin.y;
 	}
 	
 	return -1;
@@ -513,6 +510,7 @@
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
+		self.translatesAutoresizingMaskIntoConstraints = NO;
 		
 		[RakScroller updateScrollers:self];
 	}

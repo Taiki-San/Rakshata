@@ -43,10 +43,6 @@
 	NSColor * highlight;
 	
 	NSString * _identifier;
-	
-	//Used to give some place to the scroller in the RakScrollView when required
-	//At the time of the implementation, only used by RakCTSelectionList
-	CGFloat _tableViewRightBorder;
 }
 
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;
@@ -63,7 +59,6 @@
 - (void) resizeAnimation : (NSRect) frameRect;
 
 //Overwrite only
-- (void) resizeProcessingBeforeTableView;
 - (void) additionalResizing : (NSSize) newSize;
 
 - (NSRect) getFrameFromParent : (NSRect) superviewFrame;

@@ -340,11 +340,6 @@
 
 #pragma mark - Methods to deal with tableView
 
-- (void) resizeProcessingBeforeTableView
-{
-	_tableViewRightBorder = scrollView.hasVerticalScroller ? 15 : 0;
-}
-
 - (void) additionalResizingProxy
 {
 	[self additionalResizing : _tableView.bounds.size];

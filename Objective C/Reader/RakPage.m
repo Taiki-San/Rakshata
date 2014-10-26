@@ -466,7 +466,7 @@ enum
 {
 	if (_scrollView != nil)
 	{
-		NSPoint point = [[_scrollView contentView] bounds].origin;
+		NSPoint point = _scrollView.contentView.bounds.origin;
 		
 		[self moveSliderX : newPos.x - point.x];
 		[self moveSliderY : newPos.y - point.y];

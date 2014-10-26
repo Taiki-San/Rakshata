@@ -647,7 +647,7 @@
 
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
-	frame.size.width -= 2 * outlineView.indentationPerLevel;
+	frame.size.width -= 2 * outlineView.indentationPerLevel + 5;
 	
 	return frame;
 }
