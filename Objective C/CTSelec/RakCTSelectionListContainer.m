@@ -126,6 +126,11 @@
 
 #pragma mark - Sizing
 
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
 - (NSRect) frameFromParent : (NSRect) parentFrame
 {
 	if(self.compactMode)
@@ -164,12 +169,10 @@
 
 - (NSRect) frameForTitle : (NSRect) parentFrame
 {
-	parentFrame.origin.y = parentFrame.size.height;
+	parentFrame.origin = NSZeroPoint;
 	
 	if(_title != nil)
 		parentFrame.size.height = _title.bounds.size.height;
-
-	parentFrame.origin.y -= parentFrame.size.height;
 	
 	return parentFrame;
 }
@@ -179,9 +182,9 @@
 	if(!self.compactMode)
 	{
 		parentFrame.origin.x = BORDERS_CONTENT;
-		parentFrame.origin.y = BORDERS_CONTENT;
+		parentFrame.origin.y = _title.bounds.size.height + BORDERS_CONTENT;
 		
-		parentFrame.size.height -= _title.bounds.size.height + 2 * BORDERS_CONTENT;
+		parentFrame.size.height -= parentFrame.origin.y + BORDERS_CONTENT;
 		parentFrame.size.width -= 2 * BORDERS_CONTENT;
 	}
 
