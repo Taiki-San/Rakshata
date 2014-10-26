@@ -31,6 +31,6 @@
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
 
 //Customisation
-- (void) additionalDrawing : (RakDragView *) draggedView;
+- (void) additionalDrawing : (RakDragView *) draggedView : (uint) row;
 
 @end

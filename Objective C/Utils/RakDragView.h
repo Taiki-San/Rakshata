@@ -18,9 +18,14 @@
 	IBOutlet NSTextField * selectionName;
 	
 	IBOutlet NSBox * separationLine;
+	
+	BOOL _noContent;
+	CGFloat _originalWidth;
 }
 
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString;
+- (void) addPrice : (RakText *) price;
+
 - (NSImage *) createImage;
 
 @end

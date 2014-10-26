@@ -117,7 +117,7 @@
 		 if(draggedView != nil)
 		 {
 			 [draggedView setupContent:[self getProjectDataForDrag : row] :[self contentNameForDrag : row]];
-			 [self additionalDrawing : draggedView];
+			 [self additionalDrawing : draggedView : row];
 			 
 			 NSImage * image = [draggedView createImage];
 			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
@@ -130,7 +130,7 @@
 	 }];
 }
 
-- (void) additionalDrawing : (RakDragView *) draggedView
+- (void) additionalDrawing : (RakDragView *) draggedView : (uint) row
 {
 	
 }

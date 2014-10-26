@@ -627,9 +627,30 @@
 	[item setDataProject:getCopyOfProjectData(projectData) isTome:self.isTome element:selection];
 }
 
-- (void) additionalDrawing : (RakDragView *) draggedView
+- (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
-	
+	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
+	{
+		if(data == NULL)
+			return;
+		
+		//We may have to add the price
+		uint price = 0;
+		if(self.isTome)
+			price = ((META_TOME*)data)[row].price;
+		else if(chapterPrice != NULL)
+			price = chapterPrice[row];
+		
+		if(price != 0)
+		{
+			RakText * priceView = [[RakText alloc] init];
+			priceView.textColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+			priceView.stringValue = priceString(price);
+			[priceView sizeToFit];
+			
+			[_draggedView addPrice:priceView];
+		}
+	}
 }
 
 @end

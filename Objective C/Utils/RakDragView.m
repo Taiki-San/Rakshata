@@ -16,7 +16,7 @@
 
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString
 {
-	CGFloat originalWidth = self.bounds.size.width;
+	_originalWidth = self.bounds.size.width;
 	
 	if(projectImage != nil)
 	{
@@ -53,28 +53,14 @@
 	}
 	else
 	{
-		[selectionName setHidden:YES];
-		if(separationLine != nil)	[separationLine setHidden:YES];
-		
-		NSRect frame = [projectName frame];
-		[projectName removeConstraints:[projectName constraints]];
-		
-		frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
-		[projectName setFrameOrigin:frame.origin];
+		_noContent = YES;
 	}
 	
 	if(separationLine != nil)
-	{
 		[separationLine setBorderColor:[Prefs getSystemColor:GET_COLOR_SURVOL:nil]];
-		
-		if(self.bounds.size.width > originalWidth)
-		{
-			NSRect frame = separationLine.frame;
-			frame.size.width = self.bounds.size.width - frame.origin.x - 20;
-			[separationLine setFrame : frame];
-		}
-	}
 }
+
+#define SPACE_AT_THE_RIGHT 5
 
 - (void) optimizeWidth : (NSTextField *) element
 {
@@ -93,11 +79,66 @@
 	}
 
 	//We check if we need to increse the full width
-	if(newFrame.origin.x + newFrame.size.width > self.bounds.size.width)
+	if(NSMaxX(newFrame) + SPACE_AT_THE_RIGHT > self.bounds.size.width)
 	{
 		NSSize size = self.bounds.size;
-		size.width = newFrame.origin.x + newFrame.size.width + 5;
+		size.width = newFrame.origin.x + newFrame.size.width + SPACE_AT_THE_RIGHT;
 		[self setFrameSize:size];
+	}
+}
+
+#define PRICE_BORDER 20
+
+//Our goal is to be centered to the right, but with at least PRICE_BORDER between the content and us.
+//The one exception is when there is no content, when we are centered to the base position of the content
+//To achieve that, we set our origin to the minimal margin, then ask for an optimization.
+//If width didn't changed, that mean we weren't far enough to the right
+- (void) addPrice : (RakText *) price
+{
+	if(selectionName == nil)
+		return;
+
+	NSRect contentFrame = selectionName.frame;
+	if(!_noContent)
+		contentFrame.origin.x = NSMaxX(contentFrame) + PRICE_BORDER;
+
+	[price setFrameOrigin: contentFrame.origin];
+	[self addSubview:price];
+
+	CGFloat preoptimizationWidth = self.bounds.size.width;
+	[self optimizeWidth:price];
+	
+	if(!_noContent && preoptimizationWidth == self.bounds.size.width)
+	{
+		contentFrame.origin.x = preoptimizationWidth - SPACE_AT_THE_RIGHT - price.bounds.size.width;
+		[price setFrameOrigin: contentFrame.origin];
+	}
+	
+	_noContent = NO;
+}
+
+- (void) finalPostProcessing
+{
+	if(_noContent)
+	{
+		[selectionName removeFromSuperview];
+		selectionName = nil;
+
+		if(separationLine != nil)
+		{
+			[separationLine removeFromSuperview];
+			separationLine = nil;
+		}
+		
+		NSRect frame = projectName.frame;
+		frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
+		[projectName setFrameOrigin:frame.origin];
+	}
+	else if(separationLine != nil && self.bounds.size.width > _originalWidth)
+	{
+		NSRect frame = separationLine.frame;
+		frame.size.width = self.bounds.size.width - frame.origin.x - 20;
+		[separationLine setFrame : frame];
 	}
 }
 
