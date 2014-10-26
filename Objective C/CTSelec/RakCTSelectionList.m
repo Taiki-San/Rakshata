@@ -580,9 +580,24 @@
 
 #pragma mark - Get result from NSTableView
 
+- (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
+{
+	if(!self.compactMode && rowIndex < _nbElem && _installedTable != NULL && !_installedTable[rowIndex])
+	{
+		CGFloat oldSelectedIndex = selectedIndex;
+		selectedIndex = rowIndex;
+		[self tableViewSelectionDidChange:nil];
+		selectedIndex = oldSelectedIndex;
+		
+		return NO;
+	}
+	else
+		return [super tableView:tableView shouldSelectRow:rowIndex];
+}
+
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	if(selectedIndex != -1 && selectedIndex < amountData)
+	if(selectedIndex != -1 && selectedIndex < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[selectedIndex]);
 		
