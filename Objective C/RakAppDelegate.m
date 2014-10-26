@@ -139,5 +139,14 @@
 	return YES;
 }
 
+#pragma mark - Menu interface
+
+#pragma mark Debug
+
+- (IBAction) reloadFromRemote : (id)sender
+{
+	updateDatabase(YES);
+}
+
 @end
 

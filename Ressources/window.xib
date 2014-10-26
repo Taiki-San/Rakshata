@@ -49,51 +49,14 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Fichier" id="56" userLabel="Menu Item - Fichier">
+                <menuItem title="Debug" id="cOA-09-KIj">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Fichier" systemMenu="apple" id="57">
+                    <menu key="submenu" title="Debug" id="Ktg-5O-tvn">
                         <items>
-                            <menuItem title="About Rakshata" id="58">
+                            <menuItem title="Reload from remote" id="xND-c1-Cwr">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="orderFrontStandardAboutPanel:" target="-2" id="142"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="236">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
-                            <menuItem title="Preferences…" keyEquivalent="," id="129"/>
-                            <menuItem isSeparatorItem="YES" id="143">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
-                            <menuItem title="Services" id="131">
-                                <menu key="submenu" title="Services" systemMenu="services" id="130"/>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="144">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
-                            <menuItem title="Hide Rakshata" keyEquivalent="h" id="134">
-                                <connections>
-                                    <action selector="hide:" target="-1" id="367"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Hide Others" keyEquivalent="h" id="145">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="hideOtherApplications:" target="-1" id="368"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Show All" id="150">
-                                <connections>
-                                    <action selector="unhideAllApplications:" target="-1" id="370"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="149">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
-                            <menuItem title="Quit Rakshata" keyEquivalent="q" id="136">
-                                <connections>
-                                    <action selector="terminate:" target="-3" id="449"/>
+                                    <action selector="reloadFromRemote:" target="494" id="H38-IK-Nh1"/>
                                 </connections>
                             </menuItem>
                         </items>
