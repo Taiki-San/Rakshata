@@ -39,6 +39,8 @@ enum {
 @property uint resizeAnimationCount;
 @property bool waitingLogin;
 
+@property BOOL forceNextFrameUpdate;
+
 #define CREATE_CUSTOM_VIEW_TAB_SERIE	1
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
 #define CREATE_CUSTOM_VIEW_TAB_READER	3

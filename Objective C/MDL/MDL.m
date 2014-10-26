@@ -200,20 +200,26 @@
 	if(!needUpdateMainViews)
 		return;
 	
+	RakAppDelegate * delegate = (RakAppDelegate *) [NSApp delegate];
+	
 	if(animated)
 	{
+		[delegate CT].forceNextFrameUpdate = YES;
 		[self refreshLevelViewsAnimation : self.superview];
 	}
 	else
 	{
-		RakAppDelegate * delegate = (RakAppDelegate *) [NSApp delegate];
-		
-		[[delegate serie]	createFrame];
-		[[delegate CT]		createFrame];
-		[[delegate reader]	createFrame];
+		for(RakTabView * view in @[[delegate serie], [delegate CT], [delegate reader]])
+			[view createFrame];
 	}
 
 	needUpdateMainViews = NO;
+}
+
+- (void) fastAnimatedRefreshLevel : (NSView*) superview
+{
+	[[NSApp delegate] CT].forceNextFrameUpdate = YES;
+	[super fastAnimatedRefreshLevel:superview];
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame

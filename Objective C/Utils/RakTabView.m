@@ -549,6 +549,12 @@
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame
 {
+	if(self.forceNextFrameUpdate)
+	{
+		self.forceNextFrameUpdate = NO;
+		return YES;
+	}
+	
 	return !NSEqualRects([self frame], newFrame);
 }
 
