@@ -40,4 +40,9 @@
 	return YES;
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return YES;
+}
+
 @end
