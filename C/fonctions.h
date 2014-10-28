@@ -32,6 +32,7 @@ bool checkPathEscape(char *string, int length);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
+void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);
 void releaseCTData(PROJECT_DATA data);
 
 /**Donwload.c**/

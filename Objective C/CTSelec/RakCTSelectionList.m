@@ -27,10 +27,11 @@
 		//We check we have valid data
 		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
-		projectData = project;	//We don't protect chapter/volumen list but not really a problem as we'll only use it for drag'n drop
 		chapterPrice = NULL;
+		projectData.cacheDBID = UINT_MAX;	//Prevent incorrect beliefs we are updating a project
 		
-		if(![self reloadData:projectData :NO])
+		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop
+		if(![self reloadData:project :NO])
 		{
 			self = nil;
 			return nil;
@@ -83,9 +84,9 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
-	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL;
-	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL;
-	BOOL *installedTable = NULL;
+	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL, *oldData = NULL, *oldInstalled = NULL;
+	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled;
+	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID;
 	
 	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
 	
@@ -114,27 +115,26 @@
 			return NO;
 		
 		//Price table
-		if(projectData.isPaid && projectData.chapitresPrix != NULL)
+		if(project.isPaid && project.chapitresPrix != NULL)
 		{
-			newPrices = calloc(projectData.nombreChapitre, sizeof(uint));
+			newPrices = calloc(project.nombreChapitre, sizeof(uint));
 			if(newPrices != NULL)
 			{
-				nbChapterPrice = projectData.nombreChapitre;
-				memcpy(newPrices, projectData.chapitresPrix, nbChapterPrice * sizeof(uint));
-				
+				nbChapterPrice = project.nombreChapitre;
+				memcpy(newPrices, project.chapitresPrix, nbChapterPrice * sizeof(uint));
 			}
 		}
 	}
 	
 	//Post-processing
 	//Create newDataBuf
-	newDataBuf = malloc(nbElem * allocSize);
+	newDataBuf = malloc((nbElem + 1) * allocSize);
 	if(newDataBuf == NULL)
 	{
 		free(newPrices);
 		return NO;
 	}
-	memcpy(newDataBuf, newData, nbElem * allocSize);
+	memcpy(newDataBuf, newData, (nbElem + 1) * allocSize);
 	
 	//Set up table of installed
 	if(newData != NULL && installedData != NULL)
@@ -171,8 +171,17 @@
 		}
 	}
 	
+	//We copy the old data structure
+	oldData = data;
+	nbOldElem = _nbElem;
+	if(self.compactMode)
+	{
+		oldInstalled = _installedTable;
+		_installedTable = NULL;
+		nbOldInstalled = _nbInstalled;
+	}
+	
 	//Update the main data list
-	free(data);
 	data = newDataBuf;
 	_nbElem = nbElem;
 	amountData = self.compactMode ? _nbInstalled : nbElem;
@@ -196,12 +205,59 @@
 		if(resetScroller)
 			[_tableView scrollRowToVisible:0];
 		
-		[_tableView reloadData];
+		//Add the column
+		[self updateColumnPrice : self.compactMode];
+		
+		//We get a usable data structure is required
+		if(sameProject)
+		{
+			void * newInstalledData = data;
+			uint nbNewData = _nbElem;
+			if(self.compactMode)
+			{
+				//Old data
+				void * oldDataBak = oldData;
+				oldData = buildInstalledList(oldData, nbOldElem, oldInstalled, nbOldInstalled, self.isTome);
+				nbOldElem = nbOldInstalled;
+				
+				if(self.isTome)
+					freeTomeList(oldDataBak, true);
+				else
+					free(oldDataBak);
+				
+				//New data
+				newInstalledData = buildInstalledList(data, _nbElem, _installedJumpTable, _nbInstalled, self.isTome);
+			}
+			
+			[self smartReload:oldData :nbOldElem :newInstalledData :nbNewData];
+			
+			if(self.compactMode)
+				free(newInstalledData);
+		}
+		else
+		{
+			uint newElem = _nbElem;
+			
+			if(self.compactMode)
+			{
+				nbOldElem = nbOldInstalled;
+				newElem = _nbInstalled;
+			}
+			[self fullAnimatedReload : nbOldElem :newElem];
+		}
+
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != -1)
 			[self selectRow:[self getIndexOfElement:element]];
+		
 	}
+
+	if(self.isTome)
+		freeTomeList(oldData, true);
+	else
+		free(oldData);
+	free(oldInstalled);
 	
 	return YES;
 }
@@ -328,13 +384,24 @@
 	{
 		[_tableView removeTableColumn:_detailColumn];
 		_detailColumn = nil;
+		_detailWidth = 0;
 	}
-	else if(projectData.isPaid && (self.isTome || chapterPrice != NULL))
+	else
 	{
-		_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
-		[_tableView addTableColumn:_detailColumn];
+		BOOL paidContent = projectData.isPaid && (self.isTome || chapterPrice != NULL);
+		
+		if(paidContent && _detailColumn == nil)
+		{
+			_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+			[_tableView addTableColumn:_detailColumn];
+		}
+		else if(!paidContent && _detailColumn != nil)
+		{
+			[_tableView removeTableColumn:_detailColumn];
+			_detailColumn = nil;
+			_detailWidth = 0;
+		}
 	}
-	
 	[self additionalResizing : _tableView.bounds.size];
 }
 
@@ -366,15 +433,19 @@
 	}
 	else
 	{
-		_detailColumn.width = _detailWidth;
+		if(_detailColumn != nil)
+			_detailColumn.width = _detailWidth;
 		_mainColumn.width = newSize.width - _detailWidth;
 		
 		//We update every view size
-		for(uint i = 0; i < amountData; i++)
+		if(_detailColumn != nil)
 		{
-			element = [_tableView viewAtColumn:1 row:i makeIfNecessary:NO];
-			if(element != nil && element.bounds.size.width != _detailWidth)
-				[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
+			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
+			{
+				element = [_tableView viewAtColumn:1 row:i makeIfNecessary:NO];
+				if(element != nil && element.bounds.size.width != _detailWidth)
+					[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
+			}
 		}
 	}
 }
@@ -499,6 +570,29 @@
 
 #pragma mark - Smart reloading
 
+- (void) fullAnimatedReload : (uint) oldElem : (uint) newElem
+{
+	if(oldElem != 0)
+	{
+		NSMutableIndexSet * old = [NSMutableIndexSet new];
+
+		while(oldElem > 0)
+			[old addIndex : oldElem-- - 1];
+		
+		[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+	}
+	
+	if(newElem != 0)
+	{
+		NSMutableIndexSet * new = [NSMutableIndexSet new];
+		
+		while(newElem > 0)
+			[new addIndex : newElem-- - 1];
+
+		[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
+	}
+}
+
 //Ceci est l'algorithme naif en O(n^2)
 //Il est viable sur < 1000 données, mais pourrait poser des problèmes à l'avenir
 //Un algo alternatif, en O(n*log(n)) serait de faire des copies de _oldData et de _newData
@@ -507,7 +601,7 @@
 //Regarder les positions de ce qu'il reste et voilà
 - (void) smartReload : (void*) oldData : (uint) nbElemOld : (void*) newData : (uint) nbElemNew
 {
-	if(_tableView != nil)
+	if(_tableView == nil)
 		return;
 	
 	NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
@@ -539,8 +633,16 @@
 			
 			if(i < nbElemOld)
 			{
-				for(; posOld < i; oldElem++)
-					[old addIndex : posOld++];
+				if(((META_TOME*)oldData)[i].ID != current)
+				{
+					for(; posOld < i; oldElem++)
+						[old addIndex : posOld++];
+				}
+				else
+				{
+					posOld++;
+					posNew++;
+				}
 			}
 			else
 			{

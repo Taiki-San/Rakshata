@@ -372,7 +372,6 @@
 		
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
-		updateIfRequired(&data, RDB_CTXCT);
 	}
 	
 	//Update views

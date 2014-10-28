@@ -176,8 +176,7 @@
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	PROJECT_DATA newProject = getCopyOfProjectData(project);	//Isole le tab des données
-	updateIfRequired(&newProject, RDB_CTXCT);
+	PROJECT_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
 	
 	if(coreView != nil)
 		[coreView updateContext:newProject];
@@ -306,10 +305,13 @@
 {
 	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
 	{
-		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate]reader];
-		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate]MDL];
+		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
+		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];
+		uint mainThread;
 		
-		if(readerTab != nil)
+		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+		
+		if(readerTab != nil && mainThread & TAB_READER)
 		{
 			__block NSRect readerFrame = readerTab.frame, MDLFrame = MDLTab.frame;
 			CGFloat widthCTTab = readerFrame.origin.x - self.frame.origin.x;
@@ -351,7 +353,7 @@
 		else	//We bypass the fancy animation
 		{
 			[coreView updateContext:project];
-			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			if(mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 		}
 	}

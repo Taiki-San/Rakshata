@@ -33,6 +33,36 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 		internalDeleteChapitre(projectDB, selection, true);
 }
 
+//Return a list containing only installed elements
+void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome)
+{
+	if(fullData == NULL || installed == NULL || nbInstalled == 0)
+		return NULL;
+	
+	void * output = calloc(nbInstalled + 1, (isTome ? sizeof(META_TOME) : sizeof(int)));
+	
+	if(output != NULL)
+	{
+		if(isTome)
+		{
+			for(uint i = 0; i < nbInstalled; i++)
+				((META_TOME*)output)[i].ID = ((META_TOME*)fullData)[installed[i]].ID;
+			
+			((META_TOME*)output)[nbInstalled].ID = VALEUR_FIN_STRUCT;
+		}
+		else
+		{
+			for(uint i = 0; i < nbInstalled; i++)
+				((int*)output)[i] = ((int*)fullData)[installed[i]];
+
+			((int*)output)[nbInstalled] = VALEUR_FIN_STRUCT;
+		}
+
+	}
+	
+	return output;
+}
+
 void releaseCTData(PROJECT_DATA data)
 {
 	free(data.chapitresFull);
