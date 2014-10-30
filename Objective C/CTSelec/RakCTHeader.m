@@ -51,9 +51,26 @@
 
 #pragma mark - Interface
 
-- (BOOL) updateHeaderProject : (PROJECT_DATA) project
+- (void) updateHeaderProject : (PROJECT_DATA) project
 {
-	return [self updateHeaderProjectInternal : project : YES];
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+	
+		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
+		[self.animator setAlphaValue:0.0];
+
+	} completionHandler:^{
+		
+		[self updateHeaderProjectInternal : project : YES];
+		
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+
+			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
+			[self.animator setAlphaValue:1.0];
+
+		} completionHandler:^{
+			
+		}];
+	}];
 }
 
 - (BOOL) updateHeaderProjectInternal : (PROJECT_DATA) project : (BOOL) checkReloadNeeded

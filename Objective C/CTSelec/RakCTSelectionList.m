@@ -572,25 +572,17 @@
 
 - (void) fullAnimatedReload : (uint) oldElem : (uint) newElem
 {
-	if(oldElem != 0)
-	{
-		NSMutableIndexSet * old = [NSMutableIndexSet new];
-
-		while(oldElem > 0)
-			[old addIndex : oldElem-- - 1];
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
-		[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
-	}
-	
-	if(newElem != 0)
-	{
-		NSMutableIndexSet * new = [NSMutableIndexSet new];
-		
-		while(newElem > 0)
-			[new addIndex : newElem-- - 1];
+		[context setDuration:CT_TRANSITION_ANIMATION];
 
-		[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
-	}
+		if(oldElem != 0)
+			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldElem)] withAnimation:NSTableViewAnimationSlideLeft];
+		
+		if(newElem != 0)
+			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem)] withAnimation:NSTableViewAnimationSlideRight];
+		
+	} completionHandler:^{}];
 }
 
 //Ceci est l'algorithme naif en O(n^2)
@@ -603,59 +595,58 @@
 {
 	if(_tableView == nil)
 		return;
+	else if(oldData == NULL || newData == NULL)
+	{
+		[self fullAnimatedReload : oldData == NULL ? 0 : nbElemOld  : newData == NULL ? 0 : nbElemNew];
+		return;
+	}
+
 	
 	NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
 	uint newElem = 0, oldElem = 0;
-
-	if(oldData == NULL)
+	BOOL isTome = self.isTome;
+	int current;
+	
+	for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
 	{
-		while(newElem < nbElemNew)
-			[new addIndex : newElem++];
-	}
-	else if(newData == NULL)
-	{
-		while(oldElem < nbElemOld)
-			[old addIndex : oldElem++];
-	}
-	else
-	{
-		BOOL isTome = self.isTome;
-		int current;
+		i = posOld;
 		
-		for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
+		if(isTome)
+			for(current = ((META_TOME*)newData)[posNew].ID; i < nbElemOld && ((META_TOME*)oldData)[i].ID != current; i++);
+		else
+			for(current = ((int*)newData)[posNew]; i < nbElemOld && ((int*)oldData)[i] != current; i++);
+		
+		if(i < nbElemOld)
 		{
-			i = posOld;
-			
-			if(isTome)
-				for(current = ((META_TOME*)newData)[posNew].ID; i < nbElemOld && ((META_TOME*)oldData)[i].ID != current; i++);
-			else
-				for(current = ((int*)newData)[posNew]; i < nbElemOld && ((int*)oldData)[i] != current; i++);
-			
-			if(i < nbElemOld)
+			if(((META_TOME*)oldData)[i].ID != current)
 			{
-				if(((META_TOME*)oldData)[i].ID != current)
-				{
-					for(; posOld < i; oldElem++)
-						[old addIndex : posOld++];
-				}
-				else
-				{
-					posOld++;
-					posNew++;
-				}
+				for(; posOld < i; oldElem++)
+					[old addIndex : posOld++];
 			}
 			else
 			{
-				[new addIndex:posNew];
-				newElem++;
+				posOld++;
+				posNew++;
 			}
+		}
+		else
+		{
+			[new addIndex:posNew];
+			newElem++;
 		}
 	}
 	
-	if(oldElem)
-		[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
-	if(newElem)
-		[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideLeft];
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+		
+		[context setDuration:CT_TRANSITION_ANIMATION];
+		
+		if(oldElem != 0)
+			[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+		
+		if(newElem != 0)
+			[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
+		
+	} completionHandler:^{}];
 }
 
 - (void) triggerInstallOnlyAnimate : (BOOL) enter
@@ -674,10 +665,16 @@
 	
 	if(foundOne)
 	{
-		if(enter)
-			[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
-		else
-			[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+			
+			[context setDuration:CT_TRANSITION_ANIMATION];
+			
+			if(enter)
+				[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+			else
+				[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+			
+		} completionHandler:^{}];
 	}
 }
 
