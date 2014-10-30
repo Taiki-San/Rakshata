@@ -370,6 +370,8 @@
 		if(_chapterView != NULL)	[_chapterView resetSelection];
 		if(_volView != NULL)	[_volView resetSelection];
 		
+		free(data.tomesFull);		data.tomesFull = NULL;
+		free(data.tomesInstalled);	data.tomesInstalled = NULL;
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
 	}
