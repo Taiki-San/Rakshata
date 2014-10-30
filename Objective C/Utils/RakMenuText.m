@@ -19,6 +19,7 @@
 	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
 	if(self != nil)
 	{
+		self.haveBackgroundColor = YES;
 		self.drawGradient = NO;
 		
 		[Prefs getCurrentTheme:self];	//Register for changes
@@ -177,7 +178,9 @@
 
 - (NSColor *) getBackgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	if(_haveBackgroundColor)
+		return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	return nil;
 }
 
 - (NSColor *) getGradientBackgroundColor
@@ -218,6 +221,22 @@
 	[self defineBackgroundColor];
 	[self setNeedsDisplay:YES];
 	[self generateGradient];
+}
+
+#pragma mark - Background
+
+- (void) setHaveBackgroundColor:(BOOL)haveBackgroundColor
+{
+	if(haveBackgroundColor != _haveBackgroundColor)
+	{
+		_haveBackgroundColor = haveBackgroundColor;
+		[self defineBackgroundColor];
+	}
+}
+
+- (BOOL) haveBackgroundColor
+{
+	return _haveBackgroundColor;
 }
 
 #pragma mark - barWidth

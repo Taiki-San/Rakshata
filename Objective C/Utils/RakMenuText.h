@@ -12,6 +12,8 @@
 
 @interface RakMenuText : RakText
 {
+	BOOL _haveBackgroundColor;
+	
 	BOOL _barWidthInitialized;
 	CGFloat _barWidth;
 	
@@ -31,6 +33,8 @@
 
 @property BOOL drawGradient;
 @property CGFloat widthGradient;
+
+@property BOOL haveBackgroundColor;
 
 - (instancetype) initWithText : (NSRect)frame : (NSString *)text;
 - (void) resizeAnimation : (NSRect) frameRect;
