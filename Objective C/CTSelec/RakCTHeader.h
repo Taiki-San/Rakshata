@@ -17,6 +17,11 @@
 {
 	RakCTHeaderImage * header;
 	RakCTProjectSynopsis * synopsis;
+	
+	//Background thingy
+	NSColor * _backgroundColor;
+	NSColor * _synopsisTitleBackground;
+	CGFloat _synopsisTitleHeight;
 }
 
 - (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project;

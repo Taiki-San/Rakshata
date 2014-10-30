@@ -22,12 +22,18 @@
 		
 		if(self != nil)
 		{
+			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : self];
+			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+
 			[header setFrame : self.bounds];
 			[self addSubview:header];
 			
 			synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : self.bounds : header.bounds.size];
 			if(synopsis != nil)
+			{
+				_synopsisTitleHeight = [synopsis titleHeight];	//For now, this height is stable
 				[self addSubview:synopsis];
+			}
 		}
 	}
 	
@@ -81,6 +87,30 @@
 	
 	[header resizeAnimation:frame];
 	[synopsis resizeAnimation : frame : headerSize];
+}
+
+#pragma mark - Drawing
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(_synopsisTitleHeight)
+	{
+		[_synopsisTitleBackground setFill];
+		NSRectFill(NSMakeRect(0, dirtyRect.size.height - _synopsisTitleHeight, dirtyRect.size.width, _synopsisTitleHeight));
+		dirtyRect.size.height -= _synopsisTitleHeight;
+	}
+
+	[_backgroundColor setFill];
+	NSRectFill(dirtyRect);
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil];
+	_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 }
 
 @end

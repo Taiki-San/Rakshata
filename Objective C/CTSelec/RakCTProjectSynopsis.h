@@ -21,6 +21,8 @@
 	BOOL placeholderString;
 }
 
+@property (readonly) CGFloat titleHeight;
+
 - (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize;
 - (void) updateProject : (PROJECT_DATA) newProject;
 

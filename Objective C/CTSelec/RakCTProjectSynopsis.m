@@ -36,11 +36,7 @@
 			_title.barWidth = 1;
 			_title.widthGradient = 0.4f;
 
-			NSRect titleFrame = [self frameForTitle:self.bounds : _title.bounds.size.height];
-			
-			[_title setFrame : titleFrame];
-
-
+			[_title setFrame : [self frameForTitle:self.bounds : _title.bounds.size.height]];
 			[_title setAlignment : NSRightTextAlignment];
 			[self addSubview:_title];
 		}
@@ -146,8 +142,6 @@
 {
 	if([object class] != [Prefs class])
 		return;
-	
-	//self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
 	
 	if(_synopsis != nil)
 		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
@@ -274,6 +268,13 @@
 	origin.x -= MAIN_TEXT_BORDER / 2 + 15;
 	
 	return origin;
+}
+
+#pragma mark - Property
+
+- (CGFloat) titleHeight
+{
+	return _title.bounds.size.height + TOP_BORDER_WIDTH;
 }
 
 @end
