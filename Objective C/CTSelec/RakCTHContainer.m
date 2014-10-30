@@ -37,8 +37,8 @@
 	[super setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
 	
-	[projectName setFrameOrigin:[self projectNamePos : self.bounds.size.height]];
-	[authorName setFrameOrigin:[self authorNamePos : self.bounds.size.height]];
+	[projectName setFrameOrigin:[self projectNamePos : self.bounds.size]];
+	[authorName setFrameOrigin:[self authorNamePos : self.bounds.size]];
 
 	[_tableController setFrame : self.bounds];
 }
@@ -50,8 +50,8 @@
 	[self.animator setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
 
-	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size.height]];
-	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size.height]];
+	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
+	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
 	
 	frameRect.origin = NSZeroPoint;
 	
@@ -73,7 +73,7 @@
 		if(projectName)
 		{
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
-			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size.height]];
+			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 			[projectName sizeToFit];
 		
 			[self addSubview: projectName];
@@ -96,7 +96,7 @@
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
 																	traits:NSItalicFontMask weight:0 size: 13]];
 
-			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size.height]];
+			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			[authorName sizeToFit];
 			
 			[self addSubview: authorName];
@@ -129,14 +129,14 @@
 
 #pragma mark - Elements positions
 
-- (NSPoint) projectNamePos : (CGFloat) height
+- (NSPoint) projectNamePos : (NSSize) size
 {
-	return NSMakePoint(26, height * 11 / 20);
+	return NSMakePoint(size.width * 7 / 100, size.height * 11 / 20);
 }
 
-- (NSPoint) authorNamePos : (CGFloat) height
+- (NSPoint) authorNamePos : (NSSize) size
 {
-	return NSMakePoint(35, height * 5 / 20);
+	return NSMakePoint(size.width * 9 / 100, size.height * 5 / 20);
 }
 
 #pragma mark - UI utilities
