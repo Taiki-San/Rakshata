@@ -10,30 +10,20 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define CT_HEADER_MIN_HEIGHT 200
+#import "RakCTHeaderImage.h"
+#import "RakCTProjectSynopsis.h"
 
-@class RakCTHeaderImage;
-
-#import "RakCTHImage.h"
-#import "RakCTHTableController.h"
-#import "RakCTHContainer.h"
-
-@interface RakCTHeaderImage : NSView
+@interface RakCTHeader : NSView
 {
-	uint projectCacheID;
-	PROJECT_DATA _data;
-	
-	//Elements
-	RakCTHImage * _background;
-	RakCTHContainer * _container;
-	
+	RakCTHeaderImage * header;
+	RakCTProjectSynopsis * synopsis;
 }
 
-- (id) initWithData : (NSRect) frame : (PROJECT_DATA) project;
-- (void) updateHeaderProject : (PROJECT_DATA) project;
+- (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project;
+- (void) updateProject : (PROJECT_DATA) project;
 
-- (void) resizeAnimation : (NSRect) frameRect;
 - (NSRect) frameByParent : (NSRect) parentFrame;
-- (NSSize) sizeByParent : (NSRect) parentFrame;
+
+- (void) resizeAnimation : (NSRect) frame;
 
 @end

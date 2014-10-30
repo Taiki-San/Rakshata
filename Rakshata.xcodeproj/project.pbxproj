@@ -28,6 +28,7 @@
 		B62C9EF318BD73D500CE910F /* DBTools.c in Sources */ = {isa = PBXBuildFile; fileRef = B62C9EF218BD73D500CE910F /* DBTools.c */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
 		B62F1E6518DE4EB0005FF4A5 /* RakResPath.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */; };
+		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
@@ -192,6 +193,8 @@
 		B62E6E8018F8834C006A0D5F /* RakSerieList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSerieList.m; path = "Séries/RakSerieList.m"; sourceTree = "<group>"; };
 		B62F1E6318DE4EB0005FF4A5 /* RakResPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakResPath.h; path = Prefs/RakResPath.h; sourceTree = "<group>"; };
 		B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakResPath.m; path = Prefs/RakResPath.m; sourceTree = "<group>"; };
+		B62F67871A02E8D600157DEA /* RakCTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeader.h; path = CTSelec/RakCTHeader.h; sourceTree = "<group>"; };
+		B62F67881A02E8D600157DEA /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
@@ -552,12 +555,16 @@
 			children = (
 				B6012BB919D41AA000E12BED /* RakCTHContainer.h */,
 				B6012BBA19D41AA000E12BED /* RakCTHContainer.m */,
+				B62F67871A02E8D600157DEA /* RakCTHeader.h */,
+				B62F67881A02E8D600157DEA /* RakCTHeader.m */,
 				B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */,
 				B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */,
 				B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */,
 				B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */,
 				B68ED56B19DAA63100644A79 /* RakCTHTableController.h */,
 				B68ED56C19DAA63100644A79 /* RakCTHTableController.m */,
+				B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */,
+				B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */,
 			);
 			name = "CT Header";
 			sourceTree = "<group>";
@@ -565,14 +572,12 @@
 		B6CC724318723044003A745B /* CT */ = {
 			isa = PBXGroup;
 			children = (
-				B62808B119EB00FF0067EE82 /* CT List */,
 				B6BF49D919D18E5700A2AAC9 /* CT Header */,
+				B62808B119EB00FF0067EE82 /* CT List */,
 				B6E89387189EF39700ACAF36 /* CTSelec.h */,
 				B6E89388189EF39700ACAF36 /* CTSelec.m */,
 				B6EC482118E5E03E00288C3B /* RakChapterView.h */,
 				B6EC482218E5E03E00288C3B /* RakChapterView.m */,
-				B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */,
-				B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */,
 				B6E9427B197F2D5B000F268E /* RakCTTools.h */,
 				B6E9427C197F2D5B000F268E /* RakCTTools.m */,
 			);
@@ -1069,6 +1074,7 @@
 				B6F6ECFC18A3001400E3B55B /* lecteur_check_newElems.c in Sources */,
 				B678675418F5F407004AA6B4 /* RakSerieView.m in Sources */,
 				B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */,
+				B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */,
 				B642480B19D57DF000679D78 /* RakGradientView.m in Sources */,
 				B62C9EF318BD73D500CE910F /* DBTools.c in Sources */,
 				B6F6ECF718A3001400E3B55B /* favoris.c in Sources */,

@@ -18,8 +18,6 @@
 	
 	if(self != nil)
 	{
-		_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : self];
-
 		[self updateHeaderProjectInternal : project : NO];
 		
 		if(_background != nil)	//We may need to update our frame
@@ -116,51 +114,45 @@
 
 #pragma mark - UI utilities
 
-- (NSRect) frameByParent : (NSRect) parentFrame
+- (NSRect) frameByParent:(NSRect)parentFrame
 {
-	parentFrame.origin.x += 1;
+	if(_background != nil && _background.image != nil)		//round(ratio * fullWidth)
+		parentFrame.size.width = round((parentFrame.size.height / _background.image.size.height) * _background.image.size.width);
+	else
+		parentFrame.size.width /= 2;
+	
+	parentFrame.origin.x = 1;
+	parentFrame.origin.y = 0;
+	
+	return parentFrame;
+}
 
-	//We take half of the width, and the top 40% of the view
-	parentFrame.size.width /= 2;
+- (NSSize) sizeByParent : (NSRect) parentFrame
+{
+	NSSize output = parentFrame.size;
 	
 	//We'll adapt our size to image's
 	if(_background != nil && _background.image != nil)
 	{
 		NSSize size = _background.image.size;
-		CGFloat ratio = parentFrame.size.width / size.width;
+		CGFloat ratio = (output.width / 2) / size.width;
 		
 		//Make the thing bigger is too wide, and no high enough
-		if(size.height * ratio > parentFrame.size.height / 2)
-			ratio = (parentFrame.size.height / 2) / size.height;
+		if(size.height * ratio > output.height / 2)
+			ratio = (output.height / 2) / size.height;
 		
 		//We scale everything
-		size.height = round(size.height * ratio);
-		size.width = round(size.width * ratio);
-		
-		parentFrame.origin.y = parentFrame.size.height - size.height;
-		parentFrame.size = size;
+		output.height = round(size.height * ratio);
+		output.width = round(size.width * ratio);
 	}
 	else
 	{
-		parentFrame.origin.y = parentFrame.size.height * 3 / 5;
-		parentFrame.size.height -= parentFrame.origin.y;
+		//If we can't, we take half of the width, and the top 40% of the view
+		output.width /= 2;
+		output.height = output.height * 2 / 5;
 	}
 	
-	return parentFrame;
-}
-
-- (void) drawRect:(NSRect)dirtyRect
-{
-	[_backgroundColor setFill];
-	NSRectFill(dirtyRect);
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return;
-	
-	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil];
+	return output;
 }
 
 @end

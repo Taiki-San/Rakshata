@@ -13,8 +13,7 @@
 #import "RakCTSelectionList.h"
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
-#import "RakCTHeaderImage.h"
-#import "RakCTProjectSynopsis.h"
+#import "RakCTHeader.h"
 #import "RakChapterView.h"
 
 #define CT_TRANSITION_ANIMATION 0.2f

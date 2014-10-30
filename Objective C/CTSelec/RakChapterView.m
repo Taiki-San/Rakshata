@@ -43,7 +43,6 @@
 	if(!self.CTViewHidden)
 	{
 		[header setFrame:newBound];
-		[synopsis setFrame : newBound : header.bounds.size];
 	}
 
 	if(!self.readerViewHidden)
@@ -61,12 +60,8 @@
 	
 	if(!self.CTViewHidden)
 	{
-		NSSize headerSize = [header frameByParent : newBound].size;
-		
 		[header resizeAnimation:newBound];
-		[synopsis resizeAnimation : newBound : headerSize];
-		
-		headerHeight = headerSize.height;
+		headerHeight = [header frameByParent : newBound].size.height;
 	}
 	
 	if(!self.readerViewHidden)
@@ -81,7 +76,6 @@
 - (void) dealloc
 {
 	[header removeFromSuperview];		header = nil;
-	[synopsis removeFromSuperview];		synopsis = nil;
 	
 	[projectName removeFromSuperview];	projectName = nil;
 	[projectImage removeFromSuperview];	projectImage = nil;
@@ -93,13 +87,9 @@
 
 - (void) initCTView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	header = [[RakCTHeaderImage alloc] initWithData : self.bounds : project];
+	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
 	if(header != nil)
 		[self addSubview:header];
-	
-	synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : self.bounds : header.bounds.size];
-	if(synopsis != nil)
-		[self addSubview:synopsis];
 	
 	self.CTViewHidden = readerMode;
 }
@@ -120,13 +110,10 @@
 	if(CTViewHidden)
 	{
 		[header setHidden:YES];
-		[synopsis setHidden:YES];
 	}
 	else
 	{
 		[header setHidden:NO];
-		[synopsis setHidden:NO];
-		
 		coreview.currentContext = TAB_CT;
 	}
 	
@@ -206,21 +193,12 @@
 	}
 	
 	if(header != nil)
-		[header updateHeaderProject:data];
+		[header updateProject:data];
 	else
 	{
-		header = [[RakCTHeaderImage alloc] initWithData : self.bounds :data];
+		header = [[RakCTHeader alloc] initWithData : self.bounds :data];
 		if(header != nil)
 			[self addSubview:header];
-	}
-	
-	if(synopsis != nil)
-		[synopsis updateProject : data];
-	else
-	{
-		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : data : self.bounds : header.bounds.size];
-		if(synopsis != nil)
-			[self addSubview:synopsis];
 	}
 	
 	if(coreview != nil)

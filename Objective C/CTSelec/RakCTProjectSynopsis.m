@@ -24,13 +24,13 @@
 	if(self != nil)
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE :self].CGColor;
 		self.layer.cornerRadius = 4;
 		
 		_title = [[RakMenuText alloc] initWithText : self.bounds : @"Résumé"];
 		if(_title != nil)
 		{
 			[_title sizeToFit];
+			_title.haveBackgroundColor = NO;
 			_title.ignoreInternalFrameMagic = YES;
 			_title.drawGradient = YES;
 			_title.barWidth = 1;
@@ -147,7 +147,7 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
+	//self.layer.backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
 	
 	if(_synopsis != nil)
 		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
@@ -231,13 +231,13 @@
 
 #pragma mark - Position routines
 
-- (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) headerSize
+- (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) image
 {
-	parentFrame.origin.x = headerSize.width + SYNOPSIS_BORDER;
+	parentFrame.origin.x = image.width + SYNOPSIS_BORDER;
 	parentFrame.size.width -= parentFrame.origin.x + SYNOPSIS_BORDER;
 	
-	parentFrame.origin.y = parentFrame.size.height - headerSize.height;
-	parentFrame.size.height = headerSize.height - TOP_BORDER_WIDTH;
+	parentFrame.origin.y = 0;
+	parentFrame.size.height -= TOP_BORDER_WIDTH;
 	
 	return parentFrame;
 }
