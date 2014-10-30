@@ -13,12 +13,12 @@
 #import "RakCTSelectionList.h"
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
-#import "RakCTHeader.h"
+#import "RakCTHeaderImage.h"
 #import "RakCTProjectSynopsis.h"
 #import "RakChapterView.h"
 
-#define CT_TRANSITION_ANIMATION 0.3f
-#define CT_HALF_TRANSITION_ANIMATION 0.15
+#define CT_TRANSITION_ANIMATION 0.2f
+#define CT_HALF_TRANSITION_ANIMATION 0.1f
 
 @interface CTSelec : RakTabView
 {

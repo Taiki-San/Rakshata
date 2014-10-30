@@ -54,6 +54,7 @@
 - (void) failure;
 
 - (void) setFrameOrigin : (NSPoint) origin;
+- (void) setAlphaValue : (CGFloat) alphaValue : (BOOL) animated;
 
 - (NSScrollView*) getContent;
 - (void) resizeAnimation : (NSRect) frameRect;

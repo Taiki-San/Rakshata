@@ -47,7 +47,7 @@
 					}
 
 					uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
-					PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
+					PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, RDB_CTXCT, false);
 					
 					if(project == NULL)
 					{
@@ -69,6 +69,8 @@
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
 					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
+					
+					releaseCTData(*project);
 					free(project);
 					
 				} while (0);
@@ -352,7 +354,8 @@
 		}
 		else	//We bypass the fancy animation
 		{
-			[coreView updateContext:project];
+			[self updateProject : project : isTome : element];
+
 			if(mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 		}

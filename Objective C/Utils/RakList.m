@@ -139,6 +139,14 @@
 	return [scrollView isHidden];
 }
 
+- (void) setAlphaValue : (CGFloat) alphaValue : (BOOL) animated
+{
+	if(animated)
+		scrollView.animator.alphaValue = alphaValue;
+	else
+		scrollView.alphaValue = alphaValue;
+}
+
 - (void) dealloc
 {
 	[_tableView removeFromSuperview];
