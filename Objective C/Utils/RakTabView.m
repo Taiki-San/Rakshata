@@ -210,6 +210,37 @@
 	[foregroundView resizeAnimation:frame];
 }
 
+#ifdef DEV_VERSION
+
+- (void) addConstraint:(NSLayoutConstraint *)constraint
+{
+	NSLog(@"Fuck you");
+	kill(getpid(), SIGSTOP);
+}
+
+- (void) addConstraints:(NSArray *)constraints
+{
+	NSLog(@"Fuck you too, especially you!");
+	kill(getpid(), SIGSTOP);
+}
+
+- (NSArray *) constraints
+{
+	kill(getpid(), SIGSTOP);
+
+	NSArray * constraints = [super constraints];
+	
+	if([constraints count])
+	{
+		[self removeConstraints:constraints];
+		constraints = [super constraints];
+	}
+	
+	return constraints;
+}
+
+#endif
+
 #pragma mark - Tab opening notification
 
 - (void) animationIsOver : (uint) mainThread : (byte) context
