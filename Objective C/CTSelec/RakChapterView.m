@@ -93,7 +93,7 @@
 
 - (void) initCTView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
+	header = [[RakCTHeaderImage alloc] initWithData : self.bounds : project];
 	if(header != nil)
 		[self addSubview:header];
 	
@@ -209,7 +209,7 @@
 		[header updateHeaderProject:data];
 	else
 	{
-		header = [[RakCTHeader alloc] initWithData : self.bounds :data];
+		header = [[RakCTHeaderImage alloc] initWithData : self.bounds :data];
 		if(header != nil)
 			[self addSubview:header];
 	}

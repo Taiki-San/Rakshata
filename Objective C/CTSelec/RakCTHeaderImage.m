@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakCTHeader
+@implementation RakCTHeaderImage
 
 - (id) initWithData : (NSRect) frame : (PROJECT_DATA) project
 {
@@ -18,6 +18,8 @@
 	
 	if(self != nil)
 	{
+		_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : self];
+
 		[self updateHeaderProjectInternal : project : NO];
 		
 		if(_background != nil)	//We may need to update our frame
@@ -145,6 +147,20 @@
 	}
 	
 	return parentFrame;
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[_backgroundColor setFill];
+	NSRectFill(dirtyRect);
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil];
 }
 
 @end

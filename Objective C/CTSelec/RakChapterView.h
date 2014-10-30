@@ -15,7 +15,7 @@
 @interface RakChapterView : RakTabContentTemplate
 {
 	//CT mode only
-	RakCTHeader * header;
+	RakCTHeaderImage * header;
 	RakCTProjectSynopsis * synopsis;
 	
 	//Reader mode only

@@ -73,7 +73,7 @@
 		B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */; };
 		B6BAD730198D22DF00447A7D /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = B6BAD72F198D22DF00447A7D /* loading.gif */; };
 		B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6BD7B5A194860A9000A0B73 /* jumpPage.xib */; };
-		B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */; };
+		B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */; };
 		B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
@@ -276,8 +276,8 @@
 		B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDeleteConfirm.m; path = Reader/RakDeleteConfirm.m; sourceTree = "<group>"; };
 		B6BAD72F198D22DF00447A7D /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		B6BD7B5A194860A9000A0B73 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Reader/jumpPage.xib"; sourceTree = "<group>"; };
-		B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeader.h; path = CTSelec/RakCTHeader.h; sourceTree = "<group>"; };
-		B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
+		B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeaderImage.h; path = CTSelec/RakCTHeaderImage.h; sourceTree = "<group>"; };
+		B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeaderImage.m; path = CTSelec/RakCTHeaderImage.m; sourceTree = "<group>"; };
 		B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHImage.h; path = CTSelec/RakCTHImage.h; sourceTree = "<group>"; };
 		B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHImage.m; path = CTSelec/RakCTHImage.m; sourceTree = "<group>"; };
 		B6C64E57194BB6EB0066A7BD /* RakDragItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragItem.h; path = Utils/RakDragItem.h; sourceTree = "<group>"; };
@@ -552,8 +552,8 @@
 			children = (
 				B6012BB919D41AA000E12BED /* RakCTHContainer.h */,
 				B6012BBA19D41AA000E12BED /* RakCTHContainer.m */,
-				B6BF49D619D189FE00A2AAC9 /* RakCTHeader.h */,
-				B6BF49D719D189FE00A2AAC9 /* RakCTHeader.m */,
+				B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */,
+				B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */,
 				B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */,
 				B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */,
 				B68ED56B19DAA63100644A79 /* RakCTHTableController.h */,
@@ -1034,7 +1034,7 @@
 				B61EBE7319EC699400EE6837 /* RakCTSelectionListContainer.m in Sources */,
 				B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
-				B6BF49D819D189FE00A2AAC9 /* RakCTHeader.m in Sources */,
+				B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */,
 				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,

@@ -12,16 +12,18 @@
 
 #define CT_HEADER_MIN_HEIGHT 200
 
-@class RakCTHeader;
+@class RakCTHeaderImage;
 
 #import "RakCTHImage.h"
 #import "RakCTHTableController.h"
 #import "RakCTHContainer.h"
 
-@interface RakCTHeader : NSView
+@interface RakCTHeaderImage : NSView
 {
 	uint projectCacheID;
 	PROJECT_DATA _data;
+	
+	NSColor * _backgroundColor;
 	
 	//Elements
 	RakCTHImage * _background;
