@@ -262,6 +262,29 @@
 	return YES;
 }
 
+- (void) flushContext : (BOOL) animated
+{
+	if(animated)
+		[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _tableView.numberOfRows)] withAnimation:NSTableViewAnimationSlideLeft];
+	
+	_nbElem = _nbInstalled = 0;
+	
+	if(self.isTome)
+		freeTomeList(data, true);
+	else
+	{
+		free(data);
+		free(chapterPrice);	chapterPrice = NULL;
+	}
+	
+	data = NULL;
+	free(_installedJumpTable);	_installedJumpTable = NULL;
+	free(_installedTable);		_installedTable = NULL;
+	
+	if(!animated)
+		[_tableView noteNumberOfRowsChanged];
+}
+
 #pragma mark - Properties
 
 - (uint) nbElem
@@ -618,7 +641,7 @@
 		
 		if(i < nbElemOld)
 		{
-			if(((META_TOME*)oldData)[i].ID != current)
+			if((isTome ? ((META_TOME*)oldData)[i].ID : ((int*)oldData)[i]) != current)
 			{
 				for(; posOld < i; oldElem++)
 					[old addIndex : posOld++];
@@ -646,7 +669,10 @@
 		if(newElem != 0)
 			[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
 		
-	} completionHandler:^{}];
+	} completionHandler:^{
+		if(nbElemOld != nbElemNew)
+			[_tableView noteNumberOfRowsChanged];
+	}];
 }
 
 - (void) triggerInstallOnlyAnimate : (BOOL) enter

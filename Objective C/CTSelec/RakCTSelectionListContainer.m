@@ -249,8 +249,36 @@
 	if(_placeholderActive == retValue)
 	{
 		_placeholderActive = !_placeholderActive;
-		[_content setHidden : _placeholderActive];
-		[_placeholder setHidden : !_placeholderActive];
+		
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+			
+			[context setDuration:CT_TRANSITION_ANIMATION];
+			
+			if(retValue)
+			{
+				[_content setHidden:NO];
+				[_content setAlphaValue:1 :NO];
+
+				_placeholder.alphaValue = 1;
+				_placeholder.animator.alphaValue = 0;
+			}
+			else
+			{
+				[_placeholder setHidden:NO];
+				_placeholder.alphaValue = 0;
+				_placeholder.animator.alphaValue = 1;
+
+				[_content flushContext:YES];
+			}
+			
+		} completionHandler:^{
+			
+			if(retValue)
+				[_placeholder setHidden : YES];
+			else
+				[_content setHidden : YES];
+
+		}];
 	}
 	
 	_title.stringValue = [self titleString];
