@@ -11,6 +11,9 @@
  *********************************************************************************************/
 
 @interface RakCTHImageGradient : RakGradientView
+{
+	NSGradient * _titleGradient;
+}
 
 @end
 

@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define DEFAULT_TITLE_HEIGHT (CT_READERMODE_WIDTH_PROJECT_NAME + 6)
+
 @implementation RakCTHImage
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
@@ -97,12 +99,42 @@
 
 - (NSColor *) startColor
 {
-	return [Prefs getSystemColor : GET_COLOR_BACKGROUND_TABS : nil];
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil];
 }
 
 - (NSColor *) endColor : (NSColor *) startColor
 {
 	return [startColor colorWithAlphaComponent:0];
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[super drawRect:dirtyRect];
+	
+	NSRect frame = [super grandientBounds];
+	frame.origin.y = frame.size.height - DEFAULT_TITLE_HEIGHT;
+	frame.size.height = DEFAULT_TITLE_HEIGHT;
+
+	[_titleGradient drawInRect : frame angle : self.angle];
+}
+
+#pragma mark - UI utilities
+
+- (NSRect) grandientBounds
+{
+	NSRect frame = [super grandientBounds];
+	
+	frame.size.height -= DEFAULT_TITLE_HEIGHT;
+	
+	return frame;
+}
+
+- (void) updateGradient
+{
+	NSColor * startColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	_titleGradient = [[NSGradient alloc] initWithStartingColor : startColor endingColor : [self endColor: startColor]];
+	
+	[super updateGradient];
 }
 
 @end
