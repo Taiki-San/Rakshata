@@ -52,7 +52,27 @@
 
 - (void) updateProject : (PROJECT_DATA) newProject
 {
-	[self setStringToSynopsis : newProject];
+	if(placeholderString && newProject.description[0] == 0)
+		return;
+	
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+		
+		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
+		[self.animator setAlphaValue:0.0];
+		
+	} completionHandler:^{
+		
+		[self setStringToSynopsis : newProject];
+		
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+			
+			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
+			[self.animator setAlphaValue:1.0];
+			
+		} completionHandler:^{
+			
+		}];
+	}];
 }
 
 - (BOOL) setStringToSynopsis : (PROJECT_DATA) project

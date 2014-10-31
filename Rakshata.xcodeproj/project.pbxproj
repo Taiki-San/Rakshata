@@ -693,12 +693,12 @@
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
 				B66ED18F1949B6D2002A333F /* Interface Builder */,
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
+				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6CF07BC1868DD58009B16A3 /* Products */,
 				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
-				B64B74F5195909030015B16D /* OptimizationProfiles */,
 			);
 			sourceTree = "<group>";
 		};
