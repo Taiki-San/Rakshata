@@ -73,8 +73,8 @@
 {
 	[super setFrame:[self frameByParent:frameRect]];
 	
-	[header setFrame : frameRect];
-	[synopsis setFrame : frameRect : header.bounds.size];
+	[header setFrame : self.bounds];
+	[synopsis setFrame : self.bounds : header.bounds.size];
 }
 
 - (void) resizeAnimation : (NSRect) frame

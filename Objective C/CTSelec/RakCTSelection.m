@@ -401,6 +401,11 @@
 			[_buttons setSelectedSegment:1];
 		}
 	}
+	else
+	{
+		[_chapterView setHidden:NO];
+		[_volView setHidden:NO];
+	}
 
 	return YES;
 }
