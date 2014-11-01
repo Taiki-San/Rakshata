@@ -30,6 +30,11 @@
 	return STATE_EMPTY;
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return YES;
+}
+
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])

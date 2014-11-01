@@ -21,6 +21,11 @@
 	[self updateGradient];
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return YES;
+}
+
 #pragma mark - UI routines
 
 - (void) updateTheme

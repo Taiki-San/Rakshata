@@ -35,6 +35,11 @@
 	return YES;
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return YES;
+}
+
 - (CGFloat) getTextHeight
 {
 	return CT_READERMODE_WIDTH_PROJECT_NAME;

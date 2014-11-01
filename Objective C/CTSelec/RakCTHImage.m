@@ -32,6 +32,11 @@
 	return self;
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return YES;
+}
+
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
 	char * teamPath = getPathForTeam(data.team->URLRepo);
