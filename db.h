@@ -60,6 +60,7 @@ bool updateIfRequired(PROJECT_DATA *data, short context);
 
 //Teams
 uint getDBTeamID(TEAMS_DATA * team);
+uint getTeamID(TEAMS_DATA * team);
 bool addRepoToDB(TEAMS_DATA newTeam);
 TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam);
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh);

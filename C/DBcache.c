@@ -699,10 +699,25 @@ uint getDBTeamID(TEAMS_DATA * team)
 	{
 		for(output = 0; output < lengthTeam && team != teamList[output]; output++);
 		if(output == lengthTeam)
-			return 0xffffffff;
+			return UINT_MAX;
 	}
 	else
-		return 0xffffffff;
+		return UINT_MAX;
+	
+	return output;
+}
+
+uint getTeamID(TEAMS_DATA * team)
+{
+	uint output;
+	if(teamList != NULL)
+	{
+		for(output = 0; output < lengthTeam && strcmp(team->URLRepo, teamList[output]->URLRepo); output++);
+		if(output == lengthTeam)
+			return UINT_MAX;
+	}
+	else
+		return UINT_MAX;
 	
 	return output;
 }

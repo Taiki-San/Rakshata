@@ -8,31 +8,18 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-#import "RakWindow.h"
+@interface RakDBUpdate : NSObject
 
-#import "RakTextCell.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakText.h"
-#import "RakSegmentedButtonCell.h"
-#import "RakMenuText.h"
-#import "RakProgressBar.h"
-#import "RakBackButton.h"
-#import "RakPopover.h"
++ (void) registerForUpdate : (id) instance : (SEL) selector;
++ (void) unRegister : (id) instance;
 
-#import "RakForegroundView.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakDragView.h"
-#import "RakDragItem.h"
-#import "RakDragResponder.h"
-#import "RakList.h"
-#import "RakGradientView.h"
++ (void) postNotificationFullUpdate;
++ (void) postNotificationTeamUpdate : (TEAMS_DATA) team;
++ (void) postNotificationProjectUpdate : (PROJECT_DATA) project;
++ (void) postNotification : (uint) teamID : (uint) projectID;
 
-#import "RakDBUpdate.h"
++ (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project;
 
-#define NSCenteredRect(base, content) NSMakePoint(base.origin.x + base.size.width / 2 - content.size.width / 2, base.origin.y + base.size.height / 2 - content.size.height / 2)
-#define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)
+@end

@@ -60,6 +60,7 @@
 		B68ED56D19DAA63100644A79 /* RakCTHTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = B68ED56C19DAA63100644A79 /* RakCTHTableController.m */; };
 		B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = B696DDED194A7D430018CDF9 /* RakDragResponder.m */; };
 		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
+		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -255,6 +256,8 @@
 		B696DDED194A7D430018CDF9 /* RakDragResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragResponder.m; path = Utils/RakDragResponder.m; sourceTree = "<group>"; };
 		B6976681190D9B7D00B0A266 /* RakMDLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLView.h; path = MDL/RakMDLView.h; sourceTree = "<group>"; };
 		B6976682190D9B7D00B0A266 /* RakMDLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLView.m; path = MDL/RakMDLView.m; sourceTree = "<group>"; };
+		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
+		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -657,6 +660,8 @@
 				B6E5146418771492006470ED /* RakButton.m */,
 				B623390818DBB7F800FC188A /* RakContentView.h */,
 				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */,
+				B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */,
 				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
 				B6FCB424196C1F8E0026C64C /* RakForegroundView.m */,
 				B642480919D57DF000679D78 /* RakGradientView.h */,
@@ -1092,6 +1097,7 @@
 				B68B5225191AE3050057F35A /* RakScroller.m in Sources */,
 				B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */,
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,
+				B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */,
 				B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */,
 				B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */,
 				B678674E18F5ED4A004AA6B4 /* RakMenuText.m in Sources */,

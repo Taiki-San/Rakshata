@@ -302,7 +302,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 {
 	uint IDTeam = getDBTeamID(oldData[0].team);
 	
-	if(IDTeam == 0xffffffff)
+	if(IDTeam == UINT_MAX)
 		return;
 	
 	//On commence par reclasser les éléments
