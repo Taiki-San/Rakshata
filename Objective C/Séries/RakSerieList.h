@@ -34,9 +34,6 @@ enum {
 	
 	CGFloat _forcedHeight;
 	
-	uint _sizeCache;
-	PROJECT_DATA * _cache;
-	
 	uint8_t _nbElemReadDisplayed;
 	uint8_t _nbElemDLDisplayed;
 	NSPointerArray * _data;
@@ -74,7 +71,7 @@ enum {
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView;
 
 - (void) updateMainListSizePadding;
-- (void) RakSeriesNeedUpdateRecent : (NSNotification *) notification;
+- (void) needUpdateRecent : (NSNotification *) notification;
 
 + (NSString *) contentNameForDrag : (PROJECT_DATA) project;
 

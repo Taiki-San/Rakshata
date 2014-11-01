@@ -157,6 +157,12 @@
 	return nil;
 }
 
+- (void) setRawDataChild : (PROJECT_DATA*) data
+{
+	if (!_isRootItem && !_isMainList)
+		dataChild = data;
+}
+
 - (PROJECT_DATA*) getRawDataChild
 {
 	if (_isRootItem || _isMainList)

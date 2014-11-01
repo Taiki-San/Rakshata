@@ -62,7 +62,7 @@
 			if(rootItems[i] != nil)
 				[rootItems[i] resetMainListHeight];
 			
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateRecent:) name:@"RakSeriesNeedUpdateRecent" object:nil];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(needUpdateRecent:) name:@"RakSeriesNeedUpdateRecent" object:nil];
 		}
 		else
 			self = nil;
@@ -129,7 +129,6 @@
 
 - (void) dealloc
 {
-	freeProjectData(_cache);
 	[content removeFromSuperview];
 }
 
@@ -205,13 +204,8 @@
 
 - (void) loadContent
 {
-	_cache = getCopyCache(SORT_TEAM, &_sizeCache);
-	
-	if(_cache != NULL)
-	{
-		_data = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsOpaqueMemory];
-		[self loadRecentFromDB];
-	}
+	_data = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsOpaqueMemory];
+	[self loadRecentFromDB];
 }
 
 - (void) loadRecentFromDB
@@ -268,17 +262,7 @@
 
 - (void) DBUpdated : (NSNotification *) notification
 {
-	if([RakDBUpdate isPluralUpdate:notification.userInfo])
-	{
-		PROJECT_DATA * newCache = getCopyCache(SORT_TEAM, &_sizeCache);
-		
-		if(newCache != NULL)
-		{
-			freeProjectData(_cache);
-			_cache = newCache;
-			[self reloadContent];
-		}
-	}
+	[self reloadContent];
 }
 
 - (void) reloadContent
@@ -362,9 +346,7 @@
 	
 	if(initializationStage == INIT_THIRD_STAGE)
 	{
-		if(_sizeCache)
-			return 1;
-		[self goToNextInitStage];
+		return 1;
 	}
 	
 	return 0;
@@ -431,7 +413,7 @@
 {
     if(item == nil)
 	{
-		return (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) + (_sizeCache != 0);
+		return (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) + 1;
 	}
 	else if ([item isRootItem])
 		return [item getNbChildren];
@@ -718,12 +700,12 @@
 	}
 }
 
-- (void) RakSeriesNeedUpdateRecent : (NSNotification *) notification
+- (void) needUpdateRecent : (NSNotification *) notification
 {
 	if([NSThread isMainThread])
 		[self reloadContent];
 	else
-		[self performSelectorOnMainThread:@selector(RakSeriesNeedUpdateRecent:) withObject:notification waitUntilDone:YES];
+		[self performSelectorOnMainThread:@selector(needUpdateRecent:) withObject:notification waitUntilDone:YES];
 }
 
 #pragma mark - Drag'n Drop

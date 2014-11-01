@@ -1120,7 +1120,7 @@ PROJECT_DATA getElementByID(uint cacheID)
 	
 	memset(&output, 0, sizeof(PROJECT_DATA));
 	
-	if(cache != NULL)
+	if(cache != NULL && cacheID != UINT_MAX)
 	{
 		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
 		sqlite3_bind_int(request, 1, cacheID);

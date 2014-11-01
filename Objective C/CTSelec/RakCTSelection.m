@@ -393,11 +393,11 @@
 	[_chapterView reloadData : data : YES];
 	[_volView reloadData : data : YES];
 	
+	[_buttons setEnabled:(newData.nombreChapitreInstalled > 0) forSegment:0];
+	[_buttons setEnabled:(newData.nombreTomesInstalled > 0) forSegment:1];
+
 	if(isCompact)
 	{
-		[_buttons setEnabled:(newData.nombreChapitreInstalled > 0) forSegment:0];
-		[_buttons setEnabled:(newData.nombreTomesInstalled > 0) forSegment:1];
-		
 		//Update focus
 		if(isTome && data.nombreTomesInstalled == 0)
 		{
