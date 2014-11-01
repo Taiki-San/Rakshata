@@ -51,26 +51,23 @@
 - (void) performFromTo : (NSArray*) basePosition
 {
 	int count = [_views count];		//	i doit être un int pour récupérer -1 si indexOfObjectPassingTest fail, et count ne devrait pas causer d'overflow
-	RakTabView *currentView;
 	haveBasePos = (basePosition != nil && [basePosition count] == count);
 	
-	[NSAnimationContext beginGrouping];
-	
-	[[NSAnimationContext currentContext] setDuration:animationDuration];
-	
-	[[NSAnimationContext currentContext] setCompletionHandler:^{
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+		
+		[context setDuration:animationDuration];
+		
+		[[(RakAppDelegate*) [NSApp delegate]MDL] createFrame];
+		
+		byte pos = 0;
+		for(RakTabView *currentView in _views)
+		{
+			[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:pos++] : nil];
+		}
+
+	} completionHandler:^{
 		[self cleanUpAnimation];
 	}];
-	
-	[[(RakAppDelegate*) [NSApp delegate]MDL] createFrame];
-
-	byte pos = 0;
-	for(currentView in _views)
-	{
-		[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:pos++] : nil];
-	}
-	
-	[NSAnimationContext endGrouping];
 }
 
 - (void) resizeView : (RakTabView *) view : (id) basePos
