@@ -184,7 +184,7 @@
 	//Update the main data list
 	data = newDataBuf;
 	_nbElem = nbElem;
-	amountData = self.compactMode ? _nbInstalled : nbElem;
+	amountData = self.compactMode ? nbInstalledData : nbElem;
 	projectData = project;
 	
 	//Update installed list
@@ -444,7 +444,7 @@
 	if(self.compactMode)
 	{
 		_mainColumn.width = newSize.width;
-		for(uint i = 0; i < amountData; i++)
+		for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
 		{
 			element = [_tableView viewAtColumn:0 row:i makeIfNecessary:NO];
 			if(element != nil)
@@ -509,8 +509,11 @@
 {
 	NSString * output;
 	
-	if(rowIndex >= amountData)
+	if(rowIndex >= amountData)	//Inconsistency
+	{
+		[aTableView performSelectorOnMainThread:@selector(noteNumberOfRowsChanged) withObject:nil waitUntilDone:NO];
 		return @"Error :(";
+	}
 	
 	if(self.compactMode)
 	{
@@ -680,13 +683,20 @@
 	BOOL foundOne = NO;
 	NSMutableIndexSet * index = [NSMutableIndexSet new];
 
-	for(uint i = 0; i < _nbElem; i++)
+	if(_installedTable != NULL)
 	{
-		if(!_installedTable[i])
+		for(uint i = 0; i < _nbElem; i++)
 		{
-			[index addIndex:i];
-			foundOne = YES;
+			if(!_installedTable[i])
+			{
+				[index addIndex:i];
+				foundOne = YES;
+			}
 		}
+	}
+	else
+	{
+		[self flushContext:NO];
 	}
 	
 	if(foundOne)

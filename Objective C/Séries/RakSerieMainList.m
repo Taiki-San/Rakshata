@@ -94,7 +94,7 @@
 	}
 
 	//Gather rows that will have to be removed/inserted
-	for(uint pos = 0; pos < amountData; pos++)
+	for(uint pos = 0; pos < _nbElemFull; pos++)
 	{
 		if(!_installed[pos])
 			[index addIndex:pos];
