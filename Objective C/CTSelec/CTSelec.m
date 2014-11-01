@@ -332,7 +332,12 @@
 
 			} completionHandler:^{
 				
+				[CATransaction begin];
+				[CATransaction setDisableActions:YES];
+
 				[self updateProject : project : isTome : element];
+				
+				[CATransaction commit];
 				
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
