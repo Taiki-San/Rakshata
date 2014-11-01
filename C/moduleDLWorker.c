@@ -41,7 +41,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     listDL = calloc(nombreElement, sizeof(void*));
     listSizeDL = calloc(nombreElement, sizeof(size_t));
 	
-	if (isTome && todoListTmp.datas->tomesFull != NULL)	//We find the tome position
+	if(isTome && todoListTmp.datas->tomesFull != NULL)	//We find the tome position
 	{
 		posTomeInStruct = getPosForID(*todoListTmp.datas, false, input.todoList->identifier);
 	
@@ -209,7 +209,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			*(input.currentState) = MDL_CODE_INSTALL_OVER;
 			setInstalled(input.todoList->datas->cacheDBID);
 			addRecentEntry(*(input.todoList->datas), true);
-			MDLInstallOver(input.selfCode, input.todoList->rowViewResponsible);
+			MDLInstallOver(*input.todoList->datas);
 		}
     }
     else
@@ -221,8 +221,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
 			setInstalled(input.todoList->datas->cacheDBID);
 			addRecentEntry(*(input.todoList->datas), true);
-			MDLInstallOver(input.selfCode, input.todoList->rowViewResponsible);
 		}
+		MDLInstallOver(*input.todoList->datas);
 	}
 	
 	//On lance les éventuelles installations en attente

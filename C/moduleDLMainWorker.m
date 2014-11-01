@@ -212,17 +212,17 @@ void MDLQuit()
 	MUTEX_UNLOCK(asynchronousTaskInThreads);
 }
 
-void MDLInstallOver(uint selfCode, void * UIInstance)
+void MDLInstallOver(PROJECT_DATA project)
 {
-	MDLCommunicateOC(REQ_VIEW_INSTALL_OVER, selfCode, UIInstance);
+	[RakDBUpdate postNotificationProjectUpdate:project];
 }
 
 void MDLUpdateIcons(uint selfCode, void * UIInstance)
 {
-	MDLCommunicateOC(REQ_VIEW_UPDATE_ICONS, selfCode, UIInstance);
+	MDLCommunicateOC(selfCode, UIInstance);
 }
 
-void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
+void MDLCommunicateOC(uint selfCode, void * UIInstance)
 {
 	//If we have to recover UIInstance
 	if(UIInstance == NULL && mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
@@ -234,14 +234,7 @@ void MDLCommunicateOC(byte request, uint selfCode, void * UIInstance)
 	
 	if(UIInstance != nil)
 	{
-		SEL selector = nil;
-		
-		if(request == REQ_VIEW_UPDATE_ICONS)
-			selector = @selector(updateContext);
-		else if(request == REQ_VIEW_INSTALL_OVER)
-			selector = @selector(installOver);
-		
-		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:selector withObject:nil waitUntilDone:NO];
+		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
 	}
 }
 

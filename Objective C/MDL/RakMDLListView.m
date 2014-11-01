@@ -409,10 +409,4 @@
 	[self removeRowFromList];
 }
 
-- (void) installOver
-{
-#warning "we must be able to assume RakCTSelection will be allocated if it wasn't already"
-	[RakDBUpdate postNotificationProjectUpdate:*(*todoList)->datas];
-}
-
 @end
