@@ -239,9 +239,9 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 		return;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/%s", encodedTeam, project.projectID, CONFIGFILETOME);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedTeam, project.projectID);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/%s", encodedTeam, project.projectID, CONFIGFILE);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedTeam, project.projectID);
 
 	fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);

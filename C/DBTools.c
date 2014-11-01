@@ -457,6 +457,7 @@ bool isInstalled(char * basePath)
 		return false;
 	
 	bool retValue = false;
+	uint basePathLength = strlen(basePath);
 	struct dirent *entry;
 	
 	while((entry = readdir(directory)) != NULL)
@@ -464,10 +465,27 @@ bool isInstalled(char * basePath)
 		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
 			continue;
 		
-		if((!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9) || (!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5))
+		if(!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9)
 		{
 			retValue = true;
 			break;
+		}
+		else if(!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5)
+		{
+			char * path = malloc(basePathLength + 0x100);
+			if(path != NULL)
+			{
+				snprintf(path, basePathLength + 0x100, "%s/%s/"CONFIGFILETOME, basePath, entry->d_name);
+				if(checkFileExist(path))
+				{
+					free(path);
+					retValue = true;
+					break;
+				}
+				
+				free(path);
+			}
+			
 		}
 	}
 	

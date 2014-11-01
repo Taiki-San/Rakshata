@@ -429,7 +429,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(encodedTeam == NULL)
 		return false;
 	
-	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/%s.tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier);
 	length = getFileSize(bufferPath);
 	
 	if(length)
@@ -572,7 +572,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 		uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + 110;
 		char bufferPathTmp[lengthTmp];
 		
-		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier, CONFIGFILETOME);
+		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier);
 		rename(bufferPath, bufferPathTmp);
 		
 		refreshTomeList(tomeDatas->datas);

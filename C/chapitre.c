@@ -170,7 +170,7 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool car
 			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
-				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/%s", encodedTeam, projectDB.projectID, IDTomeLinked, CONFIGFILETOME);
+				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, projectDB.projectID, IDTomeLinked);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
 					//On crée le dossier
