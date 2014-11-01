@@ -694,10 +694,6 @@
 			}
 		}
 	}
-	else
-	{
-		[self flushContext:NO];
-	}
 	
 	if(foundOne)
 	{

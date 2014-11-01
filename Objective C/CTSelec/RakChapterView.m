@@ -107,9 +107,6 @@
 
 - (void) setCTViewHidden : (BOOL) CTViewHidden
 {
-	if(_CTViewHidden == CTViewHidden)
-		return;
-
 	if(CTViewHidden)
 		[header setHidden:YES];
 	else
@@ -123,9 +120,6 @@
 
 - (void) setReaderViewHidden : (BOOL) readerViewHidden
 {
-	if(_readerViewHidden == readerViewHidden)
-		return;
-	
 	if(readerViewHidden)
 	{
 		[projectName setHidden:YES];

@@ -119,6 +119,9 @@
 
 - (void) focusViewChanged : (uint) newMainThread
 {
+	if(mainThread == newMainThread)
+		return;
+	
 	mainThread = newMainThread;
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	
