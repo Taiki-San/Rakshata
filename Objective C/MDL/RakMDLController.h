@@ -53,7 +53,6 @@
 - (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
 - (void) discardElement : (uint) element;
 
-- (void) refreshCT : (uint) ID;
 - (BOOL) areCredentialsComplete;
 - (RakTabForegroundView *) getForegroundView;
 - (void) setWaitingLogin : (NSNumber *) request;

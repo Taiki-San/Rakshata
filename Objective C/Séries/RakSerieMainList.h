@@ -22,7 +22,6 @@
 
 - (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly;
 
-- (void) reloadData;
 - (void) updateJumpTable;
 - (PROJECT_DATA) getElementAtIndex : (NSInteger) index;
 

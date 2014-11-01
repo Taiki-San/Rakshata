@@ -225,7 +225,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 			int indexTeam = getIndexOfTeam(team);
 			if(indexTeam != -1)
 			{
-				output[*nbElem] = getDataFromSearch (indexTeam, projectID, RDB_CTXSERIES, true);
+				output[*nbElem] = getDataFromSearch(indexTeam, projectID, true);
 				
 				if(output[*nbElem] != NULL)
 					(*nbElem)++;

@@ -428,7 +428,6 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 		return false;
 	
 	sqlite3_finalize(request);
-	setProjectUpdated(DBID);
 	
 	return true;
 }
@@ -618,9 +617,6 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			if(!copyOutputDBToStruct(request, &output[pos]))
 				continue;
 			
-			if(maskRequest & RDB_CTXMASK)
-				signalProjectRefreshed(pos, (maskRequest & RDB_CTXMASK) >> 8);
-
 			if(output[pos].team != NULL)
 				pos++;
 		}
@@ -632,62 +628,6 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	}
 	
 	return output;
-}
-
-//Check si le projet est à jour
-
-bool isProjectUpdated(uint ID, byte context)
-{
-	if(isUpdated != NULL && ID <= lengthIsUpdated)
-		return isUpdated[ID] & context;
-	return 0;
-}
-
-void setProjectUpdated(uint ID)
-{
-	if(isUpdated != NULL && ID <= lengthIsUpdated)
-		isUpdated[ID] = 0xff;
-}
-
-void signalProjectRefreshed(uint ID, short context)
-{
-	if(isUpdated != NULL && ID <= lengthIsUpdated)
-		isUpdated[ID] &= ~(context >> 8);
-}
-
-bool updateIfRequired(PROJECT_DATA *data, short context)
-{
-	if(data == NULL)
-		return false;
-	
-	bool ret_value = false;
-	
-	context >>= 8;
-
-	if (isProjectUpdated(data->cacheDBID, context))
-	{
-		sqlite3_stmt* request = NULL;
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?", -1, &request, NULL);
-		sqlite3_bind_int(request, 1, data->cacheDBID);
-		
-		if(sqlite3_step(request) == SQLITE_ROW)
-		{
-			free(data->chapitresFull);
-			free(data->chapitresPrix);
-			free(data->tomesFull);
-			copyOutputDBToStruct(request, data);
-			
-			checkChapitreValable(data, NULL);
-			checkTomeValable(data, NULL);
-			
-			ret_value = true;
-		}
-		
-		signalProjectRefreshed(data->cacheDBID, context);
-		sqlite3_finalize(request);
-	}
-	
-	return ret_value;
 }
 
 /*************		REPOSITORIES DATA		*****************/
@@ -975,7 +915,7 @@ void freeProjectData(PROJECT_DATA* projectDB)
 
 //Requêtes pour obtenir des données spécifiques
 
-PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context, bool installed)
+PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, bool installed)
 {
 	if(IDTeam >= lengthTeam)
 		return NULL;
@@ -1003,8 +943,6 @@ PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, uint32_t context,
 			free(output);
 			output = NULL;
 		}
-		else if(context & RDB_CTXMASK)
-			signalProjectRefreshed(output->cacheDBID, (context & RDB_CTXMASK) >> 8);
 		
 		if (sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -1175,7 +1113,7 @@ bool isProjectInstalledInCache (uint ID)
 	return output;
 }
 
-PROJECT_DATA getElementByID(uint cacheID, uint32_t context)
+PROJECT_DATA getElementByID(uint cacheID)
 {
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output;
@@ -1188,10 +1126,7 @@ PROJECT_DATA getElementByID(uint cacheID, uint32_t context)
 		sqlite3_bind_int(request, 1, cacheID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
-		{
-			if(copyOutputDBToStruct(request, &output) && context & RDB_CTXMASK)
-				signalProjectRefreshed(output.cacheDBID, (context & RDB_CTXMASK) >> 8);
-		}
+			copyOutputDBToStruct(request, &output);
 		
 		sqlite3_finalize(request);
 	}

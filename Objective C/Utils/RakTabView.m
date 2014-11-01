@@ -652,7 +652,14 @@
 	if (item == nil || [item class] != [RakDragItem class])
 		return NO;
 	
-	return [self receiveDrop:item.project :item.isTome :item.selection :[RakDragResponder getOwnerOfTV:[sender draggingSource]]];
+	PROJECT_DATA localProject = getElementByID(item.project.projectID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
+	
+	BOOL retVal = [self receiveDrop:localProject :item.isTome :item.selection :[RakDragResponder getOwnerOfTV:[sender draggingSource]]];
+
+	releaseCTData(localProject);
+	releaseCTData(item.project);
+	
+	return retVal;
 }
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender

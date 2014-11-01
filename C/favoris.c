@@ -130,7 +130,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	else
 		removeFromPref(SETTINGS_FAVORITE_FLAG);
 	
-	PROJECT_DATA cacheCopy = getElementByID(projectDB->cacheDBID, RDB_CTXFAVS);
+	PROJECT_DATA cacheCopy = getElementByID(projectDB->cacheDBID);
 	cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
 	updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
 	
@@ -157,7 +157,7 @@ void updateFavorites()
     updateDatabase(false);
 	
 	uint nbElem, pos;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbElem);
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM, &nbElem);
     if(projectDB == NULL)
         return;
 
@@ -190,7 +190,7 @@ void getNewFavs()
 	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
 	uint posProject, nbProject, prevProjectIndex;
 	size_t posFull, maxPos;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM | RDB_CTXFAVS, &nbProject), *current;
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM, &nbProject), *current;
 
     if(projectDB == NULL)
         return;

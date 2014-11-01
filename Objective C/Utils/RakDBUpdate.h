@@ -21,5 +21,7 @@
 + (void) postNotification : (uint) teamID : (uint) projectID;
 
 + (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project;
++ (BOOL) getIDUpdated : (NSDictionary*) notification : (uint*) ID;
++ (BOOL) isPluralUpdate : (NSDictionary *) notification;
 
 @end

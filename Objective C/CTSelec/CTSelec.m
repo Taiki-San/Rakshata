@@ -47,7 +47,7 @@
 					}
 
 					uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
-					PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, RDB_CTXCT, false);
+					PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, false);
 					
 					if(project == NULL)
 					{
@@ -82,8 +82,12 @@
 		}
 		
 		if(coreView != nil)
-		{
 			[self addSubview:coreView];
+		else
+		{
+			[backButton removeFromSuperview];
+			backButton = nil;
+			self = nil;
 		}
 	}
     return self;
@@ -97,9 +101,7 @@
 - (void) dealloc
 {
 	[backButton removeFromSuperview];		backButton = nil;
-	
-	if(coreView != nil)	{	[coreView removeFromSuperview];				coreView = nil;		}
-	
+	[coreView removeFromSuperview];			coreView = nil;
 }
 
 - (void) backButtonClicked
@@ -166,7 +168,7 @@
 {
 	NSString * string;
 	
-	if(coreView == nil || (string = [coreView getContextToGTFO]) == nil)
+	if((string = [coreView getContextToGTFO]) == nil)
 	{
 		return [super byebye];
 	}
@@ -178,17 +180,9 @@
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	PROJECT_DATA newProject = getElementByID(project.cacheDBID, RDB_CTXCT);	//Isole le tab des données
+	PROJECT_DATA newProject = getElementByID(project.cacheDBID);	//Isole le tab des données
 	
-	if(coreView != nil)
-		[coreView updateContext:newProject];
-	else
-	{
-		coreView = [[RakChapterView alloc] initContent : [self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.bounds.size.height] : newProject : NO : (long [4]) {-1, -1, -1, -1}];
-		
-		if(coreView != nil)
-			[self addSubview:coreView];
-	}
+	[coreView updateContext:newProject];
 	
 	//Coreview en fait aussi une copie, on doit donc release cette version
 	releaseCTData(newProject);
@@ -267,10 +261,7 @@
 		
 		frameRect.origin.x = frameRect.origin.y = 0;
 		[backButton setFrame:frameRect];
-		if (coreView != nil)
-		{
-			[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
-		}
+		[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
 	}
 }
 
@@ -284,11 +275,7 @@
 
 		frame.origin = NSZeroPoint;
 		[backButton resizeAnimation:frame];
-
-		if(coreView)
-		{
-			[coreView resizeAnimation:[self calculateContentViewSize : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
-		}
+		[coreView resizeAnimation:[self calculateContentViewSize : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
 	}
 }
 
@@ -369,19 +356,9 @@
 
 #pragma mark - Proxy
 
-//Return NO some class were not instantiated
-- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID
-{
-	if(coreView != nil)
-		return [coreView refreshCT : checkIfRequired : ID];
-
-	return NO;
-}
-
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
 {
-	if(coreView != nil)
-		[coreView selectElem : projectID : isTome : element];
+	[coreView selectElem : projectID : isTome : element];
 }
 
 #pragma mark - Drop
@@ -395,8 +372,6 @@
 		[coreView updateContext:data];
 		ret_value = YES;
 	}
-	
-	releaseCTData(data);
 	
 	return ret_value;
 }

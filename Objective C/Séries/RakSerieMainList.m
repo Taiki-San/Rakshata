@@ -20,7 +20,8 @@
 	{
 		_jumpToInstalled = NULL;
 		
-		data = getCopyCache(RDB_CTXSERIES | SORT_NAME | RDB_LOADALL, &_nbElemFull);
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		data = getCopyCache(SORT_NAME | RDB_LOADALL, &_nbElemFull);
 		_installed = getInstalledFromData(data, _nbElemFull);
 		
 		if(installOnly)
@@ -115,31 +116,72 @@
 
 #pragma mark - Data manipulation
 
-- (void) reloadData
+- (void) DBUpdated : (NSNotification *) notification
 {
-	BOOL newData = NO;
-	
-	NSInteger element = [self getSelectedElement];
-	
-	for(uint pos = 0; pos < amountData; pos++)
+	uint updatedID;
+	if(![RakDBUpdate isPluralUpdate:notification.userInfo] && [RakDBUpdate getIDUpdated:notification.userInfo :&updatedID])			//Single item updated
 	{
-		if(updateIfRequired(&((PROJECT_DATA*) data)[pos], RDB_CTXSERIES))
+		for(uint pos = 0; pos < _nbElemFull; pos++)
 		{
-			_installed[pos] = isProjectInstalledInCache(((PROJECT_DATA*)data)[pos].cacheDBID);
-			newData = YES;
+			if(((PROJECT_DATA*)data)[pos].cacheDBID == updatedID)
+			{
+				BOOL needUpdate = NO;
+				uint length;
+				PROJECT_DATA newElem = getElementByID(updatedID), *current = &((PROJECT_DATA*)data)[pos];
+
+				if((length = wstrlen(current->projectName)) != wstrlen(newElem.projectName) || memcmp(newElem.projectName, current->projectName, length * sizeof(wchar_t)))	//If name didn't changed, we don't give a fuck about this update
+				{
+					releaseCTData(*current);
+					*current = newElem;
+					needUpdate = YES;
+				}
+				
+				BOOL newIsInstalled = isProjectInstalledInCache(updatedID);
+				if(_installed[pos] != newIsInstalled)
+				{
+					_installed[pos] = newIsInstalled;
+					needUpdate |= self.installOnlyMode;
+				}
+				
+				if(needUpdate)
+				{
+					
+				}
+				
+				break;
+			}
 		}
 	}
 	
-	if(newData)
+	uint nbElem;
+	PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem);
+	bool * newInstalled;
+	if(projects == NULL)
+		return;
+	
+	newInstalled = getInstalledFromData(projects, nbElem);
+	if(newInstalled)
 	{
-		if(self.installOnlyMode)
-			[self updateJumpTable];
-
-		[_tableView reloadData];
-		
-		if(element != -1)
-			[self selectRow:[self getIndexOfElement:element]];
+		freeProjectData(projects);
+		return;
 	}
+	
+	freeProjectData(data);
+	data = projects;
+	free(_installed);
+	_installed = newInstalled;
+
+	_nbElemFull = nbElem;
+	
+	NSInteger element = [self selectedRow];
+	if(self.installOnlyMode)
+		[self updateJumpTable];
+	
+#warning "what about an efficient system?"
+	[_tableView reloadData];
+	
+	if(element != -1)
+		[self selectRow:element];
 }
 
 - (void) updateJumpTable

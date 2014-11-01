@@ -10,12 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-enum
-{
-	COM_CT_SELEC,
-	COM_CT_REFRESH
-};
-
 @implementation Reader (PageManagement)
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
@@ -322,6 +316,18 @@ enum
 	cacheSession++;
 }
 
+#pragma mark - DB update
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
+	{
+		releaseCTData(_project);
+		_project = getElementByID(_project.cacheDBID);
+		_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+	}
+}
+
 #pragma mark - High level API
 
 - (void) nextPage
@@ -484,11 +490,6 @@ enum
 	self.isTome = isTomeRequest;
 	
 	_cacheBeingBuilt = false;
-	
-	updateIfRequired(&_project, RDB_CTXLECTEUR);
-	
-	getUpdatedCTList(&_project, true);
-	getUpdatedCTList(&_project, false);
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 	if(_posElemInStructure == -1)
@@ -661,7 +662,7 @@ enum
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
 		
-		[self updateCTTab : COM_CT_SELEC];
+		[self updateCTTab];
 		
 		if((goToNext && nextDataLoaded) || (!goToNext && previousDataLoaded))
 		{
@@ -733,38 +734,25 @@ enum
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
-		[self updateCTTab : COM_CT_SELEC];
+		[self updateCTTab];
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
 	addRecentEntry(_project, false);
 }
 
-- (void) updateCTTab : (uint) request
+- (void) updateCTTab
 {
 	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate]CT];
 	
-	if(request == COM_CT_SELEC)
-	{
-		_dontGiveACrapAboutCTPosUpdate = true;
-		[tabCT selectElem: _project.cacheDBID :self.isTome :_currentElem];
-		_dontGiveACrapAboutCTPosUpdate = false;
-	}
-	else if(request == COM_CT_REFRESH)
-	{
-		[tabCT refreshCT:NO :_project.cacheDBID];
-	}
+	_dontGiveACrapAboutCTPosUpdate = true;
+	[tabCT selectElem: _project.cacheDBID :self.isTome :_currentElem];
+	_dontGiveACrapAboutCTPosUpdate = false;
 }
 
 - (void) updateContext : (BOOL) dataAlreadyLoaded
 {
 	[self flushCache];
-		
-	if(updateIfRequired(&_project, RDB_CTXLECTEUR))
-	{
-		checkChapitreValable(&_project, NULL);
-		checkTomeValable(&_project, NULL);
-	}
 	
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
@@ -847,12 +835,9 @@ enum
 	cacheSession++;	//Tell the cache system to stop
 	while (_cacheBeingBuilt);
 	
-	internalDeleteCT(_project, self.isTome, _currentElem);
-	
-	[self updateCTTab:COM_CT_REFRESH];
-	
-	getUpdatedCTList(&_project, self.isTome);
-	
+	deleteProject(_project, _currentElem, self.isTome);
+	[RakDBUpdate postNotificationProjectUpdate:_project];
+		
 	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 		[self nextChapter];
 	else if(_posElemInStructure > 0)

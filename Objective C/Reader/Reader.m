@@ -21,7 +21,10 @@
 	{
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
+		
 		[Prefs getCurrentTheme:self];		//register for changes
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		
 		self = [self initView : contentView : state];
 		self.layer.cornerRadius = 0;
 		
@@ -68,7 +71,7 @@
 				
 				const uint projectID = [[dataState objectAtIndex:1] longLongValue];
 	
-				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXLECTEUR, true);
+				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, true);
 				
 				if(project == NULL)
 				{
@@ -532,18 +535,12 @@
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
-	BOOL ret_value = NO;
-	
-	if(element != VALEUR_FIN_STRUCT &&
-		(sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element)) ) )
+	if(element != VALEUR_FIN_STRUCT && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
 	{
 		[self updateContextNotification:data :isTome :element];
-		ret_value = YES;
+		return YES;
 	}
-	
-	releaseCTData(data);
-	
-	return ret_value;
+	return NO;
 }
 
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL

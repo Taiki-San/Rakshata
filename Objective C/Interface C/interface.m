@@ -36,14 +36,35 @@ void sendToLog(char * string)
 }
 
 /*****************************************
-**										**
-**				  Series				**
-**										**
-*****************************************/
+ **										**
+ **				 DB update				**
+ **										**
+ *****************************************/
+
+void notifyFullUpdate()
+{
+	[RakDBUpdate postNotificationFullUpdate];
+}
+
+void notifyUpdateTeam(TEAMS_DATA team)
+{
+	[RakDBUpdate postNotificationTeamUpdate:team];
+}
+
+void notifyUpdateProject(PROJECT_DATA project)
+{
+	[RakDBUpdate postNotificationProjectUpdate:project];
+}
+
+/*****************************************
+ **										**
+ **				  Series				**
+ **										**
+ *****************************************/
 
 void updateRecentSeries()
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakSeriesNeedUpdateContent" object:nil userInfo: @{@"request": [NSNumber numberWithInt:RELOAD_RECENT]}];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakSeriesNeedUpdateRecent" object:nil userInfo: nil];
 }
 
 /*****************************************

@@ -142,7 +142,7 @@ int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
+void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
 {
 	TEAMS_DATA *globalTeam = oldData[posBase].team;
 	uint magnitudeInput = posEnd - posBase, nbElem = 0;
@@ -183,6 +183,10 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd)
 			
 				applyChangesProject(&oldData[posBase], magnitudeInput, projectShort, nbElem);
 				free(projectShort);
+				
+				if(standalone)
+					notifyUpdateTeam(*globalTeam);
+				
 			}
 			free(projects);
 		}
@@ -200,7 +204,7 @@ void updateProjects()
 	{
 		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
-			updateProjectsFromTeam(oldData, posBase, posEnd);
+			updateProjectsFromTeam(oldData, posBase, posEnd, false);
 		else
 			break;
 
@@ -209,6 +213,7 @@ void updateProjects()
 	
 	syncCacheToDisk(SYNC_TEAM | SYNC_PROJECTS);
 	freeProjectData(oldData);
+	notifyFullUpdate();
 }
 
 void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)

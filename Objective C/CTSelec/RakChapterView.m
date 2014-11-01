@@ -214,15 +214,15 @@
 	}
 }
 
-- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
+#warning "Granular update"
+- (void) projectDataUpdate : (PROJECT_DATA) oldData : (PROJECT_DATA) newData
 {
-	if (coreview != nil)
-	{
-		[coreview refreshCTData : checkIfRequired : ID];
-		return YES;
-	}
-	
-	return NO;
+//	uint length;
+//	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(wchar_t)))
+//	{
+//		
+//	}
+	[self updateContext:newData];
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

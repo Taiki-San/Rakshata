@@ -23,7 +23,7 @@
 	if (self != nil)
 	{
 		self.autoresizesSubviews = NO;
-		
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		data = getCopyOfProjectData(project);
 		
 		if(![self setupButtons:&isTome])
@@ -238,6 +238,27 @@
 	return _currentContext;
 }
 
+#pragma mark - "DB update"
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :data])
+	{
+		releaseCTData(data);
+		PROJECT_DATA newData = getElementByID(data.cacheDBID);
+		
+		//We define what changed on the structure, except chapters/volumes
+		_preventContextUpdate = YES;
+		[(RakChapterView*) self.superview projectDataUpdate:data :newData];
+		_preventContextUpdate = NO;
+		
+		data = newData;
+		[_chapterView reloadData : data : NO];
+		[_volView reloadData : data : NO];
+	}
+}
+
+
 #pragma mark - Proxy
 
 - (void) gotClickedTransmitData : (NSNotification *) notification
@@ -324,18 +345,6 @@
 		_volView.hidden = !isTome;
 }
 
-- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
-{
-	if((checkIfRequired || data.cacheDBID != ID) && (!checkIfRequired || !updateIfRequired(&data, RDB_CTXCT)))
-		return;
-	
-	getUpdatedChapterList(&data, true);
-	[_chapterView reloadData : data : NO];
-	
-	getUpdatedTomeList(&data, true);
-	[_volView reloadData : data : NO];
-}
-
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
 {
 	if(data.cacheDBID != projectID || self.dontNotify)
@@ -358,6 +367,8 @@
 
 - (BOOL) updateContext : (PROJECT_DATA) newData
 {
+	if(_preventContextUpdate)
+		return NO;
 	//Some danger of TOCTOU around here, mutexes would be great
 	
 	if(data.cacheDBID == newData.cacheDBID)

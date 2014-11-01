@@ -354,7 +354,7 @@
 - (void) updatePercentage : (CGFloat) percentage : (size_t) speed
 {
 	if(DLprogress != nil)
-		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[[NSNumber numberWithDouble:percentage], [NSNumber numberWithUnsignedLong:speed]] waitUntilDone:YES];
+		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[@(percentage), @(speed)] waitUntilDone:YES];
 }
 
 //We will abort the download, notify the controller, notify the main dispatcher, and diseapear from the table
@@ -403,8 +403,6 @@
 
 - (void) sendRead
 {
-	updateIfRequired((*todoList)->datas, RDB_CTXMDL);
-
 	[[(RakAppDelegate*) [NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 
 	[_controller discardElement: _row];
@@ -413,16 +411,8 @@
 
 - (void) installOver
 {
-	if(![[(RakAppDelegate*) [NSApp delegate]CT] refreshCT : NO : (*todoList)->datas->cacheDBID])
-	{
-		//Some instance were not instantiated, we need to get them created
-		
-		//We first refresh data, as CT won't do it in this scenario
-		getUpdatedChapterList((*todoList)->datas, true);
-		getUpdatedTomeList((*todoList)->datas, true);
-	
-		[[(RakAppDelegate*) [NSApp delegate]CT] updateProject : *(*todoList)->datas : YES : VALEUR_FIN_STRUCT];
-	}
+#warning "we must be able to assume RakCTSelection will be allocated if it wasn't already"
+	[RakDBUpdate postNotificationProjectUpdate:*(*todoList)->datas];
 }
 
 @end

@@ -27,6 +27,8 @@
 
 - (void) failure;
 
+- (void) DBUpdated : (NSNotification*) notification;
+
 - (void) nextPage;
 - (void) prevPage;
 - (void) nextChapter;
@@ -40,7 +42,7 @@
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (bool) goToNext : (BOOL) byChangingPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
-- (void) updateCTTab : (uint) request;
+- (void) updateCTTab;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;
 - (void) updateEvnt;
 - (void) deleteElement;

@@ -24,8 +24,8 @@
 		IDToPosition = NULL;
 		quit = false;
 		
-		cache = getCopyCache(RDB_LOADALL | SORT_NAME | RDB_CTXMDL, &sizeCache);
-
+		cache = getCopyCache(RDB_LOADALL | SORT_NAME, &sizeCache);
+		
 		char * stateChar = NULL;
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 			stateChar = (char *) [state UTF8String];
@@ -37,6 +37,8 @@
 			{
 				for(discardedCount = 0; discardedCount < nbElem; discardedCount++)
 					IDToPosition[discardedCount] = discardedCount;
+				
+				[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 			}
 			else
 				self = nil;
@@ -67,6 +69,34 @@
 
 	free(data);
 	return output;
+}
+
+- (void) DBUpdated : (NSNotification *) notification
+{
+	uint updatedID;
+	PROJECT_DATA prevData;
+	
+	if([RakDBUpdate getIDUpdated:notification.userInfo :&updatedID])
+	{
+		uint pos = 0;
+		
+		for(; pos < sizeCache && cache[pos].cacheDBID != updatedID; pos++);
+		if(pos < sizeCache)
+		{
+			prevData = cache[pos];
+			cache[pos] = getElementByID(updatedID);
+			releaseCTData(prevData);
+		}
+	}
+	else	//Full update
+	{
+		for(uint pos = 0; pos < sizeCache; pos++)
+		{
+			prevData = cache[pos];
+			cache[pos] = getElementByID(prevData.cacheDBID);
+			releaseCTData(prevData);
+		}
+	}
 }
 		   
 - (void) dealloc
@@ -311,16 +341,6 @@
 }
 
 #pragma mark - Main view control
-
-- (void) refreshCT : (uint) row
-{
-	DATA_LOADED ** data = [self getData:row :YES];
-	
-	if(data != NULL && *data != NULL)
-	{
-		[[(RakAppDelegate*) [NSApp delegate]CT] refreshCT : YES : (*data)->datas->cacheDBID];
-	}
-}
 
 - (BOOL) areCredentialsComplete
 {

@@ -31,7 +31,6 @@
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
 
-- (BOOL) refreshCT : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 
 @end

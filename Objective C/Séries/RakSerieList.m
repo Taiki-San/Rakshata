@@ -20,6 +20,7 @@
 	{
 		initializationStage = INIT_FIRST_STAGE;
 		[Prefs getCurrentTheme:self];		//register
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
 		rootItems[0] = rootItems[1] = rootItems[2] = nil;
 		readerMode = _readerMode;
@@ -61,7 +62,7 @@
 			if(rootItems[i] != nil)
 				[rootItems[i] resetMainListHeight];
 			
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateContent:) name:@"RakSeriesNeedUpdateContent" object:nil];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(RakSeriesNeedUpdateRecent:) name:@"RakSeriesNeedUpdateRecent" object:nil];
 		}
 		else
 			self = nil;
@@ -98,7 +99,7 @@
 				
 				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
 				
-				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, RDB_CTXCT, false);
+				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, false);
 				
 				if(project == NULL || project->team == NULL)
 				{
@@ -204,7 +205,7 @@
 
 - (void) loadContent
 {
-	_cache = getCopyCache(RDB_CTXSERIES | SORT_TEAM, &_sizeCache);
+	_cache = getCopyCache(SORT_TEAM, &_sizeCache);
 	
 	if(_cache != NULL)
 	{
@@ -236,7 +237,7 @@
 	
 	//Recent read
 	uint8_t i = 0;
-	PROJECT_DATA ** recent = getRecentEntries (false, &_nbElemReadDisplayed);
+	PROJECT_DATA ** recent = getRecentEntries(false, &_nbElemReadDisplayed);
 	
 	if(recent != NULL)
 	{
@@ -263,6 +264,21 @@
 	
 	for (; i < 3; i++)
 		[_data insertPointer:NULL atIndex: i + 3];
+}
+
+- (void) DBUpdated : (NSNotification *) notification
+{
+	if([RakDBUpdate isPluralUpdate:notification.userInfo])
+	{
+		PROJECT_DATA * newCache = getCopyCache(SORT_TEAM, &_sizeCache);
+		
+		if(newCache != NULL)
+		{
+			freeProjectData(_cache);
+			_cache = newCache;
+			[self reloadContent];
+		}
+	}
 }
 
 - (void) reloadContent
@@ -321,14 +337,6 @@
 		if(rootItems[i] != nil && [rootItems[i] isExpanded])
 			[content expandItem:rootItems[i]];
 	}
-}
-
-- (void) reloadMainList
-{
-	id view = [_mainList getContent];
-	
-	if([view class] == [RakSerieMainList class])
-		[(RakSerieMainList*) view reloadData];
 }
 
 - (void) goToNextInitStage
@@ -710,27 +718,12 @@
 	}
 }
 
-- (void) RakSeriesNeedUpdateContent : (NSNotification *) notification
+- (void) RakSeriesNeedUpdateRecent : (NSNotification *) notification
 {
 	if([NSThread isMainThread])
-	{
-		NSNumber *requestObj = [notification.userInfo objectForKey:@"request"];
-		
-		if(requestObj == nil)
-			return;
-		
-		int request = [requestObj intValue];
-		
-		if(request == RELOAD_RECENT || request == RELOAD_BOTH)
-			[self reloadContent];
-		
-		if(request == RELOAD_MAINLIST || request == RELOAD_BOTH)
-			[self reloadMainList];
-	}
+		[self reloadContent];
 	else
-	{
-		[self performSelectorOnMainThread:@selector(RakSeriesNeedUpdateContent:) withObject:notification waitUntilDone:YES];
-	}
+		[self performSelectorOnMainThread:@selector(RakSeriesNeedUpdateRecent:) withObject:notification waitUntilDone:YES];
 }
 
 #pragma mark - Drag'n Drop

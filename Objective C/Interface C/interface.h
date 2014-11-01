@@ -45,6 +45,15 @@ int internalUIAlert(char *titre, char* content, UIABUTT* buttons);
 uint32_t getMainThread();
 void sendToLog(char * string);
 
+/*****************************************
+ **										**
+ **				 DB update				**
+ **										**
+ *****************************************/
+
+void notifyFullUpdate();
+void notifyUpdateTeam(TEAMS_DATA team);
+void notifyUpdateProject(PROJECT_DATA project);
 
 /*****************************************
  **										**

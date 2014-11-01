@@ -32,7 +32,7 @@
 
 - (void) updateProjectWithID : (uint) projectID
 {
-	PROJECT_DATA project = getElementByID(projectID, RDB_CTXCT);
+	PROJECT_DATA project = getElementByID(projectID);
 	
 	[self updateProject : project];
 	

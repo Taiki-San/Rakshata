@@ -19,6 +19,8 @@
 	
 	uint _currentContext;
 	uint _cachedHeaderHeight;
+	
+	BOOL _preventContextUpdate;
 }
 
 @property uint currentContext;
@@ -39,7 +41,6 @@
 - (void) feedAnimationController : (RakCTAnimationController *) animationController;
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender;
 
-- (void) refreshCTData : (BOOL) checkIfRequired : (uint) ID;
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (BOOL) updateContext : (PROJECT_DATA) newData;
 

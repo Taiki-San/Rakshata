@@ -42,22 +42,12 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	}
 	
 	//update the database from network (heavy part)
-	updateProjectsFromTeam(fullData, posStart, posEnd);
+	updateProjectsFromTeam(fullData, posStart, posEnd, true);
 	syncCacheToDisk(SYNC_PROJECTS);
 	
 	freeProjectData(fullData);
 	
-	free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
-	free(projectDB->chapitresPrix);		projectDB->chapitresPrix = NULL;
-	free(projectDB->tomesFull);			projectDB->tomesFull = NULL;
-	free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
-	free(projectDB->tomesInstalled);		projectDB->tomesInstalled = NULL;
-	
-    if(!updateIfRequired(projectDB, RDB_CTXLECTEUR))
-	{
-		getUpdatedChapterList(projectDB, true);
-		getUpdatedTomeList(projectDB, true);
-	}
+#warning "Theorically, projectDB is supposed to be already updated thanks to the notification updateProjectsFromTeam fired"
 
     uint firstNewElem;
     

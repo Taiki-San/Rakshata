@@ -70,12 +70,11 @@ enum {
 - (void) loadContent;
 - (void) loadRecentFromDB;
 - (void) reloadContent;
-- (void) reloadMainList;
 
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView;
 
 - (void) updateMainListSizePadding;
-- (void) RakSeriesNeedUpdateContent : (NSNotification *) notification;
+- (void) RakSeriesNeedUpdateRecent : (NSNotification *) notification;
 
 + (NSString *) contentNameForDrag : (PROJECT_DATA) project;
 

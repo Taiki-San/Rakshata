@@ -79,4 +79,34 @@
 	return NO;
 }
 
++ (BOOL) getIDUpdated : (NSDictionary*) notification : (uint*) ID
+{
+	if(notification == nil || ID == NULL)
+		return NO;
+	
+	NSNumber * val = [notification objectForKey:PROJECT_FIELD];
+	if(val == nil)
+		return NO;
+
+	uint localID = [val unsignedIntValue];
+	if(localID == UNUSED_FIELD)
+		return NO;
+	
+	*ID = localID;
+	return YES;
+}
+
++ (BOOL) isPluralUpdate : (NSDictionary *) notification
+{
+	if(notification == nil)
+		return NO;
+	
+	NSNumber * val = [notification objectForKey:PROJECT_FIELD];
+	if(val == nil)
+		return NO;
+	
+	uint localID = [val unsignedIntValue];
+	return localID == UNUSED_FIELD;
+}
+
 @end
