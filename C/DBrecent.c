@@ -108,18 +108,41 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 			haveToUpdate = true;
 			if (nbOccurence != 0)
 			{
-				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead);
+				byte value = wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead;
 				
-				if (sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
+				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
+				
+				if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
 				{
 					sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
 					sqlite3_bind_int(request, 2, data.projectID);
 					
 					if(sqlite3_step(request) == SQLITE_ROW)
-						haveToUpdate = sqlite3_column_int(request, 0) == 0;
+					{
+						if(sqlite3_column_int(request, 0) == 0)
+							haveToUpdate = true;
+						
+						else	//We have the maximal value. However, if everything was zero, we would want to update the UI anyway
+						{
+							sqlite3_finalize(request);
+							
+							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", value);
+							if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
+							{
+								sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
+								sqlite3_bind_int(request, 2, data.projectID);
+								
+								if(sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) == 0)
+								{
+									haveToUpdate = true;
+								}
+							}
+							else
+								request = NULL;	//Prevent a crash with the following sqlite3_finalize
+						}
+					}
+					sqlite3_finalize(request);
 				}
-				
-				sqlite3_finalize(request);
 			}
 
 			//We craft the request
