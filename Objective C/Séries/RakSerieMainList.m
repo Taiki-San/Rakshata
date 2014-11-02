@@ -328,13 +328,10 @@
 
 - (NSString *) contentNameForDrag : (uint) row
 {
-	PROJECT_DATA project = [self getElementAtIndex:row], empty;
+	PROJECT_DATA project = [self getElementAtIndex:row];
 	
-	memset(&empty, 0, sizeof(empty));
-	
-	if(memcmp(&project, &empty, sizeof(empty)))
+	if(project.isInitialized)
 		return [RakSerieList contentNameForDrag : project];
-
 	else
 		return [super contentNameForDrag:row];
 }

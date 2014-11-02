@@ -296,7 +296,7 @@ sqlite3_stmt * getAddToCacheRequest()
 
 bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint posTeamIndex, bool isInstalled)
 {
-	if(data.isInitialized)
+	if(!data.isInitialized)
 		return false;
 	
 	sqlite3_stmt * internalRequest = NULL;

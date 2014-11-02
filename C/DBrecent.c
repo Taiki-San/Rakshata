@@ -250,7 +250,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 			{
 				output[*nbElem] = getDataFromSearch(indexTeam, projectID, true);
 				
-				if(output[*nbElem] != NULL)
+				if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
 					(*nbElem)++;
 				else
 				{

@@ -513,6 +513,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
 {
 	void * outputData = NULL;
+	bool isInit;
 	NSArray * projects = objectForKey(remoteData, JSON_RP_PROJECTS, @"projects");
 	
 	if(projects == nil || [projects superclass] != [NSArray class])
@@ -521,11 +522,9 @@ void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool
 	size_t size = [projects count];
 	outputData = malloc(size * (parseExtra ? sizeof(PROJECT_DATA_EXTRA) : sizeof(PROJECT_DATA)));
 	
-	if (outputData != NULL)
+	if(outputData != NULL)
 	{
 		size_t validElements = 0;
-		PROJECT_DATA emptySample;
-		memset(&emptySample, 0, sizeof(emptySample));
 		
 		for (remoteData in projects)
 		{
@@ -535,11 +534,17 @@ void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool
 				continue;
 			
 			if(parseExtra)
+			{
 				((PROJECT_DATA_EXTRA*)outputData)[validElements] = parseBlocExtra(remoteData);
+				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].isInitialized;
+			}
 			else
+			{
 				((PROJECT_DATA*)outputData)[validElements] = parseBloc(remoteData);
+				isInit = ((PROJECT_DATA*)outputData)[validElements].isInitialized;
+			}
 		
-			if(((PROJECT_DATA*)outputData)[validElements].isInitialized)
+			if(isInit)
 			{
 				PROJECT_DATA * project;
 				
