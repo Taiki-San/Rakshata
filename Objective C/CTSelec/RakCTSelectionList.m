@@ -31,11 +31,7 @@
 		projectData.cacheDBID = UINT_MAX;	//Prevent incorrect beliefs we are updating a project
 		
 		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop
-		if(![self reloadData:project :NO])
-		{
-			self = nil;
-			return nil;
-		}
+		[self reloadData:project :NO];
 		
 		if(elemSelected != -1)
 		{
@@ -79,7 +75,7 @@
 
 - (bool) didInitWentWell
 {
-	return data != NULL;
+	return YES;
 }
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
@@ -255,7 +251,11 @@
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != -1)
+		{
+			_UIOnlySelection = YES;
 			[self selectRow:[self getIndexOfElement:element]];
+			_UIOnlySelection = NO;
+		}
 		
 	}
 
@@ -725,7 +725,7 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	if(!self.compactMode && rowIndex < _nbElem && _installedTable != NULL && !_installedTable[rowIndex])
+	if(!_UIOnlySelection && !self.compactMode && rowIndex < _nbElem && _installedTable != NULL && !_installedTable[rowIndex])
 	{
 		CGFloat oldSelectedIndex = selectedIndex;
 		selectedIndex = rowIndex;

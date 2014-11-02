@@ -16,6 +16,7 @@
 	
 	BOOL _compactMode;
 	BOOL _resizingQueued;
+	BOOL _UIOnlySelection;
 	
 	NSTableColumn * _mainColumn;
 	NSTableColumn * _detailColumn;
