@@ -1118,15 +1118,8 @@ bool isProjectInstalledInCache (uint ID)
 	return output;
 }
 
-#define PERF_ANALYSIS
 PROJECT_DATA getElementByID(uint cacheID)
 {
-#ifdef PERF_ANALYSIS
-	struct timeval t1, t2;
-	double elapsedTime;
-	gettimeofday(&t1, NULL);
-#endif
-	
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output;
 	
@@ -1142,18 +1135,6 @@ PROJECT_DATA getElementByID(uint cacheID)
 		
 		sqlite3_finalize(request);
 	}
-
-#ifdef PERF_ANALYSIS
-	gettimeofday(&t2, NULL);
-	
-	// compute and print the elapsed time in millisec
-	elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000;
-	elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
-	
-	char time[100];
-	snprintf(time, 100, "Loading time: %f", elapsedTime);
-	logR(time);
-#endif
 
 	return output;
 }
