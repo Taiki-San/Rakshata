@@ -33,7 +33,8 @@
 - (void) setFrame : (NSRect) frameRect
 {
 	frameRect = [self frameFromParent : frameRect];
-
+	lastKnownHeight = frameRect.size.height;
+	
 	[super setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
 	
@@ -46,6 +47,7 @@
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	frameRect = [self frameFromParent : frameRect];
+	lastKnownHeight = frameRect.size.height;
 	
 	[self.animator setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
@@ -123,7 +125,12 @@
 	else
 	{
 		[_tableController updateProject:_data];
-		[_tableController setFrame:self.bounds];	//We refresh scrollview size
+
+		NSRect bounds = self.bounds;
+		if(bounds.size.height != lastKnownHeight)	//May happend during animation
+			bounds.size = [self frameFromParent:bounds].size;
+
+		[_tableController setFrame : bounds];	//We refresh scrollview size
 	}
 }
 

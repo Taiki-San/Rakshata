@@ -18,6 +18,8 @@
 	RakText * authorName;
 	
 	RakCTHTableController * _tableController;
+	
+	CGFloat lastKnownHeight;
 }
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;
