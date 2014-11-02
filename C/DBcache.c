@@ -523,7 +523,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
 	if(buffer != NULL)
 	{
-		output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(int));
+		output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(uint));
 		if(output->chapitresPrix != NULL)
 			memcpy(output->chapitresPrix, buffer, (output->nombreChapitre + 1) * sizeof(int));
 		else
@@ -1013,7 +1013,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 				void * data = (int*) sqlite3_column_int64(request, 2);
 				if(data != NULL)
 				{
-					*price = malloc(nbElemOut * sizeof(int));
+					*price = malloc(nbElemOut * sizeof(uint));
 					if(*price != NULL)
 					{
 						memcpy(*price, data, nbElemOut * sizeof(int));
@@ -1118,8 +1118,15 @@ bool isProjectInstalledInCache (uint ID)
 	return output;
 }
 
+#define PERF_ANALYSIS
 PROJECT_DATA getElementByID(uint cacheID)
 {
+#ifdef PERF_ANALYSIS
+	struct timeval t1, t2;
+	double elapsedTime;
+	gettimeofday(&t1, NULL);
+#endif
+	
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output;
 	
@@ -1135,6 +1142,18 @@ PROJECT_DATA getElementByID(uint cacheID)
 		
 		sqlite3_finalize(request);
 	}
+
+#ifdef PERF_ANALYSIS
+	gettimeofday(&t2, NULL);
+	
+	// compute and print the elapsed time in millisec
+	elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000;
+	elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+	
+	char time[100];
+	snprintf(time, 100, "Loading time: %f", elapsedTime);
+	logR(time);
+#endif
 
 	return output;
 }

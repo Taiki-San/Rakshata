@@ -14,14 +14,15 @@
 
 - (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project
 {
-	header = [[RakCTHeaderImage alloc] initWithData : frameRect : project];
+	RakCTHeaderImage * localHeader = [[RakCTHeaderImage alloc] initWithData : frameRect : project];
 
-	if(header != nil)
+	if(localHeader != nil)
 	{
 		self = [self initWithFrame:[self frameByParent:frameRect]];
 		
 		if(self != nil)
 		{
+			header = localHeader;
 			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : self];
 			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 
@@ -36,6 +37,8 @@
 			}
 		}
 	}
+	else
+		self = nil;
 	
 	return self;
 }

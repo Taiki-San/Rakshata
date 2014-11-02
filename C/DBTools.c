@@ -417,7 +417,7 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	if(data.chapitresPrix != NULL)
 	{
-		newData.chapitresPrix = malloc(data.nombreChapitre * sizeof(int));
+		newData.chapitresPrix = malloc(data.nombreChapitre * sizeof(uint));
 		if(newData.chapitresPrix != NULL)
 			memcpy(newData.chapitresPrix, data.chapitresPrix, data.nombreChapitre * sizeof(int));
 	}

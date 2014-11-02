@@ -81,7 +81,7 @@
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
 	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL, *oldData = NULL, *oldInstalled = NULL;
-	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled;
+	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled = 0;
 	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID;
 	
 	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
@@ -155,7 +155,12 @@
 				}
 			}
 			
-			if(posInst < nbInstalledData)
+			if(!posInst)	//No data
+			{
+				free(installedTable);		installedTable = NULL;
+				free(installedJumpTable);	installedJumpTable = NULL;
+			}
+			else if(posInst < nbInstalledData)
 			{
 				nbInstalledData = posInst;
 				void * tmp = realloc(installedJumpTable, posInst * sizeof(uint));

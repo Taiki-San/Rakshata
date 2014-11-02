@@ -114,7 +114,7 @@
 		if(tmp != nil)
 			[tmp getBytes:&project length:sizeof(project)];
 		else
-			project.isInitialized = false;
+			return;
 		
 		tmp = [userInfo objectForKey:@"selectionType"];
 		if (tmp != nil)

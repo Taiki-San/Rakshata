@@ -116,16 +116,20 @@
 		 
 		 if(draggedView != nil)
 		 {
-			 [draggedView setupContent:[self getProjectDataForDrag : row] :[self contentNameForDrag : row]];
-			 [self additionalDrawing : draggedView : row];
-			 
-			 NSImage * image = [draggedView createImage];
-			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
-									   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
-									   image.size.width, image.size.height);
-			 
-			 [draggingItem setDraggingFrame:frame contents:image];
-			 *stop = NO;
+			 PROJECT_DATA project = [self getProjectDataForDrag : row];
+			 if(project.isInitialized)
+			 {
+				 [draggedView setupContent: project :[self contentNameForDrag : row]];
+				 [self additionalDrawing : draggedView : row];
+				 
+				 NSImage * image = [draggedView createImage];
+				 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
+										   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
+										   image.size.width, image.size.height);
+				 
+				 [draggingItem setDraggingFrame:frame contents:image];
+				 *stop = NO;
+			 }
 		 }
 	 }];
 }

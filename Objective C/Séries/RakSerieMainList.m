@@ -318,7 +318,7 @@
 {
 	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedIndex];
 	
-	if(dataToSend.team != NULL)
+	if(dataToSend.isInitialized)
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCT];
 }
 
@@ -346,7 +346,12 @@
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
-	PROJECT_DATA project = getCopyOfProjectData([self getElementAtIndex:row]);
+	PROJECT_DATA project = [self getElementAtIndex:row];
+	
+	if(!project.isInitialized)
+		return;
+
+	project = getCopyOfProjectData(project);
 	
 	BOOL isTome = [[item class] defineIsTomePriority:&project alreadyRefreshed:NO];
 	
