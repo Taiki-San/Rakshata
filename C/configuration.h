@@ -15,6 +15,7 @@
 
 //DB configuration
 #define KEEP_UNUSED_TEAMS					//If droped, they won't be refreshed, nor their project DB will be updated, so bad idea for now
+#define DISCARD_FROM_CACHE_REMOVED_PROJECTS
 //#define DELETE_REMOVED_PROJECT
 
 #ifndef DEV_VERSION

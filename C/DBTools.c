@@ -323,8 +323,10 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
-#ifdef DELETE_REMOVED_PROJECT
+#ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 			removeFromCache(oldData[posOld]);
+#endif
+#ifdef DELETE_REMOVED_PROJECT
 			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
 			if(encodedTeam != NULL)
 			{
@@ -368,8 +370,10 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	while (posOld < magnitudeOldData)
 	{
-#ifdef DELETE_REMOVED_PROJECT
+#ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 		removeFromCache(oldData[posOld]);
+#endif
+#ifdef DELETE_REMOVED_PROJECT
 		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
 		if(encodedTeam != NULL)
 		{
