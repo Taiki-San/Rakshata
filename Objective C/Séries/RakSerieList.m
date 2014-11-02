@@ -262,7 +262,13 @@
 
 - (void) DBUpdated : (NSNotification *) notification
 {
-	[self reloadContent];
+	if(![NSThread isMainThread])
+	{
+		[self performSelectorOnMainThread:@selector(reloadContent) withObject:nil waitUntilDone:NO];
+		return;
+	}
+	else
+		[self reloadContent];
 }
 
 - (void) reloadContent

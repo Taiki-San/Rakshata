@@ -235,6 +235,12 @@
 {
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :data])
 	{
+		if(![NSThread isMainThread])
+		{
+			[self performSelectorOnMainThread:@selector(DBUpdated:) withObject:notification waitUntilDone:NO];
+			return;
+		}
+		
 		releaseCTData(data);
 		PROJECT_DATA newData = getElementByID(data.cacheDBID);
 		

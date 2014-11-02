@@ -118,6 +118,12 @@
 
 - (void) DBUpdated : (NSNotification *) notification
 {
+	if(![NSThread isMainThread])
+	{
+		[self performSelectorOnMainThread:@selector(DBUpdated:) withObject:notification waitUntilDone:NO];
+		return;
+	}
+	
 	uint updatedID;
 	if(![RakDBUpdate isPluralUpdate:notification.userInfo] && [RakDBUpdate getIDUpdated:notification.userInfo :&updatedID])			//Single item updated
 	{
