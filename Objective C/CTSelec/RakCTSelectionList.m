@@ -88,7 +88,7 @@
 	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled;
 	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID;
 	
-	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
+	NSInteger element = _tableView != nil ? selectedIndex : 0;
 	
 	if(self.isTome)
 	{
@@ -191,9 +191,12 @@
 	projectData = project;
 	
 	//Update installed list
-	free(_installedTable);
-	_installedTable = installedTable;
+
 	free(_installedJumpTable);
+	_installedJumpTable = (void*) _installedTable;
+	_installedTable = installedTable;
+	installedTable = (void*) _installedJumpTable;
+
 	_installedJumpTable = installedJumpTable;
 	_nbInstalled = nbInstalledData;
 	
@@ -232,7 +235,7 @@
 				newInstalledData = buildInstalledList(data, _nbElem, _installedJumpTable, _nbInstalled, self.isTome);
 			}
 			
-			[self smartReload:oldData :nbOldElem :newInstalledData :nbNewData];
+			[self smartReload:oldData :nbOldElem :installedTable  :newInstalledData :nbNewData :_installedTable];
 			
 			if(self.compactMode)
 				free(newInstalledData);
@@ -252,15 +255,17 @@
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != -1)
-			[self selectRow:[self getIndexOfElement:element]];
+			[self selectRow:element];
 		
 	}
+
 
 	if(self.isTome)
 		freeTomeList(oldData, true);
 	else
 		free(oldData);
 	free(oldInstalled);
+	free(installedTable);
 	
 	return YES;
 }
@@ -620,7 +625,7 @@
 //Les trier (avec un introsort (cf implé de g++), qsort est en n^2 dans notre cas générique)
 //Retirer les doublons (vérifier que les positions collent, un déplacement doit être detecté)
 //Regarder les positions de ce qu'il reste et voilà
-- (void) smartReload : (void*) oldData : (uint) nbElemOld : (void*) newData : (uint) nbElemNew
+- (void) smartReload : (void*) oldData : (uint) nbElemOld : (BOOL *) oldInstalled : (void*) newData : (uint) nbElemNew : (BOOL *) newInstalled
 {
 	if(_tableView == nil)
 		return;
@@ -633,7 +638,7 @@
 	
 	NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
 	uint newElem = 0, oldElem = 0;
-	BOOL isTome = self.isTome;
+	BOOL isTome = self.isTome, noValidInstall = oldInstalled == NULL | newInstalled == NULL;
 	int current;
 	
 	for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
@@ -652,16 +657,19 @@
 				for(; posOld < i; oldElem++)
 					[old addIndex : posOld++];
 			}
-			else
+			else if(noValidInstall || oldInstalled[i] == newInstalled[posNew])
 			{
 				posOld++;
-				posNew++;
+			}
+			else
+			{
+				[old addIndex : posOld++];	oldElem++;
+				[new addIndex : posNew];	newElem++;
 			}
 		}
 		else
 		{
-			[new addIndex:posNew];
-			newElem++;
+			[new addIndex:posNew];			newElem++;
 		}
 	}
 	
