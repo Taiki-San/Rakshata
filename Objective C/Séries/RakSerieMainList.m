@@ -127,67 +127,75 @@
 	uint updatedID;
 	if(![RakDBUpdate isPluralUpdate:notification.userInfo] && [RakDBUpdate getIDUpdated:notification.userInfo :&updatedID])			//Single item updated
 	{
+		//The only data that could change if only a single project changed is the installation state
 		for(uint pos = 0; pos < _nbElemFull; pos++)
 		{
 			if(((PROJECT_DATA*)data)[pos].cacheDBID == updatedID)
 			{
-				BOOL needUpdate = NO;
-				uint length;
 				PROJECT_DATA newElem = getElementByID(updatedID), *current = &((PROJECT_DATA*)data)[pos];
-
-				if((length = wstrlen(current->projectName)) != wstrlen(newElem.projectName) || memcmp(newElem.projectName, current->projectName, length * sizeof(wchar_t)))	//If name didn't changed, we don't give a fuck about this update
-				{
-					releaseCTData(*current);
-					*current = newElem;
-					needUpdate = YES;
-				}
+				
+				if(!newElem.isInitialized)
+					return;
+				
+				releaseCTData(*current);
+				*current = newElem;
 				
 				BOOL newIsInstalled = isProjectInstalledInCache(updatedID);
-				if(_installed[pos] != newIsInstalled)
-				{
-					_installed[pos] = newIsInstalled;
-					needUpdate |= self.installOnlyMode;
-				}
+				if(_installed[pos] == newIsInstalled)
+					break;
 				
-				if(needUpdate)
-				{
-					
-				}
+				_installed[pos] = newIsInstalled;
+				[self updateJumpTable];
+				
+				if(!self.installOnlyMode)
+					break;
+
+				//We get our position in the tableview to update
+				uint posOfElemInInstalled;
+				for(posOfElemInInstalled = 0; posOfElemInInstalled < _nbElemInstalled && _jumpToInstalled[posOfElemInInstalled] != pos; posOfElemInInstalled++);
+				
+				//We remove then our row to animate the update
+				if(!_installed[pos])
+					[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:posOfElemInInstalled] withAnimation:NSTableViewAnimationSlideLeft];
+				else
+					[_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:posOfElemInInstalled] withAnimation:NSTableViewAnimationSlideLeft];
 				
 				break;
 			}
 		}
 	}
-	
-	uint nbElem;
-	PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem);
-	bool * newInstalled;
-	if(projects == NULL)
-		return;
-	
-	newInstalled = getInstalledFromData(projects, nbElem);
-	if(newInstalled)
+	else
 	{
-		freeProjectData(projects);
-		return;
-	}
-	
-	freeProjectData(data);
-	data = projects;
-	free(_installed);
-	_installed = newInstalled;
-
-	_nbElemFull = nbElem;
-	
-	NSInteger element = [self selectedRow];
-	if(self.installOnlyMode)
-		[self updateJumpTable];
-	
+		uint nbElem;
+		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem);
+		bool * newInstalled;
+		if(projects == NULL)
+			return;
+		
+		newInstalled = getInstalledFromData(projects, nbElem);
+		if(newInstalled == NULL)
+		{
+			freeProjectData(projects);
+			return;
+		}
+		
+		freeProjectData(data);
+		data = projects;
+		free(_installed);
+		_installed = newInstalled;
+		
+		_nbElemFull = nbElem;
+		
+		NSInteger element = [self selectedRow];
+		if(self.installOnlyMode)
+			[self updateJumpTable];
+		
 #warning "what about an efficient system?"
-	[_tableView reloadData];
-	
-	if(element != -1)
-		[self selectRow:element];
+		[_tableView reloadData];
+		
+		if(element != -1)
+			[self selectRow:element];
+	}
 }
 
 - (void) updateJumpTable
@@ -237,7 +245,7 @@
 		output = getCopyOfProjectData(((PROJECT_DATA*) data)[index]);
 	}
 	else
-		memset(&output, 0, sizeof(output));
+		output.isInitialized = false;
 	
 	return output;
 }
