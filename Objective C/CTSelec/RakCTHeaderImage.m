@@ -18,7 +18,7 @@
 	
 	if(self != nil)
 	{
-		[self updateHeaderProjectInternal : project : NO];
+		[self updateHeaderProjectInternal : project];
 		
 		if(_background != nil)	//We may need to update our frame
 			[self setFrame: frame];
@@ -60,7 +60,7 @@
 
 	} completionHandler:^{
 		
-		[self updateHeaderProjectInternal : project : YES];
+		[self updateHeaderProjectInternal : project];
 		
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 
@@ -73,13 +73,9 @@
 	}];
 }
 
-- (BOOL) updateHeaderProjectInternal : (PROJECT_DATA) project : (BOOL) checkReloadNeeded
+- (BOOL) updateHeaderProjectInternal : (PROJECT_DATA) project
 {
-	if(checkReloadNeeded && project.cacheDBID == projectCacheID)
-		return NO;
-	
 	BOOL needAddBackgroundGradient = NO;
-	projectCacheID = project.cacheDBID;
 	
 	//Update background image
 	if(_background == nil)

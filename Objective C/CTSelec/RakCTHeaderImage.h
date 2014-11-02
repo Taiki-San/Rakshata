@@ -20,7 +20,6 @@
 
 @interface RakCTHeaderImage : NSView
 {
-	uint projectCacheID;
 	PROJECT_DATA _data;
 	
 	//Elements
