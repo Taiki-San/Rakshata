@@ -211,17 +211,18 @@
 	}
 }
 
-#warning "Granular update"
 - (void) projectDataUpdate : (PROJECT_DATA) oldData : (PROJECT_DATA) newData
 {
-//	uint length;
-//	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(wchar_t)))
-//	{
-//		
-//	}
-	coreview.preventContextUpdate = YES;
-	[self updateContext:newData];
-	coreview.preventContextUpdate = NO;
+	uint length;
+	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(wchar_t)))
+	{
+		NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:newData.projectName length:sizeof(newData.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+
+		[projectName setStringValue : projectNameString];
+		[projectImage updateProject:projectNameString];
+	}
+
+	[header updateProjectDiff:oldData :newData];
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

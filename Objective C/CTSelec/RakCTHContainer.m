@@ -81,7 +81,7 @@
 			[self addSubview: projectName];
 		}
 	}
-	else
+	else if(![currentElem isEqualToString:projectName.stringValue])
 	{
 		[projectName setStringValue : currentElem];
 		[projectName sizeToFit];
@@ -104,7 +104,7 @@
 			[self addSubview: authorName];
 		}
 	}
-	else
+	else if(![currentElem isEqualToString:authorName.stringValue])
 	{
 		[authorName setStringValue : currentElem];
 		[authorName sizeToFit];

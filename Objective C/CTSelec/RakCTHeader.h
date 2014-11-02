@@ -26,6 +26,7 @@
 
 - (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project;
 - (void) updateProject : (PROJECT_DATA) project;
+- (void) updateProjectDiff : (PROJECT_DATA) oldData : (PROJECT_DATA) newData;
 
 - (NSRect) frameByParent : (NSRect) parentFrame;
 

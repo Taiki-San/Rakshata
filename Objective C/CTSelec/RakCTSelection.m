@@ -365,9 +365,6 @@
 
 - (BOOL) updateContext : (PROJECT_DATA) newData
 {
-	if(self.preventContextUpdate)
-		return NO;
-	
 	if(data.cacheDBID == newData.cacheDBID)
 	{
 		getUpdatedCTList(&data, true);

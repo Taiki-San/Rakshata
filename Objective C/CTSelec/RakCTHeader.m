@@ -54,6 +54,17 @@
 	}
 }
 
+- (void) updateProjectDiff : (PROJECT_DATA) oldData : (PROJECT_DATA) newData
+{
+	uint length;
+	if((length = wstrlen(oldData.description)) != wstrlen(newData.description) || memcmp(oldData.description, newData.description, length * sizeof(wchar_t)))
+	{
+		[synopsis updateProject : newData];
+	}
+	
+	[header updateHeaderProjectInternal :newData];
+}
+
 #pragma mark - Resizing
 
 - (NSRect) frameByParent : (NSRect) parentFrame
