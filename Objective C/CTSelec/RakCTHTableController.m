@@ -34,9 +34,11 @@
 {
 	PROJECT_DATA project = getElementByID(projectID);
 	
-	[self updateProject : project];
-	
-	releaseCTData(project);
+	if(project.isInitialized)
+	{
+		[self updateProject : project];
+		releaseCTData(project);
+	}
 }
 
 - (void) updateProject : (PROJECT_DATA) project

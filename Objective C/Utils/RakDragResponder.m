@@ -49,7 +49,7 @@
 {
 	PROJECT_DATA returnData;
 	
-	memset(&returnData, 0, sizeof(returnData));
+	returnData.isInitialized = false;
 	
 	return returnData;
 }

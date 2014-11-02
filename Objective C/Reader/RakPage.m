@@ -322,9 +322,13 @@
 {
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
 	{
-		releaseCTData(_project);
-		_project = getElementByID(_project.cacheDBID);
-		_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+		PROJECT_DATA project = getElementByID(_project.cacheDBID);
+		if(project.isInitialized)
+		{
+			releaseCTData(_project);
+			_project = project;
+			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+		}
 	}
 }
 

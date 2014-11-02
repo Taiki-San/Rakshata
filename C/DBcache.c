@@ -296,6 +296,9 @@ sqlite3_stmt * getAddToCacheRequest()
 
 bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint posTeamIndex, bool isInstalled)
 {
+	if(data.isInitialized)
+		return false;
+	
 	sqlite3_stmt * internalRequest = NULL;
 	
 	if(request != NULL)
@@ -337,7 +340,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	void * buffer;
 	sqlite3_stmt *request = NULL;
 	
-	if(cache == NULL && !setupBDDCache())	//Échec du chargement
+	if(cache == NULL && !setupBDDCache() && !data.isInitialized)	//Échec du chargement
 		return false;
 	
 	//On libère la mémoire des éléments remplacés
@@ -578,6 +581,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	}
 	
 	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
+	output->isInitialized = true;
 	
 	return true;
 }
@@ -620,7 +624,8 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			if(output[pos].team != NULL)
 				pos++;
 		}
-		memset(&output[pos], 0, sizeof(PROJECT_DATA));
+
+		output[pos].isInitialized = false;
 		sqlite3_finalize(request);
 		
 		if(nbElemCopied != NULL)
@@ -1118,7 +1123,7 @@ PROJECT_DATA getElementByID(uint cacheID)
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output;
 	
-	memset(&output, 0, sizeof(PROJECT_DATA));
+	output.isInitialized = false;
 	
 	if(cache != NULL && cacheID != UINT_MAX)
 	{

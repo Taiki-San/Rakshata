@@ -373,7 +373,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 PROJECT_DATA parseBloc(NSDictionary * bloc)
 {
 	PROJECT_DATA data;
-	memset(&data, 0, sizeof(PROJECT_DATA));
+	data.isInitialized = false;
 	
 	int * chapters = NULL;
 	uint * chaptersPrices = NULL;
@@ -428,6 +428,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.type = [type unsignedCharValue];
 	if(data.type > TYPE_MAX)		data.type = TYPE_MAX;
 	data.category = [category unsignedIntValue];
+	data.isInitialized = true;
 	
 	wcsncpy(data.projectName, (wchar_t*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
 	wcsncpy(data.authorName, (wchar_t*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
@@ -485,10 +486,9 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 {
 	PROJECT_DATA_EXTRA output;
-	PROJECT_DATA shortData = parseBloc(bloc), empty;
-	memset(&empty, 0, sizeof(empty));
+	PROJECT_DATA shortData = parseBloc(bloc);
 	
-	if(memcmp(&shortData, &empty, sizeof(PROJECT_DATA)))
+	if(shortData.isInitialized)
 	{
 		memcpy(&output, &shortData, sizeof(shortData));
 		
@@ -505,7 +505,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 			memset(output.hashSmall, 0, LENGTH_HASH);
 	}
 	else
-		memset(&output, 0, sizeof(output));
+		output.isInitialized = false;
 	
 	return output;
 }
@@ -539,7 +539,7 @@ void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool
 			else
 				((PROJECT_DATA*)outputData)[validElements] = parseBloc(remoteData);
 		
-			if(memcmp(&(outputData[validElements]), &emptySample, sizeof(emptySample)))
+			if(((PROJECT_DATA*)outputData)[validElements].isInitialized)
 			{
 				PROJECT_DATA * project;
 				

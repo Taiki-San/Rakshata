@@ -114,7 +114,7 @@
 		if(tmp != nil)
 			[tmp getBytes:&project length:sizeof(project)];
 		else
-			memset(&project, 0, sizeof(project));
+			project.isInitialized = false;
 		
 		tmp = [userInfo objectForKey:@"selectionType"];
 		if (tmp != nil)
@@ -653,6 +653,9 @@
 		return NO;
 	
 	PROJECT_DATA localProject = getElementByID(item.project.projectID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
+	
+	if(!localProject.isInitialized)
+		return NO;
 	
 	BOOL retVal = [self receiveDrop:localProject :item.isTome :item.selection :[RakDragResponder getOwnerOfTV:[sender draggingSource]]];
 

@@ -131,12 +131,15 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		removeFromPref(SETTINGS_FAVORITE_FLAG);
 	
 	PROJECT_DATA cacheCopy = getElementByID(projectDB->cacheDBID);
-	cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
-	updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
-	
-	free(cacheCopy.chapitresFull);	//updateCache en fait une copie
-	free(cacheCopy.chapitresPrix);
-	freeTomeList(cacheCopy.tomesFull, true);
+	if(cacheCopy.isInitialized)
+	{
+		cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
+		updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
+		
+		free(cacheCopy.chapitresFull);	//updateCache en fait une copie
+		free(cacheCopy.chapitresPrix);
+		freeTomeList(cacheCopy.tomesFull, true);
+	}
 
 end:
 	

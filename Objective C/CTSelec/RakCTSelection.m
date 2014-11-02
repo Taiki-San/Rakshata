@@ -238,12 +238,15 @@
 		releaseCTData(data);
 		PROJECT_DATA newData = getElementByID(data.cacheDBID);
 		
-		//We define what changed on the structure, except chapters/volumes
-		[(RakChapterView*) self.superview projectDataUpdate:data :newData];
-		
-		data = newData;
-		[_chapterView reloadData : data : NO];
-		[_volView reloadData : data : NO];
+		if(newData.isInitialized)
+		{
+			//We define what changed on the structure, except chapters/volumes
+			[(RakChapterView*) self.superview projectDataUpdate:data :newData];
+			
+			data = newData;
+			[_chapterView reloadData : data : NO];
+			[_volView reloadData : data : NO];
+		}
 	}
 }
 

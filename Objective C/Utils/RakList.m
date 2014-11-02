@@ -439,7 +439,13 @@
 		return NO;
 	
 	PROJECT_DATA localProject = getElementByID(item.project.projectID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
-	
+
+	if(!localProject.isInitialized)
+	{
+		releaseCTData(item.project);
+		return NO;
+	}
+
 	BOOL retVal = [self receiveDrop:localProject :item.isTome :item.selection :source :row :operation];
 	
 	releaseCTData(localProject);

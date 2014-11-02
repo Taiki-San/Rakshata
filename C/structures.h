@@ -117,6 +117,7 @@ typedef struct dataProject
 	uint32_t cacheDBID;
 	
 	bool isPaid;
+	bool isInitialized;
 	
 } PROJECT_DATA;
 
@@ -155,6 +156,7 @@ typedef struct dataProjectWithExtra
 	uint32_t cacheDBID;
 	
 	bool isPaid;
+	bool isInitialized;
 
 	//2 x 64b
 	char hashLarge[LENGTH_HASH];

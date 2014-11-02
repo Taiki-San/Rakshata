@@ -182,10 +182,13 @@
 {
 	PROJECT_DATA newProject = getElementByID(project.cacheDBID);	//Isole le tab des données
 	
-	[coreView updateContext:newProject];
-	
-	//Coreview en fait aussi une copie, on doit donc release cette version
-	releaseCTData(newProject);
+	if(newProject.isInitialized)
+	{
+		[coreView updateContext:newProject];
+		
+		//Coreview en fait aussi une copie, on doit donc release cette version
+		releaseCTData(newProject);
+	}
 }
 
 #pragma mark - Reader code
