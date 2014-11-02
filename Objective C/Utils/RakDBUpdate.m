@@ -73,7 +73,7 @@
 	if(projectID != UNUSED_FIELD && projectID == project.cacheDBID)	//Project update
 		return YES;
 	
-	if(teamID != UNUSED_FIELD && teamID != getTeamID(project.team))	//Team update
+	if(teamID != UNUSED_FIELD && teamID == getTeamID(project.team))	//Team update
 		return YES;
 	
 	return NO;

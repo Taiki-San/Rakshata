@@ -47,11 +47,8 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	
 	freeProjectData(fullData);
 	
-#warning "Theorically, projectDB is supposed to be already updated thanks to the notification updateProjectsFromTeam fired"
-
     uint firstNewElem;
-    
-	if(isTome)
+    if(isTome)
 	{
 		for(firstNewElem = projectDB->nombreTomes-1; firstNewElem > 0 && projectDB->tomesFull[firstNewElem].ID > CT; firstNewElem--);
 		firstNewElem = projectDB->nombreTomes - 1 - firstNewElem;

@@ -1295,13 +1295,12 @@
 	else
 		_alreadyRefreshed = true;
 	
-	PROJECT_DATA localProject = getCopyOfProjectData(_project);
-	
-	uint nbElemToGrab = checkNewElementInRepo(&localProject, self.isTome, _currentElem);
+	uint nbElemToGrab = checkNewElementInRepo(&_project, self.isTome, _currentElem);
 	
 	if(!nbElemToGrab)
 		return;
 	
+	PROJECT_DATA localProject = getCopyOfProjectData(_project);
 	RakArgumentToRefreshAlert * argument = [RakArgumentToRefreshAlert alloc];
 	argument.data = &localProject;
 	argument.nbElem = nbElemToGrab;
