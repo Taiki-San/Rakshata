@@ -28,7 +28,7 @@
 - (void) updateProject : (PROJECT_DATA) project;
 - (void) updateProjectDiff : (PROJECT_DATA) oldData : (PROJECT_DATA) newData;
 
-- (NSRect) frameByParent : (NSRect) parentFrame;
+- (NSRect) frameByParent : (NSRect) parentFrame : (RakCTHeaderImage *) _header;
 
 - (void) resizeAnimation : (NSRect) frame;
 

@@ -61,7 +61,7 @@
 	if(!self.CTViewHidden)
 	{
 		[header resizeAnimation:newBound];
-		headerHeight = [header frameByParent : newBound].size.height;
+		headerHeight = [header frameByParent : newBound : nil].size.height;
 	}
 	
 	if(!self.readerViewHidden)

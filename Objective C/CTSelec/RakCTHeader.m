@@ -18,7 +18,7 @@
 
 	if(localHeader != nil)
 	{
-		self = [self initWithFrame:[self frameByParent:frameRect]];
+		self = [self initWithFrame:[self frameByParent:frameRect : localHeader]];
 		
 		if(self != nil)
 		{
@@ -70,12 +70,15 @@
 
 #pragma mark - Resizing
 
-- (NSRect) frameByParent : (NSRect) parentFrame
+- (NSRect) frameByParent : (NSRect) parentFrame : (RakCTHeaderImage *) _header
 {
 	NSRect output;
 	
+	if(_header == nil)
+		_header = header;
+	
 	output.size.width = parentFrame.size.width;
-	output.size.height = [header sizeByParent : parentFrame].height;
+	output.size.height = [_header sizeByParent : parentFrame].height;
 	
 	output.origin.x = 0;
 	output.origin.y = parentFrame.size.height - output.size.height;
@@ -85,7 +88,7 @@
 
 - (void) setFrame:(NSRect) frameRect
 {
-	[super setFrame:[self frameByParent:frameRect]];
+	[super setFrame:[self frameByParent:frameRect : header]];
 	
 	[header setFrame : self.bounds];
 	[synopsis setFrame : self.bounds : header.bounds.size];
@@ -93,7 +96,7 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
-	frame = [self frameByParent : frame];
+	frame = [self frameByParent : frame : header];
 
 	[self.animator setFrame:frame];
 
