@@ -201,8 +201,7 @@
 	
 	if(coreview != nil)
 	{
-		if(![coreview updateContext : data])
-			coreview = nil;
+		[coreview updateContext : data];
 	}
 	else
 	{
