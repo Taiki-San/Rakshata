@@ -16,9 +16,6 @@
 {
 	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_currentContext];
 
-	if(_currentContext == TAB_READER && project.nombreChapitreInstalled == 0 && project.nombreTomesInstalled == 0)
-		return nil;
-	
 	self = [super initWithFrame : [self frameFromParent : parentBounds : headerHeight]];
 	if (self != nil)
 	{
@@ -26,9 +23,8 @@
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		data = getCopyOfProjectData(project);
 		
-		if(![self setupButtons:&isTome])
-			return nil;
-
+		[self setupButtons:&isTome];
+		
 		BOOL isCompact = _currentContext != TAB_CT;
 		
 		//We create views even if there is no content for them
@@ -139,7 +135,7 @@
 
 #pragma mark - Buttons management
 
-- (BOOL) setupButtons : (BOOL*) isTome
+- (void) setupButtons : (BOOL*) isTome
 {
 	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:self.bounds];
 
@@ -179,18 +175,13 @@
 			[_buttons setSelected:YES forSegment:0];
 			*isTome = NO;
 		}
-		else	//Projet illisible
-		{
-			[self failure];
-			return NO;
-		}
+		//Aucun bouton actif jusqu'à que le projet soit changé
 	}
 	
 	if(_currentContext != TAB_READER)
 		[_buttons setHidden : YES];
 	
 	[self addSubview:_buttons];
-	return YES;
 }
 
 #pragma mark - Properties
