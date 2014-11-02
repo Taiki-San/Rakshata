@@ -88,7 +88,7 @@
 	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled;
 	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID;
 	
-	NSInteger element = _tableView != nil ? selectedIndex : 0;
+	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
 	
 	if(self.isTome)
 	{
@@ -255,7 +255,7 @@
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != -1)
-			[self selectRow:element];
+			[self selectRow:[self getIndexOfElement:element]];
 		
 	}
 
