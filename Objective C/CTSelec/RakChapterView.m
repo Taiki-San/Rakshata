@@ -220,7 +220,9 @@
 //	{
 //		
 //	}
+	coreview.preventContextUpdate = YES;
 	[self updateContext:newData];
+	coreview.preventContextUpdate = NO;
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

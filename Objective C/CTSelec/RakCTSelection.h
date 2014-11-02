@@ -19,13 +19,12 @@
 	
 	uint _currentContext;
 	uint _cachedHeaderHeight;
-	
-	BOOL _preventContextUpdate;
 }
 
 @property uint currentContext;
 
 @property BOOL dontNotify;
+@property BOOL preventContextUpdate;
 @property (readonly) PROJECT_DATA currentProject;
 
 

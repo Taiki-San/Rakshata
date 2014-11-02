@@ -248,9 +248,7 @@
 		PROJECT_DATA newData = getElementByID(data.cacheDBID);
 		
 		//We define what changed on the structure, except chapters/volumes
-		_preventContextUpdate = YES;
 		[(RakChapterView*) self.superview projectDataUpdate:data :newData];
-		_preventContextUpdate = NO;
 		
 		data = newData;
 		[_chapterView reloadData : data : NO];
@@ -367,9 +365,8 @@
 
 - (BOOL) updateContext : (PROJECT_DATA) newData
 {
-	if(_preventContextUpdate)
+	if(self.preventContextUpdate)
 		return NO;
-	//Some danger of TOCTOU around here, mutexes would be great
 	
 	if(data.cacheDBID == newData.cacheDBID)
 	{

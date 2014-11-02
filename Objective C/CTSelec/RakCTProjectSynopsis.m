@@ -30,7 +30,6 @@
 		if(_title != nil)
 		{
 			[_title sizeToFit];
-			_title.haveBackgroundColor = NO;
 			_title.ignoreInternalFrameMagic = YES;
 			_title.drawGradient = YES;
 			_title.barWidth = 1;
