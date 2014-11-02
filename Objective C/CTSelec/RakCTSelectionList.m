@@ -96,8 +96,8 @@
 		
 		nbElem = project.nombreTomes;
 		newData = project.tomesFull;
-		installedData = project.tomesInstalled;
 		nbInstalledData = project.nombreTomesInstalled;
+		installedData = project.tomesInstalled;
 		
 		if(newData == NULL)
 			return NO;
@@ -134,7 +134,10 @@
 		free(newPrices);
 		return NO;
 	}
-	memcpy(newDataBuf, newData, (nbElem + 1) * allocSize);
+	if(self.isTome)
+		copyTomeList(newData, nbElem, newDataBuf);
+	else
+		memcpy(newDataBuf, newData, (nbElem + 1) * allocSize);
 	
 	//Set up table of installed
 	if(newData != NULL && installedData != NULL)

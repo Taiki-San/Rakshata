@@ -230,9 +230,9 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 		free(encodedTeam);
 	}
 	else
-	{
 		internalDeleteCT(project, isTome, elemToDel);
-	}
+	
+	notifyUpdateProject(project);
 }
 
 void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
