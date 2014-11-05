@@ -29,6 +29,13 @@
 
 @end
 
+typedef struct smartReload_data
+{
+	uint data;
+	BOOL installed;
+	
+} SR_DATA;
+
 @interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource>
 {
 	void* _data;
@@ -80,6 +87,9 @@
 
 - (void) selectRow : (int) row;
 - (void) resetSelection : (NSTableView *) tableView;
+
+- (void) smartReload : (SR_DATA*) oldData : (uint) nbElemOld : (SR_DATA*) newData : (uint) nbElemNew;
+- (void) fullAnimatedReload : (uint) oldElem : (uint) newElem;
 
 - (void) fillDragItemWithData : (RakDragItem*) data : (uint) row;
 - (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation source:(uint) source;

@@ -82,11 +82,11 @@
 {
 	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL, *oldData = NULL, *oldInstalled = NULL;
 	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled = 0;
-	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID;
+	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID, isTome = self.isTome;
 	
 	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
 	
-	if(self.isTome)
+	if(isTome)
 	{
 		allocSize = sizeof(META_TOME);
 		
@@ -130,7 +130,7 @@
 		free(newPrices);
 		return NO;
 	}
-	if(self.isTome)
+	if(isTome)
 		copyTomeList(newData, nbElem, newDataBuf);
 	else
 		memcpy(newDataBuf, newData, (nbElem + 1) * allocSize);
@@ -144,7 +144,6 @@
 		if(installedTable != NULL && installedJumpTable != NULL)
 		{
 			uint posInst = 0;
-			BOOL isTome = self.isTome;
 			
 			for(uint posFull = 0; posFull < nbElem && posInst < nbInstalledData; posFull++)
 			{
@@ -224,19 +223,20 @@
 			{
 				//Old data
 				void * oldDataBak = oldData;
-				oldData = buildInstalledList(oldData, nbOldElem, oldInstalled, nbOldInstalled, self.isTome);
+				oldData = buildInstalledList(oldData, nbOldElem, oldInstalled, nbOldInstalled, isTome);
 				nbOldElem = nbOldInstalled;
 				
-				if(self.isTome)
+				if(isTome)
 					freeTomeList(oldDataBak, true);
 				else
 					free(oldDataBak);
 				
 				//New data
-				newInstalledData = buildInstalledList(_data, _nbElem, _installedJumpTable, _nbInstalled, self.isTome);
+				newInstalledData = buildInstalledList(_data, _nbElem, _installedJumpTable, _nbInstalled, isTome);
 			}
 			
-			[self smartReload:oldData :nbOldElem :installedTable  :newInstalledData :nbNewData :_installedTable];
+			[self smartReload : [self getSmartReloadData:oldData :isTome :nbOldElem :installedTable] :nbOldElem
+							  : [self getSmartReloadData:newInstalledData :isTome :nbNewData :_installedTable] :nbNewData];
 			
 			if(self.compactMode)
 				free(newInstalledData);
@@ -265,7 +265,7 @@
 	}
 
 
-	if(self.isTome)
+	if(isTome)
 		freeTomeList(oldData, true);
 	else
 		free(oldData);
@@ -609,89 +609,23 @@
 
 #pragma mark - Smart reloading
 
-- (void) fullAnimatedReload : (uint) oldElem : (uint) newElem
+- (SR_DATA *) getSmartReloadData : (void*) data : (BOOL) isTome : (uint) nbElem : (BOOL *) installed
 {
-	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-		
-		[context setDuration:CT_TRANSITION_ANIMATION];
-
-		if(oldElem != 0)
-			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldElem)] withAnimation:NSTableViewAnimationSlideLeft];
-		
-		if(newElem != 0)
-			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem)] withAnimation:NSTableViewAnimationSlideRight];
-		
-	} completionHandler:^{}];
-}
-
-//Ceci est l'algorithme naif en O(n^2)
-//Il est viable sur < 1000 données, mais pourrait poser des problèmes à l'avenir
-//Un algo alternatif, en O(n*log(n)) serait de faire des copies de _oldData et de _newData
-//Les trier (avec un introsort (cf implé de g++), qsort est en n^2 dans notre cas générique)
-//Retirer les doublons (vérifier que les positions collent, un déplacement doit être detecté)
-//Regarder les positions de ce qu'il reste et voilà
-- (void) smartReload : (void*) oldData : (uint) nbElemOld : (BOOL *) oldInstalled : (void*) newData : (uint) nbElemNew : (BOOL *) newInstalled
-{
-	if(_tableView == nil)
-		return;
-	else if(oldData == NULL || newData == NULL)
-	{
-		[self fullAnimatedReload : oldData == NULL ? 0 : nbElemOld  : newData == NULL ? 0 : nbElemNew];
-		return;
-	}
-
+	if(!nbElem)
+		return NULL;
 	
-	NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
-	uint newElem = 0, oldElem = 0;
-	BOOL isTome = self.isTome, noValidInstall = oldInstalled == NULL | newInstalled == NULL;
-	int current;
+	SR_DATA * output = calloc(nbElem, sizeof(SR_DATA));
 	
-	for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
+	if(output != NULL)
 	{
-		i = posOld;
-		
-		if(isTome)
-			for(current = ((META_TOME*)newData)[posNew].ID; i < nbElemOld && ((META_TOME*)oldData)[i].ID != current; i++);
-		else
-			for(current = ((int*)newData)[posNew]; i < nbElemOld && ((int*)oldData)[i] != current; i++);
-		
-		if(i < nbElemOld)
+		for(uint i = 0; i < nbElem; i++)
 		{
-			if((isTome ? ((META_TOME*)oldData)[i].ID : ((int*)oldData)[i]) != current)
-			{
-				for(; posOld < i; oldElem++)
-					[old addIndex : posOld++];
-			}
-			else if(noValidInstall || oldInstalled[i] == newInstalled[posNew])
-			{
-				posOld++;
-			}
-			else
-			{
-				[old addIndex : posOld++];	oldElem++;
-				[new addIndex : posNew];	newElem++;
-			}
-		}
-		else
-		{
-			[new addIndex:posNew];			newElem++;
+			output[i].data = isTome ? ((META_TOME*)data)[i].ID : ((int*)data)[i];
+			output[i].installed = installed == NULL ? NO : installed[i];
 		}
 	}
 	
-	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-		
-		[context setDuration:CT_TRANSITION_ANIMATION];
-		
-		if(oldElem != 0)
-			[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
-		
-		if(newElem != 0)
-			[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
-		
-	} completionHandler:^{
-		if(nbElemOld != nbElemNew)
-			[_tableView noteNumberOfRowsChanged];
-	}];
+	return output;
 }
 
 - (void) triggerInstallOnlyAnimate : (BOOL) enter

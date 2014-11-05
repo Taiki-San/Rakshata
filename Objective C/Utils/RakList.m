@@ -412,6 +412,94 @@
 	}
 }
 
+#pragma mark - Smart reloading
+
+//Ceci est l'algorithme naif en O(n^2)
+//Il est viable sur < 1000 données, mais pourrait poser des problèmes à l'avenir
+//Un algo alternatif, en O(n*log(n)) serait de faire des copies de _oldData et de _newData
+//Les trier (avec un introsort (cf implé de g++), qsort est en n^2 dans notre cas générique)
+//Retirer les doublons (vérifier que les positions collent, un déplacement doit être detecté)
+//Regarder les positions de ce qu'il reste et voilà
+
+- (void) smartReload : (SR_DATA*) oldData : (uint) nbElemOld : (SR_DATA*) newData : (uint) nbElemNew
+{
+	if(_tableView != nil)
+	{
+		if(oldData == NULL || newData == NULL)
+		{
+			[self fullAnimatedReload : oldData == NULL ? 0 : nbElemOld  : newData == NULL ? 0 : nbElemNew];
+		}
+		else
+		{
+			NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
+			uint newElem = 0, oldElem = 0;
+			int current;
+			
+			for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
+			{
+				i = posOld;
+				
+				for(current = newData[posNew].data; i < nbElemOld && oldData[i].data != current; i++);
+				
+				if(i < nbElemOld)
+				{
+					if(oldData[i].data != current)
+					{
+						for(; posOld < i; oldElem++)
+							[old addIndex : posOld++];
+					}
+					else if(oldData[i].installed == newData[posNew].installed)
+					{
+						posOld++;
+					}
+					else
+					{
+						[old addIndex : posOld++];	oldElem++;
+						[new addIndex : posNew];	newElem++;
+					}
+				}
+				else
+				{
+					[new addIndex:posNew];			newElem++;
+				}
+			}
+			
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+				
+				[context setDuration:CT_TRANSITION_ANIMATION];
+				
+				if(oldElem != 0)
+					[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+				
+				if(newElem != 0)
+					[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
+				
+			} completionHandler:^{
+				if(nbElemOld != nbElemNew)
+					[_tableView noteNumberOfRowsChanged];
+			}];
+		}
+	}
+	
+	free(oldData);
+	free(newData);
+}
+
+- (void) fullAnimatedReload : (uint) oldElem : (uint) newElem
+{
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+		
+		[context setDuration:CT_TRANSITION_ANIMATION];
+		
+		if(oldElem != 0)
+			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldElem)] withAnimation:NSTableViewAnimationSlideLeft];
+		
+		if(newElem != 0)
+			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem)] withAnimation:NSTableViewAnimationSlideRight];
+		
+	} completionHandler:^{}];
+}
+
 #pragma mark - Drag'n drop control
 
 - (void) fillDragItemWithData : (RakDragItem*) data : (uint) row
