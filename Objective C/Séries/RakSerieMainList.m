@@ -21,24 +21,24 @@
 		_jumpToInstalled = NULL;
 		
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
-		data = getCopyCache(SORT_NAME | RDB_LOADALL, &_nbElemFull);
-		_installed = getInstalledFromData(data, _nbElemFull);
+		_data = getCopyCache(SORT_NAME | RDB_LOADALL, &_nbElemFull);
+		_installed = getInstalledFromData(_data, _nbElemFull);
 		
 		if(installOnly)
 		{
 			[self updateJumpTable];
-			amountData = _nbElemInstalled;
+			_nbData = _nbElemInstalled;
 		}
 		else
-			amountData = _nbElemFull;
+			_nbData = _nbElemFull;
 		
 		if(selectedDBID != -1)
 		{
-			for(uint i = 0, positionInInstalled = 0; i < amountData; i++)
+			for(uint i = 0, positionInInstalled = 0; i < _nbData; i++)
 			{
 				if(!installOnly || _installed[i])
 				{
-					if(((PROJECT_DATA*)data)[i].cacheDBID == selectedDBID)
+					if(((PROJECT_DATA*)_data)[i].cacheDBID == selectedDBID)
 					{
 						selectedIndex = positionInInstalled;
 						break;
@@ -49,11 +49,11 @@
 			}
 		}
 		
-		if(data == NULL || (self.installOnlyMode && _installed == NULL))
+		if(_data == NULL || (self.installOnlyMode && _installed == NULL))
 		{
 			NSLog(@"Failed at initialize RakSerieMainList, most probably a memory problem :(");
 
-			freeProjectData(data); //Seul _cache peut ne pas être null dans cette branche
+			freeProjectData(_data); //Seul _cache peut ne pas être null dans cette branche
 		}
 		
 		[self applyContext:frame : selectedIndex : scrollPosition];
@@ -63,7 +63,7 @@
 
 - (bool) didInitWentWell
 {
-	return data != NULL && (!self.installOnlyMode || _installed != NULL);
+	return _data != NULL && (!self.installOnlyMode || _installed != NULL);
 }
 
 - (BOOL) installOnlyMode
@@ -81,7 +81,7 @@
 	if(installedOnly)
 	{
 		[self updateJumpTable];
-		amountData = _nbElemInstalled;
+		_nbData = _nbElemInstalled;
 	}
 	else
 	{
@@ -91,7 +91,7 @@
 		_nbElemInstalled = 0;
 		
 		free(tmp);
-		amountData = _nbElemFull;
+		_nbData = _nbElemFull;
 	}
 
 	//Gather rows that will have to be removed/inserted
@@ -130,9 +130,9 @@
 		//The only data that could change if only a single project changed is the installation state
 		for(uint pos = 0; pos < _nbElemFull; pos++)
 		{
-			if(((PROJECT_DATA*)data)[pos].cacheDBID == updatedID)
+			if(((PROJECT_DATA*)_data)[pos].cacheDBID == updatedID)
 			{
-				PROJECT_DATA newElem = getElementByID(updatedID), *current = &((PROJECT_DATA*)data)[pos];
+				PROJECT_DATA newElem = getElementByID(updatedID), *current = &((PROJECT_DATA*)_data)[pos];
 				
 				if(!newElem.isInitialized)
 					return;
@@ -179,14 +179,14 @@
 			return;
 		}
 		
-		freeProjectData(data);
-		data = projects;
+		freeProjectData(_data);
+		_data = projects;
 		free(_installed);
 		_installed = newInstalled;
 		
 		_nbElemFull = nbElem;
 		
-		NSInteger element = [self selectedRow];
+		NSInteger element = [self getSelectedElement];
 		if(self.installOnlyMode)
 			[self updateJumpTable];
 		
@@ -194,7 +194,7 @@
 		[_tableView reloadData];
 		
 		if(element != -1)
-			[self selectRow:element];
+			[self selectRow:[self getIndexOfElement:element]];
 	}
 }
 
@@ -237,12 +237,12 @@
 {
 	PROJECT_DATA output;
 	
-	if(index >= 0 && index < amountData)
+	if(index >= 0 && index < _nbData)
 	{
 		if(self.installOnlyMode && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];
 		
-		output = getCopyOfProjectData(((PROJECT_DATA*) data)[index]);
+		output = getCopyOfProjectData(((PROJECT_DATA*) _data)[index]);
 	}
 	else
 		output.isInitialized = false;
@@ -273,7 +273,7 @@
 	
 	for (uint pos = 0; pos < _nbElemInstalled; pos++)
 	{
-		if(((PROJECT_DATA*) data)[_jumpToInstalled[pos]].cacheDBID == element)
+		if(((PROJECT_DATA*) _data)[_jumpToInstalled[pos]].cacheDBID == element)
 			return pos;
 	}
 	
@@ -284,17 +284,17 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return data == NULL ? 0 : amountData;
+	return _data == NULL ? 0 : _nbData;
 }
 
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if(rowIndex < amountData)
+	if(rowIndex < _nbData)
 	{
 		if (_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
 			rowIndex = _jumpToInstalled[rowIndex];
 		
-		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) data)[rowIndex].projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) _data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) _data)[rowIndex].projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	}
 	else
 		return @"Error D:";

@@ -37,16 +37,16 @@
 		{
 			if(self.isTome)
 			{
-				for(; tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID < elemSelected; tmpRow++);
+				for(; tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID < elemSelected; tmpRow++);
 				
-				if(tmpRow < amountData && ((META_TOME*)data)[tmpRow].ID == elemSelected)
+				if(tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID == elemSelected)
 					row = tmpRow;
 			}
 			else if(!self.isTome)
 			{
-				for(; tmpRow < amountData && ((int*)data)[tmpRow] < elemSelected; tmpRow++);
+				for(; tmpRow < _nbData && ((int*)_data)[tmpRow] < elemSelected; tmpRow++);
 				
-				if(tmpRow < amountData && ((int*)data)[tmpRow] == elemSelected)
+				if(tmpRow < _nbData && ((int*)_data)[tmpRow] == elemSelected)
 					row = tmpRow;
 			}
 		}
@@ -64,7 +64,7 @@
 		}
 		else
 		{
-			free(data);
+			free(_data);
 			free(chapterPrice);
 			self = nil;
 		}
@@ -176,7 +176,7 @@
 	}
 	
 	//We copy the old data structure
-	oldData = data;
+	oldData = _data;
 	nbOldElem = _nbElem;
 	if(self.compactMode)
 	{
@@ -186,9 +186,9 @@
 	}
 	
 	//Update the main data list
-	data = newDataBuf;
+	_data = newDataBuf;
 	_nbElem = nbElem;
-	amountData = self.compactMode ? nbInstalledData : nbElem;
+	_nbData = self.compactMode ? nbInstalledData : nbElem;
 	projectData = project;
 	
 	//Update installed list
@@ -218,7 +218,7 @@
 		//We get a usable data structure is required
 		if(sameProject)
 		{
-			void * newInstalledData = data;
+			void * newInstalledData = _data;
 			uint nbNewData = _nbElem;
 			if(self.compactMode)
 			{
@@ -233,7 +233,7 @@
 					free(oldDataBak);
 				
 				//New data
-				newInstalledData = buildInstalledList(data, _nbElem, _installedJumpTable, _nbInstalled, self.isTome);
+				newInstalledData = buildInstalledList(_data, _nbElem, _installedJumpTable, _nbInstalled, self.isTome);
 			}
 			
 			[self smartReload:oldData :nbOldElem :installedTable  :newInstalledData :nbNewData :_installedTable];
@@ -283,14 +283,14 @@
 	_nbElem = _nbInstalled = 0;
 	
 	if(self.isTome)
-		freeTomeList(data, true);
+		freeTomeList(_data, true);
 	else
 	{
-		free(data);
+		free(_data);
 		free(chapterPrice);	chapterPrice = NULL;
 	}
 	
-	data = NULL;
+	_data = NULL;
 	free(_installedJumpTable);	_installedJumpTable = NULL;
 	free(_installedTable);		_installedTable = NULL;
 	
@@ -311,24 +311,24 @@
 {
 	NSInteger row = selectedIndex;
 	
-	if(row < 0 || row > amountData)
+	if(row < 0 || row > _nbData)
 		return -1;
 	
 	if(self.isTome)
-		return ((META_TOME *) data)[row].ID;
+		return ((META_TOME *) _data)[row].ID;
 	else
-		return ((int *) data)[row];
+		return ((int *) _data)[row];
 }
 
 - (void) jumpScrollerToRow : (int) row
 {
-	if(_tableView != nil && row != -1 && row < amountData)
+	if(_tableView != nil && row != -1 && row < _nbData)
 		[_tableView scrollRowToVisible:row];
 }
  
 - (NSInteger) getIndexOfElement : (NSInteger) element
 {
-	if (data == NULL || (self.compactMode && _installedJumpTable == NULL))
+	if (_data == NULL || (self.compactMode && _installedJumpTable == NULL))
 		return -1;
 	
 	if (self.isTome)
@@ -337,7 +337,7 @@
 		{
 			for (uint pos = 0; pos < _nbInstalled; pos++)
 			{
-				if(((META_TOME *) data)[_installedJumpTable[pos]].ID == element)
+				if(((META_TOME *) _data)[_installedJumpTable[pos]].ID == element)
 					return pos;
 			}
 		}
@@ -345,7 +345,7 @@
 		{
 			for (uint pos = 0; pos < _nbElem; pos++)
 			{
-				if(((META_TOME *) data)[pos].ID == element)
+				if(((META_TOME *) _data)[pos].ID == element)
 					return pos;
 			}
 		}
@@ -356,7 +356,7 @@
 		{
 			for (uint pos = 0; pos < _nbInstalled; pos++)
 			{
-				if(((int*) data)[_installedJumpTable[pos]] == element)
+				if(((int*) _data)[_installedJumpTable[pos]] == element)
 					return pos;
 			}
 		}
@@ -364,7 +364,7 @@
 		{
 			for (uint pos = 0; pos < _nbElem; pos++)
 			{
-				if(((int *) data)[pos] == element)
+				if(((int *) _data)[pos] == element)
 					return pos;
 			}
 		}
@@ -386,7 +386,7 @@
 	{
 		_compactMode = compactMode;
 		
-		amountData = [self nbElem];
+		_nbData = [self nbElem];
 		
 		if(selectedIndex != -1 && _installedJumpTable != NULL)
 		{
@@ -522,7 +522,7 @@
 {
 	NSString * output;
 	
-	if(rowIndex >= amountData)	//Inconsistency
+	if(rowIndex >= _nbData)	//Inconsistency
 	{
 		[aTableView performSelectorOnMainThread:@selector(noteNumberOfRowsChanged) withObject:nil waitUntilDone:NO];
 		return @"Error :(";
@@ -533,12 +533,12 @@
 		if(_installedJumpTable != NULL && rowIndex < _nbInstalled)
 			rowIndex = _installedJumpTable[rowIndex];
 		else
-			rowIndex = amountData;	//Will trigger an error
+			rowIndex = _nbData;	//Will trigger an error
 	}
 	
 	if(self.isTome)
 	{
-		META_TOME element = ((META_TOME *) data)[rowIndex];
+		META_TOME element = ((META_TOME *) _data)[rowIndex];
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
 			if(aTableColumn != _detailColumn)
@@ -561,7 +561,7 @@
 	{
 		if(aTableColumn != _detailColumn)
 		{
-			int ID = ((int *) data)[rowIndex];
+			int ID = ((int *) _data)[rowIndex];
 			if(ID != VALEUR_FIN_STRUCT)
 			{
 				if(ID % 10)
@@ -593,7 +593,7 @@
 
 - (NSColor*) getTextColor:(uint)column :(uint)row
 {
-	if(row >= amountData)
+	if(row >= _nbData)
 		return nil;
 	
 	if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
@@ -776,12 +776,12 @@
 	
 	if(self.isTome)
 	{
-		selection = (((META_TOME *) data)[row]).ID;
-		item.price = (((META_TOME *) data)[row]).price;
+		selection = (((META_TOME *) _data)[row]).ID;
+		item.price = (((META_TOME *) _data)[row]).price;
 	}
 	else
 	{
-		selection = ((int *) data)[row];
+		selection = ((int *) _data)[row];
 		
 		if(chapterPrice != NULL && row < _nbChapterPrice)
 			item.price = chapterPrice[row];
@@ -794,13 +794,13 @@
 {
 	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
 	{
-		if(data == NULL)
+		if(_data == NULL)
 			return;
 		
 		//We may have to add the price
 		uint price = 0;
 		if(self.isTome)
-			price = ((META_TOME*)data)[row].price;
+			price = ((META_TOME*)_data)[row].price;
 		else if(chapterPrice != NULL)
 			price = chapterPrice[row];
 		

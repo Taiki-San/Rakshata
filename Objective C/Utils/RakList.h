@@ -31,8 +31,8 @@
 
 @interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource>
 {
-	void* data;
-	uint amountData;
+	void* _data;
+	uint _nbData;
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
 	

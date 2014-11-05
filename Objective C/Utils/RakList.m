@@ -154,7 +154,7 @@
 	
 	[scrollView removeFromSuperview];
 	
-	free(data);
+	free(_data);
 }
 
 #pragma mark - Resizing
@@ -288,7 +288,7 @@
 	NSColor * backgroundColor = [self getBackgroundHighlightColor];
 	NSView * rowView;
 	
-	for(uint rowIndex = 0, column; rowIndex < amountData; rowIndex++)
+	for(uint rowIndex = 0, column; rowIndex < _nbData; rowIndex++)
 	{
 		rowView = [_tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
 		column = 0;
@@ -312,7 +312,7 @@
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
-	return data == NULL ? 0 : amountData;
+	return _data == NULL ? 0 : _nbData;
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
@@ -387,7 +387,7 @@
 			return;
 	}
 	
-	if(selectedIndex >= amountData)
+	if(selectedIndex >= _nbData)
 		selectedIndex = -1;
 	
 	else if(selectedIndex != -1)
