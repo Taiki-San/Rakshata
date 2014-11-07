@@ -10,18 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakListScrollView : NSScrollView
-{
-	NSView* documentViewToResize;
-}
-
-@property BOOL horizontalScrollingEnabled;
-@property BOOL scrollingDisabled;
-
-- (void) resizeAnimation : (NSRect) frameRect;
-- (void) updateScrollerState : (NSRect) frame;
-
-@end
+#import "RakListScrollView.h"
 
 @interface RakTableView : NSTableView
 
