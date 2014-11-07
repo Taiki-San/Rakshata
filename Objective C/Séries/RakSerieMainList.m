@@ -166,9 +166,9 @@
 	}
 	else
 	{
-		uint nbElem;
-		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem);
-		bool * newInstalled;
+		uint nbElem, oldNbElem = _nbElemFull;
+		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem), *oldData = _data;
+		bool * newInstalled, *oldInstalled = _installed;
 		if(projects == NULL)
 			return;
 		
@@ -179,23 +179,43 @@
 			return;
 		}
 		
-		freeProjectData(_data);
-		_data = projects;
-		free(_installed);
-		_installed = newInstalled;
+		//We need to inverse variables, to let the table view access the new data
 		
+		_data = projects;
+		_installed = newInstalled;
 		_nbElemFull = nbElem;
 		
 		NSInteger element = [self getSelectedElement];
 		if(self.installOnlyMode)
 			[self updateJumpTable];
 		
-#warning "what about an efficient system?"
-		[_tableView reloadData];
+		[self smartReload : [self getSmartReloadData : oldData : oldNbElem : oldInstalled] : oldNbElem : [self getSmartReloadData : _data : _nbElemFull : _installed]: _nbElemFull];
+		
+		freeProjectData(oldData);
+		free(oldInstalled);
 		
 		if(element != -1)
 			[self selectRow:[self getIndexOfElement:element]];
 	}
+}
+
+- (SR_DATA *) getSmartReloadData : (PROJECT_DATA*) data : (uint) nbElem : (bool *) installed
+{
+	if(!nbElem)
+		return NULL;
+	
+	SR_DATA * output = calloc(nbElem, sizeof(SR_DATA));
+	
+	if(output != NULL)
+	{
+		for(uint i = 0; i < nbElem; i++)
+		{
+			output[i].data = data[i].cacheDBID;
+			output[i].installed = installed == NULL ? NO : installed[i];
+		}
+	}
+	
+	return output;
 }
 
 - (void) updateJumpTable
