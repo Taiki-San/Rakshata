@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #define IDENTIFIER_PRICE @"RakCTSelectionListPrice"
+#define DEFAULT_MAIN_WIDTH 125
 
 @implementation RakCTSelectionList
 
@@ -55,7 +56,8 @@
 		
 		if(_tableView != nil && scrollView != nil)
 		{
-			_mainColumn = _tableView.tableColumns[0];
+			_mainColumns = @[[_tableView.tableColumns firstObject]];
+			_nbCoupleColumn = 1;
 			[self updateColumnPrice : _compactMode];
 			
 			scrollView.wantsLayer = YES;
@@ -418,23 +420,23 @@
 {
 	if(isCompact)
 	{
-		[_tableView removeTableColumn:_detailColumn];
-		_detailColumn = nil;
+		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
+		_detailColumns = nil;
 		_detailWidth = 0;
 	}
 	else
 	{
 		BOOL paidContent = projectData.isPaid && (self.isTome || chapterPrice != NULL);
 		
-		if(paidContent && _detailColumn == nil)
+		if(paidContent && _detailColumns == nil)
 		{
-			_detailColumn = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
-			[_tableView addTableColumn:_detailColumn];
+			_detailColumns = @[[[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE]];
+			[_tableView addTableColumn:[_detailColumns firstObject]];
 		}
-		else if(!paidContent && _detailColumn != nil)
+		else if(!paidContent && _detailColumns != nil)
 		{
-			[_tableView removeTableColumn:_detailColumn];
-			_detailColumn = nil;
+			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
+			_detailColumns = nil;
 			_detailWidth = 0;
 		}
 	}
@@ -453,34 +455,47 @@
 - (void) additionalResizing : (NSSize) newSize
 {
 	RakText * element;
+	uint width = newSize.width / _nbCoupleColumn, detailWidth = self.compactMode ? 0 : _detailWidth;
+	
+	[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		((NSTableColumn*) obj).width = width - detailWidth;
+	}];
 	
 	if(self.compactMode)
 	{
-		_mainColumn.width = newSize.width;
-		for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
+		for(uint column = 0; column < _nbCoupleColumn; column++)
 		{
-			element = [_tableView viewAtColumn:0 row:i makeIfNecessary:NO];
-			if(element != nil)
+			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
 			{
-				if(element.frame.origin.x < 0)
-					[element setFrameOrigin:NSMakePoint(0, element.frame.origin.y)];
+				element = [_tableView viewAtColumn:2 * column row:i makeIfNecessary:NO];
+				if(element != nil)
+				{
+					if(element.frame.origin.x < 0)
+						[element setFrameOrigin:NSMakePoint(0, element.frame.origin.y)];
+				}
 			}
 		}
 	}
 	else
 	{
-		if(_detailColumn != nil)
-			_detailColumn.width = _detailWidth;
-		_mainColumn.width = newSize.width - _detailWidth;
+		if(_detailColumns != nil)
+		{
+			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				((NSTableColumn *)obj).width = _detailWidth;
+			}];
+		}
 		
 		//We update every view size
-		if(_detailColumn != nil)
+		if(_detailColumns != nil)
 		{
-			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
+			for(uint column = 0; column < _nbCoupleColumn; column++)
 			{
-				element = [_tableView viewAtColumn:1 row:i makeIfNecessary:NO];
-				if(element != nil && element.bounds.size.width != _detailWidth)
-					[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
+				for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
+				{
+					element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
+					if(element != nil && element.bounds.size.width != _detailWidth)
+						[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
+				}
 			}
 		}
 	}
@@ -490,7 +505,7 @@
 {
 	RakText * output = (RakText *) [super tableView:tableView viewForTableColumn:tableColumn row:row];
 	
-	if(tableColumn == _detailColumn)
+	if(_detailColumns != nil && [_detailColumns containsObject : tableColumn])
 	{
 		output.alignment = NSRightTextAlignment;
 
@@ -541,7 +556,7 @@
 		META_TOME element = ((META_TOME *) _data)[rowIndex];
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
-			if(aTableColumn != _detailColumn)
+			if(_detailColumns == nil || ![_detailColumns containsObject : aTableColumn])
 			{
 				if(element.readingName[0])
 					output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
@@ -559,7 +574,7 @@
 	}
 	else
 	{
-		if(aTableColumn != _detailColumn)
+		if(_detailColumns == nil || ![_detailColumns containsObject : aTableColumn])
 		{
 			int ID = ((int *) _data)[rowIndex];
 			if(ID != VALEUR_FIN_STRUCT)

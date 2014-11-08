@@ -18,8 +18,9 @@
 	BOOL _resizingQueued;
 	BOOL _UIOnlySelection;
 	
-	NSTableColumn * _mainColumn;
-	NSTableColumn * _detailColumn;
+	NSArray * _mainColumns;
+	NSArray * _detailColumns;
+	uint _nbCoupleColumn;
 	uint _detailWidth;
 	
 	
