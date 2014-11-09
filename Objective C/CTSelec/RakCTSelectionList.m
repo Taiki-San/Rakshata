@@ -58,7 +58,7 @@
 		{
 			_mainColumns = @[[_tableView.tableColumns firstObject]];
 			_nbCoupleColumn = 1;
-			[self updateColumnPrice : _compactMode];
+			[self updateMultiColumn: _compactMode : scrollView.bounds.size];
 			
 			scrollView.wantsLayer = YES;
 			scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
@@ -214,7 +214,7 @@
 			[_tableView scrollRowToVisible:0];
 		
 		//Add the column
-		[self updateColumnPrice : self.compactMode];
+		[self updateMultiColumn: self.compactMode : scrollView.bounds.size];
 		
 		//We get a usable data structure is required
 		if(sameProject)
@@ -412,41 +412,134 @@
 			selectedRowIndex = -1;
 		
 		[self triggerInstallOnlyAnimate : compactMode];
-		[self updateColumnPrice:compactMode];
+		[self updateMultiColumn : compactMode : scrollView.bounds.size];
 	}
 }
 
-- (void) updateColumnPrice : (BOOL) isCompact
+#pragma mark - Methods to deal with tableView
+
+- (void) updateMultiColumn :(NSSize)scrollviewSize
 {
-	if(isCompact)
+	[self updateMultiColumn : self.compactMode : scrollviewSize];
+}
+
+- (void) updateMultiColumn : (BOOL) isCompact : (NSSize) scrollviewSize
+{
+	if(isCompact)	//We clean everything up if required
 	{
-		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
-		_detailColumns = nil;
+		if(_detailColumns != nil)
+		{
+			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
+			_detailColumns = nil;
+		}
+		
+		if(_nbCoupleColumn > 1 && _mainColumns != nil)
+		{
+			[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				if(idx)
+					[_tableView removeTableColumn:obj];
+			}];
+			
+			_mainColumns = @[_mainColumns.firstObject];
+		}
+		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
 		_detailWidth = 0;
 	}
 	else
 	{
+		//First, we define if we need a detail column, and update the context if required
 		BOOL paidContent = projectData.isPaid && (self.isTome || chapterPrice != NULL);
-		
-		if(paidContent && _detailColumns == nil)
-		{
-			_detailColumns = @[[[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE]];
-			[_tableView addTableColumn:[_detailColumns firstObject]];
-			_nbElemPerCouple = 2;
-		}
-		else if(!paidContent && _detailColumns != nil)
+		if(!paidContent && _detailColumns != nil)
 		{
 			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
 			_detailColumns = nil;
 			_nbElemPerCouple = 1;
 			_detailWidth = 0;
 		}
+		else if(paidContent && _detailColumns == nil)
+		{
+			NSMutableArray * newDetails = [NSMutableArray new];
+			NSTableColumn * column;
+			
+			_nbElemPerCouple = 2;
+			for(uint pos = 0; pos < _nbCoupleColumn; pos++)
+			{
+				column = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+				[_tableView addTableColumn:column];
+				[newDetails addObject:column];
+			}
+			
+			_detailColumns = newDetails;
+		}
+		
+		if(_mainColumns == nil)
+			_mainColumns = @[[_tableView.tableColumns firstObject]];
+		
+		//Great, now that we are up to date, we're going to check if we need to add new columns
+		NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH + _detailWidth, scrollviewSize.height / _nbCoupleColumn);
+		uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
+		int newColumns;
+		
+		//Define number of columns
+		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn <= scrollviewSize.width)
+			nbColumn++;
+		
+		if(nbColumn > 1)	//We can't get under a single column
+			nbColumn--;
+		
+		_nbCoupleColumn = nbColumn;
+		newColumns = nbColumn - oldNbColumn;
+		
+		if(newColumns > 0)		//We need to add columns
+		{
+			NSMutableArray *newMainColumns = [NSMutableArray arrayWithArray:_mainColumns], *newDetailColumns = [NSMutableArray arrayWithArray:_detailColumns];
+			NSTableColumn * column;
+			
+			for(uint pos = 0; pos < newColumns; pos++)
+			{
+				column = [[NSTableColumn alloc] initWithIdentifier:RAKLIST_MAIN_COLUMN_ID];
+				[_tableView addTableColumn:column];
+				[newMainColumns addObject:column];
+				
+				if(paidContent)
+				{
+					column = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+					[_tableView addTableColumn:column];
+					[newDetailColumns addObject:column];
+				}
+			}
+			
+			_mainColumns = newMainColumns;
+			_detailColumns = newDetailColumns;
+		}
+		else if(newColumns < 0)	//We have to remove some
+		{
+			NSMutableArray * newMainColumns = [NSMutableArray new];
+			
+			[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				if(idx < nbColumn)
+					[newMainColumns addObject:obj];
+				else
+					[_tableView removeTableColumn:obj];
+			}];
+			_mainColumns = [NSArray arrayWithArray:newMainColumns];
+			
+			[newMainColumns removeAllObjects];
+			
+			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				if(idx < nbColumn)
+					[newMainColumns addObject:obj];
+				else
+					[_tableView removeTableColumn:obj];
+			}];
+			
+			_detailColumns = [NSArray arrayWithArray:newMainColumns];
+		}
 	}
+	
 	[self additionalResizing : _tableView.bounds.size];
 }
-
-#pragma mark - Methods to deal with tableView
 
 - (void) additionalResizingProxy
 {
@@ -479,26 +572,19 @@
 			}
 		}
 	}
-	else
+	else if(_detailColumns != nil) //We update every view size
 	{
-		if(_detailColumns != nil)
-		{
-			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				((NSTableColumn *)obj).width = _detailWidth;
-			}];
-		}
+		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			((NSTableColumn *)obj).width = _detailWidth;
+		}];
 		
-		//We update every view size
-		if(_detailColumns != nil)
+		for(uint column = 0; column < _nbCoupleColumn; column++)
 		{
-			for(uint column = 0; column < _nbCoupleColumn; column++)
+			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
 			{
-				for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
-				{
-					element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
-					if(element != nil && element.bounds.size.width != _detailWidth)
-						[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
-				}
+				element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
+				if(element != nil && element.bounds.size.width != _detailWidth)
+					[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
 			}
 		}
 	}
@@ -536,13 +622,26 @@
 	return output;
 }
 
-- (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+- (NSString*) tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
 	NSString * output;
+	__block uint column = 0;
+	__block BOOL isDetails = NO;
+	
+	[tableView.tableColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if(obj == tableColumn)
+		{
+			column = idx / _nbElemPerCouple;
+			isDetails = idx % _nbElemPerCouple != 0;
+			*stop = YES;
+		}
+	}];
+	
+	rowIndex = rowIndex * _nbCoupleColumn + column;
 	
 	if(rowIndex >= _nbData)	//Inconsistency
 	{
-		[aTableView performSelectorOnMainThread:@selector(noteNumberOfRowsChanged) withObject:nil waitUntilDone:NO];
+		[tableView performSelectorOnMainThread:@selector(noteNumberOfRowsChanged) withObject:nil waitUntilDone:NO];
 		return @"Error :(";
 	}
 	
@@ -559,7 +658,7 @@
 		META_TOME element = ((META_TOME *) _data)[rowIndex];
 		if(element.ID != VALEUR_FIN_STRUCT)
 		{
-			if(_detailColumns == nil || ![_detailColumns containsObject : aTableColumn])
+			if(_detailColumns == nil || !isDetails)
 			{
 				if(element.readingName[0])
 					output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
@@ -577,7 +676,7 @@
 	}
 	else
 	{
-		if(_detailColumns == nil || ![_detailColumns containsObject : aTableColumn])
+		if(_detailColumns == nil || !isDetails)
 		{
 			int ID = ((int *) _data)[rowIndex];
 			if(ID != VALEUR_FIN_STRUCT)
@@ -611,6 +710,7 @@
 
 - (NSColor*) getTextColor:(uint)column :(uint)row
 {
+	row = row * _nbCoupleColumn + column;
 	if(row >= _nbData)
 		return nil;
 	
@@ -719,7 +819,7 @@
 
 - (NSString *) contentNameForDrag : (uint) row
 {
-	return [self tableView:nil objectValueForTableColumn:nil row:row];
+	return [self tableView:_tableView objectValueForTableColumn:[_tableView.tableColumns objectAtIndex:_tableView.preCommitedLastClickedColumn] row:row];
 }
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row

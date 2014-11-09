@@ -12,6 +12,8 @@
 
 #import "RakListScrollView.h"
 
+#define RAKLIST_MAIN_COLUMN_ID @"For the New Lunar Republic!"
+
 @interface RakTableView : NSTableView
 {
 	BOOL _lastSelectionWasClic;
@@ -74,6 +76,7 @@ typedef struct smartReload_data
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) reloadSize;
 
+- (void) updateMultiColumn : (NSSize) scrollviewSize;
 //Overwrite only
 - (void) additionalResizing : (NSSize) newSize;
 

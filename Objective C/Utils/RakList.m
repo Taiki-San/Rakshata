@@ -21,6 +21,7 @@
 	
 	if(self != nil)
 	{
+		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
 		selectedRowIndex = -1;
 		selectedColumnIndex = -1;
@@ -55,8 +56,6 @@
 	_tableView.autoresizesSubviews = NO;
 	scrollView.documentView = _tableView;
 	
-	NSTableColumn * column = [[NSTableColumn alloc] initWithIdentifier:@"For the New Lunar Republic!"];
-	
 	//Customisation
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
@@ -69,7 +68,7 @@
 	_tableView.intercellSpacing = NSMakeSize(0, _tableView.intercellSpacing.height);
 	
 	//End of setup
-	[_tableView addTableColumn:column];
+	[_tableView addTableColumn:[[NSTableColumn alloc] initWithIdentifier:RAKLIST_MAIN_COLUMN_ID]];
 	[_tableView sizeLastColumnToFit];
 	[_tableView setDelegate:self];
 	[_tableView setDataSource:self];
@@ -196,8 +195,13 @@
 		
 		[_tableView setFrameSize : oldTableviewSize];
 		
-		[self additionalResizing : scrollviewFrame.size];
+		[self updateMultiColumn : scrollviewFrame.size];
 	}
+}
+
+- (void) updateMultiColumn :(NSSize)scrollviewSize
+{
+	[self additionalResizing : scrollviewSize];
 }
 
 - (void) additionalResizing : (NSSize) newSize
@@ -315,7 +319,7 @@
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
-	return _data == NULL ? 0 : _nbData;
+	return _data == NULL ? 0 : (_nbData / _nbCoupleColumn + (_nbData % _nbCoupleColumn != 0));
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row

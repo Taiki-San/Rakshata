@@ -19,6 +19,7 @@
 @property BOOL scrollingDisabled;
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (BOOL) willContentFitInHeight : (CGFloat) height;
 - (void) updateScrollerState : (NSRect) frame;
 
 @end
