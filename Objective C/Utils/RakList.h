@@ -13,8 +13,23 @@
 #import "RakListScrollView.h"
 
 @interface RakTableView : NSTableView
+{
+	BOOL _lastSelectionWasClic;
+	
+	NSInteger _preCommitedLastClickedRow;
+	
+	NSInteger _lastClickedRow;
+	NSInteger _lastClickedColumn;
+}
+
+@property NSInteger lastClickedRow;
+@property NSInteger lastClickedColumn;
+@property NSInteger preCommitedLastClickedColumn;
 
 - (NSColor *) _dropHighlightColor;
+
+//Need to be called when the clicked row/column are validated, and we want to exploit the data
+- (void) commitClic;
 
 @end
 
@@ -32,7 +47,10 @@ typedef struct smartReload_data
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
 	
-	NSInteger selectedIndex;
+	NSInteger selectedRowIndex;
+	NSInteger selectedColumnIndex;
+	uint _nbElemPerCouple;
+	uint _nbCoupleColumn;
 	
 	//Color cache
 	NSColor * normal;
@@ -85,6 +103,6 @@ typedef struct smartReload_data
 - (void) cleanupDrag;
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
 
-+ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started : (BOOL) canDL;
++ (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL;
 
 @end

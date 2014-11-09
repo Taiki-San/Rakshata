@@ -21,7 +21,9 @@
 	
 	if(self != nil)
 	{
-		selectedIndex = -1;
+		_nbElemPerCouple = 1;
+		selectedRowIndex = -1;
+		selectedColumnIndex = -1;
 		[Prefs getCurrentTheme:self];	//register for change
 		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
 	}
@@ -241,7 +243,7 @@
 
 - (NSInteger) selectedRow
 {
-	return selectedIndex;
+	return selectedRowIndex;
 }
 
 #pragma mark - Colors
@@ -288,6 +290,7 @@
 	NSColor * backgroundColor = [self getBackgroundHighlightColor];
 	NSView * rowView;
 	
+	uint lastClickedColumn = _tableView.lastClickedColumn / _nbElemPerCouple;
 	for(uint rowIndex = 0, column; rowIndex < _nbData; rowIndex++)
 	{
 		rowView = [_tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
@@ -296,7 +299,7 @@
 		{
 			if(element != nil && [element class] == [RakText class])
 			{
-				if(rowIndex == selectedIndex)
+				if(rowIndex == selectedRowIndex && column / _nbElemPerCouple == lastClickedColumn)
 					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column :rowIndex];
 				else
 					element.textColor = normal != nil ? normal : [self getTextColor:column :rowIndex];
@@ -327,7 +330,18 @@
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
-	BOOL selectedRow = row == selectedIndex;
+	BOOL selected = row == selectedRowIndex;
+	if(selected && _nbCoupleColumn > 1)	//We need to check if we are in the good column
+	{
+		__block uint index = 0;
+		[tableView.tableColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if(obj == tableColumn)
+				index++;
+		}];
+		
+		selected = tableView.lastClickedColumn / _nbElemPerCouple != index / _nbElemPerCouple;
+	}
+	
     // Get an existing cell with the identifier if it exists
     RakText *result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	
@@ -338,8 +352,8 @@
 		result.identifier = _identifier;
 	}
 	
-	result.textColor = selectedRow ? (highlight != nil ? highlight : [self getTextHighlightColor:0 :row]) : (normal != nil ? normal : [self getTextColor:0 :row]);
-	result.drawsBackground = selectedRow;
+	result.textColor = selected ? (highlight != nil ? highlight : [self getTextHighlightColor:0 :row]) : (normal != nil ? normal : [self getTextColor:0 :row]);
+	result.drawsBackground = selected;
 	result.backgroundColor = [self getBackgroundHighlightColor];
 	
 	return result;
@@ -348,22 +362,30 @@
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
 	[self resetSelection:tableView];
+	[tableView commitClic];
 
-	selectedIndex = -1;
+	selectedRowIndex = -1;
 	
 	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
 	
-	NSView * rowView = [tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
-	for(RakText * view in rowView.subviews)
+	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
+	if(baseColumn != -1)
 	{
-		if([view class] == [RakText class])
+		RakText * view;
+		for(byte pos = 0; pos < _nbElemPerCouple; pos++)
 		{
-			view.textColor = highlightColor;
-			view.drawsBackground = YES;
-			[view setNeedsDisplay];
+			view = [tableView viewAtColumn:initialColumn + pos row:rowIndex makeIfNecessary:NO];
+			if(view != nil && [view class] == [RakText class])
+			{
+				view.textColor = highlightColor;
+				view.drawsBackground = YES;
+				[view setNeedsDisplay];
+			}
 		}
 	}
-	selectedIndex = rowIndex;
+
+	selectedRowIndex = rowIndex;
+	selectedColumnIndex = baseColumn;
 	
 	return YES;
 }
@@ -387,14 +409,14 @@
 			return;
 	}
 	
-	if(selectedIndex >= _nbData)
-		selectedIndex = -1;
+	if(selectedRowIndex >= _nbData)
+		selectedRowIndex = -1;
 	
-	else if(selectedIndex != -1)
+	else if(selectedRowIndex != -1)
 	{
-		NSColor * normalColor = normal != nil ? normal : [self getTextColor:0 :selectedIndex];
+		NSColor * normalColor = normal != nil ? normal : [self getTextColor:0 :selectedRowIndex];
 		
-		NSView * rowView = [tableView rowViewAtRow:selectedIndex makeIfNecessary:NO];
+		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
 			if([view class] == [RakText class])
@@ -405,8 +427,8 @@
 			}
 		}
 		
-		CGFloat rowToDeselect = selectedIndex;
-		selectedIndex = -1;	//Prevent any notification
+		CGFloat rowToDeselect = selectedRowIndex;
+		selectedRowIndex = -1;	//Prevent any notification
 		
 		[tableView deselectRow : rowToDeselect];
 	}
@@ -565,10 +587,9 @@
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
-+ (void) propagateDragAndDropChangeState : (NSView*) view : (BOOL) started : (BOOL) canDL
++ (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL
 {
-	while(view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
-	
+	NSView * view = [[NSApp delegate] serie];
 	if(view != nil && view.superview != nil)
 	{
 		NSArray * views = [view.superview subviews];
@@ -586,13 +607,13 @@
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
-	[RakList propagateDragAndDropChangeState : _tableView.superview : YES : [RakDragItem canDL:[session draggingPasteboard]]];
+	[RakList propagateDragAndDropChangeState : YES : [RakDragItem canDL:[session draggingPasteboard]]];
 }
 
 - (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
 	//Need to cleanup once the drag is over
-	[RakList propagateDragAndDropChangeState : _tableView.superview : NO : [RakDragItem canDL:[session draggingPasteboard]]];
+	[RakList propagateDragAndDropChangeState : NO : [RakDragItem canDL:[session draggingPasteboard]]];
 	[self cleanupDrag];
 }
 
@@ -613,6 +634,16 @@
 
 @implementation RakTableView
 
+- (instancetype) initWithFrame:(NSRect)frameRect
+{
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedColumn = _preCommitedLastClickedRow = -1;
+	
+	return self;
+}
+
 - (NSColor *) _dropHighlightColor
 {
 	return [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
@@ -624,6 +655,56 @@
 		operation = NSTableViewDropAbove;
 	
 	[super setDropRow:row dropOperation:operation];
+}
+
+#pragma mark - Selection
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	NSPoint localLocation = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	
+	_preCommitedLastClickedRow = [self rowAtPoint:localLocation];
+	self.preCommitedLastClickedColumn = [self columnAtPoint:localLocation];
+	
+	[super mouseDown : theEvent];
+}
+
+- (void) commitClic
+{
+	_lastSelectionWasClic = YES;
+	_lastSelectedRow = _preCommitedLastClickedRow;
+	_lastSelectedColumn = self.preCommitedLastClickedColumn;
+}
+
+- (void) setLastClickedColumn : (NSInteger)lastClickedColumn
+{
+	if(_lastSelectionWasClic)
+	{
+		_lastSelectedRow = [self selectedRow];
+		_lastSelectionWasClic = NO;
+	}
+	
+	_lastSelectedColumn = lastClickedColumn;
+}
+
+- (NSInteger) lastClickedColumn
+{
+	return _lastSelectedColumn;
+}
+
+- (void) setLastClickedRow : (NSInteger) lastClickedRow
+{
+	if(_lastSelectionWasClic)
+	{
+		_lastSelectedColumn = [self selectedColumn];
+		_lastSelectionWasClic = NO;
+	}
+	_lastSelectedRow = lastClickedRow;
+}
+
+- (NSInteger) lastClickedRow
+{
+	return _lastSelectedColumn;
 }
 
 @end

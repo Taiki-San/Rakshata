@@ -20,7 +20,6 @@
 	
 	NSArray * _mainColumns;
 	NSArray * _detailColumns;
-	uint _nbCoupleColumn;
 	uint _detailWidth;
 	
 	

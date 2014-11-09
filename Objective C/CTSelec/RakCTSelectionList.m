@@ -311,7 +311,7 @@
 
 - (NSInteger) getSelectedElement
 {
-	NSInteger row = selectedIndex;
+	NSInteger row = selectedRowIndex;
 	
 	if(row < 0 || row > _nbData)
 		return -1;
@@ -390,26 +390,26 @@
 		
 		_nbData = [self nbElem];
 		
-		if(selectedIndex != -1 && _installedJumpTable != NULL)
+		if(selectedRowIndex != -1 && _installedJumpTable != NULL)
 		{
 			if(compactMode)	//We go from full to installed only
 			{
 				uint pos = 0;
-				for(; pos < _nbInstalled && _installedJumpTable[pos] != selectedIndex; pos++);
+				for(; pos < _nbInstalled && _installedJumpTable[pos] != selectedRowIndex; pos++);
 				
 				if(pos < _nbInstalled)
-					selectedIndex = pos;
+					selectedRowIndex = pos;
 				else
-					selectedIndex = -1;
+					selectedRowIndex = -1;
 			}
 			else
 			{
-				if(_installedJumpTable != NULL && selectedIndex < _nbInstalled)
-					selectedIndex = _installedJumpTable[selectedIndex];
+				if(_installedJumpTable != NULL && selectedRowIndex < _nbInstalled)
+					selectedRowIndex = _installedJumpTable[selectedRowIndex];
 			}
 		}
 		else
-			selectedIndex = -1;
+			selectedRowIndex = -1;
 		
 		[self triggerInstallOnlyAnimate : compactMode];
 		[self updateColumnPrice:compactMode];
@@ -422,6 +422,7 @@
 	{
 		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
 		_detailColumns = nil;
+		_nbElemPerCouple = 1;
 		_detailWidth = 0;
 	}
 	else
@@ -432,11 +433,13 @@
 		{
 			_detailColumns = @[[[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE]];
 			[_tableView addTableColumn:[_detailColumns firstObject]];
+			_nbElemPerCouple = 2;
 		}
 		else if(!paidContent && _detailColumns != nil)
 		{
 			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
 			_detailColumns = nil;
+			_nbElemPerCouple = 1;
 			_detailWidth = 0;
 		}
 	}
@@ -681,10 +684,10 @@
 {
 	if(!_UIOnlySelection && !self.compactMode && rowIndex < _nbElem && _installedTable != NULL && !_installedTable[rowIndex])
 	{
-		CGFloat oldSelectedIndex = selectedIndex;
-		selectedIndex = rowIndex;
+		CGFloat oldselectedRowIndex = selectedRowIndex;
+		selectedRowIndex = rowIndex;
 		[self tableViewSelectionDidChange:nil];
-		selectedIndex = oldSelectedIndex;
+		selectedRowIndex = oldselectedRowIndex;
 		
 		return NO;
 	}
@@ -694,11 +697,11 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	if(selectedIndex != -1 && selectedIndex < [self nbElem])
+	if(selectedRowIndex != -1 && selectedRowIndex < [self nbElem])
 	{
-		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[selectedIndex]);
+		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[selectedRowIndex]);
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(selectedIndex), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(selectedRowIndex), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }
 
@@ -722,6 +725,7 @@
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	int selection;
+	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
 	
 	if(self.isTome)
 	{
@@ -741,6 +745,8 @@
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
+	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
+
 	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
 	{
 		if(_data == NULL)

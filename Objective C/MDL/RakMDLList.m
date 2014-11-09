@@ -174,6 +174,8 @@
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
+	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
+
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
 	
 	if(dataProject == NULL || *dataProject == NULL)

@@ -40,7 +40,7 @@
 				{
 					if(((PROJECT_DATA*)_data)[i].cacheDBID == selectedDBID)
 					{
-						selectedIndex = positionInInstalled;
+						selectedRowIndex = positionInInstalled;
 						break;
 					}
 					
@@ -56,7 +56,7 @@
 			freeProjectData(_data); //Seul _cache peut ne pas être null dans cette branche
 		}
 		
-		[self applyContext:frame : selectedIndex : scrollPosition];
+		[self applyContext:frame : selectedRowIndex : scrollPosition];
 	}
 	return self;
 }
@@ -111,7 +111,7 @@
 
 - (NSInteger) selectedRow
 {
-	return selectedIndex;
+	return selectedRowIndex;
 }
 
 #pragma mark - Data manipulation
@@ -275,10 +275,10 @@
 	if(_tableView == nil)
 		return -1;
 	
-	if(selectedIndex == -1)
+	if(selectedRowIndex == -1)
 		return -1;
 	
-	PROJECT_DATA project = [self getElementAtIndex:selectedIndex];
+	PROJECT_DATA project = [self getElementAtIndex:selectedRowIndex];
 
 	if(project.team == NULL)
 		return -1;
@@ -324,7 +324,7 @@
 {
 	RakText * element = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
 	
-	if (row == selectedIndex)
+	if (row == selectedRowIndex)
 	{
 		[element setTextColor : highlight != nil ? highlight : [self getTextHighlightColor:0 :row]];
 		[element setDrawsBackground:YES];
@@ -336,7 +336,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedIndex];
+	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedRowIndex];
 	
 	if(dataToSend.isInitialized)
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCT];
@@ -366,7 +366,7 @@
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
-	PROJECT_DATA project = [self getElementAtIndex:row];
+	PROJECT_DATA project = [self getElementAtIndex:	row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
 	
 	if(!project.isInitialized)
 		return;

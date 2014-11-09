@@ -804,14 +804,14 @@
 	currentDraggedItem = [draggedItems objectAtIndex:0];
 	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
-	[RakList propagateDragAndDropChangeState:outlineView.superview :YES : [RakDragItem canDL:[session draggingPasteboard]]];
+	[RakList propagateDragAndDropChangeState :YES : [RakDragItem canDL:[session draggingPasteboard]]];
 	
 	currentDraggedItem = nil;
 }
 
 - (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
-	[RakList propagateDragAndDropChangeState:outlineView.superview :NO : [RakDragItem canDL:[session draggingPasteboard]]];
+	[RakList propagateDragAndDropChangeState :NO : [RakDragItem canDL:[session draggingPasteboard]]];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
