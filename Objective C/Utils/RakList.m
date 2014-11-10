@@ -335,15 +335,19 @@
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	BOOL selected = row == selectedRowIndex;
-	if(selected && _nbCoupleColumn > 1)	//We need to check if we are in the good column
+	__block uint column = 0;
+	if(_nbCoupleColumn > 1)	//We need to check if we are in the good column
 	{
-		__block uint index = 0;
 		[tableView.tableColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if(obj == tableColumn)
-				index++;
+			{
+				column = idx;
+				*stop = YES;
+			}
 		}];
 		
-		selected = tableView.lastClickedColumn / _nbElemPerCouple != index / _nbElemPerCouple;
+		if(selected)
+			selected = tableView.lastClickedColumn / _nbElemPerCouple != column / _nbElemPerCouple;
 	}
 	
     // Get an existing cell with the identifier if it exists
@@ -356,7 +360,7 @@
 		result.identifier = _identifier;
 	}
 	
-	result.textColor = selected ? (highlight != nil ? highlight : [self getTextHighlightColor:0 :row]) : (normal != nil ? normal : [self getTextColor:0 :row]);
+	result.textColor = selected ? (highlight != nil ? highlight : [self getTextHighlightColor:column :row]) : (normal != nil ? normal : [self getTextColor:column :row]);
 	result.drawsBackground = selected;
 	result.backgroundColor = [self getBackgroundHighlightColor];
 	
@@ -518,10 +522,10 @@
 		[context setDuration:CT_TRANSITION_ANIMATION];
 		
 		if(oldElem != 0)
-			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldElem)] withAnimation:NSTableViewAnimationSlideLeft];
+			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] withAnimation:NSTableViewAnimationSlideLeft];
 		
 		if(newElem != 0)
-			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem)] withAnimation:NSTableViewAnimationSlideRight];
+			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem / _nbCoupleColumn + (newElem % _nbCoupleColumn != 0))] withAnimation:NSTableViewAnimationSlideRight];
 		
 	} completionHandler:^{}];
 }
