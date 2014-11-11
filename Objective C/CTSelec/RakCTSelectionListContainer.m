@@ -143,7 +143,7 @@
 	else
 	{
 		parentFrame.origin.y = 10;
-		parentFrame.size.height -= 20 + 8;
+		parentFrame.size.height -= 10 + 2;
 		
 		parentFrame.size.width /= 2;
 		parentFrame.size.width -= 20;

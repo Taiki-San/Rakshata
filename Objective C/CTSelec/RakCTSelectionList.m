@@ -425,6 +425,8 @@
 
 - (void) updateMultiColumn : (BOOL) isCompact : (NSSize) scrollviewSize
 {
+	NSSize initialSize = _tableView.bounds.size;
+
 	if(isCompact)	//We clean everything up if required
 	{
 		if(_detailColumns != nil)
@@ -573,7 +575,11 @@
 		[_tableView endUpdates];
 	}
 	
-	[self additionalResizing : _tableView.bounds.size];
+	//Adding or removing columns will impact tableview size
+	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
+		[_tableView setFrameSize:initialSize];
+
+	[self additionalResizing : initialSize];
 }
 
 - (void) updateRowNumber
@@ -625,36 +631,19 @@
 			}
 		}
 	}
-	else	//We manually enforce sizing, as NSTableView encounter a few issues
+	else if(_detailColumns != nil) //We update every view size
 	{
-//		NSRect frame;
-//		for(uint column = 0; column < _nbCoupleColumn; column++)
-//		{
-//			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
-//			{
-//				element = [_tableView viewAtColumn:_nbElemPerCouple * column row:i makeIfNecessary:NO];
-//				if(element != nil)
-//				{
-//					frame = element.frame;
-//					[element setFrame:NSMakeRect(column * width, frame.origin.y, mainWidth, frame.size.height)];
-//				}
-//			}
-//		}
+		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			((NSTableColumn *)obj).width = _detailWidth;
+		}];
 		
-		if(_detailColumns != nil) //We update every view size
+		for(uint column = 0; column < _nbCoupleColumn; column++)
 		{
-			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				((NSTableColumn *)obj).width = _detailWidth;
-			}];
-			
-			for(uint column = 0; column < _nbCoupleColumn; column++)
+			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
 			{
-				for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
-				{
-					element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
-					if(element != nil && element.bounds.size.width != _detailWidth)
-						[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
-				}
+				element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
+				if(element != nil && element.bounds.size.width != _detailWidth)
+					[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
 			}
 		}
 	}
@@ -760,7 +749,9 @@
 				output = @"Error! Out of bounds D:";
 		}
 		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice && (_installedTable == NULL || !_installedTable[rowIndex]))
-			output = priceString(chapterPrice[rowIndex]);
+		{
+			output = [NSString stringWithFormat:@"%@%c", priceString(chapterPrice[rowIndex]) , column == _nbCoupleColumn-1 ? '\0' : '	'];
+		}
 		else
 			output = @"";
 	}
