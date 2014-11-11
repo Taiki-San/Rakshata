@@ -15,6 +15,7 @@
 	PROJECT_DATA projectData;
 	
 	BOOL _compactMode;
+	BOOL _rowNumberUpdateQueued;
 	BOOL _resizingQueued;
 	BOOL _UIOnlySelection;
 	

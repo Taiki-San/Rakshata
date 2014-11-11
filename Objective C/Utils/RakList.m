@@ -195,7 +195,10 @@
 		
 		[_tableView setFrameSize : oldTableviewSize];
 		
-		[self updateMultiColumn : scrollviewFrame.size];
+		if(inmatureFrame)
+			[self updateMultiColumn : scrollviewFrame.size];
+		else
+			[self additionalResizing : scrollviewFrame.size];
 	}
 }
 
