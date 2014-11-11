@@ -502,6 +502,12 @@
 		return NO;
 	}
 	
+	if(_project.isPaid && !preventWindowCaptureForWindow(self.window))
+	{
+		[self failure];
+		return NO;
+	}
+	
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{

@@ -96,3 +96,5 @@
 #import "RakDeleteConfirm.h"
 #import "RakReaderBottomBar.h"
 #import "RakPage.h"
+
+BOOL preventWindowCaptureForWindow(NSWindow *window);
