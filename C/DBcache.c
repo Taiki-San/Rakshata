@@ -912,7 +912,7 @@ void freeProjectData(PROJECT_DATA* projectDB)
         return;
 	
 	size_t pos;
-	for(pos = 0; projectDB[pos].team != NULL; releaseCTData(projectDB[pos++]));
+	for(pos = 0; projectDB[pos].isInitialized; releaseCTData(projectDB[pos++]));
     free(projectDB);
 }
 
