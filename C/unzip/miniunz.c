@@ -139,20 +139,31 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             fout = fopen(write_filename, "wb");
 
             //some zipfile don't contain directory alone before file
-            if (fout == NULL && !*extractWithoutPath && strcmp(filename_withoutpath, filename_inzip))
+            if (fout == NULL)
             {
-				createPath(write_filename);
-                fout = fopen(write_filename,"wb");
+				if(checkDirExist(output_path))
+				{
+					createPath(output_path);
+					fout = fopen(write_filename,"wb");
+				}
+
+				if(fout == NULL && !*extractWithoutPath && strcmp(filename_withoutpath, filename_inzip))
+				{
+					createPath(write_filename);
+					fout = fopen(write_filename,"wb");
+				}
+				
+				if(fout == NULL)
+				{
+#ifdef DEV_VERSION
+					char temp[200];
+					snprintf(temp, 200, "error opening %s\n", write_filename);
+					logR(temp);
+#endif
+
+				}
             }
 
-#ifdef DEV_VERSION
-            if (fout==NULL)
-            {
-                char temp[200];
-                snprintf(temp, 200, "error opening %s\n", write_filename);
-                logR(temp);
-            }
-#endif
         }
 		free(write_filename);
 

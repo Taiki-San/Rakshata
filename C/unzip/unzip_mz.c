@@ -194,7 +194,7 @@ typedef struct
 
 
 #ifndef NOUNCRYPT
-#include "crypt.h"
+	#include "crypt.h"
 #endif
 
 /* ===========================================================================
@@ -1589,43 +1589,33 @@ extern int ZEXPORT unzOpenCurrentFile3 (unzFile file, int* method,
          * size of both compressed and uncompressed data
          */
     }
-    pfile_in_zip_read_info->rest_read_compressed =
-            s->cur_file_info.compressed_size ;
-    pfile_in_zip_read_info->rest_read_uncompressed =
-            s->cur_file_info.uncompressed_size ;
+    pfile_in_zip_read_info->rest_read_compressed = s->cur_file_info.compressed_size;
+    pfile_in_zip_read_info->rest_read_uncompressed = s->cur_file_info.uncompressed_size;
 
-
-    pfile_in_zip_read_info->pos_in_zipfile =
-            s->cur_file_info_internal.offset_curfile + SIZEZIPLOCALHEADER +
-              iSizeVar;
+    pfile_in_zip_read_info->pos_in_zipfile = s->cur_file_info_internal.offset_curfile + SIZEZIPLOCALHEADER + iSizeVar;
 
     pfile_in_zip_read_info->stream.avail_in = (uInt)0;
 
     s->pfile_in_zip_read = pfile_in_zip_read_info;
-                s->encrypted = 0;
+	s->encrypted = 0;
 
-#    ifndef NOUNCRYPT
+#ifndef NOUNCRYPT
     if (password != NULL)
     {
-        int i;
         s->pcrc_32_tab = get_crc_table();
         init_keys(password,s->keys,s->pcrc_32_tab);
-        if (ZSEEK64(s->z_filefunc, s->filestream,
-                  s->pfile_in_zip_read->pos_in_zipfile +
-                     s->pfile_in_zip_read->byte_before_the_zipfile,
-                  SEEK_SET)!=0)
+        if (ZSEEK64(s->z_filefunc, s->filestream, s->pfile_in_zip_read->pos_in_zipfile + s->pfile_in_zip_read->byte_before_the_zipfile, SEEK_SET) != 0)
             return UNZ_INTERNALERROR;
         if(ZREAD64(s->z_filefunc, s->filestream,source, 12)<12)
             return UNZ_INTERNALERROR;
 
-        for (i = 0; i<12; i++)
+        for (char i = 0; i < 12; i++)
             zdecode(s->keys,s->pcrc_32_tab,source[i]);
 
         s->pfile_in_zip_read->pos_in_zipfile+=12;
         s->encrypted=1;
     }
-#    endif
-
+#endif
 
     return UNZ_OK;
 }
@@ -1732,16 +1722,14 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
                 return UNZ_ERRNO;
 
 
-#            ifndef NOUNCRYPT
+#ifndef NOUNCRYPT
             if(s->encrypted)
             {
                 uInt i;
                 for(i=0;i<uReadThis;i++)
-                  pfile_in_zip_read_info->read_buffer[i] =
-                      zdecode(s->keys,s->pcrc_32_tab,
-                              pfile_in_zip_read_info->read_buffer[i]);
+                  pfile_in_zip_read_info->read_buffer[i] = zdecode(s->keys,s->pcrc_32_tab, pfile_in_zip_read_info->read_buffer[i]);
             }
-#            endif
+#endif
 
 
             pfile_in_zip_read_info->pos_in_zipfile += uReadThis;

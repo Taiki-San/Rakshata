@@ -40,7 +40,7 @@ void hexToDec(const char *input, unsigned char *output)
 
 void hexToCGFloat(const char *input, uint32_t length, double *output)
 {
-	int i = 0, j = 0;
+	uint i = 0, j = 0;
 	char c = 0, tmp[2];
 	
 	for(*output = 0; *input && i < length; i++)

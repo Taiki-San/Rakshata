@@ -23,7 +23,7 @@ MUTEX_VAR mutex;
     #ifdef main
         #undef main
     #endif
-#else 
+#else
 	int NSApplicationMain(int argc, const char *argv[]);
 #endif
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
 	if(!earlyInit(argc, argv)) //On regroupe tout dans une fonction pour vider main
         return -1; //Si echec
-	
+
 	setupBDDCache();
 
     int ret_value = NSApplicationMain(argc, (const char **)argv);
