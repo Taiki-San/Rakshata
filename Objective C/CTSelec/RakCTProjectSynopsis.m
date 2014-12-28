@@ -88,7 +88,7 @@
 		if(_synopsis == nil)
 			return NO;
 		
-		_synopsis.fixedWidth = self.bounds.size.width - 2 * MAIN_TEXT_BORDER;
+		_synopsis.fixedWidth = self.bounds.size.width - MAIN_TEXT_BORDER;
 		[_synopsis setFrameOrigin : NSZeroPoint];
 
 		[_synopsis setAlignment:NSJustifiedTextAlignment];
@@ -191,7 +191,7 @@
 	
 	if(_synopsis != nil)
 	{
-		const CGFloat newSynopsisWidth = mainFrame.size.width - 2 * SYNOPSIS_BORDER;
+		const CGFloat newSynopsisWidth = mainFrame.size.width - SYNOPSIS_BORDER;
 		
 		if(_synopsis.fixedWidth != newSynopsisWidth)
 			_synopsis.fixedWidth = newSynopsisWidth;
@@ -269,7 +269,7 @@
 	mainBounds.size.height -= mainBounds.origin.y + SPACING;
 	
 	if(_synopsis == nil)
-		mainBounds.size.width -= 2 * MAIN_TEXT_BORDER;
+		mainBounds.size.width -= MAIN_TEXT_BORDER;
 	else
 		mainBounds.size.width = _synopsis.fixedWidth;
 	

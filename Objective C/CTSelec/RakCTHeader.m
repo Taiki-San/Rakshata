@@ -118,6 +118,11 @@
 	}
 
 	[_backgroundColor setFill];
+	
+	CGFloat maxX = NSMaxX(synopsis.frame);
+	if(dirtyRect.size.width > maxX)
+		dirtyRect.size.width = maxX;
+	
 	NSRectFill(dirtyRect);
 }
 

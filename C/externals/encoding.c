@@ -108,7 +108,6 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 	
 	for (int i = 0, j = 0; i < input_length;)
 	{
-		
 		uint32_t byteA = i < input_length ? (unsigned char)data[i++] : 0;
 		uint32_t byteB = i < input_length ? (unsigned char)data[i++] : 0;
 		uint32_t byteC = i < input_length ? (unsigned char)data[i++] : 0;
