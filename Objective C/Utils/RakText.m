@@ -109,6 +109,13 @@
 
 - (void) setStringValue : (NSString *)aString
 {
+	if(aString == nil)
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Hum, tried to set a nil string in RakText...");
+#endif
+		aString = @"";
+	}
 	[super setStringValue : aString];
 	
 	if ([self.cell wraps])
