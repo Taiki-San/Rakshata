@@ -45,12 +45,14 @@
 }
 
 @property (strong) RakListScrollView * scrollView;
+@property (readonly) CGFloat baseX;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame;
 - (void) updateProject : (PROJECT_DATA) projectID;
 
 - (void) setFrame : (NSRect) frameRect;
 - (void) resizeAnimation : (NSRect) frameRect;
+- (CGFloat) rawBaseX : (NSRect) frameRect;	//When animating, heavier to get, reflect expectation
 
 - (void) craftTableView : (NSRect) frame;
 

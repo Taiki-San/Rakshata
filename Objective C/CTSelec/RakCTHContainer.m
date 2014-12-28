@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define BORDER_BETWEEN_NAME_AND_TABLE 10
+
 @implementation RakCTHContainer
 
 - (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project
@@ -30,6 +32,11 @@
 	return self;
 }
 
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
 - (void) setFrame : (NSRect) frameRect
 {
 	frameRect = [self frameFromParent : frameRect];
@@ -38,10 +45,20 @@
 	[super setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
 	
-	[projectName setFrameOrigin:[self projectNamePos : self.bounds.size]];
-	[authorName setFrameOrigin:[self authorNamePos : self.bounds.size]];
-
 	[_tableController setFrame : self.bounds];
+	CGFloat tableControllerBaseX = _tableController.baseX, oldNameHeight = projectName.bounds.size.height, oldAuthorHeight = authorName.bounds.size.height;
+	
+	[projectName setFrameOrigin:[self projectNamePos : self.bounds.size]];
+	projectName.fixedWidth = tableControllerBaseX - projectName.frame.origin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+	
+	if(projectName.bounds.size.height != oldNameHeight)	//fixedWidth may warp the lines
+		[projectName setFrameOrigin:[self projectNamePos : self.bounds.size]];
+	
+	[authorName setFrameOrigin:[self authorNamePos : self.bounds.size]];
+	authorName.fixedWidth = tableControllerBaseX - authorName.frame.origin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+	
+	if(authorName.bounds.size.height != oldAuthorHeight)	//fixedWidth may warp the lines
+		[authorName setFrameOrigin:[self authorNamePos : self.bounds.size]];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
@@ -51,11 +68,24 @@
 	
 	[self.animator setFrame : frameRect];
 	self.gradientMaxWidth = frameRect.size.height;
+	
+	NSPoint nameOrigin = [self projectNamePos : frameRect.size], authorOrigin = [self authorNamePos : frameRect.size];
+	CGFloat oldNameHeight = projectName.bounds.size.height, oldAuthorHeight = authorName.bounds.size.height;
 
-	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
-	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
+	[projectName.animator setFrameOrigin : nameOrigin];
+	[authorName.animator setFrameOrigin : authorOrigin];
 	
 	frameRect.origin = NSZeroPoint;
+	
+	CGFloat tableControllerBaseX = [_tableController rawBaseX:frameRect];
+	projectName.fixedWidth = tableControllerBaseX - nameOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+	authorName.fixedWidth = tableControllerBaseX - authorOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+	
+	if(projectName.bounds.size.height != oldNameHeight)	//fixedWidth may warp the lines
+		[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
+	
+	if(authorName.bounds.size.height != oldAuthorHeight)	//fixedWidth may warp the lines
+		[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
 	
 	[_tableController resizeAnimation : frameRect];
 }
@@ -66,17 +96,22 @@
 {
 	_data = project;
 	
+	BOOL needProcessName = NO, needProcessAuthor = NO;
 	NSString * currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.projectName length:sizeof(_data.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
 	
 	//Project name
 	if(projectName == nil)
 	{
 		projectName = [[RakText alloc] initWithText : self.frame : currentElem : [self textColor]];
-		if(projectName)
+		if(projectName != nil)
 		{
+			[projectName setAlignment:NSLeftTextAlignment];
+			[projectName.cell setWraps:YES];
+			needProcessName = YES;
+			
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
-			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 			[projectName sizeToFit];
+			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 		
 			[self addSubview: projectName];
 		}
@@ -85,6 +120,7 @@
 	{
 		[projectName setStringValue : currentElem];
 		[projectName sizeToFit];
+		[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 	}
 	
 	currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding];
@@ -95,11 +131,14 @@
 		authorName = [[RakText alloc] initWithText : self.frame : currentElem : [self textColor]];
 		if(authorName)
 		{
+			[authorName setAlignment:NSLeftTextAlignment];
+			[authorName.cell setWraps:YES];
+			needProcessAuthor = YES;
+
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
 																	traits:NSItalicFontMask weight:0 size: 13]];
-
-			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			[authorName sizeToFit];
+			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			
 			[self addSubview: authorName];
 		}
@@ -108,6 +147,7 @@
 	{
 		[authorName setStringValue : currentElem];
 		[authorName sizeToFit];
+		[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 	}
 	
 	if(_tableController == nil)
@@ -132,18 +172,53 @@
 
 		[_tableController setFrame : bounds];	//We refresh scrollview size
 	}
+	
+	if(_tableController != nil && (needProcessAuthor || needProcessName))
+	{
+		CGFloat tableControllerBaseX = _tableController.baseX, oldHeight;
+		
+		if(needProcessName)
+		{
+			oldHeight = projectName.bounds.size.height;
+			projectName.fixedWidth = tableControllerBaseX - projectName.frame.origin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+			
+			if(projectName.bounds.size.height != oldHeight)
+				[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
+
+		}
+		
+		if(needProcessAuthor)
+		{
+			oldHeight = authorName.bounds.size.height;
+			authorName.fixedWidth = tableControllerBaseX - authorName.frame.origin.x - BORDER_BETWEEN_NAME_AND_TABLE;
+			
+			if(authorName.bounds.size.height != oldHeight)
+				[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
+			
+		}
+	}
 }
 
 #pragma mark - Elements positions
 
 - (NSPoint) projectNamePos : (NSSize) size
 {
-	return NSMakePoint(size.width * 7 / 100, size.height * 11 / 20);
+	CGFloat height = size.height * 6.5 / 20;
+	
+	if(projectName != nil)
+		height -= projectName.bounds.size.height / 2;
+	
+	return NSMakePoint(size.width * 7 / 100, height);
 }
 
 - (NSPoint) authorNamePos : (NSSize) size
 {
-	return NSMakePoint(size.width * 9 / 100, size.height * 5 / 20);
+	CGFloat height = size.height * 13 / 20;
+	
+	if(authorName != nil)
+		height -= authorName.bounds.size.height / 2;
+	
+	return NSMakePoint(size.width * 9 / 100, height);
 }
 
 #pragma mark - UI utilities

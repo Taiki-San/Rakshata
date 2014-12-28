@@ -47,6 +47,16 @@
 	[self refreshLayout];
 }
 
+- (CGFloat) baseX
+{
+	return _scrollView.frame.origin.x;
+}
+
+- (CGFloat) rawBaseX : (NSRect) frameRect
+{
+	return [self frameFromParent:frameRect].origin.x;
+}
+
 #pragma mark - Data tools
 
 - (void) analyseCurrentProject : (PROJECT_DATA) project
@@ -173,7 +183,7 @@
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
 {
-	parentBounds.origin.y = BOTTOM_BORDER;
+	parentBounds.origin.y = parentBounds.size.height - BOTTOM_BORDER;
 	parentBounds.origin.x = parentBounds.size.width / 2;
 	
 	parentBounds.size.width -= parentBounds.origin.x;
