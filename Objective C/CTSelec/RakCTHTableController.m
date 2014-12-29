@@ -183,7 +183,7 @@
 
 - (NSRect) frameFromParent : (NSRect) parentBounds
 {
-	parentBounds.origin.y = parentBounds.size.height - BOTTOM_BORDER;
+	parentBounds.origin.y = BOTTOM_BORDER;
 	parentBounds.origin.x = parentBounds.size.width / 2;
 	
 	parentBounds.size.width -= parentBounds.origin.x;

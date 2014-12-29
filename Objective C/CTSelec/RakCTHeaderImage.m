@@ -46,7 +46,7 @@
 	frameRect.origin = NSZeroPoint;
 	
 	[_background resizeAnimation : frameRect];
-	[_container.animator setFrame : frameRect];
+	[_container resizeAnimation : frameRect];
 }
 
 #pragma mark - Interface

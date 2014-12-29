@@ -160,7 +160,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
         {
 			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->team->URLRepo, LONGUEUR_URL, bufferURLDepot);
 			
-            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][proj]=%d&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->projectID, compteur, data[index[compteur]]->listChapitreOfTome != NULL, compteur, data[index[compteur]]->identifier);
+            snprintf(buffer, 500, "&data[%d][editor]=%s&data[%d][IDProject]=%d&data[%d][isTome]=%d&data[%d][ID]=%d", compteur, data[index[compteur]]->datas->team->URLRepo, compteur, data[index[compteur]]->datas->projectID, compteur, data[index[compteur]]->listChapitreOfTome != NULL, compteur, data[index[compteur]]->identifier);
             length += strlen(buffer);
             buf = realloc(output, length * sizeof(char));
             if(buf != NULL)

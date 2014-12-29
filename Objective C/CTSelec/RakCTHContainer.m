@@ -43,6 +43,7 @@
 	lastKnownHeight = frameRect.size.height;
 	
 	[super setFrame : frameRect];
+	
 	self.gradientMaxWidth = frameRect.size.height;
 	
 	[_tableController setFrame : self.bounds];
@@ -67,6 +68,7 @@
 	lastKnownHeight = frameRect.size.height;
 	
 	[self.animator setFrame : frameRect];
+	
 	self.gradientMaxWidth = frameRect.size.height;
 	
 	NSPoint nameOrigin = [self projectNamePos : frameRect.size], authorOrigin = [self authorNamePos : frameRect.size];

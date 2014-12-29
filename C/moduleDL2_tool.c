@@ -18,6 +18,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 {
     uint length;
     char *output = NULL;
+	
     if (!strcmp(data.datas->team->type, TYPE_DEPOT_DB) || !strcmp(data.datas->team->type, TYPE_DEPOT_OTHER))
     {
         output = internalCraftBaseURL(*data.datas->team, &length);
@@ -50,7 +51,8 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 		
         length = 110 + 20 + (strlen(data.datas->team->URLRepo) + 10 + 10) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
-        if(output != NULL) {
+        if(output != NULL)
+		{
             snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
         }
     }
