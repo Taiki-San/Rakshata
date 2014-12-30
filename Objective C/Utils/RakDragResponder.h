@@ -32,5 +32,6 @@
 
 //Customisation
 - (void) additionalDrawing : (RakDragView *) draggedView : (uint) row;
+- (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame;
 
 @end

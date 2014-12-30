@@ -932,4 +932,15 @@
 	}
 }
 
+- (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame
+{
+	//FIXME: Update earlyFrame with a more precise metric
+	uint column = _tableView.preCommitedLastClickedColumn;
+	
+	if(column != 0 && _nbElemPerCouple && _nbCoupleColumn)
+		earlyFrame.origin.x += (column / _nbElemPerCouple) * (_tableView.bounds.size.width / _nbCoupleColumn);
+	
+	return earlyFrame;
+}
+
 @end

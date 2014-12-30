@@ -127,7 +127,7 @@
 										   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
 										   image.size.width, image.size.height);
 				 
-				 [draggingItem setDraggingFrame:frame contents:image];
+				 [draggingItem setDraggingFrame:[self updateFrameBeforeDrag : frame] contents:image];
 				 *stop = NO;
 			 }
 		 }
@@ -137,6 +137,11 @@
 - (void) additionalDrawing : (RakDragView *) draggedView : (uint) row
 {
 	
+}
+
+- (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame
+{
+	return earlyFrame;
 }
 
 @end
