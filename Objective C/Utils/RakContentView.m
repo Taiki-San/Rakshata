@@ -29,7 +29,7 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	if([(RakWindow*) self.window isFullscreen])
+	if(((RakWindow*) self.window).fullscreen)
 	{
 		frameRect.size.height = self.window.frame.size.height;
 		frameRect.size.width = self.window.frame.size.width;

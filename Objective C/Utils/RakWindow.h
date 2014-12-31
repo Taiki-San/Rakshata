@@ -12,7 +12,6 @@
 
 @interface RakWindow : NSWindow <NSWindowDelegate>
 {
-	bool dragInProgress;
 	NSPoint initialLocation;
 }
 
@@ -23,10 +22,7 @@
 @property BOOL functionPressed;
 @property BOOL commandPressed;
 
+@property (readonly, getter=isFullscreen) BOOL fullscreen;
 @property (weak) NSView* defaultDispatcher;
-
-
-- (BOOL) isFullscreen;
-- (void) stopDrag;
 
 @end

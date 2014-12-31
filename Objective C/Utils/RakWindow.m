@@ -25,14 +25,10 @@
 
 - (void)sendEvent:(NSEvent *)event
 {
-	if(![self isFullscreen])
+	if(!self.fullscreen)
 	{
 		if([event type] == NSLeftMouseDown)
 			[self mouseDown:event];
-		else if([event type] == NSLeftMouseDragged && dragInProgress)
-			[self mouseDragged:event];
-		else if([event type] == NSLeftMouseUp)
-			dragInProgress = false;
 	}
 	
 	if ([event type] == NSKeyDown)
@@ -60,11 +56,6 @@
 	self.commandPressed		= (flags & NSCommandKeyMask) != 0;
 	
 	[super flagsChanged:theEvent];
-}
-
-- (void) stopDrag
-{
-	dragInProgress = false;
 }
 
 - (void) keyDown:(NSEvent *)theEvent

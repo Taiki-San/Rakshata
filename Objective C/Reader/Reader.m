@@ -404,7 +404,7 @@
 	}
 	
 	//Do we have to switch to fullscreen, or can we animate
-	if(self.distractionFree && ![(RakWindow*) self.window isFullscreen])
+	if(self.distractionFree && !((RakWindow*) self.window).fullscreen)
 		[self.window toggleFullScreen:self];
 
 	else

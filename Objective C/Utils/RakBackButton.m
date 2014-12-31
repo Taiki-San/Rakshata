@@ -135,7 +135,6 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	cursorOnMe = false;
-	[(RakWindow*) self.window stopDrag];
 	[self.cell setAnimationInProgress:NO];
 }
 

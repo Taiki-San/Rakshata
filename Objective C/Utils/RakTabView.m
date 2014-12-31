@@ -410,7 +410,7 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if(![(RakWindow*) self.window isFullscreen] && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
+	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			if(self.readerMode && [self mouseOutOfWindow])

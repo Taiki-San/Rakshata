@@ -557,6 +557,7 @@
 
 ///			Manipulation we view added/removed
 
+#if 0
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
 	
@@ -566,6 +567,7 @@
 {
 	
 }
+#endif
 
 ///		Craft views
 
