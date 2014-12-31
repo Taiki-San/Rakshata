@@ -65,9 +65,12 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 
 void releaseCTData(PROJECT_DATA data)
 {
-	free(data.chapitresFull);
-	free(data.chapitresInstalled);
-	free(data.chapitresPrix);
-	freeTomeList(data.tomesFull, true);
-	freeTomeList(data.tomesInstalled, true);
+	if(data.isInitialized)
+	{
+		free(data.chapitresFull);
+		free(data.chapitresInstalled);
+		free(data.chapitresPrix);
+		freeTomeList(data.tomesFull, true);
+		freeTomeList(data.tomesInstalled, true);
+	}
 }

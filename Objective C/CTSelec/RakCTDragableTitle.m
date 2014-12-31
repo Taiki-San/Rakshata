@@ -87,7 +87,7 @@
 
 - (BOOL) mouseDownCanMoveWindow
 {
-	return outOfArea || noSession;
+	return self.isEmpty;//outOfArea || noSession;
 }
 
 #pragma - mark NSDraggingSource support

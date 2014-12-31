@@ -824,7 +824,7 @@
 
 	if(_installedTable != NULL)
 	{
-		for(uint i = 0; i < _nbElem; i++)
+		for(uint i = 0, size = MIN(_nbElem, [_tableView numberOfRows]); i < size; i++)
 		{
 			if(!_installedTable[i])
 			{
