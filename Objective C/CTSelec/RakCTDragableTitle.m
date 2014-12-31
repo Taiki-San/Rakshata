@@ -37,10 +37,10 @@
 
 	else
 	{
-		textSize = [self intrinsicContentSize];
-		NSPoint mouse = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+		NSSize textSize = [self intrinsicContentSize];
+		mousePosition = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 		
-		if(mouse.x > textSize.width || mouse.y > textSize.height)
+		if(mousePosition.x > textSize.width || mousePosition.y > textSize.height)
 			outOfArea = YES;
 		else
 			noSession = YES;
@@ -78,7 +78,7 @@
 	couldDL = self.isTome ? (projectData.nombreTomesInstalled < projectData.nombreTomes) : (projectData.nombreChapitreInstalled < projectData.nombreChapitre);
 	[RakList propagateDragAndDropChangeState : YES : couldDL];
 
-	[self dragImage:image at:NSMakePoint(textSize.width / 2, textSize.height) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
+	[self dragImage:image at:NSMakePoint(mousePosition.x - image.size.width / 3, mousePosition.y + 3) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
 	
 	[RakList propagateDragAndDropChangeState : NO : couldDL];
 	
@@ -87,7 +87,6 @@
 
 - (BOOL) mouseDownCanMoveWindow
 {
-	NSLog(@"CALLED : %d ~ %d ~ %@", outOfArea || noSession, self.isEmpty, self.stringValue);
 	return outOfArea || noSession;
 }
 

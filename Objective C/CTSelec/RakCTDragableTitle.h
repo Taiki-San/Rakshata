@@ -14,7 +14,7 @@
 {
 	RakDragResponder * _dragResponder;
 	
-	NSSize textSize;
+	NSPoint mousePosition;
 	BOOL couldDL;
 	
 	BOOL outOfArea;
