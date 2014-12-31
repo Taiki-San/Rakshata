@@ -1,0 +1,101 @@
+/*********************************************************************************************
+ **	__________         __           .__            __                 ________   _______   	**
+ **	\______   \_____  |  | __  _____|  |__ _____ _/  |______   	___  _\_____  \  \   _  \  	**
+ **	 |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \  	\  \/ //  ____/  /  /_\  \ 	**
+ **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
+ **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
+ **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
+ **                                                                                         **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
+ **                                                                                         **
+ ********************************************************************************************/
+
+#import "RakCTDragableTitle.h"
+
+@implementation RakCTDragableTitle
+
+- (instancetype) initWithText : (NSRect) frame : (NSString *) text
+{
+	self = [super initWithText:frame :text];
+	
+	if(self != nil)
+	{
+		_dragResponder = [[RakDragResponder alloc] init];
+		outOfArea = YES;
+	}
+	
+	return self;
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	outOfArea = NO;
+
+	//We check if it's worth the trouble to initialize
+	if(self.isEmpty || self.currentID == UINT_MAX || _dragResponder == nil)
+		outOfArea = YES;
+
+	else
+	{
+		textSize = [self intrinsicContentSize];
+		NSPoint mouse = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+		
+		if(mouse.x > textSize.width || mouse.y > textSize.height)
+			outOfArea = YES;
+		else
+			noSession = YES;
+	}
+}
+
+- (void) mouseDragged:(NSEvent *)theEvent
+{
+	if(outOfArea)
+		return;
+	
+	//We get a copy of the project data
+	PROJECT_DATA projectData = getElementByID(self.currentID);
+	if(!projectData.isInitialized)
+		return;
+	
+	//We initialize the pasteboard
+	NSPasteboard * pBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
+	[RakDragResponder registerToPasteboard:pBoard];
+	
+	//We create the shared item
+	RakDragItem * item = [[RakDragItem alloc] init];
+	if(item == nil)
+		return;
+
+	noSession = NO;
+	
+	//We initialize the item, then insert it in the pasteboard
+	[item setDataProject:projectData isTome:self.isTome element:VALEUR_FIN_STRUCT];
+	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
+	
+	//We create the image for the dragging session
+	NSImage * image = [_dragResponder initializeImageForItem : projectData : (self.isTome ? @"Intégralité des tomes" : @"Intégralité des chapitres") : VALEUR_FIN_STRUCT];
+
+	couldDL = self.isTome ? (projectData.nombreTomesInstalled < projectData.nombreTomes) : (projectData.nombreChapitreInstalled < projectData.nombreChapitre);
+	[RakList propagateDragAndDropChangeState : YES : couldDL];
+
+	[self dragImage:image at:NSMakePoint(textSize.width / 2, textSize.height) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
+	
+	[RakList propagateDragAndDropChangeState : NO : couldDL];
+	
+	noSession = YES;
+}
+
+- (BOOL) mouseDownCanMoveWindow
+{
+	NSLog(@"CALLED : %d ~ %d ~ %@", outOfArea || noSession, self.isEmpty, self.stringValue);
+	return outOfArea || noSession;
+}
+
+#pragma - mark NSDraggingSource support
+
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+{
+	return NSDragOperationCopy;
+}
+
+@end

@@ -105,33 +105,42 @@
 		return;
 	
 	NSUInteger row = [rowIndexes firstIndex];
-	
+
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
 									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
 								 searchOptions:nil
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
-		 [[NSBundle mainBundle] loadNibNamed:@"dragView" owner:self topLevelObjects:nil];
-		 
-		 if(draggedView != nil)
+		 NSImage * image = [self initializeImageForItem : [self getProjectDataForDrag : row] : [self contentNameForDrag : row] : row];
+		 if(image != nil)
 		 {
-			 PROJECT_DATA project = [self getProjectDataForDrag : row];
-			 if(project.isInitialized)
-			 {
-				 [draggedView setupContent: project :[self contentNameForDrag : row]];
-				 [self additionalDrawing : draggedView : row];
-				 
-				 NSImage * image = [draggedView createImage];
-				 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
-										   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
-										   image.size.width, image.size.height);
-				 
-				 [draggingItem setDraggingFrame:[self updateFrameBeforeDrag : frame] contents:image];
-				 *stop = NO;
-			 }
+			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
+									   draggingItem.draggingFrame.origin.y - 3 * image.size.height / 4,
+									   image.size.width, image.size.height);
+			 
+			 [draggingItem setDraggingFrame:[self updateFrameBeforeDrag : frame] contents:image];
 		 }
+		 else
+			 *stop = YES;
 	 }];
+}
+
+- (NSImage *) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing
+{
+	if(project.isInitialized)
+	{
+		[[NSBundle mainBundle] loadNibNamed:@"dragView" owner:self topLevelObjects:nil];
+		if(draggedView != nil)
+		{
+			[draggedView setupContent: project : name];
+			[self additionalDrawing : draggedView : rowForAdditionalDrawing];
+
+			return [draggedView createImage];
+		}
+	}
+	
+	return nil;
 }
 
 - (void) additionalDrawing : (RakDragView *) draggedView : (uint) row

@@ -12,7 +12,7 @@
 
 @interface RakCTSelectionListContainer : NSView
 {
-	RakMenuText * _title;
+	RakCTDragableTitle * _title;
 	RakCTSelectionList * _content;
 	RakText * _placeholder;
 	

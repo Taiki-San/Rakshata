@@ -36,6 +36,9 @@
 }
 
 @property BOOL isTome;
+@property (readonly) uint cacheID;
+@property (readonly) BOOL isEmpty;
+
 @property (readonly) uint nbElem;
 
 @property BOOL compactMode;

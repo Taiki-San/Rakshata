@@ -33,12 +33,15 @@
 		[Prefs getCurrentTheme:self];
 		[content setSuperview:self];
 		
-		_title = [[RakMenuText alloc] initWithText : self.bounds : [self titleString]];
+		_title = [[RakCTDragableTitle alloc] initWithText : self.bounds : [self titleString]];
 		if(_title != nil)
 		{
 			_title.ignoreInternalFrameMagic = YES;
 			_title.barWidth = 1;
 			_title.drawGradient = YES;
+			_title.isTome = _content.isTome;
+			_title.currentID = _content.cacheID;
+			_title.isEmpty = _content.isEmpty;
 			
 			[_title sizeToFit];
 			[_title setFrame : [self frameForTitle : self.bounds]];
@@ -281,6 +284,8 @@
 		}];
 	}
 	
+	_title.currentID = project.cacheDBID;
+	_title.isEmpty = retValue;
 	_title.stringValue = [self titleString];
 	
 	return retValue;

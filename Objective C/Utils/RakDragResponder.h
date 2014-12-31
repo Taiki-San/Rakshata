@@ -29,6 +29,7 @@
 - (BOOL) grantDropAuthorization : (BOOL) canDL;
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation;
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
+- (NSImage*) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing;
 
 //Customisation
 - (void) additionalDrawing : (RakDragView *) draggedView : (uint) row;

@@ -302,6 +302,16 @@
 
 #pragma mark - Properties
 
+- (uint) cacheID
+{
+	return projectData.isInitialized ? projectData.cacheDBID : UINT_MAX;
+}
+
+- (BOOL) isEmpty
+{
+	return projectData.isInitialized ? (self.isTome ? projectData.nombreTomes == 0 : projectData.nombreChapitre == 0) : YES;
+}
+
 - (uint) nbElem
 {
 	return self.compactMode ? _nbInstalled : _nbElem;

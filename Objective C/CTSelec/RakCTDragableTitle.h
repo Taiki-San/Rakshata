@@ -8,30 +8,22 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-#import "RakCTDragableTitle.h"
-#import "RakCTSelectionList.h"
-#import "RakCTTools.h"
-#import "RakCTCoreViewButtons.h"
-#import "RakCTHeader.h"
-#import "RakChapterView.h"
-
-#define CT_TRANSITION_ANIMATION 0.3f
-#define CT_HALF_TRANSITION_ANIMATION 0.15f
-
-@interface CTSelec : RakTabView
+@interface RakCTDragableTitle : RakMenuText <NSDraggingSource>
 {
-	RakBackButton *backButton;
-	RakChapterView * coreView;
+	RakDragResponder * _dragResponder;
+	
+	NSSize textSize;
+	BOOL couldDL;
+	
+	BOOL outOfArea;
+	BOOL noSession;
 }
 
-- (id)init : (NSView*)contentView : (NSString *) state;
+@property uint currentID;
 
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY;
-
-- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
-
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+@property BOOL isTome;
+@property BOOL isEmpty;
 
 @end
