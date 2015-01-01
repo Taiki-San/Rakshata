@@ -181,8 +181,8 @@
 	nbOldElem = _nbElem;
 	if(self.compactMode)
 	{
-		oldInstalled = _installedTable;
-		_installedTable = NULL;
+		oldInstalled = _installedJumpTable;
+		_installedJumpTable = NULL;
 		nbOldInstalled = _nbInstalled;
 	}
 	
@@ -853,7 +853,9 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	if(!_UIOnlySelection && !self.compactMode && rowIndex < _nbElem && _installedTable != NULL && !_installedTable[rowIndex])
+	NSInteger index = rowIndex * _nbCoupleColumn + tableView.preCommitedLastClickedColumn;
+	
+	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
 	{
 		CGFloat oldselectedRowIndex = selectedRowIndex;
 		selectedRowIndex = rowIndex;
@@ -868,11 +870,13 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	if(selectedRowIndex != -1 && selectedRowIndex < [self nbElem])
+	NSInteger index = selectedRowIndex *_nbCoupleColumn + selectedColumnIndex;
+	
+	if(selectedRowIndex != -1 && index < [self nbElem])
 	{
-		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[selectedRowIndex]);
+		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(selectedRowIndex), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(index), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }
 

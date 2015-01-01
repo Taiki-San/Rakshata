@@ -278,9 +278,32 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 #endif
 
     configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
-    _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
+    _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On déchiffre config.enc
 #ifndef DEV_VERSION
 	crashTemp(hash, SHA256_DIGEST_LENGTH);
+#else
+
+	//Legacy
+	unsigned char hashOld[SHA256_DIGEST_LENGTH];
+	bool needRewrite = false;
+	
+	for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
+	if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
+	{
+		logR("Crypto error: maybe an outdated key?");
+		
+		for(short i = 0; i < SHA256_DIGEST_LENGTH; i++)
+		{
+			if(key[i] <= ' ')
+				key[i] += ' ';
+		}
+		
+		internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hashOld);
+		_AESDecrypt(hashOld, path, configEnc, OUTPUT_IN_MEMORY, 1);
+		
+		needRewrite = true;
+	}
+	
 #endif
 
     for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
@@ -291,6 +314,16 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
         free(configEnc);
 		return IMGLOAD_INCORRECT_DECRYPTION;
     }
+	
+#ifdef DEV_VERSION
+	
+	//More legacy
+	if(needRewrite)
+	{
+		logR("Updated crypto");
+		_AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY, 1);
+	}
+#endif
 
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
 

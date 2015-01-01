@@ -114,16 +114,16 @@ byte getMasterKey(unsigned char *input)
 		
 		for(j = 0; j < 16; j++)
         {
-            output_char[MK_TOKEN_LENGTH + j + 16] ^= bufferLoad[MK_TOKEN_LENGTH + i][j];	//XOR block 2 by encrypted block 1
-            output_char[MK_TOKEN_LENGTH + j] ^= output_char[MK_TOKEN_LENGTH + j + 16];	//XOR block 1 by plaintext block 2
+            output_char[MK_TOKEN_LENGTH + j + 16] ^= bufferLoad[i][MK_TOKEN_LENGTH + j];	//XOR block 2 by encrypted block 1
+            output_char[MK_TOKEN_LENGTH + j] ^= output_char[MK_TOKEN_LENGTH + j + 16];		//XOR block 1 by plaintext block 2
         }
 
         if(!strncmp(MK_TOKEN, (const char *) output_char, MK_TOKEN_LENGTH))
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
             {
-                input[i] = output_char[SHA256_DIGEST_LENGTH + i];
-                output_char[i] = 0;
+                input[i] = output_char[MK_TOKEN_LENGTH + i];
+                output_char[MK_TOKEN_LENGTH + i] = 0;
             }
             break;
         }

@@ -650,7 +650,10 @@
 	self = [super initWithFrame:frameRect];
 	
 	if(self != nil)
-		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedColumn = _preCommitedLastClickedRow = -1;
+	{
+		self.preCommitedLastClickedColumn = -1;
+		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedRow = -1;
+	}
 	
 	return self;
 }
