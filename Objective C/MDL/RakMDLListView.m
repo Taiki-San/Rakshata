@@ -102,7 +102,7 @@
 
 - (NSString *) getName
 {
-	NSString * name, *projectName = [[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->datas->projectName length:sizeof((*todoList)->datas->projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+	NSString * name, *projectName = getStringForWchar((*todoList)->datas->projectName);
 	
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
@@ -115,7 +115,7 @@
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
 		{
-			NSString * tomeName = [[NSString alloc] initWithData:[NSData dataWithBytes:(*todoList)->tomeName length:sizeof((*todoList)->tomeName)] encoding:NSUTF32LittleEndianStringEncoding];
+			NSString * tomeName = getStringForWchar((*todoList)->tomeName);
 			name = [NSString stringWithFormat:@"%@ %@", projectName, tomeName];
 		}
 		else

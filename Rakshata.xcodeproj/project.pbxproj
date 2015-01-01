@@ -25,6 +25,7 @@
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
 		B621988D19D16BC800001092 /* RakCTSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = B621988C19D16BC800001092 /* RakCTSelection.m */; };
+		B62266A71A55D5B3000A5138 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B62266A61A55D5B3000A5138 /* Utils.m */; };
 		B623390A18DBB7F800FC188A /* RakContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B623390918DBB7F800FC188A /* RakContentView.m */; };
 		B62C9EF318BD73D500CE910F /* DBTools.c in Sources */ = {isa = PBXBuildFile; fileRef = B62C9EF218BD73D500CE910F /* DBTools.c */; };
 		B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */ = {isa = PBXBuildFile; fileRef = B62DBB891A118AEF007EBAC6 /* RakDRM.m */; };
@@ -190,6 +191,7 @@
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; };
 		B621988B19D16BC800001092 /* RakCTSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSelection.h; path = CTSelec/RakCTSelection.h; sourceTree = "<group>"; };
 		B621988C19D16BC800001092 /* RakCTSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSelection.m; path = CTSelec/RakCTSelection.m; sourceTree = "<group>"; };
+		B62266A61A55D5B3000A5138 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
 		B623390818DBB7F800FC188A /* RakContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContentView.h; path = Utils/RakContentView.h; sourceTree = "<group>"; };
 		B623390918DBB7F800FC188A /* RakContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContentView.m; path = Utils/RakContentView.m; sourceTree = "<group>"; };
 		B6245AD019F698A60015F11B /* configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = configuration.h; path = C/configuration.h; sourceTree = "<group>"; };
@@ -708,6 +710,7 @@
 				B6A1E36618F9E92F001D1F8E /* RakWindow.h */,
 				B6A1E36718F9E92F001D1F8E /* RakWindow.m */,
 				B67E079118E765C10007EB44 /* utils.h */,
+				B62266A61A55D5B3000A5138 /* Utils.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -1127,6 +1130,7 @@
 				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */,
+				B62266A71A55D5B3000A5138 /* Utils.m in Sources */,
 				B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */,
 				B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,

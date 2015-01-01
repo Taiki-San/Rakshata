@@ -10,31 +10,23 @@
  **                                                                                         **
  *********************************************************************************************/
 
-NSString * getStringForWchar(wchar_t * string);
-
-#import "RakWindow.h"
-
-#import "RakTextCell.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakText.h"
-#import "RakSegmentedButtonCell.h"
-#import "RakMenuText.h"
-#import "RakProgressBar.h"
-#import "RakBackButton.h"
-#import "RakPopover.h"
-
-#import "RakForegroundView.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakDragView.h"
-#import "RakDragItem.h"
-#import "RakDragResponder.h"
-#import "RakList.h"
-#import "RakGradientView.h"
-
-#import "RakDBUpdate.h"
-
-#define NSCenteredRect(base, content) NSMakePoint(base.origin.x + base.size.width / 2 - content.size.width / 2, base.origin.y + base.size.height / 2 - content.size.height / 2)
-#define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)
+NSString * getStringForWchar(wchar_t * string)
+{
+	if(string == NULL)
+		return @"";
+	
+	uint length = wstrlen(string);
+	NSString * output;
+	
+	do
+	{
+		output = [[NSString alloc] initWithData:[NSData dataWithBytes:string length:length * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding];
+		length--;
+		
+	} while(output == nil && length > 0);
+	
+	if(output == nil)
+		output = @"";
+	
+	return output;
+}

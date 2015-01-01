@@ -353,10 +353,10 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_RP_VOL_INTERNAL_ID];
 		
 		if(volume[pos].description[0])
-			[dict setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:volume[pos].description length:sizeof(volume[pos].description)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_VOL_DESCRIPTION];
+			[dict setObject:getStringForWchar(volume[pos].description) forKey:JSON_RP_VOL_DESCRIPTION];
 		
 		if(volume[pos].readingName[0])
-			[dict setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:volume[pos].readingName length:sizeof(volume[pos].readingName)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_VOL_READING_NAME];
+			[dict setObject:getStringForWchar(volume[pos].readingName) forKey:JSON_RP_VOL_READING_NAME];
 		
 		if(volume[pos].readingID != VALEUR_FIN_STRUCT)
 			[dict setObject:@(volume[pos].readingID) forKey:JSON_RP_VOL_READING_ID];
@@ -434,7 +434,10 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	wcsncpy(data.authorName, (wchar_t*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
 	
 	if(description != nil)
+	{
 		wcsncpy(data.description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
+		data.description[LENGTH_DESCRIPTION-1] = 0;
+	}
 	else
 		memset(&data.description, 0, sizeof(data.description));
 	
@@ -458,7 +461,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	NSMutableDictionary * output = [NSMutableDictionary dictionary];
 	
 	[output setObject:@(project.projectID) forKey:JSON_RP_ID];
-	[output setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:wstrlen(project.projectName) * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_PROJECT_NAME];
+	[output setObject:getStringForWchar(project.projectName) forKey:JSON_RP_PROJECT_NAME];
 	
 	buf = recoverChapterBloc(project.chapitresFull, project.chapitresPrix, project.nombreChapitre);
 	if(buf != nil)		[output setObject:buf forKey:JSON_RP_CHAPTERS];
@@ -467,10 +470,10 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	if(buf != nil)		[output setObject:buf forKey:JSON_RP_VOLUMES];
 	
 	if(project.description[0])
-		[output setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:wstrlen(project.description) * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_DESCRIPTION];
+		[output setObject:getStringForWchar(project.description) forKey:JSON_RP_DESCRIPTION];
 	
 	if(project.authorName[0])
-		[output setObject:[[NSString alloc] initWithData:[NSData dataWithBytes:project.authorName length:wstrlen(project.authorName) * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding] forKey:JSON_RP_AUTHOR];
+		[output setObject:getStringForWchar(project.authorName) forKey:JSON_RP_AUTHOR];
 	
 	[output setObject:@(project.status) forKey:JSON_RP_STATUS];
 	[output setObject:@(project.type) forKey:JSON_RP_TYPE];

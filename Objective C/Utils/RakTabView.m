@@ -600,7 +600,7 @@
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
 {
-	NSLog(@"Project %@ received: istome: %d - element : %d", [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32LittleEndianStringEncoding], isTome, element);
+	NSLog(@"Project %@ received: istome: %d - element : %d", getStringForWchar(data.projectName), isTome, element);
 	return YES;
 }
 

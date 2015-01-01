@@ -314,7 +314,7 @@
 		if (_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
 			rowIndex = _jumpToInstalled[rowIndex];
 		
-		return [[NSString alloc] initWithData:[NSData dataWithBytes:((PROJECT_DATA*) _data)[rowIndex].projectName length:sizeof(((PROJECT_DATA*) _data)[rowIndex].projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+		return getStringForWchar(((PROJECT_DATA*) _data)[rowIndex].projectName);
 	}
 	else
 		return @"Error D:";

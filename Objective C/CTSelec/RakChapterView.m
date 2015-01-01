@@ -96,7 +96,7 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakMenuText alloc] initWithText:[self bounds] : [[NSString alloc] initWithData:[NSData dataWithBytes:project.projectName length:sizeof(project.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
+	projectName = [[RakMenuText alloc] initWithText:[self bounds] : getStringForWchar(project.projectName)];
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.team->URLRepo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
@@ -172,7 +172,7 @@
 
 - (void) updateContext : (PROJECT_DATA) data
 {
-	NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:data.projectName length:sizeof(data.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+	NSString *projectNameString = getStringForWchar(data.projectName);
 	
 	if(projectName != nil)
 		[projectName setStringValue : projectNameString];
@@ -216,7 +216,7 @@
 	uint length;
 	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(wchar_t)))
 	{
-		NSString *projectNameString = [[NSString alloc] initWithData:[NSData dataWithBytes:newData.projectName length:sizeof(newData.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+		NSString *projectNameString = getStringForWchar(newData.projectName);
 
 		[projectName setStringValue : projectNameString];
 		[projectImage updateProject:projectNameString];

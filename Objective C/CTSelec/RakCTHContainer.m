@@ -99,7 +99,7 @@
 	_data = project;
 	
 	BOOL needProcessName = NO, needProcessAuthor = NO;
-	NSString * currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.projectName length:sizeof(_data.projectName)] encoding:NSUTF32LittleEndianStringEncoding];
+	NSString * currentElem = getStringForWchar(_data.projectName);
 	
 	//Project name
 	if(projectName == nil)
@@ -125,7 +125,7 @@
 		[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 	}
 	
-	currentElem = [[NSString alloc] initWithData:[NSData dataWithBytes:_data.authorName length:sizeof(_data.authorName)] encoding:NSUTF32LittleEndianStringEncoding];
+	currentElem = getStringForWchar(_data.authorName);
 
 	//Author name
 	if(authorName == nil)

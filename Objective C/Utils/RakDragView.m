@@ -40,7 +40,7 @@
 	
 	if (projectName != nil)
 	{
-		[projectName setStringValue:[[NSString alloc] initWithData:[NSData dataWithBytes:projectData.projectName length:sizeof(projectData.projectName)] encoding:NSUTF32LittleEndianStringEncoding]];
+		[projectName setStringValue:getStringForWchar(projectData.projectName)];
 		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE:nil]];
 		[self optimizeWidth : projectName];
 	}

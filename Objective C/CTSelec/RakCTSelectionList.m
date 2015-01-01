@@ -730,7 +730,7 @@
 			if(_detailColumns == nil || !isDetails)
 			{
 				if(element.readingName[0])
-					output = [[NSString alloc] initWithBytes:element.readingName length:sizeof(element.readingName) encoding:NSUTF32LittleEndianStringEncoding];
+					output = getStringForWchar(element.readingName);
 				else
 					output = [NSString stringWithFormat:@"Tome %d", element.readingID];
 			}

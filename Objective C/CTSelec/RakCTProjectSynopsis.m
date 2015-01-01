@@ -102,7 +102,7 @@
 	{
 		placeholderString = NO;
 		
-		[_synopsis setStringValue : [[NSString alloc] initWithData:[NSData dataWithBytes:project.description length:sizeof(project.description)] encoding:NSUTF32LittleEndianStringEncoding]];
+		[_synopsis setStringValue : getStringForWchar(project.description)];
 	}
 	else
 	{

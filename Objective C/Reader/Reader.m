@@ -528,7 +528,7 @@
 
 - (NSString*) waitingLoginMessage
 {
-	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", [[NSString alloc] initWithData:[NSData dataWithBytes:_project.projectName length:sizeof(_project.projectName)] encoding:NSUTF32LittleEndianStringEncoding], _isTome ? @"tome" : @"chapitre"];
+	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", getStringForWchar(_project.projectName), _isTome ? @"tome" : @"chapitre"];
 }
 
 #pragma mark - Drop support
