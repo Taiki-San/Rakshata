@@ -13,6 +13,10 @@
 #include "crypto/crypto.h"
 #include "db.h"
 
+#define MK_TOKEN "TyrionGetPoisond"
+#define MK_TOKEN_LENGTH 16
+#define MK_CHUNK (MK_TOKEN_LENGTH+SHA256_DIGEST_LENGTH)
+
 #define NB_ROUNDS_MK	512
 
 static char passwordGB[2*SHA256_DIGEST_LENGTH] = {0};
@@ -29,7 +33,7 @@ byte getMasterKey(unsigned char *input)
 	uint addressLength = ustrlen(COMPTE_PRINCIPAL_MAIL);
 	bool fileInvalid;
 	char date[100];
-	unsigned char buffer[addressLength + 101 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][SHA256_DIGEST_LENGTH];
+	unsigned char buffer[addressLength + 101 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][MK_CHUNK];
 	size_t size;
 	FILE* bdd = NULL;
 	
@@ -54,7 +58,7 @@ byte getMasterKey(unsigned char *input)
 			break;
         }
 	
-		else if(size % SHA256_DIGEST_LENGTH != 0 || size > NOMBRE_CLE_MAX_ACCEPTE * SHA256_DIGEST_LENGTH)
+		else if(size % MK_CHUNK != 0 || size > NOMBRE_CLE_MAX_ACCEPTE * MK_CHUNK)
         {
             fileInvalid = true;
             remove(SECURE_DATABASE);
@@ -69,11 +73,11 @@ byte getMasterKey(unsigned char *input)
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
-        for(j = 0; j < SHA256_DIGEST_LENGTH && (i = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = i);
+        for(j = 0; j < MK_CHUNK && (i = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = i);
     }
     fclose(bdd);
 
-	unsigned char output_char[SHA256_DIGEST_LENGTH];
+	unsigned char output_char[MK_CHUNK];
     RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
@@ -97,27 +101,28 @@ byte getMasterKey(unsigned char *input)
 
     for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
-        /*Décryptage manuel car un petit peu délicat*/
-        for(j = 0; j < 2; j++)
+		/*Décryptage manuel car un petit peu délicat*/
+        for(j = 0; j < 3; j++)
         {
 			unsigned char plaintext[16];
-            unsigned char ciphertext[16];
+			unsigned char ciphertext[16];
+		
 			memcpy(ciphertext, bufferLoad[i] + j*16, 16);
             rijndaelDecrypt(rijndaelKey, nrounds, ciphertext, plaintext);
             memcpy(&output_char[j*16] , plaintext, 16);
         }
-        for(j=0; j < 16; j++)
+		
+		for(j = 0; j < 16; j++)
         {
-            output_char[j+16] ^= bufferLoad[i][j]; //XOR block 2 by encrypted block 1
-            output_char[j] ^= output_char[j+16]; //XOR block 1 by plaintext block 2
+            output_char[MK_TOKEN_LENGTH + j + 16] ^= bufferLoad[MK_TOKEN_LENGTH + i][j];	//XOR block 2 by encrypted block 1
+            output_char[MK_TOKEN_LENGTH + j] ^= output_char[MK_TOKEN_LENGTH + j + 16];	//XOR block 1 by plaintext block 2
         }
-        for(j = 0; j < SHA256_DIGEST_LENGTH && output_char[j] >= ' '; j++); //On regarde si c'est bien une clée
 
-        if(j == SHA256_DIGEST_LENGTH) //C'est la clée
+        if(!strncmp(MK_TOKEN, (const char *) output_char, MK_TOKEN_LENGTH))
         {
             for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
             {
-                input[i] = output_char[i];
+                input[i] = output_char[SHA256_DIGEST_LENGTH + i];
                 output_char[i] = 0;
             }
             break;
@@ -400,36 +405,32 @@ byte createSecurePasswordDB(unsigned char *key_sent)
     crashTemp(key, SHA256_DIGEST_LENGTH);
 
     if(key_sent == NULL)
-    {
         createNewMK(password, key);
-        for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-            if(key[i] <= ' ') { key[i] += ' '; }
-    }
     else
     {
         for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-		{
-			if(key_sent[i] <= ' ')
-				key_sent[i] += ' ';
-			
 			key[i] = key_sent[i];
-		}
     }
 
     bdd = fopen(SECURE_DATABASE, "ab+");
     if(bdd != NULL)
     {
-        unsigned char ciphertext[16];
-
-        for(i=0; i<16; i++)
-            key[i] ^= key[i+16]; //XOR block 1 by plaintext block 2
+		//We encrypt the token
+		unsigned char ciphertext[16], token[] = MK_TOKEN;
+		
+		rijndaelEncrypt(rk, nrounds, token, ciphertext);
+		fwrite(ciphertext, 16, 1, bdd);
+		
+		//We XOR around, then encrypt to the disk
+		for(i = 0; i < 16; i++)
+            key[i] ^= key[16 + i];			//XOR block 1 by plaintext block 2
 
         rijndaelEncrypt(rk, nrounds, key, ciphertext);
         fwrite(ciphertext, 16, 1, bdd);
         crashTemp(key, 16);
 
-        for(i=0; i<16; i++)
-            key[i+16] ^= ciphertext[i]; //XOR block 2 by encrypted block 1
+		for(i = 0; i < 16; i++)
+            key[16 + i] ^= ciphertext[i];		//XOR block 2 by encrypted block 1
 
         rijndaelEncrypt(rk, nrounds, &key[16], ciphertext);
         crashTemp(&key[16], 16);
