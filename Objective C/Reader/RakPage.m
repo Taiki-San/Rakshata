@@ -719,7 +719,10 @@
 			NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
 			
 			[array replaceObjectAtIndex:1 withObject:currentPageView];
+			
+			MUTEX_LOCK(cacheMutex);
 			mainScroller.arrangedObjects = array;
+			MUTEX_UNLOCK(cacheMutex);
 		}
 		else
 			[self updateContext : NO];
@@ -798,13 +801,13 @@
 	
 	_scrollView = nil;
 	
-	[array replaceObjectAtIndex:_data.pageCourante withObject:@(_data.pageCourante)];
-	mainScroller.arrangedObjects = array;
-	
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
 	
+		[array replaceObjectAtIndex:_data.pageCourante withObject:@(_data.pageCourante)];
+
+		mainScroller.arrangedObjects = array;
 		mainScroller.selectedIndex = _data.pageCourante + 1;
 		
 		MUTEX_UNLOCK(cacheMutex);
@@ -953,7 +956,11 @@
 		return;
 	}
 	
+	MUTEX_LOCK(cacheMutex);
+
 	NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
+
+	MUTEX_UNLOCK(cacheMutex);
 	
 	while (currentSession == cacheSession)	//While the active chapter is still the same
 	{
@@ -1369,6 +1376,8 @@
 	
 	if(mainScroller != nil)
 	{
+		MUTEX_LOCK(cacheMutex);
+		
 		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 		
 		[array removeAllObjects];
@@ -1378,6 +1387,8 @@
 		
 		mainScroller.selectedIndex = 0;
 		mainScroller.arrangedObjects = array;
+		
+		MUTEX_UNLOCK(cacheMutex);
 	}
 	
 	_flushingCache = false;
