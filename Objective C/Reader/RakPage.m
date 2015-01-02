@@ -530,10 +530,6 @@
 	return YES;
 }
 
-#ifdef DEV_VERSION
-	void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre);
-#endif
-
 - (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
 {
 	if(_data.path == NULL)
@@ -542,13 +538,8 @@
 	IMG_DATA * dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
 	
 	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
-	{
-#ifdef DEV_VERSION
-		updateChapter(data, _currentElem);
-		loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
-#endif
 		return nil;
-	}
+
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
