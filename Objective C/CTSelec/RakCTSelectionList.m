@@ -421,8 +421,18 @@
 		else
 			selectedRowIndex = -1;
 		
-		[self triggerInstallOnlyAnimate : compactMode];
-		[self updateMultiColumn : compactMode : scrollView.bounds.size];
+		//Because of how things have to be handled when er get in vs out, the call order change
+		if(compactMode)
+		{
+			uint nbColumn = _nbCoupleColumn;
+			[self updateMultiColumn : compactMode : scrollView.bounds.size];
+			[self triggerInstallOnlyAnimate : compactMode numberOfColumns: nbColumn];
+		}
+		else
+		{
+			[self triggerInstallOnlyAnimate : compactMode numberOfColumns: _nbCoupleColumn];
+			[self updateMultiColumn : compactMode : scrollView.bounds.size];
+		}
 	}
 }
 
@@ -518,7 +528,7 @@
 		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn <= scrollviewSize.width)
 			nbColumn++;
 		
-		if(nbColumn > 1)	//We can't get under a single column
+		if(nbColumn > 1 && singleColumn.width * nbColumn <= scrollviewSize.width)	//We can't get under a single column
 			nbColumn--;
 		
 		_nbCoupleColumn = nbColumn;
@@ -579,7 +589,7 @@
 		
 		if(newColumns != 0)
 		{
-			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, MIN(nbColumn, oldNbColumn))]];
+			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfColumns])]];
 			[self updateRowNumber];
 		}
 		[_tableView endUpdates];
@@ -708,10 +718,17 @@
 	
 	rowIndex = rowIndex * _nbCoupleColumn + column;
 	
-	if(rowIndex >= _nbData)	//Inconsistency
+	if(rowIndex >= _nbData)	//Too much entry?
 	{
-		[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
-		return @"Error :(";
+		if(rowIndex / _nbCoupleColumn >= _nbData / _nbCoupleColumn)	//Inconsistency
+		{
+			[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
+			return @"Error :(";
+		}
+		else	//We're just on the last incomplete row
+		{
+			return @"";
+		}
 	}
 	
 	if(self.compactMode)
@@ -817,33 +834,58 @@
 	return output;
 }
 
-- (void) triggerInstallOnlyAnimate : (BOOL) enter
+- (void) triggerInstallOnlyAnimate : (BOOL) enter numberOfColumns : (uint) nbColumns
 {
-	BOOL foundOne = NO;
-	NSMutableIndexSet * index = [NSMutableIndexSet new];
+	BOOL foundOneIn = NO, foundOneOut = NO;
+	uint nbRows = [_tableView numberOfRows];
+	NSMutableIndexSet * indexIn = [NSMutableIndexSet new], * indexOut = [NSMutableIndexSet new];
 
 	if(_installedTable != NULL)
 	{
-		for(uint i = 0, size = MIN(_nbElem, [_tableView numberOfRows]); i < size; i++)
+		if(enter)
 		{
-			if(!_installedTable[i])
+			for(uint i = 0, rank = 0; i < _nbElem; i++)
 			{
-				[index addIndex:i];
-				foundOne = YES;
+				if(_installedTable[i])
+				{
+					if(i % nbColumns)
+					{
+						[indexIn addIndex:rank];
+						foundOneIn = YES;
+					}
+					
+					rank++;
+				}
+				else if(i % nbColumns == 0 && i / nbColumns < nbRows)
+				{
+					[indexOut addIndex : i / nbColumns];
+					foundOneOut = YES;
+				}
+			}
+		}
+		else
+		{
+			for(uint i = 0, size = MIN(_nbElem, [_tableView numberOfRows]); i < size; i++)
+			{
+				if(!_installedTable[i])
+				{
+					[indexIn addIndex:i];
+					foundOneOut = YES;
+				}
 			}
 		}
 	}
 	
-	if(foundOne)
+	if(foundOneIn || foundOneOut)
 	{
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
 			[context setDuration:CT_TRANSITION_ANIMATION];
 			
-			if(enter)
-				[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
-			else
-				[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+			if(foundOneOut)
+				[_tableView removeRowsAtIndexes:indexOut withAnimation:NSTableViewAnimationSlideLeft];
+			if(foundOneIn)
+				[_tableView insertRowsAtIndexes:indexIn withAnimation:NSTableViewAnimationSlideLeft];
 			
 		} completionHandler:^{}];
 	}
