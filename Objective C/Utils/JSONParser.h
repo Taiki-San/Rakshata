@@ -16,7 +16,6 @@ void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool
 
 id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName);
 
-#define JSON_RP_AUTHOR_NAME @"ROOT-NAME"
 #define JSON_RP_AUTHOR_URL	@"ROOT-URL"
 
 #define JSON_RP_PROJECTS @"0"
