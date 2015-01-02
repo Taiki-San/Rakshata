@@ -720,7 +720,7 @@
 	
 	if(rowIndex >= _nbData)	//Too much entry?
 	{
-		if(rowIndex / _nbCoupleColumn >= _nbData / _nbCoupleColumn)	//Inconsistency
+		if(rowIndex / _nbCoupleColumn > _nbData / _nbCoupleColumn)	//Inconsistency
 		{
 			[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
 			return @"Error :(";
