@@ -840,61 +840,77 @@ void encryptPage(void *password, rawData *buffer_in, char * pathOut, size_t leng
 
 void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 {
-    int i = 0;
-    rawData *configEnc = NULL; //+1 pour 0x20, +10 pour le nombre en tête et le \n qui suis
-    char *path;
-    unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
-    size_t size, sizeDBPass;
-    FILE* test= NULL;
+	byte retValue;
+	uint curPosInConfigEnc, lengthPath = strlen(dataLecteur->path[0]) + 60;
+	rawData *configEnc = NULL;
+	char path[lengthPath];
+	unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
+	size_t size, sizeDBPass;
+	FILE * test;
 	
-	path = malloc(strlen(dataLecteur->path[0]) + 60);
-	if(path != NULL)
-        snprintf(path, strlen(dataLecteur->path[0]) + 60, "%s/"DRM_FILE, dataLecteur->path[0]);
-    else
-        return;
+	IMG_DATA * data = loadSecurePage(dataLecteur->path[0], dataLecteur->nomPages[0], numeroChapitre, 0);
 	
-	sizeDBPass = getFileSize(dataLecteur->path[0]);
-    if(!sizeDBPass) //Si on trouve pas config.enc
-    {
-        free(path);
-		return;
-    }
-	
-    if(getMasterKey(key) != GMK_RETVAL_OK)
-    {
-        logR("Huge fail: database corrupted\n");
-        free(path);
-        exit(-1);
-    }
-	
-	unsigned char numChapitreChar[10];
-    snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
-    internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
-	
-    configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
-    _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
-    for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
-    if(i == 0 || configEnc[i] != ' ')
-    {
-		internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 2048, PBKDF2_OUTPUT_LENGTH, hash);
-		
-		configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
-		_AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On décrypte config.enc
-		for(i = 0; configEnc[i] >= '0' && configEnc[i] <= '9'; i++);
-		if(i == 0 || configEnc[i] != ' ')
+	if((void*) data > IMGLOAD_NEED_CREDENTIALS_PASS)
+	{
+		if(isJPEG(data->data) || isPNG(data->data))
 		{
-			logR("Huge fail: database corrupted\n");
-			free(configEnc);
+			printf("=> It seems this is an already up to date chapter, dropping it: %s", dataLecteur->path[0]);
+			free(data->data);
+			free(data);
 			return;
 		}
-		
-		internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
-		_AESEncrypt(hash, configEnc, path, INPUT_IN_MEMORY, 1);
-    }
-    
-	free(path);
+		else
+		{
+			free(data->data);
+			free(data);
+		}
+	}
+	
+	snprintf(path, strlen(dataLecteur->path[0]) + 60, "%s/"DRM_FILE, dataLecteur->path[0]);
+	
+	if(!(sizeDBPass = getFileSize(path))) //Si on trouve pas config.enc
+	{
+		printf("=> Not encrypted? : %s", dataLecteur->path[0]);
+		return;
+	}
+	
+	if((retValue = getMasterKey(key)) == GMK_RETVAL_INTERNALERROR)
+	{
+		printf("=> MK error : %s", dataLecteur->path[0]);
+		return;
+	}
+
+	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_MAIL)
+		return;
+	
+	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_PASS)
+		return;
+	
+	unsigned char numChapitreChar[10];
+	snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
+	internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
+	
+#ifndef DEV_VERSION
+	crashTemp(key, SHA256_DIGEST_LENGTH);
+#endif
+	
+	configEnc = calloc(sizeof(rawData), sizeDBPass+SHA256_DIGEST_LENGTH);
+	_AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On déchiffre config.enc
+#ifndef DEV_VERSION
+	crashTemp(hash, SHA256_DIGEST_LENGTH);
+#endif
+	
+	for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
+	if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
+	{
+		printf("=> Incorrect decryption\nDeleting %s", dataLecteur->path[0]);
+		removeFolder(dataLecteur->path[0]);
+		free(configEnc);
+		return;
+	}
 		
 	int length2 = ustrlen(configEnc), pos; //pour le \0
+	char decryptedCopy[lengthPath+50];
 	
 	for(pos = 0; pos < length2 && configEnc[pos] != ' '; pos++);
 	pos++;
@@ -924,11 +940,111 @@ void updateChapter(DATA_LECTURE * dataLecteur, int numeroChapitre)
 			fclose(test);
 			
 			decryptPageLeg(key, buf_in, output, size/(CRYPTO_BUFFER_SIZE*2));
-			encryptPage(key, output, dataLecteur->nomPages[curPage], size / (CRYPTO_BUFFER_SIZE * 2));
+
+			sprintf(decryptedCopy, "decrypted/%s", dataLecteur->nomPages[curPage]);
+			test = fopen(decryptedCopy, "wb");
+			if(test == NULL)
+			{
+				createPath(decryptedCopy);
+				test = fopen(decryptedCopy, "wb");
+			}
+			
+			if(test != NULL)
+			{
+				fwrite(output, 1, size, test);
+				fclose(test);
+			}
+			else
+			{
+				printf("=> Failed at creating decrypted copy: %s", dataLecteur->nomPages[curPage]);
+			}
+			
+			sprintf(decryptedCopy, "updated/%s", dataLecteur->nomPages[curPage]);
+			test = fopen(decryptedCopy, "wb");
+			if(test == NULL)
+				createPath(decryptedCopy);
+			else
+				fclose(test);
+				
+			encryptPage(key, output, decryptedCopy, size / (CRYPTO_BUFFER_SIZE * 2));
 		}
 		
 		free(output);
 		free(buf_in);
 	}
+}
+
+void updateMagico()
+{
+	uint nbElem, pos;
+	PROJECT_DATA * cache = getCopyCache(RDB_LOADINSTALLED, &nbElem);
+	
+	if(cache == NULL || nbElem == 0)
+	{
+		logR("Couldn't load DB");
+		return;
+	}
+	
+	for(pos = 0; pos < nbElem && cache[pos].projectID != 41; pos++);
+	
+	if(pos == nbElem)
+	{
+		logR("Couldn't find project");
+		return;
+	}
+	
+	printf("About to start working on %S\nStarting by chapters\n", cache[pos].projectName);
+	
+	if(cache[pos].nombreChapitreInstalled)
+	{
+		DATA_LECTURE reader;
+		for(uint i = 0, nbElemInstalled = cache[pos].nombreChapitreInstalled; i < nbElemInstalled; i++)
+		{
+			if(!configFileLoader(cache[pos], false, cache[pos].chapitresInstalled[i], &reader))
+			{
+				updateChapter(&reader, cache[pos].chapitresInstalled[i] / 10);
+				printf("Finished %d\n", cache[pos].chapitresInstalled[i]);
+				
+				releaseDataReader(&reader);
+			}
+			else
+			{
+				printf("Failed chapter %d\n", cache[pos].chapitresInstalled[i]);
+			}
+		}
+	}
+	else
+	{
+		printf("None available, skipping them\n");
+	}
+	
+	printf("Trying volumes\n");
+	
+	if(cache[pos].nombreTomesInstalled)
+	{
+		DATA_LECTURE reader;
+		for(uint i = 0, nbElemInstalled = cache[pos].nombreTomesInstalled; i < nbElemInstalled; i++)
+		{
+			if(configFileLoader(cache[pos], false, cache[pos].tomesInstalled[i].ID, &reader))
+			{
+				updateChapter(&reader, cache[pos].chapitresInstalled[i] / 10);
+				printf("Finished %d\n", cache[pos].chapitresInstalled[i]);
+				
+				releaseDataReader(&reader);
+			}
+			else
+			{
+				printf("Failed volume %d\n", cache[pos].chapitresInstalled[i]);
+			}
+		}
+	}
+	else
+	{
+		printf("None available, skipping them\n");
+	}
+	
+	printf("And, we're done, cleaning up\n");
+	
+	freeProjectData(cache);
 }
 #endif
