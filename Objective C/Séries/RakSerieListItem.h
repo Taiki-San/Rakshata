@@ -12,7 +12,6 @@
 
 @interface RakSerieListItem : NSObject
 {
-	BOOL _expanded;
 	BOOL _isRecentList;
 	BOOL _isDLList;
 	BOOL _isMainList;
@@ -28,6 +27,9 @@
 	
 }
 
+@property BOOL expanded;
+@property (readonly, getter=getHeight) CGFloat height;
+
 - (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
 
 - (BOOL) isRecentList;
@@ -37,10 +39,6 @@
 
 - (void) setMainListHeight : (CGFloat) height;
 - (void) resetMainListHeight;
-- (CGFloat) getHeight;
-
-- (void) setExpaded : (BOOL) expanded;
-- (BOOL) isExpanded;
 
 - (void) setNbChildren : (uint) nbChildren : (BOOL) flush;
 - (uint) getNbChildren;

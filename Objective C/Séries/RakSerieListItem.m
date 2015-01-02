@@ -24,7 +24,7 @@
 		{
 			children = [[NSMutableArray alloc] init];
 			dataChild.isInitialized = NO;
-			_expanded = YES;
+			self.expanded = YES;
 			_isRecentList = _isDLList = _isMainList = NO;
 			_nbChildren = nbChildren;
 			
@@ -123,16 +123,6 @@
 		return _mainListHeight;
 	
 	return 0;
-}
-
-- (void) setExpaded : (BOOL) expanded
-{
-	_expanded = expanded;
-}
-
-- (BOOL) isExpanded
-{
-	return _expanded;
 }
 
 - (void) setNbChildren : (uint) nbChildren : (BOOL) flush

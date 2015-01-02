@@ -324,7 +324,7 @@
 	//We expand items wanted so
 	for(uint8_t i = 0; i < posMainList; i++)
 	{
-		if(rootItems[i] != nil && [rootItems[i] isExpanded])
+		if(rootItems[i] != nil && rootItems[i].expanded)
 			[content expandItem:rootItems[i]];
 	}
 }
@@ -492,8 +492,17 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
-	if(item == nil || [item isRootItem] || [item isMainList])
+	if(item == nil || [item isMainList])
 		return NO;
+	else if([item isRootItem])
+	{
+		if(((RakSerieListItem*)item).expanded)
+			[outlineView collapseItem:item];
+		else
+			[outlineView expandItem:item];
+		
+		return NO;
+	}
 	
 	PROJECT_DATA tmp = [item getRawDataChild];
 	
@@ -507,13 +516,13 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item
 {
-	[item setExpaded:YES];
+	((RakSerieListItem*) item).expanded = YES;
 	return YES;
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item
 {
-	[item setExpaded:NO];
+	((RakSerieListItem*) item).expanded = NO;
 	return YES;
 }
 
@@ -539,13 +548,13 @@
 	if(item == nil)
 		output = 0;
 	
-	else if((output = [item getHeight]) == 0)
+	else if((output = ((RakSerieListItem*)item).height) == 0)
 	{
 		if([item isMainList])
 		{
 			CGFloat p = [outlineView intercellSpacing].height;	//Padding
 			
-			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (21 + p) + [rootItems[0] isExpanded] * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (21 + p) + [rootItems[1] isExpanded] * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (21 + p) + p);
+			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (21 + p) + rootItems[0].expanded * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (21 + p) + rootItems[1].expanded * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (21 + p) + p);
 			
 			if(output < 21)
 				output = 21;
@@ -688,7 +697,7 @@
 		if([item isRootItem])
 		{
 			height += 21 + padding;
-			currentPortionExpanded = [item isExpanded];
+			currentPortionExpanded = item.expanded;
 		}
 		
 		else if([item isMainList])
