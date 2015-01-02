@@ -95,6 +95,8 @@ typedef struct smartReload_data
 - (NSColor *) getTextHighlightColor : (uint) column : (uint) row;
 - (NSColor *) getBackgroundHighlightColor;
 
+- (void) postProcessingSelection : (uint) row;
+
 - (void) selectRow : (int) row;
 - (void) resetSelection : (NSTableView *) tableView;
 

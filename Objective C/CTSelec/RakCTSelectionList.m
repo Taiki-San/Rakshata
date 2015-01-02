@@ -897,12 +897,17 @@
 {
 	NSInteger index = rowIndex * _nbCoupleColumn + tableView.preCommitedLastClickedColumn;
 	
+	//If not installed, we don't want to reflect the UI
 	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
 	{
-		CGFloat oldselectedRowIndex = selectedRowIndex;
+		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
 		selectedRowIndex = rowIndex;
+		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
+		
 		[self tableViewSelectionDidChange:nil];
+		
 		selectedRowIndex = oldselectedRowIndex;
+		selectedColumnIndex = oldselectedColumnIndex;
 		
 		return NO;
 	}
@@ -914,7 +919,7 @@
 {
 	NSInteger index = selectedRowIndex *_nbCoupleColumn + selectedColumnIndex;
 	
-	if(selectedRowIndex != -1 && index < [self nbElem])
+	if(selectedRowIndex != -1 && selectedColumnIndex != -1 && index < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
 		
