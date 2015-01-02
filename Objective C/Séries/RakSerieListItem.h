@@ -24,7 +24,7 @@
 	NSMutableArray * children;
 	
 	NSString * dataRoot;
-	PROJECT_DATA * dataChild;
+	PROJECT_DATA dataChild;
 	
 }
 
@@ -48,8 +48,7 @@
 - (void) setChild : (id) child atIndex : (NSInteger) index;
 - (id) getChildAtIndex : (NSInteger) index;
 
-- (void) setRawDataChild : (PROJECT_DATA*) data;
-- (PROJECT_DATA*) getRawDataChild;
+- (PROJECT_DATA) getRawDataChild;
 - (NSString*) getData;
 
 @end

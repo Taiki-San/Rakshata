@@ -458,8 +458,13 @@
 		output = [item getChildAtIndex:index];
 		if(output == nil)
 		{
-			output = [[RakSerieListItem alloc] init : [_data pointerAtIndex: (index + ([item isDLList] ? 3 : 0))] : NO : initializationStage : 0];
+			uint8_t recentIndex =  (index + ([item isDLList] ? 3 : 0));
+			
+			output = [[RakSerieListItem alloc] init : [_data pointerAtIndex:recentIndex] : NO : initializationStage : 0];
 			[item setChild:output atIndex:index];
+			
+			[_data removePointerAtIndex:recentIndex];
+			[_data insertPointer:NULL atIndex:recentIndex];
 		}
 	}
 	else
@@ -490,12 +495,12 @@
 	if(item == nil || [item isRootItem] || [item isMainList])
 		return NO;
 	
-	PROJECT_DATA *tmp = [item getRawDataChild];
+	PROJECT_DATA tmp = [item getRawDataChild];
 	
-	if(tmp == NULL)
+	if(!tmp.isInitialized)
 		return NO;
 
-	[RakTabView broadcastUpdateContext: content : *tmp : NO : VALEUR_FIN_STRUCT];
+	[RakTabView broadcastUpdateContext: content : tmp : NO : VALEUR_FIN_STRUCT];
 	
 	return YES;
 }
@@ -557,7 +562,6 @@
 
 ///			Manipulation we view added/removed
 
-#if 0
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
 	
@@ -567,7 +571,6 @@
 {
 	
 }
-#endif
 
 ///		Craft views
 
@@ -727,9 +730,9 @@
 {
 	if(currentDraggedItem != nil)
 	{
-		PROJECT_DATA * project = [currentDraggedItem getRawDataChild];
-		if(project != NULL)
-			return *project;
+		PROJECT_DATA project = [currentDraggedItem getRawDataChild];
+		if(project.isInitialized)
+			return project;
 	}
 	
 	return [super getProjectDataForDrag:row];
@@ -739,9 +742,9 @@
 {
 	if(currentDraggedItem != nil)
 	{
-		PROJECT_DATA * project = [currentDraggedItem getRawDataChild];
-		if(project != NULL)
-			return [[self class] contentNameForDrag:*project];
+		PROJECT_DATA project = [currentDraggedItem getRawDataChild];
+		if(project.isInitialized)
+			return [[self class] contentNameForDrag:project];
 	}
 	
 	return [super contentNameForDrag:row];
@@ -788,12 +791,12 @@
 	if(pbData == nil)
 		return NO;
 	
-	PROJECT_DATA* project = [item getRawDataChild];
+	PROJECT_DATA project = [item getRawDataChild];
 	
-	getUpdatedChapterList(project, true);
-	getUpdatedTomeList(project, true);
+	getUpdatedChapterList(&project, true);
+	getUpdatedTomeList(&project, true);
 	
-	[pbData setDataProject : getCopyOfProjectData(*project) isTome: [[pbData class] defineIsTomePriority:project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
+	[pbData setDataProject : project isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

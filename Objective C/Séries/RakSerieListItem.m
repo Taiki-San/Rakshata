@@ -23,7 +23,7 @@
 		if(_isRootItem)
 		{
 			children = [[NSMutableArray alloc] init];
-			dataChild	= NULL;
+			dataChild.isInitialized = NO;
 			_expanded = YES;
 			_isRecentList = _isDLList = _isMainList = NO;
 			_nbChildren = nbChildren;
@@ -55,12 +55,21 @@
 		else
 		{
 			dataRoot	= nil;
-			dataChild	= data;
 			
-			if(dataChild == nil && initStage == INIT_FINAL_STAGE)
+			if(data == NULL && initStage == INIT_FINAL_STAGE)
 				_isMainList = YES;
+
 			else
+			{
 				_isMainList = NO;
+
+				dataChild	= *(PROJECT_DATA *) data;
+				
+				releaseCTData(dataChild);
+				dataChild.chapitresFull = dataChild.chapitresInstalled = NULL;
+				dataChild.tomesFull = dataChild.tomesInstalled = NULL;
+				dataChild.chapitresPrix = NULL;
+			}
 		}
 	}
 	
@@ -157,16 +166,16 @@
 	return nil;
 }
 
-- (void) setRawDataChild : (PROJECT_DATA*) data
-{
-	if (!_isRootItem && !_isMainList)
-		dataChild = data;
-}
-
-- (PROJECT_DATA*) getRawDataChild
+- (PROJECT_DATA) getRawDataChild
 {
 	if (_isRootItem || _isMainList)
-		return NULL;
+	{
+		PROJECT_DATA emptyStruct;
+		
+		emptyStruct.isInitialized = NO;
+
+		return emptyStruct;
+	}
 	else
 		return dataChild;
 }
@@ -175,8 +184,8 @@
 {
 	if(_isRootItem && dataRoot != NULL)
 		return dataRoot;
-	else if(!_isRootItem && dataChild != NULL)
-		return getStringForWchar(dataChild->projectName);
+	else if(!_isRootItem && dataChild.isInitialized)
+		return getStringForWchar(dataChild.projectName);
 	else
 		return @"Internal error :(";
 }
