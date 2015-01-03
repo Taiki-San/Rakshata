@@ -12,3 +12,394 @@
 
 #include "JSONParser.h"
 
+#pragma mark - Utilities
+
+wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
+{
+	//Initial sanity checks
+	if(array == nil || ![array isKindOfClass:[NSArray class]] || languages == NULL || length == NULL)
+		return NULL;
+	
+	//We check that there is work to do, and if so allocate the memory we're going to need
+	uint localLength = [array count];
+	
+	if(localLength == 0)
+		return NULL;
+	
+	wchar_t ** output = calloc(localLength, sizeof(wchar_t *));
+	*languages = calloc(localLength, sizeof(char*));
+	
+	if(output == NULL || *languages == NULL)
+	{
+		free(output);
+		free(*languages);
+		return NULL;
+	}
+	
+	//Great, now, let's parse the whole thing
+	uint failure = 0, pos = 0, lengthDescription, lengthLanguage;
+	NSString * description, *language;
+	
+	for(NSDictionary * line in array)
+	{
+		//Sanitization and extraction
+		if(![line isKindOfClass:[NSDictionary class]])
+		{
+			failure++;
+			continue;
+		}
+		
+		description = objectForKey(line, JSON_REPO_DESCRIPTION, @"description");
+		if(description == nil || ![description isKindOfClass:[NSString class]])
+		{
+			failure++;
+			continue;
+		}
+		
+		language = objectForKey(line, JSON_REPO_LANGUAGE, @"language");
+		if(language == nil || ![language isKindOfClass:[NSString class]] || [language length] > REPO_LANGUAGE_LENGTH - 1)
+		{
+			failure++;
+			continue;
+		}
+		
+		//Memory allocation
+		lengthDescription = [description length];
+		
+		output[pos] = malloc(lengthDescription+1 * sizeof(wchar_t));
+		if(output[pos] == NULL)
+		{
+			failure++;
+			continue;
+		}
+		
+		lengthLanguage = [language length];
+		(*languages)[pos] = malloc(lengthLanguage * sizeof(char));
+		if((*languages)[pos] == NULL)
+		{
+			free(output[pos]);
+			output[pos] = NULL;
+			failure++;
+			continue;
+		}
+		
+		//Copy
+		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], lengthDescription * sizeof(wchar_t));
+		output[pos][lengthDescription] = 0;
+		
+		memcpy((*languages)[pos], [language cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], lengthLanguage * sizeof(wchar_t));
+		(*languages)[pos++][lengthLanguage] = 0;
+	}
+
+	//If nothing was copied
+	if (pos == 0)
+	{
+		free(output);
+		free(*languages);
+		return NULL;
+	}
+	else if(failure != 0)	//If there was any error, we drop the unecessary memory
+	{
+		void * tmp = realloc(output, pos * sizeof(wchar_t*));
+		if(tmp != NULL)
+			output = tmp;
+		
+		tmp = realloc(*languages, pos * sizeof(char*));
+		if(tmp != NULL)
+			*languages = tmp;
+	}
+	
+	*length = pos;
+	
+	return output;
+}
+
+bool validateTrust(NSString * input)
+{
+	return false;
+}
+
+REPO_DATA parseSingleSubRepo(NSDictionary * dict, bool * error)
+{
+	REPO_DATA output;
+	output.active = false;
+	
+	if(error == NULL)
+		return output;
+
+	else if(dict == nil)
+	{
+fail:	//We'll jump back here when it's starting to go wrong
+		*error = true;
+		return output;
+	}
+	else
+		*error = false;
+	
+	//Allocate everything we're going to need
+	NSString *name, *URL, *language, *website;
+	NSNumber *repoID, *type, *isMature;
+	
+	//Now, let's parse
+	
+	repoID = objectForKey(dict, JSON_REPO_SUB_ID, @"repoID");
+	if(repoID == nil || ![repoID isKindOfClass:[NSNumber class]])
+		goto fail;
+	
+	name = objectForKey(dict, JSON_REPO_NAME, @"repo_name");
+	if(name == nil || ![name isKindOfClass:[NSString class]] || [name length] > REPO_NAME_LENGTH - 1)
+		goto fail;
+	
+	language = objectForKey(dict, JSON_REPO_LANGUAGE, @"language");
+	if(language == nil || ![language isKindOfClass:[NSString class]] || [language length] > REPO_LANGUAGE_LENGTH - 1)
+		goto fail;
+	
+	type = objectForKey(dict, JSON_REPO_TYPE, @"type");
+	if(type == nil || ![type isKindOfClass:[NSNumber class]])
+		goto fail;
+	
+	URL = objectForKey(dict, JSON_REPO_URL, @"URL");
+	if(URL == nil || ![URL isKindOfClass:[NSString class]] || [URL length] > REPO_URL_LENGTH - 1)
+		goto fail;
+	
+	website = objectForKey(dict, JSON_REPO_SUB_WEBSITE, @"website");
+	if(website == nil || ![website isKindOfClass:[NSString class]] || [website length] > REPO_WEBSITE_LENGTH - 1)
+		goto fail;
+	
+	isMature = objectForKey(dict, JSON_REPO_SUB_MATURE, @"mature_content");
+	if(isMature == nil || ![isMature isKindOfClass:[NSNumber class]])
+		goto fail;
+	
+	//Great, parsing is over, copy time
+	
+	output.repoID = [repoID unsignedIntValue];
+	wstrncpy(output.name, REPO_NAME_LENGTH, (void *) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
+	strncpy(output.language, [language cStringUsingEncoding:NSASCIIStringEncoding], REPO_LANGUAGE_LENGTH);
+	output.type = [type unsignedCharValue];
+	strncpy(output.URL, [URL cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+	strncpy(output.website, [website cStringUsingEncoding:NSASCIIStringEncoding], REPO_WEBSITE_LENGTH);
+	output.isMature = [isMature boolValue];
+	
+	output.active = true;
+	
+	return output;
+}
+
+#pragma mark - Main parsers
+
+void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo)
+{
+	if(nbSubRepo == NULL)
+		return NULL;
+	
+	size_t count = [array count];
+	
+	if(count == 0 || count > UINT_MAX)
+		return NULL;
+	
+	bool error = false;
+	uint pos = 0, failure = 0, sizeOfStruct = wantExtra ? sizeof(REPO_DATA_EXTRA) : sizeof(REPO_DATA);
+	REPO_DATA * output = calloc(count, sizeOfStruct);
+	REPO_DATA_EXTRA * outputExtra = (void*) output;			//Too lazy to cast too often
+	
+	if(output == NULL)
+		return NULL;
+	
+	NSString * URLImage, * URLImageRetina, * hash;
+	
+	for(NSDictionary * repo in array)
+	{
+		if(repo == nil || ![repo isKindOfClass:[NSDictionary class]])
+		{
+			failure++;
+			continue;
+		}
+
+		if(!wantExtra)
+		{
+			output[pos] = parseSingleSubRepo(repo, &error);
+			
+			if(error)
+				failure++;
+			else
+				pos++;
+		}
+		else
+		{
+			outputExtra[pos].data = calloc(1, sizeof(REPO_DATA));
+			if(outputExtra[pos].data == NULL)
+			{
+				failure++;
+				continue;
+			}
+			
+			//We parse the different component
+			URLImage = objectForKey(repo, JSON_REPO_SUB_IMAGE, @"image");
+			if(URLImage == nil || ![URLImage isKindOfClass:[NSString class]] || [URLImage length] >= REPO_URL_LENGTH - 1)
+			{
+				failure++;
+				continue;
+			}
+			
+			//Not absolutely necessary
+			URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
+			if(URLImageRetina != nil && (![URLImageRetina isKindOfClass:[NSString class]] || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
+			{
+				URLImageRetina = nil;
+			}
+			
+			hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
+			if(hash == nil || ![hash isKindOfClass:[NSString class]] || [hash length] != REPO_IMAGE_HASH_LENGTH - 1)
+			{
+				failure++;
+				continue;
+			}
+			
+			*(outputExtra[pos].data) = parseSingleSubRepo(repo, &error);
+			
+			if(error)
+			{
+				free(outputExtra[pos].data);
+				failure++;
+				continue;
+			}
+			
+			//Now, time to copy the rest of the data
+			
+			strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+
+			if(URLImageRetina != nil)
+			{
+				strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+				outputExtra[pos].haveRetina = true;
+			}
+			else
+				outputExtra[pos].haveRetina = false;
+			
+			strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], REPO_IMAGE_HASH_LENGTH);
+		}
+	}
+	
+	if(pos == 0)
+	{
+		free(output);
+		return NULL;
+	}
+	else if(failure != 0)
+	{
+		void * tmp = realloc(output, pos * sizeOfStruct);
+		if(tmp != NULL)
+			output = tmp;
+	}
+	
+	*nbSubRepo = pos;
+	
+	return output;
+}
+
+ROOT_REPO_DATA * parseRootRepo(char * dataRaw, bool wantExtra)
+{
+	NSError * parseError = nil;
+	NSMutableDictionary * parseData = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:dataRaw length:ustrlen(dataRaw)] options:0 error:&parseError];
+	
+	if(parseError != nil)
+	{
+#ifdef DEV_VERSION
+		NSLog(@"%@", parseError);
+#endif
+		return NULL;
+	}
+	else if(parseData == nil || [parseData superclass] != [NSMutableDictionary class])
+		return NULL;
+	
+	//Great, parseData contain the serialized structure, let's go
+	
+	NSNumber * version = objectForKey(parseData, JSON_REPO_MIN_VERSION, @"minimum_rakshata_version");
+	if(version == nil || ![version isKindOfClass:[NSNumber class]])
+		return NULL;
+	else if([version unsignedIntegerValue] > CURRENTVERSION)
+	{
+		logR("Unsupported file, please update Rakshata");
+		return NULL;
+	}
+	
+	bool trusted;
+	uint nbDescriptions = 0;
+	wchar_t ** descriptions = NULL;
+	char ** languages;
+	
+	ROOT_REPO_DATA * root = calloc(1, sizeof(ROOT_REPO_DATA)), *rootWip = root;
+	if(root == NULL)
+		return NULL;
+	
+	//Create everything we need
+	NSString *name, *URL;
+	NSNumber * type;
+	NSArray * array;
+	
+	//Parse the shit out of this file
+	name = objectForKey(parseData, JSON_REPO_NAME, @"root_repo_name");
+	if(name == nil || ![name isKindOfClass:[NSString class]] || [name length] >= REPO_NAME_LENGTH - 1)
+		goto error;
+	
+	type = objectForKey(parseData, JSON_REPO_TYPE, @"type");
+	if(type == nil || ![type isKindOfClass:[NSNumber class]])
+		goto error;
+	
+	URL = objectForKey(parseData, JSON_REPO_URL, @"URL");
+	if(URL == nil || ![URL isKindOfClass:[NSString class]] || [URL length] >= REPO_URL_LENGTH - 1)
+		goto error;
+	
+	array = objectForKey(parseData, JSON_REPO_DESCRIPTION, @"description");
+	if(array == nil || ![array isKindOfClass:[NSArray class]])
+		goto error;
+	
+	descriptions = parseDescriptions(array, &languages, &nbDescriptions);
+	trusted = validateTrust(objectForKey(parseData, JSON_REPO_TRUSTED, @"trusted"));	//Not required, so if it doesn't work, there is no big deal
+	
+	array = objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository");
+	if(array == nil || ![array isKindOfClass:[NSArray class]])
+		goto error;
+	
+	//Okay, the root parsing is over, the sub-repo parsing is performed by an other routine
+	
+	root->subRepo = parseSubRepo(array, wantExtra, &(root->nombreSubrepo));
+	root->subRepoAreExtra = wantExtra;
+	
+	wstrncpy(root->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
+	usstrcpy(root->URL, REPO_URL_LENGTH, [URL cStringUsingEncoding:NSASCIIStringEncoding]);
+	
+	root->descriptions = descriptions;
+	root->langueDescriptions = languages;
+	root->nombreDescriptions = nbDescriptions;
+
+	root->type = [type unsignedCharValue];
+	root->trusted = trusted;
+	
+	rootWip = NULL;
+	descriptions = NULL;
+	languages = NULL;
+error:
+
+	free(rootWip);
+	
+	if(descriptions != NULL)
+	{
+		for(uint i = 0; i < nbDescriptions; free(descriptions[i++]));
+		free(descriptions);
+	}
+
+	if(languages != NULL)
+	{
+		for(uint i = 0; i < nbDescriptions; free(languages[i++]));
+		free(languages);
+	}
+
+	return root;
+}
+
+ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw)
+{
+	return parseRootRepo(parseDataRaw, true);
+}
+
