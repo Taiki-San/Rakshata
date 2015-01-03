@@ -27,6 +27,7 @@
 		NSInteger row = -1, tmpRow = 0;
 
 		//We check we have valid data
+		_nbElemPerCouple = 1;
 		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		chapterPrice = NULL;
@@ -934,14 +935,14 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn];
+	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
 	
 	//If not installed, we don't want to reflect the UI
 	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
 	{
 		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
 		selectedRowIndex = rowIndex;
-		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
+		selectedColumnIndex = tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
 		
 		[self tableViewSelectionDidChange:nil];
 		
@@ -991,7 +992,7 @@
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	int selection;
-	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
 	
 	if(self.isTome)
 	{
@@ -1011,7 +1012,7 @@
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
-	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
 	
 	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
 	{
@@ -1040,10 +1041,10 @@
 - (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame
 {
 	//FIXME: Update earlyFrame with a more precise metric
-	uint column = _tableView.preCommitedLastClickedColumn;
+	uint column = _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
 	
-	if(column != 0 && _nbElemPerCouple != 0 && _nbCoupleColumn != 0)
-		earlyFrame.origin.x += (column / _nbElemPerCouple) * (_tableView.bounds.size.width / _nbCoupleColumn);
+	if(column != 0 && _nbCoupleColumn != 0)
+		earlyFrame.origin.x += column * (_tableView.bounds.size.width / _nbCoupleColumn);
 	
 	return earlyFrame;
 }
