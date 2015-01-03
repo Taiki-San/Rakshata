@@ -26,5 +26,6 @@
 }
 
 + (void) updateScrollers : (NSScrollView *) view;
++ (CGFloat) width;
 
 @end

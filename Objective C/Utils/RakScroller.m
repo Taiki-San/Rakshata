@@ -144,6 +144,17 @@
 		[view setHorizontalScroller:[[RakScroller alloc] initWithFrame:horizontalScrollerFrame]];
 }
 
++ (CGFloat) width
+{
+	byte scrollerStyle;
+	[Prefs getPref : PREFS_GET_SCROLLER_STYLE : &scrollerStyle];
+	
+	if(scrollerStyle == SCROLLER_STYLE_THIN)
+		return 2 * 5.0;
+
+	return 2 * 6.5;
+}
+
 /*
  Code to move sliders according to an internal view move:
  

@@ -56,9 +56,12 @@
 		
 		if(_tableView != nil && scrollView != nil)
 		{
+			NSSize size = scrollView.bounds.size;
+			size.width /= 2;
+			
 			_mainColumns = @[[_tableView.tableColumns firstObject]];
 			_nbCoupleColumn = 1;
-			[self updateMultiColumn: _compactMode : scrollView.bounds.size];
+			[self updateMultiColumn: _compactMode : size];
 			
 			scrollView.wantsLayer = YES;
 			scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
@@ -520,17 +523,24 @@
 			_mainColumns = @[[_tableView.tableColumns firstObject]];
 		
 		//Great, now that we are up to date, we're going to check if we need to add new columns
-		NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH + (_detailWidth == 0 ? 15 : _detailWidth), scrollviewSize.height / _nbCoupleColumn);
+		NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH, scrollviewSize.height / _nbCoupleColumn);
 		uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
+		CGFloat scrollerWidth = [RakScroller width];
 		int newColumns;
 		
+		//We add space for detail tab
+		if(paidContent)
+			singleColumn.width += _detailWidth == 0 ? 15 : _detailWidth;
+		
 		//Define number of columns
-		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn <= scrollviewSize.width)
+		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
 			nbColumn++;
 		
-		if(nbColumn > 1 && singleColumn.width * nbColumn <= scrollviewSize.width)	//We can't get under a single column
+		//If we can't fit in the width we got
+		if(nbColumn > 1 && singleColumn.width * nbColumn + scrollerWidth > scrollviewSize.width)
 			nbColumn--;
 		
+		//Now, apply changes
 		_nbCoupleColumn = nbColumn;
 		newColumns = nbColumn - oldNbColumn;
 		
