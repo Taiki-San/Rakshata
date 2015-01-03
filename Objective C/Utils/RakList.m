@@ -470,8 +470,9 @@
 		else
 		{
 			NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
-			uint newElem = 0, oldElem = 0;
-			int current;
+			uint newElem = 0, oldElem = 0, nbColumn = _nbCoupleColumn, currentRowOld = 0, currentRowNew = 0;
+			int current, previousDelta = 0, delta = 0;
+			BOOL didChange = NO;
 			
 			for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
 			{
@@ -483,8 +484,20 @@
 				{
 					if(oldData[i].data != current)
 					{
-						for(; posOld < i; oldElem++)
-							[old addIndex : posOld++];
+						if(nbColumn == 1)
+						{
+							for(; posOld < i; oldElem++)
+								[old addIndex : posOld++];
+						}
+						else
+						{
+							for(; posOld < i; oldElem++)
+							{
+								delta--;
+								posOld++;
+								didChange = YES;
+							}
+						}
 					}
 					else if(oldData[i].installed == newData[posNew].installed)
 					{
@@ -492,13 +505,61 @@
 					}
 					else
 					{
-						[old addIndex : posOld++];	oldElem++;
-						[new addIndex : posNew];	newElem++;
+						if(nbColumn == 1)
+						{
+							[old addIndex : posOld++];
+							[new addIndex : posNew];
+						}
+						else
+						{
+							posOld++;
+							didChange = YES;
+						}
+						
+						oldElem++;	newElem++;
 					}
 				}
 				else
 				{
-					[new addIndex:posNew];			newElem++;
+					if(nbColumn == 1)
+						[new addIndex:posNew];
+					else
+					{
+						delta++;
+						didChange = YES;
+					}
+
+					newElem++;
+				}
+				
+				//We don't update row unless we got at the end of it (when several columns)
+				if(nbColumn > 1 && posNew != 0 && posNew % nbColumn == 0)
+				{
+					if(didChange)	//Something changed
+					{
+						if(delta / nbColumn == previousDelta / nbColumn)
+						{
+							//Update row
+							[old addIndex : currentRowOld++];
+							[new addIndex : currentRowNew++];
+						}
+						else if(delta > previousDelta)	//A full row was added
+							[new addIndex:currentRowNew++];
+						
+						else							//A full row was removed
+						{
+							for(int count = delta; delta < previousDelta; count += nbColumn)
+								[old addIndex:currentRowOld++];
+						}
+						
+						previousDelta = delta;
+						didChange = NO;
+					}
+					else
+					{
+						currentRowOld++;
+						currentRowNew++;
+					}
 				}
 			}
 			
