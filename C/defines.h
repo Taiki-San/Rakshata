@@ -119,50 +119,6 @@
 #define SSL_OFF 0
 #define SSL_ON 1
 
-/*Status*/
-enum
-{
-	STATUS_OVER = 1,
-	STATUS_CANCELED,
-	STATUS_SUSPENDED,
-	STATUS_WIP,
-	STATUS_ANOUNCED,
-};
-
-/*Genre*/
-enum
-{
-	GENRE_SHONEN = 1,
-	GENRE_SHOJO,
-	GENRE_SEINEN,
-	GENRE_HENTAI
-};
-
-/*Type*/
-enum
-{
-	TYPE_MANGA = 1,
-	TYPE_COMIC,
-	TYPE_BD,
-	TYPE_MANWA
-};
-
-/*Database*/
-#define LENGTH_DESCRIPTION 1024
-#define LENGTH_PROJECT_NAME 51
-#define LENGTH_AUTHORS		51
-#define LENGTH_URL			256
-#define	LENGTH_HASH			9
-#define STATUS_MAX			5
-#define TYPE_MAX			4
-
-#define LONGUEUR_COURT 10
-#define LONGUEUR_SITE 100
-#define LONGUEUR_TYPE_TEAM 5
-#define LONGUEUR_URL 300
-#define SIZE_BUFFER_UPDATE_DATABASE (20*1024*1024)
-#define NUMBER_MAX_TEAM_KILLSWITCHE 200
-
 /*Sécurité*/
 #define EVERYTHING_IN_HDD 1
 #define INPUT_IN_MEMORY 2

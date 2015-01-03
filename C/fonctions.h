@@ -86,6 +86,7 @@ int fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(const void *input);
 size_t wstrlen(const wchar_t * input);
+void wstrncpy(wchar_t * output, size_t length, const wchar_t * input);
 void usstrcpy(void* output, size_t length, const void* input);
 void ustrcpy(void* output, const void* input);
 

@@ -267,6 +267,19 @@ size_t wstrlen(const wchar_t * input)
 	return output - 1;
 }
 
+void wstrncpy(wchar_t * output, size_t length, const wchar_t * input)
+{
+	size_t count = 0;
+	
+	for(; count < length && input[count] != 0; count++)
+		output[count] = input[count];
+	
+	if(count == length)
+		count--;
+	
+	output[count] = 0;
+}
+
 void usstrcpy(void* output, size_t length, const void* input)
 {
     char *output_char = output;

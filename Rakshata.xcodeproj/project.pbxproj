@@ -175,6 +175,7 @@
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
+		B61279FC1A586B5E0034C241 /* dbProperties.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = dbProperties.h; path = C/dbProperties.h; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
 		B61585F71912591F004F1791 /* moduleDLMainWorker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = moduleDLMainWorker.m; path = C/moduleDLMainWorker.m; sourceTree = "<group>"; };
@@ -891,14 +892,15 @@
 			children = (
 				B6F6ECA418A3001400E3B55B /* chapitre.c */,
 				B6F6ECAF18A3001400E3B55B /* CTCommon.c */,
+				B61279FC1A586B5E0034C241 /* dbProperties.h */,
 				B6FE79E018B903B4004BE38D /* DBcache.c */,
 				B678D0311977178A00D7FE6A /* DBrecent.c */,
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
 				B62C9EF218BD73D500CE910F /* DBTools.c */,
-				B678D033197717A600D7FE6A /* ProjectParser.m */,
-				B61279FA1A585EFF0034C241 /* RepoParser.m */,
 				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
+				B678D033197717A600D7FE6A /* ProjectParser.m */,
 				B6F6ECD218A3001400E3B55B /* repo.c */,
+				B61279FA1A585EFF0034C241 /* RepoParser.m */,
 				B6F6ECD818A3001400E3B55B /* tome.c */,
 			);
 			name = DB;

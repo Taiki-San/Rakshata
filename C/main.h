@@ -22,6 +22,7 @@
 
 #include "configuration.h"
 #include "defines.h"
+#include "dbProperties.h"
 #include "prototypes.h"
 #include "structures.h"
 #include "externs.h"

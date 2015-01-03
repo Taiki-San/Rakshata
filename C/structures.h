@@ -18,6 +18,29 @@ typedef byte rawData;
 //Copied from sqlite3.h
 typedef struct sqlite3_stmt sqlite3_stmt;
 
+typedef struct details_tome_data
+{
+	int ID;
+	bool isNative;			//Chapitre indé
+} CONTENT_TOME;
+
+typedef struct tome_metadata
+{
+	CONTENT_TOME * details;
+	int ID;
+	int readingID;
+	uint price;
+	wchar_t readingName[MAX_TOME_NAME_LENGTH];
+	wchar_t description[TOME_DESCRIPTION_LENGTH];
+} META_TOME;
+
+typedef struct
+{
+	void* data;
+	size_t length;
+} IMG_DATA;
+
+
 //Legacy, to get rid of ASAP
 typedef struct infos_Team
 {
@@ -28,21 +51,6 @@ typedef struct infos_Team
     char site[LONGUEUR_SITE];
     bool openSite;
 } TEAMS_DATA;
-
-typedef struct details_tome_data{
-	int ID;
-	bool isNative;			//Chapitre indé
-} CONTENT_TOME;
-
-typedef struct tome_metadata
-{
-	CONTENT_TOME * details;
-    int ID;
-	int readingID;
-	uint price;
-	wchar_t readingName[MAX_TOME_NAME_LENGTH];
-    wchar_t description[TOME_DESCRIPTION_LENGTH];
-} META_TOME;
 
 /**********************************************************************************************
  **
@@ -62,7 +70,6 @@ typedef struct tome_metadata
  **			-	URL						Adresse utilisée pour contacter le repo
  **			-	language				Langue principale de la repo
  **			-	isMature				Contenu pornographique présent dans la repo
- **			-	isPaid					Contenus payants disponibles
  **
  **		Extras
  **			- URLImage					URL pour DL la version courante de l'image (150x150, 72ppi)
@@ -75,6 +82,7 @@ typedef struct tome_metadata
  **			-	nombreDescriptions		Taille des tableaux sus-nommés
  **			-	subRepo					Tableau contenant les données des sous-repos
  **			-	nombreSubrepo			Taille du tableau des sous-repos
+ **			-	subRepoAreExtra			Défini si la structure de subRepo (REPO_DATA/REPO_DATA_EXTRA)
  **			-	trusted					Indique si la repo est de confiance
  **
  **********************************************************************************************/
@@ -88,13 +96,14 @@ typedef struct repository_data
 	wchar_t name[REPO_NAME_LENGTH];
 	char URL[REPO_URL_LENGTH];
 	
-	//(32b + 8b) + 2 x 8b
+	//64b
 	char language[REPO_LANGUAGE_LENGTH];
 	
 	byte type;
 	bool isMature;
+	bool active;
 	
-	//8b de padding, puis 32b
+	//32b
 	uint repoID;
 	
 } REPO_DATA;
@@ -106,7 +115,7 @@ typedef struct repository_data_extra
 	char URLImage[REPO_URL_LENGTH];
 	char URLImageRetina[REPO_URL_LENGTH];
 	
-	char hashImage[33];
+	char hashImage[REPO_IMAGE_HASH_LENGTH];
 	
 	bool haveRetina;
 	
@@ -123,10 +132,11 @@ typedef struct root_repository_data
 	char ** langueDescriptions;
 	uint nombreDescriptions;
 	
-	REPO_DATA_EXTRA * subRepo;
+	REPO_DATA * subRepo;
 	uint nombreSubrepo;
 	
 	bool trusted;
+	bool subRepoAreExtra;
 	
 } ROOT_REPO_DATA;
 
@@ -265,10 +275,4 @@ typedef struct dataProjectWithExtra
 	char hashSmall[LENGTH_HASH];
 	
 } PROJECT_DATA_EXTRA;
-
-typedef struct
-{
-	void* data;
-	size_t length;
-} IMG_DATA;
 
