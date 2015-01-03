@@ -18,6 +18,7 @@ typedef byte rawData;
 //Copied from sqlite3.h
 typedef struct sqlite3_stmt sqlite3_stmt;
 
+//Legacy, to get rid of ASAP
 typedef struct infos_Team
 {
     char teamLong[LENGTH_PROJECT_NAME];
@@ -31,7 +32,7 @@ typedef struct infos_Team
 typedef struct details_tome_data{
 	int ID;
 	bool isNative;			//Chapitre indé
-}CONTENT_TOME;
+} CONTENT_TOME;
 
 typedef struct tome_metadata
 {
@@ -41,9 +42,97 @@ typedef struct tome_metadata
 	uint price;
 	wchar_t readingName[MAX_TOME_NAME_LENGTH];
     wchar_t description[TOME_DESCRIPTION_LENGTH];
-}META_TOME;
+} META_TOME;
 
 /**********************************************************************************************
+ **
+ **		REPOSITORY STRUCTURES
+ **
+ **	Ce système utilise un total de trois structures:
+ **		- ROOT_REPO_DATA: contient le parsage complet d'un fichier rakshata-repo-3
+ **		- REPO_DATA_EXTRA: contient l'intégralité des données relatives à une sous-repo
+ **		- REPO_DATA: contient les données relatives à une sous-repo requise au fonctionnement
+ **
+ **	Structure optimisée, explication du contenu
+ **
+ **		Infos générales
+ **			-	repoID					ID identifiant la repo parmit les sous-repo d'un root
+ **			-	name					Nom du gestionnaire de la repo
+ **			-	type					Type de repo (Payant, Dropbox, ...)
+ **			-	URL						Adresse utilisée pour contacter le repo
+ **			-	language				Langue principale de la repo
+ **			-	isMature				Contenu pornographique présent dans la repo
+ **			-	isPaid					Contenus payants disponibles
+ **
+ **		Extras
+ **			- URLImage					URL pour DL la version courante de l'image (150x150, 72ppi)
+ **			- URLImageRetina			URL pour DL la version courante de l'image retina (300x300, 144ppi)
+ **			- hashImage					MD5 de la version courante
+ **
+ **		Root additions
+ **			-	descriptions			Tableau de descriptions localisés
+ **			-	langueDescriptions		Tableau synchronisé donnant la localisation des descriptions
+ **			-	nombreDescriptions		Taille des tableaux sus-nommés
+ **			-	subRepo					Tableau contenant les données des sous-repos
+ **			-	nombreSubrepo			Taille du tableau des sous-repos
+ **			-	trusted					Indique si la repo est de confiance
+ **
+ **********************************************************************************************/
+
+
+typedef struct repository_data
+{
+	//Bloc sans padding
+	
+	char website[REPO_WEBSITE_LENGTH];
+	wchar_t name[REPO_NAME_LENGTH];
+	char URL[REPO_URL_LENGTH];
+	
+	//(32b + 8b) + 2 x 8b
+	char language[REPO_LANGUAGE_LENGTH];
+	
+	byte type;
+	bool isMature;
+	
+	//8b de padding, puis 32b
+	uint repoID;
+	
+} REPO_DATA;
+
+typedef struct repository_data_extra
+{
+	REPO_DATA * data;
+	
+	char URLImage[REPO_URL_LENGTH];
+	char URLImageRetina[REPO_URL_LENGTH];
+	
+	char hashImage[33];
+	
+	bool haveRetina;
+	
+} REPO_DATA_EXTRA;
+
+typedef struct root_repository_data
+{
+	wchar_t name[REPO_NAME_LENGTH];
+	
+	byte type;
+	char URL[REPO_URL_LENGTH];
+	
+	wchar_t ** descriptions;
+	char ** langueDescriptions;
+	uint nombreDescriptions;
+	
+	REPO_DATA_EXTRA * subRepo;
+	uint nombreSubrepo;
+	
+	bool trusted;
+	
+} ROOT_REPO_DATA;
+
+/**********************************************************************************************
+**
+**		PROJECT STRUCTURES
 **
 **	Structure optimisée, explication du contenu
 **

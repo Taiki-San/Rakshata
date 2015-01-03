@@ -46,9 +46,9 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 		{
 			if([dictionary superclass] != [NSMutableDictionary class])	continue;
 			
-			entry1 = objectForKey(dictionary, JSON_RP_CHAP_DETAILS, @"details");
+			entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_DETAILS, @"details");
 			if(paidContent)
-				entry2 = objectForKey(dictionary, JSON_RP_PRICE, @"price");
+				entry2 = objectForKey(dictionary, JSON_PROJ_PRICE, @"price");
 			
 			if(entry1 != nil && [(NSObject*)entry1 superclass] == [NSArray class])	//This is a special chunck
 			{
@@ -97,13 +97,13 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 			}
 			else
 			{
-				entry1 = objectForKey(dictionary, JSON_RP_CHAP_JUMP, @"jump");
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_JUMP, @"jump");
 				if(entry1 != nil && [entry1 superclass] == [NSNumber class])	jump = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
-				entry1 = objectForKey(dictionary, JSON_RP_CHAP_FIRST, @"first");
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_FIRST, @"first");
 				if(entry1 != nil && [entry1 superclass] == [NSNumber class])	first = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
-				entry1 = objectForKey(dictionary, JSON_RP_CHAP_LAST, @"last");
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_LAST, @"last");
 				if(entry1 != nil && [entry1 superclass] == [NSNumber class])	last = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
 				sum = (last - first) / jump + 1;
@@ -162,10 +162,10 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 			
 			for(uint i = 0; i < length; [prices addObject:@(chapterPrices[i++])]);
 			
-			[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, prices] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+			[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, prices] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
 		}
 		else
-			[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+			[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
 		
 		currentDetail = nil;
 	}
@@ -204,18 +204,18 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 					if(currentDetail != nil && [currentDetail count])
 					{
 						if(pricesValid)
-							[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, priceDetail] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+							[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, priceDetail] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
 						else
-							[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+							[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
 
 						currentDetail = nil;
 					}
 					
 					//Because diff tell us how far is the next element, a != diff mean the next element break the chain, so the last one of the burst is the current one
 					if(pricesValid)
-						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP, JSON_RP_PRICE]]];
+						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP, JSON_PROJ_PRICE]]];
 					else
-						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff)] forKeys:@[JSON_RP_CHAP_FIRST, JSON_RP_CHAP_LAST, JSON_RP_CHAP_JUMP]]];
+						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
 				}
 				else
 				{
@@ -260,9 +260,9 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 		if(currentDetail != nil && [currentDetail count])
 		{
 			if(pricesValid)
-				[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, pricesInBurst] forKeys : @[JSON_RP_CHAP_DETAILS, JSON_RP_PRICE]]];
+				[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, pricesInBurst] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
 			else
-				[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_RP_CHAP_DETAILS]];
+				[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
 		}
 	}
 	
@@ -293,25 +293,25 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		{
 			if([dict superclass] != [NSMutableDictionary class])					continue;
 			
-			readingName = objectForKey(dict, JSON_RP_VOL_READING_NAME, @"Reading name");
+			readingName = objectForKey(dict, JSON_PROJ_VOL_READING_NAME, @"Reading name");
 			if (readingName == nil || [readingName superclass] != [NSMutableString class] || [readingName length] == 0)
 			{
 				readingName = nil;
-				readingID = objectForKey(dict, JSON_RP_VOL_READING_ID, @"Reading ID");
+				readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID");
 				if(readingID == nil || [readingID superclass] != [NSNumber class])	continue;
 			}
 			else
 				readingID = nil;
 			
-			internalID = objectForKey(dict, JSON_RP_VOL_INTERNAL_ID, @"Internal ID");
+			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID");
 			if(internalID == nil || [internalID superclass] != [NSNumber class])	continue;
 
 			(*nbElem)++;
 			
-			description = objectForKey(dict, JSON_RP_VOL_DESCRIPTION, @"Description");
+			description = objectForKey(dict, JSON_PROJ_VOL_DESCRIPTION, @"Description");
 			
 			if(paidContent)
-				priceObj = objectForKey(dict, JSON_RP_PRICE, @"price");
+				priceObj = objectForKey(dict, JSON_PROJ_PRICE, @"price");
 			
 			output[cache].ID = [internalID intValue];
 			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
@@ -350,19 +350,19 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		else if(volume[pos].readingID == VALEUR_FIN_STRUCT && volume[pos].readingName[0] == 0)
 			continue;
 		
-		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_RP_VOL_INTERNAL_ID];
+		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_PROJ_VOL_INTERNAL_ID];
 		
 		if(volume[pos].description[0])
-			[dict setObject:getStringForWchar(volume[pos].description) forKey:JSON_RP_VOL_DESCRIPTION];
+			[dict setObject:getStringForWchar(volume[pos].description) forKey:JSON_PROJ_VOL_DESCRIPTION];
 		
 		if(volume[pos].readingName[0])
-			[dict setObject:getStringForWchar(volume[pos].readingName) forKey:JSON_RP_VOL_READING_NAME];
+			[dict setObject:getStringForWchar(volume[pos].readingName) forKey:JSON_PROJ_VOL_READING_NAME];
 		
 		if(volume[pos].readingID != VALEUR_FIN_STRUCT)
-			[dict setObject:@(volume[pos].readingID) forKey:JSON_RP_VOL_READING_ID];
+			[dict setObject:@(volume[pos].readingID) forKey:JSON_PROJ_VOL_READING_ID];
 		
 		if(paidContent && volume[pos].price != UINT_MAX)
-			[dict setObject:@(volume[pos].price) forKey:JSON_RP_PRICE];
+			[dict setObject:@(volume[pos].price) forKey:JSON_PROJ_PRICE];
 		
 		[output addObject:dict];
 	}
@@ -383,39 +383,39 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *category = nil, *paidContent = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
-	ID = objectForKey(bloc, JSON_RP_ID, @"ID");
+	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
 	if (ID == nil || [ID superclass] != [NSNumber class])					goto end;
 	
-	projectName = objectForKey(bloc, JSON_RP_PROJECT_NAME, @"projectName");
+	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
 	
-	paidContent = objectForKey(bloc, JSON_RP_PRICE, @"price");
+	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price");
 	if(paidContent != nil && [paidContent superclass] != [NSNumber class])	goto end;
 		 
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	uint nbChapters = 0, nbVolumes = 0;
-	chapters = getChapters(objectForKey(bloc, JSON_RP_CHAPTERS, @"chapters"), &nbChapters, isPaidContent, &chaptersPrices);
-	volumes = getVolumes(objectForKey(bloc, JSON_RP_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
+	chapters = getChapters(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, isPaidContent, &chaptersPrices);
+	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
 
 	if(nbChapters == 0 && nbVolumes == 0)									goto end;
 	
-	description = objectForKey(bloc, JSON_RP_DESCRIPTION, @"description");
+	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description");
 	if(description == nil || [description superclass] != [NSMutableString class])	description = nil;
 	
-	authors = objectForKey(bloc, JSON_RP_AUTHOR , @"author");
+	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author");
 	if(authors == nil || [authors superclass] != [NSMutableString class])			goto end;
 	
-	status = objectForKey(bloc, JSON_RP_STATUS , @"status");
+	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status");
 	if(status == nil || [status superclass] != [NSNumber class])			goto end;
 	
-	type = objectForKey(bloc, JSON_RP_TYPE , @"type");
+	type = objectForKey(bloc, JSON_PROJ_TYPE , @"type");
 	if(type == nil || [type superclass] != [NSNumber class])				goto end;
 	
-	asianOrder = objectForKey(bloc, JSON_RP_ASIAN_ORDER , @"asian_order_of_reading");
+	asianOrder = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading");
 	if(asianOrder == nil || [asianOrder superclass] != [NSNumber class])	goto end;
 	
-	category = objectForKey(bloc, JSON_RP_CATEGORY , @"category");
+	category = objectForKey(bloc, JSON_PROJ_CATEGORY , @"category");
 	if(category == nil || [category superclass] != [NSNumber class])		goto end;
 	
 	data.projectID = [ID unsignedIntValue];
@@ -460,28 +460,28 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	id buf;
 	NSMutableDictionary * output = [NSMutableDictionary dictionary];
 	
-	[output setObject:@(project.projectID) forKey:JSON_RP_ID];
-	[output setObject:getStringForWchar(project.projectName) forKey:JSON_RP_PROJECT_NAME];
+	[output setObject:@(project.projectID) forKey:JSON_PROJ_ID];
+	[output setObject:getStringForWchar(project.projectName) forKey:JSON_PROJ_PROJECT_NAME];
 	
 	buf = recoverChapterBloc(project.chapitresFull, project.chapitresPrix, project.nombreChapitre);
-	if(buf != nil)		[output setObject:buf forKey:JSON_RP_CHAPTERS];
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAPTERS];
 	
 	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes, project.isPaid);
-	if(buf != nil)		[output setObject:buf forKey:JSON_RP_VOLUMES];
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOLUMES];
 	
 	if(project.description[0])
-		[output setObject:getStringForWchar(project.description) forKey:JSON_RP_DESCRIPTION];
+		[output setObject:getStringForWchar(project.description) forKey:JSON_PROJ_DESCRIPTION];
 	
 	if(project.authorName[0])
-		[output setObject:getStringForWchar(project.authorName) forKey:JSON_RP_AUTHOR];
+		[output setObject:getStringForWchar(project.authorName) forKey:JSON_PROJ_AUTHOR];
 	
-	[output setObject:@(project.status) forKey:JSON_RP_STATUS];
-	[output setObject:@(project.type) forKey:JSON_RP_TYPE];
-	[output setObject:@(project.japaneseOrder) forKey:JSON_RP_ASIAN_ORDER];
-	[output setObject:@(project.category) forKey:JSON_RP_CATEGORY];
+	[output setObject:@(project.status) forKey:JSON_PROJ_STATUS];
+	[output setObject:@(project.type) forKey:JSON_PROJ_TYPE];
+	[output setObject:@(project.japaneseOrder) forKey:JSON_PROJ_ASIAN_ORDER];
+	[output setObject:@(project.category) forKey:JSON_PROJ_CATEGORY];
 	
 	if(project.isPaid)
-		[output setObject:@(YES) forKey:JSON_RP_PRICE];
+		[output setObject:@(YES) forKey:JSON_PROJ_PRICE];
 	
 	return [NSDictionary dictionaryWithDictionary:output];
 }
@@ -495,13 +495,13 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	{
 		memcpy(&output, &shortData, sizeof(shortData));
 		
-		NSString * crcLarge = objectForKey(bloc, JSON_RP_HASH_URL_LARGE , @"hash_URL_large_pic");
+		NSString * crcLarge = objectForKey(bloc, JSON_PROJ_HASH_URL_LARGE , @"hash_URL_large_pic");
 		if(crcLarge != nil && [crcLarge superclass] == [NSMutableString class])
 			strncpy(output.hashLarge, [crcLarge cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
 		else
 			memset(output.hashLarge, 0, LENGTH_HASH);
 		
-		NSString * crcSmall = objectForKey(bloc, JSON_RP_HASH_URL_SMALL , @"hash_URL_small_pic");
+		NSString * crcSmall = objectForKey(bloc, JSON_PROJ_HASH_URL_SMALL , @"hash_URL_small_pic");
 		if(crcSmall != nil && [crcSmall superclass] == [NSMutableString class])
 			strncpy(output.hashSmall, [crcSmall cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
 		else
@@ -513,11 +513,11 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	return output;
 }
 
-void* parseJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
+void* parseProjectJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
 {
 	void * outputData = NULL;
 	bool isInit;
-	NSArray * projects = objectForKey(remoteData, JSON_RP_PROJECTS, @"projects");
+	NSArray * projects = objectForKey(remoteData, JSON_PROJ_PROJECTS, @"projects");
 	
 	if(projects == nil || [projects superclass] != [NSArray class])
 		return NULL;
@@ -583,11 +583,11 @@ PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uin
 	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
 		return NULL;
 	
-	id teamURL = objectForKey(remoteData, JSON_RP_AUTHOR_URL, @"authorURL");
+	id teamURL = objectForKey(remoteData, JSON_PROJ_AUTHOR_URL, @"authorURL");
 	if(teamURL == nil || [teamURL superclass] != [NSMutableString class] || ![(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team->URLRepo]])
 		return NULL;
 	
-	return parseJSON(team, remoteData, nbElem, true);
+	return parseProjectJSON(team, remoteData, nbElem, true);
 }
 
 PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem)
@@ -610,7 +610,7 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 		if([remoteDataPart superclass] != [NSMutableDictionary class])
 			continue;
 		
-		teamURL = objectForKey(remoteDataPart, JSON_RP_AUTHOR_URL, @"authorURL");
+		teamURL = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_URL, @"authorURL");
 		if (teamURL == nil || [teamURL superclass] != [NSMutableString class])
 			continue;
 		
@@ -622,7 +622,7 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 			if([(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team[posTeam]->URLRepo]])
 			{
 				nbElemPart = 0;
-				currentPart = (PROJECT_DATA*) parseJSON(team[posTeam], remoteDataPart, &nbElemPart, false);
+				currentPart = (PROJECT_DATA*) parseProjectJSON(team[posTeam], remoteDataPart, &nbElemPart, false);
 				
 				if(nbElemPart)
 				{
@@ -689,7 +689,7 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, u
 		
 		if([projects count])
 		{
-			currentNode = [NSDictionary dictionaryWithObjects:@[[NSString stringWithUTF8String:team[pos]->URLRepo], projects] forKeys:@[JSON_RP_AUTHOR_URL, JSON_RP_PROJECTS]];
+			currentNode = [NSDictionary dictionaryWithObjects:@[[NSString stringWithUTF8String:team[pos]->URLRepo], projects] forKeys:@[JSON_PROJ_AUTHOR_URL, JSON_PROJ_PROJECTS]];
 			if(currentNode != nil)
 				[root addObject:currentNode];
 		}

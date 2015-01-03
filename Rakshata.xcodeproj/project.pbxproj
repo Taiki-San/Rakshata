@@ -15,6 +15,7 @@
 		B6033BD218E4617000750226 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCD18E4617000750226 /* libssl.a */; };
 		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
+		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
 		B61585F81912591F004F1791 /* moduleDLMainWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = B61585F71912591F004F1791 /* moduleDLMainWorker.m */; };
 		B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = B61585F9191280DF004F1791 /* moduleDLWorker.c */; };
@@ -173,6 +174,7 @@
 		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = "Objective C/Utils/JSONParser.h"; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
+		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
 		B61585F71912591F004F1791 /* moduleDLMainWorker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = moduleDLMainWorker.m; path = C/moduleDLMainWorker.m; sourceTree = "<group>"; };
@@ -894,6 +896,7 @@
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
 				B62C9EF218BD73D500CE910F /* DBTools.c */,
 				B678D033197717A600D7FE6A /* ProjectParser.m */,
+				B61279FA1A585EFF0034C241 /* RepoParser.m */,
 				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
 				B6F6ECD218A3001400E3B55B /* repo.c */,
 				B6F6ECD818A3001400E3B55B /* tome.c */,
@@ -1046,6 +1049,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */,
 				B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */,
 				B621824118732CB0008AC5DD /* RakTabView.m in Sources */,
 				B6F6ED0918A3001400E3B55B /* moduleDL2.c in Sources */,
