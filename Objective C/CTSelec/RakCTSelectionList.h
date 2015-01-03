@@ -30,6 +30,7 @@
 	uint * chapterPrice;
 	
 	uint _nbElem;
+	uint _numberOfRows;
 	uint _nbInstalled;
 	uint * _installedJumpTable;		//Give the position in the main array of installed elements
 	BOOL * _installedTable;			//Tell if an element of the main array is installed
@@ -48,6 +49,8 @@
 - (void) flushContext : (BOOL) animated;
 
 - (void) jumpScrollerToRow : (int) row;
+
+- (uint) rowFromCoordinates : (uint) row : (uint) column;
 
 @end
 

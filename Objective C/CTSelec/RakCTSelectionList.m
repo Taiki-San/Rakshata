@@ -61,6 +61,7 @@
 			
 			_mainColumns = @[[_tableView.tableColumns firstObject]];
 			_nbCoupleColumn = 1;
+			_numberOfRows = _nbData;
 			[self updateMultiColumn: _compactMode : size];
 			
 			scrollView.wantsLayer = YES;
@@ -193,6 +194,7 @@
 	_data = newDataBuf;
 	_nbElem = nbElem;
 	_nbData = self.compactMode ? nbInstalledData : nbElem;
+	_numberOfRows = _nbData / _nbCoupleColumn;
 	projectData = project;
 	
 	//Update installed list
@@ -402,6 +404,7 @@
 		_compactMode = compactMode;
 		
 		_nbData = [self nbElem];
+		_numberOfRows = _nbData / _nbCoupleColumn;
 		
 		if(selectedRowIndex != -1 && _installedJumpTable != NULL)
 		{
@@ -439,6 +442,24 @@
 	}
 }
 
+#pragma mark - Model manipulation
+
+- (uint) rowFromCoordinates : (uint) row : (uint) column
+{
+	uint modulo = _nbData % _nbCoupleColumn;
+	if(modulo != 0 && column > modulo)
+	{
+		row += modulo * (_numberOfRows + 1);
+		row += (column - modulo) * _numberOfRows;
+	}
+	else if (modulo != 0)
+		row += column * (_numberOfRows + 1);
+	else
+		row += column * _numberOfRows;
+
+	return row;
+}
+
 #pragma mark - Methods to deal with tableView
 
 - (void) updateMultiColumn :(NSSize)scrollviewSize
@@ -470,6 +491,7 @@
 		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
 		_detailWidth = 0;
+		_numberOfRows = _nbData;
 	}
 	else
 	{
@@ -542,6 +564,8 @@
 		
 		//Now, apply changes
 		_nbCoupleColumn = nbColumn;
+		_numberOfRows = _nbData / nbColumn;
+		
 		newColumns = nbColumn - oldNbColumn;
 		
 		if(newColumns > 0)		//We need to add columns
@@ -726,7 +750,7 @@
 			isDetails = YES;
 	}
 	
-	rowIndex = rowIndex * _nbCoupleColumn + column;
+	rowIndex = [self rowFromCoordinates : rowIndex : column];
 	
 	if(rowIndex >= _nbData)	//Too much entry?
 	{
@@ -808,7 +832,8 @@
 
 - (NSColor*) getTextColor:(uint)column :(uint)row
 {
-	row = row * _nbCoupleColumn + column / _nbElemPerCouple;
+	row = [self rowFromCoordinates : row : column];
+
 	if(row >= _nbData)
 		return nil;
 	
@@ -847,7 +872,7 @@
 - (void) triggerInstallOnlyAnimate : (BOOL) enter numberOfColumns : (uint) nbColumns
 {
 	BOOL foundOneIn = NO, foundOneOut = NO;
-	uint nbRows = [_tableView numberOfRows];
+	uint nbRows = [_tableView numberOfRows], size = MIN(_nbElem, nbRows);
 	NSMutableIndexSet * indexIn = [NSMutableIndexSet new], * indexOut = [NSMutableIndexSet new];
 
 	if(_installedTable != NULL)
@@ -858,7 +883,7 @@
 			{
 				if(_installedTable[i])
 				{
-					if(i % nbColumns)
+					if(nbColumns == 1 || rank >= size)
 					{
 						[indexIn addIndex:rank];
 						foundOneIn = YES;
@@ -866,7 +891,7 @@
 					
 					rank++;
 				}
-				else if(i % nbColumns == 0 && i / nbColumns < nbRows)
+				else if(i / size == 0)	//Always true when a single columns, overwise skip the columns afterward
 				{
 					[indexOut addIndex : i / nbColumns];
 					foundOneOut = YES;
@@ -875,12 +900,12 @@
 		}
 		else
 		{
-			for(uint i = 0, size = MIN(_nbElem, [_tableView numberOfRows]); i < size; i++)
+			for(uint i = 0; i < size; i++)
 			{
 				if(!_installedTable[i])
 				{
 					[indexIn addIndex:i];
-					foundOneOut = YES;
+					foundOneIn = YES;
 				}
 			}
 		}
@@ -905,7 +930,7 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	NSInteger index = rowIndex * _nbCoupleColumn + tableView.preCommitedLastClickedColumn;
+	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn];
 	
 	//If not installed, we don't want to reflect the UI
 	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
@@ -927,7 +952,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	NSInteger index = selectedRowIndex *_nbCoupleColumn + selectedColumnIndex;
+	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex];
 	
 	if(selectedRowIndex != -1 && selectedColumnIndex != -1 && index < [self nbElem])
 	{
@@ -957,7 +982,7 @@
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	int selection;
-	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
 	
 	if(self.isTome)
 	{
@@ -977,8 +1002,8 @@
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
-	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
-
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
+	
 	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
 	{
 		if(_data == NULL)
@@ -1008,7 +1033,7 @@
 	//FIXME: Update earlyFrame with a more precise metric
 	uint column = _tableView.preCommitedLastClickedColumn;
 	
-	if(column != 0 && _nbElemPerCouple && _nbCoupleColumn)
+	if(column != 0 && _nbElemPerCouple != 0 && _nbCoupleColumn != 0)
 		earlyFrame.origin.x += (column / _nbElemPerCouple) * (_tableView.bounds.size.width / _nbCoupleColumn);
 	
 	return earlyFrame;
