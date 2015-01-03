@@ -852,7 +852,7 @@
 
 - (SR_DATA *) getSmartReloadData : (void*) data : (BOOL) isTome : (uint) nbElem : (BOOL *) installed
 {
-	if(!nbElem)
+	if(data == NULL || !nbElem)
 		return NULL;
 	
 	SR_DATA * output = calloc(nbElem, sizeof(SR_DATA));
@@ -872,7 +872,7 @@
 - (void) triggerInstallOnlyAnimate : (BOOL) enter numberOfColumns : (uint) nbColumns
 {
 	BOOL foundOneIn = NO, foundOneOut = NO;
-	uint nbRows = [_tableView numberOfRows], size = MIN(_nbElem, nbRows);
+	uint size = MIN(_nbElem, [_tableView numberOfRows]);
 	NSMutableIndexSet * indexIn = [NSMutableIndexSet new], * indexOut = [NSMutableIndexSet new];
 
 	if(_installedTable != NULL)
@@ -883,7 +883,8 @@
 			{
 				if(_installedTable[i])
 				{
-					if(nbColumns == 1 || rank >= size)
+					//If the element was on a column > 1, when have to add it to the main column as it's going to be the only one remaining
+					if(nbColumns > 1 && rank >= size)
 					{
 						[indexIn addIndex:rank];
 						foundOneIn = YES;
@@ -976,7 +977,12 @@
 
 - (NSString *) contentNameForDrag : (uint) row
 {
-	return [self tableView:_tableView objectValueForTableColumn:[_tableView.tableColumns objectAtIndex:_tableView.preCommitedLastClickedColumn] row:row];
+	uint column = _tableView.preCommitedLastClickedColumn;
+	
+	if(column != UINT_MAX && column % _nbElemPerCouple)
+		column -= column % _nbElemPerCouple;
+	
+	return [self tableView:_tableView objectValueForTableColumn:[_tableView.tableColumns objectAtIndex:column] row:row];
 }
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row

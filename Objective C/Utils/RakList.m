@@ -344,13 +344,13 @@
 		[tableView.tableColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if(obj == tableColumn)
 			{
-				column = idx;
+				column = idx / _nbElemPerCouple;
 				*stop = YES;
 			}
 		}];
 		
 		if(selected)
-			selected = tableView.lastClickedColumn / _nbElemPerCouple != column / _nbElemPerCouple;
+			selected = tableView.lastClickedColumn / _nbElemPerCouple != column;
 	}
 	
     // Get an existing cell with the identifier if it exists
@@ -463,16 +463,16 @@
 {
 	if(_tableView != nil)
 	{
-		if(oldData == NULL || newData == NULL)
+		if(oldData == NULL || newData == NULL || (_nbCoupleColumn > 1 && nbElemOld != nbElemNew))
 		{
 			[self fullAnimatedReload : oldData == NULL ? 0 : nbElemOld  : newData == NULL ? 0 : nbElemNew];
 		}
 		else
 		{
 			NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
-			uint newElem = 0, oldElem = 0, nbColumn = _nbCoupleColumn, currentRowOld = 0, currentRowNew = 0;
-			int current, previousDelta = 0, delta = 0;
-			BOOL didChange = NO;
+			uint newElem = 0, oldElem = 0, nbColumn = _nbCoupleColumn, overflow = nbElemOld % _nbCoupleColumn, height = nbElemOld / _nbCoupleColumn;
+			int current;
+			BOOL tooMuchChanges = NO, singleColumn = nbColumn == 1;
 			
 			for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
 			{
@@ -484,20 +484,14 @@
 				{
 					if(oldData[i].data != current)
 					{
-						if(nbColumn == 1)
+						if(singleColumn)
 						{
 							for(; posOld < i; oldElem++)
 								[old addIndex : posOld++];
 						}
 						else
-						{
-							for(; posOld < i; oldElem++)
-							{
-								delta--;
-								posOld++;
-								didChange = YES;
-							}
-						}
+							tooMuchChanges = YES;
+
 					}
 					else if(oldData[i].installed == newData[posNew].installed)
 					{
@@ -505,78 +499,59 @@
 					}
 					else
 					{
-						if(nbColumn == 1)
+						if(singleColumn)
 						{
-							[old addIndex : posOld++];
+							[old addIndex : posOld];
 							[new addIndex : posNew];
 						}
 						else
 						{
-							posOld++;
-							didChange = YES;
+							//Considering we refresh everything when anything is added/removed, if the row from the the old context is validated, the new one will also be
+							//Also, considering they are the same, no need to compute them again
+							uint row = posOld % height + (posOld / height < overflow);
+							if(![old containsIndex:row])
+							{
+								[old addIndex : row];
+								[new addIndex : row];
+							}
 						}
 						
+						posOld++;
 						oldElem++;	newElem++;
 					}
 				}
 				else
 				{
-					if(nbColumn == 1)
+					if(singleColumn)
 						[new addIndex:posNew];
 					else
-					{
-						delta++;
-						didChange = YES;
-					}
+						tooMuchChanges = YES;
 
 					newElem++;
 				}
-				
-				//We don't update row unless we got at the end of it (when several columns)
-				if(nbColumn > 1 && posNew != 0 && posNew % nbColumn == 0)
-				{
-					if(didChange)	//Something changed
-					{
-						if(delta / nbColumn == previousDelta / nbColumn)
-						{
-							//Update row
-							[old addIndex : currentRowOld++];
-							[new addIndex : currentRowNew++];
-						}
-						else if(delta > previousDelta)	//A full row was added
-							[new addIndex:currentRowNew++];
-						
-						else							//A full row was removed
-						{
-							for(int count = delta; delta < previousDelta; count += nbColumn)
-								[old addIndex:currentRowOld++];
-						}
-						
-						previousDelta = delta;
-						didChange = NO;
-					}
-					else
-					{
-						currentRowOld++;
-						currentRowNew++;
-					}
-				}
 			}
-			
-			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-				
-				[context setDuration:CT_TRANSITION_ANIMATION];
-				
-				if(oldElem != 0)
-					[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
-				
-				if(newElem != 0)
-					[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
-				
-			} completionHandler:^{
-				if(nbElemOld != nbElemNew)
-					[_tableView noteNumberOfRowsChanged];
-			}];
+
+			if(!tooMuchChanges)
+			{
+				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+					
+					[context setDuration:CT_TRANSITION_ANIMATION];
+					
+					if(oldElem != 0)
+						[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+					
+					if(newElem != 0)
+						[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
+					
+				} completionHandler:^{
+					if(nbElemOld != nbElemNew)
+						[_tableView noteNumberOfRowsChanged];
+				}];
+			}
+			else
+			{
+				[self fullAnimatedReload : nbElemOld  : nbElemNew];
+			}
 		}
 	}
 	
