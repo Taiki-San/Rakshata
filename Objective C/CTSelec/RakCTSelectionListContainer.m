@@ -285,7 +285,7 @@
 	}
 	
 	_title.currentID = project.cacheDBID;
-	_title.isEmpty = retValue;
+	_title.isEmpty = !retValue;
 	_title.stringValue = [self titleString];
 	
 	return retValue;
