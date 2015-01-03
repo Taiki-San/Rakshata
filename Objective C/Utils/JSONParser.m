@@ -425,7 +425,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.tomesFull = volumes;			data.tomesInstalled = NULL;			data.nombreTomes = nbVolumes;		data.nombreTomesInstalled = 0;
 	data.status = [status unsignedCharValue];
 	if(data.status > STATUS_MAX)	data.status = STATUS_MAX;
-	data.type = [type unsignedCharValue];
+	data.type = [type unsignedIntValue];
 	if(data.type > TYPE_MAX)		data.type = TYPE_MAX;
 	data.category = [category unsignedIntValue];
 	data.isInitialized = true;

@@ -142,6 +142,16 @@ int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
+void refreshTeam(TEAMS_DATA * team, bool standalone)
+{
+	PROJECT_DATA project;
+	
+	project.isInitialized = false;
+	project.team = team;
+	
+	updateProjectsFromTeam(&project, 0, 0, standalone);
+}
+
 void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
 {
 	TEAMS_DATA *globalTeam = oldData[posBase].team;
@@ -197,18 +207,84 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 
 void updateProjects()
 {
-	uint nbElem, posBase = 0, posEnd;
+	uint nbElem, posBase = 0, posEnd, nbTeamRefreshed = 0;
 	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbElem);
 	
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
+		{
 			updateProjectsFromTeam(oldData, posBase, posEnd, false);
+			nbTeamRefreshed++;
+		}
 		else
 			break;
 
 		posBase = posEnd;
+	}
+	
+	if(!isAppropriateNumberOfTeam(nbTeamRefreshed))
+	{
+		//We didn't refreshed every team, WTF?
+		//Let's refresh them manually
+		
+		uint realNumberOfTeam;
+		TEAMS_DATA ** teams = getCopyKnownTeams(&realNumberOfTeam);
+		
+		if(teams != NULL)
+		{
+			bool *refreshedTable = calloc(realNumberOfTeam, sizeof(bool));
+			
+			if(refreshedTable != NULL)
+			{
+				uint posTeam = 0;
+				posBase = 0;
+				
+				//We're going to go through the updated repo and see if any is missing
+				while(posBase != nbElem)
+				{
+					posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
+					if(posEnd != UINT_MAX)
+					{
+						//Now, find the team in our base, starting from where we left (it's supposed to be ordered)
+						for(; posTeam < realNumberOfTeam && strcmp(teams[posTeam]->URLRepo, oldData[posBase].team->URLRepo); posTeam++);
+						
+						//Couldn't find the team, weird, let's recheck from the begining
+						if(posTeam == realNumberOfTeam)
+						{
+							for(posTeam = 0; posTeam < realNumberOfTeam && strcmp(teams[posTeam]->URLRepo, oldData[posBase].team->URLRepo); posTeam++);
+							
+							if(posTeam == realNumberOfTeam)
+							{
+								char temp[100+LONGUEUR_URL];
+								snprintf(temp, sizeof(temp), "Missing team, WTF? %s", oldData[posBase].team->URLRepo);
+								logR(temp);
+								
+								continue;
+							}
+						}
+						
+						refreshedTable[posTeam] = true;
+					}
+					else
+						break;
+					
+					posBase = posEnd;
+				}
+				
+				//Okay, now, let's find the culprits
+				for(uint i = 0; i < realNumberOfTeam; i++)
+				{
+					if(!refreshedTable[i])
+						refreshTeam(teams[i], false);
+				}
+				
+				free(refreshedTable);
+			}
+			
+			freeTeam(teams);
+		}
 	}
 	
 	syncCacheToDisk(SYNC_TEAM | SYNC_PROJECTS);

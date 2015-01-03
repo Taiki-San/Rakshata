@@ -873,6 +873,11 @@ void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
 	}
 }
 
+bool isAppropriateNumberOfTeam(uint requestedNumber)
+{
+	return requestedNumber == lengthTeam;
+}
+
 void freeTeam(TEAMS_DATA **data)
 {
 	for(int i = 0; data[i] != NULL; free(data[i++]));

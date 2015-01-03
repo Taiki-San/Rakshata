@@ -83,6 +83,17 @@ typedef struct tome_metadata
 **
 **********************************************************************************************/
 
+/////////////////////////////////////////
+/////////////////////////////////////////
+////////						/////////
+////////		WARNING			/////////
+////////						/////////
+////////	 The two structs	/////////
+////////	have to be synced	/////////
+////////						/////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+
 typedef struct dataProject
 {
 	//Pointeurs, un bloc chacun (64b)
@@ -108,18 +119,20 @@ typedef struct dataProject
 	bool japaneseOrder;
 	
 	//Un bloc de 64b complet
-	uint8_t status;
-	uint8_t type;
-	uint16_t category;
+	uint32_t type;
+	uint32_t category;
 	
 	//Un bloc de 64b
 	uint32_t projectID;
 	uint32_t cacheDBID;
 	
+	uint8_t status;
 	bool isPaid;
 	bool isInitialized;
 	
 } PROJECT_DATA;
+
+//Type here how many time you forgot to update the second structure: 2
 
 typedef struct dataProjectWithExtra
 {
@@ -141,22 +154,22 @@ typedef struct dataProjectWithExtra
 	
 	//2 x ((51 + 1) x 32b) = 52 x 64b
 	wchar_t projectName[LENGTH_PROJECT_NAME];
-	bool contentDownloadable;
-	wchar_t authorName[LENGTH_AUTHORS];
 	bool favoris;
+	wchar_t authorName[LENGTH_AUTHORS];
+	bool japaneseOrder;
 	
 	//Un bloc de 64b complet
-	uint8_t status;
-	uint8_t type;
-	uint16_t category;
-	bool japaneseOrder;
+	uint32_t type;
+	uint32_t category;
 	
 	//Un bloc de 64b
 	uint32_t projectID;
 	uint32_t cacheDBID;
 	
+	uint8_t status;
 	bool isPaid;
 	bool isInitialized;
+
 
 	//2 x 64b
 	char hashLarge[LENGTH_HASH];
