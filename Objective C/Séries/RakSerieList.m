@@ -368,7 +368,7 @@
 	//We grab superior tabs state
 	for(NSInteger row = 0, nbRow = [content numberOfRows], tabExported = 0; row < nbRow && tabExported != 2; row++)
 	{
-		id item = [content itemAtRow:row];
+		RakSerieListItem* item = [content itemAtRow:row];
 		
 		if(item == nil)
 			continue;
@@ -376,9 +376,9 @@
 		else if([item isRootItem] && ![item isMainList])
 		{
 			if(tabExported == 0)
-				isTabReadOpen = [item isExpanded];
+				isTabReadOpen = item.expanded;
 			else
-				isTabDLOpen = [item isExpanded];
+				isTabDLOpen = item.expanded;
 			
 			tabExported++;
 		}

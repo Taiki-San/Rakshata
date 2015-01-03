@@ -62,10 +62,13 @@
 			else
 			{
 				_isMainList = NO;
-
-				dataChild	= *(PROJECT_DATA *) data;
 				
-				releaseCTData(dataChild);
+				if(data != NULL)
+				{
+					dataChild	= *(PROJECT_DATA *) data;
+					releaseCTData(dataChild);
+				}
+
 				dataChild.chapitresFull = dataChild.chapitresInstalled = NULL;
 				dataChild.tomesFull = dataChild.tomesInstalled = NULL;
 				dataChild.chapitresPrix = NULL;
