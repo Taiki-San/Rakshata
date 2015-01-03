@@ -760,7 +760,8 @@ TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam)
 
 TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
 {
-	TEAMS_DATA ** output = calloc(lengthTeam, sizeof(TEAMS_DATA*));
+	//+1 used to free everything
+	TEAMS_DATA ** output = calloc(lengthTeam + 1, sizeof(TEAMS_DATA*));
 	if(output != NULL)
 	{
 		for(int i = 0; i < lengthTeam; i++)
