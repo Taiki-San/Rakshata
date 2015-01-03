@@ -11,7 +11,8 @@
  *********************************************************************************************/
 
 #define IDENTIFIER_PRICE @"RakCTSelectionListPrice"
-#define DEFAULT_MAIN_WIDTH 110
+#define DEFAULT_MAIN_WIDTH 95
+#define DEFAULT_DETAIL_WIDTH 60
 
 @implementation RakCTSelectionList
 
@@ -513,7 +514,7 @@
 			BOOL needToInjectMainColumns = _nbCoupleColumn > 1;
 
 			_nbElemPerCouple = 2;
-			_detailWidth = 60;
+			_detailWidth = DEFAULT_DETAIL_WIDTH;
 			
 			if(needToInjectMainColumns)
 			{
@@ -547,12 +548,14 @@
 		//Great, now that we are up to date, we're going to check if we need to add new columns
 		NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH, scrollviewSize.height / _nbCoupleColumn);
 		uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
-		CGFloat scrollerWidth = [RakScroller width];
+		CGFloat scrollerWidth = 0;
 		int newColumns;
 		
 		//We add space for detail tab
 		if(paidContent)
-			singleColumn.width += _detailWidth == 0 ? 15 : _detailWidth;
+			singleColumn.width += DEFAULT_DETAIL_WIDTH;
+		else
+			scrollerWidth = [RakScroller width];
 		
 		//Define number of columns
 		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
