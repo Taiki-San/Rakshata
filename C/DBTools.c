@@ -300,7 +300,7 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
 {
-	uint IDTeam = getTeamID(oldData[0].team);
+	size_t IDTeam = getTeamID(oldData[0].team);
 	
 	if(IDTeam == UINT_MAX)
 		return;

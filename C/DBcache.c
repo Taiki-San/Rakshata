@@ -15,6 +15,13 @@
 static sqlite3 *cache = NULL;
 static uint nbElem = 0;
 
+static ROOT_REPO_DATA ** rootRepoList = NULL;
+static uint lengthRootRepo = 0;
+static uint maxRootID = 0;
+
+static REPO_DATA ** repoList = NULL;
+static uint lengthRepo = 0;
+
 static TEAMS_DATA **teamList = NULL;
 static uint lengthTeam = 0;
 
@@ -637,20 +644,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 /*************		REPOSITORIES DATA		*****************/
 
-uint getDBTeamID(TEAMS_DATA * team)
-{
-	uint output;
-	if(teamList != NULL)
-	{
-		for(output = 0; output < lengthTeam && team != teamList[output]; output++);
-		if(output == lengthTeam)
-			return UINT_MAX;
-	}
-	else
-		return UINT_MAX;
-	
-	return output;
-}
+#pragma mark - Obsolete 'Team' code
 
 uint getTeamID(TEAMS_DATA * team)
 {
@@ -880,8 +874,229 @@ bool isAppropriateNumberOfTeam(uint requestedNumber)
 
 void freeTeam(TEAMS_DATA **data)
 {
-	for(int i = 0; data[i] != NULL; free(data[i++]));
+	for(uint i = 0; data[i] != NULL; free(data[i++]));
 	free(data);
+}
+
+#pragma mark - Identical API for 'Repo'
+
+uint64_t getRepoID(REPO_DATA * team)
+{
+	uint64_t output = team->parentRepoID;;
+	return (output << 32) | team->repoID;
+}
+
+ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
+{
+	return parseLocalRepo(repoDB, nbRepo);
+}
+
+REPO_DATA ** getCopyKnownRepo(uint * nbRepo)
+{
+	//+1 used to free everything
+	REPO_DATA ** output = calloc(lengthRepo + 1, sizeof(REPO_DATA*));
+	if(output != NULL)
+	{
+		for(int i = 0; i < lengthRepo; i++)
+		{
+			if(repoList[i] == NULL)
+				output[i] = NULL;
+			else
+			{
+				output[i] = malloc(sizeof(REPO_DATA));
+				
+				if(output[i] != NULL)
+					memcpy(output[i], repoList[i], sizeof(REPO_DATA));
+				
+				else	//Memory error, let's get the fuck out of here
+				{
+					for (; i > 0; free(output[--i]));
+					free(output);
+					*nbRepo = 0;
+					return NULL;
+				}
+			}
+		}
+		*nbRepo = lengthRepo;
+	}
+	else
+		*nbRepo = 0;
+
+	return output;
+}
+
+int getIndexOfRepo(uint parentID, uint repoID)
+{
+	int output = 0;
+	
+	for(; output < lengthRepo && repoList[output] != NULL && (repoList[output]->repoID != repoID || repoList[output]->parentRepoID != parentID); output++);
+	
+	if(output == lengthRepo || repoList[output] == NULL)	//Error
+		output = -1;
+	
+	return output;
+}
+
+uint getFreeRootRepoID()
+{
+	return ++maxRootID;
+}
+
+void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
+{
+	uint lengthRepoCopy = lengthRepo;
+	
+	REPO_DATA ** newReceiver;
+	
+	if(newAmountOfRepo == -1 || newAmountOfRepo == lengthRepoCopy)
+	{
+		newReceiver = repoList;
+	}
+	else	//Resize teamList
+	{
+		newReceiver = calloc(lengthRepoCopy + 1, sizeof(REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
+		if(newReceiver == NULL)
+			return;
+		
+		memcpy(newReceiver, repoList, lengthRepoCopy);
+		lengthRepoCopy = newAmountOfRepo;
+	}
+	
+	for(int pos = 0; pos < lengthRepoCopy; pos++)
+	{
+		if(newReceiver[pos] != NULL && repoData[pos] != NULL)
+		{
+			memcpy(newReceiver[pos], repoData[pos], sizeof(REPO_DATA));
+			free(repoData[pos]);
+		}
+		else if(repoData[pos] != NULL)
+		{
+			newReceiver[pos] = repoData[pos];
+		}
+	}
+	
+	getRideOfDuplicateInRepo(repoData, &lengthRepoCopy);
+	if(repoList != newReceiver)
+	{
+		void * buf = repoList;
+		repoList = newReceiver;
+		free(buf);
+		lengthRepo = lengthRepoCopy;
+	}
+}
+
+void getRideOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo)
+{
+	uint internalNombreRepo = *nombreRepo;
+	
+	//On va chercher des collisions
+	for(uint posBase = 0; posBase < internalNombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	{
+		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
+			continue;
+		
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreRepo; posToCompareWith++)
+		{
+			if(data[posToCompareWith] == NULL)
+				continue;
+			
+			if(data[posBase]->parentRepoID == data[posToCompareWith]->parentRepoID && data[posBase]->repoID == data[posToCompareWith]->repoID)
+			{
+				free(data[posToCompareWith]);
+				data[posToCompareWith] = NULL;
+			}
+		}
+	}
+}
+
+void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
+{
+	uint lengthRepoCopy = lengthRootRepo;
+	
+	ROOT_REPO_DATA ** newReceiver;
+	
+	if(newAmountOfRepo == -1 || newAmountOfRepo == lengthRepoCopy)
+	{
+		newReceiver = rootRepoList;
+	}
+	else	//Resize teamList
+	{
+		newReceiver = calloc(lengthRepoCopy + 1, sizeof(ROOT_REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
+		if(newReceiver == NULL)
+			return;
+		
+		memcpy(newReceiver, rootRepoList, lengthRepoCopy);
+		lengthRepoCopy = newAmountOfRepo;
+	}
+	
+	for(int pos = 0; pos < lengthRepoCopy; pos++)
+	{
+		if(newReceiver[pos] != NULL && repoData[pos] != NULL)
+		{
+			memcpy(newReceiver[pos], repoData[pos], sizeof(ROOT_REPO_DATA));
+			free(repoData[pos]);
+		}
+		else if(repoData[pos] != NULL)
+		{
+			newReceiver[pos] = repoData[pos];
+		}
+	}
+	
+	getRideOfDuplicateInRootRepo(repoData, &lengthRepoCopy);
+	if(rootRepoList != newReceiver)
+	{
+		void * buf = rootRepoList;
+		rootRepoList = newReceiver;
+		free(buf);
+		lengthRootRepo = lengthRepoCopy;
+	}
+}
+
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint *nombreRepo)
+{
+	uint internalNombreRepo = *nombreRepo;
+	
+	//On va chercher des collisions
+	for(uint posBase = 0; posBase < internalNombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	{
+		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
+			continue;
+		
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreRepo; posToCompareWith++)
+		{
+			if(data[posToCompareWith] == NULL)
+				continue;
+			
+			if(data[posBase]->repoID == data[posToCompareWith]->repoID)
+			{
+				free(data[posToCompareWith]);
+				data[posToCompareWith] = NULL;
+			}
+		}
+	}
+}
+
+bool isAppropriateNumberOfRepo(uint requestedNumber)
+{
+	return requestedNumber == lengthRepo;
+}
+
+void freeRootRepo(ROOT_REPO_DATA ** root)
+{
+	for(uint i = 0; root[i] != NULL; i++)
+	{
+		free(root[i]->subRepo);
+		
+		for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
+		{
+			free(root[i]->descriptions[j]);
+			free(root[i]->langueDescriptions[j]);
+		}
+		
+		free(root[i]);
+	}
+	
+	free(root);
 }
 
 #ifdef TEAM_COPIED_TO_INSTANCE

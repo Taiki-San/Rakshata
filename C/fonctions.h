@@ -58,6 +58,11 @@ PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uin
 PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem);
 char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput);
 
+ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
+ROOT_REPO_DATA * parseLocalRootRepo(NSDictionary * rootRepo);
+ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
+char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeOutput);
+
 /**Keys.c**/
 byte getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);

@@ -55,7 +55,6 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output);
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 
 //Teams
-uint getDBTeamID(TEAMS_DATA * team);
 uint getTeamID(TEAMS_DATA * team);
 bool addRepoToDB(TEAMS_DATA newTeam);
 TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam);
@@ -65,6 +64,20 @@ void freeTeam(TEAMS_DATA **data);
 void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam);
 int getIndexOfTeam(char * URL);
 void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam);
+
+//Repository
+uint64_t getRepoID(REPO_DATA * team);
+ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
+REPO_DATA ** getCopyKnownRepo(uint * nbRepo);
+int getIndexOfRepo(uint parentID, uint repoID);
+uint getFreeRootRepoID();
+void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
+void getRideOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo);
+void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo);
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint *nombreRepo);
+bool isAppropriateNumberOfRepo(uint requestedNumber);
+void freeRootRepo(ROOT_REPO_DATA ** root);
+
 
 void freeProjectData(PROJECT_DATA* projectDB);
 

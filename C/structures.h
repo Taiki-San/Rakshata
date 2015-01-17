@@ -65,6 +65,7 @@ typedef struct infos_Team
  **
  **		Infos générales
  **			-	repoID					ID identifiant la repo parmit les sous-repo d'un root
+ **			-	parentRepoID			ID identifiant le parent parmis les root
  **			-	name					Nom du gestionnaire de la repo
  **			-	type					Type de repo (Payant, Dropbox, ...)
  **			-	URL						Adresse utilisée pour contacter le repo
@@ -82,7 +83,7 @@ typedef struct infos_Team
  **			-	nombreDescriptions		Taille des tableaux sus-nommés
  **			-	subRepo					Tableau contenant les données des sous-repos
  **			-	nombreSubrepo			Taille du tableau des sous-repos
- **			-	subRepoAreExtra			Défini si la structure de subRepo (REPO_DATA/REPO_DATA_EXTRA)
+ **			-	subRepoAreExtra			Défini la structure de subRepo (REPO_DATA/REPO_DATA_EXTRA)
  **			-	trusted					Indique si la repo est de confiance
  **
  **********************************************************************************************/
@@ -105,6 +106,7 @@ typedef struct repository_data
 	
 	//32b
 	uint repoID;
+	uint parentRepoID;
 	
 } REPO_DATA;
 
@@ -135,6 +137,7 @@ typedef struct root_repository_data
 	REPO_DATA * subRepo;
 	uint nombreSubrepo;
 	
+	uint repoID;
 	bool trusted;
 	bool subRepoAreExtra;
 	
