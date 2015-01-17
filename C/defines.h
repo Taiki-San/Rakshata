@@ -101,10 +101,13 @@
 #define LONGUEUR_NOMS_DATA 100
 
 /*Ajout repo*/
-#define TYPE_DEPOT_DB 1
-#define TYPE_DEPOT_OTHER 2	//Dépôt arbitraire
-#define TYPE_DEPOT_PAID 3
-#define TYPE_DEPOT_GOO 4
+enum
+{
+	TYPE_DEPOT_PAID 	= 1,
+	TYPE_DEPOT_DB 		= 2,
+	TYPE_DEPOT_OTHER	= 3,
+	TYPE_DEPOT_GOO		= 4
+};
 #define MAX_TYPE_DEPOT 4
 
 /*String macro*/

@@ -19,11 +19,9 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
 void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
 
 //Repo parser
-ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
-ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
 NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
-#define JSON_PROJ_AUTHOR_ID	@"ROOT-URL"
+#define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 
 #define JSON_PROJ_PROJECTS @"0"
 #define JSON_PROJ_ID @"1"
@@ -64,3 +62,4 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_REPO_SUB_RETINA_IMAGE	@"11"
 #define JSON_REPO_SUB_IMAGE_HASH	@"12"
 #define JSON_REPO_SUB_MATURE		@"13"
+#define JSON_REPO_ID				@"14"

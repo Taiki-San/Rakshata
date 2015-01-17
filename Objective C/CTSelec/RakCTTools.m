@@ -159,11 +159,11 @@
 
 @implementation RakCTProjectImageView
 
-- (id) initWithImageName : (char*) URLRepo : (NSString *) imageName : (NSRect) superviewFrame
+- (id) initWithImageName : (REPO_DATA*) repo : (NSString *) imageName : (NSRect) superviewFrame
 {
 	NSImage * projectImageBase = nil;
 	
-	char * encodedHash = getPathForRepo(URLRepo);
+	char * encodedHash = getPathForRepo(repo);
 	
 	if(encodedHash == NULL)
 		return nil;

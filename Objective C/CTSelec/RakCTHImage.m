@@ -39,7 +39,7 @@
 
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
-	char * teamPath = getPathForRepo(data.repo->URL);
+	char * teamPath = getPathForRepo(data.repo);
 	
 	if(teamPath == NULL)
 		return NO;

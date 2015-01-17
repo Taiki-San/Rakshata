@@ -29,7 +29,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
 	uint nombreToursRequis = 1;
-	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo->URL);
+	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	

@@ -30,7 +30,7 @@ bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)
     char pathConfigFile[LENGTH_PROJECT_NAME*3+350];
     char pathInstallFlag[LENGTH_PROJECT_NAME*3+350];
 	
-	char * encodedHash = getPathForRepo(projectDB.repo->URL);
+	char * encodedHash = getPathForRepo(projectDB.repo);
 	
 	if(encodedHash == NULL)		return false;
 
@@ -63,7 +63,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 		return;
 	
     char configFilePath[TAILLE_BUFFER*5];
-	char * encodedHash = getPathForRepo(projectDB->repo->URL);
+	char * encodedHash = getPathForRepo(projectDB->repo);
 	
 	if(encodedHash == NULL)
 		return;
@@ -146,7 +146,7 @@ void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
 
 void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters)
 {
-    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedRepo = getPathForRepo(projectDB.repo->URL);
+    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedRepo = getPathForRepo(projectDB.repo);
 	
 	if(encodedRepo == NULL)
 		return;
@@ -207,7 +207,7 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID)
 	}
 	else if(ID != VALEUR_FIN_STRUCT)
 	{
-		char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForRepo(data.repo->URL);
+		char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForRepo(data.repo);
 		
 		if(encodedRepo == NULL)
 			return false;

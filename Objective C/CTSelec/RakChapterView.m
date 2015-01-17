@@ -99,7 +99,7 @@
 	projectName = [[RakMenuText alloc] initWithText:[self bounds] : getStringForWchar(project.projectName)];
 	if(projectName != nil)	[self addSubview:projectName];
 	
-	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.repo->URL : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
+	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
 	if(projectImage != nil)	[self addSubview:projectImage];
 	
 	self.readerViewHidden = !readerMode;
@@ -186,7 +186,7 @@
 		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.repo->URL : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : [self bounds]];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	

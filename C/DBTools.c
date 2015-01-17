@@ -15,7 +15,7 @@
 
 /**********		REFRESH REPOS		***************/
 
-bool parseRemoteRepoLine(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA *output)
+bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA *output)
 {
 	if(version >= VERSION_FIRST_REPO_JSON && data != NULL)
 	{
@@ -153,8 +153,8 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	bool large;
 	size_t length;
-	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH+1], *hash;
-	REPO_DATA *repo;
+	char imagePath[1024], crcHash[LENGTH_HASH+1], *hash;
+	REPO_DATA *repo = NULL;
 	
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
@@ -162,15 +162,14 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		if(project[pos].repo != NULL)
 		{
 			repo = project[pos].repo;
-			strncpy(URLRepo, repo->URL, sizeof(URLRepo));
 			break;
 		}
 	}
 	
-	if(!URLRepo[0])		return;
+	if(repo == NULL)		return;
 	else
 	{
-		char * encodedHash = getPathForRepo(URLRepo);
+		char * encodedHash = getPathForRepo(repo);
 		if(encodedHash == NULL)		return;
 		
 		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
@@ -293,7 +292,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			removeFromCache(oldData[posOld]);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo->URL);
+			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
 			if(encodedRepo != NULL)
 			{
 				snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);
@@ -340,7 +339,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		removeFromCache(oldData[posOld]);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo->URL);
+		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
 		if(encodedRepo != NULL)
 		{
 			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);

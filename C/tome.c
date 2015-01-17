@@ -40,7 +40,7 @@ void refreshTomeList(PROJECT_DATA *projectDB)
 
 void setTomeReadable(PROJECT_DATA projectDB, int ID)
 {
-	char pathWithTemp[600], pathWithoutTemp[600], *encodedRepo = getPathForRepo(projectDB.repo->URL);
+	char pathWithTemp[600], pathWithoutTemp[600], *encodedRepo = getPathForRepo(projectDB.repo);
 	
 	if(encodedRepo != NULL)
 	{
@@ -69,7 +69,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		return false;
 	
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
-	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo->URL);
+	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo);
 	
 	if (cache == NULL || encodedRepo == NULL)
 	{
@@ -139,7 +139,7 @@ bool parseTomeDetails(PROJECT_DATA projectDB, int ID, CONTENT_TOME ** output)
 	}
 	
 	uint bufferSize, posBuf;
-	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedRepo = getPathForRepo(projectDB.repo->URL);
+	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedRepo = getPathForRepo(projectDB.repo);
     FILE* config;
 	
 	if(encodedRepo == NULL)
@@ -222,7 +222,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	
     if(dernierLu != NULL)
     {
-		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo->URL);
+		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo);
 		FILE* config;
 		
 		if(encodedRepo == NULL)
@@ -310,7 +310,7 @@ void freeTomeList(META_TOME * data, bool includeDetails)
 
 void printTomeDatas(PROJECT_DATA projectDB, char *bufferDL, int tome)
 {
-    char bufferPath[256], *encodedRepo = getPathForRepo(projectDB.repo->URL);
+    char bufferPath[256], *encodedRepo = getPathForRepo(projectDB.repo);
     FILE* out;
 	
     if(encodedRepo == NULL)
@@ -382,7 +382,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		return;
 	}
 	
-	char * encodedRepo = getPathForRepo(projectDB.repo->URL);
+	char * encodedRepo = getPathForRepo(projectDB.repo);
 	if(encodedRepo == NULL)
 		return;
 	

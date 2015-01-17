@@ -117,7 +117,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(!isTome && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
 				{
-					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(todoListTmp.datas->repo->URL);
+					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(todoListTmp.datas->repo);
 					if(encodedRepo == NULL)
 						continue;
 					
@@ -371,7 +371,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
     bool wentFine = true;
-    char temp[600], basePath[500], *encodedRepo = getPathForRepo(projectDB->repo->URL);
+    char temp[600], basePath[500], *encodedRepo = getPathForRepo(projectDB->repo);
 	
 	if(encodedRepo == NULL)
 		return true;

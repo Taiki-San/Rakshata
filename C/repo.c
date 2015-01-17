@@ -130,7 +130,9 @@ bool addRepo(char * URL, byte type)
 		
 		if(isDownloadValid(bufferDL))
 		{
-			addRepoToDB(parseRemoteRepo(bufferDL));
+			ROOT_REPO_DATA * root = parseRemoteRepo(bufferDL);
+			enforceRepoExtra(root, true);
+			addRepoToDB(root);
 			return true;
 		}
     }
@@ -138,14 +140,36 @@ bool addRepo(char * URL, byte type)
 	return false;
 }
 
-char * getPathForRepo(char *URLRepo)
+#warning "To enforce"
+void enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 {
-	if(URLRepo < (char*) sizeof(REPO_DATA))	//In case the base pointer was NULL
-		return NULL;
+	if(!root->subRepoAreExtra)
+		return;
 	
-	unsigned char URLRepoHash[SHA256_DIGEST_LENGTH];
-	sha256((unsigned char*)URLRepo, URLRepoHash);
-	return base64_encode(URLRepoHash, SHA256_DIGEST_LENGTH, NULL);
+	if(getRidOfThemAfterward)
+	{
+		REPO_DATA * final = calloc(root->nombreSubrepo, sizeof(REPO_DATA));
+		
+		for(uint i = 0, length = root->nombreSubrepo; i < length; i++)
+		{
+			final[i] = *((REPO_DATA_EXTRA *)root->subRepo)[i].data;
+		}
+		
+		free(root->subRepo);
+		root->subRepo = final;
+		root->subRepoAreExtra = false;
+	}
+}
+
+char * getPathForRepo(REPO_DATA * repo)
+{
+	char * output = calloc(20, sizeof(char));
+	if(output != NULL)
+	{
+		snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
+	}
+
+	return output;
 }
 
 byte defineTypeRepo(char *URL)

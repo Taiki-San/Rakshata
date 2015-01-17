@@ -20,7 +20,7 @@
 	
 	if(projectImage != nil)
 	{
-		char * encodedHash = getPathForRepo(projectData.repo->URL);
+		char * encodedHash = getPathForRepo(projectData.repo);
 		
 		if(encodedHash != NULL)
 		{

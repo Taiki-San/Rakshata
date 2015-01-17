@@ -251,7 +251,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	if(IDChap == -1)
 		return ERROR_CHECK;
 	
-	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedRepo = getPathForRepo(projectData.repo->URL);
+	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedRepo = getPathForRepo(projectData.repo);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 	char pathInstall[LENGTH_PROJECT_NAME * 2 + 256];
 #endif
@@ -366,7 +366,7 @@ void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
-	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(data.repo->URL);
+	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(data.repo);
 	
 	if(encodedRepo == NULL)
 		return;
@@ -426,7 +426,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(length < 110)	//overflow
 		return false;
 
-    char bufferPath[length], *encodedRepo = getPathForRepo(tomeDatas->datas->repo->URL);
+    char bufferPath[length], *encodedRepo = getPathForRepo(tomeDatas->datas->repo);
 	
 	if(encodedRepo == NULL)
 		return false;

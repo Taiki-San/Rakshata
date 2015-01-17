@@ -246,24 +246,26 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			
 			//We parse the different component
 			URLImage = objectForKey(repo, JSON_REPO_SUB_IMAGE, @"image");
-			if(URLImage == nil || ![URLImage isKindOfClass:[NSString class]] || [URLImage length] >= REPO_URL_LENGTH - 1)
+			if(URLImage != nil)
 			{
-				failure++;
-				continue;
-			}
-			
-			//Not absolutely necessary
-			URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
-			if(URLImageRetina != nil && (![URLImageRetina isKindOfClass:[NSString class]] || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
-			{
-				URLImageRetina = nil;
-			}
-			
-			hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
-			if(hash == nil || ![hash isKindOfClass:[NSString class]] || [hash length] != REPO_IMAGE_HASH_LENGTH - 1)
-			{
-				failure++;
-				continue;
+				if(![URLImage isKindOfClass:[NSString class]] || [URLImage length] >= REPO_URL_LENGTH - 1)
+				{
+					failure++;
+					continue;
+				}
+				
+				URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
+				if(URLImageRetina != nil && (![URLImageRetina isKindOfClass:[NSString class]] || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
+				{
+					URLImageRetina = nil;
+				}
+				
+				hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
+				if(hash == nil || ![hash isKindOfClass:[NSString class]] || [hash length] != REPO_IMAGE_HASH_LENGTH - 1)
+				{
+					failure++;
+					continue;
+				}
 			}
 			
 			*(outputExtra[pos].data) = parseSingleSubRepo(repo, parentID, &error);
@@ -277,17 +279,27 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			
 			//Now, time to copy the rest of the data
 			
-			strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-
-			if(URLImageRetina != nil)
+			if(URLImage != nil)
 			{
-				strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-				outputExtra[pos].haveRetina = true;
+				strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], REPO_IMAGE_HASH_LENGTH);
+				
+				if(URLImageRetina != nil)
+				{
+					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+					outputExtra[pos].haveRetina = true;
+				}
+				else
+					outputExtra[pos].haveRetina = false;
 			}
 			else
+			{
+				outputExtra[pos].URLImage[0] = 0;
+				outputExtra[pos].hashImage[0] = 0;
 				outputExtra[pos].haveRetina = false;
+			}
 			
-			strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], REPO_IMAGE_HASH_LENGTH);
+			pos++;
 		}
 	}
 	
@@ -329,10 +341,12 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	ROOT_REPO_DATA * root = calloc(1, sizeof(ROOT_REPO_DATA)), *rootWip = root;
 	if(root == NULL)
 		return NULL;
+	else
+		root = NULL;
 	
 	//Create everything we need
 	NSString *name, *URL;
-	NSNumber * type;
+	NSNumber * type, *ID;
 	NSArray * array;
 	
 	//Parse the shit out of this file
@@ -361,20 +375,31 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	
 	//Okay, the root parsing is over, the sub-repo parsing is performed by an other routine
 	
-	root->repoID = getFreeRootRepoID();
-	root->subRepo = parseSubRepo(array, wantExtra, &(root->nombreSubrepo), root->repoID);
-	root->subRepoAreExtra = wantExtra;
-	
-	wstrncpy(root->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
-	usstrcpy(root->URL, REPO_URL_LENGTH, [URL cStringUsingEncoding:NSASCIIStringEncoding]);
-	
-	root->descriptions = descriptions;
-	root->langueDescriptions = languages;
-	root->nombreDescriptions = nbDescriptions;
+	if(localSource)
+	{
+		ID = objectForKey(parseData, JSON_REPO_ID, @"GUID");
+		if(ID == nil || ![ID isKindOfClass:[NSNumber class]])
+			goto error;
+		
+		rootWip->repoID = [ID unsignedIntValue];
+	}
+	else
+		rootWip->repoID = getFreeRootRepoID();
 
-	root->type = [type unsignedCharValue];
-	root->trusted = trusted;
+	rootWip->subRepo = parseSubRepo(array, wantExtra, &(rootWip->nombreSubrepo), rootWip->repoID);
+	rootWip->subRepoAreExtra = wantExtra;
 	
+	wstrncpy(rootWip->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
+	usstrcpy(rootWip->URL, REPO_URL_LENGTH, [URL cStringUsingEncoding:NSASCIIStringEncoding]);
+	
+	rootWip->descriptions = descriptions;
+	rootWip->langueDescriptions = languages;
+	rootWip->nombreDescriptions = nbDescriptions;
+
+	rootWip->type = [type unsignedCharValue];
+	rootWip->trusted = trusted;
+	
+	root = rootWip;
 	rootWip = NULL;
 	descriptions = NULL;
 	languages = NULL;
@@ -455,7 +480,7 @@ ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem)
 			if(![dict isKindOfClass:[NSDictionary class]])
 				continue;
 			
-			root[count] = parseRootRepo(dict, true, false);
+			root[count] = parseRootRepo(dict, false, true);
 
 			if(root[count] != NULL)
 				count++;
@@ -481,8 +506,8 @@ NSArray * rebuildDescriptions(wchar_t ** descriptions, char ** langueDescription
 	{
 		dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
 		
-		[dictionary insertValue:getStringForWchar(descriptions[i]) inPropertyWithKey:JSON_REPO_DESCRIPTION];
-		[dictionary insertValue:[NSString stringWithUTF8String:langueDescriptions[i]] inPropertyWithKey:JSON_REPO_LANGUAGE];
+		[dictionary setObject:getStringForWchar(descriptions[i]) forKey:JSON_REPO_DESCRIPTION];
+		[dictionary setObject:[NSString stringWithUTF8String:langueDescriptions[i]] forKey:JSON_REPO_LANGUAGE];
 		
 		[output addObject:[NSDictionary dictionaryWithDictionary:dictionary]];
 	}
@@ -508,13 +533,13 @@ NSArray * rebuildRepoTree(REPO_DATA * subRepo, uint nombreSubrepo, bool isExtra)
 		else
 			element = &subRepo[i];
 		
-		[dict insertValue:@(element->repoID) inPropertyWithKey:JSON_REPO_SUB_ID];
-		[dict insertValue:getStringForWchar(element->name) inPropertyWithKey:JSON_REPO_NAME];
-		[dict insertValue:[NSString stringWithUTF8String:element->language] inPropertyWithKey:JSON_REPO_LANGUAGE];
-		[dict insertValue:@(element->type) inPropertyWithKey:JSON_REPO_TYPE];
-		[dict insertValue:[NSString stringWithUTF8String:element->URL] inPropertyWithKey:JSON_REPO_URL];
-		[dict insertValue:[NSString stringWithUTF8String:element->website] inPropertyWithKey:JSON_REPO_SUB_WEBSITE];
-		[dict insertValue:@(element->isMature) inPropertyWithKey:JSON_REPO_SUB_MATURE];
+		[dict setObject:@(element->repoID) forKey:JSON_REPO_SUB_ID];
+		[dict setObject:getStringForWchar(element->name) forKey:JSON_REPO_NAME];
+		[dict setObject:[NSString stringWithUTF8String:element->language] forKey:JSON_REPO_LANGUAGE];
+		[dict setObject:@(element->type) forKey:JSON_REPO_TYPE];
+		[dict setObject:[NSString stringWithUTF8String:element->URL] forKey:JSON_REPO_URL];
+		[dict setObject:[NSString stringWithUTF8String:element->website] forKey:JSON_REPO_SUB_WEBSITE];
+		[dict setObject:@(element->isMature) forKey:JSON_REPO_SUB_MATURE];
 		
 		[output addObject:dict];
 	}
@@ -528,26 +553,27 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root)
 		return nil;
 	
 	//Will leak one empty element if no description but don't survive the end of the function, so we don't care
-	NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:7];
+	NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:8];
 	NSArray * array;
 	
-	[dict insertValue:@(MINIMUM_VERSION_FOR_DUMPER) inPropertyWithKey:JSON_REPO_MIN_VERSION];
-	[dict insertValue:getStringForWchar(root->name) inPropertyWithKey:JSON_REPO_NAME];
-	[dict insertValue:@(root->type) inPropertyWithKey:JSON_REPO_TYPE];
-	[dict insertValue:[NSString stringWithUTF8String:root->URL] inPropertyWithKey:JSON_REPO_URL];
+	[dict setObject:@(MINIMUM_VERSION_FOR_DUMPER) forKey:JSON_REPO_MIN_VERSION];
+	[dict setObject:getStringForWchar(root->name) forKey:JSON_REPO_NAME];
+	[dict setObject:@(root->type) forKey:JSON_REPO_TYPE];
+	[dict setObject:[NSString stringWithUTF8String:root->URL] forKey:JSON_REPO_URL];
+	[dict setObject:@(root->repoID) forKey:JSON_REPO_ID];
 
 	array = rebuildDescriptions(root->descriptions, root->langueDescriptions, root->nombreDescriptions);
 	if(array != nil)
-		[dict insertValue:array inPropertyWithKey:JSON_REPO_DESCRIPTION];
+		[dict setObject:array forKey:JSON_REPO_DESCRIPTION];
 	
 	if(root->trusted)
-		[dict insertValue:@(YES) inPropertyWithKey:JSON_REPO_TRUSTED];
+		[dict setObject:@(YES) forKey:JSON_REPO_TRUSTED];
 	
 	array = rebuildRepoTree(root->subRepo, root->nombreSubrepo, root->subRepoAreExtra);
 	if(array == nil)
 		return nil;
 	
-	[dict insertValue:array inPropertyWithKey:JSON_REPO_REPO_TREE];
+	[dict setObject:array forKey:JSON_REPO_REPO_TREE];
 	
 	return [NSDictionary dictionaryWithDictionary:dict];
 }

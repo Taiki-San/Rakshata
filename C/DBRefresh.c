@@ -100,9 +100,11 @@ void updateRepo()
 		
 		//Refresh effectif
 		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldRootData[posRepo]);
-		if(parseRemoteRepoLine(bufferDL, oldRootData[posRepo], dataVersion, &newData))
+		if(parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
-			removeNonInstalledSubRepo(&(newData.subRepo), newData.nombreSubrepo);
+			removeNonInstalledSubRepo(&(newData.subRepo), newData.nombreSubrepo, true);
+			enforceRepoExtra(&newData, true);
+			
 			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
 		}
 	}
@@ -299,7 +301,7 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
 	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
 	{
-		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForRepo(project.repo->URL);
+		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForRepo(project.repo);
 		
 		if(encodedRepo != NULL)
 		{
@@ -316,7 +318,7 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 
 void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 {
-	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForRepo(project.repo->URL);
+	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForRepo(project.repo);
 	FILE* fichier = NULL;
 	
 	if(encodedRepo == NULL)

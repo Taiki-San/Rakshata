@@ -103,7 +103,7 @@ int setupBDDCache()
 	char * encodedRepo[nombreRepo];
 	for(uint i = 0; i < nombreRepo; i++)
 	{
-		encodedRepo[i] = internalRepoList[i] == NULL ? NULL : getPathForRepo(internalRepoList[i]->URL);
+		encodedRepo[i] = internalRepoList[i] == NULL ? NULL : getPathForRepo(internalRepoList[i]);
 	}
 	
 	getRidOfDuplicateInRepo(internalRepoList, &nombreRepo);
@@ -734,7 +734,14 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 {
-	return parseLocalRepo(repoDB, nbRepo);
+	size_t length;
+	char * decoded = (char*) base64_decode(repoDB, strlen(repoDB), &length);
+	
+	ROOT_REPO_DATA ** output = parseLocalRepo(decoded, nbRepo);
+	
+	free(decoded);
+	
+	return output;
 }
 
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
@@ -898,7 +905,23 @@ int getIndexOfRepo(uint parentID, uint repoID)
 
 uint getFreeRootRepoID()
 {
-	return ++maxRootID;
+	if(rootRepoList == NULL)
+		return ++maxRootID;
+	
+	uint i;
+	while(1)
+	{
+		++maxRootID;
+		
+		for(i = 0; i < lengthRootRepo; i++)
+		{
+			if(rootRepoList[i]->repoID == maxRootID)
+				break;
+		}
+		
+		if(i == lengthRootRepo)
+			return maxRootID;
+	}
 }
 
 void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
@@ -1041,24 +1064,30 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 	}
 }
 
-void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo)
+void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveExtra)
 {
 	if(_subRepo == NULL || *_subRepo == NULL || nbSubRepo == 0)
 		return;
-	
+
 	REPO_DATA * subRepo = *_subRepo;
-	uint parentID = subRepo[0].parentRepoID, validatedCount = 0;
+	uint parentID, validatedCount = 0;
 	bool validated[nbSubRepo];
 	
 	memset(validated, 0, sizeof(validated));
+	
+	if(haveExtra)
+		parentID = ((REPO_DATA_EXTRA *) subRepo)[0].data->parentRepoID;
+	else
+		parentID = subRepo[0].parentRepoID;
 	
 	for(uint pos = 0; pos < lengthRepo; pos++)
 	{
 		if(repoList[pos] != NULL && repoList[pos]->parentRepoID == parentID)
 		{
-			for(uint posSub = 0; posSub < nbSubRepo; posSub++)
+			for(uint posSub = 0, currentID; posSub < nbSubRepo; posSub++)
 			{
-				if(subRepo[posSub].repoID == repoList[pos]->repoID && !validated[posSub])
+				currentID = haveExtra ? ((REPO_DATA_EXTRA *) subRepo)[0].data->repoID : subRepo[posSub].repoID;
+				if(currentID == repoList[pos]->repoID && !validated[posSub])
 				{
 					validated[posSub] = true;
 					validatedCount++;
