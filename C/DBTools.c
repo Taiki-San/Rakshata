@@ -13,65 +13,31 @@
 #include "db.h"
 #include "crypto/crypto.h"
 
-/**********		REFRESH TEAMS		***************/
+/**********		REFRESH REPOS		***************/
 
-bool isRemoteRepoLineValid(char * data, int version)
+bool parseRemoteRepoLine(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA *output)
 {
-	if(version < 1 || version > 2)
-		return false;
-	
-	uint basePos, nbrSpaces = 0;
-	
-	for(basePos = 0; data[basePos] && (data[basePos] < '!' || data[basePos] > '~'); basePos++);
-	
-	//Check the number of spaces
-	nbrSpaces = countSpaces(&data[basePos]);
-	
-	if((version == 1 && nbrSpaces != 5) || (version == 2 && nbrSpaces != 5))
+	if(version >= VERSION_FIRST_REPO_JSON && data != NULL)
 	{
-#ifdef DEV_VERSION
-		uint messageLength = 200 + strlen(data);
-		char logMessage[messageLength];
-		snprintf(logMessage, messageLength, "Incoherent number of spaces in downloaded repo file, dumping data: version = %d, nbrSpaces = %d 'data: %s'", version, nbrSpaces, data);
-		logR(logMessage);
-#endif
-		return false;
-	}
-	
-	return true;
-}
-
-bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAMS_DATA *output)
-{
-	if(version == -1 || !isRemoteRepoLineValid(data, version))
-		logR("An error occured");
-	
-	else if(version == 1)	//Legacy mode
-	{
-		char uselessID[10];
-		sscanfs(data, "%s %s %s %s %s %s", uselessID, 10, output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE);
-		
-		if(strcmp(output->type, TYPE_DEPOT_PAID) && strcmp(output->type, TYPE_DEPOT_OTHER) && strcmp(output->type, TYPE_DEPOT_DB))
-			return false;
-		
-		output->openSite = (previousData == NULL) ? REPO_DEFAULT_OPEN_WEBSITE : previousData->openSite;
-		return true;
-	}
-	
-	else if(version == 2)
-	{
-		sscanfs(data, "%s %s %s %s %s %d", output->teamLong, LENGTH_PROJECT_NAME, output->teamCourt, LONGUEUR_COURT, output->type, LONGUEUR_TYPE_TEAM, output->URLRepo, LONGUEUR_URL, output->site, LONGUEUR_SITE, &output->openSite);
-		
-		if(strcmp(output->type, TYPE_DEPOT_PAID) && strcmp(output->type, TYPE_DEPOT_OTHER) && strcmp(output->type, TYPE_DEPOT_DB))
-			return false;
-		
-		return true;
+		if(version == 3)
+		{
+			output = parseRemoteRepo(data);
+			if(output != NULL)
+			{
+				output->repoID = previousData->repoID;
+				return true;
+			}
+			else
+				logR("An error occured when parsing a root repo");
+		}
+		else
+			logR("Unsupported repo, an update is probably required");
 	}
 	else
-		logR("Unsupported repo, an update is probably required");
+		logR("An error occured");
 	
 	if(previousData != NULL)
-		memcpy(output, previousData, sizeof(TEAMS_DATA));
+		memcpy(output, previousData, sizeof(ROOT_REPO_DATA));
 	
 	return false;
 }
@@ -79,21 +45,21 @@ bool parseRemoteRepoLine(char *data, TEAMS_DATA *previousData, int version, TEAM
 
 /**********		REFRESH PROJECTS		***********/
 
-uint defineBoundsTeamOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem)
+uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem)
 {
 	if(oldData == NULL)
 		return UINT_MAX;
 	
-	for(; posBase < nbElem && oldData[posBase].team == NULL; posBase++);
+	for(; posBase < nbElem && oldData[posBase].repo == NULL; posBase++);
 	
-	void * ptrTeam = oldData[posBase].team;
+	void * ptrRepo = oldData[posBase].repo;
 	
-	for (posBase++; oldData[posBase].team == ptrTeam; posBase++);
+	for (posBase++; oldData[posBase].repo == ptrRepo; posBase++);
 	
 	return posBase;
 }
 
-bool downloadedProjectListSeemsLegit(char *data, TEAMS_DATA* team)
+bool downloadedProjectListSeemsLegit(char *data)
 {
 	uint pos = 0;
 	for(; data[pos] && (data[pos] <= ' ' && data[pos] > 127); pos++);
@@ -188,15 +154,15 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	bool large;
 	size_t length;
 	char URLRepo[LONGUEUR_URL] = {0}, imagePath[1024], crcHash[LENGTH_HASH+1], *hash;
-	TEAMS_DATA *team;
+	REPO_DATA *repo;
 	
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].team != NULL)
+		if(project[pos].repo != NULL)
 		{
-			team = project[pos].team;
-			strncpy(URLRepo, team->URLRepo, sizeof(URLRepo));
+			repo = project[pos].repo;
+			strncpy(URLRepo, repo->URL, sizeof(URLRepo));
 			break;
 		}
 	}
@@ -204,7 +170,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	if(!URLRepo[0])		return;
 	else
 	{
-		char * encodedHash = getPathForTeam(URLRepo);
+		char * encodedHash = getPathForRepo(URLRepo);
 		if(encodedHash == NULL)		return;
 		
 		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
@@ -213,7 +179,7 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].team == NULL)
+		if(project[pos].repo == NULL)
 			continue;
 		
 		for(char i = 0; i < 2; i++)
@@ -243,14 +209,14 @@ void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
 			
 			if(strncmp(crcHash, hash, LENGTH_HASH))
-				getPageInfo(*team, project[pos].projectID, large, imagePath);
+				getPageInfo(*repo, project[pos].projectID, large, imagePath);
 		}
 	}
 }
 
-void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
+void getPageInfo(REPO_DATA repo, uint projectID, bool large, char * filename)
 {
-	bool ssl = strcmp(team.type, TYPE_DEPOT_OTHER) != 0;
+	bool ssl = repo.type != TYPE_DEPOT_OTHER;
 	char URL[1024], filenameTmp[1024+64], suffix[6] = PROJ_IMG_SUFFIX_CT, buf[5];
 	uint pos = strlen(filename);
 	FILE* file;
@@ -260,14 +226,14 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 	strncpy(filenameTmp, filename, sizeof(filenameTmp));
 	for(char i = 0; i < 2; i++)
 	{
-		if(!strcmp(team.type, TYPE_DEPOT_DB))
-			snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
+		if(repo.type == TYPE_DEPOT_DB)
+			snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/imageCache/%d_%s.png", repo.URL, projectID, suffix);
 		
-		else if(!strcmp(team.type, TYPE_DEPOT_OTHER))
-			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", team.URLRepo, projectID, suffix);
+		else if(repo.type == TYPE_DEPOT_OTHER)
+			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", repo.URL, projectID, suffix);
 		
-		else if(!strcmp(team.type, TYPE_DEPOT_PAID)) //Payant
-			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s", team.URLRepo, projectID, suffix);
+		else if(repo.type == TYPE_DEPOT_PAID) //Payant
+			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s", repo.URL, projectID, suffix);
 		
 		filenameTmp[pos] = '.';	filenameTmp[pos+1] = 't';	filenameTmp[pos+2] = 'm';	filenameTmp[pos+3] = 'p';	filenameTmp[pos+4] = '\0';
 		download_disk(URL, NULL, filenameTmp, ssl);
@@ -300,9 +266,9 @@ void getPageInfo(TEAMS_DATA team, uint projectID, bool large, char * filename)
 
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
 {
-	size_t IDTeam = getTeamID(oldData[0].team);
+	uint repoID = getRepoIndex(oldData[0].repo);
 	
-	if(IDTeam == UINT_MAX)
+	if(repoID == UINT_MAX)
 		return;
 	
 	//On commence par reclasser les éléments
@@ -327,13 +293,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			removeFromCache(oldData[posOld]);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
-			if(encodedTeam != NULL)
+			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo->URL);
+			if(encodedRepo != NULL)
 			{
-				snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, oldData[posOld].projectID);
+				snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);
 				removeFolder(path);
 			}
-			free(encodedTeam);
+			free(encodedRepo);
 #endif
 			posOld++;
 		}
@@ -362,7 +328,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		{
 			newData[posNew].cacheDBID = 0;
 			
-			addToCache(request, newData[posNew], IDTeam, false);
+			addToCache(request, newData[posNew], repoID, false);
 			
 			posNew++;
 		}
@@ -374,13 +340,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		removeFromCache(oldData[posOld]);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedTeam = getPathForTeam(oldData[posOld].team->URLRepo);
-		if(encodedTeam != NULL)
+		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo->URL);
+		if(encodedRepo != NULL)
 		{
-			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, oldData[posOld].projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);
 			removeFolder(path);
 		}
-		free(encodedTeam);
+		free(encodedRepo);
 #endif
 		posOld++;
 	}
@@ -389,7 +355,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	{
 		newData[posNew].cacheDBID = 0;
 		
-		addToCache(request, newData[posNew], IDTeam, false);
+		addToCache(request, newData[posNew], repoID, false);
 		
 		posNew++;
 	}
@@ -448,7 +414,7 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 
 bool isPaidProject(PROJECT_DATA projectData)
 {
-	return projectData.team != NULL && !strcmp(projectData.team->type, TYPE_DEPOT_PAID);
+	return projectData.repo != NULL && projectData.repo->type == TYPE_DEPOT_PAID;
 }
 
 bool isInstalled(char * basePath)

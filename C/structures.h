@@ -40,18 +40,6 @@ typedef struct
 	size_t length;
 } IMG_DATA;
 
-
-//Legacy, to get rid of ASAP
-typedef struct infos_Team
-{
-    char teamLong[LENGTH_PROJECT_NAME];
-    char teamCourt[LONGUEUR_COURT];
-    char type[LONGUEUR_TYPE_TEAM];
-    char URLRepo[LONGUEUR_URL];
-    char site[LONGUEUR_SITE];
-    bool openSite;
-} TEAMS_DATA;
-
 /**********************************************************************************************
  **
  **		REPOSITORY STRUCTURES
@@ -199,7 +187,7 @@ typedef struct root_repository_data
 typedef struct dataProject
 {
 	//Pointeurs, un bloc chacun (64b)
-	TEAMS_DATA *team;
+	REPO_DATA *repo;
 	int *chapitresFull;
 	uint *chapitresPrix;
 	int *chapitresInstalled;
@@ -239,7 +227,7 @@ typedef struct dataProject
 typedef struct dataProjectWithExtra
 {
 	//Pointeurs, un bloc chacun (64b)
-	TEAMS_DATA *team;
+	REPO_DATA *repo;
 	int *chapitresFull;
 	uint *chapitresPrix;
 	int *chapitresInstalled;

@@ -139,12 +139,12 @@ char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition,
                 continue;
             else if(todoList[currentPosition]->listChapitreOfTome != NULL)
             {
-				snprintf(buffer, sizePerElem, "%s %d T %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %d T %d\n", todoList[currentPosition]->datas->repo->URL, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
             else
             {
-				snprintf(buffer, sizePerElem, "%s %d C %d\n", todoList[currentPosition]->datas->team->URLRepo, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
+				snprintf(buffer, sizePerElem, "%s %d C %d\n", todoList[currentPosition]->datas->repo->URL, todoList[currentPosition]->datas->projectID, todoList[currentPosition]->identifier);
 				strlcat(output, buffer, fullSize);
             }
         }

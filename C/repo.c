@@ -65,17 +65,18 @@ void checkAjoutRepoParFichier(char *argv)
     }
 
 	bool anySuccess = false;
-	char type[LONGUEUR_TYPE_TEAM], URL[LONGUEUR_URL];
+	char URL[LONGUEUR_URL];
 	position = ligneCourante = 0;
 	while(position < size && ligneCourante < nombreRetourLigne && bufferRead[position])
 	{
-		position += sscanfs(&bufferRead[position], "%s %s", type, LONGUEUR_TYPE_TEAM, URL, LONGUEUR_URL);
+		uint typeBuf = MAX_TYPE_DEPOT + 1;
+		position += sscanfs(&bufferRead[position], "%d %s", &typeBuf, URL, LONGUEUR_URL);
+		
 		for(; position < size && bufferRead[position++] != '\n';);
 		for(; position < size && (bufferRead[position] == '\n' || bufferRead[position] == '\r'); position++);
-		if(URL[0])
-			anySuccess |= addRepo(URL, type);
+		if(typeBuf <= MAX_TYPE_DEPOT && URL[0])
+			anySuccess |= addRepo(URL, typeBuf & 0xff);
 		
-		crashTemp(type, LONGUEUR_TYPE_TEAM);
 		crashTemp(URL, LONGUEUR_URL);
 	}
 	
@@ -83,23 +84,19 @@ void checkAjoutRepoParFichier(char *argv)
 		updateDatabase(true);
 }
 
-bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput)
+bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
 {
 	if(type == 0 || type > MAX_TYPE_DEPOT || repoURL == NULL || output == NULL || !sizeOutput)
 		return false;
 	
 	output[0] = 0;
-	if(type == 1 || type == 2)
+	if(type == TYPE_DEPOT_DB || type == TYPE_DEPOT_OTHER)
 	{
 		short versionRepo = VERSION_REPO;
-		char fullURL[512], *baseURL = type == 1 ? "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d" : "http://%s/rakshata-repo-%d";
-		do
-		{
-			snprintf(fullURL, sizeof(fullURL), baseURL, repoURL, versionRepo);
-			download_mem(fullURL, NULL, output, sizeOutput, type == 1 ? SSL_ON : SSL_OFF);
-			versionRepo--;
-
-		} while(versionRepo > 0 && !isDownloadValid(output));
+		char fullURL[512];
+		
+		snprintf(fullURL, sizeof(fullURL), type == TYPE_DEPOT_DB ? "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d" : "http://%s/rakshata-repo-%d", repoURL, versionRepo);
+		download_mem(fullURL, NULL, output, sizeOutput, type == 1 ? SSL_ON : SSL_OFF);
 	}
 	else
 	{
@@ -111,53 +108,29 @@ bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput)
 	return isDownloadValid(output);
 }
 
-TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length)
-{
-	TEAMS_DATA outputData;
-	memset(&outputData, 0, sizeof(TEAMS_DATA));
-	
-	if(remoteData != NULL && length > 0)
-	{
-		length--;
-		
-		if(remoteData[length] >= '0' && remoteData[length] <= '9') //Ca fini par un chiffe, c'est la v2
-		{
-			sscanfs(remoteData, "%s %s %s %s %s %d", outputData.teamLong, LENGTH_PROJECT_NAME, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE, &outputData.openSite);
-		}
-		else
-		{
-			char ID[10];
-			sscanfs(remoteData, "%s %s %s %s %s %s", ID, sizeof(ID), outputData.teamLong, LENGTH_PROJECT_NAME, outputData.teamCourt, LONGUEUR_COURT, outputData.type, LONGUEUR_TYPE_TEAM, outputData.URLRepo, LONGUEUR_URL, outputData.site, LONGUEUR_SITE);
-			outputData.openSite = 1;
-		}
-	}
-	
-	return outputData;
-}
-
-#warning "To test"
-bool addRepo(char * URL, char *type)
+#warning "To upgrade"
+bool addRepo(char * URL, byte type)
 {
     char bufferDL[1000];
-    TEAMS_DATA tmpData;
 
 	if(!checkNetworkState(CONNEXION_DOWN))
     {
-		if(type == NULL)
+		if(type > MAX_TYPE_DEPOT)
 		{
 			getRepoData(defineTypeRepo(URL), URL, bufferDL, sizeof(bufferDL));
 		}
 		else
 		{
-			usstrcpy(tmpData.URLRepo, LONGUEUR_URL, URL);
-			usstrcpy(tmpData.type, LONGUEUR_TYPE_TEAM, type);
+			ROOT_REPO_DATA tmpData;
+			
+			usstrcpy(tmpData.URL, LONGUEUR_URL, URL);
+			tmpData.type = type;
 			getUpdatedRepo(bufferDL, sizeof(bufferDL), tmpData);
 		}
 		
 		if(isDownloadValid(bufferDL))
 		{
-			tmpData = parseRemoteRepoData(bufferDL, sizeof(bufferDL));
-			addRepoToDB(tmpData);
+			addRepoToDB(parseRemoteRepo(bufferDL));
 			return true;
 		}
     }
@@ -165,9 +138,9 @@ bool addRepo(char * URL, char *type)
 	return false;
 }
 
-char * getPathForTeam(char *URLRepo)
+char * getPathForRepo(char *URLRepo)
 {
-	if(URLRepo < (char*) sizeof(TEAMS_DATA))	//In case the base pointer was NULL
+	if(URLRepo < (char*) sizeof(REPO_DATA))	//In case the base pointer was NULL
 		return NULL;
 	
 	unsigned char URLRepoHash[SHA256_DIGEST_LENGTH];
@@ -175,18 +148,19 @@ char * getPathForTeam(char *URLRepo)
 	return base64_encode(URLRepoHash, SHA256_DIGEST_LENGTH, NULL);
 }
 
-int defineTypeRepo(char *URL)
+byte defineTypeRepo(char *URL)
 {
     int i = 0;
     if(strlen(URL) == 8) //SI DB, seulement 8 chiffres
     {
         while(i < 8 && isNbr(URL[i++]));
         if(i == 8) //Si que des chiffres
-            return 1; //DB
+            return TYPE_DEPOT_DB;
     }
     else if(strlen(URL) == 5 || strlen(URL) == 6) //GOO.GL
-        return 3;
-    return 2; //O
+        return TYPE_DEPOT_GOO;
+
+	return TYPE_DEPOT_OTHER;
 }
 
 int confirmationRepo(char team[LENGTH_PROJECT_NAME])

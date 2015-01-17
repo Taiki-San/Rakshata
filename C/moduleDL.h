@@ -153,7 +153,6 @@ typedef struct argument_to_MDL_handler
 {
 	int selfCode;
     int8_t *currentState;
-    char ***historiqueTeam;
     
 	DATA_LOADED* todoList;
 	
@@ -173,7 +172,7 @@ char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, 
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
-char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length);
+char* internalCraftBaseURL(REPO_DATA repoData, uint* length);
 DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProjectTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
@@ -183,7 +182,6 @@ bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 bool getTomeDetails(DATA_LOADED *tomeDatas);
 int sortProjectsToDownload(const void *a, const void *b);
 
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam);
 bool MDLDownloadOver(bool reanimateOnly);
 bool MDLStartNextInstallation();
 void MDLQuit();
@@ -198,7 +196,7 @@ void watcherForLoginRequest(MDL_MWORKER_ARG * arg);
 /**ModuleDLMainWorker.m**/
 void mainDLProcessing(MDL_MWORKER_ARG * arg);
 void MDLSetThreadID(THREAD_TYPE *thread);
-void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam);
+void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status);
 
 /**ModuleDLWorker.c**/
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);

@@ -16,7 +16,7 @@
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
 {
-	if(data.team == NULL)
+	if(data.repo == NULL)
 		return nil;
 	
 	self = [self initWithFrame : parentFrame];
@@ -39,7 +39,7 @@
 
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
-	char * teamPath = getPathForTeam(data.team->URLRepo);
+	char * teamPath = getPathForRepo(data.repo->URL);
 	
 	if(teamPath == NULL)
 		return NO;

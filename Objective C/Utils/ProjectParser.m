@@ -454,7 +454,7 @@ end:
 
 NSDictionary * reverseParseBloc(PROJECT_DATA project)
 {
-	if(project.team == NULL)
+	if(project.repo == NULL)
 		return nil;
 	
 	id buf;
@@ -513,7 +513,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	return output;
 }
 
-void* parseProjectJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
+void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra)
 {
 	void * outputData = NULL;
 	bool isInit;
@@ -556,7 +556,7 @@ void* parseProjectJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbEle
 				else
 					project = &((PROJECT_DATA*)outputData)[validElements++];
 				
-				project->team = team;
+				project->repo = repo;
 				if(project->tomesFull != NULL)
 				{
 					for(uint i = 0; i < project->nombreTomes; i++)
@@ -575,7 +575,7 @@ void* parseProjectJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbEle
 	return outputData;
 }
 
-PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uint * nbElem)
+PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint * nbElem)
 {
 	NSError * error = nil;
 	NSMutableDictionary * remoteData = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:remoteDataRaw length:ustrlen(remoteDataRaw)] options:0 error:&error];
@@ -583,16 +583,16 @@ PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uin
 	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
 		return NULL;
 	
-	id teamURL = objectForKey(remoteData, JSON_PROJ_AUTHOR_URL, @"authorURL");
-	if(teamURL == nil || [teamURL superclass] != [NSMutableString class] || ![(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team->URLRepo]])
+	id repoID = objectForKey(remoteData, JSON_PROJ_AUTHOR_ID, @"authorID");
+	if(repoID == nil || ![repoID isKindOfClass:[NSNumber class]] || [(NSNumber*) repoID unsignedLongLongValue] != getRepoID(repo))
 		return NULL;
 	
-	return parseProjectJSON(team, remoteData, nbElem, true);
+	return parseProjectJSON(repo, remoteData, nbElem, true);
 }
 
-PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem)
+PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem)
 {
-	if(team == nil || nbElem == NULL)
+	if(repo == NULL || nbElem == NULL)
 		return NULL;
 	
 	NSError * error = nil;
@@ -601,28 +601,28 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 	if(error != nil || remoteData == nil || [remoteData superclass] != [NSArray class])
 		return NULL;
 	
-	uint nbElemPart, posTeam;
+	uint nbElemPart, posRepo;
 	PROJECT_DATA *output = NULL, *currentPart;
-	id teamURL;
+	id repoID;
 	
 	for(NSDictionary * remoteDataPart in remoteData)
 	{
 		if([remoteDataPart superclass] != [NSMutableDictionary class])
 			continue;
 		
-		teamURL = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_URL, @"authorURL");
-		if (teamURL == nil || [teamURL superclass] != [NSMutableString class])
+		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID");
+		if (repoID == nil || ![repoID isKindOfClass : [NSNumber class]])
 			continue;
 		
-		for(posTeam = 0; posTeam < nbTeam; posTeam++)
+		for(posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
-			if(team[posTeam] == NULL)
+			if(repo[posRepo] == NULL)
 				continue;
 			
-			if([(NSString*) teamURL isEqualToString:[NSString stringWithUTF8String:team[posTeam]->URLRepo]])
+			if([(NSNumber*) repoID unsignedLongLongValue] != getRepoID(repo[posRepo]))
 			{
 				nbElemPart = 0;
-				currentPart = (PROJECT_DATA*) parseProjectJSON(team[posTeam], remoteDataPart, &nbElemPart, false);
+				currentPart = (PROJECT_DATA*) parseProjectJSON(repo[posRepo], remoteDataPart, &nbElemPart, false);
 				
 				if(nbElemPart)
 				{
@@ -643,38 +643,38 @@ PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * r
 	return output;
 }
 
-char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput)
+char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput)
 {
-	if(data == NULL || team == NULL || !nbElem || !nbTeam)
+	if(data == NULL || repo == NULL || !nbElem || !nbRepo)
 		return NULL;
 	
-	uint counters[nbTeam], jumpTable[nbTeam][nbElem];
-	bool projectLinkedToTeam = false;
+	uint counters[nbRepo], jumpTable[nbRepo][nbElem];
+	bool projectLinkedToRepo = false;
 	
 	memset(counters, 0, sizeof(counters));
 	
 	//Create a table linking projects to team
-	for(uint pos = 0, posTeam; pos < nbElem; pos++)
+	for(uint pos = 0, posRepo; pos < nbElem; pos++)
 	{
-		for (posTeam = 0; posTeam < nbTeam; posTeam++)
+		for (posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
-			if(data[pos].team == team[posTeam])
+			if(data[pos].repo == repo[posRepo])
 			{
-				jumpTable[posTeam][counters[posTeam]++] = pos;
-				projectLinkedToTeam = true;
+				jumpTable[posRepo][counters[posRepo]++] = pos;
+				projectLinkedToRepo = true;
 				break;
 			}
 		}
 	}
 	
-	if(!projectLinkedToTeam)
+	if(!projectLinkedToRepo)
 		return NULL;
 	
 	NSMutableArray *root = [NSMutableArray array], *projects;
 	NSDictionary * currentNode;
 	id currentProject;
 	
-	for(uint pos = 0; pos < nbTeam; pos++)
+	for(uint pos = 0; pos < nbRepo; pos++)
 	{
 		if(!counters[pos])	continue;
 		
@@ -689,7 +689,7 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, u
 		
 		if([projects count])
 		{
-			currentNode = [NSDictionary dictionaryWithObjects:@[[NSString stringWithUTF8String:team[pos]->URLRepo], projects] forKeys:@[JSON_PROJ_AUTHOR_URL, JSON_PROJ_PROJECTS]];
+			currentNode = [NSDictionary dictionaryWithObjects:@[@(getRepoID(repo[pos])), projects] forKeys:@[JSON_PROJ_AUTHOR_ID, JSON_PROJ_PROJECTS]];
 			if(currentNode != nil)
 				[root addObject:currentNode];
 		}

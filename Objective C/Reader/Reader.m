@@ -60,7 +60,7 @@
 		{
 			do
 			{
-				int indexTeam = getIndexOfTeam((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+				int indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
 				if(indexTeam == -1)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");

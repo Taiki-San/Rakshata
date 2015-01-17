@@ -37,12 +37,12 @@ bool checkIfFaved(PROJECT_DATA* projectDB, char **favs)
     {
         favsBak += sscanfs(favsBak, "%s %d", URLRepo, sizeof(URLRepo), &projectID);
         for(; favsBak != NULL && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
-	} while(favsBak != NULL && *favsBak && (strcmp(projectDB->team->URLRepo, URLRepo) || projectDB->projectID != projectID));
+	} while(favsBak != NULL && *favsBak && (strcmp(projectDB->repo->URL, URLRepo) || projectDB->projectID != projectID));
 	
     if(generateOwnCache)
         free(internalCache);
 
-	return projectDB->projectID == projectID && !strcmp(projectDB->team->URLRepo, URLRepo);
+	return projectDB->projectID == projectID && !strcmp(projectDB->repo->URL, URLRepo);
 }
 
 bool setFavorite(PROJECT_DATA* projectDB)
@@ -52,9 +52,9 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	
 	bool removing = projectDB->favoris != 0, elementAlreadyAdded = false, ret_value = false;
 	char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsNew;
-	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], URLRepo[LONGUEUR_URL], *URLRepoRef = projectDB->team->URLRepo;
+	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], URLRepo[LONGUEUR_URL], *URLRepoRef = projectDB->repo->URL;
 	uint nbSpaces, pos = 0, posLine, projectID;
-	size_t length = (favs != NULL ? strlen(favs) : 0) + 10 + strlen(projectDB->team->URLRepo) + 64, posOutput = 0;
+	size_t length = (favs != NULL ? strlen(favs) : 0) + 10 + strlen(projectDB->repo->URL) + 64, posOutput = 0;
 
 	favsNew = malloc(length * sizeof(char));	//Alloc final buffer
 	if(favsNew == NULL)
@@ -160,7 +160,7 @@ void updateFavorites()
     updateDatabase(false);
 	
 	uint nbElem, pos;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM, &nbElem);
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_REPO, &nbElem);
     if(projectDB == NULL)
         return;
 
@@ -193,14 +193,14 @@ void getNewFavs()
 	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
 	uint posProject, nbProject, prevProjectIndex;
 	size_t posFull, maxPos;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_TEAM, &nbProject), *current;
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_REPO, &nbProject), *current;
 
     if(projectDB == NULL)
         return;
 
 	for(posProject = 0; posProject < nbProject; posProject++)
     {
-		if(projectDB[posProject].team == NULL)
+		if(projectDB[posProject].repo == NULL)
 			continue;
 		else
 			current = &projectDB[posProject];

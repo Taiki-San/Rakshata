@@ -29,7 +29,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 {
     int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
 	uint nombreToursRequis = 1;
-	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
+	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo->URL);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
@@ -39,7 +39,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
     dataReader->pathNumber = dataReader->chapitreTomeCPT = NULL;
 	dataReader->pageCouranteDuChapitre = NULL;
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return true;
 	
     if(isTome)
@@ -95,7 +95,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedTeam, projectDB.projectID, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedRepo, projectDB.projectID, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
         if(nomPagesTmp != NULL)
@@ -166,7 +166,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedTeam, projectDB.projectID, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedRepo, projectDB.projectID, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
                 else
@@ -218,7 +218,7 @@ memoryFail:
     if(dataReader->pageCourante > dataReader->nombrePageTotale)
         dataReader->pageCourante = dataReader->nombrePageTotale;
 	
-	free(encodedTeam);
+	free(encodedRepo);
     return false;
 }
 

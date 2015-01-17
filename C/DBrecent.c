@@ -94,7 +94,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 	//We check if the element exist
 	if(sqlite3_prepare_v2(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", -1, &request, NULL) == SQLITE_OK)
 	{
-		sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
+		sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, data.projectID);
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -114,7 +114,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 				
 				if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
 				{
-					sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
+					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 					sqlite3_bind_int(request, 2, data.projectID);
 					
 					if(sqlite3_step(request) == SQLITE_ROW)
@@ -129,7 +129,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", value);
 							if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) == SQLITE_OK)
 							{
-								sqlite3_bind_text(request, 1, data.team->URLRepo, -1, SQLITE_STATIC);
+								sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 								sqlite3_bind_int(request, 2, data.projectID);
 								
 								if(sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) == 0)
@@ -159,7 +159,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 				if(!nbOccurence || wasItADL)
 					sqlite3_bind_int64(request, 2, recentDL);
 
-				sqlite3_bind_text(request, 3, data.team->URLRepo, -1, SQLITE_STATIC);
+				sqlite3_bind_text(request, 3, data.repo->URL, -1, SQLITE_STATIC);
 				sqlite3_bind_int(request, 4, data.projectID);
 
 				output = sqlite3_step(request) == SQLITE_DONE;
@@ -182,7 +182,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 
 void removeRecentEntry(PROJECT_DATA data)
 {
-	removeRecentEntryInternal(data.team->URLRepo, data.projectID);
+	removeRecentEntryInternal(data.repo->URL, data.projectID);
 }
 
 void removeRecentEntryInternal(char * URLRepo, uint projectID)
@@ -245,7 +245,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 		
 		if(team != NULL)
 		{
-			int indexTeam = getIndexOfTeam(team);
+			int indexTeam = getRepoIndexFromURL(team);
 			if(indexTeam != -1)
 			{
 				output[*nbElem] = getDataFromSearch(indexTeam, projectID, true);
@@ -257,12 +257,12 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					//We craft a PROJECT_DATA structure for updateRecentEntry
 					uint lengthTeam = strlen(team) + 1;
 					PROJECT_DATA tmpProject;
-					TEAMS_DATA tmpTeam;
+					REPO_DATA tmpRepo;
 					memset(&tmpProject, 0, sizeof(tmpProject));
-					memset(&tmpTeam, 0, sizeof(tmpTeam));
+					memset(&tmpRepo, 0, sizeof(tmpRepo));
 
-					strncpy(tmpTeam.URLRepo, team, lengthTeam);
-					tmpProject.team = &tmpTeam;
+					strncpy(tmpRepo.URL, team, lengthTeam);
+					tmpProject.repo = &tmpRepo;
 					tmpProject.projectID = projectID;
 					
 					sqlite3_finalize(request);	//Will release team, so must be called after strncpy

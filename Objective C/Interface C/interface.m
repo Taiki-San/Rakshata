@@ -46,9 +46,9 @@ void notifyFullUpdate()
 	[RakDBUpdate postNotificationFullUpdate];
 }
 
-void notifyUpdateTeam(TEAMS_DATA team)
+void notifyUpdateRepo(REPO_DATA repo)
 {
-	[RakDBUpdate postNotificationTeamUpdate:team];
+	[RakDBUpdate postNotificationRepoUpdate:repo];
 }
 
 void notifyUpdateProject(PROJECT_DATA project)

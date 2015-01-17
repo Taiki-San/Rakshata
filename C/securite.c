@@ -208,14 +208,14 @@ void get_file_date(const char *filename, char *date, void* internalData)
 #endif
 }
 
-void KSTriggered(TEAMS_DATA team)
+void KSTriggered(REPO_DATA repo)
 {
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char path[LENGTH_PROJECT_NAME+10], *encodedTeam = getPathForTeam(team.URLRepo);
+    char path[LENGTH_PROJECT_NAME+10], *encodedRepo = getPathForRepo(repo.URL);
 
-	if(encodedTeam != NULL)
+	if(encodedRepo != NULL)
 	{
-		snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedTeam);
+		snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
 		removeFolder(path);
 	}
 }
@@ -387,18 +387,18 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     return output;
 }
 
-void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
+void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
     if(!checkNetworkState(CONNEXION_OK))
         return;
 	
-	int lengthBufferDL = (NUMBER_MAX_TEAM_KILLSWITCHE+1) * (2*SHA256_DIGEST_LENGTH+1);
+	int lengthBufferDL = (NUMBER_MAX_REPO_KILLSWITCHE+1) * (2*SHA256_DIGEST_LENGTH+1);
     char bufferDL[lengthBufferDL], temp[350];
 	
-	memset(outputKS, 0, NUMBER_MAX_TEAM_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
+	memset(outputKS, 0, NUMBER_MAX_REPO_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
 	bufferDL[0] = 0;
 
-    download_mem("https://"SERVEUR_URL"/killswitch", NULL, bufferDL, (NUMBER_MAX_TEAM_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
+    download_mem("https://"SERVEUR_URL"/killswitch", NULL, bufferDL, (NUMBER_MAX_REPO_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
 
     if(!*bufferDL) //Rien n'a été téléchargé
         return;
@@ -415,8 +415,8 @@ void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     temp[posBufferOut] = 0;
 	nbElemInKS = charToInt(temp);
 	
-	if(nbElemInKS >= NUMBER_MAX_TEAM_KILLSWITCHE)
-		nbElemInKS = NUMBER_MAX_TEAM_KILLSWITCHE -1;
+	if(nbElemInKS >= NUMBER_MAX_REPO_KILLSWITCHE)
+		nbElemInKS = NUMBER_MAX_REPO_KILLSWITCHE -1;
 	
     for(posBufferOut = 0; posBufferOut < nbElemInKS; posBufferOut++)
     {
@@ -426,20 +426,20 @@ void loadKS(char outputKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     }
 }
 
-bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
+bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
 	if(dataKS[0][0] == 0)
         return false;
 
     char stringToHash[LONGUEUR_TYPE_TEAM+LONGUEUR_URL+1], hashedData[2*SHA256_DIGEST_LENGTH+1];
 	
-    snprintf(stringToHash, LONGUEUR_TYPE_TEAM+LONGUEUR_URL, "%s%s", dataCheck.URLRepo, dataCheck.type);
+    snprintf(stringToHash, LONGUEUR_TYPE_TEAM+LONGUEUR_URL, "%s~%d", dataCheck.URL, dataCheck.type);
     sha256_legacy(stringToHash, hashedData);
 
 	int i = 0;
-    for(; dataKS[i][0] && i < NUMBER_MAX_TEAM_KILLSWITCHE && strcmp(dataKS[i], hashedData); i++);
+    for(; dataKS[i][0] && i < NUMBER_MAX_REPO_KILLSWITCHE && strcmp(dataKS[i], hashedData); i++);
 
-    return i < NUMBER_MAX_TEAM_KILLSWITCHE && !strcmp(dataKS[i], hashedData);
+    return i < NUMBER_MAX_REPO_KILLSWITCHE && !strcmp(dataKS[i], hashedData);
 }
 
 uint getRandom()

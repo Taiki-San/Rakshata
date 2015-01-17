@@ -15,15 +15,15 @@
 uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {
 	uint posStart, posEnd, nbElemFullData;
-	PROJECT_DATA * fullData = getCopyCache(SORT_TEAM, &nbElemFullData);
+	PROJECT_DATA * fullData = getCopyCache(SORT_REPO, &nbElemFullData);
 	
 	if(fullData == NULL)
 		return 0;
 	
-	//Find the beginning of the team area
+	//Find the beginning of the repo area
 	for (posStart = 0; posStart < nbElemFullData; posStart++)
 	{
-		if (fullData[posStart].team != NULL && !strcmp(projectDB->team->teamCourt, fullData[posStart].team->teamCourt) && !strcmp(projectDB->team->teamLong, fullData[posStart].team->teamLong))
+		if (fullData[posStart].repo != NULL && (projectDB->repo->parentRepoID != fullData[posStart].repo->parentRepoID || projectDB->repo->repoID != fullData[posStart].repo->repoID))
 			break;
 	}
 	
@@ -37,12 +37,12 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if (fullData[posEnd].team == NULL || strcmp(projectDB->team->teamCourt, fullData[posEnd].team->teamCourt) || strcmp(projectDB->team->teamLong, fullData[posEnd].team->teamLong))
+		if (fullData[posStart].repo == NULL || (projectDB->repo->parentRepoID == fullData[posStart].repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].repo->repoID))
 			break;
 	}
 	
 	//update the database from network (heavy part)
-	updateProjectsFromTeam(fullData, posStart, posEnd, true);
+	updateProjectsFromRepo(fullData, posStart, posEnd, true);
 	syncCacheToDisk(SYNC_PROJECTS);
 	
 	freeProjectData(fullData);

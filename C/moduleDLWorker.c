@@ -87,11 +87,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		switch (MDL_isAlreadyInstalled(*todoListTmp.datas, todoListTmp.subFolder, todoListTmp.chapitre, &posTomeInStruct))
 		{
 			case NOT_INSTALLED:
-			{
-				if(checkIfWebsiteAlreadyOpened(*todoListTmp.datas->team, input.historiqueTeam)) {
-					ouvrirSite(todoListTmp.datas->team->site); //Ouverture du site de la team
-				}
-				
+			{				
 				didElemGotDownloaded[i] = true;
 				argument.buf = NULL;
 				argument.length = 0;
@@ -121,21 +117,21 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(!isTome && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
 				{
-					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedTeam = getPathForTeam(todoListTmp.datas->team->URLRepo);
-					if(encodedTeam == NULL)
+					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(todoListTmp.datas->repo->URL);
+					if(encodedRepo == NULL)
 						continue;
 					
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
-						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
-						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedTeam, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
 					}
-					free(encodedTeam);
+					free(encodedRepo);
 					
 					rename(oldPath, newPath);
 					
@@ -375,9 +371,9 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
     bool wentFine = true;
-    char temp[600], basePath[500], *encodedTeam = getPathForTeam(projectDB->team->URLRepo);
+    char temp[600], basePath[500], *encodedRepo = getPathForRepo(projectDB->repo->URL);
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return true;
 	
     /*Récupération des valeurs envoyés*/
@@ -387,24 +383,24 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 		if(subFolder)
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedTeam, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre/10);
 		}
 		else
 		{
 			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, tome, chapitre/10, chapitre%10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre/10, chapitre%10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedTeam, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre/10);
 		}
     }
     else
     {
         if(chapitre%10)
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedTeam, projectDB->projectID, chapitre/10, chapitre%10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, chapitre/10, chapitre%10);
         else
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedTeam, projectDB->projectID, chapitre/10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedRepo, projectDB->projectID, chapitre/10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);
@@ -433,13 +429,13 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 
 		if(!subFolder && !wentFine)
 		{
-			snprintf(temp, 500, "Archive Corrompue: %s - %d - %d\n", projectDB->team->teamLong, projectDB->projectID, chapitre);
+			snprintf(temp, 500, "Archive Corrompue: %ls - %d - %d\n", projectDB->repo->name, projectDB->projectID, chapitre);
 			logR(temp);
 			removeFolder(basePath);
 		}
     }
 
-	free(encodedTeam);
+	free(encodedRepo);
     return wentFine;
 }
 

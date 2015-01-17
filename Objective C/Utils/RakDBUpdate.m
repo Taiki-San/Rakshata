@@ -38,9 +38,9 @@
 	[self postNotification:UNUSED_FIELD :UNUSED_FIELD];
 }
 
-+ (void) postNotificationTeamUpdate : (TEAMS_DATA) team
++ (void) postNotificationRepoUpdate : (REPO_DATA) repo
 {
-	[self postNotification : getTeamID(&team) :UNUSED_FIELD];
+	[self postNotification : getRepoID(&repo) :UNUSED_FIELD];
 }
 
 + (void) postNotificationProjectUpdate : (PROJECT_DATA) project
@@ -48,9 +48,9 @@
 	[self postNotification:UNUSED_FIELD :project.cacheDBID];
 }
 
-+ (void) postNotification : (uint) teamID : (uint) projectID
++ (void) postNotification : (uint64_t) repoID : (uint) projectID
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_NAME object:nil userInfo: @{REPO_FIELD:@(teamID), PROJECT_FIELD:@(projectID)}];
+	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_NAME object:nil userInfo: @{REPO_FIELD:@(repoID), PROJECT_FIELD:@(projectID)}];
 }
 
 #pragma mark - Analyse notification
@@ -60,20 +60,20 @@
 	if(notification == nil)
 		return NO;
 	
-	NSNumber * teamIDObj = [notification objectForKey:REPO_FIELD], * projectIDObj = [notification objectForKey:PROJECT_FIELD];
+	NSNumber * repoIDObj = [notification objectForKey:REPO_FIELD], * projectIDObj = [notification objectForKey:PROJECT_FIELD];
 
-	if(teamIDObj == nil || projectIDObj == nil)
+	if(repoIDObj == nil || projectIDObj == nil)
 		return NO;
 	
-	uint teamID = [teamIDObj unsignedIntValue], projectID = [projectIDObj unsignedIntValue];
+	uint64_t repoID = [repoIDObj unsignedLongLongValue], projectID = [projectIDObj unsignedIntValue];
 	
-	if(teamID == UNUSED_FIELD && projectID == UNUSED_FIELD)			//Full update
+	if(repoID == UNUSED_FIELD && projectID == UNUSED_FIELD)			//Full update
 		return YES;
 	
 	if(projectID != UNUSED_FIELD && projectID == project.cacheDBID)	//Project update
 		return YES;
 	
-	if(teamID != UNUSED_FIELD && teamID == getTeamID(project.team))	//Team update
+	if(repoID != UNUSED_FIELD && repoID == getRepoID(project.repo))	//Team update
 		return YES;
 	
 	return NO;

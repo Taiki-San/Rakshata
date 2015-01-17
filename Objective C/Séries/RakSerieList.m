@@ -90,8 +90,8 @@
 		{
 			if([dataState count] == 5)
 			{
-				int indexTeam = getIndexOfTeam((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
-				if(indexTeam == -1)
+				uint indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
+				if(indexTeam == UINT_MAX)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");
 					break;
@@ -101,7 +101,7 @@
 				
 				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, false);
 				
-				if(project == NULL || project->team == NULL)
+				if(project == NULL || project->repo == NULL)
 				{
 					free(project);
 					NSLog(@"Couldn't find the project to restore, abort :/");
@@ -389,8 +389,8 @@
 	NSString *currentSelection;
 	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
-	if(project.team != NULL)
-		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.team->URLRepo, project.projectID];
+	if(project.repo != NULL)
+		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.repo->URL, project.projectID];
 	else
 		currentSelection = @"";
 	

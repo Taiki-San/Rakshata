@@ -59,7 +59,8 @@
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
 #define CONFIGFILETOME "config.tome.dat"
-#define VERSION_REPO 2
+#define VERSION_REPO 3
+#define VERSION_FIRST_REPO_JSON 3
 #define VERSION_PROJECT 1
 
 /*Réseau*/
@@ -100,10 +101,10 @@
 #define LONGUEUR_NOMS_DATA 100
 
 /*Ajout repo*/
-#define TYPE_DEPOT_DB "DB"
-#define TYPE_DEPOT_OTHER "O"	//Dépôt arbitraire
-#define TYPE_DEPOT_PAID "P"
-#define TYPE_DEPOT_4			//Raccourcis goo.gl pour acceder au dépôt, reservé, mais
+#define TYPE_DEPOT_DB 1
+#define TYPE_DEPOT_OTHER 2	//Dépôt arbitraire
+#define TYPE_DEPOT_PAID 3
+#define TYPE_DEPOT_GOO 4
 #define MAX_TYPE_DEPOT 4
 
 /*String macro*/

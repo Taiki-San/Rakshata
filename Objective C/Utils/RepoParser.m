@@ -68,7 +68,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		//Memory allocation
 		lengthDescription = [description length];
 		
-		output[pos] = malloc(lengthDescription+1 * sizeof(wchar_t));
+		output[pos] = malloc((lengthDescription + 1) * sizeof(wchar_t));
 		if(output[pos] == NULL)
 		{
 			failure++;
@@ -76,7 +76,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		}
 		
 		lengthLanguage = [language length];
-		(*languages)[pos] = malloc(lengthLanguage * sizeof(char));
+		(*languages)[pos] = malloc((lengthLanguage + 1) * sizeof(char));
 		if((*languages)[pos] == NULL)
 		{
 			free(output[pos]);

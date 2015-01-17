@@ -39,7 +39,7 @@
 			{
 				do
 				{
-					int indexTeam = getIndexOfTeam((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+					int indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
 					if(indexTeam == -1)
 					{
 						NSLog(@"Couldn't find the repo to restore, abort :/");
@@ -295,7 +295,7 @@
 
 - (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	if(element == VALEUR_FIN_STRUCT && project.team != NULL)
+	if(element == VALEUR_FIN_STRUCT && project.repo != NULL)
 	{
 		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
 		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];

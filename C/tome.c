@@ -40,17 +40,17 @@ void refreshTomeList(PROJECT_DATA *projectDB)
 
 void setTomeReadable(PROJECT_DATA projectDB, int ID)
 {
-	char pathWithTemp[600], pathWithoutTemp[600], *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
+	char pathWithTemp[600], pathWithoutTemp[600], *encodedRepo = getPathForRepo(projectDB.repo->URL);
 	
-	if(encodedTeam != NULL)
+	if(encodedRepo != NULL)
 	{
-		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, projectDB.projectID, ID);
-		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, projectDB.projectID, ID);
+		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, projectDB.projectID, ID);
+		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, ID);
 		rename(pathWithTemp, pathWithoutTemp);
 		
 		projectDB.tomesFull = projectDB.tomesInstalled = NULL;
 		getUpdatedTomeList(&projectDB, false);
-		free(encodedTeam);
+		free(encodedRepo);
 	}
 
 	if(!checkTomeReadable(projectDB, ID))
@@ -69,16 +69,16 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		return false;
 	
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
-	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
+	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo->URL);
 	
-	if (cache == NULL || encodedTeam == NULL)
+	if (cache == NULL || encodedRepo == NULL)
 	{
-		free(encodedTeam);
+		free(encodedRepo);
 		return false;
 	}
 	
-	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d/", encodedTeam, projectDB.projectID);
-	free(encodedTeam);
+	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d/", encodedRepo, projectDB.projectID);
+	free(encodedRepo);
 	
 	for(posDetails = 0; cache[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
 	{
@@ -139,15 +139,15 @@ bool parseTomeDetails(PROJECT_DATA projectDB, int ID, CONTENT_TOME ** output)
 	}
 	
 	uint bufferSize, posBuf;
-	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
+	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedRepo = getPathForRepo(projectDB.repo->URL);
     FILE* config;
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return false;
 	
 	//On charge le fichier dans un buffer en mémoire pour accélérer les IO
-	snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, projectDB.projectID, ID);
-	free(encodedTeam);
+	snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, ID);
+	free(encodedRepo);
 	
 	bufferSize = getFileSize(pathConfigFile);
 	
@@ -222,14 +222,14 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	
     if(dernierLu != NULL)
     {
-		char temp[LENGTH_PROJECT_NAME*2+100], *encodedTeam = getPathForTeam(project->team->URLRepo);
+		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo->URL);
 		FILE* config;
 		
-		if(encodedTeam == NULL)
+		if(encodedRepo == NULL)
 			return;
 		
-		snprintf(temp, sizeof(temp), PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedTeam, project->projectID);
-		free(encodedTeam);
+		snprintf(temp, sizeof(temp), PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedRepo, project->projectID);
+		free(encodedRepo);
 		if((config = fopen(temp, "r")) != NULL)
 		{
 			*dernierLu = VALEUR_FIN_STRUCT;
@@ -310,14 +310,14 @@ void freeTomeList(META_TOME * data, bool includeDetails)
 
 void printTomeDatas(PROJECT_DATA projectDB, char *bufferDL, int tome)
 {
-    char bufferPath[256], *encodedTeam = getPathForTeam(projectDB.team->URLRepo);
+    char bufferPath[256], *encodedRepo = getPathForRepo(projectDB.repo->URL);
     FILE* out;
 	
-    if(encodedTeam == NULL)
+    if(encodedRepo == NULL)
 		return;
 
-	snprintf(bufferPath, sizeof(bufferPath), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, projectDB.projectID, tome);
-	free(encodedTeam);
+	snprintf(bufferPath, sizeof(bufferPath), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, projectDB.projectID, tome);
+	free(encodedRepo);
 	
 	if((out = fopen(bufferPath, "w+")) == NULL)
 	{
@@ -371,7 +371,7 @@ int extractNumFromConfigTome(char *input, int ID)
 
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters)
 {
-	uint length = strlen(projectDB.team->teamLong) + 60, position;
+	uint length = strlen(projectDB.repo->URL) * 4 / 3 + 60, position;
     char dir[length];
 	
 	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
@@ -382,8 +382,8 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		return;
 	}
 	
-	char * encodedTeam = getPathForTeam(projectDB.team->URLRepo);
-	if(encodedTeam == NULL)
+	char * encodedRepo = getPathForRepo(projectDB.repo->URL);
+	if(encodedRepo == NULL)
 		return;
 	
 	position = getPosForID(projectDB, true, tomeDelete);
@@ -394,7 +394,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];
 		CONTENT_TOME * details = projectDB.tomesInstalled[position].details;
 		
-		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedTeam, projectDB.projectID);
+		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
 		
 		for(uint posDetails = 0; details[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
 		{
@@ -412,7 +412,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		}
 	}
 	
-    snprintf(dir, length, PROJECT_ROOT"%s/%d/Tome_%d/", encodedTeam, projectDB.projectID, tomeDelete);
+    snprintf(dir, length, PROJECT_ROOT"%s/%d/Tome_%d/", encodedRepo, projectDB.projectID, tomeDelete);
 	removeFolder(dir);
-	free(encodedTeam);
+	free(encodedRepo);
 }

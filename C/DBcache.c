@@ -22,9 +22,6 @@ static uint maxRootID = 0;
 static REPO_DATA ** repoList = NULL;
 static uint lengthRepo = 0;
 
-static TEAMS_DATA **teamList = NULL;
-static uint lengthTeam = 0;
-
 static char *isUpdated = NULL;
 static uint lengthIsUpdated = 0;
 
@@ -35,7 +32,7 @@ MUTEX_VAR cacheMutex;
 
 int setupBDDCache()
 {
-	uint nombreTeam, nombreProject = 0;
+	uint nombreRootRepo, nombreRepo, nombreProject = 0;
     char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 	
@@ -69,31 +66,47 @@ int setupBDDCache()
 		return 0;
 	}
 	
-	if(teamList != NULL)	//En principe inutile mais au cas où
+	if(repoList != NULL)
 	{
-		for(int i = 0; i < lengthTeam; free(teamList[i++]));
-		free(teamList);		teamList = NULL;
+		freeRepo(repoList);
+		repoList = NULL;
 	}
+	
+	if(rootRepoList != NULL)
+	{
+		freeRootRepo(rootRepoList);
+		rootRepoList = NULL;
+	}
+	
 	free(isUpdated);	isUpdated = NULL;
-	nbElem = lengthTeam = lengthIsUpdated = 0;
+	nbElem = lengthRepo = lengthRootRepo = lengthIsUpdated = 0;
 	
 	//On parse les teams
-	TEAMS_DATA ** internalTeamList = loadTeams(repoDB, &nombreTeam);
+	ROOT_REPO_DATA ** internalRootRepoList = loadRootRepo(repoDB, &nombreRootRepo);
 	
 	free(repoDB);
 	
-	if(internalTeamList == NULL || nombreTeam == 0)
+	if(internalRootRepoList == NULL || nombreRootRepo == 0)
 	{
 		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}
-	char * encodedTeam[nombreTeam];
-	for(uint i = 0; i < nombreTeam; i++)
+	
+	REPO_DATA ** internalRepoList = loadRepo(internalRootRepoList, nombreRootRepo, &nombreRepo);
+	if(internalRepoList == NULL || nombreRepo == 0)
 	{
-		encodedTeam[i] = internalTeamList[i] == NULL ? NULL : getPathForTeam(internalTeamList[i]->URLRepo);
+		freeRootRepo(internalRootRepoList);
+		MUTEX_UNLOCK(cacheMutex);
+		return 0;
 	}
 	
-	getRideOfDuplicateInTeam(internalTeamList, &nombreTeam);
+	char * encodedRepo[nombreRepo];
+	for(uint i = 0; i < nombreRepo; i++)
+	{
+		encodedRepo[i] = internalRepoList[i] == NULL ? NULL : getPathForRepo(internalRepoList[i]->URL);
+	}
+	
+	getRidOfDuplicateInRepo(internalRepoList, &nombreRepo);
 	
 	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
@@ -109,28 +122,24 @@ int setupBDDCache()
 	//On est bon, let's go
     if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
 	{
-#ifndef KEEP_UNUSED_TEAMS
-		bool isTeamUsed[nombreTeam], begining = true;
-		for(numeroTeam = 0; numeroTeam < nombreTeam; isTeamUsed[numeroTeam++] = false);
-#endif
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
 		size_t decodedLength;
 		unsigned char * decodedProject = base64_decode(projectDB, strlen(projectDB) - 1, &decodedLength);
-		PROJECT_DATA * projects = parseLocalData(internalTeamList, nombreTeam, decodedProject, &nombreProject);
+		PROJECT_DATA * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
 		
 		free(decodedProject);
 		if(projects != NULL)
 		{
-			for(uint pos = 0, teamPos; pos < nombreProject; pos++)
+			for(uint pos = 0, posRepo; pos < nombreProject; pos++)
 			{
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
-				for(teamPos = 0; teamPos < nombreTeam && internalTeamList[teamPos] != projects[pos].team; teamPos++);	//Get team index
+				for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].repo; posRepo++);	//Get team index
 				
-				if(teamPos < nombreTeam && encodedTeam[teamPos] != NULL)
+				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
-					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedTeam[teamPos], projects[pos].projectID);
-					if(!addToCache(request, projects[pos], teamPos, isInstalled(pathInstall)))
+					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
+					if(!addToCache(request, projects[pos], posRepo, isInstalled(pathInstall)))
 					{
 						free(projects[pos].chapitresFull);
 						free(projects[pos].chapitresPrix);
@@ -142,18 +151,6 @@ int setupBDDCache()
 		
 		sqlite3_finalize(request);
 		
-#ifndef KEEP_UNUSED_TEAMS
-		//Work is done, we start freeing memory
-		for(numeroTeam = 0; numeroTeam < nombreTeam; numeroTeam++)
-		{
-			if(isTeamUsed[numeroTeam] == false)
-			{
-				free(internalTeamList[numeroTeam]);
-				internalTeamList[numeroTeam] = NULL;
-			}
-		}
-#endif
-
 		if(nombreProject)
 		{
 			if(cache != NULL)
@@ -162,8 +159,11 @@ int setupBDDCache()
 			cache = internalDB;
 			nbElem = nombreProject;
 			
-			teamList = internalTeamList;
-			lengthTeam = nombreTeam;
+			rootRepoList = internalRootRepoList;
+			lengthRootRepo = nombreRootRepo;
+			
+			repoList = internalRepoList;
+			lengthRepo = nombreRepo;
 			
 			isUpdated = calloc(nombreProject + 1, sizeof(char));
 			if(isUpdated)
@@ -173,7 +173,7 @@ int setupBDDCache()
 	
 	MUTEX_UNLOCK(cacheMutex);
 	
-	for(uint i = 0; i < nombreTeam; free(encodedTeam[i++]));
+	for(uint i = 0; i < nombreRepo; free(encodedRepo[i++]));
 	free(cacheFavs);
 	free(projectDB);
 	
@@ -182,55 +182,23 @@ int setupBDDCache()
 
 void syncCacheToDisk(byte syncCode)
 {
-	uint posStruct, posOut = 0, nbProject, nbTeam = 0;
-	int newChar;
-	char *bufferOut;
+	uint nbProject, nbRepo;
+	char *data;
+	size_t dataSize;
 	PROJECT_DATA *projectDB = NULL;
-	TEAMS_DATA **teamDB = getCopyKnownTeams(&nbTeam);
+	ROOT_REPO_DATA **rootRepoDB = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRepo, true);
 	
 	if(syncCode & SYNC_PROJECTS)
-		projectDB = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbProject);
+		projectDB = getCopyCache(RDB_LOADALL | SORT_REPO, &nbProject);
 	else
 		nbProject = 0;
 	
-	if(syncCode & SYNC_TEAM)
+	if(syncCode & SYNC_REPO)
 	{
-		bufferOut = malloc(nbTeam * MAX_TEAM_LINE_LENGTH + 200);
-		if(teamDB != NULL && bufferOut != NULL)
-		{
-			strncpy(bufferOut, "<"SETTINGS_REPODB_FLAG">\n", 10);
-			posOut = strlen(bufferOut);
-			
-			for(posStruct = 0; posStruct < nbTeam; posStruct++)
-			{
-				if(teamDB[posStruct] != NULL)
-				{
-					newChar = snprintf(&bufferOut[posOut], MAX_TEAM_LINE_LENGTH, "%s %s %s %s %s %d\n", teamDB[posStruct]->teamLong, teamDB[posStruct]->teamCourt, teamDB[posStruct]->type, teamDB[posStruct]->URLRepo, teamDB[posStruct]->site, teamDB[posStruct]->openSite);
-					if(newChar > 0)
-						posOut += MIN(newChar, MAX_TEAM_LINE_LENGTH);
-				}
-			}
-			
-			strncpy(&bufferOut[posOut], "</"SETTINGS_REPODB_FLAG">\n", 10);
-			
-			updatePrefs(SETTINGS_REPODB_FLAG, bufferOut);
-			free(bufferOut);
-		}
-		else
-		{
-			free(bufferOut);
-			logR("Sync failed");
-		}
-	}
-	
-	if(syncCode & SYNC_PROJECTS)
-	{
-		size_t dataSize = 0;
-		char * data = reversedParseData(projectDB, nbProject, teamList, lengthTeam, &dataSize);
-		
+		data = linearizeRepoData(rootRepoDB, nbRepo, &dataSize);
 		if(data != NULL)
 		{
-			bufferOut = malloc(dataSize + 50);
+			char *bufferOut = malloc(dataSize + 50);
 			if(bufferOut != NULL)
 			{
 				strncpy(bufferOut, "<"SETTINGS_PROJECTDB_FLAG">\n", 10);
@@ -244,13 +212,36 @@ void syncCacheToDisk(byte syncCode)
 		else
 			logR("Sync failed");
 		
-		free(projectDB);
+		freeRootRepo(rootRepoDB);
 	}
 	
-	if(teamDB != NULL)
+	if(syncCode & SYNC_PROJECTS)
 	{
-		for(uint i = 0; i < nbTeam; free(teamDB[i++]));
-		free(teamDB);
+		REPO_DATA ** repoDB = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false);
+		if(repoDB != NULL)
+		{
+			data = reversedParseData(projectDB, nbProject, repoDB, nbRepo, &dataSize);
+			
+			if(data != NULL)
+			{
+				char *bufferOut = malloc(dataSize + 50);
+				if(bufferOut != NULL)
+				{
+					strncpy(bufferOut, "<"SETTINGS_PROJECTDB_FLAG">\n", 10);
+					memcpy(&bufferOut[4], data, dataSize);
+					strncpy(&bufferOut[4+dataSize], "\n</"SETTINGS_PROJECTDB_FLAG">\n", 10);
+					updatePrefs(SETTINGS_PROJECTDB_FLAG, bufferOut);
+					free(bufferOut);
+				}
+				free(data);
+			}
+			else
+				logR("Sync failed");
+			
+			freeRepo(repoDB);
+		}
+		
+		free(projectDB);
 	}
 }
 
@@ -272,11 +263,11 @@ void flushDB()
 	sqlite3_close_v2(cache);
 	cache = NULL;
 	nbElem = 0;
-	
-	for(int pos = 0; pos < lengthTeam; free(teamList[pos++]));
-	free(teamList);
-	teamList = NULL;
-	lengthTeam = 0;
+
+	freeRepo(repoList);
+	lengthRepo = 0;
+	freeRootRepo(rootRepoList);
+	lengthRootRepo = 0;
 	
 	free(isUpdated);
 	isUpdated = NULL;
@@ -301,7 +292,7 @@ sqlite3_stmt * getAddToCacheRequest()
 	return request;
 }
 
-bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint posTeamIndex, bool isInstalled)
+bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled)
 {
 	if(!data.isInitialized)
 		return false;
@@ -315,7 +306,7 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint posTeamIndex, boo
 	
 	bool output;
 	
-	sqlite3_bind_int(internalRequest, 1, posTeamIndex);
+	sqlite3_bind_int(internalRequest, 1, repoID);
 	sqlite3_bind_int(internalRequest, 2, data.projectID);
 	sqlite3_bind_int(internalRequest, 3, isInstalled);
 	sqlite3_bind_blob(internalRequest, 4, data.projectName, sizeof(data.projectName), SQLITE_STATIC);
@@ -360,7 +351,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	else
 	{
 		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
-		sqlite3_bind_int64(request, 1, (uint64_t) data.team);
+		sqlite3_bind_int64(request, 1, getRepoIndex(data.repo));
 		sqlite3_bind_int(request, 2, projectID);
 	}
 	
@@ -482,11 +473,11 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	
 	//Team
 	uint data = sqlite3_column_int(state, RDB_team-1);
-	if(data < lengthTeam)		//Si la team est pas valable, on drop complètement le projet
-		output->team = teamList[data];
+	if(data < lengthRepo)				//Si la team est pas valable, on drop complètement le projet
+		output->repo = repoList[data];
 	else
 	{
-		output->team = NULL;	//L'appelant est signalé d'ignorer l'élément
+		output->repo = NULL;	//L'appelant est signalé d'ignorer l'élément
 		return false;
 	}
 	
@@ -628,7 +619,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			if(!copyOutputDBToStruct(request, &output[pos]))
 				continue;
 			
-			if(output[pos].team != NULL)
+			if(output[pos].repo != NULL)
 				pos++;
 		}
 
@@ -644,246 +635,101 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 /*************		REPOSITORIES DATA		*****************/
 
-#pragma mark - Obsolete 'Team' code
-
-uint getTeamID(TEAMS_DATA * team)
+uint64_t getRepoID(REPO_DATA * repo)
 {
-	uint output;
-	if(teamList != NULL)
-	{
-		for(output = 0; output < lengthTeam && strcmp(team->URLRepo, teamList[output]->URLRepo); output++);
-		if(output == lengthTeam)
-			return UINT_MAX;
-	}
-	else
-		return UINT_MAX;
-	
-	return output;
+	uint64_t output = repo->parentRepoID;;
+	return (output << 32) | repo->repoID;
 }
 
-bool addRepoToDB(TEAMS_DATA newTeam)
+uint getRepoIndex(REPO_DATA * repo)
 {
-	uint nbTeam;
-	TEAMS_DATA **oldData = getCopyKnownTeams(&nbTeam), **newData = NULL, *newEntry = NULL;
+	uint64_t repoID = getRepoID(repo);
 	
-	if(oldData == NULL)
-		return false;
-		
-	newData	= malloc((nbTeam + 2) * sizeof(TEAMS_DATA*));
-	newEntry = malloc(sizeof(TEAMS_DATA));
-	if(newData == NULL || newEntry == NULL)
+	for(uint i = 0; i < lengthRepo; i++)
 	{
-		freeTeam(oldData);
+		if(getRepoID(repoList[i]) == repoID)
+			return i;
+	}
+	
+	return UINT_MAX;
+}
+
+uint getRepoIndexFromURL(char * URL)
+{
+	for(uint i = 0; i < lengthRepo; i++)
+	{
+		if(!strcmp(repoList[i]->URL, URL))
+			return i;
+	}
+	
+	return UINT_MAX;
+}
+
+//La sélection des repo MaJ se fera avant l'appel à cette fonction
+bool addRepoToDB(ROOT_REPO_DATA * newRepo)
+{
+	uint nbRepo, nbRootRepo, subLength = newRepo->nombreSubrepo;
+	ROOT_REPO_DATA **oldRootData = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRootRepo, true), **newRootData = NULL, *newRootEntry = NULL;
+	REPO_DATA **oldData = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false), **newData = NULL;
+	void * newEntry[subLength];
+	bool allocFail = false;
+	
+	if(oldRootData == NULL || oldData == NULL)
+	{
+		freeRootRepo(oldRootData);
+		freeRepo(oldData);
+	}
+	
+	newRootData = malloc((nbRootRepo + 2) * sizeof(ROOT_REPO_DATA *));
+	newRootEntry = malloc(sizeof(ROOT_REPO_DATA));
+	
+	newData	= malloc((nbRepo + subLength + 1) * sizeof(REPO_DATA*));
+	
+	for(uint i = 0; i < subLength; i++)
+	{
+		newEntry[i] = malloc(sizeof(REPO_DATA));
+		if(newEntry[i] == NULL)
+		{
+			for(uint j = 0; j < i; free(newEntry[j++]));
+			allocFail = true;
+			break;
+		}
+	}
+
+	if(newRootData == NULL || newRootEntry == NULL || newData == NULL || allocFail)
+	{
+		freeRootRepo(oldRootData);
+		free(newRootData);
+		free(newRootEntry);
+		freeRepo(oldData);
 		free(newData);
-		free(newEntry);
 		return false;
 	}
 	
-	memcpy(newData, oldData, nbTeam * sizeof(TEAMS_DATA*));
-	memcpy(newEntry, &newTeam, sizeof(TEAMS_DATA));
-	newData[nbTeam] = newEntry;
-	newData[nbTeam + 1] = NULL;
-
-	updateTeamCache(newData, nbTeam+1);
-	syncCacheToDisk(SYNC_TEAM);
+	memcpy(newRootData, oldRootData, nbRootRepo * sizeof(ROOT_REPO_DATA));
+	memcpy(newRootEntry, newRepo, sizeof(ROOT_REPO_DATA));
+	newRootData[nbRootRepo] = newRootEntry;
+	newRootData[nbRootRepo + 1] = NULL;
+	
+	memcpy(newData, oldData, nbRepo * sizeof(REPO_DATA*));
+	for(uint i = 0; i < subLength; i++)
+	{
+		memcpy(newEntry[i], &(newRepo->subRepo[i]), sizeof(REPO_DATA));
+		newData[nbRepo + i] = newEntry[i];
+	}
+		
+	newData[nbRepo + subLength] = NULL;
+	
+	updateRootRepoCache(newRootData, nbRootRepo + 1);
+	syncCacheToDisk(SYNC_REPO);
 	resetUpdateDBCache();
 	
-	free(oldData);
-	free(newData);
+	freeRootRepo(oldRootData);
+	free(newRootData);
+	freeRepo(oldData);
+	freeRepo(newData);
 	
 	return true;
-}
-
-TEAMS_DATA ** loadTeams(char * repoDB, uint *nbTeam)
-{
-	if(nbTeam != NULL)
-		*nbTeam = 0;
-	
-	if(repoDB == NULL)
-		return NULL;
-	
-	uint nombreTeam, currentBufferSize = INITIAL_BUFFER_SIZE;
-	void * buf;
-	TEAMS_DATA ** internalTeamList = malloc(INITIAL_BUFFER_SIZE * sizeof(TEAMS_DATA*));
-	
-	if(internalTeamList == NULL)
-		return 0;
-	
-	for(nombreTeam = 0, currentBufferSize = INITIAL_BUFFER_SIZE; *repoDB != 0;) //Tant qu'on a pas fini de lire le fichier de base de données
-	{
-		if(nombreTeam + 2 > currentBufferSize)	//The current + one empty to show the end of the list
-		{
-			currentBufferSize *= 2;
-			buf = realloc(internalTeamList, currentBufferSize * sizeof(TEAMS_DATA*));
-			if(buf != NULL)
-				internalTeamList = buf;
-			else
-				break;
-		}
-		
-		internalTeamList[nombreTeam] = (TEAMS_DATA*) calloc(1, sizeof(TEAMS_DATA));
-		
-		if(internalTeamList[nombreTeam] != NULL)
-		{
-			repoDB += sscanfs(repoDB, "%s %s %s %s %s %d", internalTeamList[nombreTeam]->teamLong, LENGTH_PROJECT_NAME, internalTeamList[nombreTeam]->teamCourt, LONGUEUR_COURT, internalTeamList[nombreTeam]->type, LONGUEUR_TYPE_TEAM, internalTeamList[nombreTeam]->URLRepo, LONGUEUR_URL, internalTeamList[nombreTeam]->site, LONGUEUR_SITE, &internalTeamList[nombreTeam]->openSite);
-			for(; *repoDB == '\r' || *repoDB == '\n'; repoDB++);
-			nombreTeam++;
-		}
-	}
-	
-	if(nombreTeam == 0)	//Aucune team lue
-	{
-		free(internalTeamList);
-		return NULL;
-	}
-	else
-	{
-		void * real = realloc(internalTeamList, (nombreTeam + 1) * sizeof(TEAMS_DATA*));
-		
-		if(real != NULL)
-			internalTeamList = real;
-		
-		internalTeamList[nombreTeam] = NULL;
-	}
-	
-	if(nbTeam != NULL)
-		*nbTeam = nombreTeam;
-	
-	return internalTeamList;
-}
-
-TEAMS_DATA ** getCopyKnownTeams(uint *nbTeamToRefresh)
-{
-	//+1 used to free everything
-	TEAMS_DATA ** output = calloc(lengthTeam + 1, sizeof(TEAMS_DATA*));
-	if(output != NULL)
-	{
-		for(int i = 0; i < lengthTeam; i++)
-		{
-			if(teamList[i] == NULL)
-				output[i] = NULL;
-			else
-			{
-				output[i] = malloc(sizeof(TEAMS_DATA));
-				if(output[i] != NULL)
-					memcpy(output[i], teamList[i], sizeof(TEAMS_DATA));
-				else	//Memory error, let's get the fuck out of here
-				{
-					for (; i > 0; free(output[--i]));
-					free(output);
-					return NULL;
-				}
-			}
-		}
-		*nbTeamToRefresh = lengthTeam;
-	}
-	else
-		*nbTeamToRefresh = 0;
-	return output;
-}
-
-int getIndexOfTeam(char * URL)
-{
-	if(URL == NULL)
-		return -1;
-	
-	int output = 0;
-	
-	for(; output < lengthTeam && teamList[output] != NULL && strcmp(URL, teamList[output]->URLRepo); output++);
-	
-	if(output == lengthTeam || teamList[output] == NULL)	//Error
-		output = -1;
-	
-	return output;
-}
-
-void updateTeamCache(TEAMS_DATA ** teamData, uint newAmountOfTeam)
-{
-	uint lengthTeamCopy = lengthTeam;
-	
-	TEAMS_DATA ** newReceiver;
-	
-	if(newAmountOfTeam == -1 || newAmountOfTeam == lengthTeamCopy)
-	{
-		newReceiver = teamList;
-	}
-	else	//Resize teamList
-	{
-		newReceiver = calloc(newAmountOfTeam + 1, sizeof(TEAMS_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
-		if(newReceiver == NULL)
-			return;
-		
-		memcpy(newReceiver, teamList, lengthTeamCopy);
-		lengthTeamCopy = newAmountOfTeam;
-	}
-	
-	for(int pos = 0; pos < lengthTeamCopy; pos++)
-	{
-		if(newReceiver[pos] != NULL && teamData[pos] != NULL)
-		{
-			memcpy(newReceiver[pos], teamData[pos], sizeof(TEAMS_DATA));
-			free(teamData[pos]);
-		}
-		else if(teamData[pos] != NULL)
-		{
-			newReceiver[pos] = teamData[pos];
-		}
-	}
-	
-	getRideOfDuplicateInTeam(newReceiver, &lengthTeamCopy);
-	if(teamList != newReceiver)
-	{
-		void * buf = teamList;
-		teamList = newReceiver;
-		free(buf);
-		lengthTeam = lengthTeamCopy;
-	}
-}
-
-void getRideOfDuplicateInTeam(TEAMS_DATA ** data, uint *nombreTeam)
-{
-	uint internalNombreTeam = *nombreTeam;
-	
-	//On va chercher des collisions
-	for(uint posBase = 0; posBase < internalNombreTeam; posBase++)	//On test avec jusqu'à nombreTeam - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
-	{
-		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
-			continue;
-		
-		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreTeam; posToCompareWith++)
-		{
-			if(data[posToCompareWith] == NULL)
-				continue;
-			
-			if(!strcmp(data[posBase]->URLRepo, data[posToCompareWith]->URLRepo))	//Même URL
-			{
-				if(!strcmp(data[posBase]->teamLong, data[posToCompareWith]->teamLong))
-				{
-					free(data[posToCompareWith]);
-					data[posToCompareWith] = NULL;
-				}
-			}
-		}
-	}
-}
-
-bool isAppropriateNumberOfTeam(uint requestedNumber)
-{
-	return requestedNumber == lengthTeam;
-}
-
-void freeTeam(TEAMS_DATA **data)
-{
-	for(uint i = 0; data[i] != NULL; free(data[i++]));
-	free(data);
-}
-
-#pragma mark - Identical API for 'Repo'
-
-uint64_t getRepoID(REPO_DATA * team)
-{
-	uint64_t output = team->parentRepoID;;
-	return (output << 32) | team->repoID;
 }
 
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
@@ -891,37 +737,150 @@ ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 	return parseLocalRepo(repoDB, nbRepo);
 }
 
-REPO_DATA ** getCopyKnownRepo(uint * nbRepo)
+REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 {
-	//+1 used to free everything
-	REPO_DATA ** output = calloc(lengthRepo + 1, sizeof(REPO_DATA*));
+	if(root == NULL || nbRepo == NULL)
+		return NULL;
+	
+	uint nbSubRepo = 0;
+	
+	for(uint pos = 0; pos < nbRoot; pos++)
+	{
+		if(root[pos] != NULL)
+			nbSubRepo += root[pos]->nombreSubrepo;
+	}
+	
+	REPO_DATA ** output = calloc(nbSubRepo + 1, sizeof(REPO_DATA *));
 	if(output != NULL)
 	{
-		for(int i = 0; i < lengthRepo; i++)
+		for(uint pos = 0, indexRoot = 0, posInRoot = 0; pos < nbSubRepo; pos++)
 		{
-			if(repoList[i] == NULL)
+			if(posInRoot >= root[indexRoot]->nombreSubrepo)
+			{
+				indexRoot++;
+				posInRoot = 0;
+			}
+			
+			output[pos] = malloc(sizeof(REPO_DATA));
+			if(output[pos] == NULL)
+			{
+				while (pos-- > 0)
+					free(output[pos]);
+				free(output);
+				return NULL;
+			}
+			
+			*output[pos] = root[indexRoot]->subRepo[posInRoot++];
+		}
+	}
+	
+	return output;
+}
+
+void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
+{
+	//+1 used to free everything
+	uint sizeElem = wantRoot ? sizeof(ROOT_REPO_DATA) : sizeof(REPO_DATA), length = wantRoot ? lengthRootRepo : lengthRepo;
+	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output = calloc(lengthRepo + 1, sizeof(void*));
+	if(output != NULL)
+	{
+		for(int i = 0; i < length; i++)
+		{
+			if(originalData[i] == NULL)
 				output[i] = NULL;
 			else
 			{
-				output[i] = malloc(sizeof(REPO_DATA));
+				output[i] = malloc(sizeElem);
 				
 				if(output[i] != NULL)
-					memcpy(output[i], repoList[i], sizeof(REPO_DATA));
-				
-				else	//Memory error, let's get the fuck out of here
 				{
-					for (; i > 0; free(output[--i]));
+					memcpy(output[i], originalData[i], sizeElem);
+
+					if(wantRoot)
+					{
+						ROOT_REPO_DATA * currentElem = output[i], * currentOld = (ROOT_REPO_DATA *) originalData[i];
+						
+						//We need to alloc those ourselves
+						currentElem->subRepo = calloc(currentElem->nombreSubrepo + 1, sizeof(ROOT_REPO_DATA *));
+						currentElem->descriptions = NULL;
+						currentElem->langueDescriptions = NULL;
+						
+						if(currentElem->subRepo == NULL)
+						{
+							free(currentElem);
+							output[i] = NULL;
+						}
+						else
+						{
+							memcpy(&(currentElem->subRepo), &(currentOld->subRepo), currentElem->nombreSubrepo * sizeof(ROOT_REPO_DATA));
+							
+							//Yep, descriptions are a pain in the ass
+							if(currentElem->nombreDescriptions > 0)
+							{
+								currentElem->descriptions = calloc(currentElem->nombreDescriptions, sizeof(wchar_t*));
+								currentElem->langueDescriptions = calloc(currentElem->nombreDescriptions, sizeof(char*));
+								
+								if(currentElem->descriptions != NULL && currentElem->langueDescriptions != NULL)
+								{
+									for(uint posDesc = 0; posDesc < currentElem->nombreDescriptions; posDesc++)
+									{
+										uint lengthDesc = wstrlen(currentOld->descriptions[posDesc]), lengthLanguage = strlen(currentOld->langueDescriptions[posDesc]);
+										currentElem->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(wchar_t));
+										currentElem->langueDescriptions[posDesc] = malloc((lengthLanguage + 1) * sizeof(char));
+										
+										if(currentElem->descriptions[posDesc] == NULL || currentElem->langueDescriptions[posDesc] == NULL)
+										{
+											do
+											{
+												free(currentElem->descriptions[posDesc]);
+												free(currentElem->langueDescriptions[posDesc]);
+											} while(posDesc-- > 0);
+											
+											free(currentElem->descriptions);
+											free(currentElem->langueDescriptions);
+											free(currentElem->subRepo);
+											free(currentElem);
+											output[i] = NULL;
+										}
+										else
+										{
+											memcpy(currentElem->descriptions[posDesc], currentOld->descriptions[posDesc], lengthDesc * sizeof(wchar_t));
+											memcpy(currentElem->langueDescriptions[posDesc], currentOld->langueDescriptions[posDesc], lengthLanguage * sizeof(char));
+											currentElem->descriptions[posDesc][lengthDesc] = 0;
+											currentElem->langueDescriptions[posDesc][lengthLanguage] = 0;
+										}
+									}
+								}
+								else
+								{
+									free(currentElem->descriptions);
+									free(currentElem->langueDescriptions);
+									free(currentElem->subRepo);
+									free(currentElem);
+									output[i] = NULL;
+								}
+							}
+						}
+					}
+				}
+				
+				if(output[i] == NULL)	//Memory error, let's get the fuck out of here
+				{
+					if(wantRoot)
+						freeRootRepo((ROOT_REPO_DATA**) output);
+					else
+						for (; i > 0; free(output[--i]));
 					free(output);
 					*nbRepo = 0;
 					return NULL;
 				}
 			}
 		}
-		*nbRepo = lengthRepo;
+		*nbRepo = length;
 	}
 	else
 		*nbRepo = 0;
-
+	
 	return output;
 }
 
@@ -975,7 +934,7 @@ void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
 		}
 	}
 	
-	getRideOfDuplicateInRepo(repoData, &lengthRepoCopy);
+	getRidOfDuplicateInRepo(repoData, &lengthRepoCopy);
 	if(repoList != newReceiver)
 	{
 		void * buf = repoList;
@@ -985,7 +944,7 @@ void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
 	}
 }
 
-void getRideOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo)
+void getRidOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo)
 {
 	uint internalNombreRepo = *nombreRepo;
 	
@@ -1009,6 +968,7 @@ void getRideOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo)
 	}
 }
 
+//Be carefull, you can't add repo using this method, only existing repo will be updated with new root data
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 {
 	uint lengthRepoCopy = lengthRootRepo;
@@ -1049,6 +1009,77 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 		rootRepoList = newReceiver;
 		free(buf);
 		lengthRootRepo = lengthRepoCopy;
+	}
+	
+	//We updated the root store, we now have to update the repo store
+	//From then on, we can fail without significant issues, as this list will get rebuild at next launch
+	
+	for(uint64_t pos = 0, prevParent = 0, prevChild = 0, subChildCount; pos < lengthRepo; pos++)
+	{
+		if(repoList[pos]->parentRepoID != rootRepoList[prevParent]->repoID)
+		{
+			for(; prevParent < lengthRootRepo && rootRepoList[prevParent]->repoID != repoList[pos]->parentRepoID; prevParent++);
+			if(prevParent == lengthRootRepo)
+			{
+				for (prevParent = 0; prevParent < lengthRootRepo && rootRepoList[prevParent]->repoID != repoList[pos]->parentRepoID; prevParent++);
+				if(prevParent == lengthRootRepo)
+					continue;
+			}
+		}
+		
+		subChildCount = rootRepoList[prevParent]->nombreSubrepo;
+		
+		for(prevChild++; prevChild < subChildCount && rootRepoList[prevParent]->subRepo[prevChild].repoID != repoList[pos]->repoID; prevChild++);
+		if(prevChild == subChildCount)
+		{
+			for(prevChild = 0; prevChild < subChildCount && rootRepoList[prevParent]->subRepo[prevChild].repoID != repoList[pos]->repoID; prevChild++);
+			if(prevChild == subChildCount)
+				continue;
+		}
+		
+		memcpy(repoList[pos], &(rootRepoList[prevParent]->subRepo[prevChild]), sizeof(REPO_DATA));
+	}
+}
+
+void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo)
+{
+	if(_subRepo == NULL || *_subRepo == NULL || nbSubRepo == 0)
+		return;
+	
+	REPO_DATA * subRepo = *_subRepo;
+	uint parentID = subRepo[0].parentRepoID, validatedCount = 0;
+	bool validated[nbSubRepo];
+	
+	memset(validated, 0, sizeof(validated));
+	
+	for(uint pos = 0; pos < lengthRepo; pos++)
+	{
+		if(repoList[pos] != NULL && repoList[pos]->parentRepoID == parentID)
+		{
+			for(uint posSub = 0; posSub < nbSubRepo; posSub++)
+			{
+				if(subRepo[posSub].repoID == repoList[pos]->repoID && !validated[posSub])
+				{
+					validated[posSub] = true;
+					validatedCount++;
+					break;
+				}
+			}
+		}
+	}
+	
+	if(validatedCount != nbSubRepo)
+	{
+		REPO_DATA * newSubrepo = calloc(validatedCount, sizeof(REPO_DATA));
+		
+		for(uint pos = 0, posValidated = 0; pos < nbSubRepo; pos++)
+		{
+			if(validated[pos])
+				newSubrepo[posValidated++] = subRepo[pos];
+		}
+		
+		*_subRepo = newSubrepo;
+		free(subRepo);
 	}
 }
 
@@ -1093,39 +1124,22 @@ void freeRootRepo(ROOT_REPO_DATA ** root)
 			free(root[i]->langueDescriptions[j]);
 		}
 		
+		free(root[i]->descriptions);
+		free(root[i]->langueDescriptions);
 		free(root[i]);
 	}
 	
 	free(root);
 }
 
-#ifdef TEAM_COPIED_TO_INSTANCE
-
-void freeProjectData(PROJECT_DATA* projectDB)
+void freeRepo(REPO_DATA ** repos)
 {
-    if(projectDB == NULL)
-        return;
+	if(repos == NULL)
+		return;
 	
-    size_t pos = 0, posTeamCollector = 0, i;
-	void* collector[lengthTeam];
-    
-	for(; projectDB[pos].team != NULL; pos++)
-    {
-        if(projectDB[pos].team != NULL)
-		{
-			for(i = 0; i < posTeamCollector && projectDB[pos].team != collector[i]; i++);
-			if(i == posTeamCollector)
-				collector[posTeamCollector++] = projectDB[pos].team;
-		}
-		releaseCTData(projectDB[pos]);
-    }
-	while (posTeamCollector--)
-		free(collector[posTeamCollector]);
-	
-    free(projectDB);
+	for(uint i = 0; repos[i] != NULL; free(repos[i++]));
+	free(repos);
 }
-
-#else
 
 void freeProjectData(PROJECT_DATA* projectDB)
 {
@@ -1137,13 +1151,11 @@ void freeProjectData(PROJECT_DATA* projectDB)
     free(projectDB);
 }
 
-#endif
-
 //Requêtes pour obtenir des données spécifiques
 
-PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, bool installed)
+PROJECT_DATA * getDataFromSearch (uint IDRepo, uint projectID, bool installed)
 {
-	if(IDTeam >= lengthTeam)
+	if(IDRepo >= lengthRepo)
 		return NULL;
 	
 	PROJECT_DATA * output = calloc(1, sizeof(PROJECT_DATA));
@@ -1159,7 +1171,7 @@ PROJECT_DATA * getDataFromSearch (uint IDTeam, uint projectID, bool installed)
 	else
 		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_team)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
 	
-	sqlite3_bind_int(request, 1, IDTeam);
+	sqlite3_bind_int(request, 1, IDRepo);
 	sqlite3_bind_int(request, 2, projectID);
 	
 	if(sqlite3_step(request) == SQLITE_ROW)

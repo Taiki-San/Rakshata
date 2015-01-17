@@ -229,7 +229,7 @@
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{
-		if(project.team == NULL || element == VALEUR_FIN_STRUCT || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+		if(project.repo == NULL || element == VALEUR_FIN_STRUCT || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
 		if(!dragInProgress)

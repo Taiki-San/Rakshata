@@ -16,9 +16,9 @@
 + (void) unRegister : (id) instance;
 
 + (void) postNotificationFullUpdate;
-+ (void) postNotificationTeamUpdate : (TEAMS_DATA) team;
++ (void) postNotificationRepoUpdate : (REPO_DATA) repo;
 + (void) postNotificationProjectUpdate : (PROJECT_DATA) project;
-+ (void) postNotification : (uint) teamID : (uint) projectID;
++ (void) postNotification : (uint64_t) repoID : (uint) projectID;
 
 + (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project;
 + (BOOL) getIDUpdated : (NSDictionary*) notification : (uint*) ID;

@@ -19,9 +19,9 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     uint length;
     char *output = NULL;
 	
-    if (!strcmp(data.datas->team->type, TYPE_DEPOT_DB) || !strcmp(data.datas->team->type, TYPE_DEPOT_OTHER))
+    if (data.datas->repo->type == TYPE_DEPOT_DB || data.datas->repo->type == TYPE_DEPOT_OTHER)
     {
-        output = internalCraftBaseURL(*data.datas->team, &length);
+        output = internalCraftBaseURL(*data.datas->repo, &length);
         if(output != NULL)
         {
             if(data.partOfTome == VALEUR_FIN_STRUCT || data.subFolder == false)
@@ -49,40 +49,40 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 		if(saltedPass[0] == 0)
 			return NULL;
 		
-        length = 110 + 20 + (strlen(data.datas->team->URLRepo) + 10 + 10) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
+        length = 110 + 20 + (strlen(data.datas->repo->URL) + 10 + 10) + strlen(COMPTE_PRINCIPAL_MAIL) + 64 + 0x20; //Core URL + numbers + elements + password + marge de sécurité
         output = malloc(length);
         if(output != NULL)
 		{
-            snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->team->URLRepo, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
+            snprintf(output, length, "https://"SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->repo->URL, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
         }
     }
 
     else
     {
         char errorMessage[400];
-        snprintf(errorMessage, 400, "URL non gérée: %s\n", data.datas->team->type);
+        snprintf(errorMessage, 400, "URL non gérée: %d\n", data.datas->repo->type);
         logR(errorMessage);
     }
     return output;
 }
 
-char* internalCraftBaseURL(TEAMS_DATA teamData, uint* length)
+char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
 {
     char *output = NULL;
-    if (!strcmp(teamData.type, TYPE_DEPOT_DB))
+    if(repoData.type == TYPE_DEPOT_DB)
     {
-        *length = 60 + 15 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 60 + 15 + strlen(repoData.URL) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
-            snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", teamData.URLRepo);
+            snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", repoData.URL);
     }
 
-    else if (!strcmp(teamData.type, TYPE_DEPOT_OTHER))
+    else if (repoData.type == TYPE_DEPOT_OTHER)
     {
-        *length = 200 + strlen(teamData.URLRepo) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
+        *length = 200 + strlen(repoData.URL) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
         if(output != NULL)
-            snprintf(output, *length, "http://%s", teamData.URLRepo);
+            snprintf(output, *length, "http://%s", repoData.URL);
     }
 
     return output;
@@ -179,14 +179,14 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProject
 
             sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
 			
-			if(projectDB[posCatalogue].projectID != projectID && !strcmp(projectDB[posCatalogue].team->URLRepo, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
+			if(projectDB[posCatalogue].projectID != projectID && !strcmp(projectDB[posCatalogue].repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
             {
 				currentProject = &projectDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; projectDB[posCatalogue].team != NULL && (projectDB[posCatalogue].projectID != projectID || strcmp(projectDB[posCatalogue].team->URLRepo, URL)); posCatalogue++);
-                if(projectDB[posCatalogue].team != NULL && projectID != projectDB[posCatalogue].projectID && !strcmp(projectDB[posCatalogue].team->URLRepo, URL))
+                for(posCatalogue = 0; projectDB[posCatalogue].repo != NULL && (projectDB[posCatalogue].projectID != projectID || strcmp(projectDB[posCatalogue].repo->URL, URL)); posCatalogue++);
+                if(projectDB[posCatalogue].repo != NULL && projectID != projectDB[posCatalogue].projectID && !strcmp(projectDB[posCatalogue].repo->URL, URL))
                 {
                     currentProject = &projectDB[posCatalogue];
                 }
@@ -251,12 +251,12 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	if(IDChap == -1)
 		return ERROR_CHECK;
 	
-	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedTeam = getPathForTeam(projectData.team->URLRepo);
+	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedRepo = getPathForRepo(projectData.repo->URL);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 	char pathInstall[LENGTH_PROJECT_NAME * 2 + 256];
 #endif
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return ERROR_CHECK;
 	
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
@@ -271,20 +271,20 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/"CONFIGFILE, encodedRepo, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/installing", encodedRepo, projectData.projectID, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/"CONFIGFILE, encodedTeam, projectData.projectID, IDTome, IDChap / 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/"CONFIGFILE, encodedRepo, projectData.projectID, IDTome, IDChap / 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/installing", encodedTeam, projectData.projectID, IDTome, IDChap / 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/installing", encodedRepo, projectData.projectID, IDTome, IDChap / 10);
 #endif
 		}
 		
-		free(encodedTeam);
+		free(encodedRepo);
 		
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
 		return checkFileExist(pathConfig) && !checkFileExist(pathInstall) ? ALREADY_INSTALLED : NOT_INSTALLED;
@@ -298,8 +298,8 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	char basePath[LENGTH_PROJECT_NAME * 2 + 256], nameChapter[256];
 	
 	//Craft les portions constantes du nom
-	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedTeam, projectData.projectID);
-	free(encodedTeam);
+	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectData.projectID);
+	free(encodedRepo);
 	
 	if(IDChap % 10)
 		snprintf(nameChapter, sizeof(nameChapter), "Chapitre_%d.%d", IDChap / 10, IDChap % 10);
@@ -366,17 +366,17 @@ void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
-	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedTeam = getPathForTeam(data.team->URLRepo);
+	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(data.repo->URL);
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return;
 	
 	if(chapitreID % 10)
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/shared", encodedTeam, data.projectID, chapitreID / 10, chapitreID % 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/shared", encodedRepo, data.projectID, chapitreID / 10, chapitreID % 10);
 	else
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d/shared", encodedTeam, data.projectID, chapitreID / 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/%d/Chapitre_%d/shared", encodedRepo, data.projectID, chapitreID / 10);
 	
-	free(encodedTeam);
+	free(encodedRepo);
 	
 	FILE * file = fopen(pathToSharedFile, "w+");
 	if(file != NULL)
@@ -419,19 +419,19 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(tomeDatas == NULL || tomeDatas->datas == NULL)
 		return false;
 	
-    uint length = strlen(tomeDatas->datas->team->teamLong) + 110;
+    uint length = strlen(tomeDatas->datas->repo->URL) * 4 / 3 + 110;
     char *bufferDL = NULL;
 	bool mayHaveAlreadyBeenHere = false, ret_value = false;
 	
 	if(length < 110)	//overflow
 		return false;
 
-    char bufferPath[length], *encodedTeam = getPathForTeam(tomeDatas->datas->team->URLRepo);
+    char bufferPath[length], *encodedRepo = getPathForRepo(tomeDatas->datas->repo->URL);
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return false;
 	
-	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier);
+	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
 	length = getFileSize(bufferPath);
 	
 	if(length)
@@ -458,21 +458,21 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 			goto end;
 
         ///Craft URL
-        if (!strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_DB) || !strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_OTHER))
+        if (tomeDatas->datas->repo->type == TYPE_DEPOT_DB || tomeDatas->datas->repo->type == TYPE_DEPOT_OTHER)
         {
-            URL = internalCraftBaseURL(*tomeDatas->datas->team, &length);
+            URL = internalCraftBaseURL(*tomeDatas->datas->repo, &length);
             if(URL != NULL)
                 snprintf(URL, length, "%s/%d/Tome_%d.dat", URL, tomeDatas->datas->projectID, tomeDatas->identifier);
         }
         else if (isPaidProject(*tomeDatas->datas))
         {
-            length = 100 + 15 + strlen(tomeDatas->datas->team->URLRepo) + 10 + 64; //Core URL + numbers + elements
+            length = 100 + 15 + strlen(tomeDatas->datas->repo->URL) + 10 + 64; //Core URL + numbers + elements
             URL = malloc(length);
             if(URL != NULL)
-                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d", tomeDatas->datas->team->URLRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
+                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d", tomeDatas->datas->repo->URL, tomeDatas->datas->projectID, tomeDatas->identifier);
         }
 
-        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, strcmp(tomeDatas->datas->team->type, TYPE_DEPOT_OTHER)?SSL_ON:SSL_OFF) != CODE_RETOUR_OK)
+        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, tomeDatas->datas->repo->type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF) != CODE_RETOUR_OK)
 		{
 			free(URL);
 			goto end;
@@ -571,10 +571,10 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 	if(mayHaveAlreadyBeenHere)
 	{
 		//On va vérifier si le tome est pas déjà lisible
-		uint lengthTmp = strlen(tomeDatas->datas->team->teamLong) + 110;
+		uint lengthTmp = strlen(tomeDatas->datas->repo->URL) * 4 / 3 + 110;
 		char bufferPathTmp[lengthTmp];
 		
-		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedTeam, tomeDatas->datas->projectID, tomeDatas->identifier);
+		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
 		rename(bufferPath, bufferPathTmp);
 		
 		refreshTomeList(tomeDatas->datas);
@@ -630,7 +630,7 @@ bool getTomeDetails(DATA_LOADED *tomeDatas)
 end:
 	
     free(bufferDL);
-	free(encodedTeam);
+	free(encodedRepo);
     return ret_value;
 }
 
@@ -658,12 +658,12 @@ int sortProjectsToDownload(const void *a, const void *b)
     //Projets différents, on les classe
     if(struc1->datas->favoris)
         ptsA = 2;
-    if(!strcmp(struc1->datas->team->type, TYPE_DEPOT_PAID))
+    if(struc1->datas->repo->type == TYPE_DEPOT_PAID)
         ptsA += 1;
 
     if(struc2->datas->favoris)
         ptsB = 2;
-    if(!strcmp(struc2->datas->team->type, TYPE_DEPOT_PAID))
+    if(struc2->datas->repo->type == TYPE_DEPOT_PAID)
         ptsB += 1;
 
     if(ptsA > ptsB)
@@ -674,29 +674,6 @@ int sortProjectsToDownload(const void *a, const void *b)
 }
 
 /*Divers*/
-
-bool checkIfWebsiteAlreadyOpened(TEAMS_DATA teamToCheck, char ***historiqueTeam)
-{
-    if(teamToCheck.openSite && *historiqueTeam != NULL)
-    {
-		uint i;
-		
-        for(i = 0; (*historiqueTeam)[i] && strcmp(teamToCheck.teamCourt, (*historiqueTeam)[i]) != 0; i++);
-        if((*historiqueTeam)[i] == NULL) //Si pas déjà installé
-        {
-            void *ptr = realloc(*historiqueTeam, (i+2)*sizeof(char*));
-            if(ptr != NULL) //Si ptr == NULL, *historiqueTeam n'a pas été modifié
-            {
-                *historiqueTeam = ptr;
-                (*historiqueTeam)[i] = malloc(LONGUEUR_COURT);
-                ustrcpy((*historiqueTeam)[i], teamToCheck.teamCourt);
-                (*historiqueTeam)[i+1] = NULL;
-            }
-            return true;
-        }
-    }
-    return false;
-}
 
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
 {

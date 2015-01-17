@@ -29,52 +29,50 @@ void updateDatabase(bool forced)
 
 /************** UPDATE REPO	********************/
 
-int getUpdatedRepo(char *buffer_repo, uint bufferSize, TEAMS_DATA teams)
+int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo)
 {
 	if(buffer_repo == NULL)
 		return -1;
+	else
+		buffer_repo[0] = 0;
 	
     int defaultVersion = VERSION_REPO;
 	char temp[500];
-	do
+	
+	if(repo.type == TYPE_DEPOT_DB)
+		snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", repo.URL, defaultVersion);
+	
+	else if(repo.type == TYPE_DEPOT_OTHER)
+		snprintf(temp, 500, "http://%s/rakshata-repo-%d", repo.URL, defaultVersion);
+	
+	else if(repo.type == TYPE_DEPOT_PAID) //Payant
+		snprintf(temp, 500, "https://"SERVEUR_URL"/ressource.php?editor=%s&request=repo&version=%d", repo.URL, defaultVersion);
+	
+	else
 	{
-        if(!strcmp(teams.type, TYPE_DEPOT_DB))
-            snprintf(temp, 500, "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
-		
-        else if(!strcmp(teams.type, TYPE_DEPOT_OTHER))
-            snprintf(temp, 500, "http://%s/rakshata-repo-%d", teams.URLRepo, defaultVersion);
-		
-        else if(!strcmp(teams.type, TYPE_DEPOT_PAID)) //Payant
-            snprintf(temp, 500, "https://"SERVEUR_URL"/ressource.php?editor=%s&request=repo&version=%d", teams.URLRepo, defaultVersion);
-		
-        else
-        {
-            snprintf(temp, 500, "Failed at understand what is the repo: %s", teams.type);
-            logR(temp);
-            return -1;
-        }
-		
-        buffer_repo[0] = 0;
-        download_mem(temp, NULL, buffer_repo, bufferSize, strcmp(teams.type, TYPE_DEPOT_OTHER) ? SSL_ON : SSL_OFF);
-        defaultVersion--;
-		
-	} while(defaultVersion > 0 && !isDownloadValid(buffer_repo));
-	return defaultVersion+1;
+		snprintf(temp, 500, "Failed at understand what is the repo: %d", repo.type);
+		logR(temp);
+		return -1;
+	}
+	
+	download_mem(temp, NULL, buffer_repo, bufferSize, repo.type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF);
+	
+	return isDownloadValid(buffer_repo) ? defaultVersion : -1;
 }
 
 void updateRepo()
 {
-	uint nbTeamToRefresh;
-	TEAMS_DATA **oldData = getCopyKnownTeams(&nbTeamToRefresh);
+	uint nbRepoToRefresh;
+	ROOT_REPO_DATA **oldRootData = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRepoToRefresh, true);
 
-	if(oldData == NULL || nbTeamToRefresh == 0)
+	if(oldRootData == NULL || nbRepoToRefresh == 0)
 	{
-		free(oldData);
+		freeRootRepo(oldRootData);
 		return;
 	}
 	
-	char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
-	TEAMS_DATA newData;
+	char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
+	ROOT_REPO_DATA newData;
 	
 	loadKS(dataKS);
 	
@@ -83,58 +81,63 @@ void updateRepo()
 
 	if(bufferDL == NULL)
 	{
-		freeTeam(oldData);
+		freeRootRepo(oldRootData);
 		return;
 	}
 
-	for(int posTeam = 0; posTeam < nbTeamToRefresh; posTeam++)
+	for(uint posRepo = 0; posRepo < nbRepoToRefresh; posRepo++)
 	{
-		if(oldData[posTeam] == NULL)
+		if(oldRootData[posRepo] == NULL)
 			continue;
-		else if(checkKS(*oldData[posTeam], dataKS))
+		
+		else if(checkKS(*oldRootData[posRepo], dataKS))
 		{
-			KSTriggered(*oldData[posTeam]);
+			for(uint i = 0, length = oldRootData[posRepo]->nombreSubrepo; i < length; i++)
+				KSTriggered(oldRootData[posRepo]->subRepo[i]);
+	
 			continue;
 		}
 		
 		//Refresh effectif
-		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldData[posTeam]);
-		if(parseRemoteRepoLine(bufferDL, oldData[posTeam], dataVersion, &newData))
-			memcpy(oldData[posTeam], &newData, sizeof(TEAMS_DATA));
-
+		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldRootData[posRepo]);
+		if(parseRemoteRepoLine(bufferDL, oldRootData[posRepo], dataVersion, &newData))
+		{
+			removeNonInstalledSubRepo(&(newData.subRepo), newData.nombreSubrepo);
+			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
+		}
 	}
 	free(bufferDL);
-	updateTeamCache(oldData, -1);
-	free(oldData);
+	updateRootRepoCache(oldRootData, -1);
+	freeRootRepo(oldRootData);
 }
 
 /******************* UPDATE PROJECTS ****************************/
 
-int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
+int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo)
 {
 	int defaultVersion = VERSION_PROJECT;
 	char URL[500];
     do
 	{
-	    if(!strcmp(teams->type, TYPE_DEPOT_DB))
-            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
+	    if(repo->type == TYPE_DEPOT_DB)
+            snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/rakshata-project-%d", repo->URL, defaultVersion);
 
-        else if(!strcmp(teams->type, TYPE_DEPOT_OTHER))
-            snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", teams->URLRepo, defaultVersion);
+        else if(repo->type == TYPE_DEPOT_OTHER)
+            snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", repo->URL, defaultVersion);
 
-        else if(!strcmp(teams->type, TYPE_DEPOT_PAID)) //Payant
-            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=project&version=%d", teams->URLRepo, defaultVersion);
+        else if(repo->type == TYPE_DEPOT_PAID) //Payant
+            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=project&version=%d", repo->URL, defaultVersion);
 
         else
         {
             char temp[LENGTH_PROJECT_NAME + 100];
-            snprintf(temp, sizeof(temp), "failed at read mode(project database): %s", teams->type);
+            snprintf(temp, sizeof(temp), "Failed at read mode (project database): %d", repo->type);
             logR(temp);
             return -1;
         }
 		
         projectBuf[0] = 0;
-        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, strcmp(teams->type, TYPE_DEPOT_OTHER)?SSL_ON:SSL_OFF);
+        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, repo->type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF);
         defaultVersion--;
 		
 	} while(defaultVersion > 0 && !isDownloadValid(projectBuf));
@@ -142,19 +145,19 @@ int getUpdatedProjectOfTeam(char *projectBuf, TEAMS_DATA* teams)
     return defaultVersion+1;
 }
 
-void refreshTeam(TEAMS_DATA * team, bool standalone)
+void refreshRepo(REPO_DATA * repo, bool standalone)
 {
 	PROJECT_DATA project;
 	
 	project.isInitialized = false;
-	project.team = team;
+	project.repo = repo;
 	
-	updateProjectsFromTeam(&project, 0, 0, standalone);
+	updateProjectsFromRepo(&project, 0, 0, standalone);
 }
 
-void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
+void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
 {
-	TEAMS_DATA *globalTeam = oldData[posBase].team;
+	REPO_DATA *globalRepo = oldData[posBase].repo;
 	uint magnitudeInput = posEnd - posBase, nbElem = 0;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
 	
@@ -162,13 +165,13 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 		return;
 
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
-	bool paidTeam = !strcmp(globalTeam->type, TYPE_DEPOT_PAID);
+	bool paidRepo = globalRepo->type == TYPE_DEPOT_PAID;
 #endif
-	int version = getUpdatedProjectOfTeam(bufferDL, globalTeam);
+	int version = getUpdatedProjectOfRepo(bufferDL, globalRepo);
 	
-	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL, globalTeam))		//On a des données à peu près valide
+	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL))		//On a des données à peu près valide
 	{
-		PROJECT_DATA_EXTRA * projects = parseRemoteData(globalTeam, bufferDL, &nbElem);
+		PROJECT_DATA_EXTRA * projects = parseRemoteData(globalRepo, bufferDL, &nbElem);
 		updatePageInfoForProjects(projects, nbElem);
 		
 		//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
@@ -182,7 +185,7 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
 					
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
-					if(projectShort[pos].isPaid && !paidTeam)
+					if(projectShort[pos].isPaid && !paidRepo)
 					{
 						projectShort[pos].isPaid = false;
 						free(projectShort[pos].chapitresPrix);
@@ -195,7 +198,7 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 				free(projectShort);
 				
 				if(standalone)
-					notifyUpdateTeam(*globalTeam);
+					notifyUpdateRepo(*globalRepo);
 				
 			}
 			free(projects);
@@ -207,16 +210,16 @@ void updateProjectsFromTeam(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 
 void updateProjects()
 {
-	uint nbElem, posBase = 0, posEnd, nbTeamRefreshed = 0;
-	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_TEAM, &nbElem);
+	uint nbElem, posBase = 0, posEnd, nbRepoRefreshed = 0;
+	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO, &nbElem);
 	
 	while(posBase != nbElem)
 	{
-		posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
+		posEnd = defineBoundsRepoOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
 		{
-			updateProjectsFromTeam(oldData, posBase, posEnd, false);
-			nbTeamRefreshed++;
+			updateProjectsFromRepo(oldData, posBase, posEnd, false);
+			nbRepoRefreshed++;
 		}
 		else
 			break;
@@ -224,48 +227,48 @@ void updateProjects()
 		posBase = posEnd;
 	}
 	
-	if(!isAppropriateNumberOfTeam(nbTeamRefreshed))
+	if(!isAppropriateNumberOfRepo(nbRepoRefreshed))
 	{
-		//We didn't refreshed every team, WTF?
+		//We didn't refreshed every repo, WTF?
 		//Let's refresh them manually
 		
-		uint realNumberOfTeam;
-		TEAMS_DATA ** teams = getCopyKnownTeams(&realNumberOfTeam);
+		uint realNumberOfRepo;
+		REPO_DATA ** repo = (REPO_DATA **)getCopyKnownRepo(&realNumberOfRepo, false);
 		
-		if(teams != NULL)
+		if(repo != NULL)
 		{
-			bool *refreshedTable = calloc(realNumberOfTeam, sizeof(bool));
+			bool *refreshedTable = calloc(realNumberOfRepo, sizeof(bool));
 			
 			if(refreshedTable != NULL)
 			{
-				uint posTeam = 0;
+				uint posRepo = 0;
 				posBase = 0;
 				
 				//We're going to go through the updated repo and see if any is missing
 				while(posBase != nbElem)
 				{
-					posEnd = defineBoundsTeamOnProjectDB(oldData, posBase, nbElem);
+					posEnd = defineBoundsRepoOnProjectDB(oldData, posBase, nbElem);
 					if(posEnd != UINT_MAX)
 					{
-						//Now, find the team in our base, starting from where we left (it's supposed to be ordered)
-						for(; posTeam < realNumberOfTeam && strcmp(teams[posTeam]->URLRepo, oldData[posBase].team->URLRepo); posTeam++);
+						//Now, find the repo in our base, starting from where we left (it's supposed to be ordered)
+						for(; posRepo < realNumberOfRepo && (repo[posRepo]->parentRepoID != oldData[posBase].repo->parentRepoID || repo[posRepo]->repoID != oldData[posBase].repo->repoID); posRepo++);
 						
-						//Couldn't find the team, weird, let's recheck from the begining
-						if(posTeam == realNumberOfTeam)
+						//Couldn't find the repo, weird, let's recheck from the begining
+						if(posRepo == realNumberOfRepo)
 						{
-							for(posTeam = 0; posTeam < realNumberOfTeam && strcmp(teams[posTeam]->URLRepo, oldData[posBase].team->URLRepo); posTeam++);
+							for(posRepo = 0; posRepo < realNumberOfRepo && (repo[posRepo]->parentRepoID != oldData[posBase].repo->parentRepoID || repo[posRepo]->repoID != oldData[posBase].repo->repoID); posRepo++);
 							
-							if(posTeam == realNumberOfTeam)
+							if(posRepo == realNumberOfRepo)
 							{
 								char temp[100+LONGUEUR_URL];
-								snprintf(temp, sizeof(temp), "Missing team, WTF? %s", oldData[posBase].team->URLRepo);
+								snprintf(temp, sizeof(temp), "Missing repo, WTF? %d - %d", oldData[posBase].repo->parentRepoID, oldData[posBase].repo->repoID);
 								logR(temp);
 								
 								continue;
 							}
 						}
 						
-						refreshedTable[posTeam] = true;
+						refreshedTable[posRepo] = true;
 					}
 					else
 						break;
@@ -274,20 +277,20 @@ void updateProjects()
 				}
 				
 				//Okay, now, let's find the culprits
-				for(uint i = 0; i < realNumberOfTeam; i++)
+				for(uint i = 0; i < realNumberOfRepo; i++)
 				{
 					if(!refreshedTable[i])
-						refreshTeam(teams[i], false);
+						refreshRepo(repo[i], false);
 				}
 				
 				free(refreshedTable);
 			}
 			
-			freeTeam(teams);
+			freeRepo(repo);
 		}
 	}
 	
-	syncCacheToDisk(SYNC_TEAM | SYNC_PROJECTS);
+	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 	freeProjectData(oldData);
 	notifyFullUpdate();
 }
@@ -296,14 +299,14 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
 	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
 	{
-		char path[2*LENGTH_PROJECT_NAME + 25], *encodedTeam = getPathForTeam(project.team->URLRepo);
+		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForRepo(project.repo->URL);
 		
-		if(encodedTeam != NULL)
+		if(encodedRepo != NULL)
 		{
-			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedTeam, project.projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, project.projectID);
 			removeFolder(path);
 		}
-		free(encodedTeam);
+		free(encodedRepo);
 	}
 	else
 		internalDeleteCT(project, isTome, elemToDel);
@@ -313,16 +316,16 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 
 void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 {
-	char temp[5*LENGTH_PROJECT_NAME], *encodedTeam = getPathForTeam(project.team->URLRepo);
+	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForRepo(project.repo->URL);
 	FILE* fichier = NULL;
 	
-	if(encodedTeam == NULL)
+	if(encodedRepo == NULL)
 		return;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedTeam, project.projectID);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedRepo, project.projectID);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedTeam, project.projectID);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedRepo, project.projectID);
 
 	fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);

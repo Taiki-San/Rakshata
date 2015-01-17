@@ -52,7 +52,7 @@ void sendToLog(char * string);
  *****************************************/
 
 void notifyFullUpdate();
-void notifyUpdateTeam(TEAMS_DATA team);
+void notifyUpdateRepo(REPO_DATA repo);
 void notifyUpdateProject(PROJECT_DATA project);
 
 /*****************************************

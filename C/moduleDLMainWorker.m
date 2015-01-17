@@ -34,7 +34,6 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	free(arg);
 	
 	uint dataPos;
-	char **historiqueTeam = calloc(1, sizeof(char*));
 	
 	requestID = RID_DEFAULT;
 	
@@ -44,7 +43,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 	if(dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) == MDL_CODE_DEFAULT)
 	{
-		MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status, &historiqueTeam);
+		MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status);
 	}
 	
 	while(1)
@@ -79,7 +78,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 				
 				if(dataPos < *nbElemTotal)
 				{
-					MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status, &historiqueTeam);
+					MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status);
 				}
 				else
 				{
@@ -128,8 +127,6 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	}
 	
 	threadID = NULL;
-	for(dataPos = 0; historiqueTeam[dataPos] != NULL; free(historiqueTeam[dataPos++]));
-	free(historiqueTeam);
 	
 	pthread_cond_broadcast(&condResumeExecution);
 	pthread_mutex_trylock(&mutexLockMainThread);
@@ -143,7 +140,7 @@ void MDLSetThreadID(THREAD_TYPE *thread)
 	threadID = thread;
 }
 
-void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status, char ***historiqueTeam)
+void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList, int8_t *** status)
 {
     if(todoList[posElement] != NULL)
     {
@@ -160,7 +157,6 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 		
 		argument->todoList = todoList[posElement];
         argument->currentState = (*status)[posElement];
-        argument->historiqueTeam = historiqueTeam;
 		argument->fullStatus = status;
 		argument->statusLength = nbElemTotal;
 		

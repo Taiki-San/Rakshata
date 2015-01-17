@@ -163,7 +163,7 @@
 {
 	NSImage * projectImageBase = nil;
 	
-	char * encodedHash = getPathForTeam(URLRepo);
+	char * encodedHash = getPathForRepo(URLRepo);
 	
 	if(encodedHash == NULL)
 		return nil;

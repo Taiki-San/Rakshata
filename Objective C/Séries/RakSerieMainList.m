@@ -280,7 +280,7 @@
 	
 	PROJECT_DATA project = [self getElementAtIndex:selectedRowIndex];
 
-	if(project.team == NULL)
+	if(project.repo == NULL)
 		return -1;
 	
 	return project.cacheDBID;

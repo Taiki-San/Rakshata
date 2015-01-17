@@ -54,12 +54,11 @@ void updateFavorites();
 void getNewFavs();
 
 /**JSONParser.m**/
-PROJECT_DATA_EXTRA * parseRemoteData(TEAMS_DATA* team, char * remoteDataRaw, uint * nbElem);
-PROJECT_DATA * parseLocalData(TEAMS_DATA ** team, uint nbTeam, unsigned char * remoteDataRaw, uint *nbElem);
-char * reversedParseData(PROJECT_DATA * data, uint nbElem, TEAMS_DATA ** team, uint nbTeam, size_t * sizeOutput);
+PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint * nbElem);
+PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem);
+char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput);
 
 ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
-ROOT_REPO_DATA * parseLocalRootRepo(NSDictionary * rootRepo);
 ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
 char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeOutput);
 
@@ -103,11 +102,10 @@ bool checkDirExist(char *dirname);
 
 /**Repo.c**/
 void checkAjoutRepoParFichier(char *argv);
-bool getRepoData(uint type, char * repoURL, char * output, uint sizeOutput);
-TEAMS_DATA parseRemoteRepoData(char * remoteData, uint length);
-bool addRepo(char * URL, char *type);
-char * getPathForTeam(char *URLRepo);
-int defineTypeRepo(char *URL);
+bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput);
+bool addRepo(char * URL, byte type);
+char * getPathForRepo(char *URLRepo);
+byte defineTypeRepo(char *URL);
 int confirmationRepo(char team[LENGTH_PROJECT_NAME]);
 
 /**Securite.c**/
@@ -118,10 +116,10 @@ int AESDecrypt(void *_password, void *_path_input, void *_path_output, int crypt
 void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void get_file_date(const char *filename, char *date, void* internalData);
-void KSTriggered(TEAMS_DATA team);
+void KSTriggered(REPO_DATA team);
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page);
-void loadKS(char killswitch_string[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
-bool checkKS(TEAMS_DATA dataCheck, char dataKS[NUMBER_MAX_TEAM_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
+void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
+bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 uint getRandom();
 
 /**Settings.c**/

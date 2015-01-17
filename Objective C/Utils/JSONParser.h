@@ -16,14 +16,14 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName);
 
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
-void* parseProjectJSON(TEAMS_DATA* team, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
+void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
 
 //Repo parser
 ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
 ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
 NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
-#define JSON_PROJ_AUTHOR_URL	@"ROOT-URL"
+#define JSON_PROJ_AUTHOR_ID	@"ROOT-URL"
 
 #define JSON_PROJ_PROJECTS @"0"
 #define JSON_PROJ_ID @"1"
