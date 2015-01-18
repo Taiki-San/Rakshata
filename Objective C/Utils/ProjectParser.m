@@ -619,7 +619,7 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 			if(repo[posRepo] == NULL)
 				continue;
 			
-			if([(NSNumber*) repoID unsignedLongLongValue] != getRepoID(repo[posRepo]))
+			if([(NSNumber*) repoID unsignedLongLongValue] == getRepoID(repo[posRepo]))
 			{
 				nbElemPart = 0;
 				currentPart = (PROJECT_DATA*) parseProjectJSON(repo[posRepo], remoteDataPart, &nbElemPart, false);
@@ -653,12 +653,14 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, ui
 	
 	memset(counters, 0, sizeof(counters));
 	
-	//Create a table linking projects to team
+	//Create a table linking projects to a repo
 	for(uint pos = 0, posRepo; pos < nbElem; pos++)
 	{
-		for (posRepo = 0; posRepo < nbRepo; posRepo++)
+		uint64_t repoID = getRepoID(data[pos].repo);
+		
+		for(posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
-			if(data[pos].repo == repo[posRepo])
+			if(repoID == getRepoID(repo[posRepo]))
 			{
 				jumpTable[posRepo][counters[posRepo]++] = pos;
 				projectLinkedToRepo = true;

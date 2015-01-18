@@ -177,7 +177,7 @@ int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DAT
 void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
-    int i = 0, hostNotReached = 0;
+    int hostNotReached = 0;
 	char temp[TAILLE_BUFFER], bufferDL[100] = {0};
 
     MUTEX_LOCK(mutex);
@@ -209,8 +209,10 @@ void networkAndVersionTest()
         MUTEX_UNLOCK(mutex);
     }
 
-    else
+	else
     {
+#if 0
+		//No more update code
         MUTEX_LOCK(mutex);
         NETWORK_ACCESS = CONNEXION_OK;
         MUTEX_UNLOCK(mutex);
@@ -230,6 +232,7 @@ void networkAndVersionTest()
                     remove("data/update");
             }
         }
+#endif
 
         //Nouveau killswitch
         if(COMPTE_PRINCIPAL_MAIL != NULL)

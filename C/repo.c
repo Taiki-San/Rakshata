@@ -131,6 +131,7 @@ bool addRepo(char * URL, byte type)
 		if(isDownloadValid(bufferDL))
 		{
 			ROOT_REPO_DATA * root = parseRemoteRepo(bufferDL);
+			root->repoID = getFreeRootRepoID();
 			enforceRepoExtra(root, true);
 			addRepoToDB(root);
 			return true;
@@ -152,7 +153,7 @@ void enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 		
 		for(uint i = 0, length = root->nombreSubrepo; i < length; i++)
 		{
-			final[i] = *((REPO_DATA_EXTRA *)root->subRepo)[i].data;
+			final[i] = *(((REPO_DATA_EXTRA *)root->subRepo)[i].data);
 		}
 		
 		free(root->subRepo);

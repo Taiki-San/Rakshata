@@ -86,11 +86,8 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		}
 		
 		//Copy
-		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], lengthDescription * sizeof(wchar_t));
-		output[pos][lengthDescription] = 0;
-		
-		memcpy((*languages)[pos], [language cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], lengthLanguage * sizeof(wchar_t));
-		(*languages)[pos++][lengthLanguage] = 0;
+		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], (lengthDescription + 1) * sizeof(wchar_t));
+		memcpy((*languages)[pos++], [language cStringUsingEncoding:NSASCIIStringEncoding], lengthLanguage + 1);
 	}
 
 	//If nothing was copied
@@ -383,8 +380,6 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 		
 		rootWip->repoID = [ID unsignedIntValue];
 	}
-	else
-		rootWip->repoID = getFreeRootRepoID();
 
 	rootWip->subRepo = parseSubRepo(array, wantExtra, &(rootWip->nombreSubrepo), rootWip->repoID);
 	rootWip->subRepoAreExtra = wantExtra;

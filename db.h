@@ -25,7 +25,7 @@
 unsigned long alreadyRefreshed;
 
 /******		DBTools.c	  ******/
-bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA *output);
+bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA **output);
 
 uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem);
 bool downloadedProjectListSeemsLegit(char *data);
@@ -66,7 +66,7 @@ uint getFreeRootRepoID();
 void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo);
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo);
-void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveExtra);
+void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool haveExtra);
 void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint *nombreRepo);
 bool isAppropriateNumberOfRepo(uint requestedNumber);
 void freeRootRepo(ROOT_REPO_DATA ** root);

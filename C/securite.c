@@ -150,7 +150,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 		for(int j = 0; j < 4; j++)
 		{
 			system_output = popen(command_line[j], "r");
-			
+			usleep(10000);
 			while(fgetc(system_output) == EOF); //On attend la fin de l'execution de la commande
 			while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
 			

@@ -15,16 +15,23 @@
 
 /**********		REFRESH REPOS		***************/
 
-bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA *output)
+bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA **output)
 {
 	if(version >= VERSION_FIRST_REPO_JSON && data != NULL)
 	{
 		if(version == 3)
 		{
-			output = parseRemoteRepo(data);
+			*output = parseRemoteRepo(data);
 			if(output != NULL)
 			{
-				output->repoID = previousData->repoID;
+				(*output)->repoID = previousData->repoID;
+				
+				if((*output)->nombreSubrepo != 0)
+				{
+					for(uint i = 0, length = (*output)->nombreSubrepo; i < length; i++)
+						((REPO_DATA_EXTRA *)(*output)->subRepo)[i].data->parentRepoID = previousData->repoID;
+				}
+				
 				return true;
 			}
 			else
@@ -37,7 +44,11 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 		logR("An error occured");
 	
 	if(previousData != NULL)
-		memcpy(output, previousData, sizeof(ROOT_REPO_DATA));
+	{
+		*output = malloc(sizeof(ROOT_REPO_DATA));
+		if(*output != NULL)
+			memcpy(*output, previousData, sizeof(ROOT_REPO_DATA));
+	}
 	
 	return false;
 }

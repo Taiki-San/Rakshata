@@ -72,7 +72,7 @@ void updateRepo()
 	}
 	
 	char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1];
-	ROOT_REPO_DATA newData;
+	ROOT_REPO_DATA * newData;
 	
 	loadKS(dataKS);
 	
@@ -102,8 +102,8 @@ void updateRepo()
 		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldRootData[posRepo]);
 		if(parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
-			removeNonInstalledSubRepo(&(newData.subRepo), newData.nombreSubrepo, true);
-			enforceRepoExtra(&newData, true);
+			removeNonInstalledSubRepo(&(newData->subRepo), &(newData->nombreSubrepo), true);
+			enforceRepoExtra(newData, true);
 			
 			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
 		}
