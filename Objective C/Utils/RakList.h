@@ -24,6 +24,7 @@
 	NSInteger _lastClickedColumn;
 }
 
+@property BOOL wantVerboseClick;
 @property NSInteger lastClickedRow;
 @property NSInteger lastClickedColumn;
 @property NSInteger preCommitedLastClickedColumn;

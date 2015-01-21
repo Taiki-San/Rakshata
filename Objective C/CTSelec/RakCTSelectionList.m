@@ -66,6 +66,7 @@
 			_numberOfRows = _nbData;
 			[self updateMultiColumn: _compactMode : size];
 			
+			_tableView.wantVerboseClick = YES;
 			scrollView.wantsLayer = YES;
 			scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
 			scrollView.layer.cornerRadius = 4;
@@ -938,6 +939,7 @@
 	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
 	
 	//If not installed, we don't want to reflect the UI
+	//We have one bypass for init, we don't block signal when in compactMode, then sanity checks and check if installed
 	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
 	{
 		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
@@ -957,12 +959,12 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex];
+	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / 2];
 	
 	if(selectedRowIndex != -1 && selectedColumnIndex != -1 && index < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
-		
+
 		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(index), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }

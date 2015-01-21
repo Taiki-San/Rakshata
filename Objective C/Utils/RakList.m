@@ -721,6 +721,12 @@
 	_preCommitedLastClickedRow = [self rowAtPoint:localLocation];
 	self.preCommitedLastClickedColumn = [self columnAtPoint:localLocation];
 	
+	if(self.wantVerboseClick && _preCommitedLastClickedRow == self.selectedRow)
+	{
+		if([self.delegate tableView:self shouldSelectRow:_preCommitedLastClickedRow])
+			[self.delegate tableViewSelectionDidChange:nil];
+	}
+	
 	[super mouseDown : theEvent];
 }
 
