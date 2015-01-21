@@ -52,9 +52,5 @@
     #define MUTEX_LOCK(a) pthread_mutex_lock(&a)
     #define MUTEX_UNLOCK(a) pthread_mutex_unlock(&a)
     #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
-
-    #ifdef __APPLE__
-        #define SDL_MapRGB(a, b, c, d) SDL_Swap32(SDL_MapRGB(a, b, c, d))
-	#endif
 #endif
 
