@@ -211,11 +211,11 @@ void networkAndVersionTest()
 
 	else
     {
-#if 0
 		//No more update code
         MUTEX_LOCK(mutex);
         NETWORK_ACCESS = CONNEXION_OK;
         MUTEX_UNLOCK(mutex);
+#if 0
         if(bufferDL[0] == '1' && !checkFileExist("data/update")) //Update needed
         {
             FILE* test = NULL;
