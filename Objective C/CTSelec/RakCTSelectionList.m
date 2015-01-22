@@ -517,165 +517,168 @@
 {
 	NSSize initialSize = _tableView.bounds.size;
 	_indexSelectedBeforeUpdate = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
-
-	if(isCompact)	//We clean everything up if required
+	
+	if(!isCompact || _nbCoupleColumn > 1)
 	{
-		if(_detailColumns != nil)
+		if(isCompact)	//We clean everything up if required
 		{
-			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
-			_detailColumns = nil;
-		}
-		
-		if(_nbCoupleColumn > 1 && _mainColumns != nil)
-		{
-			[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				if(idx)
-					[_tableView removeTableColumn:obj];
-			}];
+			if(_detailColumns != nil)
+			{
+				[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
+				_detailColumns = nil;
+			}
 			
-			_mainColumns = @[_mainColumns.firstObject];
-		}
-		_nbCoupleColumn = 1;
-		_nbElemPerCouple = 1;
-		_detailWidth = 0;
-		_numberOfRows = _nbData;
-	}
-	else
-	{
-		[_tableView beginUpdates];
-		
-		//First, we define if we need a detail column, and update the context if required
-		BOOL paidContent = projectData.isPaid && (self.isTome || chapterPrice != NULL);
-		if(!paidContent && _detailColumns != nil)
-		{
-			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
-			_detailColumns = nil;
-			_nbElemPerCouple = 1;
-			_detailWidth = 0;
-		}
-		else if(paidContent && _detailColumns == nil)
-		{
-			NSMutableArray * newDetails = [NSMutableArray new];
-			NSTableColumn * column;
-			BOOL needToInjectMainColumns = _nbCoupleColumn > 1;
-
-			_nbElemPerCouple = 2;
-			_detailWidth = DEFAULT_DETAIL_WIDTH;
-			
-			if(needToInjectMainColumns)
+			if(_nbCoupleColumn > 1 && _mainColumns != nil)
 			{
 				[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 					if(idx)
 						[_tableView removeTableColumn:obj];
 				}];
-			}
-			
-			for(uint pos = 0; pos < _nbCoupleColumn; pos++)
-			{
-				column = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
-				column.width = _detailWidth;
-				[_tableView addTableColumn:column];
 				
-				if(needToInjectMainColumns && pos + 1 < _nbCoupleColumn)
-					[_tableView addTableColumn:[_mainColumns objectAtIndex:pos + 1]];
-				
-				[newDetails addObject:column];
+				_mainColumns = @[_mainColumns.firstObject];
 			}
-			
-			if([newDetails firstObject] != nil)	//not empty
-				_detailColumns = [NSArray arrayWithArray:newDetails];
-			else
-				_detailColumns = nil;
+			_nbCoupleColumn = 1;
+			_nbElemPerCouple = 1;
+			_detailWidth = 0;
+			_numberOfRows = _nbData;
 		}
-		
-		if(_mainColumns == nil)
-			_mainColumns = @[[_tableView.tableColumns firstObject]];
-		
-		//Great, now that we are up to date, we're going to check if we need to add new columns
-		NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH, scrollviewSize.height / _nbCoupleColumn);
-		uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
-		CGFloat scrollerWidth = 0;
-		int newColumns;
-		
-		//We add space for detail tab
-		if(paidContent)
-			singleColumn.width += DEFAULT_DETAIL_WIDTH;
 		else
-			scrollerWidth = [RakScroller width];
-		
-		//Define number of columns
-		while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
-			nbColumn++;
-		
-		//If we can't fit in the width we got
-		if(nbColumn > 1 && singleColumn.width * nbColumn + scrollerWidth > scrollviewSize.width)
-			nbColumn--;
-		
-		//Now, apply changes
-		_nbCoupleColumn = nbColumn;
-		_numberOfRows = _nbData / nbColumn;
-		
-		newColumns = nbColumn - oldNbColumn;
-		
-		if(newColumns > 0)		//We need to add columns
 		{
-			NSMutableArray *newMainColumns = [NSMutableArray arrayWithArray:_mainColumns], *newDetailColumns = [NSMutableArray arrayWithArray:_detailColumns];
-			NSTableColumn * column;
+			[_tableView beginUpdates];
 			
-			for(uint pos = 0; pos < newColumns; pos++)
+			//First, we define if we need a detail column, and update the context if required
+			BOOL paidContent = projectData.isPaid && (self.isTome || chapterPrice != NULL);
+			if(!paidContent && _detailColumns != nil)
 			{
-				column = [[NSTableColumn alloc] initWithIdentifier:RAKLIST_MAIN_COLUMN_ID];
-				[_tableView addTableColumn:column];
-				[newMainColumns addObject:column];
+				[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {	[_tableView removeTableColumn:obj];	}];
+				_detailColumns = nil;
+				_nbElemPerCouple = 1;
+				_detailWidth = 0;
+			}
+			else if(paidContent && _detailColumns == nil)
+			{
+				NSMutableArray * newDetails = [NSMutableArray new];
+				NSTableColumn * column;
+				BOOL needToInjectMainColumns = _nbCoupleColumn > 1;
 				
-				if(paidContent)
+				_nbElemPerCouple = 2;
+				_detailWidth = DEFAULT_DETAIL_WIDTH;
+				
+				if(needToInjectMainColumns)
+				{
+					[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						if(idx)
+							[_tableView removeTableColumn:obj];
+					}];
+				}
+				
+				for(uint pos = 0; pos < _nbCoupleColumn; pos++)
 				{
 					column = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+					column.width = _detailWidth;
 					[_tableView addTableColumn:column];
-					[newDetailColumns addObject:column];
+					
+					if(needToInjectMainColumns && pos + 1 < _nbCoupleColumn)
+						[_tableView addTableColumn:[_mainColumns objectAtIndex:pos + 1]];
+					
+					[newDetails addObject:column];
 				}
+				
+				if([newDetails firstObject] != nil)	//not empty
+					_detailColumns = [NSArray arrayWithArray:newDetails];
+				else
+					_detailColumns = nil;
 			}
 			
-			_mainColumns = newMainColumns;
-
-			if([newDetailColumns firstObject] != nil)	//not empty
-				_detailColumns = [NSArray arrayWithArray:newDetailColumns];
+			if(_mainColumns == nil)
+				_mainColumns = @[[_tableView.tableColumns firstObject]];
+			
+			//Great, now that we are up to date, we're going to check if we need to add new columns
+			NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH, scrollviewSize.height / _nbCoupleColumn);
+			uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
+			CGFloat scrollerWidth = 0;
+			int newColumns;
+			
+			//We add space for detail tab
+			if(paidContent)
+				singleColumn.width += DEFAULT_DETAIL_WIDTH;
 			else
-				_detailColumns = nil;
-		}
-		else if(newColumns < 0)	//We have to remove some
-		{
-			NSMutableArray * newMainColumns = [NSMutableArray new];
+				scrollerWidth = [RakScroller width];
 			
-			[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				if(idx < nbColumn)
-					[newMainColumns addObject:obj];
+			//Define number of columns
+			while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
+				nbColumn++;
+			
+			//If we can't fit in the width we got
+			if(nbColumn > 1 && singleColumn.width * nbColumn + scrollerWidth > scrollviewSize.width)
+				nbColumn--;
+			
+			//Now, apply changes
+			_nbCoupleColumn = nbColumn;
+			_numberOfRows = _nbData / nbColumn;
+			
+			newColumns = nbColumn - oldNbColumn;
+			
+			if(newColumns > 0)		//We need to add columns
+			{
+				NSMutableArray *newMainColumns = [NSMutableArray arrayWithArray:_mainColumns], *newDetailColumns = [NSMutableArray arrayWithArray:_detailColumns];
+				NSTableColumn * column;
+				
+				for(uint pos = 0; pos < newColumns; pos++)
+				{
+					column = [[NSTableColumn alloc] initWithIdentifier:RAKLIST_MAIN_COLUMN_ID];
+					[_tableView addTableColumn:column];
+					[newMainColumns addObject:column];
+					
+					if(paidContent)
+					{
+						column = [[NSTableColumn alloc] initWithIdentifier:IDENTIFIER_PRICE];
+						[_tableView addTableColumn:column];
+						[newDetailColumns addObject:column];
+					}
+				}
+				
+				_mainColumns = newMainColumns;
+				
+				if([newDetailColumns firstObject] != nil)	//not empty
+					_detailColumns = [NSArray arrayWithArray:newDetailColumns];
 				else
-					[_tableView removeTableColumn:obj];
-			}];
-			_mainColumns = [NSArray arrayWithArray:newMainColumns];
-			
-			[newMainColumns removeAllObjects];
-			
-			[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				if(idx < nbColumn)
-					[newMainColumns addObject:obj];
+					_detailColumns = nil;
+			}
+			else if(newColumns < 0)	//We have to remove some
+			{
+				NSMutableArray * newMainColumns = [NSMutableArray new];
+				
+				[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					if(idx < nbColumn)
+						[newMainColumns addObject:obj];
+					else
+						[_tableView removeTableColumn:obj];
+				}];
+				_mainColumns = [NSArray arrayWithArray:newMainColumns];
+				
+				[newMainColumns removeAllObjects];
+				
+				[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					if(idx < nbColumn)
+						[newMainColumns addObject:obj];
+					else
+						[_tableView removeTableColumn:obj];
+				}];
+				
+				if([newMainColumns firstObject] != nil)	//not empty
+					_detailColumns = [NSArray arrayWithArray:newMainColumns];
 				else
-					[_tableView removeTableColumn:obj];
-			}];
+					_detailColumns = nil;
+			}
 			
-			if([newMainColumns firstObject] != nil)	//not empty
-				_detailColumns = [NSArray arrayWithArray:newMainColumns];
-			else
-				_detailColumns = nil;
+			if(newColumns != 0)
+			{
+				[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfColumns])]];
+				[self updateRowNumber];
+			}
+			[_tableView endUpdates];
 		}
-		
-		if(newColumns != 0)
-		{
-			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfColumns])]];
-			[self updateRowNumber];
-		}
-		[_tableView endUpdates];
 	}
 	
 	dispatch_after(0, dispatch_get_main_queue(), ^{
