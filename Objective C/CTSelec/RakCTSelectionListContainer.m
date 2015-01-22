@@ -293,7 +293,10 @@
 
 - (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}
 - (void) selectIndex : (uint) index	{	[_content selectIndex:index];	}
-- (void) jumpScrollerToRow : (uint) index	{	[_content jumpScrollerToRow:index];	}
+- (void) jumpScrollerToIndex : (uint) index
+{
+	[_content jumpScrollerToIndex:index];
+}
 
 - (void) resetSelection	{	[_content resetSelection:nil];	}
 

@@ -83,6 +83,7 @@ typedef struct smartReload_data
 - (void) additionalResizing : (NSSize) newSize;
 
 - (NSRect) getFrameFromParent : (NSRect) superviewFrame;
+- (void) needUpdateTableviewHeight;
 
 - (void) enableDrop;
 

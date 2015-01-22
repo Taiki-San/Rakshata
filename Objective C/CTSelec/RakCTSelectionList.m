@@ -341,10 +341,18 @@
 		return ((int *) _data)[element];
 }
 
-- (void) jumpScrollerToRow : (uint) row
+- (void) jumpScrollerToIndex : (uint) index
 {
-	if(_tableView != nil && row != LIST_INVALID_SELECTION && row < _nbData)
+	uint row = [self coordinateForIndex:index :NULL];
+	
+	if(_tableView != nil && row != LIST_INVALID_SELECTION)
+	{
+		uint numberOfVisibleRow = scrollView.bounds.size.height / _tableView.rowHeight;
+		if(row > numberOfVisibleRow)
+			row = MIN(_numberOfRows - 1, row + numberOfVisibleRow / 2);
+		
 		[_tableView scrollRowToVisible:row];
+	}
 }
  
 - (uint) getIndexOfElement : (uint) element
@@ -448,6 +456,7 @@
 			uint nbColumn = _nbCoupleColumn;
 			[self updateMultiColumn : compactMode : scrollView.bounds.size];
 			[self triggerInstallOnlyAnimate : compactMode numberOfColumns: nbColumn];
+			[self needUpdateTableviewHeight];
 		}
 		else
 		{
@@ -480,13 +489,14 @@
 
 - (uint) coordinateForIndex : (uint) index : (uint *) column
 {
-	if(_nbCoupleColumn > 1 && index != LIST_INVALID_SELECTION && column != NULL)
+	if(_nbCoupleColumn > 1 && index != LIST_INVALID_SELECTION)
 	{
 		uint modulo = _nbData % _nbCoupleColumn, idealColumn = index / (_numberOfRows + (modulo != 0));
 
 		if(modulo == 0 || idealColumn <= modulo)
 		{
-			*column = idealColumn;
+			if(column != NULL)
+				*column = idealColumn;
 			return index % _numberOfRows;
 		}
 		else
@@ -498,7 +508,10 @@
 				curColumn++;
 				index -= _numberOfRows;
 			}
-			*column = curColumn;
+			
+			if(column != NULL)
+				*column = curColumn;
+			
 			return index;
 		}
 	}
@@ -699,7 +712,7 @@
 		_UIOnlySelection = YES;
 		[self selectIndex:_indexSelectedBeforeUpdate];
 		_UIOnlySelection = NO;
-		[self jumpScrollerToRow:_indexSelectedBeforeUpdate];
+		[self jumpScrollerToIndex:_indexSelectedBeforeUpdate];
 	}
 }
 

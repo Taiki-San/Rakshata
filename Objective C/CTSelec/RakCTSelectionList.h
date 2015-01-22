@@ -51,7 +51,7 @@
 
 - (void) postProcessColumnUpdate;
 
-- (void) jumpScrollerToRow : (uint) row;
+- (void) jumpScrollerToIndex : (uint) index;
 
 @end
 

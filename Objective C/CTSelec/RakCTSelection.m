@@ -358,8 +358,8 @@
 	if(tab != nil)
 	{
 		uint row = [tab getIndexOfElement:element];
-		[tab selectIndex:element];
-		[tab jumpScrollerToRow:row];
+		[tab selectIndex:row];
+		[tab jumpScrollerToIndex:row];
 	}
 }
 

@@ -217,6 +217,16 @@
 	return superviewFrame;
 }
 
+- (void) needUpdateTableviewHeight
+{
+	uint height = _tableView.numberOfRows * _tableView.rowHeight;
+	
+	if(height)
+	{
+		[_tableView setFrameSize:NSMakeSize(_tableView.bounds.size.width, height)];
+	}
+}
+
 #pragma mark - Drag'n drop routines
 
 - (void) enableDrop

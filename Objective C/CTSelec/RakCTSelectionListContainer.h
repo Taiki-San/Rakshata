@@ -38,7 +38,7 @@
 
 - (NSInteger) getIndexOfElement : (NSInteger) element;
 - (void) selectIndex : (uint) index;
-- (void) jumpScrollerToRow : (uint) index;
+- (void) jumpScrollerToIndex : (uint) index;
 
 - (void) resetSelection;
 
