@@ -32,7 +32,7 @@
 		else
 			_nbData = _nbElemFull;
 		
-		if(selectedDBID != -1)
+		if(selectedDBID != LIST_INVALID_SELECTION)
 		{
 			for(uint i = 0, positionInInstalled = 0; i < _nbData; i++)
 			{
@@ -185,7 +185,7 @@
 		_installed = newInstalled;
 		_nbElemFull = nbElem;
 		
-		NSInteger element = [self getSelectedElement];
+		uint element = [self getSelectedElement];
 		if(self.installOnlyMode)
 			[self updateJumpTable];
 		
@@ -194,8 +194,8 @@
 		freeProjectData(oldData);
 		free(oldInstalled);
 		
-		if(element != -1)
-			[self selectRow:[self getIndexOfElement:element]];
+		if(element != LIST_INVALID_SELECTION)
+			[self selectElement : element];
 	}
 }
 
@@ -270,26 +270,26 @@
 	return output;
 }
 
-- (NSInteger) getSelectedElement
+- (uint) getSelectedElement
 {
 	if(_tableView == nil)
-		return -1;
+		return LIST_INVALID_SELECTION;
 	
-	if(selectedRowIndex == -1)
-		return -1;
+	if(selectedRowIndex == LIST_INVALID_SELECTION)
+		return LIST_INVALID_SELECTION;
 	
 	PROJECT_DATA project = [self getElementAtIndex:selectedRowIndex];
 
 	if(project.repo == NULL)
-		return -1;
+		return LIST_INVALID_SELECTION;
 	
 	return project.cacheDBID;
 }
 
-- (NSInteger) getIndexOfElement : (NSInteger) element
+- (uint) getIndexOfElement : (uint) element
 {
 	if(_jumpToInstalled == NULL)
-		return -1;
+		return LIST_INVALID_SELECTION;
 	
 	for (uint pos = 0; pos < _nbElemInstalled; pos++)
 	{
@@ -297,7 +297,7 @@
 			return pos;
 	}
 	
-	return -1;
+	return LIST_INVALID_SELECTION;
 }
 
 #pragma mark - Methods to deal with tableView

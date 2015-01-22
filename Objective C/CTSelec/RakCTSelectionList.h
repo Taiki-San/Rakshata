@@ -23,6 +23,7 @@
 	NSArray * _detailColumns;
 	uint _detailWidth;
 	
+	uint _indexSelectedBeforeUpdate;
 	
 	//Various data
 	//Chapter only
@@ -48,9 +49,9 @@
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 - (void) flushContext : (BOOL) animated;
 
-- (void) jumpScrollerToRow : (int) row;
+- (void) postProcessColumnUpdate;
 
-- (uint) rowFromCoordinates : (uint) row : (uint) column;
+- (void) jumpScrollerToRow : (uint) row;
 
 @end
 

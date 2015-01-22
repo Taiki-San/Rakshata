@@ -73,7 +73,7 @@
 	if(data.repo == NULL)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%ld\n%.0f\n%ld\n%.0f", data.repo->URL, data.projectID, [_buttons selectedSegment] == 1 ? 1 : 0, (long)[_chapterView getSelectedElement], [_chapterView getSliderPos], (long)[_volView getSelectedElement], [_volView getSliderPos]];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%u\n%.0f\n%u\n%.0f", data.repo->URL, data.projectID, [_buttons selectedSegment] == 1 ? 1 : 0, (uint)[_chapterView getSelectedElement], [_chapterView getSliderPos], (uint)[_volView getSelectedElement], [_volView getSliderPos]];
 }
 
 - (void) dealloc
@@ -357,8 +357,8 @@
 	
 	if(tab != nil)
 	{
-		int row = [tab getIndexOfElement:element];
-		[tab selectRow:row];
+		uint row = [tab getIndexOfElement:element];
+		[tab selectIndex:element];
 		[tab jumpScrollerToRow:row];
 	}
 }

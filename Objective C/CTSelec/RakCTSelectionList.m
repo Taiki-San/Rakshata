@@ -24,10 +24,11 @@
 
 	if(self != nil)
 	{
-		NSInteger row = -1, tmpRow = 0;
+		NSInteger row = LIST_INVALID_SELECTION, tmpRow = 0;
 
 		//We check we have valid data
 		_nbElemPerCouple = 1;
+		_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		chapterPrice = NULL;
@@ -36,7 +37,7 @@
 		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop
 		[self reloadData:project :NO];
 		
-		if(elemSelected != -1)
+		if(elemSelected != LIST_INVALID_SELECTION)
 		{
 			if(self.isTome)
 			{
@@ -265,10 +266,10 @@
 
 		[scrollView updateScrollerState : scrollView.bounds];
 		
-		if(element != -1)
+		if(element != LIST_INVALID_SELECTION)
 		{
 			_UIOnlySelection = YES;
-			[self selectRow:[self getIndexOfElement:element]];
+			[self selectElement : element];
 			_UIOnlySelection = NO;
 		}
 		
@@ -327,29 +328,29 @@
 
 #pragma mark - Backup routine
 
-- (NSInteger) getSelectedElement
+- (uint) getSelectedElement
 {
-	NSInteger row = selectedRowIndex;
+	uint element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex / 2];
 	
-	if(row < 0 || row > _nbData)
-		return -1;
+	if(element > _nbElem)
+		return LIST_INVALID_SELECTION;
 	
 	if(self.isTome)
-		return ((META_TOME *) _data)[row].ID;
+		return ((META_TOME *) _data)[element].ID;
 	else
-		return ((int *) _data)[row];
+		return ((int *) _data)[element];
 }
 
-- (void) jumpScrollerToRow : (int) row
+- (void) jumpScrollerToRow : (uint) row
 {
-	if(_tableView != nil && row != -1 && row < _nbData)
+	if(_tableView != nil && row != LIST_INVALID_SELECTION && row < _nbData)
 		[_tableView scrollRowToVisible:row];
 }
  
-- (NSInteger) getIndexOfElement : (NSInteger) element
+- (uint) getIndexOfElement : (uint) element
 {
 	if (_data == NULL || (self.compactMode && _installedJumpTable == NULL))
-		return -1;
+		return LIST_INVALID_SELECTION;
 	
 	if (self.isTome)
 	{
@@ -390,7 +391,7 @@
 		}
 	}
 	
-	return -1;
+	return LIST_INVALID_SELECTION;
 }
 
 #pragma mark - Switch state
@@ -409,26 +410,37 @@
 		_nbData = [self nbElem];
 		_numberOfRows = _nbData / _nbCoupleColumn;
 		
-		if(selectedRowIndex != -1 && _installedJumpTable != NULL)
+		if(selectedRowIndex != LIST_INVALID_SELECTION && _installedJumpTable != NULL)
 		{
 			if(compactMode)	//We go from full to installed only
 			{
-				uint pos = 0;
-				for(; pos < _nbInstalled && _installedJumpTable[pos] != selectedRowIndex; pos++);
+				uint pos = 0, element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex / 2];
 				
-				if(pos < _nbInstalled)
-					selectedRowIndex = pos;
+				if(element != UINT_MAX)
+				{
+					for(; pos < _nbInstalled && _installedJumpTable[pos] != element; pos++);
+					
+					if(pos < _nbInstalled)
+						selectedRowIndex = pos;
+					else
+						selectedRowIndex = LIST_INVALID_SELECTION;
+				}
 				else
-					selectedRowIndex = -1;
+					selectedRowIndex = LIST_INVALID_SELECTION;
+				
+				selectedColumnIndex = 1;
 			}
 			else
 			{
 				if(_installedJumpTable != NULL && selectedRowIndex < _nbInstalled)
-					selectedRowIndex = _installedJumpTable[selectedRowIndex];
+				{
+					uint index = _installedJumpTable[selectedRowIndex];
+					selectedRowIndex = [self coordinateForIndex:index :&selectedColumnIndex];
+				}
 			}
 		}
 		else
-			selectedRowIndex = -1;
+			selectedRowIndex = LIST_INVALID_SELECTION;
 		
 		//Because of how things have to be handled when er get in vs out, the call order change
 		if(compactMode)
@@ -449,18 +461,49 @@
 
 - (uint) rowFromCoordinates : (uint) row : (uint) column
 {
-	uint modulo = _nbData % _nbCoupleColumn;
-	if(modulo != 0 && column > modulo)
+	if(_nbCoupleColumn > 1 && row != LIST_INVALID_SELECTION && column != LIST_INVALID_SELECTION)
 	{
-		row += modulo * (_numberOfRows + 1);
-		row += (column - modulo) * _numberOfRows;
+		uint modulo = _nbData % _nbCoupleColumn;
+		if(modulo != 0 && column > modulo)
+		{
+			row += modulo * (_numberOfRows + 1);
+			row += (column - modulo) * _numberOfRows;
+		}
+		else if (modulo != 0)
+			row += column * (_numberOfRows + 1);
+		else
+			row += column * _numberOfRows;
 	}
-	else if (modulo != 0)
-		row += column * (_numberOfRows + 1);
-	else
-		row += column * _numberOfRows;
 
 	return row;
+}
+
+- (uint) coordinateForIndex : (uint) index : (uint *) column
+{
+	if(_nbCoupleColumn > 1 && index != LIST_INVALID_SELECTION && column != NULL)
+	{
+		uint modulo = _nbData % _nbCoupleColumn, idealColumn = index / (_numberOfRows + (modulo != 0));
+
+		if(modulo == 0 || idealColumn <= modulo)
+		{
+			*column = idealColumn;
+			return index % _numberOfRows;
+		}
+		else
+		{
+			uint curColumn = modulo;
+			index -= curColumn * (_numberOfRows + 1);
+			while(index >= _numberOfRows)
+			{
+				curColumn++;
+				index -= _numberOfRows;
+			}
+			*column = curColumn;
+			return index;
+		}
+	}
+	
+	return index;
 }
 
 #pragma mark - Methods to deal with tableView
@@ -473,6 +516,7 @@
 - (void) updateMultiColumn : (BOOL) isCompact : (NSSize) scrollviewSize
 {
 	NSSize initialSize = _tableView.bounds.size;
+	_indexSelectedBeforeUpdate = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 
 	if(isCompact)	//We clean everything up if required
 	{
@@ -634,11 +678,26 @@
 		[_tableView endUpdates];
 	}
 	
+	dispatch_after(0, dispatch_get_main_queue(), ^{
+		[self performSelectorOnMainThread:@selector(postProcessColumnUpdate) withObject:nil waitUntilDone:NO];
+	});
+	
 	//Adding or removing columns will impact tableview size
 	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
 		[_tableView setFrameSize:initialSize];
 
 	[self additionalResizing : initialSize];
+}
+
+- (void) postProcessColumnUpdate
+{
+	if(_indexSelectedBeforeUpdate != LIST_INVALID_SELECTION)
+	{
+		_UIOnlySelection = YES;
+		[self selectIndex:_indexSelectedBeforeUpdate];
+		_UIOnlySelection = NO;
+		[self jumpScrollerToRow:_indexSelectedBeforeUpdate];
+	}
 }
 
 - (void) updateRowNumber
@@ -961,7 +1020,7 @@
 {
 	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / 2];
 	
-	if(selectedRowIndex != -1 && selectedColumnIndex != -1 && index < [self nbElem])
+	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
 

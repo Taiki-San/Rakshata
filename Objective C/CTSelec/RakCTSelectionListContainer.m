@@ -241,7 +241,7 @@
 
 - (NSScrollView*) getContent	{	return [_content getContent];	}
 
-- (NSInteger) getSelectedElement	{	return [_content getSelectedElement];	}
+- (uint) getSelectedElement	{	return [_content getSelectedElement];	}
 - (float) getSliderPos	{	return [_content getSliderPos];		}
 - (uint) nbElem	{	return _content.nbElem;	}
 
@@ -292,8 +292,8 @@
 }
 
 - (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}
-- (void) selectRow : (int) row	{	[_content selectRow:row];	}
-- (void) jumpScrollerToRow : (int) row	{	[_content jumpScrollerToRow:row];	}
+- (void) selectIndex : (uint) index	{	[_content selectIndex:index];	}
+- (void) jumpScrollerToRow : (uint) index	{	[_content jumpScrollerToRow:index];	}
 
 - (void) resetSelection	{	[_content resetSelection:nil];	}
 

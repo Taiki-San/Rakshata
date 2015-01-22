@@ -31,14 +31,14 @@
 //Proxy
 - (NSScrollView*) getContent;
 
-- (NSInteger) getSelectedElement;
+- (uint) getSelectedElement;
 - (float) getSliderPos;
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 
 - (NSInteger) getIndexOfElement : (NSInteger) element;
-- (void) selectRow : (int) row;
-- (void) jumpScrollerToRow : (int) row;
+- (void) selectIndex : (uint) index;
+- (void) jumpScrollerToRow : (uint) index;
 
 - (void) resetSelection;
 

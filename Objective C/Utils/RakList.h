@@ -13,21 +13,22 @@
 #import "RakListScrollView.h"
 
 #define RAKLIST_MAIN_COLUMN_ID @"For the New Lunar Republic!"
+#define LIST_INVALID_SELECTION	UINT_MAX
 
 @interface RakTableView : NSTableView
 {
 	BOOL _lastSelectionWasClic;
 	
-	NSInteger _preCommitedLastClickedRow;
+	uint _preCommitedLastClickedRow;
 	
-	NSInteger _lastClickedRow;
-	NSInteger _lastClickedColumn;
+	uint _lastClickedRow;
+	uint _lastClickedColumn;
 }
 
 @property BOOL wantVerboseClick;
-@property NSInteger lastClickedRow;
-@property NSInteger lastClickedColumn;
-@property NSInteger preCommitedLastClickedColumn;
+@property uint lastClickedRow;
+@property uint lastClickedColumn;
+@property uint preCommitedLastClickedColumn;
 
 - (NSColor *) _dropHighlightColor;
 
@@ -50,8 +51,8 @@ typedef struct smartReload_data
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
 	
-	NSInteger selectedRowIndex;
-	NSInteger selectedColumnIndex;
+	uint selectedRowIndex;
+	uint selectedColumnIndex;
 	uint _nbElemPerCouple;
 	uint _nbCoupleColumn;
 	
@@ -85,8 +86,8 @@ typedef struct smartReload_data
 
 - (void) enableDrop;
 
-- (NSInteger) getSelectedElement;
-- (NSInteger) getIndexOfElement : (NSInteger) element;
+- (uint) getSelectedElement;
+- (uint) getIndexOfElement : (uint) element;
 - (float) getSliderPos;
 - (NSInteger) selectedRow;
 
@@ -98,8 +99,12 @@ typedef struct smartReload_data
 
 - (void) postProcessingSelection : (uint) row;
 
-- (void) selectRow : (int) row;
+- (void) selectElement : (uint) element;
+- (void) selectIndex : (uint) index;
 - (void) resetSelection : (NSTableView *) tableView;
+
+- (uint) rowFromCoordinates : (uint) row : (uint) column;
+- (uint) coordinateForIndex : (uint) index : (uint *) column;
 
 - (void) smartReload : (SR_DATA*) oldData : (uint) nbElemOld : (SR_DATA*) newData : (uint) nbElemNew;
 - (void) fullAnimatedReload : (uint) oldElem : (uint) newElem;

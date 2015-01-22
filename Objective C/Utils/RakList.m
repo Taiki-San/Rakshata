@@ -23,8 +23,8 @@
 	{
 		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
-		selectedRowIndex = -1;
-		selectedColumnIndex = -1;
+		selectedRowIndex = LIST_INVALID_SELECTION;
+		selectedColumnIndex = LIST_INVALID_SELECTION;
 		[Prefs getCurrentTheme:self];	//register for change
 		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
 	}
@@ -77,7 +77,7 @@
 	//We call our complex resizing routine to update everything
 	[self reloadSize];
 	
-	if(activeRow != -1)
+	if(activeRow != LIST_INVALID_SELECTION)
 	{
 		[self tableView:_tableView shouldSelectRow:activeRow];		//Apply graphic changes
 		[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:activeRow] byExtendingSelection:NO];
@@ -228,14 +228,14 @@
 
 #pragma mark - Backup routine
 
-- (NSInteger) getSelectedElement
+- (uint) getSelectedElement
 {
-	return -1;
+	return LIST_INVALID_SELECTION;
 }
 
-- (NSInteger) getIndexOfElement : (NSInteger) element
+- (uint) getIndexOfElement : (uint) element
 {
-	return -1;
+	return LIST_INVALID_SELECTION;
 }
 
 - (float) getSliderPos
@@ -375,12 +375,12 @@
 	[self resetSelection:tableView];
 	[tableView commitClic];
 
-	selectedRowIndex = -1;
+	selectedRowIndex = LIST_INVALID_SELECTION;
 	
 	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
 	
 	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
-	if(baseColumn != -1)
+	if(baseColumn != LIST_INVALID_SELECTION)
 	{
 		RakText * view;
 		for(byte pos = 0; pos < _nbElemPerCouple; pos++)
@@ -406,13 +406,24 @@
 	selectedColumnIndex = _tableView.lastClickedColumn;
 }
 
-- (void) selectRow : (int) row
+- (void) selectElement:(uint)element
+{
+	[self selectIndex : [self getIndexOfElement:element]];
+}
+
+- (void) selectIndex : (uint) index
 {
 	if(_tableView == nil)
 		return;
 	
-	if(row != -1)
+	uint column = LIST_INVALID_SELECTION;
+	uint row = [self coordinateForIndex:index :&column];
+	
+	if(row != LIST_INVALID_SELECTION)
+	{
+		_tableView.preCommitedLastClickedColumn = column * _nbElemPerCouple;
 		[self tableView:_tableView shouldSelectRow:row];
+	}
 }
 
 - (void) resetSelection : (NSTableView *) tableView
@@ -425,10 +436,10 @@
 			return;
 	}
 	
-	if(selectedRowIndex >= _nbData)
-		selectedRowIndex = -1;
+	if(selectedRowIndex >= MIN(_nbData, [_tableView numberOfRows]))
+		selectedRowIndex = LIST_INVALID_SELECTION;
 	
-	else if(selectedRowIndex != -1)
+	else if(selectedRowIndex != LIST_INVALID_SELECTION)
 	{
 		NSColor * normalColor = normal != nil ? normal : [self getTextColor:0 :selectedRowIndex];
 		
@@ -444,10 +455,22 @@
 		}
 		
 		CGFloat rowToDeselect = selectedRowIndex;
-		selectedRowIndex = -1;	//Prevent any notification
+		selectedRowIndex = LIST_INVALID_SELECTION;	//Prevent any notification
 		
 		[tableView deselectRow : rowToDeselect];
 	}
+}
+
+#pragma mark - Model manipulation
+
+- (uint) rowFromCoordinates : (uint) row : (uint) column
+{
+	return row;
+}
+
+- (uint) coordinateForIndex : (uint) index : (uint *) column
+{
+	return index >= [_tableView numberOfRows] ? LIST_INVALID_SELECTION : index;
 }
 
 #pragma mark - Smart reloading
@@ -692,8 +715,8 @@
 	
 	if(self != nil)
 	{
-		self.preCommitedLastClickedColumn = -1;
-		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedRow = -1;
+		self.preCommitedLastClickedColumn = LIST_INVALID_SELECTION;
+		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedRow = LIST_INVALID_SELECTION;
 	}
 	
 	return self;
@@ -737,7 +760,7 @@
 	_lastSelectedColumn = self.preCommitedLastClickedColumn;
 }
 
-- (void) setLastClickedColumn : (NSInteger)lastClickedColumn
+- (void) setLastClickedColumn : (uint) lastClickedColumn
 {
 	if(_lastSelectionWasClic)
 	{
@@ -748,12 +771,12 @@
 	_lastSelectedColumn = lastClickedColumn;
 }
 
-- (NSInteger) lastClickedColumn
+- (uint) lastClickedColumn
 {
 	return _lastSelectedColumn;
 }
 
-- (void) setLastClickedRow : (NSInteger) lastClickedRow
+- (void) setLastClickedRow : (uint) lastClickedRow
 {
 	if(_lastSelectionWasClic)
 	{
@@ -763,7 +786,7 @@
 	_lastSelectedRow = lastClickedRow;
 }
 
-- (NSInteger) lastClickedRow
+- (uint) lastClickedRow
 {
 	return _lastSelectedColumn;
 }
