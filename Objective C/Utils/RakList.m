@@ -175,10 +175,10 @@
 	[self _resize:scrollView.frame :NO :NO];
 }
 
-- (void) _resize : (NSRect) frame : (BOOL) animate : (BOOL) inmatureFrame
+- (void) _resize : (NSRect) frame : (BOOL) animate : (BOOL) immatureFrame
 {
 	NSSize oldTableviewSize = _tableView.bounds.size;
-	NSRect scrollviewFrame = inmatureFrame ? [self getFrameFromParent : frame] : frame;
+	NSRect scrollviewFrame = immatureFrame ? [self getFrameFromParent : frame] : frame;
 	
 	if(animate)
 		[scrollView resizeAnimation:scrollviewFrame];
@@ -188,14 +188,14 @@
 	scrollviewFrame.origin = NSZeroPoint;
 	
 	CGFloat scrollerWidth = scrollView.hasVerticalScroller ? SCROLLER_WIDTH : 0;
-	if(floor(oldTableviewSize.width) + scrollerWidth != floor(scrollviewFrame.size.width))
+	if(oldTableviewSize.width + scrollerWidth != scrollviewFrame.size.width)
 	{
 		scrollviewFrame.size.width -= scrollerWidth;
 		oldTableviewSize.width = scrollviewFrame.size.width;
 		
 		[_tableView setFrameSize : oldTableviewSize];
 		
-		if(inmatureFrame)
+		if(immatureFrame)
 			[self updateMultiColumn : scrollviewFrame.size];
 		else
 			[self additionalResizing : scrollviewFrame.size];
@@ -503,9 +503,9 @@
 		else
 		{
 			NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
-			uint newElem = 0, oldElem = 0, nbColumn = _nbCoupleColumn, overflow = nbElemOld % _nbCoupleColumn, height = nbElemOld / _nbCoupleColumn;
+			uint newElem = 0, oldElem = 0;
 			int current;
-			BOOL tooMuchChanges = NO, singleColumn = nbColumn == 1;
+			BOOL tooMuchChanges = NO, singleColumn = _nbCoupleColumn == 1;
 			
 			for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
 			{
@@ -541,7 +541,7 @@
 						{
 							//Considering we refresh everything when anything is added/removed, if the row from the the old context is validated, the new one will also be
 							//Also, considering they are the same, no need to compute them again
-							uint row = posOld % (height + (posOld / height < overflow));
+							uint row = [self coordinateForIndex:posOld : NULL];;
 							if(![old containsIndex:row])
 							{
 								[old addIndex : row];

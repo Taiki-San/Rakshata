@@ -13,6 +13,7 @@
 #define IDENTIFIER_PRICE @"RakCTSelectionListPrice"
 #define DEFAULT_MAIN_WIDTH 95
 #define DEFAULT_DETAIL_WIDTH 60
+//#define PREFER_LESS_COLUMN 1
 
 @implementation RakCTSelectionList
 
@@ -620,7 +621,13 @@
 				scrollerWidth = [RakScroller width];
 			
 			//Define number of columns
-			while(![scrollView willContentFitInHeight:singleColumn.height * nbColumn] && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
+#if PREFER_LESS_COLUMN
+			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight;
+#else
+			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight * 2;
+#endif
+			
+			while(singleColumn.height * nbColumn < maxTabHeight && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
 				nbColumn++;
 			
 			//If we can't fit in the width we got
@@ -744,43 +751,17 @@
 
 - (void) additionalResizing : (NSSize) newSize
 {
-	RakText * element;
-	uint width = newSize.width / _nbCoupleColumn, detailWidth = self.compactMode ? 0 : _detailWidth, mainWidth = width - detailWidth;
+	CGFloat width = newSize.width / _nbCoupleColumn, detailWidth = self.compactMode ? 0 : _detailWidth, mainWidth = width - detailWidth;
 	
 	[_mainColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		((NSTableColumn*) obj).width = mainWidth;
 	}];
 	
-	if(self.compactMode)
-	{
-		for(uint column = 0; column < _nbCoupleColumn; column++)
-		{
-			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
-			{
-				element = [_tableView viewAtColumn:2 * column row:i makeIfNecessary:NO];
-				if(element != nil)
-				{
-					if(element.frame.origin.x < 0)
-						[element setFrameOrigin:NSMakePoint(0, element.frame.origin.y)];
-				}
-			}
-		}
-	}
-	else if(_detailColumns != nil) //We update every view size
+	if(!self.compactMode && _detailColumns != nil) //We update every view size
 	{
 		[_detailColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			((NSTableColumn *)obj).width = _detailWidth;
 		}];
-		
-		for(uint column = 0; column < _nbCoupleColumn; column++)
-		{
-			for(uint i = 0, rows = [_tableView numberOfRows]; i < rows; i++)
-			{
-				element = [_tableView viewAtColumn : 2 * column + 1 row:i makeIfNecessary:NO];
-				if(element != nil && element.bounds.size.width != _detailWidth)
-					[element setFrameSize:NSMakeSize(_detailWidth, element.bounds.size.height)];
-			}
-		}
 	}
 }
 

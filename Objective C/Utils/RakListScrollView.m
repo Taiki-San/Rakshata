@@ -46,11 +46,6 @@
 	[self updateScrollerState:frameRect];
 }
 
-- (BOOL) willContentFitInHeight : (CGFloat) height
-{
-	return ((NSView *) self.documentView).bounds.size.height <= height;
-}
-
 - (void) updateScrollerState : (NSRect) frame
 {
 	self.hasVerticalScroller = ((NSView *) self.documentView).bounds.size.height > frame.size.height;
