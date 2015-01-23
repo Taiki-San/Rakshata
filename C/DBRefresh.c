@@ -110,7 +110,7 @@ void updateRepo()
 	}
 	free(bufferDL);
 	updateRootRepoCache(oldRootData, -1);
-	freeRootRepo(oldRootData);
+	free(oldRootData);
 }
 
 /******************* UPDATE PROJECTS ****************************/
