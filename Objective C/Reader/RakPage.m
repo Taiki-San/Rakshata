@@ -716,7 +716,12 @@
 			MUTEX_UNLOCK(cacheMutex);
 		}
 		else
+		{
+			if(!byChangingPage)
+				_data.pageCourante = 0;
+
 			[self updateContext : NO];
+		}
 	}
 }
 
