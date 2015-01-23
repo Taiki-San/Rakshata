@@ -33,6 +33,7 @@
 		self.isTome = isTomeRequest;
 		chapterPrice = NULL;
 		projectData.cacheDBID = UINT_MAX;	//Prevent incorrect beliefs we are updating a project
+		_selectionWithoutUI = NO;
 		
 		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop
 		[self reloadData:project :NO];
@@ -707,7 +708,7 @@
 
 - (void) postProcessColumnUpdate
 {
-	if(_indexSelectedBeforeUpdate != LIST_INVALID_SELECTION)
+	if(!_selectionWithoutUI && _indexSelectedBeforeUpdate != LIST_INVALID_SELECTION)
 	{
 		_UIOnlySelection = YES;
 		[self selectIndex:_indexSelectedBeforeUpdate];
@@ -1020,9 +1021,11 @@
 		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
 		selectedRowIndex = rowIndex;
 		selectedColumnIndex = tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
+		_selectionWithoutUI = YES;
 		
 		[self tableViewSelectionDidChange:nil];
 		
+		_selectionWithoutUI = NO;
 		selectedRowIndex = oldselectedRowIndex;
 		selectedColumnIndex = oldselectedColumnIndex;
 		
@@ -1032,7 +1035,7 @@
 		return [super tableView:tableView shouldSelectRow:rowIndex];
 }
 
-- (void)tableViewSelectionDidChange:(NSNotification *)notification;
+- (void) tableViewSelectionDidChange : (NSNotification *) notification;
 {
 	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / 2];
 	

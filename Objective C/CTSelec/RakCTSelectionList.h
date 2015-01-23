@@ -18,6 +18,7 @@
 	BOOL _rowNumberUpdateQueued;
 	BOOL _resizingQueued;
 	BOOL _UIOnlySelection;
+	BOOL _selectionWithoutUI;
 	
 	NSArray * _mainColumns;
 	NSArray * _detailColumns;

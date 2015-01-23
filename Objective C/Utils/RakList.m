@@ -541,7 +541,7 @@
 						{
 							//Considering we refresh everything when anything is added/removed, if the row from the the old context is validated, the new one will also be
 							//Also, considering they are the same, no need to compute them again
-							uint row = posOld % height + (posOld / height < overflow);
+							uint row = posOld % (height + (posOld / height < overflow));
 							if(![old containsIndex:row])
 							{
 								[old addIndex : row];
