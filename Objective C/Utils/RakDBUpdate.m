@@ -50,7 +50,10 @@
 
 + (void) postNotification : (uint64_t) repoID : (uint) projectID
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_NAME object:nil userInfo: @{REPO_FIELD:@(repoID), PROJECT_FIELD:@(projectID)}];
+	if([NSThread isMainThread])
+		[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_NAME object:nil userInfo: @{REPO_FIELD:@(repoID), PROJECT_FIELD:@(projectID)}];
+	else
+		dispatch_async(dispatch_get_main_queue(), ^{	[self postNotification:repoID :projectID];	});
 }
 
 #pragma mark - Analyse notification

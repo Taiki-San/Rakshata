@@ -493,19 +493,19 @@
 {
 	if(_nbCoupleColumn > 1 && index != LIST_INVALID_SELECTION)
 	{
-		uint modulo = _nbData % _nbCoupleColumn, idealColumn = index / (_numberOfRows + (modulo != 0));
+		uint modulo = _nbData % _nbCoupleColumn, maxNumberOfRows = _numberOfRows + (modulo != 0), idealColumn = index / maxNumberOfRows;
 
 		if(modulo == 0 || idealColumn <= modulo)
 		{
 			if(column != NULL)
 				*column = idealColumn;
-			return index % _numberOfRows;
+			return index % maxNumberOfRows;
 		}
 		else
 		{
 			uint curColumn = modulo;
-			index -= curColumn * (_numberOfRows + 1);
-			while(index >= _numberOfRows)
+			index -= curColumn * maxNumberOfRows;
+			while(index >= maxNumberOfRows)
 			{
 				curColumn++;
 				index -= _numberOfRows;
