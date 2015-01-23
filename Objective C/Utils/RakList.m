@@ -431,7 +431,7 @@
 	
 	if(row != LIST_INVALID_SELECTION)
 	{
-		_tableView.preCommitedLastClickedColumn = column * _nbElemPerCouple;
+		_tableView.preCommitedLastClickedColumn = column != LIST_INVALID_SELECTION ? column * _nbElemPerCouple : LIST_INVALID_SELECTION;
 		[self tableView:_tableView shouldSelectRow:row];
 	}
 }

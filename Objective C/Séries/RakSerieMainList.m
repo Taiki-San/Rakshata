@@ -95,10 +95,26 @@
 	}
 
 	//Gather rows that will have to be removed/inserted
-	for(uint pos = 0; pos < _nbElemFull; pos++)
+	uint newSelectedIndex = LIST_INVALID_SELECTION;
+	
+	for(uint pos = 0, counter = 0; pos < _nbElemFull; pos++)
 	{
-		if(!_installed[pos])
+		if(!_installed[pos])				//Not installed
+		{
 			[index addIndex:pos];
+		}
+		else if(installedOnly)				//Installed, and we look to our rank in installed
+		{
+			if(pos == selectedRowIndex)
+				newSelectedIndex = counter;
+			else
+				counter++;
+		}
+		else								//Installed, and we're looking at our position in the main list
+		{
+			if(counter++ == selectedRowIndex)
+				newSelectedIndex = pos;
+		}
 	}
 	
 	if(installedOnly)
@@ -106,7 +122,11 @@
 	else
 		[_tableView insertRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
 	
+	[self needUpdateTableviewHeight];
 	[scrollView updateScrollerState : scrollView.bounds];
+
+	if(newSelectedIndex != LIST_INVALID_SELECTION)	//Previous selection is in the new list
+		[self selectIndex:newSelectedIndex];
 }
 
 - (NSInteger) selectedRow
