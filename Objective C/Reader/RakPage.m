@@ -869,14 +869,14 @@
 	[pageView setImage:page];
 	
 	scrollView.documentView = pageView;
-
+	
 	[CATransaction begin];
 
 	[self initialPositionning : scrollView];
 	
 	[scrollView setFrame : scrollView.scrollViewFrame];
 	[scrollView scrollToBeginningOfDocument];
-	
+
 	[CATransaction commit];
 }
 
@@ -954,7 +954,14 @@
 	
 	MUTEX_UNLOCK(cacheMutex);
 	
-	[self _buildCache : [session unsignedIntValue] : data];
+	@autoreleasepool
+	{
+		[self _buildCache : [session unsignedIntValue] : data];
+		
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+	}
+	[CATransaction commit];
 	
 	_cacheBeingBuilt = false;
 }

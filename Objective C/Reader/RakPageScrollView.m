@@ -29,29 +29,10 @@
 
 - (void) dealloc
 {
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-		[CATransaction begin];
-	
 	self.documentView = nil;
-	
-	if(!mainThread)
-		[CATransaction commit];
 }
 
 #pragma mark - Size and position manipulation
-
-- (void) setFrameSize : (NSSize) newSize
-{
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-		[CATransaction begin];
-	
-	[super setFrameSize:newSize];
-	
-	if(!mainThread)
-		[CATransaction commit];
-}
 
 - (void) scrollToBeginningOfDocument
 {
@@ -74,14 +55,7 @@
 
 - (void) scrollToPoint : (NSPoint) origin
 {
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-		[CATransaction begin];
-
 	[self.contentView scrollToPoint:origin];
-	
-	if(!mainThread)
-		[CATransaction commit];
 }
 
 #pragma mark - Mouse events
@@ -110,15 +84,8 @@
 
 - (void) setPageTooHigh : (BOOL) pageTooHigh
 {
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-		[CATransaction begin];
-
 	self.hasVerticalScroller = _pageTooHigh = pageTooHigh;
 	self.verticalScroller.alphaValue =	0;
-
-	if(!mainThread)
-		[CATransaction commit];
 }
 
 - (BOOL) pageTooLarge
@@ -128,15 +95,8 @@
 
 - (void) setPageTooLarge : (BOOL) pageTooLarge
 {
-	BOOL mainThread = [NSThread isMainThread];
-	if(!mainThread)
-		[CATransaction begin];
-	
 	self.hasHorizontalScroller = _pageTooLarge = pageTooLarge;
 	self.horizontalScroller.alphaValue = 0;
-	
-	if(!mainThread)
-		[CATransaction commit];
 }
 
 @end
