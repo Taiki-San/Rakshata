@@ -869,12 +869,15 @@
 	[pageView setImage:page];
 	
 	scrollView.documentView = pageView;
-	
+
+	[CATransaction begin];
+
 	[self initialPositionning : scrollView];
 	
 	[scrollView setFrame : scrollView.scrollViewFrame];
 	[scrollView scrollToBeginningOfDocument];
-
+	
+	[CATransaction commit];
 }
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
@@ -939,8 +942,6 @@
 {
 	_cacheBeingBuilt = true;
 	
-	uint currentSession = [session unsignedIntValue];
-	
 	if(_data.pageCourante > _data.nombrePageTotale)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = false;
@@ -948,17 +949,24 @@
 	}
 	
 	MUTEX_LOCK(cacheMutex);
-
+	
 	NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
-
+	
 	MUTEX_UNLOCK(cacheMutex);
 	
-	while (currentSession == cacheSession)	//While the active chapter is still the same
+	[self _buildCache : [session unsignedIntValue] : data];
+	
+	_cacheBeingBuilt = false;
+}
+
+- (void) _buildCache : (uint) session : (NSMutableArray *) data
+{
+	while(session == cacheSession)	//While the active chapter is still the same
 	{
 		//Page courante
 		if(![self entryValid : data : _data.pageCourante + 1])
 		{
-			[self loadPageCache: _data.pageCourante : currentSession : &data];
+			[self loadPageCache: _data.pageCourante : session : &data];
 		}
 		
 		//Encore de la place dans le cache
@@ -966,13 +974,13 @@
 		{
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
 			uint i, max = _data.nombrePageTotale;
-
+			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
 			for(i = 0; i < 5 && _data.pageCourante + i * move <= max; i++)
 			{
 				if(![self entryValid : data : _data.pageCourante + 1 + i * move])
 				{
-					[self loadPageCache:_data.pageCourante + i * move :currentSession :&data];
+					[self loadPageCache:_data.pageCourante + i * move :session :&data];
 					move = 0;
 					break;
 				}
@@ -983,7 +991,7 @@
 			
 			else if(i != 5)	//We hit the max
 			{
-				if([self loadAdjacentChapter : move == 1 : &data : currentSession])
+				if([self loadAdjacentChapter : move == 1 : &data : session])
 					continue;
 			}
 			
@@ -993,13 +1001,13 @@
 			{
 				if(![self entryValid : data :_data.pageCourante + 1 - move])
 				{
-					[self loadPageCache:_data.pageCourante - move : currentSession : &data];
+					[self loadPageCache:_data.pageCourante - move : session : &data];
 					continue;
 				}
 			}
 			else	//We are at the begining/end of the chapter
 			{
-				if([self loadAdjacentChapter : move == -1 : &data : currentSession])
+				if([self loadAdjacentChapter : move == -1 : &data : session])
 					continue;
 			}
 			
@@ -1008,7 +1016,7 @@
 			{
 				if(![self entryValid : data : i + 1])
 				{
-					[self loadPageCache : i :currentSession :&data];
+					[self loadPageCache : i :session :&data];
 					break;
 				}
 			}
@@ -1019,8 +1027,6 @@
 		else
 			break;
 	}
-	
-	_cacheBeingBuilt = false;
 }
 
 - (BOOL) loadAdjacentChapter : (BOOL) loadNext : (NSMutableArray **) data : (uint) currentSession
@@ -1165,7 +1171,7 @@
 	[CATransaction begin];
 	
 	MUTEX_LOCK(cacheMutex);
-	
+
 	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	[*data replaceObjectAtIndex:page withObject:view];
 	mainScroller.arrangedObjects = *data;
