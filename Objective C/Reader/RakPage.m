@@ -361,7 +361,7 @@
 
 - (void) prevChapter
 {
-	[self changeChapter : false : NO];
+	[self changeChapter : NO : NO];
 }
 
 //Did the scroll succeed, or were we alredy at the bottom
@@ -582,7 +582,7 @@
 	{
 		if(_data.pageCourante + 1 > _data.nombrePageTotale)
 		{
-			[self changeChapter : true : YES];
+			[self changeChapter : YES : YES];
 			return;
 		}
 		_data.pageCourante++;
@@ -591,7 +591,7 @@
 	{
 		if(_data.pageCourante < 1)
 		{
-			[self changeChapter : false : YES];
+			[self changeChapter : NO : YES];
 			return;
 		}
 		_data.pageCourante--;
@@ -654,7 +654,7 @@
 	}
 }
 
-- (void) changeChapter : (bool) goToNext : (BOOL) byChangingPage
+- (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage
 {
 	uint newPosIntoStruct = _posElemInStructure;
 	
@@ -1280,11 +1280,11 @@
 	
 	if(index == 0)
 	{
-		[self changeChapter : false : YES];
+		[self changeChapter : NO : YES];
 	}
 	else if(index == _data.nombrePageTotale + 2)
 	{
-		[self changeChapter : true : YES];
+		[self changeChapter : YES : YES];
 	}
 	else
 	{

@@ -40,7 +40,7 @@
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
-- (void) changeChapter : (bool) goToNext : (BOOL) byChangingPage;
+- (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
 - (void) updateCTTab;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;
