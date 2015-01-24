@@ -130,7 +130,7 @@ int setupBDDCache()
 		free(decodedProject);
 		if(projects != NULL)
 		{
-			for(uint pos = 0, posRepo; pos < nombreProject; pos++)
+			for(uint pos = 0, posRepo = 0; pos < nombreProject; pos++)
 			{
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
@@ -704,6 +704,10 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 		free(newRootEntry);
 		freeRepo(oldData);
 		free(newData);
+		
+		if(!allocFail)
+			for(uint i = 0; i < subLength; free(newEntry[i++]));
+		
 		return false;
 	}
 	
@@ -747,7 +751,7 @@ ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 {
-	if(root == NULL || nbRepo == NULL)
+	if(root == NULL || nbRepo == NULL || nbRoot == 0)
 		return NULL;
 	
 	uint nbSubRepo = 0;
@@ -761,7 +765,7 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 	REPO_DATA ** output = calloc(nbSubRepo + 1, sizeof(REPO_DATA *));
 	if(output != NULL)
 	{
-		for(uint pos = 0, indexRoot = 0, posInRoot = 0; pos < nbSubRepo; pos++)
+		for(uint pos = 0, indexRoot = 0, posInRoot = 0; pos < nbSubRepo && indexRoot < nbRoot && root[indexRoot] != NULL; pos++)
 		{
 			if(posInRoot >= root[indexRoot]->nombreSubrepo)
 			{
@@ -778,7 +782,8 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 				return NULL;
 			}
 			
-			*output[pos] = root[indexRoot]->subRepo[posInRoot++];
+			if(indexRoot < nbRoot && root[indexRoot] != NULL)
+				*output[pos] = root[indexRoot]->subRepo[posInRoot++];
 		}
 		*nbRepo = nbSubRepo;
 	}
@@ -850,6 +855,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 											free(currentElem->subRepo);
 											free(currentElem);
 											output[i] = NULL;
+											break;
 										}
 										else
 										{
@@ -866,7 +872,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 									free(currentElem->langueDescriptions);
 									free(currentElem->subRepo);
 									free(currentElem);
-									output[i] = NULL;
+									output[i--] = NULL;
 								}
 							}
 						}
@@ -878,8 +884,10 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 					if(wantRoot)
 						freeRootRepo((ROOT_REPO_DATA**) output);
 					else
+					{
 						for (; i > 0; free(output[--i]));
-					free(output);
+						free(output);
+					}
 					*nbRepo = 0;
 					return NULL;
 				}
@@ -952,6 +960,7 @@ void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
 		{
 			memcpy(newReceiver[pos], repoData[pos], sizeof(REPO_DATA));
 			free(repoData[pos]);
+			repoData[pos] = NULL;
 		}
 		else if(repoData[pos] != NULL)
 		{
@@ -1024,16 +1033,18 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 			{
 				newReceiver[pos] = repoData[pos];
 			}
+			else
+				newAmountOfRepo--;
 		}
 	}
 	
-	getRideOfDuplicateInRootRepo(newReceiver, &lengthRepoCopy);
+	getRideOfDuplicateInRootRepo(newReceiver, &newAmountOfRepo);
 	if(rootRepoList != newReceiver)
 	{
 		void * buf = rootRepoList;
 		rootRepoList = newReceiver;
 		free(buf);
-		lengthRootRepo = lengthRepoCopy;
+		lengthRootRepo = newAmountOfRepo;
 	}
 	
 	//We updated the root store, we now have to update the repo store
@@ -1042,7 +1053,7 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 	for(uint64_t pos = 0, prevParent = 0, prevChild = 0, subChildCount; pos < lengthRepo; pos++)
 	{
 		//Look for the begining of the root sequence
-		if(repoList[pos]->parentRepoID != rootRepoList[prevParent]->repoID)
+		if(prevParent >= lengthRootRepo || repoList[pos]->parentRepoID != rootRepoList[prevParent]->repoID)
 		{
 			for(; prevParent < lengthRootRepo && rootRepoList[prevParent]->repoID != repoList[pos]->parentRepoID; prevParent++);
 			if(prevParent == lengthRootRepo)
@@ -1103,17 +1114,23 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool hav
 	
 	if(validatedCount != *nbSubRepo)
 	{
-		REPO_DATA * newSubrepo = calloc(validatedCount, sizeof(REPO_DATA));
-		
-		for(uint pos = 0, posValidated = 0; pos < *nbSubRepo; pos++)
+		if(validatedCount == 0)
+			*_subRepo = NULL;
+		else
 		{
-			if(validated[pos])
-				newSubrepo[posValidated++] = subRepo[pos];
+			REPO_DATA * newSubrepo = calloc(validatedCount, sizeof(REPO_DATA));
+			
+			for(uint pos = 0, posValidated = 0; pos < *nbSubRepo; pos++)
+			{
+				if(validated[pos])
+					newSubrepo[posValidated++] = subRepo[pos];
+			}
+
+			*_subRepo = newSubrepo;
+			free(subRepo);
 		}
 		
 		*nbSubRepo = validatedCount;
-		*_subRepo = newSubrepo;
-		free(subRepo);
 	}
 }
 

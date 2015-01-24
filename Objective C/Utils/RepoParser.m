@@ -35,6 +35,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	{
 		free(output);
 		free(*languages);
+		*languages = NULL;
 		return NULL;
 	}
 	
@@ -95,6 +96,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	{
 		free(output);
 		free(*languages);
+		*languages = NULL;
 		return NULL;
 	}
 	else if(failure != 0)	//If there was any error, we drop the unecessary memory
