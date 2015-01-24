@@ -27,6 +27,7 @@
 	self.verticallyCenterTitle = YES;
 	self.centerTrafficLightButtons = YES;
 	self.showsBaselineSeparator = NO;
+	self.hideTitleBarInFullScreen = YES;
 	
 	self.titleTextShadow = self.inactiveTitleTextShadow = [[NSShadow alloc] init];
 
@@ -122,11 +123,6 @@
 }
 
 #pragma mark - Delegate
-
-- (void) windowWillExitFullScreen:(NSNotification *)notification
-{
-	[[(RakAppDelegate*) [NSApp delegate]reader] shouldLeaveDistractionFreeMode];
-}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {

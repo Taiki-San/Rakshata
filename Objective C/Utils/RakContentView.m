@@ -27,14 +27,11 @@
 	return self;
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) setFrame : (NSRect) frameRect
 {
-	if(((RakWindow*) self.window).fullscreen)
-	{
-		frameRect.size.height = self.window.frame.size.height;
-		frameRect.size.width = self.window.frame.size.width;
-	}
-	
+	if(_heightOffset)
+		frameRect.size.height -= _heightOffset;
+		
 	[super setFrame:frameRect];
 	
 	if(![self.subviews count])
@@ -65,8 +62,8 @@
 
 - (void) setupBorders
 {
-	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
-	NSRect frame = [self frame];
+	backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
+	NSRect frame = self.frame;
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
 	frame.size.height -= 2 * WIDTH_BORDER_FAREST;
@@ -98,7 +95,7 @@
 
 - (void) updateUI
 {
-	self.window.backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
+	backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
 	[internalRows1 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
 	[internalRows2 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];
 	
@@ -113,6 +110,12 @@
 - (void) keyDown:(NSEvent *)theEvent
 {
 	[firstResponder keyDown:theEvent];
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[backgroundColor setFill];
+	NSRectFill(dirtyRect);
 }
 
 - (void) dealloc

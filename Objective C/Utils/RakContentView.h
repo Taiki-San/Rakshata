@@ -33,11 +33,16 @@
 
 @interface RakContentViewBack : NSView
 {
+	NSColor * backgroundColor;
+	
 	RakBorder* internalRows1;
 	RakBorder* internalRows2;
 	
 	RakContentView * firstResponder;
 }
+
+//Used when leaving fullscreen mode
+@property CGFloat heightOffset;
 
 - (void) setupBorders;
 - (void) updateUI;

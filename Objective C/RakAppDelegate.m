@@ -16,7 +16,7 @@
 {
 	loginPromptOpen = NO;
 	
-	[self.window setDelegate:self.window];
+	[self.window setDelegate:self];
 	[self.window configure];
 	
 	RakContentView * contentView = [self getContentView];
@@ -116,7 +116,7 @@
 - (MDL *)		MDL		{	return tabMDL;		}
 - (Reader *)	reader	{	return tabReader;	}
 
-#pragma mark - Delegate
+#pragma mark - Application Delegate
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
@@ -133,6 +133,20 @@
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
 {
 	return YES;
+}
+
+#pragma mark - Window delegate
+
+- (void) windowWillExitFullScreen:(NSNotification *)notification
+{
+	[tabReader shouldLeaveDistractionFreeMode];
+	
+	((RakContentViewBack*) self.window.contentView).heightOffset = self.window.titleBarHeight;
+}
+
+- (void) windowDidExitFullScreen:(NSNotification *)notification
+{
+	((RakContentViewBack*) self.window.contentView).heightOffset = 0;
 }
 
 #pragma mark - Menu interface

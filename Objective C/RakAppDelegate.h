@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate>
+@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 {
 	Series * tabSerie;
 	CTSelec * tabCT;
