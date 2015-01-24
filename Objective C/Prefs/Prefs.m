@@ -61,7 +61,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 	
 	prefsCache.themeCode = newTheme;
 	
-	RakAppDelegate * core = [NSApplication sharedApplication].delegate;
+	RakAppDelegate * core = [NSApp delegate];
 	if([core class] == [RakAppDelegate class] && [core.window.contentView class] == [RakContentViewBack class])
 		[(RakContentViewBack*) core.window.contentView updateUI];
 }
@@ -884,7 +884,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		
 		prefsPosMDL = [prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
 		
-		RakAppDelegate * core = [NSApplication sharedApplication].delegate;
+		RakAppDelegate * core = [NSApp delegate];
 		if([core class] == [RakAppDelegate class])
 			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
 
