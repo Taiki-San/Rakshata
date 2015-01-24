@@ -1012,6 +1012,7 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
 	if(newAmountOfRepo == -1 || newAmountOfRepo == lengthRepoCopy)
 	{
 		newReceiver = rootRepoList;
+		newAmountOfRepo = lengthRepoCopy;
 	}
 	else	//Resize teamList
 	{

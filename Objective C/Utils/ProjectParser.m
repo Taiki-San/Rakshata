@@ -583,7 +583,7 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 	if(error != nil || remoteData == nil || [remoteData superclass] != [NSMutableDictionary class])
 	{
 		if(error != nil)
-			NSLog(@"%@", error.localizedDescription);
+			NSLog(@"%@", error.description);
 		else
 			NSLog(@"Parse error when analysing remote project file for %@", getStringForWchar(repo->name));
 		return NULL;
