@@ -20,7 +20,7 @@
 	[self.window.contentView setupBorders];
 	[self.window setMovableByWindowBackground:YES];
 	[self.window setMovable:YES];
-	[self.window setStyleMask : NSBorderlessWindowMask | NSResizableWindowMask];
+	[self.window setStyleMask : NSResizableWindowMask];
 	
 	RakContentView * contentView = [self getContentView];
 	if(contentView == nil)

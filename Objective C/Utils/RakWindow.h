@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakWindow : NSWindow <NSWindowDelegate>
+@interface RakWindow : INAppStoreWindow <NSWindowDelegate>
 {
 	NSPoint initialLocation;
 }
