@@ -75,7 +75,7 @@
 	if(data.repo == NULL)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%u\n%.0f\n%u\n%.0f", data.repo->URL, data.projectID, [_buttons selectedSegment] == 1 ? 1 : 0, (uint)[_chapterView getSelectedElement], [_chapterView getSliderPos], (uint)[_volView getSelectedElement], [_volView getSliderPos]];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%u\n%.0f\n%u\n%.0f", data.repo->URL, data.projectID, [_buttons selectedSegment] == 1 ? 1 : 0, [_chapterView getSelectedElement], [_chapterView getSliderPos], [_volView getSelectedElement], [_volView getSliderPos]];
 }
 
 - (void) dealloc
