@@ -54,6 +54,8 @@
 			view = nil;
 		}
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotClickedTransmitData:) name:@"RakCTSelectedManually" object:nil];
+		
+		[self updateTitle];
 	}
 	
 	return self;
@@ -197,6 +199,8 @@
 		return;
 	
 	_currentContext = currentContext;
+	[self updateTitle];
+
 	BOOL isTome = [_buttons selectedSegment] == 1;
 	
 	if(currentContext == TAB_READER)
@@ -379,6 +383,8 @@
 		free(data.tomesInstalled);	data.tomesInstalled = NULL;
 		releaseCTData(data);
 		data = getCopyOfProjectData(newData);
+		
+		[self updateTitle];
 	}
 	
 	//Update views
@@ -413,6 +419,12 @@
 	}
 
 	return YES;
+}
+
+- (void) updateTitle
+{
+	if(_currentContext & TAB_CT)
+		[((RakAppDelegate *)[NSApp delegate]).window setProjectTitle:data];
 }
 
 @end

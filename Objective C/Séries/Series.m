@@ -292,4 +292,9 @@
 	return frame;
 }
 
+- (void) seriesIsOpening:(byte)context
+{
+	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
+}
+
 @end

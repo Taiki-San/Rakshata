@@ -87,6 +87,7 @@
 - (void) switchFavs;
 - (void) triggerFullscreen;
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
+- (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
 
 @end
 

@@ -493,6 +493,8 @@
 	_currentElem = elemRequest;
 	self.isTome = isTomeRequest;
 	
+	[self updateTitleBar:_project :isTomeRequest :elemRequest];
+	
 	_cacheBeingBuilt = false;
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
@@ -662,6 +664,8 @@
 	{
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
+		
+		[self updateTitleBar:_project :self.isTome :_currentElem];
 		
 		[self updateCTTab];
 		

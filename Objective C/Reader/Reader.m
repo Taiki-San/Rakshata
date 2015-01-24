@@ -286,6 +286,8 @@
 	
 	if(bottomBar != nil)
 		bottomBar.readerMode = YES;
+
+	[self updateTitleBar :_project :_isTome :_currentElem];
 }
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
@@ -522,6 +524,12 @@
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
 {
 	[bottomBar updatePage:newCurrentPage :newPageMax];
+}
+
+- (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (int) element
+{
+	if(self.readerMode)
+		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :isTome :element];
 }
 
 #pragma mark - Waiting login

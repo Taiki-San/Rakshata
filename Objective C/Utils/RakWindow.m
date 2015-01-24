@@ -22,7 +22,7 @@
 	[self setMovable:YES];
 	self.movableByWindowBackground = YES;
 	
-	self.title = @"Rakshata - Proof of Concept - Chapitre/Tome XXX";
+	self.title = @"Rakshata";
 	self.showsTitle = YES;
 	self.verticallyCenterTitle = YES;
 	self.centerTrafficLightButtons = YES;
@@ -120,6 +120,23 @@
 - (void) layoutIfNeeded
 {
 	
+}
+
+#pragma mark - Title management
+
+- (void) resetTitle
+{
+	self.title = @"Rakshata";
+}
+
+- (void) setProjectTitle : (PROJECT_DATA) project
+{
+	self.title = [NSString stringWithFormat:@"Rakshata - %@", getStringForWchar(project.projectName)];
+}
+
+- (void) setCTTitle : (PROJECT_DATA) project : (BOOL) isTome : (int) element
+{
+	self.title = [NSString stringWithFormat:@"Rakshata - %@ - %s %d", getStringForWchar(project.projectName), isTome ? "Tome" : "Chapitre", element];
 }
 
 #pragma mark - Delegate
