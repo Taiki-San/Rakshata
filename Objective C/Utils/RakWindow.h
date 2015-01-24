@@ -25,4 +25,6 @@
 @property (readonly, getter=isFullscreen) BOOL fullscreen;
 @property (weak) NSView* defaultDispatcher;
 
+- (void) configure;
+
 @end

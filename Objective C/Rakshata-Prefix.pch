@@ -24,9 +24,9 @@
 #include "constants.h"
  
 #ifdef __OBJC__
+	#import <Foundation/Foundation.h>
 	#import <Cocoa/Cocoa.h>
 	#import <QuartzCore/QuartzCore.h>
-	#import <Foundation/Foundation.h>
 	#import <INPopoverController/INPopoverController.h>
 	#import "INAppStoreWindow.framework/Headers/INAppStoreWindow.h"
 

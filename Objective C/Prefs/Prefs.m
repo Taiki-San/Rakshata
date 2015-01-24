@@ -159,6 +159,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		}
 			
 		case GET_COLOR_BACKGROUND_READER_INTAB:
+		case GET_COLOR_TITLEBAR_BACKGROUND_MAIN:
 		case GET_COLOR_BACKGROUND_DRAG_AND_DROP:
 		{
 			output = [NSColor colorWithDeviceWhite:42/255.0f alpha:1.0];
@@ -170,12 +171,15 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 		case GET_COLOR_BORDER_TABS:
+		case GET_COLOR_TITLEBAR_BACKGROUND_STANDBY:
+		case GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_END:
 		{
 			output = [NSColor colorWithDeviceWhite:52/255.0f alpha:1.0];
 			break;
 		}
 			
 		case GET_COLOR_BACKGROUD_BACK_BUTTONS:
+		case GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_START:
 		{
 			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
 			break;

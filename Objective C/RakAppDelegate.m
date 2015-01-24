@@ -17,10 +17,7 @@
 	loginPromptOpen = NO;
 	
 	[self.window setDelegate:self.window];
-	[self.window.contentView setupBorders];
-	[self.window setMovableByWindowBackground:YES];
-	[self.window setMovable:YES];
-	[self.window setStyleMask : NSResizableWindowMask];
+	[self.window configure];
 	
 	RakContentView * contentView = [self getContentView];
 	if(contentView == nil)
