@@ -493,8 +493,6 @@
 	_currentElem = elemRequest;
 	self.isTome = isTomeRequest;
 	
-	[self updateTitleBar:_project :isTomeRequest :elemRequest];
-	
 	_cacheBeingBuilt = false;
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
@@ -510,6 +508,8 @@
 		return NO;
 	}
 	
+	[self updateTitleBar:_project :isTomeRequest :_posElemInStructure];
+
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
@@ -665,7 +665,7 @@
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
 		
-		[self updateTitleBar:_project :self.isTome :_currentElem];
+		[self updateTitleBar:_project :self.isTome :_posElemInStructure];
 		
 		[self updateCTTab];
 		

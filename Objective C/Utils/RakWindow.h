@@ -29,6 +29,6 @@
 
 - (void) resetTitle;
 - (void) setProjectTitle : (PROJECT_DATA) project;
-- (void) setCTTitle : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
+- (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element;
 
 @end

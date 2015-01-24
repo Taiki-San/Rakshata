@@ -59,6 +59,7 @@ CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid, CGSWindow
 
 BOOL preventWindowCaptureForWindow(NSWindow *window)
 {
+#ifndef DEV_VERSION
 	CGSConnectionID cid = CGSMainConnectionID();
 	CGSWindowID wid = (int)window.windowNumber;
 	
@@ -94,6 +95,6 @@ BOOL preventWindowCaptureForWindow(NSWindow *window)
 	}
 	
 	CGSReleaseRegion(regionOut);
-	
+#endif
 	return YES;
 }

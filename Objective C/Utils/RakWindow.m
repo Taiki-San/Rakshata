@@ -134,9 +134,9 @@
 	self.title = [NSString stringWithFormat:@"Rakshata - %@", getStringForWchar(project.projectName)];
 }
 
-- (void) setCTTitle : (PROJECT_DATA) project : (BOOL) isTome : (int) element
+- (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element
 {
-	self.title = [NSString stringWithFormat:@"Rakshata - %@ - %s %d", getStringForWchar(project.projectName), isTome ? "Tome" : "Chapitre", element];
+	self.title = [NSString stringWithFormat:@"Rakshata - %@ - %@", getStringForWchar(project.projectName), element];
 }
 
 #pragma mark - Delegate

@@ -287,7 +287,8 @@
 	if(bottomBar != nil)
 		bottomBar.readerMode = YES;
 
-	[self updateTitleBar :_project :_isTome :_currentElem];
+	if(_posElemInStructure != -1)
+		[self updateTitleBar :_project :_isTome :_posElemInStructure];
 }
 
 - (void) setUpViewForAnimation : (BOOL) newReaderMode
@@ -526,10 +527,34 @@
 	[bottomBar updatePage:newCurrentPage :newPageMax];
 }
 
-- (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (int) element
+- (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (uint) position
 {
 	if(self.readerMode)
-		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :isTome :element];
+	{
+		NSString * string;
+		
+		if(isTome)
+		{
+			META_TOME tome = project.tomesInstalled[position];
+			
+			if(tome.readingName[0])
+				string = getStringForWchar(tome.readingName);
+			else
+				string = [NSString stringWithFormat:@"Tome %d", tome.readingID];
+		}
+		else
+		{
+			int element = project.chapitresInstalled[position];
+			
+			if(element % 10)
+				string = [NSString stringWithFormat:@"Chapitre %d.%d", element / 10, element % 10];
+			else
+				string = [NSString stringWithFormat:@"Chapitre %d", element / 10];
+		}
+		
+		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];
+		
+	}
 }
 
 #pragma mark - Waiting login
