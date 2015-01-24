@@ -103,6 +103,9 @@
 		placeholderString = NO;
 		
 		[_synopsis setStringValue : getStringForWchar(project.description)];
+		
+		if(!_scrollview.hasVerticalScroller)
+			_scrollview.hasVerticalScroller = YES;
 	}
 	else
 	{
