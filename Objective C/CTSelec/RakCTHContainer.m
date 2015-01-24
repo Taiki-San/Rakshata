@@ -112,7 +112,7 @@
 			needProcessName = YES;
 			
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
-			[projectName sizeToFit];
+			projectName.fixedWidth = projectName.fixedWidth;	//Will refresh our width
 			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 		
 			[self addSubview: projectName];
@@ -121,7 +121,7 @@
 	else if(![currentElem isEqualToString:projectName.stringValue])
 	{
 		[projectName setStringValue : currentElem];
-		[projectName sizeToFit];
+		projectName.fixedWidth = projectName.fixedWidth;	//Will refresh our width
 		[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 	}
 	
@@ -139,7 +139,7 @@
 
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
 																	traits:NSItalicFontMask weight:0 size: 13]];
-			[authorName sizeToFit];
+			authorName.fixedWidth = authorName.fixedWidth;	//Will refresh our width
 			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			
 			[self addSubview: authorName];
@@ -148,7 +148,7 @@
 	else if(![currentElem isEqualToString:authorName.stringValue])
 	{
 		[authorName setStringValue : currentElem];
-		[authorName sizeToFit];
+		authorName.fixedWidth = authorName.fixedWidth;	//Will refresh our width
 		[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 	}
 	
