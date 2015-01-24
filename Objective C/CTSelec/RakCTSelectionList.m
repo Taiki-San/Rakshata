@@ -1001,7 +1001,7 @@
 	{
 		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
 		selectedRowIndex = rowIndex;
-		selectedColumnIndex = tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
+		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
 		_selectionWithoutUI = YES;
 		
 		[self tableViewSelectionDidChange:nil];
@@ -1018,7 +1018,7 @@
 
 - (void) tableViewSelectionDidChange : (NSNotification *) notification;
 {
-	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / 2];
+	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / _nbElemPerCouple];
 	
 	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])
 	{
