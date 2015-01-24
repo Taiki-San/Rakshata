@@ -435,7 +435,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	if(description != nil)
 	{
-		wcsncpy(data.description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
+		wcsncpy(data.description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], [description length]);
 		data.description[LENGTH_DESCRIPTION-1] = 0;
 	}
 	else
@@ -584,7 +584,7 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 		return NULL;
 	
 	id repoID = objectForKey(remoteData, JSON_PROJ_AUTHOR_ID, @"authorID");
-	if(repoID == nil || ![repoID isKindOfClass:[NSNumber class]] || [(NSNumber*) repoID unsignedLongLongValue] != getRepoID(repo))
+	if(repoID == nil || ![repoID isKindOfClass:[NSNumber class]] || [(NSNumber*) repoID unsignedLongLongValue] != repo->repoID)
 		return NULL;
 	
 	return parseProjectJSON(repo, remoteData, nbElem, true);
