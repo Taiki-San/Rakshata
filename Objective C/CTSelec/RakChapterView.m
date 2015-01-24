@@ -19,10 +19,8 @@
 	{
 		[self setupInternal];
 		
-		BOOL readerMode = [(RakAppDelegate*) [NSApp delegate]CT].readerMode;
-
-		[self initCTView : project : readerMode];
-		[self initReaderView : project : readerMode];
+		[self initCTView : project : mainThread & TAB_CT];
+		[self initReaderView : project : mainThread & TAB_READER];
 
 		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context];
 		if(coreview != nil)
@@ -85,13 +83,13 @@
 
 #pragma mark - UI Initializers
 
-- (void) initCTView : (PROJECT_DATA) project : (BOOL) readerMode
+- (void) initCTView : (PROJECT_DATA) project : (BOOL) CTMode
 {
 	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
 	if(header != nil)
 		[self addSubview:header];
 	
-	self.CTViewHidden = readerMode;
+	self.CTViewHidden = !CTMode;
 }
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode

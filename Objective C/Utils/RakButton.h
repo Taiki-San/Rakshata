@@ -14,8 +14,10 @@
 
 @property BOOL textButton;
 
-+ (id) allocForSeries : (NSView*) superview : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall;
 + (id) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
+
++ (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
++ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
 + (id) allocWithText : (NSString*) string : (NSRect) frame;
 
 @end

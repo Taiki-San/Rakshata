@@ -12,7 +12,7 @@
 
 @implementation RakButton
 
-+ (instancetype) allocForSeries : (NSView*) superview : (NSString*) imageName : (NSPoint) origin : (id) target : (SEL) selectorToCall
++ (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall
 {
 	RakButton *output = [self new];
 	
@@ -20,7 +20,7 @@
 	{
 		output.textButton = NO;
 
-		output.cell = [output.cell initWithPage: imageName : RB_STATE_STANDARD];
+		output.cell = [output.cell initWithPage: imageName : stateAtStartup];
 		
 		//Update a couple of prefs
 		[output sizeToFit];
@@ -35,22 +35,12 @@
 			[output setTarget:target];
 			[output setAction:selectorToCall];
 		}
-		
-		if(superview != nil)
-		{
-			//Set origin
-			origin.x -= ((RakButtonCell*)output.cell).cellSize.width / 2;
-			[output setFrameOrigin: origin];
-			
-			//Add to the superview
-			[superview addSubview:output];
-		}
 	}
 	
 	return output;
 }
 
-+ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall
 {
 	RakButton* output = [self new];
 	
@@ -69,23 +59,6 @@
 		{
 			[output setTarget:target];
 			[output setAction:selectorToCall];
-		}
-		
-		if(superview != nil)
-		{
-			//Set origin
-
-			NSPoint point;
-		
-			if(posXFromLeftSide)
-				point = NSMakePoint(posX, superview.frame.size.height / 2 - output.frame.size.height / 2);
-			else
-				point = NSMakePoint(posX - output.frame.size.width, superview.frame.size.height / 2 - output.frame.size.height / 2);
-			
-			[output setFrameOrigin: point];
-			
-			//Add to the superview
-			[superview addSubview:output];
 		}
 	}
 	
@@ -154,6 +127,32 @@
 + (Class) cellClass
 {
 	return [RakButtonCell class];
+}
+
+#pragma mark - Helper
+
++ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
+{
+	RakButton * button = [self allocImageWithoutBackground:imageName :stateAtStartup :target :selectorToCall];
+	
+	if(button != nil && superview != nil)
+	{
+		//Set origin
+		
+		NSPoint point;
+		
+		if(posXFromLeftSide)
+			point = NSMakePoint(posX, superview.frame.size.height / 2 - button.frame.size.height / 2);
+		else
+			point = NSMakePoint(posX - button.frame.size.width, superview.frame.size.height / 2 - button.frame.size.height / 2);
+		
+		[button setFrameOrigin: point];
+		
+		//Add to the superview
+		[superview addSubview:button];
+	}
+	
+	return button;
 }
 
 @end

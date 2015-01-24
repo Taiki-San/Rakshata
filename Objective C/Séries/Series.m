@@ -41,8 +41,14 @@
 - (void) initContent : (NSString *) state
 {
 	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
-	preferenceButton = [RakButton allocForSeries : self : @"parametre" : NSMakePoint(SR_PREF_BUTTON_BORDERS, RBB_TOP_BORDURE) : self : @selector(gogoWindow)];
-	[preferenceButton.cell setHighlightAllowed:NO];
+	preferenceButton = [RakButton allocImageWithBackground: @"parametre" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
+	if(preferenceButton != nil)
+	{
+		[preferenceButton.cell setHighlightAllowed:NO];
+		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
+		
+		[self addSubview:preferenceButton];
+	}
 	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];

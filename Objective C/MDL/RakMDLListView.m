@@ -63,10 +63,9 @@
 {
 	if(_pause == nil)
 	{
-		_pause = [RakButton allocForSeries : nil : @"pause" : NSMakePoint(0, 0) : self : @selector(sendPause)];
+		_pause = [RakButton allocImageWithoutBackground : @"pause" : RB_STATE_STANDARD : self : @selector(sendPause)];
 		if(_pause != nil)
 		{
-			_pause.layer.backgroundColor = [NSColor clearColor].CGColor;
 			[_pause setButtonType:NSMomentaryChangeButton];
 			[self addSubview:_pause];
 			[_pause setHidden:YES];
@@ -75,10 +74,9 @@
 	
 	if(_read == nil)
 	{
-		_read = [RakButton allocForSeries : nil : @"voir" : NSMakePoint(0, 0) : self : @selector(sendRead)];
+		_read = [RakButton allocImageWithoutBackground : @"voir" : RB_STATE_STANDARD : self : @selector(sendRead)];
 		if(_read != nil)
 		{
-			_read.layer.backgroundColor = [NSColor clearColor].CGColor;
 			[_read setButtonType:NSMomentaryChangeButton];
 			[self addSubview:_read];
 			[_read setHidden:YES];
@@ -88,10 +86,9 @@
 	
 	if(_remove == nil)
 	{
-		_remove = [RakButton allocForSeries : nil : @"X" : NSMakePoint(0, 0) : self : @selector(sendRemove)];
+		_remove = [RakButton allocImageWithoutBackground : @"X" : RB_STATE_STANDARD : self : @selector(sendRemove)];
 		if(_remove != nil)
 		{
-			_remove.layer.backgroundColor = [NSColor clearColor].CGColor;
 			[_remove setButtonType:NSMomentaryChangeButton];
 			[self addSubview:_remove];
 			[_remove setHidden:NO];
