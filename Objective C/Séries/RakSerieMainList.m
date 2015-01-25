@@ -354,6 +354,11 @@
 
 #pragma mark - Get result from NSTableView
 
+- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+	return self._selectionChangeComeFromClic = [super tableView:tableView shouldSelectRow:row];
+}
+
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
 	if(!self._selectionChangeComeFromClic)
