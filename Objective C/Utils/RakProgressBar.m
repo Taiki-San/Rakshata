@@ -18,6 +18,8 @@
     
 	if (self)
 	{
+		self.autoresizesSubviews = NO;
+		
 		_width = 2;
 		_percentage = 0;
 		_speed = 0;
