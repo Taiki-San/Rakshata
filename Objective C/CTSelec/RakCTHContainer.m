@@ -170,7 +170,7 @@
 
 		NSRect bounds = self.bounds;
 		if(bounds.size.height != lastKnownHeight)	//May happend during animation
-			bounds.size = [self frameFromParent:bounds].size;
+			bounds.size = [self frameFromParent:self.superview.bounds].size;
 
 		[_tableController setFrame : bounds];	//We refresh scrollview size
 	}

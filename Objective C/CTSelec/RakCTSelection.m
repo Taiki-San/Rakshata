@@ -321,7 +321,6 @@
 	else
 	{
 		[[[NSApp delegate] MDL] proxyAddElement:data isTome:isTome element:ID partOfBatch:NO];
-		[_volView resizeAnimation : self.bounds];	//If MDL is here to stay, we have to update the size of the view below
 	}
 	
 	self.dontNotify = NO;

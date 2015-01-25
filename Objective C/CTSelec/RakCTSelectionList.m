@@ -702,9 +702,12 @@
 		}
 	}
 	
-	dispatch_after(0, dispatch_get_main_queue(), ^{
-		[self performSelectorOnMainThread:@selector(postProcessColumnUpdate) withObject:nil waitUntilDone:NO];
-	});
+	if(!_selectionWithoutUI)
+	{
+		dispatch_after(0, dispatch_get_main_queue(), ^{
+			[self performSelectorOnMainThread:@selector(postProcessColumnUpdate) withObject:nil waitUntilDone:NO];
+		});
+	}
 	
 	//Adding or removing columns will impact tableview size
 	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
@@ -715,7 +718,7 @@
 
 - (void) postProcessColumnUpdate
 {
-	if(!_selectionWithoutUI && _indexSelectedBeforeUpdate != LIST_INVALID_SELECTION)
+	if(_indexSelectedBeforeUpdate != LIST_INVALID_SELECTION)
 	{
 		_UIOnlySelection = YES;
 		[self selectIndex:_indexSelectedBeforeUpdate];

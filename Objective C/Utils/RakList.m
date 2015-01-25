@@ -318,13 +318,12 @@
 			if(element != nil && [element class] == [RakText class])
 			{
 				if(rowIndex == selectedRowIndex && column / _nbElemPerCouple == lastClickedColumn)
-					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column :rowIndex];
+					element.textColor = highlight != nil ? highlight : [self getTextHighlightColor:column++ :rowIndex];
 				else
-					element.textColor = normal != nil ? normal : [self getTextColor:column :rowIndex];
+					element.textColor = normal != nil ? normal : [self getTextColor:column++ :rowIndex];
 				
 				element.backgroundColor = backgroundColor;
 			}
-			column++;
 		}
 	}
 }
@@ -452,14 +451,13 @@
 	
 	else if(selectedRowIndex != LIST_INVALID_SELECTION)
 	{
-		NSColor * normalColor = normal != nil ? normal : [self getTextColor:0 :selectedRowIndex];
-		
+		uint column = 0;
 		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
 			if([view class] == [RakText class])
 			{
-				view.textColor =  normalColor;
+				view.textColor =  [self getTextColor:column++ :selectedRowIndex];
 				view.drawsBackground = NO;
 				[view setNeedsDisplay];
 			}
