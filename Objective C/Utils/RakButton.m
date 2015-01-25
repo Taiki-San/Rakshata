@@ -14,27 +14,13 @@
 
 + (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [self new];
+	RakButton *output = [self allocImageWithoutBackground:imageName :stateAtStartup: target :selectorToCall];
 	
 	if(output != nil)
 	{
-		output.textButton = NO;
-
-		output.cell = [output.cell initWithPage: imageName : stateAtStartup];
-		
-		//Update a couple of prefs
-		[output sizeToFit];
 		output.wantsLayer = YES;
 		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:output].CGColor;
 		output.layer.cornerRadius = 4;
-		[output setBordered:NO];
-		
-		//Set action
-		if(target != nil)
-		{
-			[output setTarget:target];
-			[output setAction:selectorToCall];
-		}
 	}
 	
 	return output;

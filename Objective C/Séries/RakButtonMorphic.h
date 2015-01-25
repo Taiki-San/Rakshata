@@ -10,28 +10,20 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakButtonMorphic : RakButton
 {
-	NSRect _defaultFrame;
+	NSArray * cells;
+	
+	id _target;
+	NSArray* _selectors;
+	
+	short _defaultState;
+	
+	uint _activeCell;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property uint activeCell;
+
++ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (NSArray *) selectors;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"

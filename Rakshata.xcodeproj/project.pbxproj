@@ -74,6 +74,7 @@
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
+		B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */ = {isa = PBXBuildFile; fileRef = B69FBE8C1A74FBE1009ACBEF /* RakButtonMorphic.m */; };
 		B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36418F99CD7001D1F8E /* RakTextCell.m */; };
 		B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36718F9E92F001D1F8E /* RakWindow.m */; };
 		B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
@@ -285,6 +286,8 @@
 		B69D61D7186CA308003504F9 /* Series.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Series.m; path = "Séries/Series.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B69D61DC186CA3D0003504F9 /* MDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MDL.h; path = MDL/MDL.h; sourceTree = "<group>"; };
 		B69D61DD186CA3D0003504F9 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; };
+		B69FBE8B1A74FBE1009ACBEF /* RakButtonMorphic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakButtonMorphic.h; path = "Séries/RakButtonMorphic.h"; sourceTree = "<group>"; };
+		B69FBE8C1A74FBE1009ACBEF /* RakButtonMorphic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakButtonMorphic.m; path = "Séries/RakButtonMorphic.m"; sourceTree = "<group>"; };
 		B6A1E36318F99CD7001D1F8E /* RakTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTextCell.h; path = Utils/RakTextCell.h; sourceTree = "<group>"; };
 		B6A1E36418F99CD7001D1F8E /* RakTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTextCell.m; path = Utils/RakTextCell.m; sourceTree = "<group>"; };
 		B6A1E36618F9E92F001D1F8E /* RakWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakWindow.h; path = Utils/RakWindow.h; sourceTree = "<group>"; };
@@ -558,6 +561,17 @@
 			name = Externals;
 			sourceTree = "<group>";
 		};
+		B69FBE8A1A74FB9C009ACBEF /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				B69FBE8B1A74FBE1009ACBEF /* RakButtonMorphic.h */,
+				B69FBE8C1A74FBE1009ACBEF /* RakButtonMorphic.m */,
+				B678674F18F5EF6F004AA6B4 /* RakSRRessources.h */,
+				B678675018F5EF6F004AA6B4 /* RakSRRessources.m */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
 		B6B3830F188740E7005B5F01 /* Deep Prefs */ = {
 			isa = PBXGroup;
 			children = (
@@ -674,10 +688,9 @@
 				B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */,
 				B678675218F5F407004AA6B4 /* RakSerieView.h */,
 				B678675318F5F407004AA6B4 /* RakSerieView.m */,
-				B678674F18F5EF6F004AA6B4 /* RakSRRessources.h */,
-				B678675018F5EF6F004AA6B4 /* RakSRRessources.m */,
 				B69D61D6186CA308003504F9 /* Series.h */,
 				B69D61D7186CA308003504F9 /* Series.m */,
+				B69FBE8A1A74FB9C009ACBEF /* Tools */,
 			);
 			name = Series;
 			sourceTree = "<group>";
@@ -1154,6 +1167,7 @@
 				B6F6ED0718A3001400E3B55B /* moduleDL2_tool.c in Sources */,
 				B6F6ECF018A3001400E3B55B /* sha256.c in Sources */,
 				B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */,
+				B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */,
 				B678675118F5EF6F004AA6B4 /* RakSRRessources.m in Sources */,
 				B6F6ECF418A3001400E3B55B /* download.c in Sources */,
 				B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */,
