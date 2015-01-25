@@ -23,9 +23,18 @@
 		if(headerText != nil)
 			[self addSubview:headerText];
 		
-		mainList = [[RakSerieList alloc] init : [self getMainListFrame : self.bounds] : mainThread == TAB_READER : state];
-		if(mainList != nil)
-			[self addSubview:[mainList getContent]];
+		compactList = [[RakSerieList alloc] init : [self getCompactListFrame : self.bounds] : mainThread == TAB_READER : state];
+		if(compactList != nil)
+			[self addSubview:[compactList getContent]];
+		
+		if(mainThread == TAB_SERIES)
+		{
+			compactListHidden = compactList.hidden = headerText.hidden = YES;
+		}
+		else
+		{
+			compactListHidden = NO;
+		}
 	}
 	
 	return self;
@@ -34,23 +43,23 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	[headerText setFrame:[self bounds]];
-	[mainList setFrame:[self getMainListFrame : self.bounds]];
+	[compactList setFrame:[self getCompactListFrame : self.bounds]];
 }
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
 	[headerText resizeAnimation: newBound];
-	[mainList resizeAnimation:[self getMainListFrame : newBound]];
+	[compactList resizeAnimation:[self getCompactListFrame : newBound]];
 }
 
 - (NSString *) getContextToGTFO
 {
-	return [mainList getContextToGTFO];
+	return [compactList getContextToGTFO];
 }
 
 - (void) dealloc
 {
-	headerText = nil;	mainList = nil;
+	headerText = nil;	compactList = nil;
 }
 
 - (BOOL)isFlipped
@@ -92,7 +101,7 @@
 
 #pragma mark - Frame calcul
 
-- (NSRect) getMainListFrame : (NSRect) frame
+- (NSRect) getCompactListFrame : (NSRect) frame
 {
 	if(headerText != nil)
 		frame.origin.y = headerText.frame.size.height + SR_READERMODE_LBWIDTH_OUTLINE;
@@ -106,19 +115,38 @@
 
 #pragma mark - Context change
 
+- (void) setSerieViewHidden : (BOOL) serieViewHidden
+{
+	if(!serieViewHidden)
+	{
+		if(compactList != nil && !compactListHidden)
+			compactListHidden = compactList.hidden = headerText.hidden = YES;
+	}
+}
+
 - (void) setCTViewHidden : (BOOL) CTViewHidden
 {
-	if(!CTViewHidden && mainList != nil)
-		mainList.installOnly = NO;
+	if(!CTViewHidden && compactList != nil)
+	{
+		if(compactListHidden)
+			compactListHidden = compactList.hidden = headerText.hidden = NO;
+		
+		compactList.installOnly = NO;
+	}
 	
 	[super setCTViewHidden:CTViewHidden];
 }
 
 - (void) setReaderViewHidden : (BOOL) readerViewHidden
 {
-	if(!readerViewHidden && mainList != nil)
-		mainList.installOnly = YES;
+	if(!readerViewHidden && compactList != nil)
+	{
+		if(compactListHidden)
+			compactListHidden = compactList.hidden = headerText.hidden = NO;
 		
+		compactList.installOnly = YES;
+	}
+	
 	[super setReaderViewHidden:readerViewHidden];
 }
 

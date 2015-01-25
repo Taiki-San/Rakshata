@@ -400,6 +400,16 @@
 
 #pragma mark - Context change
 
+- (BOOL) isHidden
+{
+	return content.isHidden;
+}
+
+- (void) setHidden:(BOOL)hidden
+{
+	content.hidden = hidden;
+}
+
 - (BOOL) installOnly
 {
 	return _mainList != NULL ? _mainList.installOnlyMode : NO;

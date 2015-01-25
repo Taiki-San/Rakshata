@@ -49,6 +49,7 @@ enum {
 	BOOL readerMode;
 }
 
+@property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 @property BOOL installOnly;
 
 - (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state;

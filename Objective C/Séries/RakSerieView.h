@@ -13,11 +13,12 @@
 @interface RakSerieView : RakTabContentTemplate
 {
 	RakSRHeaderText* headerText;
-	RakSerieList * mainList;
+	
+	BOOL compactListHidden;
+
+	RakSerieList * compactList;
 }
 
 - (id)initContent:(NSRect)frame : (NSString *) state;
-
-- (NSRect) getMainListFrame : (NSRect) frame;
 
 @end

@@ -30,12 +30,27 @@
 
 - (instancetype) initImages : (NSArray*) imageNames : (short) defaultState
 {
+	uint currentTheme = [Prefs getCurrentTheme : self];
+	
+	if(![self updateImages:imageNames :currentTheme])
+		return nil;
+	
+	_activeCell = 0;
+	_defaultState = defaultState;
+	_imageNames = [NSArray arrayWithArray:imageNames];
+	
+	return self;
+}
+
+#pragma mark - Context update
+
+- (BOOL) updateImages : (NSArray *) imageNames : (uint) currentTheme
+{
 	NSMutableArray * images = [NSMutableArray array];
 	
 	NSImage * image;
 	BOOL firstPass = YES;
-	uint currentTheme = [Prefs getCurrentTheme : self];
-	
+
 	for(NSString * imageName in imageNames)
 	{
 		if(firstPass)
@@ -49,16 +64,29 @@
 			if(image != nil)
 				[images addObject:image];
 			else
-				return nil;
+				return NO;
 		}
 	}
 	
-	_activeCell = 0;
-	
-	_defaultState = defaultState;
 	_images = [NSArray arrayWithArray:images];
 	
-	return self;
+	return YES;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	uint currentTheme = [Prefs getCurrentTheme : nil];
+
+	NSImage * image = [RakResPath craftResNameFromContext:_imageNames[0] : NO : YES : currentTheme];
+
+	if(image != nil)
+	{
+		self.image = image;
+		[self updateImages:_imageNames :currentTheme];
+	}
 }
 
 #pragma mark - Active Cell property

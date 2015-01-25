@@ -12,6 +12,7 @@
 
 @interface RakButtonMorphic : RakButton
 {
+	NSArray * _imageNames;
 	NSArray * _images;
 	
 	short _defaultState;

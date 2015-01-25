@@ -20,6 +20,7 @@
 	BOOL _readerViewHidden;
 }
 
+@property BOOL serieViewHidden;
 @property BOOL CTViewHidden;
 @property BOOL readerViewHidden;
 
