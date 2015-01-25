@@ -26,7 +26,7 @@
 		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
 		[backButton setTarget:self];
 		[backButton setAction:@selector(backButtonClicked)];
-		[backButton setHidden:!self.readerMode];
+		[backButton setHidden:self.readerMode];
 		
 		[self addSubview:backButton];
 

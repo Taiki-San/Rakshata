@@ -155,6 +155,7 @@
 	uint _mainThread;
 	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
 	
+	[backButton setHidden: _mainThread == TAB_SERIES];
 	[coreView focusViewChanged : _mainThread];
 	
 	[super setUpViewForAnimation:newReaderMode];

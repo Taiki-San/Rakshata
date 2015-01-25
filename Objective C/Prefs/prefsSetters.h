@@ -18,9 +18,9 @@ enum
 	PREFS_SET_READER_TABS_STATE_FROM_CALLER
 };
 
-#define TAB_READER				0x0001
-#define TAB_READER_DF			0x0011
-#define TAB_CT					0x0002
-#define TAB_MDL					0x0004
-#define TAB_SERIES				0x0008
+#define TAB_READER				(1 << 0)
+#define TAB_READER_DF			(0x0010 & TAB_READER)
+#define TAB_CT					(1 << 1)
+#define TAB_MDL					(1 << 2)
+#define TAB_SERIES				(1 << 3)
 #define TAB_MASK				0xFFFF
