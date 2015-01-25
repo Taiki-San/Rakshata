@@ -10,29 +10,21 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakSRHeader : NSView
 {
-	NSRect _defaultFrame;
+	RakButton *preferenceButton;
+	RakBackButton * backButton;
+	
+	PrefsUI * winController;
+	
+	BOOL _haveFocus;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property CGFloat height;
+@property BOOL prefUIOpen;
+
+- (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) haveFocus;
+
+- (void) updateFocus : (uint) mainThread;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
-#import "RakSRHeader.h"

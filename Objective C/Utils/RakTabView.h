@@ -35,7 +35,7 @@ enum {
 	RakTabForegroundView * foregroundView;
 }
 
-@property bool readerMode;
+@property uint mainThread;
 @property uint resizeAnimationCount;
 @property bool waitingLogin;
 
@@ -66,9 +66,9 @@ enum {
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
-- (void) resizeReaderCatchArea : (bool) inReaderMode;
+- (void) resizeReaderCatchArea : (BOOL) inReaderMode;
 - (void) releaseReaderCatchArea;
-- (void) setUpViewForAnimation : (BOOL) newReaderMode;
+- (void) setUpViewForAnimation : (uint) mainThread;
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
 - (void) refreshDataAfterAnimation;

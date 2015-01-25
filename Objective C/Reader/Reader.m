@@ -129,7 +129,7 @@
 	
 	if(bottomBar == nil)
 	{
-		bottomBar = [[RakReaderBottomBar alloc] init: self.readerMode: self];
+		bottomBar = [[RakReaderBottomBar alloc] init: self.mainThread == TAB_READER: self];
 	
 		if(foregroundView.superview == self)
 			[self addSubview:bottomBar positioned:NSWindowBelow relativeTo:foregroundView];
@@ -249,7 +249,7 @@
 
 - (void) readerIsOpening : (byte) context
 {
-	if(context == REFRESHVIEWS_CHANGE_MT && self.readerMode)
+	if(context == REFRESHVIEWS_CHANGE_MT && self.mainThread == TAB_READER)
 	{
 		uint copy;
 		do
@@ -262,7 +262,7 @@
 #endif
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(gonnaReduceTabs == copy && self.readerMode)
+			if(gonnaReduceTabs == copy && self.mainThread == TAB_READER)
 			{
 				[self collapseAllTabs : false];
 			}
@@ -272,18 +272,12 @@
 
 - (void) willLeaveReader
 {
-	if(pageInitialized)
-		self.readerMode = NO;
-	
 	if(bottomBar != nil)
 		bottomBar.readerMode = NO;
 }
 
 - (void) willOpenReader
 {
-	if(pageInitialized)
-		self.readerMode = YES;
-	
 	if(bottomBar != nil)
 		bottomBar.readerMode = YES;
 
@@ -291,14 +285,17 @@
 		[self updateTitleBar :_project :_isTome :_posElemInStructure];
 }
 
-- (void) setUpViewForAnimation : (BOOL) newReaderMode
+- (void) setUpViewForAnimation : (uint) mainThread
 {
-	if(newReaderMode && !self.readerMode)
+	uint prevMainThread = self.mainThread;
+	self.mainThread = mainThread;
+	
+	if(mainThread == TAB_READER && prevMainThread != TAB_READER)
 		[self willOpenReader];
-	else if(!newReaderMode && self.readerMode)
+	else if(mainThread != TAB_READER && prevMainThread == TAB_READER)
 		[self willLeaveReader];
 	
-	[super setUpViewForAnimation:newReaderMode];
+	[super setUpViewForAnimation:mainThread];
 }
 
 /**	Drawing	**/
@@ -320,7 +317,7 @@
 - (void) resizeReaderCatchArea
 {
 	if([self isStillCollapsedReaderTab])
-		[super resizeReaderCatchArea : self.readerMode];
+		[super resizeReaderCatchArea : self.mainThread == TAB_READER];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
@@ -529,7 +526,7 @@
 
 - (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (uint) position
 {
-	if(self.readerMode)
+	if(self.mainThread == TAB_READER)
 	{
 		NSString * string;
 		

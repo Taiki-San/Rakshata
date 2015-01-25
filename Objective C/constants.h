@@ -52,7 +52,6 @@
 
 /** RakSerieView **/
 #define SR_READERMODE_LATERAL_BORDER 5			//	%
-#define SR_READERMODE_BOTTOMBAR_WIDTH	14
 
 /** RakSerieSubmenu **/
 #define SR_READERMODE_MARGIN_ELEMENT_OUTLINE 8

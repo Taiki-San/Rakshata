@@ -16,22 +16,10 @@
 
 @interface Series : RakTabView
 {
-	RakButton *preferenceButton;
-	RakBackButton * backButton;
-	
+	RakSRHeader * header;
 	RakSerieView * coreView;
-	
-	PrefsUI * winController;
-	BOOL prefsUIIsOpen;
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
-
-- (void) gogoWindow;
-
-- (void) setupBackButton;
-- (void) backButtonClicked;
-
-- (NSRect) getCoreviewFrame : (CGFloat) backButtonY;
 
 @end

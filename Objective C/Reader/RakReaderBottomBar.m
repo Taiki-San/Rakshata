@@ -14,7 +14,7 @@
 
 #define RADIUS_BORDERS 13.0
 
-- (id)init: (BOOL) displayed : (Reader*) parent
+- (id) init: (BOOL) displayed : (Reader*) parent
 {
 	self = [super initWithFrame:[self createFrameWithSuperView:parent.frame]];
 	
@@ -26,7 +26,7 @@
 		[self setAutoresizesSubviews:NO];
 		
 		_parent = parent;
-		self.readerMode = parent.readerMode;
+		self.readerMode = parent.mainThread == TAB_READER;
 
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:RADIUS_BORDERS];

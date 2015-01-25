@@ -25,7 +25,7 @@
 		}];
 		
 		_views = [NSArray arrayWithArray:validatedViews];
-		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
+		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 		animationDuration = fastAnimation ? 0.1 : 0.2;
 	}
 	return self;
@@ -39,7 +39,7 @@
 	{
 		currentView = [_views objectAtIndex:i];
 		if([currentView respondsToSelector:@selector(setUpViewForAnimation:)])
-			[currentView setUpViewForAnimation : readerMode];
+			[currentView setUpViewForAnimation : mainThread];
 	}
 }
 

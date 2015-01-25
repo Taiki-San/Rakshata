@@ -33,9 +33,7 @@
 		
 		[self.layer setCornerRadius:7.5];
 		
-		bool readerMode;
-		[Prefs getPref:PREFS_GET_IS_READER_MT :&readerMode];
-		self.readerMode = readerMode;
+		[Prefs getPref:PREFS_GET_IS_READER_MT :&_mainThread];
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
@@ -52,7 +50,7 @@
 
 - (void) endOfInitialization
 {
-	[self resizeReaderCatchArea : self.readerMode];
+	[self resizeReaderCatchArea : _mainThread == TAB_READER];
 }
 
 - (NSString *) byebye
@@ -189,7 +187,7 @@
 	{
 		[super setFrame:frameRect];
 		[foregroundView setFrame:frameRect];
-		[self resizeReaderCatchArea : self.readerMode];
+		[self resizeReaderCatchArea : _mainThread == TAB_READER];
 	}
 }
 
@@ -282,7 +280,7 @@
 #pragma mark - Reader
 /**		Reader		**/
 
-- (void) resizeReaderCatchArea : (bool) inReaderMode
+- (void) resizeReaderCatchArea : (BOOL) inReaderMode
 {
 	[self releaseReaderCatchArea];
 		
@@ -301,7 +299,7 @@
 
 - (void) refreshDataAfterAnimation
 {
-	[self resizeReaderCatchArea : self.readerMode];
+	[self resizeReaderCatchArea : _mainThread == TAB_READER];
 }
 
 - (BOOL) isStillCollapsedReaderTab
@@ -323,9 +321,9 @@
 	}
 }
 
-- (void) setUpViewForAnimation : (BOOL) newReaderMode
+- (void) setUpViewForAnimation : (uint) mainThread
 {
-	self.readerMode = newReaderMode;
+	_mainThread = mainThread;
 }
 
 #pragma mark - Events
@@ -335,7 +333,7 @@
 {
 	NSRect frame = [self bounds];
 	
-	if(self.readerMode && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
+	if(_mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 	{
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
 	}
@@ -413,7 +411,7 @@
 	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(self.readerMode && [self mouseOutOfWindow])
+			if(_mainThread == TAB_READER && [self mouseOutOfWindow])
 			{
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];

@@ -27,7 +27,7 @@
 
 @interface RakTabAnimationResize : NSObject
 {
-	BOOL readerMode;
+	uint mainThread;
 	BOOL haveBasePos;
 	NSArray* _views;
 	

@@ -63,7 +63,7 @@
 		scrollViewFrame.size.height = scrollView.contentFrame.size.height;
 	}
 	
-	if(!self.readerMode)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
+	if(self.mainThread != TAB_READER)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
 	{
 		scrollView.scrollViewFrame = scrollViewFrame;
 		return;
@@ -88,14 +88,14 @@
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
-	if(!self.readerMode)
+	if(self.mainThread != TAB_READER)
 		frameRect.size.width = container.frame.size.width;
 	
 	[container setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
 	
 	if(_scrollView != nil)
 	{
-		if(!self.readerMode)
+		if(self.mainThread != TAB_READER)
 			frameRect.origin = _scrollView.frame.origin;
 		
 		[_scrollView.superview setFrame:container.frame];
@@ -119,7 +119,7 @@
 			
 			frame.origin.y = frameRect.size.height / 2 - frame.size.height / 2;
 
-			if(self.readerMode)
+			if(self.mainThread == TAB_READER)
 				frame.origin.x = frameRect.size.width / 2 - frame.size.width / 2;
 			
 			[view.superview setFrame:frame];
@@ -135,7 +135,7 @@
 {
 	bool fail = false;
 
-	if(!self.readerMode || !noDrag || _scrollView == nil)
+	if(self.mainThread != TAB_READER || !noDrag || _scrollView == nil)
 		fail = true;
 	else
 	{

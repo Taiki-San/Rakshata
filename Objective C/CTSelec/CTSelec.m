@@ -24,9 +24,9 @@
 		self.layer.borderWidth = 2;
 		
 		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
-		[backButton setTarget:self];
-		[backButton setAction:@selector(backButtonClicked)];
-		[backButton setHidden:self.readerMode];
+		[backButton setTarget : self];
+		[backButton setAction : @selector(backButtonClicked)];
+		[backButton setHidden : self.mainThread != TAB_READER];
 		
 		[self addSubview:backButton];
 
@@ -153,15 +153,13 @@
 	return output;
 }
 
-- (void) setUpViewForAnimation : (BOOL) newReaderMode
+- (void) setUpViewForAnimation : (uint) mainThread
 {
-	uint _mainThread;
-	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
-	[backButton setHidden: _mainThread == TAB_SERIES];
+	[backButton setHidden: mainThread == TAB_SERIES];
 	
-	[coreView focusViewChanged : _mainThread];
+	[coreView focusViewChanged : mainThread];
 	
-	[super setUpViewForAnimation:newReaderMode];
+	[super setUpViewForAnimation:mainThread];
 }
 
 - (NSString *) byebye
@@ -233,7 +231,7 @@
 
 - (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY
 {
-	if(self.readerMode)
+	if(self.mainThread == TAB_READER)
 	{
 		CGFloat previousHeight = frame.size.height;
 		

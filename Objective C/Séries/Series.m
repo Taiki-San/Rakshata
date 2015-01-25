@@ -18,7 +18,6 @@
     if (self)
 	{
 		flag = TAB_SERIES;
-		prefsUIIsOpen = false;
 		
 		self = [self initView:contentView : state];
 		
@@ -40,22 +39,10 @@
 
 - (void) initContent : (NSString *) state
 {
-	/*Initialise la fenêtre de prefs, la position en Y est celle du back button*/
-	preferenceButton = [RakButton allocImageWithBackground: @"parametre" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
-	if(preferenceButton != nil)
-	{
-		[preferenceButton.cell setHighlightAllowed:NO];
-		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
-		
-		[self addSubview:preferenceButton];
-	}
+	header = [[RakSRHeader alloc] initWithFrame:self.bounds : self.mainThread];
+	[self addSubview:header];
 	
-	winController = [[PrefsUI alloc] init];
-	[winController setAnchor:preferenceButton];
-	
-	[self setupBackButton];
-	
-	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : self.frame.size.height - backButton.frame.origin.y - backButton.frame.size.height] : state];
+	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : self.frame] : state];
 	[self addSubview:coreView];
 }
 
@@ -73,92 +60,40 @@
 
 - (void) dealloc
 {
-	[preferenceButton removeFromSuperview];	
-	[coreView removeFromSuperview];			
-
+	[header removeFromSuperview];
+	[coreView removeFromSuperview];
 	[self removeFromSuperview];
-}
-
-/**		Pref UI		**/
-#pragma mark - Preference UI
-
-- (void) gogoWindow
-{
-	prefsUIIsOpen = true;
-	[winController showPopover];
 }
 
 - (BOOL) abortCollapseReaderTab
 {
-	return prefsUIIsOpen;
+	return header.prefUIOpen;
 }
 
 - (void)mouseExited:(NSEvent *)theEvent	//Appelé quand je sors
 {
-	if(!prefsUIIsOpen)
+	if(!header.prefUIOpen)
 		[super mouseExited:theEvent];
-}
-
-#pragma mark - Back button
-
-- (void) setupBackButton
-{
-	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame]: false];
-	[backButton setTarget:self];
-	[backButton setAction:@selector(backButtonClicked)];
-	
-	uint _mainThread;
-	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
-	[backButton setHidden: _mainThread == TAB_SERIES];
-	
-	[self addSubview:backButton];
-}
-
-- (NSRect) backButtonFrame
-{
-	NSRect frame = [self lastFrame];
-	
-	if(preferenceButton != nil)
-	{
-		frame.origin.x = preferenceButton.frame.origin.x + preferenceButton.frame.size.width;
-		frame.size.width -= frame.origin.x;
-		
-		return frame;
-	}
-	else
-		return frame;
-}
-
-- (void) backButtonClicked
-{
-	noDrag = true;
-	[self mouseUp:NULL];
 }
 
 #pragma mark - Routine to setup and communicate with coreview
 
-- (NSRect) getCoreviewFrame : (CGFloat) backButtonY
+- (NSRect) getCoreviewFrame : (NSRect) frame
 {
-	NSRect frame = [self lastFrame];
-	CGFloat previousHeight = frame.size.height;
-	
-	frame.size.height -= 2 * (frame.size.height - backButtonY) - backButton.frame.size.height + SR_READERMODE_BOTTOMBAR_WIDTH;
+	frame.size.height -= header.height;
 	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = previousHeight - frame.size.height - SR_READERMODE_BOTTOMBAR_WIDTH;
-	frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+	frame.origin.y = header.height;
+	frame.size.width -= 2 * frame.origin.x;
 	
 	return frame;
 }
 
-- (void) setUpViewForAnimation : (BOOL) newReaderMode
+- (void) setUpViewForAnimation : (uint) mainThread
 {
-	uint _mainThread;
-	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_mainThread];
+	[header updateFocus : mainThread];
+	[coreView focusViewChanged : mainThread];
 	
-	[backButton setHidden: _mainThread == TAB_SERIES];
-	[coreView focusViewChanged : _mainThread];
-	
-	[super setUpViewForAnimation:newReaderMode];
+	[super setUpViewForAnimation : mainThread];
 }
 
 #pragma mark - RakTabView routines
@@ -171,16 +106,16 @@
 	return isReader;
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) setFrame : (NSRect) frameRect
 {
 	if([self wouldFrameChange:frameRect])
 	{
 		[super setFrame:frameRect];
 		
-		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
-		[backButton setFrame:[self backButtonFrame]];
-		
-		[coreView setFrame:[self getCoreviewFrame : frameRect.size.height - backButton.frame.origin.y - backButton.frame.size.height]];
+		frameRect.origin = NSZeroPoint;
+
+		[header setFrame:frameRect];
+		[coreView setFrame:[self getCoreviewFrame : frameRect]];
 	}
 }
 
@@ -191,10 +126,10 @@
 	{
 		[self.animator setFrame:newFrame];
 		
-		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
-		[backButton resizeAnimation:[self backButtonFrame]];
+		newFrame.origin = NSZeroPoint;
 		
-		[coreView resizeAnimation:[self getCoreviewFrame : newFrame.size.height - RBB_TOP_BORDURE - backButton.frame.size.height]];
+		[header setFrame:newFrame];
+		[coreView resizeAnimation:[self getCoreviewFrame : newFrame]];
 	}
 }
 

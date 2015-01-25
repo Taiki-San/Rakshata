@@ -14,12 +14,7 @@
 
 - (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack
 {
-	frame.origin.x += frame.size.width * RBB_BUTTON_POSX / 100.0f;
-	frame.origin.y = RBB_TOP_BORDURE;
-	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
-	frame.size.height = RBB_BUTTON_HEIGHT;
-	
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame : [self frameFromParent:frame]];
     if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
@@ -39,33 +34,35 @@
     return self;
 }
 
-- (NSRect) createFrameFromSuperFrame : (NSRect) superFrame
+- (NSRect) frameFromParent : (NSRect) frame
 {
-	superFrame.origin.y = RBB_TOP_BORDURE;
-	superFrame.size.height = self.frame.size.height;
-	superFrame.origin.x += superFrame.size.width * RBB_BUTTON_POSX / 100.0f;
-	superFrame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
+	frame.origin.y = RBB_TOP_BORDURE;
+	frame.size.height = RBB_BUTTON_HEIGHT;
+	frame.origin.x += frame.size.width * RBB_BUTTON_POSX / 100.0f;
+	frame.size.width *= RBB_BUTTON_WIDTH / 100.0f;
 	
-	return superFrame;
+	return frame;
 }
 
 - (void) setFrame:(NSRect)frameRect
 {
-	NSRect newFrame = [self createFrameFromSuperFrame:frameRect];
+	NSRect newFrame = [self frameFromParent:frameRect];
 	[super setFrame: newFrame];
 	
-	newFrame.origin.x = newFrame.origin.y = 0;
+	newFrame.origin = NSZeroPoint;
+
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	NSRect newFrame = [self createFrameFromSuperFrame:frameRect];
+	NSRect newFrame = [self frameFromParent:frameRect];
 	
 	[self.animator setFrame: newFrame];
 	
-	newFrame.origin.x = newFrame.origin.y = 0;
+	newFrame.origin = NSZeroPoint;
+	
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
@@ -79,12 +76,6 @@
 + (Class) cellClass
 {
 	return [RakBackButtonCell class];
-}
-
-- (void) setHidden:(BOOL)flag
-{
-	if([self isHidden] != flag)
-		[super setHidden:flag];
 }
 
 #pragma mark - Color
