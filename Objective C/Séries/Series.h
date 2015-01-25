@@ -22,4 +22,6 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 
+- (void) displayTypeUpdate : (uint) activeCell;
+
 @end

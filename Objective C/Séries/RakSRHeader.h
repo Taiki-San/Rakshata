@@ -10,9 +10,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class Series;
+
 @interface RakSRHeader : NSView
 {
 	RakButton *preferenceButton;
+	RakButtonMorphic * displayType;
+	
 	RakBackButton * backButton;
 	
 	PrefsUI * winController;
@@ -20,6 +24,7 @@
 	BOOL _haveFocus;
 }
 
+@property (weak) Series * responder;
 @property CGFloat height;
 @property BOOL prefUIOpen;
 
@@ -28,3 +33,12 @@
 - (void) updateFocus : (uint) mainThread;
 
 @end
+
+
+enum
+{
+	SR_CELLTYPE_GRID = 0,
+	SR_CELLTYPE_REPO = 1,
+	SR_CELLTYPE_LIST = 2,
+	SR_CELLTYPE_MAX = SR_CELLTYPE_LIST
+};

@@ -12,14 +12,14 @@
 
 @implementation Series
 
-- (id)init : (NSView*)contentView : (NSString *) state
+- (id)init : (NSView*) contentView : (NSString *) state
 {
     self = [super init];
     if (self)
 	{
 		flag = TAB_SERIES;
 		
-		self = [self initView:contentView : state];
+		self = [self initView : contentView : state];
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor;
 		self.layer.borderWidth = 2;
@@ -40,7 +40,11 @@
 - (void) initContent : (NSString *) state
 {
 	header = [[RakSRHeader alloc] initWithFrame:self.bounds : self.mainThread];
-	[self addSubview:header];
+	if(header != nil)
+	{
+		header.responder = self;
+		[self addSubview:header];
+	}
 	
 	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : self.frame] : state];
 	[self addSubview:coreView];
@@ -94,6 +98,18 @@
 	[coreView focusViewChanged : mainThread];
 	
 	[super setUpViewForAnimation : mainThread];
+}
+
+- (void) displayTypeUpdate : (uint) activeCell
+{
+	if(activeCell == SR_CELLTYPE_GRID)
+		NSLog(@"Would update to grid");
+	else if(activeCell == SR_CELLTYPE_REPO)
+		NSLog(@"Would update to repo view");
+	else if(activeCell == SR_CELLTYPE_LIST)
+		NSLog(@"Would update to list");
+	else
+		NSLog(@"Would fail to update");
 }
 
 #pragma mark - RakTabView routines

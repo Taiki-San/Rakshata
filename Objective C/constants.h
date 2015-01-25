@@ -49,6 +49,7 @@
 /** Serie itself **/
 
 #define SR_PREF_BUTTON_BORDERS 25
+#define SR_HEADER_INTERBUTTON_WIDTH 10
 
 /** RakSerieView **/
 #define SR_READERMODE_LATERAL_BORDER 5			//	%

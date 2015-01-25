@@ -18,6 +18,7 @@
 	
 	if(self != nil)
 	{
+		_responder = nil;
 		_prefUIOpen = NO;
 		_haveFocus = haveFocus;
 		_height = self.bounds.size.height;
@@ -37,6 +38,13 @@
 		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
 		
 		[self addSubview:preferenceButton];
+	}
+	
+	displayType = [RakButtonMorphic allocImages:@[@"grille", @"repo", @"list"] :RB_STATE_STANDARD :self :@selector(displayTypeSwitch)];
+	if(displayType != nil)
+	{
+		[displayType setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
+		[self addSubview:displayType];
 	}
 	
 	winController = [[PrefsUI alloc] init];
@@ -119,13 +127,26 @@
 - (void) updateFocus : (uint) mainThread
 {
 	[backButton setHidden: mainThread == TAB_SERIES];
+	[displayType setHidden : mainThread != TAB_SERIES];
 }
 
 - (void) backButtonClicked
 {
-	Series * serie = [(RakAppDelegate*) [NSApp delegate] serie];
-	[serie mouseDown:nil];
-	[serie mouseUp:nil];
+	if(_responder != nil)
+	{
+		[_responder mouseDown:nil];
+		[_responder mouseUp:nil];
+	}
+}
+
+- (void) displayTypeSwitch
+{
+	uint activeCell = displayType.activeCell = (displayType.activeCell + 1) % 3;
+	
+	if(_responder != nil)
+	{
+		[_responder displayTypeUpdate:activeCell];
+	}
 }
 
 @end

@@ -12,37 +12,42 @@
 
 @implementation RakButtonMorphic
 
-+ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (NSArray *) selectors
++ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (SEL) selector
 {
-	if(imageNames == nil || [imageNames count] == 0 || target == nil || [imageNames count] != [selectors count])
+	if(imageNames == nil || [imageNames count] == 0 || target == nil)
 		return nil;
 	
-	RakButtonMorphic * output = [self allocImageWithBackground:imageNames[0] :defaultState :target : NSSelectorFromString(selectors[0])];
+	RakButtonMorphic * output = [self allocImageWithBackground:imageNames[0] :defaultState :target : selector];
 	
 	if(output != nil)
 	{
-		output = [output initImages : (NSArray*) imageNames : (short) defaultState : (id) target : selectors];
+		[output.cell setHighlightAllowed:NO];
+		output = [output initImages : imageNames : defaultState];
 	}
 	
 	return output;
 }
 
-- (instancetype) initImages : (NSArray*) imageNames : (short) defaultState : (id) target : (NSArray *) selectors
+- (instancetype) initImages : (NSArray*) imageNames : (short) defaultState
 {
-	NSMutableArray * _cells = [NSMutableArray array];
-	[_cells addObject:self.cell];
+	NSMutableArray * images = [NSMutableArray array];
 	
-	RakButtonCell * cell;
+	NSImage * image;
 	BOOL firstPass = YES;
+	uint currentTheme = [Prefs getCurrentTheme : self];
+	
 	for(NSString * imageName in imageNames)
 	{
 		if(firstPass)
+		{
+			[images addObject : self.image];
 			firstPass = !firstPass;
+		}
 		else
 		{
-			cell = [[[[self class] cellClass] alloc] initWithPage:imageName :defaultState];
-			if(cell != nil)
-				[_cells addObject:cell];
+			image = [RakResPath craftResNameFromContext:imageName : NO : YES : currentTheme];
+			if(image != nil)
+				[images addObject:image];
 			else
 				return nil;
 		}
@@ -51,8 +56,7 @@
 	_activeCell = 0;
 	
 	_defaultState = defaultState;
-	_target = target;
-	_selectors = selectors;
+	_images = [NSArray arrayWithArray:images];
 	
 	return self;
 }
@@ -66,13 +70,9 @@
 
 - (void) setActiveCell : (uint) activeCell
 {
-	if(activeCell <= [_cell count])
+	if(activeCell <= [_images count])
 	{
-		self.cell = _cell[activeCell];
-		self.action = NSSelectorFromString(_selectors[activeCell]);
-		
-		[self.cell setState:_defaultState];
-		
+		self.image = _images[activeCell];
 		_activeCell = activeCell;
 	}
 }

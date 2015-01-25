@@ -12,10 +12,7 @@
 
 @interface RakButtonMorphic : RakButton
 {
-	NSArray * cells;
-	
-	id _target;
-	NSArray* _selectors;
+	NSArray * _images;
 	
 	short _defaultState;
 	
@@ -24,6 +21,6 @@
 
 @property uint activeCell;
 
-+ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (NSArray *) selectors;
++ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (SEL) selector;
 
 @end
