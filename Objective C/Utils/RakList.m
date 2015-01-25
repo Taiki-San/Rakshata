@@ -80,6 +80,7 @@
 	if(activeRow != LIST_INVALID_SELECTION)
 	{
 		[self tableView:_tableView shouldSelectRow:activeRow];		//Apply graphic changes
+		self._selectionChangeComeFromClic = NO;
 		[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:activeRow] byExtendingSelection:NO];
 	}
 	
@@ -406,7 +407,6 @@
 	}
 
 	[self postProcessingSelection : rowIndex];
-	
 	return YES;
 }
 
@@ -433,6 +433,7 @@
 	{
 		_tableView.preCommitedLastClickedColumn = column != LIST_INVALID_SELECTION ? column * _nbElemPerCouple : LIST_INVALID_SELECTION;
 		[self tableView:_tableView shouldSelectRow:row];
+		self._selectionChangeComeFromClic = NO;
 	}
 }
 
@@ -757,7 +758,12 @@
 	if(self.wantVerboseClick && _preCommitedLastClickedRow == self.selectedRow)
 	{
 		if([self.delegate tableView:self shouldSelectRow:_preCommitedLastClickedRow])
+		{
+			if([self.delegate isKindOfClass:[RakList class]])
+				((RakList*) self.delegate)._selectionChangeComeFromClic = YES;
+	
 			[self.delegate tableViewSelectionDidChange:nil];
+		}
 	}
 	
 	[super mouseDown : theEvent];

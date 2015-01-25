@@ -1004,6 +1004,7 @@
 		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
 		_selectionWithoutUI = YES;
 		
+		self._selectionChangeComeFromClic = YES;
 		[self tableViewSelectionDidChange:nil];
 		
 		_selectionWithoutUI = NO;
@@ -1013,11 +1014,19 @@
 		return NO;
 	}
 	else
+	{
+		self._selectionChangeComeFromClic = YES;
 		return [super tableView:tableView shouldSelectRow:rowIndex];
+	}
 }
 
 - (void) tableViewSelectionDidChange : (NSNotification *) notification;
 {
+	if(!self._selectionChangeComeFromClic)
+		return;
+	else
+		self._selectionChangeComeFromClic = NO;
+
 	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / _nbElemPerCouple];
 	
 	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])

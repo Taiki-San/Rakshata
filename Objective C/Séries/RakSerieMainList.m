@@ -356,6 +356,11 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
+	if(!self._selectionChangeComeFromClic)
+		return;
+	else
+		self._selectionChangeComeFromClic = NO;
+	
 	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedRowIndex];
 	
 	if(dataToSend.isInitialized)

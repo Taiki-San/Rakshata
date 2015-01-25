@@ -66,6 +66,7 @@ typedef struct smartReload_data
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 @property (getter=frame, setter=setFrame:)					NSRect frame;
 @property (weak, getter=superview, setter=setSuperview:)	NSView * superview;
+@property BOOL _selectionChangeComeFromClic;
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
 - (bool) didInitWentWell;

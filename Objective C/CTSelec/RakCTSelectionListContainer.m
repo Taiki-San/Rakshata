@@ -216,6 +216,8 @@
 	[_content resizeAnimation : frame];
 	
 	if(_placeholderActive)
+		[_placeholder.animator setFrameOrigin : NSCenteredRect(frame, _placeholder.bounds)];
+	else
 		[_placeholder setFrameOrigin : NSCenteredRect(frame, _placeholder.bounds)];
 }
 
