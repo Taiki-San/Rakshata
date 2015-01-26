@@ -89,6 +89,11 @@
 				isTome = [[dataState objectAtIndex:3] boolValue];
 				page = [[dataState objectAtIndex:4] intValue];
 				
+				if(((RakAppDelegate*)[NSApp delegate]).CT.initWithNoContent)
+				{
+					[((RakAppDelegate*)[NSApp delegate]).CT updateProject :*project :isTome :elemToRead];
+				}
+				
 				[self startReading: *project: elemToRead: isTome : page];
 				
 				free(project);

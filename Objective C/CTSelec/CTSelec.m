@@ -19,6 +19,7 @@
 	{
 		flag = TAB_CT;
 		self = [self initView:contentView : state];
+		_initWithNoContent = NO;
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
@@ -30,6 +31,7 @@
 		
 		[self addSubview:backButton];
 
+		BOOL initFailure = YES;
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 		{
 			NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
@@ -73,10 +75,12 @@
 					releaseCTData(*project);
 					free(project);
 					
+					initFailure = NO;
 				} while (0);
 			}
 		}
-		else
+		
+		if(initFailure)
 		{
 			[self noContent];
 		}
@@ -95,7 +99,39 @@
 
 - (void) noContent
 {
-
+	BOOL installOnly = self.mainThread == TAB_READER;
+	uint mask = SORT_NAME | (installOnly ? RDB_LOADINSTALLED : 0), nbElem;
+	PROJECT_DATA * project = getCopyCache(mask, &nbElem);
+	
+	for(uint i = 0; i < nbElem; i++)
+	{
+		if(project[i].isInitialized && (installOnly || project[i].nombreChapitre != 0 || project[i].nombreTomes != 0))
+		{
+			BOOL isTome;
+			
+			if(installOnly)
+			{
+				if(project[i].nombreChapitreInstalled)
+					isTome = NO;
+				else
+					isTome = YES;
+			}
+			else
+			{
+				if(project[i].nombreChapitre)
+					isTome = NO;
+				else if(project[i].nombreTomes)
+					isTome = YES;
+				else
+					continue;
+			}
+			
+			coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] :project[i] : isTome : (long[4]){-1, -1, -1, -1}];
+		}
+	}
+	
+	freeProjectData(project);
+	_initWithNoContent = YES;
 }
 
 - (void) dealloc
@@ -182,6 +218,7 @@
 	
 	if(newProject.isInitialized)
 	{
+		_initWithNoContent = NO;
 		[coreView updateContext:newProject];
 		
 		//Coreview en fait aussi une copie, on doit donc release cette version
