@@ -47,14 +47,55 @@
 		[self addSubview:displayType];
 	}
 	
+	storeSwitch = [RakButton allocWithText:@"Magasin" :self.bounds];
+	if(storeSwitch != nil)
+	{
+		[storeSwitch sizeToFit];
+		[storeSwitch setFrameSize:NSMakeSize(storeSwitch.bounds.size.width, displayType.bounds.size.height)];
+		
+		storeSwitch.hasBorder = NO;
+		[storeSwitch setButtonType:NSOnOffButton];
+
+		[storeSwitch triggerBackground];
+		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(displayType.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
+
+		[self addSubview:storeSwitch];
+		
+		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(storeSwitch.frame);
+	}
+	else if(displayType != nil)
+		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(displayType.frame);
+	else
+		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(preferenceButton.frame);
+	
+	search = [[RakSRSearchBar alloc] initWithFrame:[self searchButtonFrame : self.bounds]];
+	if(search != nil)
+	{
+		[self addSubview:search];
+	}
+	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
 	
 	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame : self.bounds] : NO];
-	[backButton setTarget:self];
-	[backButton setAction:@selector(backButtonClicked)];
-	[backButton setHidden:!_haveFocus];
-	[self addSubview:backButton];
+	if(backButton != nil)
+	{
+		[backButton setTarget:self];
+		[backButton setAction:@selector(backButtonClicked)];
+		[backButton setHidden:_haveFocus];
+		[self addSubview:backButton];
+	}
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(_haveFocus)
+	{
+		CGFloat border = dirtyRect.size.height / 8;
+		
+		[[self separatorColor] setFill];
+		NSRectFill(NSMakeRect(_separatorX, border, 1, dirtyRect.size.height - 2 * border));
+	}
 }
 
 #pragma mark - Resizing
@@ -67,13 +108,16 @@
 	if(animation)
 	{
 		[self.animator setFrame:frameRect];
-		[preferenceButton.animator setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
+		frameRect.origin = NSZeroPoint;
+		
+		[search resizeAnimation : [self searchButtonFrame:frameRect]];
 		[backButton resizeAnimation : [self backButtonFrame:frameRect]];
 	}
 	else
 	{
 		[super setFrame:frameRect];
-		[preferenceButton setFrameOrigin : NSMakePoint(preferenceButton.frame.origin.x, RBB_TOP_BORDURE)];
+
+		[search setFrame : [self searchButtonFrame:frameRect]];
 		[backButton setFrame : [self backButtonFrame:frameRect]];
 	}
 }
@@ -114,6 +158,31 @@
 	}
 }
 
+- (NSRect) searchButtonFrame : (NSRect) frame
+{
+	frame.origin.y = frame.size.height / 2;
+	frame.origin.x = SR_HEADER_INTERBUTTON_WIDTH;
+
+	if(displayType != nil)
+		frame.origin.x += NSMaxX(displayType.frame);
+	else if(preferenceButton != nil)
+		frame.origin.x += NSMaxX(preferenceButton.frame);
+	
+	frame.size.height = 22;
+	frame.origin.y -= frame.size.height / 2;
+	frame.origin.x += frame.size.width / 2 - 75;
+	frame.size.width = 150;
+	
+	return frame;
+}
+
+#pragma mark - Color
+
+- (NSColor *) separatorColor
+{
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE :nil];
+}
+
 #pragma mark - Preference UI
 
 - (void) gogoWindow
@@ -126,8 +195,9 @@
 
 - (void) updateFocus : (uint) mainThread
 {
-	[backButton setHidden: mainThread == TAB_SERIES];
-	[displayType setHidden : mainThread != TAB_SERIES];
+	_haveFocus = mainThread == TAB_SERIES;
+	[backButton setHidden: _haveFocus];
+	[displayType setHidden : !_haveFocus];
 }
 
 - (void) backButtonClicked

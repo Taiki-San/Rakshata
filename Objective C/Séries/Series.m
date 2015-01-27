@@ -39,7 +39,7 @@
 
 - (void) initContent : (NSString *) state
 {
-	header = [[RakSRHeader alloc] initWithFrame:self.bounds : self.mainThread];
+	header = [[RakSRHeader alloc] initWithFrame:self.bounds : self.mainThread == TAB_SERIES];
 	if(header != nil)
 	{
 		header.responder = self;

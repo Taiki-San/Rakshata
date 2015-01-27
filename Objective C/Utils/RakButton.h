@@ -11,14 +11,20 @@
  *********************************************************************************************/
 
 @interface RakButton: NSButton
+{
+	BOOL haveBackground;
+}
 
 @property BOOL textButton;
+@property BOOL hasBorder;
 
 + (id) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 
 + (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
 + (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
 + (id) allocWithText : (NSString*) string : (NSRect) frame;
+
+- (void) triggerBackground;
 
 @end
 
@@ -37,6 +43,7 @@
 }
 
 @property bool forceHighlight;
+@property BOOL hasBorder;
 
 - (id) initWithPage : (NSString*) imageName : (short) state;
 - (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;

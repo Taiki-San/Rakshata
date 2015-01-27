@@ -18,9 +18,7 @@
 	
 	if(output != nil)
 	{
-		output.wantsLayer = YES;
-		output.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:output].CGColor;
-		output.layer.cornerRadius = 4;
+		[output triggerBackground];
 	}
 	
 	return output;
@@ -139,6 +137,33 @@
 	}
 	
 	return button;
+}
+
+#pragma mark - Interface
+
+- (BOOL) hasBorder
+{
+	return ((RakButtonCell *) self.cell).hasBorder;
+}
+
+- (void) setHasBorder : (BOOL) hasBorder
+{
+	((RakButtonCell *) self.cell).hasBorder = hasBorder;
+}
+
+- (void) triggerBackground
+{
+	if(haveBackground)
+	{
+		self.wantsLayer = NO;
+	}
+	else
+	{
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS : self].CGColor;
+		self.layer.cornerRadius = 4;
+	}
+	haveBackground = !haveBackground;
 }
 
 @end
@@ -305,6 +330,7 @@
 	
 	if(self != nil)
 	{
+		_hasBorder = YES;
 		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
 		if(textCell != nil)
 		{
@@ -356,20 +382,21 @@
 {
 	if(textCell != nil)
 	{
-		[[self getBorderColor] setFill];
-		NSRectFill(cellFrame);
-		
-		NSRect frame = cellFrame;
-		
-		frame.size.width -= 2;	//border
-		frame.size.height -= 2;
-		frame.origin.x++;
-		frame.origin.y++;
+		if(_hasBorder)
+		{
+			[[self getBorderColor] setFill];
+			NSRectFill(cellFrame);
+			
+			cellFrame.size.width -= 2;	//border
+			cellFrame.size.height -= 2;
+			cellFrame.origin.x++;
+			cellFrame.origin.y++;
+		}
 		
 		[[self getBackgroundColor] setFill];
-		NSRectFill(frame);
+		NSRectFill(cellFrame);
 		
-		[textCell drawInteriorWithFrame:frame inView:controlView];
+		[textCell drawInteriorWithFrame:cellFrame inView:controlView];
 	}
 	else
 		[super drawWithFrame:cellFrame inView:controlView];

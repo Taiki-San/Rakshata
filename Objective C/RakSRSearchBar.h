@@ -10,30 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakSRSearchBar : NSSearchField
 {
-	NSRect _defaultFrame;
+	RakButtonCell * _button;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+- (void) resizeAnimation : (NSRect) frame;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSRSearchBar.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
-#import "RakSRHeader.h"

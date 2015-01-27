@@ -16,12 +16,16 @@
 {
 	RakButton *preferenceButton;
 	RakButtonMorphic * displayType;
+	RakButton * storeSwitch;
+	RakSRSearchBar * search;
 	
 	RakBackButton * backButton;
 	
 	PrefsUI * winController;
 	
 	BOOL _haveFocus;
+	
+	CGFloat _separatorX;
 }
 
 @property (weak) Series * responder;

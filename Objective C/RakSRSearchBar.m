@@ -10,30 +10,35 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@implementation RakSRSearchBar
 
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+- (instancetype) initWithFrame : (NSRect) frameRect
 {
-	NSRect _defaultFrame;
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+	{
+		NSSearchFieldCell * cell = self.cell;
+		
+		_button = [[RakButtonCell alloc] initWithPage : @"loupe" : RB_STATE_STANDARD];
+		if(_button != nil)
+		{
+			[_button setBordered:NO];
+			[_button setHighlightAllowed:NO];
+			[cell setSearchButtonCell:_button];
+		}
+		
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
+
+	}
+	
+	return self;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+- (void) resizeAnimation : (NSRect) frame
+{
+	[self.animator setFrame:frame];
+}
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSRSearchBar.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
-#import "RakSRHeader.h"

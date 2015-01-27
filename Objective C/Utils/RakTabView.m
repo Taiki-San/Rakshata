@@ -33,7 +33,7 @@
 		
 		[self.layer setCornerRadius:7.5];
 		
-		[Prefs getPref:PREFS_GET_IS_READER_MT :&_mainThread];
+		[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
