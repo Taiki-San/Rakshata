@@ -149,21 +149,13 @@
 {
 	_currentPlaceholderState = inactive;
 	
-	if(inactive)
-	{
-		[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
-												   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
-													 NSBackgroundColorAttributeName : [self getBackgroundColor],
-													 NSBaselineOffsetAttributeName : @(-3)
-													 }]];
-	}
-	else
-	{
-		[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
-												   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
-													 NSBackgroundColorAttributeName : [self getBackgroundColor]
-													 }]];
-	}
+	CGFloat offset = inactive ? -3 : 0;
+
+	[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
+											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
+												 NSBackgroundColorAttributeName : [self getBackgroundColor],
+												 NSBaselineOffsetAttributeName : @(offset)
+												 }]];
 }
 
 - (void) willLooseFocus

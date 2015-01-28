@@ -127,6 +127,7 @@
 			}
 			
 			coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] :project[i] : isTome : (long[4]){-1, -1, -1, -1}];
+			break;
 		}
 	}
 	

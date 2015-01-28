@@ -213,18 +213,15 @@
 - (void) addConstraint:(NSLayoutConstraint *)constraint
 {
 	NSLog(@"Fuck you");
-	kill(getpid(), SIGSTOP);
 }
 
 - (void) addConstraints:(NSArray *)constraints
 {
 	NSLog(@"Fuck you too, especially you!");
-	kill(getpid(), SIGSTOP);
 }
 
 - (NSArray *) constraints
 {
-	kill(getpid(), SIGSTOP);
 
 	NSArray * constraints = [super constraints];
 	

@@ -123,8 +123,11 @@ int setupBDDCache()
     if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
 	{
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
-		size_t decodedLength;
-		unsigned char * decodedProject = base64_decode(projectDB, strlen(projectDB) - 1, &decodedLength);
+		size_t decodedLength = strlen(projectDB);
+		
+		if(decodedLength > 1 && projectDB[decodedLength - 2] == '\n')	decodedLength--;
+		
+		unsigned char * decodedProject = base64_decode(projectDB, decodedLength - 1, &decodedLength);
 		PROJECT_DATA * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
 		
 		free(decodedProject);
@@ -739,8 +742,11 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 {
-	size_t length;
-	char * decoded = (char*) base64_decode(repoDB, strlen(repoDB) - 1, &length);
+	size_t length = strlen(repoDB);
+	
+	if(length > 1 && repoDB[length - 2] == '\n')	length--;
+	
+	char * decoded = (char*) base64_decode(repoDB, length - 1, &length);
 	
 	ROOT_REPO_DATA ** output = parseLocalRepo(decoded, nbRepo);
 	
