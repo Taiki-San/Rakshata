@@ -10,14 +10,23 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchBar : NSSearchField <NSTextViewDelegate>
+@interface RakSRSearchBar : NSSearchField
 {
 	BOOL _currentPlaceholderState;
+	
+	id _cancelTarget;
+	SEL _cancelAction;
 }
 
 - (void) resizeAnimation : (NSRect) frame;
 
 - (void) updatePlaceholder : (BOOL) inactive;
 - (void) willLooseFocus;
+
+- (NSColor *) getBackgroundColor;
+
+@end
+
+@interface RakSRSearchBarCell : NSSearchFieldCell
 
 @end

@@ -10,21 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PLACEHOLDER @"Test - test - test - tesT"
-
-@interface RakSRSearchBarCell : NSSearchFieldCell
-
-@end
+#define PLACEHOLDER @"Search"
+#define OFFSET 22
 
 @implementation RakSRSearchBarCell
 
-- (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
+- (NSRect)titleRectForBounds:(NSRect)theRect
 {
-	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
-	
-	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
-	
-	return output;
+	theRect = [self centerCell : [super titleRectForBounds:theRect]];
+	theRect.origin.y = 10;
+	return theRect;
 }
 
 - (NSRect)drawingRectForBounds:(NSRect)theRect
@@ -32,12 +27,22 @@
 	return [self centerCell : [super drawingRectForBounds:theRect]];
 }
 
+- (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
+{
+	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
+	
+	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
+	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SELECTION_COLOR :nil],
+										 NSForegroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SURVOL :nil]}];
+
+	
+	return output;
+}
+
 - (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSTextView *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
 {
 	if([controlView isKindOfClass:[RakSRSearchBar class]] && [[(RakSRSearchBar *) controlView stringValue] isEqualToString:@""])
-	{
 		[(RakSRSearchBar *) controlView updatePlaceholder:NO];
-	}
 	
 	[super selectWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject start:selStart length:selLength];
 }
@@ -47,13 +52,11 @@
 	[super editWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject event:theEvent];
 }
 
-#define OFFSET 22
-
 - (NSRect) centerCell : (NSRect) originalRect
 {
-	NSSize textSize = [self cellSizeForBounds:originalRect];		// Get our ideal size for current text
+	NSSize textSize = [self cellSizeForBounds:originalRect];
+	double heightDelta = originalRect.size.height - textSize.height;
 	
-	double heightDelta = originalRect.size.height - textSize.height;		// Center that in the proposed rect
 	if (heightDelta > 0)
 	{
 		originalRect.size.height -= heightDelta;
@@ -78,14 +81,19 @@
 	{
 		[self initCell];
 		
-		[self setBezelStyle:NSRegularSquareBezelStyle];
 		[self setBezeled: NO];
+		[self setDrawsBackground:NO];
+		
+		self.wantsLayer = YES;
+		self.layer.cornerRadius = 4;
+		self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+		self.layer.borderWidth = 1;
+		self.layer.borderColor = [self getBorderColor].CGColor;
 
-		[self setDrawsBackground:YES];
-		[self setBackgroundColor:[self getBackgroundColor]];
 		[self setTextColor:[self getTextColor]];
-
+		
 		[self updatePlaceholder:YES];
+		[Prefs getCurrentTheme:self];
 	}
 	
 	return self;
@@ -116,8 +124,11 @@
 		[button setHighlightAllowed:NO];
 		
 		_oldButton = cell.cancelButtonCell;
-		button.target = _oldButton.target;
-		button.action = _oldButton.action;
+		_cancelTarget = _oldButton.target;
+		_cancelAction = _oldButton.action;
+		
+		button.target = self;
+		button.action = @selector(cancelProxy);
 		
 		[cell setCancelButtonCell:button];
 	}
@@ -132,7 +143,12 @@
 
 - (NSColor *) getBackgroundColor
 {
-	return [NSColor blackColor];
+	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BACKGROUND :nil];
+}
+
+- (NSColor *) getBorderColor
+{
+	return [[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] colorWithAlphaComponent:0.3];
 }
 
 - (NSColor *) getPlaceholderTextColor
@@ -163,6 +179,15 @@
 	[self updatePlaceholder:YES];
 }
 
+- (void) cancelProxy
+{
+	IMP imp = [_cancelTarget methodForSelector:_cancelAction];
+	void (*func)(id, SEL) = (void *)imp;
+	func(_cancelTarget, _cancelAction);
+	
+	[self willLooseFocus];
+}
+
 #pragma mark - View stuffs
 
 - (void) resizeAnimation : (NSRect) frame
@@ -176,7 +201,10 @@
 		return;
 	
 	[self initCell];
-	[self.cell setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD:nil]];
+
+	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.layer.borderColor = [self getBorderColor].CGColor;
+
 	[self.cell setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 	[self updatePlaceholder : _currentPlaceholderState];
 }

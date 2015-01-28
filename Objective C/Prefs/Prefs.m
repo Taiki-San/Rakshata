@@ -136,9 +136,15 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		}
 			
 		case GET_COLOR_INSERTION_POINT:
+		case GET_COLOR_SELECTION_COLOR:
 		{
 			output = [NSColor colorWithDeviceWhite:200/255.0f alpha:1.0];
 			break;
+		}
+			
+		case GET_COLOR_SEARCHBAR_BACKGROUND:
+		{
+			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:1.0];
 		}
 			
 		case GET_COLOR_READER_BAR:
