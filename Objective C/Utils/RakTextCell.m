@@ -72,7 +72,7 @@
 - (id)initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [self initTextCell:text];
-    if (self)
+    if (self != nil)
 	{
 		self.editable = NO;
 		self.bordered = NO;

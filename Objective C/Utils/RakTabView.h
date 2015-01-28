@@ -80,6 +80,7 @@ enum {
 - (NSPoint) getCursorPosInWindow;
 - (NSRect) getFrameOfNextTab;
 - (BOOL) mouseOutOfWindow;
+- (void) objectWillLooseFocus : (id) object;
 
 - (void) resizeAnimation;
 - (NSRect) createFrame;

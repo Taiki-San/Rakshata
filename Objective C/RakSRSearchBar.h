@@ -10,11 +10,14 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchBar : NSSearchField
+@interface RakSRSearchBar : NSSearchField <NSTextViewDelegate>
 {
-	RakButtonCell * _button;
+	BOOL _currentPlaceholderState;
 }
 
 - (void) resizeAnimation : (NSRect) frame;
+
+- (void) updatePlaceholder : (BOOL) inactive;
+- (void) willLooseFocus;
 
 @end

@@ -384,6 +384,12 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	noDrag = true;
+	
+	if(_mainThread == flag)
+	{
+		[self objectWillLooseFocus : self.window.firstResponder];
+		[self.window makeFirstResponder:nil];
+	}
 }
 
 - (void) mouseDragged:(NSEvent *)theEvent
@@ -423,6 +429,18 @@
 - (void) keyDown:(NSEvent *)theEvent
 {
 	
+}
+
+//This is responsible to perform some processing when some object are about to loose focus
+- (void) objectWillLooseFocus : (id) object
+{
+	if([object isKindOfClass:[NSTextView class]])
+	{
+		if([[(NSTextView*) object delegate] isKindOfClass:[RakSRSearchBar class]])
+		{
+			[(RakSRSearchBar *) [(NSTextView*) object delegate] willLooseFocus];
+		}
+	}
 }
 
 #pragma mark - Graphic Utilities

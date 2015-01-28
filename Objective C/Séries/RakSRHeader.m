@@ -160,18 +160,14 @@
 
 - (NSRect) searchButtonFrame : (NSRect) frame
 {
+	frame.origin.x = frame.size.width - SR_HEADER_INTERBUTTON_WIDTH;
 	frame.origin.y = frame.size.height / 2;
-	frame.origin.x = SR_HEADER_INTERBUTTON_WIDTH;
 
-	if(displayType != nil)
-		frame.origin.x += NSMaxX(displayType.frame);
-	else if(preferenceButton != nil)
-		frame.origin.x += NSMaxX(preferenceButton.frame);
-	
 	frame.size.height = 22;
 	frame.origin.y -= frame.size.height / 2;
-	frame.origin.x += frame.size.width / 2 - 75;
-	frame.size.width = 150;
+
+	frame.size.width = 250;
+	frame.origin.x -= frame.size.width;
 	
 	return frame;
 }
