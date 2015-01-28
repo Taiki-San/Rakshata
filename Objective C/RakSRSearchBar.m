@@ -84,9 +84,11 @@
 		[self setBezeled: NO];
 		[self setDrawsBackground:NO];
 		
+		[self setFocusRingType:NSFocusRingTypeNone];
+		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
-		self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+		self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
 
@@ -141,14 +143,14 @@
 
 #pragma mark - Interface
 
-- (NSColor *) getBackgroundColor
++ (NSColor *) getBackgroundColor
 {
 	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BACKGROUND :nil];
 }
 
 - (NSColor *) getBorderColor
 {
-	return [[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] colorWithAlphaComponent:0.3];
+	return [[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] colorWithAlphaComponent:0.2];
 }
 
 - (NSColor *) getPlaceholderTextColor
@@ -169,7 +171,7 @@
 
 	[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
 											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
-												 NSBackgroundColorAttributeName : [self getBackgroundColor],
+												 NSBackgroundColorAttributeName : [RakSRSearchBar getBackgroundColor],
 												 NSBaselineOffsetAttributeName : @(offset)
 												 }]];
 }
@@ -202,7 +204,7 @@
 	
 	[self initCell];
 
-	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 	self.layer.borderColor = [self getBorderColor].CGColor;
 
 	[self.cell setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];

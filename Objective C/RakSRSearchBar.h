@@ -23,7 +23,7 @@
 - (void) updatePlaceholder : (BOOL) inactive;
 - (void) willLooseFocus;
 
-- (NSColor *) getBackgroundColor;
++ (NSColor *) getBackgroundColor;
 
 @end
 
