@@ -76,7 +76,10 @@ enum COLOR_REQUEST {
 	GET_COLOR_TITLEBAR_BACKGROUND_MAIN,
 	GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_START,
 	GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_END,
-	GET_COLOR_TITLEBAR_BACKGROUND_STANDBY
+	GET_COLOR_TITLEBAR_BACKGROUND_STANDBY,
+	GET_COLOR_TAGITEM_BORDER,
+	GET_COLOR_TAGITEM_BACKGROUND,
+	GET_COLOR_TAGITEM_FONT
 };
 
 enum FONT_REQUEST {
@@ -112,6 +115,7 @@ enum FONT_REQUEST {
 + (void) syncCacheToDisk;
 
 + (uint) getCurrentTheme : (id) registerForChanges;
++ (void) deRegisterForChanges : (id) object;
 + (void) setCurrentTheme : (uint) newTheme;
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;

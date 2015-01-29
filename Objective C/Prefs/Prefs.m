@@ -54,6 +54,17 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 	return prefsCache.themeCode;
 }
 
++ (void) deRegisterForChanges : (id) object
+{
+	if(prefsCache == nil)
+		[self initCache];
+	
+	if(object != nil)
+	{
+		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
+	}
+}
+
 + (void) setCurrentTheme : (uint) newTheme
 {
 	if(prefsCache == nil)
@@ -129,6 +140,12 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
+		case GET_COLOR_TAGITEM_FONT:
+		{
+			output = [NSColor colorWithSRGBRed:102/255.0f green:171/255.0f blue:150/255.0f alpha:1];
+			break;
+		}
+			
 		case GET_COLOR_CLICKABLE_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:227/255.0f green:227/255.0f blue:216/255.0f alpha:1.0];
@@ -153,6 +170,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 		case GET_COLOR_READER_BAR_FRONT:
+		case GET_COLOR_TAGITEM_BORDER:
 		{
 			output = [NSColor colorWithDeviceWhite:75/255.0f alpha:0.8];
 			break;
@@ -201,6 +219,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_BACKGROUD_CT_READERMODE:
 		case GET_COLOR_BACKGROUD_SR_READERMODE:
 		case GET_COLOR_BACKGROUD_MDL_READERMODE:
+		case GET_COLOR_TAGITEM_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:44/255.0f green:63/255.0f blue:80/255.0f alpha:1.0];

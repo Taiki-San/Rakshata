@@ -20,14 +20,9 @@
 	
 	if(self != nil)
 	{
-		close = [RakButton allocImageWithoutBackground:BUTTON_NAME :RB_STATE_STANDARD :self :@selector(close)];
-		if(close != nil)
-		{
-			[close.cell setHighlightAllowed:NO];
-			[close setFrameOrigin:NSMakePoint(5, TAG_BUTTON_MIDDLE - close.bounds.size.height / 2)];
-			[self addSubview:close];
-		}
-		else
+		[Prefs getCurrentTheme:self];
+		
+		if(![self updateIcon])
 			return nil;
 		
 		label = [[RakText alloc] initWithText:NSMakeRect(0, 0, 25, TAG_BUTTON_HEIGHT) :tagName :[self getTextColor]];
@@ -46,6 +41,23 @@
 	return self;
 }
 
+- (BOOL) updateIcon
+{
+	if(close != nil)
+		[close removeFromSuperview];
+	
+	close = [RakButton allocImageWithoutBackground:BUTTON_NAME :RB_STATE_STANDARD :self :@selector(close)];
+	if(close != nil)
+	{
+		[close.cell setHighlightAllowed:NO];
+		[close setFrameOrigin:NSMakePoint(5, TAG_BUTTON_MIDDLE - close.bounds.size.height / 2)];
+		[self addSubview:close];
+		return YES;
+	}
+	
+	return NO;
+}
+
 - (void) updateContent : (NSString *) newTagName
 {
 	label.stringValue = newTagName;
@@ -56,12 +68,12 @@
 
 - (NSColor *) getTextColor
 {
-	return [NSColor colorWithSRGBRed:102/255.0f green:171/255.0f blue:150/255.0f alpha:1];
+	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_SR_READERMODE :nil];
+	return [Prefs getSystemColor:GET_COLOR_TAGITEM_BACKGROUND :nil];
 }
 
 - (NSColor *) borderColor
@@ -107,6 +119,15 @@
 		[_parent removeTag : self.index];
 		_parent = nil;
 	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([object class] != [Prefs class])
+		return;
+	
+	[self updateIcon];
+	[label setTextColor:[self getTextColor]];
 }
 
 @end
