@@ -10,31 +10,28 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+@class RakSRTagRail;
 
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakSRTagItem : NSView
 {
-	NSRect _defaultFrame;
+	RakText * label;
+	RakButton * close;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property uint index;
+@property (weak) RakSRTagRail * parent;
+
+- (instancetype) initWithTag : (NSString *) tagName;
+- (void) updateContent : (NSString *) newTagName;
 
 @end
 
-@interface RakTableRowView : NSTableRowView
+enum
+{
+	TAG_BUTTON_HEIGHT = 25,
+	TAG_BUTTON_MIDDLE = 13,
+	TAG_BUTTON_ARROW_DEPTH = 12,
+	TAG_BORDER_LEFT_LABEL = 3,
+	TAG_BORDER_RIGHT_LABEL = 5
+};
 
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSRSearchBar.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
-#import "RakSRTagRail.h"
-#import "RakSRHeader.h"

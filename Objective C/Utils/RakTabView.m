@@ -191,6 +191,16 @@
 	}
 }
 
+- (void) resetFrameSize : (BOOL) withAnimation
+{
+	self.forceNextFrameUpdate = YES;
+	
+	if(withAnimation)
+		[self resizeAnimation];
+	else
+		[self setFrame:[self createFrame]];
+}
+
 - (void) refreshViewSize
 {
 	[self setFrame:[self createFrame]];

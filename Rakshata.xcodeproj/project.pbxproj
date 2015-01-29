@@ -148,6 +148,8 @@
 		B6F6ED1818A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE718A3001400E3B55B /* unzip.c */; };
 		B6F6ED1918A3001400E3B55B /* update.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE818A3001400E3B55B /* update.c */; };
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
+		B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */; };
+		B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */; };
 		B6FBCB9A19AABC8200FE1240 /* failed_loading.png in Resources */ = {isa = PBXBuildFile; fileRef = B6FBCB9919AABC8200FE1240 /* failed_loading.png */; };
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 		B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FCB424196C1F8E0026C64C /* RakForegroundView.m */; };
@@ -409,6 +411,10 @@
 		B6F6ECE818A3001400E3B55B /* update.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = update.c; path = C/update.c; sourceTree = "<group>"; };
 		B6F6ECE918A3001400E3B55B /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/utilitaires.c; sourceTree = "<group>"; };
 		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = unz_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B6FB5C051A7994F100EF99E6 /* RakSRTagRail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagRail.h; path = "Séries/RakSRTagRail.h"; sourceTree = "<group>"; };
+		B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagRail.m; path = "Séries/RakSRTagRail.m"; sourceTree = "<group>"; };
+		B6FB5C081A79958E00EF99E6 /* RakSRTagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagItem.h; path = "Séries/RakSRTagItem.h"; sourceTree = "<group>"; };
+		B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagItem.m; path = "Séries/RakSRTagItem.m"; sourceTree = "<group>"; };
 		B6FBCB9919AABC8200FE1240 /* failed_loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = failed_loading.png; sourceTree = "<group>"; };
 		B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTProjectSynopsis.h; path = CTSelec/RakCTProjectSynopsis.h; sourceTree = "<group>"; };
 		B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTProjectSynopsis.m; path = CTSelec/RakCTProjectSynopsis.m; sourceTree = "<group>"; };
@@ -576,6 +582,8 @@
 				B678675018F5EF6F004AA6B4 /* RakSRRessources.m */,
 				B6ABC4681A768A0D004D20D3 /* RakSRSearchBar.h */,
 				B6ABC4691A768A0D004D20D3 /* RakSRSearchBar.m */,
+				B6FB5C081A79958E00EF99E6 /* RakSRTagItem.h */,
+				B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -598,6 +606,8 @@
 			children = (
 				B69FBE901A756472009ACBEF /* RakSRHeader.h */,
 				B69FBE911A756472009ACBEF /* RakSRHeader.m */,
+				B6FB5C051A7994F100EF99E6 /* RakSRTagRail.h */,
+				B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */,
 			);
 			name = Header;
 			sourceTree = "<group>";
@@ -1134,8 +1144,10 @@
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,
+				B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */,
 				B68B522B191AE38D0057F35A /* RakProgressBar.m in Sources */,
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
+				B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
 				B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */,
 				B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */,

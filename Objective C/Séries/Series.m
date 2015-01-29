@@ -144,7 +144,7 @@
 		
 		newFrame.origin = NSZeroPoint;
 		
-		[header setFrame:newFrame];
+		[header resizeAnimation:newFrame];
 		[coreView resizeAnimation:[self getCoreviewFrame : newFrame]];
 	}
 }

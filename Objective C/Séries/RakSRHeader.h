@@ -12,11 +12,16 @@
 
 @class Series;
 
+#define SR_HEADER_ROW_HEIGHT 25
+
 @interface RakSRHeader : NSView
 {
 	RakButton *preferenceButton;
 	RakButtonMorphic * displayType;
 	RakButton * storeSwitch;
+
+	RakSRTagRail * tagRail;
+	
 	RakSRSearchBar * search;
 	
 	RakBackButton * backButton;
@@ -34,7 +39,11 @@
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) haveFocus;
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 - (void) updateFocus : (uint) mainThread;
+
+- (void) nbRowRailsChanged;
 
 @end
 

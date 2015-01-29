@@ -10,6 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define HEIGHT_SINGLE_ROW (RBB_TOP_BORDURE + SR_HEADER_ROW_HEIGHT + RBB_TOP_BORDURE)
+#define HEIGHT_ADDITIONNAL_ROW (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER)
+
 @implementation RakSRHeader
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) haveFocus
@@ -24,6 +27,9 @@
 		_height = self.bounds.size.height;
 		
 		[self initView];
+		
+		if(tagRail.nbRow != 1)
+			[self setFrame:frameRect];
 	}
 	
 	return self;
@@ -31,6 +37,8 @@
 
 - (void) initView
 {
+	NSRect frame = self.bounds;
+	
 	preferenceButton = [RakButton allocImageWithBackground: @"parametre" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
@@ -47,7 +55,7 @@
 		[self addSubview:displayType];
 	}
 	
-	storeSwitch = [RakButton allocWithText:@"Magasin" :self.bounds];
+	storeSwitch = [RakButton allocWithText:@"Magasin" :frame];
 	if(storeSwitch != nil)
 	{
 		[storeSwitch sizeToFit];
@@ -68,16 +76,22 @@
 	else
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(preferenceButton.frame);
 	
-	search = [[RakSRSearchBar alloc] initWithFrame:[self searchButtonFrame : self.bounds]];
+	search = [[RakSRSearchBar alloc] initWithFrame:[self searchButtonFrame : frame]];
 	if(search != nil)
 	{
 		[self addSubview:search];
 	}
 	
+	tagRail = [[RakSRTagRail alloc] initWithFrame: [self railFrame:frame] : search.frame.origin.x];
+	if(tagRail != nil)
+	{
+		[self addSubview:tagRail];
+	}
+	
 	winController = [[PrefsUI alloc] init];
 	[winController setAnchor:preferenceButton];
 	
-	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame : self.bounds] : NO];
+	backButton = [[RakBackButton alloc] initWithFrame:[self backButtonFrame : frame] : NO];
 	if(backButton != nil)
 	{
 		[backButton setTarget:self];
@@ -98,10 +112,16 @@
 	}
 }
 
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
 #pragma mark - Resizing
 
 - (void) _resize : (NSRect) frameRect : (BOOL) animation
 {
+	NSRect searchFrame;
 	frameRect = [self frameFromParent:frameRect];
 	
 	_height = frameRect.size.height;
@@ -110,15 +130,23 @@
 		[self.animator setFrame:frameRect];
 		frameRect.origin = NSZeroPoint;
 		
-		[search resizeAnimation : [self searchButtonFrame:frameRect]];
+		searchFrame = [self searchButtonFrame:frameRect];
+		[search resizeAnimation : searchFrame];
 		[backButton resizeAnimation : [self backButtonFrame:frameRect]];
+		
+		tagRail.baseSearchBar = searchFrame.origin.x;
+		[tagRail resizeAnimation : [self railFrame:frameRect]];
 	}
 	else
 	{
 		[super setFrame:frameRect];
 
-		[search setFrame : [self searchButtonFrame:frameRect]];
+		searchFrame = [self searchButtonFrame:frameRect];
+		[search setFrame : searchFrame];
 		[backButton setFrame : [self backButtonFrame:frameRect]];
+
+		tagRail.baseSearchBar = searchFrame.origin.x;
+		[tagRail setFrame: [self railFrame:frameRect]];
 	}
 }
 
@@ -134,15 +162,18 @@
 
 - (NSRect) frameFromParent : (NSRect) parentFrame
 {
+	uint nbRow = tagRail != nil ? tagRail.nbRow - 1 : 0;
+	
 	parentFrame.origin = NSZeroPoint;
-	parentFrame.size.height = RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT + RBB_TOP_BORDURE;
+	parentFrame.size.height = HEIGHT_SINGLE_ROW + nbRow * HEIGHT_ADDITIONNAL_ROW;
 	
 	return parentFrame;
 }
 
 - (NSRect) backButtonFrame : (NSRect) frame
 {
-	frame.origin.y = RBB_TOP_BORDURE;
+	frame.origin.y = frame.size.height / 2 - RBB_BUTTON_HEIGHT / 2;
+	frame.size.height = RBB_BUTTON_HEIGHT;
 
 	if(preferenceButton != nil)
 	{
@@ -161,7 +192,7 @@
 - (NSRect) searchButtonFrame : (NSRect) frame
 {
 	frame.origin.x = frame.size.width - SR_HEADER_INTERBUTTON_WIDTH;
-	frame.origin.y = frame.size.height / 2;
+	frame.origin.y = HEIGHT_SINGLE_ROW / 2;
 
 	frame.size.height = 22;
 	frame.origin.y -= frame.size.height / 2;
@@ -170,6 +201,22 @@
 	frame.origin.x -= frame.size.width;
 	
 	return frame;
+}
+
+- (NSRect) railFrame : (NSRect) frame
+{
+	frame.size.height -= 2 * RBB_TOP_BORDURE;
+	frame.origin.y = RBB_TOP_BORDURE - 1;
+	
+	frame.origin.x = _separatorX + SR_HEADER_INTERBUTTON_WIDTH;
+	frame.size.width -= frame.origin.x + 10;
+	
+	return frame;
+}
+
+- (void) nbRowRailsChanged
+{
+	[self setFrame:self.superview.bounds];
 }
 
 #pragma mark - Color

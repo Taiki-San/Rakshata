@@ -10,31 +10,29 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
+#import "RakSRTagItem.h"
 
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakSRTagRail : NSView
 {
-	NSRect _defaultFrame;
+	NSMutableArray * tagList;
+	
+	CGFloat _reducedWidth, _baseSearchBar;
+	BOOL _noReorder;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property uint nbRow;
+
+- (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar;
+- (void) removeTag : (uint) index;
+
+- (void) resizeAnimation : (NSRect) frameRect;
+- (void) setBaseSearchBar : (CGFloat) baseSearchBar;
 
 @end
 
-@interface RakTableRowView : NSTableRowView
+enum
+{
+	TAG_RAIL_INTER_RAIL_BORDER = 5,
+	TAG_RAIL_INTER_ITEM_BORDER = 7
+};
 
-@end
-
-#import "RakButtonMorphic.h"
-#import "RakSRSearchBar.h"
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-#import "RakSerieView.h"
-#import "RakSRTagRail.h"
-#import "RakSRHeader.h"
