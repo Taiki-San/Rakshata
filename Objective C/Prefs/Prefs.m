@@ -124,6 +124,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SURVOL:
 		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
 		case GET_COLOR_FONT_BUTTON_NONCLICKED:
+		case GET_COLOR_SEARCHBAR_SELECTION_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:102/255.0f green:149/255.0f blue:176/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];	//vert
@@ -153,7 +154,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		}
 			
 		case GET_COLOR_INSERTION_POINT:
-		case GET_COLOR_SELECTION_COLOR:
+		case GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:200/255.0f alpha:1.0];
 			break;
@@ -162,6 +163,19 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SEARCHBAR_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_SEARCHBAR_BORDER:
+		{
+			output = [NSColor colorWithSRGBRed:227/255.0f green:227/255.0f blue:216/255.0f alpha:0.2];
+			break;
+		}
+			
+		case GET_COLOR_SEARCHBAR_PLACEHOLDER_TEXT:
+		{
+			output = [NSColor colorWithSRGBRed:146/255.0f green:146/255.0f blue:141/255.0f alpha:1.0];
+			break;
 		}
 			
 		case GET_COLOR_READER_BAR:

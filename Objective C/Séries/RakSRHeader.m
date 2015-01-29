@@ -76,16 +76,18 @@
 	else
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(preferenceButton.frame);
 	
-	search = [[RakSRSearchBar alloc] initWithFrame:[self searchButtonFrame : frame]];
-	if(search != nil)
-	{
-		[self addSubview:search];
-	}
-	
-	tagRail = [[RakSRTagRail alloc] initWithFrame: [self railFrame:frame] : search.frame.origin.x];
+	NSRect searchButtonFrame = [self searchButtonFrame : frame];
+
+	tagRail = [[RakSRTagRail alloc] initWithFrame: [self railFrame:frame] : searchButtonFrame.origin.x];
 	if(tagRail != nil)
 	{
 		[self addSubview:tagRail];
+	}
+	
+	search = [[RakSRSearchBar alloc] initWithFrame:searchButtonFrame];
+	if(search != nil)
+	{
+		[self addSubview:search];
 	}
 	
 	winController = [[PrefsUI alloc] init];

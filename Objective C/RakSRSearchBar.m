@@ -15,31 +15,29 @@
 
 @implementation RakSRSearchBarCell
 
-- (NSRect)titleRectForBounds:(NSRect)theRect
-{
-	theRect = [self centerCell : [super titleRectForBounds:theRect]];
-	theRect.origin.y = 10;
-	return theRect;
-}
-
-- (NSRect)drawingRectForBounds:(NSRect)theRect
-{
-	return [self centerCell : [super drawingRectForBounds:theRect]];
-}
-
 - (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
 {
 	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
 	
 	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
-	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SELECTION_COLOR :nil],
+	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND :nil],
 										 NSForegroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SURVOL :nil]}];
-
 	
 	return output;
 }
 
-- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSTextView *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
+- (void) endEditing:(NSText *)textObj
+{
+	//We discovered on Yosemite that if bezel was disabled, things would go _very_ wrong
+	//Basically, positionning of text would get completly nuts
+	//We fixed most of the issues with the hooks below, but one remained, if text was inputed, then focus was lost,
+	//we couldn't fix the y positionning. It seems that kill this function achieve that without significant issues
+	
+	if([self.stringValue isEqualToString:@""])
+		[super endEditing:textObj];
+}
+
+- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
 {
 	if([controlView isKindOfClass:[RakSRSearchBar class]] && [[(RakSRSearchBar *) controlView stringValue] isEqualToString:@""])
 		[(RakSRSearchBar *) controlView updatePlaceholder:NO];
@@ -49,6 +47,9 @@
 
 - (void) editWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
 {
+	if([controlView isKindOfClass:[RakSRSearchBar class]] && [[(RakSRSearchBar *) controlView stringValue] isEqualToString:@""])
+		[(RakSRSearchBar *) controlView updatePlaceholder:NO];
+	
 	[super editWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject event:theEvent];
 }
 
@@ -150,12 +151,12 @@
 
 - (NSColor *) getBorderColor
 {
-	return [[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] colorWithAlphaComponent:0.2];
+	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BORDER :nil];
 }
 
 - (NSColor *) getPlaceholderTextColor
 {
-	return [[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] colorWithAlphaComponent:0.5];
+	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_PLACEHOLDER_TEXT :nil];
 }
 
 - (NSColor *) getTextColor
@@ -167,13 +168,10 @@
 {
 	_currentPlaceholderState = inactive;
 	
-	CGFloat offset = inactive ? -3 : 0;
-
 	[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
 											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
 												 NSBackgroundColorAttributeName : [RakSRSearchBar getBackgroundColor],
-												 NSBaselineOffsetAttributeName : @(offset)
-												 }]];
+												 NSBaselineOffsetAttributeName : @(inactive ? -3 : 0)}]];
 }
 
 - (void) willLooseFocus
@@ -183,8 +181,7 @@
 
 - (void) cancelProxy
 {
-	IMP imp = [_cancelTarget methodForSelector:_cancelAction];
-	void (*func)(id, SEL) = (void *)imp;
+	void (*func)(id, SEL) = (void *)[_cancelTarget methodForSelector:_cancelAction];
 	func(_cancelTarget, _cancelAction);
 	
 	[self willLooseFocus];
@@ -207,7 +204,7 @@
 	self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 	self.layer.borderColor = [self getBorderColor].CGColor;
 
-	[self.cell setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+	[self.cell setTextColor:[self getTextColor]];
 	[self updatePlaceholder : _currentPlaceholderState];
 }
 
