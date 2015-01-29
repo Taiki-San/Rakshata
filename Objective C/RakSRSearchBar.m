@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PLACEHOLDER @"Search"
+#define PLACEHOLDER @"Recherche et filtres"
 #define OFFSET 22
 
 @implementation RakSRSearchBarCell
