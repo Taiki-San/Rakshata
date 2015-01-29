@@ -31,8 +31,11 @@
 			_reducedWidth = _baseSearchBar - frameRect.origin.x;
 		}
 
+		_currentX = _currentRow = 0;
 		tagList = [NSMutableArray array];
 		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag", @"Sixth Tag"] : self.bounds];
+		
+		_nbRow = _currentRow + 1;
 	}
 	
 	return self;
@@ -40,9 +43,61 @@
 
 #pragma mark - Tag management
 
+- (void) addTag : (NSString *) tagName
+{
+	uint tagLength = [tagList count], length;
+	NSRect frame;
+	BOOL newRow = NO;
+	
+	//Create animation and update the model
+	[NSAnimationContext beginGrouping];
+	
+	[self insertTags:@[tagName] :self.bounds];
+	[self updateContext];
+
+	//Update the UI
+	length = [tagList count];
+	for(RakSRTagItem * item; tagLength < length; tagLength++)
+	{
+		item = [tagList objectAtIndex:tagLength];
+		frame = item.frame;
+	
+		if(newRow || frame.origin.x == 0 || frame.origin.y == 0)
+		{
+			item.alphaValue = 0;
+			item.animator.alphaValue = 1;
+
+			if(frame.origin.x != 0)			newRow = YES;
+		}
+		else
+		{
+			item.frame = NSMakeRect(self.bounds.size.width, frame.origin.y, frame.size.width, frame.size.height);
+			item.animator.frame = frame;
+		}
+	}
+	
+	[NSAnimationContext endGrouping];
+}
+
+- (void) updateContext
+{
+	if(_nbRow != _currentRow + 1)
+	{
+		_nbRow = _currentRow + 1;
+		
+		Series * tabSerie = [(RakAppDelegate *) [NSApp delegate] serie];
+		if(tabSerie != nil)
+		{
+			_noReorder = YES;
+			[tabSerie resetFrameSize : YES];
+			_noReorder = NO;
+		}
+	}
+}
+
 - (void) insertTags : (NSArray *) tags : (NSRect) frame
 {
-	uint currentX = 0, _width = frame.size.width, width = _baseSearchBar != 0 ? _reducedWidth : _width, currentRow = 0, index = 0;
+	uint _width = frame.size.width, width = _baseSearchBar != 0 && _currentRow == 0 ? _reducedWidth : _width, index = [tagList count];
 	
 	RakSRTagItem * tag;
 	for(NSString * tagString in tags)
@@ -56,42 +111,42 @@
 			tag.parent = self;
 		}
 		
-		if(currentX + tag.bounds.size.width > width)
+		if(_currentX + tag.bounds.size.width > width)
 		{
-			if(!currentRow)
+			if(!_currentRow)
 				width = _width;
 			
-			currentX = 0;
-			currentRow++;
+			_currentX = 0;
+			_currentRow++;
 		}
 		
-		[tag setFrameOrigin:NSMakePoint(currentX, currentRow * (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER))];
+		[tag setFrameOrigin:NSMakePoint(_currentX, _currentRow * (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER))];
 		[self addSubview:tag];
 		
 		tag.index = index++;
-		currentX += tag.bounds.size.width + TAG_RAIL_INTER_ITEM_BORDER;
+		_currentX += tag.bounds.size.width + TAG_RAIL_INTER_ITEM_BORDER;
 	}
-	
-	_nbRow = currentRow + 1;
 }
 
 - (void) reorderTags: (NSRect) frame : (BOOL) animated
 {
-	uint currentX = 0, currentRow = 0, _width = frame.size.width, width = _baseSearchBar != 0 ? _reducedWidth : _width, index = 0;
+	uint _width = frame.size.width, width = _baseSearchBar != 0 ? _reducedWidth : _width, index = 0;
 	NSPoint point;
+	
+	_currentX = _currentRow = 0;
 	
 	for(RakSRTagItem * tag in tagList)
 	{
-		if(currentX + tag.bounds.size.width > width)
+		if(_currentX + tag.bounds.size.width > width)
 		{
-			if(!currentRow)
+			if(!_currentRow)
 				width = _width;
 				
-			currentX = 0;
-			currentRow++;
+			_currentX = 0;
+			_currentRow++;
 		}
 		
-		point = NSMakePoint(currentX, currentRow * (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER));
+		point = NSMakePoint(_currentX, _currentRow * (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER));
 		
 		if(animated)
 			[tag.animator setFrameOrigin:point];
@@ -99,12 +154,12 @@
 			[tag setFrameOrigin:point];
 		
 		tag.index = index++;
-		currentX += tag.bounds.size.width + TAG_RAIL_INTER_ITEM_BORDER;
+		_currentX += tag.bounds.size.width + TAG_RAIL_INTER_ITEM_BORDER;
 	}
 	
-	if(_nbRow != currentRow + 1)
+	if(_nbRow != _currentRow + 1)
 	{
-		_nbRow = currentRow + 1;
+		_nbRow = _currentRow + 1;
 
 		Series * tabSerie = [(RakAppDelegate *) [NSApp delegate] serie];
 		if(tabSerie != nil)
@@ -154,6 +209,11 @@
 		_reducedWidth = _baseSearchBar - self.frame.origin.x;
 	}
 }
+
+//- (void) mouseDown:(NSEvent *)theEvent
+//{
+//	[self addTag : @"Inserted!"];
+//}
 
 #pragma mark - View management
 

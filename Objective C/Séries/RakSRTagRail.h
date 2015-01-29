@@ -16,6 +16,7 @@
 {
 	NSMutableArray * tagList;
 	
+	uint _currentX, _currentRow;
 	CGFloat _reducedWidth, _baseSearchBar;
 	BOOL _noReorder;
 }
@@ -24,6 +25,7 @@
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar;
 - (void) removeTag : (uint) index;
+- (void) addTag : (NSString *) tagName;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) setBaseSearchBar : (CGFloat) baseSearchBar;
