@@ -11,15 +11,22 @@
  *********************************************************************************************/
 
 #define SR_NOTIF_NAME_SEARCH_TRIGGERED @"RakSearchFieldWasTriggered"
-#define SR_NOTIF_KEY @"key"
+#define SR_NOTIF_NEW_STATE @"newState"
 
 #define SR_SEARCH_TAB_INITIAL_HEIGHT 100
 
 @interface RakSRSearchTab : NSView
 {
 	BOOL _isVisible;
+	
+	NSArray * gradients;
+	RakGradientView * gradientTop, * gradientRight, * gradientBottom, * gradientLeft;
+	
+	RakMenuText * menuText;
 }
 
 @property CGFloat height;
+
+- (void) resizeAnimation : (NSRect) frameRect;
 
 @end

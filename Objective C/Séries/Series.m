@@ -165,7 +165,7 @@
 			NSRect frame = [header frameFromParent:newFrame];
 			
 			[header resizeAnimation:frame];
-			[searchTab.animator setFrame:[self getSearchTabFrame:frame.size]];
+			[searchTab resizeAnimation:[self getSearchTabFrame:frame.size]];
 		}
 
 		[coreView resizeAnimation:[self getCoreviewFrame : newFrame]];

@@ -140,7 +140,8 @@
 + (void) triggeringSearchBar : (BOOL) goingIn
 {
 	if([NSThread isMainThread])
-		[[NSNotificationCenter defaultCenter] postNotificationName: SR_NOTIF_NAME_SEARCH_TRIGGERED object:nil userInfo: @{SR_NOTIF_KEY:@(goingIn)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName: SR_NOTIF_NAME_SEARCH_TRIGGERED
+															object:nil userInfo: @{SR_NOTIF_NEW_STATE:@(goingIn)}];
 	else
 		dispatch_async(dispatch_get_main_queue(), ^{	[self triggeringSearchBar:goingIn];	});
 }
