@@ -74,10 +74,15 @@
 	return header.prefUIOpen;
 }
 
-- (void)mouseExited:(NSEvent *)theEvent	//Appelé quand je sors
+- (void)mouseExited:(NSEvent *)theEvent
 {
 	if(!header.prefUIOpen)
 		[super mouseExited:theEvent];
+}
+
+- (void) seriesIsOpening:(byte)context
+{
+	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
 }
 
 #pragma mark - Routine to setup and communicate with coreview
@@ -155,6 +160,8 @@
 	[self refreshLevelViews: self : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
+#pragma mark - Frame generation
+
 - (NSRect) getFrameOfNextTab
 {
 	NSRect output;
@@ -169,6 +176,37 @@
 	
 	return output;
 }
+
+- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+{
+	CGFloat var;
+	NSRect frame = viewFrame;
+	NSSize svSize = self.superview.frame.size;
+	
+	[Prefs getPref:PREFS_GET_TAB_CT_POSX : &(frame.size.width) : &svSize];
+	frame.origin.x = 0;
+	
+	MDL * tabMDL = [self getMDL : YES];
+	
+	if(tabMDL != nil)
+	{
+		var = [tabMDL lastFrame].size.height - [tabMDL lastFrame].origin.y - viewFrame.origin.y;
+		
+		if(var > 0)
+		{
+			frame.origin.y = var;
+			frame.size.height -= var;
+		}
+		else
+			frame.origin.y = 0;
+	}
+	else
+		frame.origin.y = 0;
+	
+	return frame;
+}
+
+#pragma mark - Reader code
 
 - (int) getCodePref : (int) request
 {
@@ -213,46 +251,11 @@
 	return output;
 }
 
-/**		Reader		**/
 - (BOOL) isStillCollapsedReaderTab
 {
 	int state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return (state & STATE_READER_TAB_SERIE_FOCUS) == 0;
-}
-
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
-{
-	CGFloat var;
-	NSRect frame = viewFrame;
-	NSSize svSize = self.superview.frame.size;
-	
-	[Prefs getPref:PREFS_GET_TAB_CT_POSX : &(frame.size.width) : &svSize];
-	frame.origin.x = 0;
-	
-	MDL * tabMDL = [self getMDL : YES];
-
-	if(tabMDL != nil)
-	{
-		var = [tabMDL lastFrame].size.height - [tabMDL lastFrame].origin.y - viewFrame.origin.y;
-		
-		if(var > 0)
-		{
-			frame.origin.y = var;
-			frame.size.height -= var;
-		}
-		else
-			frame.origin.y = 0;
-	}
-	else
-		frame.origin.y = 0;
-	
-	return frame;
-}
-
-- (void) seriesIsOpening:(byte)context
-{
-	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
 }
 
 @end
