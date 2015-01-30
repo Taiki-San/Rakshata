@@ -232,11 +232,11 @@
 
 - (NSArray *) constraints
 {
-
 	NSArray * constraints = [super constraints];
 	
 	if([constraints count])
 	{
+		NSLog(@"Hum, constraints were requested: %@", self);
 		[self removeConstraints:constraints];
 		constraints = [super constraints];
 	}
