@@ -33,7 +33,7 @@
 
 		_currentX = _currentRow = 0;
 		tagList = [NSMutableArray array];
-		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag", @"Sixth Tag"] : self.bounds];
+		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag"] : self.bounds];
 		
 		_nbRow = _currentRow + 1;
 	}
@@ -209,11 +209,6 @@
 		_reducedWidth = _baseSearchBar - self.frame.origin.x;
 	}
 }
-
-//- (void) mouseDown:(NSEvent *)theEvent
-//{
-//	[self addTag : @"Inserted!"];
-//}
 
 #pragma mark - View management
 

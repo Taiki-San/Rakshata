@@ -132,23 +132,35 @@
 		[self.animator setFrame:frameRect];
 		frameRect.origin = NSZeroPoint;
 		
-		searchFrame = [self searchButtonFrame:frameRect];
-		[search resizeAnimation : searchFrame];
-		[backButton resizeAnimation : [self backButtonFrame:frameRect]];
-		
-		tagRail.baseSearchBar = searchFrame.origin.x;
-		[tagRail resizeAnimation : [self railFrame:frameRect]];
+		if(_haveFocus)
+		{
+			searchFrame = [self searchButtonFrame:frameRect];
+			[search resizeAnimation : searchFrame];
+			
+			tagRail.baseSearchBar = searchFrame.origin.x;
+			[tagRail resizeAnimation : [self railFrame:frameRect]];
+		}
+		else
+		{
+			[backButton resizeAnimation : [self backButtonFrame:frameRect]];
+		}
 	}
 	else
 	{
 		[super setFrame:frameRect];
 
-		searchFrame = [self searchButtonFrame:frameRect];
-		[search setFrame : searchFrame];
-		[backButton setFrame : [self backButtonFrame:frameRect]];
-
-		tagRail.baseSearchBar = searchFrame.origin.x;
-		[tagRail setFrame: [self railFrame:frameRect]];
+		if(_haveFocus)
+		{
+			searchFrame = [self searchButtonFrame:frameRect];
+			[search setFrame : searchFrame];
+			
+			tagRail.baseSearchBar = searchFrame.origin.x;
+			[tagRail setFrame: [self railFrame:frameRect]];
+		}
+		else
+		{
+			[backButton setFrame : [self backButtonFrame:frameRect]];
+		}
 	}
 }
 
@@ -208,7 +220,7 @@
 - (NSRect) railFrame : (NSRect) frame
 {
 	frame.size.height -= 2 * RBB_TOP_BORDURE;
-	frame.origin.y = RBB_TOP_BORDURE - 1;
+	frame.origin.y = RBB_TOP_BORDURE;
 	
 	frame.origin.x = _separatorX + SR_HEADER_INTERBUTTON_WIDTH;
 	frame.size.width -= frame.origin.x + 10;
@@ -241,8 +253,13 @@
 - (void) updateFocus : (uint) mainThread
 {
 	_haveFocus = mainThread == TAB_SERIES;
+	
+	[self _resize :self.superview.bounds :NO];
+	
 	[backButton setHidden: _haveFocus];
 	[displayType setHidden : !_haveFocus];
+	[tagRail setHidden:!_haveFocus];
+	[search setHidden:!_haveFocus];
 }
 
 - (void) backButtonClicked
