@@ -137,6 +137,14 @@
 	}
 }
 
++ (void) triggeringSearchBar : (BOOL) goingIn
+{
+	if([NSThread isMainThread])
+		[[NSNotificationCenter defaultCenter] postNotificationName: SR_NOTIF_NAME_SEARCH_TRIGGERED object:nil userInfo: @{SR_NOTIF_KEY:@(goingIn)}];
+	else
+		dispatch_async(dispatch_get_main_queue(), ^{	[self triggeringSearchBar:goingIn];	});
+}
+
 + (Class)cellClass
 {
 	return [RakSRSearchBarCell class];
@@ -172,6 +180,8 @@
 											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
 												 NSBackgroundColorAttributeName : [RakSRSearchBar getBackgroundColor],
 												 NSBaselineOffsetAttributeName : @(inactive ? -3 : 0)}]];
+
+	[RakSRSearchBar triggeringSearchBar : !inactive];
 }
 
 - (void) willLooseFocus

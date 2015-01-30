@@ -10,25 +10,46 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchBar : NSSearchField
+@implementation RakSRSearchTab
+
+- (instancetype) initWithFrame:(NSRect)frameRect
 {
-	BOOL _currentPlaceholderState;
+	self = [super initWithFrame:frameRect];
 	
-	id _cancelTarget;
-	SEL _cancelAction;
+	if(self != nil)
+	{
+		_isVisible = NO;
+		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchWasTriggered:) name:SR_NOTIF_NAME_SEARCH_TRIGGERED object:nil];
+	}
+	
+	return self;
 }
 
-+ (void) triggeringSearchBar : (BOOL) goingIn;
+- (void) searchWasTriggered : (NSNotification *) notification
+{
+	NSDictionary * dict = notification.userInfo;
+	NSNumber * number;
+	
+	if(dict != nil && (number = [dict objectForKey:SR_NOTIF_KEY]) != nil && [number isKindOfClass:[NSNumber class]])
+	{
+		_isVisible = number.boolValue;
+		
+		if(_isVisible)
+			_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
+		else
+			_height = SRSEARCHTAB_DEFAULT_HEIGHT;
+		
+		if([self.superview class] == [Series class])
+			[(Series *) self.superview resetFrameSize:YES];
+	}
+}
 
-- (void) resizeAnimation : (NSRect) frame;
-
-- (void) updatePlaceholder : (BOOL) inactive;
-- (void) willLooseFocus;
-
-+ (NSColor *) getBackgroundColor;
-
-@end
-
-@interface RakSRSearchBarCell : NSSearchFieldCell
+- (void)drawRect:(NSRect)dirtyRect
+{
+	[[[NSColor blackColor] colorWithAlphaComponent:0.5] setFill];
+	NSRectFill(dirtyRect);
+}
 
 @end

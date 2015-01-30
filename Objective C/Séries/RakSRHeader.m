@@ -107,6 +107,8 @@
 {
 	if(_haveFocus)
 	{
+		dirtyRect.size.height += SRSEARCHTAB_DEFAULT_HEIGHT;
+		
 		CGFloat border = dirtyRect.size.height / 8;
 		
 		[[self separatorColor] setFill];
@@ -179,14 +181,14 @@
 	uint nbRow = tagRail != nil ? tagRail.nbRow - 1 : 0;
 	
 	parentFrame.origin = NSZeroPoint;
-	parentFrame.size.height = HEIGHT_SINGLE_ROW + nbRow * HEIGHT_ADDITIONNAL_ROW;
+	parentFrame.size.height = HEIGHT_SINGLE_ROW + nbRow * HEIGHT_ADDITIONNAL_ROW - SRSEARCHTAB_DEFAULT_HEIGHT;
 	
 	return parentFrame;
 }
 
 - (NSRect) backButtonFrame : (NSRect) frame
 {
-	frame.origin.y = frame.size.height / 2 - RBB_BUTTON_HEIGHT / 2;
+	frame.origin.y = (frame.size.height + SRSEARCHTAB_DEFAULT_HEIGHT) / 2 - RBB_BUTTON_HEIGHT / 2;
 	frame.size.height = RBB_BUTTON_HEIGHT;
 
 	if(preferenceButton != nil)

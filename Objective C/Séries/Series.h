@@ -17,6 +17,8 @@
 @interface Series : RakTabView
 {
 	RakSRHeader * header;
+	RakSRSearchTab * searchTab;
+	
 	RakSerieView * coreView;
 }
 

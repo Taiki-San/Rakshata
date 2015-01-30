@@ -13,6 +13,7 @@
 @class Series;
 
 #define SR_HEADER_ROW_HEIGHT 25
+#define SRSEARCHTAB_DEFAULT_HEIGHT 2
 
 @interface RakSRHeader : NSView
 {
@@ -40,6 +41,7 @@
 - (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) haveFocus;
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (NSRect) frameFromParent : (NSRect) parentFrame;
 
 - (void) updateFocus : (uint) mainThread;
 

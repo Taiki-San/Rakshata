@@ -38,3 +38,4 @@
 #import "RakSerieView.h"
 #import "RakSRTagRail.h"
 #import "RakSRHeader.h"
+#import "RakSRSearchTab.h"

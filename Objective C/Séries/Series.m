@@ -39,14 +39,22 @@
 
 - (void) initContent : (NSString *) state
 {
-	header = [[RakSRHeader alloc] initWithFrame:self.bounds : self.mainThread == TAB_SERIES];
+	NSRect frame = self.bounds;
+	
+	header = [[RakSRHeader alloc] initWithFrame:frame : self.mainThread == TAB_SERIES];
 	if(header != nil)
 	{
 		header.responder = self;
 		[self addSubview:header];
+		
+		searchTab = [[RakSRSearchTab alloc] initWithFrame: [self getSearchTabFrame : header.bounds.size]];
+		if(searchTab != nil)
+		{
+			[self addSubview:searchTab];
+		}
 	}
 	
-	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : self.frame] : state];
+	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : frame] : state];
 	[self addSubview:coreView];
 }
 
@@ -80,22 +88,20 @@
 		[super mouseExited:theEvent];
 }
 
-- (void) seriesIsOpening:(byte)context
+- (void) animationIsOver:(uint)mainThread :(byte)context
+{
+	[super animationIsOver:mainThread :context];
+	
+	if((mainThread == TAB_SERIES) == searchTab.isHidden)
+		[searchTab setHidden: mainThread == TAB_SERIES];
+}
+
+- (void) seriesIsOpening : (byte) context
 {
 	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
 }
 
 #pragma mark - Routine to setup and communicate with coreview
-
-- (NSRect) getCoreviewFrame : (NSRect) frame
-{
-	frame.size.height -= header.height;
-	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.origin.y = header.height;
-	frame.size.width -= 2 * frame.origin.x;
-	
-	return frame;
-}
 
 - (void) setUpViewForAnimation : (uint) mainThread
 {
@@ -135,7 +141,12 @@
 		
 		frameRect.origin = NSZeroPoint;
 
-		[header setFrame:frameRect];
+		if(header != nil)
+		{
+			[header setFrame:frameRect];
+			[searchTab setFrame:[self getSearchTabFrame : header.bounds.size]];
+		}
+
 		[coreView setFrame:[self getCoreviewFrame : frameRect]];
 	}
 }
@@ -149,7 +160,14 @@
 		
 		newFrame.origin = NSZeroPoint;
 		
-		[header resizeAnimation:newFrame];
+		if(header != nil)
+		{
+			NSRect frame = [header frameFromParent:newFrame];
+			
+			[header resizeAnimation:frame];
+			[searchTab.animator setFrame:[self getSearchTabFrame:frame.size]];
+		}
+
 		[coreView resizeAnimation:[self getCoreviewFrame : newFrame]];
 	}
 }
@@ -175,6 +193,30 @@
 	output.size.height *= sizeSuperView.height / 100.0f;
 	
 	return output;
+}
+
+- (NSRect) getSearchTabFrame : (NSSize) headerSize
+{
+	NSRect frame;
+	
+	frame.origin.x = 0;
+	frame.origin.y = headerSize.height;
+	frame.size.width = headerSize.width;
+	frame.size.height = (searchTab != nil ? searchTab.height : SRSEARCHTAB_DEFAULT_HEIGHT);
+
+	return frame;
+}
+
+- (NSRect) getCoreviewFrame : (NSRect) frame
+{
+	if(header != nil)
+		frame.origin.y = header.height + (searchTab != nil ? searchTab.height : 0);
+	
+	frame.size.height -= frame.origin.y;
+	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+	frame.size.width -= 2 * frame.origin.x;
+	
+	return frame;
 }
 
 - (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame

@@ -10,25 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchBar : NSSearchField
+#define SR_NOTIF_NAME_SEARCH_TRIGGERED @"RakSearchFieldWasTriggered"
+#define SR_NOTIF_KEY @"key"
+
+#define SR_SEARCH_TAB_INITIAL_HEIGHT 100
+
+@interface RakSRSearchTab : NSView
 {
-	BOOL _currentPlaceholderState;
-	
-	id _cancelTarget;
-	SEL _cancelAction;
+	BOOL _isVisible;
 }
 
-+ (void) triggeringSearchBar : (BOOL) goingIn;
-
-- (void) resizeAnimation : (NSRect) frame;
-
-- (void) updatePlaceholder : (BOOL) inactive;
-- (void) willLooseFocus;
-
-+ (NSColor *) getBackgroundColor;
-
-@end
-
-@interface RakSRSearchBarCell : NSSearchFieldCell
+@property CGFloat height;
 
 @end
