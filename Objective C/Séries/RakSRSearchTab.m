@@ -21,20 +21,25 @@
 	if(self != nil)
 	{
 		_isVisible = NO;
+		_collapsed = YES;
 		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
 		
+		[Prefs getCurrentTheme:self];
+
 		self.wantsLayer = YES;
 		self.layer.borderWidth = 1;
-		self.layer.borderColor = [NSColor blackColor].CGColor;
-		self.layer.backgroundColor = [NSColor grayColor].CGColor;
+		self.layer.borderColor = [self getBorderColor].CGColor;
+		self.layer.backgroundColor = [self getBackgroudColor].CGColor;
 		
-		menuText = [[RakMenuText alloc] initWithText:frameRect :@"Liste de filtres & co"];
-		if(menuText != nil)
+		placeholder = [[RakText alloc] initWithText:frameRect :@"Afficher les outils de recherche avancée" : [self placeholderTextColor]];
+		if(placeholder != nil)
 		{
-			[menuText sizeToFit];
+			placeholder.font = [self placeholderFont];
+
+			[placeholder sizeToFit];
+			[placeholder setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
 			
-			[menuText setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - menuText.bounds.size.width / 2, frameRect.size.height / 2 - menuText.bounds.size.height / 2)];
-			[self addSubview:menuText];
+			[self addSubview:placeholder];
 		}
 		
 		NSMutableArray * _gradients = [NSMutableArray arrayWithCapacity:4];
@@ -67,7 +72,7 @@
 {
 	[super setFrame:frameRect];
 	
-	[menuText setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - menuText.bounds.size.width / 2, frameRect.size.height / 2 - menuText.bounds.size.height / 2)];
+	[placeholder setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
 	
 	byte position = 0;
 	for(RakGradientView * gradient in gradients)
@@ -80,7 +85,7 @@
 {
 	[self.animator setFrame:frameRect];
 	
-	[menuText.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - menuText.bounds.size.width / 2, frameRect.size.height / 2 - menuText.bounds.size.height / 2)];
+	[placeholder.animator setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
 	
 	byte position = 0;
 	for(RakGradientView * gradient in gradients)
@@ -106,6 +111,99 @@
 	return frame;
 }
 
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(_isVisible && _collapsed)
+	{
+		[[[NSColor blackColor] colorWithAlphaComponent:0.3] setFill];
+		NSRectFill(dirtyRect);
+	}
+}
+
+#pragma mark - Colors
+
+- (NSColor *) getBorderColor
+{
+	return [NSColor blackColor];
+}
+
+- (NSColor *) getBackgroudColor
+{
+	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BACKGROUND :nil];
+}
+
+- (NSColor *) placeholderTextColor
+{
+	return [[Prefs getSystemColor:GET_COLOR_ACTIVE :nil] colorWithAlphaComponent:0.6];
+}
+
+- (NSFont *) placeholderFont
+{
+	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:14];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+
+	placeholder.font = [self placeholderFont];
+	[placeholder sizeToFit];
+	[placeholder setFrameOrigin:NSCenterPoint(self.bounds, placeholder.bounds)];
+
+	placeholder.textColor = [self placeholderTextColor];
+	self.layer.borderColor = [self getBorderColor].CGColor;
+	self.layer.backgroundColor = [self getBackgroudColor].CGColor;
+}
+
+#pragma mark Interactions
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if (!_isVisible)
+		return;
+
+	[self updateCollapseState:!_collapsed : NO];
+	[self updateGeneralFrame];
+}
+
+- (void) updateCollapseState : (BOOL) newIsCollapsed : (BOOL) silentUpdate
+{
+	if(_collapsed != newIsCollapsed)
+		_collapsed = newIsCollapsed;
+	else
+		return;
+	
+	if(silentUpdate)
+	{
+		[placeholder setHidden:!_collapsed];
+		return;
+	}
+	
+	[NSAnimationContext beginGrouping];
+	
+	placeholder.alphaValue = _collapsed;
+	
+	__block BOOL getCollapsed = _collapsed;
+	[[NSAnimationContext currentContext] setCompletionHandler:^{
+		[placeholder setHidden:!getCollapsed];
+		placeholder.alphaValue = 1;
+	}];
+	
+	[NSAnimationContext endGrouping];
+	
+	if(_collapsed)
+		_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
+	else
+		_height = SR_SEARCH_TAB_EXPANDED_HEIGHT;
+}
+
+- (void) updateGeneralFrame
+{
+	if([self.superview class] == [Series class])
+		[(Series *) self.superview resetFrameSize:YES];
+}
+
 #pragma mark - Interface with header
 
 - (void) searchWasTriggered : (NSNotification *) notification
@@ -113,17 +211,19 @@
 	NSDictionary * dict = notification.userInfo;
 	NSNumber * number;
 	
-	if(dict != nil 	&& (number = [dict objectForKey:SR_NOTIF_NEW_STATE]) != nil && [number isKindOfClass:[NSNumber class]])
+	if(dict != nil 	&& (number = [dict objectForKey:SR_NOTIF_NEW_STATE]) != nil && [number isKindOfClass:[NSNumber class]] && _isVisible != number.boolValue)
 	{
 		_isVisible = number.boolValue;
 		
 		if(_isVisible)
+		{
+			[self updateCollapseState : YES : YES];
 			_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
+		}
 		else
 			_height = SRSEARCHTAB_DEFAULT_HEIGHT;
 		
-		if([self.superview class] == [Series class])
-			[(Series *) self.superview resetFrameSize:YES];
+		[self updateGeneralFrame];
 	}
 }
 

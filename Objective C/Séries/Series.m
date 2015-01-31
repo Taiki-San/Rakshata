@@ -213,8 +213,12 @@
 		frame.origin.y = header.height + (searchTab != nil ? searchTab.height : 0);
 	
 	frame.size.height -= frame.origin.y;
-	frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
-	frame.size.width -= 2 * frame.origin.x;
+	
+	if((self.mainThread & TAB_SERIES) == 0)
+	{
+		frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
+		frame.size.width -= 2 * frame.origin.x;
+	}
 	
 	return frame;
 }

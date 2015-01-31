@@ -234,6 +234,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_BACKGROUD_SR_READERMODE:
 		case GET_COLOR_BACKGROUD_MDL_READERMODE:
 		case GET_COLOR_TAGITEM_BACKGROUND:
+		case GET_COLOR_SEARCHTAB_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:44/255.0f green:63/255.0f blue:80/255.0f alpha:1.0];
@@ -350,6 +351,11 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_FONT_STANDARD:
 		{
 			output = @"Helvetica";
+			break;
+		}
+		case GET_FONT_PLACEHOLDER:
+		{
+			output = @"Helvetica-Oblique";
 			break;
 		}
 		case GET_FONT_RD_BUTTONS:
