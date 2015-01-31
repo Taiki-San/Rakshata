@@ -14,13 +14,16 @@ static NSSize workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 
 enum
 {
-	INTERLINE_NAME_AUTHOR = 0
+	BORDER_THUMB			= 150
 };
 
 @implementation RakCollectionViewItem
 
 - (instancetype) initWithProject : (PROJECT_DATA) project
 {
+	if(!project.isInitialized || project.repo == NULL)
+		return nil;
+	
 	self = [self initWithFrame:NSMakeRect(0, 0, RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT)];
 	
 	if(self != nil)
@@ -41,6 +44,17 @@ enum
 
 - (void) initContent
 {
+	NSImage * image = [self loadImage];
+	if(image != nil)
+	{
+		thumbnails = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, BORDER_THUMB, BORDER_THUMB)];
+		if(thumbnails != nil)
+		{
+			thumbnails.image = image;
+			[self addSubview:thumbnails];
+		}
+	}
+	
 	name = [[RakText alloc] initWithText :getStringForWchar(_project.projectName) : [self getTextColor]];
 	if(name != nil)
 	{
@@ -64,6 +78,47 @@ enum
 		
 		[self addSubview:author];
 	}
+	
+
+	mainTag = [[RakText alloc] initWithText: @"Placeholder" :[self getTagTextColor]];
+	if(mainTag != nil)
+	{
+		uint random = getRandom() % 70;
+		if(random < 10)			mainTag.stringValue = @"Shonen";
+		else if(random < 20)	mainTag.stringValue = @"Shojo";
+		else if(random < 30)	mainTag.stringValue = @"Seinen";
+		else if(random < 40)	mainTag.stringValue = @"Comics";
+		else if(random == 42)	mainTag.stringValue = @"Pony";
+		else if(random < 50)	mainTag.stringValue = @"Manwa";
+		else if(random < 60)	mainTag.stringValue = @"Webcomic";
+		else if(random < 69)	mainTag.stringValue = @"Ecchi";
+		else 					mainTag.stringValue = @"Hentai";
+		
+		mainTag.alignment = NSCenterTextAlignment;
+		mainTag.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TAGS] size:10];
+		[mainTag sizeToFit];
+		
+		[self addSubview:mainTag];
+	}
+}
+
+- (NSImage *) loadImage
+{
+	char * teamPath = getPathForRepo(_project.repo);
+	
+	if(teamPath == NULL)
+		return nil;
+	
+	NSImage * image = nil;
+	
+	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
+	if(bundle != nil)
+		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_SRGRID, _project.projectID]];
+	
+	if(image == nil)
+		image = [NSImage imageNamed:@"defaultSRImage"];
+	
+	return image;
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
@@ -123,28 +178,53 @@ enum
 	
 	if(animated)
 	{
-		previousOrigin = [self originOfName : frameRect];
-		[name.animator setFrameOrigin: previousOrigin];
-		[author.animator setFrameOrigin:[self originOfAuthor : frameRect : previousOrigin]];
+		[thumbnails.animator setFrameOrigin:	(previousOrigin = [self originOfThumb : frameRect])];
+		[name.animator setFrameOrigin: 			(previousOrigin = [self originOfName : frameRect : previousOrigin])];
+		[author.animator setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
+		[mainTag.animator setFrameOrigin:		[self originOfTag : frameRect : previousOrigin]];
 	}
 	else
 	{
-		previousOrigin = [self originOfName : frameRect];
-		[name setFrameOrigin: previousOrigin];
-		[author setFrameOrigin:[self originOfAuthor : frameRect : previousOrigin]];
+		[thumbnails setFrameOrigin: (previousOrigin = [self originOfThumb : frameRect])];
+		[name setFrameOrigin: 		(previousOrigin = [self originOfName : frameRect : previousOrigin])];
+		[author setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
+		[mainTag setFrameOrigin:		[self originOfTag : frameRect : previousOrigin]];
 	}
 }
 
-- (NSPoint) originOfName : (NSRect) frameRect
+- (NSPoint) originOfThumb : (NSRect) frameRect
 {
-	return NSCenteredRect(frameRect, name.bounds);
+	NSPoint output;
+	
+	output.x = frameRect.origin.x + frameRect.size.width / 2 - BORDER_THUMB / 2;
+	output.y = frameRect.origin.y + frameRect.size.height - BORDER_THUMB;
+	
+	return output;
+}
+
+- (NSPoint) originOfName : (NSRect) frameRect : (NSPoint) thumbOrigin
+{
+	NSPoint center = NSCenteredRect(frameRect, name.bounds);
+	
+	center.y = thumbOrigin.y - name.bounds.size.height;
+	
+	return center;
 }
 
 - (NSPoint) originOfAuthor : (NSRect) frameRect : (NSPoint) nameOrigin
 {
-	NSPoint center = NSCenteredRect(frameRect, name.bounds);
+	NSPoint center = NSCenteredRect(frameRect, author.bounds);
 	
-	center.y = nameOrigin.y - (author.bounds.size.height + INTERLINE_NAME_AUTHOR);
+	center.y = nameOrigin.y - author.bounds.size.height;
+	
+	return center;
+}
+
+- (NSPoint) originOfTag : (NSRect) frameRect : (NSPoint) authorOrigin
+{
+	NSPoint center = NSCenteredRect(frameRect, mainTag.bounds);
+	
+	center.y = authorOrigin.y - mainTag.bounds.size.height;
 	
 	return center;
 }
@@ -154,6 +234,11 @@ enum
 - (NSColor *) getTextColor
 {
 	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+}
+
+- (NSColor *) getTagTextColor
+{
+	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
 }
 
 - (NSColor *) borderColor

@@ -18,6 +18,8 @@
 	
 	//Content
 	RakText * name, * author;
+	NSImageView * thumbnails;
+	RakText * mainTag;
 }
 
 @property BOOL selected;

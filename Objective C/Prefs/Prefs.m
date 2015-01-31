@@ -352,6 +352,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			output = @"Helvetica";
 			break;
 		}
+		case GET_FONT_TAGS:
 		case GET_FONT_PLACEHOLDER:
 		{
 			output = @"Helvetica-Oblique";
