@@ -199,32 +199,7 @@
 
 - (NSColor*) getBackgroundColor
 {
-	byte code;
-	switch (mainThread & TAB_MASK)
-	{
-		case TAB_READER:
-		{
-			code = GET_COLOR_BACKGROUD_MDL_READERMODE;
-			break;
-		}
-			
-		case TAB_CT:
-		{
-			code = GET_COLOR_BACKGROUD_MDL_READERMODE;
-			break;
-		}
-			
-		case TAB_SERIES:
-		{
-			code = GET_COLOR_BACKGROUD_MDL_READERMODE;
-			break;
-		}
-			
-		default:
-			return [NSColor clearColor];
-	}
-	
-	return [Prefs getSystemColor: code: nil];
+	return [Prefs getSystemColor: GET_COLOR_BACKGROUD_COREVIEW: nil];
 }
 
 - (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender

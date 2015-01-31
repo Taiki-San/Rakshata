@@ -228,7 +228,7 @@
 	if(self.compactMode)
 		return [NSColor clearColor].CGColor;
 	
-	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil].CGColor;
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_COREVIEW : nil].CGColor;
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

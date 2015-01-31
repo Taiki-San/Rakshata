@@ -104,7 +104,7 @@
 
 - (NSColor *) startColor
 {
-	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_CT_READERMODE : nil];
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUD_COREVIEW : nil];
 }
 
 - (NSColor *) endColor : (NSColor *) startColor

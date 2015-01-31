@@ -12,11 +12,15 @@
 
 @interface RakCollectionViewItem : NSView
 {
+	BOOL _animationRequested;
+	
 	PROJECT_DATA _project;
 	
 	//Content
-	RakText * name;
+	RakText * name, * author;
 }
+
+@property BOOL selected;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 

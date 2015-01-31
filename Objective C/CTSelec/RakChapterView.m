@@ -142,20 +142,15 @@
 	switch (mainThread & TAB_MASK)
 	{
 		case TAB_READER:
+		case TAB_SERIES:
 		{
-			code = GET_COLOR_BACKGROUD_CT_READERMODE;
+			code = GET_COLOR_BACKGROUD_COREVIEW;
 			break;
 		}
 			
 		case TAB_CT:
 		{
 			code = GET_COLOR_BACKGROUND_TABS;
-			break;
-		}
-			
-		case TAB_SERIES:
-		{
-			code = GET_COLOR_BACKGROUD_CT_READERMODE;
 			break;
 		}
 			

@@ -143,7 +143,8 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_TAGITEM_FONT:
 		{
-			output = [NSColor colorWithSRGBRed:102/255.0f green:171/255.0f blue:150/255.0f alpha:1];
+			output = [NSColor colorWithSRGBRed:61/255.0f green:119/255.0f blue:152/255.0f alpha:1];
+			//output = [NSColor colorWithSRGBRed:102/255.0f green:171/255.0f blue:150/255.0f alpha:1];		//vert
 			break;
 		}
 			
@@ -230,9 +231,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUD_CT_READERMODE:
-		case GET_COLOR_BACKGROUD_SR_READERMODE:
-		case GET_COLOR_BACKGROUD_MDL_READERMODE:
+		case GET_COLOR_BACKGROUD_COREVIEW:
 		case GET_COLOR_TAGITEM_BACKGROUND:
 		case GET_COLOR_SEARCHTAB_BACKGROUND:
 		{
@@ -359,6 +358,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 		case GET_FONT_RD_BUTTONS:
+		case GET_FONT_SR_TITLE:
 		{
 			output = @"Helvetica-Bold";
 			break;

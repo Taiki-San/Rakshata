@@ -103,8 +103,8 @@
 
 	//Front
 	CGContextBeginPath(contextBorder);
-	CGContextMoveToPoint(contextBorder, TAG_BUTTON_ARROW_DEPTH - 1, 0);
-	CGContextAddLineToPoint(contextBorder, size.width, 0);
+	CGContextMoveToPoint(contextBorder, TAG_BUTTON_ARROW_DEPTH - 1, 1);
+	CGContextAddLineToPoint(contextBorder, size.width, 1);
 	CGContextAddLineToPoint(contextBorder, size.width, size.height);
 	
 	[[self borderColor] setStroke];
