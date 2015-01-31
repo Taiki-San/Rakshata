@@ -13,6 +13,7 @@
 #define SR_NOTIF_NAME_SEARCH_TRIGGERED @"RakSearchFieldWasTriggered"
 #define SR_NOTIF_NEW_STATE @"newState"
 
+#define SRSEARCHTAB_DEFAULT_HEIGHT 1
 #define SR_SEARCH_TAB_INITIAL_HEIGHT 40
 #define SR_SEARCH_TAB_EXPANDED_HEIGHT 150
 
@@ -22,7 +23,6 @@
 	BOOL _collapsed;
 	
 	NSArray * gradients;
-	RakGradientView * gradientTop, * gradientRight, * gradientBottom, * gradientLeft;
 	
 	RakText * placeholder;
 }

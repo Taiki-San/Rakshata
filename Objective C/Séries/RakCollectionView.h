@@ -8,39 +8,14 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakCollectionView : NSCollectionView
 {
-	NSRect _defaultFrame;
+	PROJECT_DATA * cache;
+	uint nbElemCache;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+- (void) resizeAnimation : (NSRect) frameRect;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-
-#import "RakSRSearchBar.h"
-#import "RakSRTagRail.h"
-#import "RakSRHeader.h"
-#import "RakSRSearchTab.h"
-
-#import "RakGridView.h"
-
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-
-#import "RakSerieView.h"

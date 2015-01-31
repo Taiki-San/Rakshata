@@ -174,7 +174,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_SEARCHBAR_PLACEHOLDER_TEXT:
 		{
-			output = [NSColor colorWithSRGBRed:146/255.0f green:146/255.0f blue:141/255.0f alpha:0.3];
+			output = [NSColor colorWithSRGBRed:146/255.0f green:146/255.0f blue:141/255.0f alpha:0.4];
 			break;
 		}
 			

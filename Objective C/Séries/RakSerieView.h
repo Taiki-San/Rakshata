@@ -17,6 +17,8 @@
 	BOOL compactListHidden;
 
 	RakSerieList * compactList;
+	
+	RakGridView * gridView;
 }
 
 - (id)initContent:(NSRect)frame : (NSString *) state;

@@ -8,39 +8,33 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+enum
 {
-	NSRect _defaultFrame;
+	RCVC_OFFSET = 10,
+	RCVC_MINIMUM_WIDTH = 150,
+	RCVC_MINIMUM_WIDTH_OFFSET = (RCVC_MINIMUM_WIDTH + RCVC_OFFSET),
+	RCVC_MINIMUM_HEIGHT = 200,
+	RCVC_MINIMUM_HEIGHT_OFFSET = (RCVC_MINIMUM_HEIGHT + RCVC_OFFSET),
+};
+
+#import "RakCollectionView.h"
+#import "RakCollectionViewItem.h"
+
+@interface RakGridView : NSObject
+{
+	RakListScrollView * scrollview;
+	
+	RakCollectionView * collection;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property (readonly) RakListScrollView * contentView;
+@property (getter=isHidden) BOOL hidden;
+
+- (instancetype) initWithFrame:(NSRect)frameRect;
+
+- (void) setFrame : (NSRect) frameRect;
+- (void) resizeAnimation : (NSRect) frameRect;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-
-#import "RakSRSearchBar.h"
-#import "RakSRTagRail.h"
-#import "RakSRHeader.h"
-#import "RakSRSearchTab.h"
-
-#import "RakGridView.h"
-
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-
-#import "RakSerieView.h"

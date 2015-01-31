@@ -26,16 +26,31 @@
 
 - (instancetype) initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
 {
-    self = [self initWithFrame : frame];
-    if (self != nil)
+	self = [self initWithFrame : frame];
+	if (self != nil)
 	{
 		[self internalInit];
 		self.stringValue = text;
 		
 		if(color != nil)
 			self.textColor = color;
-    }
-    return self;
+	}
+	return self;
+}
+
+- (instancetype) initWithText : (NSString *) text : (NSColor *) color
+{
+	self = [super init];
+	if (self != nil)
+	{
+		[self internalInit];
+		self.stringValue = text;
+		[self sizeToFit];
+		
+		if(color != nil)
+			self.textColor = color;
+	}
+	return self;
 }
 
 - (void) internalInit

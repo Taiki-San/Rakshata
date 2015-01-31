@@ -27,6 +27,10 @@
 		if(compactList != nil)
 			[self addSubview:[compactList getContent]];
 		
+		gridView = [[RakGridView alloc] initWithFrame:self.bounds];
+		if(gridView != nil)
+			[self addSubview : gridView.contentView];
+		
 		if(mainThread == TAB_SERIES)
 		{
 			compactListHidden = compactList.hidden = headerText.hidden = YES;
@@ -35,6 +39,7 @@
 		else
 		{
 			compactListHidden = NO;
+			gridView.hidden = YES;
 		}
 	}
 	
@@ -43,14 +48,16 @@
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
-	[headerText setFrame:[self bounds]];
-	[compactList setFrame:[self getCompactListFrame : self.bounds]];
+	[headerText setFrame:newBound];
+	[compactList setFrame:[self getCompactListFrame : newBound]];
+	[gridView setFrame : newBound];
 }
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
 	[headerText resizeAnimation: newBound];
 	[compactList resizeAnimation:[self getCompactListFrame : newBound]];
+	[gridView resizeAnimation : newBound];
 }
 
 - (NSString *) getContextToGTFO
@@ -123,6 +130,9 @@
 		if(compactList != nil && !compactListHidden)
 			compactListHidden = compactList.hidden = headerText.hidden = YES;
 		
+		if(gridView != nil && gridView.hidden)
+			gridView.hidden = NO;
+		
 		if(self.layer.backgroundColor != nil)
 			self.layer.backgroundColor = nil;
 	}
@@ -130,6 +140,9 @@
 	{
 		if(self.layer.backgroundColor == nil)
 			self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+		
+		if(gridView != nil && !gridView.hidden)
+			gridView.hidden = YES;
 	}
 }
 
