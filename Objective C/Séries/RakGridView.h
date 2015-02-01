@@ -21,7 +21,6 @@ enum
 
 #define SR_NOTIFICATION_TAG 	@"RakSRTagSelectionNotification"
 #define SR_NOTIFICATION_AUTHOR 	@"RakSRAuthorSelectionNotification"
-#define SR_NOTIFICATION_PROJECT @"RakSRProjectSelectionNotification"
 
 #define SR_NOTIF_CACHEID 		@"cacheID"
 

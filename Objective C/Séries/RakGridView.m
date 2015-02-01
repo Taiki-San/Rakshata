@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define BORDER 3
+
 @implementation RakGridView
 
 - (instancetype) initWithFrame:(NSRect)frameRect
@@ -44,11 +46,11 @@
 
 - (NSRect) frameFromParent : (NSRect) frame
 {
-	frame.origin.x += 3;
-	frame.origin.y += 3;
+	frame.origin.x = BORDER;
+	frame.origin.y = BORDER;
 	
-	frame.size.width -= 6;
-	frame.size.height -= 6;
+	frame.size.width -= 2 * BORDER;
+	frame.size.height -= 2 * BORDER;
 	
 	return frame;
 }

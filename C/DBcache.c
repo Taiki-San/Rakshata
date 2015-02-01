@@ -93,7 +93,7 @@ int setupBDDCache()
 	}
 	
 	REPO_DATA ** internalRepoList = loadRepo(internalRootRepoList, nombreRootRepo, &nombreRepo);
-	if(internalRepoList == NULL || nombreRepo == 0)
+	if(internalRepoList == NULL)
 	{
 		freeRootRepo(internalRootRepoList);
 		MUTEX_UNLOCK(cacheMutex);
@@ -791,6 +791,13 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 			if(indexRoot < nbRoot && root[indexRoot] != NULL)
 				*output[pos] = root[indexRoot]->subRepo[posInRoot++];
 		}
+		
+		if(nbSubRepo == 0)
+		{
+			free(output);
+			return NULL;
+		}
+
 		*nbRepo = nbSubRepo;
 	}
 	

@@ -54,9 +54,10 @@
 				gradient.angle = position * 90;
 				
 				[self addSubview:gradient];
+				[_gradients addObject:gradient];
 			}
-			
-			[_gradients addObject:gradient];
+			else
+				[_gradients addObject:@(0)];
 		}
 		gradients = [NSArray arrayWithArray:_gradients];
 		
@@ -82,7 +83,9 @@
 	byte position = 0;
 	for(RakGradientView * gradient in gradients)
 	{
-		gradient.frame = [self getShadowFrame:frameRect :position++];
+		if([gradient class] == [RakGradientView class])
+			gradient.frame = [self getShadowFrame:frameRect :position];
+		position++;
 	}
 }
 

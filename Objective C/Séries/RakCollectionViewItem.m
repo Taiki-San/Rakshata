@@ -154,8 +154,6 @@ enum
 
 			if(dataToSend.isInitialized)
 				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
-
-//			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_PROJECT object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
 		}
 	}
 }
