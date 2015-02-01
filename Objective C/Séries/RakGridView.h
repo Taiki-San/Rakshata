@@ -19,6 +19,12 @@ enum
 	RCVC_MINIMUM_HEIGHT_OFFSET = (RCVC_MINIMUM_HEIGHT + RCVC_OFFSET),
 };
 
+#define SR_NOTIFICATION_TAG 	@"RakSRTagSelectionNotification"
+#define SR_NOTIFICATION_AUTHOR 	@"RakSRAuthorSelectionNotification"
+#define SR_NOTIFICATION_PROJECT @"RakSRProjectSelectionNotification"
+
+#define SR_NOTIF_CACHEID 		@"cacheID"
+
 #import "RakCollectionView.h"
 #import "RakCollectionViewItem.h"
 

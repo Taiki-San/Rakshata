@@ -130,8 +130,34 @@ enum
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	_selected = !_selected;
-	[self setNeedsDisplay : YES];
+	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	
+	//Three cases: click on tag, click on author, other
+	//The first two trigger a tag, the last select
+	
+	if(NSPointInRect(point, mainTag.frame))
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
+	}
+	else if(NSPointInRect(point, author.frame))
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
+	}
+	else if(point.y > mainTag.frame.origin.y)	//We exclude when we are below the main tag
+	{
+		NSRect mainFrame;	mainFrame.size = workingSize;
+		mainFrame.origin = NSCenterSize(self.bounds.size, mainFrame.size);
+		
+		if(NSPointInRect(point, mainFrame))	//We check we are actually inside the valid area (excluding the padding
+		{
+			PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
+
+			if(dataToSend.isInitialized)
+				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
+
+//			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_PROJECT object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
+		}
+	}
 }
 
 #pragma mark - Resizing code

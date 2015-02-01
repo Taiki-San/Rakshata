@@ -80,7 +80,7 @@
 {
 	//We'll recover the main view by hicking the view hierarchy
 	
-	if(project.repo == NULL)
+	if(!project.isInitialized || project.repo == NULL)
 		return NO;
 	
 	while (sender != nil && [sender superclass] != [RakTabView class])

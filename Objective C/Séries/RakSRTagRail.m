@@ -36,9 +36,51 @@
 		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag"] : self.bounds];
 		
 		_nbRow = _currentRow + 1;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifTag:) name:SR_NOTIFICATION_TAG object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifAuthor:) name:SR_NOTIFICATION_AUTHOR object:nil];
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) receiveNotifTag : (NSNotification *) notification
+{
+	NSNumber * number;
+	
+	if(notification == nil || notification.userInfo == nil || (number = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![number isKindOfClass:[NSNumber class]])
+		return;
+	
+	[self performNotification:[number unsignedIntValue] :YES];
+}
+
+- (void) receiveNotifAuthor : (NSNotification *) notification
+{
+	NSNumber * number;
+	
+	if(notification == nil || notification.userInfo == nil || (number = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![number isKindOfClass:[NSNumber class]])
+		return;
+	
+	[self performNotification:[number unsignedIntValue] :NO];
+}
+
+- (void) performNotification : (uint) cacheID : (BOOL) wantTag
+{
+	
+	PROJECT_DATA project = getElementByID(cacheID);
+	
+	if(project.isInitialized)
+	{
+		if(wantTag)
+			[self addTag:[NSString stringWithFormat:@"Tag of %@", getStringForWchar(project.projectName)]];
+		else
+			[self addTag: getStringForWchar(project.authorName)];
+	}
 }
 
 #pragma mark - Tag management

@@ -335,11 +335,8 @@
 	{
 		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
 		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];
-		uint mainThread;
 		
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		
-		if(readerTab != nil && mainThread & TAB_READER)
+		if(readerTab != nil && self.mainThread & TAB_READER)
 		{
 			__block NSRect readerFrame = readerTab.frame, MDLFrame = MDLTab.frame;
 			CGFloat widthCTTab = readerFrame.origin.x - self.frame.origin.x;
@@ -383,12 +380,20 @@
 			}];
 			
 		}
+		
 		else	//We bypass the fancy animation
 		{
 			[self updateProject : project : isTome : element];
 
-			if(mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			if(self.mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+
+			//Oh, we got selected then, awesome :)
+			else if(self.mainThread & TAB_SERIES)
+			{
+				[self mouseDown:nil];
+				[self mouseUp:nil];
+			}
 		}
 	}
 }
