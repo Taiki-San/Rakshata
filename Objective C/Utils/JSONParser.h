@@ -41,7 +41,7 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_PROJ_STATUS @"15"
 #define JSON_PROJ_TYPE @"16"
 #define JSON_PROJ_ASIAN_ORDER @"17"
-#define JSON_PROJ_CATEGORY @"18"
+#define JSON_PROJ_TAG @"18"
 #define JSON_PROJ_HASH_URL_LARGE @"19"
 #define JSON_PROJ_HASH_URL_SMALL @"20"
 #define JSON_PROJ_PRICE @"21"

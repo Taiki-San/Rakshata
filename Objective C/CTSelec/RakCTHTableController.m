@@ -71,7 +71,7 @@
 	
 	status = project.status;
 	type = project.type;
-	category = project.category;
+	tag = project.tag;
 
 	paidContent = project.isPaid;
 	DRM = YES;

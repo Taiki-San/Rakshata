@@ -111,7 +111,8 @@ enum
 #define MAX_TYPE_DEPOT 4
 
 /*String macro*/
-#define STRINGIZE(s) "`"#s"`"
+#define STRINGIZE_HELPER(s) #s
+#define STRINGIZE(s) STRINGIZE_HELPER(s)
 
 /*Download.c*/
 #define CODE_RETOUR_OK 0

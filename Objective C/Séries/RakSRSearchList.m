@@ -10,50 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define RCTH_TITLE_ID @"CTHProperty"
-#define RCTH_DETAILS_ID @"CTHData"
+@implementation RakSRSearchList
 
-/*Data are organized as the following:
-	- Release date
-	- Number of chapters
-	- Number of volumes
-	- Paid content
-	- DRM
- */
-
-
-@interface RakCTHTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+- (instancetype) init : (NSRect) frame : (byte) type
 {
-	NSTableView * _tableView;
+	self = [self init];
 	
-	uint cacheID;
+	if(self != nil)
+	{
+		
+	}
 	
-	//Context data
-	uint numberOfRows;
-	
-	uint numberOfChapters;
-	uint numberOfChaptersInstalled;
-	uint numberOfVolumes;
-	uint numberOfVolumesInstalled;
-	
-	uint status;
-	uint32_t type;
-	uint32_t tag;
-	
-	BOOL paidContent;
-	BOOL DRM;
+	return self;
 }
-
-@property (strong) RakListScrollView * scrollView;
-@property (readonly) CGFloat baseX;
-
-- (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame;
-- (void) updateProject : (PROJECT_DATA) projectID;
-
-- (void) setFrame : (NSRect) frameRect;
-- (void) resizeAnimation : (NSRect) frameRect;
-- (CGFloat) rawBaseX : (NSRect) frameRect;	//When animating, heavier to get, reflect expectation
-
-- (void) craftTableView : (NSRect) frame;
 
 @end

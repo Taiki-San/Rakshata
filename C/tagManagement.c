@@ -10,50 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define RCTH_TITLE_ID @"CTHProperty"
-#define RCTH_DETAILS_ID @"CTHData"
+#include "db.h"
 
-/*Data are organized as the following:
-	- Release date
-	- Number of chapters
-	- Number of volumes
-	- Paid content
-	- DRM
- */
-
-
-@interface RakCTHTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+wchar_t * getTagForCode(uint32_t tagID)
 {
-	NSTableView * _tableView;
+	if(tagID < 10)			return L"Shonen";
+	else if(tagID < 20)		return L"Shojo";
+	else if(tagID < 30)		return L"Seinen";
+	else if(tagID < 40)		return L"Comics";
+	else if(tagID == 42)	return L"Pony";
+	else if(tagID < 50)		return L"Manwa";
+	else if(tagID < 60)		return L"Webcomic";
+	else if(tagID < 69)		return L"Ecchi";
 	
-	uint cacheID;
-	
-	//Context data
-	uint numberOfRows;
-	
-	uint numberOfChapters;
-	uint numberOfChaptersInstalled;
-	uint numberOfVolumes;
-	uint numberOfVolumesInstalled;
-	
-	uint status;
-	uint32_t type;
-	uint32_t tag;
-	
-	BOOL paidContent;
-	BOOL DRM;
+	return L"Hentai";
 }
-
-@property (strong) RakListScrollView * scrollView;
-@property (readonly) CGFloat baseX;
-
-- (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame;
-- (void) updateProject : (PROJECT_DATA) projectID;
-
-- (void) setFrame : (NSRect) frameRect;
-- (void) resizeAnimation : (NSRect) frameRect;
-- (CGFloat) rawBaseX : (NSRect) frameRect;	//When animating, heavier to get, reflect expectation
-
-- (void) craftTableView : (NSRect) frame;
-
-@end

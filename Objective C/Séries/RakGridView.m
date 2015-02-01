@@ -113,7 +113,6 @@
 	//We initialize the item, then insert it in the pasteboard
 	[item setDataProject:_dragProject isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:VALEUR_FIN_STRUCT];
 	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
-
 	
 	return YES;
 }

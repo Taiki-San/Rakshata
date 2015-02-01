@@ -84,6 +84,16 @@ PROJECT_DATA getElementByID(uint cacheID);
 void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData);
 void setInstalled(uint cacheID);
 
+/**DBSearch.c**/
+void buildSearchTables(sqlite3 *_cache);
+void * buildSearchJumpTable(sqlite3 * _cache);
+
+uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
+bool insertInSearch(void * _table, byte type, PROJECT_DATA project);
+
+/**tagManagement.c**/
+wchar_t * getTagForCode(uint tagID);
+
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
 void resetUpdateDBCache();
@@ -137,31 +147,49 @@ enum RDB_CODES {
 
 //========= Obfuscation	==========//
 
-enum
+//An enum won't be expanded by STRINGIZE, so we must use define
+#define RDB_ID 				1
+#define RDB_team 			2
+#define RDB_projectID		3
+#define RDB_isInstalled		4
+#define RDB_projectName		5
+#define RDB_description		6
+#define RDB_authors			7
+#define RDB_status			8
+#define RDB_type			9
+#define RDB_asianOrder		10
+#define RDB_isPaid			11
+#define RDB_tag				12
+#define RDB_nombreChapitre	13
+#define RDB_chapitres		14
+#define RDB_chapitresPrice	15
+#define RDB_nombreTomes		16
+#define RDB_tomes			17
+#define RDB_favoris			18
+
+#define RDBS_dataID			19
+#define RDBS_dataType		20
+
+#define RDBS_tagCode		21
+#define RDBS_tagType		22
+#define RDBS_tagID			23
+
+
+enum SEARCH_REQUEST
 {
-	RDB_ID = 1,
-	RDB_team,
-	RDB_projectID,
-	RDB_isInstalled,
-	RDB_projectName,
-	RDB_description,
-	RDB_authors,
-	RDB_status,
-	RDB_type,
-	RDB_asianOrder,
-	RDB_isPaid,
-	RDB_category,
-	RDB_nombreChapitre,
-	RDB_chapitres,
-	RDB_chapitresPrice,
-	RDB_nombreTomes,
-	RDB_tomes,
-	RDB_favoris
+	INSERT_AUTHOR,
+	INSERT_TAG,
+	INSERT_TYPE,
+	INSERT_PROJECT,
+	
+	PULL_SEARCH_AUTHORID,
+	PULL_SEARCH_TAGID,
+	PULL_SEARCH_TYPEID
 };
 
 #define RDB_REC_lastRead				1
 #define RDB_REC_lastDL					2
 #define RDB_REC_team					3
-#define RDB_REC_projectID			4
+#define RDB_REC_projectID				4
 
-#define DBNAMETOID(s) STRINGIZE(s)
+#define DBNAMETOID(s) "`"STRINGIZE(s)"`"

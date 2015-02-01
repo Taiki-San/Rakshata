@@ -99,7 +99,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	if(a.type != b.type)
 		return false;
 	
-	if(a.category != b.category)
+	if(a.tag != b.tag)
 		return false;
 	
 	if(a.japaneseOrder != b.japaneseOrder)

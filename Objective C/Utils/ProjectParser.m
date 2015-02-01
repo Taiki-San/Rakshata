@@ -380,7 +380,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *category = nil, *paidContent = nil;
+	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *tag = nil, *paidContent = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
@@ -415,8 +415,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	asianOrder = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading");
 	if(asianOrder == nil || [asianOrder superclass] != [NSNumber class])	goto end;
 	
-	category = objectForKey(bloc, JSON_PROJ_CATEGORY , @"category");
-	if(category == nil || [category superclass] != [NSNumber class])		goto end;
+	tag = objectForKey(bloc, JSON_PROJ_TAG , @"category");
+	if(tag == nil || [tag superclass] != [NSNumber class])		goto end;
 	
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
@@ -427,7 +427,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	if(data.status > STATUS_MAX)	data.status = STATUS_MAX;
 	data.type = [type unsignedIntValue];
 	if(data.type > TYPE_MAX)		data.type = TYPE_MAX;
-	data.category = [category unsignedIntValue];
+	data.tag = [tag unsignedIntValue];
 	data.isInitialized = true;
 	
 	wcsncpy(data.projectName, (wchar_t*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
@@ -478,7 +478,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.status) forKey:JSON_PROJ_STATUS];
 	[output setObject:@(project.type) forKey:JSON_PROJ_TYPE];
 	[output setObject:@(project.japaneseOrder) forKey:JSON_PROJ_ASIAN_ORDER];
-	[output setObject:@(project.category) forKey:JSON_PROJ_CATEGORY];
+	[output setObject:@(project.tag) forKey:JSON_PROJ_TAG];
 	
 	if(project.isPaid)
 		[output setObject:@(YES) forKey:JSON_PROJ_PRICE];

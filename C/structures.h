@@ -210,7 +210,7 @@ typedef struct dataProject
 	
 	//Un bloc de 64b complet
 	uint32_t type;
-	uint32_t category;
+	uint32_t tag;
 	
 	//Un bloc de 64b
 	uint32_t projectID;
@@ -250,7 +250,7 @@ typedef struct dataProjectWithExtra
 	
 	//Un bloc de 64b complet
 	uint32_t type;
-	uint32_t category;
+	uint32_t tag;
 	
 	//Un bloc de 64b
 	uint32_t projectID;

@@ -17,6 +17,8 @@
 #define SR_SEARCH_TAB_INITIAL_HEIGHT 40
 #define SR_SEARCH_TAB_EXPANDED_HEIGHT 150
 
+#import "RakSRSearchList.h"
+
 @interface RakSRSearchTab : NSView
 {
 	BOOL _isVisible;
