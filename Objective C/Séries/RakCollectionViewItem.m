@@ -128,7 +128,7 @@ enum
 	return image;
 }
 
-- (void) mouseDown:(NSEvent *)theEvent
+- (void) mouseUp:(NSEvent *)theEvent
 {
 	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	

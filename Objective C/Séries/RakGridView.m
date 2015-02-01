@@ -20,11 +20,16 @@
 
 	if(self != nil)
 	{
+		_currentDragItem = UINT_MAX;
+		_dragProject.isInitialized = NO;
+		
 		NSRect bounds = [self frameFromParent : frameRect];
 		
 		collection = [[RakCollectionView alloc] initWithFrame:bounds];
 		if(collection == nil)
 			return nil;
+		
+		collection.delegate = self;
 		
 		scrollview = [[RakListScrollView alloc] initWithFrame : bounds];
 		if(scrollview != nil)
@@ -69,6 +74,55 @@
 	
 	[collection resizeAnimation:frameRect];
 	[scrollview.animator setFrame:frameRect];
+}
+
+#pragma mark - Delegate for RakCollectionView
+
+- (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event
+{
+	if([indexes count] > 1)
+		return NO;
+	
+	if([collection isValidIndex:[indexes firstIndex]])
+	{
+		_currentDragItem = [indexes firstIndex];
+		_dragProject = getElementByID([collection cacheIDForIndex:_currentDragItem]);
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (NSImage *) collectionView:(NSCollectionView *)collectionView draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset
+{
+	if(!_dragProject.isInitialized)
+		return nil;
+	
+	return [self initializeImageForItem : _dragProject : [RakSerieList contentNameForDrag:_dragProject] : _currentDragItem];
+}
+
+- (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard
+{
+	[[self class] registerToPasteboard:pasteboard];
+	
+	//We create the shared item
+	RakDragItem * item = [[RakDragItem alloc] init];
+	if(item == nil)
+		return NO;
+	
+	//We initialize the item, then insert it in the pasteboard
+	[item setDataProject:_dragProject isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:VALEUR_FIN_STRUCT];
+	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
+
+	
+	return YES;
+}
+
+#pragma mark - RakDragResponder back end
+
+- (BOOL) grantDropAuthorization : (BOOL) canDL
+{
+	return NO;
 }
 
 @end

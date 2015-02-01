@@ -18,4 +18,7 @@
 
 - (void) resizeAnimation : (NSRect) frameRect;
 
+- (BOOL) isValidIndex : (uint) index;
+- (uint) cacheIDForIndex : (uint) index;
+
 @end

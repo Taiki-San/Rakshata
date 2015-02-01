@@ -27,11 +27,13 @@ enum
 #import "RakCollectionView.h"
 #import "RakCollectionViewItem.h"
 
-@interface RakGridView : NSObject
+@interface RakGridView : RakDragResponder <NSCollectionViewDelegate>
 {
 	RakListScrollView * scrollview;
-	
 	RakCollectionView * collection;
+	
+	PROJECT_DATA _dragProject;
+	uint _currentDragItem;
 }
 
 @property (readonly) RakListScrollView * contentView;

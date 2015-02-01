@@ -12,7 +12,7 @@
 
 @interface RakCollectionViewItem : NSView
 {
-	BOOL _animationRequested;
+	BOOL _animationRequested, _noDrag;
 	NSSize workingSize;
 	
 	PROJECT_DATA _project;

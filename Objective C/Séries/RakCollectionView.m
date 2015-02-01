@@ -23,9 +23,13 @@
 		if(cache == NULL)
 			return nil;
 		
+		self.selectable = YES;
 		self.allowsMultipleSelection = NO;
 		self.backgroundColors = @[[NSColor clearColor]];
 		self.minItemSize = NSMakeSize(RCVC_MINIMUM_WIDTH_OFFSET, RCVC_MINIMUM_HEIGHT_OFFSET);
+		
+		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
+		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 
 		NSMutableArray * array = [NSMutableArray arrayWithCapacity:nbElemCache];
 		
@@ -75,5 +79,18 @@
 	
 	return output;
 }
+
+#pragma mark - Drag & Drop tools
+
+- (BOOL) isValidIndex : (uint) index
+{
+	return index < nbElemCache;
+}
+
+- (uint) cacheIDForIndex : (uint) index
+{
+	return cache[index].cacheDBID;
+}
+
 
 @end
