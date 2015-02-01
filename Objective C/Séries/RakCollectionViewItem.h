@@ -13,6 +13,7 @@
 @interface RakCollectionViewItem : NSView
 {
 	BOOL _animationRequested;
+	NSSize workingSize;
 	
 	PROJECT_DATA _project;
 	
@@ -23,6 +24,7 @@
 }
 
 @property BOOL selected;
+@property CGFloat requestedHeight;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 

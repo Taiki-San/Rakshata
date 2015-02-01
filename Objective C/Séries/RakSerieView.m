@@ -34,7 +34,6 @@
 		if(mainThread == TAB_SERIES)
 		{
 			compactListHidden = compactList.hidden = headerText.hidden = YES;
-			self.layer.backgroundColor = nil;
 		}
 		else
 		{
@@ -107,15 +106,9 @@
 		
 		if(gridView != nil && gridView.hidden)
 			gridView.hidden = NO;
-		
-		if(self.layer.backgroundColor != nil)
-			self.layer.backgroundColor = nil;
 	}
 	else
 	{
-		if(self.layer.backgroundColor == nil)
-			self.layer.backgroundColor = [self getBackgroundColor].CGColor;
-		
 		if(gridView != nil && !gridView.hidden)
 			gridView.hidden = YES;
 	}

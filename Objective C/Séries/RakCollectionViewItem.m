@@ -10,11 +10,12 @@
  **                                                                                         **
  ********************************************************************************************/
 
-static NSSize workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
+static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 
 enum
 {
-	BORDER_THUMB			= 150
+	BORDER_THUMB			= 150,
+	BORDER_BOTTOM			= 7
 };
 
 @implementation RakCollectionViewItem
@@ -36,7 +37,10 @@ enum
 		project.chapitresPrix = NULL;
 		
 		_project = project;
+		workingSize = _workingSize;
+		
 		[self initContent];
+		[self setFrameSize: workingSize];
 	}
 	
 	return self;
@@ -100,6 +104,9 @@ enum
 		
 		[self addSubview:mainTag];
 	}
+	
+	_requestedHeight = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]);
+	workingSize.height = _requestedHeight;
 }
 
 - (NSImage *) loadImage
@@ -181,14 +188,14 @@ enum
 		[thumbnails.animator setFrameOrigin:	(previousOrigin = [self originOfThumb : frameRect])];
 		[name.animator setFrameOrigin: 			(previousOrigin = [self originOfName : frameRect : previousOrigin])];
 		[author.animator setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
-		[mainTag.animator setFrameOrigin:		[self originOfTag : frameRect : previousOrigin]];
+		[mainTag.animator setFrameOrigin:		(previousOrigin = [self originOfTag : frameRect : previousOrigin])];
 	}
 	else
 	{
 		[thumbnails setFrameOrigin: (previousOrigin = [self originOfThumb : frameRect])];
 		[name setFrameOrigin: 		(previousOrigin = [self originOfName : frameRect : previousOrigin])];
 		[author setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
-		[mainTag setFrameOrigin:		[self originOfTag : frameRect : previousOrigin]];
+		[mainTag setFrameOrigin:	(previousOrigin = [self originOfTag : frameRect : previousOrigin])];
 	}
 }
 
@@ -229,6 +236,11 @@ enum
 	return center;
 }
 
+- (CGFloat) getMinimumHeight
+{
+	return BORDER_BOTTOM + mainTag.bounds.size.height + author.bounds.size.height + name.bounds.size.height + BORDER_THUMB;
+}
+
 #pragma mark - Color & Drawing
 
 - (NSColor *) getTextColor
@@ -248,19 +260,19 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	if(_selected)
-		return [NSColor grayColor];
-
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_COREVIEW :nil];
+	return [NSColor grayColor];
 }
 
 - (void) drawRect:(NSRect)dirtyRect
 {
-	NSRect printArea = {NSCenterSize(dirtyRect.size, workingSize), workingSize};
-	NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:printArea xRadius:3 yRadius:3];
-
-	[[self backgroundColor] setFill];
-	[path fill];
+	if(_selected)
+	{
+		NSRect printArea = {NSCenterSize(dirtyRect.size, workingSize), workingSize};
+		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:printArea xRadius:3 yRadius:3];
+		
+		[[self backgroundColor] setFill];
+		[path fill];
+	}
 }
 
 @end

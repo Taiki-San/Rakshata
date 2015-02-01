@@ -23,6 +23,7 @@
 		if(cache == NULL)
 			return nil;
 		
+		self.allowsMultipleSelection = NO;
 		self.backgroundColors = @[[NSColor clearColor]];
 		self.minItemSize = NSMakeSize(RCVC_MINIMUM_WIDTH_OFFSET, RCVC_MINIMUM_HEIGHT_OFFSET);
 
