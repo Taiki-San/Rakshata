@@ -15,6 +15,8 @@
 extern sqlite3 *cache;
 static bool initialized = false;
 
+static uint nbAuthor = 0, nbTag = 0, nbType = 0;
+
 typedef struct buildTablePointer
 {
 	sqlite3_stmt * addAuthor;
@@ -26,6 +28,7 @@ typedef struct buildTablePointer
 	sqlite3_stmt * addProject;
 	sqlite3_stmt * updateProject;
 	sqlite3_stmt * removeProject;
+	sqlite3_stmt * readProject;
 	
 } * SEARCH_JUMPTABLE;
 
@@ -34,11 +37,11 @@ typedef struct buildTablePointer
 #define TABLE_NAME_CORRES	"rakSearch3"
 
 #define RDBS_TYPE_AUTHOR 	1
-#define RDBS_TYPE_TAG		3
+#define RDBS_TYPE_TAG		2
 #define RDBS_TYPE_TYPE		3
-#define RDBS_TYPE_SOURCE	4
 
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project);
+void updateElementCount(byte type, int change);
 
 void buildSearchTables(sqlite3 *_cache)
 {
@@ -135,6 +138,11 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
+	if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &(output->readProject), NULL) != SQLITE_OK)
+		goto fail;
+	else
+		stage++;
+	
 	if(0)
 	{
 fail:
@@ -146,6 +154,7 @@ fail:
 		if(stage > 5)	sqlite3_finalize(output->getTypeID);
 		if(stage > 6)	sqlite3_finalize(output->addProject);
 		if(stage > 7)	sqlite3_finalize(output->updateProject);
+		if(stage > 8)	sqlite3_finalize(output->removeProject);
 		
 		free(output);
 		output = NULL;
@@ -170,9 +179,12 @@ void flushSearchJumpTable(void * _table)
 	sqlite3_finalize(table->addProject);
 	sqlite3_finalize(table->updateProject);
 	sqlite3_finalize(table->removeProject);
+	sqlite3_finalize(table->readProject);
 	
 	free(table);
 }
+
+//API to manipulate the content
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 {
@@ -255,12 +267,13 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 	}
 	
 	sqlite3_stmt * request = NULL;
+	byte requestType;
 	
 	switch (type)
 	{
 		case INSERT_AUTHOR:
 		{
-			printf("Inserted author: %ls\n", project.authorName);
+			requestType = RDBS_TYPE_AUTHOR;
 			request = table->addAuthor;
 			sqlite3_bind_blob(request, 1, project.authorName, sizeof(project.authorName), SQLITE_STATIC);
 			break;
@@ -268,6 +281,7 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 			
 		case INSERT_TAG:
 		{
+			requestType = RDBS_TYPE_TAG;
 			request = table->addTag;
 			sqlite3_bind_int64(request, 1, project.tag);
 			break;
@@ -275,6 +289,7 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 			
 		case INSERT_TYPE:
 		{
+			requestType = RDBS_TYPE_TYPE;
 			request = table->addType;
 			sqlite3_bind_int64(request, 1, project.type);
 			break;
@@ -293,6 +308,9 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 	if(_table == NULL)
 		flushSearchJumpTable(table);
 	
+	if(output)
+		updateElementCount(requestType, 1);
+
 	return output;
 }
 
@@ -341,6 +359,9 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project)
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project)
 {
 	uint typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project), tagID = getFromSearch(table, PULL_SEARCH_TAGID, project), authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
+	uint oldType, oldTag, oldAuthor;
+	
+	getProjectSearchData(table, project.cacheDBID, &oldAuthor, &oldTag, &oldType);
 	
 	if(typeID == UINT_MAX && insertInSearch(table, INSERT_TYPE, project))
 		typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project);
@@ -354,35 +375,224 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	if(typeID == UINT_MAX || tagID == UINT_MAX || authorID == UINT_MAX)
 		return false;
 	
-	bool fail;
+	bool fail = false;
 	sqlite3_stmt * request = wantInsert ? table->addProject : table->updateProject;
 
-	sqlite3_bind_int(request, 1, project.projectID);
-	sqlite3_bind_int(request, 2, authorID);
-	sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
+	if(authorID != oldAuthor)
+	{
+		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 2, authorID);
+		sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
+		
+		fail = sqlite3_step(request) != SQLITE_DONE;
+		sqlite3_reset(request);
+		
+		if(fail)
+			return false;
+
+		checkIfRemainingAndDelete(authorID, RDBS_TYPE_AUTHOR);
+	}
+
+	if(typeID != oldType)
+	{
+		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 2, typeID);
+		sqlite3_bind_int(request, 3, RDBS_TYPE_TYPE);
+		
+		fail = sqlite3_step(request) != SQLITE_DONE;
+		sqlite3_reset(request);
+		
+		if(fail)
+			return false;
+		
+		checkIfRemainingAndDelete(typeID, RDBS_TYPE_TYPE);
+	}
 	
-	fail = sqlite3_step(request) != SQLITE_DONE;
-	sqlite3_reset(request);
-	
-	if(fail)
-		return false;
-	
-	sqlite3_bind_int(request, 1, project.projectID);
-	sqlite3_bind_int(request, 2, typeID);
-	sqlite3_bind_int(request, 3, RDBS_TYPE_TYPE);
-	
-	fail = sqlite3_step(request) != SQLITE_DONE;
-	sqlite3_reset(request);
-	
-	if(fail)
-		return false;
-	
-	sqlite3_bind_int(request, 1, project.projectID);
-	sqlite3_bind_int(request, 2, tagID);
-	sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
-	
-	fail = sqlite3_step(request) != SQLITE_DONE;
-	sqlite3_reset(request);
-	
+	if(tagID != oldTag)
+	{
+		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 2, tagID);
+		sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
+		
+		fail = sqlite3_step(request) != SQLITE_DONE;
+		sqlite3_reset(request);
+		
+		checkIfRemainingAndDelete(tagID, RDBS_TYPE_TAG);
+	}
+
 	return !fail;
+}
+
+//API to keep things kinda clean
+
+void updateElementCount(byte type, int change)
+{
+	switch (type)
+	{
+		case RDBS_TYPE_AUTHOR:
+		{
+			nbAuthor += change;
+			break;
+		}
+			
+		case RDBS_TYPE_TAG:
+		{
+			nbTag += change;
+			break;
+		}
+			
+		case RDBS_TYPE_TYPE:
+		{
+			nbType += change;
+			break;
+		}
+	}
+}
+
+void checkIfRemainingAndDelete(uint data, byte type)
+{
+	if(cache == NULL || data == UINT_MAX)
+		return;
+	
+	sqlite3_stmt * request;
+	
+	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;", -1, &request, NULL) != SQLITE_OK)
+		return;
+	
+	sqlite3_bind_int(request, 1, data);
+	sqlite3_bind_int(request, 2, type);
+	
+	bool nothingRemaining = sqlite3_step(request) == SQLITE_DONE;
+	
+	sqlite3_finalize(request);
+	
+	//We have to delete the entry
+	if(nothingRemaining)
+	{
+		if(type == RDBS_TYPE_AUTHOR && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL) == SQLITE_OK);
+
+		else if(type == RDBS_TYPE_TAG && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)"", -1, &request, NULL) == SQLITE_OK);
+		
+		else if(type == RDBS_TYPE_TYPE && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)"", -1, &request, NULL) == SQLITE_OK);
+		
+		else
+			return;
+		
+		sqlite3_bind_int(request, 1, data);
+		
+		if(sqlite3_step(request) == SQLITE_DONE)
+			updateElementCount(type, -1);
+			
+		sqlite3_finalize(request);
+	}
+}
+
+//API to read and work on those data
+
+bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID)
+{
+	if(authorID == NULL || tagID == NULL || typeID == NULL)
+		return false;
+	else
+		*authorID = *tagID = *typeID = UINT_MAX;
+	
+	sqlite3_stmt * request;
+	
+	if(table != NULL)
+		request = ((SEARCH_JUMPTABLE) table)->readProject;
+	else
+	{
+		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &request, NULL) != SQLITE_OK)
+			return false;
+	}
+
+	sqlite3_bind_int(request, 1, cacheID);
+
+	while(sqlite3_step(request) == SQLITE_ROW)
+	{
+		uint type = sqlite3_column_int(request, 1), data = sqlite3_column_int(request, 0);
+		
+		if(type == RDBS_TYPE_AUTHOR)
+			*authorID = data;
+
+		else if(type == RDBS_TYPE_TAG)
+			*tagID = data;
+		
+		else if(type == RDBS_TYPE_TYPE)
+			*typeID = data;
+	}
+
+	sqlite3_finalize(request);
+	return true;
+}
+
+
+uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
+{
+	if(dataName == NULL || dataLength == NULL || cache == NULL)
+		return NULL;
+	
+	sqlite3_stmt * request;
+
+	if(type == RDBS_TYPE_AUTHOR)
+	{
+		*dataLength = nbAuthor;
+		if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_AUTHOR";", -1, &request, NULL) != SQLITE_OK)
+			return NULL;
+	}
+	else if(type == RDBS_TYPE_TAG)
+	{
+		*dataLength = nbTag;
+		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";", -1, &request, NULL) != SQLITE_OK)
+			return NULL;
+	}
+	else if(type == RDBS_TYPE_TYPE)
+	{
+		*dataLength = nbType;
+		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)";", -1, &request, NULL) != SQLITE_OK)
+			return NULL;
+	}
+	else
+		return NULL;
+	
+	uint pos = 0, length = *dataLength, * codes = malloc(length * sizeof(uint));
+	*dataName = malloc(length * sizeof(wchar_t *));
+	
+	if(codes == NULL || *dataName == NULL)
+	{
+		free(codes);
+		free(*dataName);	*dataName = NULL;
+		
+		sqlite3_finalize(request);
+		return NULL;
+	}
+	
+	while(pos < length && sqlite3_step(request) == SQLITE_ROW)
+	{
+		if(type == RDBS_TYPE_AUTHOR)
+		{
+			(*dataName)[pos] = malloc(REPO_NAME_LENGTH * sizeof(wchar_t));
+			if((*dataName)[pos] == NULL)
+				continue;
+			
+			const wchar_t * authorName = sqlite3_column_blob(request, 0);
+			if(authorName == NULL)
+			{
+				free((*dataName)[pos]);
+				continue;
+			}
+			
+			wstrncpy((*dataName)[pos], REPO_NAME_LENGTH, authorName);
+		}
+		else
+		{
+			(*dataName)[pos] = wstrdup(getTagForCode(sqlite3_column_int(request, 0)));
+			if((*dataName)[pos] == NULL)
+				continue;
+		}
+		
+		codes[pos++] = sqlite3_column_int(request, 1);
+	}
+	
+	return codes;
 }

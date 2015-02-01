@@ -94,6 +94,11 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project);
 bool removeFromSearch(void * _table, uint cacheID);
 bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
+void checkIfRemainingAndDelete(uint data, byte type);
+
+bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
+uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
+
 /**tagManagement.c**/
 wchar_t * getTagForCode(uint tagID);
 

@@ -262,14 +262,35 @@ size_t ustrlen(const void *input)
 
 size_t wstrlen(const wchar_t * input)
 {
+	if(input == NULL)	return 0;
+	
 	size_t output = 0;
 	while (input[output++]);
 	return output - 1;
 }
 
+wchar_t * wstrdup(const wchar_t * input)
+{
+	size_t length = wstrlen(input);
+
+	if(length == 0)
+		return NULL;
+	
+	wchar_t * output = malloc((length + 1) * sizeof(wchar_t));
+	if(output != NULL)
+	{
+		memcpy(output, input, length * sizeof(wchar_t));
+		output[length] = 0;
+	}
+	
+	return output;
+}
+
 void wstrncpy(wchar_t * output, size_t length, const wchar_t * input)
 {
 	size_t count = 0;
+	if(input == NULL)
+		return;
 	
 	for(; count < length && input[count] != 0; count++)
 		output[count] = input[count];
