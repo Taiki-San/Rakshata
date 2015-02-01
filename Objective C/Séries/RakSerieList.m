@@ -130,6 +130,8 @@
 - (void) dealloc
 {
 	[content removeFromSuperview];
+	[RakDBUpdate unRegister : self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void) setFrame: (NSRect) frame

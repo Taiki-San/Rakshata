@@ -101,6 +101,8 @@
 		   
 - (void) dealloc
 {
+	[RakDBUpdate unRegister : self];
+
 	MDLCleanup(nbElem, status, todoList, cache);
 	free(IDToPosition);
 }

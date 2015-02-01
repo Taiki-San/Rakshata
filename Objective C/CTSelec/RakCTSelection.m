@@ -87,6 +87,9 @@
 	[[_volView getContent ] removeFromSuperviewWithoutNeedingDisplay];
 	
 	releaseCTData(data);
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[RakDBUpdate unRegister : self];
 }
 
 #pragma mark - Size management

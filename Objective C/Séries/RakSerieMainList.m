@@ -61,6 +61,11 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	[RakDBUpdate unRegister : self];
+}
+
 - (bool) didInitWentWell
 {
 	return _data != NULL && (!self.installOnlyMode || _installed != NULL);

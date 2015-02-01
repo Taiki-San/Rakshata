@@ -162,6 +162,8 @@
 
 - (void) dealloc
 {
+	[RakDBUpdate unRegister : self];
+
 	[bottomBar removeFromSuperview];
 	
 	[self deallocInternal];

@@ -66,6 +66,11 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - Drawing and view manipulation
 
 - (void) setFrame : (NSRect) frameRect
