@@ -157,6 +157,8 @@ int setupBDDCache()
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
 				}
 			}
+			
+			flushSearchJumpTable(searchData);
 		}
 		
 		sqlite3_finalize(request);

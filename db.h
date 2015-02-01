@@ -87,9 +87,12 @@ void setInstalled(uint cacheID);
 /**DBSearch.c**/
 void buildSearchTables(sqlite3 *_cache);
 void * buildSearchJumpTable(sqlite3 * _cache);
+void flushSearchJumpTable(void * _table);
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project);
+bool removeFromSearch(void * _table, uint cacheID);
+bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
 /**tagManagement.c**/
 wchar_t * getTagForCode(uint tagID);

@@ -135,6 +135,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	{
 		cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
 		updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
+		updateProjectSearch(NULL, cacheCopy);
 		
 		free(cacheCopy.chapitresFull);	//updateCache en fait une copie
 		free(cacheCopy.chapitresPrix);

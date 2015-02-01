@@ -292,6 +292,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	int outputSort;
 	PROJECT_DATA internalBufferOld, internalBufferNew;
 	sqlite3_stmt * request = getAddToCacheRequest();
+	void * searchData = buildSearchJumpTable(NULL);
 	
 	while(posOld < magnitudeOldData && posNew < magnitudeNewData)
 	{
@@ -301,6 +302,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 			removeFromCache(oldData[posOld]);
+			removeFromSearch(searchData, oldData[posOld].cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
 			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
@@ -324,6 +326,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 				newData[posNew].favoris = oldData[posOld].favoris;
 				
 				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
+				updateProjectSearch(searchData, newData[posNew]);
 				
 				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
 				free(newData[posNew].chapitresPrix);
@@ -339,6 +342,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			newData[posNew].cacheDBID = 0;
 			
 			addToCache(request, newData[posNew], repoID, false);
+			insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
 			
 			posNew++;
 		}
@@ -348,6 +352,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 		removeFromCache(oldData[posOld]);
+		removeFromSearch(searchData, oldData[posOld].cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
 		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
@@ -366,10 +371,12 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		newData[posNew].cacheDBID = 0;
 		
 		addToCache(request, newData[posNew], repoID, false);
+		insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
 		
 		posNew++;
 	}
 	
+	flushSearchJumpTable(searchData);
 	sqlite3_finalize(request);
 }
 

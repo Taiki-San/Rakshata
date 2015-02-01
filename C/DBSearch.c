@@ -24,6 +24,8 @@ typedef struct buildTablePointer
 	sqlite3_stmt * getTagID;
 	sqlite3_stmt * getTypeID;
 	sqlite3_stmt * addProject;
+	sqlite3_stmt * updateProject;
+	sqlite3_stmt * removeProject;
 	
 } * SEARCH_JUMPTABLE;
 
@@ -35,6 +37,8 @@ typedef struct buildTablePointer
 #define RDBS_TYPE_TAG		3
 #define RDBS_TYPE_TYPE		3
 #define RDBS_TYPE_SOURCE	4
+
+bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project);
 
 void buildSearchTables(sqlite3 *_cache)
 {
@@ -74,7 +78,10 @@ void buildSearchTables(sqlite3 *_cache)
 
 void * buildSearchJumpTable(sqlite3 * _cache)
 {
-	if(!initialized)
+	if(_cache == NULL)
+		_cache = cache;
+		
+	if(!initialized || _cache == NULL)
 		return NULL;
 	
 	byte stage = 0;
@@ -117,6 +124,16 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 		goto fail;
 	else
 		stage++;
+
+	if(sqlite3_prepare_v2(_cache, "UPDATE "TABLE_NAME_CORRES" SET "DBNAMETOID(RDBS_dataID)" = ?2 WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?3;", -1, &(output->updateProject), NULL) != SQLITE_OK)
+		goto fail;
+	else
+		stage++;
+	
+	if(sqlite3_prepare_v2(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &(output->removeProject), NULL) != SQLITE_OK)
+		goto fail;
+	else
+		stage++;
 	
 	if(0)
 	{
@@ -127,6 +144,8 @@ fail:
 		if(stage > 3)	sqlite3_finalize(output->getAuthorID);
 		if(stage > 4)	sqlite3_finalize(output->getTagID);
 		if(stage > 5)	sqlite3_finalize(output->getTypeID);
+		if(stage > 6)	sqlite3_finalize(output->addProject);
+		if(stage > 7)	sqlite3_finalize(output->updateProject);
 		
 		free(output);
 		output = NULL;
@@ -135,12 +154,38 @@ fail:
 	return output;
 }
 
+void flushSearchJumpTable(void * _table)
+{
+	SEARCH_JUMPTABLE table = _table;
+	
+	if(table == NULL)
+		return;
+	
+	sqlite3_finalize(table->addAuthor);
+	sqlite3_finalize(table->addTag);
+	sqlite3_finalize(table->addType);
+	sqlite3_finalize(table->getAuthorID);
+	sqlite3_finalize(table->getTagID);
+	sqlite3_finalize(table->getTypeID);
+	sqlite3_finalize(table->addProject);
+	sqlite3_finalize(table->updateProject);
+	sqlite3_finalize(table->removeProject);
+	
+	free(table);
+}
+
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 {
-	if(_table == NULL)
-		return UINT_MAX;
-	
 	SEARCH_JUMPTABLE table = _table;
+
+	if(_table == NULL)
+	{
+		table = buildSearchJumpTable(cache);
+		
+		if(table == NULL)
+			return UINT_MAX;
+	}
+	
 	sqlite3_stmt * request = NULL;
 	
 	switch (type)
@@ -181,21 +226,41 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 	
 	sqlite3_reset(request);
 	
+	if(_table == NULL)
+		flushSearchJumpTable(table);
+	
 	return output;
 }
 
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 {
-	if(_table == NULL)
-		return false;
+	SEARCH_JUMPTABLE table = _table;
 	
-	SEARCH_JUMPTABLE table = _table;	
+	if(_table == NULL)
+	{
+		table = buildSearchJumpTable(cache);
+
+		if(table == NULL)
+			return false;
+	}
+
+	if(type == INSERT_PROJECT)
+	{
+		bool output = manipulateProjectSearch(table, true, project);
+		
+		if(_table == NULL)
+			flushSearchJumpTable(table);
+		
+		return output;
+	}
+	
 	sqlite3_stmt * request = NULL;
 	
 	switch (type)
 	{
 		case INSERT_AUTHOR:
 		{
+			printf("Inserted author: %ls\n", project.authorName);
 			request = table->addAuthor;
 			sqlite3_bind_blob(request, 1, project.authorName, sizeof(project.authorName), SQLITE_STATIC);
 			break;
@@ -215,51 +280,6 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 			break;
 		}
 			
-		case INSERT_PROJECT:
-		{
-			request = table->addProject;
-			
-			bool fail = false;
-			uint typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project), tagID = getFromSearch(table, PULL_SEARCH_TAGID, project), authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
-			
-			if(typeID == UINT_MAX && insertInSearch(_table, INSERT_TYPE, project))
-				typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project);
-
-			if(tagID == UINT_MAX && insertInSearch(_table, INSERT_TAG, project))
-				tagID = getFromSearch(table, PULL_SEARCH_TAGID, project);
-			
-			if(authorID == UINT_MAX && insertInSearch(_table, INSERT_AUTHOR, project))
-				authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
-			
-			if(typeID == UINT_MAX || tagID == UINT_MAX || authorID == UINT_MAX)
-				return false;
-			
-			sqlite3_bind_int(request, 1, project.projectID);
-			sqlite3_bind_int(request, 2, authorID);
-			sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
-			
-			fail = sqlite3_step(request) != SQLITE_DONE;
-			sqlite3_reset(request);
-			
-			if(fail)
-				return false;
-
-			sqlite3_bind_int(request, 1, project.projectID);
-			sqlite3_bind_int(request, 2, typeID);
-			sqlite3_bind_int(request, 3, RDBS_TYPE_TYPE);
-			
-			fail = sqlite3_step(request) != SQLITE_DONE;
-			sqlite3_reset(request);
-			
-			if(fail)
-				return false;
-			
-			sqlite3_bind_int(request, 1, project.projectID);
-			sqlite3_bind_int(request, 2, tagID);
-			sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
-			break;
-		}
-			
 		default:
 		{
 			return false;
@@ -270,5 +290,99 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 	
 	sqlite3_reset(request);
 	
+	if(_table == NULL)
+		flushSearchJumpTable(table);
+	
 	return output;
+}
+
+bool removeFromSearch(void * _table, uint cacheID)
+{
+	SEARCH_JUMPTABLE table = _table;
+	
+	if(_table == NULL)
+	{
+		table = buildSearchJumpTable(cache);
+		
+		if(table == NULL)
+			return false;
+	}
+
+	sqlite3_stmt * request = table->removeProject;
+	sqlite3_bind_int(request, 1, cacheID);
+
+	bool output = sqlite3_step(request) == SQLITE_DONE;
+	
+	sqlite3_reset(request);
+	
+	return output;
+}
+
+bool updateProjectSearch(void * _table, PROJECT_DATA project)
+{
+	SEARCH_JUMPTABLE table = _table;
+	
+	if(_table == NULL)
+	{
+		table = buildSearchJumpTable(cache);
+		
+		if(table == NULL)
+			return false;
+	}
+
+	bool output = manipulateProjectSearch(table, false, project);
+	
+	if(_table == NULL)
+		flushSearchJumpTable(table);
+
+	return output;
+}
+
+bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project)
+{
+	uint typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project), tagID = getFromSearch(table, PULL_SEARCH_TAGID, project), authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
+	
+	if(typeID == UINT_MAX && insertInSearch(table, INSERT_TYPE, project))
+		typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project);
+	
+	if(tagID == UINT_MAX && insertInSearch(table, INSERT_TAG, project))
+		tagID = getFromSearch(table, PULL_SEARCH_TAGID, project);
+	
+	if(authorID == UINT_MAX && insertInSearch(table, INSERT_AUTHOR, project))
+		authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
+	
+	if(typeID == UINT_MAX || tagID == UINT_MAX || authorID == UINT_MAX)
+		return false;
+	
+	bool fail;
+	sqlite3_stmt * request = wantInsert ? table->addProject : table->updateProject;
+
+	sqlite3_bind_int(request, 1, project.projectID);
+	sqlite3_bind_int(request, 2, authorID);
+	sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
+	
+	fail = sqlite3_step(request) != SQLITE_DONE;
+	sqlite3_reset(request);
+	
+	if(fail)
+		return false;
+	
+	sqlite3_bind_int(request, 1, project.projectID);
+	sqlite3_bind_int(request, 2, typeID);
+	sqlite3_bind_int(request, 3, RDBS_TYPE_TYPE);
+	
+	fail = sqlite3_step(request) != SQLITE_DONE;
+	sqlite3_reset(request);
+	
+	if(fail)
+		return false;
+	
+	sqlite3_bind_int(request, 1, project.projectID);
+	sqlite3_bind_int(request, 2, tagID);
+	sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
+	
+	fail = sqlite3_step(request) != SQLITE_DONE;
+	sqlite3_reset(request);
+	
+	return !fail;
 }
