@@ -27,28 +27,28 @@
 	{
 		NSInteger row = LIST_INVALID_SELECTION, tmpRow = 0;
 
-		//We check we have valid data
 		_nbElemPerCouple = 1;
 		_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		chapterPrice = NULL;
-		projectData.cacheDBID = UINT_MAX;	//Prevent incorrect beliefs we are updating a project
+		projectData.isInitialized = NO;
 		_selectionWithoutUI = NO;
 		
 		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop
 		[self reloadData:project :NO];
 		
+		//We check we have valid data
 		if(elemSelected != LIST_INVALID_SELECTION)
 		{
-			if(self.isTome)
+			if(_isTome)
 			{
 				for(; tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID < elemSelected; tmpRow++);
 				
 				if(tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID == elemSelected)
 					row = tmpRow;
 			}
-			else if(!self.isTome)
+			else
 			{
 				for(; tmpRow < _nbData && ((int*)_data)[tmpRow] < elemSelected; tmpRow++);
 				
@@ -70,9 +70,6 @@
 			[self updateMultiColumn: _compactMode : size];
 			
 			_tableView.wantVerboseClick = YES;
-			scrollView.wantsLayer = YES;
-			scrollView.layer.backgroundColor = [NSColor whiteColor].CGColor;
-			scrollView.layer.cornerRadius = 4;
 		}
 		else
 		{
@@ -85,7 +82,7 @@
 	return self;
 }
 
-- (bool) didInitWentWell
+- (BOOL) didInitWentWell
 {
 	return YES;
 }
@@ -621,7 +618,7 @@
 				scrollerWidth = [RakScroller width];
 			
 			//Define number of columns
-#if PREFER_LESS_COLUMN
+#ifdef PREFER_LESS_COLUMN
 			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight;
 #else
 			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight * 2;

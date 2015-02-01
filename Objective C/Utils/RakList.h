@@ -69,7 +69,7 @@ typedef struct smartReload_data
 @property BOOL _selectionChangeComeFromClic;
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
-- (bool) didInitWentWell;
+- (BOOL) didInitWentWell;
 - (void) failure;
 
 - (void) setFrameOrigin : (NSPoint) origin;

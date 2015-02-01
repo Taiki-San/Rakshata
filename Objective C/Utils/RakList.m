@@ -94,9 +94,9 @@
 	}
 }
 
-- (bool) didInitWentWell
+- (BOOL) didInitWentWell
 {
-	return false;
+	return NO;
 }
 
 - (void) failure

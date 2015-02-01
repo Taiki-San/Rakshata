@@ -63,9 +63,9 @@
 		[scrollView setHasVerticalScroller:!hidden];
 }
 
-- (bool) didInitWentWell
+- (BOOL) didInitWentWell
 {
-	return true;
+	return YES;
 }
 
 #pragma mark - Methods to deal with tableView
