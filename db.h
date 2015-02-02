@@ -17,12 +17,6 @@
 #define MAX_TEAM_LINE_LENGTH		(LENGTH_PROJECT_NAME + LONGUEUR_COURT + LONGUEUR_TYPE_TEAM + LONGUEUR_URL + LONGUEUR_SITE + 25)
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
-//Image cache suffixes
-#define PROJ_IMG_SUFFIX_CT		"CT"		//CT miniature in the reduced CT tab (reader mode)
-#define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
-#define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
-#define PROJ_IMG_SUFFIX_SRGRID	"GRID"		//Thumbnails in grid mode in SR
-
 unsigned long alreadyRefreshed;
 
 /******		DBTools.c	  ******/
@@ -38,8 +32,6 @@ void getPageInfo(REPO_DATA repo, uint projectID, bool large, char * filename);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();
-PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
-bool isPaidProject(PROJECT_DATA projectData);
 bool isInstalled(char * basePath);
 
 /**DBCache.c**/
@@ -52,12 +44,9 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
 void removeFromCache(PROJECT_DATA data);
 void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output);
-PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 
 //Repository
-uint64_t getRepoID(REPO_DATA * repo);
 uint getRepoIndex(REPO_DATA * repo);
-uint getRepoIndexFromURL(char * URL);
 bool addRepoToDB(ROOT_REPO_DATA * newRepo);
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
@@ -73,14 +62,8 @@ bool isAppropriateNumberOfRepo(uint requestedNumber);
 void freeRootRepo(ROOT_REPO_DATA ** root);
 void freeRepo(REPO_DATA ** repos);
 
-void freeProjectData(PROJECT_DATA* projectDB);
-
 //Searches
-PROJECT_DATA * getDataFromSearch (uint IDRepo, uint projectID, bool installed);
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
-bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
-bool isProjectInstalledInCache (uint ID);
-PROJECT_DATA getElementByID(uint cacheID);
 void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData);
 void setInstalled(uint cacheID);
 
@@ -97,13 +80,12 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 void checkIfRemainingAndDelete(uint data, byte type);
 
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
-uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
+uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength);
 
 /**tagManagement.c**/
 wchar_t * getTagForCode(uint tagID);
 
 /**DBRefresh.c**/
-void updateDatabase(bool forced);
 void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo);
 void updateRepo();
@@ -111,34 +93,17 @@ int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo);
 void refreshRepo(REPO_DATA * repo, bool standalone);
 void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);
 void updateProjects();
-void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome);
-void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 int databaseVersion(char* projectDB);
 
 /**DBRecent.c**/
 sqlite3* getPtrRecentDB();
 bool checkRecentDBValid(sqlite3 * DB);
 
-bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
 void removeRecentEntryInternal(char * URLRepo, uint projectID);
-PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 
 /*Database*/
-
-enum getCopyDBCodes
-{
-	RDB_LOADALL				= 0x0,
-	RDB_LOADINSTALLED		= 0x1,
-	RDB_LOADMASK			= 0x1,
-	
-	//Sorting type
-	SORT_NAME				= 0x0,
-	SORT_REPO				= 0x2,
-	RDB_SORTMASK			= 0x2,
-	SORT_DEFAULT			= SORT_NAME,
-};
 
 enum syncCode
 {
@@ -195,9 +160,13 @@ enum SEARCH_REQUEST
 	PULL_SEARCH_TYPEID
 };
 
-#define RDB_REC_lastRead				1
-#define RDB_REC_lastDL					2
-#define RDB_REC_team					3
-#define RDB_REC_projectID				4
+#define RDBS_TYPE_AUTHOR 	1
+#define RDBS_TYPE_TAG		2
+#define RDBS_TYPE_TYPE		3
+
+#define RDB_REC_lastRead	1
+#define RDB_REC_lastDL		2
+#define RDB_REC_team		3
+#define RDB_REC_projectID	4
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"

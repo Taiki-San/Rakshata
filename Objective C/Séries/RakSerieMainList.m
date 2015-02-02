@@ -134,11 +134,6 @@
 		[self selectIndex:newSelectedIndex];
 }
 
-- (NSInteger) selectedRow
-{
-	return selectedRowIndex;
-}
-
 #pragma mark - Data manipulation
 
 - (void) DBUpdated : (NSNotification *) notification

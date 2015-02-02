@@ -35,7 +35,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);
 void releaseCTData(PROJECT_DATA data);
 
-/**Donwload.c**/
+/**Download.c**/
 void initializeDNSCache();
 void releaseDNSCache();
 int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled);

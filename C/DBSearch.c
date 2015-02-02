@@ -36,10 +36,6 @@ typedef struct buildTablePointer
 #define TABLE_NAME_TAG		"rakSearch2"
 #define TABLE_NAME_CORRES	"rakSearch3"
 
-#define RDBS_TYPE_AUTHOR 	1
-#define RDBS_TYPE_TAG		2
-#define RDBS_TYPE_TYPE		3
-
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project);
 void updateElementCount(byte type, int change);
 
