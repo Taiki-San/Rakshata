@@ -478,10 +478,12 @@
 		B60DE2831A0D72C8003EA058 /* RakList */ = {
 			isa = PBXGroup;
 			children = (
-				B60DE2841A0D72F4003EA058 /* RakListScrollView.h */,
-				B60DE2851A0D72F4003EA058 /* RakListScrollView.m */,
 				B6B46DAE18FB34FE00EB1FE6 /* RakList.h */,
 				B6B46DAF18FB34FE00EB1FE6 /* RakList.m */,
+				B60DE2841A0D72F4003EA058 /* RakListScrollView.h */,
+				B60DE2851A0D72F4003EA058 /* RakListScrollView.m */,
+				B68B5223191AE3050057F35A /* RakScroller.h */,
+				B68B5224191AE3050057F35A /* RakScroller.m */,
 			);
 			name = RakList;
 			sourceTree = "<group>";
@@ -525,6 +527,49 @@
 			name = "CT List";
 			sourceTree = "<group>";
 		};
+		B62935DC1A803A9400DE20E2 /* RakText */ = {
+			isa = PBXGroup;
+			children = (
+				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
+				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
+				B61A790818E389F300D8E0E0 /* RakText.h */,
+				B61A790918E389F300D8E0E0 /* RakText.m */,
+				B6A1E36318F99CD7001D1F8E /* RakTextCell.h */,
+				B6A1E36418F99CD7001D1F8E /* RakTextCell.m */,
+			);
+			name = RakText;
+			sourceTree = "<group>";
+		};
+		B62935DD1A803AAE00DE20E2 /* Window */ = {
+			isa = PBXGroup;
+			children = (
+				B61DD14B18E23915009D51E3 /* RakBorder.h */,
+				B61DD14C18E23915009D51E3 /* RakBorder.m */,
+				B623390818DBB7F800FC188A /* RakContentView.h */,
+				B623390918DBB7F800FC188A /* RakContentView.m */,
+				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
+				B6FCB424196C1F8E0026C64C /* RakForegroundView.m */,
+				B6EBD80319538B6B00642EB8 /* RakPopover.h */,
+				B6EBD80419538B6B00642EB8 /* RakPopover.m */,
+				B6A1E36618F9E92F001D1F8E /* RakWindow.h */,
+				B6A1E36718F9E92F001D1F8E /* RakWindow.m */,
+			);
+			name = Window;
+			sourceTree = "<group>";
+		};
+		B62935DE1A803AD800DE20E2 /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */,
+				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
+				B6CC724D18723121003A745B /* RakButton.h */,
+				B6E5146418771492006470ED /* RakButton.m */,
+				B64C926619571DDF000D60CC /* RakSegmentedButtonCell.h */,
+				B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */,
+			);
+			name = Button;
+			sourceTree = "<group>";
+		};
 		B64B74F5195909030015B16D /* OptimizationProfiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -563,6 +608,8 @@
 			isa = PBXGroup;
 			children = (
 				B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */,
+				B678675518F5F4A8004AA6B4 /* RakTabContentTemplate.h */,
+				B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */,
 				B67983A618DD192E007F18CD /* RakTabView.h */,
 				B621824018732CB0008AC5DD /* RakTabView.m */,
 				B64B2A73198C6CC20044344B /* RakTabViewTools.h */,
@@ -819,42 +866,19 @@
 		B6CC724918723084003A745B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B62935DE1A803AD800DE20E2 /* Button */,
 				B6694F55194A8A8200D656A9 /* Drag'n Drop */,
-				B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */,
-				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
-				B61DD14B18E23915009D51E3 /* RakBorder.h */,
-				B61DD14C18E23915009D51E3 /* RakBorder.m */,
-				B6CC724D18723121003A745B /* RakButton.h */,
-				B6E5146418771492006470ED /* RakButton.m */,
-				B623390818DBB7F800FC188A /* RakContentView.h */,
-				B623390918DBB7F800FC188A /* RakContentView.m */,
 				B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */,
 				B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */,
-				B6FCB423196C1F8E0026C64C /* RakForegroundView.h */,
-				B6FCB424196C1F8E0026C64C /* RakForegroundView.m */,
 				B642480919D57DF000679D78 /* RakGradientView.h */,
 				B642480A19D57DF000679D78 /* RakGradientView.m */,
 				B60DE2831A0D72C8003EA058 /* RakList */,
-				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
-				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
-				B6EBD80319538B6B00642EB8 /* RakPopover.h */,
-				B6EBD80419538B6B00642EB8 /* RakPopover.m */,
 				B68B5229191AE38D0057F35A /* RakProgressBar.h */,
 				B68B522A191AE38D0057F35A /* RakProgressBar.m */,
-				B68B5223191AE3050057F35A /* RakScroller.h */,
-				B68B5224191AE3050057F35A /* RakScroller.m */,
-				B64C926619571DDF000D60CC /* RakSegmentedButtonCell.h */,
-				B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */,
-				B678675518F5F4A8004AA6B4 /* RakTabContentTemplate.h */,
-				B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */,
-				B61A790818E389F300D8E0E0 /* RakText.h */,
-				B61A790918E389F300D8E0E0 /* RakText.m */,
-				B6A1E36318F99CD7001D1F8E /* RakTextCell.h */,
-				B6A1E36418F99CD7001D1F8E /* RakTextCell.m */,
-				B6A1E36618F9E92F001D1F8E /* RakWindow.h */,
-				B6A1E36718F9E92F001D1F8E /* RakWindow.m */,
+				B62935DC1A803A9400DE20E2 /* RakText */,
 				B67E079118E765C10007EB44 /* utils.h */,
 				B62266A61A55D5B3000A5138 /* Utils.m */,
+				B62935DD1A803AAE00DE20E2 /* Window */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
