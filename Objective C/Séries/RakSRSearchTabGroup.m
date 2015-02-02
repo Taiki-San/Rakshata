@@ -68,7 +68,7 @@
 }
 
 #define BORDER_LIST 3
-#define BORDERL_SEARCH_LIST 10
+#define BORDER_SEARCH_LIST 4
 
 - (NSRect) getSearchFrame : (NSRect) frame
 {
@@ -82,7 +82,7 @@
 
 - (NSRect) getTableFrame : (NSRect) frame
 {
-	frame.size.height -= SR_SEARCH_FIELD_HEIGHT + BORDERL_SEARCH_LIST;
+	frame.size.height -= SR_SEARCH_FIELD_HEIGHT + BORDER_SEARCH_LIST;
 	
 	frame.size.width -= 2 * BORDER_LIST;
 	
