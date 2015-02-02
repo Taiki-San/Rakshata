@@ -79,6 +79,18 @@
 		author.hidden = YES;
 		[self addSubview:author];
 	}
+	
+	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_TYPE];
+	{
+		type.hidden = YES;
+		[self addSubview:type];
+	}
+	
+	tag = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :4] :SEARCH_BAR_ID_TAG];
+	{
+		tag.hidden = YES;
+		[self addSubview:tag];
+	}
 }
 
 - (void) dealloc
@@ -99,6 +111,8 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[author setFrame:[self getBlockFrame:frameRect :1]];
+		[type setFrame:[self getBlockFrame:frameRect :3]];
+		[tag setFrame:[self getBlockFrame:frameRect :4]];
 	}
 	
 	byte position = 0;
@@ -120,6 +134,8 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[author resizeAnimation:[self getBlockFrame:frameRect :1]];
+		[type resizeAnimation:[self getBlockFrame:frameRect :3]];
+		[tag resizeAnimation:[self getBlockFrame:frameRect :4]];
 	}
 	
 	byte position = 0;
@@ -162,14 +178,16 @@
 
 - (NSRect) getBlockFrame : (NSRect) frame : (byte) position
 {
+	CGFloat blockWidth;
+	
 	frame.size.height = SR_SEARCH_TAB_EXPANDED_HEIGHT - 2 * BORDER_HORIZON;
 	
 	frame.size.width -= BORDER_VERT;
 	frame.size.width /= 4;
-	frame.size.width *= position;
+	blockWidth = frame.size.width;
 	frame.size.width -= BORDER_VERT;
 	
-	frame.origin.x = BORDER_VERT;
+	frame.origin.x = (position - 1) * blockWidth + BORDER_VERT;
 	frame.origin.y = BORDER_HORIZON;
 	
 	return frame;
@@ -239,6 +257,8 @@
 	[NSAnimationContext beginGrouping];
 	
 	author.hidden = _collapsed;
+	type.hidden = _collapsed;
+	tag.hidden = _collapsed;
 	placeholder.animator.alphaValue = _collapsed;
 	
 	__block BOOL getCollapsed = _collapsed;

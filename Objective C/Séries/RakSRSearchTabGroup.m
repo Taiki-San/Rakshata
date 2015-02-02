@@ -26,7 +26,7 @@
 		if(list != nil)
 			[self addSubview:[list getContent]];
 		
-		searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] :SEARCH_BAR_ID_AUTHOR];
+		searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] :_ID];
 		if(searchBar != nil)
 		{
 			[self addSubview:searchBar];
@@ -34,8 +34,7 @@
 		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 3;
-		self.layer.borderWidth = 1;
-		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BORDER :nil].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
 	}
 	
 	return self;
