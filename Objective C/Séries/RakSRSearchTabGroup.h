@@ -10,13 +10,15 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchList : RakList
+@interface RakSRSearchTabGroup : NSView
 {
-	byte _type;
+	byte _ID;
 	
-	uint * indexes;
+	RakSRSearchList * list;
+	RakSRSearchBar * searchBar;
 }
 
-- (instancetype) init : (NSRect) frame : (byte) type;
+- (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;
+- (void) resizeAnimation:(NSRect)frameRect;
 
 @end

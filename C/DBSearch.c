@@ -134,7 +134,7 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &(output->readProject), NULL) != SQLITE_OK)
+	if(sqlite3_prepare_v2(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &(output->readProject), NULL) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
@@ -518,7 +518,11 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 			*typeID = data;
 	}
 
-	sqlite3_finalize(request);
+	sqlite3_reset(request);
+	
+	if(table == NULL)
+		sqlite3_finalize(request);
+	
 	return true;
 }
 

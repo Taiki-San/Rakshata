@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PLACEHOLDER @"Recherche et filtres"
 #define OFFSET 22
 
 @implementation RakSRSearchBarCell
@@ -34,7 +33,10 @@
 	//we couldn't fix the y positionning. It seems that kill this function achieve that without significant issues
 	
 	if([self.stringValue isEqualToString:@""])
+	{
 		[super endEditing:textObj];
+		[(RakSRSearchBar *) self.controlView updatePlaceholder:YES];
+	}
 }
 
 - (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
@@ -74,12 +76,15 @@
 
 @implementation RakSRSearchBar
 
-- (instancetype) initWithFrame : (NSRect) frameRect
+- (instancetype) initWithFrame : (NSRect) frameRect : (byte) ID
 {
 	self = [super initWithFrame:frameRect];
 	
 	if(self != nil)
 	{
+		_ID = ID;
+		_currentPlaceholderState = YES;
+		
 		[self initCell];
 		
 		[self setBezeled: NO];
@@ -137,13 +142,13 @@
 	}
 }
 
-+ (void) triggeringSearchBar : (BOOL) goingIn
++ (void) triggeringSearchBar : (BOOL) goingIn : (byte) ID
 {
 	if([NSThread isMainThread])
 		[[NSNotificationCenter defaultCenter] postNotificationName: SR_NOTIF_NAME_SEARCH_TRIGGERED
-															object:nil userInfo: @{SR_NOTIF_NEW_STATE:@(goingIn)}];
+															object:@(ID * SEARCH_BAR_ID_NBCASES + 1) userInfo: @{SR_NOTIF_NEW_STATE:@(goingIn)}];
 	else
-		dispatch_async(dispatch_get_main_queue(), ^{	[self triggeringSearchBar:goingIn];	});
+		dispatch_async(dispatch_get_main_queue(), ^{	[self triggeringSearchBar:goingIn:ID];	});
 }
 
 + (Class)cellClass
@@ -173,16 +178,34 @@
 	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
 }
 
+- (NSString *) placeholderMessage
+{
+	if(_ID == SEARCH_BAR_ID_MAIN)
+		return @"Recherche et filtres";
+	
+	else if(_ID == SEARCH_BAR_ID_AUTHOR)
+		return @"Auteur";
+	
+	else if(_ID == SEARCH_BAR_ID_TAG)
+		return @"Tags";
+	
+	else if(_ID == SEARCH_BAR_ID_TYPE)
+		return @"Catégories";
+	
+	NSLog(@"Not supported yet");
+	return @"Oops, erreur :/";
+}
+
 - (void) updatePlaceholder : (BOOL) inactive
 {
 	_currentPlaceholderState = inactive;
 	
-	[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:PLACEHOLDER attributes:
+	[self.cell setPlaceholderAttributedString:[[NSAttributedString alloc] initWithString:[self placeholderMessage] attributes:
 											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
 												 NSBackgroundColorAttributeName : [RakSRSearchBar getBackgroundColor],
 												 NSBaselineOffsetAttributeName : @(inactive ? -3 : 0)}]];
 
-	[RakSRSearchBar triggeringSearchBar : !inactive];
+	[RakSRSearchBar triggeringSearchBar : !inactive : _ID];
 }
 
 - (void) willLooseFocus

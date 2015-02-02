@@ -84,7 +84,7 @@
 		[self addSubview:tagRail];
 	}
 	
-	search = [[RakSRSearchBar alloc] initWithFrame:searchButtonFrame];
+	search = [[RakSRSearchBar alloc] initWithFrame:searchButtonFrame : SEARCH_BAR_ID_MAIN];
 	if(search != nil)
 	{
 		[self addSubview:search];
@@ -210,7 +210,7 @@
 	frame.origin.x = frame.size.width - SR_HEADER_INTERBUTTON_WIDTH;
 	frame.origin.y = HEIGHT_SINGLE_ROW / 2;
 
-	frame.size.height = 22;
+	frame.size.height = SR_SEARCH_FIELD_HEIGHT;
 	frame.origin.y -= frame.size.height / 2;
 
 	frame.size.width = 250;

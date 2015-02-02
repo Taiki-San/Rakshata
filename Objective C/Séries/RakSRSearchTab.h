@@ -18,6 +18,7 @@
 #define SR_SEARCH_TAB_EXPANDED_HEIGHT 150
 
 #import "RakSRSearchList.h"
+#import "RakSRSearchTabGroup.h"
 
 @interface RakSRSearchTab : NSView
 {
@@ -27,6 +28,8 @@
 	NSArray * gradients;
 	
 	RakText * placeholder;
+	
+	RakSRSearchTabGroup * author, *tag, * type;
 }
 
 @property CGFloat height;

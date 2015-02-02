@@ -141,6 +141,17 @@
 
 #pragma mark - Delegate
 
+- (BOOL) makeFirstResponder:(NSResponder *)aResponder
+{
+	id old = _imatureFirstResponder;
+	
+	_imatureFirstResponder = aResponder;
+	BOOL retValue = [super makeFirstResponder:aResponder];
+	_imatureFirstResponder = old;
+	
+	return retValue;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])

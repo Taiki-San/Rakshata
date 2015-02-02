@@ -24,6 +24,7 @@
 
 @property (readonly, getter=isFullscreen) BOOL fullscreen;
 @property (weak) NSView* defaultDispatcher;
+@property (strong) NSResponder* imatureFirstResponder;
 
 - (void) configure;
 

@@ -31,6 +31,7 @@
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935D51A7E71E800DE20E2 /* DBSearch.c in Sources */ = {isa = PBXBuildFile; fileRef = B62935D41A7E71E800DE20E2 /* DBSearch.c */; };
 		B62935D71A7E848A00DE20E2 /* tagManagement.c in Sources */ = {isa = PBXBuildFile; fileRef = B62935D61A7E848A00DE20E2 /* tagManagement.c */; };
+		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62C9EF318BD73D500CE910F /* DBTools.c in Sources */ = {isa = PBXBuildFile; fileRef = B62C9EF218BD73D500CE910F /* DBTools.c */; };
 		B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */ = {isa = PBXBuildFile; fileRef = B62DBB891A118AEF007EBAC6 /* RakDRM.m */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
@@ -221,6 +222,8 @@
 		B62935D41A7E71E800DE20E2 /* DBSearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBSearch.c; path = C/DBSearch.c; sourceTree = "<group>"; };
 		B62935D61A7E848A00DE20E2 /* tagManagement.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tagManagement.c; path = C/tagManagement.c; sourceTree = "<group>"; };
 		B62935D81A80016300DE20E2 /* db_external.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = db_external.h; path = C/db_external.h; sourceTree = "<group>"; };
+		B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTabGroup.h; path = "Séries/RakSRSearchTabGroup.h"; sourceTree = "<group>"; };
+		B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchTabGroup.m; path = "Séries/RakSRSearchTabGroup.m"; sourceTree = "<group>"; };
 		B62C9EF218BD73D500CE910F /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/DBTools.c; sourceTree = "<group>"; };
 		B62C9EF418BD742F00CE910F /* db.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = db.h; sourceTree = "<group>"; };
 		B62DBB891A118AEF007EBAC6 /* RakDRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDRM.m; path = Reader/RakDRM.m; sourceTree = "<group>"; };
@@ -735,6 +738,8 @@
 				B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */,
 				B6CBD2A11A7C2E380051EECB /* RakSRSearchTab.h */,
 				B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */,
+				B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */,
+				B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -1296,6 +1301,7 @@
 				B6F6ECED18A3001400E3B55B /* pbkdf2.c in Sources */,
 				B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */,
 				B678675118F5EF6F004AA6B4 /* RakSRRessources.m in Sources */,
+				B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */,
 				B6F6ECF418A3001400E3B55B /* download.c in Sources */,
 				B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */,
 				B6F6ECEF18A3001400E3B55B /* Serpent.c in Sources */,

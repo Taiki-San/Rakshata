@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#include "db.h"
+
 #define SHADOW_HEIGHT 8
 
 @implementation RakSRSearchTab
@@ -42,6 +44,8 @@
 			[self addSubview:placeholder];
 		}
 		
+		[self initContent];
+		
 		NSMutableArray * _gradients = [NSMutableArray arrayWithCapacity:4];
 		for(byte position = 0; position < 4; position++)
 		{
@@ -67,6 +71,16 @@
 	return self;
 }
 
+- (void) initContent
+{
+	author = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame : _bounds : 1] :SEARCH_BAR_ID_AUTHOR];
+	if(author != nil)
+	{
+		author.hidden = YES;
+		[self addSubview:author];
+	}
+}
+
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -76,9 +90,16 @@
 
 - (void) setFrame : (NSRect) frameRect
 {
+	CGFloat oldWidth = self.bounds.size.width;
+	
 	[super setFrame:frameRect];
 	
 	[placeholder setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
+	
+	if(oldWidth != frameRect.size.width)
+	{
+		[author setFrame:[self getBlockFrame:frameRect :1]];
+	}
 	
 	byte position = 0;
 	for(RakGradientView * gradient in gradients)
@@ -91,9 +112,15 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
+	CGFloat oldWidth = self.bounds.size.width;
+
 	[self.animator setFrame:frameRect];
-	
 	[placeholder.animator setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
+	
+	if(oldWidth != frameRect.size.width)
+	{
+		[author resizeAnimation:[self getBlockFrame:frameRect :1]];
+	}
 	
 	byte position = 0;
 	for(RakGradientView * gradient in gradients)
@@ -101,6 +128,17 @@
 		gradient.animator.frame = [self getShadowFrame:frameRect :position++];
 	}
 }
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(_isVisible && _collapsed)
+	{
+		[[[NSColor blackColor] colorWithAlphaComponent:0.3] setFill];
+		NSRectFill(dirtyRect);
+	}
+}
+
+#pragma mark - Frame
 
 //Position: 0 = left, 1 = bottom, 2 = right, 3 = top
 - (NSRect) getShadowFrame : (NSRect) frame : (byte) position
@@ -119,13 +157,22 @@
 	return frame;
 }
 
-- (void) drawRect:(NSRect)dirtyRect
+#define BORDER_HORIZON 	10
+#define BORDER_VERT 	25
+
+- (NSRect) getBlockFrame : (NSRect) frame : (byte) position
 {
-	if(_isVisible && _collapsed)
-	{
-		[[[NSColor blackColor] colorWithAlphaComponent:0.3] setFill];
-		NSRectFill(dirtyRect);
-	}
+	frame.size.height = SR_SEARCH_TAB_EXPANDED_HEIGHT - 2 * BORDER_HORIZON;
+	
+	frame.size.width -= BORDER_VERT;
+	frame.size.width /= 4;
+	frame.size.width *= position;
+	frame.size.width -= BORDER_VERT;
+	
+	frame.origin.x = BORDER_VERT;
+	frame.origin.y = BORDER_HORIZON;
+	
+	return frame;
 }
 
 #pragma mark - Colors
@@ -185,12 +232,14 @@
 	if(silentUpdate)
 	{
 		[placeholder setHidden:!_collapsed];
+		[author setHidden:_collapsed];
 		return;
 	}
 	
 	[NSAnimationContext beginGrouping];
 	
-	placeholder.alphaValue = _collapsed;
+	author.hidden = _collapsed;
+	placeholder.animator.alphaValue = _collapsed;
 	
 	__block BOOL getCollapsed = _collapsed;
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
@@ -216,23 +265,41 @@
 
 - (void) searchWasTriggered : (NSNotification *) notification
 {
+	NSNumber * ID = notification.object;
+	if(ID == nil || ![ID isKindOfClass:[NSNumber class]])
+		return;
+	
 	NSDictionary * dict = notification.userInfo;
 	NSNumber * number;
 	
 	if(dict != nil 	&& (number = [dict objectForKey:SR_NOTIF_NEW_STATE]) != nil && [number isKindOfClass:[NSNumber class]] && _isVisible != number.boolValue)
 	{
-		_isVisible = number.boolValue;
-		
-		if(_isVisible)
-		{
-			[self updateCollapseState : YES : YES];
-			_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
-		}
-		else
-			_height = SRSEARCHTAB_DEFAULT_HEIGHT;
-		
-		[self updateGeneralFrame];
+		if([ID unsignedCharValue] == SEARCH_BAR_ID_MAIN_TRIGGERED || [ID unsignedCharValue] ==  SEARCH_BAR_ID_AUTHOR_TRIGGERED)
+			[self mainSearchWasTriggered:number.boolValue];
 	}
+}
+
+- (void) mainSearchWasTriggered : (BOOL) isVisible
+{
+	//We need to check if the focus is not just changing to an other search bar
+	if(!isVisible && [((RakWindow *)self.window).imatureFirstResponder class] == [RakSRSearchBar class])
+	{
+		//Basic check, if the previous firstResponder was a search bar, we block the request
+		if([self.window.firstResponder class] == [RakWindow class])
+			return;
+	}
+	
+	_isVisible = isVisible;
+	
+	if(_isVisible)
+	{
+		[self updateCollapseState : YES : YES];
+		_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
+	}
+	else
+		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
+	
+	[self updateGeneralFrame];
 }
 
 @end
