@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-wchar_t * getTagForCode(uint32_t tagID)
+charType * getTagForCode(uint32_t tagID)
 {
 	if(tagID < 10)			return L"Shonen";
 	else if(tagID < 20)		return L"Shojo";
@@ -25,3 +25,4 @@ wchar_t * getTagForCode(uint32_t tagID)
 	
 	return L"Hentai";
 }
+

@@ -317,10 +317,10 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
 			
 			if(readingName == nil)			output[cache].readingName[0] = 0;
-			else							wcsncpy(output[cache].readingName, (wchar_t*) [readingName cStringUsingEncoding:NSUTF32StringEncoding], MAX_TOME_NAME_LENGTH);
+			else							wcsncpy(output[cache].readingName, (charType*) [readingName cStringUsingEncoding:NSUTF32StringEncoding], MAX_TOME_NAME_LENGTH);
 			
 			if(description == nil)			output[cache].description[0] = 0;
-			else							wcsncpy(output[cache].description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], TOME_DESCRIPTION_LENGTH);
+			else							wcsncpy(output[cache].description, (charType*) [description cStringUsingEncoding:NSUTF32StringEncoding], TOME_DESCRIPTION_LENGTH);
 			
 			if(priceObj == nil || ![priceObj isKindOfClass:[NSNumber class]])	output[cache].price = UINT_MAX;
 			else							output[cache].price = [priceObj unsignedIntValue];
@@ -430,12 +430,12 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.tag = [tag unsignedIntValue];
 	data.isInitialized = true;
 	
-	wcsncpy(data.projectName, (wchar_t*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
-	wcsncpy(data.authorName, (wchar_t*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
+	wcsncpy(data.projectName, (charType*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
+	wcsncpy(data.authorName, (charType*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
 	
 	if(description != nil)
 	{
-		wcsncpy(data.description, (wchar_t*) [description cStringUsingEncoding:NSUTF32StringEncoding], [description length]);
+		wcsncpy(data.description, (charType*) [description cStringUsingEncoding:NSUTF32StringEncoding], [description length]);
 		data.description[LENGTH_DESCRIPTION-1] = 0;
 	}
 	else

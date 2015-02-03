@@ -260,7 +260,7 @@ size_t ustrlen(const void *input)
     return (copy-1) - (unsigned char *)input;	//copy -1 pour la dernière itération
 }
 
-size_t wstrlen(const wchar_t * input)
+size_t wstrlen(const charType * input)
 {
 	if(input == NULL)	return 0;
 	
@@ -269,24 +269,24 @@ size_t wstrlen(const wchar_t * input)
 	return output - 1;
 }
 
-wchar_t * wstrdup(const wchar_t * input)
+charType * wstrdup(const charType * input)
 {
 	size_t length = wstrlen(input);
 
 	if(length == 0)
 		return NULL;
 	
-	wchar_t * output = malloc((length + 1) * sizeof(wchar_t));
+	charType * output = malloc((length + 1) * sizeof(charType));
 	if(output != NULL)
 	{
-		memcpy(output, input, length * sizeof(wchar_t));
+		memcpy(output, input, length * sizeof(charType));
 		output[length] = 0;
 	}
 	
 	return output;
 }
 
-void wstrncpy(wchar_t * output, size_t length, const wchar_t * input)
+void wstrncpy(charType * output, size_t length, const charType * input)
 {
 	size_t count = 0;
 	if(input == NULL)

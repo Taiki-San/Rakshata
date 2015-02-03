@@ -68,7 +68,7 @@ typedef struct data_loaded_from_download_list
 	CURL * curlHandler;
 	
     PROJECT_DATA* datas;
-	wchar_t *tomeName;
+	charType *tomeName;
 	
 	DATA_LOADED_TOME_DETAILS *listChapitreOfTome;	//Should be used to differentiate chapters from volumes
 	

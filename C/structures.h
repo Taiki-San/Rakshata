@@ -15,6 +15,8 @@
 #endif
 typedef byte rawData;
 
+typedef wchar_t charType;
+
 //Copied from sqlite3.h
 typedef struct sqlite3_stmt sqlite3_stmt;
 
@@ -30,8 +32,8 @@ typedef struct tome_metadata
 	int ID;
 	int readingID;
 	uint price;
-	wchar_t readingName[MAX_TOME_NAME_LENGTH];
-	wchar_t description[TOME_DESCRIPTION_LENGTH];
+	charType readingName[MAX_TOME_NAME_LENGTH];
+	charType description[TOME_DESCRIPTION_LENGTH];
 } META_TOME;
 
 typedef struct
@@ -82,7 +84,7 @@ typedef struct repository_data
 	//Bloc sans padding
 	
 	char website[REPO_WEBSITE_LENGTH];
-	wchar_t name[REPO_NAME_LENGTH];
+	charType name[REPO_NAME_LENGTH];
 	char URL[REPO_URL_LENGTH];
 	
 	//64b
@@ -113,12 +115,12 @@ typedef struct repository_data_extra
 
 typedef struct root_repository_data
 {
-	wchar_t name[REPO_NAME_LENGTH];
+	charType name[REPO_NAME_LENGTH];
 	
 	byte type;
 	char URL[REPO_URL_LENGTH];
 	
-	wchar_t ** descriptions;
+	charType ** descriptions;
 	char ** langueDescriptions;
 	uint nombreDescriptions;
 	
@@ -200,12 +202,12 @@ typedef struct dataProject
 	size_t nombreTomes;
 	size_t nombreTomesInstalled;
 	
-	wchar_t description[LENGTH_DESCRIPTION];
+	charType description[LENGTH_DESCRIPTION];
 	
 	//2 x ((51 + 1) x 32b) = 52 x 64b
-	wchar_t projectName[LENGTH_PROJECT_NAME];
+	charType projectName[LENGTH_PROJECT_NAME];
 	bool favoris;
-	wchar_t authorName[LENGTH_AUTHORS];
+	charType authorName[LENGTH_AUTHORS];
 	bool japaneseOrder;
 	
 	//Un bloc de 64b complet
@@ -240,12 +242,12 @@ typedef struct dataProjectWithExtra
 	size_t nombreTomes;
 	size_t nombreTomesInstalled;
 	
-	wchar_t description[LENGTH_DESCRIPTION];
+	charType description[LENGTH_DESCRIPTION];
 	
 	//2 x ((51 + 1) x 32b) = 52 x 64b
-	wchar_t projectName[LENGTH_PROJECT_NAME];
+	charType projectName[LENGTH_PROJECT_NAME];
 	bool favoris;
-	wchar_t authorName[LENGTH_AUTHORS];
+	charType authorName[LENGTH_AUTHORS];
 	bool japaneseOrder;
 	
 	//Un bloc de 64b complet

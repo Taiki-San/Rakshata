@@ -22,7 +22,7 @@
 	{
 		_type = type;
 		
-		indexes = getSearchData(type, (wchar_t ***) &_data, &_nbData);
+		indexes = getSearchData(type, (charType ***) &_data, &_nbData);
 		if(indexes == NULL)
 			return nil;
 		
@@ -90,7 +90,7 @@
 {
 	if(rowIndex < _nbData)
 	{
-		return getStringForWchar(((wchar_t **) _data)[rowIndex]);
+		return getStringForWchar(((charType **) _data)[rowIndex]);
 	}
 	else
 		return @"Error D:";
@@ -135,10 +135,10 @@
 	if(selectedRowIndex != LIST_INVALID_SELECTION)
 	{
 		if(_type == RDBS_TYPE_AUTHOR)
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((wchar_t **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((charType **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
 
 		else if(_type == RDBS_TYPE_TAG)
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((wchar_t **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((charType **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
 	}
 }
 

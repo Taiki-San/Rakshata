@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-NSString * getStringForWchar(wchar_t * string)
+NSString * getStringForWchar(charType * string)
 {
 	if(string == NULL)
 		return @"";
@@ -20,7 +20,7 @@ NSString * getStringForWchar(wchar_t * string)
 	
 	do
 	{
-		output = [[NSString alloc] initWithData:[NSData dataWithBytes:string length:length * sizeof(wchar_t)] encoding:NSUTF32LittleEndianStringEncoding];
+		output = [[NSString alloc] initWithData:[NSData dataWithBytes:string length:length * sizeof(charType)] encoding:NSUTF32LittleEndianStringEncoding];
 		length--;
 		
 	} while(output == nil && length > 0);

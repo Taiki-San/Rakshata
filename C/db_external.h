@@ -61,4 +61,4 @@ void updateDatabase(bool forced);
 bool isPaidProject(PROJECT_DATA projectData);
 
 /**tagManagement.c**/
-wchar_t * getTagForCode(uint tagID);
+charType * getTagForCode(uint tagID);

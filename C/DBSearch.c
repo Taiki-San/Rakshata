@@ -46,7 +46,7 @@ void buildSearchTables(sqlite3 *_cache)
 	
 	sqlite3_stmt* request = NULL;
 	
-	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" BLOB UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		sqlite3_finalize(request);
@@ -201,7 +201,15 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 		case PULL_SEARCH_AUTHORID:
 		{
 			request = table->getAuthorID;
-			sqlite3_bind_blob(request, 1, project.authorName, sizeof(project.authorName), SQLITE_STATIC);
+			
+			size_t length = wstrlen(project.authorName);
+			char utf8[4 * length + 1];
+			if(utf8 == NULL)
+				return UINT_MAX;
+			
+			length = wchar_to_utf8(project.authorName, length, utf8, 4 * length + 1, 0);
+			
+			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
 			break;
 		}
 			
@@ -271,7 +279,12 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 		{
 			requestType = RDBS_TYPE_AUTHOR;
 			request = table->addAuthor;
-			sqlite3_bind_blob(request, 1, project.authorName, sizeof(project.authorName), SQLITE_STATIC);
+			
+			size_t length = wstrlen(project.authorName);
+			char utf8[4 * length + 1];
+			length = wchar_to_utf8(project.authorName, length, utf8, 4 * length + 1, 0);
+			
+			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
 			break;
 		}
 			
@@ -527,7 +540,7 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 }
 
 
-uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
+uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
 {
 	if(dataName == NULL || dataLength == NULL || cache == NULL)
 		return NULL;
@@ -537,7 +550,7 @@ uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
 	if(type == RDBS_TYPE_AUTHOR)
 	{
 		*dataLength = nbAuthor;
-		if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_AUTHOR";", -1, &request, NULL) != SQLITE_OK)
+		if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" ASC;", -1, &request, NULL) != SQLITE_OK)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_TAG)
@@ -556,7 +569,7 @@ uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
 		return NULL;
 	
 	uint pos = 0, length = *dataLength, * codes = malloc(length * sizeof(uint));
-	*dataName = malloc(length * sizeof(wchar_t *));
+	*dataName = malloc(length * sizeof(charType *));
 	
 	if(codes == NULL || *dataName == NULL)
 	{
@@ -571,18 +584,19 @@ uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength)
 	{
 		if(type == RDBS_TYPE_AUTHOR)
 		{
-			(*dataName)[pos] = malloc(REPO_NAME_LENGTH * sizeof(wchar_t));
+			(*dataName)[pos] = malloc(REPO_NAME_LENGTH * sizeof(charType));
 			if((*dataName)[pos] == NULL)
 				continue;
 			
-			const wchar_t * authorName = sqlite3_column_blob(request, 0);
-			if(authorName == NULL)
+			const char * utf8 = (const char *) sqlite3_column_text(request, 0);
+			
+			if(utf8 == NULL)
 			{
 				free((*dataName)[pos]);
 				continue;
 			}
 			
-			wstrncpy((*dataName)[pos], REPO_NAME_LENGTH, authorName);
+			utf8_to_wchar(utf8, strlen(utf8), (*dataName)[pos], REPO_NAME_LENGTH, 0);
 		}
 		else
 		{

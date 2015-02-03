@@ -207,7 +207,7 @@
 - (void) projectDataUpdate : (PROJECT_DATA) oldData : (PROJECT_DATA) newData
 {
 	uint length;
-	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(wchar_t)))
+	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(charType)))
 	{
 		NSString *projectNameString = getStringForWchar(newData.projectName);
 

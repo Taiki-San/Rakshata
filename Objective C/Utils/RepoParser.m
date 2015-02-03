@@ -16,7 +16,7 @@
 
 #pragma mark - Utilities
 
-wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
+charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 {
 	//Initial sanity checks
 	if(array == nil || ![array isKindOfClass:[NSArray class]] || languages == NULL || length == NULL)
@@ -28,7 +28,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	if(localLength == 0)
 		return NULL;
 	
-	wchar_t ** output = calloc(localLength, sizeof(wchar_t *));
+	charType ** output = calloc(localLength, sizeof(charType *));
 	*languages = calloc(localLength, sizeof(char*));
 	
 	if(output == NULL || *languages == NULL)
@@ -69,7 +69,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		//Memory allocation
 		lengthDescription = [description length];
 		
-		output[pos] = malloc((lengthDescription + 1) * sizeof(wchar_t));
+		output[pos] = malloc((lengthDescription + 1) * sizeof(charType));
 		if(output[pos] == NULL)
 		{
 			failure++;
@@ -87,7 +87,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		}
 		
 		//Copy
-		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], (lengthDescription + 1) * sizeof(wchar_t));
+		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], (lengthDescription + 1) * sizeof(charType));
 		memcpy((*languages)[pos++], [language cStringUsingEncoding:NSASCIIStringEncoding], lengthLanguage + 1);
 	}
 
@@ -101,7 +101,7 @@ wchar_t ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	}
 	else if(failure != 0)	//If there was any error, we drop the unecessary memory
 	{
-		void * tmp = realloc(output, pos * sizeof(wchar_t*));
+		void * tmp = realloc(output, pos * sizeof(charType*));
 		if(tmp != NULL)
 			output = tmp;
 		
@@ -334,7 +334,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	
 	bool trusted;
 	uint nbDescriptions = 0;
-	wchar_t ** descriptions = NULL;
+	charType ** descriptions = NULL;
 	char ** languages;
 	
 	ROOT_REPO_DATA * root = calloc(1, sizeof(ROOT_REPO_DATA)), *rootWip = root;
@@ -491,7 +491,7 @@ ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem)
 
 #pragma mark - Linearizer
 
-NSArray * rebuildDescriptions(wchar_t ** descriptions, char ** langueDescriptions, uint nombreDescriptions)
+NSArray * rebuildDescriptions(charType ** descriptions, char ** langueDescriptions, uint nombreDescriptions)
 {
 	if(descriptions == NULL || langueDescriptions == NULL || nombreDescriptions == 0)
 		return nil;

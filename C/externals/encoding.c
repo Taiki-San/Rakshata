@@ -92,7 +92,7 @@ const static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 static char decoding_table[256] = {-1};
 const static int mod_table[] = {0, 2, 1};
 
-char * base64_encode_wchar(const wchar_t *data, size_t input_length, size_t *output_length)
+char * base64_encode_charType(const charType *data, size_t input_length, size_t *output_length)
 {
 	unsigned char utf8Data[4 * input_length];
 	size_t length = wchar_to_utf8(data, input_length, (char *) utf8Data, sizeof(utf8Data), 0);

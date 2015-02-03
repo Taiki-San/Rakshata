@@ -21,7 +21,7 @@ void decToHex(const unsigned char *input, size_t length, char *output);
 
 //base-64
 
-char * base64_encode_wchar(const wchar_t *data, size_t input_length, size_t *output_length);
+char * base64_encode_wchar(const charType *data, size_t input_length, size_t *output_length);
 char *base64_encode(const unsigned char *data, size_t input_length, size_t *output_length);
 unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length);
 

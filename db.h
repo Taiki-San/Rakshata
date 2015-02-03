@@ -80,7 +80,7 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 void checkIfRemainingAndDelete(uint data, byte type);
 
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
-uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength);
+uint * getSearchData(byte type, charType *** dataName, uint * dataLength);
 
 /**DBRefresh.c**/
 void resetUpdateDBCache();

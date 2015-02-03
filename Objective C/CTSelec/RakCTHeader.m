@@ -60,7 +60,7 @@
 - (void) updateProjectDiff : (PROJECT_DATA) oldData : (PROJECT_DATA) newData
 {
 	uint length;
-	if((length = wstrlen(oldData.description)) != wstrlen(newData.description) || memcmp(oldData.description, newData.description, length * sizeof(wchar_t)))
+	if((length = wstrlen(oldData.description)) != wstrlen(newData.description) || memcmp(oldData.description, newData.description, length * sizeof(charType)))
 	{
 		[synopsis updateProject : newData];
 	}

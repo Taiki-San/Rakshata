@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-NSString * getStringForWchar(wchar_t * string);
+NSString * getStringForWchar(charType * string);
 
 #import "RakWindow.h"
 

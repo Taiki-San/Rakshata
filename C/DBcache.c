@@ -854,7 +854,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 							//Yep, descriptions are a pain in the ass
 							if(currentElem->nombreDescriptions > 0)
 							{
-								currentElem->descriptions = calloc(currentElem->nombreDescriptions, sizeof(wchar_t*));
+								currentElem->descriptions = calloc(currentElem->nombreDescriptions, sizeof(charType*));
 								currentElem->langueDescriptions = calloc(currentElem->nombreDescriptions, sizeof(char*));
 								
 								if(currentElem->descriptions != NULL && currentElem->langueDescriptions != NULL)
@@ -862,7 +862,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 									for(uint posDesc = 0; posDesc < currentElem->nombreDescriptions; posDesc++)
 									{
 										uint lengthDesc = wstrlen(currentOld->descriptions[posDesc]), lengthLanguage = strlen(currentOld->langueDescriptions[posDesc]);
-										currentElem->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(wchar_t));
+										currentElem->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(charType));
 										currentElem->langueDescriptions[posDesc] = malloc((lengthLanguage + 1) * sizeof(char));
 										
 										if(currentElem->descriptions[posDesc] == NULL || currentElem->langueDescriptions[posDesc] == NULL)
@@ -882,7 +882,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 										}
 										else
 										{
-											memcpy(currentElem->descriptions[posDesc], currentOld->descriptions[posDesc], lengthDesc * sizeof(wchar_t));
+											memcpy(currentElem->descriptions[posDesc], currentOld->descriptions[posDesc], lengthDesc * sizeof(charType));
 											memcpy(currentElem->langueDescriptions[posDesc], currentOld->langueDescriptions[posDesc], lengthLanguage * sizeof(char));
 											currentElem->descriptions[posDesc][lengthDesc] = 0;
 											currentElem->langueDescriptions[posDesc][lengthLanguage] = 0;
