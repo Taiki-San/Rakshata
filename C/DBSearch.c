@@ -46,8 +46,6 @@ void buildSearchTables(sqlite3 *_cache)
 	if(_cache == NULL)
 		return;
 	
-	printf( "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)");\n");
-	
 	sqlite3_stmt* request = NULL;
 	
 	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
@@ -197,6 +195,11 @@ void flushSearchJumpTable(void * _table)
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 {
+	return _getFromSearch(_table, type, type == PULL_SEARCH_AUTHORID ? (void*) &(project.authorName) : (type == PULL_SEARCH_TAGID ? &(project.tag) : &(project.type)));
+}
+
+uint _getFromSearch(void * _table, byte type, void * data)
+{
 	SEARCH_JUMPTABLE table = _table;
 
 	if(_table == NULL)
@@ -215,12 +218,12 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 		{
 			request = table->getAuthorID;
 			
-			size_t length = wstrlen(project.authorName);
+			size_t length = wstrlen((charType *) data);
 			char utf8[4 * length + 1];
 			if(utf8 == NULL)
 				return UINT_MAX;
 			
-			length = wchar_to_utf8(project.authorName, length, utf8, 4 * length + 1, 0);
+			length = wchar_to_utf8((charType *) data, length, utf8, 4 * length + 1, 0);
 			
 			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
 			break;
@@ -229,14 +232,14 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 		case PULL_SEARCH_TAGID:
 		{
 			request = table->getTagID;
-			sqlite3_bind_int64(request, 1, project.tag);
+			sqlite3_bind_int64(request, 1, *(uint *) data);
 			break;
 		}
 			
 		case PULL_SEARCH_TYPEID:
 		{
 			request = table->getTypeID;
-			sqlite3_bind_int64(request, 1, project.type);
+			sqlite3_bind_int64(request, 1, *(uint *) data);
 			break;
 		}
 			

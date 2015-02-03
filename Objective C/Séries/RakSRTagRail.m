@@ -53,30 +53,32 @@
 - (void) receiveNotifTag : (NSNotification *) notification
 {
 	NSString * string;
-	NSNumber * opType;
+	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.userInfo == nil || (string = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![string isKindOfClass:[NSString class]])
+	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
+	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 	
-	[self performNotification:string :YES : insertion];
+	[self performNotification:string : [ID unsignedIntValue] : YES : insertion];
 }
 
 - (void) receiveNotifAuthor : (NSNotification *) notification
 {
 	NSString * string;
-	NSNumber * opType;
+	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.userInfo == nil || (string = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![string isKindOfClass:[NSString class]])
+	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
+	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 
-	[self performNotification: string : NO : insertion];
+	[self performNotification: string : [ID unsignedIntValue] : NO : insertion];
 }
 
-- (void) performNotification : (NSString *) object : (BOOL) wantTag : (BOOL) insertion
+- (void) performNotification : (NSString *) object : (uint) ID : (BOOL) wantTag : (BOOL) insertion
 {
 	if(insertion)
 		[self addTag:object];

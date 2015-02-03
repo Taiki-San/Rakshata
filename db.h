@@ -73,6 +73,7 @@ void * buildSearchJumpTable(sqlite3 * _cache);
 void flushSearchJumpTable(void * _table);
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
+uint _getFromSearch(void * _table, byte type, void * data);
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project);
 bool removeFromSearch(void * _table, uint cacheID);
 bool updateProjectSearch(void * _table, PROJECT_DATA project);

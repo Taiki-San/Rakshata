@@ -134,11 +134,18 @@
 {
 	if(selectedRowIndex != LIST_INVALID_SELECTION)
 	{
+		NSString * notificationName;
+
 		if(_type == RDBS_TYPE_AUTHOR)
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((charType **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			notificationName = SR_NOTIFICATION_AUTHOR;
 
 		else if(_type == RDBS_TYPE_TAG)
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((charType **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			notificationName = SR_NOTIFICATION_TAG;
+		
+		else
+			return;
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:getStringForWchar(((charType **) _data)[selectedRowIndex]) userInfo:@{SR_NOTIF_CACHEID : @(indexes[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
 	}
 }
 

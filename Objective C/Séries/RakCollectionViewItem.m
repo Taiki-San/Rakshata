@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#include "db.h"
+
 static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 
 enum
@@ -128,6 +130,11 @@ enum
 	return image;
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	
+}
+
 - (void) mouseUp:(NSEvent *)theEvent
 {
 	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -137,11 +144,21 @@ enum
 	
 	if(NSPointInRect(point, mainTag.frame))
 	{
-		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(getTagForCode(_project.tag)), SR_NOTIF_OPTYPE : @(YES)}];
+		uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.tag));
+		
+		if(ID != UINT_MAX)
+		{
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(_project.tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+		}
 	}
 	else if(NSPointInRect(point, author.frame))
 	{
-		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(_project.authorName), SR_NOTIF_OPTYPE : @(YES)}];
+		uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_project.authorName));
+		
+		if(ID != UINT_MAX)
+		{
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_project.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+		}
 	}
 	else if(point.y > mainTag.frame.origin.y)	//We exclude when we are below the main tag
 	{
