@@ -15,6 +15,9 @@
 	byte _type;
 	
 	uint * indexes;
+	
+	BOOL lastWasSelection;
+	NSMutableArray * selection;
 }
 
 - (instancetype) init : (NSRect) frame : (byte) type;

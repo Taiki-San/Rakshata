@@ -28,6 +28,8 @@
 		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
+		selection = [NSMutableArray array];
+		
 		_tableView.rowHeight = 14;
 	}
 	
@@ -72,6 +74,12 @@
 	
 	if(view != nil)
 	{
+		if([selection indexOfObject:@(row)] != NSNotFound)
+		{
+			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :row]);
+			view.drawsBackground = YES;
+		}
+		
 		view.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:11];
 	}
 	
@@ -88,5 +96,50 @@
 		return @"Error D:";
 }
 
+//Selection
+
+- (BOOL) tableView:(RakTableView *)tableView shouldSelectRow:(NSInteger)rowIndex
+{
+	[tableView commitClic];
+	
+	RakText * view = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:NO];
+	if(view != nil && [view class] == [RakText class])
+	{
+		lastWasSelection = !view.drawsBackground;
+		if(lastWasSelection)
+		{
+			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
+			view.drawsBackground = YES;
+			[selection addObject:@(rowIndex)];
+		}
+		else
+		{
+			view.textColor = (normal != nil ? normal : [self getTextColor:0 :rowIndex]);
+			view.drawsBackground = NO;
+			[selection removeObject:@(rowIndex)];
+		}
+
+		selectedRowIndex = rowIndex;
+		[view setNeedsDisplay];
+		
+		[self postProcessingSelection];
+	}
+	else
+		selectedRowIndex = LIST_INVALID_SELECTION;
+	
+	return NO;
+}
+
+- (void) postProcessingSelection
+{
+	if(selectedRowIndex != LIST_INVALID_SELECTION)
+	{
+		if(_type == RDBS_TYPE_AUTHOR)
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((wchar_t **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+
+		else if(_type == RDBS_TYPE_TAG)
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(((wchar_t **) _data)[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+	}
+}
 
 @end

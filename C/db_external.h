@@ -59,3 +59,6 @@ void updateDatabase(bool forced);
 
 /**DBTools.c**/
 bool isPaidProject(PROJECT_DATA projectData);
+
+/**tagManagement.c**/
+wchar_t * getTagForCode(uint tagID);

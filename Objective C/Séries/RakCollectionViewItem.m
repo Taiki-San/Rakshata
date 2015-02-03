@@ -137,11 +137,11 @@ enum
 	
 	if(NSPointInRect(point, mainTag.frame))
 	{
-		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(getTagForCode(_project.tag)), SR_NOTIF_OPTYPE : @(YES)}];
 	}
 	else if(NSPointInRect(point, author.frame))
 	{
-		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : @(_project.cacheDBID)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:nil userInfo:@{SR_NOTIF_CACHEID : getStringForWchar(_project.authorName), SR_NOTIF_OPTYPE : @(YES)}];
 	}
 	else if(point.y > mainTag.frame.origin.y)	//We exclude when we are below the main tag
 	{

@@ -387,9 +387,9 @@
 
 	selectedRowIndex = LIST_INVALID_SELECTION;
 	
-	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
-	
 	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
+	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:baseColumn / _nbElemPerCouple :rowIndex]);
+	
 	if(baseColumn != LIST_INVALID_SELECTION)
 	{
 		RakText * view;

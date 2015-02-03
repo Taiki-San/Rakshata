@@ -15,6 +15,7 @@
 @interface RakSRTagRail : NSView
 {
 	NSMutableArray * tagList;
+	NSMutableArray * tagNames;
 	
 	uint _currentX, _currentRow;
 	CGFloat _reducedWidth, _baseSearchBar;

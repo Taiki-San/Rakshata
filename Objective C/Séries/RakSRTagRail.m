@@ -33,6 +33,7 @@
 
 		_currentX = _currentRow = 0;
 		tagList = [NSMutableArray array];
+		tagNames = [NSMutableArray array];
 		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag"] : self.bounds];
 		
 		_nbRow = _currentRow + 1;
@@ -51,35 +52,37 @@
 
 - (void) receiveNotifTag : (NSNotification *) notification
 {
-	NSNumber * number;
+	NSString * string;
+	NSNumber * opType;
 	
-	if(notification == nil || notification.userInfo == nil || (number = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![number isKindOfClass:[NSNumber class]])
+	if(notification == nil || notification.userInfo == nil || (string = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![string isKindOfClass:[NSString class]])
 		return;
 	
-	[self performNotification:[number unsignedIntValue] :YES];
+	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
+	
+	[self performNotification:string :YES : insertion];
 }
 
 - (void) receiveNotifAuthor : (NSNotification *) notification
 {
-	NSNumber * number;
+	NSString * string;
+	NSNumber * opType;
 	
-	if(notification == nil || notification.userInfo == nil || (number = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![number isKindOfClass:[NSNumber class]])
+	if(notification == nil || notification.userInfo == nil || (string = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![string isKindOfClass:[NSString class]])
 		return;
-	
-	[self performNotification:[number unsignedIntValue] :NO];
+
+	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
+
+	[self performNotification: string : NO : insertion];
 }
 
-- (void) performNotification : (uint) cacheID : (BOOL) wantTag
+- (void) performNotification : (NSString *) object : (BOOL) wantTag : (BOOL) insertion
 {
-	
-	PROJECT_DATA project = getElementByID(cacheID);
-	
-	if(project.isInitialized)
+	if(insertion)
+		[self addTag:object];
+	else
 	{
-		if(wantTag)
-			[self addTag:[NSString stringWithFormat:@"Tag of %@", getStringForWchar(project.projectName)]];
-		else
-			[self addTag: getStringForWchar(project.authorName)];
+		[self removeTag:[tagNames indexOfObject:object]];
 	}
 }
 
@@ -150,6 +153,7 @@
 		else
 		{
 			[tagList addObject:tag];
+			[tagNames addObject:tagString];
 			tag.parent = self;
 		}
 		
@@ -221,6 +225,7 @@
 	__block RakSRTagItem * tag = [tagList objectAtIndex:index];
 	
 	[tagList removeObjectAtIndex:index];
+	[tagNames removeObjectAtIndex:index];
 
 	[NSAnimationContext beginGrouping];
 

@@ -23,6 +23,7 @@ enum
 #define SR_NOTIFICATION_AUTHOR 	@"RakSRAuthorSelectionNotification"
 
 #define SR_NOTIF_CACHEID 		@"cacheID"
+#define SR_NOTIF_OPTYPE 		@"opType"
 
 #import "RakCollectionView.h"
 #import "RakCollectionViewItem.h"

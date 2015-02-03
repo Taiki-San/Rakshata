@@ -1097,8 +1097,8 @@
 		B6F6ED2018A31EF600E3B55B /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				B62935D81A80016300DE20E2 /* db_external.h */,
 				B6245AD019F698A60015F11B /* configuration.h */,
+				B62935D81A80016300DE20E2 /* db_external.h */,
 				B62C9EF418BD742F00CE910F /* db.h */,
 				B6F6ECB118A3001400E3B55B /* defines.h */,
 				B67845A219631311007372C7 /* encoding.h */,

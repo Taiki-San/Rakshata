@@ -82,9 +82,6 @@ void checkIfRemainingAndDelete(uint data, byte type);
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
 uint * getSearchData(byte type, wchar_t *** dataName, uint * dataLength);
 
-/**tagManagement.c**/
-wchar_t * getTagForCode(uint tagID);
-
 /**DBRefresh.c**/
 void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo);

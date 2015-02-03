@@ -302,10 +302,14 @@
 - (void) mainSearchWasTriggered : (BOOL) isVisible
 {
 	//We need to check if the focus is not just changing to an other search bar
-	if(!isVisible && [((RakWindow *)self.window).imatureFirstResponder class] == [RakSRSearchBar class])
+	if(!isVisible)
 	{
-		//Basic check, if the previous firstResponder was a search bar, we block the request
-		if([self.window.firstResponder class] == [RakWindow class])
+		//Change to a sub-search bar
+		if([((RakWindow *)self.window).imatureFirstResponder class] == [RakSRSearchBar class])
+			return;
+		
+		//Selection of element in a sub-list
+		if([((RakWindow *)self.window).imatureFirstResponder class] == [RakTableView class])
 			return;
 	}
 	
