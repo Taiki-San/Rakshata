@@ -79,6 +79,9 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
 void checkIfRemainingAndDelete(uint data, byte type);
 
+bool insertRestriction(uint code, byte type);
+bool removeRestriction(uint code, byte type);
+
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
 uint * getSearchData(byte type, charType *** dataName, uint * dataLength);
 
@@ -160,6 +163,7 @@ enum SEARCH_REQUEST
 #define RDBS_TYPE_AUTHOR 	1
 #define RDBS_TYPE_TAG		2
 #define RDBS_TYPE_TYPE		3
+#define RDBS_TYPE_SOURCE	4
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2

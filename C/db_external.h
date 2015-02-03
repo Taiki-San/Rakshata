@@ -57,6 +57,9 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
 
+/**DBSearch.c**/
+uint * getFilteredProject(uint * dataLength);
+
 /**DBTools.c**/
 bool isPaidProject(PROJECT_DATA projectData);
 

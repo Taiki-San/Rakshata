@@ -13,7 +13,7 @@
 #include "db.h"
 
 sqlite3 *cache = NULL;
-static uint nbElem = 0;
+uint nbElem = 0;
 
 static ROOT_REPO_DATA ** rootRepoList = NULL;
 static uint lengthRootRepo = 0;

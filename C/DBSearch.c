@@ -13,6 +13,7 @@
 #include "db.h"
 
 extern sqlite3 *cache;
+extern uint nbElem;
 static bool initialized = false;
 
 static uint nbAuthor = 0, nbTag = 0, nbType = 0;
@@ -32,9 +33,10 @@ typedef struct buildTablePointer
 	
 } * SEARCH_JUMPTABLE;
 
-#define TABLE_NAME_AUTHOR	"rakSearch1"
-#define TABLE_NAME_TAG		"rakSearch2"
-#define TABLE_NAME_CORRES	"rakSearch3"
+#define TABLE_NAME_AUTHOR		"rakSearch1"
+#define TABLE_NAME_TAG			"rakSearch2"
+#define TABLE_NAME_CORRES		"rakSearch3"
+#define TABLE_NAME_RESTRICTIONS	"rakSearch4"
 
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project);
 void updateElementCount(byte type, int change);
@@ -43,6 +45,8 @@ void buildSearchTables(sqlite3 *_cache)
 {
 	if(_cache == NULL)
 		return;
+	
+	printf( "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)");\n");
 	
 	sqlite3_stmt* request = NULL;
 	
@@ -63,14 +67,23 @@ void buildSearchTables(sqlite3 *_cache)
 	}
 
 	sqlite3_finalize(request);
-
+	
 	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		sqlite3_finalize(request);
 		return;
 	}
-
+	
+	sqlite3_finalize(request);
+	
+	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	{
+		initialized = false;
+		sqlite3_finalize(request);
+		return;
+	}
+	
 	initialized = true;
 	sqlite3_finalize(request);
 }
@@ -432,6 +445,62 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	return !fail;
 }
 
+//API to manipulate tags
+
+bool insertRestriction(uint code, byte type)
+{
+	if(type == RDBS_TYPE_AUTHOR || type == RDBS_TYPE_SOURCE || type == RDBS_TYPE_TAG || type == RDBS_TYPE_TYPE || cache == NULL)
+		return false;
+	
+	sqlite3_stmt * request;
+	
+	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2 LIMIT 1", -1, &request, NULL) != SQLITE_OK)
+		return false;
+	
+	sqlite3_bind_int(request, 1, type);
+	sqlite3_bind_int(request, 2, code);
+	
+	if(sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 0)
+	{
+		sqlite3_finalize(request);
+		return false;
+	}
+	
+	sqlite3_finalize(request);
+
+	if(sqlite3_prepare_v2(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);", -1, &request, NULL) != SQLITE_OK)
+		return false;
+
+	sqlite3_bind_int(request, 1, type);
+	sqlite3_bind_int(request, 2, code);
+	
+	bool output = sqlite3_step(request) == SQLITE_DONE;
+	
+	sqlite3_finalize(request);
+	
+	return output;
+}
+
+bool removeRestriction(uint code, byte type)
+{
+	if(type == RDBS_TYPE_AUTHOR || type == RDBS_TYPE_SOURCE || type == RDBS_TYPE_TAG || type == RDBS_TYPE_TYPE || cache == NULL)
+		return false;
+	
+	sqlite3_stmt * request;
+	
+	if(sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;", -1, &request, NULL) != SQLITE_OK)
+		return false;
+	
+	sqlite3_bind_int(request, 1, type);
+	sqlite3_bind_int(request, 2, code);
+	
+	bool output = sqlite3_step(request) == SQLITE_DONE;
+	
+	sqlite3_finalize(request);
+	
+	return output;
+}
+
 //API to keep things kinda clean
 
 void updateElementCount(byte type, int change)
@@ -539,7 +608,6 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 	return true;
 }
 
-
 uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
 {
 	if(dataName == NULL || dataLength == NULL || cache == NULL)
@@ -609,4 +677,58 @@ uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	}
 	
 	return codes;
+}
+
+uint * getFilteredProject(uint * dataLength)
+{
+	if(dataLength == NULL)
+		return NULL;
+	
+	sqlite3_stmt * request;
+	
+	size_t maxLength = nbElem;
+	uint * output = malloc(maxLength * sizeof(uint));	//We allocate more space, but will reduce at the end
+	
+	if(output == NULL)
+		return NULL;
+	
+	//Bon, on va essayer de documenter un poil ce joujou
+	//Cette requête est composée de deux morceaux fonctionnellements très proches, je vais documenter la version compilée de cette requêtes, les constantes n'ayant pas un sens critique
+	//Cette requête est un INTERSECT de deux requêtes de cette forme:
+	//SELECT `1` FROM rakSearch3 list JOIN rakSearch4 rest WHERE (SELECT COUNT() = 0 FROM rakSearch4 WHERE rakSearch4.`20` = 2) OR (rest.`20` = 2 AND list.`19` = rest.`19` AND list.`20` = rest.`20`) GROUP BY `1` HAVING COUNT(`1`) >= (SELECT COUNT() FROM rakSearch4 WHERE rakSearch4.`20` = 2);
+	//Nous faisons une jointure entre la table de correspondance et la table contenant les restrictions
+	//Ensuite, soit aucune restriction compatible n'est trouvée, et tout est alors autorisé (COUNT = 0 -> TRUE), soit une restriction du type considéré est présente, auquel cas elle est filtrée (`20` = 2) et la restriction est appliquée
+	//Enfin, nous regroupons les correspondances (GROUP BY) dans le cas ou toutes les conditions ont étés remplies (HAVING). Nous utilisons >= pour fonctionner dans le cas où aucune restriction n'a été trouvée
+	//Nous supportons deux types de restrictions, les AND et les OR, ceci était une AND, forçant que toutes ses conditions soient remplies à travers son HAVING
+	//Les OR remplacent GROUP BY ... HAVING ... par SELECT DISTINCT, retirant les collisions
+	//La donnée que nous extrayons est l'ID des éléments valides
+	
+	//Current recipe: (AUTHOR(|) OR SOURCE(|) OR TYPE(|)) AND TAG(&)
+	
+	//Futur maintainer, I wish you good luck
+	
+	if(sqlite3_prepare_v2(cache, "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)");", -1, &request, NULL) != SQLITE_OK)
+	{
+		free(output);
+		return NULL;
+	}
+	
+	size_t realLength = 0;
+	while (realLength < nbElem && sqlite3_step(request) == SQLITE_ROW)
+	{
+		output[realLength++] = sqlite3_column_int(request, 0);
+	}
+	
+	sqlite3_finalize(request);
+	
+	if(realLength < nbElem)
+	{
+		void * tmp = realloc(output, realLength * sizeof(uint));
+		if(tmp != NULL)
+			output = tmp;
+	}
+	
+	*dataLength = realLength;
+	
+	return output;
 }
