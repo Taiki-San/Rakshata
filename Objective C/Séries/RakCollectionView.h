@@ -12,10 +12,10 @@
 
 @interface RakCollectionView : NSCollectionView
 {
-	PROJECT_DATA * cache;
-	uint nbElemCache;
+	RakSRContentManager * _manager;
 }
 
+- (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
 - (void) resizeAnimation : (NSRect) frameRect;
 
 - (BOOL) isValidIndex : (uint) index;

@@ -18,7 +18,7 @@
 
 	RakSerieList * compactList;
 	
-	RakGridView * gridView;
+	RakSRContentManager * contentManager;
 }
 
 - (id)initContent:(NSRect)frame : (NSString *) state;

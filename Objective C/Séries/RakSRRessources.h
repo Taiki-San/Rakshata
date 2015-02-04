@@ -38,7 +38,11 @@
 #import "RakSRHeader.h"
 #import "RakSRSearchTab.h"
 
+@class RakSRContentManager;
+
 #import "RakGridView.h"
+
+#import "RakSRContentManager.h"
 
 #import "RakSerieMainList.h"
 #import "RakSerieList.h"

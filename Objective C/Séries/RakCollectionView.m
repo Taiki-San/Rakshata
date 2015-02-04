@@ -12,16 +12,13 @@
 
 @implementation RakCollectionView
 
-- (instancetype) initWithFrame:(NSRect)frameRect
+- (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager
 {
 	self = [super initWithFrame:[self frameFromParent : frameRect]];
 	
 	if(self != nil)
 	{
-		//We load the data
-		cache = getCopyCache(SORT_NAME, &nbElemCache);
-		if(cache == NULL)
-			return nil;
+		_manager = manager;
 		
 		self.selectable = YES;
 		self.allowsMultipleSelection = NO;
@@ -31,9 +28,10 @@
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 
-		NSMutableArray * array = [NSMutableArray arrayWithCapacity:nbElemCache];
+		uint nbElem = [_manager nbElement];
+		NSMutableArray * array = [NSMutableArray arrayWithCapacity:nbElem];
 		
-		for(uint i = 0; i < nbElemCache; i++)
+		for(uint i = 0; i < nbElem; i++)
 			[array addObject:@(i)];
 		
 		self.content = array;
@@ -67,12 +65,16 @@
 		return nil;
 	
 	cacheCode = [object unsignedIntValue];
-	if(cacheCode >= nbElemCache)
+	if(cacheCode >= [_manager nbElement])
+		return nil;
+	
+	PROJECT_DATA * project = [_manager getDataAtIndex:cacheCode];
+	if(project == NULL)
 		return nil;
 	
 	NSCollectionViewItem * output = [NSCollectionViewItem new];
 	
-	RakCollectionViewItem * item = [[RakCollectionViewItem alloc] initWithProject:cache[cacheCode]];
+	RakCollectionViewItem * item = [[RakCollectionViewItem alloc] initWithProject:*project];
 	
 	output.view = item;
 	output.representedObject = object;
@@ -84,12 +86,17 @@
 
 - (BOOL) isValidIndex : (uint) index
 {
-	return index < nbElemCache;
+	return index < [_manager nbElement];
 }
 
 - (uint) cacheIDForIndex : (uint) index
 {
-	return cache[index].cacheDBID;
+	PROJECT_DATA * project = [_manager getDataAtIndex:index];
+	
+	if(project == NULL)
+		return UINT_MAX;
+	
+	return project->cacheDBID;
 }
 
 

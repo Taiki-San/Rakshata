@@ -27,9 +27,13 @@
 		if(compactList != nil)
 			[self addSubview:[compactList getContent]];
 		
-		gridView = [[RakGridView alloc] initWithFrame:self.bounds];
-		if(gridView != nil)
-			[self addSubview : gridView.contentView];
+		contentManager = [[RakSRContentManager alloc] init];
+		if(contentManager != nil)
+		{
+			contentManager.controlView = self;
+			contentManager.activeView = SR_CELLTYPE_GRID;
+			[contentManager initViews];
+		}
 		
 		if(mainThread == TAB_SERIES)
 		{
@@ -38,7 +42,7 @@
 		else
 		{
 			compactListHidden = NO;
-			gridView.hidden = YES;
+			contentManager.hidden = YES;
 		}
 	}
 	
@@ -49,14 +53,14 @@
 {
 	[headerText setFrame:newBound];
 	[compactList setFrame:[self getCompactListFrame : newBound]];
-	[gridView setFrame : newBound];
+	[contentManager setFrame : newBound];
 }
 
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
 	[headerText resizeAnimation: newBound];
 	[compactList resizeAnimation:[self getCompactListFrame : newBound]];
-	[gridView resizeAnimation : newBound];
+	[contentManager resizeAnimation : newBound];
 }
 
 - (NSString *) getContextToGTFO
@@ -103,15 +107,10 @@
 	{
 		if(compactList != nil && !compactListHidden)
 			compactListHidden = compactList.hidden = headerText.hidden = YES;
-		
-		if(gridView != nil && gridView.hidden)
-			gridView.hidden = NO;
 	}
-	else
-	{
-		if(gridView != nil && !gridView.hidden)
-			gridView.hidden = YES;
-	}
+
+	if(contentManager != nil)
+		contentManager.hidden = serieViewHidden;
 }
 
 - (void) setCTViewHidden : (BOOL) CTViewHidden

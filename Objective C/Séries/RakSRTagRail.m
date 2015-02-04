@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#include "db.h"
+
 @implementation RakSRTagRail
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar
@@ -34,7 +36,6 @@
 		_currentX = _currentRow = 0;
 		tagList = [NSMutableArray array];
 		tagNames = [NSMutableArray array];
-		[self insertTags:@[@"First Tag", @"Second Tag", @"Third Tag", @"Fourth Tag", @"Fifth Tag"] : self.bounds];
 		
 		_nbRow = _currentRow + 1;
 		
@@ -81,10 +82,14 @@
 - (void) performNotification : (NSString *) object : (uint) ID : (BOOL) wantTag : (BOOL) insertion
 {
 	if(insertion)
+	{
 		[self addTag:object];
+		insertRestriction(ID, wantTag ? RDBS_TYPE_TAG : RDBS_TYPE_AUTHOR);
+	}
 	else
 	{
 		[self removeTag:[tagNames indexOfObject:object]];
+		removeRestriction(ID, wantTag ? RDBS_TYPE_TAG : RDBS_TYPE_AUTHOR);
 	}
 }
 

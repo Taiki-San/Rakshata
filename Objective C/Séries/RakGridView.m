@@ -14,7 +14,7 @@
 
 @implementation RakGridView
 
-- (instancetype) initWithFrame:(NSRect)frameRect
+- (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager
 {
 	self = [self init];
 
@@ -25,7 +25,7 @@
 		
 		NSRect bounds = [self frameFromParent : frameRect];
 		
-		collection = [[RakCollectionView alloc] initWithFrame:bounds];
+		collection = [[RakCollectionView alloc] initWithFrame : bounds : manager];
 		if(collection == nil)
 			return nil;
 		
