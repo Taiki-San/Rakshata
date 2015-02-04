@@ -10,8 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "db.h"
-
 @implementation RakSRContentManager
 
 - (instancetype) init
@@ -102,7 +100,7 @@
 		
 		if(nbElemFull == nbElemActivated)
 		{
-			memset(activatedList, 1, nbElemFull * sizeof(uint));
+			memset(activatedList, 1, nbElemFull);
 			for(uint i = 0; i < nbElemActivated; i++)
 				orderedToSorted[i] = i;
 		}

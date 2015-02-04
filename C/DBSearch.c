@@ -83,7 +83,7 @@ void buildSearchTables(sqlite3 *_cache)
 	}
 	
 	//We need at least one (invalid) data :/
-	if(sqlite3_prepare_v2(_cache, "	INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", 0);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(sqlite3_prepare_v2(_cache, "	INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		sqlite3_finalize(request);
@@ -206,6 +206,11 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 	return _getFromSearch(_table, type, type == PULL_SEARCH_AUTHORID ? (void*) &(project.authorName) : (type == PULL_SEARCH_TAGID ? &(project.tag) : &(project.type)));
 }
 
+uint getIDForTag(byte type, uint code)
+{
+	return _getFromSearch(NULL, type, &code);
+}
+
 uint _getFromSearch(void * _table, byte type, void * data)
 {
 	SEARCH_JUMPTABLE table = _table;
@@ -228,9 +233,6 @@ uint _getFromSearch(void * _table, byte type, void * data)
 			
 			size_t length = wstrlen((charType *) data);
 			char utf8[4 * length + 1];
-			if(utf8 == NULL)
-				return UINT_MAX;
-			
 			length = wchar_to_utf8((charType *) data, length, utf8, 4 * length + 1, 0);
 			
 			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
@@ -413,7 +415,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 
 	if(authorID != oldAuthor)
 	{
-		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 1, project.cacheDBID);
 		sqlite3_bind_int(request, 2, authorID);
 		sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
 		
@@ -428,7 +430,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 
 	if(typeID != oldType)
 	{
-		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 1, project.cacheDBID);
 		sqlite3_bind_int(request, 2, typeID);
 		sqlite3_bind_int(request, 3, RDBS_TYPE_TYPE);
 		
@@ -443,7 +445,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	
 	if(tagID != oldTag)
 	{
-		sqlite3_bind_int(request, 1, project.projectID);
+		sqlite3_bind_int(request, 1, project.cacheDBID);
 		sqlite3_bind_int(request, 2, tagID);
 		sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
 		
@@ -460,7 +462,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 
 bool insertRestriction(uint code, byte type)
 {
-	if(type == RDBS_TYPE_AUTHOR || type == RDBS_TYPE_SOURCE || type == RDBS_TYPE_TAG || type == RDBS_TYPE_TYPE || cache == NULL)
+	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_TYPE))
 		return false;
 	
 	sqlite3_stmt * request;
@@ -494,7 +496,7 @@ bool insertRestriction(uint code, byte type)
 
 bool removeRestriction(uint code, byte type)
 {
-	if(type == RDBS_TYPE_AUTHOR || type == RDBS_TYPE_SOURCE || type == RDBS_TYPE_TAG || type == RDBS_TYPE_TYPE || cache == NULL)
+	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_TYPE))
 		return false;
 	
 	sqlite3_stmt * request;

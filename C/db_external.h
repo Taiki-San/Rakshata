@@ -31,6 +31,13 @@ enum getCopyDBCodes
 	SORT_DEFAULT			= SORT_NAME,
 };
 
+enum
+{
+	PULL_SEARCH_AUTHORID = 10,
+	PULL_SEARCH_TAGID,
+	PULL_SEARCH_TYPEID
+};
+
 /**DBCache.c**/
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
@@ -58,6 +65,9 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 void updateDatabase(bool forced);
 
 /**DBSearch.c**/
+uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
+uint getIDForTag(byte type, uint code);
+
 uint * getFilteredProject(uint * dataLength);
 
 /**DBTools.c**/

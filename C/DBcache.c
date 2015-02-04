@@ -111,7 +111,7 @@ int setupBDDCache()
 	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
 		
-	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_team)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" BLOB NOT NULL, "DBNAMETOID(RDB_description)" BLOB, "DBNAMETOID(RDB_authors)" BLOB, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_tag)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitresPrice)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_team)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_tag)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitresPrice)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_team)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		//abort, couldn't setup DB
 		sqlite3_finalize(request);
@@ -137,7 +137,7 @@ int setupBDDCache()
 		if(projects != NULL)
 		{
 			void * searchData = buildSearchJumpTable(internalDB);
-			for(uint pos = 0, posRepo = 0; pos < nombreProject; pos++)
+			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nombreProject; pos++)
 			{
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
@@ -154,7 +154,13 @@ int setupBDDCache()
 						freeTomeList(projects[pos].tomesFull, true);
 					}
 					else
-						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
+					{
+						projects[pos].cacheDBID = cacheID++;
+						if(!insertInSearch(searchData, INSERT_PROJECT, projects[pos]))
+						{
+							logR("Rejected project :/");
+						}
+					}
 				}
 			}
 			
@@ -318,14 +324,22 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	else
 		internalRequest = getAddToCacheRequest();
 	
+	//We convert wchar_t to utf8
+	size_t lengthP = wstrlen(data.projectName), lengthD = wstrlen(data.description), lengthA = wstrlen(data.authorName);
+	char utf8Project[4 * lengthP + 1], utf8Descriptions[4 * lengthD + 1], utf8Author[4 * lengthA + 1];
+	
+	lengthP = wchar_to_utf8(data.projectName, lengthP, utf8Project, sizeof(utf8Project), 0);			utf8Project[lengthP] = 0;
+	lengthD = wchar_to_utf8(data.description, lengthD, utf8Descriptions, sizeof(utf8Descriptions), 0);	utf8Descriptions[lengthD] = 0;
+	lengthA = wchar_to_utf8(data.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
+	
 	bool output;
 	
 	sqlite3_bind_int(internalRequest, 1, repoID);
 	sqlite3_bind_int(internalRequest, 2, data.projectID);
 	sqlite3_bind_int(internalRequest, 3, isInstalled);
-	sqlite3_bind_blob(internalRequest, 4, data.projectName, sizeof(data.projectName), SQLITE_STATIC);
-	sqlite3_bind_blob(internalRequest, 5, data.description, sizeof(data.description), SQLITE_STATIC);
-	sqlite3_bind_blob(internalRequest, 6, data.authorName, sizeof(data.authorName), SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 4, utf8Project, lengthP, SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 5, utf8Descriptions, lengthD, SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 6, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(internalRequest, 7, data.status);
 	sqlite3_bind_int(internalRequest, 8, data.type);
 	sqlite3_bind_int(internalRequest, 9, data.japaneseOrder);
@@ -386,12 +400,20 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	sqlite3_finalize(request);
 
+	//We convert wchar_t to utf8
+	size_t lengthP = wstrlen(data.projectName), lengthD = wstrlen(data.description), lengthA = wstrlen(data.authorName);
+	char utf8Project[4 * lengthP + 1], utf8Descriptions[4 * lengthD + 1], utf8Author[4 * lengthA + 1];
+	
+	lengthP = wchar_to_utf8(data.projectName, lengthP, utf8Project, sizeof(utf8Project), 0);			utf8Project[lengthP] = 0;
+	lengthD = wchar_to_utf8(data.description, lengthD, utf8Descriptions, sizeof(utf8Descriptions), 0);	utf8Descriptions[lengthD] = 0;
+	lengthA = wchar_to_utf8(data.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
+	
 	//On pratique le remplacement effectif
 	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_type)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_tag)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_chapitresPrice)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_tomes)" = ?13, "DBNAMETOID(RDB_favoris)" = ?14 WHERE "DBNAMETOID(RDB_ID)" = ?15", -1, &request, NULL);
 	
-	sqlite3_bind_blob(request, 1, data.projectName, sizeof(data.projectName), SQLITE_STATIC);
-	sqlite3_bind_blob(request, 2, data.description, sizeof(data.description), SQLITE_STATIC);
-	sqlite3_bind_blob(request, 3, data.authorName, sizeof(data.authorName), SQLITE_STATIC);
+	sqlite3_bind_text(request, 1, utf8Project, lengthP, SQLITE_STATIC);
+	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);
+	sqlite3_bind_text(request, 3, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(request, 4, data.status);
 	sqlite3_bind_int(request, 5, data.type);
 	sqlite3_bind_int(request, 6, data.japaneseOrder);
@@ -504,25 +526,43 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	//isInstalled est ici, on saute donc son index
 	
 	//Nom du projet
-	buffer = (void*) sqlite3_column_blob(state, RDB_projectName-1);
+	buffer = (void*) sqlite3_column_text(state, RDB_projectName-1);
 	if(buffer == NULL)
 		return false;
 	else
-		memcpy(output->projectName, buffer, sizeof(output->projectName));
+	{
+		size_t length = strlen(buffer);
+		wchar_t converted[length + 1];
+		
+		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		wstrncpy(output->projectName, LENGTH_PROJECT_NAME, converted);
+	}
 	
 	//Description
-	buffer = (void*) sqlite3_column_blob(state, RDB_description-1);
+	buffer = (void*) sqlite3_column_text(state, RDB_description-1);
 	if(buffer == NULL)
 		memset(output->description, 0, sizeof(output->description));
 	else
-		memcpy(output->description, buffer, sizeof(output->description));
+	{
+		size_t length = strlen(buffer);
+		wchar_t converted[length + 1];
+		
+		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		wstrncpy(output->description, LENGTH_DESCRIPTION, converted);
+	}
 
 	//Nom de l'auteur
-	buffer = (void*) sqlite3_column_blob(state, RDB_authors-1);
+	buffer = (void*) sqlite3_column_text(state, RDB_authors-1);
 	if(buffer == NULL)
 		memset(output->authorName, 0, sizeof(output->authorName));
 	else
-		memcpy(output->authorName, buffer, sizeof(output->authorName));
+	{
+		size_t length = strlen(buffer);
+		wchar_t converted[length + 1];
+		
+		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		wstrncpy(output->authorName, LENGTH_AUTHORS, converted);
+	}
 	
 	//Divers données
 	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD

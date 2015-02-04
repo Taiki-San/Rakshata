@@ -25,8 +25,8 @@
 @property uint nbRow;
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar;
-- (void) removeTag : (uint) index;
-- (void) addTag : (NSString *) tagName;
+
+- (void) performOperation : (NSString *) object : (uint) ID : (BOOL) wantTag : (BOOL) insertion;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) setBaseSearchBar : (CGFloat) baseSearchBar;

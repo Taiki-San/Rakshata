@@ -72,7 +72,6 @@ void buildSearchTables(sqlite3 *_cache);
 void * buildSearchJumpTable(sqlite3 * _cache);
 void flushSearchJumpTable(void * _table);
 
-uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 uint _getFromSearch(void * _table, byte type, void * data);
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project);
 bool removeFromSearch(void * _table, uint cacheID);
@@ -155,10 +154,6 @@ enum SEARCH_REQUEST
 	INSERT_TAG,
 	INSERT_TYPE,
 	INSERT_PROJECT,
-	
-	PULL_SEARCH_AUTHORID,
-	PULL_SEARCH_TAGID,
-	PULL_SEARCH_TYPEID
 };
 
 #define RDBS_TYPE_AUTHOR 	1
