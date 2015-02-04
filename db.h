@@ -165,6 +165,7 @@ enum SEARCH_REQUEST
 #define RDBS_TYPE_TAG		2
 #define RDBS_TYPE_TYPE		3
 #define RDBS_TYPE_SOURCE	4
+#define RDBS_TYPE_UNUSED	5
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2
