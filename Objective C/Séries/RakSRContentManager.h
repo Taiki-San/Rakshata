@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define NOTIFICATION_SEARCH_UPDATED	@"RakNotificationSearchUpdated"
+
 @interface RakSRContentManager : NSObject
 {
 	BOOL _initialized;

@@ -58,6 +58,17 @@ void notifyUpdateProject(PROJECT_DATA project)
 
 /*****************************************
  **										**
+ **			Restrictions update			**
+ **										**
+ *****************************************/
+
+void notifyRestrictionChanged()
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_SEARCH_UPDATED object:nil userInfo: nil];
+}
+
+/*****************************************
+ **										**
  **				  Series				**
  **										**
  *****************************************/

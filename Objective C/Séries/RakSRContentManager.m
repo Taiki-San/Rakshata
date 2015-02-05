@@ -23,6 +23,7 @@
 		
 		//Okay, we have all our data, we can register for updates
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restrictionsUpdated:) name:NOTIFICATION_SEARCH_UPDATED object:nil];
 		
 		_sharedReference = [NSMutableArray array];
 		
@@ -123,7 +124,7 @@
 		if(collector[i] != invalidValue)
 		{
 			(*_cacheList)[pos] = i;
-			orderedToSorted[collector[i]] = pos++;
+			orderedToSorted[pos++] = collector[i];
 		}
 	}
 	
@@ -142,6 +143,7 @@
 			if(filtered[filteredPos] == (*_cacheList)[i])
 			{
 				(*_activatedList)[orderedToSorted[i]] = YES;
+				filteredPos++;
 			}
 		}
 		
@@ -316,6 +318,11 @@
 	[self updateContext:YES];
 }
 
+- (void) restrictionsUpdated : (NSNotification *) notification
+{
+	[self updateContext:NO];
+}
+
 - (void) updateContext : (BOOL) includeCacheRefresh
 {
 	PROJECT_DATA * newProject;
@@ -363,7 +370,7 @@
 			else if(_newFilteredToSorted[posNew] == UINT_MAX)
 				posNew++;
 			
-			else if(newFilteredToSorted[posOld] != newFilteredToSorted[posNew])
+			else if(_filteredToSorted[posOld] != newFilteredToSorted[posNew])
 			{
 				removal[nbRemoval++] = posOld++;
 				insertion[nbInsertion++] = posNew++;

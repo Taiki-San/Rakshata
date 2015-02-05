@@ -483,13 +483,15 @@ bool insertRestriction(uint code, byte type)
 
 	if(sqlite3_prepare_v2(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);", -1, &request, NULL) != SQLITE_OK)
 		return false;
-
+	
 	sqlite3_bind_int(request, 1, type);
 	sqlite3_bind_int(request, 2, code);
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
 	sqlite3_finalize(request);
+	
+	notifyRestrictionChanged();
 	
 	return output;
 }
@@ -510,6 +512,8 @@ bool removeRestriction(uint code, byte type)
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
 	sqlite3_finalize(request);
+	
+	notifyRestrictionChanged();
 	
 	return output;
 }

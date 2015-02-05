@@ -18,6 +18,9 @@
 	RakButton * close;
 }
 
+@property byte _dataType;
+@property uint _dataID;
+
 @property uint index;
 @property (weak) RakSRTagRail * parent;
 

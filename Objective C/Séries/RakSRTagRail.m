@@ -62,7 +62,7 @@
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 	
-	[self performOperation:string : [ID unsignedIntValue] : YES : insertion];
+	[self performOperation:string : [ID unsignedIntValue] : RDBS_TYPE_TAG : insertion];
 }
 
 - (void) receiveNotifAuthor : (NSNotification *) notification
@@ -76,21 +76,29 @@
 
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 
-	[self performOperation: string : [ID unsignedIntValue] : NO : insertion];
+	[self performOperation: string : [ID unsignedIntValue] : RDBS_TYPE_AUTHOR : insertion];
 }
 
-- (void) performOperation : (NSString *) object : (uint) ID : (BOOL) wantTag : (BOOL) insertion
+- (void) performOperation : (NSString *) object : (uint) ID : (byte) dataType : (BOOL) insertion
 {
 	if(insertion)
 	{
 		[self addTag:object];
-		insertRestriction(ID, wantTag ? RDBS_TYPE_TAG : RDBS_TYPE_AUTHOR);
+		
+		RakSRTagItem * item = [tagList lastObject];
+		if(item != nil && [item class] == [RakSRTagItem class])
+		{
+			item._dataType = dataType;
+			item._dataID = ID;
+		}
+		
+		insertRestriction(ID, dataType);
 	}
 	else
 	{
 		uint index = [object isKindOfClass:[NSNumber class]] ? [(NSNumber *) object unsignedIntValue] : [tagNames indexOfObject:object];
 		[self removeTag:index];
-		removeRestriction(ID, wantTag ? RDBS_TYPE_TAG : RDBS_TYPE_AUTHOR);
+		removeRestriction(ID, dataType);
 	}
 }
 

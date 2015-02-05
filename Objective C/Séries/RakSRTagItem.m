@@ -116,7 +116,7 @@
 {
 	if(_parent != nil)
 	{
-		[_parent performOperation:(id) @(_index) : getIDForTag(PULL_SEARCH_TAGID, _index) :YES :NO];
+		[_parent performOperation:(id) @(_index) : __dataID :__dataType :NO];
 		_parent = nil;
 	}
 }
