@@ -18,7 +18,7 @@
 	
 	if(self != nil)
 	{
-		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&nbElemFull :&nbElemActivated])
+		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&nbElemFull :&nbElemActivated : YES])
 			return nil;
 		
 		//Okay, we have all our data, we can register for updates
@@ -33,18 +33,30 @@
 	return self;
 }
 
-- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated
+- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated : (BOOL) includeCacheRefresh
 {
+	if(!includeCacheRefresh && project == NULL)
+		includeCacheRefresh = YES;
+	
 	//We get the full list
-	*_project = getCopyCache(SORT_NAME, _nbElemFull);
-	if(*_project == NULL)
-		return NO;
+	if(includeCacheRefresh)
+	{
+		*_project = getCopyCache(SORT_NAME, _nbElemFull);
+		if(*_project == NULL)
+			return NO;
+	}
+	else
+	{
+		*_project = project;
+		*_nbElemFull = nbElemFull;
+	}
 	
 	//We get the filtered list
 	uint * filtered = getFilteredProject(_nbElemActivated);
 	if(filtered == NULL)
 	{
-		freeProjectData(*_project);
+		if(includeCacheRefresh)
+			freeProjectData(*_project);
 		return NO;
 	}
 	
@@ -55,7 +67,8 @@
 	
 	if(*_cacheList == NULL || *_activatedList == NULL || *_filteredToSorted == NULL)
 	{
-		freeProjectData(*_project);
+		if(includeCacheRefresh)
+			freeProjectData(*_project);
 		free(filtered);
 		free(*_cacheList);
 		free(*_activatedList);
@@ -73,7 +86,8 @@
 	
 	if(highestValue == UINT_MAX)	//We would get an overflow
 	{
-		freeProjectData(*_project);
+		if(includeCacheRefresh)
+			freeProjectData(*_project);
 		free(filtered);
 		free(*_cacheList);
 		free(*_activatedList);
@@ -86,7 +100,8 @@
 	uint * collector = malloc(++highestValue * sizeof(uint));
 	if(collector == NULL)
 	{
-		freeProjectData(*_project);
+		if(includeCacheRefresh)
+			freeProjectData(*_project);
 		free(filtered);
 		free(*_cacheList);
 		free(*_activatedList);
@@ -289,6 +304,104 @@
 			{}
 		}];
 		[NSAnimationContext endGrouping];
+	}
+}
+
+#pragma mark - Manage update
+
+//We won't try to be smartasses, we grab the new context, diff it, apply changes...
+//Because of that, it's pretty expensive, both in computation o(~5n) and in memory o(higestValue)
+- (void) DBUpdated : (NSNotification*) notification
+{
+	[self updateContext:YES];
+}
+
+- (void) updateContext : (BOOL) includeCacheRefresh
+{
+	PROJECT_DATA * newProject;
+	uint * newCacheList, * newFilteredToSorted, newNbElemFull, newNbElemActivated;
+	BOOL * newActivatedList;
+	
+	if([self initData:&newProject :&newCacheList :&newActivatedList :&newFilteredToSorted :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
+	{
+		uint removal[nbElemActivated], insertion[newNbElemActivated], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
+		uint _filteredToSorted[nbElemActivated], _newFilteredToSorted[newNbElemActivated];
+		
+		memcpy(_filteredToSorted, filteredToSorted, nbElemActivated * sizeof(uint));
+		memcpy(_newFilteredToSorted, newFilteredToSorted, newNbElemActivated * sizeof(uint));
+		
+		//First, we detect suppressions/deletions
+		while(posOld < nbElemActivated && posNew < newNbElemActivated)
+		{
+			if(cacheList[_filteredToSorted[posOld]] < newCacheList[_newFilteredToSorted[posNew]])
+			{
+				_filteredToSorted[posOld] = UINT_MAX;	//Invalidate the entry
+				removal[nbRemoval++] = posOld++;
+			}
+			else if(cacheList[_filteredToSorted[posOld]] > newCacheList[_newFilteredToSorted[posNew]])
+			{
+				_newFilteredToSorted[posNew] = UINT_MAX;
+				insertion[nbInsertion++] = posNew++;
+			}
+			else
+			{
+				posOld++;
+				posNew++;
+			}
+		}
+
+		while(posOld < nbElemActivated)			{	_filteredToSorted[posOld] = UINT_MAX;		removal[nbRemoval++] = posOld++;		}
+		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[posNew] = UINT_MAX;	insertion[nbInsertion++] = posNew++;	}
+		
+		//Then we look for moves
+		posOld = posNew = 0;
+		while(posOld < nbElemActivated && posNew < newNbElemActivated)
+		{
+			if(_filteredToSorted[posOld] == UINT_MAX)
+				posOld++;
+
+			else if(_newFilteredToSorted[posNew] == UINT_MAX)
+				posNew++;
+			
+			else if(newFilteredToSorted[posOld] != newFilteredToSorted[posNew])
+			{
+				removal[nbRemoval++] = posOld++;
+				insertion[nbInsertion++] = posNew++;
+			}
+			
+			else
+			{
+				posOld++;
+				posNew++;
+			}
+		}
+		
+		//We replace the old data structure
+		PROJECT_DATA * oldProject = project;
+		uint * oldCacheList = cacheList, * oldFilteredToSorted = filteredToSorted;
+		BOOL * oldActivatedList = activatedList;
+		
+		project = newProject;
+		cacheList = newCacheList;
+		filteredToSorted = newFilteredToSorted;
+		activatedList = newActivatedList;
+		nbElemActivated = newNbElemActivated;
+		nbElemFull = newNbElemFull;
+		
+		if(includeCacheRefresh)
+			freeProjectData(oldProject);
+		free(oldCacheList);
+		free(oldFilteredToSorted);
+		free(oldActivatedList);
+		
+		//Aply changes, yay
+		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
+		
+		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
+		for(uint i = 0; i < nbInsertion; i++)
+		{
+			[content insertObject:@(insertion[i]) atIndex:insertion[i]];
+		}
 	}
 }
 
