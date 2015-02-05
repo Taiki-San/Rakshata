@@ -186,6 +186,9 @@
 	else if(_ID == SEARCH_BAR_ID_AUTHOR)
 		return @"Auteur";
 	
+	else if(_ID == SEARCH_BAR_ID_SOURCE)
+		return @"Éditeur";
+	
 	else if(_ID == SEARCH_BAR_ID_TAG)
 		return @"Tags";
 	

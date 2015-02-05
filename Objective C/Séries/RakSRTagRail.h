@@ -26,7 +26,7 @@
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar;
 
-- (void) performOperation : (NSString *) object : (uint) ID : (byte) dataType : (BOOL) insertion;
+- (void) performOperation : (NSString *) object : (uint64_t) ID : (byte) dataType : (BOOL) insertion;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) setBaseSearchBar : (CGFloat) baseSearchBar;

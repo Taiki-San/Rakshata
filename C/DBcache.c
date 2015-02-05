@@ -156,10 +156,7 @@ int setupBDDCache()
 					else
 					{
 						projects[pos].cacheDBID = cacheID++;
-						if(!insertInSearch(searchData, INSERT_PROJECT, projects[pos]))
-						{
-							logR("Rejected project :/");
-						}
+						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
 					}
 				}
 			}

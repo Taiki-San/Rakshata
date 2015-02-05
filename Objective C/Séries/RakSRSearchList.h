@@ -14,7 +14,7 @@
 {
 	byte _type;
 	
-	uint * indexes;
+	uint64_t * indexes;
 	
 	BOOL lastWasSelection;
 	NSMutableArray * selection;

@@ -80,6 +80,13 @@
 		[self addSubview:author];
 	}
 	
+	source = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :2] :SEARCH_BAR_ID_SOURCE];
+	if(source != nil)
+	{
+		source.hidden = YES;
+		[self addSubview:source];
+	}
+	
 	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_TYPE];
 	{
 		type.hidden = YES;
@@ -111,6 +118,7 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[author setFrame:[self getBlockFrame:frameRect :1]];
+		[source setFrame:[self getBlockFrame:frameRect :2]];
 		[type setFrame:[self getBlockFrame:frameRect :3]];
 		[tag setFrame:[self getBlockFrame:frameRect :4]];
 	}
@@ -134,6 +142,7 @@
 	if(oldWidth != frameRect.size.width)
 	{
 		[author resizeAnimation:[self getBlockFrame:frameRect :1]];
+		[source resizeAnimation:[self getBlockFrame:frameRect :2]];
 		[type resizeAnimation:[self getBlockFrame:frameRect :3]];
 		[tag resizeAnimation:[self getBlockFrame:frameRect :4]];
 	}
@@ -175,6 +184,7 @@
 
 #define BORDER_HORIZON 	10
 #define BORDER_VERT 	25
+#define BORDER_INTER	10
 
 - (NSRect) getBlockFrame : (NSRect) frame : (byte) position
 {
@@ -183,11 +193,11 @@
 	frame.size.height = SR_SEARCH_TAB_EXPANDED_HEIGHT - 2 * BORDER_HORIZON;
 	
 	frame.size.width -= BORDER_VERT;
-	frame.size.width /= 4;
+	frame.size.width /= 5;
 	blockWidth = frame.size.width;
-	frame.size.width -= BORDER_VERT;
+	frame.size.width -= BORDER_INTER;
 	
-	frame.origin.x = (position - 1) * blockWidth + BORDER_VERT;
+	frame.origin.x = (position - 1) * blockWidth + BORDER_INTER;
 	frame.origin.y = BORDER_HORIZON;
 	
 	return frame;
@@ -247,18 +257,19 @@
 	else
 		return;
 	
+	author.hidden = _collapsed;
+	source.hidden = _collapsed;
+	type.hidden = _collapsed;
+	tag.hidden = _collapsed;
+
 	if(silentUpdate)
 	{
 		[placeholder setHidden:!_collapsed];
-		[author setHidden:_collapsed];
 		return;
 	}
 	
 	[NSAnimationContext beginGrouping];
 	
-	author.hidden = _collapsed;
-	type.hidden = _collapsed;
-	tag.hidden = _collapsed;
 	placeholder.animator.alphaValue = _collapsed;
 	
 	__block BOOL getCollapsed = _collapsed;

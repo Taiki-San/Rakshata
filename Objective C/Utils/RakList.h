@@ -39,7 +39,7 @@
 
 typedef struct smartReload_data
 {
-	uint data;
+	uint64_t data;
 	BOOL installed;
 	
 } SR_DATA;

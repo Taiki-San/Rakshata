@@ -79,11 +79,11 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
 void checkIfRemainingAndDelete(uint data, byte type);
 
-bool insertRestriction(uint code, byte type);
-bool removeRestriction(uint code, byte type);
+bool insertRestriction(uint64_t code, byte type);
+bool removeRestriction(uint64_t code, byte type);
 
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);
-uint * getSearchData(byte type, charType *** dataName, uint * dataLength);
+uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength);
 
 /**DBRefresh.c**/
 void resetUpdateDBCache();
@@ -151,15 +151,16 @@ enum RDB_CODES {
 enum SEARCH_REQUEST
 {
 	INSERT_AUTHOR,
+	INSERT_SOURCE,
 	INSERT_TAG,
 	INSERT_TYPE,
 	INSERT_PROJECT,
 };
 
 #define RDBS_TYPE_AUTHOR 	1
-#define RDBS_TYPE_TAG		2
-#define RDBS_TYPE_TYPE		3
-#define RDBS_TYPE_SOURCE	4
+#define RDBS_TYPE_SOURCE	2
+#define RDBS_TYPE_TAG		3
+#define RDBS_TYPE_TYPE		4
 #define RDBS_TYPE_UNUSED	5
 
 #define RDB_REC_lastRead	1

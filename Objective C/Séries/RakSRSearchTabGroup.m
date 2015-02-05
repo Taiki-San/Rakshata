@@ -44,6 +44,8 @@
 {
 	if(_ID == SEARCH_BAR_ID_AUTHOR)
 		return RDBS_TYPE_AUTHOR;
+	else if(_ID == SEARCH_BAR_ID_SOURCE)
+		return RDBS_TYPE_SOURCE;
 	else if(_ID == SEARCH_BAR_ID_TAG)
 		return RDBS_TYPE_TAG;
 	else if(_ID == SEARCH_BAR_ID_TYPE)

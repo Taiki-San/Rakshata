@@ -454,13 +454,23 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		
 		checkIfRemainingAndDelete(tagID, RDBS_TYPE_TAG);
 	}
+	
+	if(wantInsert && !fail)
+	{
+		sqlite3_bind_int(request, 1, project.cacheDBID);
+		sqlite3_bind_int64(request, 2, getRepoID(project.repo));
+		sqlite3_bind_int(request, 3, RDBS_TYPE_SOURCE);
+		
+		fail = sqlite3_step(request) != SQLITE_DONE;
+		sqlite3_reset(request);
+	}
 
 	return !fail;
 }
 
 //API to manipulate tags
 
-bool insertRestriction(uint code, byte type)
+bool insertRestriction(uint64_t code, byte type)
 {
 	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_TYPE))
 		return false;
@@ -471,7 +481,7 @@ bool insertRestriction(uint code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int(request, 2, code);
+	sqlite3_bind_int64(request, 2, code);
 	
 	if(sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 0)
 	{
@@ -485,7 +495,7 @@ bool insertRestriction(uint code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int(request, 2, code);
+	sqlite3_bind_int64(request, 2, code);
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -496,7 +506,7 @@ bool insertRestriction(uint code, byte type)
 	return output;
 }
 
-bool removeRestriction(uint code, byte type)
+bool removeRestriction(uint64_t code, byte type)
 {
 	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_TYPE))
 		return false;
@@ -507,7 +517,7 @@ bool removeRestriction(uint code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int(request, 2, code);
+	sqlite3_bind_int64(request, 2, code);
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -554,7 +564,7 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;", -1, &request, NULL) != SQLITE_OK)
 		return;
 	
-	sqlite3_bind_int(request, 1, data);
+	sqlite3_bind_int64(request, 1, data);
 	sqlite3_bind_int(request, 2, type);
 	
 	bool nothingRemaining = sqlite3_step(request) == SQLITE_DONE;
@@ -625,7 +635,7 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 	return true;
 }
 
-uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
+uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 {
 	if(dataName == NULL || dataLength == NULL || cache == NULL)
 		return NULL;
@@ -653,7 +663,8 @@ uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	else
 		return NULL;
 	
-	uint pos = 0, length = *dataLength, * codes = malloc(length * sizeof(uint));
+	uint pos = 0, length = *dataLength;
+	uint64_t * codes = malloc(length * sizeof(uint64_t));
 	*dataName = malloc(length * sizeof(charType *));
 	
 	if(codes == NULL || *dataName == NULL)
@@ -690,7 +701,7 @@ uint * getSearchData(byte type, charType *** dataName, uint * dataLength)
 				continue;
 		}
 		
-		codes[pos++] = sqlite3_column_int(request, 1);
+		codes[pos++] = sqlite3_column_int64(request, 1);
 	}
 	
 	return codes;
@@ -726,7 +737,7 @@ uint * getFilteredProject(uint * dataLength)
 	//If TABLE_NAME_RESTRICTIONS is empty, it seems the request return no data, asshole
 	//We insert an invalid data when creating it to solve the issue
 	
- 	if(sqlite3_prepare_v2(cache, "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", -1, &request, NULL) != SQLITE_OK)
+	if(sqlite3_prepare_v2(cache, "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_TYPE)", "STRINGIZE(RDBS_TYPE_SOURCE)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", -1, &request, NULL) != SQLITE_OK)
 	{
 		free(output);
 		return NULL;

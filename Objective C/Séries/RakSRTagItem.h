@@ -19,7 +19,7 @@
 }
 
 @property byte _dataType;
-@property uint _dataID;
+@property uint64_t _dataID;
 
 @property uint index;
 @property (weak) RakSRTagRail * parent;

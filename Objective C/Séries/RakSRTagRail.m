@@ -42,6 +42,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifTag:) name:SR_NOTIFICATION_TAG object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifType:) name:SR_NOTIFICATION_TYPE object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifAuthor:) name:SR_NOTIFICATION_AUTHOR object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifSource:) name:SR_NOTIFICATION_SOURCE object:nil];
 	}
 	
 	return self;
@@ -63,7 +64,7 @@
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 	
-	[self performOperation:string : [ID unsignedIntValue] : RDBS_TYPE_TYPE : insertion];
+	[self performOperation:string : [ID unsignedLongLongValue] : RDBS_TYPE_TYPE : insertion];
 }
 
 - (void) receiveNotifTag : (NSNotification *) notification
@@ -77,7 +78,7 @@
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 	
-	[self performOperation:string : [ID unsignedIntValue] : RDBS_TYPE_TAG : insertion];
+	[self performOperation:string : [ID unsignedLongLongValue] : RDBS_TYPE_TAG : insertion];
 }
 
 - (void) receiveNotifAuthor : (NSNotification *) notification
@@ -88,13 +89,27 @@
 	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
 	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
-
+	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
-
-	[self performOperation: string : [ID unsignedIntValue] : RDBS_TYPE_AUTHOR : insertion];
+	
+	[self performOperation: string : [ID unsignedLongLongValue] : RDBS_TYPE_AUTHOR : insertion];
 }
 
-- (void) performOperation : (NSString *) object : (uint) ID : (byte) dataType : (BOOL) insertion
+- (void) receiveNotifSource : (NSNotification *) notification
+{
+	NSString * string;
+	NSNumber * ID, * opType;
+	
+	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
+	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+		return;
+	
+	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
+	
+	[self performOperation: string : [ID unsignedLongLongValue] : RDBS_TYPE_SOURCE : insertion];
+}
+
+- (void) performOperation : (NSString *) object : (uint64_t) ID : (byte) dataType : (BOOL) insertion
 {
 	if(insertion)
 	{
