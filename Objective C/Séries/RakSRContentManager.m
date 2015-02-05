@@ -18,108 +18,127 @@
 	
 	if(self != nil)
 	{
-		//We get the full list
-		project = getCopyCache(SORT_NAME, &nbElemFull);
-		if(project == NULL)
+		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&nbElemFull :&nbElemActivated])
 			return nil;
 		
-		//We get the filtered list
-		uint * filtered = getFilteredProject(&nbElemActivated);
-		if(filtered == NULL)
-		{
-			freeProjectData(project);
-			return nil;
-		}
+		//Okay, we have all our data, we can register for updates
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
-		//We alloc memory for everything
-		cacheList = malloc(nbElemFull * sizeof(uint));
-		activatedList = calloc(nbElemFull, sizeof(BOOL));
-		sortedToOrdered = malloc(nbElemFull * sizeof(uint));
-		orderedToSorted = malloc(nbElemActivated * sizeof(uint));
+		_sharedReference = [NSMutableArray array];
 		
-		if(cacheList == NULL || activatedList == NULL || sortedToOrdered == NULL || orderedToSorted == NULL)
-		{
-			freeProjectData(project);
-			free(filtered);
-			free(cacheList);
-			free(activatedList);
-			free(sortedToOrdered);
-			free(orderedToSorted);
-			return nil;
-		}
-		
-		//We look for the highest value
-		uint highestValue = nbElemFull;
-		for(uint i = 0; i < nbElemFull; i++)
-		{
-			if(project[i].cacheDBID > highestValue)
-				highestValue = project[i].cacheDBID;
-		}
-		
-		if(highestValue == UINT_MAX)	//We would get an overflow
-		{
-			freeProjectData(project);
-			free(filtered);
-			free(cacheList);
-			free(activatedList);
-			free(sortedToOrdered);
-			free(orderedToSorted);
-			return nil;
-		}
-		
-		//We create a buffer large enough to fit every data at the index of its value
-		const uint invalidValue = UINT_MAX;
-		uint * collector = malloc(++highestValue * sizeof(uint));
-		if(collector == NULL)
-		{
-			freeProjectData(project);
-			free(filtered);
-			free(cacheList);
-			free(activatedList);
-			free(sortedToOrdered);
-			free(orderedToSorted);
-			return nil;
-		}
-		memset(collector, invalidValue, highestValue * sizeof(uint));
-
-		//We store the item position
-		for(uint i = 0; i < nbElemFull; i++)
-			collector[project[i].cacheDBID] = i;
-		
-		//We compact the large dataset in the reduced final structure
-		for(uint i = 0, pos = 0; i < highestValue; i++)
-		{
-			if(collector[i] != invalidValue)
-			{
-				cacheList[pos] = i;
-				sortedToOrdered[pos++] = collector[i];
-			}
-		}
-		
-		free(collector);
-		
-		if(nbElemFull == nbElemActivated)
-		{
-			memset(activatedList, 1, nbElemFull);
-			for(uint i = 0; i < nbElemActivated; i++)
-				orderedToSorted[i] = i;
-		}
-		else
-		{
-			for(uint i = 0, filteredPos = 0; i < nbElemFull && filteredPos < nbElemActivated; i++)
-			{
-				if(filtered[filteredPos] == cacheList[i])
-				{
-					activatedList[i] = YES;
-					orderedToSorted[filteredPos++] = i;
-				}
-			}
-		}
-		
-		free(filtered);
+		for(uint i = 0; i < nbElemActivated; i++)
+			[_sharedReference addObject:@(i)];
 	}
 	
 	return self;
+}
+
+- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated
+{
+	//We get the full list
+	*_project = getCopyCache(SORT_NAME, _nbElemFull);
+	if(*_project == NULL)
+		return NO;
+	
+	//We get the filtered list
+	uint * filtered = getFilteredProject(_nbElemActivated);
+	if(filtered == NULL)
+	{
+		freeProjectData(*_project);
+		return NO;
+	}
+	
+	//We alloc memory for everything
+	*_cacheList = malloc(*_nbElemFull * sizeof(uint));
+	*_activatedList = calloc(*_nbElemFull, sizeof(BOOL));
+	*_filteredToSorted = malloc(*_nbElemActivated * sizeof(uint));
+	
+	if(*_cacheList == NULL || *_activatedList == NULL || *_filteredToSorted == NULL)
+	{
+		freeProjectData(*_project);
+		free(filtered);
+		free(*_cacheList);
+		free(*_activatedList);
+		free(*_filteredToSorted);
+		return NO;
+	}
+	
+	//We look for the highest value
+	uint highestValue = *_nbElemFull;
+	for(uint i = 0; i < *_nbElemFull; i++)
+	{
+		if((*_project)[i].cacheDBID > highestValue)
+			highestValue = (*_project)[i].cacheDBID;
+	}
+	
+	if(highestValue == UINT_MAX)	//We would get an overflow
+	{
+		freeProjectData(*_project);
+		free(filtered);
+		free(*_cacheList);
+		free(*_activatedList);
+		free(*_filteredToSorted);
+		return NO;
+	}
+	
+	//We create a buffer large enough to fit every data at the index of its value
+	const uint invalidValue = UINT_MAX;
+	uint * collector = malloc(++highestValue * sizeof(uint));
+	if(collector == NULL)
+	{
+		freeProjectData(*_project);
+		free(filtered);
+		free(*_cacheList);
+		free(*_activatedList);
+		free(*_filteredToSorted);
+		return NO;
+	}
+	memset(collector, invalidValue, highestValue * sizeof(uint));
+	
+	//We store the item position
+	for(uint i = 0; i < *_nbElemFull; i++)
+		collector[(*_project)[i].cacheDBID] = i;
+	
+	//We compact the large dataset in the reduced final structure
+	uint orderedToSorted[*_nbElemFull];
+	memset(orderedToSorted, invalidValue, *_nbElemFull * sizeof(uint));
+	
+	for(uint i = 0, pos = 0; i < highestValue; i++)
+	{
+		if(collector[i] != invalidValue)
+		{
+			(*_cacheList)[pos] = i;
+			orderedToSorted[collector[i]] = pos++;
+		}
+	}
+	
+	free(collector);
+	
+	if(*_nbElemFull == *_nbElemActivated)
+	{
+		memset(*_activatedList, 1, *_nbElemFull);
+		for(uint i = 0; i < *_nbElemActivated; i++)
+			(*_filteredToSorted)[i] = i;
+	}
+	else
+	{
+		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
+		{
+			if(filtered[filteredPos] == (*_cacheList)[i])
+			{
+				(*_activatedList)[orderedToSorted[i]] = YES;
+			}
+		}
+		
+		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
+		{
+			if((*_activatedList)[i])
+				(*_filteredToSorted)[filteredPos++] = i;
+		}
+	}
+	
+	free(filtered);
+	return YES;
 }
 
 - (void) initViews
@@ -128,7 +147,9 @@
 	
 	_grid = [[RakGridView alloc] initWithFrame : previousFrame : self];
 	if(_grid != nil)
+	{
 		[_controlView addSubview : _grid.contentView];
+	}
 	
 	_grid.hidden = _activeView != SR_CELLTYPE_GRID;
 	_initialized = YES;
@@ -283,7 +304,7 @@
 	if(index >= nbElemActivated)
 		return NULL;
 		
-	return &(project[orderedToSorted[index]]);
+	return &(project[filteredToSorted[index]]);
 }
 
 @end

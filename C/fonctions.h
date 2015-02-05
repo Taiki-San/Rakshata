@@ -194,4 +194,3 @@ uint32_t getFileSize(const char *filename);
 uint64_t getFileSize64(const char * filename);
 void mergeSort(int * tab, size_t length);
 int removeDuplicate(int * array, int length);
-

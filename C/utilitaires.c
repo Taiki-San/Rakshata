@@ -444,7 +444,6 @@ void mergeSort(int * tab, size_t length)
 
 int removeDuplicate(int * array, int length)
 {
-	
 	int i, j, newLength = 0;
 	
 	for(i = 0; i < length; i++)

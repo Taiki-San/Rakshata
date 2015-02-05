@@ -24,17 +24,10 @@
 		self.allowsMultipleSelection = NO;
 		self.backgroundColors = @[[NSColor clearColor]];
 		self.minItemSize = NSMakeSize(RCVC_MINIMUM_WIDTH_OFFSET, RCVC_MINIMUM_HEIGHT_OFFSET);
+		[self bind:NSContentBinding toObject:_manager withKeyPath:@"sharedReference" options:nil];
 		
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
-
-		uint nbElem = [_manager nbElement];
-		NSMutableArray * array = [NSMutableArray arrayWithCapacity:nbElem];
-		
-		for(uint i = 0; i < nbElem; i++)
-			[array addObject:@(i)];
-		
-		self.content = array;
 	}
 	
 	return self;

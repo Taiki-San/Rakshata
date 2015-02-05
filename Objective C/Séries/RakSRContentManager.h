@@ -21,8 +21,7 @@
 	uint * cacheList;
 	
 	BOOL * activatedList;
-	uint * sortedToOrdered;		//Natural sort -> ID ordered
-	uint * orderedToSorted;
+	uint * filteredToSorted;
 	
 	//Views
 	NSRect previousFrame;
@@ -36,6 +35,7 @@
 @property byte activeView;
 
 @property BOOL hidden;
+@property NSMutableArray * sharedReference;
 
 - (void) initViews;
 
