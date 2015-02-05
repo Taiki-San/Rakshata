@@ -13,6 +13,7 @@
 #include "db.h"
 
 #define SHADOW_HEIGHT 8
+#define LAST_BLOCK_POSITION 5
 
 @implementation RakSRSearchTab
 
@@ -88,15 +89,24 @@
 	}
 	
 	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_TYPE];
+	if(type != nil)
 	{
 		type.hidden = YES;
 		[self addSubview:type];
 	}
 	
 	tag = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :4] :SEARCH_BAR_ID_TAG];
+	if(tag != nil)
 	{
 		tag.hidden = YES;
 		[self addSubview:tag];
+	}
+	
+	extra = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :5] :SEARCH_BAR_ID_EXTRA];
+	if(extra != nil)
+	{
+		extra.hidden = YES;
+		[self addSubview:extra];
 	}
 }
 
@@ -121,6 +131,7 @@
 		[source setFrame:[self getBlockFrame:frameRect :2]];
 		[type setFrame:[self getBlockFrame:frameRect :3]];
 		[tag setFrame:[self getBlockFrame:frameRect :4]];
+		[extra setFrame:[self getBlockFrame:frameRect :5]];
 	}
 	
 	byte position = 0;
@@ -145,6 +156,7 @@
 		[source resizeAnimation:[self getBlockFrame:frameRect :2]];
 		[type resizeAnimation:[self getBlockFrame:frameRect :3]];
 		[tag resizeAnimation:[self getBlockFrame:frameRect :4]];
+		[extra resizeAnimation:[self getBlockFrame:frameRect :5]];
 	}
 	
 	byte position = 0;
@@ -185,6 +197,7 @@
 #define BORDER_HORIZON 	10
 #define BORDER_VERT 	25
 #define BORDER_INTER	10
+#define LAST_BLOCK_WIDTH 125
 
 - (NSRect) getBlockFrame : (NSRect) frame : (byte) position
 {
@@ -192,10 +205,15 @@
 	
 	frame.size.height = SR_SEARCH_TAB_EXPANDED_HEIGHT - 2 * BORDER_HORIZON;
 	
-	frame.size.width -= BORDER_VERT;
-	frame.size.width /= 5;
+	frame.size.width -= BORDER_VERT + LAST_BLOCK_WIDTH;
+	frame.size.width /= 4;
 	blockWidth = frame.size.width;
-	frame.size.width -= BORDER_INTER;
+	
+	if(position < LAST_BLOCK_POSITION)
+		frame.size.width -= BORDER_INTER;
+	else
+		frame.size.width = LAST_BLOCK_WIDTH;
+	
 	
 	frame.origin.x = (position - 1) * blockWidth + BORDER_INTER;
 	frame.origin.y = BORDER_HORIZON;
@@ -261,6 +279,7 @@
 	source.hidden = _collapsed;
 	type.hidden = _collapsed;
 	tag.hidden = _collapsed;
+	extra.hidden = _collapsed;
 
 	if(silentUpdate)
 	{

@@ -29,7 +29,7 @@
 	
 	RakText * placeholder;
 	
-	RakSRSearchTabGroup * author, *source, *tag, * type;
+	RakSRSearchTabGroup * author, *source, *tag, * type, *extra;
 }
 
 @property CGFloat height;

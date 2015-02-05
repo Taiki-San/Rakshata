@@ -17,7 +17,8 @@ enum
 	SEARCH_BAR_ID_AUTHOR	= 1,
 	SEARCH_BAR_ID_SOURCE	= 2,
 	SEARCH_BAR_ID_TAG		= 3,
-	SEARCH_BAR_ID_TYPE		= 4
+	SEARCH_BAR_ID_TYPE		= 4,
+	SEARCH_BAR_ID_EXTRA		= 5		//Unused in the search bar, but to stick to the scheme
 };
 
 enum

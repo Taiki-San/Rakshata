@@ -22,14 +22,17 @@
 	{
 		_ID = ID;
 		
-		list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] :[self getRDBSCodeForID]];
-		if(list != nil)
-			[self addSubview:[list getContent]];
-		
-		searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] :_ID];
-		if(searchBar != nil)
+		if(_ID != SEARCH_BAR_ID_EXTRA)
 		{
-			[self addSubview:searchBar];
+			list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] :[self getRDBSCodeForID]];
+			if(list != nil)
+				[self addSubview:[list getContent]];
+			
+			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] :_ID];
+			if(searchBar != nil)
+			{
+				[self addSubview:searchBar];
+			}
 		}
 		
 		self.wantsLayer = YES;
@@ -58,15 +61,31 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-	[list setFrame:[self getTableFrame:frameRect]];
-	[searchBar setFrame:[self getSearchFrame:frameRect]];
+	
+	if(_ID == SEARCH_BAR_ID_EXTRA)
+	{
+		
+	}
+	else
+	{
+		[list setFrame:[self getTableFrame:frameRect]];
+		[searchBar setFrame:[self getSearchFrame:frameRect]];
+	}
 }
 
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
-	[list resizeAnimation:[self getTableFrame:frameRect]];
-	[searchBar resizeAnimation:[self getSearchFrame:frameRect]];
+
+	if(_ID == SEARCH_BAR_ID_EXTRA)
+	{
+		
+	}
+	else
+	{
+		[list resizeAnimation:[self getTableFrame:frameRect]];
+		[searchBar resizeAnimation:[self getSearchFrame:frameRect]];
+	}
 }
 
 #define BORDER_LIST 3
