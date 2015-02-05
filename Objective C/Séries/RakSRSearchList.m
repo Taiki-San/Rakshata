@@ -142,6 +142,9 @@
 		else if(_type == RDBS_TYPE_TAG)
 			notificationName = SR_NOTIFICATION_TAG;
 		
+		else if(_type == RDBS_TYPE_TYPE)
+			notificationName = SR_NOTIFICATION_TYPE;
+		
 		else
 			return;
 		

@@ -40,6 +40,7 @@
 		_nbRow = _currentRow + 1;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifTag:) name:SR_NOTIFICATION_TAG object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifType:) name:SR_NOTIFICATION_TYPE object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifAuthor:) name:SR_NOTIFICATION_AUTHOR object:nil];
 	}
 	
@@ -49,6 +50,20 @@
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) receiveNotifType : (NSNotification *) notification
+{
+	NSString * string;
+	NSNumber * ID, * opType;
+	
+	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
+	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+		return;
+	
+	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
+	
+	[self performOperation:string : [ID unsignedIntValue] : RDBS_TYPE_TYPE : insertion];
 }
 
 - (void) receiveNotifTag : (NSNotification *) notification

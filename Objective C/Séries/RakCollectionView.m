@@ -57,10 +57,7 @@
 	if(object == nil || ![object isKindOfClass:[NSNumber class]])
 		return nil;
 	
-	cacheCode = [object unsignedIntValue];
-	if(cacheCode >= [_manager nbElement])
-		return nil;
-	
+	cacheCode = [object unsignedIntValue];	
 	PROJECT_DATA * project = [_manager getDataAtIndex:cacheCode];
 	if(project == NULL)
 		return nil;

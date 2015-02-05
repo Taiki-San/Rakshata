@@ -28,7 +28,7 @@
 		_sharedReference = [NSMutableArray array];
 		
 		for(uint i = 0; i < nbElemActivated; i++)
-			[_sharedReference addObject:@(i)];
+			[_sharedReference addObject:@(filteredToSorted[i])];
 	}
 	
 	return self;
@@ -407,7 +407,7 @@
 		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
 		for(uint i = 0; i < nbInsertion; i++)
 		{
-			[content insertObject:@(insertion[i]) atIndex:insertion[i]];
+			[content insertObject:@(filteredToSorted[insertion[i]]) atIndex:insertion[i]];
 		}
 	}
 }
@@ -416,15 +416,15 @@
 
 - (uint) nbElement
 {
-	return nbElemActivated;
+	return nbElemFull;
 }
 
 - (PROJECT_DATA *) getDataAtIndex : (uint) index
 {
-	if(index >= nbElemActivated)
+	if(index >= nbElemFull)
 		return NULL;
 		
-	return &(project[filteredToSorted[index]]);
+	return &(project[index]);
 }
 
 @end
