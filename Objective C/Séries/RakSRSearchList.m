@@ -59,6 +59,7 @@
 						freeRepo(repo);
 					else
 					{
+						qsort(output, nbElem, sizeof(wchar_t *), sortWchar);
 						_nbData = nbElem;
 						_data = output;
 						indexes = _indexes;
