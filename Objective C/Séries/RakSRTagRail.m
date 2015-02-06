@@ -58,8 +58,7 @@
 	NSString * string;
 	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
-	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+	if(notification == nil || (string = notification.object) == nil || notification.userInfo == nil || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
@@ -72,8 +71,7 @@
 	NSString * string;
 	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
-	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+	if(notification == nil || (string = notification.object) == nil || notification.userInfo == nil || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
@@ -86,8 +84,7 @@
 	NSString * string;
 	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
-	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+	if(notification == nil || (string = notification.object) == nil || notification.userInfo == nil || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
@@ -100,8 +97,7 @@
 	NSString * string;
 	NSNumber * ID, * opType;
 	
-	if(notification == nil || notification.object == nil || notification.userInfo == nil || ![(string = notification.object) isKindOfClass:[NSString class]]
-	   || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+	if(notification == nil || (string = notification.object) == nil || notification.userInfo == nil || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
 		return;
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
@@ -113,6 +109,9 @@
 {
 	if(insertion)
 	{
+		if(![object isKindOfClass:[NSString class]])
+			return;
+		
 		[self addTag:object];
 		
 		RakSRTagItem * item = [tagList lastObject];

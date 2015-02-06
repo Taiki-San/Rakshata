@@ -89,17 +89,7 @@ enum
 	mainTag = [[RakText alloc] initWithText: @"Placeholder" :[self getTagTextColor]];
 	if(mainTag != nil)
 	{
-		uint random = getRandom() % 70;
-		if(random < 10)			mainTag.stringValue = @"Shonen";
-		else if(random < 20)	mainTag.stringValue = @"Shojo";
-		else if(random < 30)	mainTag.stringValue = @"Seinen";
-		else if(random < 40)	mainTag.stringValue = @"Comics";
-		else if(random == 42)	mainTag.stringValue = @"Pony";
-		else if(random < 50)	mainTag.stringValue = @"Manwa";
-		else if(random < 60)	mainTag.stringValue = @"Webcomic";
-		else if(random < 69)	mainTag.stringValue = @"Ecchi";
-		else 					mainTag.stringValue = @"Hentai";
-		
+		mainTag.stringValue = getStringForWchar(getTagForCode(getRandom() % 70));
 		mainTag.alignment = NSCenterTextAlignment;
 		mainTag.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TAGS] size:10];
 		[mainTag sizeToFit];

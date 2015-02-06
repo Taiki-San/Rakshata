@@ -16,6 +16,9 @@
 	
 	RakSRSearchList * list;
 	RakSRSearchBar * searchBar;
+	
+	//Used by extra
+	RakButton * close;
 }
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;

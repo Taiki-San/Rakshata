@@ -13,6 +13,7 @@
 @interface RakSRSearchList : RakList
 {
 	byte _type;
+	BOOL _manualSelection;
 	
 	uint64_t * indexes;
 	

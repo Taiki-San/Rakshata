@@ -10,6 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#include "db.h"
 #define BUTTON_NAME @"clearTag"
 
 @implementation RakSRTagItem
@@ -114,11 +115,23 @@
 
 - (void) close
 {
-	if(_parent != nil)
-	{
-		[_parent performOperation:(id) @(_index) : __dataID :__dataType :NO];
-		_parent = nil;
-	}
+	NSString * notification;
+	
+	if(__dataType == RDBS_TYPE_AUTHOR)
+		notification = SR_NOTIFICATION_AUTHOR;
+	
+	else if(__dataType == RDBS_TYPE_SOURCE)
+		notification = SR_NOTIFICATION_SOURCE;
+	
+	else if(__dataType == RDBS_TYPE_TAG)
+		notification = SR_NOTIFICATION_TAG;
+	
+	else if(__dataType == RDBS_TYPE_TYPE)
+		notification = SR_NOTIFICATION_TYPE;
+	else
+		return;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:notification object:@(_index) userInfo:@{SR_NOTIF_CACHEID : @(__dataID), SR_NOTIF_OPTYPE : @(NO)}];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

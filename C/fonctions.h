@@ -171,7 +171,7 @@ void changeTo(char *string, char toFind, char toPut);
 int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
-int sortWchar(const void *a, const void *b);
+int sortRepo(const void *a, const void *b);
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b);
 uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable);
 int positionnementApresChar(char* input, char *stringToFind);

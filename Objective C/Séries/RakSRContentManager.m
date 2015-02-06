@@ -401,7 +401,7 @@
 		free(oldFilteredToSorted);
 		free(oldActivatedList);
 		
-		//Aply changes, yay
+		//Apply changes, yay
 		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
 		
 		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);

@@ -21,6 +21,7 @@
 	if(self != nil)
 	{
 		_type = type;
+		_manualSelection = NO;
 		
 		if(_type != RDBS_TYPE_SOURCE)
 		{
@@ -40,6 +41,8 @@
 				charType ** output = malloc(nbElem * sizeof(charType *));
 				if(output != NULL && _indexes != NULL)
 				{
+					qsort(repo, nbElem, sizeof(REPO_DATA *), sortRepo);
+					
 					for(uint i = 0; i < nbElem; i++)
 					{
 						output[i] = malloc(REPO_NAME_LENGTH * sizeof(charType));
@@ -59,7 +62,6 @@
 						freeRepo(repo);
 					else
 					{
-						qsort(output, nbElem, sizeof(wchar_t *), sortWchar);
 						_nbData = nbElem;
 						_data = output;
 						indexes = _indexes;
@@ -79,6 +81,10 @@
 		selection = [NSMutableArray array];
 		
 		_tableView.rowHeight = 14;
+		
+		NSString * notificationName = [self getNotificationName];
+		if(notificationName != nil)
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerFired:) name:notificationName object:nil];
 	}
 	
 	return self;
@@ -180,26 +186,57 @@
 
 - (void) postProcessingSelection
 {
-	if(selectedRowIndex != LIST_INVALID_SELECTION)
+	if(selectedRowIndex != LIST_INVALID_SELECTION && !_manualSelection)
 	{
-		NSString * notificationName;
+		NSString * notificationName = [self getNotificationName];
+		if(notificationName != nil)
+		{
+			_manualSelection = YES;
+			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:getStringForWchar(((charType **) _data)[selectedRowIndex]) userInfo:@{SR_NOTIF_CACHEID : @(indexes[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			_manualSelection = NO;
+		}
+	}
+}
 
-		if(_type == RDBS_TYPE_AUTHOR)
-			notificationName = SR_NOTIFICATION_AUTHOR;
+#pragma mark - Trigger
 
-		else if(_type == RDBS_TYPE_SOURCE)
-			notificationName = SR_NOTIFICATION_SOURCE;
-		
-		else if(_type == RDBS_TYPE_TAG)
-			notificationName = SR_NOTIFICATION_TAG;
-		
-		else if(_type == RDBS_TYPE_TYPE)
-			notificationName = SR_NOTIFICATION_TYPE;
-		
-		else
-			return;
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:getStringForWchar(((charType **) _data)[selectedRowIndex]) userInfo:@{SR_NOTIF_CACHEID : @(indexes[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+- (NSString *) getNotificationName
+{
+	if(_type == RDBS_TYPE_AUTHOR)
+		return SR_NOTIFICATION_AUTHOR;
+	
+	else if(_type == RDBS_TYPE_SOURCE)
+		return SR_NOTIFICATION_SOURCE;
+	
+	else if(_type == RDBS_TYPE_TAG)
+		return SR_NOTIFICATION_TAG;
+	
+	else if(_type == RDBS_TYPE_TYPE)
+		return SR_NOTIFICATION_TYPE;
+	
+	return nil;
+}
+
+- (void) triggerFired : (NSNotification *) notification
+{
+	if(_manualSelection)
+		return;
+	
+	NSNumber * ID;
+	
+	if(notification == nil || notification.userInfo == nil || (ID = [notification.userInfo objectForKey:SR_NOTIF_CACHEID]) == nil || ![ID isKindOfClass:[NSNumber class]])
+		return;
+	
+	uint64_t code = [ID unsignedLongLongValue];
+	for(uint i = 0; i < _nbData; i++)
+	{
+		if(indexes[i] == code)
+		{
+			_manualSelection = YES;
+			[self tableView:_tableView shouldSelectRow:i];
+			_manualSelection = NO;
+			break;
+		}
 	}
 }
 

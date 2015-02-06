@@ -57,9 +57,9 @@ int sortTomes(const void *a, const void *b)
     return struc1->ID - struc2->ID;
 }
 
-int sortWchar(const void *a, const void *b)
+int sortRepo(const void *a, const void *b)
 {
-	return wstrcmp(*(charType**)a , *(charType**)b);
+	return wstrcmp((*((REPO_DATA**) a))->name, (*((REPO_DATA**) b))->name);
 }
 
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
