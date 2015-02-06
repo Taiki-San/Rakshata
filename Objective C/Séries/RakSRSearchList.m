@@ -117,6 +117,11 @@
 
 #pragma mark - tableview
 
+- (NSColor *) getTextHighlightColor
+{
+	return [Prefs getSystemColor:GET_COLOR_SURVOL:nil];
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return _data == NULL ? 0 : _nbData;
@@ -159,20 +164,19 @@
 	RakText * view = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:NO];
 	if(view != nil && [view class] == [RakText class])
 	{
-		lastWasSelection = !view.drawsBackground;
-		if(lastWasSelection)
+		lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
+		if(lastWasSelected)
 		{
-			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
-			view.drawsBackground = YES;
-			[selection addObject:@(rowIndex)];
+			view.textColor = (normal != nil ? normal : [self getTextColor:0 :rowIndex]);
+			[selection removeObject:@(rowIndex)];
 		}
 		else
 		{
-			view.textColor = (normal != nil ? normal : [self getTextColor:0 :rowIndex]);
-			view.drawsBackground = NO;
-			[selection removeObject:@(rowIndex)];
+			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
+			[selection addObject:@(rowIndex)];
 		}
 
+		lastWasSelected = !lastWasSelected;
 		selectedRowIndex = rowIndex;
 		[view setNeedsDisplay];
 		
@@ -192,7 +196,7 @@
 		if(notificationName != nil)
 		{
 			_manualSelection = YES;
-			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:getStringForWchar(((charType **) _data)[selectedRowIndex]) userInfo:@{SR_NOTIF_CACHEID : @(indexes[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelection)}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:getStringForWchar(((charType **) _data)[selectedRowIndex]) userInfo:@{SR_NOTIF_CACHEID : @(indexes[selectedRowIndex]), SR_NOTIF_OPTYPE : @(lastWasSelected)}];
 			_manualSelection = NO;
 		}
 	}

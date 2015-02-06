@@ -17,7 +17,7 @@
 	
 	uint64_t * indexes;
 	
-	BOOL lastWasSelection;
+	BOOL lastWasSelected;
 	NSMutableArray * selection;
 }
 
