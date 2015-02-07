@@ -98,7 +98,7 @@
 	}
 	
 	//Update text
-	if(project.description[0] != 0)
+	if(project.isInitialized && project.description[0] != 0)
 	{
 		placeholderString = NO;
 		

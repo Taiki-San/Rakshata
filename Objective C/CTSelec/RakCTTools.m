@@ -163,20 +163,16 @@
 {
 	NSImage * projectImageBase = nil;
 	
-	char * encodedHash = getPathForRepo(repo);
-	
-	if(encodedHash == NULL)
-		return nil;
-	
-	NSString * path = [NSString stringWithFormat:@"imageCache/%s/", encodedHash];
-	free(encodedHash);
-	
-	if(path != nil && imageName != nil)
+	if(repo != NULL && imageName != nil)
 	{
-		NSBundle * bundle = [NSBundle bundleWithPath: path];
-		if(bundle != nil)
+		char * encodedHash = getPathForRepo(repo);
+		if(encodedHash != NULL)
 		{
-			projectImageBase = [bundle imageForResource:[NSString stringWithFormat:@"%@_large", imageName]];
+			NSString * path = [NSString stringWithFormat:@"imageCache/%s/", encodedHash];
+			free(encodedHash);
+			
+			if(path != nil)
+				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_large", imageName]];
 		}
 	}
 	

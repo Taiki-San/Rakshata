@@ -99,40 +99,10 @@
 
 - (void) noContent
 {
-	BOOL installOnly = self.mainThread == TAB_READER;
-	uint mask = SORT_NAME | (installOnly ? RDB_LOADINSTALLED : 0), nbElem;
-	PROJECT_DATA * project = getCopyCache(mask, &nbElem);
+	PROJECT_DATA empty;
+	empty.isInitialized = NO;
 	
-	for(uint i = 0; i < nbElem; i++)
-	{
-		if(project[i].isInitialized && (installOnly || project[i].nombreChapitre != 0 || project[i].nombreTomes != 0))
-		{
-			BOOL isTome;
-			
-			if(installOnly)
-			{
-				if(project[i].nombreChapitreInstalled)
-					isTome = NO;
-				else
-					isTome = YES;
-			}
-			else
-			{
-				if(project[i].nombreChapitre)
-					isTome = NO;
-				else if(project[i].nombreTomes)
-					isTome = YES;
-				else
-					continue;
-			}
-			
-			coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] :project[i] : isTome : (long[4]){-1, -1, -1, -1}];
-			break;
-		}
-	}
-	
-	freeProjectData(project);
-	_initWithNoContent = YES;
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc

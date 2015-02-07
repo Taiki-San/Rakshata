@@ -12,6 +12,8 @@
 
 #define BOTTOM_BORDER 5
 
+#warning "Refresh when update avec updateProjectWithID"
+
 @implementation RakCTHTableController
 
 - (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame
@@ -61,22 +63,29 @@
 
 - (void) analyseCurrentProject : (PROJECT_DATA) project
 {
-	cacheID = project.cacheDBID;
-	
-	numberOfChapters = project.nombreChapitre;
-	numberOfChaptersInstalled = project.nombreChapitreInstalled;
-	
-	numberOfVolumes = project.nombreTomes;
-	numberOfVolumesInstalled = project.nombreTomesInstalled;
-	
-	status = project.status;
-	type = project.type;
-	tag = project.tag;
-
-	paidContent = project.isPaid;
-	DRM = YES;
-	
-	numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);
+	if(!project.isInitialized)
+	{
+		numberOfRows = 0;
+	}
+	else
+	{
+		cacheID = project.cacheDBID;
+		
+		numberOfChapters = project.nombreChapitre;
+		numberOfChaptersInstalled = project.nombreChapitreInstalled;
+		
+		numberOfVolumes = project.nombreTomes;
+		numberOfVolumesInstalled = project.nombreTomesInstalled;
+		
+		status = project.status;
+		type = project.type;
+		tag = project.tag;
+		
+		paidContent = project.isPaid;
+		DRM = YES;
+		
+		numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);
+	}
 	
 	if(_tableView != nil)
 		[_tableView reloadData];

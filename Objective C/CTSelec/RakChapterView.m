@@ -94,10 +94,14 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakMenuText alloc] initWithText:[self bounds] : getStringForWchar(project.projectName)];
+	projectName = [[RakMenuText alloc] initWithText:[self bounds] : project.isInitialized ? getStringForWchar(project.projectName) : @""];
 	if(projectName != nil)	[self addSubview:projectName];
 	
-	projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : [self bounds]];
+	if(project.isInitialized)
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : _bounds];
+	else
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: NULL : nil : _bounds];
+	
 	if(projectImage != nil)	[self addSubview:projectImage];
 	
 	self.readerViewHidden = !readerMode;

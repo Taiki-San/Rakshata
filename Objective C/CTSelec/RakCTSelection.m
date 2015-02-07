@@ -143,44 +143,51 @@
 - (void) setupButtons : (BOOL*) isTome
 {
 	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:self.bounds];
-
-	if(data.nombreChapitreInstalled > 0)
-	{
-		[_buttons setEnabled : YES forSegment:0];
-		
-		if(!*isTome)
-			[_buttons setSelected : YES forSegment:0];
-		
-		if(data.nombreChapitreInstalled == 1)
-		{
-			NSString * name = [_buttons labelForSegment:0];
-			[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:0];
-		}
-	}
-	else if(!*isTome)	//Si on recoit une demande incohérante
-		*isTome = YES;
 	
-	if(data.nombreTomesInstalled > 0)
+	if(!data.isInitialized)
 	{
-		[_buttons setEnabled:YES forSegment:1];
-		
-		if(*isTome)
-			[_buttons setSelected:YES forSegment:1];
-		
-		if(data.nombreTomesInstalled == 1)
-		{
-			NSString * name = [_buttons labelForSegment:1];
-			[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
-		}
+		[_buttons setEnabled: NO forSegment:0];
+		[_buttons setEnabled: NO forSegment:1];
 	}
-	else if(*isTome)
+	else
 	{
 		if(data.nombreChapitreInstalled > 0)
 		{
-			[_buttons setSelected:YES forSegment:0];
-			*isTome = NO;
+			[_buttons setEnabled : YES forSegment:0];
+			
+			if(!*isTome)
+				[_buttons setSelected : YES forSegment:0];
+			
+			if(data.nombreChapitreInstalled == 1)
+			{
+				NSString * name = [_buttons labelForSegment:0];
+				[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:0];
+			}
 		}
-		//Aucun bouton actif jusqu'à que le projet soit changé
+		else if(!*isTome)	//Si on recoit une demande incohérante
+			*isTome = YES;
+		
+		if(data.nombreTomesInstalled > 0)
+		{
+			[_buttons setEnabled:YES forSegment:1];
+			
+			if(*isTome)
+				[_buttons setSelected:YES forSegment:1];
+			
+			if(data.nombreTomesInstalled == 1)
+			{
+				NSString * name = [_buttons labelForSegment:1];
+				[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
+			}
+		}
+		else if(*isTome)
+		{
+			if(data.nombreChapitreInstalled > 0)
+			{
+				[_buttons setSelected:YES forSegment:0];
+				*isTome = NO;
+			}
+		}
 	}
 	
 	if(_currentContext != TAB_READER)

@@ -389,6 +389,9 @@ void resetUpdateDBCache()
 
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 {
+	if(!data.isInitialized)
+		return data;
+	
 	PROJECT_DATA newData = data;
 	
 	if(data.chapitresFull != NULL)

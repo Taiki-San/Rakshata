@@ -16,9 +16,6 @@
 
 - (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
 {
-	if(data.repo == NULL)
-		return nil;
-	
 	self = [self initWithFrame : parentFrame];
 	
 	if(self != nil)
@@ -39,16 +36,17 @@
 
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
-	char * teamPath = getPathForRepo(data.repo);
-	
-	if(teamPath == NULL)
-		return NO;
-	
+	char * teamPath;
 	NSImage * image = nil;
 
-	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
-	if(bundle != nil)
-		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]];
+	if(data.repo != NULL && (teamPath = getPathForRepo(data.repo)) != NULL)
+	{
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
+		if(bundle != nil)
+			image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]];
+
+		free(teamPath);
+	}
 	
 	if(image == nil)
 	{
@@ -59,8 +57,6 @@
 	}
 	
 	self.image = image;
-	free(teamPath);
-	
 	return YES;
 }
 

@@ -99,7 +99,7 @@
 	_data = project;
 	
 	BOOL needProcessName = NO, needProcessAuthor = NO;
-	NSString * currentElem = getStringForWchar(_data.projectName);
+	NSString * currentElem = _data.isInitialized ? getStringForWchar(_data.projectName) : @"";
 	
 	//Project name
 	if(projectName == nil)
@@ -125,7 +125,7 @@
 		[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 	}
 	
-	currentElem = getStringForWchar(_data.authorName);
+	currentElem = _data.isInitialized ? getStringForWchar(_data.authorName) : @"";
 
 	//Author name
 	if(authorName == nil)

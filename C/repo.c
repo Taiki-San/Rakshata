@@ -164,6 +164,9 @@ void enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 
 char * getPathForRepo(REPO_DATA * repo)
 {
+	if(repo == NULL)
+		return NULL;
+	
 	char * output = calloc(20, sizeof(char));
 	if(output != NULL)
 	{

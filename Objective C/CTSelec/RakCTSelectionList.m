@@ -89,6 +89,14 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
+	if(!project.isInitialized)
+	{
+		[self fullAnimatedReload : _nbData :0];
+		_data = NULL;
+		_nbData = 0;
+		return YES;
+	}
+	
 	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL, *oldData = NULL, *oldInstalled = NULL;
 	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled = 0;
 	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID, isTome = self.isTome;
