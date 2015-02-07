@@ -205,9 +205,11 @@
 
 - (void) defineBackgroundColor
 {
-	if([self getBackgroundColor] != nil)
+	NSColor * background = [self getBackgroundColor];
+	
+	if(background != nil)
 	{
-		[self setBackgroundColor:[self getBackgroundColor]];
+		[self setBackgroundColor:background];
 		[self setDrawsBackground:YES];
 	}
 	else

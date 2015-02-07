@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-#define SHADOW_HEIGHT 8
+#define SHADOW_HEIGHT 4
 #define LAST_BLOCK_POSITION 5
 
 @implementation RakSRSearchTab
@@ -47,24 +47,28 @@
 		
 		[self initContent];
 		
-		NSMutableArray * _gradients = [NSMutableArray arrayWithCapacity:4];
-		for(byte position = 0; position < 4; position++)
-		{
-			RakGradientView * gradient = [[RakGradientView alloc] initWithFrame:[self getShadowFrame : frameRect : position]];
-			if(gradient != nil)
-			{
-				[gradient initGradient];
-				gradient.gradientWidth = 1;
-				gradient.gradientMaxWidth = 0;
-				gradient.angle = position * 90;
-				
-				[self addSubview:gradient];
-				[_gradients addObject:gradient];
-			}
-			else
-				[_gradients addObject:@(0)];
-		}
-		gradients = [NSArray arrayWithArray:_gradients];
+//		NSMutableArray * _gradients = [NSMutableArray arrayWithCapacity:4];
+//		for(byte position = 0; position < 4; position++)
+//		{
+//			_gradient = [[NSGradient alloc] initWithStartingColor : [NSColor clearColor] endingColor : [self getGradientBackgroundColor]];
+//			RakGradientView * gradient = [[RakGradientView alloc] initWithFrame:[self getShadowFrame : frameRect : position]];
+//			if(gradient != nil)
+//			{
+//				[gradient initGradient];
+//				gradient.gradientWidth = 1;
+//				gradient.gradientMaxWidth = 0;
+//				gradient.angle = position * 90;
+//				
+//				if(position % 2 == 0)
+//					gradient.hidden = YES;
+//				
+//				[self addSubview:gradient];
+//				[_gradients addObject:gradient];
+//			}
+//			else
+//				[_gradients addObject:@(0)];
+//		}
+//		gradients = [NSArray arrayWithArray:_gradients];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchWasTriggered:) name:SR_NOTIF_NAME_SEARCH_TRIGGERED object:nil];
 	}
@@ -194,7 +198,7 @@
 	return frame;
 }
 
-#define BORDER_HORIZON 	10
+#define BORDER_HORIZON 	(SHADOW_HEIGHT + 2)
 #define BORDER_VERT 	25
 #define BORDER_INTER	10
 #define LAST_BLOCK_WIDTH 125
@@ -225,7 +229,7 @@
 
 - (NSColor *) getBorderColor
 {
-	return [NSColor blackColor];
+	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER :nil];
 }
 
 - (NSColor *) getBackgroudColor
@@ -331,6 +335,9 @@
 
 - (void) mainSearchWasTriggered : (BOOL) isVisible
 {
+	if(isVisible == _isVisible)
+		return;
+	
 	//We need to check if the focus is not just changing to an other search bar
 	if(!isVisible)
 	{
