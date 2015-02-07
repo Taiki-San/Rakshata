@@ -118,7 +118,6 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SEARCHTAB_BORDER_BAR:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
-			//output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];	//vert
 			break;
 		}
 			
@@ -128,7 +127,6 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SEARCHBAR_SELECTION_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:102/255.0f green:149/255.0f blue:176/255.0f alpha:1.0];
-			//output = [NSColor colorWithSRGBRed:136/255.0f green:177/255.0f blue:102/255.0f alpha:1.0];	//vert
 			break;
 		}
 			
@@ -138,14 +136,12 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
 		{
 			output = [NSColor colorWithSRGBRed:159/255.0f green:202/255.0f blue:227/255.0f alpha:1.0];
-			//output = [NSColor colorWithSRGBRed:191/255.0f green:228/255.0f blue:160/255.0f alpha:1.0];	//vert
 			break;
 		}
 			
 		case GET_COLOR_TAGITEM_FONT:
 		{
 			output = [NSColor colorWithSRGBRed:61/255.0f green:119/255.0f blue:152/255.0f alpha:1];
-			//output = [NSColor colorWithSRGBRed:102/255.0f green:171/255.0f blue:150/255.0f alpha:1];		//vert
 			break;
 		}
 			
@@ -232,7 +228,6 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			
 		case GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING:
 		{
-			//output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			output = [NSColor colorWithSRGBRed:104/255.0f green:150/255.0f blue:176/255.0f alpha:1.0];
 			break;
 		}
@@ -242,7 +237,6 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SEARCHTAB_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
-			//output = [NSColor colorWithSRGBRed:44/255.0f green:63/255.0f blue:80/255.0f alpha:1.0];
 			break;
 		}
 			
