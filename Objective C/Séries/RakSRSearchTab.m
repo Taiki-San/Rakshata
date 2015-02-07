@@ -12,7 +12,6 @@
 
 #include "db.h"
 
-#define SHADOW_HEIGHT 4
 #define LAST_BLOCK_POSITION 5
 
 @implementation RakSRSearchTab
@@ -46,29 +45,6 @@
 		}
 		
 		[self initContent];
-		
-//		NSMutableArray * _gradients = [NSMutableArray arrayWithCapacity:4];
-//		for(byte position = 0; position < 4; position++)
-//		{
-//			_gradient = [[NSGradient alloc] initWithStartingColor : [NSColor clearColor] endingColor : [self getGradientBackgroundColor]];
-//			RakGradientView * gradient = [[RakGradientView alloc] initWithFrame:[self getShadowFrame : frameRect : position]];
-//			if(gradient != nil)
-//			{
-//				[gradient initGradient];
-//				gradient.gradientWidth = 1;
-//				gradient.gradientMaxWidth = 0;
-//				gradient.angle = position * 90;
-//				
-//				if(position % 2 == 0)
-//					gradient.hidden = YES;
-//				
-//				[self addSubview:gradient];
-//				[_gradients addObject:gradient];
-//			}
-//			else
-//				[_gradients addObject:@(0)];
-//		}
-//		gradients = [NSArray arrayWithArray:_gradients];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchWasTriggered:) name:SR_NOTIF_NAME_SEARCH_TRIGGERED object:nil];
 	}
@@ -137,14 +113,6 @@
 		[tag setFrame:[self getBlockFrame:frameRect :4]];
 		[extra setFrame:[self getBlockFrame:frameRect :5]];
 	}
-	
-	byte position = 0;
-	for(RakGradientView * gradient in gradients)
-	{
-		if([gradient class] == [RakGradientView class])
-			gradient.frame = [self getShadowFrame:frameRect :position];
-		position++;
-	}
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
@@ -162,12 +130,6 @@
 		[tag resizeAnimation:[self getBlockFrame:frameRect :4]];
 		[extra resizeAnimation:[self getBlockFrame:frameRect :5]];
 	}
-	
-	byte position = 0;
-	for(RakGradientView * gradient in gradients)
-	{
-		gradient.animator.frame = [self getShadowFrame:frameRect :position++];
-	}
 }
 
 - (void) drawRect:(NSRect)dirtyRect
@@ -181,24 +143,7 @@
 
 #pragma mark - Frame
 
-//Position: 0 = left, 1 = bottom, 2 = right, 3 = top
-- (NSRect) getShadowFrame : (NSRect) frame : (byte) position
-{
-	frame.origin.x = position == 2 ? frame.size.width - SHADOW_HEIGHT : 0;
-	frame.origin.y = position == 3 ? frame.size.height - SHADOW_HEIGHT : 0;
-	
-	if(frame.origin.x < 0)		frame.origin.x = 0;
-	if(frame.origin.y < 0)		frame.origin.y = 0;
-	
-	if(position & 1)
-		frame.size.height = SHADOW_HEIGHT;
-	else
-		frame.size.width = SHADOW_HEIGHT;
-	
-	return frame;
-}
-
-#define BORDER_HORIZON 	(SHADOW_HEIGHT + 2)
+#define BORDER_HORIZON 	6
 #define BORDER_VERT 	25
 #define BORDER_INTER	10
 #define LAST_BLOCK_WIDTH 125
@@ -229,7 +174,13 @@
 
 - (NSColor *) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER :nil];
+	if(!_isVisible)
+		return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_BAR :nil];
+
+	else if(_collapsed)
+		return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_COLLAPSED :nil];
+
+	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_DEPLOYED :nil];
 }
 
 - (NSColor *) getBackgroudColor
@@ -265,7 +216,7 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	if (!_isVisible)
+	if (!_isVisible || !_collapsed)
 		return;
 
 	[self updateCollapseState:!_collapsed : NO];
@@ -288,6 +239,7 @@
 	if(silentUpdate)
 	{
 		[placeholder setHidden:!_collapsed];
+		self.layer.borderColor = [self getBorderColor].CGColor;
 		return;
 	}
 	
@@ -299,6 +251,7 @@
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[placeholder setHidden:!getCollapsed];
 		placeholder.alphaValue = 1;
+		self.layer.borderColor = [self getBorderColor].CGColor;
 	}];
 	
 	[NSAnimationContext endGrouping];
@@ -328,7 +281,7 @@
 	
 	if(dict != nil 	&& (number = [dict objectForKey:SR_NOTIF_NEW_STATE]) != nil && [number isKindOfClass:[NSNumber class]] && _isVisible != number.boolValue)
 	{
-		if([ID unsignedCharValue] == SEARCH_BAR_ID_MAIN_TRIGGERED || [ID unsignedCharValue] ==  SEARCH_BAR_ID_AUTHOR_TRIGGERED)
+		if((!_isVisible || _collapsed) && [ID unsignedCharValue] == SEARCH_BAR_ID_MAIN_TRIGGERED)
 			[self mainSearchWasTriggered:number.boolValue];
 	}
 }
@@ -354,13 +307,25 @@
 	
 	if(_isVisible)
 	{
+		self.layer.borderColor = [self getBorderColor].CGColor;
 		[self updateCollapseState : YES : YES];
 		_height = SR_SEARCH_TAB_INITIAL_HEIGHT;
 	}
 	else
 		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
 	
+	[NSAnimationContext beginGrouping];
+	
 	[self updateGeneralFrame];
+	
+	if(!_isVisible)
+	{
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+			self.layer.borderColor = [self getBorderColor].CGColor;
+		}];
+	}
+	
+	[NSAnimationContext endGrouping];
 }
 
 @end

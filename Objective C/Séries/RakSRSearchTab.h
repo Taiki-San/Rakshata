@@ -24,9 +24,7 @@
 {
 	BOOL _isVisible;
 	BOOL _collapsed;
-	
-	NSArray * gradients;
-	
+		
 	RakText * placeholder;
 	
 	RakSRSearchTabGroup * author, *source, *tag, * type, *extra;

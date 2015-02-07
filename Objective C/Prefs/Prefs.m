@@ -115,6 +115,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_BORDERS_COREVIEWS:
 		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
 		case GET_COLOR_FONT_BUTTON_UNAVAILABLE:
+		case GET_COLOR_SEARCHTAB_BORDER_BAR:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
 			//output = [NSColor colorWithSRGBRed:104/255.0f green:143/255.0f blue:71/255.0f alpha:1.0];	//vert
@@ -245,9 +246,15 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 			break;
 		}
 			
-		case GET_COLOR_SEARCHTAB_BORDER:
+		case GET_COLOR_SEARCHTAB_BORDER_COLLAPSED:
 		{
 			output = [NSColor colorWithSRGBRed:52/255.0f green:83/255.0f blue:102/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_SEARCHTAB_BORDER_DEPLOYED:
+		{
+			output = [NSColor colorWithSRGBRed:44/255.0f green:71/255.0f blue:88/255.0f alpha:1.0];
 			break;
 		}
 
