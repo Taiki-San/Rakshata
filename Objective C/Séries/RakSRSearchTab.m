@@ -57,6 +57,7 @@
 	author = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame : _bounds : 1] :SEARCH_BAR_ID_AUTHOR];
 	if(author != nil)
 	{
+		author.alphaValue = 0;
 		author.hidden = YES;
 		[self addSubview:author];
 	}
@@ -64,6 +65,7 @@
 	source = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :2] :SEARCH_BAR_ID_SOURCE];
 	if(source != nil)
 	{
+		source.alphaValue = 0;
 		source.hidden = YES;
 		[self addSubview:source];
 	}
@@ -71,6 +73,7 @@
 	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_TYPE];
 	if(type != nil)
 	{
+		type.alphaValue = 0;
 		type.hidden = YES;
 		[self addSubview:type];
 	}
@@ -78,6 +81,7 @@
 	tag = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :4] :SEARCH_BAR_ID_TAG];
 	if(tag != nil)
 	{
+		tag.alphaValue = 0;
 		tag.hidden = YES;
 		[self addSubview:tag];
 	}
@@ -85,6 +89,7 @@
 	extra = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :5] :SEARCH_BAR_ID_EXTRA];
 	if(extra != nil)
 	{
+		extra.alphaValue = 0;
 		extra.hidden = YES;
 		[self addSubview:extra];
 	}
@@ -230,15 +235,29 @@
 	else
 		return;
 	
-	author.hidden = _collapsed;
-	source.hidden = _collapsed;
-	type.hidden = _collapsed;
-	tag.hidden = _collapsed;
-	extra.hidden = _collapsed;
+	//We update the state of those 5 linked views
+	for(NSView * view in @[author, source, type, tag, extra])
+	{
+		if(silentUpdate)
+		{
+			view.hidden = _collapsed;
+			view.alphaValue = !_collapsed;
+		}
+		else
+		{
+			if(!_collapsed)
+				view.hidden = NO;
+				
+			view.animator.alphaValue = !_collapsed;
+		}
+	}
+
+	placeholder.hidden = !_collapsed;
 
 	if(silentUpdate)
 	{
-		[placeholder setHidden:!_collapsed];
+		placeholder.alphaValue = _collapsed;
+
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		return;
 	}
@@ -246,14 +265,16 @@
 	[NSAnimationContext beginGrouping];
 	
 	placeholder.animator.alphaValue = _collapsed;
+	self.layer.borderColor = [self getBorderColor].CGColor;
 	
-	__block BOOL getCollapsed = _collapsed;
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		[placeholder setHidden:!getCollapsed];
-		placeholder.alphaValue = 1;
-		self.layer.borderColor = [self getBorderColor].CGColor;
+		for(NSView * view in @[author, source, type, tag, extra, placeholder])
+		{
+			if(view.alphaValue == 0)
+				view.hidden = YES;
+		}
 	}];
-	
+
 	[NSAnimationContext endGrouping];
 	
 	if(_collapsed)

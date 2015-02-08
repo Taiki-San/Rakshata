@@ -35,7 +35,6 @@
 }
 
 - (id) init : (NSArray*) views : (BOOL) fastAnimation;
-- (void) setUpViews;
 - (void) performTo;
 - (void) performFromTo : (NSArray*) basePosition;
 

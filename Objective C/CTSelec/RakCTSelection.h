@@ -42,5 +42,7 @@
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (BOOL) updateContext : (PROJECT_DATA) newData;
 
+- (void) cleanChangeCurrentContext;
+
 @end
 

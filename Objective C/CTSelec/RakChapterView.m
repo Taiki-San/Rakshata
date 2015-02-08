@@ -107,13 +107,25 @@
 	self.readerViewHidden = !readerMode;
 }
 
+- (void) setSerieViewHidden : (BOOL) serieViewHidden
+{
+	if(!serieViewHidden)
+	{
+		coreview.currentContext = TAB_SERIES;
+	}
+	
+	[super setSerieViewHidden:serieViewHidden];
+}
+
 - (void) setCTViewHidden : (BOOL) CTViewHidden
 {
 	if(CTViewHidden)
-		[header setHidden:YES];
+	{
+		header.animator.alphaValue = 0;
+	}
 	else
 	{
-		[header setHidden:NO];
+		header.hidden = NO;	header.animator.alphaValue = 1;
 		coreview.currentContext = TAB_CT;
 	}
 	
@@ -124,18 +136,29 @@
 {
 	if(readerViewHidden)
 	{
-		[projectName setHidden:YES];
-		[projectImage setHidden:YES];
+		projectName.animator.alphaValue = 0;
+		projectImage.animator.alphaValue = 0;
 	}
 	else
 	{
-		[projectName setHidden:NO];
-		[projectImage setHidden:NO];
+		projectName.hidden = NO;	projectName.animator.alphaValue = 1;
+		projectImage.hidden = NO;	projectImage.animator.alphaValue = 1;
 		
 		coreview.currentContext = TAB_READER;
 	}
 	
 	[super setReaderViewHidden:readerViewHidden];
+}
+
+- (void) cleanupFocusViewChange
+{
+	for(NSView * view in @[header, projectName, projectImage])
+	{
+		if(view.alphaValue == 0)
+			view.hidden = YES;
+	}
+	
+	[coreview cleanChangeCurrentContext];
 }
 
 #pragma mark - Color

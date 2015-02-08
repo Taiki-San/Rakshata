@@ -75,7 +75,7 @@
 	
 	if(_chapter != nil && _volume != nil)
 	{
-		_chapter.hidden = NO;		_volume.hidden = NO;
+		_chapter.alphaValue = 1;		_volume.alphaValue = 1;
 		
 		CGFloat width = _chapter.superview.frame.size.width;
 		

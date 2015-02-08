@@ -31,18 +31,6 @@
 	return self;
 }
 
-- (void) setUpViews
-{
-	RakTabView * currentView;
-	NSUInteger i, count = [_views count];
-	for(i = 0; i < count; i++)
-	{
-		currentView = [_views objectAtIndex:i];
-		if([currentView respondsToSelector:@selector(setUpViewForAnimation:)])
-			[currentView setUpViewForAnimation : mainThread];
-	}
-}
-
 - (void) performTo
 {
 	[self performFromTo:NULL];
@@ -55,7 +43,14 @@
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
+		[context setAllowsImplicitAnimation:YES];
 		[context setDuration:animationDuration];
+		
+		for(RakTabView * currentView in _views)
+		{
+			if([currentView respondsToSelector:@selector(setUpViewForAnimation:)])
+				[currentView setUpViewForAnimation : mainThread];
+		}
 		
 		[[(RakAppDelegate*) [NSApp delegate]MDL] createFrame];
 		

@@ -168,17 +168,12 @@
 	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
 		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
 	
-	//Variable to set up the animation
-	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superview subviews] : NO];
-	[animation setUpViews];
-	[animation performTo];
+	[[[RakTabAnimationResize alloc] init: [superview subviews] : NO] performTo];
 }
 
 - (void) fastAnimatedRefreshLevel : (NSView*) superview
 {
-	RakTabAnimationResize *animation = [[RakTabAnimationResize alloc] init: [superview subviews] : YES];
-	[animation setUpViews];
-	[animation performTo];
+	[[[RakTabAnimationResize alloc] init: [superview subviews] : YES] performTo];
 }
 
 - (void) setFrame:(NSRect)frameRect

@@ -34,7 +34,7 @@
 			_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
 			if(_chapterView != nil)
 			{
-				_chapterView.hidden = isTome && isCompact;
+				_chapterView.alphaValue = !isTome || !isCompact;
 				[self addSubview : _chapterView];
 			}
 			
@@ -47,7 +47,7 @@
 			_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
 			if(_volView != nil)
 			{
-				_volView.hidden = !isTome && isCompact;
+				_volView.alphaValue = isTome || !isCompact;
 				[self addSubview: _volView];
 			}
 			
@@ -215,26 +215,38 @@
 	
 	if(currentContext == TAB_READER)
 	{
-		if(_buttons != nil)
-			[_buttons setHidden:NO];
+		for(NSView * view in @[_buttons, isTome ? _volView : _chapterView])
+		{
+			view.hidden = NO;
+			view.animator.alphaValue = 1;
+		}
 		
-		[_chapterView setHidden:isTome];
-		[_volView setHidden:!isTome];
+		if(isTome)
+			_chapterView.animator.alphaValue = 0;
+		else
+			_volView.animator.alphaValue = 0;
 	}
 	else
 	{
-		if(_buttons != nil)
-			[_buttons setHidden:YES];
+		if(currentContext == TAB_CT)
+		{
+			_chapterView.hidden = NO;	_chapterView.animator.alphaValue = 1;
+			_volView.hidden = NO;		_volView.animator.alphaValue = 1;
+		}
+		
+		_buttons.animator.alphaValue = 0;
 	}
 	
-	if(_chapterView != nil)
+	_chapterView.compactMode = currentContext != TAB_CT;
+	_volView.compactMode = currentContext != TAB_CT;
+}
+
+- (void) cleanChangeCurrentContext
+{
+	for(NSView * view in @[_buttons, _volView, _chapterView])
 	{
-		_chapterView.compactMode = currentContext != TAB_CT;
-	}
-	
-	if(_volView != nil)
-	{
-		_volView.compactMode = currentContext != TAB_CT;
+		if(view.alphaValue == 0)
+			view.hidden = YES;
 	}
 }
 
@@ -344,16 +356,10 @@
 
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender
 {
-	bool isTome;
-	if ([sender selectedSegment] == 0)
-		isTome = false;
-	else
-		isTome = true;
+	BOOL isTome = [sender selectedSegment] != 0;
 	
-	if(_chapterView != nil)
-		_chapterView.hidden = isTome;
-	if(_volView != nil)
-		_volView.hidden = !isTome;
+	_chapterView.alphaValue = isTome;
+	_volView.alphaValue = !isTome;
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

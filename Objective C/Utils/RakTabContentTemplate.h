@@ -16,6 +16,9 @@
 	
 	BOOL isFocusDrop;
 	
+	BOOL _animatedContextChange;
+	BOOL _ignoredPreviousContextChange;
+	
 	BOOL _CTViewHidden;
 	BOOL _readerViewHidden;
 }
@@ -42,5 +45,6 @@
 - (NSColor*) getBorderColor;
 
 - (void) focusViewChanged : (uint) newMainThread;
+- (void) cleanupFocusViewChange;
 
 @end

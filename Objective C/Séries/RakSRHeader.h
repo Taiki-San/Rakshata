@@ -44,6 +44,7 @@
 - (NSRect) frameFromParent : (NSRect) parentFrame;
 
 - (void) updateFocus : (uint) mainThread;
+- (void) cleanupAfterFocusChange;
 
 - (void) nbRowRailsChanged;
 

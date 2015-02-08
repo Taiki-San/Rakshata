@@ -27,7 +27,6 @@
 	
 	//Views
 	NSRect previousFrame;
-	BOOL _hidden;
 	byte _activeView;
 
 	RakGridView * _grid;
@@ -36,7 +35,7 @@
 @property (weak) NSView * controlView;
 @property byte activeView;
 
-@property BOOL hidden;
+@property (readonly) NSView * getActiveView;
 @property NSMutableArray * sharedReference;
 
 - (void) initViews;

@@ -209,8 +209,8 @@
 	
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_data])
 	{
-		releaseCTData(_data);
 		[self loadProject:getElementByID(_data.cacheDBID)];
+		releaseCTData(_data);
 	}
 }
 

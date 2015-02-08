@@ -61,8 +61,9 @@
 		}
 		
 		_placeholderActive = content.nbElem == 0;
-		[content setHidden : _placeholderActive];
-		[_placeholder setHidden : !_placeholderActive];
+		
+		[content getContent].alphaValue = !_placeholderActive;	[content setHidden : _placeholderActive];
+		_placeholder.alphaValue = _placeholderActive;			[_placeholder setHidden : !_placeholderActive];
 		
 		[content setFrame:[self frameForContent : self.bounds]];
 		[_placeholder setFrameOrigin : NSCenteredRect(content.frame, _placeholder.bounds)];
@@ -262,15 +263,15 @@
 			if(retValue)
 			{
 				[_content setHidden:NO];
-				[_content setAlphaValue:1 :NO];
+				[_content setAlphaValue:1 :YES];
 
-				_placeholder.alphaValue = 1;
 				_placeholder.animator.alphaValue = 0;
 			}
 			else
 			{
+				[_content setAlphaValue:0 :YES];
+
 				[_placeholder setHidden:NO];
-				_placeholder.alphaValue = 0;
 				_placeholder.animator.alphaValue = 1;
 
 				[_content flushContext:YES];

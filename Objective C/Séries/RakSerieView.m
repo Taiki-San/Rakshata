@@ -37,12 +37,18 @@
 		
 		if(mainThread == TAB_SERIES)
 		{
-			compactListHidden = compactList.hidden = headerText.hidden = YES;
+			compactListHidden = YES;
+			[compactList getContent].alphaValue = 0;
+			[compactList getContent].hidden = YES;
+			
+			headerText.alphaValue = 0;
+			headerText.hidden = YES;
 		}
 		else
 		{
 			compactListHidden = NO;
-			contentManager.hidden = YES;
+			[contentManager getActiveView].alphaValue = 0;
+			[contentManager getActiveView].hidden = YES;
 		}
 	}
 	
@@ -103,25 +109,49 @@
 
 - (void) setSerieViewHidden : (BOOL) serieViewHidden
 {
-	if(!serieViewHidden)
+	if(compactList != nil && compactListHidden == serieViewHidden)
 	{
-		if(compactList != nil && !compactListHidden)
-			compactListHidden = compactList.hidden = headerText.hidden = YES;
+		compactListHidden = !serieViewHidden;
+		
+		RakTreeView * scrollview = [compactList getContent];
+		
+		if(_animatedContextChange)
+		{
+			if(serieViewHidden)
+			{
+				scrollview.animator.alphaValue = 1;
+				headerText.animator.alphaValue = 1;
+			}
+			else
+			{
+				scrollview.animator.alphaValue = 0;
+				headerText.animator.alphaValue = 0;
+			}
+		}
+		else
+			scrollview.alphaValue = headerText.alphaValue = !serieViewHidden;
 	}
-
+	
 	if(contentManager != nil)
-		contentManager.hidden = serieViewHidden;
+	{
+		NSView * view = [contentManager getActiveView];
+		
+		if(_animatedContextChange)
+		{
+			if(serieViewHidden)
+				view.animator.alphaValue = 0;
+			else
+				view.animator.alphaValue = 1;
+		}
+		else
+			view.alphaValue = serieViewHidden;
+	}
 }
 
 - (void) setCTViewHidden : (BOOL) CTViewHidden
 {
 	if(!CTViewHidden && compactList != nil)
-	{
-		if(compactListHidden)
-			compactListHidden = compactList.hidden = headerText.hidden = NO;
-		
 		compactList.installOnly = NO;
-	}
 	
 	[super setCTViewHidden:CTViewHidden];
 }
@@ -129,15 +159,18 @@
 - (void) setReaderViewHidden : (BOOL) readerViewHidden
 {
 	if(!readerViewHidden && compactList != nil)
-	{
-		if(compactListHidden)
-			compactListHidden = compactList.hidden = headerText.hidden = NO;
-		
 		compactList.installOnly = YES;
-	}
 	
 	[super setReaderViewHidden:readerViewHidden];
 }
 
+- (void) cleanupFocusViewChange
+{
+	for(NSView * view in @[[compactList getContent], headerText, [contentManager getActiveView]])
+	{
+		if(view.alphaValue == 0)
+			view.hidden = YES;
+	}
+}
 
 @end

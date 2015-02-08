@@ -111,6 +111,12 @@
 	[super setUpViewForAnimation : mainThread];
 }
 
+- (void) refreshDataAfterAnimation
+{
+	[header cleanupAfterFocusChange];
+	[coreView cleanupFocusViewChange];
+}
+
 - (void) displayTypeUpdate : (uint) activeCell
 {
 	if(activeCell == SR_CELLTYPE_GRID)

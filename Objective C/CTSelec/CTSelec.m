@@ -162,11 +162,29 @@
 
 - (void) setUpViewForAnimation : (uint) mainThread
 {
-	[backButton setHidden: mainThread == TAB_SERIES];
+	if(mainThread != TAB_READER && !backButton.isHidden)
+	{
+		backButton.animator.alphaValue = 0;
+	}
+	else if(mainThread == TAB_READER && backButton.isHidden)
+	{
+		backButton.hidden = NO;
+		backButton.animator.alphaValue = 1;
+	}
 	
 	[coreView focusViewChanged : mainThread];
 	
 	[super setUpViewForAnimation:mainThread];
+}
+
+- (void) refreshDataAfterAnimation
+{
+	if(backButton.alphaValue == 0)
+		backButton.hidden = YES;
+	
+	[coreView cleanupFocusViewChange];
+	
+	[super refreshDataAfterAnimation];
 }
 
 - (NSString *) byebye

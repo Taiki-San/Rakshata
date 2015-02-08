@@ -168,33 +168,24 @@
 		[_controlView addSubview : _grid.contentView];
 	}
 	
-	_grid.hidden = _activeView != SR_CELLTYPE_GRID;
+	[_grid contentView].alphaValue = _activeView != SR_CELLTYPE_GRID;
 	_initialized = YES;
 }
 
 #pragma mark - Property
 
-- (BOOL) hidden
+- (NSView *) getActiveView
 {
-	return _hidden;
-}
-
-- (void) setHidden : (BOOL) hidden
-{
-	_hidden = hidden;
-	
 	if(_activeView == SR_CELLTYPE_GRID)
-		_grid.hidden = hidden;
+		return (NSView*) [_grid contentView];
 	
 	else if(_activeView == SR_CELLTYPE_REPO)
-	{
-		
-	}
+		return nil;
 	
 	else if(_activeView == SR_CELLTYPE_LIST)
-	{
-		
-	}
+		return nil;
+	
+	return nil;
 }
 
 - (void) setFrame : (NSRect) frame
@@ -248,18 +239,6 @@
 	if(!_initialized || activeView == _activeView)
 		return;
 	
-	//We resize the new view
-	if(activeView == SR_CELLTYPE_GRID)
-	{
-		[_grid setFrame:previousFrame];
-		if(animated)
-			[_grid contentView].alphaValue = 0;
-	}
-	else if(activeView == SR_CELLTYPE_REPO)
-	{}
-	else if(activeView == SR_CELLTYPE_LIST)
-	{}
-
 	if(animated)
 		[NSAnimationContext beginGrouping];
 	
@@ -269,23 +248,25 @@
 		if(animated)
 			[_grid contentView].animator.alphaValue = 0;
 		else
-			[_grid setHidden:YES];
+			[_grid contentView].alphaValue = 0;
 	}
 	else if(_activeView == SR_CELLTYPE_REPO)
 	{}
 	else if(_activeView == SR_CELLTYPE_LIST)
 	{}
 	
-	__block byte oldView = _activeView;
+	__block byte oldActive = _activeView;
 	_activeView = activeView;
 
 	//We reveal the new view
 	if(activeView == SR_CELLTYPE_GRID)
 	{
+		[_grid contentView].hidden = NO;
+
 		if(animated)
 			[_grid contentView].animator.alphaValue = 1;
 		else
-			[_grid setHidden:NO];
+			[_grid contentView].alphaValue = 1;
 	}
 	else if(activeView == SR_CELLTYPE_REPO)
 	{}
@@ -295,16 +276,18 @@
 	if(animated)
 	{
 		[[NSAnimationContext currentContext] setCompletionHandler:^{
-			if(oldView == SR_CELLTYPE_GRID)
+			if(oldActive == SR_CELLTYPE_GRID)
 			{
-				_grid.hidden = YES;
-				[_grid contentView].alphaValue = 1;
+				if([_grid contentView].alphaValue == 0)
+					[_grid contentView].hidden = YES;
 			}
-			else if(oldView == SR_CELLTYPE_REPO)
+			else if(oldActive == SR_CELLTYPE_REPO)
 			{}
-			else if(oldView == SR_CELLTYPE_LIST)
+			else if(oldActive == SR_CELLTYPE_LIST)
 			{}
+
 		}];
+		
 		[NSAnimationContext endGrouping];
 	}
 }

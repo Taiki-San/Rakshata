@@ -256,12 +256,29 @@
 {
 	_haveFocus = mainThread == TAB_SERIES;
 	
-	[self _resize :self.superview.bounds :NO];
+	[self _resize :self.superview.bounds :YES];
+
+	if(_haveFocus)
+	{
+		displayType.hidden = tagRail.hidden = search.hidden = NO;
+	}
+	else
+		backButton.hidden = NO;
 	
-	[backButton setHidden: _haveFocus];
-	[displayType setHidden : !_haveFocus];
-	[tagRail setHidden:!_haveFocus];
-	[search setHidden:!_haveFocus];
+	backButton.animator.alphaValue = !_haveFocus;
+	
+	displayType.animator.alphaValue = _haveFocus;
+	tagRail.animator.alphaValue = _haveFocus;
+	search.animator.alphaValue = _haveFocus;
+}
+
+- (void) cleanupAfterFocusChange
+{
+	for(NSView * view in @[backButton, displayType, tagRail, search])
+	{
+		if(view.alphaValue == 0)
+			view.hidden = YES;
+	}
 }
 
 - (void) backButtonClicked
