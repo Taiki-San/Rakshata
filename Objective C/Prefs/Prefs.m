@@ -159,7 +159,7 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 
 		case GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND:
 		{
-			output = [NSColor colorWithDeviceWhite:1 alpha:1.0];
+			output = [NSColor colorWithDeviceWhite:222/255.0f alpha:1.0];
 			break;
 		}
 			
@@ -322,6 +322,13 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_CTHEADER_GRADIENT_END:
 		{
 			output = [NSColor colorWithDeviceWhite:0 alpha:0.4f];
+			break;
+		}
+			
+		case GET_COLOR_SRPLACEHOLDER_TEXT:
+		{
+			output = [NSColor colorWithSRGBRed:27/255.0f green:162/255.0f blue:249/255.0f alpha:0.65];
+			//output = [[Prefs getSystemColor:GET_COLOR_ACTIVE :nil] colorWithAlphaComponent:0.6];
 			break;
 		}
 			

@@ -195,7 +195,7 @@
 
 - (NSColor *) placeholderTextColor
 {
-	return [[Prefs getSystemColor:GET_COLOR_ACTIVE :nil] colorWithAlphaComponent:0.6];
+	return [Prefs getSystemColor:GET_COLOR_SRPLACEHOLDER_TEXT :nil];
 }
 
 - (NSFont *) placeholderFont
