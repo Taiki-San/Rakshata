@@ -310,8 +310,13 @@
 
 - (BOOL) isStillCollapsedReaderTab
 {
+	if(self.mainThread != TAB_READER)
+		return NO;
+	
 	int state;
+
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
+	
 	return (state & STATE_READER_TAB_SERIE_FOCUS) == 0;
 }
 
