@@ -165,10 +165,17 @@
 	_grid = [[RakGridView alloc] initWithFrame : previousFrame : self];
 	if(_grid != nil)
 	{
-		[_controlView addSubview : _grid.contentView];
+		NSView * view = _grid.contentView;
+		
+		if(_activeView != SR_CELLTYPE_GRID)
+		{
+			view.alphaValue = 0;
+			view.hidden = YES;
+		}
+		
+		[_controlView addSubview : view];
 	}
 	
-	[_grid contentView].alphaValue = _activeView != SR_CELLTYPE_GRID;
 	_initialized = YES;
 }
 

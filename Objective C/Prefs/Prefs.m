@@ -13,7 +13,7 @@
 __strong Prefs* prefsCache;
 
 // Contexte
-static uint mainThread = TAB_CT;				//Default : TAB_SERIES
+static uint mainThread = TAB_SERIES;				//Default : TAB_SERIES
 static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
 
 #define READERMODE_MAX_WIDTH_WHEN_INACTIVE 320

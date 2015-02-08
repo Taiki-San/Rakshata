@@ -15,7 +15,7 @@
 - (id)initContent:(NSRect)frame : (NSString *) state
 {
     self = [super initWithFrame:frame];
-    if (self)
+    if(self != nil)
 	{
 		[self setupInternal];
 		

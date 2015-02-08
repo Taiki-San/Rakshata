@@ -457,7 +457,7 @@
 		{
 			if([view class] == [RakText class])
 			{
-				view.textColor =  [self getTextColor:column++ :selectedRowIndex];
+				view.textColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
 				view.drawsBackground = NO;
 				[view setNeedsDisplay];
 			}

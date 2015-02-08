@@ -24,14 +24,14 @@
 		_responder = nil;
 		_prefUIOpen = NO;
 		_haveFocus = haveFocus;
-		_height = self.bounds.size.height;
+		_height = _bounds.size.height;
 		
 		[self initView];
 		
 		if(tagRail.nbRow != 1)
 			[self setFrame:frameRect];
 		
-		[self updateFocus:haveFocus ? TAB_SERIE_ACTIVE : TAB_CT];
+		[self updateFocus:haveFocus ? TAB_SERIES : TAB_CT];
 	}
 	
 	return self;
