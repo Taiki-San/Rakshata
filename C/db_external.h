@@ -69,6 +69,7 @@ uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 uint getIDForTag(byte type, uint code);
 
 uint * getFilteredProject(uint * dataLength);
+char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 
 /**DBTools.c**/
 bool isPaidProject(PROJECT_DATA projectData);

@@ -199,7 +199,7 @@ void flushSearchJumpTable(void * _table)
 	free(table);
 }
 
-//API to manipulate the content
+#pragma mark - Manipulate the content
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 {
@@ -468,7 +468,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	return !fail;
 }
 
-//API to manipulate tags
+#pragma mark - Manipulate tags
 
 bool insertRestriction(uint64_t code, byte type)
 {
@@ -528,7 +528,7 @@ bool removeRestriction(uint64_t code, byte type)
 	return output;
 }
 
-//API to keep things kinda clean
+#pragma mark - Maintenance API
 
 void updateElementCount(byte type, int change)
 {
@@ -592,7 +592,7 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	}
 }
 
-//API to read and work on those data
+#pragma mark - Read and work on those data
 
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID)
 {
@@ -707,6 +707,8 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	return codes;
 }
 
+#pragma mark - Most highlevel API
+
 uint * getFilteredProject(uint * dataLength)
 {
 	if(dataLength == NULL)
@@ -759,6 +761,41 @@ uint * getFilteredProject(uint * dataLength)
 	}
 	
 	*dataLength = realLength;
+	
+	return output;
+}
+
+char ** getProjectNameStartingWith(const char * start, uint * nbProject)
+{
+	char ** output = calloc(nbElem, sizeof(char *));
+	if(output == NULL)
+		return NULL;
+	
+	uint length = strlen(start);
+	char requestText[length + 200];
+	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM rakSQLite WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\" ORDER BY "DBNAMETOID(RDB_projectName)" ASC", start);
+	
+	sqlite3_stmt * request;
+	
+	if(sqlite3_prepare_v2(cache, requestText, -1, &request, NULL) != SQLITE_OK)
+	{
+		free(output);
+		return NULL;
+	}
+	
+	size_t realLength = 0;
+	while (realLength < nbElem && sqlite3_step(request) == SQLITE_ROW)
+	{
+		output[realLength] = strdup((void*) sqlite3_column_text(request, 0));
+		
+		if(output[realLength] != NULL)
+			realLength++;
+	}
+	
+	sqlite3_finalize(request);
+	
+	if(nbProject != NULL)
+		*nbProject = realLength;
 	
 	return output;
 }

@@ -35,10 +35,12 @@ enum
 	SEARCH_BAR_ID_TYPE_TYPED		= 10
 };
 
-@interface RakSRSearchBar : NSSearchField
+@interface RakSRSearchBar : NSSearchField <NSTextFieldDelegate>
 {
 	BOOL _currentPlaceholderState;
 	byte _ID;
+	
+	BOOL noRecursive;
 	
 	id _cancelTarget;
 	SEL _cancelAction;

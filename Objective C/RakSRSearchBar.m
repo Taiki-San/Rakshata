@@ -104,6 +104,10 @@
 		
 		[self updatePlaceholder:YES];
 		[Prefs getCurrentTheme:self];
+		
+		[self setDelegate:self];
+		[self.cell setSendsWholeSearchString:NO];
+		[self.cell setSendsSearchStringImmediately:YES];
 	}
 	
 	return self;
@@ -245,6 +249,44 @@
 
 	[self.cell setTextColor:[self getTextColor]];
 	[self updatePlaceholder : _currentPlaceholderState];
+}
+
+#pragma mark - Logic behind auto-completion
+
+- (NSArray *)control:(NSControl *)control textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
+{
+	uint nbElem;
+	char ** output = getProjectNameStartingWith([textView.string cStringUsingEncoding:NSUTF8StringEncoding], &nbElem);
+	
+	if(output == NULL)
+		return @[];
+	else if(nbElem == 0)
+	{
+		free(output);
+		return @[];
+	}
+	
+	NSMutableArray * array = [NSMutableArray array];
+	
+	for(uint i = 0; i < nbElem; i++)
+	{
+		[array addObject:[NSString stringWithUTF8String:output[i]]];
+		free(output[i]);
+	}
+	free(output);
+	
+	return array;
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj
+{
+	NSTextView * view = [obj.userInfo objectForKey:@"NSFieldEditor"];
+	if (![view.string isEqualToString:@""] && !noRecursive)
+	{
+		noRecursive = YES;
+		[view complete:nil];
+		noRecursive = NO;
+	}
 }
 
 @end
