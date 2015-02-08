@@ -25,7 +25,6 @@
 	//Elements
 	RakCTHImage * _background;
 	RakCTHContainer * _container;
-	
 }
 
 - (id) initWithData : (NSRect) frame : (PROJECT_DATA) project;

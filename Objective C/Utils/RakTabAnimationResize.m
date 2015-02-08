@@ -26,7 +26,6 @@
 
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
-		[context setAllowsImplicitAnimation:YES];
 		[context setDuration : fastAnimation ? 0.1 : 0.2];
 		
 		for(RakTabView * currentView in validatedViews)

@@ -129,15 +129,6 @@
 	[_volView resizeAnimation : frame];
 }
 
-- (void) setFrame:(NSRect)frameRect
-{
-#ifdef DEV_VERSION
-	NSLog(@"Shouldn't have been called");
-#endif
-	
-	[self setFrame : frameRect : _cachedHeaderHeight];
-}
-
 - (NSRect) frameFromParent : (NSRect) parentBounds : (CGFloat) headerHeight
 {
 	if(_currentContext == TAB_READER)

@@ -69,26 +69,18 @@
 	lastKnownHeight = frameRect.size.height;
 	
 	[self.animator setFrame : frameRect];
+	frameRect.origin = NSZeroPoint;
 	
 	self.gradientMaxWidth = frameRect.size.height;
 	
 	NSPoint nameOrigin = [self projectNamePos : frameRect.size], authorOrigin = [self authorNamePos : frameRect.size];
-	CGFloat oldNameHeight = projectName.bounds.size.height, oldAuthorHeight = authorName.bounds.size.height;
-
-	[projectName.animator setFrameOrigin : nameOrigin];
-	[authorName.animator setFrameOrigin : authorOrigin];
-	
-	frameRect.origin = NSZeroPoint;
-	
 	CGFloat tableControllerBaseX = [_tableController rawBaseX:frameRect];
+	
 	projectName.fixedWidth = tableControllerBaseX - nameOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
 	authorName.fixedWidth = tableControllerBaseX - authorOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
 	
-	if(projectName.bounds.size.height != oldNameHeight)	//fixedWidth may warp the lines
-		[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
-	
-	if(authorName.bounds.size.height != oldAuthorHeight)	//fixedWidth may warp the lines
-		[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
+	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
+	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
 	
 	[_tableController resizeAnimation : frameRect];
 }
@@ -209,8 +201,8 @@
 	
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_data])
 	{
-		[self loadProject:getElementByID(_data.cacheDBID)];
 		releaseCTData(_data);
+		[self loadProject:getElementByID(_data.cacheDBID)];
 	}
 }
 
