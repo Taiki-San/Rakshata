@@ -222,13 +222,12 @@
 	[super fastAnimatedRefreshLevel:superview];
 }
 
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+- (NSRect) generateNSTrackingAreaSize
 {
 	NSSize svSize = self.superview.frame.size;
-	NSRect frame = viewFrame;
+	NSRect frame = _bounds;
 	
 	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &(frame.size.width) : &svSize];
-	frame.origin = NSZeroPoint;
 	
 	return frame;
 }

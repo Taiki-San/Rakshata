@@ -225,30 +225,26 @@
 	return (state & STATE_READER_TAB_CT_FOCUS) == 0;
 }
 
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+- (NSRect) generateNSTrackingAreaSize
 {
-	NSRect frame = viewFrame;
+	NSRect frame = _bounds;
 	NSSize svSize = self.superview.bounds.size;
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX : &frame.size.width : &svSize];
+
 	frame.size.width -= _lastFrame.origin.x;
-	frame.origin.x = 0;
 	
 	MDL * tabMDL = [self getMDL : YES];
 	
 	if(tabMDL != nil)
 	{
-		CGFloat MDLHeight = [tabMDL lastFrame].size.height - [tabMDL frame].origin.y - viewFrame.origin.y;
+		CGFloat MDLHeight = [tabMDL lastFrame].size.height - [tabMDL frame].origin.y - frame.origin.y;
 		
 		if(MDLHeight > 0)
 		{
 			frame.origin.y = MDLHeight;
 			frame.size.height -= MDLHeight;
 		}
-		else
-			frame.origin.y = 0;
 	}
-	else
-		frame.origin.y = 0;
 	
 	return frame;
 }

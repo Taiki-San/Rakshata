@@ -27,6 +27,7 @@
 
 		//On initialise la cellule
 		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
+		ID = isOneLevelBack ? 2 : 1;
 	
 		//Set tracking area
 		tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
@@ -102,16 +103,14 @@
 
 - (bool) confirmMouseOnMe
 {
-	if([self.superview superclass] == [RakTabView class])	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
-	{
-		NSRect frame = [self frame];
-		if([self.superview isFlipped])
-			frame.origin.y = self.superview.frame.size.height - frame.size.height - frame.origin.y;
-		
-		return ![(RakTabView *) self.superview isStillCollapsedReaderTab] && [(RakTabView *) self.superview isCursorOnRect:frame];
-	}
-	else
-		return YES;
+	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
+	RakTabView * group = ID == 1 ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
+	
+	NSRect frame = [self frame];
+	if(group.isFlipped)
+		frame.origin.y = group.bounds.size.height - frame.size.height - frame.origin.y;
+	
+	return ![group isStillCollapsedReaderTab] && [group isCursorOnRect:frame];
 }
 
 - (void) mouseEntered:(NSEvent *)theEvent

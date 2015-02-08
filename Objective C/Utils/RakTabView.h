@@ -71,7 +71,7 @@ enum {
 - (void) releaseReaderCatchArea;
 - (void) setUpViewForAnimation : (uint) mainThread;
 
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame;
+- (NSRect) generateNSTrackingAreaSize;
 - (void) refreshDataAfterAnimation;
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;

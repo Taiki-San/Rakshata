@@ -12,6 +12,7 @@
 
 @interface RakBackButton : NSButton <NSAnimationDelegate>
 {
+	byte ID;
 	bool cursorOnMe;
 	NSTrackingRectTag tag;
 

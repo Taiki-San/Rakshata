@@ -56,6 +56,11 @@
 	
 	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : frame] : state];
 	[self addSubview:coreView];
+	
+	if(self.mainThread != TAB_SERIES)
+	{
+		searchTab.hidden = YES;	searchTab.alphaValue = 0;
+	}
 }
 
 - (NSString *) byebye
@@ -88,14 +93,6 @@
 		[super mouseExited:theEvent];
 }
 
-- (void) animationIsOver:(uint)mainThread :(byte)context
-{
-	[super animationIsOver:mainThread :context];
-	
-	if((mainThread == TAB_SERIES) == searchTab.isHidden)
-		[searchTab setHidden: mainThread == TAB_SERIES];
-}
-
 - (void) seriesIsOpening : (byte) context
 {
 	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
@@ -106,15 +103,28 @@
 - (void) setUpViewForAnimation : (uint) mainThread
 {
 	[header updateFocus : mainThread];
+	
 	[coreView focusViewChanged : mainThread];
+	
+	if(mainThread != TAB_SERIES)
+		searchTab.animator.alphaValue = 0;
+	else
+	{
+		searchTab.hidden = NO;
+		searchTab.animator.alphaValue = 1;
+	}
 	
 	[super setUpViewForAnimation : mainThread];
 }
 
 - (void) refreshDataAfterAnimation
 {
+	if(searchTab.alphaValue == 0)
+		[searchTab setHidden: YES];
+	
 	[header cleanupAfterFocusChange];
 	[coreView cleanupFocusViewChange];
+	[super refreshDataAfterAnimation];
 }
 
 - (void) displayTypeUpdate : (uint) activeCell
@@ -229,31 +239,26 @@
 	return frame;
 }
 
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+- (NSRect) generateNSTrackingAreaSize
 {
 	CGFloat var;
-	NSRect frame = viewFrame;
+	NSRect frame = _bounds;
 	NSSize svSize = self.superview.frame.size;
 	
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX : &(frame.size.width) : &svSize];
-	frame.origin.x = 0;
 	
 	MDL * tabMDL = [self getMDL : YES];
 	
 	if(tabMDL != nil)
 	{
-		var = [tabMDL lastFrame].size.height - [tabMDL lastFrame].origin.y - viewFrame.origin.y;
+		var = [tabMDL lastFrame].size.height - [tabMDL lastFrame].origin.y - frame.origin.y;
 		
 		if(var > 0)
 		{
 			frame.origin.y = var;
 			frame.size.height -= var;
 		}
-		else
-			frame.origin.y = 0;
 	}
-	else
-		frame.origin.y = 0;
 	
 	return frame;
 }

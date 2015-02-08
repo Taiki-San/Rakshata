@@ -30,6 +30,8 @@
 		
 		if(tagRail.nbRow != 1)
 			[self setFrame:frameRect];
+		
+		[self updateFocus:haveFocus ? TAB_SERIE_ACTIVE : TAB_CT];
 	}
 	
 	return self;

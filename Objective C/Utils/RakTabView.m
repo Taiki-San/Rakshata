@@ -232,8 +232,7 @@
 	if([constraints count])
 	{
 		NSLog(@"Hum, constraints were requested: %@", self);
-		[self removeConstraints:constraints];
-		constraints = [super constraints];
+		return nil;
 	}
 	
 	return constraints;
@@ -288,15 +287,14 @@
 		
 	if(inReaderMode)
 	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize:[self frame]] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingMouseMoved) owner:self userInfo:nil];
+		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingMouseMoved) owner:self userInfo:nil];
 		[self addTrackingArea:trackingArea];
 	}
 }
 
-- (NSRect) generateNSTrackingAreaSize : (NSRect) viewFrame
+- (NSRect) generateNSTrackingAreaSize
 {
-	viewFrame.origin = NSZeroPoint;
-	return viewFrame;
+	return _bounds;
 }
 
 - (void) refreshDataAfterAnimation
