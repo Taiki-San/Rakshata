@@ -30,7 +30,7 @@
 		ID = isOneLevelBack ? 2 : 1;
 	
 		//Set tracking area
-		tag = [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:NO];
+		tag = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:NO];
 	}
     return self;
 }
@@ -106,7 +106,7 @@
 	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
 	RakTabView * group = ID == 1 ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
 	
-	NSRect frame = [self frame];
+	NSRect frame = _frame;
 	if(group.isFlipped)
 		frame.origin.y = group.bounds.size.height - frame.size.height - frame.origin.y;
 	

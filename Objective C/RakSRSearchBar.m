@@ -27,11 +27,13 @@
 
 - (void) endEditing:(NSText *)textObj
 {
+	[textObj setSelectedRange:NSMakeRange(0, 0)];
+	
 	//We discovered on Yosemite that if bezel was disabled, things would go _very_ wrong
 	//Basically, positionning of text would get completly nuts
 	//We fixed most of the issues with the hooks below, but one remained, if text was inputed, then focus was lost,
 	//we couldn't fix the y positionning. It seems that kill this function achieve that without significant issues
-	
+
 	if([self.stringValue isEqualToString:@""])
 	{
 		[super endEditing:textObj];

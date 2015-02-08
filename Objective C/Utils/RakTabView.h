@@ -36,7 +36,6 @@ enum {
 }
 
 @property uint mainThread;
-@property uint resizeAnimationCount;
 @property bool waitingLogin;
 
 @property BOOL forceNextFrameUpdate;

@@ -24,12 +24,16 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
 		
-		backButton = [[RakBackButton alloc] initWithFrame:[self bounds]: true];
-		[backButton setTarget : self];
-		[backButton setAction : @selector(backButtonClicked)];
-		[backButton setHidden : self.mainThread != TAB_READER];
-		
-		[self addSubview:backButton];
+		backButton = [[RakBackButton alloc] initWithFrame:_bounds: true];
+		if(backButton != nil)
+		{
+			[backButton setTarget : self];
+			[backButton setAction : @selector(backButtonClicked)];
+			backButton.alphaValue = self.mainThread == TAB_READER;
+			backButton.hidden = self.mainThread != TAB_READER;
+
+			[self addSubview:backButton];
+		}
 
 		BOOL initFailure = YES;
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
@@ -70,12 +74,13 @@
 					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 						
-					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
+					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
 					
 					releaseCTData(*project);
 					free(project);
 					
 					initFailure = NO;
+					
 				} while (0);
 			}
 		}
@@ -86,7 +91,10 @@
 		}
 		
 		if(coreView != nil)
+		{
 			[self addSubview:coreView];
+			[coreView focusViewChanged : self.mainThread];
+		}
 		else
 		{
 			[backButton removeFromSuperview];
@@ -102,7 +110,7 @@
 	PROJECT_DATA empty;
 	empty.isInitialized = NO;
 	
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : [self frame] : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc

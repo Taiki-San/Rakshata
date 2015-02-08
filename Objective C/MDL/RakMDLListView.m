@@ -145,7 +145,7 @@
 
 - (void) setPositionsOfStuffs
 {
-	NSRect frame = [self bounds], curFrame;
+	NSRect frame = _bounds, curFrame;
 	NSPoint newPoint;
 	
 	//Text at extreme left

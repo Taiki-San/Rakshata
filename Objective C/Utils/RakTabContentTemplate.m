@@ -69,7 +69,7 @@
 {
 	[super setFrame:frameRect];
 	
-	[self setFrameInternalViews:[self bounds]];
+	[self setFrameInternalViews:_bounds];
 }
 
 - (void) resizeAnimation : (NSRect)frameRect

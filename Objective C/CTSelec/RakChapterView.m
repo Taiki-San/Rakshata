@@ -19,12 +19,13 @@
 	{
 		[self setupInternal];
 		
-		[self initCTView : project : mainThread & TAB_CT];
-		[self initReaderView : project : mainThread & TAB_READER];
-
-		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context];
+		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : _bounds : (header != nil ? header.bounds.size.height : 0) : context : mainThread];
 		if(coreview != nil)
 			[self addSubview:coreview];
+
+		[self initSerieView : project : mainThread & TAB_SERIES];
+		[self initCTView : project : mainThread & TAB_CT];
+		[self initReaderView : project : mainThread & TAB_READER];
     }
     return self;
 }
@@ -83,6 +84,11 @@
 
 #pragma mark - UI Initializers
 
+- (void) initSerieView : (PROJECT_DATA) project : (BOOL) serieMode
+{
+	self.serieViewHidden = !serieMode;
+}
+
 - (void) initCTView : (PROJECT_DATA) project : (BOOL) CTMode
 {
 	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
@@ -94,7 +100,7 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakMenuText alloc] initWithText:[self bounds] : project.isInitialized ? getStringForWchar(project.projectName) : @""];
+	projectName = [[RakMenuText alloc] initWithText:_bounds : project.isInitialized ? getStringForWchar(project.projectName) : @""];
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	if(project.isInitialized)
@@ -198,7 +204,7 @@
 		[projectName setStringValue : projectNameString];
 	else
 	{
-		projectName = [[RakMenuText alloc] initWithText:[self bounds] : projectNameString];
+		projectName = [[RakMenuText alloc] initWithText:_bounds : projectNameString];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
 
@@ -206,7 +212,7 @@
 		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : [self bounds]];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : _bounds];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -225,7 +231,7 @@
 	}
 	else
 	{
-		coreview = [[RakCTSelection alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1}];
+		coreview = [[RakCTSelection alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1} : mainThread];
 		if(coreview != nil)
 			[self addSubview:coreview];
 	}

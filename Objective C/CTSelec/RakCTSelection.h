@@ -27,7 +27,7 @@
 @property (readonly) PROJECT_DATA currentProject;
 
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context;
+- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context : (uint) mainThread;
 
 - (void) setFrame : (NSRect) parentFrame : (CGFloat) headerHeight;
 - (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight;

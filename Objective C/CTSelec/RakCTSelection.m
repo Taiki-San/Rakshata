@@ -12,7 +12,7 @@
 
 @implementation RakCTSelection
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context
+- (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context : (uint) mainThread
 {
 	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_currentContext];
 
@@ -34,7 +34,12 @@
 			_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
 			if(_chapterView != nil)
 			{
-				_chapterView.alphaValue = !isTome || !isCompact;
+				if(mainThread == TAB_SERIES || (isTome && isCompact))
+				{
+					_chapterView.hidden = YES;
+					_chapterView.alphaValue = 0;
+				}
+
 				[self addSubview : _chapterView];
 			}
 			
@@ -47,7 +52,12 @@
 			_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
 			if(_volView != nil)
 			{
-				_volView.alphaValue = isTome || !isCompact;
+				if(mainThread == TAB_SERIES || (!isTome && isCompact))
+				{
+					_volView.hidden = YES;
+					_volView.alphaValue = 0;
+				}
+
 				[self addSubview: _volView];
 			}
 			
@@ -233,12 +243,20 @@
 			_chapterView.hidden = NO;	_chapterView.animator.alphaValue = 1;
 			_volView.hidden = NO;		_volView.animator.alphaValue = 1;
 		}
+		else
+		{
+			_chapterView.animator.alphaValue = 0;
+			_volView.animator.alphaValue = 0;
+		}
 		
 		_buttons.animator.alphaValue = 0;
 	}
-	
-	_chapterView.compactMode = currentContext != TAB_CT;
-	_volView.compactMode = currentContext != TAB_CT;
+
+	if(currentContext != TAB_SERIES)
+	{
+		_chapterView.compactMode = currentContext != TAB_CT;
+		_volView.compactMode = currentContext != TAB_CT;
+	}
 }
 
 - (void) cleanChangeCurrentContext
@@ -267,7 +285,6 @@
 			return;
 		}
 		
-		releaseCTData(data);
 		PROJECT_DATA newData = getElementByID(data.cacheDBID);
 		
 		if(newData.isInitialized)
@@ -275,9 +292,11 @@
 			//We define what changed on the structure, except chapters/volumes
 			[(RakChapterView*) self.superview projectDataUpdate:data :newData];
 			
+			[_chapterView reloadData : newData : NO];
+			[_volView reloadData : newData : NO];
+			
+			releaseCTData(data);
 			data = newData;
-			[_chapterView reloadData : data : NO];
-			[_volView reloadData : data : NO];
 		}
 	}
 }

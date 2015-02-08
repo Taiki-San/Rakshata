@@ -36,7 +36,7 @@
 {
 	controller = [[RakMDLController alloc] init: self : state];
 	
-	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : [self bounds]] : state : controller];
+	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : _bounds] : state : controller];
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];

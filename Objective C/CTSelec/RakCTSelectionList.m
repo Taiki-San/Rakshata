@@ -251,6 +251,7 @@
 				
 				//New data
 				newInstalledData = buildInstalledList(_data, _nbElem, _installedJumpTable, _nbInstalled, isTome);
+				nbNewData = _nbInstalled;
 			}
 			
 			[self smartReload : [self getSmartReloadData:oldData :isTome :nbOldElem :installedTable] :nbOldElem

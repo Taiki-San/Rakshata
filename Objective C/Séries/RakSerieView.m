@@ -119,7 +119,9 @@
 		{
 			if(serieViewHidden)
 			{
+				scrollview.hidden = NO;
 				scrollview.animator.alphaValue = 1;
+				headerText.hidden = NO;
 				headerText.animator.alphaValue = 1;
 			}
 			else
@@ -129,22 +131,23 @@
 			}
 		}
 		else
+		{
+			scrollview.hidden = headerText.hidden = serieViewHidden;
 			scrollview.alphaValue = headerText.alphaValue = !serieViewHidden;
+		}
 	}
 	
 	if(contentManager != nil)
 	{
 		NSView * view = [contentManager getActiveView];
 		
+		if(!serieViewHidden)
+			view.hidden = NO;
+		
 		if(_animatedContextChange)
-		{
-			if(serieViewHidden)
-				view.animator.alphaValue = 0;
-			else
-				view.animator.alphaValue = 1;
-		}
+			view.animator.alphaValue = !serieViewHidden;
 		else
-			view.alphaValue = serieViewHidden;
+			view.alphaValue = !serieViewHidden;
 	}
 }
 

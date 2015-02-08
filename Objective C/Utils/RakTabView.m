@@ -37,7 +37,6 @@
 		trackingArea = NULL;
 		
 		[self endOfInitialization];
-		self.resizeAnimationCount = 0;	//activate animation
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
 		
@@ -168,12 +167,12 @@
 	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
 		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
 	
-	[[[RakTabAnimationResize alloc] init: [superview subviews] : NO] performTo];
+	[RakTabAnimationResize animateTabs : [superview subviews] : NO];
 }
 
 - (void) fastAnimatedRefreshLevel : (NSView*) superview
 {
-	[[[RakTabAnimationResize alloc] init: [superview subviews] : YES] performTo];
+	[RakTabAnimationResize animateTabs : [superview subviews] : YES];
 }
 
 - (void) setFrame:(NSRect)frameRect
@@ -331,7 +330,7 @@
 
 - (BOOL) isCursorOnMe
 {
-	NSRect frame = [self bounds];
+	NSRect frame = _bounds;
 	
 	if(_mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 	{
@@ -602,7 +601,7 @@
 		return YES;
 	}
 	
-	return !NSEqualRects([self frame], newFrame);
+	return !NSEqualRects(_frame, newFrame);
 }
 
 #pragma mark - Drop support

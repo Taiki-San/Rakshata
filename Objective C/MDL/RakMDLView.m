@@ -21,13 +21,13 @@
 		_controller = controller;
 		[self setupInternal];
 		
-		headerText = [[RakMenuText alloc] initWithText:[self bounds] : @"Téléchargement"];
+		headerText = [[RakMenuText alloc] initWithText:_bounds : @"Téléchargement"];
 		if(headerText != nil)	{	[self addSubview:headerText];		}
 		
-		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:[self bounds]] : controller];
+		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:_bounds] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
 		
-		dropPlaceHolder = [[RakText alloc] initWithText:[self bounds] :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
+		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
 			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];
@@ -130,7 +130,7 @@
 		return;
 	
 	NSColor * color = [self getBorderColor];
-	NSRect frame = [self bounds];
+	NSRect frame = _bounds;
 	CGFloat radius = self.layer.cornerRadius;
 	
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];

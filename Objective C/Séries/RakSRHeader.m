@@ -31,7 +31,9 @@
 		if(tagRail.nbRow != 1)
 			[self setFrame:frameRect];
 		
+		_noAnimation = YES;
 		[self updateFocus:haveFocus ? TAB_SERIES : TAB_CT];
+		_noAnimation = NO;
 	}
 	
 	return self;
@@ -258,8 +260,6 @@
 {
 	_haveFocus = mainThread == TAB_SERIES;
 	
-	[self _resize :self.superview.bounds :YES];
-
 	if(_haveFocus)
 	{
 		displayType.hidden = tagRail.hidden = search.hidden = NO;
@@ -267,11 +267,22 @@
 	else
 		backButton.hidden = NO;
 	
-	backButton.animator.alphaValue = !_haveFocus;
-	
-	displayType.animator.alphaValue = _haveFocus;
-	tagRail.animator.alphaValue = _haveFocus;
-	search.animator.alphaValue = _haveFocus;
+	if(_noAnimation)
+	{
+		backButton.alphaValue = !_haveFocus;
+		
+		displayType.alphaValue = _haveFocus;
+		tagRail.alphaValue = _haveFocus;
+		search.alphaValue = _haveFocus;
+	}
+	else
+	{
+		backButton.animator.alphaValue = !_haveFocus;
+		
+		displayType.animator.alphaValue = _haveFocus;
+		tagRail.animator.alphaValue = _haveFocus;
+		search.animator.alphaValue = _haveFocus;
+	}
 }
 
 - (void) cleanupAfterFocusChange

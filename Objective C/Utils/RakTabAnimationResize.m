@@ -12,99 +12,36 @@
 
 @implementation RakTabAnimationResize
 
-- (id) init : (NSArray*) views : (BOOL) fastAnimation
++ (void) animateTabs : (NSArray *) views : (BOOL) fastAnimation
 {
-	self = [super init];
-	if(self != nil)
-	{
-		NSMutableArray * validatedViews = [NSMutableArray array];
-		
-		[views enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if([obj isKindOfClass:[RakTabView class]])
-				[validatedViews addObject:obj];
-		}];
-		
-		_views = [NSArray arrayWithArray:validatedViews];
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-		animationDuration = fastAnimation ? 0.1 : 0.2;
-	}
-	return self;
-}
-
-- (void) performTo
-{
-	[self performFromTo:NULL];
-}
-
-- (void) performFromTo : (NSArray*) basePosition
-{
-	int count = [_views count];		//	i doit être un int pour récupérer -1 si indexOfObjectPassingTest fail, et count ne devrait pas causer d'overflow
-	haveBasePos = (basePosition != nil && [basePosition count] == count);
+	uint mainThread;
+	NSMutableArray * validatedViews = [NSMutableArray array];
 	
+	[views enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if([obj isKindOfClass:[RakTabView class]])
+			[validatedViews addObject:obj];
+	}];
+	
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setAllowsImplicitAnimation:YES];
-		[context setDuration:animationDuration];
+		[context setDuration : fastAnimation ? 0.1 : 0.2];
 		
-		for(RakTabView * currentView in _views)
-		{
-			if([currentView respondsToSelector:@selector(setUpViewForAnimation:)])
-				[currentView setUpViewForAnimation : mainThread];
-		}
+		for(RakTabView * currentView in validatedViews)
+			[currentView setUpViewForAnimation : mainThread];
 		
-		[[(RakAppDelegate*) [NSApp delegate]MDL] createFrame];
+		[[(RakAppDelegate*) [NSApp delegate] MDL] createFrame];
 		
-		byte pos = 0;
-		for(RakTabView *currentView in _views)
-		{
-			[self resizeView:currentView : haveBasePos ? [basePosition objectAtIndex:pos++] : nil];
-		}
-
+		for(RakTabView *currentView in validatedViews)
+			[currentView resizeAnimation];
+		
 	} completionHandler:^{
-		[self cleanUpAnimation];
-	}];
-}
-
-- (void) resizeView : (RakTabView *) view : (id) basePos
-{
-	if(haveBasePos)
-	{
-		CABasicAnimation *animation = [CABasicAnimation animation];
-		animation.fromValue = basePos;
-		[view.animations setValue:animation forKey:@"frame"];
-	}
-	
-	if([view respondsToSelector:@selector(resizeAnimation)])
-	{
-		[view resizeAnimation];
 		
-		if([view isKindOfClass:[RakTabView class]])
-			view.resizeAnimationCount++;
-	}
-}
-
-- (void) cleanUpAnimation
-{
-	NSUInteger count = [_views count];
-	RakTabView * currentView;
-	for(NSUInteger i = 0; i < count; i++)
-	{
-		currentView = [_views objectAtIndex:i];
-		
-		//resizeAnimationCount == 1 => dernière animation en cours
-		//Post mortem: no idea why, de mémoire un crash mais repose sur un contexte qu'on utilise plus pour l'instant, donc on laisse en place pour l'instant
-		if([currentView isKindOfClass:[RakTabView class]] && currentView.resizeAnimationCount == 1)
-		{
-			if(haveBasePos)	//si on a qqchose à libérer
-				[currentView.animations objectForKey:@"frame"];
-		}
-
-		if([currentView respondsToSelector:@selector(refreshDataAfterAnimation)])
+		for(RakTabView * currentView in validatedViews)
 			[currentView refreshDataAfterAnimation];
-		
-		if([currentView isKindOfClass:[RakTabView class]])
-			currentView.resizeAnimationCount--;
-	}
+	}];
 }
 
 @end

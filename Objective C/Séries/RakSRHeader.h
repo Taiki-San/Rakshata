@@ -30,6 +30,7 @@
 	PrefsUI * winController;
 	
 	BOOL _haveFocus;
+	BOOL _noAnimation;
 	
 	CGFloat _separatorX;
 }

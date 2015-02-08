@@ -167,18 +167,18 @@
 	if (![self.cell wraps])
 		return [super intrinsicContentSize];
 	
-	NSRect frame = [self frame];
+	NSRect frame = NSZeroRect;
 	
 	if(haveFixedWidth)
 		frame.size.width = _fixedWidth;
+	else
+		frame.size.width = _bounds.size.width;
 	
 	// Make the frame very high, while keeping the width
 	frame.size.height = CGFLOAT_MAX;
 	
 	// Calculate new height within the frame with practically infinite height.
-	CGFloat height = [self.cell cellSizeForBounds: frame].height;
-	
-	return NSMakeSize(frame.size.width, height);
+	return NSMakeSize(frame.size.width, [self.cell cellSizeForBounds: frame].height);
 }
 
 @end

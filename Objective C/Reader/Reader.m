@@ -104,9 +104,7 @@
 		}
 	}
 	
-	self.resizeAnimationCount = -1;	//Disable animation
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
-	self.resizeAnimationCount = 0;
 }
 
 - (void) endOfInitialization
@@ -262,7 +260,7 @@
 		do
 		{
 			gonnaReduceTabs = copy = getRandom();
-		}while (!copy);
+		} while (!copy);
 		
 #ifdef NO_RETRACTION_WIP
 		copy--;

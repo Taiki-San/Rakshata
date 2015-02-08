@@ -26,16 +26,7 @@
 @end
 
 @interface RakTabAnimationResize : NSObject
-{
-	uint mainThread;
-	BOOL haveBasePos;
-	NSArray* _views;
-	
-	CGFloat animationDuration;
-}
 
-- (id) init : (NSArray*) views : (BOOL) fastAnimation;
-- (void) performTo;
-- (void) performFromTo : (NSArray*) basePosition;
++ (void) animateTabs : (NSArray *) views : (BOOL) fastAnimation;
 
 @end
