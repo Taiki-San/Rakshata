@@ -95,7 +95,9 @@
 	if(localID == UNUSED_FIELD)
 		return NO;
 	
-	*ID = localID;
+	if(ID != NULL)
+		*ID = localID;
+	
 	return YES;
 }
 

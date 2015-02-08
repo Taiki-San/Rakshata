@@ -12,8 +12,6 @@
 
 #define BOTTOM_BORDER 5
 
-#warning "Refresh when update avec updateProjectWithID"
-
 @implementation RakCTHTableController
 
 - (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame
@@ -31,17 +29,6 @@
 }
 
 #pragma mark - Interface
-
-- (void) updateProjectWithID : (uint) projectID
-{
-	PROJECT_DATA project = getElementByID(projectID);
-	
-	if(project.isInitialized)
-	{
-		[self updateProject : project];
-		releaseCTData(project);
-	}
-}
 
 - (void) updateProject : (PROJECT_DATA) project
 {
