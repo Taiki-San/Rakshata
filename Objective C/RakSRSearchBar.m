@@ -258,9 +258,7 @@
 	uint nbElem;
 	char ** output = getProjectNameStartingWith([textView.string cStringUsingEncoding:NSUTF8StringEncoding], &nbElem);
 	
-	if(output == NULL)
-		return @[];
-	else if(nbElem == 0)
+	if(output == NULL || nbElem == 0)
 	{
 		free(output);
 		return @[];
@@ -278,15 +276,38 @@
 	return array;
 }
 
+#pragma mark - Delegate code
+
 - (void)controlTextDidChange:(NSNotification *)obj
 {
 	NSTextView * view = [obj.userInfo objectForKey:@"NSFieldEditor"];
-	if (![view.string isEqualToString:@""] && !noRecursive)
+	
+	if(!noRecursive && ![view.string isEqualToString:@""])
 	{
 		noRecursive = YES;
 		[view complete:nil];
 		noRecursive = NO;
 	}
+}
+
+- (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector
+{
+	BOOL result = NO;
+	
+	if ([textView respondsToSelector:commandSelector])
+	{
+		noRecursive = YES;
+		
+		IMP imp = [textView methodForSelector:commandSelector];
+		void (*func)(id, SEL, id) = (void *)imp;
+		func(textView, commandSelector, nil);
+
+		noRecursive = NO;
+		
+		result = YES;
+	}
+	
+	return result;
 }
 
 @end
