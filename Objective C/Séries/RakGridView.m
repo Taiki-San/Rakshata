@@ -78,8 +78,10 @@
 
 #pragma mark - Delegate for RakCollectionView
 
-- (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event
+- (BOOL)collectionView:(RakCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event
 {
+	collectionView.draggedSomething = YES;
+	
 	if([indexes count] > 1)
 		return NO;
 	

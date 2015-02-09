@@ -53,6 +53,8 @@
 
 - (void) updateHeaderProject : (PROJECT_DATA) project
 {
+	PROJECT_DATA copy = getCopyOfProjectData(project);
+	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 	
 		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
@@ -60,7 +62,7 @@
 
 	} completionHandler:^{
 		
-		[self updateHeaderProjectInternal : project];
+		[self updateHeaderProjectInternal : copy];
 		
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 

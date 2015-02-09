@@ -89,7 +89,7 @@
 
 - (void) loadProject : (PROJECT_DATA) project
 {
-	_data = getCopyOfProjectData(project);
+	_data = project;
 	
 	BOOL needProcessName = NO, needProcessAuthor = NO;
 	NSString * currentElem = _data.isInitialized ? getStringForWchar(_data.projectName) : @"";

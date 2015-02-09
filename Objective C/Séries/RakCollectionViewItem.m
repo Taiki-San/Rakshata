@@ -122,7 +122,12 @@ enum
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
+	RakCollectionView * view = (id) self.superview;
 	
+	if([view class] == [RakCollectionView class])
+		view.clickedView = self;
+
+	[view mouseDown:theEvent];
 }
 
 - (void) mouseUp:(NSEvent *)theEvent

@@ -10,10 +10,15 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@class RakCollectionViewItem;
+
 @interface RakCollectionView : NSCollectionView
 {
 	RakSRContentManager * _manager;
 }
+
+@property (strong) RakCollectionViewItem * clickedView;
+@property BOOL draggedSomething;
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
 - (void) resizeAnimation : (NSRect) frameRect;

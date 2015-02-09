@@ -48,6 +48,18 @@
 	return frame;
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	_draggedSomething = NO;
+
+	[super mouseDown:theEvent];
+	
+	if(!_draggedSomething && _clickedView != nil)
+		[_clickedView mouseUp:theEvent];
+
+	_clickedView = nil;
+}
+
 #pragma mark - Generate views
 
 - (NSCollectionViewItem *) newItemForRepresentedObject:(id)object
