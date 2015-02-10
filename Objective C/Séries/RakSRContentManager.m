@@ -53,7 +53,7 @@
 	}
 	
 	//We get the filtered list
-	uint * filtered = getFilteredProject(_nbElemActivated);
+	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL);
 	if(filtered == NULL)
 	{
 		if(includeCacheRefresh)
@@ -310,7 +310,11 @@
 
 - (void) restrictionsUpdated : (NSNotification *) notification
 {
-	[self updateContext:NO];
+	if(notification != nil && notification.object != nil && [notification.object isKindOfClass:[NSString class]])
+	{
+		commitedSearch = notification.object;
+		[self updateContext:NO];
+	}
 }
 
 - (void) updateContext : (BOOL) includeCacheRefresh

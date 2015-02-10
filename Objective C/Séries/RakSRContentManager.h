@@ -16,6 +16,8 @@
 {
 	BOOL _initialized;
 	
+	NSString * commitedSearch;
+	
 	//Model
 	PROJECT_DATA * project;
 	uint nbElemFull, nbElemActivated;

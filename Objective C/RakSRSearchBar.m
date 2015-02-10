@@ -89,10 +89,10 @@
 		
 		[self initCell];
 		
-		[self setBezeled: NO];
-		[self setDrawsBackground:NO];
-		
-		[self setFocusRingType:NSFocusRingTypeNone];
+		self.bezeled = NO;
+		self.drawsBackground = NO;
+		self.focusRingType = NSFocusRingTypeNone;
+		self.textColor = [self getTextColor];
 		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
@@ -100,14 +100,16 @@
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
 
-		[self setTextColor:[self getTextColor]];
-		
 		[self updatePlaceholder:YES];
 		[Prefs getCurrentTheme:self];
 		
-		[self setDelegate:self];
+		self.delegate = self;
 		[self.cell setSendsWholeSearchString:NO];
 		[self.cell setSendsSearchStringImmediately:YES];
+		
+		self.target = self;
+		self.action = @selector(performSearch);
+		self.recentsAutosaveName = [NSString stringWithFormat:@"RakRecentSearch#%d", _ID];
 	}
 	
 	return self;
@@ -253,6 +255,19 @@
 
 #pragma mark - Logic behind auto-completion
 
+- (void) performSearch
+{
+	if(normalKeyPressed)
+	{
+		normalKeyPressed = NO;
+	}
+	else
+	{
+		[self willLooseFocus];
+		[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_SEARCH_UPDATED object:self.stringValue];
+	}
+}
+
 - (NSArray *)control:(NSControl *)control textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
 	uint nbElem;
@@ -282,8 +297,9 @@
 {
 	NSTextView * view = [obj.userInfo objectForKey:@"NSFieldEditor"];
 	
-	if(!noRecursive && ![view.string isEqualToString:@""])
+	if(!noRecursive && view != nil && ![view.string isEqualToString:@""])
 	{
+		normalKeyPressed = YES;
 		noRecursive = YES;
 		[view complete:nil];
 		noRecursive = NO;
@@ -297,6 +313,8 @@
 	if ([textView respondsToSelector:commandSelector])
 	{
 		noRecursive = YES;
+		
+		normalKeyPressed = commandSelector != @selector(insertNewline:);
 		
 		IMP imp = [textView methodForSelector:commandSelector];
 		void (*func)(id, SEL, id) = (void *)imp;

@@ -40,7 +40,7 @@ enum
 	BOOL _currentPlaceholderState;
 	byte _ID;
 	
-	BOOL noRecursive;
+	BOOL noRecursive, normalKeyPressed;
 	
 	id _cancelTarget;
 	SEL _cancelAction;

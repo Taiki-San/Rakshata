@@ -30,6 +30,10 @@ MUTEX_VAR cacheMutex;
 
 //Routines génériques
 
+#ifdef DEV_VERSION
+void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)	{	fprintf(stderr, "(%d) %s\n", iErrCode, zMsg);	}
+#endif
+
 int setupBDDCache()
 {
 	uint nombreRootRepo, nombreRepo, nombreProject = 0;
@@ -57,6 +61,10 @@ int setupBDDCache()
 		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}
+	
+#ifdef DEV_VERSION
+	sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, NULL);
+#endif
 	
 	//On détruit le cache
 	if(sqlite3_open(":memory:", &internalDB) != SQLITE_OK)
