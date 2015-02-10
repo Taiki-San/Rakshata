@@ -302,7 +302,7 @@
 	
 	if(dict != nil 	&& (number = [dict objectForKey:SR_NOTIF_NEW_STATE]) != nil && [number isKindOfClass:[NSNumber class]] && _isVisible != number.boolValue)
 	{
-		if((!_isVisible || _collapsed) && [ID unsignedCharValue] == SEARCH_BAR_ID_MAIN_TRIGGERED)
+		if(((!_isVisible || _collapsed) && [ID unsignedCharValue] == SEARCH_BAR_ID_MAIN_TRIGGERED) || [ID unsignedCharValue] == SEARCH_BAR_ID_FORCE_CLOSE)
 			[self mainSearchWasTriggered:number.boolValue];
 	}
 }
