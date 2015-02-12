@@ -22,6 +22,10 @@
 	NSColor * _backgroundColor;
 	NSColor * _synopsisTitleBackground;
 	CGFloat _synopsisTitleHeight;
+	
+	//Optimization
+	NSRect _cachedFrame;
+	BOOL forceUpdate;
 }
 
 - (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project;

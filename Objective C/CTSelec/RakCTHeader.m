@@ -88,6 +88,12 @@
 
 - (void) setFrame:(NSRect) frameRect
 {
+	if(self.isHidden && !forceUpdate)
+	{
+		_cachedFrame = frameRect;
+		return;
+	}
+		
 	[super setFrame:[self frameByParent:frameRect : header]];
 	
 	[header setFrame : self.bounds];
@@ -96,6 +102,12 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
+	if(self.isHidden && !forceUpdate)
+	{
+		_cachedFrame = frame;
+		return;
+	}
+	
 	frame = [self frameByParent : frame : header];
 
 	[self.animator setFrame:frame];
@@ -104,6 +116,18 @@
 	
 	[header resizeAnimation:frame];
 	[synopsis resizeAnimation : frame : headerSize];
+}
+
+- (void) setHidden : (BOOL) flag
+{
+	if(!flag && self.isHidden)
+	{
+		forceUpdate = YES;
+		[self setFrame:_cachedFrame];
+		forceUpdate = NO;
+	}
+
+	[super setHidden:flag];
 }
 
 #pragma mark - Drawing
