@@ -35,6 +35,7 @@
 		if(scrollview != nil)
 		{
 			scrollview.documentView = collection;
+			[self updateTrackingArea];
 		}
 	}
 	
@@ -74,6 +75,19 @@
 	
 	[collection resizeAnimation:frameRect];
 	[scrollview.animator setFrame:frameRect];
+}
+
+- (void) updateTrackingArea
+{
+	if(trackingArea != nil)
+	{
+		[scrollview removeTrackingArea:trackingArea];
+		trackingArea = nil;
+	}
+	
+	trackingArea = [[NSTrackingArea alloc] initWithRect:scrollview.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:collection userInfo:nil];
+	if(trackingArea != nil)
+		[scrollview addTrackingArea:trackingArea];
 }
 
 #pragma mark - Delegate for RakCollectionView
@@ -118,8 +132,6 @@
 	
 	return YES;
 }
-
-#pragma mark - RakDragResponder back end
 
 - (BOOL) grantDropAuthorization : (BOOL) canDL
 {

@@ -39,10 +39,10 @@ enum
 		project.chapitresPrix = NULL;
 		
 		_project = project;
-		workingSize = _workingSize;
+		_workingArea.size = _workingSize;
 		
 		[self initContent];
-		[self setFrameSize: workingSize];
+		[self setFrameSize: NSMakeSize(_workingArea.size.height + BORDER_BOTTOM, _workingArea.size.width)];
 	}
 	
 	return self;
@@ -98,7 +98,8 @@ enum
 	}
 	
 	_requestedHeight = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]);
-	workingSize.height = _requestedHeight;
+	_workingArea.size.height = _requestedHeight;
+	_workingArea.origin = NSCenterSize(_bounds.size, _workingArea.size);
 }
 
 - (NSImage *) loadImage
@@ -118,6 +119,71 @@ enum
 		image = [NSImage imageNamed:@"defaultSRImage"];
 	
 	return image;
+}
+
+#ifdef TRACKING_AREA_WORK_PROPERLY
+
+- (void) viewDidMoveToSuperview
+{
+	[self removeTracking];
+	[self addTracking];
+}
+
+- (void) viewDidHide
+{
+	[self removeTracking];
+}
+
+- (void) viewDidUnhide
+{
+	[self addTracking];
+}
+
+- (void) addTracking
+{
+	if(!haveTrackRect)
+	{
+		trackingArea = [[NSTrackingArea alloc] initWithRect:_workingArea options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+		[self addTrackingArea:trackingArea];
+		
+		if (NSPointInRect([self convertPoint: [self.window mouseLocationOutsideOfEventStream] fromView: nil], _bounds))
+			[self mouseEntered:nil];
+
+		haveTrackRect = YES;
+	}
+}
+
+- (void) updateTrackingAreass
+{
+	[self removeTracking];
+	[self addTracking];
+	[super updateTrackingAreass];
+}
+
+- (void) removeTracking
+{
+	if(haveTrackRect)
+	{
+		[self removeTrackingArea:trackingArea];
+		trackingArea = nil;
+		haveTrackRect = NO;
+	}
+}
+
+#endif
+
+#pragma mark - Mouse handling
+
+- (void) mouseEntered:(NSEvent *)theEvent
+{
+	_selected = YES;
+	[self setNeedsDisplay:YES];
+}
+
+- (void) mouseExited:(NSEvent *)theEvent
+{
+	_selected = NO;
+	[self setNeedsDisplay:YES];
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
@@ -157,10 +223,7 @@ enum
 	}
 	else if(point.y > mainTag.frame.origin.y)	//We exclude when we are below the main tag
 	{
-		NSRect mainFrame;	mainFrame.size = workingSize;
-		mainFrame.origin = NSCenterSize(self.bounds.size, mainFrame.size);
-		
-		if(NSPointInRect(point, mainFrame))	//We check we are actually inside the valid area (excluding the padding
+		if(NSPointInRect(point, _workingArea))	//We check we are actually inside the valid area (excluding the padding
 		{
 			PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
 
@@ -211,27 +274,24 @@ enum
 
 - (void) resizeContent : (NSSize) newSize : (BOOL) animated
 {
-	NSRect frameRect;
-	//We update the frame
-	frameRect.origin = NSCenterSize(newSize, workingSize);
-	frameRect.size = workingSize;
+	_workingArea.origin = NSCenterSize(newSize, _workingArea.size);
 	
 	//We resize our content
 	NSPoint previousOrigin;
 	
 	if(animated)
 	{
-		[thumbnails.animator setFrameOrigin:	(previousOrigin = [self originOfThumb : frameRect])];
-		[name.animator setFrameOrigin: 			(previousOrigin = [self originOfName : frameRect : previousOrigin])];
-		[author.animator setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
-		[mainTag.animator setFrameOrigin:		(previousOrigin = [self originOfTag : frameRect : previousOrigin])];
+		[thumbnails.animator setFrameOrigin:	(previousOrigin = [self originOfThumb : _workingArea])];
+		[name.animator setFrameOrigin: 			(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
+		[author.animator setFrameOrigin:		(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+		[mainTag.animator setFrameOrigin:		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
 	else
 	{
-		[thumbnails setFrameOrigin: (previousOrigin = [self originOfThumb : frameRect])];
-		[name setFrameOrigin: 		(previousOrigin = [self originOfName : frameRect : previousOrigin])];
-		[author setFrameOrigin:		(previousOrigin = [self originOfAuthor : frameRect : previousOrigin])];
-		[mainTag setFrameOrigin:	(previousOrigin = [self originOfTag : frameRect : previousOrigin])];
+		[thumbnails setFrameOrigin: (previousOrigin = [self originOfThumb : _workingArea])];
+		[name setFrameOrigin: 		(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
+		[author setFrameOrigin:		(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+		[mainTag setFrameOrigin:	(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
 }
 
@@ -274,7 +334,7 @@ enum
 
 - (CGFloat) getMinimumHeight
 {
-	return BORDER_BOTTOM + mainTag.bounds.size.height + author.bounds.size.height + name.bounds.size.height + BORDER_THUMB;
+	return mainTag.bounds.size.height + author.bounds.size.height + name.bounds.size.height + BORDER_THUMB;
 }
 
 #pragma mark - Color & Drawing
@@ -303,8 +363,7 @@ enum
 {
 	if(_selected)
 	{
-		NSRect printArea = {NSCenterSize(dirtyRect.size, workingSize), workingSize};
-		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:printArea xRadius:3 yRadius:3];
+		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:_workingArea xRadius:3 yRadius:3];
 		
 		[[self backgroundColor] setFill];
 		[path fill];

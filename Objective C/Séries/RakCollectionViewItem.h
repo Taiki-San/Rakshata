@@ -13,9 +13,13 @@
 @interface RakCollectionViewItem : NSView
 {
 	BOOL _animationRequested, _noDrag;
-	NSSize workingSize;
 	
 	PROJECT_DATA _project;
+	
+#ifdef TRACKING_AREA_WORK_PROPERLY
+	BOOL haveTrackRect;
+	NSTrackingArea * trackingArea;
+#endif
 	
 	//Content
 	RakText * name, * author;
@@ -25,6 +29,7 @@
 
 @property BOOL selected;
 @property CGFloat requestedHeight;
+@property NSRect workingArea;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 

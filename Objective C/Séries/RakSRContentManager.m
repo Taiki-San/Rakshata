@@ -200,7 +200,10 @@
 	previousFrame = frame;
 	
 	if(_activeView == SR_CELLTYPE_GRID)
+	{
 		[_grid setFrame:frame];
+		[_grid updateTrackingArea];
+	}
 	
 	else if(_activeView == SR_CELLTYPE_REPO)
 	{
@@ -218,7 +221,10 @@
 	previousFrame = frame;
 	
 	if(_activeView == SR_CELLTYPE_GRID)
+	{
 		[_grid resizeAnimation:frame];
+		[_grid updateTrackingArea];
+	}
 	
 	else if(_activeView == SR_CELLTYPE_REPO)
 	{

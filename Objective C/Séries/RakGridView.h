@@ -38,6 +38,10 @@ enum
 	
 	PROJECT_DATA _dragProject;
 	uint _currentDragItem;
+	
+#ifndef TRACKING_AREA_WORK_PROPERLY
+	NSTrackingArea * trackingArea;
+#endif
 }
 
 @property (readonly) RakListScrollView * contentView;
@@ -47,5 +51,7 @@ enum
 
 - (void) setFrame : (NSRect) frameRect;
 - (void) resizeAnimation : (NSRect) frameRect;
+
+- (void) updateTrackingArea;
 
 @end
