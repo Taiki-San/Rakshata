@@ -35,12 +35,15 @@
 		
 		if(!displayed)
 			[self setHidden:![self isHidden]];
-		
-		trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
-		[self addTrackingArea:trackingArea];
 	}
 
 	return self;
+}
+
+- (void) viewDidMoveToWindow
+{
+	trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+	[self addTrackingArea:trackingArea];
 }
 
 - (void) setupPath
