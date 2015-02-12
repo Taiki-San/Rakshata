@@ -13,7 +13,7 @@
 @interface RakCollectionViewItem : NSView
 {
 	BOOL _animationRequested, _noDrag;
-	
+	uint currentRequestID;
 	PROJECT_DATA _project;
 	
 #ifdef TRACKING_AREA_WORK_PROPERLY

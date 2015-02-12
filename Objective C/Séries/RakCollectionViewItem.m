@@ -176,14 +176,22 @@ enum
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
-	_selected = YES;
-	[self setNeedsDisplay:YES];
+	if(!_selected)
+	{
+		_selected = YES;
+		[self acquireFocus];
+		[self setNeedsDisplay:YES];
+	}
 }
 
 - (void) mouseExited:(NSEvent *)theEvent
 {
-	_selected = NO;
-	[self setNeedsDisplay:YES];
+	if(_selected)
+	{
+		_selected = NO;
+		[self acquireFocus];
+		[self setNeedsDisplay:YES];
+	}
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
@@ -231,6 +239,22 @@ enum
 				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
 		}
 	}
+}
+
+- (void) acquireFocus
+{
+	if(!_project.isInitialized)
+		return;
+	
+	__block uint initialFocus = ++currentRequestID;
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		if(initialFocus == currentRequestID)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID)];
+			});
+		}
+	});
 }
 
 #pragma mark - Resizing code

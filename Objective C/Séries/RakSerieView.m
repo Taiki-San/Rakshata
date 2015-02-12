@@ -79,7 +79,7 @@
 	headerText = nil;	compactList = nil;
 }
 
-- (BOOL)isFlipped
+- (BOOL) isFlipped
 {
 	return YES;	//Required to fix issues with QuickAccesses
 }

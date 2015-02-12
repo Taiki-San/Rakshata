@@ -25,6 +25,9 @@ enum
 #define SR_NOTIFICATION_SOURCE 	@"RakSRSourceSelectionNotification"
 #define SR_NOTIFICATION_SELECTION_TRIGGERED	@"RakSRSelectionTriggeredNotification"
 
+#define RCVC_FOCUS_DELAY 		0.2f
+#define SR_NOTIFICATION_FOCUS	@"RakSRItemFocusChanged"
+
 #define SR_NOTIF_CACHEID 		@"cacheID"
 #define SR_NOTIF_OPTYPE 		@"opType"
 
@@ -53,5 +56,6 @@ enum
 - (void) resizeAnimation : (NSRect) frameRect;
 
 - (void) updateTrackingArea;
+- (void) removeTracking;
 
 @end

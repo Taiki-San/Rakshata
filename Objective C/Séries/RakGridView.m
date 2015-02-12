@@ -45,7 +45,18 @@
 #pragma mark - Access to view
 
 - (RakListScrollView *) contentView		{	return scrollview;	}
-- (void) setHidden : (BOOL) hidden		{	scrollview.hidden = hidden;	}
+- (void) setHidden : (BOOL) hidden
+{
+	if(scrollview.isHidden != hidden)
+	{
+		scrollview.hidden = hidden;
+		
+		if(hidden)
+			[self removeTracking];
+		else
+			[self updateTrackingArea];
+	}
+}
 - (BOOL) isHidden 	{	return scrollview.isHidden;	}
 
 #pragma mark - Resizing code
@@ -79,15 +90,20 @@
 
 - (void) updateTrackingArea
 {
+	[self removeTracking];
+	
+	trackingArea = [[NSTrackingArea alloc] initWithRect:scrollview.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:collection userInfo:nil];
+	if(trackingArea != nil)
+		[scrollview addTrackingArea:trackingArea];
+}
+
+- (void) removeTracking
+{
 	if(trackingArea != nil)
 	{
 		[scrollview removeTrackingArea:trackingArea];
 		trackingArea = nil;
 	}
-	
-	trackingArea = [[NSTrackingArea alloc] initWithRect:scrollview.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:collection userInfo:nil];
-	if(trackingArea != nil)
-		[scrollview addTrackingArea:trackingArea];
 }
 
 #pragma mark - Delegate for RakCollectionView
