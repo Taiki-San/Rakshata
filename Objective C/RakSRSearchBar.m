@@ -22,6 +22,9 @@
 	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND :nil],
 										 NSForegroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SURVOL :nil]}];
 	
+	output.drawsBackground = YES;
+	output.backgroundColor = [RakSRSearchBar getBackgroundColor];
+
 	return output;
 }
 
