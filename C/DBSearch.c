@@ -704,6 +704,8 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 		codes[pos++] = sqlite3_column_int64(request, 1);
 	}
 	
+	sqlite3_finalize(request);
+	
 	return codes;
 }
 
@@ -750,8 +752,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 
 	}
 	
-	byte val = sqlite3_prepare_v2(cache, requestString, -1, &request, NULL);
-	if(val != SQLITE_OK)
+	if(sqlite3_prepare_v2(cache, requestString, -1, &request, NULL) != SQLITE_OK)
 	{
 #ifdef DEV_VERSION
 		logR(requestString);

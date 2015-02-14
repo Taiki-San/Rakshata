@@ -138,29 +138,31 @@
 		return;
 	}
 	
+	//Ok, time to animate
 	NSRect frame = [self titleFrame:_bounds :!_projectHaveFocus];
-	CGFloat oldY = frame.origin.y;
-
+	
 	//We generate the new title
 	RakText * newTitle = [self craftField:PROJECT_NAME_PLACEHOLDER], * oldTitle = title;
 	if(newTitle != nil)
 	{
+		CGFloat oldY = frame.origin.y;
 		frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? 1 : -1);
+		
 		[newTitle setFrame:frame];
 		[newTitle setStringValue: newName];
-		
 		[self addSubview:newTitle];
 
 		title = newTitle;
-		frame.origin.y *= -1;
+		frame.origin.y = oldY;
 	}
-	
+
 	[NSAnimationContext beginGrouping];
 	
-	[oldTitle.animator setFrameOrigin:frame.origin];
+	if(newTitle != nil)
+		[newTitle.animator setFrame : frame];
 	
-	frame.origin.y = oldY;
-	[newTitle.animator setFrame : frame];
+	frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
+	[oldTitle.animator setFrameOrigin:frame.origin];
 	
 	[NSAnimationContext endGrouping];
 	
