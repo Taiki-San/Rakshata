@@ -10,24 +10,22 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#import "RakSRProjectView.h"
-
-@interface RakCollectionViewItem : RakSRProjectView
+@interface RakSRProjectView : NSView
 {
-	BOOL _animationRequested;
-	uint currentRequestID;
-	
-	uint * _sharedActive;
-	
-	//Content
-	RakText * name, * author;
-	NSImageView * thumbnails;
-	RakText * mainTag;
+	PROJECT_DATA _project;
+	NSRect _workingArea
 }
 
-@property BOOL selected;
-@property CGFloat requestedHeight;
+@property (readonly) NSRect workingArea;
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
+- (instancetype) initWithProject : (PROJECT_DATA) project;
+
+- (void) initContent;
+- (NSImage *) loadImage;
+
+- (NSColor *) getTextColor;
+- (NSColor *) getTagTextColor;
+- (NSColor *) borderColor;
+- (NSColor *) backgroundColor;
 
 @end

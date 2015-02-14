@@ -12,8 +12,6 @@
 
 #include "db.h"
 
-static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
-
 enum
 {
 	BORDER_THUMB			= 150,
@@ -24,25 +22,13 @@ enum
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive
 {
-	if(!project.isInitialized || project.repo == NULL)
-		return nil;
-	
-	self = [self initWithFrame:NSMakeRect(0, 0, RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT)];
+	self = [self initWithProject : project];
 	
 	if(self != nil)
 	{
 		_selected = NO;
 		_sharedActive = sharedActive;
 		
-		//We really don't care about those data, so we don't want the burden of having to update them
-		project.chapitresFull = project.chapitresInstalled = NULL;
-		project.tomesFull = project.tomesInstalled = NULL;
-		project.chapitresPrix = NULL;
-		
-		_project = project;
-		_workingArea.size = _workingSize;
-		
-		[self initContent];
 		[self setFrameSize: NSMakeSize(_workingArea.size.height + BORDER_BOTTOM, _workingArea.size.width)];
 	}
 	
@@ -101,25 +87,6 @@ enum
 	_requestedHeight = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]);
 	_workingArea.size.height = _requestedHeight;
 	_workingArea.origin = NSCenterSize(_bounds.size, _workingArea.size);
-}
-
-- (NSImage *) loadImage
-{
-	char * teamPath = getPathForRepo(_project.repo);
-	
-	if(teamPath == NULL)
-		return nil;
-	
-	NSImage * image = nil;
-	
-	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
-	if(bundle != nil)
-		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_SRGRID, _project.projectID]];
-	
-	if(image == nil)
-		image = [NSImage imageNamed:@"defaultSRImage"];
-	
-	return image;
 }
 
 #pragma mark - Mouse handling
@@ -313,26 +280,6 @@ enum
 }
 
 #pragma mark - Color & Drawing
-
-- (NSColor *) getTextColor
-{
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
-}
-
-- (NSColor *) getTagTextColor
-{
-	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
-}
-
-- (NSColor *) borderColor
-{
-	return [NSColor blackColor];
-}
-
-- (NSColor *) backgroundColor
-{
-	return [NSColor grayColor];
-}
 
 - (void) drawRect:(NSRect)dirtyRect
 {
