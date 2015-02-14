@@ -142,8 +142,7 @@
 	CGFloat oldY = frame.origin.y;
 
 	//We generate the new title
-	RakText * newTitle = [self craftField:PROJECT_NAME_PLACEHOLDER];
-
+	RakText * newTitle = [self craftField:PROJECT_NAME_PLACEHOLDER], * oldTitle = title;
 	if(newTitle != nil)
 	{
 		frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? 1 : -1);
@@ -152,22 +151,20 @@
 		
 		[self addSubview:newTitle];
 
+		title = newTitle;
 		frame.origin.y *= -1;
 	}
 	
 	[NSAnimationContext beginGrouping];
 	
-	[title.animator setFrameOrigin:frame.origin];
+	[oldTitle.animator setFrameOrigin:frame.origin];
 	
 	frame.origin.y = oldY;
 	[newTitle.animator setFrame : frame];
 	
-	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		[title removeFromSuperview];
-		title = newTitle;
-	}];
-
 	[NSAnimationContext endGrouping];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{	[oldTitle removeFromSuperview];	});
 }
 
 #pragma mark - Sizing
