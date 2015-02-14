@@ -58,8 +58,8 @@
 	self.wantsLayer = NO;
 	self.editable = NO;
 	self.bordered = NO;
-	self.wantCustomBorder = NO;
-	self.forcedOffset = 0;
+	_wantCustomBorder = NO;
+	_forcedOffsetY = 0;
 	self.drawsBackground = NO;
 	self.backgroundColor = [NSColor clearColor];
 	self.selectable = NO;
@@ -81,7 +81,7 @@
 {
 	if(self.wantCustomBorder)
 	{
-		NSBezierPath * path = [NSBezierPath bezierPathWithRect : self.bounds];
+		NSBezierPath * path = [NSBezierPath bezierPathWithRect : _bounds];
 		[path setLineWidth:1];
 		[[self getBorderColor] setStroke];
 		[path stroke];
@@ -91,9 +91,9 @@
 - (void) setFrameSize:(NSSize)newSize
 {
 	//Fix an issue when resizing with an animation
-	if(self.forcedOffset && newSize.height != self.bounds.size.height)
+	if(_forcedOffsetY && newSize.height != _bounds.size.height)
 	{
-		newSize.height += self.forcedOffset;
+		newSize.height += _forcedOffsetY;
 	}
 	
 	[super setFrameSize:newSize];
@@ -101,9 +101,9 @@
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
 {
-	if(self.forcedOffset)
+	if(_forcedOffsetY)
 	{
-		newOrigin.y -= self.forcedOffset;
+		newOrigin.y -= _forcedOffsetY;
 	}
 	
 	[super setFrameOrigin:newOrigin];

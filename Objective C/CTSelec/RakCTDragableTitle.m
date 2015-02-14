@@ -42,8 +42,6 @@
 		
 		if(mousePosition.x > textSize.width || mousePosition.y > textSize.height)
 			outOfArea = YES;
-		else
-			noSession = YES;
 	}
 }
 
@@ -66,8 +64,6 @@
 	if(item == nil)
 		return;
 
-	noSession = NO;
-	
 	//We initialize the item, then insert it in the pasteboard
 	[item setDataProject:projectData isTome:self.isTome element:VALEUR_FIN_STRUCT];
 	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
@@ -81,13 +77,11 @@
 	[self dragImage:image at:NSMakePoint(mousePosition.x - image.size.width / 3, mousePosition.y + 3) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
 	
 	[RakList propagateDragAndDropChangeState : NO : couldDL];
-	
-	noSession = YES;
 }
 
 - (BOOL) mouseDownCanMoveWindow
 {
-	return self.isEmpty;//outOfArea || noSession;
+	return self.isEmpty;
 }
 
 #pragma - mark NSDraggingSource support

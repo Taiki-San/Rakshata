@@ -18,7 +18,6 @@
 	BOOL couldDL;
 	
 	BOOL outOfArea;
-	BOOL noSession;
 }
 
 @property uint currentID;

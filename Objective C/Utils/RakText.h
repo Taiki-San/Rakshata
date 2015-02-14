@@ -17,7 +17,7 @@
 }
 
 @property BOOL wantCustomBorder;
-@property CGFloat forcedOffset;
+@property CGFloat forcedOffsetY;
 
 @property CGFloat fixedWidth;
 

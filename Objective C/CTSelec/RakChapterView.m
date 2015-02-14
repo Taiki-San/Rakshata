@@ -116,9 +116,7 @@
 - (void) setSerieViewHidden : (BOOL) serieViewHidden
 {
 	if(!serieViewHidden)
-	{
 		coreview.currentContext = TAB_SERIES;
-	}
 	
 	[super setSerieViewHidden:serieViewHidden];
 }
