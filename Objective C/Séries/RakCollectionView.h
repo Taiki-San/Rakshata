@@ -18,13 +18,11 @@
 	
 	uint activeProject;
 
-#ifndef TRACKING_AREA_WORK_PROPERLY
 	uint nbColumn;
 	BOOL _resized;
 	
 	NSClipView * _clipView;
 	RakCollectionViewItem * selectedItem;
-#endif
 }
 
 @property (strong) RakCollectionViewItem * clickedView;

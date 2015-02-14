@@ -122,57 +122,6 @@ enum
 	return image;
 }
 
-#ifdef TRACKING_AREA_WORK_PROPERLY
-
-- (void) viewDidMoveToSuperview
-{
-	[self removeTracking];
-	[self addTracking];
-}
-
-- (void) viewDidHide
-{
-	[self removeTracking];
-}
-
-- (void) viewDidUnhide
-{
-	[self addTracking];
-}
-
-- (void) addTracking
-{
-	if(!haveTrackRect)
-	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:_workingArea options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
-		[self addTrackingArea:trackingArea];
-		
-		if (NSPointInRect([self convertPoint: [self.window mouseLocationOutsideOfEventStream] fromView: nil], _bounds))
-			[self mouseEntered:nil];
-
-		haveTrackRect = YES;
-	}
-}
-
-- (void) updateTrackingAreass
-{
-	[self removeTracking];
-	[self addTracking];
-	[super updateTrackingAreass];
-}
-
-- (void) removeTracking
-{
-	if(haveTrackRect)
-	{
-		[self removeTrackingArea:trackingArea];
-		trackingArea = nil;
-		haveTrackRect = NO;
-	}
-}
-
-#endif
-
 #pragma mark - Mouse handling
 
 - (void) mouseEntered:(NSEvent *)theEvent
