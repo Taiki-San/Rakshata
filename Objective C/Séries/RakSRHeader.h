@@ -15,6 +15,8 @@
 #define SR_HEADER_ROW_HEIGHT 25
 #define SR_SEARCH_FIELD_HEIGHT 22
 
+#define SR_HEADER_HEIGHT_SINGLE_ROW (RBB_TOP_BORDURE + SR_HEADER_ROW_HEIGHT + RBB_TOP_BORDURE)
+
 @interface RakSRHeader : NSView
 {
 	RakButton *preferenceButton;

@@ -15,6 +15,7 @@
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"
+#import "RakCTSerieHeader.h"
 #import "RakChapterView.h"
 
 #define CT_TRANSITION_ANIMATION 0.3f
@@ -22,7 +23,11 @@
 
 @interface CTSelec : RakTabView
 {
+	//SR mode only
+	RakCTSerieHeader * SRHeader;
+	
 	RakBackButton *backButton;
+	
 	RakChapterView * coreView;
 }
 

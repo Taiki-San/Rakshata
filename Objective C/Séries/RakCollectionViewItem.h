@@ -21,6 +21,8 @@
 	NSTrackingArea * trackingArea;
 #endif
 	
+	uint * _sharedActive;
+	
 	//Content
 	RakText * name, * author;
 	NSImageView * thumbnails;
@@ -31,6 +33,6 @@
 @property CGFloat requestedHeight;
 @property NSRect workingArea;
 
-- (instancetype) initWithProject : (PROJECT_DATA) project;
+- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
 
 @end

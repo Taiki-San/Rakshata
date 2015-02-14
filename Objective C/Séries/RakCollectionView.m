@@ -20,6 +20,7 @@
 	{
 		_resized = YES;
 		_manager = manager;
+		activeProject = UINT_MAX;
 		
 		self.selectable = YES;
 		self.allowsMultipleSelection = NO;
@@ -91,7 +92,7 @@
 	
 	NSCollectionViewItem * output = [NSCollectionViewItem new];
 	
-	RakCollectionViewItem * item = [[RakCollectionViewItem alloc] initWithProject:*project];
+	RakCollectionViewItem * item = [[RakCollectionViewItem alloc] initWithProject : *project : &activeProject];
 	
 	output.view = item;
 	output.representedObject = object;

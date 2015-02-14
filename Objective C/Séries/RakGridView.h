@@ -27,6 +27,7 @@ enum
 
 #define RCVC_FOCUS_DELAY 		0.2f
 #define SR_NOTIFICATION_FOCUS	@"RakSRItemFocusChanged"
+#define SR_FOCUS_IN_OR_OUT		@"inOrOut"
 
 #define SR_NOTIF_CACHEID 		@"cacheID"
 #define SR_NOTIF_OPTYPE 		@"opType"

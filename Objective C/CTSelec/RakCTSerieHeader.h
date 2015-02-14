@@ -8,34 +8,21 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- ********************************************************************************************/
+ *********************************************************************************************/
 
-@class RakCollectionViewItem;
-
-@interface RakCollectionView : NSCollectionView
+@interface RakCTSerieHeader : NSView
 {
-	RakSRContentManager * _manager;
+	NSRect _cachedFrame;
+	NSGradient * _gradient;
 	
-	uint activeProject;
+	BOOL _projectHaveFocus;
+	uint _activeProject;
 
-#ifndef TRACKING_AREA_WORK_PROPERLY
-	uint nbColumn;
-	BOOL _resized;
-	
-	NSClipView * _clipView;
-	RakCollectionViewItem * selectedItem;
-#endif
+	//UI element
+	RakText * title;
+	RakText * placeholder;
 }
 
-@property (strong) RakCollectionViewItem * clickedView;
-@property BOOL draggedSomething;
-
-- (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
-- (void) resizeAnimation : (NSRect) frameRect;
-
-- (BOOL) isValidIndex : (uint) index;
-- (uint) cacheIDForIndex : (uint) index;
-
-- (uint) updateNumberColumn;
+@property BOOL ignoreTransitionAnimation;
 
 @end

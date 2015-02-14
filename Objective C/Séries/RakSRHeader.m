@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define HEIGHT_SINGLE_ROW (RBB_TOP_BORDURE + SR_HEADER_ROW_HEIGHT + RBB_TOP_BORDURE)
 #define HEIGHT_ADDITIONNAL_ROW (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER)
 
 @implementation RakSRHeader
@@ -185,7 +184,7 @@
 	uint nbRow = tagRail != nil ? tagRail.nbRow - 1 : 0;
 	
 	parentFrame.origin = NSZeroPoint;
-	parentFrame.size.height = HEIGHT_SINGLE_ROW + nbRow * HEIGHT_ADDITIONNAL_ROW - SRSEARCHTAB_DEFAULT_HEIGHT;
+	parentFrame.size.height = SR_HEADER_HEIGHT_SINGLE_ROW + nbRow * HEIGHT_ADDITIONNAL_ROW - SRSEARCHTAB_DEFAULT_HEIGHT;
 	
 	return parentFrame;
 }
@@ -212,7 +211,7 @@
 - (NSRect) searchButtonFrame : (NSRect) frame
 {
 	frame.origin.x = frame.size.width - SR_HEADER_INTERBUTTON_WIDTH;
-	frame.origin.y = HEIGHT_SINGLE_ROW / 2;
+	frame.origin.y = SR_HEADER_HEIGHT_SINGLE_ROW / 2;
 
 	frame.size.height = SR_SEARCH_FIELD_HEIGHT;
 	frame.origin.y -= frame.size.height / 2;

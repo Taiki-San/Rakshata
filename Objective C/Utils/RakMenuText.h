@@ -48,7 +48,8 @@
 - (NSColor *) getBackgroundColor;
 - (NSColor *) getGradientBackgroundColor;
 - (CGFloat) getFontSize;
-- (NSFont *) getFont;
+
++ (NSFont *) getFont : (CGFloat) fontSize;
 
 - (void) defineBackgroundColor;
 

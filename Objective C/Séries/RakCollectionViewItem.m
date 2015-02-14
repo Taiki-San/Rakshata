@@ -22,7 +22,7 @@ enum
 
 @implementation RakCollectionViewItem
 
-- (instancetype) initWithProject : (PROJECT_DATA) project
+- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive
 {
 	if(!project.isInitialized || project.repo == NULL)
 		return nil;
@@ -32,6 +32,7 @@ enum
 	if(self != nil)
 	{
 		_selected = NO;
+		_sharedActive = sharedActive;
 		
 		//We really don't care about those data, so we don't want the burden of having to update them
 		project.chapitresFull = project.chapitresInstalled = NULL;
@@ -179,6 +180,7 @@ enum
 	if(!_selected)
 	{
 		_selected = YES;
+		*_sharedActive = _project.cacheDBID;
 		[self acquireFocus];
 		[self setNeedsDisplay:YES];
 	}
@@ -248,10 +250,10 @@ enum
 	
 	__block uint initialFocus = ++currentRequestID;
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		if(initialFocus == currentRequestID)
+		if(initialFocus == currentRequestID && *_sharedActive == _project.cacheDBID)
 		{
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID)];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
 			});
 		}
 	});

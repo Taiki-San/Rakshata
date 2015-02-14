@@ -23,7 +23,7 @@
 		self.drawGradient = NO;
 		
 		[Prefs getCurrentTheme:self];	//Register for changes
-		[self setFont:[self getFont]];
+		[self setFont:[[self class] getFont : [self getFontSize]]];
 		[self defineBackgroundColor];
 	}
 	
@@ -198,9 +198,9 @@
 	return 16;
 }
 
-- (NSFont *) getFont
++ (NSFont *) getFont : (CGFloat) fontSize;
 {
-	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:[self getFontSize]];
+	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:fontSize];
 }
 
 - (void) defineBackgroundColor

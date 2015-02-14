@@ -24,76 +24,25 @@
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
 		
-		backButton = [[RakBackButton alloc] initWithFrame:_bounds: true];
-		if(backButton != nil)
-		{
-			[backButton setTarget : self];
-			[backButton setAction : @selector(backButtonClicked)];
-			backButton.alphaValue = self.mainThread == TAB_READER;
-			backButton.hidden = self.mainThread != TAB_READER;
-
-			[self addSubview:backButton];
-		}
-
-		BOOL initFailure = YES;
+		[self initBackButton];
+		
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 		{
 			NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 			NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 			
-			if([dataState count] == 7)
-			{
-				do
-				{
-					int indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
-					if(indexTeam == -1)
-					{
-						NSLog(@"Couldn't find the repo to restore, abort :/");
-						break;
-					}
-
-					uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
-					PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, false);
-					
-					if(project == NULL)
-					{
-						NSLog(@"Couldn't find the project to restore, abort :/");
-						break;
-					}
-					else
-					{
-						checkChapitreValable(project, NULL);
-						checkTomeValable(project, NULL);
-					}
-					
-					//Perfect! now, all we have to do is to sanitize last few data :D
-					bool isTome = [[dataState objectAtIndex:2] boolValue] != 0;
-					long context[4];
-					context[0] = [[dataState objectAtIndex:3] floatValue];		//elemSelectedChapter
-					context[1] = [[dataState objectAtIndex:4] floatValue];		//scrollerPosChapter
-					context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
-					context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
-						
-					coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
-					
-					releaseCTData(*project);
-					free(project);
-					
-					initFailure = NO;
-					
-				} while (0);
-			}
+			if([dataState count] != 7 || ![self initCoreview : dataState])
+				[self noContent];
 		}
-		
-		if(initFailure)
-		{
+		else
 			[self noContent];
-		}
 		
 		if(coreView != nil)
 		{
 			[self addSubview:coreView];
 			[coreView focusViewChanged : self.mainThread];
+
+			[self initMisc];
 		}
 		else
 		{
@@ -103,6 +52,68 @@
 		}
 	}
     return self;
+}
+
+- (void) initBackButton
+{
+	backButton = [[RakBackButton alloc] initWithFrame:_bounds: true];
+	if(backButton != nil)
+	{
+		[backButton setTarget : self];
+		[backButton setAction : @selector(backButtonClicked)];
+		backButton.alphaValue = self.mainThread == TAB_READER;
+		backButton.hidden = self.mainThread != TAB_READER;
+		
+		[self addSubview:backButton];
+	}
+}
+
+- (void) initMisc
+{
+	SRHeader = [[RakCTSerieHeader alloc] initWithFrame:[self headerFrame : _bounds]];
+	if(SRHeader != nil)
+	{
+		[self addSubview:SRHeader];
+	}
+}
+
+- (BOOL) initCoreview : (NSArray*) dataState
+{
+	int indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+	if(indexTeam == -1)
+	{
+		NSLog(@"Couldn't find the repo to restore, abort :/");
+		return NO;
+	}
+	
+	uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
+	PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, false);
+	
+	if(project == NULL)
+	{
+		NSLog(@"Couldn't find the project to restore, abort :/");
+		return NO;
+	}
+	else
+	{
+		checkChapitreValable(project, NULL);
+		checkTomeValable(project, NULL);
+	}
+	
+	//Perfect! now, all we have to do is to sanitize last few data :D
+	bool isTome = [[dataState objectAtIndex:2] boolValue] != 0;
+	long context[4];
+	context[0] = [[dataState objectAtIndex:3] floatValue];		//elemSelectedChapter
+	context[1] = [[dataState objectAtIndex:4] floatValue];		//scrollerPosChapter
+	context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
+	context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
+	
+	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
+	
+	releaseCTData(*project);
+	free(project);
+	
+	return YES;
 }
 
 - (void) noContent
@@ -180,6 +191,16 @@
 		backButton.animator.alphaValue = 1;
 	}
 	
+	if(mainThread == TAB_SERIES)
+	{
+		SRHeader.hidden = NO;
+		SRHeader.animator.alphaValue = 1;
+	}
+	else
+	{
+		SRHeader.animator.alphaValue = 0;
+	}
+	
 	[coreView focusViewChanged : mainThread];
 	
 	[super setUpViewForAnimation:mainThread];
@@ -189,6 +210,9 @@
 {
 	if(backButton.alphaValue == 0)
 		backButton.hidden = YES;
+	
+	if(SRHeader.alphaValue == 0)
+		SRHeader.hidden = YES;
 	
 	[coreView cleanupFocusViewChange];
 	
@@ -270,9 +294,24 @@
 		frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
 		frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
 	}
-	else
+	else if(self.mainThread == TAB_CT)
+	{
 		frame.origin = NSZeroPoint;
+	}
+	else
+	{
+		frame.origin.x = 0;
+		frame.origin.y = SR_HEADER_HEIGHT_SINGLE_ROW - 3;
+	}
 
+	return frame;
+}
+
+- (NSRect) headerFrame : (NSRect) frame
+{
+	frame.origin = NSZeroPoint;
+	frame.size.height = SR_HEADER_HEIGHT_SINGLE_ROW;
+	
 	return frame;
 }
 
@@ -289,9 +328,11 @@
 	if([self wouldFrameChange:frameRect])
 	{
 		[super setFrame : frameRect];
-		
-		frameRect.origin.x = frameRect.origin.y = 0;
+		frameRect.origin = NSZeroPoint;
+
 		[backButton setFrame:frameRect];
+		[SRHeader setFrame:[self headerFrame:frameRect]];
+		
 		[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
 	}
 }
@@ -303,9 +344,11 @@
 	if([self wouldFrameChange:frame])
 	{
 		[self.animator setFrame:frame];
-
 		frame.origin = NSZeroPoint;
+
 		[backButton resizeAnimation:frame];
+		[SRHeader setFrame:[self headerFrame : frame]];
+
 		[coreView resizeAnimation:[self calculateContentViewSize : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
 	}
 }
