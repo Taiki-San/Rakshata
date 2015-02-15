@@ -12,8 +12,13 @@
 
 enum
 {
-	SEPARATOR_WIDTH = 3,
-	SUB_ELEMENT_FONT_SIZE = 11
+	TOP_BORDER = 2,
+	BORDER_NAME = 1,
+	BORDER_STARS = 3,
+	BAR_SEPARATOR = 5,
+
+	SEPARATOR_WIDTH = 3,		//The - between the type and the tag
+	SUB_ELEMENT_FONT_SIZE = 11,
 };
 
 @implementation RakCTFocusSRItem
@@ -21,13 +26,10 @@ enum
 - (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason
 {
 	_reason = reason;
-	
 	self = [self initWithProject:project];
 	
 	if(self != nil)
-	{
-		
-	}
+		[self setFrameSize:NSMakeSize(_workingArea.size.width, _workingArea.size.height + 2 * TOP_BORDER)];
 	
 	return self;
 }
@@ -36,14 +38,24 @@ enum
 {
 	[super initContent];
 	
-	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : GET_FONT_STANDARD : 13];
+	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : GET_FONT_STANDARD : 12];
 	if(projectName != nil)
 	{
 		projectName.fixedWidth = 180;
 		[self addSubview:projectName];
 	}
 	
+	stars = [[RakStarView alloc] init];
+	if(stars != nil)
+	{
+		[self addSubview:stars];
+	}
+	
 	[self initReason];
+	
+	_workingArea.size.height = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]) - 2 * TOP_BORDER;
+	_workingArea.origin = NSCenterSize(_bounds.size, _workingArea.size);
+	NSLog(@"%f", [self getMinimumHeight]);
 }
 
 - (void) initReason
@@ -146,6 +158,11 @@ enum
 			[tagProject setFrameOrigin:		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 		}
 	}
+	
+	if(animated)
+		[stars.animator setFrameOrigin:	(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
+	else
+		[stars setFrameOrigin:			(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 
 	return previousOrigin;
 }
@@ -153,6 +170,15 @@ enum
 - (NSSize) defaultWorkingSize
 {
 	return NSMakeSize(RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT);
+}
+
+- (NSPoint) originOfName:(NSRect)frameRect :(NSPoint)thumbOrigin
+{
+	NSPoint output = [super originOfName:frameRect :thumbOrigin];
+	
+	output.y -= BORDER_NAME;
+	
+	return output;
 }
 
 - (NSPoint) originOfType : (NSRect) frameRect : (NSPoint) nameOrigin
@@ -163,8 +189,8 @@ enum
 	mergedSize.size.height = MAX(typeSize.height, tagSize.height);
 	mergedSize.size.width = typeSize.width + SEPARATOR_WIDTH + tagSize.width;
 	
-	NSPoint center = NSCenteredRect(frameRect, mergedSize);
-	
+	NSPoint center;
+	center.x = frameRect.origin.x + frameRect.size.width / 2 - mergedSize.size.width / 2;
 	center.y = nameOrigin.y - typeProject.bounds.size.height;
 	
 	return center;
@@ -177,7 +203,26 @@ enum
 	return typeOrigin;
 }
 
+- (NSPoint) originOfStars : (NSRect) frameRect : (NSPoint) tagOrigin
+{
+	NSPoint center = NSCenteredRect(frameRect, stars.bounds);
+	
+	center.y = tagOrigin.y - BORDER_STARS - stars.bounds.size.height;
+	
+	return center;
+}
+
+- (CGFloat) getMinimumHeight
+{
+	return TOP_BORDER + 1 + BAR_SEPARATOR + stars.bounds.size.height + BORDER_STARS + (_reason == SUGGESTION_REASON_TAG ? MAX(typeProject.bounds.size.height, tagProject.bounds.size.height) : projectAuthor.bounds.size.height) + projectName.bounds.size.height + BORDER_NAME + [self thumbSize].height + TOP_BORDER;
+}
+
 #pragma mark - Drawing
+
+- (NSColor *) borderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_INACTIVE :nil];
+}
 
 - (void) drawRect : (NSRect) dirtyRect
 {
@@ -192,6 +237,15 @@ enum
 		
 		[[self getTextColor] setFill];
 		NSRectFill(typeFrame);
+	}
+	
+	if(!_last)
+	{
+		dirtyRect = _workingArea;
+		dirtyRect.size.height = 1;
+		
+		[[self borderColor] setFill];
+		NSRectFill(dirtyRect);
 	}
 }
 

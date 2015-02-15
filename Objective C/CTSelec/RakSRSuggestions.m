@@ -25,7 +25,8 @@
 		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
-		scrollView.verticalScroller.alphaValue = 0;
+		scrollView.hasVerticalScroller = NO;
+		[_tableView setFrameSize:NSMakeSize(scrollView.bounds.size.width, _tableView.bounds.size.height)];
 	}
 	
 	return self;
@@ -79,7 +80,7 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-	return 200;
+	return 202;
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row

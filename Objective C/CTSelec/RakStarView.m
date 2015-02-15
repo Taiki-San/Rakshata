@@ -10,16 +10,19 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTFocusSRItem : RakSRProjectView
+@implementation RakStarView
+
+- (instancetype) init
 {
-	RakText * typeProject, * tagProject;
-	RakStarView * stars;
+	self = [super init];
+	
+	if(self != nil)
+	{
+		self.image = [[NSImage alloc] initByReferencingFile:@"stars.png"];
+		[self setFrameSize : self.image.size];
+	}
+	
+	return self;
 }
-
-@property byte reason;
-@property BOOL last;
-
-- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
-- (void) updateProject : (PROJECT_DATA) project;
 
 @end

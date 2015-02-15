@@ -12,12 +12,16 @@
 
 #import "RakCTDragableTitle.h"
 #import "RakCTSelectionList.h"
+#import "RakStarView.h"
+
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"
+
 #import "RakCTSerieHeader.h"
 #import "RakCTFocusSRItem.h"
 #import "RakSRSuggestions.h"
+
 #import "RakChapterView.h"
 
 #define CT_TRANSITION_ANIMATION 0.3f

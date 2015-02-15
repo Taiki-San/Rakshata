@@ -94,6 +94,7 @@
 		B6BC730B1A90093000018BE9 /* RakSRSuggestions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC730A1A90093000018BE9 /* RakSRSuggestions.m */; };
 		B6BC730E1A90143A00018BE9 /* RakCTFocusSRItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC730D1A90143A00018BE9 /* RakCTFocusSRItem.m */; };
 		B6BC73111A90145E00018BE9 /* RakSRSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC73101A90145E00018BE9 /* RakSRSearchBar.m */; };
+		B6BC73151A90D74500018BE9 /* RakStarView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC73141A90D74500018BE9 /* RakStarView.m */; };
 		B6BD45BB1A7D161800C2A675 /* RakCollectionViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BD45BA1A7D161800C2A675 /* RakCollectionViewItem.m */; };
 		B6BD45BE1A7D1B9E00C2A675 /* RakCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BD45BD1A7D1B9E00C2A675 /* RakCollectionView.m */; };
 		B6BD45C11A7D240400C2A675 /* RakGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BD45C01A7D240400C2A675 /* RakGridView.m */; };
@@ -343,6 +344,8 @@
 		B6BC730D1A90143A00018BE9 /* RakCTFocusSRItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTFocusSRItem.m; path = CTSelec/RakCTFocusSRItem.m; sourceTree = "<group>"; };
 		B6BC730F1A90145E00018BE9 /* RakSRSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchBar.h; path = "Séries/RakSRSearchBar.h"; sourceTree = "<group>"; };
 		B6BC73101A90145E00018BE9 /* RakSRSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchBar.m; path = "Séries/RakSRSearchBar.m"; sourceTree = "<group>"; };
+		B6BC73131A90D74500018BE9 /* RakStarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakStarView.h; path = CTSelec/RakStarView.h; sourceTree = "<group>"; };
+		B6BC73141A90D74500018BE9 /* RakStarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakStarView.m; path = CTSelec/RakStarView.m; sourceTree = "<group>"; };
 		B6BD45B91A7D161800C2A675 /* RakCollectionViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCollectionViewItem.h; path = "Séries/RakCollectionViewItem.h"; sourceTree = "<group>"; };
 		B6BD45BA1A7D161800C2A675 /* RakCollectionViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCollectionViewItem.m; path = "Séries/RakCollectionViewItem.m"; sourceTree = "<group>"; };
 		B6BD45BC1A7D1B9E00C2A675 /* RakCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCollectionView.h; path = "Séries/RakCollectionView.h"; sourceTree = "<group>"; };
@@ -594,6 +597,8 @@
 				B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */,
 				B6BC73091A90093000018BE9 /* RakSRSuggestions.h */,
 				B6BC730A1A90093000018BE9 /* RakSRSuggestions.m */,
+				B6BC73131A90D74500018BE9 /* RakStarView.h */,
+				B6BC73141A90D74500018BE9 /* RakStarView.m */,
 			);
 			name = "SR extension";
 			sourceTree = "<group>";
@@ -1376,6 +1381,7 @@
 				B67845A319631311007372C7 /* encoding.c in Sources */,
 				B64C926819571DDF000D60CC /* RakSegmentedButtonCell.m in Sources */,
 				B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */,
+				B6BC73151A90D74500018BE9 /* RakStarView.m in Sources */,
 				B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */,
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */,

@@ -39,7 +39,6 @@ enum
 
 - (NSColor *) getTextColor;
 - (NSColor *) getTagTextColor;
-- (NSColor *) borderColor;
 - (NSColor *) backgroundColor;
 
 - (NSSize) defaultWorkingSize;

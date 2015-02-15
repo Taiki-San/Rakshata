@@ -101,11 +101,6 @@ enum
 	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
 }
 
-- (NSColor *) borderColor
-{
-	return [NSColor blackColor];
-}
-
 - (NSColor *) backgroundColor
 {
 	return [NSColor grayColor];
