@@ -56,6 +56,8 @@ typedef struct smartReload_data
 	uint _nbElemPerCouple;
 	uint _nbCoupleColumn;
 	
+	CGFloat _scrollerWidth;
+	
 	//Color cache
 	NSColor * normal;
 	NSColor * highlight;

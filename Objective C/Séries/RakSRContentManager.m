@@ -43,13 +43,16 @@
 	if(includeCacheRefresh)
 	{
 		*_project = getCopyCache(SORT_NAME, _nbElemFull);
-		if(*_project == NULL)
+		if(*_project == NULL || *_nbElemFull == 0)
 			return NO;
 	}
 	else
 	{
 		*_project = project;
 		*_nbElemFull = nbElemFull;
+		
+		if(nbElemFull == 0)
+			return NO;
 	}
 	
 	//We get the filtered list

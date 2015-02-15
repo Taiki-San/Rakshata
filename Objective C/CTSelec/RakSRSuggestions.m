@@ -22,19 +22,14 @@
 			return nil;
 		
 		_nbData = 10;
+		frame.size.width += _scrollerWidth / 2;
 		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
-		scrollView.hasVerticalScroller = NO;
-		[_tableView setFrameSize:NSMakeSize(scrollView.bounds.size.width, _tableView.bounds.size.height)];
+		scrollView.verticalScroller.alphaValue = 0;
 	}
 	
 	return self;
-}
-
-- (BOOL) didInitWentWell
-{
-	return YES;
 }
 
 - (BOOL) initModel
@@ -66,7 +61,9 @@
 
 - (NSRect) getFrameFromParent: (NSRect) bounds
 {
-	bounds.size.height -= 6;
+	bounds.size.width += _scrollerWidth / 2;
+	bounds.size.height -= 3;
+	bounds.origin.y -= 3;
 	
 	return bounds;
 }
@@ -80,13 +77,13 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-	return 202;
+	return [self tableView:tableView viewForTableColumn:nil row:row].bounds.size.height;
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	RakCTFocusSRItem * element = [tableView makeViewWithIdentifier : _identifier owner:self];
-	byte reason = arc4random() & 1 ? SUGGESTION_REASON_TAG : SUGGESTION_REASON_AUTHOR;
+	byte reason = row & 1 ? SUGGESTION_REASON_TAG : SUGGESTION_REASON_AUTHOR;
 	
 	if(element == nil)
 	{
@@ -100,6 +97,14 @@
 	}
 	
 	return element;
+}
+
+#pragma mark - Configuration
+
+- (BOOL) didInitWentWell	{	return YES;	}
+- (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
+{
+	return NO;
 }
 
 @end

@@ -771,6 +771,12 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 	
 	if(realLength < nbElem)
 	{
+		if(realLength == 0)	//No data :/
+		{
+			free(output);
+			return NULL;
+		}
+			
 		void * tmp = realloc(output, realLength * sizeof(uint));
 		if(tmp != NULL)
 			output = tmp;

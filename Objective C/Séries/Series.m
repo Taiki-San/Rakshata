@@ -215,9 +215,9 @@
 {
 	NSRect frame;
 	
-	frame.origin.x = 0;
+	frame.origin.x = 1;
 	frame.origin.y = headerSize.height;
-	frame.size.width = headerSize.width;
+	frame.size.width = headerSize.width - 2;
 	frame.size.height = (searchTab != nil ? searchTab.height : SRSEARCHTAB_DEFAULT_HEIGHT);
 
 	return frame;

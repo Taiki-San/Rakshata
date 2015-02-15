@@ -255,7 +255,8 @@
 	[[self backgroundColor] setFill];
 	NSRectFill(dirtyRect);
 	
-	dirtyRect.size.height = 1;
+	dirtyRect.size.width -= 1;
+	dirtyRect.origin.x = dirtyRect.size.height = 1;
 	[_gradient drawInRect : dirtyRect angle : 0];
 }
 

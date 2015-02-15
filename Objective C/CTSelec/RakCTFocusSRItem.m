@@ -55,7 +55,6 @@ enum
 	
 	_workingArea.size.height = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]) - 2 * TOP_BORDER;
 	_workingArea.origin = NSCenterSize(_bounds.size, _workingArea.size);
-	NSLog(@"%f", [self getMinimumHeight]);
 }
 
 - (void) initReason

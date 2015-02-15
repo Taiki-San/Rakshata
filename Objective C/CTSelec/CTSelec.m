@@ -119,7 +119,8 @@
 - (void) noContent
 {
 	PROJECT_DATA empty;
-	empty.isInitialized = NO;
+	
+	memset(&empty, 0, sizeof(PROJECT_DATA));
 	
 	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
 }

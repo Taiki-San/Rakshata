@@ -59,7 +59,11 @@
 					}
 					
 					if(fail)
+					{
+						free(_indexes);
+						free(output);
 						freeRepo(repo);
+					}
 					else
 					{
 						_nbData = nbElem;

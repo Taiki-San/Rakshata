@@ -21,6 +21,7 @@
 	
 	if(self != nil)
 	{
+		_scrollerWidth = SCROLLER_WIDTH;
 		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
 		selectedRowIndex = LIST_INVALID_SELECTION;
@@ -188,7 +189,7 @@
 	
 	scrollviewFrame.origin = NSZeroPoint;
 	
-	CGFloat scrollerWidth = scrollView.hasVerticalScroller ? SCROLLER_WIDTH : 0;
+	CGFloat scrollerWidth = scrollView.hasVerticalScroller ? _scrollerWidth : 0;
 	if(oldTableviewSize.width + scrollerWidth != scrollviewFrame.size.width)
 	{
 		scrollviewFrame.size.width -= scrollerWidth;
