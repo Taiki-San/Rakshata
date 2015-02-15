@@ -13,6 +13,9 @@
 @interface RakListScrollView : NSScrollView
 {
 	NSView* documentViewToResize;
+	
+	BOOL forceUpdate;
+	NSRect _cachedFrame;
 }
 
 @property BOOL horizontalScrollingEnabled;

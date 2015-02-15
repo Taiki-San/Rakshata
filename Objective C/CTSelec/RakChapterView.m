@@ -12,10 +12,10 @@
 
 @implementation RakChapterView
 
-- (id)initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context
+- (instancetype) initContent : (NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context
 {
     self = [super initWithFrame:frame];
-    if (self)
+    if (self != nil)
 	{
 		[self setupInternal];
 		
@@ -39,6 +39,11 @@
 
 - (void) setFrameInternalViews : (NSRect) newBound
 {
+	if(!self.serieViewHidden)
+	{
+		[suggestions setFrame:newBound];
+	}
+	
 	if(!self.CTViewHidden)
 	{
 		[header setFrame:newBound];
@@ -56,6 +61,11 @@
 - (void) resizeAnimationInternalViews : (NSRect) newBound
 {
 	CGFloat headerHeight = 0;
+	
+	if(!self.serieViewHidden)
+	{
+		[suggestions resizeAnimation:newBound];
+	}
 	
 	if(!self.CTViewHidden)
 	{
@@ -86,6 +96,13 @@
 
 - (void) initSerieView : (PROJECT_DATA) project : (BOOL) serieMode
 {
+	suggestions = [[RakSRSuggestions alloc] init: _bounds];
+	if(suggestions != nil)
+	{
+		[self setHidden:!serieMode];
+		[self addSubview:[suggestions getContent]];
+	}
+
 	self.serieViewHidden = !serieMode;
 }
 

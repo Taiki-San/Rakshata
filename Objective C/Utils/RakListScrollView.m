@@ -36,14 +36,40 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
-	[self updateScrollerState:frameRect];
+	if(self.isHidden)
+	{
+		_cachedFrame = frameRect;
+	}
+	else
+	{
+		[super setFrame:frameRect];
+		[self updateScrollerState:frameRect];
+	}
 }
 
 - (void) resizeAnimation:(NSRect)frameRect
 {
-	[self.animator setFrame:frameRect];
-	[self updateScrollerState:frameRect];
+	if(self.isHidden)
+	{
+		_cachedFrame = frameRect;
+	}
+	else
+	{
+		[self.animator setFrame:frameRect];
+		[self updateScrollerState:frameRect];
+	}
+}
+
+- (void) setHidden : (BOOL) flag
+{
+	if(!flag && self.isHidden)
+	{
+		forceUpdate = YES;
+		[self setFrame:_cachedFrame];
+		forceUpdate = NO;
+	}
+	
+	[super setHidden:flag];
 }
 
 - (void) updateScrollerState : (NSRect) frame

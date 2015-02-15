@@ -12,11 +12,7 @@
 
 #include "db.h"
 
-enum
-{
-	BORDER_THUMB			= 150,
-	BORDER_BOTTOM			= 7
-};
+enum	{	BORDER_BOTTOM	= 7	};
 
 @implementation RakCollectionViewItem
 
@@ -35,54 +31,32 @@ enum
 	return self;
 }
 
+- (NSSize) defaultWorkingSize
+{
+	return NSMakeSize(RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT);
+}
+
 - (void) initContent
 {
-	NSImage * image = [self loadImage];
-	if(image != nil)
+	[super initContent];
+	
+	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : GET_FONT_SR_TITLE : 13];
+	if(projectName != nil)
 	{
-		thumbnails = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, BORDER_THUMB, BORDER_THUMB)];
-		if(thumbnails != nil)
-		{
-			thumbnails.image = image;
-			[self addSubview:thumbnails];
-		}
+		projectName.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
+		[self addSubview:projectName];
 	}
 	
-	name = [[RakText alloc] initWithText :getStringForWchar(_project.projectName) : [self getTextColor]];
-	if(name != nil)
+	projectAuthor = [self getTextElement:getStringForWchar(_project.authorName) : [self getTextColor] : GET_FONT_STANDARD : 10];
+	if(projectAuthor != nil)
 	{
-		name.alignment = NSCenterTextAlignment;
-		name.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_SR_TITLE] size:13];
-
-		[name.cell setWraps : YES];
-		name.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
-		
-		[self addSubview:name];
+		projectAuthor.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
+		[self addSubview:projectAuthor];
 	}
 	
-	author = [[RakText alloc] initWithText:getStringForWchar(_project.authorName) : [self getTextColor]];
-	if(author != nil)
-	{
-		author.alignment = NSCenterTextAlignment;
-		author.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:10];
-		
-		[author.cell setWraps : YES];
-		author.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
-		
-		[self addSubview:author];
-	}
-	
-
-	mainTag = [[RakText alloc] initWithText: @"Placeholder" :[self getTagTextColor]];
+	mainTag = [self getTextElement:getStringForWchar(getTagForCode(getRandom() % 70)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
 	if(mainTag != nil)
-	{
-		mainTag.stringValue = getStringForWchar(getTagForCode(getRandom() % 70));
-		mainTag.alignment = NSCenterTextAlignment;
-		mainTag.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TAGS] size:10];
-		[mainTag sizeToFit];
-		
 		[self addSubview:mainTag];
-	}
 	
 	_requestedHeight = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]);
 	_workingArea.size.height = _requestedHeight;
@@ -138,7 +112,7 @@ enum
 			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(_project.tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 		}
 	}
-	else if(NSPointInRect(point, author.frame))
+	else if(NSPointInRect(point, projectAuthor.frame))
 	{
 		uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_project.authorName));
 		
@@ -177,92 +151,22 @@ enum
 
 #pragma mark - Resizing code
 
-//We hook animator in order to run our logic during animated resizing
-- (id) animator
+- (NSPoint) resizeContent : (NSSize) newSize : (BOOL) animated
 {
-	_animationRequested = YES;
-	return self;
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	BOOL animated = _animationRequested;
+	NSPoint previousOrigin = [super resizeContent:newSize :animated];
 	
 	if(animated)
 	{
-		_animationRequested = NO;
-		[[super animator] setFrame:frameRect];
-	}
-	else
-		[super setFrame:frameRect];
-	
-	[self resizeContent:frameRect.size :animated];
-}
-
-- (void) setFrameSize:(NSSize)newSize
-{
-	BOOL animated = _animationRequested;
-	
-	if(animated)
-	{
-		_animationRequested = NO;
-		[[super animator] setFrameSize:newSize];
-	}
-	else
-		[super setFrameSize:newSize];
-	
-	[self resizeContent:newSize :animated];
-}
-
-- (void) resizeContent : (NSSize) newSize : (BOOL) animated
-{
-	_workingArea.origin = NSCenterSize(newSize, _workingArea.size);
-	
-	//We resize our content
-	NSPoint previousOrigin;
-	
-	if(animated)
-	{
-		[thumbnails.animator setFrameOrigin:	(previousOrigin = [self originOfThumb : _workingArea])];
-		[name.animator setFrameOrigin: 			(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
-		[author.animator setFrameOrigin:		(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
-		[mainTag.animator setFrameOrigin:		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+		[projectAuthor.animator setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+		[mainTag.animator setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
 	else
 	{
-		[thumbnails setFrameOrigin: (previousOrigin = [self originOfThumb : _workingArea])];
-		[name setFrameOrigin: 		(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
-		[author setFrameOrigin:		(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
-		[mainTag setFrameOrigin:	(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+		[projectAuthor setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+		[mainTag setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
-}
 
-- (NSPoint) originOfThumb : (NSRect) frameRect
-{
-	NSPoint output;
-	
-	output.x = frameRect.origin.x + frameRect.size.width / 2 - BORDER_THUMB / 2;
-	output.y = frameRect.origin.y + frameRect.size.height - BORDER_THUMB;
-	
-	return output;
-}
-
-- (NSPoint) originOfName : (NSRect) frameRect : (NSPoint) thumbOrigin
-{
-	NSPoint center = NSCenteredRect(frameRect, name.bounds);
-	
-	center.y = thumbOrigin.y - name.bounds.size.height;
-	
-	return center;
-}
-
-- (NSPoint) originOfAuthor : (NSRect) frameRect : (NSPoint) nameOrigin
-{
-	NSPoint center = NSCenteredRect(frameRect, author.bounds);
-	
-	center.y = nameOrigin.y - author.bounds.size.height;
-	
-	return center;
+	return previousOrigin;
 }
 
 - (NSPoint) originOfTag : (NSRect) frameRect : (NSPoint) authorOrigin
@@ -276,7 +180,7 @@ enum
 
 - (CGFloat) getMinimumHeight
 {
-	return mainTag.bounds.size.height + author.bounds.size.height + name.bounds.size.height + BORDER_THUMB;
+	return mainTag.bounds.size.height + projectAuthor.bounds.size.height + projectName.bounds.size.height + [self thumbSize].height;
 }
 
 #pragma mark - Color & Drawing

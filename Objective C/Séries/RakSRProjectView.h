@@ -10,12 +10,24 @@
  **                                                                                         **
  ********************************************************************************************/
 
+enum
+{
+	SUGGESTION_REASON_TAG = 1,
+	SUGGESTION_REASON_AUTHOR
+};
+
 @interface RakSRProjectView : NSView
 {
 	PROJECT_DATA _project;
-	NSRect _workingArea
+	NSRect _workingArea;
+	
+	BOOL _animationRequested;
+	
+	NSImageView * thumbnail;
+	RakText * projectName, * projectAuthor;
 }
 
+@property (readonly) uint elementID;
 @property (readonly) NSRect workingArea;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
@@ -23,9 +35,20 @@
 - (void) initContent;
 - (NSImage *) loadImage;
 
+- (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize;
+
 - (NSColor *) getTextColor;
 - (NSColor *) getTagTextColor;
 - (NSColor *) borderColor;
 - (NSColor *) backgroundColor;
+
+- (NSSize) defaultWorkingSize;
+
+- (NSSize) thumbSize;
+- (NSPoint) originOfThumb : (NSRect) frameRect;
+- (NSPoint) originOfName : (NSRect) frameRect : (NSPoint) thumbOrigin;
+- (NSPoint) originOfAuthor : (NSRect) frameRect : (NSPoint) nameOrigin;
+
+- (NSPoint) resizeContent : (NSSize) newSize : (BOOL) animated;
 
 @end

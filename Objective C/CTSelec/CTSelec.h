@@ -16,6 +16,8 @@
 #import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"
 #import "RakCTSerieHeader.h"
+#import "RakCTFocusSRItem.h"
+#import "RakSRSuggestions.h"
 #import "RakChapterView.h"
 
 #define CT_TRANSITION_ANIMATION 0.3f
@@ -34,8 +36,6 @@
 @property BOOL initWithNoContent;
 
 - (id)init : (NSView*)contentView : (NSString *) state;
-
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY;
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
 

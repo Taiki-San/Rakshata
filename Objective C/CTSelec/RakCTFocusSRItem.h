@@ -12,7 +12,12 @@
 
 @interface RakCTFocusSRItem : RakSRProjectView
 {
-	NSImageView * thumbnail;
+	RakText * typeProject, * tagProject;
 }
+
+@property byte reason;
+
+- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
+- (void) updateProject : (PROJECT_DATA) project;
 
 @end

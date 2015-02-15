@@ -108,7 +108,7 @@
 	context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
 	context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
 	
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
 	
 	releaseCTData(*project);
 	free(project);
@@ -121,7 +121,7 @@
 	PROJECT_DATA empty;
 	empty.isInitialized = NO;
 	
-	coreView = [[RakChapterView alloc] initContent:[self calculateContentViewSize : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc
@@ -283,7 +283,7 @@
 
 #pragma mark - Self code used in reader mode
 
-- (NSRect) calculateContentViewSize : (NSRect) frame : (CGFloat) backButtonLowestY
+- (NSRect) contentFrame : (NSRect) frame : (CGFloat) backButtonLowestY
 {
 	if(self.mainThread == TAB_READER)
 	{
@@ -302,6 +302,7 @@
 	{
 		frame.origin.x = 0;
 		frame.origin.y = SR_HEADER_HEIGHT_SINGLE_ROW - 3;
+		frame.size.height -= frame.origin.y;
 	}
 
 	return frame;
@@ -333,7 +334,7 @@
 		[backButton setFrame:frameRect];
 		[SRHeader setFrame:[self headerFrame:frameRect]];
 		
-		[coreView setFrame:[self calculateContentViewSize : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
+		[coreView setFrame:[self contentFrame : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
 	}
 }
 
@@ -349,7 +350,7 @@
 		[backButton resizeAnimation:frame];
 		[SRHeader setFrame:[self headerFrame : frame]];
 
-		[coreView resizeAnimation:[self calculateContentViewSize : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
+		[coreView resizeAnimation:[self contentFrame : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
 	}
 }
 

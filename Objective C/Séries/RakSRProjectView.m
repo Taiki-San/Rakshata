@@ -10,9 +10,12 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@implementation RakSRProjectView
+enum
+{
+	BORDER_THUMB = 150
+};
 
-static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
+@implementation RakSRProjectView
 
 - (instancetype) initWithProject : (PROJECT_DATA) project
 {
@@ -29,7 +32,8 @@ static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 		project.chapitresPrix = NULL;
 		
 		_project = project;
-		_workingArea.size = _workingSize;
+		_workingArea.origin = NSZeroPoint;
+		_workingArea.size = [self defaultWorkingSize];
 		
 		[self initContent];
 	}
@@ -39,7 +43,16 @@ static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 
 - (void) initContent
 {
-	
+	NSImage * image = [self loadImage];
+	if(image != nil)
+	{
+		thumbnail = [[NSImageView alloc] initWithFrame: (NSRect) {{0,0}, [self thumbSize]}];
+		if(thumbnail != nil)
+		{
+			thumbnail.image = image;
+			[self addSubview:thumbnail];
+		}
+	}
 }
 
 - (NSImage *) loadImage
@@ -59,6 +72,21 @@ static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 		image = [NSImage imageNamed:@"defaultSRImage"];
 	
 	return image;
+}
+
+- (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize
+{
+	RakText * output = [[RakText alloc] initWithText :string : color];
+	if(output != nil)
+	{
+		output.alignment = NSCenterTextAlignment;
+		output.font = [NSFont fontWithName:[Prefs getFontName:fontCode] size:fontSize];
+		
+		[output.cell setWraps : YES];
+		[output sizeToFit];
+	}
+	
+	return output;
 }
 
 #pragma mark - Color
@@ -86,5 +114,117 @@ static NSSize _workingSize = {RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT};
 #pragma mark - Property
 
 - (NSRect) workingArea	{	return _workingArea;	}
+
+- (uint) elementID {	return _project.cacheDBID;	}
+
+#pragma mark - Frames
+
+- (NSSize) defaultWorkingSize
+{
+	return NSZeroSize;
+}
+
+- (NSSize) thumbSize
+{
+	return NSMakeSize(BORDER_THUMB, BORDER_THUMB);
+}
+
+- (NSPoint) originOfThumb : (NSRect) frameRect
+{
+	NSPoint output;
+	
+	output.x = frameRect.origin.x + frameRect.size.width / 2 - BORDER_THUMB / 2;
+	output.y = frameRect.origin.y + frameRect.size.height - BORDER_THUMB;
+	
+	return output;
+}
+
+- (NSPoint) originOfName : (NSRect) frameRect : (NSPoint) thumbOrigin
+{
+	NSPoint center = NSCenteredRect(frameRect, projectName.bounds);
+	
+	center.y = thumbOrigin.y - projectName.bounds.size.height;
+	
+	return center;
+}
+
+- (NSPoint) originOfAuthor : (NSRect) frameRect : (NSPoint) nameOrigin
+{
+	NSPoint center = NSCenteredRect(frameRect, projectAuthor.bounds);
+	
+	center.y = nameOrigin.y - projectAuthor.bounds.size.height;
+	
+	return center;
+}
+
+//We hook animator in order to run our logic during animated resizing
+- (id) animator
+{
+	_animationRequested = YES;
+	return self;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	BOOL animated = _animationRequested;
+	
+	if(animated)
+	{
+		_animationRequested = NO;
+		[[super animator] setFrame:frameRect];
+	}
+	else
+		[super setFrame:frameRect];
+	
+	[self resizeContent:frameRect.size :animated];
+}
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	BOOL animated = _animationRequested;
+	
+	if(animated)
+	{
+		_animationRequested = NO;
+		[[super animator] setFrameSize:newSize];
+	}
+	else
+		[super setFrameSize:newSize];
+	
+	[self resizeContent:newSize :animated];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin
+{
+	BOOL animated = _animationRequested;
+	
+	if(animated)
+	{
+		_animationRequested = NO;
+		[[super animator] setFrameOrigin:newOrigin];
+	}
+	else
+		[super setFrameOrigin:newOrigin];
+}
+
+- (NSPoint) resizeContent : (NSSize) newSize : (BOOL) animated
+{
+	_workingArea.origin = NSCenterSize(newSize, _workingArea.size);
+	
+	NSPoint previousOrigin = [self originOfThumb : _workingArea];
+	
+	if(animated)
+	{
+		[thumbnail.animator setFrameOrigin:		previousOrigin];
+		[projectName.animator setFrameOrigin: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
+	}
+	else
+	{
+		[thumbnail setFrameOrigin: 		previousOrigin];
+		[projectName setFrameOrigin: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
+	}
+	
+	return previousOrigin;
+}
 
 @end

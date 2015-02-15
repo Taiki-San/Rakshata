@@ -8,23 +8,17 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- ********************************************************************************************/
+ *********************************************************************************************/
 
-#import "RakSRProjectView.h"
-
-@interface RakCollectionViewItem : RakSRProjectView
+@interface RakSRSuggestions : RakList
 {
-	uint currentRequestID;
+	NSArray * names;
+	uint * ID;
 	
-	uint * _sharedActive;
-	
-	//Content
-	RakText * mainTag;
+	PROJECT_DATA * cache;
+	uint nbElem;
 }
 
-@property BOOL selected;
-@property CGFloat requestedHeight;
-
-- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
+- (instancetype) init : (NSRect) frame;
 
 @end
