@@ -292,7 +292,6 @@
 	}
 }
 
-
 #pragma mark - Proxy
 
 - (void) gotClickedTransmitData : (NSNotification *) notification

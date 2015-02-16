@@ -248,4 +248,58 @@ enum
 	}
 }
 
+#pragma mark - Clic management
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(_table != nil)
+		_table.clickedID = _project.cacheDBID;
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	if(_table == nil || _table.clickedID != _project.cacheDBID)
+		return;
+	
+	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+
+	if(NSPointInRect(point, thumbnail.frame) || NSPointInRect(point, projectName.frame))
+	{
+		PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
+		
+		if(dataToSend.isInitialized)
+			[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
+	}
+	else if(_reason == SUGGESTION_REASON_AUTHOR && NSPointInRect(point, projectAuthor.frame))
+	{
+		uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_project.authorName));
+		
+		if(ID != UINT_MAX)
+		{
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_project.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+		}
+	}
+	else if(_reason == SUGGESTION_REASON_TAG)
+	{
+		if(NSPointInRect(point, typeProject.frame))
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_TYPEID, &(_project.type));
+			
+			if(ID != UINT_MAX)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getTagForCode(_project.type)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+			}
+		}
+		else if(NSPointInRect(point, tagProject.frame))
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.tag));
+			
+			if(ID != UINT_MAX)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(_project.tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+			}
+		}
+	}
+}
+
 @end

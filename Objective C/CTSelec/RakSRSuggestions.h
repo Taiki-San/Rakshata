@@ -19,6 +19,8 @@
 	uint nbElem;
 }
 
+@property uint clickedID;
+
 - (instancetype) init : (NSRect) frame;
 
 @end

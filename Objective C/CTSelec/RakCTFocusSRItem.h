@@ -19,6 +19,8 @@
 @property byte reason;
 @property BOOL last;
 
+@property (weak) RakSRSuggestions * table;
+
 - (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
 - (void) updateProject : (PROJECT_DATA) project;
 

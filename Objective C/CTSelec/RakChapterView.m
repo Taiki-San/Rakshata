@@ -99,7 +99,8 @@
 	suggestions = [[RakSRSuggestions alloc] init: _bounds];
 	if(suggestions != nil)
 	{
-		[self setHidden:!serieMode];
+		[suggestions getContent].alphaValue = 0;
+		[suggestions setHidden:!serieMode];
 		[self addSubview:[suggestions getContent]];
 	}
 
@@ -132,8 +133,16 @@
 
 - (void) setSerieViewHidden : (BOOL) serieViewHidden
 {
-	if(!serieViewHidden)
+	if(serieViewHidden)
+	{
+		[suggestions getContent].animator.alphaValue = 0;
+	}
+	else
+	{
+		[suggestions setHidden:NO];
+		[suggestions getContent].animator.alphaValue = 1;
 		coreview.currentContext = TAB_SERIES;
+	}
 	
 	[super setSerieViewHidden:serieViewHidden];
 }
@@ -178,6 +187,9 @@
 		if(view.alphaValue == 0)
 			view.hidden = YES;
 	}
+	
+	if([suggestions getContent].alphaValue == 0)
+		suggestions.hidden = YES;
 	
 	[coreview cleanChangeCurrentContext];
 }

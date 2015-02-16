@@ -36,7 +36,7 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	if(self.isHidden)
+	if(self.isHidden && !forceUpdate)
 	{
 		_cachedFrame = frameRect;
 	}
@@ -49,7 +49,7 @@
 
 - (void) resizeAnimation:(NSRect)frameRect
 {
-	if(self.isHidden)
+	if(self.isHidden && !forceUpdate)
 	{
 		_cachedFrame = frameRect;
 	}

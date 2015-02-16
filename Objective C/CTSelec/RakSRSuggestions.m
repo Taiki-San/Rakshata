@@ -89,6 +89,10 @@
 	{
 		element = [[RakCTFocusSRItem alloc] initWithProject : cache[ID[row]] reason : reason];
 		element.identifier = _identifier;
+		element.table = self;
+		
+		if(row == _nbData - 1)
+			element.last = YES;
 	}
 	else
 	{

@@ -19,8 +19,8 @@
 #import "RakCTHeader.h"
 
 #import "RakCTSerieHeader.h"
-#import "RakCTFocusSRItem.h"
 #import "RakSRSuggestions.h"
+#import "RakCTFocusSRItem.h"
 
 #import "RakChapterView.h"
 
