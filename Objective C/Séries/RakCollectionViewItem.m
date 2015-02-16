@@ -10,8 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "db.h"
-
 enum	{	BORDER_BOTTOM	= 7	};
 
 @implementation RakCollectionViewItem

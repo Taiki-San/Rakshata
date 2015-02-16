@@ -68,6 +68,8 @@ void updateDatabase(bool forced);
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 uint getIDForTag(byte type, uint code);
 
+uint _getFromSearch(void * _table, byte type, void * data);
+
 uint * getFilteredProject(uint * dataLength, const char * searchQuery);
 char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 
