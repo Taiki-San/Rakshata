@@ -982,6 +982,10 @@
 			}
 		}
 	}
+	else if(enter)
+		[self fullAnimatedReload:_nbElem :0];
+	else
+		[self fullAnimatedReload:_nbInstalled :_nbElem];
 	
 	if(foundOneIn || foundOneOut)
 	{
