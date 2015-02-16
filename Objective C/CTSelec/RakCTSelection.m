@@ -25,7 +25,7 @@
 		
 		[self setupButtons:&isTome];
 		
-		BOOL isCompact = _currentContext != TAB_CT;
+		BOOL isCompact = _currentContext == TAB_READER;
 		
 		//We create views even if there is no content for them
 		RakCTSelectionList * view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:false selection:context[0] scrollerPos:context[1]];
@@ -245,8 +245,8 @@
 
 	if(currentContext != TAB_SERIES)
 	{
-		_chapterView.compactMode = currentContext != TAB_CT;
-		_volView.compactMode = currentContext != TAB_CT;
+		_chapterView.compactMode = currentContext == TAB_READER;
+		_volView.compactMode = currentContext == TAB_READER;
 	}
 }
 
@@ -411,7 +411,7 @@
 	}
 	
 	//Update views
-	BOOL isCompact = _currentContext != TAB_CT, isTome = [_buttons selectedSegment] == 1;
+	BOOL isCompact = _currentContext == TAB_READER, isTome = [_buttons selectedSegment] == 1;
 	
 	[_chapterView reloadData : data : YES];
 	[_volView reloadData : data : YES];
@@ -446,7 +446,7 @@
 
 - (void) updateTitle
 {
-	if(_currentContext & TAB_CT)
+	if(_currentContext == TAB_CT)
 		[((RakAppDelegate *)[NSApp delegate]).window setProjectTitle:data];
 }
 
