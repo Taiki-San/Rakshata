@@ -110,9 +110,9 @@
 	
 	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
 
-	[_buttons setFrame : self.bounds];
-	[_chapterView setFrame : self.bounds];
-	[_volView setFrame : self.bounds];
+	[_buttons setFrame : _bounds];
+	[_chapterView setFrame : _bounds];
+	[_volView setFrame : _bounds];
 }
 
 - (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
@@ -367,8 +367,8 @@
 {
 	BOOL isTome = [sender selectedSegment] != 0;
 	
-	_chapterView.alphaValue = isTome;
-	_volView.alphaValue = !isTome;
+	[_chapterView setWantIsTome : isTome];
+	[_volView setWantIsTome : isTome];
 }
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element

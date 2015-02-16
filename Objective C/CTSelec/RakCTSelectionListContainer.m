@@ -198,11 +198,12 @@
 - (void) setFrame : (NSRect) parentFrame
 {
 	[super setFrame : [self frameFromParent:parentFrame]];
-	
-	[_title setFrame : [self frameForTitle : self.bounds]];
-	
-	[_content setFrame : [self frameForContent : self.bounds]];
-	[_placeholder setFrameOrigin : NSCenteredRect(_content.frame, _placeholder.bounds)];
+
+	[_title setFrame : [self frameForTitle : _bounds]];
+
+	NSRect contentFrame = [self frameForContent : _bounds];
+	[_content setFrame : contentFrame];
+	[_placeholder setFrameOrigin : NSCenteredRect(contentFrame, _placeholder.bounds)];
 }
 
 - (void) resizeAnimation : (NSRect) parentFrame
@@ -302,5 +303,18 @@
 }
 
 - (void) resetSelection	{	[_content resetSelection:nil];	}
+
+- (void) setWantIsTome : (BOOL) isTome
+{
+	BOOL hidden = _content.isTome != isTome;
+
+	if(_isCompact)
+	{
+		self.hidden = hidden;
+		self.alphaValue = !hidden;
+	}
+	else
+		_wasHidden = hidden;
+}
 
 @end

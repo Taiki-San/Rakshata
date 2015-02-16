@@ -42,4 +42,6 @@
 
 - (void) resetSelection;
 
+- (void) setWantIsTome : (BOOL) isTome;
+
 @end
