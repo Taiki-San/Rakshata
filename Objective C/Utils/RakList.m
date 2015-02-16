@@ -604,7 +604,12 @@
 		if(newElem != 0)
 			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem / _nbCoupleColumn + (newElem % _nbCoupleColumn != 0))] withAnimation:NSTableViewAnimationSlideRight];
 		
-	} completionHandler:^{}];
+	} completionHandler:^{
+
+		[_tableView setFrameSize:NSMakeSize(_tableView.bounds.size.width, _tableView.numberOfRows * _tableView.rowHeight)];
+		[scrollView updateScrollerState:scrollView.bounds];
+
+	}];
 }
 
 #pragma mark - Drag'n drop control
