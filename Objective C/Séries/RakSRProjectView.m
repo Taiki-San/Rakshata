@@ -43,7 +43,7 @@ enum
 
 - (void) initContent
 {
-	NSImage * image = [self loadImage];
+	NSImage * image = loadImage(_project, PROJ_IMG_SUFFIX_SRGRID);
 	if(image != nil)
 	{
 		thumbnail = [[NSImageView alloc] initWithFrame: (NSRect) {{0,0}, [self thumbSize]}];
@@ -53,25 +53,6 @@ enum
 			[self addSubview:thumbnail];
 		}
 	}
-}
-
-- (NSImage *) loadImage
-{
-	char * teamPath = getPathForRepo(_project.repo);
-	
-	if(teamPath == NULL)
-		return nil;
-	
-	NSImage * image = nil;
-	
-	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
-	if(bundle != nil)
-		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_SRGRID, _project.projectID]];
-	
-	if(image == nil)
-		image = [NSImage imageNamed:@"defaultSRImage"];
-	
-	return image;
 }
 
 - (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize

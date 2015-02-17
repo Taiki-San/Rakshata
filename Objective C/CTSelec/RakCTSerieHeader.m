@@ -120,6 +120,8 @@
 	
 	if (!project.isInitialized)
 		return;
+	else
+		releaseCTData(project);
 	
 	NSString * newName = getStringForWchar(project.projectName);
 	

@@ -10,44 +10,19 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRHeaderText : RakMenuText
-
-@end
-
-@interface RakSRSubMenu : RakMenuText
-
-@end
-
-@interface RakTreeView : NSOutlineView
+@interface RakSRDetails : NSView
 {
-	NSRect _defaultFrame;
+	PROJECT_DATA _project;
+	
+	NSImageView * thumb;
+	RakText * infos;
+	RakText * type, * tag;
+	
+	RakText * synopsis;
 }
 
-- (void) setDefaultFrame : (NSRect) frame;
+@property PROJECT_DATA project;
+
+- (void) resizeAnimation : (NSRect) frameRect;
 
 @end
-
-@interface RakTableRowView : NSTableRowView
-
-@end
-
-#import "RakButtonMorphic.h"
-
-#import "RakSRSearchBar.h"
-#import "RakSRTagRail.h"
-#import "RakSRHeader.h"
-#import "RakSRSearchTab.h"
-
-@class RakSRContentManager;
-
-#import "RakSRProjectView.h"
-#import "RakGridView.h"
-
-#import "RakSRContentManager.h"
-
-#import "RakSerieMainList.h"
-#import "RakSerieList.h"
-
-#import "RakSerieView.h"
-
-NSImage * loadImage (const PROJECT_DATA project, const char * suffix);

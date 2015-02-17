@@ -85,3 +85,25 @@
 }
 
 @end
+
+NSImage * loadImage(const PROJECT_DATA project, const char * suffix)
+{
+	if(!project.isInitialized || suffix == NULL)
+		return nil;
+	
+	char * teamPath = getPathForRepo(project.repo);
+	
+	if(teamPath == NULL)
+		return nil;
+	
+	NSImage * image = nil;
+	
+	NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
+	if(bundle != nil)
+		image = [bundle imageForResource:[NSString stringWithFormat:@"%d_%s", project.projectID, suffix]];
+	
+	if(image == nil)
+		image = [NSImage imageNamed:@"defaultSRImage"];
+	
+	return image;
+}

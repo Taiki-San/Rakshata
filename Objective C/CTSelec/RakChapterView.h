@@ -16,6 +16,7 @@
 {
 	//SR mode only
 	RakSRSuggestions * suggestions;
+	RakSRDetails * mainDetailView, * tmpDetailView;
 	
 	//CT mode only
 	RakCTHeader * header;

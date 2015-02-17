@@ -45,9 +45,12 @@ enum
 		[self addSubview:projectName];
 	}
 	
-	stars = [[RakStarView alloc] init];
+	stars = [[RakStarView alloc] init];//[[NSLevelIndicator alloc] initWithFrame:NSMakeRect(0, 0, 50, 9)];
 	if(stars != nil)
 	{
+//		[stars setNumberOfMajorTickMarks:5];
+//		stars.cell = [[NSLevelIndicatorCell alloc] initWithLevelIndicatorStyle:NSRatingLevelIndicatorStyle];
+				
 		[self addSubview:stars];
 	}
 	
@@ -122,7 +125,7 @@ enum
 
 	_project = project;
 	
-	NSImage * image = [self loadImage];
+	NSImage * image = loadImage(_project, PROJ_IMG_SUFFIX_SRGRID);
 	if(image != nil)
 		thumbnail.image = image;
 	

@@ -26,6 +26,8 @@
 		[self initSerieView : project : mainThread & TAB_SERIES];
 		[self initCTView : project : mainThread & TAB_CT];
 		[self initReaderView : project : mainThread & TAB_READER];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(respondToSRFocus:) name:SR_NOTIFICATION_FOCUS object:nil];
     }
     return self;
 }
@@ -99,11 +101,14 @@
 	suggestions = [[RakSRSuggestions alloc] init: _bounds];
 	if(suggestions != nil)
 	{
-		[suggestions getContent].alphaValue = 0;
+		[suggestions getContent].alphaValue = serieMode;
 		[suggestions setHidden:!serieMode];
 		[self addSubview:[suggestions getContent]];
 	}
-
+	
+	mainDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	tmpDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	
 	self.serieViewHidden = !serieMode;
 }
 
@@ -136,6 +141,8 @@
 	if(serieViewHidden)
 	{
 		[suggestions getContent].animator.alphaValue = 0;
+		if(mainDetailView != nil && mainDetailView.superview != nil)
+			mainDetailView.animator.alphaValue = 0;
 	}
 	else
 	{
@@ -190,6 +197,13 @@
 	
 	if([suggestions getContent].alphaValue == 0)
 		suggestions.hidden = YES;
+	
+	if(self.serieViewHidden)
+	{
+		[mainDetailView removeFromSuperview];
+		mainDetailView.alphaValue = 1;
+		[tmpDetailView removeFromSuperview];
+	}
 	
 	[coreview cleanChangeCurrentContext];
 }
@@ -282,6 +296,120 @@
 {
 	if(coreview != nil)
 		[coreview selectElem : projectID : isTome : element];
+}
+
+#pragma mark - Suggestion management
+
+enum
+{
+	DIR_RIGHT	= 0,
+	DIR_UP		= 1,
+	DIR_LEFT	= 2,
+	DIR_DOWN	= 3,
+	DIR_OPPOSITE = 2,
+	DIR_NB_ELEM = 4,
+	DIR_MIDDLE 	= 5
+};
+
+BOOL whatever = NO;
+
+- (void) respondToSRFocus : (NSNotification *) notification
+{
+	if(self.serieViewHidden || mainDetailView == nil)
+		return;
+	
+	NSNumber * _project = notification.object, * _inOrOut = [notification.userInfo objectForKey:SR_FOCUS_IN_OR_OUT];
+	
+	if(_project == nil || ![_project isKindOfClass:[NSNumber class]] || _inOrOut == nil || ![_inOrOut isKindOfClass:[NSNumber class]])
+		return;
+	
+	PROJECT_DATA project = getElementByID([_project unsignedIntValue]);
+	if(!project.isInitialized)
+		return;
+	
+	[CATransaction begin];
+	
+	if(![_inOrOut boolValue])			//Leaving
+	{
+		[self changeSRFocus:mainDetailView :[suggestions getContent] : DIR_RIGHT];
+	}
+	else if(!suggestions.isHidden)		//Suggestion -> Detail view
+	{
+		mainDetailView.project = project;
+		[self changeSRFocus:[suggestions getContent] :mainDetailView : DIR_LEFT];
+	}
+	else								//Detail view -> New detail view
+	{
+		whatever = YES;
+		tmpDetailView.project = project;
+		BOOL ascending = wstrcmp(mainDetailView.project.projectName, project.projectName) < 0;
+		id old = mainDetailView, new = tmpDetailView;
+		
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			[self changeSRFocus:old :new : ascending ? DIR_DOWN : DIR_UP];
+		});
+		
+		mainDetailView = new;
+		tmpDetailView = old;
+		whatever = NO;
+	}
+
+	[CATransaction commit];
+}
+
+- (void) changeSRFocus : (NSView *) oldView : (NSView *) newView : (byte) direction
+{
+	if(newView.superview == nil)
+		[self addSubview:newView];
+	
+	NSPoint base = [suggestions getFrameFromParent : _bounds].origin, a = [self newOriginFocus:newView.bounds :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], b = [self newOriginFocus:oldView.bounds :direction];
+	
+	if(whatever)
+		printf("base: %f - %f\na: %f - %f\nb: %f - %f", base.x, base.y, a.x, a.y, b.x, b.y);
+	
+	[newView setFrame:_bounds];
+	newView.hidden = NO;
+	
+	[oldView setFrameOrigin:base];
+	[newView setFrameOrigin:a];
+	
+	[NSAnimationContext beginGrouping];
+	
+	[oldView.animator setFrameOrigin:b];
+	[newView.animator setFrameOrigin:base];
+	
+	[[NSAnimationContext currentContext] setCompletionHandler:^{
+		if(oldView == [suggestions getContent])
+			oldView.hidden = YES;
+	}];
+	
+	[NSAnimationContext endGrouping];
+}
+
+- (NSPoint) newOriginFocus : (NSRect) itemBounds : (byte) direction
+{
+	NSPoint output = NSZeroPoint;
+	
+	switch (direction)
+	{
+		case DIR_RIGHT:
+			output.x = _bounds.size.width;
+			break;
+			
+		case DIR_UP:
+			output.y = _bounds.size.height;
+			break;
+
+		case DIR_LEFT:
+			output.x = -itemBounds.size.width;
+			break;
+			
+		case DIR_DOWN:
+			output.y = -itemBounds.size.height;
+			break;
+	}
+	
+	return output;
 }
 
 @end
