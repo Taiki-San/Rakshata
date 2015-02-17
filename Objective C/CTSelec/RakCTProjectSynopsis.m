@@ -10,11 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#define TOP_BORDER_WIDTH 5
-#define SPACING	5
-#define SYNOPSIS_BORDER 20
-#define MAIN_TEXT_BORDER 10
-
 @implementation RakCTProjectSynopsis
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize
@@ -26,7 +21,7 @@
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
 		
-		_title = [[RakMenuText alloc] initWithText : self.bounds : @"Résumé"];
+		_title = [[RakMenuText alloc] initWithText : _bounds : @"Résumé"];
 		if(_title != nil)
 		{
 			[_title sizeToFit];
@@ -35,7 +30,7 @@
 			_title.barWidth = 1;
 			_title.widthGradient = 0.4f;
 
-			[_title setFrame : [self frameForTitle:self.bounds : _title.bounds.size.height]];
+			[_title setFrame : [self frameForTitle:_bounds : _title.bounds.size.height]];
 			[_title setAlignment : NSRightTextAlignment];
 			[self addSubview:_title];
 		}
@@ -49,131 +44,10 @@
 	return self;
 }
 
-- (void) updateProject : (PROJECT_DATA) newProject
+- (BOOL) postProcessScrollView
 {
-	if(placeholderString && newProject.description[0] == 0)
-		return;
-	
-	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-		
-		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-		[self.animator setAlphaValue:0.0];
-		
-	} completionHandler:^{
-		
-		[self setStringToSynopsis : newProject];
-		
-		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-			
-			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-			[self.animator setAlphaValue:1.0];
-			
-		} completionHandler:^{
-			
-		}];
-	}];
+	return [self generatedScrollView : [self frameForContent : self.bounds : _title != nil ? _title.bounds.size.height : 0]];
 }
-
-- (BOOL) setStringToSynopsis : (PROJECT_DATA) project
-{
-	BOOL needPostProcessing = NO;
-	
-	//Create _synopsis object
-	if(_synopsis == nil)
-	{
-		needPostProcessing = YES;
-		placeholderString = NO;
-
-		_synopsis = [[RakText alloc] init];
-		if(_synopsis == nil)
-			return NO;
-		
-		_synopsis.fixedWidth = self.bounds.size.width - MAIN_TEXT_BORDER;
-		[_synopsis setFrameOrigin : NSZeroPoint];
-
-		[_synopsis setAlignment:NSJustifiedTextAlignment];
-		[_synopsis.cell setWraps:YES];
-		
-		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
-	}
-	
-	//Update text
-	if(project.isInitialized && project.description[0] != 0)
-	{
-		placeholderString = NO;
-		
-		[_synopsis setStringValue : getStringForWchar(project.description)];
-		
-		if(!_scrollview.hasVerticalScroller)
-			_scrollview.hasVerticalScroller = YES;
-	}
-	else
-	{
-		placeholderString = YES;
-		if(_placeholder == nil)
-		{
-			_placeholder = [[RakText alloc] initWithText:self.bounds : @"Aucun résumé disponible" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
-			if(_placeholder != nil)
-			{
-#ifdef LARGE_FONT_FOR_PLACEHOLDERS
-				[_placeholder setFont: [NSFont systemFontOfSize:15]];
-#endif
-				[_placeholder sizeToFit];
-			}
-		}
-	}
-	
-	//Hide the unused view
-	if(_synopsis != nil)
-		[_synopsis setHidden : placeholderString];
-	
-	if(_placeholder != nil)
-		[_placeholder setHidden: !placeholderString];
-
-	//Postprocessing around the scrollview
-	const CGFloat titleHeight = _title != nil ? _title.bounds.size.height : 0;
-	if(needPostProcessing)
-	{
-		_scrollview = [[RakListScrollView alloc] initWithFrame:[self frameForContent : self.bounds : titleHeight]];
-		if(_scrollview == nil)
-		{
-			_synopsis = nil;
-			return NO;
-		}
-
-		_scrollview.verticalScroller.alphaValue = 0;
-		_scrollview.documentView = _synopsis;
-		[self addSubview:_scrollview];
-	}
-	
-	//Update the placeholder string
-	if(placeholderString)
-	{
-		if(_placeholder.superview == nil)
-			[_scrollview addSubview:_placeholder];
-
-		[_placeholder setFrameOrigin : [self placeholderOrigin : _scrollview.bounds]];
-	}
-	
-	[self updateScrollViewState];
-	
-	return YES;
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return;
-	
-	if(_synopsis != nil)
-		[_synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
-	
-	if(_placeholder != nil)
-		[_placeholder setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
-
-}
-
-- (BOOL) isFlipped	{	return YES;	}
 
 #pragma mark - Resize
 
@@ -191,25 +65,10 @@
 {
 	NSRect mainFrame = [self frameFromParent:frame : headerSize];
 	const CGFloat titleHeight = _title.bounds.size.height;
-	
-	if(_synopsis != nil)
-	{
-		const CGFloat newSynopsisWidth = mainFrame.size.width - SYNOPSIS_BORDER;
-		
-		if(_synopsis.fixedWidth != newSynopsisWidth)
-			_synopsis.fixedWidth = newSynopsisWidth;
-	}
 
-	//Update main frame
-	if(animated)
-		[self.animator setFrame : mainFrame];
-	else
-		[self setFrame : mainFrame];
-
-	//Set up new frames
-	mainFrame.origin = NSZeroPoint;
+	[self _updateFrame:mainFrame :animated];
 	
-	const NSRect titleFrame =	[self frameForTitle : mainFrame : titleHeight];
+	const NSRect titleFrame = [self frameForTitle : mainFrame : titleHeight];
 
 	//Update content frames
 	NSRect scrollviewRect = [self frameForContent : mainFrame : titleHeight];
@@ -236,30 +95,11 @@
 	[self updateScrollViewState];
 }
 
-- (void) updateScrollViewState
-{
-	if(!placeholderString && _synopsis.bounds.size.height > _scrollview.bounds.size.height)
-		_scrollview.scrollingDisabled = NO;
-
-	else
-		_scrollview.scrollingDisabled = YES;
-}
-
 #pragma mark - Position routines
-
-- (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) image
-{
-	parentFrame.origin.x = image.width + SYNOPSIS_BORDER;
-	parentFrame.size.width -= parentFrame.origin.x + SYNOPSIS_BORDER;
-	
-	parentFrame.origin.y = 0;
-	parentFrame.size.height -= TOP_BORDER_WIDTH;
-	
-	return parentFrame;
-}
 
 - (NSRect) frameForTitle : (NSRect) mainBounds : (CGFloat) height
 {
+	mainBounds.origin.x = 0;
 	mainBounds.size.height = height;
 	
 	return mainBounds;
@@ -267,36 +107,28 @@
 
 - (NSRect) frameForContent : (NSRect) mainBounds : (CGFloat) titleHeight
 {
-	mainBounds.origin.x = MAIN_TEXT_BORDER;
-	mainBounds.origin.y = titleHeight + SPACING;
-	mainBounds.size.height -= mainBounds.origin.y + SPACING;
-	
-	if(_synopsis == nil)
-		mainBounds.size.width -= MAIN_TEXT_BORDER;
-	else
-		mainBounds.size.width = _synopsis.fixedWidth;
-	
-	mainBounds.size.width += 30;	//Scroller width
+	mainBounds = [self frameForContent : mainBounds];
+	mainBounds.origin.y = titleHeight + SYNOPSIS_SPACING;
+	mainBounds.size.height -= titleHeight + SYNOPSIS_SPACING;
 	
 	return mainBounds;
 }
 
-- (NSPoint) placeholderOrigin : (NSRect) scrollviewBounds
+- (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) image
 {
-	scrollviewBounds.origin = NSZeroPoint;
+	parentFrame = [self frameFromParent:parentFrame];
+
+	parentFrame.origin.x += image.width;
+	parentFrame.size.width -= image.width + SYNOPSIS_BORDER;
 	
-	NSPoint origin = NSCenteredRect(scrollviewBounds, _placeholder.bounds);
-	
-	origin.x -= MAIN_TEXT_BORDER / 2 + 15;
-	
-	return origin;
+	return parentFrame;
 }
 
 #pragma mark - Property
 
 - (CGFloat) titleHeight
 {
-	return _title.bounds.size.height + TOP_BORDER_WIDTH;
+	return _title.bounds.size.height + SYNOPSIS_TOP_BORDER_WIDTH;
 }
 
 @end

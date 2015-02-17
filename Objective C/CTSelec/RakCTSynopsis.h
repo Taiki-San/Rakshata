@@ -10,14 +10,36 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTProjectSynopsis : RakCTSynopsis
+#define SYNOPSIS_TOP_BORDER_WIDTH 	5
+#define SYNOPSIS_SPACING			5
+#define SYNOPSIS_BORDER 			20
+#define SYNOPSIS_MAIN_TEXT_BORDER 	10
+
+@interface RakCTSynopsis : NSView
 {
-	RakMenuText * _title;
+	RakListScrollView * _scrollview;
+	RakText * _synopsis;
+	RakText * _placeholder;
+	
+	BOOL placeholderString;
 }
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize;
+@property (readonly) CGFloat titleHeight;
 
-- (void) setFrame : (NSRect) frameRect : (NSSize) headerSize;
-- (void) resizeAnimation : (NSRect) frameRect : (NSSize) headerSize;
+- (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame;
+- (void) updateProject : (PROJECT_DATA) newProject;
+
+- (BOOL) setStringToSynopsis : (PROJECT_DATA) project;
+
+- (BOOL) postProcessScrollView;
+- (BOOL) generatedScrollView : (NSRect) frame;
+- (void) updateScrollViewState;
+
+- (NSRect) frameFromParent : (NSRect) parentFrame;
+- (NSPoint) placeholderOrigin : (NSRect) scrollviewBounds;
+- (NSRect) frameForContent : (NSRect) mainBounds;
+
+- (void) resizeAnimation : (NSRect) frameRect;
+- (void) _updateFrame : (NSRect) mainFrame : (BOOL) animated;
 
 @end
