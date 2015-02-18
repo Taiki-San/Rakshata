@@ -188,7 +188,12 @@ enum	{	BORDER_BOTTOM	= 7	};
 {
 	if(_selected)
 	{
-		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:_workingArea xRadius:3 yRadius:3];
+		NSRect baseFrame = thumbnail.frame;
+		
+		baseFrame.size.height = baseFrame.origin.y - _workingArea.origin.y + 3;
+		baseFrame.origin.y = _workingArea.origin.y;
+		
+		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:baseFrame xRadius:3 yRadius:3];
 		
 		[[self backgroundColor] setFill];
 		[path fill];

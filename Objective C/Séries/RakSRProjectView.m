@@ -84,7 +84,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [NSColor grayColor];
+	return [Prefs getSystemColor : GET_COLOR_BACKGROUND_GRID_FOCUS : nil];
 }
 
 #pragma mark - Property

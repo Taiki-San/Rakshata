@@ -329,13 +329,18 @@ static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER
 		case GET_COLOR_SRPLACEHOLDER_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:27/255.0f green:162/255.0f blue:249/255.0f alpha:0.65];
-			//output = [[Prefs getSystemColor:GET_COLOR_ACTIVE :nil] colorWithAlphaComponent:0.6];
 			break;
 		}
 			
 		case GET_COLOR_CTHEADER_FONT:
 		{
 			output = [NSColor colorWithDeviceWhite:1 alpha:1];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_GRID_FOCUS:
+		{
+			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
 		}
 	}
