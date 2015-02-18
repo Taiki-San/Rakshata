@@ -31,9 +31,10 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 					for(uint i = 0, length = (*output)->nombreSubrepo; i < length; i++)
 						((REPO_DATA_EXTRA *)(*output)->subRepo)[i].data->parentRepoID = previousData->repoID;
 				}
-				
 				return true;
 			}
+			else if(!strcmp(data, "internal_error"))
+				logR("An error occured on our server, please try again later");
 			else
 				logR("An error occured when parsing a root repo");
 		}
