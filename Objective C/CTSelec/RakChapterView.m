@@ -311,8 +311,6 @@ enum
 	DIR_MIDDLE 	= 5
 };
 
-BOOL whatever = NO;
-
 - (void) respondToSRFocus : (NSNotification *) notification
 {
 	if(self.serieViewHidden || mainDetailView == nil)
@@ -333,55 +331,57 @@ BOOL whatever = NO;
 	{
 		[self changeSRFocus:mainDetailView :[suggestions getContent] : DIR_RIGHT];
 	}
-	else if(!suggestions.isHidden)		//Suggestion -> Detail view
+	else if([suggestions getContent].alphaValue != 0)		//Suggestion -> Detail view
 	{
 		mainDetailView.project = project;
 		[self changeSRFocus:[suggestions getContent] :mainDetailView : DIR_LEFT];
 	}
 	else								//Detail view -> New detail view
 	{
-		whatever = YES;
 		tmpDetailView.project = project;
-		BOOL ascending = wstrcmp(mainDetailView.project.projectName, project.projectName) < 0;
-		id old = mainDetailView, new = tmpDetailView;
-		
-		dispatch_sync(dispatch_get_main_queue(), ^{
-			[self changeSRFocus:old :new : ascending ? DIR_DOWN : DIR_UP];
-		});
-		
-		mainDetailView = new;
-		tmpDetailView = old;
-		whatever = NO;
-	}
+		byte direction = wstrcmp(mainDetailView.project.projectName, project.projectName) > 0 ? DIR_DOWN : DIR_UP;
 
+		[self changeSRFocus:mainDetailView :tmpDetailView : direction];
+		
+		id tmp = mainDetailView;
+		mainDetailView = tmpDetailView;
+		tmpDetailView = tmp;
+	}
+	
 	[CATransaction commit];
 }
 
 - (void) changeSRFocus : (NSView *) oldView : (NSView *) newView : (byte) direction
 {
+	if(![NSThread isMainThread])
+	{
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			[self changeSRFocus:oldView :newView :direction];
+		});
+		return;
+	}
+	
+	[CATransaction begin];
+	
 	if(newView.superview == nil)
 		[self addSubview:newView];
 	
-	NSPoint base = [suggestions getFrameFromParent : _bounds].origin, a = [self newOriginFocus:newView.bounds :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], b = [self newOriginFocus:oldView.bounds :direction];
+	NSPoint base = [suggestions getFrameFromParent : _bounds].origin;
 	
-	if(whatever)
-		printf("base: %f - %f\na: %f - %f\nb: %f - %f", base.x, base.y, a.x, a.y, b.x, b.y);
-	
-	[newView setFrame:_bounds];
-	newView.hidden = NO;
+	[newView setFrame:(NSRect) {[self newOriginFocus:newView.bounds :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], _bounds.size}];
+	newView.alphaValue = 1;
 	
 	[oldView setFrameOrigin:base];
-	[newView setFrameOrigin:a];
+	
+	[CATransaction commit];
 	
 	[NSAnimationContext beginGrouping];
 	
-	[oldView.animator setFrameOrigin:b];
+	[oldView.animator setFrameOrigin:[self newOriginFocus:oldView.bounds :direction]];
 	[newView.animator setFrameOrigin:base];
 	
-	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		if(oldView == [suggestions getContent])
-			oldView.hidden = YES;
-	}];
+	if(oldView == [suggestions getContent])		//Completion handler is a bitch :x
+		oldView.animator.alphaValue = 0;
 	
 	[NSAnimationContext endGrouping];
 }
