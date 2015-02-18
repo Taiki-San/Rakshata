@@ -19,10 +19,10 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 {
 	if(version >= VERSION_FIRST_REPO_JSON && data != NULL)
 	{
-		if(version == 3)
+		if(version == VERSION_REPO)
 		{
 			*output = parseRemoteRepo(data);
-			if(output != NULL)
+			if(*output != NULL)
 			{
 				(*output)->repoID = previousData->repoID;
 				
