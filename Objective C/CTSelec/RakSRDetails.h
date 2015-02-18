@@ -22,6 +22,7 @@
 }
 
 @property PROJECT_DATA project;
+@property CGFloat offsetX;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

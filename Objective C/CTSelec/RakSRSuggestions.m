@@ -22,8 +22,6 @@
 			return nil;
 		
 		_nbData = 10;
-		frame.size.width += _scrollerWidth / 2;
-		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
 		scrollView.verticalScroller.alphaValue = 0;
@@ -61,6 +59,7 @@
 
 - (NSRect) getFrameFromParent: (NSRect) bounds
 {
+	bounds.origin.x += _scrollerWidth / 5;
 	bounds.size.width += _scrollerWidth / 2;
 	bounds.size.height -= 3;
 	bounds.origin.y -= 3;

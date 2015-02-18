@@ -13,8 +13,10 @@
 enum
 {
 	TYPE_SEPARATOR_WIDTH = 3,
-	SYNOPSIS_SEPARATOR_BORDER = 2,
-	SYNOPSIS_SEPARATOR_WIDTH = 1
+	TYPE_SEPARATOR_BORDER = 1,
+	SYNOPSIS_SEPARATOR_BORDER = 4,
+	SYNOPSIS_SEPARATOR_WIDTH = 1,
+	OFFSET_SYNOPSIS = 7
 };
 
 @implementation RakSRDetails
@@ -57,8 +59,8 @@ enum
 		synopsis = [[RakText alloc] init];
 		if(synopsis != nil)
 		{
-			synopsis.fixedWidth = _bounds.size.width - SYNOPSIS_MAIN_TEXT_BORDER;
-			[synopsis setFrameOrigin : NSZeroPoint];
+			synopsis.fixedWidth = _bounds.size.width - 2 * OFFSET_SYNOPSIS;
+			[synopsis setFrameOrigin : NSMakePoint(OFFSET_SYNOPSIS, 0)];
 			
 			[synopsis setAlignment:NSJustifiedTextAlignment];
 			[synopsis.cell setWraps:YES];
@@ -192,7 +194,7 @@ enum
 
 - (NSPoint) thumbOrigin : (NSRect) frame
 {
-	return NSMakePoint(frame.size.width / 2 - thumb.bounds.size.width / 2, 0);
+	return NSMakePoint(frame.size.width / 2 - thumb.bounds.size.width / 2, 8);
 }
 
 - (NSPoint) infoOrigin : (NSRect) frame : (NSPoint) previousPoint
@@ -202,23 +204,21 @@ enum
 
 - (NSPoint) typeOrigin : (NSRect) frame : (NSPoint) previousPoint
 {
-	const CGFloat fullWidth = type.bounds.size.width + TYPE_SEPARATOR_WIDTH + tag.bounds.size.width;
+	const CGFloat fullWidth = type.bounds.size.width + TYPE_SEPARATOR_WIDTH + TYPE_SEPARATOR_BORDER + tag.bounds.size.width;
 	
 	return NSMakePoint(frame.size.width / 2 - fullWidth / 2, previousPoint.y + infos.bounds.size.height);
 }
 
 - (NSPoint) tagOrigin : (NSRect) frame : (NSPoint) previousPoint
 {
-	previousPoint.x += type.bounds.size.width + TYPE_SEPARATOR_WIDTH;
+	previousPoint.x += type.bounds.size.width + TYPE_SEPARATOR_WIDTH + TYPE_SEPARATOR_BORDER;
 	return previousPoint;
 }
 
-#define OFFSET 3
-
 - (NSRect) synopsisFrame : (NSRect) frame : (NSPoint) previousPoint
 {
-	frame.size.width -= 2 * OFFSET;
-	frame.origin.x = OFFSET + frame.size.width / 2 - synopsis.bounds.size.width / 2;
+	frame.size.width -= 2 * OFFSET_SYNOPSIS;
+	frame.origin.x = OFFSET_SYNOPSIS;
 	frame.origin.y = previousPoint.y + MAX(type.bounds.size.height, tag.bounds.size.height) + 2 * SYNOPSIS_SEPARATOR_BORDER + SYNOPSIS_SEPARATOR_WIDTH;
 	
 	frame.size.height -= frame.origin.y;
@@ -246,23 +246,41 @@ enum
 	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
 }
 
+- (NSColor *) interTagColor
+{
+	return [self getTextColor];
+}
+
 - (NSColor *) borderColor
 {
-	return [NSColor whiteColor];
+	return [self getTextColor];
 }
 
 - (void) drawRect : (NSRect) dirtyRect
 {
-	NSRect frame = tag.frame;
+	NSRect frame = type.frame;
 	
-	frame.origin.x = 20;
-	frame.size.width = _bounds.size.width - 2 * frame.origin.x;
+	//Intertag separator
+	frame.origin.x += frame.size.width;
+	frame.origin.y += ceil(frame.size.height / 2) + 1;
+	frame.size.width = TYPE_SEPARATOR_WIDTH;
+	frame.size.height = 1;
 	
-	frame.origin.y += frame.size.height + SYNOPSIS_SEPARATOR_BORDER;
-	frame.size.height = SYNOPSIS_SEPARATOR_WIDTH;
-	
-	[[self borderColor] setFill];
+	[[self interTagColor] setFill];
 	NSRectFill(frame);
+	
+	//Description separator
+	if(_project.description[0])
+	{
+		frame.origin.x = 20;
+		frame.size.width = _bounds.size.width - 2 * frame.origin.x;
+		
+		frame.origin.y = NSMaxY(tag.frame) + SYNOPSIS_SEPARATOR_BORDER;
+		frame.size.height = SYNOPSIS_SEPARATOR_WIDTH;
+		
+		[[self borderColor] setFill];
+		NSRectFill(frame);
+	}
 }
 
 @end

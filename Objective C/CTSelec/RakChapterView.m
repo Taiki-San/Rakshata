@@ -107,7 +107,12 @@
 	}
 	
 	mainDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	if(mainDetailView != nil)
+		mainDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
+	
 	tmpDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	if(tmpDetailView != nil)
+		tmpDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
 	
 	self.serieViewHidden = !serieMode;
 }
@@ -329,12 +334,12 @@ enum
 	
 	if(![_inOrOut boolValue])			//Leaving
 	{
-		[self changeSRFocus:mainDetailView :[suggestions getContent] : DIR_RIGHT];
+		[self changeSRFocus:mainDetailView :suggestions : DIR_RIGHT];
 	}
 	else if([suggestions getContent].alphaValue != 0)		//Suggestion -> Detail view
 	{
 		mainDetailView.project = project;
-		[self changeSRFocus:[suggestions getContent] :mainDetailView : DIR_LEFT];
+		[self changeSRFocus:suggestions :mainDetailView : DIR_LEFT];
 	}
 	else								//Detail view -> New detail view
 	{
@@ -351,7 +356,8 @@ enum
 	[CATransaction commit];
 }
 
-- (void) changeSRFocus : (NSView *) oldView : (NSView *) newView : (byte) direction
+//RakList is more restrictive than NSView, so if it support the call, NSView will
+- (void) changeSRFocus : (id) oldView : (id) newView : (byte) direction
 {
 	if(![NSThread isMainThread])
 	{
@@ -361,33 +367,35 @@ enum
 		return;
 	}
 	
+	//Set the positions of the items
 	[CATransaction begin];
 	
-	if(newView.superview == nil)
+	if(newView != suggestions && ((NSView *)newView).superview == nil)
 		[self addSubview:newView];
 	
-	NSPoint base = [suggestions getFrameFromParent : _bounds].origin;
+	[newView setFrame:(NSRect) {[self newOriginFocus:newView :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], _bounds.size}];
+	if(newView == suggestions)
+		[newView getContent].alphaValue = 1;
 	
-	[newView setFrame:(NSRect) {[self newOriginFocus:newView.bounds :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], _bounds.size}];
-	newView.alphaValue = 1;
-	
-	[oldView setFrameOrigin:base];
+	[oldView setFrame: _bounds];
 	
 	[CATransaction commit];
-	
+
+	//Actual animation
 	[NSAnimationContext beginGrouping];
 	
-	[oldView.animator setFrameOrigin:[self newOriginFocus:oldView.bounds :direction]];
-	[newView.animator setFrameOrigin:base];
+	[(RakList *) oldView resizeAnimation: (NSRect) {[self newOriginFocus:oldView :direction], ((RakList *)oldView).frame.size}];
+	[(RakList *) newView resizeAnimation: _bounds];
 	
-	if(oldView == [suggestions getContent])		//Completion handler is a bitch :x
-		oldView.animator.alphaValue = 0;
+	if(oldView == suggestions)		//Completion handler is a bitch :x
+		[oldView getContent].animator.alphaValue = 0;
 	
 	[NSAnimationContext endGrouping];
 }
 
-- (NSPoint) newOriginFocus : (NSRect) itemBounds : (byte) direction
+- (NSPoint) newOriginFocus : (NSView *) item : (byte) direction
 {
+	NSRect itemBounds = item.frame;
 	NSPoint output = NSZeroPoint;
 	
 	switch (direction)
