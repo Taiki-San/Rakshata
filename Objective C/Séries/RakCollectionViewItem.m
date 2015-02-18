@@ -69,7 +69,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	if(!_selected)
 	{
 		_selected = YES;
-		*_sharedActive = _project.cacheDBID;
+		sessionCode = ++(*_sharedActive);
 		[self acquireFocus];
 		[self setNeedsDisplay:YES];
 	}
@@ -137,14 +137,9 @@ enum	{	BORDER_BOTTOM	= 7	};
 	if(!_project.isInitialized)
 		return;
 	
-	__block uint initialFocus = ++currentRequestID;
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		if(initialFocus == currentRequestID && *_sharedActive == _project.cacheDBID)
-		{
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
-			});
-		}
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+		if(*_sharedActive == sessionCode)
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
 	});
 }
 

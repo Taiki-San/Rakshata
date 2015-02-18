@@ -14,9 +14,8 @@
 
 @interface RakCollectionViewItem : RakSRProjectView
 {
-	uint currentRequestID;
-	
 	uint * _sharedActive;
+	uint sessionCode;
 	
 	//Content
 	RakText * mainTag;
