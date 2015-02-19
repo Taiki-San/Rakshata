@@ -146,6 +146,7 @@
 		[self viewDidMoveToSuperview];
 	}
 	
+	id oldElem = nil;
 	const NSPoint originalPoint = [theEvent locationInWindow], pointInDocument = [_clipView convertPoint:originalPoint fromView:nil];
 #ifdef VERBOSE_HACK
 	NSLog(@"Cursor at x:%lf, y:%lf ~ Position in document: x:%lf, y:%lf", originalPoint.x, originalPoint.y, pointInDocument.x, pointInDocument.y);
@@ -169,6 +170,7 @@
 		NSLog(@"Left, notificating");
 #endif
 		[selectedItem mouseExited:theEvent];
+		oldElem = selectedItem;
 		selectedItem = nil;
 	}
 	
@@ -182,11 +184,14 @@
 	}
 	
 	const uint nbElem = [_manager nbElement];
-	if(nbElem == 0)
+	if(!nbColumn || nbElem == 0)
 	{
 #ifdef VERBOSE_HACK
 		NSLog(@"No element, aborting");
 #endif
+		if(oldElem != nil)
+			[oldElem updateFocus];
+			
 		return;
 	}
 	
@@ -224,52 +229,56 @@
 		currentRow = (rowMin + rowMax) / 2;
 	}
 	
-	if(rowMin > rowMax)
+	if(rowMin <= rowMax)
+	{
+		//The number of row can be pretty high and DB grow, but the number of columns is limited by the size of the screen.
+		//Also, a big screen require significant horsepower, so we can settle to a more naive algorithm
+		
+		for(uint i = 0, index = currentRow * nbColumn; i < nbColumn && index < nbElem; i++, index++)
+		{
+			item = (id) [self itemAtIndex:index].view;
+			
+			if(item.frame.origin.x > pointInDocument.x)		//We went too far, this is an invalid clic
+			{
+#ifdef VERBOSE_HACK
+				NSLog(@"Element %d (column %d) too far :/", index, i);
+#endif
+				break;
+			}
+			
+			else if(NSMaxX(item.frame) > pointInDocument.x)	//Good element?
+			{
+#ifdef VERBOSE_HACK
+				NSLog(@"Element %d (column %d) may be good", index, i);
+#endif
+				
+				if([self validateItem:item :originalPoint])
+				{
+#ifdef VERBOSE_HACK
+					NSLog(@"Yep, confirmed");
+#endif
+					selectedItem = item;
+					[item mouseEntered:theEvent];
+				}
+				else	//In the view area, but out of the actual content
+				{
+#ifdef VERBOSE_HACK
+					NSLog(@"And, nop, we're out of it");
+#endif
+					break;
+				}
+			}
+		}
+	}
+	else
 	{
 #ifdef VERBOSE_HACK
 		NSLog(@"Invalid cursor position");
 #endif
-		return;
 	}
 	
-	//The number of row can be pretty high and DB grow, but the number of columns is limited by the size of the screen.
-	//Also, a big screen require significant horsepower, so we can settle to a more naive algorithm
-
-	for(uint i = 0, index = currentRow * nbColumn; i < nbColumn && index < nbElem; i++, index++)
-	{
-		item = (id) [self itemAtIndex:index].view;
-
-		if(item.frame.origin.x > pointInDocument.x)		//We went too far, this is an invalid clic
-		{
-#ifdef VERBOSE_HACK
-			NSLog(@"Element %d (column %d) too far :/", index, i);
-#endif
-			return;
-		}
-		
-		else if(NSMaxX(item.frame) > pointInDocument.x)	//Good element?
-		{
-#ifdef VERBOSE_HACK
-			NSLog(@"Element %d (column %d) may be good", index, i);
-#endif
-
-			if([self validateItem:item :originalPoint])
-			{
-#ifdef VERBOSE_HACK
-				NSLog(@"Yep, confirmed");
-#endif
-				selectedItem = item;
-				[item mouseEntered:theEvent];
-			}
-			else	//In the view area, but out of the actual content
-			{
-#ifdef VERBOSE_HACK
-				NSLog(@"And, nop, we're out of it");
-#endif
-				return;
-			}
-		}
-	}
+	if(oldElem != nil)
+		[oldElem updateFocus];
 }
 
 - (BOOL) validateItem : (RakCollectionViewItem *) item : (const NSPoint) originalPoint

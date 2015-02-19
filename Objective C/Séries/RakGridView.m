@@ -44,7 +44,23 @@
 
 #pragma mark - Access to view
 
+- (id) animator
+{
+	return scrollview.animator;
+}
+
+- (CGFloat) alphaValue
+{
+	return scrollview.alphaValue;
+}
+
+- (void) setAlphaValue : (CGFloat) alphaValue
+{
+	scrollview.alphaValue = alphaValue;
+}
+
 - (RakListScrollView *) contentView		{	return scrollview;	}
+
 - (void) setHidden : (BOOL) hidden
 {
 	if(scrollview.isHidden != hidden)

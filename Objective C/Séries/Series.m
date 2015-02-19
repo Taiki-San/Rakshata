@@ -230,10 +230,11 @@
 	
 	frame.size.height -= frame.origin.y;
 	
-	if((self.mainThread & TAB_SERIES) == 0)
+	if(self.mainThread != TAB_SERIES)
 	{
 		frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 		frame.size.width -= 2 * frame.origin.x;
+		frame.size.height -= SR_READERMODE_LATERAL_BORDER;
 	}
 	
 	return frame;

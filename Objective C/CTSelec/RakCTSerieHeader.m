@@ -113,6 +113,8 @@ enum
 	if(_projectHaveFocus == getIn)
 		return;
 	
+	[self lockFocusIfCanDraw];
+	
 	if(_ignoreTransitionAnimation)
 	{
 		_projectHaveFocus = getIn;
@@ -146,6 +148,8 @@ enum
 		
 		[CATransaction commit];
 	}
+	
+	[self unlockFocus];
 }
 
 - (void) updateProject : (NSNumber *) _projectID

@@ -48,9 +48,11 @@ enum
 
 @property (readonly) RakListScrollView * contentView;
 @property (getter=isHidden) BOOL hidden;
+@property CGFloat alphaValue;
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
 
+- (id) animator;
 - (void) setFrame : (NSRect) frameRect;
 - (void) resizeAnimation : (NSRect) frameRect;
 

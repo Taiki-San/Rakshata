@@ -70,7 +70,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	{
 		_selected = YES;
 		sessionCode = ++(*_sharedActive);
-		[self acquireFocus];
+		[self updateFocus];
 		[self setNeedsDisplay:YES];
 	}
 }
@@ -80,7 +80,6 @@ enum	{	BORDER_BOTTOM	= 7	};
 	if(_selected)
 	{
 		_selected = NO;
-		[self acquireFocus];
 		[self setNeedsDisplay:YES];
 	}
 }
@@ -132,7 +131,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	}
 }
 
-- (void) acquireFocus
+- (void) updateFocus
 {
 	if(!_project.isInitialized)
 		return;

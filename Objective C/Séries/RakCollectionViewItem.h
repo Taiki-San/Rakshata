@@ -25,5 +25,6 @@
 @property CGFloat requestedHeight;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
+- (void) updateFocus;
 
 @end

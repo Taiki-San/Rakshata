@@ -187,7 +187,7 @@
 - (NSView *) getActiveView
 {
 	if(_activeView == SR_CELLTYPE_GRID)
-		return (NSView*) [_grid contentView];
+		return (NSView*) _grid;
 	
 	else if(_activeView == SR_CELLTYPE_REPO)
 		return nil;
