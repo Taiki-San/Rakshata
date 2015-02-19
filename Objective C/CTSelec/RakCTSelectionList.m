@@ -229,9 +229,6 @@
 		if(resetScroller)
 			[_tableView scrollRowToVisible:0];
 		
-		//Add the column
-		[self updateMultiColumn: self.compactMode : scrollView.bounds.size];
-		
 		//We get a usable data structure is required
 		if(sameProject)
 		{
@@ -272,6 +269,9 @@
 			[self fullAnimatedReload : nbOldElem :newElem];
 		}
 
+		//Add the column
+		[self updateMultiColumn: self.compactMode : scrollView.bounds.size];
+		
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != LIST_INVALID_SELECTION)
@@ -615,29 +615,28 @@
 				_mainColumns = @[[_tableView.tableColumns firstObject]];
 			
 			//Great, now that we are up to date, we're going to check if we need to add new columns
-			NSSize singleColumn = NSMakeSize(DEFAULT_MAIN_WIDTH, scrollviewSize.height / _nbCoupleColumn);
+			CGFloat columnWidth = DEFAULT_MAIN_WIDTH, scrollerWidth = 0, maxHeight = [self nbElem] * _tableView.rowHeight;
 			uint nbColumn = 1, oldNbColumn = _nbCoupleColumn;
-			CGFloat scrollerWidth = 0;
 			int newColumns;
 			
 			//We add space for detail tab
 			if(paidContent)
-				singleColumn.width += DEFAULT_DETAIL_WIDTH;
+				columnWidth += DEFAULT_DETAIL_WIDTH;
 			else
 				scrollerWidth = [RakScroller width];
 			
 			//Define number of columns
 #ifdef PREFER_LESS_COLUMN
-			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight;
+			CGFloat minTabHeight = _tableView.numberOfRows * _tableView.rowHeight;
 #else
-			CGFloat maxTabHeight = _tableView.numberOfRows * _tableView.rowHeight * 2;
+			CGFloat minTabHeight = scrollviewSize.height / 2;
 #endif
 			
-			while(singleColumn.height * nbColumn < maxTabHeight && singleColumn.width * nbColumn + scrollerWidth <= scrollviewSize.width)
+			while(floor(maxHeight / nbColumn) > minTabHeight && columnWidth * nbColumn + scrollerWidth <= scrollviewSize.width)
 				nbColumn++;
 			
 			//If we can't fit in the width we got
-			if(nbColumn > 1 && singleColumn.width * nbColumn + scrollerWidth > scrollviewSize.width)
+			if(nbColumn > 1 && columnWidth * nbColumn + scrollerWidth > scrollviewSize.width)
 				nbColumn--;
 			
 			//Now, apply changes
