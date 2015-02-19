@@ -65,7 +65,7 @@
 		[synopsis updateProject : newData];
 	}
 	
-	[header updateHeaderProjectInternal :newData];
+	[header updateHeaderProjectInternal :getCopyOfProjectData(newData)];
 }
 
 #pragma mark - Resizing

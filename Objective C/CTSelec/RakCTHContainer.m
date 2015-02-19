@@ -27,7 +27,6 @@
 		self.autoresizesSubviews = NO;
 
 		[self loadProject : project];
-		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 	}
 	
 	return self;
@@ -193,19 +192,6 @@
 		}
 	}
 }
-
-- (void) DBUpdated : (NSNotification*) notification
-{
-	if(!_data.isInitialized)
-		return;
-	
-	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_data])
-	{
-		releaseCTData(_data);
-		[self loadProject:getElementByID(_data.cacheDBID)];
-	}
-}
-
 
 #pragma mark - Elements positions
 

@@ -18,10 +18,12 @@
 	
 	if(self != nil)
 	{
-		[self updateHeaderProjectInternal : project];
+		[self updateHeaderProjectInternal : getCopyOfProjectData(project)];
 		
 		if(_background != nil)	//We may need to update our frame
 			[self setFrame: frame];
+		
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 	}
 	
 	return self;
@@ -47,6 +49,15 @@
 	
 	[_background resizeAnimation : frameRect];
 	[_container resizeAnimation : frameRect];
+}
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if(!_data.isInitialized)
+		return;
+	
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_data])
+		[self updateHeaderProjectInternal:getElementByID(_data.cacheDBID)];
 }
 
 #pragma mark - Interface
@@ -78,6 +89,9 @@
 - (BOOL) updateHeaderProjectInternal : (PROJECT_DATA) project
 {
 	BOOL needAddBackgroundGradient = NO;
+	
+	releaseCTData(_data);
+	_data = project;
 	
 	//Update background image
 	if(_background == nil)
