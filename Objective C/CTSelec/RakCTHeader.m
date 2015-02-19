@@ -26,10 +26,10 @@
 			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_COREVIEW : self];
 			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 
-			[header setFrame : self.bounds];
+			[header setFrame : _bounds];
 			[self addSubview:header];
 			
-			synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : self.bounds : header.bounds.size];
+			synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : _bounds : header.bounds.size];
 			if(synopsis != nil)
 			{
 				_synopsisTitleHeight = [synopsis titleHeight];	//For now, this height is stable
@@ -45,13 +45,16 @@
 
 - (void) updateProject : (PROJECT_DATA) project
 {
-	[header updateHeaderProject:project];
-	
+	if(self.isHidden)
+		[header updateHeaderProjectInternal:getCopyOfProjectData(project)];
+	else
+		[header updateHeaderProject:project];
+
 	if(synopsis != nil)
 		[synopsis updateProject : project];
 	else
 	{
-		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : project : self.bounds : header.bounds.size];
+		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : project : _bounds : header.bounds.size];
 		if(synopsis != nil)
 			[self addSubview:synopsis];
 	}
@@ -96,8 +99,8 @@
 		
 	[super setFrame:[self frameByParent:frameRect : header]];
 	
-	[header setFrame : self.bounds];
-	[synopsis setFrame : self.bounds : header.bounds.size];
+	[header setFrame : _bounds];
+	[synopsis setFrame : _bounds : header.bounds.size];
 }
 
 - (void) resizeAnimation : (NSRect) frame
