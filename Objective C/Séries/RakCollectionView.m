@@ -291,6 +291,7 @@
 	if(selectedItem != nil)
 	{
 		[selectedItem mouseExited:theEvent];
+		[selectedItem updateFocus];
 		selectedItem = nil;
 	}
 }

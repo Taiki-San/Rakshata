@@ -114,41 +114,28 @@ enum
 		return;
 	
 	[self lockFocusIfCanDraw];
+	[CATransaction begin];
 	
-	if(_ignoreTransitionAnimation)
+	if(getIn)
 	{
-		_projectHaveFocus = getIn;
-		[placeholder setFrame : [self titleFrame:_bounds : YES]];
-		[title setFrame : [self titleFrame:_bounds : NO]];
-		[rating setFrameOrigin:[self ratingOrigin:_bounds]];
-	}
-	else
-	{
-		if(getIn)
-		{
-			[CATransaction begin];
-			
-			title.alphaValue = 1;
-			[title setFrame : [self titleFrame:_bounds :NO]];
-			[rating setFrameOrigin:[self ratingOrigin:_bounds : NO : NO]];
-
-			[CATransaction commit];
-		}
-			
-		_projectHaveFocus = getIn;
-
-		[CATransaction begin];
-
-		[placeholder.animator setFrame : [self titleFrame:_bounds : YES]];
-		[title.animator setFrame : [self titleFrame:_bounds : NO]];
-		[rating.animator setFrameOrigin:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
-		
-		if(!getIn)
-			title.animator.alphaValue = 0;
+		title.alphaValue = 1;
+		[title setFrame : [self titleFrame:_bounds :NO]];
+		[rating setFrameOrigin:[self ratingOrigin:_bounds : NO : YES]];
 		
 		[CATransaction commit];
+		[CATransaction begin];
 	}
 	
+	_projectHaveFocus = getIn;
+	
+	[placeholder.animator setFrame : [self titleFrame:_bounds : YES]];
+	[title.animator setFrame : [self titleFrame:_bounds : NO]];
+	[rating.animator setFrameOrigin:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
+	
+	if(!getIn)
+		title.animator.alphaValue = 0;
+	
+	[CATransaction commit];
 	[self unlockFocus];
 }
 
@@ -172,7 +159,7 @@ enum
 	NSString * newName = getStringForWchar(project.projectName);
 	
 	//Animation is not required
-	if(_ignoreTransitionAnimation || [title.stringValue isEqualToString:PROJECT_NAME_PLACEHOLDER])
+	if(!_projectHaveFocus || [title.stringValue isEqualToString:PROJECT_NAME_PLACEHOLDER])
 	{
 		[title setStringValue: newName];
 		return;
@@ -203,9 +190,10 @@ enum
 		
 		if(newStars != nil)
 		{
+			rating = newStars;
+
 			[newStars setFrameOrigin:NSMakePoint([self ratingOrigin:_bounds].x, frame.origin.y)];
 			
-			rating = newStars;
 			[self addSubview:newStars];
 		}
 
