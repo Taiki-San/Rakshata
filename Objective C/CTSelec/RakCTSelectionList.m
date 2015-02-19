@@ -32,7 +32,7 @@
 		_compactMode = isCompact;
 		self.isTome = isTomeRequest;
 		chapterPrice = NULL;
-		projectData.isInitialized = NO;
+		projectData = getEmtpyProject();
 		_selectionWithoutUI = NO;
 		
 		//We don't protect chapter/volume list but not really a problem as we'll only use it for drag'n drop

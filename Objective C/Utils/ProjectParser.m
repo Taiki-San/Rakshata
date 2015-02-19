@@ -372,8 +372,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 
 PROJECT_DATA parseBloc(NSDictionary * bloc)
 {
-	PROJECT_DATA data;
-	data.isInitialized = false;
+	PROJECT_DATA data = getEmtpyProject();
 	
 	int * chapters = NULL;
 	uint * chaptersPrices = NULL;

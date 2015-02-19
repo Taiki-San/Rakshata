@@ -483,3 +483,12 @@ bool isInstalled(char * basePath)
 	closedir(directory);
 	return retValue;
 }
+
+PROJECT_DATA getEmtpyProject()
+{
+	PROJECT_DATA project;
+	
+	memset(&project, 0, sizeof(PROJECT_DATA));
+	
+	return project;
+}

@@ -27,7 +27,7 @@ enum
 	
 	if(self != nil)
 	{
-		_project.isInitialized = NO;
+		_project = getEmtpyProject();
 		
 		thumb = [[NSImageView alloc] init];
 		if(thumb != nil)

@@ -682,7 +682,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 				pos++;
 		}
 
-		output[pos].isInitialized = false;
+		output[pos] = getEmtpyProject();
 		sqlite3_finalize(request);
 		
 		if(nbElemCopied != NULL)
@@ -1474,9 +1474,7 @@ bool isProjectInstalledInCache (uint ID)
 PROJECT_DATA getElementByID(uint cacheID)
 {
 	sqlite3_stmt* request = NULL;
-	PROJECT_DATA output;
-	
-	output.isInitialized = false;
+	PROJECT_DATA output = getEmtpyProject();
 	
 	if(cache != NULL && cacheID != UINT_MAX)
 	{

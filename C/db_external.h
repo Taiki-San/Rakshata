@@ -41,6 +41,7 @@ enum
 /**DBCache.c**/
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
+PROJECT_DATA getEmtpyProject();
 
 void freeProjectData(PROJECT_DATA* projectDB);
 

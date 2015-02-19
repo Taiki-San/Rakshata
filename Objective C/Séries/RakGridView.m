@@ -21,7 +21,7 @@
 	if(self != nil)
 	{
 		_currentDragItem = UINT_MAX;
-		_dragProject.isInitialized = NO;
+		_dragProject = getEmtpyProject();
 		
 		NSRect bounds = [self frameFromParent : frameRect];
 		

@@ -275,19 +275,15 @@
 
 - (PROJECT_DATA) getElementAtIndex : (NSInteger) index
 {
-	PROJECT_DATA output;
-	
 	if(index >= 0 && index < _nbData)
 	{
 		if(self.installOnlyMode && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];
 		
-		output = getCopyOfProjectData(((PROJECT_DATA*) _data)[index]);
+		return getCopyOfProjectData(((PROJECT_DATA*) _data)[index]);
 	}
-	else
-		output.isInitialized = false;
 	
-	return output;
+	return getEmtpyProject();
 }
 
 - (uint) getSelectedElement
