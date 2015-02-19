@@ -21,11 +21,19 @@
 		
 		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : _bounds : (header != nil ? header.bounds.size.height : 0) : context : mainThread];
 		if(coreview != nil)
+		{
 			[self addSubview:coreview];
+		
+			if(mainThread == TAB_SERIES)
+			{
+				coreview.alphaValue = 0;
+				coreview.hidden = YES;
+			}
+		}
 
-		[self initSerieView : project : mainThread & TAB_SERIES];
-		[self initCTView : project : mainThread & TAB_CT];
-		[self initReaderView : project : mainThread & TAB_READER];
+		[self initSerieView : project : mainThread == TAB_SERIES];
+		[self initCTView : project : mainThread == TAB_CT];
+		[self initReaderView : project : mainThread == TAB_READER];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(respondToSRFocus:) name:SR_NOTIFICATION_FOCUS object:nil];
     }
@@ -113,17 +121,25 @@
 	tmpDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
 	if(tmpDetailView != nil)
 		tmpDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
-	
-	self.serieViewHidden = !serieMode;
+
+	[super setSerieViewHidden:!serieMode];
 }
 
 - (void) initCTView : (PROJECT_DATA) project : (BOOL) CTMode
 {
 	header = [[RakCTHeader alloc] initWithData : self.bounds : project];
 	if(header != nil)
+	{
 		[self addSubview:header];
+		
+		if(!CTMode)
+		{
+			header.alphaValue = 0;
+			header.hidden = YES;
+		}
+	}
 	
-	self.CTViewHidden = !CTMode;
+	[super setCTViewHidden:!CTMode];
 }
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
@@ -136,9 +152,16 @@
 	else
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: NULL : nil : _bounds];
 	
-	if(projectImage != nil)	[self addSubview:projectImage];
+	if(projectImage != nil)
+		[self addSubview:projectImage];
 	
-	self.readerViewHidden = !readerMode;
+	if(!readerMode)
+	{
+		projectName.alphaValue = 0;		projectName.hidden = YES;
+		projectImage.alphaValue = 0;	projectImage.hidden = YES;
+	}
+
+	[self setReaderViewHidden:!readerMode];
 }
 
 - (void) setSerieViewHidden : (BOOL) serieViewHidden
@@ -148,6 +171,9 @@
 		[suggestions getContent].animator.alphaValue = 0;
 		if(mainDetailView != nil && mainDetailView.superview != nil)
 			mainDetailView.animator.alphaValue = 0;
+		
+		coreview.hidden = NO;
+		coreview.animator.alphaValue = 1;
 	}
 	else
 	{
@@ -194,7 +220,7 @@
 
 - (void) cleanupFocusViewChange
 {
-	for(NSView * view in @[header, projectName, projectImage])
+	for(NSView * view in @[header, projectName, projectImage, coreview])
 	{
 		if(view.alphaValue == 0)
 			view.hidden = YES;
