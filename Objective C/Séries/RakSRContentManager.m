@@ -319,9 +319,11 @@
 
 - (void) restrictionsUpdated : (NSNotification *) notification
 {
-	if(notification != nil && notification.object != nil && [notification.object isKindOfClass:[NSString class]])
+	if(notification != nil)
 	{
-		commitedSearch = notification.object;
+		if(notification.object != nil && [notification.object isKindOfClass:[NSString class]])
+			commitedSearch = notification.object;
+	
 		[self updateContext:NO];
 	}
 }
