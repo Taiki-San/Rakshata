@@ -10,9 +10,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define TITLE_OFFSET 10
-#define INFLECTION_POINT 0.7f
+enum
+{
+	TITLE_OFFSET = 10,
+	RATING_OFFSET = 1
+};
 
+#define INFLECTION_POINT 0.7f
 #define PROJECT_NAME_PLACEHOLDER @"Project name"
 
 @implementation RakCTSerieHeader
@@ -292,7 +296,7 @@
 
 - (NSPoint) ratingOrigin : (NSRect) frame : (BOOL) isShown : (BOOL) changingState
 {
-	return NSMakePoint(frame.size.width + (isShown ? (- 5 - rating.bounds.size.width) : (changingState ? frame.size.width : 0)), 3);
+	return NSMakePoint(frame.size.width + (isShown ? (- 5 - rating.bounds.size.width) : (changingState ? frame.size.width : 0)), RATING_OFFSET);
 }
 
 #pragma mark - Drawing

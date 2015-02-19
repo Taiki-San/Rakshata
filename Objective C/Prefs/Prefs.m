@@ -16,8 +16,11 @@ __strong Prefs* prefsCache;
 static uint mainThread = TAB_SERIES;				//Default : TAB_SERIES
 static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
 
-#define SERIESMODE_MAX_WIDTH_WHEN_INACTIVE 200
-#define READERMODE_MAX_WIDTH_WHEN_INACTIVE 320
+enum
+{
+	SERIESMODE_MAX_WIDTH_WHEN_INACTIVE = 250,
+	READERMODE_MAX_WIDTH_WHEN_INACTIVE = 320
+};
 
 @implementation Prefs
 
