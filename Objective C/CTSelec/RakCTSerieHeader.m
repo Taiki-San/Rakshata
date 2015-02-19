@@ -41,6 +41,15 @@
 			[self addSubview:title];
 		}
 		
+		rating = [[RakStarView alloc] init: getEmtpyProject()];
+		if(rating != nil)
+		{
+			rating.wantNumber = YES;
+
+			[rating setFrameOrigin:[self ratingOrigin:frameRect]];
+			[self addSubview:rating];
+		}
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(respondToFocus:) name:SR_NOTIFICATION_FOCUS object:nil];
 	}
 	
@@ -53,8 +62,18 @@
 	if(output != nil)
 	{
 		output.font = [RakMenuText getFont : 17];
-		
 		[output sizeToFit];
+	}
+	
+	return output;
+}
+
+- (RakStarView *) craftRating : (PROJECT_DATA) project
+{
+	RakStarView * output = [[RakStarView alloc] init: project];
+	if(rating != nil)
+	{
+		output.wantNumber = YES;
 	}
 	
 	return output;
@@ -90,19 +109,36 @@
 	if(_projectHaveFocus == getIn)
 		return;
 	
-	_projectHaveFocus = getIn;
-	
 	if(_ignoreTransitionAnimation)
 	{
+		_projectHaveFocus = getIn;
 		[placeholder setFrame : [self titleFrame:_bounds : YES]];
 		[title setFrame : [self titleFrame:_bounds : NO]];
+		[rating setFrameOrigin:[self ratingOrigin:_bounds]];
 	}
 	else
 	{
+		if(getIn)
+		{
+			[CATransaction begin];
+			
+			title.alphaValue = 1;
+			[title setFrame : [self titleFrame:_bounds :NO]];
+			[rating setFrameOrigin:[self ratingOrigin:_bounds : NO : NO]];
+
+			[CATransaction commit];
+		}
+			
+		_projectHaveFocus = getIn;
+
 		[CATransaction begin];
 
 		[placeholder.animator setFrame : [self titleFrame:_bounds : YES]];
 		[title.animator setFrame : [self titleFrame:_bounds : NO]];
+		[rating.animator setFrameOrigin:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
+		
+		if(!getIn)
+			title.animator.alphaValue = 0;
 		
 		[CATransaction commit];
 	}
@@ -123,6 +159,8 @@
 	else
 		releaseCTData(project);
 	
+	[rating updateProject : project];
+
 	NSString * newName = getStringForWchar(project.projectName);
 	
 	//Animation is not required
@@ -145,6 +183,7 @@
 	
 	//We generate the new title
 	RakText * newTitle = [self craftField:PROJECT_NAME_PLACEHOLDER], * oldTitle = title;
+	RakStarView * newStars = [self craftRating:project], * oldRating = rating;
 	if(newTitle != nil)
 	{
 		CGFloat oldY = frame.origin.y;
@@ -153,18 +192,31 @@
 		[newTitle setFrame:frame];
 		[newTitle setStringValue: newName];
 		[self addSubview:newTitle];
+		
+		if(newStars != nil)
+		{
+			[newStars setFrameOrigin:NSMakePoint([self ratingOrigin:_bounds].x, frame.origin.y)];
+			
+			rating = newStars;
+			[self addSubview:newStars];
+		}
 
 		title = newTitle;
 		frame.origin.y = oldY;
 	}
-
+	
 	[NSAnimationContext beginGrouping];
 	
 	if(newTitle != nil)
 		[newTitle.animator setFrame : frame];
 	
+	if(newStars != nil)
+		[newStars.animator setFrameOrigin:[self ratingOrigin:_bounds]];
+	
 	frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
+
 	[oldTitle.animator setFrameOrigin:frame.origin];
+	[oldRating.animator setFrameOrigin:NSMakePoint(newStars.frame.origin.x, frame.origin.y)];
 	
 	[NSAnimationContext endGrouping];
 	
@@ -183,6 +235,8 @@
 		
 		[placeholder setFrame : [self titleFrame:frameRect : YES]];
 		[title setFrame : [self titleFrame:frameRect : NO]];
+		
+		[rating setFrameOrigin:[self ratingOrigin:frameRect]];
 	}
 }
 
@@ -196,6 +250,8 @@
 		
 		[placeholder.animator setFrame : [self titleFrame:frameRect : YES]];
 		[title.animator setFrame : [self titleFrame:frameRect : NO]];
+		
+		[rating.animator setFrameOrigin:[self ratingOrigin:frameRect]];
 	}
 }
 
@@ -227,6 +283,16 @@
 	}
 	
 	return frame;
+}
+
+- (NSPoint) ratingOrigin : (NSRect) frame
+{
+	return [self ratingOrigin:frame : _projectHaveFocus : NO];
+}
+
+- (NSPoint) ratingOrigin : (NSRect) frame : (BOOL) isShown : (BOOL) changingState
+{
+	return NSMakePoint(frame.size.width + (isShown ? (- 5 - rating.bounds.size.width) : (changingState ? frame.size.width : 0)), 3);
 }
 
 #pragma mark - Drawing

@@ -10,6 +10,19 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakStarView : NSImageView
+@interface RakStarView : NSView
+{
+	BOOL _wantNumber;
+	
+	PROJECT_DATA _project;
+
+	NSImageView * stars;	//NSLevelIndicator
+	RakText * number;
+}
+
+@property BOOL wantNumber;
+
+- (instancetype) init : (PROJECT_DATA) project;
+- (void) updateProject : (PROJECT_DATA) project;
 
 @end

@@ -45,14 +45,9 @@ enum
 		[self addSubview:projectName];
 	}
 	
-	stars = [[RakStarView alloc] init];//[[NSLevelIndicator alloc] initWithFrame:NSMakeRect(0, 0, 50, 9)];
+	stars = [[RakStarView alloc] init:_project];
 	if(stars != nil)
-	{
-//		[stars setNumberOfMajorTickMarks:5];
-//		stars.cell = [[NSLevelIndicatorCell alloc] initWithLevelIndicatorStyle:NSRatingLevelIndicatorStyle];
-				
 		[self addSubview:stars];
-	}
 	
 	[self initReason];
 	

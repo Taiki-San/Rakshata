@@ -21,6 +21,7 @@
 	//UI element
 	RakText * title;
 	RakText * placeholder;
+	RakStarView * rating;
 }
 
 @property BOOL ignoreTransitionAnimation;
