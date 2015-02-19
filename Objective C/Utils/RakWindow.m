@@ -122,6 +122,11 @@
 	
 }
 
+- (void) updateConstraintsIfNeeded
+{
+	
+}
+
 #pragma mark - Title management
 
 - (void) resetTitle
