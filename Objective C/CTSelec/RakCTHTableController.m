@@ -276,9 +276,9 @@
 				else
 				{
 					if(numberOfChaptersInstalled <= 1)
-						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfChapters];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfChapters, numberOfChaptersInstalled];
 					else
-						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfChapters];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfChapters, numberOfChaptersInstalled];
 				}
 			}
 			break;
@@ -301,10 +301,10 @@
 				}
 				else
 				{
-					if(numberOfChaptersInstalled <= 1)
-						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfVolumes];
+					if(numberOfVolumesInstalled <= 1)
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfVolumes, numberOfVolumesInstalled];
 					else
-						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfVolumes];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfVolumes, numberOfVolumesInstalled];
 				}
 			}
 			break;

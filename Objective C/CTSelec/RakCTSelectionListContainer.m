@@ -78,7 +78,7 @@
 - (NSString *) titleString
 {
 	
-	return [NSString localizedStringWithFormat:NSLocalizedString(_content.isTome ? @"VOLUME%c" : @"CHAPTER%c", nil), (_content.nbElem > 1 ? 's' : '\0')];
+	return [NSString stringWithFormat:NSLocalizedString(_content.isTome ? @"VOLUME%c" : @"CHAPTER%c", nil), (_content.nbElem > 1 ? 's' : '\0')];
 }
 
 #pragma mark - Properties

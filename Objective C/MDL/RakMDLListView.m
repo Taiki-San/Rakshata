@@ -104,9 +104,9 @@
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
 		if((*todoList)->identifier % 10)
-			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), (*todoList)->identifier / 10, (*todoList)->identifier % 10];
+			localized = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), (*todoList)->identifier / 10, (*todoList)->identifier % 10];
 		else
-			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), (*todoList)->identifier / 10];
+			localized = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), (*todoList)->identifier / 10];
 	}
 	else
 	{
@@ -115,7 +115,7 @@
 			localized = getStringForWchar((*todoList)->tomeName);
 		}
 		else
-			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*todoList)->identifier];
+			localized = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*todoList)->identifier];
 	}
 	
 	return [NSString stringWithFormat:@"%@ - %@", getStringForWchar((*todoList)->datas->projectName), localized];

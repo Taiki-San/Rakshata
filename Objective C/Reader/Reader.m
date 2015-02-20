@@ -542,16 +542,16 @@
 			if(tome.readingName[0])
 				string = getStringForWchar(tome.readingName);
 			else
-				string = [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), tome.readingID];
+				string = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), tome.readingID];
 		}
 		else
 		{
 			int element = project.chapitresInstalled[position];
 			
 			if(element % 10)
-				string = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), element / 10, element % 10];
+				string = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), element / 10, element % 10];
 			else
-				string = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), element / 10];
+				string = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), element / 10];
 		}
 		
 		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];
@@ -562,7 +562,7 @@
 
 - (NSString*) waitingLoginMessage
 {
-	return [NSString localizedStringWithFormat:NSLocalizedString(_isTome ? @"AUTH-REQUIRED-READER-VOL-OF-%@" : @"AUTH-REQUIRED-READER-CHAP-OF-%@", nil), getStringForWchar(_project.projectName)];
+	return [NSString stringWithFormat:NSLocalizedString(_isTome ? @"AUTH-REQUIRED-READER-VOL-OF-%@" : @"AUTH-REQUIRED-READER-CHAP-OF-%@", nil), getStringForWchar(_project.projectName)];
 }
 
 #pragma mark - Drop support

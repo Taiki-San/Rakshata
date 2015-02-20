@@ -101,19 +101,18 @@ enum
 				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUME", nil), project.nombreTomes, project.nombreChapitre];
 		}
 		
-		output = [output stringByAppendingString:current];
 	}
 	else if(project.nombreTomes)
 	{
-		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreTomes > 1 ? @"PROJ_DETAILS-%zu-VOLUMES" : @"PROJ_DETAILS-%zu-VOLUME", nil), project.nombreTomes];
-		output = [output stringByAppendingString:current];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreTomes > 1 ? @"PROJ-DETAILS-%zu-VOLUMES" : @"PROJ-DETAILS-%zu-VOLUME", nil), project.nombreTomes];
 	}
 	else if(project.nombreChapitre)
 	{
-		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreChapitre > 1 ? @"PROJ_DETAILS-%zu-CHAPTERS" : @"PROJ_DETAILS-%zu-CHAPTER", nil), project.nombreChapitre];
-		output = [output stringByAppendingString:current];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreChapitre > 1 ? @"PROJ-DETAILS-%zu-CHAPTERS" : @"PROJ-DETAILS-%zu-CHAPTER", nil), project.nombreChapitre];
 	}
 	
+	output = [output stringByAppendingString:current];
+
 	BOOL DRM = getRandom() & 1;
 	
 	if(project.isPaid)
