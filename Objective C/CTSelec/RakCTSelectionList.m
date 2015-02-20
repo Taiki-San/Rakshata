@@ -853,7 +853,7 @@
 				if(element.readingName[0])
 					output = getStringForWchar(element.readingName);
 				else
-					output = [NSString stringWithFormat:@"Tome %d", element.readingID];
+					output = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), element.readingID];
 			}
 			else if(_installedTable == NULL || !_installedTable[rowIndex])
 				output = priceString(element.price);
@@ -872,9 +872,9 @@
 			if(ID != VALEUR_FIN_STRUCT)
 			{
 				if(ID % 10)
-					output = [NSString stringWithFormat:@"Chapitre %d.%d", ID / 10, ID % 10];
+					output = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), ID / 10, ID % 10];
 				else
-					output = [NSString stringWithFormat:@"Chapitre %d", ID / 10];
+					output = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), ID / 10];
 			}
 			else
 				output = @"Error! Out of bounds D:";

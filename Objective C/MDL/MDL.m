@@ -314,12 +314,10 @@
 {
 	if(controller != NULL && controller.requestCredentials)
 	{
-		return @"Votre sélection contient des éléments payants,\nveuillez vous connecter pour lancer la transaction.";
+		return NSLocalizedString(@"MDL-LOGIN-TO-PAY", nil);
 	}
-	else
-	{
-		return @"Suite à la politique des détenteurs des droits\nd'une partie de votre sélection, vous connecter\nest requis pour démarrer le téléchargement.";
-	}
+	
+	return NSLocalizedString(@"MDL-LOGIN-TO-AUTH", nil);
 }
 
 #pragma mark - Intertab communication

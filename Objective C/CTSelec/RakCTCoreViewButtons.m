@@ -21,13 +21,13 @@
 		uint widthButton;
 		
 		[self setSegmentCount:2];
-		[self setLabel:@"Chapitres" forSegment:0];
+		[self setLabel:NSLocalizedString(@"CHAPTERS", nil) forSegment:0];
 		[self setEnabled:NO forSegment:0];
 		[self sizeToFit];
 		widthButton = self.frame.size.width - 20;
 		[self setWidth:widthButton forSegment:0];
 		
-		[self setLabel:@"Tomes" forSegment:1];
+		[self setLabel:NSLocalizedString(@"VOLUMES", nil) forSegment:1];
 		[self setEnabled:NO forSegment:1];
 		[self sizeToFit];
 		widthButton = self.frame.size.width - widthButton - 1;	//Hack to properly draw the buttons below

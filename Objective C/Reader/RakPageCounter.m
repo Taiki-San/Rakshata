@@ -215,17 +215,20 @@
 {
 	if(mainLabel != nil)
 	{
-		[mainLabel setStringValue:@"Aller à:"];
+		[mainLabel setStringValue:NSLocalizedString(@"READER-JUMP-TO", nil)];
 		[mainLabel sizeToFit];
 		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 	}
 	
 	if(gotoButtonContainer != nil)
 	{
-		RakButton * gotoButton = [RakButton allocWithText:@"Go":gotoButtonContainer.bounds];
-		[gotoButton setTarget:self];
-		[gotoButton setAction:@selector(jumpTrigered)];
-		[gotoButtonContainer addSubview:gotoButton];
+		RakButton * gotoButton = [RakButton allocWithText : NSLocalizedString(@"GO", nil) : gotoButtonContainer.bounds];
+		if(gotoButton != nil)
+		{
+			[gotoButton setTarget:self];
+			[gotoButton setAction:@selector(jumpTrigered)];
+			[gotoButtonContainer addSubview:gotoButton];
+		}
 	}
 	
 	if(textField != nil)

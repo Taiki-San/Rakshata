@@ -16,6 +16,7 @@
 #define PROJ_IMG_SUFFIX_CT		"CT"		//CT miniature in the reduced CT tab (reader mode)
 #define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
 #define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
+#define PROJ_IMG_SUFFIX_THUMB	"THUMB"		//Thumbnail in reader mode
 #define PROJ_IMG_SUFFIX_SRGRID	"GRID"		//Thumbnails in grid mode in SR
 
 enum getCopyDBCodes
@@ -78,4 +79,5 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 bool isPaidProject(PROJECT_DATA projectData);
 
 /**tagManagement.c**/
+charType * getTypeForCode(uint32_t tagID);
 charType * getTagForCode(uint tagID);

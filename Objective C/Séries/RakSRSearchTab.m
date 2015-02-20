@@ -33,7 +33,7 @@
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		self.layer.backgroundColor = [self getBackgroudColor].CGColor;
 		
-		placeholder = [[RakText alloc] initWithText:frameRect :@"Afficher les outils de recherche avancée" : [self placeholderTextColor]];
+		placeholder = [[RakText alloc] initWithText:frameRect :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
 		if(placeholder != nil)
 		{
 			placeholder.font = [self placeholderFont];

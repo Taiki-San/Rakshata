@@ -172,7 +172,7 @@
 			free(encodedHash);
 			
 			if(path != nil)
-				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_large", imageName]];
+				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_"PROJ_IMG_SUFFIX_THUMB, imageName]];
 		}
 	}
 	
@@ -268,6 +268,6 @@ NSString * priceString(uint price)
 		return [formater stringFromNumber:@(price / 100.0f)];
 	}
 	
-	return @"Gratuit";
+	return NSLocalizedString(@"FREE", nil);
 }
 

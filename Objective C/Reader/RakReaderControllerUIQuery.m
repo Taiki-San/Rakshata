@@ -50,32 +50,39 @@
 
 - (void) setupView
 {
-	NSString * string = nil, *complement = _isTome ? @"tome" : @"chapitre";
-	
-	if (_sizeArray == 1)
-		string = [NSString stringWithFormat:@" J'ai remarqué %s y a un %@\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
-	else
-		string = [NSString stringWithFormat:@" J'ai remarqué %s y a des %@s\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?", _isTome ? "\nqu'il" : "qu'il\n", complement];
+	NSString * string = NSLocalizedString(_isTome ? (_sizeArray == 1 ? @"AUTO-DL-ONE-VOL" : @"AUTO-DL-SEVERAL-VOL") : (_sizeArray == 1 ? @"AUTO-DL-ONE-CHAP" : @"AUTO-DL-SEVERAL-CHAP"), nil);
 	
 	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
-	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
-	[contentText setAlignment:NSCenterTextAlignment];
-	[contentText sizeToFit];
-	[self addSubview : contentText];
-	[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
-	
-	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : @"Oui" : @"Non"];
-	[button setTarget:self];
-	[button setAction:@selector(buttonClicked:)];
-	[self addSubview:button];
-	
-	RakButton * buttonRemind = [RakButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
-	[buttonRemind setTarget:self];
-	[buttonRemind setAction:@selector(remindSwitched:)];
-	((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
-	[((RakButtonCell*)buttonRemind.cell) reloadFontColor];
+	if(contentText != nil)
+	{
+		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+		[contentText setAlignment:NSCenterTextAlignment];
+		[contentText sizeToFit];
+		
+		[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
 
-	[self addSubview:buttonRemind];
+		[self addSubview : contentText];
+	}
+	
+	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : NSLocalizedString(@"YES", nil) : NSLocalizedString(@"NO", nil)];
+	if(button != nil)
+	{
+		[button setTarget:self];
+		[button setAction:@selector(buttonClicked:)];
+		[self addSubview:button];
+	}
+	
+	RakButton * buttonRemind = [RakButton allocWithText:NSLocalizedString(@"REMIND", nil) :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
+	if(buttonRemind != nil)
+	{
+		[buttonRemind setTarget:self];
+		[buttonRemind setAction:@selector(remindSwitched:)];
+
+		((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
+		[((RakButtonCell*)buttonRemind.cell) reloadFontColor];
+
+		[self addSubview:buttonRemind];
+	}
 }
 
 //Toolbox

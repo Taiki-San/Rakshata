@@ -33,7 +33,7 @@
 		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
 		if(requestName != nil)		{	[requestName setFrameSize:NSMakeSize(self.bounds.size.width - 50, requestName.bounds.size.height)];		[self addSubview:requestName];		}
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : @"Installation" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		[self initIcons];
@@ -99,27 +99,26 @@
 
 - (NSString *) getName
 {
-	NSString * name, *projectName = getStringForWchar((*todoList)->datas->projectName);
+	NSString * localized;
 	
 	if((*todoList)->listChapitreOfTome == NULL)
 	{
 		if((*todoList)->identifier % 10)
-			name = [NSString stringWithFormat:@"%@ chapitre %d.%d", projectName, (*todoList)->identifier / 10, (*todoList)->identifier % 10];
+			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), (*todoList)->identifier / 10, (*todoList)->identifier % 10];
 		else
-			name = [NSString stringWithFormat:@"%@ chapitre %d", projectName, (*todoList)->identifier / 10];
+			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), (*todoList)->identifier / 10];
 	}
 	else
 	{
 		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
 		{
-			NSString * tomeName = getStringForWchar((*todoList)->tomeName);
-			name = [NSString stringWithFormat:@"%@ %@", projectName, tomeName];
+			localized = getStringForWchar((*todoList)->tomeName);
 		}
 		else
-			name = [NSString stringWithFormat:@"%@ tome %d", projectName, (*todoList)->identifier];
+			localized = [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*todoList)->identifier];
 	}
 	
-	return name;
+	return [NSString stringWithFormat:@"%@ - %@", getStringForWchar((*todoList)->datas->projectName), localized];
 }
 
 - (void) setFont : (NSFont*) font

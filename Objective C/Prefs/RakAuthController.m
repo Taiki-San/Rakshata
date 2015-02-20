@@ -36,7 +36,7 @@
 	foreground = [[RakForegroundView alloc] init : [(RakAppDelegate*)[NSApp delegate] getContentView] : self.view];
 	foreground.delegate = self;
 	
-	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : @"Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!" : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
+	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
 	[footerPlaceholder sizeToFit];
 	
@@ -221,7 +221,7 @@
 {
 	if(privacy == nil)
 	{
-		privacy = [[RakTextClickable alloc] initWithText:container.bounds :@"Vos coordonnées ne seront pas, hors obligation légale, transmise à des tiers" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		privacy = [[RakTextClickable alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -232,7 +232,7 @@
 	
 	if(terms == nil)
 	{
-		terms = [[RakTextClickable alloc] initWithText:container.bounds :@"Veuillez accepter les conditions d'utilisation" :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		terms = [[RakTextClickable alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";
@@ -257,7 +257,7 @@
 	
 	if(confirm == nil)
 	{
-		confirm = [RakButton allocWithText:@"Créer un compte" : container.bounds];
+		confirm = [RakButton allocWithText:NSLocalizedString(@"AUTH-CREATE", nil) : container.bounds];
 		[confirm sizeToFit];
 		[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
 		[container addSubview:confirm];
@@ -339,7 +339,7 @@
 	
 	if(forgottenPass == nil)
 	{
-		forgottenPass = [RakButton allocWithText:@"Mot de passe oublié?" : frame];
+		forgottenPass = [RakButton allocWithText:NSLocalizedString(@"AUTH-PASS-FORGOTTEN", nil) : frame];
 		[forgottenPass sizeToFit];
 		[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
 	
@@ -350,7 +350,7 @@
 	
 	if(_login == nil)
 	{
-		_login = [RakButton allocWithText:@"Connexion" : frame];
+		_login = [RakButton allocWithText:NSLocalizedString(@"AUTH-LOGIN", nil) : frame];
 		[_login sizeToFit];
 		[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
 		[container addSubview:_login];

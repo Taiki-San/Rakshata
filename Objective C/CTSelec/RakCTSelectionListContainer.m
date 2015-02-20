@@ -49,7 +49,7 @@
 			[self addSubview:_title];
 		}
 
-		_placeholder = [[RakText alloc] initWithText: self.bounds :[NSString stringWithFormat:@"Aucun %s\ndisponible", _content.isTome ? "tome" : "chapitre"] :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		_placeholder = [[RakText alloc] initWithText: self.bounds : NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 		if(_placeholder != nil)
 		{
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS
@@ -77,7 +77,8 @@
 
 - (NSString *) titleString
 {
-	return [NSString stringWithFormat : @"%s%c", (_content.isTome ? "Tome" : "Chapitre"), (_content.nbElem > 1 ? 's' : '\0')];
+	
+	return [NSString localizedStringWithFormat:NSLocalizedString(_content.isTome ? @"VOLUME%c" : @"CHAPTER%c", nil), (_content.nbElem > 1 ? 's' : '\0')];
 }
 
 #pragma mark - Properties

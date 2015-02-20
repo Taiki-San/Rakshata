@@ -37,19 +37,29 @@
 
 - (void) setupView
 {
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :@"Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie" :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
-	[contentText setAlignment:NSCenterTextAlignment];
-	[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
-	[contentText sizeToFit];
-	[self addSubview : contentText];
-	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :NSLocalizedString(@"FAVORITE-DESCRIPTION", nil) :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
+	if(contentText != nil)
+	{
+		[contentText setAlignment:NSCenterTextAlignment];
+		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+		[contentText sizeToFit];
+		
+		[contentText setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - contentText.frame.size.width / 2 , _bounds.size.height - 10 - contentText.frame.size.height)];
+		
+		[self addSubview : contentText];
+	}
 	
-	RakButton * button = [RakButton allocWithText:@"Ok" : self.bounds];
-	[button sizeToFit];
-	[button setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
-	[button setTarget:self];
-	[button setAction:@selector(closePopover)];
-	[self addSubview:button];
+	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"OK", nil) : _bounds];
+	if(button != nil)
+	{
+		[button sizeToFit];
+		[button setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
+		
+		[button setTarget:self];
+		[button setAction:@selector(closePopover)];
+
+		[self addSubview:button];
+	}
 }
 
 - (void) configurePopover:(INPopoverController *)internalPopover

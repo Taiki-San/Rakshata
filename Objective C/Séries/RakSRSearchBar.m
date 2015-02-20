@@ -192,19 +192,19 @@
 - (NSString *) placeholderMessage
 {
 	if(_ID == SEARCH_BAR_ID_MAIN)
-		return @"Recherche et filtres";
+		return NSLocalizedString(@"PROJ-SEARCH-MAIN", nil);
 	
 	else if(_ID == SEARCH_BAR_ID_AUTHOR)
-		return @"Auteur";
+		return NSLocalizedString(@"PROJ-SEARCH-AUTHOR", nil);
 	
 	else if(_ID == SEARCH_BAR_ID_SOURCE)
-		return @"Éditeur";
+		return NSLocalizedString(@"PROJ-SEARCH-SOURCE", nil);
 	
 	else if(_ID == SEARCH_BAR_ID_TAG)
-		return @"Tags";
+		return NSLocalizedString(@"PROJ-SEARCH-TAGS", nil);
 	
 	else if(_ID == SEARCH_BAR_ID_TYPE)
-		return @"Catégories";
+		return NSLocalizedString(@"PROJ-SEARCH-TYPE", nil);
 	
 	NSLog(@"Not supported yet");
 	return @"Oops, erreur :/";

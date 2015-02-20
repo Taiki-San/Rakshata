@@ -21,13 +21,13 @@
 		_controller = controller;
 		[self setupInternal];
 		
-		headerText = [[RakMenuText alloc] initWithText:_bounds : @"Téléchargement"];
+		headerText = [[RakMenuText alloc] initWithText:_bounds : NSLocalizedString(@"MDL-TAB-TITLE", nil)];
 		if(headerText != nil)	{	[self addSubview:headerText];		}
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:_bounds] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
 		
-		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :@"Lâchez ici pour télécharger" : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
+		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:GET_COLOR_SURVOL : nil]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
 			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];

@@ -91,7 +91,7 @@
 		placeholderString = YES;
 		if(_placeholder == nil)
 		{
-			_placeholder = [[RakText alloc] initWithText:self.bounds : @"Aucun résumé disponible" : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+			_placeholder = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"CT-NO-SYNOPSIS", nil) : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 			if(_placeholder != nil)
 			{
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS

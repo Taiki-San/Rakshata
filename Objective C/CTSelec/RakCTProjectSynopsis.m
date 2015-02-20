@@ -21,7 +21,7 @@
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
 		
-		_title = [[RakMenuText alloc] initWithText : _bounds : @"Résumé"];
+		_title = [[RakMenuText alloc] initWithText : _bounds : NSLocalizedString(@"CT-SYNOPSIS", nil)];
 		if(_title != nil)
 		{
 			[_title sizeToFit];

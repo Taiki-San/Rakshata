@@ -780,12 +780,12 @@
 	if(shouldUseVols)
 	{
 		delta = project.nombreTomes - project.nombreTomesInstalled;
-		output = [NSString stringWithFormat:@"%d Tome%c", delta, delta > 1 ? 's' : '\0'];
+		output = [NSString localizedStringWithFormat:NSLocalizedString(@"%u-VOLUME%c", nil), delta, delta > 1 ? 's' : '\0'];
 	}
 	else
 	{
 		delta = project.nombreChapitre - project.nombreChapitreInstalled;
-		output = [NSString stringWithFormat:@"%d Chapitre%c", delta, delta > 1 ? 's' : '\0'];
+		output = [NSString localizedStringWithFormat:NSLocalizedString(@"%u-CHAPTER%c", nil), delta, delta > 1 ? 's' : '\0'];
 	}
 	
 	if(delta != 0)

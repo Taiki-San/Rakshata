@@ -58,7 +58,7 @@
 		[self addSubview:displayType];
 	}
 	
-	storeSwitch = [RakButton allocWithText:@"Magasin" :frame];
+	storeSwitch = [RakButton allocWithText:NSLocalizedString(@"PROJ-STORE", nil) :frame];
 	if(storeSwitch != nil)
 	{
 		[storeSwitch sizeToFit];

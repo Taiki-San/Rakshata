@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define DEFAULT_EMAIL @"exemple@email.com"
+
 @implementation RakEmailField
 
 - (instancetype) initWithFrame : (NSRect) frameRect
@@ -30,7 +32,7 @@
 		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[self setFormatter:[[RakFormatterLength alloc] init : 100]];
-		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:@"exemple@email.com" attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
+		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
 		
 		[self setDelegate:self];
 	}
@@ -40,7 +42,7 @@
 
 - (BOOL) becomeFirstResponder
 {
-	[self.cell setPlaceholderString:@"exemple@email.com"];
+	[self.cell setPlaceholderString:DEFAULT_EMAIL];
 	return [super becomeFirstResponder];
 }
 

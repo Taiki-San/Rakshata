@@ -19,11 +19,11 @@
 	{
 		[self setupInternal];
 		
-		headerText = [[RakSRHeaderText alloc] initWithText : self.bounds : @"Vos séries"];
+		headerText = [[RakSRHeaderText alloc] initWithText : _bounds : NSLocalizedString(@"YOUR-PROJECTS", nil)];
 		if(headerText != nil)
 			[self addSubview:headerText];
 		
-		compactList = [[RakSerieList alloc] init : [self getCompactListFrame : self.bounds] : mainThread == TAB_READER : state];
+		compactList = [[RakSerieList alloc] init : [self getCompactListFrame : _bounds] : mainThread == TAB_READER : state];
 		if(compactList != nil)
 			[self addSubview:[compactList getContent]];
 		

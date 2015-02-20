@@ -86,24 +86,42 @@ enum
 	
 	if(project.nombreTomes && project.nombreChapitre)
 	{
-		current = [NSString stringWithFormat:@"%zu Tome%s - %zu Chapitre%s\n", project.nombreTomes, project.nombreTomes > 1 ? "s" : "", project.nombreChapitre, project.nombreChapitre > 1 ? "s" : ""];
+		if(project.nombreChapitre > 1)
+		{
+			if(project.nombreTomes > 1)
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES", nil), project.nombreTomes, project.nombreChapitre];
+			else
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUME", nil), project.nombreTomes, project.nombreChapitre];
+		}
+		else
+		{
+			if(project.nombreTomes > 1)
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES", nil), project.nombreTomes, project.nombreChapitre];
+			else
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUME", nil), project.nombreTomes, project.nombreChapitre];
+		}
 		
 		output = [output stringByAppendingString:current];
 	}
 	else if(project.nombreTomes)
 	{
-		current = [NSString stringWithFormat:@"%zu Tome%s\n", project.nombreTomes, project.nombreTomes > 1 ? "s" : ""];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreTomes > 1 ? @"PROJ_DETAILS-%zu-VOLUMES" : @"PROJ_DETAILS-%zu-VOLUME", nil), project.nombreTomes];
 		output = [output stringByAppendingString:current];
 	}
 	else if(project.nombreChapitre)
 	{
-		current = [NSString stringWithFormat:@"%zu Chapitre%s\n", project.nombreChapitre, project.nombreChapitre > 1 ? "s" : ""];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreChapitre > 1 ? @"PROJ_DETAILS-%zu-CHAPTERS" : @"PROJ_DETAILS-%zu-CHAPTER", nil), project.nombreChapitre];
 		output = [output stringByAppendingString:current];
 	}
 	
 	BOOL DRM = getRandom() & 1;
 	
-	return [output stringByAppendingString:[NSString stringWithFormat:@"%sayant - %sDRM", project.isPaid ? "P" : "Non p", DRM ? "" : "Sans "]];
+	if(project.isPaid)
+		current = NSLocalizedString(DRM ? @"PROJ-DETAILS-PAID-DRM" : @"PROJ-DETAILS-PAID-NO-DRM" , nil);
+	else
+		current = NSLocalizedString(DRM ? @"PROJ-DETAILS-FREE-DRM" : @"PROJ-DETAILS-FREE-NO-DRM", nil);
+	
+	return [output stringByAppendingString:current];
 }
 
 - (PROJECT_DATA) project

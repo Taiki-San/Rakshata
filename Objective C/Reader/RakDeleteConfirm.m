@@ -50,12 +50,7 @@
 
 - (void) setupView
 {
-	NSString * string = nil;
-	
-	if(_isTome)
-		string = @"Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
-	else
-		string = @"Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+	NSString * string = NSLocalizedString(_isTome ? @"DELETION-VOL-CONFIRM" : @"DELETION-CHAP-CONFIRM", <#comment#>);
 	
 	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 	[contentText setAlignment:NSCenterTextAlignment];
@@ -64,12 +59,12 @@
 	[self addSubview : contentText];
 	[contentText setFrameOrigin:NSMakePoint(self.frame.size.width / 2 - contentText.frame.size.width / 2 , self.frame.size.height - 10 - contentText.frame.size.height)];
 	
-	RakDeleteSegmentedControl * button = [[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : @"Confirmer" : @"Non"];
+	RakDeleteSegmentedControl * button = [[RakDeleteSegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : NSLocalizedString(@"CONFIRM", nil) : NSLocalizedString(@"NO", nil)];
 	[button setTarget:self];
 	[button setAction:@selector(buttonClicked:)];
 	[self addSubview:button];
 	
-	RakDeleteButton * buttonRemind = [RakDeleteButton allocWithText:@"S'en souvenir" :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
+	RakDeleteButton * buttonRemind = [RakDeleteButton allocWithText:NSLocalizedString(@"REMIND", nil) :NSMakeRect(button.frame.origin.x, button.frame.origin.y - 5 - button.frame.size.height, button.frame.size.width, button.frame.size.height)];
 	[buttonRemind setTarget:self];
 	[buttonRemind setAction:@selector(remindSwitched:)];
 	

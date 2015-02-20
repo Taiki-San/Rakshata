@@ -33,21 +33,21 @@
 				case INIT_FIRST_STAGE:
 				{
 					_isRecentList = YES;
-					dataRoot = @"Consultées récemment";
+					dataRoot = NSLocalizedString(@"RECENT-OPEN", nil);
 					break;
 				}
 					
 				case INIT_SECOND_STAGE:
 				{
 					_isDLList = YES;
-					dataRoot = @"Téléchargées récemment";
+					dataRoot = NSLocalizedString(@"RECENT-DL", nil);
 					break;
 				}
 					
 				case INIT_THIRD_STAGE:
 				{
 					_isMainList = YES;
-					dataRoot = @"Liste complète";
+					dataRoot = NSLocalizedString(@"FULL-LIST", nil);
 					break;
 				}
 			}

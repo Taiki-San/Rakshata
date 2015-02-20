@@ -261,20 +261,25 @@
 		case 0:
 		{
 			if(titleColumn)
-				ret_value = [NSString stringWithFormat:@"Chapitre%c", numberOfChapters == 1 ? '\0' : 's'];
+				ret_value = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER%c", nil), numberOfChapters == 1 ? '\0' : 's'];
 			else
 			{
 				if(numberOfChapters == numberOfChaptersInstalled)
 				{
 					if(numberOfChaptersInstalled == 0)
-						ret_value = [NSString stringWithFormat:@"%d (aucun installé)", numberOfChapters];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-NO-INSTALLED", nil), numberOfChapters];
 					else if(numberOfChaptersInstalled == 1)
-						ret_value = [NSString stringWithFormat:@"%d (installé)", numberOfChapters];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-ONE-AND-INSTALLED", nil), numberOfChapters];
 					else
-						ret_value = [NSString stringWithFormat:@"%d (tous installés)", numberOfChapters];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ALL-INSTALLED", nil), numberOfChapters];
 				}
 				else
-					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfChapters, numberOfChaptersInstalled, numberOfChaptersInstalled <= 1 ? ")" : "s)"];
+				{
+					if(numberOfChaptersInstalled <= 1)
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfChapters];
+					else
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfChapters];
+				}
 			}
 			break;
 		}
@@ -288,14 +293,19 @@
 				if(numberOfVolumes == numberOfVolumesInstalled)
 				{
 					if(numberOfVolumesInstalled == 0)
-						ret_value = [NSString stringWithFormat:@"%d (aucun installé)", numberOfVolumes];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-NO-INSTALLED", nil), numberOfVolumes];
 					else if(numberOfVolumesInstalled == 1)
-						ret_value = [NSString stringWithFormat:@"%d (installé)", numberOfVolumes];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-ONE-AND-INSTALLED", nil), numberOfVolumes];
 					else
-						ret_value = [NSString stringWithFormat:@"%d (tous installés)", numberOfVolumes];
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ALL-INSTALLED", nil), numberOfVolumes];
 				}
 				else
-					ret_value = [NSString stringWithFormat:@"%d (%d installé%s", numberOfVolumes, numberOfVolumesInstalled, numberOfVolumesInstalled <= 1 ? ")" : "s)"];
+				{
+					if(numberOfChaptersInstalled <= 1)
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED", nil), numberOfVolumes];
+					else
+						ret_value = [NSString stringWithFormat:NSLocalizedString(@"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL", nil), numberOfVolumes];
+				}
 			}
 			break;
 		}
@@ -303,57 +313,44 @@
 		case 2:
 		{
 			if(titleColumn)
-				ret_value = @"Status";
+				ret_value = NSLocalizedString(@"CT-STATUS", nil);
 			else
 			{
 				if(status == STATUS_OVER)
-					ret_value = @"Terminé";
+					ret_value = NSLocalizedString(@"CT-STATUS-OVER", nil);
 				else if(status == STATUS_CANCELED)
-					ret_value = @"Annulé";
+					ret_value = NSLocalizedString(@"CT-STATUS-CANCELLED", nil);
 				else if(status == STATUS_SUSPENDED)
-					ret_value = @"En pause";
+					ret_value = NSLocalizedString(@"CT-STATUS-PAUSE", nil);
 				else if(status == STATUS_WIP)
-					ret_value = @"En cours";
+					ret_value = NSLocalizedString(@"CT-STATUS-WIP", nil);
 				else if(status == STATUS_ANOUNCED)
-					ret_value = @"Annoncé";
+					ret_value = NSLocalizedString(@"CT-STATUS-ANNOUNCED", nil);
 			}
 			break;
 		}
 		case 3:
 		{
 			if(titleColumn)
-				ret_value = @"Type";
+				ret_value = NSLocalizedString(@"CT-TYPE", nil);
 			else
-			{
-				if(type == TYPE_BD)
-					ret_value = @"Bande dessinée";
-				else if(type == TYPE_MANGA)
-					ret_value = @"Manga";
-				else if(type == TYPE_MANWA)
-					ret_value = @"Manwa";
-				else if(type == TYPE_COMIC)
-					ret_value = @"Comic";
-				else
-					ret_value = @"Inconnu";
-			}
+				ret_value = getStringForWchar(getTypeForCode(type));
 			break;
 		}
 		case 4:
 		{
 			if(titleColumn)
-				ret_value = @"Catégorie";
+				ret_value = NSLocalizedString(@"CT-TAGS", nil);
 			else
-			{
-				ret_value = @"Meeeh, later";
-			}
+				ret_value = getStringForWchar(getTagForCode(tag));
 			break;
 		}
 		case 5:
 		{
 			if(titleColumn)
-				ret_value = @"Payant";
+				ret_value = NSLocalizedString(@"CT-PAID", nil);
 			else
-				ret_value = paidContent ? @"Oui" : @"Non";
+				ret_value = paidContent ? NSLocalizedString(@"YES", nil) : NSLocalizedString(@"NO", nil);
 			
 			break;
 		}
@@ -361,9 +358,9 @@
 		case 6:
 		{
 			if(titleColumn)
-				ret_value = @"Exportable";
+				ret_value = NSLocalizedString(@"CT-NO-DRM", nil);
 			else
-				ret_value = DRM ? @"Non" : @"Oui";
+				ret_value = DRM ? NSLocalizedString(@"NO", nil) : NSLocalizedString(@"YES", nil);
 
 			break;
 		}

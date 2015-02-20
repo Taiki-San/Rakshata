@@ -542,20 +542,19 @@
 			if(tome.readingName[0])
 				string = getStringForWchar(tome.readingName);
 			else
-				string = [NSString stringWithFormat:@"Tome %d", tome.readingID];
+				string = [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), tome.readingID];
 		}
 		else
 		{
 			int element = project.chapitresInstalled[position];
 			
 			if(element % 10)
-				string = [NSString stringWithFormat:@"Chapitre %d.%d", element / 10, element % 10];
+				string = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), element / 10, element % 10];
 			else
-				string = [NSString stringWithFormat:@"Chapitre %d", element / 10];
+				string = [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), element / 10];
 		}
 		
 		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];
-		
 	}
 }
 
@@ -563,7 +562,7 @@
 
 - (NSString*) waitingLoginMessage
 {
-	return [NSString stringWithFormat:@"Suite à une demande\ndes détenteurs des droits de '%@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce %@.", getStringForWchar(_project.projectName), _isTome ? @"tome" : @"chapitre"];
+	return [NSString localizedStringWithFormat:NSLocalizedString(_isTome ? @"AUTH-REQUIRED-READER-VOL-OF-%@" : @"AUTH-REQUIRED-READER-CHAP-OF-%@", nil), getStringForWchar(_project.projectName)];
 }
 
 #pragma mark - Drop support

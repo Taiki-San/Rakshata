@@ -22,7 +22,7 @@
 	[self setMovable:YES];
 	self.movableByWindowBackground = YES;
 	
-	self.title = @"Rakshata";
+	self.title = [NSString stringWithUTF8String:PROJECT_NAME];
 	self.showsTitle = YES;
 	self.verticallyCenterTitle = YES;
 	self.centerTrafficLightButtons = YES;
@@ -131,17 +131,17 @@
 
 - (void) resetTitle
 {
-	self.title = @"Rakshata";
+	self.title = [NSString stringWithUTF8String:PROJECT_NAME];
 }
 
 - (void) setProjectTitle : (PROJECT_DATA) project
 {
-	self.title = [NSString stringWithFormat:@"Rakshata - %@", getStringForWchar(project.projectName)];
+	self.title = [NSString stringWithFormat:@"%s - %@", PROJECT_NAME, getStringForWchar(project.projectName)];
 }
 
 - (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element
 {
-	self.title = [NSString stringWithFormat:@"Rakshata - %@ - %@", getStringForWchar(project.projectName), element];
+	self.title = [NSString stringWithFormat:@"%s - %@ - %@", PROJECT_NAME, getStringForWchar(project.projectName), element];
 }
 
 #pragma mark - Delegate

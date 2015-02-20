@@ -31,7 +31,7 @@ enum
 		[self updateGradient];
 		_projectHaveFocus = NO;
 
-		placeholder = [self craftField:@"Suggestions"];
+		placeholder = [self craftField:NSLocalizedString(@"SUGGESTIONS", nil)];
 		if(placeholder != nil)
 		{
 			[placeholder setFrame:[self titleFrame : _bounds : YES]];

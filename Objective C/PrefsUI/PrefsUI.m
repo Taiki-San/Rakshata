@@ -20,7 +20,7 @@
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
-		RakButton * button = [RakButton allocWithText:@"Change UI" :NSZeroRect];
+		RakButton * button = [RakButton allocWithText:NSLocalizedString(@"PREFS-UPDATE-UI", nil) :NSZeroRect];
 		if(button)
 		{
 			[button sizeToFit];

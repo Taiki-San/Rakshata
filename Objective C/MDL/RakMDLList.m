@@ -160,15 +160,15 @@
 		int chapitre = (*dataProject)->identifier;
 		
 		if(chapitre % 10)
-			return [NSString stringWithFormat: @"Chapitre %d.%d", chapitre / 10, chapitre % 10];
-		return [NSString stringWithFormat:@"Chapitre %d", chapitre / 10];
+			return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapitre / 10, chapitre % 10];
+		return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), chapitre / 10];
 	}
 	else
 	{
 		if((*dataProject)->tomeName != NULL && (*dataProject)->tomeName[0] != 0)
 			return [NSString stringWithUTF8String: (char*) (*dataProject)->tomeName];
 		
-		return [NSString stringWithFormat:@"Tome %d", (*dataProject)->identifier];
+		return [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*dataProject)->identifier];
 	}
 }
 
