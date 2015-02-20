@@ -183,7 +183,7 @@
 		_resized = NO;
 	}
 	
-	const uint nbElem = [_manager nbElement];
+	const uint nbElem = [_manager nbActivatedElement];
 	if(!nbColumn || nbElem == 0)
 	{
 #ifdef VERBOSE_HACK

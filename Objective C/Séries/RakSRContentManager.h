@@ -46,6 +46,7 @@
 - (void) resizeAnimation : (NSRect) frame;
 
 - (uint) nbElement;
+- (uint) nbActivatedElement;
 - (PROJECT_DATA *) getDataAtIndex : (uint) index;
 
 @end

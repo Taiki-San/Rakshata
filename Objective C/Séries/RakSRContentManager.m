@@ -424,6 +424,11 @@
 	return nbElemFull;
 }
 
+- (uint) nbActivatedElement
+{
+	return nbElemActivated;
+}
+
 - (PROJECT_DATA *) getDataAtIndex : (uint) index
 {
 	if(index >= nbElemFull)
