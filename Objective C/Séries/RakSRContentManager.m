@@ -79,6 +79,8 @@
 		free(*_filteredToSorted);
 		return NO;
 	}
+	else
+		memset(*_cacheList, UINT_MAX, *_nbElemFull * sizeof(uint));
 	
 	//We look for the highest value
 	uint highestValue = *_nbElemFull;

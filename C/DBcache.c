@@ -732,12 +732,14 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 	void * newEntry[subLength];
 	bool allocFail = false;
 	
+	//If there was no repo before
 	if(oldRootData == NULL || oldData == NULL)
 	{
-		freeRootRepo(oldRootData);
-		freeRepo(oldData);
+		freeRootRepo(oldRootData);	nbRootRepo = 0;
+		freeRepo(oldData);			nbRepo = 0;
 	}
 	
+	//We get the memory to fit the previous store and the new repo
 	newRootData = malloc((nbRootRepo + 2) * sizeof(ROOT_REPO_DATA *));
 	newRootEntry = malloc(sizeof(ROOT_REPO_DATA));
 	
@@ -754,6 +756,7 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 		}
 	}
 
+	//Allocation error
 	if(newRootData == NULL || newRootEntry == NULL || newData == NULL || allocFail)
 	{
 		freeRootRepo(oldRootData);
@@ -769,11 +772,13 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 	}
 	
 	memcpy(newRootData, oldRootData, nbRootRepo * sizeof(ROOT_REPO_DATA));
+
 	memcpy(newRootEntry, newRepo, sizeof(ROOT_REPO_DATA));
 	newRootData[nbRootRepo] = newRootEntry;
 	newRootData[nbRootRepo + 1] = NULL;
 	
 	memcpy(newData, oldData, nbRepo * sizeof(REPO_DATA*));
+	
 	for(uint i = 0; i < subLength; i++)
 	{
 		memcpy(newEntry[i], &(newRepo->subRepo[i]), sizeof(REPO_DATA));
@@ -782,7 +787,7 @@ bool addRepoToDB(ROOT_REPO_DATA * newRepo)
 		
 	newData[nbRepo + subLength] = NULL;
 	
-	updateRootRepoCache(newRootData, nbRootRepo + 1);
+	updateRootRepoCache(newRootData, 1);
 	syncCacheToDisk(SYNC_REPO);
 	resetUpdateDBCache();
 	
@@ -1068,49 +1073,45 @@ void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 }
 
 //Be carefull, you can't add repo using this method, only existing repo will be updated with new root data
-void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo)
+void updateRootRepoCache(ROOT_REPO_DATA ** repoData, const uint newAmountOfRepo)
 {
 	uint lengthRepoCopy = lengthRootRepo;
 	
 	ROOT_REPO_DATA ** newReceiver;
 	
-	if(newAmountOfRepo == -1 || newAmountOfRepo == lengthRepoCopy)
+	if(newAmountOfRepo != -1)	//Resize teamList
 	{
-		newReceiver = rootRepoList;
-		newAmountOfRepo = lengthRepoCopy;
-	}
-	else	//Resize teamList
-	{
-		newReceiver = calloc(lengthRepoCopy + 1, sizeof(ROOT_REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
+		newReceiver = calloc(lengthRepoCopy + newAmountOfRepo + 1, sizeof(ROOT_REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
 		if(newReceiver == NULL)
 			return;
 		
 		memcpy(newReceiver, rootRepoList, lengthRepoCopy);
-		lengthRepoCopy = newAmountOfRepo;
 		
-		for(int pos = 0; pos < lengthRepoCopy; pos++)
+		for(uint count = 0; count < newAmountOfRepo; count++, lengthRepoCopy++)
 		{
-			if(newReceiver[pos] != NULL && repoData[pos] != NULL)
+			if(newReceiver[lengthRepoCopy] != NULL && repoData[lengthRepoCopy] != NULL)
 			{
-				memcpy(newReceiver[pos], repoData[pos], sizeof(ROOT_REPO_DATA));
-				free(repoData[pos]);
+				memcpy(newReceiver[lengthRepoCopy], repoData[lengthRepoCopy], sizeof(ROOT_REPO_DATA));
+				free(repoData[lengthRepoCopy]);
 			}
-			else if(repoData[pos] != NULL)
+			else if(repoData[lengthRepoCopy] != NULL)
 			{
-				newReceiver[pos] = repoData[pos];
+				newReceiver[lengthRepoCopy] = repoData[lengthRepoCopy];
 			}
 			else
-				newAmountOfRepo--;
+				lengthRepoCopy--;
 		}
 	}
+	else
+		newReceiver = rootRepoList;
 	
-	getRideOfDuplicateInRootRepo(newReceiver, &newAmountOfRepo);
+	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
 	if(rootRepoList != newReceiver)
 	{
 		void * buf = rootRepoList;
 		rootRepoList = newReceiver;
 		free(buf);
-		lengthRootRepo = newAmountOfRepo;
+		lengthRootRepo = lengthRepoCopy;
 	}
 	
 	//We updated the root store, we now have to update the repo store
@@ -1200,17 +1201,15 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool hav
 	}
 }
 
-void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint *nombreRepo)
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo)
 {
-	uint internalNombreRepo = *nombreRepo;
-	
 	//On va chercher des collisions
-	for(uint posBase = 0; posBase < internalNombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{
 		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
 			continue;
 		
-		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreRepo; posToCompareWith++)
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < nombreRepo; posToCompareWith++)
 		{
 			if(data[posToCompareWith] == NULL)
 				continue;
@@ -1235,10 +1234,16 @@ void freeRootRepo(ROOT_REPO_DATA ** root)
 	{
 		free(root[i]->subRepo);
 		
-		for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
+		if(root[i]->descriptions != NULL)
 		{
-			free(root[i]->descriptions[j]);
-			free(root[i]->langueDescriptions[j]);
+			for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
+				free(root[i]->descriptions[j]);
+		}
+		
+		if(root[i]->langueDescriptions != NULL)
+		{
+			for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
+				free(root[i]->langueDescriptions[j]);
 		}
 		
 		free(root[i]->descriptions);
