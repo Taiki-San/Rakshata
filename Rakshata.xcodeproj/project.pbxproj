@@ -167,7 +167,6 @@
 		B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECDF18A3001400E3B55B /* miniunz.c */; };
 		B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE318A3001400E3B55B /* unzip_mz.c */; };
 		B6F6ED1818A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE718A3001400E3B55B /* unzip.c */; };
-		B6F6ED1918A3001400E3B55B /* update.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE818A3001400E3B55B /* update.c */; };
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
 		B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */; };
 		B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */; };
@@ -466,7 +465,6 @@
 		B6F6ECE518A3001400E3B55B /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		B6F6ECE618A3001400E3B55B /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		B6F6ECE718A3001400E3B55B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = C/unzip.c; sourceTree = "<group>"; };
-		B6F6ECE818A3001400E3B55B /* update.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = update.c; path = C/update.c; sourceTree = "<group>"; };
 		B6F6ECE918A3001400E3B55B /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/utilitaires.c; sourceTree = "<group>"; };
 		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = unz_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6FB5C051A7994F100EF99E6 /* RakSRTagRail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagRail.h; path = "Séries/RakSRTagRail.h"; sourceTree = "<group>"; };
@@ -1160,7 +1158,6 @@
 				B6F6ECD918A3001400E3B55B /* translation.c */,
 				B6F6ECDA18A3001400E3B55B /* unzip */,
 				B6F6ECE718A3001400E3B55B /* unzip.c */,
-				B6F6ECE818A3001400E3B55B /* update.c */,
 				B6F6ECE918A3001400E3B55B /* utilitaires.c */,
 			);
 			name = Core;
@@ -1425,7 +1422,6 @@
 				B6F6ECF318A3001400E3B55B /* DBRefresh.c in Sources */,
 				B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */,
 				B62935D51A7E71E800DE20E2 /* DBSearch.c in Sources */,
-				B6F6ED1918A3001400E3B55B /* update.c in Sources */,
 				B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,

@@ -299,8 +299,6 @@ enum
 	//Description separator
 	if(_project.description[0])
 	{
-		NSLog(@"Description: %@", getStringForWchar(_project.description));
-		
 		frame.origin.x = 20;
 		frame.size.width = _bounds.size.width - 2 * frame.origin.x;
 		

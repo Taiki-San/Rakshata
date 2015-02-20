@@ -161,31 +161,22 @@ void setNewLangue(int newLangue);
 /**Unzip.c**/
 bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);
 
-/**Update.c**/
-void checkUpdate();
-void checkJustUpdated();
-
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, char toFind, char toPut);
-int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
-int sortTomes(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b);
-uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable);
 int positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void createPath(char *output);
 IMG_DATA* readFile(char * path);
-#define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))?1:0
+#define isHexa(caract) (((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F')) ? 1 : 0)
 #define isNbr(caract) isdigit(caract)
 #define swapValues(a, b) { uint c; c = b; b = a; a = c; }
 #define MIN(a, b) (a < b ? a : b)
 void MajToMin(char* input);
 void minToMaj(char* input);
-void unescapeLineReturn(char *input);
-uint jumpLine(char * data);
 void openOnlineHelp();
 bool isDownloadValid(char *input);
 int isJPEG(void *input);
@@ -194,5 +185,4 @@ void addToRegistry(bool firstStart);
 uint countSpaces(char * data);
 uint32_t getFileSize(const char *filename);
 uint64_t getFileSize64(const char * filename);
-void mergeSort(int * tab, size_t length);
-int removeDuplicate(int * array, int length);
+int removeDuplicate(int * array, uint length);

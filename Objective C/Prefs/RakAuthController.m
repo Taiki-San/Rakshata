@@ -353,9 +353,11 @@
 		_login = [RakButton allocWithText:NSLocalizedString(@"AUTH-LOGIN", nil) : frame];
 		[_login sizeToFit];
 		[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
-		[container addSubview:_login];
+
 		[_login setTarget:self];
 		[_login setAction:@selector(clickedLogin)];
+
+		[container addSubview:_login];
 	}
 	else
 		[_login setHidden:NO];

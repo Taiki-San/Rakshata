@@ -15,19 +15,7 @@
 
 char *loadPrefFile()
 {
-    size_t filesize;
-    char *output = NULL;
-    FILE* pref = fopen(SETTINGS_FILE, "r");
-    if(pref == NULL)
-    {
-#ifdef DEV_VERSION
-        logR("Failed at open settings");
-#endif
-        return NULL;
-    }
-    fseek(pref, 0, SEEK_END);
-    filesize = ftell(pref);
-    fclose(pref);
+	size_t filesize = getFileSize(SETTINGS_FILE);
 
     if(filesize == 0)
     {
@@ -36,23 +24,26 @@ char *loadPrefFile()
 #endif
         return NULL;
     }
-    output = calloc(filesize+10, sizeof(char));
+	
+    char * output = calloc(filesize + 10, sizeof(char));
     if(output == NULL)
-    {
         return NULL;
-    }
-    AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
 
-    if(output[0] != '<' && output[1] != '<' && output[2] != '<' && output[3] != '<')
+	AESDecrypt(SETTINGS_PASSWORD, SETTINGS_FILE, output, OUTPUT_IN_MEMORY);
+
+    if(output[0] != '<')
     {
-        logR("Incorrect settings decryption\n");
-        #ifdef DEV_VERSION
-            logR(output);
-        #endif
+        logR("Incorrect settings decryption");
+
+#ifdef DEV_VERSION
+		logR(output);
+#endif
+		
         free(output);
-        return NULL;
+		output = NULL;
     }
-    return output;
+
+	return output;
 }
 
 void addToPref(char* flag, char *stringToAdd)

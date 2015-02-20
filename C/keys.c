@@ -184,8 +184,6 @@ int earlyInit(int argc, char *argv[])
 #ifndef __APPLE__
     srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
 #endif
-    
-	checkJustUpdated();
 
     return 1;
 }

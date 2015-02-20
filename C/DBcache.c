@@ -31,7 +31,10 @@ MUTEX_VAR cacheMutex;
 //Routines génériques
 
 #ifdef DEV_VERSION
-void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)	{	fprintf(stderr, "(%d) %s\n", iErrCode, zMsg);	}
+void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)
+{
+	fprintf(stderr, "(%d) %s\n", iErrCode, zMsg);
+}
 #endif
 
 int setupBDDCache()
@@ -136,9 +139,9 @@ int setupBDDCache()
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
 		size_t decodedLength = strlen(projectDB);
 		
-		if(decodedLength > 1 && projectDB[decodedLength - 2] == '\n')	decodedLength--;
+		if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
 		
-		unsigned char * decodedProject = base64_decode(projectDB, decodedLength - 1, &decodedLength);
+		unsigned char * decodedProject = base64_decode(projectDB, decodedLength, &decodedLength);
 		PROJECT_DATA * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
 		
 		free(decodedProject);
@@ -803,9 +806,9 @@ ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 {
 	size_t length = strlen(repoDB);
 	
-	if(length > 1 && repoDB[length - 2] == '\n')	length--;
+	if(length > 1 && repoDB[length - 1] == '\n')	length--;
 	
-	char * decoded = (char*) base64_decode(repoDB, length - 1, &length);
+	char * decoded = (char*) base64_decode(repoDB, length, &length);
 	
 	ROOT_REPO_DATA ** output = parseLocalRepo(decoded, nbRepo);
 	

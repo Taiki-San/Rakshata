@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-
 void changeTo(char *string, char toFind, char toPut)
 {
     while(*string)
@@ -19,15 +18,6 @@ void changeTo(char *string, char toFind, char toPut)
             *string = toPut;
         string++;
     }
-}
-
-int sortNumbers(const void *a, const void *b)
-{
-    if(*(int*)a == VALEUR_FIN_STRUCT)
-        return 1;
-    else if(*(int*)b == VALEUR_FIN_STRUCT)
-        return -1;
-    return ( *(int*)a - *(int*)b );
 }
 
 int sortProjects(const void *a, const void *b)
@@ -42,19 +32,6 @@ int sortProjects(const void *a, const void *b)
 	else if(!strcmp(struc1->repo->URL, struc2->repo->URL))
 		return struc1->projectID - struc2->projectID;
     return wcscmp(struc1->projectName, struc2->projectName);
-}
-
-int sortTomes(const void *a, const void *b)
-{
-    const META_TOME *struc1 = a;
-    const META_TOME *struc2 = b;
-
-    if(struc1->ID == VALEUR_FIN_STRUCT)
-        return 1;
-    else if(struc2->ID == VALEUR_FIN_STRUCT)
-        return -1;
-
-    return struc1->ID - struc2->ID;
 }
 
 int sortRepo(const void *a, const void *b)
@@ -120,16 +97,6 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 		return false;
 	
 	return true;
-}
-
-uint getPosOfChar(char *input, char toFind, bool isEOFAcceptable)
-{
-	int pos;
-	for(pos = 0; input[pos] && input[pos] != toFind; pos++);
-	
-	if(isEOFAcceptable || input[pos])
-		return pos;
-	return 0;
 }
 
 int positionnementApresChar(char* input, char *stringToFind)
@@ -203,16 +170,32 @@ IMG_DATA* readFile(char * path)
 	if(output != NULL)
 	{
 		FILE* input = fopen(path, "r");
-		if(input != NULL)
+		size_t length = getFileSize(path);
+
+		if(input != NULL && length)
 		{
-			fseek(input, 0, SEEK_END);
-			size_t length = ftell(input);
 			output->data = calloc(length, sizeof(char));
+
 			if(output->data != NULL)
 			{
 				rewind(input);
 				output->length = fread(output->data, sizeof(char), length, input);
 			}
+			else
+			{
+				free(output);
+				output = NULL;
+			}
+			
+			fclose(input);
+		}
+		else
+		{
+			free(output);
+			output = NULL;
+			
+			if(input != NULL)
+				fclose(input);
 		}
 	}
 	return output;
@@ -234,32 +217,6 @@ void minToMaj(char* input)
         if(*input >= 'a' && *input <= 'z')
             *input += 'A' - 'a';
     }
-}
-
-void unescapeLineReturn(char *input)
-{
-    int i, j;
-    for(i = j = 0; input[i] != 0; i++)
-    {
-        if(input[i] != '\\' || input[i+1] != 'n')
-            input[j++] = input[i];
-        else
-        {
-            input[j++] = '\n';
-            input[j] = 0;
-            i++; //On saute le n rémanent
-        }
-    }
-    input[j] = 0;
-}
-
-uint jumpLine(char * data)
-{
-	uint pos;
-	for(pos = 0; data[pos] && data[pos] != '\n'; pos++);
-	while (data[++pos] == '\n' || data[pos] == '\r');
-
-	return pos;
 }
 
 void openOnlineHelp()
@@ -343,13 +300,6 @@ void addToRegistry(bool firstStart)
     RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
     RegCloseKey(hkey);
     free(bin);
-#else
-#ifdef __APPLE__
-	system("defaults write com.apple.LaunchServices LSHandlers -array-add \"<dict><key>LSHandlerContentTag</key>\
-	<string>rak</string><key>LSHandlerContentTagClass</key>\
-	<string>public.filename-extension</string><key>LSHandlerRoleAll</key>\
-		   <string>com.taiki.Rakshata</string></dict>\"");
-#endif
 #endif
 }
 
@@ -402,52 +352,9 @@ uint64_t getFileSize64(const char * filename)
 #endif
 }
 
-void mergeSortMerge(int * tab, int *tmp, size_t length)
-{
-    size_t pos1 = 0, pos2 = length / 2, posTmp = 0;
-
-    while(pos1 < length / 2 && pos2 < length)
-        tmp[posTmp++] = (tab[pos1] < tab[pos2]) ? tab[pos1++] : tab[pos2++];
-
-    while(pos1 < length / 2)    tmp[posTmp++] = tab[pos1++];
-    while(pos2 < length)    tmp[posTmp++] = tab[pos2++];
-
-    for(pos1 = 0; pos1 < length; pos1++)    tab[pos1] = tmp[pos1];
-}
-
-void mergeSortInternal(int *tab, int *tmp, size_t length)
-{
-    if(length < 2)
-        return;
-    else if(length == 2)
-    {
-        if(tab[0] > tab[1])
-            swapValues(tab[0], tab[1]);
-    }
-    else
-    {
-        mergeSortInternal(tab, tmp, length / 2);
-        mergeSortInternal(&tab[length/2], &tmp[length/2], length - (length / 2));
-        mergeSortMerge(tab, tmp, length);
-    }
-}
-
-/*Tri par fusion maison*/
-void mergeSort(int * tab, size_t length)
-{
-    int * tmp = malloc(length * sizeof(int));
-
-    if(tmp == NULL) return;
-
-    mergeSortInternal(tab, tmp, length);
-
-    free(tmp);
-}
-
 #if 0
-///Unused so far
 
-int removeDuplicate(int * array, int length)
+int removeDuplicate(int * array, uint length)
 {
 	int i, j, newLength = 0;
 	

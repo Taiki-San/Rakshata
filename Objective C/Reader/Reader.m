@@ -531,7 +531,7 @@
 
 - (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (uint) position
 {
-	if(self.mainThread == TAB_READER)
+	if(self.mainThread == TAB_READER && project.isInitialized)
 	{
 		NSString * string;
 		
