@@ -127,6 +127,11 @@
 	
 }
 
+- (void) _postInvalidCursorRects
+{
+	
+}
+
 #pragma mark - Title management
 
 - (void) resetTitle

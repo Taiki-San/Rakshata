@@ -143,7 +143,7 @@
 	[bottomBar favsUpdated:project.favoris];
 
 	if(shouldNotifyBottomBarInitialized)
-		[self updatePage:_data.pageCourante : _data.nombrePageTotale];
+		[self updatePage:_data.pageCourante : _data.nombrePage];
 }
 
 - (NSString *) byebye

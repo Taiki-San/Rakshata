@@ -22,7 +22,7 @@
 		[Prefs getCurrentTheme:self];	//register
 		
 		currentPage = currentPageArg+1;
-		pageMax = pageMaxArg+1;
+		pageMax = pageMaxArg;
 		_target = target;
 		
 		self.drawsBackground = YES;
@@ -141,7 +141,7 @@
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
 {
 	currentPage = newCurrentPage + 1;
-	pageMax = newPageMax + 1;
+	pageMax = newPageMax;
 	
 	[self updateContext];
 }

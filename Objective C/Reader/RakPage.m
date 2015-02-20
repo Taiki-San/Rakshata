@@ -516,18 +516,18 @@
 		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	}
 	
-	if(configFileLoader(_project, self.isTome, _currentElem, &_data))
+	if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
 	{
 		[self failure];
 		return NO;
 	}
 	
-	if(startPage < 0)
+	if(startPage < 0 || _data.nombrePage == 0)
 		_data.pageCourante = 0;
-	else if(startPage < _data.nombrePageTotale)
+	else if(startPage < _data.nombrePage)
 		_data.pageCourante = startPage;
 	else
-		_data.pageCourante = _data.nombrePageTotale;
+		_data.pageCourante = _data.nombrePage - 1;
 	
 	return YES;
 }
@@ -582,7 +582,7 @@
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
-		if(_data.pageCourante + 1 > _data.nombrePageTotale)
+		if(_data.pageCourante + 1 >= _data.nombrePage)
 		{
 			[self changeChapter : YES : YES];
 			return;
@@ -623,7 +623,7 @@
 	
 	previousMove = switchType;
 	
-	[self updatePage:_data.pageCourante : _data.nombrePageTotale];	//And we update the bar
+	[self updatePage:_data.pageCourante : _data.nombrePage];	//And we update the bar
 	
 	if(switchType == READER_ETAT_DEFAULT)
 		[self updateEvnt];
@@ -640,7 +640,7 @@
 
 - (void) jumpToPage : (uint) newPage
 {
-	if (newPage == _data.pageCourante || newPage > _data.nombrePageTotale)
+	if (newPage == _data.pageCourante || newPage >= _data.nombrePage)
 		return;
 	
 	int pageCourante = _data.pageCourante;
@@ -666,7 +666,6 @@
 		_posElemInStructure = newPosIntoStruct;
 		
 		[self updateTitleBar:_project :self.isTome :_posElemInStructure];
-		
 		[self updateCTTab];
 		
 		if((goToNext && nextDataLoaded) || (!goToNext && previousDataLoaded))
@@ -676,7 +675,7 @@
 			if(goToNext)
 			{
 				releaseDataReader(&_previousData);
-				currentPage = _data.nombrePageTotale + 2;
+				currentPage = _data.nombrePage + 1;
 
 				memcpy(&_previousData, &_data, sizeof(DATA_LECTURE));
 				previousDataLoaded = dataLoaded;
@@ -697,7 +696,7 @@
 				nextDataLoaded = dataLoaded;
 				
 				memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
-				_data.pageCourante = _data.nombrePageTotale;
+				_data.pageCourante = _data.nombrePage - 1;
 				dataLoaded = previousDataLoaded;
 				
 				previousDataLoaded = NO;
@@ -713,7 +712,7 @@
 			//We inject the page we already loaded inside mainScroller
 			NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
 			
-			[array replaceObjectAtIndex:1 withObject:currentPageView];
+			[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
 			
 			MUTEX_LOCK(cacheMutex);
 			mainScroller.arrangedObjects = array;
@@ -773,9 +772,9 @@
 	
 	if(dataLoaded)
 	{
-		if(configFileLoader(_project, self.isTome, _currentElem, &_data))
+		if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
 		{
-			_data.nombrePageTotale = 1;
+			_data.nombrePage = 1;
 			[self failure : 0 : nil];
 		}
 	}
@@ -794,7 +793,7 @@
 	
 	[array addObject:@(-1)];	//Placeholder for last page of previous chapter
 	
-	for(uint i = 0; i <= _data.nombrePageTotale; i++)
+	for(uint i = 0; i < _data.nombrePage; i++)
 		[array addObject:@(i)];
 	
 	[array addObject:@(-2)];	//Placeholder for first page of next chapter
@@ -858,7 +857,7 @@
 	else
 	{
 		_data.pageCourante = 0;
-		_data.nombrePageTotale = 1;
+		_data.nombrePage = 1;
 		[self failure : 0 : nil];
 		mainScroller.selectedIndex = 1;
 	}
@@ -951,20 +950,20 @@
 {
 	_cacheBeingBuilt = true;
 	
-	if(_data.pageCourante > _data.nombrePageTotale)	//Données hors de nos bornes
+	if(_data.pageCourante >= _data.nombrePage)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = false;
 		return;
 	}
 	
-	MUTEX_LOCK(cacheMutex);
-	
-	NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
-	
-	MUTEX_UNLOCK(cacheMutex);
-	
 	@autoreleasepool
 	{
+		MUTEX_LOCK(cacheMutex);
+		
+		NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
+		
+		MUTEX_UNLOCK(cacheMutex);
+		
 		[self _buildCache : [session unsignedIntValue] : data];
 		
 		[CATransaction begin];
@@ -989,10 +988,10 @@
 		else if([self nbEntryRemaining : data])
 		{
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
-			uint i, max = _data.nombrePageTotale;
+			uint i, max = _data.nombrePage;
 			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
-			for(i = 0; i < 5 && _data.pageCourante + i * move <= max; i++)
+			for(i = 0; i < 5 && _data.pageCourante + i * move < max; i++)
 			{
 				if(![self entryValid : data : _data.pageCourante + 1 + i * move])
 				{
@@ -1013,7 +1012,7 @@
 			
 			//We cache the previous page, in the case the user want to go back
 			//First, we check if we are in the general case
-			if(_data.pageCourante - move <= max)
+			if(_data.pageCourante - move < max)
 			{
 				if(![self entryValid : data :_data.pageCourante + 1 - move])
 				{
@@ -1028,7 +1027,7 @@
 			}
 			
 			//Ok then, we cache everythin after
-			for (i = _data.pageCourante + 1; i <= max; i++)
+			for (i = _data.pageCourante + 1; i < max; i++)
 			{
 				if(![self entryValid : data : i + 1])
 				{
@@ -1037,7 +1036,7 @@
 				}
 			}
 			
-			if(i == max + 1)	//Nothing else to load
+			if(i == max)	//Nothing else to load
 				break;
 		}
 		else
@@ -1054,19 +1053,19 @@
 	if(changeChapter(&_project, self.isTome, &nextElement, &nextElementPos, loadNext))
 	{
 		//Load next CT data
-		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || !configFileLoader(_project, self.isTome, nextElement, (loadNext ? &_nextData : &_previousData)))
+		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, (loadNext ? &_nextData : &_previousData)))
 		{
-			if(loadNext && ![self entryValid : *data : _data.nombrePageTotale + 2])
+			if(loadNext && ![self entryValid : *data : _data.nombrePage + 1])
 			{
 				nextDataLoaded = YES;
-				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePageTotale + 2 : data];
+				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePage + 1 : data];
 				
 				return YES;
 			}
 			else if(!loadNext && ![self entryValid : *data : 0])
 			{
 				previousDataLoaded = YES;
-				[self loadPageCache : _previousData.nombrePageTotale : &_previousData : currentSession : 0 : data];
+				[self loadPageCache : _previousData.nombrePage - 1 : &_previousData : currentSession : 0 : data];
 				
 				return YES;
 			}
@@ -1291,7 +1290,7 @@
 	{
 		[self changeChapter : NO : YES];
 	}
-	else if(index == _data.nombrePageTotale + 2)
+	else if(index == _data.nombrePage + 1)
 	{
 		[self changeChapter : YES : YES];
 	}

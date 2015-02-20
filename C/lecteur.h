@@ -16,7 +16,7 @@
 
 typedef struct data_lecture_tome
 {
-    uint nombrePageTotale;
+    uint nombrePage;
     uint pageCourante;
     uint *pageCouranteDuChapitre;
 
