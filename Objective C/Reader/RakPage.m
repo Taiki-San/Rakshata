@@ -1374,9 +1374,7 @@
 		}
 	}
 	
-	//We got the data, now, craft the alert. ARC will complain if we don't put it in a var...
-	RakReaderControllerUIQuery *letItRun = [RakReaderControllerUIQuery alloc];
-	letItRun = [letItRun initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
+	newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
 }
 
 #pragma mark - Quit

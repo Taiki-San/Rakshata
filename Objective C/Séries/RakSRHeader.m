@@ -51,31 +51,39 @@
 		[self addSubview:preferenceButton];
 	}
 	
+#ifdef SEVERAL_VIEWS
 	displayType = [RakButtonMorphic allocImages:@[@"grille", @"repo", @"list"] :RB_STATE_STANDARD :self :@selector(displayTypeSwitch)];
 	if(displayType != nil)
 	{
 		[displayType setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
 		[self addSubview:displayType];
 	}
+#endif
 	
 	storeSwitch = [RakButton allocWithText:NSLocalizedString(@"PROJ-STORE", nil) :frame];
 	if(storeSwitch != nil)
 	{
 		[storeSwitch sizeToFit];
-		[storeSwitch setFrameSize:NSMakeSize(storeSwitch.bounds.size.width, displayType.bounds.size.height)];
+		[storeSwitch setFrameSize:NSMakeSize(storeSwitch.bounds.size.width, preferenceButton.bounds.size.height)];
 		
 		storeSwitch.hasBorder = NO;
 		[storeSwitch setButtonType:NSOnOffButton];
 
 		[storeSwitch triggerBackground];
+#ifdef SEVERAL_VIEWS
 		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(displayType.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
-
+#else
+		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
+#endif
+		
 		[self addSubview:storeSwitch];
 		
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(storeSwitch.frame);
 	}
+#ifdef SEVERAL_VIEWS
 	else if(displayType != nil)
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(displayType.frame);
+#endif
 	else
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(preferenceButton.frame);
 	
@@ -112,7 +120,7 @@
 	{
 		dirtyRect.size.height += SRSEARCHTAB_DEFAULT_HEIGHT;
 		
-		CGFloat border = dirtyRect.size.height / 8;
+		CGFloat border = dirtyRect.size.height / 5  ;
 		
 		[[self separatorColor] setFill];
 		NSRectFill(NSMakeRect(_separatorX, border, 1, dirtyRect.size.height - 2 * border));
@@ -261,7 +269,10 @@
 	
 	if(_haveFocus)
 	{
-		displayType.hidden = tagRail.hidden = search.hidden = NO;
+#ifdef SEVERAL_VIEWS
+		displayType.hidden = NO;
+#endif
+		tagRail.hidden = search.hidden = NO;
 	}
 	else
 		backButton.hidden = NO;
@@ -270,7 +281,9 @@
 	{
 		backButton.alphaValue = !_haveFocus;
 		
+#ifdef SEVERAL_VIEWS
 		displayType.alphaValue = _haveFocus;
+#endif
 		tagRail.alphaValue = _haveFocus;
 		search.alphaValue = _haveFocus;
 	}
@@ -278,7 +291,9 @@
 	{
 		backButton.animator.alphaValue = !_haveFocus;
 		
+#ifdef SEVERAL_VIEWS
 		displayType.animator.alphaValue = _haveFocus;
+#endif
 		tagRail.animator.alphaValue = _haveFocus;
 		search.animator.alphaValue = _haveFocus;
 	}
@@ -286,7 +301,11 @@
 
 - (void) cleanupAfterFocusChange
 {
+#ifdef SEVERAL_VIEWS
 	for(NSView * view in @[backButton, displayType, tagRail, search])
+#else
+	for(NSView * view in @[backButton, tagRail, search])
+#endif
 	{
 		if(view.alphaValue == 0)
 			view.hidden = YES;
@@ -302,6 +321,7 @@
 	}
 }
 
+#ifdef SEVERAL_VIEWS
 - (void) displayTypeSwitch
 {
 	uint activeCell = displayType.activeCell = (displayType.activeCell + 1) % 3;
@@ -311,5 +331,6 @@
 		[_responder displayTypeUpdate:activeCell];
 	}
 }
+#endif
 
 @end

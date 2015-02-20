@@ -22,6 +22,7 @@
 	uint gonnaReduceTabs;
 	NSView * container;
 	RakReaderBottomBar * bottomBar;
+	RakReaderControllerUIQuery * newStuffsQuery;
 	
 	//Page management
 	RakPageScrollView * _prevScrollView;

@@ -317,11 +317,6 @@ void usstrcpy(void* output, size_t length, const void* input)
     output_char[length-1] = 0;
 }
 
-void ustrcpy(void* output, const void* input)
-{
-    usstrcpy(output, ustrlen((void*)input) + 1, input);
-}
-
 /**Différent en fonction de l'OS**/
 int rmdir (const char *filename);
 void removeFolder(char *path)
@@ -415,7 +410,6 @@ void lancementExternalBinary(char cheminDAcces[100])
     #endif
 
 	system(superTemp);
-
 #endif
 }
 

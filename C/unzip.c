@@ -48,7 +48,7 @@ static bool do_list(unzFile uf, bool *encrypted, char filenameInzip[NOMBRE_PAGE_
             break;
         }
 
-        ustrcpy(filenameInzip[i], filename);
+		usstrcpy(filenameInzip[i], ustrlen(filename) + 1, filename);
 
         if ((file_info.flag & 1) != 0) //Si chiffré
             *encrypted = true;

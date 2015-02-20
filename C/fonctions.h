@@ -94,7 +94,6 @@ int wstrcmp(const charType * a, const charType * b);
 charType * wstrdup(const charType * input);
 void wstrncpy(charType * output, size_t length, const charType * input);
 void usstrcpy(void* output, size_t length, const void* input);
-void ustrcpy(void* output, const void* input);
 
 void removeFolder(char *path);
 void ouvrirSite(char *URL);
