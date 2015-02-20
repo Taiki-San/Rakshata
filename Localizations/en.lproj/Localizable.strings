@@ -1,7 +1,122 @@
-/* 
-  Localizable.strings
-  Rakshata
+/*
+ Localizable.strings
+ Rakshata
+ 
+ Created by Taiki on 20/02/2015.
+ Copyright (c) 2015 Taiki. All rights reserved.
+ */
 
-  Created by Taiki on 20/02/2015.
-  Copyright (c) 2015 Taiki. All rights reserved.
-*/
+//Generals
+"CHAPTER%c" = "Chapter%1$c";
+"%u-CHAPTER%c" = "%1$zu Chapter%2$c";
+"CHAPTERS" = "Chapters";
+"CHAPTER-NO-CAP" = "chapter";
+"CHAPTER-%d" = "Chapter %1$d";
+"CHAPTER-%d.%d" = "Chapter %1$d.%2$d";
+
+"VOLUME%c" = "Volume%1$c";
+"%u-VOLUME%c" = "%1$zu Volume%2$c";
+"VOLUMES" = "Volumes";
+"VOLUME-NO-CAP" = "volume";
+"VOLUME-%d" = "Volume %1$d";
+
+"FREE" = "Free";
+"REMIND" = "Remind";
+"CONFIRM" = "Confirm";
+"YES" = "Yes";
+"NO" = "No";
+"OK" = "Ok";
+"GO" = "Go";
+
+//MDL
+"MDL-LOGIN-TO-PAY" = "Votre sélection contient des éléments payants,\nveuillez vous connecter pour lancer la transaction.";
+"MDL-LOGIN-TO-AUTH" = "Suite à la politique des détenteurs des droits\nd'une partie de votre sélection, vous connecter\nest requis pour démarrer le téléchargement.";
+"MDL-INSTALLING" = "Installation";
+
+"MDL-TAB-TITLE" = "Téléchargement";
+"MDL-DROP-PLACEHOLDER" = "Lâchez ici pour télécharger";
+
+//Authentification controller
+"AUTH-REQUIRED" = "Connexion requise";
+"AUTH-REQUIRED-READER-VOL-OF-%@" = "Suite à une demande\ndes détenteurs des droits de '%1$@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce tome.";
+"AUTH-REQUIRED-READER-CHAP-OF-%@" = "Suite à une demande\ndes détenteurs des droits de '%1$@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce chapitre.";
+
+"AUTH-FOOTER-PLACEHOLDER" = "Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!";
+"AUTH-PRIVACY" = "Vos coordonnées ne seront pas, hors obligation légale, transmise à des tiers";
+"AUTH-CGU" = "Please accept our terms of use";
+"AUTH-CREATE" = "Create an account";
+"AUTH-PASS-FORGOTTEN" = "Password forgotten?";
+"AUTH-LOGIN" = "Login";
+
+//Chapters related strings
+"CT-ALL-CHAPTERS" = "Intégralité des chapitres";
+"CT-NO-CHAPTER" = "No chapter\navailable";
+
+"CT-ALL-VOLUMES" = "Intégralité des tomes";
+"CT-NO-VOLUME" = "No volume\navailable";
+
+"CT-%zu-NO-INSTALLED" = "%1$zu (none installed)";
+"CT-%zu-ONLY-ONE-AND-INSTALLED" = "%1$zu (installed)";
+"CT-%zu-ONLY-%zu-INSTALLED" = "%1$zu (%2$zu installed)";
+"CT-%zu-ONLY-%zu-INSTALLED-SEVERAL" = "%1$zu (%2$zu installed)";
+"CT-%zu-ALL-INSTALLED" = "%1$zu (all installed)";
+
+"CT-STATUS" = "Status";
+"CT-STATUS-OVER" = "Over";
+"CT-STATUS-CANCELLED" = "Cancelled";
+"CT-STATUS-PAUSE" = "Paused";
+"CT-STATUS-WIP" = "In progress";
+"CT-STATUS-ANNOUNCED" = "Annonced";
+
+"CT-TYPE" = "Categories";
+"CT-TAGS" = "Tags";
+"CT-PAID" = "Paid";
+"CT-NO-DRM" = "Exportable";
+
+"CT-SYNOPSIS" = "Synopsis";
+"CT-NO-SYNOPSIS" = "No synopsis available";
+
+//Project selection strings
+"YOUR-PROJECTS" = "Your series";
+"SUGGESTIONS" = "Suggestions";
+"RECENT-OPEN" = "Consultées récemment";
+"RECENT-DL" = "Téléchargées récemment";
+"FULL-LIST" = "Full list";
+
+"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES" = "%2$zu Volumes - %1$zu Chapters\n";
+"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES" = "%2$zu Volumes - %1$zu Chapter\n";
+"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUME" = "%2$zu Volume - %1$zu Chapters\n";
+"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUME" = "%2$zu Volume - %1$zu Chapter\n";
+"PROJ-DETAILS-%zu-CHAPTER" = "%1$zu Chapiter\n";
+"PROJ-DETAILS-%zu-CHAPTERS" = "%1$zu Chapiters\n";
+"PROJ-DETAILS-%zu-VOLUME" = "%1$zu Volume\n";
+"PROJ-DETAILS-%zu-VOLUMES" = "%1$zu Volumes\n";
+"PROJ-DETAILS-FREE-NO-DRM" = "Free - No DRM";
+"PROJ-DETAILS-FREE-DRM" = "Free - DRM";
+"PROJ-DETAILS-PAID-NO-DRM" = "Paid - No DRM";
+"PROJ-DETAILS-PAID-DRM" = "Paid - DRM";
+
+"PROJ-STORE" = "Store";
+
+"PROJ-SEARCH-MAIN" = "Search and filters";
+"PROJ-SEARCH-AUTHOR" = "Author";
+"PROJ-SEARCH-SOURCE" = "Editor";
+"PROJ-SEARCH-TAGS" = "Tags";
+"PROJ-SEARCH-TYPE" = "Categories";
+
+"PROJ-EXPAND-FILTER-AREA" = "Afficher les outils de recherche avancée";
+
+//Reader utils
+"DELETION-CHAP-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+"DELETION-VOL-CONFIRM" = "Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+
+"FAVORITE-DESCRIPTION" = "Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie";
+"READER-JUMP-TO" = "Aller à:";
+
+"AUTO-DL-ONE-CHAP" = " J'ai remarqué qu'il\n y a un chapitre\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
+"AUTO-DL-SEVERAL-CHAP" = " J'ai remarqué qu'il\n y a des chapitres\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
+"AUTO-DL-ONE-VOL" = "J'ai remarqué\nqu'il y a un tome\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
+"AUTO-DL-SEVERAL-VOL" = "J'ai remarqué\nqu'il y a des tomes\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
+
+//DEV COMS, shouldn't really end up in production
+"PREFS-UPDATE-UI" = "MàJ de l'UI";
