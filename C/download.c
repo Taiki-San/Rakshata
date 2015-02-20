@@ -31,6 +31,8 @@ static void defineUserAgent(CURL *curl);
 
 void initializeDNSCache()
 {
+	curl_global_init(CURL_GLOBAL_ALL);
+	
     cacheDNS = curl_share_init();
     if(cacheDNS != NULL)
         curl_share_setopt(cacheDNS, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
@@ -45,6 +47,8 @@ void releaseDNSCache()
 {
     if(cacheDNS != NULL)
         curl_share_cleanup(cacheDNS);
+	
+	curl_global_cleanup();
 }
 
 /** Chapter download **/
@@ -350,13 +354,16 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, adresse);
-    if(POST != NULL)
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
+	
+	defineUserAgent(curl);
+	useDNSCache(curl);
+	
+	if(POST != NULL)
          curl_easy_setopt(curl, CURLOPT_POSTFIELDS, POST);
-    defineUserAgent(curl);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
-    useDNSCache(curl);
+
     if(SSL_enabled == SSL_ON)
     {
         if(!strncmp(&adresse[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&adresse[8], STORE_URL, strlen(STORE_URL))) //RSP

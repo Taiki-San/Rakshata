@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 
     int ret_value = NSApplicationMain(argc, (const char **)argv);
 
+	free(COMPTE_PRINCIPAL_MAIL);
 	flushDB();
     releaseDNSCache();
     MUTEX_DESTROY(mutex);

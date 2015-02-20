@@ -65,7 +65,7 @@ enum
 			[synopsis setAlignment:NSJustifiedTextAlignment];
 			[synopsis.cell setWraps:YES];
 			
-			[synopsis setTextColor : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+			[synopsis setTextColor : [self getSynopsisColor]];
 
 			[self addSubview:synopsis];
 		}
@@ -251,6 +251,11 @@ enum
 		return;
 	
 	infos.textColor = [self getTextColor];
+	type.textColor = [self getTagColor];
+	tag.textColor = [self getTagColor];
+	synopsis.textColor = [self getSynopsisColor];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (NSColor *) getTextColor
@@ -261,6 +266,11 @@ enum
 - (NSColor *) getTagColor
 {
 	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
+}
+
+- (NSColor *) getSynopsisColor
+{
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE : nil];
 }
 
 - (NSColor *) interTagColor
@@ -289,6 +299,8 @@ enum
 	//Description separator
 	if(_project.description[0])
 	{
+		NSLog(@"Description: %@", getStringForWchar(_project.description));
+		
 		frame.origin.x = 20;
 		frame.size.width = _bounds.size.width - 2 * frame.origin.x;
 		

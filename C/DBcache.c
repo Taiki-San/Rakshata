@@ -114,7 +114,7 @@ int setupBDDCache()
 		encodedRepo[i] = internalRepoList[i] == NULL ? NULL : getPathForRepo(internalRepoList[i]);
 	}
 	
-	getRidOfDuplicateInRepo(internalRepoList, &nombreRepo);
+	getRidOfDuplicateInRepo(internalRepoList, nombreRepo);
 	
 	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
@@ -155,18 +155,17 @@ int setupBDDCache()
 				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
-					if(!addToCache(request, projects[pos], posRepo, isInstalled(pathInstall)))
-					{
-						free(projects[pos].chapitresFull);
-						free(projects[pos].chapitresPrix);
-						freeTomeList(projects[pos].tomesFull, true);
-					}
-					else
+					if(addToCache(request, projects[pos], posRepo, isInstalled(pathInstall)))
 					{
 						projects[pos].cacheDBID = cacheID++;
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
+						continue;
 					}
 				}
+
+				free(projects[pos].chapitresFull);
+				free(projects[pos].chapitresPrix);
+				freeTomeList(projects[pos].tomesFull, true);
 			}
 			
 			flushSearchJumpTable(searchData);
@@ -266,7 +265,7 @@ void syncCacheToDisk(byte syncCode)
 			freeRepo(repoDB);
 		}
 		
-		free(projectDB);
+		freeProjectData(projectDB);
 	}
 }
 
@@ -1036,7 +1035,7 @@ void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
 		}
 	}
 	
-	getRidOfDuplicateInRepo(repoData, &lengthRepoCopy);
+	getRidOfDuplicateInRepo(repoData, lengthRepoCopy);
 	if(repoList != newReceiver)
 	{
 		void * buf = repoList;
@@ -1046,17 +1045,15 @@ void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
 	}
 }
 
-void getRidOfDuplicateInRepo(REPO_DATA ** data, uint *nombreRepo)
+void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 {
-	uint internalNombreRepo = *nombreRepo;
-	
 	//On va chercher des collisions
-	for(uint posBase = 0; posBase < internalNombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{
 		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
 			continue;
 		
-		for(uint posToCompareWith = posBase + 1; posToCompareWith < internalNombreRepo; posToCompareWith++)
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < nombreRepo; posToCompareWith++)
 		{
 			if(data[posToCompareWith] == NULL)
 				continue;
@@ -1302,7 +1299,7 @@ PROJECT_DATA * getDataFromSearch (uint IDRepo, uint projectID, bool installed)
 			output = NULL;
 		}
 		
-		if (sqlite3_step(request) == SQLITE_ROW)
+		if(sqlite3_step(request) == SQLITE_ROW)
 		{
 			free(output);
 			output = NULL;

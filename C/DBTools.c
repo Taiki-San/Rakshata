@@ -328,11 +328,11 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 				
 				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
 				updateProjectSearch(searchData, newData[posNew]);
-				
-				free(newData[posNew].chapitresFull);	//updateCache en fait une copie
-				free(newData[posNew].chapitresPrix);
-				freeTomeList(newData[posNew].tomesFull, true);
 			}
+
+			free(newData[posNew].chapitresFull);	//updateCache en fait une copie
+			free(newData[posNew].chapitresPrix);
+			freeTomeList(newData[posNew].tomesFull, true);
 			
 			posOld++;
 			posNew++;
