@@ -12,7 +12,7 @@
 
 @interface RakContextRestoration : NSObject
 
-+ (void) saveContext : (NSString *) contextSerie : (NSString *) contextCT : (NSString *) contextReader : (NSString *) contextMDL;
++ (void) saveContextPrefs : (NSString *) contextPrefs  series: (NSString *) contextSerie CT: (NSString *) contextCT reader: (NSString *) contextReader MDL: (NSString *) contextMDL;
 + (NSArray *) newContext;
 
 @end

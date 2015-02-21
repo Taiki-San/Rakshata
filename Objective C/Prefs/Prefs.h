@@ -122,8 +122,8 @@ enum FONT_REQUEST {
 @property uint themeCode;
 
 + (void) initCache;
-+ (void) rebuildCache;
-+ (void) syncCacheToDisk;
++ (void) initCache : (NSString *) data;
++ (NSString *) dumpPrefs;
 
 + (uint) getCurrentTheme : (id) registerForChanges;
 + (void) deRegisterForChanges : (id) object;
@@ -143,8 +143,8 @@ enum FONT_REQUEST {
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;
 
 //Not public, only called by subprefs
-- (id) init;
-- (char*) dumpPrefs;
+- (id) init : (NSString *) data;
+- (NSString*) dumpPrefs;
 - (void) refreshFirstResponder;
 - (void) flushMemory : (bool) memoryError;
 - (NSArray *) setupExecuteConsistencyChecks : (uint8) request;

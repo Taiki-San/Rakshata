@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7515.2" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7515.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -17,13 +17,20 @@
                 <menuItem title="Rakshata" id="Hri-sJ-p8T">
                     <menu key="submenu" title="Rakshata" systemMenu="apple" id="dpW-Qr-oG6">
                         <items>
-                            <menuItem title="About Rakshata" id="alb-cC-NkW">
+                            <menuItem title="About Rakshata" id="led-o6-fnq" userLabel="About Rakshata">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="orderFrontStandardAboutPanel:" target="-1" id="pOu-Tu-Thr"/>
+                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NdE-UH-XwG">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Preferences…" keyEquivalent="," id="NfC-pn-vLp"/>
+                            <menuItem title="Preferences…" keyEquivalent="," id="NfC-pn-vLp">
+                                <connections>
+                                    <action selector="openPreferenceWindow:" target="494" id="W5E-9c-w0Y"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="vk9-Dz-qa9">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
@@ -33,11 +40,23 @@
                             <menuItem isSeparatorItem="YES" id="GK4-SD-uU8">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Hide Rakshata" keyEquivalent="h" id="PP1-lM-wFQ"/>
-                            <menuItem title="Hide Others" keyEquivalent="h" id="Zps-kV-acr">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                            <menuItem title="Hide Rakshata" keyEquivalent="h" id="xei-mZ-s9Q">
+                                <connections>
+                                    <action selector="hide:" target="-1" id="5qw-9Q-ISi"/>
+                                </connections>
                             </menuItem>
-                            <menuItem title="Show All" id="bu8-Zr-fPB"/>
+                            <menuItem title="Hide Others" keyEquivalent="h" id="fuP-2k-SkB">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hideOtherApplications:" target="-1" id="DjN-gp-LUB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show All" id="Bor-Qc-XBs">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="unhideAllApplications:" target="-1" id="raX-62-6uB"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="jvg-Kz-6JP">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
@@ -49,14 +68,55 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Debug" id="cOA-09-KIj">
+                <menuItem title="Window" id="04p-Ar-WHc">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Debug" id="Ktg-5O-tvn">
+                    <menu key="submenu" title="Window" systemMenu="window" id="iO1-m9-I20">
                         <items>
-                            <menuItem title="Reload from remote" id="xND-c1-Cwr">
+                            <menuItem title="Minimize" keyEquivalent="m" id="vWB-a6-P6Y">
+                                <connections>
+                                    <action selector="performMiniaturize:" target="-1" id="OKY-v0-DgO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom" id="619-0e-Kvx">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="reloadFromRemote:" target="494" id="H38-IK-Nh1"/>
+                                    <action selector="performZoom:" target="-1" id="Tkb-UO-BMg"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="PH4-s9-UiY"/>
+                            <menuItem title="Série" keyEquivalent="1" id="xND-c1-Cwr">
+                                <connections>
+                                    <action selector="jumpToSeries:" target="494" id="iwk-wb-Il7"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Chapitres et tomes" keyEquivalent="2" id="MKm-XU-UsC">
+                                <connections>
+                                    <action selector="jumpToCT:" target="494" id="lPe-Il-Aue"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Lecteur" keyEquivalent="3" id="SEh-wr-8cr">
+                                <connections>
+                                    <action selector="jumpToReader:" target="494" id="ugY-6c-7HB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="XXe-1Y-hwU"/>
+                            <menuItem title="Bring All to Front" id="hoH-Ma-NDS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="arrangeInFront:" target="-1" id="NEy-2M-PD8"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Debug" id="RcL-kR-KFp">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Debug" id="1jt-hw-f98">
+                        <items>
+                            <menuItem title="Reload from remote" id="YA7-9I-tsi">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="reloadFromRemote:" target="494" id="erD-lc-TTo"/>
                                 </connections>
                             </menuItem>
                         </items>

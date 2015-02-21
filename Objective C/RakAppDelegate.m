@@ -38,13 +38,13 @@
 	self.window.defaultDispatcher = contentView;
 	[self.window makeFirstResponder:contentView];
 	
-	[Prefs initCache];
 	NSArray *context = [RakContextRestoration newContext];
-	
-	tabSerie = [tabSerie init:contentView : [context objectAtIndex:0]];
-	tabCT = [tabCT init:contentView : [context objectAtIndex:1]];
+
+	[Prefs initCache:[context objectAtIndex:0]];
+	tabSerie = [tabSerie init:contentView : [context objectAtIndex:1]];
+	tabCT = [tabCT init:contentView : [context objectAtIndex:2]];
 	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
-	tabReader = [tabReader init:contentView : [context objectAtIndex:2]];
+	tabReader = [tabReader init:contentView : [context objectAtIndex:4]];
 }
 
 - (RakContentView*) getContentView
@@ -127,11 +127,21 @@
 	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];		tabReader = nil;
 	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
 	
-	[RakContextRestoration saveContext: saveSerie : saveCT : saveReader : saveMDL];
+	[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
+									 series:saveSerie
+										 CT:saveCT
+									 reader:saveReader
+										MDL:saveMDL];
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
 {
+	return YES;
+}
+
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+	NSLog(@"%s", (const char*) [[NSData dataWithContentsOfFile:filename] bytes]);
 	return YES;
 }
 
@@ -150,6 +160,40 @@
 }
 
 #pragma mark - Menu interface
+
+#pragma mark Entryp point for about and preference windows
+
+- (void)orderFrontStandardAboutPanel:(id)sender
+{
+	
+}
+
+- (void)orderFrontStandardAboutPanelWithOptions:(NSDictionary *)optionsDictionary
+{
+	[self orderFrontStandardAboutPanel:self];
+}
+
+- (IBAction) openPreferenceWindow : (id) sender
+{
+	
+}
+
+#pragma mark Panneau
+
+- (IBAction)jumpToSeries:(id)sender
+{
+	[tabSerie ownFocus];
+}
+
+- (IBAction)jumpToCT:(id)sender
+{
+	[tabCT ownFocus];
+}
+
+- (IBAction)jumpToReader:(id)sender
+{
+	[tabReader ownFocus];
+}
 
 #pragma mark Debug
 

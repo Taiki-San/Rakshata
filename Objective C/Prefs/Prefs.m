@@ -12,9 +12,11 @@
 
 __strong Prefs* prefsCache;
 
+#define MAX_THEME_ID 2
+
 // Contexte
-static uint mainThread = TAB_SERIES;				//Default : TAB_SERIES
-static uint stateTabsReader = STATE_READER_TAB_DEFAULT;	//Default : STATE_READER_TAB_DEFAULT
+static uint mainThread = TAB_SERIES;
+static uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 
 enum
 {
@@ -26,23 +28,24 @@ enum
 
 + (void) initCache
 {
-	prefsCache = [[Prefs alloc] init];
+	[self initCache:nil];
+}
+
++ (void) initCache : (NSString *) data
+{
+	if(prefsCache == nil)
+		prefsCache = [[Prefs alloc] init : data];
+
+	else if(data != nil)
+		[prefsCache updateContext:data];
 
 	//We'll have to cache the old encrypted prefs /!\ prefs de crypto à protéger!!!
 	//Also, need to get the open prefs including tabs size, theme and various stuffs
 }
 
-+ (void) rebuildCache
++ (NSString *) dumpPrefs
 {
-	
-}
-
-+ (void) syncCacheToDisk
-{
-	if(prefsCache != nil)
-	{
-		[prefsCache dumpPrefs];
-	}
+	return prefsCache != nil ? [prefsCache dumpPrefs] : nil;
 }
 
 + (uint) getCurrentTheme : (id) registerForChanges
@@ -948,15 +951,18 @@ enum
 
 char * loadPref(char request[3], unsigned int length, char defaultChar);
 
-- (id) init
+- (id) init : (NSString *) data
 {
 	self = [super init];
 	if(self != nil)
 	{
-		self.themeCode = 1;
-		
+		if(data == nil)
+			self.themeCode = 1;
+		else
+			[self updateContext:data];
+
 		uint expectedSize[] = { [RakSizeSeries getExpectedBufferSizeVirtual], [RakSizeCT getExpectedBufferSizeVirtual], [RakSizeReader getExpectedBufferSizeVirtual], [RakMDLSize getExpectedBufferSizeVirtual] };
-		int bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
+		uint bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
 		char *input = loadPref("si", bufferSize, 'f'), recoveryBuffer[bufferSize];
 
 		if(input == NULL)
@@ -984,19 +990,53 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			[self flushMemory:YES];
 		
 		prefsPosMDL = [prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
+
+		if(input != recoveryBuffer)
+			free(input);
 		
 		RakAppDelegate * core = [NSApp delegate];
 		if([core class] == [RakAppDelegate class])
 			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
 
 		[self refreshFirstResponder];
-	
-		if(input != recoveryBuffer)
-			free(input);
 	}
 	return self;
 }
 
+- (void) updateContext : (NSString *) data
+{
+	NSArray *componentsWithSpaces = [data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+	NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+	
+	uint pos = 0;
+	int value;
+	
+	for(NSString * element in dataState)
+	{
+		value = [element intValue];
+		
+		if(!value)
+			continue;
+		
+		if(pos == 0)
+		{
+			if(value == TAB_SERIES || value == TAB_CT || value == TAB_READER)
+				mainThread = value;
+		}
+		else if(pos == 1)
+		{
+			if(value > 0 && value <= MAX_THEME_ID)
+				_themeCode = value;
+		}
+		else
+			break;
+		
+		pos++;
+	}
+
+}
+
+#ifdef MUTABLE_SIZING
 - (char*) dumpPrefs
 {
 	char *output = NULL;
@@ -1013,6 +1053,12 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	}
 	
 	return output;
+}
+#endif
+
+- (NSString *) dumpPrefs
+{
+	return [NSString stringWithFormat:@"%d\n%d", mainThread, _themeCode];
 }
 
 - (void) refreshFirstResponder
@@ -1055,3 +1101,67 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 }
 
 @end
+
+char * loadPref(char request[3], unsigned int length, char defaultChar)
+{
+#ifdef MUTABLE_SIZING
+	char * output = calloc(length, sizeof(char));
+	if(output != NULL)
+	{
+		FILE* prefs = fopen("prefs.txt", "r");
+		
+		if(prefs != NULL)
+		{
+			bool isWritting = false;
+			char c, count = 0;
+			unsigned int pos = 0;
+			
+			while((c = fgetc(prefs)) != EOF)
+			{
+				if(!isWritting)
+				{
+					if(count == 0 && c == '<')
+						count++;
+					else if(count == 1 && c == request[0])
+						count++;
+					else if(count == 2 && c == request[1])
+						count++;
+					else if(count == 3 && c == '>')
+					{
+						count = 0;
+						isWritting = true;
+					}
+					else
+						count = 0;
+				}
+				else
+				{
+					if(pos >= length)
+						break;
+					else if(isHexa(c))
+						output[pos++] = c;
+					else if(count == 0 && c == '<')
+						count++;
+					else if(count == 1 && c == '/')
+						count++;
+					else if(count == 2 && c == request[0])
+						count++;
+					else if(count == 3 && c == request[1])
+						count++;
+					else if(count == 4 && c == '>')	//Parsing over, on quitte
+						break;
+					else
+						count = 0;
+				}
+			}
+			
+			fclose(prefs);
+		}
+		
+		for(int pos = 0; pos < length; output[pos++] = defaultChar);	//On remplit la fin
+	}
+	return output;
+#else
+	return NULL;
+#endif
+}

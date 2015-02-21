@@ -10,45 +10,40 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define NB_CONTEXT 5
+
 @implementation RakContextRestoration
 
-+ (void) saveContext : (NSString *) contextSerie : (NSString *) contextCT : (NSString *) contextReader : (NSString *) contextMDL
++ (void) saveContextPrefs : (NSString *) contextPrefs  series: (NSString *) contextSerie CT: (NSString *) contextCT reader: (NSString *) contextReader MDL: (NSString *) contextMDL
 {
 	FILE * output = fopen("context.dat.new", "w+");
 	
 	if(output == NULL)
 		return;
-	
-	NSString * chain[] = {contextSerie, contextCT, contextReader, contextMDL};
-	const char * intermediaryBuffer;
-	char* stringOutput;
-	size_t length;
-	
-	for(byte i = 0; i < 4; i++)
+
+	byte pos = 0;
+	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL, contextReader])
 	{
-		if(chain[i] == nil)
-			chain[i] = STATE_EMPTY;
+		const char * intermediaryBuffer = [(element != nil ? element : STATE_EMPTY) UTF8String];
+		size_t length = strlen(intermediaryBuffer);
 		
-		intermediaryBuffer = [chain[i] UTF8String];
-		length = strlen(intermediaryBuffer);
-		
-		stringOutput = malloc(length * 2 + 1);
+		char * stringOutput = malloc(length * 2 + 1);
 		
 		if (stringOutput == NULL)
 		{
-			memoryError(length + 1);
+			memoryError(2 * length + 1);
 			fclose(output);
 			remove("context.dat.new");
 			return;
 		}
 		
 		decToHex((const unsigned char*) intermediaryBuffer, length, stringOutput);
-		
 		stringOutput[length*2] = 0;
 		
 		fputs(stringOutput, output);
+		free(stringOutput);
 		
-		if(i < 3)
+		if(pos++ < NB_CONTEXT - 1)
 			fputc(' ', output);
 	}
 	
@@ -67,17 +62,17 @@
 	NSArray *componentsWithSpaces = [fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	NSArray *data = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 	
-	char count;
-	if([data count] >= 4)
-		count = 4;
+	byte count, pos = 0;
+	if([data count] >= NB_CONTEXT)
+		count = NB_CONTEXT;
 	else
 		count = [data count];
 	
 	NSString * buffer;
 	const char *bufferC;
-	NSString *output[4] = {@"", @"", @"", @""};
+	NSMutableArray * output = [NSMutableArray arrayWithCapacity:5];
 	
-	for (char pos = 0; pos < count; pos++)
+	while(pos < count)
 	{
 		buffer = [data objectAtIndex:pos];
 		
@@ -98,10 +93,13 @@
 		
 		decodedString[sizeof(decodedString) - 1] = 0;
 		
-		output[pos] = [NSString stringWithFormat:@"%s", decodedString];
+		output[pos++] = [NSString stringWithUTF8String: (const char*) decodedString];
 	}
 	
-	return [[NSArray alloc] initWithObjects:output count:4];
+	while(pos < NB_CONTEXT)
+		output[pos++] = @"";
+	
+	return [NSArray arrayWithArray:output];
 }
 
 @end
