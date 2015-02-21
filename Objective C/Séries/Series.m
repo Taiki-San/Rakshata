@@ -44,7 +44,6 @@
 	header = [[RakSRHeader alloc] initWithFrame:frame : self.mainThread == TAB_SERIES];
 	if(header != nil)
 	{
-		header.responder = self;
 		[self addSubview:header];
 		
 		searchTab = [[RakSRSearchTab alloc] initWithFrame: [self getSearchTabFrame : header.bounds.size]];
@@ -125,18 +124,6 @@
 	[header cleanupAfterFocusChange];
 	[coreView cleanupFocusViewChange];
 	[super refreshDataAfterAnimation];
-}
-
-- (void) displayTypeUpdate : (uint) activeCell
-{
-	if(activeCell == SR_CELLTYPE_GRID)
-		NSLog(@"Would update to grid");
-	else if(activeCell == SR_CELLTYPE_REPO)
-		NSLog(@"Would update to repo view");
-	else if(activeCell == SR_CELLTYPE_LIST)
-		NSLog(@"Would update to list");
-	else
-		NSLog(@"Would fail to update");
 }
 
 #pragma mark - RakTabView routines

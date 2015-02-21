@@ -40,7 +40,6 @@
 	CGFloat _separatorX;
 }
 
-@property (weak) Series * responder;
 @property CGFloat height;
 @property BOOL prefUIOpen;
 

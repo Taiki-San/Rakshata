@@ -133,8 +133,7 @@
 
 - (void) backButtonClicked
 {
-	noDrag = true;
-	[self mouseUp:NULL];
+	[self ownFocus];
 }
 
 - (int) getCodePref : (int) request
@@ -426,10 +425,9 @@
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 
 			//Oh, we got selected then, awesome :)
-			else if(self.mainThread & TAB_SERIES)
+			else if(self.mainThread == TAB_SERIES)
 			{
-				[self mouseDown:nil];
-				[self mouseUp:nil];
+				[self ownFocus];
 			}
 		}
 	}

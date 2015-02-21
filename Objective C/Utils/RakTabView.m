@@ -38,7 +38,8 @@
 		
 		[self endOfInitialization];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:@"RakNotificationContextUpdated" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
 		
 		//Drag'n drop support
 		[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
@@ -91,9 +92,14 @@
 	//Ladies and gentlemen, your eyes are about to burn
 	
 	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[NSData alloc] initWithBytes:&project length:sizeof(project)], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"RakNotificationContextUpdated" object:sender userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_UPDATE_TAB_CONTENT object:sender userInfo:userInfo];
 	
 	return YES;
+}
+
++ (void) broadcastUpdateFocus : (uint) newFocus
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_UPDATE_TAB_FOCUS object:@(newFocus)];
 }
 
 - (void) contextChanged : (NSNotification*) notification
@@ -127,6 +133,23 @@
 		
 		[self updateContextNotification : project : isTome : element];
 	}
+}
+
+- (void) changeFocusNotification : (NSNotification *) notification
+{
+	if(notification == nil || notification.object == nil || ![notification.object isKindOfClass:[NSNumber class]])
+		return;
+	
+	uint newTab = [notification.object unsignedIntValue];
+	
+	if(newTab == flag)
+		[self ownFocus];
+}
+
+- (void) ownFocus
+{
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (int) element
@@ -398,8 +421,8 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-	if(canDeploy && noDrag && [Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
-		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
+	if(canDeploy && noDrag)
+		[self ownFocus];
 }
 
 - (void) mouseEntered:(NSEvent *)theEvent

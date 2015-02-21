@@ -507,8 +507,7 @@
 {
 	if(element != VALEUR_FIN_STRUCT)
 	{
-		[super mouseDown:NULL];
-		[super mouseUp:NULL];
+		[self ownFocus];
 		[self startReading : project : element : isTome : -1];
 	}
 }

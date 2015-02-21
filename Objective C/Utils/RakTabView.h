@@ -14,6 +14,9 @@
 
 #define STATE_EMPTY @"Luna is bored"
 
+#define NOTIFICATION_UPDATE_TAB_FOCUS	@"RakTabUpdateFocusNotification"
+#define NOTIFICATION_UPDATE_TAB_CONTENT	@"RakTabUpdateContentNotification"
+
 enum {
     REFRESHVIEWS_CHANGE_MT,
     REFRESHVIEWS_CHANGE_READER_TAB,
@@ -49,7 +52,9 @@ enum {
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
++ (void) broadcastUpdateFocus : (uint) newFocus;
 - (void) contextChanged : (NSNotification*) notification;
+- (void) ownFocus;
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
 
 - (NSColor*) getMainColor;

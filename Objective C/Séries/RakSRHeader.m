@@ -20,7 +20,6 @@
 	
 	if(self != nil)
 	{
-		_responder = nil;
 		_prefUIOpen = NO;
 		_haveFocus = haveFocus;
 		_height = _bounds.size.height;
@@ -314,11 +313,7 @@
 
 - (void) backButtonClicked
 {
-	if(_responder != nil)
-	{
-		[_responder mouseDown:nil];
-		[_responder mouseUp:nil];
-	}
+	[RakTabView broadcastUpdateFocus : TAB_SERIES];
 }
 
 #ifdef SEVERAL_VIEWS
@@ -326,10 +321,14 @@
 {
 	uint activeCell = displayType.activeCell = (displayType.activeCell + 1) % 3;
 	
-	if(_responder != nil)
-	{
-		[_responder displayTypeUpdate:activeCell];
-	}
+	if(activeCell == SR_CELLTYPE_GRID)
+		NSLog(@"Would update to grid");
+	else if(activeCell == SR_CELLTYPE_REPO)
+		NSLog(@"Would update to repo view");
+	else if(activeCell == SR_CELLTYPE_LIST)
+		NSLog(@"Would update to list");
+	else
+		NSLog(@"Would fail to update");
 }
 #endif
 
