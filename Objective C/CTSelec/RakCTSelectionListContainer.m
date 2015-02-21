@@ -66,7 +66,7 @@
 		_placeholder.alphaValue = _placeholderActive;			[_placeholder setHidden : !_placeholderActive];
 		
 		[content setFrame:[self frameForContent : self.bounds]];
-		[_placeholder setFrameOrigin : NSCenteredRect(content.frame, _placeholder.bounds)];
+		[_placeholder setFrameOrigin : NSCenterPoint(content.frame, _placeholder.bounds)];
 		
 		if(self.compactMode)
 			[_title setHidden:YES];

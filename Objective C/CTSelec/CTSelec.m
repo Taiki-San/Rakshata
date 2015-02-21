@@ -73,6 +73,12 @@
 	SRHeader = [[RakCTSerieHeader alloc] initWithFrame:[self headerFrame : _bounds]];
 	if(SRHeader != nil)
 	{
+		if(self.mainThread != TAB_SERIES)
+		{
+			SRHeader.alphaValue = 0;
+			SRHeader.hidden = YES;
+		}
+		
 		[self addSubview:SRHeader];
 	}
 }

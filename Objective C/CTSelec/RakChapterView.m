@@ -19,6 +19,8 @@
 	{
 		[self setupInternal];
 		
+		[self initCTView : project : mainThread == TAB_CT];
+		
 		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : _bounds : (header != nil ? header.bounds.size.height : 0) : context : mainThread];
 		if(coreview != nil)
 		{
@@ -32,7 +34,6 @@
 		}
 
 		[self initSerieView : project : mainThread == TAB_SERIES];
-		[self initCTView : project : mainThread == TAB_CT];
 		[self initReaderView : project : mainThread == TAB_READER];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(respondToSRFocus:) name:SR_NOTIFICATION_FOCUS object:nil];

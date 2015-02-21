@@ -75,6 +75,12 @@
 		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
 #endif
 		
+		if(!_haveFocus)
+		{
+			storeSwitch.hidden = YES;
+			storeSwitch.alphaValue = 0;
+		}
+		
 		[self addSubview:storeSwitch];
 		
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(storeSwitch.frame);
@@ -91,12 +97,23 @@
 	tagRail = [[RakSRTagRail alloc] initWithFrame: [self railFrame:frame] : searchButtonFrame.origin.x];
 	if(tagRail != nil)
 	{
+		if(!_haveFocus)
+		{
+			tagRail.hidden = YES;
+			tagRail.alphaValue = 0;
+		}
+
 		[self addSubview:tagRail];
 	}
 	
 	search = [[RakSRSearchBar alloc] initWithFrame:searchButtonFrame : SEARCH_BAR_ID_MAIN];
 	if(search != nil)
 	{
+		if(!_haveFocus)
+		{
+			search.hidden = YES;
+			search.alphaValue = 0;
+		}
 		[self addSubview:search];
 	}
 	
@@ -271,7 +288,7 @@
 #ifdef SEVERAL_VIEWS
 		displayType.hidden = NO;
 #endif
-		tagRail.hidden = search.hidden = NO;
+		tagRail.hidden = search.hidden = storeSwitch.hidden = NO;
 	}
 	else
 		backButton.hidden = NO;
@@ -283,6 +300,7 @@
 #ifdef SEVERAL_VIEWS
 		displayType.alphaValue = _haveFocus;
 #endif
+		storeSwitch.alphaValue = _haveFocus;
 		tagRail.alphaValue = _haveFocus;
 		search.alphaValue = _haveFocus;
 	}
@@ -293,6 +311,7 @@
 #ifdef SEVERAL_VIEWS
 		displayType.animator.alphaValue = _haveFocus;
 #endif
+		storeSwitch.animator.alphaValue = _haveFocus;
 		tagRail.animator.alphaValue = _haveFocus;
 		search.animator.alphaValue = _haveFocus;
 	}

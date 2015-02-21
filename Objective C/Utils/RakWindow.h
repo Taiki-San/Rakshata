@@ -11,9 +11,8 @@
  *********************************************************************************************/
 
 @interface RakWindow : INAppStoreWindow
-{
-	NSPoint initialLocation;
-}
+
+@property BOOL isMain;
 
 //Event data
 @property BOOL shiftPressed;

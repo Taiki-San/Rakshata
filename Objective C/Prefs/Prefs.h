@@ -124,6 +124,7 @@ enum FONT_REQUEST {
 + (void) initCache;
 + (void) initCache : (NSString *) data;
 + (NSString *) dumpPrefs;
++ (void) deletePrefs;
 
 + (uint) getCurrentTheme : (id) registerForChanges;
 + (void) deRegisterForChanges : (id) object;

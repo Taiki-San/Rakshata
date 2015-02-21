@@ -48,6 +48,11 @@ enum
 	return prefsCache != nil ? [prefsCache dumpPrefs] : nil;
 }
 
++ (void) deletePrefs
+{
+	prefsCache = nil;
+}
+
 + (uint) getCurrentTheme : (id) registerForChanges
 {
 	if(prefsCache == nil)

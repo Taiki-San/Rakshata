@@ -22,7 +22,7 @@
 		return;
 
 	byte pos = 0;
-	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL, contextReader])
+	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL , contextReader])
 	{
 		const char * intermediaryBuffer = [(element != nil ? element : STATE_EMPTY) UTF8String];
 		size_t length = strlen(intermediaryBuffer);

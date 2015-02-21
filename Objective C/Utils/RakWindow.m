@@ -77,7 +77,7 @@
 	return (self.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask;
 }
 
-- (void)sendEvent:(NSEvent *)event
+- (void) sendEvent:(NSEvent *)event
 {
 	if(!self.fullscreen)
 	{
@@ -91,8 +91,11 @@
 		{
 			NSString * character = [event charactersIgnoringModifiers];
 
-            if ([character isEqualToString:@"f"])
-			    [self toggleFullScreen:self];
+			if(_isMain)
+			{
+				if ([character isEqualToString:@"f"])
+					[self toggleFullScreen:self];
+			}
 		}
 	}
 	
