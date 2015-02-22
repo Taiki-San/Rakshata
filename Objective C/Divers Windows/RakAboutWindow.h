@@ -10,35 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakAboutWindow;
-
-@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
+@interface RakAboutWindow : NSObject <NSWindowDelegate>
 {
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
-	
-	RakAboutWindow * aboutWindow;
-	
-	BOOL loginPromptOpen;
-	pthread_cond_t loginLock;
-	MUTEX_VAR loginMutex;
+	RakWindow * window;
 }
 
-@property (weak) IBOutlet RakWindow *window;
-
-- (RakContentView*) getContentView;
-
-- (pthread_cond_t*) sharedLoginLock;
-- (MUTEX_VAR *) sharedLoginMutex : (BOOL) locked;
-
-- (void) openLoginPrompt;
-- (void) loginPromptClosed;
-
-- (Series *)	serie;
-- (CTSelec *)	CT;
-- (MDL *)		MDL;
-- (Reader *)	reader;
+- (void) createWindow;
 
 @end

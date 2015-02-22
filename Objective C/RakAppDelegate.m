@@ -168,7 +168,9 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
+	aboutWindow = [[RakAboutWindow alloc] init];
 	
+	[aboutWindow createWindow];
 }
 
 - (void)orderFrontStandardAboutPanelWithOptions:(NSDictionary *)optionsDictionary

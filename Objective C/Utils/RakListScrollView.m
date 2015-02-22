@@ -68,8 +68,17 @@
 		[self setFrame:_cachedFrame];
 		forceUpdate = NO;
 	}
+	else if(flag && !self.isHidden)
+	{
+		_cachedFrame = [super frame];
+	}
 	
 	[super setHidden:flag];
+}
+
+- (NSRect) frame
+{
+	return self.isHidden ? _cachedFrame : [super frame];
 }
 
 - (void) updateScrollerState : (NSRect) frame

@@ -1045,7 +1045,7 @@
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
 
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakCTSelectedManually" object:nil userInfo: @{@"index": @(index), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName: CT_CLIC_NOTIFICATION object:nil userInfo: @{@"index": @(index), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }
 

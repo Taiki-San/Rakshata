@@ -27,6 +27,21 @@
 	return self;
 }
 
+- (instancetype) initWithFrame:(NSRect)frameRect
+{
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
+	{
+		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+		[self setAutoresizesSubviews:NO];
+		[self setNeedsDisplay:YES];
+		[self setWantsLayer:YES];
+	}
+	
+	return self;
+}
+
 - (void) setFrame : (NSRect) frameRect
 {
 	if(_heightOffset)
@@ -62,7 +77,9 @@
 
 - (void) setupBorders
 {
-	backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
+	[Prefs getCurrentTheme:self];
+	
+	backgroundColor = [self firstBorderColor];
 	NSRect frame = self.frame;
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
@@ -70,7 +87,7 @@
 	frame.origin.x += WIDTH_BORDER_FAREST;
 	frame.origin.y += WIDTH_BORDER_FAREST;
 	
-	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
+	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [self middleBorderColor]];
 	if (internalRows1 != nil)
 		[self addSubview:internalRows1];
 	
@@ -79,7 +96,7 @@
 	frame.origin.x += WIDTH_BORDER_MIDDLE;
 	frame.origin.y += WIDTH_BORDER_MIDDLE;
 	
-	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];
+	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [self lastBorderColor]];
 	if (internalRows2 != nil)
 		[self addSubview:internalRows2];
 	
@@ -95,9 +112,9 @@
 
 - (void) updateUI
 {
-	backgroundColor = [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
-	[internalRows1 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil]];
-	[internalRows2 setColor:[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil]];
+	backgroundColor = [self firstBorderColor];
+	[internalRows1 setColor:[self middleBorderColor]];
+	[internalRows2 setColor:[self lastBorderColor]];
 	
 	[self setNeedsDisplay:YES];
 }
@@ -123,6 +140,23 @@
 	[internalRows1 removeFromSuperview];
 	[internalRows2 removeFromSuperview];
 	[firstResponder removeFromSuperview];
+}
+
+#pragma mark - Color
+
+- (NSColor *) firstBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
+}
+
+- (NSColor *) middleBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil];
+}
+
+- (NSColor *) lastBorderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil];
 }
 
 @end

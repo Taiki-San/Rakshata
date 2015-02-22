@@ -10,35 +10,35 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakAboutWindow;
+@implementation RakAboutWindow
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
+- (void) createWindow
 {
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
+	if(window == nil)
+	{
+		window = [[RakWindow alloc] initWithContentRect:NSMakeRect(200, 200, 300, 500) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:YES];
+		
+		RakContentViewBack * contentView = [[RakContentViewBack alloc] initWithFrame:NSMakeRect(0, 0, 300, 500)];
+		
+		window.delegate = [NSApp delegate];
+		window.contentView = contentView;
+		
+		[window configure];
+		window.title = @"";
+	}
 	
-	RakAboutWindow * aboutWindow;
-	
-	BOOL loginPromptOpen;
-	pthread_cond_t loginLock;
-	MUTEX_VAR loginMutex;
+	[window orderFront:self];
 }
 
-@property (weak) IBOutlet RakWindow *window;
+- (BOOL) windowShouldClose:(id)sender
+{
+	[window orderOut:self];
+	return NO;
+}
 
-- (RakContentView*) getContentView;
-
-- (pthread_cond_t*) sharedLoginLock;
-- (MUTEX_VAR *) sharedLoginMutex : (BOOL) locked;
-
-- (void) openLoginPrompt;
-- (void) loginPromptClosed;
-
-- (Series *)	serie;
-- (CTSelec *)	CT;
-- (MDL *)		MDL;
-- (Reader *)	reader;
+- (void) dealloc
+{
+	[window close];
+}
 
 @end

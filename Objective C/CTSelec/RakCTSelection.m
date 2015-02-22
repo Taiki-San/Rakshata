@@ -63,7 +63,7 @@
 			
 			view = nil;
 		}
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotClickedTransmitData:) name:@"RakCTSelectedManually" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotClickedTransmitData:) name:CT_CLIC_NOTIFICATION object:nil];
 		
 		[self updateTitle];
 	}

@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define CT_CLIC_NOTIFICATION @"RakCTSelectedManually"
+
 @interface RakCTSelection : NSView
 {
 	PROJECT_DATA data;

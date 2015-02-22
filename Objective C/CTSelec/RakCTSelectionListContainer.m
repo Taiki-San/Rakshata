@@ -49,7 +49,7 @@
 			[self addSubview:_title];
 		}
 
-		_placeholder = [[RakText alloc] initWithText: self.bounds : NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		_placeholder = [[RakText alloc] initWithText: NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 		if(_placeholder != nil)
 		{
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS
@@ -65,8 +65,8 @@
 		[content getContent].alphaValue = !_placeholderActive;	[content setHidden : _placeholderActive];
 		_placeholder.alphaValue = _placeholderActive;			[_placeholder setHidden : !_placeholderActive];
 		
-		[content setFrame:[self frameForContent : self.bounds]];
-		[_placeholder setFrameOrigin : NSCenterPoint(content.frame, _placeholder.bounds)];
+		[content setFrame:[self frameForContent : _bounds]];
+		[_placeholder setFrameOrigin : NSCenteredRect(content.frame, _placeholder.bounds)];
 		
 		if(self.compactMode)
 			[_title setHidden:YES];
@@ -77,7 +77,6 @@
 
 - (NSString *) titleString
 {
-	
 	return [NSString stringWithFormat:NSLocalizedString(_content.isTome ? @"VOLUME%c" : @"CHAPTER%c", nil), (_content.nbElem > 1 ? 's' : '\0')];
 }
 
