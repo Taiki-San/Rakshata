@@ -62,7 +62,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
     if(projectDB->chapitresFull == NULL || projectDB->chapitresFull[0] == VALEUR_FIN_STRUCT)
 		return;
 	
-    char configFilePath[TAILLE_BUFFER*5];
+    char configFilePath[256];
 	char * encodedHash = getPathForRepo(projectDB->repo);
 	
 	if(encodedHash == NULL)

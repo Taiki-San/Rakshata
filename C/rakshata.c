@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-volatile int NETWORK_ACCESS = CONNEXION_OK;
 char *COMPTE_PRINCIPAL_MAIL = NULL;
 MUTEX_VAR networkAndDBRefreshMutex;
 

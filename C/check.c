@@ -174,20 +174,22 @@ int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DAT
 
 /****	   Other checks		 ****/
 
+volatile int NETWORK_ACCESS = CONNEXION_OK;
+
 void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int hostNotReached = 0;
-	char temp[TAILLE_BUFFER], bufferDL[100] = {0};
+	char testURL[512], bufferDL[100] = {0};
 
     MUTEX_LOCK(networkAndDBRefreshMutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
     MUTEX_UNLOCK(networkAndDBRefreshMutex);
 
     /*Chargement de l'URL*/
-    snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
+    snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
 
-    if(download_mem(temp, NULL, bufferDL, sizeof(bufferDL), SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(testURL, NULL, bufferDL, sizeof(bufferDL), SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
@@ -264,22 +266,22 @@ void networkAndVersionTest()
     quit_thread(0);
 }
 
-int checkNetworkState(int state)
+bool checkNetworkState(int state)
 {
     MUTEX_LOCK(networkAndDBRefreshMutex);
     if(NETWORK_ACCESS == state)
     {
         MUTEX_UNLOCK(networkAndDBRefreshMutex);
-        return 1;
+        return true;
     }
     MUTEX_UNLOCK(networkAndDBRefreshMutex);
-    return 0;
+    return false;
 }
 
 #ifdef _WIN32
 void checkHostNonModifie()
 {
-    char temp[TAILLE_BUFFER];
+    char temp[256];
     FILE* host = NULL;
     host = fopen("C:\\Windows\\System32\\drivers\\etc\\hosts", "r"); //pas fopen car on se balade dans le DD, pas dans les fichiers de Rakshata
     if(host != NULL)
@@ -300,7 +302,7 @@ void checkHostNonModifie()
             if(i == 'r')
             {
                 fseek(host, -1, SEEK_CUR);
-                crashTemp(temp, TAILLE_BUFFER);
+                crashTemp(temp, sizeof(temp));
                 j = 0;
                 while((i = fgetc(host)) != '\n' && i != EOF && i != ' ' && j < 50)
                     temp[j++] = i;

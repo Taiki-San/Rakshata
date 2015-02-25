@@ -12,15 +12,7 @@
 
 /*DEFINES*/
 
-/*Général*/
-#define TAILLE_BUFFER 500
-
-/*Thread*/
-#ifdef _WIN32
-    #define quit_thread(a) ExitThread(a)
-#else
-    #define quit_thread(a) pthread_exit(a)
-#endif
+#define CURRENTVERSIONSTRING STRINGIZE(CURRENTVERSION)
 
 /*Environnement*/
 #define STORE_URL	"store.rakshata.com"

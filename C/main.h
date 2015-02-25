@@ -18,13 +18,14 @@
 #endif
 
 #define CURRENTVERSION 200
-#define CURRENTVERSIONSTRING "200"
 
 #include "configuration.h"
 #include "defines.h"
 #include "dbProperties.h"
 #include "prototypes.h"
 #include "structures.h"
-#include "externs.h"
 #include "fonctions.h"
 #include "db_external.h"
+
+extern char * COMPTE_PRINCIPAL_MAIL;
+extern MUTEX_VAR networkAndDBRefreshMutex;

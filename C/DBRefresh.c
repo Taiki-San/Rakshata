@@ -14,17 +14,13 @@
 
 void updateDatabase(bool forced)
 {
-    MUTEX_LOCK(networkAndDBRefreshMutex);
-    if(NETWORK_ACCESS != CONNEXION_DOWN && (forced || time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY))
+    if(!checkNetworkState(CONNEXION_DOWN) && (forced || time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY))
 	{
-        MUTEX_UNLOCK(networkAndDBRefreshMutex);
 	    updateRepo();
         updateProjects();
 		consolidateCache();
         alreadyRefreshed = time(NULL);
 	}
-    else
-        MUTEX_UNLOCK(networkAndDBRefreshMutex);
 }
 
 /************** UPDATE REPO	********************/

@@ -20,7 +20,7 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID);
 
 /**check.c**/
 void networkAndVersionTest();
-int checkNetworkState(int state);
+bool checkNetworkState(int state);
 void checkHostNonModifie();
 int checkFirstLineButtonPressed(int button_selected[8]);
 int checkSecondLineButtonPressed(int button_selected[8]);

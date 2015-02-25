@@ -33,7 +33,9 @@
     #include <windows.h>
 
     #define THREAD_TYPE HANDLE
-    #define MUTEX_VAR HANDLE
+	#define quit_thread(a) ExitThread(a)
+
+	#define MUTEX_VAR HANDLE
     #define MUTEX_LOCK(a) for(; WaitForSingleObject(a, 50) == WAIT_TIMEOUT; usleep(getRandom() & 0x80))
     #define MUTEX_UNLOCK(a) ReleaseSemaphore (a, 1, NULL)
     #define MUTEX_DESTROY(a) CloseHandle(a)
@@ -48,9 +50,10 @@
 	#include <sys/wait.h>
 
     #define THREAD_TYPE pthread_t
-    #define MUTEX_VAR pthread_mutex_t
+	#define quit_thread(a) pthread_exit(a)
+
+	#define MUTEX_VAR pthread_mutex_t
     #define MUTEX_LOCK(a) pthread_mutex_lock(&a)
     #define MUTEX_UNLOCK(a) pthread_mutex_unlock(&a)
     #define MUTEX_DESTROY(a) pthread_mutex_destroy(&a)
 #endif
-
