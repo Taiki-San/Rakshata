@@ -69,7 +69,7 @@
 		tag = project.tag;
 		
 		paidContent = project.isPaid;
-		DRM = YES;
+		DRM = project.haveDRM;
 		
 		numberOfRows = 5 + (numberOfChapters != 0) + (numberOfVolumes != 0);
 	}

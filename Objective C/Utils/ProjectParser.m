@@ -379,7 +379,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *tag = nil, *paidContent = nil;
+	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *tag = nil, *paidContent = nil, *DRM = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
@@ -387,6 +387,9 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
 	if([projectName superclass] != [NSMutableString class])					goto end;
+	
+	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil);
+	if(DRM != nil && [DRM superclass] != [NSNumber class])					goto end;
 	
 	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price");
 	if(paidContent != nil && [paidContent superclass] != [NSNumber class])	goto end;
@@ -427,6 +430,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.type = [type unsignedIntValue];
 	if(data.type > TYPE_MAX)		data.type = TYPE_MAX;
 	data.tag = [tag unsignedIntValue];
+	data.haveDRM = (DRM != nil && [DRM boolValue]) | (DRM == nil && isPaidContent);
 	data.isInitialized = true;
 	
 	wcsncpy(data.projectName, (charType*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
@@ -478,6 +482,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.type) forKey:JSON_PROJ_TYPE];
 	[output setObject:@(project.japaneseOrder) forKey:JSON_PROJ_ASIAN_ORDER];
 	[output setObject:@(project.tag) forKey:JSON_PROJ_TAG];
+	[output setObject:@(project.haveDRM) forKey:JSON_PROJ_DRM];
 	
 	if(project.isPaid)
 		[output setObject:@(YES) forKey:JSON_PROJ_PRICE];

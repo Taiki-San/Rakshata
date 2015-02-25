@@ -17,10 +17,15 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
 {
     uint *index = NULL;
 	
-#warning "Improve check, only DRM protected need account"
-	
-	if(COMPTE_PRINCIPAL_MAIL == NULL)	//For now, everything require the email
-		return false;
+	if(COMPTE_PRINCIPAL_MAIL == NULL)	//We check if we need the email address
+	{
+		for(uint i = 0, pos; i < length; i++)
+		{
+			pos = IDToPosition != NULL ? IDToPosition[i] : i;
+			if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->haveDRM)
+				return false;
+		}
+	}
 	
 	else if(!MDLPCheckAnythingPayable(data, *status, IDToPosition, length))
         return true;

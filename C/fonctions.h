@@ -155,7 +155,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 void setNewLangue(int newLangue);
 
 /**Unzip.c**/
-bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type);
+bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, size_t type);
 
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)

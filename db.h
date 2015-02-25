@@ -132,15 +132,16 @@ enum RDB_CODES {
 #define RDB_chapitres		14
 #define RDB_chapitresPrice	15
 #define RDB_nombreTomes		16
-#define RDB_tomes			17
-#define RDB_favoris			18
+#define RDB_DRM				17
+#define RDB_tomes			18
+#define RDB_favoris			19
 
-#define RDBS_dataID			19
-#define RDBS_dataType		20
+#define RDBS_dataID			20
+#define RDBS_dataType		21
 
-#define RDBS_tagCode		21
-#define RDBS_tagType		22
-#define RDBS_tagID			23
+#define RDBS_tagCode		22
+#define RDBS_tagType		23
+#define RDBS_tagID			24
 
 enum SEARCH_REQUEST
 {

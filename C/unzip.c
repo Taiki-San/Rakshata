@@ -16,7 +16,7 @@
 
 #define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
 
-static bool do_list(unzFile uf, bool *encrypted, char filenameInzip[NOMBRE_PAGE_MAX][256])
+static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
 {
     unz_global_info64 gi;
     int err;
@@ -50,9 +50,6 @@ static bool do_list(unzFile uf, bool *encrypted, char filenameInzip[NOMBRE_PAGE_
 
 		usstrcpy(filenameInzip[i], ustrlen(filename) + 1, filename);
 
-        if ((file_info.flag & 1) != 0) //Si chiffré
-            *encrypted = true;
-
         if (i + 1 < gi.number_entry)
         {
             err = unzGoToNextFile(uf);
@@ -68,12 +65,12 @@ static bool do_list(unzFile uf, bool *encrypted, char filenameInzip[NOMBRE_PAGE_
     return true;
 }
 
-bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
+bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
 {
-	bool extractWithoutPath = false, encrypted = false, ret_value = true;
-	char *zipInput = NULL, *zipFileName = NULL, *zipOutput = NULL, *password = NULL;
+	bool extractWithoutPath = false, ret_value = true;
+	char *zipInput = NULL, *zipFileName = NULL, *zipOutput = NULL;
     char *pathToConfigFile = NULL;
-	size_t lengthPath, lengthInput = 0, lengthOutput = 0, lengthPass = 0;
+	size_t lengthPath, lengthInput = 0, lengthOutput = 0;
 
     unzFile uf = NULL;
     zlib_filefunc_def fileops;
@@ -83,10 +80,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 	if(inputData == NULL || outputZip == NULL)
 		return false;
 	else
-	{
 		lengthOutput = strlen(outputZip) + 1;
-		lengthPass = passwordZip != NULL ? strlen(passwordZip) + 1 : 0;
-	}
 
 	uint nombreFichiers = 0, nombreFichiersDecompresses = 0;
     char filename[NOMBRE_PAGE_MAX][256]; //Recevra la liste de tous les fichiers
@@ -101,27 +95,19 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 	}
 	
     zipOutput = ralloc(lengthOutput);
-	if(lengthPass)
-		password = ralloc(lengthPass);
 
 	//Allocation error
-    if((!size && zipFileName == NULL) || zipOutput == NULL || (lengthPass && password == NULL))
+    if((!size && zipFileName == NULL) || zipOutput == NULL)
     {
         free(zipFileName);
         free(zipOutput);
-        free(password);
 #ifdef DEV_VERSION
         logR("Failed at allocate memory\n");
 #endif
         return false;
     }
 	else	//Copy data
-	{
 		memcpy(zipOutput, outputZip, lengthOutput);
-		
-		if(lengthPass)
-			memcpy(password, passwordZip, lengthPass);
-	}
 	
 	if(zipInput != NULL)
 	{
@@ -191,7 +177,7 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
 	crashTemp(filename, sizeof(filename));
 	
 	//List files
-    ret_value &= do_list(uf, &encrypted, filename);
+    ret_value &= do_list(uf, filename);
 	if(!ret_value)		goto quit;
 
 	//Count files inside archive
@@ -201,41 +187,34 @@ bool miniunzip (void *inputData, char *outputZip, char *passwordZip, size_t size
     unsigned char pass[NOMBRE_PAGE_MAX][SHA256_DIGEST_LENGTH];
 	crashTemp(pass, sizeof(pass));
 
-    if(size && !encrypted)
-		encrypted = FULL_ENCRYPTION;
-
 	for(uint i = 0; i < nombreFichiers; i++)
     {
         if(checkNameFileZip(filename[i]))
         {
-			if(encrypted)	//password can be NULL
-                ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, password, pass[i]);
-            else
-                ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, NULL, NULL);
-			
+			ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, NULL, project.haveDRM ? pass[i] : NULL);
             nombreFichiersDecompresses++;
 
-            if (i + 1 < nombreFichiers)
+            if(i + 1 < nombreFichiers)
             {
-                if (unzGoToNextFile(uf) != UNZ_OK)
+                if(unzGoToNextFile(uf) != UNZ_OK)
                     break;
             }
         }
         else
         {
-            if (filename[i][0] && filename[i][strlen(filename[i])-1] != '/' && i + 1 < nombreFichiers)
+            if(filename[i][0] && filename[i][strlen(filename[i])-1] != '/' && i + 1 < nombreFichiers)
             {
-                if (unzGoToNextFile(uf) != UNZ_OK)
+                if(unzGoToNextFile(uf) != UNZ_OK)
                     break;
             }
+			
 			memcpy(&filename[i], &filename[i+1], (nombreFichiers - i - 1) * sizeof(filename[0]));
-
 			nombreFichiers--;
 			i--;
         }
     }
 
-    if(encrypted)
+    if(project.haveDRM)
     {
         /*On va écrire les clées dans un config.enc
           Pour ça, on va classer les clées avec la longueur des clées, les nettoyer et les chiffrer*/
@@ -363,7 +342,6 @@ quit:
     free(pathToConfigFile);
     free(zipFileName);
     free(zipOutput);
-    free(password);
 	
 	return ret_value;
 }

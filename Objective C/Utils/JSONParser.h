@@ -43,6 +43,7 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_PROJ_ASIAN_ORDER @"17"
 #define JSON_PROJ_TAG @"18"
 #define JSON_PROJ_PRICE @"19"
+#define JSON_PROJ_DRM @"4.2"
 
 #define JSON_PROJ_URL_SRGRID @"20"
 #define JSON_PROJ_HASH_SRGRID @"21"

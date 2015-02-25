@@ -420,7 +420,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 		if(ressources != NULL)
             fclose(ressources);
 		
-        wentFine &= miniunzip(buf, basePath, NULL, sizeBuf, chapitre / 10);
+        wentFine &= miniunzip(buf, basePath, *projectDB, sizeBuf, chapitre / 10);
 
 		remove(installingFile);
 		

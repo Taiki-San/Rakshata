@@ -60,6 +60,7 @@ enum
 	
 	if(registerForChanges != nil)
 	{
+		NSLog(@"%@ joined", registerForChanges);
 		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
 	}
 	
@@ -73,6 +74,7 @@ enum
 	
 	if(object != nil)
 	{
+		NSLog(@"%@ left", object);
 		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
 	}
 }

@@ -113,7 +113,7 @@ enum
 	
 	output = [output stringByAppendingString:current];
 
-	BOOL DRM = getRandom() & 1;
+	BOOL DRM = project.haveDRM;
 	
 	if(project.isPaid)
 		current = NSLocalizedString(DRM ? @"PROJ-DETAILS-PAID-DRM" : @"PROJ-DETAILS-PAID-NO-DRM" , nil);

@@ -106,7 +106,6 @@ enum
 #define OUTPUT_IN_MEMORY 3
 #define EVERYTHING_IN_MEMORY 4
 #define NOMBRE_CLE_MAX_ACCEPTE 10
-#define FULL_ENCRYPTION 1
 
 /*Hash algorithms*/
 #define SHA256_BLOCK_LENGTH	64

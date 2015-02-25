@@ -502,7 +502,7 @@
 		return NO;
 	}
 	
-	if(_project.isPaid && !preventWindowCaptureForWindow(self.window))
+	if(_project.haveDRM && !preventWindowCaptureForWindow(self.window))
 	{
 		[self failure];
 		return NO;

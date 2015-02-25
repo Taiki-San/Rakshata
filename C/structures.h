@@ -150,6 +150,7 @@ typedef struct root_repository_data
 **			-	category				Catégorie du projet
 **			-	japaneseOrder			Sens de lecture
 **			-	isPaid					Contenus payants disponibles
+**			-	haveDRM					Les DRM sont-elles activées
 **
 **		Page d'info
 **			- hashLarge					CRC32 de la version courante
@@ -221,6 +222,7 @@ typedef struct dataProject
 	
 	uint8_t status;
 	bool isPaid;
+	bool haveDRM;
 	bool isInitialized;
 	
 } PROJECT_DATA;
@@ -259,8 +261,10 @@ typedef struct dataProjectWithExtra
 	uint32_t projectID;
 	uint32_t cacheDBID;
 	
+	//64b
 	uint8_t status;
 	bool isPaid;
+	bool haveDRM;
 	bool isInitialized;
 
 	//2 x 64b

@@ -151,7 +151,7 @@
 
 - (NSColor *) firstBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : self];
+	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
 }
 
 - (NSColor *) middleBorderColor
