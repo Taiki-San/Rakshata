@@ -163,7 +163,6 @@
 		B6F6ED0F18A3001400E3B55B /* settings.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD518A3001400E3B55B /* settings.c */; };
 		B6F6ED1018A3001400E3B55B /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD718A3001400E3B55B /* thread.c */; };
 		B6F6ED1118A3001400E3B55B /* tome.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD818A3001400E3B55B /* tome.c */; };
-		B6F6ED1218A3001400E3B55B /* translation.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD918A3001400E3B55B /* translation.c */; };
 		B6F6ED1318A3001400E3B55B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECDB18A3001400E3B55B /* ioapi.c */; };
 		B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECDF18A3001400E3B55B /* miniunz.c */; };
 		B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE318A3001400E3B55B /* unzip_mz.c */; };
@@ -458,7 +457,6 @@
 		B6F6ECD618A3001400E3B55B /* structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = structures.h; path = C/structures.h; sourceTree = "<group>"; };
 		B6F6ECD718A3001400E3B55B /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread.c; path = C/thread.c; sourceTree = "<group>"; };
 		B6F6ECD818A3001400E3B55B /* tome.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tome.c; path = C/tome.c; sourceTree = "<group>"; };
-		B6F6ECD918A3001400E3B55B /* translation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = translation.c; path = C/translation.c; sourceTree = "<group>"; };
 		B6F6ECDB18A3001400E3B55B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		B6F6ECDC18A3001400E3B55B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		B6F6ECDF18A3001400E3B55B /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
@@ -1168,7 +1166,6 @@
 				B6F6ECD318A3001400E3B55B /* securite.c */,
 				B6F6ECD518A3001400E3B55B /* settings.c */,
 				B6F6ECD718A3001400E3B55B /* thread.c */,
-				B6F6ECD918A3001400E3B55B /* translation.c */,
 				B6F6ECDA18A3001400E3B55B /* unzip */,
 				B6F6ECE718A3001400E3B55B /* unzip.c */,
 				B6F6ECE918A3001400E3B55B /* utilitaires.c */,
@@ -1390,7 +1387,6 @@
 				B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */,
 				B6F6ED0A18A3001400E3B55B /* native.c in Sources */,
 				B62182471873527A008AC5DD /* Prefs.m in Sources */,
-				B6F6ED1218A3001400E3B55B /* translation.c in Sources */,
 				B68B5225191AE3050057F35A /* RakScroller.m in Sources */,
 				B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */,
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,

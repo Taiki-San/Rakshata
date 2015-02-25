@@ -11,9 +11,7 @@
 *********************************************************************************************/
 
 #include "db.h"
-#include "crypto/crypto.h"
 
-int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
 char *COMPTE_PRINCIPAL_MAIL = NULL;
 MUTEX_VAR networkAndDBRefreshMutex;

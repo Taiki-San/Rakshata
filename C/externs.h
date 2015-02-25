@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-extern int langue; //Langue
 extern volatile int NETWORK_ACCESS;
 extern char* COMPTE_PRINCIPAL_MAIL;
 

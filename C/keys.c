@@ -175,14 +175,11 @@ int earlyInit(int argc, char *argv[])
 	loadEmailProfile();
     resetUpdateDBCache();
     initializeDNSCache();
-
-    loadLangueProfile();
-	checkAjoutRepoParFichier(argv[1]);
 	
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 
 #ifndef __APPLE__
-    srand(time(NULL)+rand()+GetTickCount()); //Initialisation de l'aléatoire
+    srand(time(NULL) + rand() + GetTickCount()); //Initialisation de l'aléatoire
 #endif
 
     return 1;

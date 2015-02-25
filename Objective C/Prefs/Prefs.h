@@ -107,7 +107,6 @@ enum FONT_REQUEST {
 	NSString * email;
 	
 	//	Prefs unencrypted
-	int langue;
 	BOOL startInFullscreen;
 	
 	// Prefs taille/pos elements (pourcentages)

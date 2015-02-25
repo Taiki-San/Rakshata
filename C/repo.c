@@ -13,6 +13,7 @@
 #include "db.h"
 #include "crypto.h"
 
+#if 0
 void checkAjoutRepoParFichier(char *argv)
 {
     if(argv == NULL || *argv == '-')
@@ -40,20 +41,11 @@ void checkAjoutRepoParFichier(char *argv)
 
     else if(version > CURRENTVERSION)
     {
-        if(langue == 1) //Francais
-            UI_Alert("Ajout automatise de depot: echec!", "Le depot que vous tentez d'ajouter n'est pas supporte par cette version de Rakshata, veuillez effectuer une mise a jour en telechargant une version plus recente sur http://www.rakshata.com/");
-        else
-            UI_Alert("Automated addition of repository: failure!", "The repository you're trying to install isn't supported by this version of Rakshata: please perform an update by getting a newer build from our website: http://www.rakshata.com/");
         free(bufferRead);
         return;
     }
     else if(strcmp(verification, "Repository_for_Rakshata"))
     {
-        if(langue == 1) //Francais
-            UI_Alert("Ajout automatise de depot: echec!", "Fichier invalide: veuillez contacter l'administrateur du site depuis lequel vous l'avez telecharge");
-        else
-            UI_Alert("Automated addition of repository: failure!", "Invalid file: please contact the administrator of the website from which you downloaded the file.");
-        free(bufferRead);
         return;
     }
 
@@ -83,6 +75,7 @@ void checkAjoutRepoParFichier(char *argv)
 	if(anySuccess)
 		updateDatabase(true);
 }
+#endif
 
 bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
 {

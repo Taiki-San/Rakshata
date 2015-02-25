@@ -62,10 +62,6 @@
 #define PALIER_MENU -3
 #define PALIER_QUIT -4
 
-/*Langue*/
-#define NOMBRE_LANGUE 4
-#define LANGUE_PAR_DEFAUT 2
-
 /*Settings*/
 #define SECURE_DATABASE "secure.enc"
 #define DRM_FILE	".config.enc"
@@ -73,7 +69,6 @@
 #define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr!s36~8713ue68"
 #define SETTINGS_EMAIL_FLAG "E"
 #define SETTINGS_FAVORITE_FLAG "F"
-#define SETTINGS_LANGUE_FLAG "L"
 #define SETTINGS_PROJECTDB_FLAG "M"
 #define SETTINGS_REPODB_FLAG "R"
 #define SETTINGS_PASSWORD_FLAG "P" //Pass de déverrouillage

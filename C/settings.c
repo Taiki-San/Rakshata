@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include <locale.h> //Pour définir la langue
 #include "db.h"
 
 char *loadPrefFile()
@@ -160,42 +159,6 @@ bool loadEmailProfile()
 	free(COMPTE_PRINCIPAL_MAIL);
 	COMPTE_PRINCIPAL_MAIL = NULL;
 	return false;
-}
-
-int loadLangueProfile()
-{
-    int i = 0;
-
-    if(langue != 0)
-        return 0;
-
-    char *prefs = loadPrefFile();
-    if(prefs != NULL)
-    {
-        char flag[] = "<"SETTINGS_LANGUE_FLAG">";
-        if((i = positionnementApresChar(prefs, flag)))
-        {
-            sscanfs(prefs+i, "%d", &langue);
-            free(prefs);
-            if(langue > 0 && langue <= NOMBRE_LANGUE)
-                return 0;
-            langue = 0;
-        }
-        else
-            free(prefs);
-    }
-    char temp[100];
-
-    char *langue_char = setlocale(LC_ALL, "");
-    if(!strcmp(langue_char, "French_France.1252") || !strcmp(langue_char, "French_Belgium.1252") || !strcmp(langue_char, "French_Canada.1252") || !strcmp(langue_char, "French_Luxembourg.1252") || !strcmp(langue_char, "French_Principality of Monaco.1252") || !strcmp(langue_char, "French_Switzerland.1252"))
-        langue = 1;
-    else if(!strcmp(langue_char, "German_Austria.1252") || !strcmp(langue_char, "German_Liechtenstein.1252") || !strcmp(langue_char, "German_Luxembourg.1252") || !strcmp(langue_char, "German_Switzerland.1252") || !strcmp(langue_char, "German_Germany.1252"))
-        langue = 3;
-    else
-        langue = LANGUE_PAR_DEFAUT;
-    snprintf(temp, 100, "<%s>\n%d\n</%s>\n", SETTINGS_LANGUE_FLAG, langue, SETTINGS_LANGUE_FLAG);
-    AESEncrypt(SETTINGS_PASSWORD, temp, SETTINGS_FILE, INPUT_IN_MEMORY);
-    return 1;
 }
 
 char* loadLargePrefs(char* flag)

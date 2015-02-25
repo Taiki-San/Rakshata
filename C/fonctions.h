@@ -103,7 +103,6 @@ void lancementExternalBinary(char cheminDAcces[100]);
 bool checkDirExist(char *dirname);
 
 /**Repo.c**/
-void checkAjoutRepoParFichier(char *argv);
 bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput);
 bool addRepo(char * URL, byte type);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
@@ -131,7 +130,6 @@ char *loadPrefFile();
 void addToPref(char* flag, char *stringToAdd);
 void removeFromPref(char* flag);
 void updatePrefs(char* flag, char *stringToAdd);
-int loadLangueProfile();
 bool loadEmailProfile();
 char* loadLargePrefs(char* flag);
 
