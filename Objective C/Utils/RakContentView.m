@@ -96,14 +96,17 @@
 	frame.origin.x += WIDTH_BORDER_MIDDLE;
 	frame.origin.y += WIDTH_BORDER_MIDDLE;
 	
-	internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [self lastBorderColor]];
-	if (internalRows2 != nil)
-		[self addSubview:internalRows2];
-	
-	frame.size.width -= 2 * WIDTH_BORDER_INTERNAL;
-	frame.size.height -= 2 * WIDTH_BORDER_INTERNAL;
-	frame.origin.x += WIDTH_BORDER_INTERNAL;
-	frame.origin.y += WIDTH_BORDER_INTERNAL;
+	if(self.window.isMainWindow)
+	{
+		internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [self lastBorderColor]];
+		if (internalRows2 != nil)
+			[self addSubview:internalRows2];
+		
+		frame.size.width -= 2 * WIDTH_BORDER_INTERNAL;
+		frame.size.height -= 2 * WIDTH_BORDER_INTERNAL;
+		frame.origin.x += WIDTH_BORDER_INTERNAL;
+		frame.origin.y += WIDTH_BORDER_INTERNAL;
+	}
 	
 	firstResponder = [[RakContentView alloc] initWithFrame:frame];
 	if(firstResponder != nil)
@@ -114,7 +117,9 @@
 {
 	backgroundColor = [self firstBorderColor];
 	[internalRows1 setColor:[self middleBorderColor]];
-	[internalRows2 setColor:[self lastBorderColor]];
+	
+	if(self.window.isMainWindow)
+		[internalRows2 setColor:[self lastBorderColor]];
 	
 	[self setNeedsDisplay:YES];
 }
