@@ -164,27 +164,6 @@ void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
     }
 }
 
-int earlyInit(int argc, char *argv[])
-{
-#ifdef _WIN32
-    networkAndDBRefreshMutex = CreateSemaphore (NULL, 1, 1, NULL);
-#else
-	pthread_mutex_init(&networkAndDBRefreshMutex, NULL);
-#endif
-
-	loadEmailProfile();
-    resetUpdateDBCache();
-    initializeDNSCache();
-	
-	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
-
-#ifndef __APPLE__
-    srand(time(NULL) + rand() + GetTickCount()); //Initialisation de l'aléatoire
-#endif
-
-    return 1;
-}
-
 bool validateEmail(const char* adresseEmail)
 {
 	if(adresseEmail == NULL)

@@ -66,7 +66,6 @@ char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeO
 /**Keys.c**/
 byte getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
-int earlyInit(int argc, char *argv[]);
 void updateEmail(const char * email);
 void addPassToCache(const char * hashedPassword);
 bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1]);
