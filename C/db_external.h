@@ -40,6 +40,9 @@ enum
 };
 
 /**DBCache.c**/
+uint setupBDDCache();
+void flushDB();
+
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
 PROJECT_DATA getEmtpyProject();
@@ -76,6 +79,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery);
 char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 
 /**DBTools.c**/
+void resetUpdateDBCache();
+
 bool isPaidProject(PROJECT_DATA projectData);
 
 /**tagManagement.c**/

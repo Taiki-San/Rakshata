@@ -31,13 +31,10 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
 void updateProjectImages(void * _todo);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
 
-void resetUpdateDBCache();
 bool isInstalled(char * basePath);
 
 /**DBCache.c**/
-int setupBDDCache();
 void syncCacheToDisk(byte syncCode);
-void flushDB();
 sqlite3_stmt * getAddToCacheRequest();
 bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled);
 bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
@@ -85,7 +82,6 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength);
 
 /**DBRefresh.c**/
-void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo);
 void updateRepo();
 int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo);

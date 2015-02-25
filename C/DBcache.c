@@ -37,7 +37,7 @@ void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)
 }
 #endif
 
-int setupBDDCache()
+uint setupBDDCache()
 {
 	uint nombreRootRepo, nombreRepo, nombreProject = 0;
     char *repoDB, *projectDB, *cacheFavs = NULL;
