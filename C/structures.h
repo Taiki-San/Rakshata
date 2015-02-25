@@ -107,7 +107,8 @@ typedef struct repository_data_extra
 	char URLImage[REPO_URL_LENGTH];
 	char URLImageRetina[REPO_URL_LENGTH];
 	
-	char hashImage[REPO_IMAGE_HASH_LENGTH];
+	char hashImage[LENGTH_HASH];
+	char hashImageRetina[LENGTH_HASH];
 	
 	bool haveRetina;
 	

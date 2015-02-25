@@ -215,7 +215,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 	if(output == NULL)
 		return NULL;
 	
-	NSString * URLImage, * URLImageRetina, * hash;
+	NSString * URLImage, * URLImageRetina, * hash, * hashRetina;
 	
 	for(NSDictionary * repo in array)
 	{
@@ -253,17 +253,26 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 					continue;
 				}
 				
+				hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
+				if(hash == nil || ![hash isKindOfClass:[NSString class]] || [hash length] != LENGTH_HASH - 1)
+				{
+					failure++;
+					continue;
+				}
+
 				URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
 				if(URLImageRetina != nil && (![URLImageRetina isKindOfClass:[NSString class]] || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
 				{
 					URLImageRetina = nil;
 				}
-				
-				hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
-				if(hash == nil || ![hash isKindOfClass:[NSString class]] || [hash length] != REPO_IMAGE_HASH_LENGTH - 1)
+				else
 				{
-					failure++;
-					continue;
+					hashRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_HASH, @"hash_image_retina");
+					if(hashRetina == nil || ![hashRetina isKindOfClass:[NSString class]] || [hashRetina length] != LENGTH_HASH - 1)
+					{
+						failure++;
+						continue;
+					}
 				}
 			}
 			
@@ -281,11 +290,12 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			if(URLImage != nil)
 			{
 				strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], REPO_IMAGE_HASH_LENGTH);
+				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
 				
 				if(URLImageRetina != nil)
 				{
 					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+					strncpy(outputExtra[pos].hashImageRetina, [hashRetina cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
 					outputExtra[pos].haveRetina = true;
 				}
 				else

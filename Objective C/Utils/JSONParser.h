@@ -76,5 +76,6 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_REPO_SUB_IMAGE			@"10"
 #define JSON_REPO_SUB_RETINA_IMAGE	@"11"
 #define JSON_REPO_SUB_IMAGE_HASH	@"12"
-#define JSON_REPO_SUB_MATURE		@"13"
-#define JSON_REPO_ID				@"14"
+#define JSON_REPO_SUB_RETINA_HASH	@"13"
+#define JSON_REPO_SUB_MATURE		@"14"
+#define JSON_REPO_ID				@"15"

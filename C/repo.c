@@ -149,7 +149,7 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 	ICONS_UPDATE * begin = NULL, * current, * new;
 	REPO_DATA_EXTRA * data = (void *) root->subRepo;
 	uint nbSubRepo = root->nombreSubrepo;
-	char rootPath[64], imagePath[256];
+	char rootPath[64], imagePath[256], crcHash[LENGTH_HASH+1];
 	
 	for(uint i = 0; i < nbSubRepo; i++)
 	{
@@ -164,51 +164,62 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 		//Check if there is any data
 		if(!data[i].URLImage[0])
 			continue;
-		
-		new = calloc(1, sizeof(ICONS_UPDATE));
-		if(new == NULL)
-		{
-			memoryError(sizeof(ICONS_UPDATE));
-			continue;
-		}
 
-		//Copy the data
 		snprintf(imagePath, sizeof(imagePath), "%s/"REPO_IMG_NAME".png", rootPath);
-		new->URL = strdup(data[i].URLImage);
-		new->filename = strdup(imagePath);
+		snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
 		
-		if(new->URL == NULL || new->filename == NULL)
+		if(strncmp(crcHash, data[i].hashImage, LENGTH_HASH))
 		{
-			free(new->URL);
-			free(new->filename);
-			free(new);
-			continue;
-		}
-		
-		//We check for retina
-		if(data[i].haveRetina)
-		{
-			ICONS_UPDATE * retina = calloc(1, sizeof(ICONS_UPDATE));
-			if(retina == NULL)
+			new = calloc(1, sizeof(ICONS_UPDATE));
+			if(new == NULL)
 			{
 				memoryError(sizeof(ICONS_UPDATE));
 				continue;
 			}
 			
 			//Copy the data
-			snprintf(imagePath, sizeof(imagePath), "%s/"REPO_IMG_NAME"@2x.png", rootPath);
-			retina->URL = strdup(data[i].URLImage);
-			retina->filename = strdup(imagePath);
+			new->URL = strdup(data[i].URLImage);
+			new->filename = strdup(imagePath);
 			
-			if(retina->URL == NULL || new->filename == NULL)
+			if(new->URL == NULL || new->filename == NULL)
 			{
-				free(retina->URL);
-				free(retina->filename);
-				free(retina);
+				free(new->URL);
+				free(new->filename);
+				free(new);
+				continue;
 			}
-			else
+		}
+		else
+			new = NULL;
+		
+		//We check for retina
+		if(data[i].haveRetina)
+		{
+			//We check for update
+			snprintf(imagePath, sizeof(imagePath), "%s/"REPO_IMG_NAME"@2x.png", rootPath);
+			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
+			
+			if(strncmp(crcHash, data[i].hashImageRetina, LENGTH_HASH))
 			{
-				new->next = retina;
+				ICONS_UPDATE * retina = calloc(1, sizeof(ICONS_UPDATE));
+				if(retina != NULL)
+				{
+					//Copy the data
+					retina->URL = strdup(data[i].URLImage);
+					retina->filename = strdup(imagePath);
+					
+					if(retina->URL == NULL || new->filename == NULL)
+					{
+						free(retina->URL);
+						free(retina->filename);
+						free(retina);
+					}
+					else if(new != NULL)
+						new->next = retina;
+					
+					else
+						new = retina;
+				}
 			}
 		}
 		
