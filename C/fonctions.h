@@ -57,6 +57,7 @@ void getNewFavs();
 PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint * nbElem);
 PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem);
 char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput);
+void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * output);
 
 ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
 ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
@@ -138,7 +139,6 @@ char* loadLargePrefs(char* flag);
 void createNewThread(void *function, void *arg);
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
 bool isThreadStillRunning(THREAD_TYPE hThread);
-int getThreadCount();
 
 /**Tome.c**/
 int getPosForID(PROJECT_DATA data, bool installed, int ID);

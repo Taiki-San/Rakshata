@@ -262,10 +262,10 @@ typedef struct dataProjectWithExtra
 	bool isPaid;
 	bool isInitialized;
 
-
 	//2 x 64b
-	char hashLarge[LENGTH_HASH];
-	char hashSmall[LENGTH_HASH];
+	bool haveImages[NB_IMAGES];
+	char hashesImages[NB_IMAGES][LENGTH_HASH];
+	char * URLImages[NB_IMAGES];
 	
 } PROJECT_DATA_EXTRA;
 

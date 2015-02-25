@@ -167,9 +167,9 @@ void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
 int earlyInit(int argc, char *argv[])
 {
 #ifdef _WIN32
-    mutex = CreateSemaphore (NULL, 1, 1, NULL);
+    networkAndDBRefreshMutex = CreateSemaphore (NULL, 1, 1, NULL);
 #else
-	pthread_mutex_init(&mutex, NULL);
+	pthread_mutex_init(&networkAndDBRefreshMutex, NULL);
 #endif
 
 	loadEmailProfile();

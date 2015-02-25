@@ -27,8 +27,8 @@ bool downloadedProjectListSeemsLegit(char *data);
 uint getNumberLineReturn(char *input);
 bool extractCurrentLine(char * input, uint * posInput, char * output, uint lengthOutput);
 bool isProjectListSorted(PROJECT_DATA* data, uint length);
-void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
-void getPageInfo(REPO_DATA repo, uint projectID, bool large, char * filename);
+void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
+void updateProjectImages(void * _todo);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
 
 void resetUpdateDBCache();
@@ -89,8 +89,8 @@ void resetUpdateDBCache();
 int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo);
 void updateRepo();
 int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo);
-void refreshRepo(REPO_DATA * repo, bool standalone);
-void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);
+void * refreshRepo(REPO_DATA * repo, bool standalone);
+void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);
 void updateProjects();
 int databaseVersion(char* projectDB);
 
@@ -146,7 +146,6 @@ enum RDB_CODES {
 #define RDBS_tagType		22
 #define RDBS_tagID			23
 
-
 enum SEARCH_REQUEST
 {
 	INSERT_AUTHOR,
@@ -168,3 +167,15 @@ enum SEARCH_REQUEST
 #define RDB_REC_projectID	4
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
+
+//Structure to update icons
+
+typedef struct icon_update_waitlist ICONS_UPDATE;
+
+struct icon_update_waitlist
+{
+	char * URL;
+	char * filename;
+	
+	ICONS_UPDATE * next;
+};

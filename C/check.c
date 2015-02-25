@@ -180,9 +180,9 @@ void networkAndVersionTest()
     int hostNotReached = 0;
 	char temp[TAILLE_BUFFER], bufferDL[100] = {0};
 
-    MUTEX_LOCK(mutex);
+    MUTEX_LOCK(networkAndDBRefreshMutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
-    MUTEX_UNLOCK(mutex);
+    MUTEX_UNLOCK(networkAndDBRefreshMutex);
 
     /*Chargement de l'URL*/
     snprintf(temp, TAILLE_BUFFER, "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
@@ -201,20 +201,20 @@ void networkAndVersionTest()
         crashTemp(bufferDL, 100);
         if(download_mem(BACKUP_INTERNET_CHECK, NULL, bufferDL, 100, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
-        MUTEX_LOCK(mutex);
+        MUTEX_LOCK(networkAndDBRefreshMutex);
         if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
-        MUTEX_UNLOCK(mutex);
+        MUTEX_UNLOCK(networkAndDBRefreshMutex);
     }
 
 	else
     {
 		//No more update code
-        MUTEX_LOCK(mutex);
+        MUTEX_LOCK(networkAndDBRefreshMutex);
         NETWORK_ACCESS = CONNEXION_OK;
-        MUTEX_UNLOCK(mutex);
+        MUTEX_UNLOCK(networkAndDBRefreshMutex);
 #if 0
         if(bufferDL[0] == '1' && !checkFileExist("data/update")) //Update needed
         {
@@ -266,16 +266,17 @@ void networkAndVersionTest()
 
 int checkNetworkState(int state)
 {
-    MUTEX_LOCK(mutex);
+    MUTEX_LOCK(networkAndDBRefreshMutex);
     if(NETWORK_ACCESS == state)
     {
-        MUTEX_UNLOCK(mutex);
+        MUTEX_UNLOCK(networkAndDBRefreshMutex);
         return 1;
     }
-    MUTEX_UNLOCK(mutex);
+    MUTEX_UNLOCK(networkAndDBRefreshMutex);
     return 0;
 }
 
+#ifdef _WIN32
 void checkHostNonModifie()
 {
     char temp[TAILLE_BUFFER];
@@ -309,15 +310,17 @@ void checkHostNonModifie()
                 {
                     fclose(host);
                     logR("Violation détecté: redirection dans host\n");
-                    MUTEX_LOCK(mutex);
+                    MUTEX_LOCK(networkAndDBRefreshMutex);
+					
                     NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
-                    MUTEX_UNLOCK(mutex);
+                    MUTEX_UNLOCK(networkAndDBRefreshMutex);
                     break; //On quitte la boucle en while
                 }
             }
         }
     }
 }
+#endif
 
 int checkFirstLineButtonPressed(int button_selected[8])
 {

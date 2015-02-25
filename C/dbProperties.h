@@ -50,6 +50,7 @@ enum
 #define LENGTH_PROJECT_NAME 51
 #define LENGTH_AUTHORS		51
 #define LENGTH_URL			256
+#define NB_IMAGES			8
 #define	LENGTH_HASH			9
 #define STATUS_MAX			5
 #define TYPE_MAX			4

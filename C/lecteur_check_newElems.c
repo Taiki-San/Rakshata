@@ -43,8 +43,16 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	}
 	
 	//update the database from network (heavy part)
-	updateProjectsFromRepo(fullData, posStart, posEnd, true);
+	MUTEX_LOCK(networkAndDBRefreshMutex);
+	
+	ICONS_UPDATE * data = updateProjectsFromRepo(fullData, posStart, posEnd, true);
+
+	if(data != NULL)
+		createNewThread(updateProjectImages, data);
+
 	syncCacheToDisk(SYNC_PROJECTS);
+	
+	MUTEX_UNLOCK(networkAndDBRefreshMutex);
 	
 	freeProjectData(fullData);
 	

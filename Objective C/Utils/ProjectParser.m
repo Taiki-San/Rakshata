@@ -494,17 +494,32 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	{
 		memcpy(&output, &shortData, sizeof(shortData));
 		
-		NSString * crcLarge = objectForKey(bloc, JSON_PROJ_HASH_URL_LARGE , @"hash_URL_large_pic");
-		if(crcLarge != nil && [crcLarge superclass] == [NSMutableString class])
-			strncpy(output.hashLarge, [crcLarge cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
-		else
-			memset(output.hashLarge, 0, LENGTH_HASH);
-		
-		NSString * crcSmall = objectForKey(bloc, JSON_PROJ_HASH_URL_SMALL , @"hash_URL_small_pic");
-		if(crcSmall != nil && [crcSmall superclass] == [NSMutableString class])
-			strncpy(output.hashSmall, [crcSmall cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
-		else
-			memset(output.hashSmall, 0, LENGTH_HASH);
+		NSString * URL, * CRC;
+		NSArray * IDURL = @[JSON_PROJ_URL_SRGRID, JSON_PROJ_URL_SRGRID_2X, JSON_PROJ_URL_HEAD, JSON_PROJ_URL_HEAD_2X, JSON_PROJ_URL_CT, JSON_PROJ_URL_CT_2X, JSON_PROJ_URL_DD, JSON_PROJ_URL_DD_2X], * IDHash = @[JSON_PROJ_HASH_SRGRID, JSON_PROJ_HASH_SRGRID_2X, JSON_PROJ_HASH_HEAD, JSON_PROJ_HASH_HEAD_2X, JSON_PROJ_HASH_CT, JSON_PROJ_HASH_CT_2X, JSON_PROJ_HASH_DD, JSON_PROJ_HASH_DD_2X];
+
+		for(byte i = 0; i < NB_IMAGES; i++)
+		{
+			URL = objectForKey(bloc, IDURL[i], nil);
+			CRC = objectForKey(bloc, IDHash[i], nil);
+			
+			if(URL == nil || CRC == nil)
+				output.haveImages[i] = false;
+			else
+			{
+				char * URLCopy = strdup([URL cStringUsingEncoding:NSASCIIStringEncoding]);
+				
+				if(URLCopy != NULL)
+				{
+					strncpy((void*) &(output.hashesImages[i]), [CRC cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
+					output.URLImages[i] = URLCopy;
+					output.haveImages[i] = true;
+				}
+				else
+				{
+					output.haveImages[i] = false;
+				}
+			}
+		}
 	}
 	else
 		output.isInitialized = false;
@@ -732,10 +747,18 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName)
 {
 	id value = [dict objectForKey : ID];
 	
-	if(value == nil)
+	if(value == nil && fullName != nil)
 	{
 		value = [dict objectForKey:fullName];
 	}
 	
 	return value;
+}
+
+void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * output)
+{
+	if(!input.isInitialized || output == NULL)
+		return;
+	
+	memcpy(output, &input, sizeof(PROJECT_DATA));
 }

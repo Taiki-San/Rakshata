@@ -15,9 +15,8 @@
 
 int langue = 0; //Langue
 volatile int NETWORK_ACCESS = CONNEXION_OK;
-uint THREAD_COUNT = 0;
 char *COMPTE_PRINCIPAL_MAIL = NULL;
-MUTEX_VAR mutex;
+MUTEX_VAR networkAndDBRefreshMutex;
 
 #ifdef _WIN32
     #ifdef main
@@ -39,7 +38,7 @@ int main(int argc, char *argv[])
 	free(COMPTE_PRINCIPAL_MAIL);
 	flushDB();
     releaseDNSCache();
-    MUTEX_DESTROY(mutex);
+    MUTEX_DESTROY(networkAndDBRefreshMutex);
 
     return ret_value;
 }

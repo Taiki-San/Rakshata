@@ -42,9 +42,24 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_PROJ_TYPE @"16"
 #define JSON_PROJ_ASIAN_ORDER @"17"
 #define JSON_PROJ_TAG @"18"
-#define JSON_PROJ_HASH_URL_LARGE @"19"
-#define JSON_PROJ_HASH_URL_SMALL @"20"
-#define JSON_PROJ_PRICE @"21"
+#define JSON_PROJ_PRICE @"19"
+
+#define JSON_PROJ_URL_SRGRID @"20"
+#define JSON_PROJ_HASH_SRGRID @"21"
+#define JSON_PROJ_URL_SRGRID_2X @"22"
+#define JSON_PROJ_HASH_SRGRID_2X @"23"
+#define JSON_PROJ_URL_HEAD @"24"
+#define JSON_PROJ_HASH_HEAD @"25"
+#define JSON_PROJ_URL_HEAD_2X @"26"
+#define JSON_PROJ_HASH_HEAD_2X @"27"
+#define JSON_PROJ_URL_CT @"28"
+#define JSON_PROJ_HASH_CT @"29"
+#define JSON_PROJ_URL_CT_2X @"30"
+#define JSON_PROJ_HASH_CT_2X @"31"
+#define JSON_PROJ_URL_DD @"32"
+#define JSON_PROJ_HASH_DD @"33"
+#define JSON_PROJ_URL_DD_2X @"34"
+#define JSON_PROJ_HASH_DD_2X @"35"
 
 //Repo parser
 

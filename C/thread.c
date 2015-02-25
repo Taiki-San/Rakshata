@@ -78,9 +78,6 @@ void createNewThread(void *function, void *arg)
         exit(EXIT_FAILURE);
     }
 #endif
-    MUTEX_LOCK(mutex);
-    THREAD_COUNT++;
-    MUTEX_UNLOCK(mutex);
 }
 
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
@@ -116,9 +113,6 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
 
 #endif
 
-    MUTEX_LOCK(mutex);
-    THREAD_COUNT++;
-    MUTEX_UNLOCK(mutex);
     return threadID;
 }
 
@@ -129,13 +123,4 @@ bool isThreadStillRunning(THREAD_TYPE hThread)
 #else
     return pthread_kill(hThread, 0) != ESRCH;
 #endif // _WIN32
-}
-
-int getThreadCount()
-{
-	MUTEX_LOCK(mutex);
-		int ret_value = THREAD_COUNT;
-	MUTEX_UNLOCK(mutex);
-
-	return ret_value;
 }

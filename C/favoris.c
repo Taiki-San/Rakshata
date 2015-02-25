@@ -165,6 +165,7 @@ void updateFavorites()
     if(projectDB == NULL)
         return;
 
+	//An optimisation by only getting projects with favorite would be nice
     for(pos = 0; pos < nbElem; pos++)
     {
         if(projectDB[pos].favoris)

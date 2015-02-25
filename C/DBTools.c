@@ -158,123 +158,6 @@ bool isProjectListSorted(PROJECT_DATA* data, uint length)
 	return true;
 }
 
-void updatePageInfoForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
-{
-	if(project == NULL || !nbElem)
-		return;
-	
-	bool large;
-	size_t length;
-	char imagePath[1024], crcHash[LENGTH_HASH+1], *hash;
-	REPO_DATA *repo = NULL;
-	
-	//Recover URLRepo
-	for (uint pos = 0; pos < nbElem; pos++)
-	{
-		if(project[pos].repo != NULL)
-		{
-			repo = project[pos].repo;
-			break;
-		}
-	}
-	
-	if(repo == NULL)		return;
-	else
-	{
-		char * encodedHash = getPathForRepo(repo);
-		if(encodedHash == NULL)		return;
-		
-		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
-		createPath(imagePath);
-	}
-	
-	for (uint pos = 0; pos < nbElem; pos++)
-	{
-		if(project[pos].repo == NULL)
-			continue;
-		
-		for(char i = 0; i < 2; i++)
-		{
-			if(i == 0)
-			{
-				if(project[pos].hashLarge[0] != 0)
-				{
-					hash = project[pos].hashLarge;
-					large = true;
-				}
-				else
-					continue;
-			}
-			else
-			{
-				if(project[pos].hashSmall[0] != 0)
-				{
-					hash = project[pos].hashSmall;
-					large = false;
-				}
-				else
-					continue;
-			}
-			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s.png", project[pos].projectID, large ? PROJ_IMG_SUFFIX_CT : PROJ_IMG_SUFFIX_DD);
-			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
-			
-			if(strncmp(crcHash, hash, LENGTH_HASH))
-				getPageInfo(*repo, project[pos].projectID, large, imagePath);
-		}
-	}
-}
-
-void getPageInfo(REPO_DATA repo, uint projectID, bool large, char * filename)
-{
-	bool ssl = repo.type != TYPE_DEPOT_OTHER;
-	char URL[1024], filenameTmp[1024+64], suffix[6] = PROJ_IMG_SUFFIX_CT, buf[5];
-	uint pos = strlen(filename);
-	FILE* file;
-	
-	if(!large)	{	suffix[0] = PROJ_IMG_SUFFIX_DD[0];	suffix[1] = PROJ_IMG_SUFFIX_DD[1]; }
-	
-	strncpy(filenameTmp, filename, sizeof(filenameTmp));
-	for(char i = 0; i < 2; i++)
-	{
-		if(repo.type == TYPE_DEPOT_DB)
-			snprintf(URL, sizeof(URL), "https://dl.dropboxusercontent.com/u/%s/imageCache/%d_%s.png", repo.URL, projectID, suffix);
-		
-		else if(repo.type == TYPE_DEPOT_OTHER)
-			snprintf(URL, sizeof(URL), "http://%s/imageCache/%d_%s.png", repo.URL, projectID, suffix);
-		
-		else if(repo.type == TYPE_DEPOT_PAID) //Payant
-			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=img&project=%d&type=%s", repo.URL, projectID, suffix);
-		
-		filenameTmp[pos] = '.';	filenameTmp[pos+1] = 't';	filenameTmp[pos+2] = 'm';	filenameTmp[pos+3] = 'p';	filenameTmp[pos+4] = '\0';
-		download_disk(URL, NULL, filenameTmp, ssl);
-		
-		file = fopen(filenameTmp, "r");
-		if(file != NULL)
-		{
-			for (char j = 0; j < 5; buf[j++] = fgetc(file));
-			fclose(file);
-			
-			if(!isJPEG(buf) && !isPNG(buf))
-				remove(filenameTmp);
-			else
-			{
-				remove(filename);
-				rename(filenameTmp, filename);
-			}
-		}
-		
-		if(i == 0)	//We add @2x everywhere
-		{
-			suffix[2] = '@';	suffix[3] = '2';	suffix[4] = 'x';	suffix[5] = '\0';
-			strncpy(&filename[pos-4], "@2x.png", 1024 - pos + 4);
-
-			for(uint j = pos - 4; j < pos+3; j++)	filenameTmp[j] = filename[j];
-			filenameTmp[pos+3] = '.';	filenameTmp[pos+4] = 't';	filenameTmp[pos+5] = 'm';	filenameTmp[pos+6] = 'p';	filenameTmp[pos+7] = '\0';
-		}
-	}
-}
-
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
 {
 	uint repoID = getRepoIndex(oldData[0].repo);
@@ -379,6 +262,194 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	flushSearchJumpTable(searchData);
 	sqlite3_finalize(request);
+}
+
+/**************		REFRESH ICONS		**************/
+
+bool ressourcesDownloadInProgress = false;
+ICONS_UPDATE * _queue;
+
+void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
+{
+	if(project == NULL || !nbElem)
+		return NULL;
+	
+	size_t length;
+	char imagePath[1024], crcHash[LENGTH_HASH+1];
+	REPO_DATA *repo = NULL;
+	
+	//Recover URLRepo
+	for (uint pos = 0; pos < nbElem; pos++)
+	{
+		if(project[pos].repo != NULL)
+		{
+			repo = project[pos].repo;
+			break;
+		}
+	}
+	
+	if(repo != NULL)
+	{
+		char * encodedHash = getPathForRepo(repo);
+		if(encodedHash == NULL)
+			return NULL;
+		
+		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
+		createPath(imagePath);
+	}
+	else
+		return NULL;
+	
+	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
+	ICONS_UPDATE * workload = NULL, * current = NULL, * previous = NULL;
+	
+	for (uint pos = 0; pos < nbElem; pos++)
+	{
+		if(project[pos].repo == NULL)
+			continue;
+		
+		for(byte i = 0; i < NB_IMAGES; i++)
+		{
+			if(!project[pos].haveImages[i])
+				continue;
+			
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "" : "@2x");
+			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
+			
+			if(strncmp(crcHash, project[pos].hashesImages[i], LENGTH_HASH))
+			{
+				if(current == NULL)
+				{
+					workload = current = calloc(1, sizeof(ICONS_UPDATE));
+					if(workload == NULL)
+					{
+						memoryError(sizeof(ICONS_UPDATE));
+						free(project[pos].URLImages[i]);
+						continue;
+					}
+				}
+				else
+				{
+					void * new = calloc(1, sizeof(ICONS_UPDATE));
+					if(new == NULL)
+					{
+						memoryError(sizeof(ICONS_UPDATE));
+						free(project[pos].URLImages[i]);
+						continue;
+					}
+					
+					current->next = new;
+					previous = current;
+					current = new;
+				}
+				
+				current->filename = strdup(imagePath);
+				
+				if(current->filename == NULL)
+				{
+					free(project[pos].URLImages[i]);
+					free(current);
+					current = previous;
+					current->next = NULL;
+				}
+				
+				current->URL = project[pos].URLImages[i];
+			}
+			else
+				free(project[pos].URLImages[i]);
+		}
+	}
+	
+	return workload;
+}
+
+void updateProjectImages(void * _todo)
+{
+	ICONS_UPDATE * todo = _todo, * end, *tmp;
+	
+	if(todo == NULL)
+		return;
+	
+	if(ressourcesDownloadInProgress)
+	{
+		if(_queue == NULL)
+			_queue = todo;
+		else
+		{
+			end = _queue;
+			
+			while(end->next != NULL)
+				end = end->next;
+			
+			end->next = todo;
+		}
+		
+		quit_thread(0);
+	}
+
+	MUTEX_LOCK(networkAndDBRefreshMutex);
+	ressourcesDownloadInProgress = true;
+	MUTEX_UNLOCK(networkAndDBRefreshMutex);
+	
+	FILE * newFile;
+	char filename[1024];
+	
+	end = todo;
+	while(end->next != NULL)
+	{
+		snprintf(filename, sizeof(filename), "%s.tmp", end->filename);
+
+		newFile = fopen(filename, "w+");
+		if(newFile != NULL)
+			fclose(newFile);
+		
+		end = end->next;
+	}
+	
+	while(todo != NULL || _queue != NULL)
+	{
+		if(_queue != NULL)
+		{
+			if(end != NULL)
+				end->next = _queue;
+			else
+				todo = end = _queue;
+
+			_queue = NULL;
+
+			while(end->next != NULL)
+			{
+				snprintf(filename, sizeof(filename), "%s.tmp", end->filename);
+				
+				newFile = fopen(filename, "w+");
+				if(newFile != NULL)
+					fclose(newFile);
+				
+				end = end->next;
+			}
+		}
+
+		snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
+		
+		if(download_disk(todo->URL, NULL, filename, !strncmp(todo->URL, "https", 5)) != CODE_RETOUR_OK)
+			remove(filename);
+		else
+		{
+			remove(todo->filename);
+			rename(filename, todo->filename);
+		}
+		
+		free(todo->filename);
+		free(todo->URL);
+	
+		tmp = todo->next;
+		free(todo);
+		todo = tmp;
+	}
+	
+	MUTEX_LOCK(networkAndDBRefreshMutex);
+	ressourcesDownloadInProgress = false;
+	MUTEX_UNLOCK(networkAndDBRefreshMutex);
 }
 
 /*****************		DIVERS		******************/

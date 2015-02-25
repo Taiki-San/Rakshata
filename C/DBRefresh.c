@@ -14,17 +14,17 @@
 
 void updateDatabase(bool forced)
 {
-    MUTEX_LOCK(mutex);
+    MUTEX_LOCK(networkAndDBRefreshMutex);
     if(NETWORK_ACCESS != CONNEXION_DOWN && (forced || time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY))
 	{
-        MUTEX_UNLOCK(mutex);
+        MUTEX_UNLOCK(networkAndDBRefreshMutex);
 	    updateRepo();
         updateProjects();
 		consolidateCache();
         alreadyRefreshed = time(NULL);
 	}
     else
-        MUTEX_UNLOCK(mutex);
+        MUTEX_UNLOCK(networkAndDBRefreshMutex);
 }
 
 /************** UPDATE REPO	********************/
@@ -147,23 +147,24 @@ int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo)
     return defaultVersion+1;
 }
 
-void refreshRepo(REPO_DATA * repo, bool standalone)
+void * refreshRepo(REPO_DATA * repo, bool standalone)
 {
 	PROJECT_DATA project = getEmtpyProject();
 	
 	project.repo = repo;
 	
-	updateProjectsFromRepo(&project, 0, 0, standalone);
+	return updateProjectsFromRepo(&project, 0, 0, standalone);
 }
 
-void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
+void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
 {
 	REPO_DATA *globalRepo = oldData[posBase].repo;
 	uint magnitudeInput = posEnd - posBase, nbElem = 0;
 	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
+	void * output = NULL;
 	
 	if(bufferDL == NULL)
-		return;
+		return output;
 
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
 	bool paidRepo = globalRepo->type == TYPE_DEPOT_PAID;
@@ -173,7 +174,7 @@ void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL))		//On a des données à peu près valide
 	{
 		PROJECT_DATA_EXTRA * projects = parseRemoteData(globalRepo, bufferDL, &nbElem);
-		updatePageInfoForProjects(projects, nbElem);
+		output = updateImagesForProjects(projects, nbElem);
 		
 		//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
 		if(projects != NULL)
@@ -183,7 +184,7 @@ void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 			{
 				for (uint pos = 0; pos < nbElem; pos++)
 				{
-					memcpy(&projectShort[pos], &projects[pos], sizeof(PROJECT_DATA));
+					moveProjectExtraToStandard(projects[pos], &projectShort[pos]);
 					
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
 					if(projectShort[pos].isPaid && !paidRepo)
@@ -207,20 +208,34 @@ void updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bo
 	}
 	
 	free(bufferDL);
+	
+	return output;
 }
 
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd, nbRepoRefreshed = 0;
 	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO, &nbElem);
+	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 	
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsRepoOnProjectDB(oldData, posBase, nbElem);
 		if(posEnd != UINT_MAX)
 		{
-			updateProjectsFromRepo(oldData, posBase, posEnd, false);
+			newIcon = updateProjectsFromRepo(oldData, posBase, posEnd, false);
 			nbRepoRefreshed++;
+			
+			if(newIcon != NULL)
+			{
+				if(iconData == NULL)
+					iconData = endIcon = newIcon;
+				else
+					endIcon->next = newIcon;
+				
+				while(endIcon->next != NULL)
+					endIcon = endIcon->next;
+			}
 		}
 		else
 			break;
@@ -281,7 +296,20 @@ void updateProjects()
 				for(uint i = 0; i < realNumberOfRepo; i++)
 				{
 					if(!refreshedTable[i])
-						refreshRepo(repo[i], false);
+					{
+						newIcon = refreshRepo(repo[i], false);
+						
+						if(newIcon != NULL)
+						{
+							if(iconData == NULL)
+								iconData = endIcon = newIcon;
+							else
+								endIcon->next = newIcon;
+							
+							while(endIcon->next != NULL)
+								endIcon = endIcon->next;
+						}
+					}
 				}
 				
 				free(refreshedTable);
@@ -291,6 +319,7 @@ void updateProjects()
 		}
 	}
 	
+	createNewThread(updateProjectImages, iconData);
 	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 	freeProjectData(oldData);
 	notifyFullUpdate();
