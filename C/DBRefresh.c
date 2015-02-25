@@ -64,6 +64,7 @@ void updateRepo()
 {
 	uint nbRepoToRefresh;
 	ROOT_REPO_DATA **oldRootData = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRepoToRefresh, true);
+	ICONS_UPDATE * iconsData = NULL, * newIcons, * endIcons;
 
 	if(oldRootData == NULL || nbRepoToRefresh == 0)
 	{
@@ -103,12 +104,29 @@ void updateRepo()
 		if(parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
 			removeNonInstalledSubRepo(&(newData->subRepo), &(newData->nombreSubrepo), true);
-			enforceRepoExtra(newData, true);
+
+			newIcons = enforceRepoExtra(newData, true);
+			
+			if(newIcons != NULL)
+			{
+				if(iconsData == NULL)
+					endIcons = iconsData = newIcons;
+				else
+					endIcons->next = newIcons;
+				
+				while(endIcons->next != NULL)
+					endIcons = endIcons->next;
+			}
 			
 			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
 		}
 	}
+
 	free(bufferDL);
+	
+	if(iconsData != NULL)
+		createNewThread(updateProjectImages, iconsData);
+	
 	updateRootRepoCache(oldRootData, -1);
 	free(oldRootData);
 }

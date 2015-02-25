@@ -17,6 +17,7 @@
 #define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
 #define PROJ_IMG_SUFFIX_CT		"CT"		//CT miniature in the reduced CT tab (reader mode)
 #define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
+#define REPO_IMG_NAME			"REPO"
 
 enum getCopyDBCodes
 {
