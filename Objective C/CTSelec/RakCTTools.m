@@ -172,7 +172,7 @@
 			free(encodedHash);
 			
 			if(path != nil)
-				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_"PROJ_IMG_SUFFIX_THUMB, imageName]];
+				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_"PROJ_IMG_SUFFIX_CT, imageName]];
 		}
 	}
 	
