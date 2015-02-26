@@ -18,6 +18,7 @@
 #endif
 
 #define CURRENTVERSION 200
+#define PRINTABLE_VERSION "2.0"
 
 #include "configuration.h"
 #include "defines.h"

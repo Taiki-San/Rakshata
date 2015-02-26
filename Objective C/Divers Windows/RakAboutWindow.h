@@ -13,6 +13,11 @@
 @interface RakAboutWindow : NSObject <NSWindowDelegate>
 {
 	RakWindow * window;
+	
+	NSImageView * icon;
+	RakText * projectName, * version;
+	
+	CGFloat step;
 }
 
 - (void) createWindow;

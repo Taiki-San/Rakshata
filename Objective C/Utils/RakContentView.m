@@ -102,15 +102,30 @@
 		if (internalRows2 != nil)
 			[self addSubview:internalRows2];
 		
+		if(firstResponder == nil)
+			[self craftFirstResponder];
+		else
+		{
+			[firstResponder removeFromSuperview];
+			[self addSubview:firstResponder];
+		}
+		
 		frame.size.width -= 2 * WIDTH_BORDER_INTERNAL;
 		frame.size.height -= 2 * WIDTH_BORDER_INTERNAL;
 		frame.origin.x += WIDTH_BORDER_INTERNAL;
 		frame.origin.y += WIDTH_BORDER_INTERNAL;
+		firstResponder.frame = frame;
 	}
-	
-	firstResponder = [[RakContentView alloc] initWithFrame:frame];
-	if(firstResponder != nil)
-		[self addSubview:firstResponder];
+}
+
+- (void) craftFirstResponder
+{
+	if(self.window.isMainWindow)
+	{
+		firstResponder = [[RakContentView alloc] initWithFrame:_bounds];
+		if(firstResponder != nil)
+			[self addSubview:firstResponder];
+	}
 }
 
 - (void) updateUI
@@ -126,6 +141,9 @@
 
 - (RakContentView *) getFirstResponder
 {
+	if(firstResponder == nil)
+		[self craftFirstResponder];
+
 	return firstResponder;
 }
 

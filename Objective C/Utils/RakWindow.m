@@ -91,7 +91,7 @@
 		{
 			NSString * character = [event charactersIgnoringModifiers];
 
-			if(_isMain)
+			if(_isMainWindow)
 			{
 				if ([character isEqualToString:@"f"])
 					[self toggleFullScreen:self];

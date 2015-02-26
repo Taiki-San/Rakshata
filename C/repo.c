@@ -102,6 +102,7 @@ bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
 }
 
 #warning "To upgrade"
+#if 0
 bool addRepo(char * URL, byte type)
 {
     char bufferDL[1000];
@@ -133,6 +134,7 @@ bool addRepo(char * URL, byte type)
 
 	return false;
 }
+#endif
 
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 {
@@ -143,6 +145,9 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 	REPO_DATA_EXTRA * data = (void *) root->subRepo;
 	uint nbSubRepo = root->nombreSubrepo;
 	char rootPath[64], imagePath[256], crcHash[LENGTH_HASH+1];
+	
+	if(nbSubRepo == 0)
+		return NULL;
 	
 	for(uint i = 0; i < nbSubRepo; i++)
 	{
@@ -201,7 +206,7 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 					retina->URL = strdup(data[i].URLImage);
 					retina->filename = strdup(imagePath);
 					
-					if(retina->URL == NULL || new->filename == NULL)
+					if(retina->URL == NULL || retina->filename == NULL)
 					{
 						free(retina->URL);
 						free(retina->filename);
@@ -216,21 +221,24 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 			}
 		}
 		
-		if(begin == NULL)
+		if(new != NULL)
 		{
-			begin = new;
-			if(new->next == NULL)
-				current = new;
+			if(begin == NULL)
+			{
+				begin = new;
+				if(new->next == NULL)
+					current = new;
+				else
+					current = new->next;
+			}
 			else
-				current = new->next;
-		}
-		else
-		{
-			current->next = new;
-			if(new->next == NULL)
-				current = new;
-			else
-				current = new->next;
+			{
+				current->next = new;
+				if(new->next == NULL)
+					current = new;
+				else
+					current = new->next;
+			}
 		}
 	}
 	

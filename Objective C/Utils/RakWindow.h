@@ -12,7 +12,7 @@
 
 @interface RakWindow : INAppStoreWindow
 
-@property BOOL isMain;
+@property (getter=isMainWindow) BOOL isMainWindow;
 
 //Event data
 @property BOOL shiftPressed;

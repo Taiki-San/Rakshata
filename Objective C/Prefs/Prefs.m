@@ -60,7 +60,6 @@ enum
 	
 	if(registerForChanges != nil)
 	{
-		NSLog(@"%@ joined", registerForChanges);
 		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
 	}
 	
@@ -74,7 +73,6 @@ enum
 	
 	if(object != nil)
 	{
-		NSLog(@"%@ left", object);
 		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
 	}
 }
@@ -398,6 +396,7 @@ enum
 		}
 		case GET_FONT_RD_BUTTONS:
 		case GET_FONT_SR_TITLE:
+		case GET_FONT_ABOUT:
 		{
 			output = @"Helvetica-Bold";
 			break;

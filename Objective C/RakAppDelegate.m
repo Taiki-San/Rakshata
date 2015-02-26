@@ -16,7 +16,7 @@
 {
 	loginPromptOpen = NO;
 	
-	self.window.isMain = YES;
+	self.window.isMainWindow = YES;
 	[self.window setDelegate:self];
 	[self.window configure];
 	
@@ -133,8 +133,6 @@
 										 CT:saveCT
 									 reader:saveReader
 										MDL:saveMDL];
-
-	[Prefs deletePrefs];
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

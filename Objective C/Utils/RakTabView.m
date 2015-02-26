@@ -351,13 +351,22 @@
 #pragma mark - Events
 /**		Events		**/
 
+#define VERBOSE_MOUSE_OVER
+
 - (BOOL) isCursorOnMe
 {
 	NSRect frame = _bounds;
 	
+#ifdef VERBOSE_MOUSE_OVER
+	NSLog(@"size: w: %lf, h: %lf", frame.size.width, frame.size.height);
+#endif
+
 	if(_mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 	{
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
+#ifdef VERBOSE_MOUSE_OVER
+		NSLog(@"'-> w: %lf", frame.size.width);
+#endif
 	}
 	
 	return [self isCursorOnRect:frame];
@@ -370,13 +379,26 @@
 	
 	selfLoc.x += frame.origin.x;
 	selfLoc.y += frame.origin.y;
-		
+	
+#ifdef VERBOSE_MOUSE_OVER
+	NSLog(@"self loc: x: %lf, y: %lf", selfLoc.x, selfLoc.y);
+	NSLog(@"cursor loc: x: %lf, y: %lf", mouseLoc.x, mouseLoc.y);
+#endif
+	
 	if(selfLoc.x - 5 < mouseLoc.x && selfLoc.x + selfSize.width + 5 >= mouseLoc.x &&
 	   selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
 	{
+#ifdef VERBOSE_MOUSE_OVER
+		NSLog(@"Test: success");
+#endif
 		return true;
 	}
 	
+#ifdef VERBOSE_MOUSE_OVER
+	NSLog(@"Test: fail... [%d - %d - %d - %d]", selfLoc.x - 5 < mouseLoc.x, selfLoc.x + selfSize.width + 5 >= mouseLoc.x,
+	   selfLoc.y - 5 < mouseLoc.y, selfLoc.y + selfSize.height + 5 >= mouseLoc.y);
+#endif
+
 	return false;
 }
 
@@ -428,9 +450,19 @@
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	//On attend 0.125 secondes avant de lancer l'animation au cas d'un passage rapide
+	NSLog(@"Detected in %@!", self);
+	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-		if([self isCursorOnMe] && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
-			[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+		if([self isCursorOnMe])
+		{
+			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			{
+				NSLog(@"Yep");
+				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+			}
+			else
+				NSLog(@"Nop");
+		}
 	});
 }
 

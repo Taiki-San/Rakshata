@@ -345,7 +345,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	bool trusted;
 	uint nbDescriptions = 0;
 	charType ** descriptions = NULL;
-	char ** languages;
+	char ** languages = NULL;
 	
 	ROOT_REPO_DATA * root = calloc(1, sizeof(ROOT_REPO_DATA)), *rootWip = root;
 	if(root == NULL)
