@@ -182,6 +182,18 @@
 	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	backgroundColor = [self firstBorderColor];
+	[internalRows1 setColor: [self middleBorderColor]];
+	
+	if(self.window.isMainWindow)
+		[internalRows2 setColor: [self lastBorderColor]];
+}
+
 @end
 
 @implementation RakContentView

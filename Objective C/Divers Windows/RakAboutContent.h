@@ -10,16 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakAboutContent.h"
+@interface RakAboutContent : NSView
 
-@interface RakAboutWindow : NSObject <NSWindowDelegate>
-{
-	RakWindow * window;
-	
-	NSImageView * icon;
-	RakText * projectName, * version;
-}
-
-- (void) createWindow;
+@property BOOL haveAdditionalDrawing;
+@property (nonatomic, copy) void (^additionalDrawing)(NSSize size);
 
 @end

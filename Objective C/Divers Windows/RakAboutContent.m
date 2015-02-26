@@ -10,16 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakAboutContent.h"
+@implementation RakAboutContent
 
-@interface RakAboutWindow : NSObject <NSWindowDelegate>
+- (void)drawRect:(NSRect)dirtyRect
 {
-	RakWindow * window;
-	
-	NSImageView * icon;
-	RakText * projectName, * version;
+	if(_haveAdditionalDrawing)
+		_additionalDrawing(_bounds.size);
 }
-
-- (void) createWindow;
 
 @end
