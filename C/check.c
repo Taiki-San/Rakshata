@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#if 0
+
 /****	 Check environnment	  ****/
 void fillCheckEvntList(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA]);
 int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DATA], int results[NOMBRE_DE_FICHIER_A_CHECKER], bool* cantWrite);
@@ -31,10 +33,6 @@ int checkEvnt()
         char temp[200];
         FILE *test = NULL;
         
-#ifdef IDENTIFY_MISSING_UI
-		#warning "Missing in check_evt"
-#endif
-		
 		while(1)
         {
             if(!checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
@@ -44,10 +42,6 @@ int checkEvnt()
 
         if(!checkNetworkState(CONNEXION_OK))
         {
-            UI_Alert("Acces internet manquant", "Un acces Internet est necessaire pour recuperer les fichiers necessaires au\nbon fonctionnement de Rakshata, veuillez relancer Rakshata avec un acces Internet.\nNeanmoins, il est possible que cette erreur apparaisse car nos serveurs sont hors-ligne.\nAuquel cas, attendez que www.rakshata.com soit de nouveau accessible.");
-#ifdef IDENTIFY_MISSING_UI
-			#warning "Need to flush"
-#endif
             quit_thread(0);
         }
 
@@ -78,9 +72,6 @@ int checkEvnt()
         {
             if(!checkFileExist(list[fichiersADL[nbCurrent]])) //On confirme que le fichier est absent
             {
-#ifdef IDENTIFY_MISSING_UI
-				#warning "Status given by nbCurrent / nbTotal"
-#endif
                 snprintf(temp, 200, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/%s", list[fichiersADL[nbCurrent]]);
                 download_disk(temp, NULL, list[fichiersADL[nbCurrent]], SSL_ON);
 
@@ -171,6 +162,8 @@ int checkFilesExistance(char list[NOMBRE_DE_FICHIER_A_CHECKER][LONGUEUR_NOMS_DAT
     }
 	return nbElemMissing;
 }
+
+#endif
 
 /****	   Other checks		 ****/
 

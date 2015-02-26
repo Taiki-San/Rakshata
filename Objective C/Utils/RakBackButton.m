@@ -10,6 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	LEVEL_SERIE,
+	LEVEL_CT
+};
+
 @implementation RakBackButton
 
 - (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack
@@ -27,7 +33,7 @@
 
 		//On initialise la cellule
 		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
-		ID = isOneLevelBack ? 2 : 1;
+		ID = isOneLevelBack ? LEVEL_CT : LEVEL_SERIE;
 	
 		//Set tracking area
 		tag = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:NO];
@@ -104,7 +110,7 @@
 - (bool) confirmMouseOnMe
 {
 	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
-	RakTabView * group = ID == 1 ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
+	RakTabView * group = ID == LEVEL_SERIE ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
 	
 	NSRect frame = _frame;
 	if(group.isFlipped)

@@ -44,7 +44,6 @@ int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
 /**Error.c**/
 void logR(char *error);
 int libcurlErrorCode(CURLcode code);
-int UI_Alert(char* titre, char* contenu);
 void memoryError(size_t size);
 
 /**Favoris.c**/

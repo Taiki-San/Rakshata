@@ -33,7 +33,7 @@ struct UIABUTT
 	UIABUTT * next;
 };
 
-int internalUIAlert(char *titre, char* content, UIABUTT* buttons);
+void internalUIAlert(char *titre, char* content, UIABUTT* buttons);
 
 
 /*****************************************

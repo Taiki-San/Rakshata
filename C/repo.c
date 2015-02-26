@@ -75,6 +75,39 @@ void checkAjoutRepoParFichier(char *argv)
 	if(anySuccess)
 		updateDatabase(true);
 }
+
+bool addRepo(char * URL, byte type)
+{
+	char bufferDL[1000];
+	
+	if(!checkNetworkState(CONNEXION_DOWN))
+	{
+		if(type > MAX_TYPE_DEPOT)
+		{
+			getRepoData(defineTypeRepo(URL), URL, bufferDL, sizeof(bufferDL));
+		}
+		else
+		{
+			ROOT_REPO_DATA tmpData;
+			
+			usstrcpy(tmpData.URL, LONGUEUR_URL, URL);
+			tmpData.type = type;
+			getUpdatedRepo(bufferDL, sizeof(bufferDL), tmpData);
+		}
+		
+		if(isDownloadValid(bufferDL))
+		{
+			ROOT_REPO_DATA * root = parseRemoteRepo(bufferDL);
+			root->repoID = getFreeRootRepoID();
+			enforceRepoExtra(root, true);
+			addRepoToDB(root);
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 #endif
 
 bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
@@ -100,41 +133,6 @@ bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
 	
 	return isDownloadValid(output);
 }
-
-#warning "To upgrade"
-#if 0
-bool addRepo(char * URL, byte type)
-{
-    char bufferDL[1000];
-
-	if(!checkNetworkState(CONNEXION_DOWN))
-    {
-		if(type > MAX_TYPE_DEPOT)
-		{
-			getRepoData(defineTypeRepo(URL), URL, bufferDL, sizeof(bufferDL));
-		}
-		else
-		{
-			ROOT_REPO_DATA tmpData;
-			
-			usstrcpy(tmpData.URL, LONGUEUR_URL, URL);
-			tmpData.type = type;
-			getUpdatedRepo(bufferDL, sizeof(bufferDL), tmpData);
-		}
-		
-		if(isDownloadValid(bufferDL))
-		{
-			ROOT_REPO_DATA * root = parseRemoteRepo(bufferDL);
-			root->repoID = getFreeRootRepoID();
-			enforceRepoExtra(root, true);
-			addRepoToDB(root);
-			return true;
-		}
-    }
-
-	return false;
-}
-#endif
 
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 {

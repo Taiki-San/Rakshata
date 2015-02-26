@@ -10,13 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-int internalUIAlert(char *titre, char* content, UIABUTT* buttons)
+void internalUIAlert(char *titre, char* content, UIABUTT* buttons)
 {
 	int ret_value[3] = {-1, -1, -1};
 	NSString *buttonsString[3] = {NULL, NULL, NULL};
-	
-	if(buttons == NULL)
-		return -1;
 	
 	for(; buttons != NULL; buttons = buttons->next)
 	{
@@ -34,9 +31,5 @@ int internalUIAlert(char *titre, char* content, UIABUTT* buttons)
 						  informativeTextWithFormat: @"%s", content];
 	[[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
 	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert runModal];	//utiliser beginSheetModalForWindow
-	
-	//Récupérer le bouton cliqué
-	
-	return ret_value[getRandom() % 3];
+	[alert beginSheetModalForWindow:[[NSApp delegate] window] completionHandler:^(NSModalResponse returnCode) {}];
 }

@@ -322,7 +322,20 @@ int rmdir (const char *filename);
 void removeFolder(char *path)
 {
 #ifdef DEV_VERSION
-    UI_Alert("Suppression detectee", path);
+	char charOK[10] = "Ok", charCancel[10] = "Cancel";
+	UIABUTT buttonOK, buttonCancel;
+	
+	buttonOK.buttonName = charOK;
+	buttonOK.ret_value = 1;
+	buttonOK.priority =	UIABUTTDefault;
+	buttonOK.next = &buttonCancel;
+	
+	buttonCancel.buttonName = charCancel;
+	buttonCancel.ret_value = 0;
+	buttonCancel.priority = UIABUTTOther;
+	buttonCancel.next = NULL;
+	
+	internalUIAlert("Suppression detectee", path, &buttonOK);
 #endif
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
