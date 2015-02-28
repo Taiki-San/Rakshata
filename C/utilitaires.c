@@ -219,11 +219,6 @@ void minToMaj(char* input)
     }
 }
 
-void openOnlineHelp()
-{
-	ouvrirSite("http://www.rakshata.com/help");
-}
-
 bool isDownloadValid(char *input)
 {
     int i = 0;

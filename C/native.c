@@ -375,7 +375,7 @@ void removeFolder(char *path)
 #endif
 }
 
-void ouvrirSite(char *URL)
+void ouvrirSite(const char *URL)
 {
     #ifdef _WIN32
         ShellExecute(NULL, "open", URL, NULL, NULL, SW_SHOWNOACTIVATE);
