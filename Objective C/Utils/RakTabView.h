@@ -28,7 +28,7 @@ enum {
 	bool noDrag;
 	bool canDeploy;
 	int flag;
-	NSTrackingArea * trackingArea;
+	NSTrackingRectTag trackingArea;
 	
 	NSRect _lastFrame;
 
@@ -48,7 +48,6 @@ enum {
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
 - (id) initView: (NSView *)superview : (NSString *) state;
-- (void) endOfInitialization;
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
@@ -71,7 +70,7 @@ enum {
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
-- (void) resizeReaderCatchArea : (BOOL) inReaderMode;
+- (void) resizeReaderCatchArea;
 - (void) releaseReaderCatchArea;
 - (void) setUpViewForAnimation : (uint) mainThread;
 

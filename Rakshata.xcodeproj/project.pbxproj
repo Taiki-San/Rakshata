@@ -69,7 +69,7 @@
 		B678866C1A82552800774431 /* RakSRContentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B678866B1A82552800774431 /* RakSRContentManager.m */; };
 		B678D0321977178A00D7FE6A /* DBrecent.c in Sources */ = {isa = PBXBuildFile; fileRef = B678D0311977178A00D7FE6A /* DBrecent.c */; };
 		B678D034197717A600D7FE6A /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
-		B67C0F391A9FDD35003A2086 /* RakAboutContent.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutContent.m */; };
+		B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutTools.m */; };
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B68B5225191AE3050057F35A /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5224191AE3050057F35A /* RakScroller.m */; };
@@ -303,8 +303,8 @@
 		B678D033197717A600D7FE6A /* ProjectParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProjectParser.m; path = "Objective C/Utils/ProjectParser.m"; sourceTree = "<group>"; };
 		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; };
-		B67C0F371A9FDD35003A2086 /* RakAboutContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutContent.h; path = "Divers Windows/RakAboutContent.h"; sourceTree = "<group>"; };
-		B67C0F381A9FDD35003A2086 /* RakAboutContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutContent.m; path = "Divers Windows/RakAboutContent.m"; sourceTree = "<group>"; };
+		B67C0F371A9FDD35003A2086 /* RakAboutTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutTools.h; path = "Divers Windows/RakAboutTools.h"; sourceTree = "<group>"; };
+		B67C0F381A9FDD35003A2086 /* RakAboutTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutTools.m; path = "Divers Windows/RakAboutTools.m"; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTSelectionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSelectionList.h; path = CTSelec/RakCTSelectionList.h; sourceTree = "<group>"; };
 		B67E079318E7714B0007EB44 /* RakCTSelectionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSelectionList.m; path = CTSelec/RakCTSelectionList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -544,8 +544,8 @@
 		B6251F711A98CBF0001C4F06 /* Divers fenêtres */ = {
 			isa = PBXGroup;
 			children = (
-				B67C0F371A9FDD35003A2086 /* RakAboutContent.h */,
-				B67C0F381A9FDD35003A2086 /* RakAboutContent.m */,
+				B67C0F371A9FDD35003A2086 /* RakAboutTools.h */,
+				B67C0F381A9FDD35003A2086 /* RakAboutTools.m */,
 				B6251F721A98CC92001C4F06 /* RakAboutWindow.h */,
 				B6251F731A98CC92001C4F06 /* RakAboutWindow.m */,
 			);
@@ -1309,7 +1309,7 @@
 				B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */,
 				B6BD45BE1A7D1B9E00C2A675 /* RakCollectionView.m in Sources */,
 				B621824118732CB0008AC5DD /* RakTabView.m in Sources */,
-				B67C0F391A9FDD35003A2086 /* RakAboutContent.m in Sources */,
+				B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */,
 				B678866C1A82552800774431 /* RakSRContentManager.m in Sources */,
 				B6F6ED0918A3001400E3B55B /* moduleDL2.c in Sources */,
 				B6F6ED0C18A3001400E3B55B /* repo.c in Sources */,

@@ -10,16 +10,26 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakAboutContent.h"
+@class RakAboutWindow;
+
+#import "RakAboutTools.h"
 
 @interface RakAboutWindow : NSObject <NSWindowDelegate>
 {
 	RakWindow * window;
 	
 	NSImageView * icon;
-	RakText * projectName, * version;
+	RakAboutText * projectName;
+	RakText * version;
+	
+	RakText * devTitle, * designTitle;
+	RakAboutText * taikiName, * blag, * planchette, *FOSS;
+	
+	RakText * copyright;
 }
 
 - (void) createWindow;
+
+- (void) respondTo : (RakAboutText *) sender;
 
 @end

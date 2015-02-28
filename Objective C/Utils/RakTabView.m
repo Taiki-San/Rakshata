@@ -34,9 +34,8 @@
 		[self.layer setCornerRadius:7.5];
 		
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
-		trackingArea = nil;
 		
-		[self endOfInitialization];
+		[self resizeReaderCatchArea];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
@@ -46,11 +45,6 @@
 	}
 		
 	return self;
-}
-
-- (void) endOfInitialization
-{
-	[self resizeReaderCatchArea : _mainThread == TAB_READER];
 }
 
 - (NSString *) byebye
@@ -158,7 +152,6 @@
 }
 
 #pragma mark - Drawing, and FS support
-/**			Handle Fullscreen			**/
 
 - (NSColor*) getMainColor
 {
@@ -204,7 +197,6 @@
 	{
 		[super setFrame:frameRect];
 		[foregroundView setFrame:frameRect];
-		[self resizeReaderCatchArea : _mainThread == TAB_READER];
 	}
 }
 
@@ -301,16 +293,23 @@
 }
 
 #pragma mark - Reader
-/**		Reader		**/
 
-- (void) resizeReaderCatchArea : (BOOL) inReaderMode
+- (void) updateTrackingAreas
+{
+	[self resizeReaderCatchArea];
+}
+
+- (void) resizeReaderCatchArea
 {
 	[self releaseReaderCatchArea];
 		
-	if(inReaderMode)
+	if(_mainThread == TAB_READER)
 	{
-		trackingArea = [[NSTrackingArea alloc] initWithRect:[self generateNSTrackingAreaSize] options: (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingMouseMoved) owner:self userInfo:nil];
-		[self addTrackingArea:trackingArea];
+		NSRect frame = [self generateNSTrackingAreaSize];
+		
+		NSLog(@"Creating a tracking area for %@ (prev: %ld): x: %lf y: %lf h: %lf w: %lf", self, (long)trackingArea, frame.origin.x, frame.origin.y, frame.size.height, frame.size.width);
+		
+		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];
 	}
 }
 
@@ -321,7 +320,7 @@
 
 - (void) refreshDataAfterAnimation
 {
-	[self resizeReaderCatchArea : _mainThread == TAB_READER];
+	[self resizeReaderCatchArea];
 }
 
 - (BOOL) isStillCollapsedReaderTab
@@ -336,10 +335,10 @@
 
 - (void) releaseReaderCatchArea
 {
-	if(trackingArea != NULL)
+	if(trackingArea != 0)
 	{
-		[self removeTrackingArea:trackingArea];
-		trackingArea = NULL;
+		[self removeTrackingRect:trackingArea];
+		trackingArea = 0;
 	}
 }
 
@@ -349,7 +348,6 @@
 }
 
 #pragma mark - Events
-/**		Events		**/
 
 #define VERBOSE_MOUSE_OVER
 
@@ -468,11 +466,16 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
+	NSLog(@"Left in %@!", self);
+	
 	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
+		NSLog(@"	Yeah?");
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			if(_mainThread == TAB_READER && [self mouseOutOfWindow])
 			{
+				NSLog(@"	Awesome");
+
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			}

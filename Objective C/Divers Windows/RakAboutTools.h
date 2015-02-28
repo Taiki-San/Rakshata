@@ -16,3 +16,20 @@
 @property (nonatomic, copy) void (^additionalDrawing)(NSSize size);
 
 @end
+
+@interface RakAboutText : RakText
+{
+	NSTrackingRectTag tracking;
+	
+	NSColor * classicalTextColor;
+}
+
+@property NSString * URL;
+
+@property id target;
+@property SEL action;
+
+- (void) setupArea;
+- (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (RakAboutWindow *) responder;
+
+@end

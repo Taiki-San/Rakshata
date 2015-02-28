@@ -221,7 +221,7 @@
 {
 	if(privacy == nil)
 	{
-		privacy = [[RakTextClickable alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		privacy = [[RakAuthText alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -232,7 +232,7 @@
 	
 	if(terms == nil)
 	{
-		terms = [[RakTextClickable alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		terms = [[RakAuthText alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";

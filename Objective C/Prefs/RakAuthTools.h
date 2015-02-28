@@ -49,6 +49,17 @@ enum
 
 @end
 
+@interface RakAuthText : NSView
+{
+	NSColor * backgroundColor;
+}
+
+@property (strong) NSString * URL;
+
+- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
+
+@end
+
 @interface RakAuthTermsButton : NSButton
 
 @property (weak) RakAuthController* controller;

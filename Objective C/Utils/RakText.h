@@ -36,14 +36,3 @@
 - (instancetype) init : (uint) length;
 
 @end
-
-@interface RakTextClickable : NSView
-{
-	NSColor * backgroundColor;
-}
-
-@property (strong) NSString * URL;
-
-- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
-
-@end

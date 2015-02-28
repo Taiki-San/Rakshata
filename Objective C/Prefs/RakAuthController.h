@@ -34,13 +34,11 @@
 	//Container
 	RakText * footerPlaceholder;
 	
-		//Login
-	RakButton * forgottenPass;
-	RakButton * _login;
+	//Login
+	RakButton * forgottenPass, * _login;
 	
-		//Signup
-	RakTextClickable * privacy;
-	RakTextClickable * terms;
+	//Signup
+	RakAuthText * privacy, * terms;
 	RakAuthTermsButton * accept;
 	RakButton * confirm;
 	
