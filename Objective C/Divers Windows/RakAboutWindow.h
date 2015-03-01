@@ -17,19 +17,29 @@
 @interface RakAboutWindow : NSObject <NSWindowDelegate>
 {
 	RakWindow * window;
+	RakAboutContent * contentView;
 	
-	NSImageView * icon;
+	RakAboutIcon * icon;
 	RakAboutText * projectName;
 	RakText * version;
 	
 	RakText * devTitle, * designTitle;
 	RakAboutText * taikiName, * blag, * planchette, *FOSS;
 	
+	uint easterCount;
+	RakText * mainEaster;
+	RakAboutText * easterLink;
+	
 	RakText * copyright;
+	
+	BOOL _isInitialized;
 }
+
+@property BOOL haveEaster;
 
 - (void) createWindow;
 
 - (void) respondTo : (RakAboutText *) sender;
+- (void) clicIcon;
 
 @end
