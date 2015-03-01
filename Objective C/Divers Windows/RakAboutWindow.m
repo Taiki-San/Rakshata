@@ -34,7 +34,9 @@ enum
 	TITLE_OFFSET = 30,
 	INTERLINE_OFFSET = 5,
 	
-	EASTER_BORDER = 7
+	EASTER_BORDER = 7,
+	
+	NB_CLIC_REQUIRED_FOR_EASTEREGG = 3
 };
 
 @implementation RakAboutWindow
@@ -210,7 +212,7 @@ enum
 
 - (void) clicIcon
 {
-	if(easterCount < 5 && ++easterCount == 5)
+	if(easterCount < NB_CLIC_REQUIRED_FOR_EASTEREGG && ++easterCount == NB_CLIC_REQUIRED_FOR_EASTEREGG)
 	{
 		[self createEaster];
 	}

@@ -24,22 +24,15 @@
 
 - (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (RakAboutWindow *) responder
 {
-	self = [super init];
+	self = [super initWithText:text :color];
 	
 	if(self != nil)
 	{
-		self.editable = NO;
-		self.stringValue = text;
-		self.textColor = color;
-		
 		self.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
 		[self sizeToFit];
 		
-		self.backgroundColor = [NSColor clearColor];
-		[self.cell setDrawsBackground: NO];
-		
-		self.target = responder;
-		self.action = @selector(respondTo:);
+		self.clicTarget = responder;
+		self.clicAction = @selector(respondTo:);
 	}
 	
 	return self;
