@@ -68,10 +68,7 @@ enum
 
 + (void) deRegisterForChanges : (id) object
 {
-	if(prefsCache == nil)
-		[self initCache];
-	
-	if(object != nil)
+	if(prefsCache != nil && object != nil)
 	{
 		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
 	}
