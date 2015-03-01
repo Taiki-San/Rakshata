@@ -107,11 +107,6 @@
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) endOfInitialization
-{
-	
-}
-
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
 {
 	bool shouldNotifyBottomBarInitialized = false;
@@ -317,12 +312,6 @@
 	int state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
-}
-
-- (void) resizeReaderCatchArea
-{
-	if([self isStillCollapsedReaderTab])
-		[super resizeReaderCatchArea : self.mainThread == TAB_READER];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent

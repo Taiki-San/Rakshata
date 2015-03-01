@@ -225,8 +225,10 @@
 - (NSRect) generateNSTrackingAreaSize
 {
 	NSSize svSize = self.superview.frame.size;
-	NSRect frame = _bounds;
+	NSRect frame = [self lastFrame];
 	
+	frame.origin = NSZeroPoint;
+
 	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &(frame.size.width) : &svSize];
 	
 	return frame;

@@ -307,7 +307,9 @@
 	{
 		NSRect frame = [self generateNSTrackingAreaSize];
 		
+#ifdef VERBOSE_MOUSE_OVER
 		NSLog(@"Creating a tracking area for %@ (prev: %ld): x: %lf y: %lf h: %lf w: %lf", self, (long)trackingArea, frame.origin.x, frame.origin.y, frame.size.height, frame.size.width);
+#endif
 		
 		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];
 	}
@@ -349,23 +351,12 @@
 
 #pragma mark - Events
 
-#define VERBOSE_MOUSE_OVER
-
 - (BOOL) isCursorOnMe
 {
 	NSRect frame = _bounds;
 	
-#ifdef VERBOSE_MOUSE_OVER
-	NSLog(@"size: w: %lf, h: %lf", frame.size.width, frame.size.height);
-#endif
-
 	if(_mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
-	{
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
-#ifdef VERBOSE_MOUSE_OVER
-		NSLog(@"'-> w: %lf", frame.size.width);
-#endif
-	}
 	
 	return [self isCursorOnRect:frame];
 }
@@ -378,24 +369,11 @@
 	selfLoc.x += frame.origin.x;
 	selfLoc.y += frame.origin.y;
 	
-#ifdef VERBOSE_MOUSE_OVER
-	NSLog(@"self loc: x: %lf, y: %lf", selfLoc.x, selfLoc.y);
-	NSLog(@"cursor loc: x: %lf, y: %lf", mouseLoc.x, mouseLoc.y);
-#endif
-	
 	if(selfLoc.x - 5 < mouseLoc.x && selfLoc.x + selfSize.width + 5 >= mouseLoc.x &&
 	   selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
 	{
-#ifdef VERBOSE_MOUSE_OVER
-		NSLog(@"Test: success");
-#endif
 		return true;
 	}
-	
-#ifdef VERBOSE_MOUSE_OVER
-	NSLog(@"Test: fail... [%d - %d - %d - %d]", selfLoc.x - 5 < mouseLoc.x, selfLoc.x + selfSize.width + 5 >= mouseLoc.x,
-	   selfLoc.y - 5 < mouseLoc.y, selfLoc.y + selfSize.height + 5 >= mouseLoc.y);
-#endif
 
 	return false;
 }
@@ -448,37 +426,22 @@
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	//On attend 0.125 secondes avant de lancer l'animation au cas d'un passage rapide
-	NSLog(@"Detected in %@!", self);
-	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 		if([self isCursorOnMe])
 		{
 			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
-			{
-				NSLog(@"Yep");
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
-			}
-			else
-				NSLog(@"Nop");
 		}
 	});
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	NSLog(@"Left in %@!", self);
-	
 	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
-		NSLog(@"	Yeah?");
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(_mainThread == TAB_READER && [self mouseOutOfWindow])
-			{
-				NSLog(@"	Awesome");
-
-				if([Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
+			if(_mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
-			}
 		});
 	}
 }
@@ -501,22 +464,13 @@
 }
 
 #pragma mark - Graphic Utilities
-/*		Graphic Utilities		*/
 
-//BOOM
-- (BOOL) isFlipped
-{
-	return YES;
-}
+- (BOOL) isFlipped	{	return YES;	}
+- (BOOL) needToConsiderMDL	{	return NO;	}
 
 - (NSRect) createFrame
 {
 	return [self createFrameWithSuperView : self.superview];
-}
-
-- (BOOL) needToConsiderMDL
-{
-	return NO;
 }
 
 - (void) setLastFrame : (NSRect) frame
