@@ -25,9 +25,7 @@
 	RakReaderControllerUIQuery * newStuffsQuery;
 	
 	//Page management
-	RakPageScrollView * _prevScrollView;
 	RakPageScrollView * _scrollView;
-	RakPageScrollView * _nextScrollView;
 	
 	NSPageController * mainScroller;
 	NSImage * loadingPlaceholder;

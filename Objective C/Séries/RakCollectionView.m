@@ -314,6 +314,7 @@
 	if(nbCol == UINT_MAX || nbCol < 3)	//nbElement = 0, ou une seule ligne
 		return nbCol;
 	
+	
 	//We validate the number of columns
 	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:nbCol - 1].view;
 	if(first.frame.origin.y == lastOfFirstLine.frame.origin.y && first.frame.origin.y != nextLine.frame.origin.y)

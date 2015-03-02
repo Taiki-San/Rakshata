@@ -391,7 +391,7 @@
 	NSString *currentSelection;
 	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
-	if(project.repo != NULL)
+	if(project.isInitialized)
 		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.repo->URL, project.projectID];
 	else
 		currentSelection = @"";

@@ -297,8 +297,7 @@
 
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
-	NSRect popoverFrame = NSZeroRect;
-	popoverFrame.origin = [pageCount.window convertBaseToScreen : [pageCount convertPoint:NSMakePoint(pageCount.frame.size.width / 2, 0) toView:nil]];
+	NSRect popoverFrame = [pageCount.window convertRectToScreen: (NSRect) {[pageCount convertPoint:NSMakePoint(pageCount.frame.size.width / 2, 0) toView:nil], NSZeroSize}];
 
 	if(isAnimated)
 		popoverFrame.origin.x += frameRect.origin.x - self.superview.frame.origin.x;
