@@ -29,4 +29,5 @@
 #include "db_external.h"
 
 extern char * COMPTE_PRINCIPAL_MAIL;
-extern MUTEX_VAR networkAndDBRefreshMutex;
+extern MUTEX_VAR DBRefreshMutex;
+extern MUTEX_VAR networkMutex;

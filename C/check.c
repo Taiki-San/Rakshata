@@ -175,9 +175,9 @@ void networkAndVersionTest()
     int hostNotReached = 0;
 	char testURL[512], bufferDL[100] = {0};
 
-    MUTEX_LOCK(networkAndDBRefreshMutex);
+    MUTEX_LOCK(networkMutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
-    MUTEX_UNLOCK(networkAndDBRefreshMutex);
+    MUTEX_UNLOCK(networkMutex);
 
     /*Chargement de l'URL*/
     snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version=%d&os=%s", CURRENTVERSION, BUILD);
@@ -196,20 +196,20 @@ void networkAndVersionTest()
         crashTemp(bufferDL, 100);
         if(download_mem(BACKUP_INTERNET_CHECK, NULL, bufferDL, 100, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
-        MUTEX_LOCK(networkAndDBRefreshMutex);
+        MUTEX_LOCK(networkMutex);
         if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
-        MUTEX_UNLOCK(networkAndDBRefreshMutex);
+        MUTEX_UNLOCK(networkMutex);
     }
 
 	else
     {
 		//No more update code
-        MUTEX_LOCK(networkAndDBRefreshMutex);
+        MUTEX_LOCK(networkMutex);
         NETWORK_ACCESS = CONNEXION_OK;
-        MUTEX_UNLOCK(networkAndDBRefreshMutex);
+        MUTEX_UNLOCK(networkMutex);
 #if 0
         if(bufferDL[0] == '1' && !checkFileExist("data/update")) //Update needed
         {
@@ -261,14 +261,13 @@ void networkAndVersionTest()
 
 bool checkNetworkState(int state)
 {
-    MUTEX_LOCK(networkAndDBRefreshMutex);
-    if(NETWORK_ACCESS == state)
-    {
-        MUTEX_UNLOCK(networkAndDBRefreshMutex);
-        return true;
-    }
-    MUTEX_UNLOCK(networkAndDBRefreshMutex);
-    return false;
+    MUTEX_LOCK(networkMutex);
+
+	bool ret_value = NETWORK_ACCESS == state;
+	
+	MUTEX_UNLOCK(networkMutex);
+
+	return ret_value;
 }
 
 #ifdef _WIN32
@@ -305,10 +304,10 @@ void checkHostNonModifie()
                 {
                     fclose(host);
                     logR("Violation détecté: redirection dans host\n");
-                    MUTEX_LOCK(networkAndDBRefreshMutex);
+                    MUTEX_LOCK(networkMutex);
 					
                     NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
-                    MUTEX_UNLOCK(networkAndDBRefreshMutex);
+                    MUTEX_UNLOCK(networkMutex);
                     break; //On quitte la boucle en while
                 }
             }

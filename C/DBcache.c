@@ -44,7 +44,7 @@ uint setupBDDCache()
 	sqlite3 *internalDB;
 	
 	if(!mutexInitialized)
-		pthread_mutex_init(&cacheMutex, NULL);
+		MUTEX_CREATE(cacheMutex);
 	
 	MUTEX_LOCK(cacheMutex);
 

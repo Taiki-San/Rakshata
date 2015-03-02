@@ -388,9 +388,9 @@ void updateProjectImages(void * _todo)
 		quit_thread(0);
 	}
 
-	MUTEX_LOCK(networkAndDBRefreshMutex);
+	MUTEX_LOCK(DBRefreshMutex);
 	ressourcesDownloadInProgress = true;
-	MUTEX_UNLOCK(networkAndDBRefreshMutex);
+	MUTEX_UNLOCK(DBRefreshMutex);
 	
 	FILE * newFile;
 	char filename[1024];
@@ -448,9 +448,9 @@ void updateProjectImages(void * _todo)
 		todo = tmp;
 	}
 	
-	MUTEX_LOCK(networkAndDBRefreshMutex);
+	MUTEX_LOCK(DBRefreshMutex);
 	ressourcesDownloadInProgress = false;
-	MUTEX_UNLOCK(networkAndDBRefreshMutex);
+	MUTEX_UNLOCK(DBRefreshMutex);
 }
 
 /*****************		DIVERS		******************/

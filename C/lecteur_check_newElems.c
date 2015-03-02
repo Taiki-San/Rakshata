@@ -24,7 +24,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	//Find the beginning of the repo area
 	for (posStart = 0; posStart < nbElemFullData; posStart++)
 	{
-		if (fullData[posStart].repo != NULL && (projectDB->repo->parentRepoID != fullData[posStart].repo->parentRepoID || projectDB->repo->repoID != fullData[posStart].repo->repoID))
+		if (fullData[posStart].repo != NULL && projectDB->repo->parentRepoID == fullData[posStart].repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].repo->repoID)
 			break;
 	}
 	
@@ -38,12 +38,12 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if (fullData[posStart].repo == NULL || (projectDB->repo->parentRepoID == fullData[posStart].repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].repo->repoID))
+		if (fullData[posStart].repo == NULL || projectDB->repo->parentRepoID != fullData[posStart].repo->parentRepoID || projectDB->repo->repoID != fullData[posStart].repo->repoID)
 			break;
 	}
 	
 	//update the database from network (heavy part)
-	MUTEX_LOCK(networkAndDBRefreshMutex);
+	MUTEX_LOCK(DBRefreshMutex);
 	
 	ICONS_UPDATE * data = updateProjectsFromRepo(fullData, posStart, posEnd, true);
 
@@ -52,7 +52,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 
 	syncCacheToDisk(SYNC_PROJECTS);
 	
-	MUTEX_UNLOCK(networkAndDBRefreshMutex);
+	MUTEX_UNLOCK(DBRefreshMutex);
 	
 	freeProjectData(fullData);
 	

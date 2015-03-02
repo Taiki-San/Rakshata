@@ -11,7 +11,8 @@
 *********************************************************************************************/
 
 char *COMPTE_PRINCIPAL_MAIL = NULL;
-MUTEX_VAR networkAndDBRefreshMutex;
+MUTEX_VAR DBRefreshMutex;
+MUTEX_VAR networkMutex;
 
 #ifdef _WIN32
     #ifdef main
@@ -23,11 +24,8 @@ MUTEX_VAR networkAndDBRefreshMutex;
 
 bool earlyInit()
 {
-#ifdef _WIN32
-	networkAndDBRefreshMutex = CreateSemaphore (NULL, 1, 1, NULL);
-#else
-	pthread_mutex_init(&networkAndDBRefreshMutex, NULL);
-#endif
+	MUTEX_CREATE(DBRefreshMutex);
+	MUTEX_CREATE(networkMutex);
 
 	loadEmailProfile();
 	resetUpdateDBCache();
@@ -47,7 +45,8 @@ void finalCleanup()
 	free(COMPTE_PRINCIPAL_MAIL);
 	flushDB();
 	releaseDNSCache();
-	MUTEX_DESTROY(networkAndDBRefreshMutex);
+	MUTEX_DESTROY(DBRefreshMutex);
+	MUTEX_DESTROY(networkMutex);
 }
 
 int main(int argc, const char *argv[])
