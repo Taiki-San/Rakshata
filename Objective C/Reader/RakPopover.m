@@ -54,13 +54,10 @@
 {
 	if(_popover != nil && _popover.popoverWindow != nil)
 	{
-		NSRect frame = _popover.popoverWindow.frame;	frame.origin.y = origin.y;
-		frame.origin.x = origin.x - frame.size.width / 2;
+		NSSize size = _popover.popoverWindow.frame.size;
+		origin.x -= size.width / 2;
 		
-		if(animated)
-			[_popover.popoverWindow.animator setFrame:frame display:YES animate:YES];
-		else
-			[_popover.popoverWindow setFrame:frame display:YES animate:NO];
+		[_popover.popoverWindow setFrame:(NSRect) {origin, size} display:YES animate:animated];
 	}
 }
 
@@ -113,6 +110,11 @@
 	
 	[popover togglePopover : baseFrame];
 	[popover setDelegate : self];
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 #pragma mark - Drawing

@@ -18,10 +18,11 @@
 		return nil;
 	
 	_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-	_tabReader = [(RakAppDelegate*) [NSApp delegate]reader];
+	_tabReader = [(RakAppDelegate*) [NSApp delegate] reader];
 	
 	//We check if the user asked not to be annoyed again
 	BOOL data = NO;
+	
 	_remind = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_AUTODL : &data];
 	if(_remind && ![(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
 	{
@@ -31,7 +32,6 @@
 		return nil;
 	}
 
-	
 	self = [super initWithFrame : NSMakeRect(0, 0, 170, 170)];
 	
 	if(self != nil)
@@ -85,19 +85,28 @@
 	}
 }
 
+- (void) configurePopover:(INPopoverController *)internalPopover
+{
+	internalPopover.closeWhenAnchorMoveOffScreen = NO;
+	internalPopover.overrideAnchorFrameUpdate = YES;
+	[super configurePopover:internalPopover];
+}
+
 //Toolbox
 
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
 {
-	NSPoint origin = NSMakePoint(0, MDLFrame.origin.y + MDLFrame.size.height);
-	origin = [_anchor.window convertBaseToScreen:[_anchor convertPoint:origin toView:nil]];
+	NSPoint origin = [_anchor convertPoint:NSMakePoint(0, NSMaxY(MDLFrame)) toView:nil];
+	origin = [_anchor.window convertRectToScreen: (NSRect) {origin, NSZeroSize}].origin;
 	
 	if(_tabReader != nil)
 		origin.x += [_tabReader createFrame].origin.x / 2;
 	else
 		origin.x += MDLFrame.size.width / 2;
 	
-	[self updateOrigin : origin : animated];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[self updateOrigin : origin : animated];
+	});
 }
 
 - (void) additionalUpdateOnThemeChange
