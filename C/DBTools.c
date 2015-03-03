@@ -351,7 +351,11 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 					free(project[pos].URLImages[i]);
 					free(current);
 					current = previous;
-					current->next = NULL;
+					
+					if(current != NULL)
+						current->next = NULL;
+					
+					continue;
 				}
 				
 				current->URL = project[pos].URLImages[i];
@@ -411,7 +415,7 @@ void updateProjectImages(void * _todo)
 	{
 		if(_queue != NULL)
 		{
-			if(end != NULL)
+			if(end != NULL)	//If todo == NULL, this mean we already freed the last element, aka end
 				end->next = _queue;
 			else
 				todo = end = _queue;
@@ -442,6 +446,9 @@ void updateProjectImages(void * _todo)
 		
 		free(todo->filename);
 		free(todo->URL);
+		
+		if(todo == end)
+			end = NULL;
 	
 		tmp = todo->next;
 		free(todo);
