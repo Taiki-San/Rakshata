@@ -106,7 +106,6 @@ bool addRepo(char * URL, byte type);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
 char * getPathForRepo(REPO_DATA * repo);
 byte defineTypeRepo(char *URL);
-int confirmationRepo(char team[LENGTH_PROJECT_NAME]);
 
 /**Securite.c**/
 int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB); //Cachés dans crypto/rijndael.c

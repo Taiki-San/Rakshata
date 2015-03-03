@@ -286,14 +286,3 @@ byte defineTypeRepo(char *URL)
 	return TYPE_DEPOT_OTHER;
 }
 
-int confirmationRepo(char team[LENGTH_PROJECT_NAME])
-{
-    int confirme = 0;
-	
-	//On demande ~
-
-    if(confirme == 1 || confirme == PALIER_QUIT) //Confirmé
-        return confirme;
-    return 0;
-}
-

@@ -446,7 +446,5 @@ uint getRandom()
 {
 #ifdef __APPLE__
 	return arc4random();
-#else
-	return rand();
 #endif
 }

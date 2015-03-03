@@ -22,44 +22,29 @@ MUTEX_VAR networkMutex;
 	int NSApplicationMain(int argc, const char *argv[]);
 #endif
 
-bool earlyInit()
+int main(int argc, const char *argv[])
 {
+	int ret_value = -1;
+
+	//Initialisation
 	MUTEX_CREATE(DBRefreshMutex);
 	MUTEX_CREATE(networkMutex);
-
+	
 	loadEmailProfile();
 	resetUpdateDBCache();
 	initializeDNSCache();
-
-	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
-
-#ifndef __APPLE__
-	srand(time(NULL) + rand() + GetTickCount()); //Initialisation de l'aléatoire
-#endif
 	
-	return setupBDDCache() != 0;
-}
+	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
+	
+	if(setupBDDCache() != 0)
+	    ret_value = NSApplicationMain(argc, argv);
 
-void finalCleanup()
-{
+	//Cleanup
 	free(COMPTE_PRINCIPAL_MAIL);
 	flushDB();
 	releaseDNSCache();
 	MUTEX_DESTROY(DBRefreshMutex);
 	MUTEX_DESTROY(networkMutex);
-}
-
-int main(int argc, const char *argv[])
-{
-	if(!earlyInit())	//Initialisation routine
-	{
-		finalCleanup();
-		return -1;
-	}
-
-    int ret_value = NSApplicationMain(argc, argv);
-
-	finalCleanup();
 
     return ret_value;
 }
