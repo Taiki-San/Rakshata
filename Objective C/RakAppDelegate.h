@@ -20,6 +20,7 @@
 	MDL * tabMDL;
 	
 	RakAboutWindow * aboutWindow;
+	RakPrefWindow * prefWindow;
 	
 	BOOL loginPromptOpen;
 	pthread_cond_t loginLock;

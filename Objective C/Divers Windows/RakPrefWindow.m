@@ -10,29 +10,22 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakAboutWindow;
-
-#import "RakAboutTools.h"
-
-@interface RakAboutWindow : RakCustomWindow
+enum
 {
-	RakAboutIcon * icon;
-	RakAboutText * projectName;
-	RakText * version;
-	
-	RakText * devTitle, * designTitle;
-	RakAboutText * taikiName, * blag, * planchette, *FOSS;
-	
-	uint easterCount;
-	RakText * mainEaster;
-	RakAboutText * easterLink;
-	
-	RakText * copyright;
+	WINDOW_HEIGHT = 400,
+	WINDOW_WIDTH = 600,
+};
+
+@implementation RakPrefWindow
+
++ (NSSize) defaultWindowSize
+{
+	return NSMakeSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-@property BOOL haveEaster;
-
-- (void) respondTo : (RakAboutText *) sender;
-- (void) clicIcon;
+- (void) fillWindow
+{
+	[super fillWindow];
+}
 
 @end

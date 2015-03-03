@@ -10,29 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakAboutWindow;
-
-#import "RakAboutTools.h"
-
-@interface RakAboutWindow : RakCustomWindow
-{
-	RakAboutIcon * icon;
-	RakAboutText * projectName;
-	RakText * version;
-	
-	RakText * devTitle, * designTitle;
-	RakAboutText * taikiName, * blag, * planchette, *FOSS;
-	
-	uint easterCount;
-	RakText * mainEaster;
-	RakAboutText * easterLink;
-	
-	RakText * copyright;
-}
-
-@property BOOL haveEaster;
-
-- (void) respondTo : (RakAboutText *) sender;
-- (void) clicIcon;
+@interface RakPrefWindow : RakCustomWindow
 
 @end

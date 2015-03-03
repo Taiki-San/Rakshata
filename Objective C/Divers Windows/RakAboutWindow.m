@@ -41,55 +41,30 @@ enum
 
 @implementation RakAboutWindow
 
-- (void) createWindow
+- (void) resetWindow
 {
-	if(window == nil)
-	{
-		window = [[RakWindow alloc] initWithContentRect:NSMakeRect(200, 200, WINDOW_WIDTH, WINDOW_HEIGHT) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:YES];
-		
-		window.delegate = [NSApp delegate];
-		window.contentView = [[RakContentViewBack alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];;
-		
-		[window configure];
-		[self fillWindow];
-	}
-	else
-		[self updateFrames];
-	
-	[window orderFront:self];
+	[self updateFrames];	
 }
 
 - (BOOL) windowShouldClose:(id)sender
 {
-	[window orderOut:self];
+	BOOL output = [super windowShouldClose:self];
+	
 	[self hideEaster];
 	
-	return NO;
+	return output;
 }
 
-- (void) dealloc
++ (NSSize) defaultWindowSize
 {
-	[window close];
+	return NSMakeSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
 #pragma mark - Content management
 
 - (void) fillWindow
 {
-	window.title = @"";
-	
-	NSView * _contentView = (id) window.contentView;
-	
-	if(_contentView == nil)
-		return;
-	else
-	{
-		contentView = [[RakAboutContent alloc] initWithFrame:NSMakeRect(WIDTH_BORDER_ALL, WIDTH_BORDER_ALL, _contentView.bounds.size.width - 2 * WIDTH_BORDER_ALL, _contentView.bounds.size.height - 2 * WIDTH_BORDER_ALL)];
-		if(contentView == nil)
-			return;
-		
-		[_contentView addSubview:contentView];
-	}
+	[super fillWindow];
 	
 	icon = [[RakAboutIcon alloc] initWithFrame:NSMakeRect(0, 0, BORDER_ICON, BORDER_ICON)];
 	if(icon != nil)
@@ -348,8 +323,8 @@ enum
 	
 	//Draw the separators
 	CGFloat step0 = steps[0], step1 = steps[1], step2 = steps[2];
-	contentView.haveAdditionalDrawing = YES;
-	contentView.additionalDrawing = ^(NSSize size)
+	((RakAboutContent *) contentView).haveAdditionalDrawing = YES;
+	((RakAboutContent *) contentView).additionalDrawing = ^(NSSize size)
 	{
 		CGFloat _steps[3] = {step0, step1, step2};
 		

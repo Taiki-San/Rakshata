@@ -166,7 +166,8 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-	aboutWindow = [[RakAboutWindow alloc] init];
+	if(aboutWindow == nil)
+		aboutWindow = [[RakAboutWindow alloc] init];
 	
 	[aboutWindow createWindow];
 }
@@ -178,7 +179,10 @@
 
 - (IBAction) openPreferenceWindow : (id) sender
 {
+	if(prefWindow == nil)
+		prefWindow = [[RakPrefWindow alloc] init];
 	
+	[prefWindow createWindow];
 }
 
 #pragma mark Panneau
