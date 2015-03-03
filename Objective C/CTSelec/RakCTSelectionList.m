@@ -13,7 +13,6 @@
 #define IDENTIFIER_PRICE @"RakCTSelectionListPrice"
 #define DEFAULT_MAIN_WIDTH 95
 #define DEFAULT_DETAIL_WIDTH 60
-//#define PREFER_LESS_COLUMN 1
 
 @implementation RakCTSelectionList
 
@@ -626,7 +625,7 @@
 				scrollerWidth = [RakScroller width];
 			
 			//Define number of columns
-#ifdef PREFER_LESS_COLUMN
+#ifdef CT_LIST_PREFER_LESS_COLUMN
 			CGFloat minTabHeight = _tableView.numberOfRows * _tableView.rowHeight;
 #else
 			CGFloat minTabHeight = scrollviewSize.height / 2;

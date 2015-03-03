@@ -188,14 +188,13 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
 void MDLPHandlePayProcedure(DATA_PAY * arg)
 {
     bool toPay = arg->somethingToPay, cancel = false;
-    int prix = arg->prix, sizeStatusLocal = arg->sizeStatusLocal;
+    int sizeStatusLocal = arg->sizeStatusLocal;
 	int8_t **statusLocal = arg->statusLocal;
     unsigned int factureID = arg->factureID;
     free(arg);
-	
-	if(!prix)	//Impossible, but shut a warning down
-		quit_thread(0);
 
+	//prix = arg->prix
+	
     if(COMPTE_PRINCIPAL_MAIL != NULL)
     {
         int i = 0;

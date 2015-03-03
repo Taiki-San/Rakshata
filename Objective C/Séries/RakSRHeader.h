@@ -12,7 +12,6 @@
 
 @class Series;
 
-//#define SEVERAL_VIEWS
 #define SR_HEADER_ROW_HEIGHT 25
 #define SR_SEARCH_FIELD_HEIGHT 22
 
