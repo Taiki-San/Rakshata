@@ -216,6 +216,7 @@ enum
 			break;
 		}
 		case GET_COLOR_BACKGROUND_TABS:
+		case GET_COLOR_BACKGROUND_PREFS_HEADER:
 		{
 			output = [NSColor colorWithDeviceWhite:47/255.0f alpha:1.0];
 			break;
@@ -350,6 +351,17 @@ enum
 		{
 			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
+		}
+			
+		case GET_COLOR_PREFS_BUTTONS_FOCUS:
+		{
+			output = [NSColor colorWithDeviceWhite:65/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BORDER_PREFS_HEADER:
+		{
+			output = [NSColor colorWithDeviceWhite:70/255.0f alpha:1.0];
 		}
 	}
 	

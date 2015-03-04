@@ -10,93 +10,115 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsSelectionButtonCell : RakButtonCell
-
-- (BOOL) wantBackground;
-
-@end
-
 enum
 {
-	CELL_RADIUS = 4,
-	TEXT_SPACE_HEIGHT = 20,
-	
-	BUTTON_CODE_GENERAL,
-	BUTTON_CODE_REPO,
-	BUTTON_CODE_FAV,
-	BUTTON_CODE_CUSTOM
+	BUTTON_OFFSET_Y = 2,
+	BUTTON_OFFSET_X = 25,
+	BUTTON_SEPARATOR_X = 10
 };
 
-@implementation RakPrefsSelectionButton
-
-+ (instancetype) allocImageWithoutBackground:(NSString *)imageName :(short)stateAtStartup :(id)target :(SEL)selectorToCall
+@interface RakPrefsButtons()
 {
-	RakPrefsSelectionButton * button = [super allocImageWithoutBackground:imageName :stateAtStartup :target :selectorToCall];
-	
-	if(button != nil)
-	{
-		[button setFrameSize:[button intrinsicContentSize]];
-	}
-	
-	return button;
-}
-
-+ (Class)cellClass
-{
-	return [RakPrefsSelectionButtonCell class];
-}
-
-- (NSSize) intrinsicContentSize
-{
-	NSSize size = [super intrinsicContentSize];
-	
-	size.height += TEXT_SPACE_HEIGHT;
-	size.width += 10;
-	
-	return size;
+	RakPrefsSelectionButton * buttonGeneral, * buttonRepo, * buttonFav, * buttonCustom;
+	RakPrefsSelectionButton * __weak activeButton;
+	RakPrefsWindow * responder;
 }
 
 @end
 
-@implementation RakPrefsSelectionButtonCell
+@implementation RakPrefsButtons
 
-- (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (instancetype) initWithFrame : (NSRect) frameRect : (RakPrefsWindow *) delegate
 {
-	if(self.image == clicked && clicked != nil)
+	self = [super initWithFrame:frameRect];
+	
+	if(self != nil)
 	{
-		NSRect patchedFrame = cellFrame;
+		responder = delegate;
 		
-		patchedFrame.size.height += CELL_RADIUS * 2;
+		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_general" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
+		if(buttonGeneral != nil)
+		{
+			buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:@"Général" attributes:
+											 @{NSForegroundColorAttributeName : [delegate textColor]}];
+			
+			[buttonGeneral setFrameOrigin:NSMakePoint(BUTTON_OFFSET_X, BUTTON_OFFSET_Y)];
+			[self addSubview:buttonGeneral];
+		}
 		
-		[[self activeBackground] setFill];
-		[[NSBezierPath bezierPathWithRoundedRect:patchedFrame xRadius:CELL_RADIUS yRadius:CELL_RADIUS] fill];
+		buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_repo" :RB_STATE_STANDARD :self :@selector(clicRepo)];
+		if(buttonRepo != nil)
+		{
+			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:@"Sources" attributes:
+										  @{NSForegroundColorAttributeName : [delegate textColor]}];
+			
+			[buttonRepo setFrameOrigin:NSMakePoint(NSMaxX(buttonGeneral.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
+			
+			[self addSubview:buttonRepo];
+		}
+		
+		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_fav" :RB_STATE_STANDARD :self :@selector(clicFav)];
+		if(buttonFav != nil)
+		{
+			buttonFav.attributedTitle = [[NSAttributedString alloc] initWithString:@"Favoris" attributes:
+										 @{NSForegroundColorAttributeName : [delegate textColor]}];
+			
+			[buttonFav setFrameOrigin:NSMakePoint(NSMaxX(buttonRepo.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
+			
+			[self addSubview:buttonFav];
+		}
+
 	}
 	
-	cellFrame.origin.y += 5;
-	cellFrame.size.height -= TEXT_SPACE_HEIGHT;
-	[self drawImage:self.image withFrame:cellFrame inView:controlView];
-
-	cellFrame.origin.y = cellFrame.size.height;
-	cellFrame.size.height = TEXT_SPACE_HEIGHT;
-	[self drawTitle:self.attributedTitle withFrame:[self titleRectForBounds:cellFrame] inView:controlView];
+	return self;
 }
 
-- (NSColor *) activeBackground
+- (void) drawRect : (NSRect) dirtyRect
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :nil];
+	[[self backgroundColor] setFill];
+	NSRectFill(_bounds);
+	
+	[[self borderColor] setFill];
+	NSRectFill(NSMakeRect(0, 0, _bounds.size.width, 1));
 }
 
-- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (NSColor *) backgroundColor
 {
-	if(!flag || self.image != clicked)
-		[super highlight:flag withFrame:cellFrame inView:controlView];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_PREFS_HEADER :nil];
 }
 
-#pragma mark - Interface
-
-- (BOOL) wantBackground
+- (NSColor *) borderColor
 {
-	return clicked != nil && self.image == clicked;
+	return [Prefs getSystemColor:GET_COLOR_BORDER_PREFS_HEADER :nil];
+}
+
+#pragma mark - Clic management
+
+- (void) clicGeneral
+{
+	[self handleClic:buttonGeneral : PREFS_BUTTON_CODE_GENERAL];
+}
+
+- (void) clicRepo
+{
+	[self handleClic:buttonRepo : PREFS_BUTTON_CODE_REPO];
+}
+
+- (void) clicFav
+{
+	[self handleClic:buttonFav : PREFS_BUTTON_CODE_FAV];
+}
+
+- (void) handleClic : (RakPrefsSelectionButton *) sender : (byte) code
+{
+	if(activeButton != nil)
+	{
+		[activeButton.cell setState:RB_STATE_STANDARD];
+		[activeButton setNeedsDisplay];
+	}
+	
+	activeButton = sender;
+	[responder focusChanged:code];
 }
 
 @end

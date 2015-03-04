@@ -16,8 +16,11 @@
 
 @interface RakPrefsWindow : RakCustomWindow
 {
-	RakPrefsSelectionButton * buttonGeneral, * buttonRepo;
-	RakPrefsSelectionButton * __weak activeButton;
+	RakPrefsButtons * header;
 }
+
+- (NSColor *) textColor;
+
+- (void) focusChanged : (byte) newTab;
 
 @end

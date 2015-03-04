@@ -14,6 +14,8 @@ enum
 {
 	WINDOW_HEIGHT = 400,
 	WINDOW_WIDTH = 600,
+	
+	BUTTON_BAR_HEIGHT = 65
 };
 
 @implementation RakPrefsWindow
@@ -23,30 +25,33 @@ enum
 	return NSMakeSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
+- (NSRect) contentFrame : (NSView *) content
+{
+	NSRect frame = [super contentFrame:content];
+	
+	CGFloat offset = frame.origin.x;
+	
+	frame.origin.x -= offset - 2;
+	frame.origin.y -= offset;
+	frame.size.height += 2 * offset - 2;
+	frame.size.width += 2 * offset - 4;
+	
+	return frame;
+}
+
 - (void) fillWindow
 {
 	[super fillWindow];
-	
-	buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_general" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
-	if(buttonGeneral != nil)
+
+	header = [[RakPrefsButtons alloc] initWithFrame:NSMakeRect(0, WINDOW_HEIGHT - BUTTON_BAR_HEIGHT, WINDOW_WIDTH, BUTTON_BAR_HEIGHT) :self];
+	if(header != nil)
 	{
-		buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:@"Général" attributes:
-										 @{NSForegroundColorAttributeName : [self textColor]}];
-		
-		[buttonGeneral setFrameOrigin:NSMakePoint(50, 300)];
-		[contentView addSubview:buttonGeneral];
+		[contentView addSubview:header];
 	}
-	
-	buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_repo" :RB_STATE_STANDARD :self :@selector(clicRepo)];
-	if(buttonRepo != nil)
-	{
-		buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:@"Sources" attributes:
-										 @{NSForegroundColorAttributeName : [self textColor]}];
-		
-		[buttonRepo setFrameOrigin:NSMakePoint(50 + 2 + buttonGeneral.bounds.size.width, 300)];
-		
-		[contentView addSubview:buttonRepo];
-	}
+}
+
+- (void) loadButtons
+{
 }
 
 #pragma mark - Color
@@ -58,25 +63,9 @@ enum
 
 #pragma mark - Buttons responder
 
-- (void) clicGeneral
+- (void) focusChanged : (byte) newTab
 {
-	[self handleClic:buttonGeneral];
-}
-
-- (void) clicRepo
-{
-	[self handleClic:buttonRepo];
-}
-
-- (void) handleClic : (RakPrefsSelectionButton *) sender
-{
-	if(activeButton != nil)
-	{
-		[activeButton.cell setState:RB_STATE_STANDARD];
-		[activeButton setNeedsDisplay];
-	}
 	
-	activeButton = sender;
 }
 
 @end

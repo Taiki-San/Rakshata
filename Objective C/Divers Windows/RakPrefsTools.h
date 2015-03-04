@@ -10,6 +10,20 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	PREFS_BUTTON_CODE_GENERAL,
+	PREFS_BUTTON_CODE_REPO,
+	PREFS_BUTTON_CODE_FAV,
+	PREFS_BUTTON_CODE_CUSTOM
+};
+
+@interface RakPrefsButtons : NSView
+
+- (instancetype) initWithFrame : (NSRect) frameRect : (RakPrefsWindow *) delegate;
+
+@end
+
 @interface RakPrefsSelectionButton : RakButton
 
 @property BOOL selected;

@@ -23,5 +23,6 @@
 - (void) resetWindow;
 
 + (NSSize) defaultWindowSize;
+- (NSRect) contentFrame : (NSView *) content;
 
 @end

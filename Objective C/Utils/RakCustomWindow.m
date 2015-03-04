@@ -52,6 +52,11 @@
 	return NSZeroSize;
 }
 
+- (NSRect) contentFrame : (NSView *) content
+{
+	return NSMakeRect(WIDTH_BORDER_ALL, WIDTH_BORDER_ALL, content.bounds.size.width - 2 * WIDTH_BORDER_ALL, content.bounds.size.height - 2 * WIDTH_BORDER_ALL);
+}
+
 - (void) fillWindow
 {
 	window.title = @"";
@@ -62,7 +67,7 @@
 		return;
 	else
 	{
-		contentView = [[RakAboutContent alloc] initWithFrame:NSMakeRect(WIDTH_BORDER_ALL, WIDTH_BORDER_ALL, _contentView.bounds.size.width - 2 * WIDTH_BORDER_ALL, _contentView.bounds.size.height - 2 * WIDTH_BORDER_ALL)];
+		contentView = [[RakAboutContent alloc] initWithFrame:[self contentFrame : _contentView]];
 		if(contentView == nil)
 			return;
 		
