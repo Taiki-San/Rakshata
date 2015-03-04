@@ -42,7 +42,6 @@
 		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
-		B63401401A96AA57003DC56E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B634013F1A96AA57003DC56E /* Credits.rtf */; };
 		B63401431A96AA7A003DC56E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401411A96AA7A003DC56E /* InfoPlist.strings */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
@@ -87,6 +86,7 @@
 		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
 		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
+		B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -255,7 +255,6 @@
 		B62F67881A02E8D600157DEA /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		B634013F1A96AA57003DC56E /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; name = Credits.rtf; path = Localizations/Credits.rtf; sourceTree = SOURCE_ROOT; };
 		B63401421A96AA7A003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B634014C1A96AB29003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
@@ -337,6 +336,8 @@
 		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
 		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
 		B69D467A1AA7592700B471AC /* RakPrefsButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsButtons.m; path = "Divers Windows/RakPrefsButtons.m"; sourceTree = "<group>"; };
+		B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsRepoView.h; path = "Divers Windows/RakPrefsRepoView.h"; sourceTree = "<group>"; };
+		B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRepoView.m; path = "Divers Windows/RakPrefsRepoView.m"; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -555,15 +556,8 @@
 		B6251F711A98CBF0001C4F06 /* Divers fenêtres */ = {
 			isa = PBXGroup;
 			children = (
-				B67C0F371A9FDD35003A2086 /* RakAboutTools.h */,
-				B67C0F381A9FDD35003A2086 /* RakAboutTools.m */,
-				B6251F721A98CC92001C4F06 /* RakAboutWindow.h */,
-				B6251F731A98CC92001C4F06 /* RakAboutWindow.m */,
-				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
-				B69F74021AA635AB008AA51B /* RakPrefsTools.h */,
-				B69F74031AA635AB008AA51B /* RakPrefsTools.m */,
-				B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */,
-				B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */,
+				B69D467D1AA7C5D300B471AC /* About */,
+				B69D467C1AA7C5C600B471AC /* Preferences */,
 			);
 			name = "Divers fenêtres";
 			sourceTree = "<group>";
@@ -679,6 +673,7 @@
 		B66B4627189A7129000354D1 /* C Core */ = {
 			isa = PBXGroup;
 			children = (
+				B6F6ED1F18A3007F00E3B55B /* Core */,
 				B6F6ED1E18A3007600E3B55B /* DB */,
 				B67845A01963110B007372C7 /* Externals */,
 				B6F6ED2018A31EF600E3B55B /* Headers */,
@@ -741,6 +736,31 @@
 				B67845A119631311007372C7 /* encoding.c */,
 			);
 			name = Externals;
+			sourceTree = "<group>";
+		};
+		B69D467C1AA7C5C600B471AC /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
+				B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */,
+				B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */,
+				B69F74021AA635AB008AA51B /* RakPrefsTools.h */,
+				B69F74031AA635AB008AA51B /* RakPrefsTools.m */,
+				B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */,
+				B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
+		B69D467D1AA7C5D300B471AC /* About */ = {
+			isa = PBXGroup;
+			children = (
+				B67C0F371A9FDD35003A2086 /* RakAboutTools.h */,
+				B67C0F381A9FDD35003A2086 /* RakAboutTools.m */,
+				B6251F721A98CC92001C4F06 /* RakAboutWindow.h */,
+				B6251F731A98CC92001C4F06 /* RakAboutWindow.m */,
+			);
+			name = About;
 			sourceTree = "<group>";
 		};
 		B69FBE8A1A74FB9C009ACBEF /* Tools */ = {
@@ -986,7 +1006,6 @@
 		B6CF07B21868DD58009B16A3 = {
 			isa = PBXGroup;
 			children = (
-				B6F6ED1F18A3007F00E3B55B /* Core */,
 				B66B4627189A7129000354D1 /* C Core */,
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
 				B66ED18F1949B6D2002A333F /* Interface Builder */,
@@ -1056,7 +1075,6 @@
 		B6CF07C51868DD58009B16A3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B634013F1A96AA57003DC56E /* Credits.rtf */,
 				B634013A1A96AA0F003DC56E /* Localization */,
 				B6BD45D11A7D624100C2A675 /* Defaults */,
 				B6E8938A189EF3A600ACAF36 /* Images.xcassets */,
@@ -1291,7 +1309,6 @@
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
 				B6BD7B5B194860A9000A0B73 /* jumpPage.xib in Resources */,
 				B6BD45CA1A7D602A00C2A675 /* loading.gif in Resources */,
-				B63401401A96AA57003DC56E /* Credits.rtf in Resources */,
 				B6BD45C91A7D602A00C2A675 /* failed_loading@2x.png in Resources */,
 				B63401391A96A890003DC56E /* Localizable.strings in Resources */,
 				B6BD45C81A7D602A00C2A675 /* failed_loading.png in Resources */,
@@ -1463,6 +1480,7 @@
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,
 				B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */,
 				B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */,
+				B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */,
 				B64D1561191058A200B6E47F /* RakMDLController.m in Sources */,
 				B69D61D5186CA2F2003504F9 /* Reader.m in Sources */,
 			);

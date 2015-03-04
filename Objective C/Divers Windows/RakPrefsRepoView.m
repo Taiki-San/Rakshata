@@ -10,32 +10,29 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakFlippedView
+@implementation RakPrefsRepoView
 
-- (BOOL) isFlipped
+- (instancetype) init
 {
-	return YES;
+	self = [self initWithFrame:[self frame]];
+	
+	if(self != nil)
+	{
+		
+	}
+	
+	return self;
+}
+
+- (NSRect) frame
+{
+	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, PREF_WINDOW_REAL_WIDTH, 500);
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[[NSColor grayColor] setFill];
+	NSRectFill(dirtyRect);
 }
 
 @end
-
-NSString * getStringForWchar(charType * string)
-{
-	if(string == NULL)
-		return @"";
-	
-	uint length = wstrlen(string);
-	NSString * output;
-	
-	do
-	{
-		output = [[NSString alloc] initWithData:[NSData dataWithBytes:string length:length * sizeof(charType)] encoding:NSUTF32LittleEndianStringEncoding];
-		length--;
-		
-	} while(output == nil && length > 0);
-	
-	if(output == nil)
-		output = @"";
-	
-	return output;
-}

@@ -10,19 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	WINDOW_HEIGHT = 400,
-	WINDOW_WIDTH = 600,
-	
-	BUTTON_BAR_HEIGHT = 65
-};
-
 @implementation RakPrefsWindow
 
 + (NSSize) defaultWindowSize
 {
-	return NSMakeSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	return NSMakeSize(PREF_WINDOW_WIDTH, PREF_WINDOW_HEIGHT);
 }
 
 - (NSRect) contentFrame : (NSView *) content
@@ -42,19 +34,35 @@ enum
 - (void) fillWindow
 {
 	[super fillWindow];
+	
+	activeView = PREFS_BUTTON_CODE_UNUSED;
 
-	header = [[RakPrefsButtons alloc] initWithFrame:NSMakeRect(0, WINDOW_HEIGHT - BUTTON_BAR_HEIGHT, WINDOW_WIDTH, BUTTON_BAR_HEIGHT) :self];
+	header = [[RakPrefsButtons alloc] initWithFrame : NSMakeRect(0, 0, PREF_WINDOW_WIDTH, PREF_BUTTON_BAR_HEIGHT) :self];
 	if(header != nil)
 	{
+		[header selectElem:PREFS_BUTTON_CODE_REPO];
 		[contentView addSubview:header];
 	}
+	
+	[self focusChanged:PREFS_BUTTON_CODE_REPO];
 }
 
-- (void) loadButtons
+- (Class) contentClass
 {
+	return [RakFlippedView class];
 }
 
-#pragma mark - Color
+#pragma mark - Drawing
+
+- (NSRect) mainFrame
+{
+	NSRect frame = contentView.bounds;
+	
+	frame.origin.y = PREF_BUTTON_BAR_HEIGHT;
+	frame.size.height -= PREF_BUTTON_BAR_HEIGHT + 4;
+	
+	return frame;
+}
 
 - (NSColor *) textColor
 {
@@ -65,7 +73,127 @@ enum
 
 - (void) focusChanged : (byte) newTab
 {
+	NSView * old = [self viewForCode : activeView : NO], * new = [self viewForCode : newTab : YES];
 	
+	if(old == nil)
+	{
+		NSRect newWindowFrame = window.frame;
+		const CGFloat diff = contentView.bounds.size.height - PREF_BUTTON_BAR_HEIGHT - new.bounds.size.height;
+		newWindowFrame.size.height -= diff;
+		newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff);
+
+		[window setFrame:newWindowFrame display:YES animate:NO];
+	}
+	else
+	{
+		new.alphaValue = 0;
+		new.hidden = NO;
+		
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+			old.animator.alphaValue = 0;
+		} completionHandler:^{
+			
+			const CGFloat diff = old.bounds.size.height - new.bounds.size.height;
+			NSRect newWindowFrame = window.frame;
+			newWindowFrame.size.height -= diff;
+			newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff);
+			
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+				[window setFrame:newWindowFrame display:YES animate:YES];
+			} completionHandler:^{
+				
+				[new setFrameOrigin:NSMakePoint(0, PREF_BUTTON_BAR_HEIGHT)];
+				
+				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+					new.animator.alphaValue = 1;
+				} completionHandler:^{
+					old.hidden = YES;
+				}];
+			}];
+		}];
+	}
+	
+	activeView = newTab;
+}
+
+- (NSView *) viewForCode : (byte) code : (BOOL) createIfNeeded
+{
+	switch (code)
+	{
+		case PREFS_BUTTON_CODE_GENERAL:
+		{
+			if(generalView != nil)
+				return generalView;
+
+			else if(createIfNeeded)
+			{
+				generalView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				
+				if(generalView != nil)
+					[contentView addSubview:generalView];
+				
+				return generalView;
+			}
+			
+			break;
+		}
+
+		case PREFS_BUTTON_CODE_REPO:
+		{
+			if(generalView != nil)
+				return repoView;
+			
+			else if(createIfNeeded)
+			{
+				repoView = [[RakPrefsRepoView alloc] init];
+				
+				if(repoView != nil)
+					[contentView addSubview:repoView];
+				
+				return repoView;
+			}
+			
+			break;
+		}
+			
+		case PREFS_BUTTON_CODE_FAV:
+		{
+			if(favoriteView != nil)
+				return favoriteView;
+			
+			else if(createIfNeeded)
+			{
+				favoriteView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				
+				if(favoriteView != nil)
+					[contentView addSubview:favoriteView];
+				
+				return favoriteView;
+			}
+			
+			break;
+		}
+			
+		case PREFS_BUTTON_CODE_CUSTOM:
+		{
+			if(customView != nil)
+				return customView;
+			
+			else if(createIfNeeded)
+			{
+				customView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				
+				if(customView != nil)
+					[contentView addSubview:customView];
+				
+				return customView;
+			}
+			
+			break;
+		}
+  	}
+	
+	return nil;
 }
 
 @end

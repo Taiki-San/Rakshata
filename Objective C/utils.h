@@ -12,6 +12,9 @@
 
 NSString * getStringForWchar(charType * string);
 
+@interface RakFlippedView : NSView
+@end
+
 #import "RakWindow.h"
 
 #import "RakTextCell.h"

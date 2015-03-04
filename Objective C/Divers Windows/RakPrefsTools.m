@@ -51,6 +51,12 @@ enum
 	return size;
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(![self.cell wantBackground])
+		[super mouseDown:theEvent];
+}
+
 @end
 
 @implementation RakPrefsSelectionButtonCell

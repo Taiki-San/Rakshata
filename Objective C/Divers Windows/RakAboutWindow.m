@@ -175,6 +175,11 @@ enum
 	[self updateFrames];
 }
 
+- (Class) contentClass
+{
+	return [RakAboutContent class];
+}
+
 #pragma mark - Responder
 
 - (void) respondTo : (RakAboutText *) sender

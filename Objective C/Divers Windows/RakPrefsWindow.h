@@ -13,10 +13,27 @@
 @class RakPrefsWindow;
 
 #import "RakPrefsTools.h"
+#import "RakPrefsRepoView.h"
+
+enum
+{
+	PREF_WINDOW_HEIGHT = 400,
+	PREF_WINDOW_WIDTH = 600,
+	PREF_WINDOW_REAL_WIDTH = 596,
+	
+	PREF_BUTTON_BAR_HEIGHT = 65
+};
 
 @interface RakPrefsWindow : RakCustomWindow
 {
 	RakPrefsButtons * header;
+	
+	byte activeView;
+	
+	NSView * generalView;
+	RakPrefsRepoView * repoView;
+	NSView * favoriteView;
+	NSView * customView;
 }
 
 - (NSColor *) textColor;

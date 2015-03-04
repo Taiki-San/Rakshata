@@ -12,7 +12,7 @@
 
 enum
 {
-	BUTTON_OFFSET_Y = 2,
+	BUTTON_OFFSET_Y = 1,
 	BUTTON_OFFSET_X = 25,
 	BUTTON_SEPARATOR_X = 10
 };
@@ -22,6 +22,8 @@ enum
 	RakPrefsSelectionButton * buttonGeneral, * buttonRepo, * buttonFav, * buttonCustom;
 	RakPrefsSelectionButton * __weak activeButton;
 	RakPrefsWindow * responder;
+	
+	BOOL triggeredClic;
 }
 
 @end
@@ -39,7 +41,7 @@ enum
 		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_general" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
 		if(buttonGeneral != nil)
 		{
-			buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:@"Général" attributes:
+			buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-GENERAL", nil) attributes:
 											 @{NSForegroundColorAttributeName : [delegate textColor]}];
 			
 			[buttonGeneral setFrameOrigin:NSMakePoint(BUTTON_OFFSET_X, BUTTON_OFFSET_Y)];
@@ -49,7 +51,7 @@ enum
 		buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_repo" :RB_STATE_STANDARD :self :@selector(clicRepo)];
 		if(buttonRepo != nil)
 		{
-			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:@"Sources" attributes:
+			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-REPO", nil) attributes:
 										  @{NSForegroundColorAttributeName : [delegate textColor]}];
 			
 			[buttonRepo setFrameOrigin:NSMakePoint(NSMaxX(buttonGeneral.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
@@ -60,7 +62,7 @@ enum
 		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_fav" :RB_STATE_STANDARD :self :@selector(clicFav)];
 		if(buttonFav != nil)
 		{
-			buttonFav.attributedTitle = [[NSAttributedString alloc] initWithString:@"Favoris" attributes:
+			buttonFav.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-FAVS", nil) attributes:
 										 @{NSForegroundColorAttributeName : [delegate textColor]}];
 			
 			[buttonFav setFrameOrigin:NSMakePoint(NSMaxX(buttonRepo.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
@@ -94,6 +96,35 @@ enum
 
 #pragma mark - Clic management
 
+- (void) selectElem : (byte) code
+{
+	triggeredClic = YES;
+	
+	switch (code)
+	{
+		case PREFS_BUTTON_CODE_GENERAL:
+			[self clicGeneral];
+			break;
+			
+		case PREFS_BUTTON_CODE_REPO:
+			[self clicRepo];
+			break;
+			
+		case PREFS_BUTTON_CODE_FAV:
+			[self clicFav];
+			break;
+			
+		case PREFS_BUTTON_CODE_CUSTOM:
+			[self clicCustom];
+			break;
+			
+		default:
+			break;
+	}
+	
+	triggeredClic = NO;
+}
+
 - (void) clicGeneral
 {
 	[self handleClic:buttonGeneral : PREFS_BUTTON_CODE_GENERAL];
@@ -109,6 +140,11 @@ enum
 	[self handleClic:buttonFav : PREFS_BUTTON_CODE_FAV];
 }
 
+- (void) clicCustom
+{
+	[self handleClic:nil : PREFS_BUTTON_CODE_CUSTOM];
+}
+
 - (void) handleClic : (RakPrefsSelectionButton *) sender : (byte) code
 {
 	if(activeButton != nil)
@@ -118,7 +154,14 @@ enum
 	}
 	
 	activeButton = sender;
-	[responder focusChanged:code];
+	
+	if(!triggeredClic)
+		[responder focusChanged:code];
+	else
+	{
+		[sender.cell setState:RB_STATE_HIGHLIGHTED];
+		[sender setNeedsDisplay];
+	}
 }
 
 @end

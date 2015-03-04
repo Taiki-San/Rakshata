@@ -67,12 +67,17 @@
 		return;
 	else
 	{
-		contentView = [[RakAboutContent alloc] initWithFrame:[self contentFrame : _contentView]];
+		contentView = [[[self contentClass] alloc] initWithFrame:[self contentFrame : _contentView]];
 		if(contentView == nil)
 			return;
 		
 		[_contentView addSubview:contentView];
 	}
+}
+
+- (Class) contentClass
+{
+	return [NSView class];
 }
 
 - (void) resetWindow

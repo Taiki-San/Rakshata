@@ -10,32 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakFlippedView
-
-- (BOOL) isFlipped
-{
-	return YES;
-}
+@interface RakPrefsRepoView : NSView
 
 @end
-
-NSString * getStringForWchar(charType * string)
-{
-	if(string == NULL)
-		return @"";
-	
-	uint length = wstrlen(string);
-	NSString * output;
-	
-	do
-	{
-		output = [[NSString alloc] initWithData:[NSData dataWithBytes:string length:length * sizeof(charType)] encoding:NSUTF32LittleEndianStringEncoding];
-		length--;
-		
-	} while(output == nil && length > 0);
-	
-	if(output == nil)
-		output = @"";
-	
-	return output;
-}

@@ -118,6 +118,11 @@
 "AUTO-DL-ONE-VOL" = "J'ai remarqué\nqu'il y a un tome\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
 "AUTO-DL-SEVERAL-VOL" = "J'ai remarqué\nqu'il y a des tomes\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
 
+//Prefs
+"PREFS-TITLE-GENERAL" = "Général";
+"PREFS-TITLE-REPO" = "Sources";
+"PREFS-TITLE-FAVS" = "Favoris";
+
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";
 "COPYRIGHT" = "© 2011-2015 Taiki. Tous droits réservées";

@@ -25,4 +25,6 @@
 + (NSSize) defaultWindowSize;
 - (NSRect) contentFrame : (NSView *) content;
 
+- (Class) contentClass;
+
 @end
