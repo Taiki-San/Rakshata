@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakPrefsWindow
+@implementation RakPrefsPopover
 
 - (instancetype) initWithFrame : (NSRect) frame
 {
@@ -50,7 +50,7 @@
 	self = [super init];
 	if(self)
 	{
-		viewControllerHUD = [[RakPrefsWindow alloc] initWithFrame : NSMakeRect(0, 0, 150, 150)];
+		viewControllerHUD = [[RakPrefsPopover alloc] initWithFrame : NSMakeRect(0, 0, 150, 150)];
 		[self setAnchor:nil];
 	}
 	return self;

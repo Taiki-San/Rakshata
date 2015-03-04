@@ -11,7 +11,7 @@
  *********************************************************************************************/
 
 //Allow to create NSViewController without NIB
-@interface RakPrefsWindow : NSViewController
+@interface RakPrefsPopover : NSViewController
 {
 	NSView * mainView;
 }
@@ -24,7 +24,7 @@
 
 @interface PrefsUI : NSView <NSPopoverDelegate>
 {
-    RakPrefsWindow *viewControllerHUD;
+    RakPrefsPopover *viewControllerHUD;
     NSPopover *popover;
 
 	NSButton *anchor;    

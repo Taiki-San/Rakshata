@@ -67,22 +67,6 @@
 	return output;
 }
 
-- (id) copyWithZone:(NSZone *)zone
-{
-	RakButton * output = [[RakButton allocWithZone:zone] init];
-	
-	if(output != nil)
-	{
-		NSCell * cell = [self.cell copy];
-		[output setCell:cell];
-		
-		[output sizeToFit];
-		[output setBordered:NO];
-	}
-	
-	return output;
-}
-
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
@@ -176,16 +160,12 @@
 	
 	if(self != nil)
 	{
+		self.focusRingType = NSFocusRingTypeNone;
 		textCell = nil;
 		_imageName = nil;
 	}
 	
 	return self;
-}
-
-- (id) copyWithZone:(NSZone *)zone
-{
-	return textCell ? nil : [[RakButtonCell allocWithZone:zone] initWithRawData: _imageName  :clicked :nonClicked :unAvailable];
 }
 
 - (void) dealloc

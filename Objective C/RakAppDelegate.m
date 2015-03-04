@@ -180,7 +180,7 @@
 - (IBAction) openPreferenceWindow : (id) sender
 {
 	if(prefWindow == nil)
-		prefWindow = [[RakPrefWindow alloc] init];
+		prefWindow = [[RakPrefsWindow alloc] init];
 	
 	[prefWindow createWindow];
 }

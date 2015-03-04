@@ -47,7 +47,6 @@
 
 - (id) initWithPage : (NSString*) imageName : (short) state;
 - (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
-- (id) copyWithZone:(NSZone *)zone;
 
 - (void) setHighlightAllowed : (BOOL) allowed;
 - (bool) isHighlightAllowed;

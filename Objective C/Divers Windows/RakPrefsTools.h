@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefWindow : RakCustomWindow
+@interface RakPrefsSelectionButton : RakButton
+
+@property BOOL selected;
 
 @end

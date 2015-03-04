@@ -10,22 +10,14 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	WINDOW_HEIGHT = 400,
-	WINDOW_WIDTH = 600,
-};
+@class RakPrefsWindow;
 
-@implementation RakPrefWindow
+#import "RakPrefsTools.h"
 
-+ (NSSize) defaultWindowSize
+@interface RakPrefsWindow : RakCustomWindow
 {
-	return NSMakeSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-}
-
-- (void) fillWindow
-{
-	[super fillWindow];
+	RakPrefsSelectionButton * buttonGeneral, * buttonRepo;
+	RakPrefsSelectionButton * __weak activeButton;
 }
 
 @end
