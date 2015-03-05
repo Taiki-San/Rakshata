@@ -42,6 +42,8 @@
 	RakCenteredTextFieldCell * textCell;
 }
 
+@property NSColor * customBackgroundColor;
+@property (nonatomic) CGFloat borderWidth;
 @property bool forceHighlight;
 @property BOOL hasBorder;
 

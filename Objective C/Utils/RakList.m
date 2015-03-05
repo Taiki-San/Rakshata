@@ -469,6 +469,8 @@
 
 - (uint) coordinateForIndex : (uint) index : (uint *) column
 {
+	*column = 0;
+	
 	return index >= [_tableView numberOfRows] ? LIST_INVALID_SELECTION : index;
 }
 

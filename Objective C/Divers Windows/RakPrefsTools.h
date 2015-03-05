@@ -19,6 +19,8 @@ enum
 	PREFS_BUTTON_CODE_UNUSED
 };
 
+NSImage * loadImageForRepo(BOOL isRoot, void* repo);
+
 @interface RakPrefsButtons : NSView
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakPrefsWindow *) delegate;

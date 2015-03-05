@@ -267,7 +267,21 @@ char * getPathForRepo(REPO_DATA * repo)
 	{
 		snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
 	}
+	
+	return output;
+}
 
+char * getPathForRootRepo(ROOT_REPO_DATA * repo)
+{
+	if(repo == NULL)
+		return NULL;
+	
+	char * output = calloc(10, sizeof(char));
+	if(output != NULL)
+	{
+		snprintf(output, 10, "%x", repo->repoID);
+	}
+	
 	return output;
 }
 

@@ -101,3 +101,25 @@ enum
 }
 
 @end
+
+NSImage * loadImageForRepo(BOOL isRoot, void* repo)
+{
+	NSImage * output = nil;
+	char path[256], * repoPath = isRoot ? getPathForRootRepo(repo) : getPathForRepo(repo);
+	
+	if(repoPath != NULL)
+	{
+		snprintf(path, sizeof(path), "imageCache/%s/", repoPath);
+		free(repoPath);
+		
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithUTF8String:path]];
+		
+		if(bundle != nil)
+			output = [bundle imageForResource:[NSString stringWithUTF8String:REPO_IMG_NAME]];
+	}
+	
+	if(output == nil)
+		output = [NSImage imageNamed: isRoot ? @"defaultRepoRoot" : @"defaultRepo"];
+
+	return output;
+}

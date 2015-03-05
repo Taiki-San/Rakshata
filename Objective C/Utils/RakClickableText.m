@@ -54,17 +54,25 @@
 
 - (void) mouseEntered : (NSEvent *) theEvent
 {
-	self.textColor = [self focusTextColor];
+	if(_URL != nil)
+		self.textColor = [self focusTextColor];
 }
 
 - (void) mouseExited : (NSEvent *) theEvent
 {
-	self.textColor = classicalTextColor;
+	if(_URL != nil)
+		self.textColor = classicalTextColor;
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(_URL == nil || _clicTarget == nil)
+		[super mouseDown:theEvent];
 }
 
 - (void) mouseUp : (NSEvent *) theEvent
 {
-	if(_clicTarget != nil)
+	if(_URL != nil && _clicTarget != nil)
 	{
 		if([_clicTarget respondsToSelector:_clicAction])
 		{

@@ -127,6 +127,7 @@
 "PREFS-ROOT-%zu-ACTIVE-REPO" = "%1$zu élements actifs";
 "PREFS-ROOT-GROUPS-%@" = "Groupe: %1$@";
 "PREFS-ROOT-NO-GROUP" = "Aucun groupe";
+"WEBSITE" = "Site Internet";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

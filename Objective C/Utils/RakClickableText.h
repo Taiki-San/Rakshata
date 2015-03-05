@@ -17,7 +17,7 @@
 	NSColor * classicalTextColor;
 }
 
-@property NSString * URL;
+@property id URL;
 
 @property (weak) id clicTarget;
 @property SEL clicAction;

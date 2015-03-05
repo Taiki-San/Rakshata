@@ -155,9 +155,11 @@ enum
 	
 	activeButton = sender;
 	
-	if(!triggeredClic)
-		[responder focusChanged:code];
-	else
+	self.window.title = activeButton.title;
+	
+	[responder focusChanged:code];
+	
+	if(triggeredClic)
 	{
 		[sender.cell setState:RB_STATE_HIGHLIGHTED];
 		[sender setNeedsDisplay];

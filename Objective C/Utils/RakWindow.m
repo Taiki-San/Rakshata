@@ -44,7 +44,7 @@
 			CGContextClip(ctx);
 		}
 		
-		if (drawsAsMainWindow)
+		if (drawsAsMainWindow || !self.isMainWindow)
 		{
 			if((NSInteger)NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
 			{

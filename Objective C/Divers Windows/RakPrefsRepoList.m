@@ -24,12 +24,14 @@ enum
 @interface RakPrefsRepoListItem : NSView
 {
 	NSImage * image;
-	RakText * title, * detail;
+	RakText * title;
+	RakClickableText * detail;
 	
 	NSRect imageFrame;
 }
 
 @property BOOL highlighted;
+@property RakPrefsRepoView * __weak responder;
 
 - (instancetype) initWithRepo : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
@@ -70,6 +72,26 @@ enum
 	scrollView.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil];
 }
 
+#pragma mark - Switch code
+
+- (void) setRootMode:(BOOL)rootMode
+{
+	if(rootMode == _rootMode)
+		return;
+	else if(_tableView == nil)
+	{
+		_rootMode = rootMode;
+		return;
+	}
+	
+	[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _nbData)] withAnimation:NSTableViewAnimationSlideLeft];
+	
+	_rootMode = rootMode;
+	_nbData = [_responder sizeForMode:_rootMode];
+	
+	[_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _nbData)] withAnimation:NSTableViewAnimationSlideLeft];
+}
+
 #pragma mark - Tableview code
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
@@ -94,7 +116,11 @@ enum
 
 	RakPrefsRepoListItem * result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if (result == nil)
+	{
 		result = [[RakPrefsRepoListItem alloc] initWithRepo :_rootMode : list[row] : detail];
+		if(result != nil)
+			result.responder = _responder;
+	}
 	else
 		[result updateContent:_rootMode :list[row] :detail];
 	
@@ -130,12 +156,7 @@ enum
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
 	//Image
-	NSBundle * bundle = [NSBundle bundleWithPath: @"imageCache/"];
-	if(bundle != nil)
-		image = [bundle imageForResource:[NSString stringWithUTF8String:repo]];
-	
-	if(image == nil)
-		image = [NSImage imageNamed: isRoot ? @"defaultRepoRoot" : @"defaultRepo"];
+	image = loadImageForRepo(isRoot, repo);
 	
 	//Title
 	NSString * string = getStringForWchar(isRoot ? ((ROOT_REPO_DATA *) repo)->name : ((REPO_DATA *) repo)->name);
@@ -177,10 +198,13 @@ enum
 	
 	if(detail == nil)
 	{
-		detail = [[RakText alloc] initWithText:string :[self detailTextColor]];
+		detail = [[RakClickableText alloc] initWithText:string :[self detailTextColor] responder:self];
 		
 		if(detail != nil)
 		{
+			if(!isRoot)
+				detail.URL = @(((REPO_DATA *) repo)->parentRepoID);
+			
 			detail.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:12];
 			[detail sizeToFit];
 			
@@ -190,6 +214,18 @@ enum
 	else
 		detail.stringValue = string;
 }
+
+- (void) respondTo : (RakClickableText *) sender
+{
+	NSNumber * group = sender.URL;
+	
+	if(group != nil && [group isKindOfClass:[NSNumber class]])
+	{
+		[_responder selectionUpdate:YES :[_responder posOfParent:[group unsignedIntValue]]];
+	}
+}
+
+#pragma mark - Drawing
 
 - (void) setFrame:(NSRect)frameRect
 {

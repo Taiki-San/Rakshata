@@ -10,19 +10,24 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define PREFS_REPO_LIST_WIDTH 600
+#define PREFS_REPO_BORDER_BELOW_LIST 40
+
 @class RakPrefsRepoView;
 
 @interface RakPrefsRepoList : RakList
 
 @property RakPrefsRepoView * __weak responder;
-
-@property BOOL rootMode;
+@property (nonatomic) BOOL rootMode;
 
 - (instancetype) initWithFrame : (NSRect) frame;
 
 @end
 
 @interface RakPrefsRepoDetails : NSView
+
+- (instancetype) initWithRepo : (NSRect) frame : (BOOL) isRoot : (void *) repo : (RakPrefsRepoView *) responder;
+- (void) updateContent : (BOOL) isRoot : (void *) repo : (BOOL) animated;
 
 @end
 
@@ -41,6 +46,7 @@
 - (uint) sizeForMode : (BOOL) rootMode;
 
 - (NSString *) nameOfParent : (uint) parentID;
+- (uint) posOfParent : (uint) parentID;
 
 - (void) selectionUpdate : (BOOL) isRoot : (uint) index;
 

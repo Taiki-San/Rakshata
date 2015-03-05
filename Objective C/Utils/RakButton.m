@@ -162,6 +162,7 @@
 	{
 		self.focusRingType = NSFocusRingTypeNone;
 		textCell = nil;
+		_borderWidth = 1;
 		_imageName = nil;
 	}
 	
@@ -330,10 +331,23 @@
 		[textCell setTextColor:[self getFontColor]];
 }
 
+- (void) setBorderWidth:(CGFloat)borderWidth
+{
+	_borderWidth = borderWidth;
+	[(RakButton *) self.controlView sizeToFit];
+}
+
 - (NSSize) sizeOfTextCell
 {
 	if(textCell != nil)
-		return textCell.attributedStringValue.size;
+	{
+		NSSize size = textCell.attributedStringValue.size;
+		
+		size.width += 2 * _borderWidth;
+		size.height += 2 * _borderWidth;
+		
+		return size;
+	}
 	
 	return NSZeroSize;
 }
@@ -345,7 +359,7 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
+	return _customBackgroundColor == nil ? [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil] : _customBackgroundColor;
 }
 
 - (NSColor *) getFontColor
@@ -367,10 +381,10 @@
 			[[self getBorderColor] setFill];
 			NSRectFill(cellFrame);
 			
-			cellFrame.size.width -= 2;	//border
-			cellFrame.size.height -= 2;
-			cellFrame.origin.x++;
-			cellFrame.origin.y++;
+			cellFrame.size.width -= 2 * _borderWidth;	//border
+			cellFrame.size.height -= 2 * _borderWidth;
+			cellFrame.origin.x += _borderWidth;
+			cellFrame.origin.y += _borderWidth;
 		}
 		
 		[[self getBackgroundColor] setFill];
