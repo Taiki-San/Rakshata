@@ -199,7 +199,7 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor: GET_COLOR_BACKGROUD_COREVIEW: nil];
+	return [Prefs getSystemColor: GET_COLOR_BACKGROUND_COREVIEW: nil];
 }
 
 - (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender

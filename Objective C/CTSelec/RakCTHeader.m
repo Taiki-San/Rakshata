@@ -23,7 +23,7 @@
 		if(self != nil)
 		{
 			header = localHeader;
-			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_COREVIEW : self];
+			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : self];
 			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 
 			[header setFrame : _bounds];
@@ -158,7 +158,7 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUD_COREVIEW : nil];
+	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : nil];
 	_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
 }
 

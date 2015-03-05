@@ -72,7 +72,7 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS:self].CGColor;
+	self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
 	[self setNeedsDisplay];
 }
 
@@ -144,7 +144,7 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS : self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS : self].CGColor;
 		self.layer.cornerRadius = 4;
 	}
 	haveBackground = !haveBackground;

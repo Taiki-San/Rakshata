@@ -250,7 +250,7 @@
 		case TAB_READER:
 		case TAB_SERIES:
 		{
-			code = GET_COLOR_BACKGROUD_COREVIEW;
+			code = GET_COLOR_BACKGROUND_COREVIEW;
 			break;
 		}
 			

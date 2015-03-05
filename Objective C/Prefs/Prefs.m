@@ -229,20 +229,20 @@ enum
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUD_BACK_BUTTONS:
+		case GET_COLOR_BACKGROUND_BACK_BUTTONS:
 		case GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_START:
 		{
 			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING:
+		case GET_COLOR_BACKGROUND_BACK_BUTTONS_ANIMATING:
 		{
 			output = [NSColor colorWithSRGBRed:104/255.0f green:150/255.0f blue:176/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUD_COREVIEW:
+		case GET_COLOR_BACKGROUND_COREVIEW:
 		case GET_COLOR_TAGITEM_BACKGROUND:
 		case GET_COLOR_SEARCHTAB_BACKGROUND:
 		{
@@ -406,6 +406,7 @@ enum
 		case GET_FONT_RD_BUTTONS:
 		case GET_FONT_SR_TITLE:
 		case GET_FONT_ABOUT:
+		case GET_FONT_PREFS_TITLE:
 		{
 			output = @"Helvetica-Bold";
 			break;

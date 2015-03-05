@@ -89,12 +89,12 @@ enum
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS : nil];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS : nil];
 }
 
 - (NSColor *) getColorBackgroundSlider
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUD_BACK_BUTTONS_ANIMATING : nil];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS_ANIMATING : nil];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

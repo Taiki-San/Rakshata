@@ -31,7 +31,7 @@
 		self.wantsLayer = YES;
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
-		self.layer.backgroundColor = [self getBackgroudColor].CGColor;
+		self.layer.backgroundColor = [self getBACKGROUNDColor].CGColor;
 		
 		placeholder = [[RakText alloc] initWithText:frameRect :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
 		if(placeholder != nil)
@@ -188,7 +188,7 @@
 	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_DEPLOYED :nil];
 }
 
-- (NSColor *) getBackgroudColor
+- (NSColor *) getBACKGROUNDColor
 {
 	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BACKGROUND :nil];
 }
@@ -214,7 +214,7 @@
 
 	placeholder.textColor = [self placeholderTextColor];
 	self.layer.borderColor = [self getBorderColor].CGColor;
-	self.layer.backgroundColor = [self getBackgroudColor].CGColor;
+	self.layer.backgroundColor = [self getBACKGROUNDColor].CGColor;
 }
 
 #pragma mark Interactions
