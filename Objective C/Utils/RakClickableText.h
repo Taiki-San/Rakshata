@@ -10,29 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakAboutWindow;
-
-#import "RakAboutTools.h"
-
-@interface RakAboutWindow : RakCustomWindow
+@interface RakClickableText : RakText
 {
-	RakAboutIcon * icon;
-	RakClickableText * projectName;
-	RakText * version;
+	NSTrackingRectTag tracking;
 	
-	RakText * devTitle, * designTitle;
-	RakClickableText * taikiName, * blag, * planchette, *FOSS;
-	
-	uint easterCount;
-	RakText * mainEaster;
-	RakClickableText * easterLink;
-	
-	RakText * copyright;
+	NSColor * classicalTextColor;
 }
 
-@property BOOL haveEaster;
+@property NSString * URL;
 
-- (void) respondTo : (RakClickableText *) sender;
-- (void) clicIcon;
+@property (weak) id clicTarget;
+@property SEL clicAction;
+
+- (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (NSObject *) responder;
 
 @end

@@ -87,6 +87,7 @@
 		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
 		B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */; };
+		B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D46841AA86A1F00B471AC /* RakClickableText.m */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -338,6 +339,8 @@
 		B69D467A1AA7592700B471AC /* RakPrefsButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsButtons.m; path = "Divers Windows/RakPrefsButtons.m"; sourceTree = "<group>"; };
 		B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsRepoView.h; path = "Divers Windows/RakPrefsRepoView.h"; sourceTree = "<group>"; };
 		B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRepoView.m; path = "Divers Windows/RakPrefsRepoView.m"; sourceTree = "<group>"; };
+		B69D46831AA86A1F00B471AC /* RakClickableText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakClickableText.h; path = Utils/RakClickableText.h; sourceTree = "<group>"; };
+		B69D46841AA86A1F00B471AC /* RakClickableText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakClickableText.m; path = Utils/RakClickableText.m; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -582,6 +585,8 @@
 		B62935DC1A803A9400DE20E2 /* RakText */ = {
 			isa = PBXGroup;
 			children = (
+				B69D46831AA86A1F00B471AC /* RakClickableText.h */,
+				B69D46841AA86A1F00B471AC /* RakClickableText.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
 				B678674D18F5ED4A004AA6B4 /* RakMenuText.m */,
 				B61A790818E389F300D8E0E0 /* RakText.h */,
@@ -742,12 +747,11 @@
 			isa = PBXGroup;
 			children = (
 				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
-				B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */,
-				B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */,
 				B69F74021AA635AB008AA51B /* RakPrefsTools.h */,
 				B69F74031AA635AB008AA51B /* RakPrefsTools.m */,
 				B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */,
 				B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */,
+				B69D46821AA868E800B471AC /* Repo */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";
@@ -761,6 +765,15 @@
 				B6251F731A98CC92001C4F06 /* RakAboutWindow.m */,
 			);
 			name = About;
+			sourceTree = "<group>";
+		};
+		B69D46821AA868E800B471AC /* Repo */ = {
+			isa = PBXGroup;
+			children = (
+				B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */,
+				B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */,
+			);
+			name = Repo;
 			sourceTree = "<group>";
 		};
 		B69FBE8A1A74FB9C009ACBEF /* Tools */ = {
@@ -1350,6 +1363,7 @@
 				B6F6ED0C18A3001400E3B55B /* repo.c in Sources */,
 				B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */,
 				B6EA520718A4111000A9B16E /* interface.m in Sources */,
+				B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */,
 				B6F6ECF618A3001400E3B55B /* error.c in Sources */,
 				B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */,
 				B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */,

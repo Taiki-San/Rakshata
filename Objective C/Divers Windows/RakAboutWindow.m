@@ -73,15 +73,13 @@ enum
 		[contentView addSubview:icon];
 	}
 	
-	projectName = [[RakAboutText alloc] initWithText:@"Rakshata" :[self mainTextColor] responder:self];
+	projectName = [[RakClickableText alloc] initWithText:@"Rakshata" :[self mainTextColor] responder:self];
 	if(projectName != nil)
 	{
 		projectName.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_ABOUT] size:18];
 		[projectName sizeToFit];
 
 		projectName.URL = PROJECT_URL;
-		[projectName setupArea];
-		
 		[contentView addSubview:projectName];
 	}
 	
@@ -112,13 +110,10 @@ enum
 		[contentView addSubview:devTitle];
 	}
 	
-	taikiName = [[RakAboutText alloc] initWithText:@"Taiki" :[self mainTextColor] responder:self];
+	taikiName = [[RakClickableText alloc] initWithText:@"Taiki" :[self mainTextColor] responder:self];
 	if(taikiName != nil)
 	{
 		taikiName.URL = TAIKI_URL;
-		
-		[taikiName setupArea];
-		
 		[contentView addSubview:taikiName];
 	}
 	
@@ -131,35 +126,27 @@ enum
 		[contentView addSubview:designTitle];
 	}
 	
-	planchette = [[RakAboutText alloc] initWithText:@"Patrick Blanchette" :[self mainTextColor] responder:self];
+	planchette = [[RakClickableText alloc] initWithText:@"Patrick Blanchette" :[self mainTextColor] responder:self];
 	if(planchette != nil)
 	{
 		planchette.URL = PATRICK_URL;
-		
-		[planchette setupArea];
-		
 		[contentView addSubview:planchette];
 	}
 
-	blag = [[RakAboutText alloc] initWithText:@"Blag" :[self mainTextColor] responder:self];
+	blag = [[RakClickableText alloc] initWithText:@"Blag" :[self mainTextColor] responder:self];
 	if(blag != nil)
 	{
 		blag.URL = BLAG_URL;
-		
-		[blag setupArea];
-		
 		[contentView addSubview:blag];
 	}
 	
-	FOSS = [[RakAboutText alloc] initWithText:NSLocalizedString(@"FOSS-USAGE", nil) :[self mainTextColor] responder:self];
+	FOSS = [[RakClickableText alloc] initWithText:NSLocalizedString(@"FOSS-USAGE", nil) :[self mainTextColor] responder:self];
 	if(FOSS != nil)
 	{
 		FOSS.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:13];
 		[FOSS sizeToFit];
 		
 		FOSS.URL = FOSS_URL;
-		[FOSS setupArea];
-		
 		[contentView addSubview:FOSS];
 	}
 	
@@ -182,7 +169,7 @@ enum
 
 #pragma mark - Responder
 
-- (void) respondTo : (RakAboutText *) sender
+- (void) respondTo : (RakClickableText *) sender
 {
 	NSString * string = sender.URL;
 	
@@ -221,7 +208,7 @@ enum
 
 	if(easterLink == nil)
 	{
-		easterLink = [[RakAboutText alloc] initWithText:@"Check them out!" :[self mainTextColor] responder:self];
+		easterLink = [[RakClickableText alloc] initWithText:@"Check them out!" :[self mainTextColor] responder:self];
 		if(easterLink != nil)
 		{
 			easterLink.URL = EASTER_URL;
@@ -240,7 +227,6 @@ enum
 	easterLink.animator.alphaValue = 1;
 	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		[easterLink setupArea];
 		[FOSS updateTrackingAreas];
 	}];
 	

@@ -17,25 +17,7 @@ enum
 	STATUS_CANCELED,
 	STATUS_SUSPENDED,
 	STATUS_WIP,
-	STATUS_ANOUNCED,
-};
-
-/*Genre*/
-enum
-{
-	GENRE_SHONEN = 1,
-	GENRE_SHOJO,
-	GENRE_SEINEN,
-	GENRE_HENTAI
-};
-
-/*Type*/
-enum
-{
-	TYPE_MANGA = 1,
-	TYPE_COMIC,
-	TYPE_BD,
-	TYPE_MANWA
+	STATUS_ANOUNCED
 };
 
 /*Repository*/

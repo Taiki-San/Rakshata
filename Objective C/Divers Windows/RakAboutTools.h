@@ -17,23 +17,6 @@
 
 @end
 
-@interface RakAboutText : RakText
-{
-	NSTrackingRectTag tracking;
-	
-	NSColor * classicalTextColor;
-}
-
-@property NSString * URL;
-
-@property (weak) id clicTarget;
-@property SEL clicAction;
-
-- (void) setupArea;
-- (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (RakAboutWindow *) responder;
-
-@end
-
 @interface RakAboutIcon : NSImageView
 
 @property (weak) RakAboutWindow * clicResponder;

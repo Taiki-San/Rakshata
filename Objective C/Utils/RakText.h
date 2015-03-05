@@ -36,3 +36,5 @@
 - (instancetype) init : (uint) length;
 
 @end
+
+#import "RakClickableText.h"
