@@ -35,14 +35,6 @@
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition
 {
-	if(![self didInitWentWell])
-	{
-#ifdef DEV_VERSION
-		NSLog(@"Invalid request");
-#endif
-		return;
-	}
-	
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getFrameFromParent:frame]];
 	_tableView = [[RakTableView alloc] initWithFrame : scrollView.contentView.bounds];
@@ -93,11 +85,6 @@
 	{
 		[_tableView scrollRowToVisible:0];
 	}
-}
-
-- (BOOL) didInitWentWell
-{
-	return NO;
 }
 
 - (void) failure
@@ -374,9 +361,10 @@
 		result.identifier = _identifier;
 	}
 	
-	result.textColor = selected ? (highlight != nil ? highlight : [self getTextHighlightColor:column :row]) : (normal != nil ? normal : [self getTextColor:column :row]);
-	result.drawsBackground = selected;
+	_tmpColor = selected ? (highlight != nil ? highlight : [self getTextHighlightColor:column :row]) : (normal != nil ? normal : [self getTextColor:column :row]);
 	result.backgroundColor = [self getBackgroundHighlightColor];
+	
+	[self graphicSelection : result : selected];
 	
 	return result;
 }
@@ -389,7 +377,7 @@
 	selectedRowIndex = LIST_INVALID_SELECTION;
 	
 	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
-	NSColor * highlightColor = (highlight != nil ? highlight : [self getTextHighlightColor:baseColumn / _nbElemPerCouple :rowIndex]);
+	_tmpColor = (highlight != nil ? highlight : [self getTextHighlightColor:baseColumn / _nbElemPerCouple :rowIndex]);
 	
 	if(baseColumn != LIST_INVALID_SELECTION)
 	{
@@ -397,17 +385,22 @@
 		for(byte pos = 0; pos < _nbElemPerCouple; pos++)
 		{
 			view = [tableView viewAtColumn:initialColumn + pos row:rowIndex makeIfNecessary:NO];
-			if(view != nil && [view class] == [RakText class])
-			{
-				view.textColor = highlightColor;
-				view.drawsBackground = YES;
-				[view setNeedsDisplay];
-			}
+			[self graphicSelection:view : YES];
 		}
 	}
 
 	[self postProcessingSelection : rowIndex];
 	return YES;
+}
+
+- (void) graphicSelection : (NSView *) view : (BOOL) select
+{
+	if(view != nil && [view class] == [RakText class])
+	{
+		((RakText *) view).drawsBackground = select;
+		((RakText *) view).textColor = _tmpColor;
+		[((RakText *) view) setNeedsDisplay];
+	}
 }
 
 - (void) postProcessingSelection : (uint) row
@@ -456,12 +449,8 @@
 		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
-			if([view class] == [RakText class])
-			{
-				view.textColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
-				view.drawsBackground = NO;
-				[view setNeedsDisplay];
-			}
+			_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
+			[self graphicSelection:view :NO];
 		}
 		
 		CGFloat rowToDeselect = selectedRowIndex;

@@ -174,7 +174,10 @@
 
 - (NSColor *) middleBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil];
+	if(self.window.isMainWindow)
+		return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil];
+	
+	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN :nil];
 }
 
 - (NSColor *) lastBorderColor

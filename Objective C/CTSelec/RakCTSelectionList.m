@@ -81,11 +81,6 @@
 	return self;
 }
 
-- (BOOL) didInitWentWell
-{
-	return YES;
-}
-
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller
 {
 	if(!project.isInitialized)

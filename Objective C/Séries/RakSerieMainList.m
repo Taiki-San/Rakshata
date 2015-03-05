@@ -66,11 +66,6 @@
 	[RakDBUpdate unRegister : self];
 }
 
-- (BOOL) didInitWentWell
-{
-	return _data != NULL && (!self.installOnlyMode || _installed != NULL);
-}
-
 - (BOOL) installOnlyMode
 {
 	return _jumpToInstalled != NULL;

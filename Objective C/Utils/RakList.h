@@ -61,6 +61,7 @@ typedef struct smartReload_data
 	//Color cache
 	NSColor * normal;
 	NSColor * highlight;
+	NSColor * _tmpColor;
 	
 	NSString * _identifier;
 }
@@ -71,7 +72,6 @@ typedef struct smartReload_data
 @property BOOL _selectionChangeComeFromClic;
 
 - (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
-- (BOOL) didInitWentWell;
 - (void) failure;
 
 - (void) setFrameOrigin : (NSPoint) origin;
@@ -101,6 +101,7 @@ typedef struct smartReload_data
 - (NSColor *) getTextHighlightColor : (uint) column : (uint) row;
 - (NSColor *) getBackgroundHighlightColor;
 
+- (void) graphicSelection : (NSView *) view : (BOOL) select;
 - (void) postProcessingSelection : (uint) row;
 
 - (void) selectElement : (uint) element;

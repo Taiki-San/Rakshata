@@ -16,7 +16,7 @@ enum
 	LIST_ROW_IMAGE_DIAMETER = 40,
 	
 	OFFSET_IMAGE_ROW = 10,
-	OFFSET_TITLE_X = 10,
+	OFFSET_TITLE_X = 5,
 	OFFSET_TITLE_Y = 22,
 	OFFSET_DETAIL_Y = 6
 };
@@ -28,6 +28,8 @@ enum
 	
 	NSRect imageFrame;
 }
+
+@property BOOL highlighted;
 
 - (instancetype) initWithRepo : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
@@ -45,17 +47,30 @@ enum
 		_nbData = [_responder sizeForMode:_rootMode];
 		
 		[self applyContext:frame : selectedRowIndex : -1];
+		
+		scrollView.wantsLayer = YES;
+		scrollView.layer.cornerRadius = 3;
+		scrollView.drawsBackground = YES;
+		scrollView.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :self];
 	}
 	
 	return self;
 }
 
-- (BOOL) didInitWentWell
+- (void) tableViewSelectionDidChange:(NSNotification *)notification
 {
-	return YES;
+	[_responder selectionUpdate:_rootMode :selectedRowIndex];
 }
 
-#pragma mark - Element generation
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	scrollView.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil];
+}
+
+#pragma mark - Tableview code
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
@@ -77,13 +92,22 @@ enum
 	if(!_rootMode && list[row] != NULL)
 		detail = [_responder nameOfParent: ((REPO_DATA *) list[row])->parentRepoID];
 
-	RakPrefsRepoListItem *result = [tableView makeViewWithIdentifier : _identifier owner:self];
+	RakPrefsRepoListItem * result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if (result == nil)
 		result = [[RakPrefsRepoListItem alloc] initWithRepo :_rootMode : list[row] : detail];
 	else
 		[result updateContent:_rootMode :list[row] :detail];
 	
 	return result;
+}
+
+- (void) graphicSelection:(RakPrefsRepoListItem *)view :(BOOL)select
+{
+	if([view class] == [RakPrefsRepoListItem class])
+	{
+		view.highlighted = select;
+		[view setNeedsDisplay:YES];
+	}
 }
 
 @end
@@ -95,7 +119,10 @@ enum
 	self = [self initWithFrame:NSMakeRect(0, 0, 300, LIST_ROW_HEIGHT)];
 	
 	if(self != nil)
+	{
+		[Prefs getCurrentTheme:self];
 		[self updateContent:isRoot :repo :detailString];
+	}
 	
 	return self;
 }
@@ -176,8 +203,11 @@ enum
 
 - (void) drawRect:(NSRect)dirtyRect
 {
-	[[self backgroundColor] setFill];
-	NSRectFill(dirtyRect);
+	if(_highlighted)
+	{
+		[[self backgroundColor] setFill];
+		NSRectFill(dirtyRect);
+	}
 
 	[NSGraphicsContext saveGraphicsState];
 	
@@ -194,6 +224,8 @@ enum
 	[NSGraphicsContext restoreGraphicsState];
 }
 
+#pragma mark - Color
+
 - (NSColor *) textColor
 {
 	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
@@ -206,7 +238,18 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :nil];
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST_ITEM :nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return;
+	
+	title.textColor = [self textColor];
+	detail.textColor = [self detailTextColor];
+	
+	[self setNeedsDisplay:YES];
 }
 
 @end

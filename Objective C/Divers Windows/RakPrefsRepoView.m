@@ -10,6 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	BORDER = 5
+};
+
 @implementation RakPrefsRepoView
 
 - (instancetype) init
@@ -39,7 +44,7 @@
 			list.responder = self;
 			list.rootMode = NO;;
 			
-			list = [list initWithFrame:NSMakeRect(0, 0, _bounds.size.width * 0.6, _bounds.size.height * 0.7)];
+			list = [list initWithFrame:[self listFrame]];
 			
 			[self addSubview:[list getContent]];
 		}
@@ -50,13 +55,21 @@
 
 - (NSRect) frame
 {
-	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, PREF_WINDOW_REAL_WIDTH, 500);
+	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, 800, 500);
 }
 
-- (void) drawRect:(NSRect)dirtyRect
+- (NSRect) listFrame
 {
-	[[NSColor grayColor] setFill];
-	NSRectFill(dirtyRect);
+	NSRect frame = _bounds;
+	const CGFloat height = frame.size.height * 0.7;
+	
+	frame.origin.x = BORDER;
+	frame.origin.y = frame.size.height - height - BORDER;
+
+	frame.size.width *= 0.6;
+	frame.size.height = height;
+	
+	return frame;
 }
 
 #pragma mark - Data interface
@@ -83,6 +96,16 @@
 	}
 	
 	return @"";
+}
+
+- (void) selectionUpdate : (BOOL) isRoot : (uint) index
+{
+	void ** _list = [self listForMode:isRoot];
+	
+	if(_list == NULL || index >= [self sizeForMode:isRoot])
+		return;
+	
+	NSLog(@"Clicked %@", getStringForWchar(isRoot ? ((ROOT_REPO_DATA **) _list)[index]->name : ((REPO_DATA **) _list)[index]->name));
 }
 
 @end

@@ -110,10 +110,18 @@ enum
 			break;
 		}
 		case GET_COLOR_EXTERNALBORDER_MIDDLE:
+		case GET_COLOR_BACKGROUND_REPO_LIST:
 		{
 			output = [NSColor colorWithDeviceWhite:32/255.0f alpha:1.0];
 			break;
 		}
+			
+		case GET_COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN:
+		{
+			output = [NSColor colorWithDeviceWhite:40/255.0f alpha:1.0];
+			break;
+		}
+			
 		case GET_COLOR_EXTERNALBORDER_CLOSEST:
 		{
 			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
@@ -216,6 +224,7 @@ enum
 			break;
 		}
 		case GET_COLOR_BACKGROUND_TABS:
+		case GET_COLOR_BACKGROUND_REPO_LIST_ITEM:
 		case GET_COLOR_BACKGROUND_PREFS_HEADER:
 		{
 			output = [NSColor colorWithDeviceWhite:47/255.0f alpha:1.0];

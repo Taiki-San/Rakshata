@@ -94,11 +94,6 @@
 	return self;
 }
 
-- (BOOL) didInitWentWell
-{
-	return YES;
-}
-
 #pragma mark - Data manipulation
 
 - (SR_DATA *) getSmartReloadData : (PROJECT_DATA*) data : (uint) nbElem : (bool *) installed

@@ -93,13 +93,21 @@
 			old.animator.alphaValue = 0;
 		} completionHandler:^{
 			
-			const CGFloat diff = old.bounds.size.height - new.bounds.size.height;
 			NSRect newWindowFrame = window.frame;
+
+			CGFloat diff = old.bounds.size.height - new.bounds.size.height;
 			newWindowFrame.size.height -= diff;
 			newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff);
 			
+			diff = old.bounds.size.width - new.bounds.size.width;
+			newWindowFrame.size.width -= diff;
+			newWindowFrame.origin.x = MAX(0, newWindowFrame.origin.x + diff);
+			
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-				[window setFrame:newWindowFrame display:YES animate:YES];
+
+				[window.animator setFrame:newWindowFrame display:YES animate:YES];
+				[header.animator setFrameSize:NSMakeSize(newWindowFrame.size.width - 4, PREF_BUTTON_BAR_HEIGHT)];
+		 	
 			} completionHandler:^{
 				
 				[new setFrameOrigin:NSMakePoint(0, PREF_BUTTON_BAR_HEIGHT)];

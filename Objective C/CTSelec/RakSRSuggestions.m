@@ -104,8 +104,7 @@
 
 #pragma mark - Configuration
 
-- (BOOL) didInitWentWell	{	return YES;	}
-- (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
+- (BOOL) tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	return NO;
 }

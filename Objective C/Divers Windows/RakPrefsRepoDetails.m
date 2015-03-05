@@ -10,38 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakPrefsRepoView;
-
-@interface RakPrefsRepoList : RakList
-
-@property RakPrefsRepoView * __weak responder;
-
-@property BOOL rootMode;
-
-- (instancetype) initWithFrame : (NSRect) frame;
+@interface RakPrefsRepoDetails()
 
 @end
 
-@interface RakPrefsRepoDetails : NSView
-
-@end
-
-@interface RakPrefsRepoView : NSView
-{
-	ROOT_REPO_DATA ** root;
-	REPO_DATA ** repo;
-	
-	uint nbRoot, nbRepo;
-	
-	RakPrefsRepoList * list;
-	RakPrefsRepoDetails * details;
-}
-
-- (void **) listForMode : (BOOL) rootMode;
-- (uint) sizeForMode : (BOOL) rootMode;
-
-- (NSString *) nameOfParent : (uint) parentID;
-
-- (void) selectionUpdate : (BOOL) isRoot : (uint) index;
+@implementation RakPrefsRepoDetails
 
 @end

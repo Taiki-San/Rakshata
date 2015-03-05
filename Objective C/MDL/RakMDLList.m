@@ -63,11 +63,6 @@
 		[scrollView setHasVerticalScroller:!hidden];
 }
 
-- (BOOL) didInitWentWell
-{
-	return YES;
-}
-
 #pragma mark - Methods to deal with tableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
