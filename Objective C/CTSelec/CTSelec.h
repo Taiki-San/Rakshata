@@ -46,5 +46,6 @@
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+- (PROJECT_DATA) activeProject;
 
 @end

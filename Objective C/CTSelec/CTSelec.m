@@ -447,6 +447,11 @@
 	[coreView selectElem : projectID : isTome : element];
 }
 
+- (PROJECT_DATA) activeProject
+{
+	return [coreView activeProject];
+}
+
 #pragma mark - Drop
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender

@@ -14,7 +14,7 @@ enum
 {
 	IMAGE_BORDER = 50,
 	TEXT_BORDER = 3,
-	BUTTON_BORDER = 70
+	BUTTON_BORDER = 50
 };
 
 @interface RakPrefsRepoDetails()
@@ -132,24 +132,32 @@ enum
 		
 		if(flushButton == nil)
 		{
-			flushButton = [RakDeleteButton allocWithText:@"Supprimer\nle contenu" :NSZeroRect];
+			flushButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-CONTENT", nil) :NSZeroRect];
 			if(flushButton != nil)
 			{
 				[flushButton.cell setBorderWidth:2];
 				[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil]];
 				[flushButton sizeToFit];
+				
+				flushButton.target = self;
+				flushButton.action = @selector(nukeTheDB);
+				
 				[self addSubview:flushButton];
 			}
 		}
 		
 		if(deleteButton == nil)
 		{
-			deleteButton = [RakDeleteButton allocWithText:@"Désactiver\nla source" :NSZeroRect];
+			deleteButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-SOURCE", nil) :NSZeroRect];
 			if(deleteButton != nil)
 			{
 				[deleteButton.cell setBorderWidth:2];
 				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil]];
 				[deleteButton sizeToFit];
+
+				deleteButton.target = self;
+				deleteButton.action = @selector(nukeEverything);
+				
 				[self addSubview:deleteButton];
 			}
 		}
@@ -157,8 +165,8 @@ enum
 		//Resizing
 		[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= TEXT_BORDER + data.bounds.size.height))];
 		
-		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 4 - flushButton.bounds.size.width / 2, BUTTON_BORDER - flushButton.bounds.size.height / 2)];
-		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width - _bounds.size.width / 4 - deleteButton.bounds.size.width / 2, BUTTON_BORDER - deleteButton.bounds.size.height / 2)];
+		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 4 - flushButton.bounds.size.width / 2, BUTTON_BORDER)];
+		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width - _bounds.size.width / 4 - deleteButton.bounds.size.width / 2, BUTTON_BORDER)];
 	}
 	else
 	{
@@ -170,12 +178,85 @@ enum
 	}
 }
 
+#pragma mark - Responder
+
 - (void) respondTo : (RakClickableText *) sender
 {
 	NSString * string = sender.URL;
 	
 	if(string != nil)
 		ouvrirSite([string UTF8String]);
+}
+
+- (void) nukeTheDB
+{
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	if(alert != nil)
+	{
+		alert.alertStyle = NSCriticalAlertStyle;
+		alert.messageText = NSLocalizedString(@"PREFS-DELETE-CONTENT-TITLE", nil);
+		alert.informativeText = NSLocalizedString(@"PREFS-DELETE-CONTENT-MESSAGE", nil);
+		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-CANCEL", nil)];
+		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-GO-FOR-IT", nil)];
+		
+		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+			if(returnCode != -NSModalResponseStop)
+				[self deleteContent:NO];
+		}];
+	}
+}
+
+- (void) nukeEverything
+{
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	if(alert != nil)
+	{
+		alert.alertStyle = NSCriticalAlertStyle;
+		alert.messageText = NSLocalizedString(@"PREFS-DELETE-SOURCE-TITLE", nil);
+		alert.informativeText = NSLocalizedString(@"PREFS-DELETE-SOURCE-MESSAGE", nil);
+		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-CANCEL", nil)];
+		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-GO-FOR-IT", nil)];
+		
+		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+			if(returnCode != -NSModalResponseStop)
+				[self deleteContent:YES];
+		}];
+	}
+}
+
+#warning "Tons of work to do there"
+- (void) deleteContent : (BOOL) nukeRepo
+{
+	PROJECT_DATA readerProject = [[[NSApp delegate] reader] activeProject], CTProject = [[[NSApp delegate] CT] activeProject];
+	uint64_t ID = getRepoID(_repo);
+	
+	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID)
+	{
+		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
+		
+		if(getRepoID(CTProject.repo) == ID)
+		{
+			
+		}
+		
+		if(getRepoID(readerProject.repo) == ID)
+		{
+			
+		}
+	}
+	
+	if(nukeRepo)
+	{
+		self.window.title = NSLocalizedString(@"PREFS-DELETE-REMOVE", nil);
+	}
+	
+	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);
+
+	char path[256];
+	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(_repo));
+	removeFolder(path);
 }
 
 #pragma mark - Drawing

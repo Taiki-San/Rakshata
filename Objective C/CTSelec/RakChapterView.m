@@ -330,6 +330,11 @@
 		[coreview selectElem : projectID : isTome : element];
 }
 
+- (PROJECT_DATA) activeProject
+{
+	return coreview.currentProject;
+}
+
 #pragma mark - Suggestion management
 
 enum

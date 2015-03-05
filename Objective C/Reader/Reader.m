@@ -298,14 +298,10 @@
 	[super setUpViewForAnimation:mainThread];
 }
 
-/**	Drawing	**/
-
 - (NSColor*) getMainColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_READER_INTAB : nil];
 }
-
-/**	NSTrackingArea	**/
 
 - (BOOL) isStillCollapsedReaderTab
 {
@@ -318,8 +314,6 @@
 {
 	[self abordFadeTimer];
 }
-
-/**	Hide stuffs	**/
 
 - (void) collapseAllTabs : (bool) forced
 {
@@ -491,6 +485,11 @@
 }
 
 #pragma mark - Proxy work
+
+- (PROJECT_DATA) activeProject
+{
+	return _project;
+}
 
 - (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
 {

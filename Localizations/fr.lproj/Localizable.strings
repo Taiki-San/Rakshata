@@ -128,6 +128,18 @@
 "PREFS-ROOT-GROUPS-%@" = "Groupe: %1$@";
 "PREFS-ROOT-NO-GROUP" = "Aucun groupe";
 "WEBSITE" = "Site Internet";
+"PREFS-DELETE-CONTENT" = "Supprimer\nle contenu";
+"PREFS-DELETE-SOURCE" = "Désactiver\nla source";
+"PREFS-DELETE-CONTENT-TITLE" = "Êtes vous sûr de vouloir supprimer le contenu de cette source?";
+"PREFS-DELETE-CONTENT-MESSAGE" = "Cette option supprimera tous les projets distribués par cette source que vous avez téléchargé. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
+"PREFS-DELETE-SOURCE-TITLE" = "Désactiver la source supprimera le contenu";
+"PREFS-DELETE-SOURCE-MESSAGE" = "Désactiver la source fera disparaitre son contenu du catalogue et supprimera tous les projets distribués par cette source. La source pourra être réajouter depuis ce menu. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
+"PREFS-DELETE-CANCEL" = "Annuler";
+"PREFS-DELETE-GO-FOR-IT" = "Ok";
+
+"PREFS-DELETE-KILL-USE" = "Arrêt d'utilisation des ressources à supprimer";
+"PREFS-DELETE-REMOVE" = "Nettoyage des traces";
+"PREFS-DELETE-PURGE" = "Suppression des fichiers";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

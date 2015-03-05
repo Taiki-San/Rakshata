@@ -83,6 +83,7 @@
 - (void) cursorShouldFadeAway;
 - (void) fadeBottomBar : (CGFloat) alpha;
 
+- (PROJECT_DATA) activeProject;
 - (void) switchFavs;
 - (void) triggerFullscreen;
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
