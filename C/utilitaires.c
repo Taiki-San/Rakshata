@@ -39,6 +39,11 @@ int sortRepo(const void *a, const void *b)
 	return wstrcmp((*((REPO_DATA**) a))->name, (*((REPO_DATA**) b))->name);
 }
 
+int sortRootRepo(const void *a, const void *b)
+{
+	return wstrcmp((*((ROOT_REPO_DATA**) a))->name, (*((ROOT_REPO_DATA**) b))->name);
+}
+
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 {
 	if(a.projectID != b.projectID)

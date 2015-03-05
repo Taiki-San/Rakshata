@@ -122,6 +122,11 @@
 "PREFS-TITLE-GENERAL" = "Général";
 "PREFS-TITLE-REPO" = "Sources";
 "PREFS-TITLE-FAVS" = "Favoris";
+"PREFS-ROOT-NO-ACTIVE-REPO" = "Aucun élement actif";
+"PREFS-ROOT-ONE-ACTIVE-REPO" = "Un élement actif";
+"PREFS-ROOT-%zu-ACTIVE-REPO" = "%1$zu élements actifs";
+"PREFS-ROOT-GROUPS-%@" = "Groupe: %1$@";
+"PREFS-ROOT-NO-GROUP" = "Aucun groupe";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

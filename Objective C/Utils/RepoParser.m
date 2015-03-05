@@ -331,8 +331,6 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 
 ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool localSource)
 {
-	//Great, parseData contain the serialized structure, let's go
-	
 	NSNumber * version = objectForKey(parseData, JSON_REPO_MIN_VERSION, @"minimum_rakshata_version");
 	if(version == nil || ![version isKindOfClass:[NSNumber class]])
 		return NULL;

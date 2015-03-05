@@ -56,6 +56,10 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
 
 //Repository
+void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot);
+void freeRootRepo(ROOT_REPO_DATA ** root);
+void freeRepo(REPO_DATA ** repos);
+
 uint64_t getRepoID(REPO_DATA * repo);
 uint getRepoIndexFromURL(char * URL);
 

@@ -160,6 +160,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 void changeTo(char *string, char toFind, char toPut);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
+int sortRootRepo(const void *a, const void *b);
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b);
 int positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);

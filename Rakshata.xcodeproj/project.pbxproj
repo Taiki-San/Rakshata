@@ -88,6 +88,11 @@
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
 		B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */; };
 		B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D46841AA86A1F00B471AC /* RakClickableText.m */; };
+		B69D46871AA8797000B471AC /* RakPrefsRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D46861AA8797000B471AC /* RakPrefsRepoList.m */; };
+		B69D468C1AA8830500B471AC /* defaultRepo.png in Resources */ = {isa = PBXBuildFile; fileRef = B69D46881AA8830500B471AC /* defaultRepo.png */; };
+		B69D468D1AA8830500B471AC /* defaultRepo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69D46891AA8830500B471AC /* defaultRepo@2x.png */; };
+		B69D468E1AA8830500B471AC /* defaultRepoRoot.png in Resources */ = {isa = PBXBuildFile; fileRef = B69D468A1AA8830500B471AC /* defaultRepoRoot.png */; };
+		B69D468F1AA8830500B471AC /* defaultRepoRoot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69D468B1AA8830500B471AC /* defaultRepoRoot@2x.png */; };
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
@@ -341,6 +346,11 @@
 		B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRepoView.m; path = "Divers Windows/RakPrefsRepoView.m"; sourceTree = "<group>"; };
 		B69D46831AA86A1F00B471AC /* RakClickableText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakClickableText.h; path = Utils/RakClickableText.h; sourceTree = "<group>"; };
 		B69D46841AA86A1F00B471AC /* RakClickableText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakClickableText.m; path = Utils/RakClickableText.m; sourceTree = "<group>"; };
+		B69D46861AA8797000B471AC /* RakPrefsRepoList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRepoList.m; path = "Divers Windows/RakPrefsRepoList.m"; sourceTree = "<group>"; };
+		B69D46881AA8830500B471AC /* defaultRepo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = defaultRepo.png; path = default/defaultRepo.png; sourceTree = "<group>"; };
+		B69D46891AA8830500B471AC /* defaultRepo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "defaultRepo@2x.png"; path = "default/defaultRepo@2x.png"; sourceTree = "<group>"; };
+		B69D468A1AA8830500B471AC /* defaultRepoRoot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = defaultRepoRoot.png; path = default/defaultRepoRoot.png; sourceTree = "<group>"; };
+		B69D468B1AA8830500B471AC /* defaultRepoRoot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "defaultRepoRoot@2x.png"; path = "default/defaultRepoRoot@2x.png"; sourceTree = "<group>"; };
 		B69D61D3186CA2F2003504F9 /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = Reader/Reader.h; sourceTree = "<group>"; };
 		B69D61D4186CA2F2003504F9 /* Reader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reader.m; path = Reader/Reader.m; sourceTree = "<group>"; };
 		B69D61D6186CA308003504F9 /* Series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Series.h; path = "Séries/Series.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -772,6 +782,7 @@
 			children = (
 				B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */,
 				B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */,
+				B69D46861AA8797000B471AC /* RakPrefsRepoList.m */,
 			);
 			name = Repo;
 			sourceTree = "<group>";
@@ -855,6 +866,10 @@
 		B6BD45D11A7D624100C2A675 /* Defaults */ = {
 			isa = PBXGroup;
 			children = (
+				B69D46881AA8830500B471AC /* defaultRepo.png */,
+				B69D46891AA8830500B471AC /* defaultRepo@2x.png */,
+				B69D468A1AA8830500B471AC /* defaultRepoRoot.png */,
+				B69D468B1AA8830500B471AC /* defaultRepoRoot@2x.png */,
 				B6BD45D21A7D628100C2A675 /* defaultSRImage.png */,
 				B6BD45D31A7D628100C2A675 /* defaultSRImage@2x.png */,
 				B6BD45C31A7D602A00C2A675 /* failed_loading.png */,
@@ -1310,13 +1325,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69D468D1AA8830500B471AC /* defaultRepo@2x.png in Resources */,
 				B6BD45D41A7D62A100C2A675 /* defaultSRImage.png in Resources */,
+				B69D468C1AA8830500B471AC /* defaultRepo.png in Resources */,
 				B6BD45D51A7D62A100C2A675 /* defaultSRImage@2x.png in Resources */,
+				B69D468E1AA8830500B471AC /* defaultRepoRoot.png in Resources */,
 				B6002C31189EF15E00466654 /* window.xib in Resources */,
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,
 				B6EB260619841E2500D678B3 /* auth.xib in Resources */,
 				B63401431A96AA7A003DC56E /* InfoPlist.strings in Resources */,
+				B69D468F1AA8830500B471AC /* defaultRepoRoot@2x.png in Resources */,
 				B6BD45CB1A7D602A00C2A675 /* project_large.png in Resources */,
 				B66ED1981949EC20002A333F /* theme 1 in Resources */,
 				B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */,
@@ -1355,6 +1374,7 @@
 			files = (
 				B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */,
 				B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */,
+				B69D46871AA8797000B471AC /* RakPrefsRepoList.m in Sources */,
 				B6BD45BE1A7D1B9E00C2A675 /* RakCollectionView.m in Sources */,
 				B621824118732CB0008AC5DD /* RakTabView.m in Sources */,
 				B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */,

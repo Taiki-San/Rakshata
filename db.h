@@ -47,7 +47,6 @@ uint getRepoIndex(REPO_DATA * repo);
 bool addRepoToDB(ROOT_REPO_DATA * newRepo);
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
-void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot);
 int getIndexOfRepo(uint parentID, uint repoID);
 uint getFreeRootRepoID();
 void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
@@ -56,8 +55,6 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, uint newAmountOfRepo);
 void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool haveExtra);
 void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo);
 bool isAppropriateNumberOfRepo(uint requestedNumber);
-void freeRootRepo(ROOT_REPO_DATA ** root);
-void freeRepo(REPO_DATA ** repos);
 
 //Searches
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
