@@ -229,24 +229,48 @@ enum
 #warning "Tons of work to do there"
 - (void) deleteContent : (BOOL) nukeRepo
 {
-	Reader * reader = [[NSApp delegate] reader];
 	CTSelec * CT = [[NSApp delegate] CT];
+	Reader * reader = [[NSApp delegate] reader];
 	
 	PROJECT_DATA readerProject = [reader activeProject], CTProject = [CT activeProject];
 	uint64_t ID = getRepoID(_repo);
 	
-	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID)
+	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID || 1)
 	{
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
+	
+		BOOL readerDeleted = NO, CTDeleted = NO;
 		
-		if(getRepoID(CTProject.repo) == ID)
-		{
-			
-		}
-		
+		//We check which tab are using content we are about to delete
 		if(getRepoID(readerProject.repo) == ID)
 		{
 			[reader resetReader];
+			readerDeleted = YES;
+		}
+
+		if(getRepoID(CTProject.repo) == ID)
+		{
+			if(readerDeleted)
+			{
+				[CT resetTabContent];
+				CTDeleted = YES;
+			}
+			else
+				[CT updateProject:readerProject :reader.isTome :reader.currentElem];
+		}
+		
+		//Update focus if required
+		if(CTDeleted)
+		{
+			[RakTabView broadcastUpdateFocus:TAB_SERIES];
+		}
+		else if(readerDeleted)
+		{
+			uint mainThread;
+			[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+			
+			if(mainThread == TAB_READER)
+				[RakTabView broadcastUpdateFocus:TAB_CT];
 		}
 	}
 	

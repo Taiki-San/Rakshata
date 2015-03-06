@@ -17,7 +17,6 @@
 @interface Reader : RakTabView
 {
 	bool initialized;
-	bool pageInitialized;
 	
 	uint gonnaReduceTabs;
 	NSView * container;
@@ -67,7 +66,6 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
-- (BOOL) isReady;
 
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
 - (void) resetReader;
@@ -86,6 +84,8 @@
 - (void) fadeBottomBar : (CGFloat) alpha;
 
 - (PROJECT_DATA) activeProject;
+- (int) currentElem;
+
 - (void) switchFavs;
 - (void) triggerFullscreen;
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;

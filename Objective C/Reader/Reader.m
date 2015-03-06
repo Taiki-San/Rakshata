@@ -17,7 +17,7 @@
 - (id)init : (NSView*)contentView : (NSString *) state
 {
     self = [super init];
-    if (self)
+    if (self != nil)
 	{
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
@@ -49,7 +49,8 @@
 
 - (void) initReaderMainView : (NSString *) state
 {
-	initialized = pageInitialized = false;
+	initialized = false;
+	self.initWithNoContent = YES;
 	
 	if(state != nil && [state caseInsensitiveCompare:STATE_EMPTY] != NSOrderedSame)
 	{
@@ -113,13 +114,13 @@
 	
 	initialized = true;
 	
-	if(!pageInitialized)
+	if(self.initWithNoContent)
 	{
-		pageInitialized = YES;
+		self.initWithNoContent = NO;
 
 		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
 		{
-			pageInitialized = NO;
+			self.initWithNoContent = YES;
 			return;
 		}
 
@@ -146,9 +147,9 @@
 
 - (void) resetReader
 {
-	if(pageInitialized)
+	if(!self.initWithNoContent)
 	{
-		pageInitialized = NO;
+		self.initWithNoContent = YES;
 
 		[self flushCache];
 		releaseDataReader(&_data);
@@ -157,11 +158,6 @@
 	
 		[self updatePage:0 :0];
 	}
-}
-
-- (BOOL) isReady
-{
-	return pageInitialized;
 }
 
 - (NSString *) byebye
@@ -514,12 +510,17 @@
 	return _project;
 }
 
+- (int) currentElem
+{
+	return _currentElem;
+}
+
 - (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
 {
 	if(element != VALEUR_FIN_STRUCT)
 	{
-		[self ownFocus];
 		[self startReading : project : element : isTome : -1];
+		[self ownFocus];
 	}
 }
 

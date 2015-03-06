@@ -14,7 +14,7 @@
 
 - (id)init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
-	if(!target.isReady)
+	if(target.initWithNoContent)
 		return nil;
 	
     self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];

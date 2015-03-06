@@ -238,6 +238,7 @@
 		//Prevent the update from messing with memory that will get freed later
 		project.chapitresFull = project.chapitresInstalled = NULL;
 		project.tomesFull = project.tomesInstalled = NULL;
+		project.chapitresPrix = NULL;
 		getUpdatedCTList(&project, isTome);
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;

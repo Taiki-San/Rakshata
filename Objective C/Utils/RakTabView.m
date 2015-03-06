@@ -22,6 +22,7 @@
 	
 	if(self != nil)
 	{
+		_initWithNoContent = NO;
 		_waitingLogin = NO;
 		canDeploy = true;
 		
@@ -142,7 +143,9 @@
 
 - (void) ownFocus
 {
-	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	if(_initWithNoContent)
+		NSLog(@"Sorry, I can't do that");
+	else if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 

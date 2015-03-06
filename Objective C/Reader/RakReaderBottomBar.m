@@ -133,7 +133,7 @@
 
 - (void) switchFavs
 {
-	if(!_parent.isReady)
+	if(_parent.initWithNoContent)
 		return;
 	
 	if(!isFaved)
@@ -144,7 +144,7 @@
 
 - (void) reactToDelete
 {
-	if(_parent.isReady && !trash.popoverOpened)
+	if(!_parent.initWithNoContent && !trash.popoverOpened)
 		trash.popoverOpened = [[[RakDeleteConfirm alloc] autoInit] launchPopover: trash : _parent];
 }
 

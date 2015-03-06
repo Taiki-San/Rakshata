@@ -19,7 +19,6 @@
 	{
 		flag = TAB_CT;
 		self = [self initView:contentView : state];
-		_initWithNoContent = NO;
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : self].CGColor;
 		self.layer.borderWidth = 2;
@@ -124,11 +123,8 @@
 
 - (void) noContent
 {
-	PROJECT_DATA empty;
-	
-	memset(&empty, 0, sizeof(PROJECT_DATA));
-	
-	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :empty : NO : (long[4]){-1, -1, -1, -1}];
+	self.initWithNoContent = YES;
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :getEmtpyProject() : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc
@@ -245,7 +241,7 @@
 	
 	if(newProject.isInitialized)
 	{
-		_initWithNoContent = NO;
+		self.initWithNoContent = NO;
 		[coreView updateContext:newProject];
 		
 		//Coreview en fait aussi une copie, on doit donc release cette version
@@ -253,8 +249,13 @@
 	}
 }
 
+- (void) resetTabContent
+{
+	self.initWithNoContent = YES;
+	[coreView updateContext:getEmtpyProject()];
+}
+
 #pragma mark - Reader code
-/**		Reader		**/
 
 - (BOOL) isStillCollapsedReaderTab
 {
@@ -374,7 +375,7 @@
 
 - (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	if(element == VALEUR_FIN_STRUCT && project.repo != NULL)
+	if(element == VALEUR_FIN_STRUCT && project.isInitialized)
 	{
 		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
 		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];

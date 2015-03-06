@@ -39,11 +39,10 @@
 	RakChapterView * coreView;
 }
 
-@property BOOL initWithNoContent;
-
 - (id)init : (NSView*)contentView : (NSString *) state;
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element;
+- (void) resetTabContent;
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (PROJECT_DATA) activeProject;

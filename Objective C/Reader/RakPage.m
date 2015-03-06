@@ -953,7 +953,7 @@
 {
 	_cacheBeingBuilt = true;
 	
-	if(_data.pageCourante >= _data.nombrePage)	//Données hors de nos bornes
+	if(mainScroller == nil || _data.pageCourante >= _data.nombrePage)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = false;
 		return;
@@ -1230,7 +1230,7 @@
 	
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
-		NSImage * imagePlaceholder = pageInitialized ? loadingPlaceholder : loadingFailedPlaceholder;
+		NSImage * imagePlaceholder = !self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder;
 
 		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
 		[placeholder setImage:imagePlaceholder];
@@ -1272,7 +1272,7 @@
 		if([object class] == [RakImageView class])
 			frame.size = object.frame.size;
 		else
-			frame.size = (pageInitialized ? loadingPlaceholder : loadingFailedPlaceholder).size;
+			frame.size = (!self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder).size;
 		
 		frame.origin.x = container.frame.size.width / 2 - frame.size.width / 2;
 		frame.origin.y = container.frame.size.height / 2 - frame.size.height / 2;

@@ -40,6 +40,7 @@ enum {
 
 @property uint mainThread;
 @property bool waitingLogin;
+@property bool initWithNoContent;
 
 @property BOOL forceNextFrameUpdate;
 
