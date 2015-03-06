@@ -20,10 +20,13 @@
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return NO;
 	
-	mainScroller = [[NSPageController alloc] init];
-	mainScroller.view = container;
-	mainScroller.transitionStyle = dataRequest.japaneseOrder ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
-	mainScroller.delegate = self;
+	if(mainScroller == nil)
+	{
+		mainScroller = [[NSPageController alloc] init];
+		mainScroller.view = container;
+		mainScroller.transitionStyle = dataRequest.japaneseOrder ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
+		mainScroller.delegate = self;
+	}
 
 	[self updateEvnt];
 	
@@ -1227,8 +1230,10 @@
 	
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
-		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, loadingPlaceholder.size.width, loadingPlaceholder.size.height)];
-		[placeholder setImage:loadingPlaceholder];
+		NSImage * imagePlaceholder = pageInitialized ? loadingPlaceholder : loadingFailedPlaceholder;
+
+		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
+		[placeholder setImage:imagePlaceholder];
 
 		if([object isKindOfClass:[NSNumber class]])
 			placeholder.page = [(NSNumber *) object unsignedIntValue];
@@ -1267,7 +1272,7 @@
 		if([object class] == [RakImageView class])
 			frame.size = object.frame.size;
 		else
-			frame.size = loadingPlaceholder.size;
+			frame.size = (pageInitialized ? loadingPlaceholder : loadingFailedPlaceholder).size;
 		
 		frame.origin.x = container.frame.size.width / 2 - frame.size.width / 2;
 		frame.origin.y = container.frame.size.height / 2 - frame.size.height / 2;

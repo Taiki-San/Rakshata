@@ -41,8 +41,6 @@
 	_receiver = receiver;
 	_anchor = anchor;
 
-	[Prefs getCurrentTheme:self];
-	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
 
 	return YES;

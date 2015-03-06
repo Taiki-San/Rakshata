@@ -14,6 +14,9 @@
 
 - (id)init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
+	if(!target.isReady)
+		return nil;
+	
     self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];
     if (self)
 	{
@@ -204,7 +207,6 @@
 {
 	_anchor = anchor;
 	_maxPage = maxPage;
-	[Prefs getCurrentTheme:self];
 	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, _anchor.frame.size.height) : YES];
 	

@@ -109,18 +109,21 @@
 
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
 {
-	bool shouldNotifyBottomBarInitialized = false;
+	BOOL shouldNotifyBottomBarInitialized = NO;
 	
 	initialized = true;
 	
 	if(!pageInitialized)
 	{
-		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
-			return;
-		else
-			pageInitialized = true;
+		pageInitialized = YES;
 
-		shouldNotifyBottomBarInitialized = true;
+		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
+		{
+			pageInitialized = NO;
+			return;
+		}
+
+		shouldNotifyBottomBarInitialized = YES;
 	}
 	else
 		[self changeProject : project : elemToRead : isTome : startPage];
@@ -139,6 +142,26 @@
 
 	if(shouldNotifyBottomBarInitialized)
 		[self updatePage:_data.pageCourante : _data.nombrePage];
+}
+
+- (void) resetReader
+{
+	if(pageInitialized)
+	{
+		pageInitialized = NO;
+
+		[self flushCache];
+		releaseDataReader(&_data);
+		releaseCTData(_project);
+		_project.isInitialized = NO;
+	
+		[self updatePage:0 :0];
+	}
+}
+
+- (BOOL) isReady
+{
+	return pageInitialized;
 }
 
 - (NSString *) byebye

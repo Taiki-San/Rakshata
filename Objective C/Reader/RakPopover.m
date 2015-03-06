@@ -84,6 +84,7 @@
 - (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig
 {
 	[Prefs getCurrentTheme:self];
+	prefsRegistered = YES;
 	
 	[self setWantsLayer:YES];
 	[self.layer setCornerRadius:4];
@@ -114,7 +115,8 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChanges:self];
+	if(prefsRegistered)
+		[Prefs deRegisterForChanges:self];
 }
 
 #pragma mark - Drawing

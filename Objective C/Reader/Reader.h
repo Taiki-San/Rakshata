@@ -67,8 +67,10 @@
 
 - (id)init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
+- (BOOL) isReady;
 
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
+- (void) resetReader;
 - (void) willLeaveReader;
 - (void) willOpenReader;
 

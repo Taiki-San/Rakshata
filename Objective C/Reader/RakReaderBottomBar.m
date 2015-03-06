@@ -133,18 +133,19 @@
 
 - (void) switchFavs
 {
-	if(!isFaved)
-	{
-		[[[RakFavsInfo alloc] autoInit] launchPopover : favorite];
-	}
+	if(!_parent.isReady)
+		return;
 	
-	[(Reader*) self.superview switchFavs];
+	if(!isFaved)
+		[[[RakFavsInfo alloc] autoInit] launchPopover : favorite];
+	
+	[_parent switchFavs];
 }
 
 - (void) reactToDelete
 {
-	if(!trash.popoverOpened)
-		trash.popoverOpened = [[[RakDeleteConfirm alloc] autoInit] launchPopover: trash : (id) self.superview];
+	if(_parent.isReady && !trash.popoverOpened)
+		trash.popoverOpened = [[[RakDeleteConfirm alloc] autoInit] launchPopover: trash : _parent];
 }
 
 - (CGFloat) getPosXElement : (uint) IDButton : (CGFloat) width

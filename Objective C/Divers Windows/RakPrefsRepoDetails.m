@@ -229,7 +229,10 @@ enum
 #warning "Tons of work to do there"
 - (void) deleteContent : (BOOL) nukeRepo
 {
-	PROJECT_DATA readerProject = [[[NSApp delegate] reader] activeProject], CTProject = [[[NSApp delegate] CT] activeProject];
+	Reader * reader = [[NSApp delegate] reader];
+	CTSelec * CT = [[NSApp delegate] CT];
+	
+	PROJECT_DATA readerProject = [reader activeProject], CTProject = [CT activeProject];
 	uint64_t ID = getRepoID(_repo);
 	
 	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID)
@@ -243,7 +246,7 @@ enum
 		
 		if(getRepoID(readerProject.repo) == ID)
 		{
-			
+			[reader resetReader];
 		}
 	}
 	
