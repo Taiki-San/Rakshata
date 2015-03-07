@@ -242,16 +242,16 @@ enum
 	{
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
 
-		BOOL readerDeleted = NO, CTDeleted = NO;
+		BOOL readerDeleted = !readerProject.isInitialized, CTDeleted = !CTProject.isInitialized;
 		
 		//We check which tab are using content we are about to delete
-		if(getRepoID(readerProject.repo) == ID)
+		if(readerProject.isInitialized && getRepoID(readerProject.repo) == ID)
 		{
 			[reader resetReader];
 			readerDeleted = YES;
 		}
 
-		if(getRepoID(CTProject.repo) == ID)
+		if(CTProject.isInitialized && getRepoID(CTProject.repo) == ID)
 		{
 			if(readerDeleted)
 			{

@@ -521,7 +521,7 @@ void removeRepoFromCache(REPO_DATA repo)
 	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", -1, &request, NULL);
 	sqlite3_bind_int64(request, 1, repoID);
 	
-	if(sqlite3_step(request) == SQLITE_ROW)
+	while(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
 		free((void*) sqlite3_column_int64(request, 1));
@@ -991,7 +991,7 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 {
 	//+1 used to free everything
 	uint sizeElem = wantRoot ? sizeof(ROOT_REPO_DATA) : sizeof(REPO_DATA), length = wantRoot ? lengthRootRepo : lengthRepo;
-	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output = calloc(lengthRepo + 1, sizeof(void*));
+	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output = calloc(length + 1, sizeof(void*));
 	if(output != NULL)
 	{
 		uint discardedElement = 0;
@@ -1014,29 +1014,38 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 					{
 						ROOT_REPO_DATA * currentElem = output[i], * currentOld = (ROOT_REPO_DATA *) originalData[i];
 						
-#ifdef FLUSH_UNUSED_REPO
 						if(currentElem->nombreSubrepo == 0)
 						{
+#ifdef FLUSH_UNUSED_REPO
 							free(output[index]);
 							output[index] = NULL;
 							discardedElement++;
 							continue;
-						}
+#else
+							currentElem->subRepo = NULL;
 #endif
-						
-						//We need to alloc those ourselves
-						currentElem->subRepo = calloc(currentElem->nombreSubrepo, sizeof(REPO_DATA));
-						currentElem->descriptions = NULL;
-						currentElem->langueDescriptions = NULL;
-						
-						if(currentElem->subRepo == NULL)
-						{
-							free(currentElem);
-							output[index] = NULL;
 						}
 						else
 						{
-							memcpy(currentElem->subRepo, currentOld->subRepo, currentElem->nombreSubrepo * sizeof(REPO_DATA));
+							currentElem->subRepo = calloc(currentElem->nombreSubrepo, sizeof(REPO_DATA));
+							if(currentElem->subRepo == NULL)
+							{
+								free(currentElem);
+								currentElem = NULL;
+								output[index] = NULL;
+							}
+						}
+						
+						if(currentElem != NULL)
+						{
+							//We need to alloc those ourselves
+							currentElem->descriptions = NULL;
+							currentElem->langueDescriptions = NULL;
+							
+							if(currentElem->subRepo != NULL)
+							{
+								memcpy(currentElem->subRepo, currentOld->subRepo, currentElem->nombreSubrepo * sizeof(REPO_DATA));
+							}
 							
 							//Yep, descriptions are a pain in the ass
 							if(currentElem->nombreDescriptions > 0)

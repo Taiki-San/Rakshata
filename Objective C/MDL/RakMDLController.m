@@ -41,7 +41,8 @@
 			{
 				while (i-- > 0)
 					free(futureCache[i]);
-
+				free(futureCache);
+				
 				memoryError(sizeof(PROJECT_DATA));
 				freeProjectData(_cache);
 				return nil;
@@ -57,7 +58,7 @@
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
 			stateChar = (char *) [state UTF8String];
 		
-		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &discardedCount, &quit, (__bridge void *)(self)))
+		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &nbElem, &quit, (__bridge void *)(self)))
 		{
 			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
@@ -136,9 +137,10 @@
 					if(firstPass)
 					{
 						firstPass = NO;
-						posNew = 0;
 						posFinal--;
 					}
+
+					posNew = 0;
 					continue;
 				}
 				else
@@ -196,7 +198,7 @@
 						
 						if(posNew < newSize)
 						{
-							cache[sizeCache] = malloc(sizeof(PROJECT_DATA *));
+							cache[sizeCache] = malloc(sizeof(PROJECT_DATA));
 							if(cache[sizeCache] != NULL)
 							{
 								*cache[sizeCache++] = _cache[posNew];

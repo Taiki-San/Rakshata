@@ -186,7 +186,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
             else
             {
                 for(posCatalogue = 0; projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && (projectDB[posCatalogue]->projectID != projectID || strcmp(projectDB[posCatalogue]->repo->URL, URL)); posCatalogue++);
-                if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && projectID != projectDB[posCatalogue]->projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL))
+                if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && projectID == projectDB[posCatalogue]->projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL))
                 {
                     currentProject = projectDB[posCatalogue];
                 }

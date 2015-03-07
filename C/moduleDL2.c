@@ -39,7 +39,24 @@ bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DAT
 		for(i = 0; i < *nbElemTotal; i++)
 		{
 			(*status)[i] = malloc(sizeof(int8_t));
-			*(*status)[i] = MDL_CODE_DEFAULT;
+			if((*status)[i] != NULL)
+				*(*status)[i] = MDL_CODE_DEFAULT;
+			else
+			{
+				while(i-- > 0)
+					free((*status)[i]);
+				free(*status);
+				*status = NULL;
+				
+				for(i = 0; i < *nbElemTotal; i++)
+					free((**todoList)[i]);
+				free(*todoList);
+				*todoList = NULL;
+				
+				*nbElemTotal = 0;
+				
+				return false;
+			}
 		}
 		
 		(*status)[i] = NULL;
