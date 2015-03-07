@@ -160,10 +160,7 @@ bool isProjectListSorted(PROJECT_DATA* data, uint length)
 
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
 {
-	uint repoID = getRepoIndex(oldData[0].repo);
-	
-	if(repoID == UINT_MAX)
-		return;
+	uint64_t repoID = getRepoID(oldData[0].repo);
 	
 	//On commence par reclasser les éléments
 	if(!isProjectListSorted(oldData, magnitudeOldData))

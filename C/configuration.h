@@ -28,3 +28,4 @@
 //#define SEVERAL_VIEWS	//In series
 //#define CT_LIST_PREFER_LESS_COLUMN
 
+//#define FLUSH_UNUSED_REPO

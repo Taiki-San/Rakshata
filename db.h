@@ -34,7 +34,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 bool isInstalled(char * basePath);
 
 /**DBCache.c**/
-void syncCacheToDisk(byte syncCode);
 sqlite3_stmt * getAddToCacheRequest();
 bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled);
 bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
@@ -43,11 +42,9 @@ void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output);
 
 //Repository
-uint getRepoIndex(REPO_DATA * repo);
 bool addRepoToDB(ROOT_REPO_DATA * newRepo);
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
-int getIndexOfRepo(uint parentID, uint repoID);
 uint getFreeRootRepoID();
 void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo);
@@ -97,14 +94,6 @@ void removeRecentEntryInternal(char * URLRepo, uint projectID);
 
 /*Database*/
 
-enum syncCode
-{
-	SYNC_REPO		= 0x1,
-	SYNC_PROJECTS	= 0x2,
-	SYNC_ALL		= SYNC_REPO | SYNC_PROJECTS
-};
-
-
 enum RDB_CODES {
 	RDB_UPDATE_ID = 1,
 	RDB_UPDATE_TEAM = 2
@@ -114,7 +103,7 @@ enum RDB_CODES {
 
 //An enum won't be expanded by STRINGIZE, so we must use define
 #define RDB_ID 				1
-#define RDB_team 			2
+#define RDB_repo 			2
 #define RDB_projectID		3
 #define RDB_isInstalled		4
 #define RDB_projectName		5

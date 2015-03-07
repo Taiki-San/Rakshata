@@ -245,10 +245,10 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 		
 		if(team != NULL)
 		{
-			int indexTeam = getRepoIndexFromURL(team);
-			if(indexTeam != -1)
+			uint64_t repoID = getRepoIndexFromURL(team);
+			if(repoID != UINT64_MAX)
 			{
-				output[*nbElem] = getDataFromSearch(indexTeam, projectID, true);
+				output[*nbElem] = getDataFromSearch(repoID, projectID, true);
 				
 				if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
 					(*nbElem)++;

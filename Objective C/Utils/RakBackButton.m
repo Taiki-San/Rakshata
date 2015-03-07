@@ -169,9 +169,11 @@ enum
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
 	
-	for (NSAnimationProgress i = 0; i < 1; i+= 1/60.0f)
+	NSAnimationProgress progress = 0;
+	for(uint i = 0; i < 60; i++)
 	{
-		[_animation addProgressMark:i];
+		[_animation addProgressMark:progress];
+		progress += 1/60.0f;
 	}
 	
 	[self.cell setAnimationInProgress:true];

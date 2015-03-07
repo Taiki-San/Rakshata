@@ -90,8 +90,8 @@
 		{
 			if([dataState count] == 5)
 			{
-				uint indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
-				if(indexTeam == UINT_MAX)
+				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
+				if(repoID == UINT64_MAX)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");
 					break;
@@ -99,7 +99,7 @@
 				
 				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
 				
-				PROJECT_DATA * project = getDataFromSearch (indexTeam, projectID, false);
+				PROJECT_DATA * project = getDataFromSearch(repoID, projectID, false);
 				
 				if(project == NULL || project->repo == NULL)
 				{

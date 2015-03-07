@@ -68,11 +68,13 @@
 	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
 	[_animation setDelegate:self];
 	
-	for (NSAnimationProgress i = 0; i < 1; i += 1.0f / steps)
+	NSAnimationProgress progress = 0;
+	for(uint i = 0; i < steps; i++)
 	{
-		[_animation addProgressMark : i];
+		[_animation addProgressMark:progress];
+		progress += 1.0f / steps;
 	}
-	
+
 	if(_chapter != nil && _volume != nil)
 	{
 		_chapter.alphaValue = 1;		_volume.alphaValue = 1;

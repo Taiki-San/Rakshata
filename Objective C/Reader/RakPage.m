@@ -38,7 +38,7 @@
 	NSPoint sliders = NSZeroPoint;
 
 	if(_scrollView != nil)
-		sliders = [[_scrollView contentView] bounds].origin;
+		sliders = [_scrollView contentView].bounds.origin;
 	
 	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.repo->URL, _project.projectID, _currentElem, self.isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
 }

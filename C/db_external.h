@@ -39,8 +39,16 @@ enum
 	PULL_SEARCH_TYPEID
 };
 
+enum syncCode
+{
+	SYNC_REPO		= 0x1,
+	SYNC_PROJECTS	= 0x2,
+	SYNC_ALL		= SYNC_REPO | SYNC_PROJECTS
+};
+
 /**DBCache.c**/
 uint setupBDDCache();
+void syncCacheToDisk(byte syncCode);
 void flushDB();
 
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
@@ -49,7 +57,7 @@ PROJECT_DATA getEmtpyProject();
 
 void freeProjectData(PROJECT_DATA* projectDB);
 
-PROJECT_DATA * getDataFromSearch (uint IDRepo, uint projectID, bool installed);
+PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installed);
 PROJECT_DATA getElementByID(uint cacheID);
 
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
@@ -57,11 +65,17 @@ bool isProjectInstalledInCache (uint ID);
 
 //Repository
 void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot);
+void removeRepoFromCache(REPO_DATA repo);
+void deleteSubRepo(uint64_t repoID);
 void freeRootRepo(ROOT_REPO_DATA ** root);
 void freeRepo(REPO_DATA ** repos);
 
 uint64_t getRepoID(REPO_DATA * repo);
-uint getRepoIndexFromURL(char * URL);
+uint getRootFromRepoID(uint64_t repoID);
+uint getSubrepoFromRepoID(uint64_t repoID);
+uint64_t getRepoIndexFromURL(char * URL);
+REPO_DATA * getRepoForID(uint64_t repoID);
+void setUninstalled(bool isRoot, uint repoID);
 
 /**DBRecent.c**/
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);

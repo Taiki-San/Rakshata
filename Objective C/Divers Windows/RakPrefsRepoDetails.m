@@ -82,6 +82,9 @@ enum
 
 - (void) _updateContent:(BOOL)isRoot :(void *)repo
 {
+	if(repo == NULL)
+		return;
+	
 	_repo = repo;
 	
 	CGFloat baseY = _bounds.size.height;
@@ -226,7 +229,6 @@ enum
 	}
 }
 
-#warning "Tons of work to do there"
 - (void) deleteContent : (BOOL) nukeRepo
 {
 	CTSelec * CT = [[NSApp delegate] CT];
@@ -237,8 +239,8 @@ enum
 	
 	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID || 1)
 	{
-		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
-	
+		[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil)];
+
 		BOOL readerDeleted = NO, CTDeleted = NO;
 		
 		//We check which tab are using content we are about to delete
@@ -276,14 +278,23 @@ enum
 	
 	if(nukeRepo)
 	{
-		self.window.title = NSLocalizedString(@"PREFS-DELETE-REMOVE", nil);
+		[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-REMOVE", nil)];
+		removeRepoFromCache(*_repo);
+		deleteSubRepo(ID);
+		syncCacheToDisk(SYNC_ALL);
 	}
 	
-	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);
+	[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-PURGE", nil)];
 
+	//Delete projects
 	char path[256];
 	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(_repo));
 	removeFolder(path);
+	
+	if(nukeRepo)
+		[RakDBUpdate postNotificationFullUpdate];
+	else
+		setUninstalled(false, ID);	//Update DB, and notify everything
 }
 
 #pragma mark - Drawing
