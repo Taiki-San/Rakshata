@@ -41,6 +41,7 @@ int main(int argc, const char *argv[])
 
 	//Cleanup
 	free(COMPTE_PRINCIPAL_MAIL);
+	flushRecentMutex();
 	flushDB();
 	releaseDNSCache();
 	MUTEX_DESTROY(DBRefreshMutex);

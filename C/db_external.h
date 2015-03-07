@@ -78,6 +78,8 @@ REPO_DATA * getRepoForID(uint64_t repoID);
 void setUninstalled(bool isRoot, uint repoID);
 
 /**DBRecent.c**/
+void flushRecentMutex();
+
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 

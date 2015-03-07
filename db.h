@@ -86,6 +86,7 @@ int databaseVersion(char* projectDB);
 
 /**DBRecent.c**/
 sqlite3* getPtrRecentDB();
+void closeRecentDB(sqlite3 * database);
 bool checkRecentDBValid(sqlite3 * DB);
 
 bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL);

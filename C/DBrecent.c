@@ -13,10 +13,20 @@
 #include "db.h"
 
 //DB Setup
+MUTEX_VAR recentMutex;
+bool mutexInitialized = false;
 
 sqlite3* getPtrRecentDB()
 {
 	sqlite3 * internalDB = NULL;
+	
+	if(!mutexInitialized)
+	{
+		MUTEX_CREATE(recentMutex);
+		mutexInitialized = true;
+	}
+	
+	MUTEX_LOCK(recentMutex);
 	
 	if(sqlite3_open("recent.db", &internalDB) != SQLITE_OK)
 	{
@@ -46,6 +56,18 @@ sqlite3* getPtrRecentDB()
 
 	}
 	return internalDB;
+}
+
+void closeRecentDB(sqlite3 * database)
+{
+	sqlite3_close_v2(database);
+	MUTEX_UNLOCK(recentMutex);
+}
+
+void flushRecentMutex()
+{
+	MUTEX_DESTROY(recentMutex);
+	mutexInitialized = false;
 }
 
 bool checkRecentDBValid(sqlite3 * DB)
@@ -172,7 +194,7 @@ bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
 		sqlite3_step(request);
 
 	sqlite3_finalize(request);
-	sqlite3_close(database);
+	closeRecentDB(database);
 	
 	if(haveToUpdate)
 		updateRecentSeries();
@@ -201,7 +223,7 @@ void removeRecentEntryInternal(char * URLRepo, uint projectID)
 	}
 	
 	sqlite3_finalize(request);
-	sqlite3_close(database);
+	closeRecentDB(database);
 }
 
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
@@ -232,7 +254,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	{
 		free(output);
 		sqlite3_finalize(request);
-		sqlite3_close(database);
+		closeRecentDB(database);
 		return NULL;
 	}
 	
@@ -278,7 +300,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	}
 	
 	sqlite3_finalize(request);
-	sqlite3_close(database);
+	closeRecentDB(database);
 
 	return output;
 }
