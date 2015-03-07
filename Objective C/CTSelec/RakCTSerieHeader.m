@@ -45,7 +45,7 @@ enum
 			[self addSubview:title];
 		}
 		
-		rating = [[RakStarView alloc] init: getEmtpyProject()];
+		rating = [[RakStarView alloc] init: getEmptyProject()];
 		if(rating != nil)
 		{
 			rating.wantNumber = YES;

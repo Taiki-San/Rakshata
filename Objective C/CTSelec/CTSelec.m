@@ -124,7 +124,7 @@
 - (void) noContent
 {
 	self.initWithNoContent = YES;
-	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :getEmtpyProject() : NO : (long[4]){-1, -1, -1, -1}];
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :getEmptyProject() : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc
@@ -252,7 +252,7 @@
 - (void) resetTabContent
 {
 	self.initWithNoContent = YES;
-	[coreView updateContext:getEmtpyProject()];
+	[coreView updateContext:getEmptyProject()];
 }
 
 #pragma mark - Reader code

@@ -787,7 +787,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 				pos++;
 		}
 
-		output[pos] = getEmtpyProject();
+		output[pos] = getEmptyProject();
 		sqlite3_finalize(request);
 		
 		if(nbElemCopied != NULL)
@@ -1600,7 +1600,7 @@ bool isProjectInstalledInCache (uint ID)
 PROJECT_DATA getElementByID(uint cacheID)
 {
 	sqlite3_stmt* request = NULL;
-	PROJECT_DATA output = getEmtpyProject();
+	PROJECT_DATA output = getEmptyProject();
 	
 	if(cache != NULL && cacheID != UINT_MAX)
 	{

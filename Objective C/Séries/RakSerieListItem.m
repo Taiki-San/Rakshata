@@ -23,7 +23,7 @@
 		if(_isRootItem)
 		{
 			children = [[NSMutableArray alloc] init];
-			dataChild = getEmtpyProject();
+			dataChild = getEmptyProject();
 			self.expanded = YES;
 			_isRecentList = _isDLList = _isMainList = NO;
 			_nbChildren = nbChildren;
@@ -162,7 +162,7 @@
 - (PROJECT_DATA) getRawDataChild
 {
 	if (_isRootItem || _isMainList)
-		return getEmtpyProject();
+		return getEmptyProject();
 
 	else
 		return dataChild;

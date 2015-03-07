@@ -278,7 +278,7 @@
 		return getCopyOfProjectData(((PROJECT_DATA*) _data)[index]);
 	}
 	
-	return getEmtpyProject();
+	return getEmptyProject();
 }
 
 - (uint) getSelectedElement

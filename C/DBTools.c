@@ -560,7 +560,7 @@ bool isInstalled(char * basePath)
 	return retValue;
 }
 
-PROJECT_DATA getEmtpyProject()
+PROJECT_DATA getEmptyProject()
 {
 	PROJECT_DATA project;
 	

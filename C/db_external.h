@@ -53,7 +53,7 @@ void flushDB();
 
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
-PROJECT_DATA getEmtpyProject();
+PROJECT_DATA getEmptyProject();
 
 void freeProjectData(PROJECT_DATA* projectDB);
 

@@ -163,7 +163,7 @@ int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo)
 
 void * refreshRepo(REPO_DATA * repo, bool standalone)
 {
-	PROJECT_DATA project = getEmtpyProject();
+	PROJECT_DATA project = getEmptyProject();
 	
 	project.repo = repo;
 	
