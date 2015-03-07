@@ -373,8 +373,6 @@
 	
 	if(status == MDL_CODE_DL)
 		MDLDownloadOver(false);
-	
-	[self removeRowFromList];
 }
 
 - (void) sendPause

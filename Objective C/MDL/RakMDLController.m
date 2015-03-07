@@ -24,7 +24,34 @@
 		IDToPosition = NULL;
 		quit = false;
 		
-		cache = getCopyCache(RDB_LOADALL | SORT_NAME, &sizeCache);
+		//We have to make reference to entries of cache. In order to keep it updatable, we have to allocate memory for each entry
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_NAME, &sizeCache);
+		PROJECT_DATA ** futureCache = calloc(sizeCache, sizeof(PROJECT_DATA *));
+		if(futureCache == NULL)
+		{
+			memoryError(sizeCache * sizeof(PROJECT_DATA *));
+			freeProjectData(_cache);
+			return nil;
+		}
+		
+		for (uint i = 0; i < sizeCache; i++)
+		{
+			futureCache[i] = malloc(sizeof(PROJECT_DATA));
+			if(futureCache[i] == NULL)
+			{
+				while (i-- > 0)
+					free(futureCache[i]);
+
+				memoryError(sizeof(PROJECT_DATA));
+				freeProjectData(_cache);
+				return nil;
+			}
+			else
+				*futureCache[i] = _cache[i];
+		}
+		
+		free(_cache);
+		cache = futureCache;
 		
 		char * stateChar = NULL;
 		if(state != nil && [state isNotEqualTo:STATE_EMPTY])
@@ -80,22 +107,115 @@
 	{
 		uint pos = 0;
 		
-		for(; pos < sizeCache && cache[pos].cacheDBID != updatedID; pos++);
+		for(; pos < sizeCache && cache[pos]->cacheDBID != updatedID; pos++);
 		if(pos < sizeCache)
 		{
-			prevData = cache[pos];
-			cache[pos] = getElementByID(updatedID);
+			prevData = *cache[pos];
+			*cache[pos] = getElementByID(updatedID);
 			releaseCTData(prevData);
 		}
 	}
 	else	//Full update
 	{
-		for(uint pos = 0; pos < sizeCache; pos++)
+		uint newSize;
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_NAME, &newSize);
+		
+		if(_cache != NULL && newSize != 0)
 		{
-			prevData = cache[pos];
-			cache[pos] = getElementByID(prevData.cacheDBID);
-			releaseCTData(prevData);
+			BOOL usedOld[sizeCache], usedNew[newSize], firstPass = YES;
+			memset(usedOld, 0, sizeof(usedOld));
+			memset(usedNew, 0, sizeof(usedNew));
+
+			//We update the current cache
+			for(uint posFinal = 0, posNew = 0; posFinal < sizeCache; posFinal++)
+			{
+				//We find the entry in the new structure
+				for(; posNew < newSize && cache[posFinal]->cacheDBID != _cache[posNew].cacheDBID; posNew++);
+				if(posNew == newSize)
+				{
+					if(firstPass)
+					{
+						firstPass = NO;
+						posNew = 0;
+						posFinal--;
+					}
+					continue;
+				}
+				else
+					firstPass = YES;
+				
+				//We note the item still exist
+				usedOld[posFinal] = usedNew[posNew] = YES;
+				
+				//We update the data
+				releaseCTData(*cache[posFinal]);
+				*cache[posFinal] = _cache[posNew];
+			}
+			
+			//Ok, now, let's check if things were added, if some were removed
+			for (uint posFinal = 0, posNew = 0; posFinal < sizeCache; posFinal++)
+			{
+    			if(usedOld[posFinal])
+					continue;
+				else
+					usedOld[posFinal] = YES;
+				
+				releaseCTData(*cache[posFinal]);
+
+				//We check if we can recycle an item to fit this hole
+				if(posNew != newSize)
+				{
+					for(; posNew < newSize && usedNew[posNew]; posNew++);
+					
+					if(posNew < newSize)
+					{
+						usedNew[posNew] = YES;
+						*cache[posFinal] = _cache[posNew];
+						continue;
+					}
+				}
+				
+				free(cache[posFinal]);
+				
+				memcpy(&(cache[posFinal]), &(cache[posFinal + 1]), (sizeCache - posFinal - 1) * sizeof(PROJECT_DATA *));
+				sizeCache--;
+			}
+			
+			//We insert the new elements
+			if(sizeCache != newSize)
+			{
+				void * new = realloc(cache, newSize * sizeof(PROJECT_DATA *));
+				if(new != NULL)
+				{
+					uint posNew = 0;
+					cache = new;
+					
+					while(posNew < newSize)
+					{
+						for(; posNew < newSize && !usedNew[posNew]; posNew++);
+						
+						if(posNew < newSize)
+						{
+							cache[sizeCache] = malloc(sizeof(PROJECT_DATA *));
+							if(cache[sizeCache] != NULL)
+							{
+								*cache[sizeCache++] = _cache[posNew];
+							}
+						}
+					}
+				}
+				else
+				{
+					for(uint posNew = 0; posNew < newSize; posNew++)
+					{
+						if(!usedNew[posNew])
+							releaseCTData(_cache[posNew]);
+					}
+				}
+			}
 		}
+		
+		free(_cache);
 	}
 }
 		   
@@ -103,7 +223,7 @@
 {
 	[RakDBUpdate unRegister : self];
 
-	MDLCleanup(nbElem, status, todoList, cache);
+	MDLCleanup(nbElem, status, todoList, cache, sizeCache);
 	free(IDToPosition);
 }
 
@@ -151,16 +271,14 @@
 		return;
 	
 	uint pos;
-	for (pos = 0; pos < sizeCache && cache[pos].cacheDBID != data.cacheDBID ; pos++);
+	for (pos = 0; pos < sizeCache && cache[pos]->cacheDBID != data.cacheDBID ; pos++);
 	
-	if(pos == sizeCache || cache[pos].cacheDBID != data.cacheDBID)
-	{
-		//We need to refresh
-	}
+	if(pos == sizeCache || cache[pos]->cacheDBID != data.cacheDBID)
+		return;
 	
 	if(!nbElem || !MDLisThereCollision(data, isTome, element, *todoList, status, nbElem))
 	{
-		DATA_LOADED * newElement = MDLCreateElement(&cache[pos], isTome, element);
+		DATA_LOADED * newElement = MDLCreateElement(cache[pos], isTome, element);
 		
 		if(newElement == NULL)
 		{

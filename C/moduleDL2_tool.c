@@ -88,7 +88,7 @@ char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
     return output;
 }
 
-DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProjectTotal, char * state)
+DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state)
 {
     uint pos;
 	uint8_t nombreEspace = 0;
@@ -179,16 +179,16 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA* projectDB, uint* nombreProject
 
             sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
 			
-			if(projectDB[posCatalogue].projectID != projectID && !strcmp(projectDB[posCatalogue].repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
+			if(projectDB[posCatalogue]->projectID != projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
             {
-				currentProject = &projectDB[posCatalogue];
+				currentProject = projectDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; projectDB[posCatalogue].repo != NULL && (projectDB[posCatalogue].projectID != projectID || strcmp(projectDB[posCatalogue].repo->URL, URL)); posCatalogue++);
-                if(projectDB[posCatalogue].repo != NULL && projectID != projectDB[posCatalogue].projectID && !strcmp(projectDB[posCatalogue].repo->URL, URL))
+                for(posCatalogue = 0; projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && (projectDB[posCatalogue]->projectID != projectID || strcmp(projectDB[posCatalogue]->repo->URL, URL)); posCatalogue++);
+                if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && projectID != projectDB[posCatalogue]->projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL))
                 {
-                    currentProject = &projectDB[posCatalogue];
+                    currentProject = projectDB[posCatalogue];
                 }
                 else //Couldn't find the project, discard it
 				{

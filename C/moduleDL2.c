@@ -12,7 +12,7 @@
 
 #include "db.h"
 
-bool startMDL(char * state, PROJECT_DATA * cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
+bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
 	if(cache == NULL || coreWorker == NULL || todoList == NULL || status == NULL || nbElemTotal == NULL || quit == NULL)
@@ -92,12 +92,10 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 	return false;
 }
 
-void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA * cache)
+void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem)
 {
-	uint i;
-
     /*On libère la mémoire*/
-    for(i = 0; i < nbElemTotal; i++)
+    for(uint i = 0; i < nbElemTotal; i++)
     {
 		if((*todoList)[i] != NULL)
 			free((*todoList)[i]->listChapitreOfTome);
@@ -105,7 +103,15 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PRO
         free(status[i]);
     }
 
-    freeProjectData(cache);
+	for(uint i = 0; i < nbElem; i++)
+	{
+		if(cache[i] != NULL)
+		{
+			releaseCTData(*cache[i]);
+			free(cache[i]);
+		}
+	}
+	free(cache);
 	
 	if(todoList != NULL)
 	{

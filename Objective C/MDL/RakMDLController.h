@@ -17,7 +17,7 @@
 {
 	MDL* _tabMDL;
 	
-	PROJECT_DATA * cache;
+	PROJECT_DATA ** cache;
 	uint sizeCache;
 	
 	THREAD_TYPE coreWorker;
