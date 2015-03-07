@@ -34,6 +34,7 @@
 	BOOL requestForPurchase;
 }
 
+@property RakMDLList * __weak list;
 @property BOOL requestCredentials;
 
 - (id) init : (MDL *) tabMDL : (NSString *) state;
@@ -51,7 +52,7 @@
 - (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd;
 - (void) reorderElements : (uint) posStart : (uint) posEnd : (uint) injectionPoint;
 - (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
-- (void) discardElement : (uint) element;
+- (void) discardElement : (uint) element withSimilar: (BOOL) similar;
 
 - (BOOL) areCredentialsComplete;
 - (RakTabForegroundView *) getForegroundView;

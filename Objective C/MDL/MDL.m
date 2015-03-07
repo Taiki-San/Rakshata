@@ -184,11 +184,11 @@
 			maximumSize.size.height = contentHeight;
 			
 			needUpdateMainViews = YES;
-			[coreView updateScroller:YES];
+			[coreView updateScroller:NO];
 		}
 
 		else
-			[coreView updateScroller:NO];
+			[coreView updateScroller:YES];
 	}
 
 	[self setLastFrame:maximumSize];

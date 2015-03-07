@@ -12,6 +12,7 @@
 
 @class MDL;
 @class RakReaderControllerUIQuery;
+@class RakMDLList;
 
 #import "RakMDLController.h"
 #import "RakMDLListView.h"

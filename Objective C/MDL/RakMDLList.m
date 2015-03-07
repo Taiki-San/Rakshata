@@ -29,6 +29,8 @@
 		[_tableView setRowHeight:cellHeight];
 		[scrollView setHasHorizontalScroller:NO];
 		[self enableDrop];
+		
+		controller.list = self;
 	}
 	
 	return self;
@@ -61,6 +63,37 @@
 {
 	if(scrollView != nil)
 		[scrollView setHasVerticalScroller:!hidden];
+}
+
+#pragma mark - Interface
+
+- (void) deleteElements : (uint*) indexes : (uint) length
+{
+	if(length == 0 || indexes == NULL)
+		return;
+	
+	if(_tableView != nil)
+	{
+		NSMutableIndexSet * index = [NSMutableIndexSet new];
+		
+		for(uint i = 0; i < length; i++)
+			[index addIndex:indexes[i]];
+
+		[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
+	}
+	
+	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	if(tabMDL != nil)
+	{
+		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
+		
+		if(!NSEqualRects(lastFrame, newFrame))
+			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
+	}
+	
+	for(uint i = 0; i < length; i++)
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(indexes[i])}];
+
 }
 
 #pragma mark - Methods to deal with tableView

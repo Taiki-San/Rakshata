@@ -317,15 +317,38 @@
 	free(movingPart);
 }
 
-- (void) discardElement : (uint) element
+- (void) discardElement : (uint) element withSimilar: (BOOL) similar
 {
 	if(element < discardedCount)
 	{
-		discardedCount--;
+		PROJECT_DATA project;
+		if(similar)
+			project = *(*todoList)[IDToPosition[element]]->datas;
 		
-		for (uint posDiscarded = element; posDiscarded < discardedCount; posDiscarded++)
+		if(similar)
 		{
-			IDToPosition[posDiscarded] = IDToPosition[posDiscarded+1];
+			uint indexRemoved[discardedCount], nbRemoved = 0;
+
+			for(uint posDiscarded = 0; posDiscarded < discardedCount; posDiscarded++)
+			{
+				//We remove every similar project from which the download is done
+				if((*todoList)[IDToPosition[posDiscarded]]->datas->cacheDBID == project.cacheDBID && (status[IDToPosition[posDiscarded]]) != NULL && *(status[IDToPosition[posDiscarded]]) == MDL_CODE_INSTALL_OVER)
+					indexRemoved[nbRemoved++] = posDiscarded;
+				else
+					IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded + 1];
+			}
+			
+			discardedCount -= nbRemoved;
+		
+			[_list deleteElements : indexRemoved : nbRemoved];
+		}
+		else
+		{
+			discardedCount--;
+			for(uint posDiscarded = element; posDiscarded < discardedCount; posDiscarded++)
+			{
+				IDToPosition[posDiscarded] = IDToPosition[posDiscarded+1];
+			}
 		}
 	}
 }

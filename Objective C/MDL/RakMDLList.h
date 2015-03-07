@@ -26,6 +26,8 @@
 - (void) wakeUp;
 - (void) setScrollerHidden : (BOOL) hidden;
 
+- (void) deleteElements : (uint*) indexes : (uint) length;
+
 - (CGFloat) contentHeight;
 - (void) resizeAnimation: (NSRect) frameRect;
 

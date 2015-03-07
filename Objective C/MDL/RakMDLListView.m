@@ -276,8 +276,7 @@
 	}
 	
 	//Now, we can send a notification to update _row counters
-	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[@(_row)] forKeys : @[@"deletedRow"]];
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(_row)}];
 }
 
 - (void) rowDeleted : (NSNotification *) notification
@@ -360,7 +359,7 @@
 	if(todoList == nil)
 		return;
 	
-	bool wasDownloading = [_controller statusOfID:_row :YES] == MDL_CODE_DL;
+	int8_t status = [_controller statusOfID:_row :YES];
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 
 	if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
@@ -369,10 +368,10 @@
 	}
 	
 	[_controller setStatusOfID: _row : YES : MDL_CODE_ABORTED];
-	[_controller discardElement: _row];
+	[_controller discardElement: _row withSimilar: status == MDL_CODE_INSTALL_OVER];
 	(*todoList)->rowViewResponsible = NULL;
 	
-	if(wasDownloading)
+	if(status == MDL_CODE_DL)
 		MDLDownloadOver(false);
 	
 	[self removeRowFromList];
@@ -401,8 +400,7 @@
 {
 	[[(RakAppDelegate*) [NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 
-	[_controller discardElement: _row];
-	[self removeRowFromList];
+	[_controller discardElement: _row withSimilar: YES];
 }
 
 @end

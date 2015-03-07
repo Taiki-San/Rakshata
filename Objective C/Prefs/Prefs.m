@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-__strong Prefs* prefsCache;
+Prefs * __strong prefsCache;
 
 #define MAX_THEME_ID 2
 
