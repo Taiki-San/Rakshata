@@ -114,7 +114,7 @@ uint setupBDDCache()
 	char * encodedRepo[nombreRepo];
 	for(uint i = 0; i < nombreRepo; i++)
 	{
-		encodedRepo[i] = internalRepoList[i] == NULL ? NULL : getPathForRepo(internalRepoList[i]);
+		encodedRepo[i] = getPathForRepo(internalRepoList[i]);
 	}
 	
 	getRidOfDuplicateInRepo(internalRepoList, nombreRepo);
@@ -152,7 +152,10 @@ uint setupBDDCache()
 			{
 				projects[pos].favoris = checkIfFaved(&projects[pos], &cacheFavs);
 				
-				if(encodedRepo[posRepo] != NULL)
+				if(internalRepoList[posRepo] != projects[pos].repo)
+					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].repo; posRepo++);	//Get team index
+				
+				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].repo), isInstalled(pathInstall)))
@@ -271,6 +274,9 @@ void syncCacheToDisk(byte syncCode)
 
 void flushDB()
 {
+	if(cache == NULL)
+		return;
+	
 	MUTEX_LOCK(cacheMutex);
 
 	sqlite3_stmt* request = NULL;
@@ -338,7 +344,7 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	
 	bool output;
 	
-	sqlite3_bind_int(internalRequest, 1, repoID);
+	sqlite3_bind_int64(internalRequest, 1, repoID);
 	sqlite3_bind_int(internalRequest, 2, data.projectID);
 	sqlite3_bind_int(internalRequest, 3, isInstalled);
 	sqlite3_bind_text(internalRequest, 4, utf8Project, lengthP, SQLITE_STATIC);
@@ -777,7 +783,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			if(!copyOutputDBToStruct(request, &output[pos]))
 				continue;
 			
-			if(output[pos].repo != NULL)
+			if(output[pos].isInitialized)
 				pos++;
 		}
 

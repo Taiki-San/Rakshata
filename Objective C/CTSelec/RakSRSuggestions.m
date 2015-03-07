@@ -37,7 +37,7 @@
 		return NO;
 	
 	cache = getCopyCache(SORT_NAME, &nbElem);
-	if(cache == NULL)
+	if(cache == NULL || nbElem == 0)
 	{
 		free(ID);
 		return NO;
@@ -47,7 +47,7 @@
 	
 	for (uint i = 0; i < 10; i++)
 	{
-		ID[i] = arc4random() % nbElem;
+		ID[i] = getRandom() % nbElem;
 		
 		[array addObject:getStringForWchar(cache[ID[i]].projectName)];
 	}

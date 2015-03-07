@@ -239,7 +239,7 @@ enum
 	
 	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID || 1)
 	{
-		[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil)];
+		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
 
 		BOOL readerDeleted = NO, CTDeleted = NO;
 		
@@ -278,13 +278,13 @@ enum
 	
 	if(nukeRepo)
 	{
-		[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-REMOVE", nil)];
+		self.window.title = NSLocalizedString(@"PREFS-DELETE-REMOVE", nil);
 		removeRepoFromCache(*_repo);
 		deleteSubRepo(ID);
 		syncCacheToDisk(SYNC_ALL);
 	}
 	
-	[self.window performSelectorInBackground:@selector(setTitle:) withObject:NSLocalizedString(@"PREFS-DELETE-PURGE", nil)];
+	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);
 
 	//Delete projects
 	char path[256];

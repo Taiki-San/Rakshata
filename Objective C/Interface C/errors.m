@@ -12,6 +12,10 @@
 
 void internalUIAlert(char *titre, char* content, UIABUTT* buttons)
 {
+	MUTEX_VAR mutex;
+	MUTEX_CREATE(mutex);
+	MUTEX_VAR * ref = &mutex;
+
 	int ret_value[3] = {-1, -1, -1};
 	NSString *buttonsString[3] = {NULL, NULL, NULL};
 	
@@ -31,5 +35,14 @@ void internalUIAlert(char *titre, char* content, UIABUTT* buttons)
 						  informativeTextWithFormat: @"%s", content];
 	[[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
 	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert beginSheetModalForWindow:[[NSApp delegate] window] completionHandler:^(NSModalResponse returnCode) {}];
+	
+	MUTEX_LOCK(mutex);
+	
+	[alert beginSheetModalForWindow:[[NSApp delegate] window] completionHandler:^(NSModalResponse returnCode) {
+		MUTEX_UNLOCK(*ref);
+	}];
+	
+	MUTEX_LOCK(mutex);
+	MUTEX_UNLOCK(mutex);
+	MUTEX_DESTROY(mutex);
 }

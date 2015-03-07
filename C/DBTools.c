@@ -64,9 +64,9 @@ uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbEl
 	
 	for(; posBase < nbElem && oldData[posBase].repo == NULL; posBase++);
 	
-	void * ptrRepo = oldData[posBase].repo;
+	uint64_t repoID = getRepoID(oldData[posBase].repo);
 	
-	for (posBase++; oldData[posBase].repo == ptrRepo; posBase++);
+	for (posBase++; posBase < nbElem && getRepoID(oldData[posBase].repo) == repoID; posBase++);
 	
 	return posBase;
 }

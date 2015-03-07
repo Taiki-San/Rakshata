@@ -183,7 +183,7 @@ typedef struct NESSIEstruct {
     u64 hash[DIGESTBYTES/8];    /* the hashing state */
 } NESSIEstruct;
 
-/* #define TRACE_INTERMEDIATE_VALUES //Si on voulait connaitre l'état intermédiaire*/
+//#define TRACE_INTERMEDIATE_VALUES //Si on voulait logger le chiffrement
 
 /*
  * The number of rounds of the internal dedicated block cipher.

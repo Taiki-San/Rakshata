@@ -318,24 +318,31 @@ void usstrcpy(void* output, size_t length, const void* input)
 }
 
 /**Différent en fonction de l'OS**/
-int rmdir (const char *filename);
+
+#ifdef DEV_VERSION
+	uint depth = 0;
+#endif
+
 void removeFolder(char *path)
 {
 #ifdef DEV_VERSION
-	char charOK[10] = "Ok", charCancel[10] = "Cancel";
-	UIABUTT buttonOK, buttonCancel;
-	
-	buttonOK.buttonName = charOK;
-	buttonOK.ret_value = 1;
-	buttonOK.priority =	UIABUTTDefault;
-	buttonOK.next = &buttonCancel;
-	
-	buttonCancel.buttonName = charCancel;
-	buttonCancel.ret_value = 0;
-	buttonCancel.priority = UIABUTTOther;
-	buttonCancel.next = NULL;
-	
-	internalUIAlert("Suppression detectee", path, &buttonOK);
+	if(!depth)
+	{
+		char charOK[10] = "Ok", charCancel[10] = "Cancel";
+		UIABUTT buttonOK, buttonCancel;
+		
+		buttonOK.buttonName = charOK;
+		buttonOK.ret_value = 1;
+		buttonOK.priority =	UIABUTTDefault;
+		buttonOK.next = &buttonCancel;
+		
+		buttonCancel.buttonName = charCancel;
+		buttonCancel.ret_value = 0;
+		buttonCancel.priority = UIABUTTOther;
+		buttonCancel.next = NULL;
+		
+		internalUIAlert("Suppression detectee", path, &buttonOK);
+	}
 #endif
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
@@ -362,12 +369,20 @@ void removeFolder(char *path)
         snprintf(buffer, size, "%s/%s", path, entry->d_name);
 
         if(checkDirExist(buffer))
-            removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+		{
+#ifdef DEV_VERSION
+			depth++;
+			removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+			depth--;
+#endif
+		}
         else
             remove(buffer); //On est sur un fichier, on le supprime.
     }
-    closedir(directory);
+
+	closedir(directory);
     rmdir(path); //Maintenant le dossier doit être vide, on le supprime.
+
 #ifdef DEV_VERSION
     char temp2[300];
     snprintf(temp2, 300, "Removed: %s\n", path);
