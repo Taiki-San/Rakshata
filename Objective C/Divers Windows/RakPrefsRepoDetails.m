@@ -231,6 +231,7 @@ enum
 
 - (void) deleteContent : (BOOL) nukeRepo
 {
+	NSString * windowTitle = self.window.title;
 	CTSelec * CT = [[NSApp delegate] CT];
 	Reader * reader = [[NSApp delegate] reader];
 	
@@ -295,6 +296,8 @@ enum
 		[RakDBUpdate postNotificationFullUpdate];
 	else
 		setUninstalled(false, ID);	//Update DB, and notify everything
+	
+	self.window.title = windowTitle;
 }
 
 #pragma mark - Drawing

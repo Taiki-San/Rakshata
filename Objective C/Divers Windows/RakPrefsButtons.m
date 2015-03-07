@@ -75,6 +75,11 @@ enum
 	return self;
 }
 
+- (void) viewDidMoveToWindow
+{
+	self.window.title = activeButton.attributedTitle.string;
+}
+
 - (void) drawRect : (NSRect) dirtyRect
 {
 	[[self backgroundColor] setFill];
@@ -155,7 +160,7 @@ enum
 	
 	activeButton = sender;
 	
-	self.window.title = activeButton.title;
+	self.window.title = activeButton.attributedTitle.string;
 	
 	[responder focusChanged:code];
 	

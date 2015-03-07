@@ -89,7 +89,7 @@ sqlite3* getPtrRecentDB();
 void closeRecentDB(sqlite3 * database);
 bool checkRecentDBValid(sqlite3 * DB);
 
-bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL);
+bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
 void removeRecentEntryInternal(char * URLRepo, uint projectID);
 

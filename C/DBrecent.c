@@ -91,14 +91,16 @@ bool checkRecentDBValid(sqlite3 * DB)
 
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL)
 {
-	return updateRecentEntry(data, time(NULL), wasItADL);
+	return updateRecentEntry(NULL, data, time(NULL), wasItADL);
 }
 
-bool updateRecentEntry(PROJECT_DATA data, time_t timestamp, bool wasItADL)
+bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL)
 {
 	bool output = false, haveToUpdate = false;
 	
-	sqlite3 *database = getPtrRecentDB();
+	if(database == NULL)
+		database = getPtrRecentDB();
+	
 	if(database == NULL)
 		return false;
 	
@@ -289,7 +291,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					
 					sqlite3_finalize(request);	//Will release team, so must be called after strncpy
 					
-					updateRecentEntry(tmpProject, 0, wantDL);
+					updateRecentEntry(database, tmpProject, 0, wantDL);
 					
 					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
 					if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
