@@ -21,10 +21,14 @@
 		isSecondTextHidden = YES;
 		_controller = controller;
 		_row = rowID;
+		_invalidData = NO;
 		
 		todoList = [_controller getData: _row : YES];
-		if(todoList == NULL)
+		if(todoList == NULL || *todoList == NULL)
+		{
+			_invalidData = YES;
 			return nil;
+		}
 
 		previousStatus = MDL_CODE_UNUSED;
 		
@@ -238,8 +242,13 @@
 	_row = data;
 	
 	todoList = [_controller getData : _row : YES];
-	if(todoList == NULL)
+	if(todoList == NULL || *todoList == NULL)
+	{
+		_invalidData = YES;
 		return;
+	}
+	else
+		_invalidData = NO;
 	
 	[requestName setStringValue : [self getName]];
 	[requestName setNeedsDisplay : YES];
@@ -285,7 +294,7 @@
 
 	NSNumber * deletedRow = [userInfo objectForKey:@"deletedRow"];
 
-	if(deletedRow != nil && _row > [deletedRow unsignedIntValue])
+	if(deletedRow != nil && _row >= [deletedRow unsignedIntValue])
 		_row--;
 }
 
@@ -352,25 +361,37 @@
 		[DLprogress performSelectorOnMainThread:@selector(updatePercentageProxy:) withObject:@[@(percentage), @(speed)] waitUntilDone:YES];
 }
 
-//We will abort the download, notify the controller, notify the main dispatcher, and diseapear from the table
+//We will abort the download, notify the controller, notify the main dispatcher, and disappear from the table
 //If we were already installed, we won't uninstall
-- (void) sendRemove
+
+- (BOOL) abortProcessing
 {
 	if(todoList == nil)
-		return;
+		return false;
 	
 	int8_t status = [_controller statusOfID:_row :YES];
-	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 
+	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
+	
 	if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
 	{
 		curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
 	}
 	
 	[_controller setStatusOfID: _row : YES : MDL_CODE_ABORTED];
-	[_controller discardElement: _row withSimilar: status == MDL_CODE_INSTALL_OVER];
 	(*todoList)->rowViewResponsible = NULL;
 	
+	return status == MDL_CODE_DL;
+}
+
+- (void) sendRemove
+{
+	int8_t status = [_controller statusOfID:_row :YES];
+
+	[self abortProcessing];
+	
+	[_controller discardElement: _row withSimilar: status == MDL_CODE_INSTALL_OVER];
+
 	if(status == MDL_CODE_DL)
 		MDLDownloadOver(false);
 }

@@ -31,6 +31,8 @@
 	int8_t previousStatus;
 }
 
+@property BOOL invalidData;
+
 - (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID;
 - (void) initIcons;
 - (NSString *) getName;
@@ -42,6 +44,7 @@
 - (void) requestReloadData : (NSTableView *) tableView;
 
 - (void) updatePercentage : (CGFloat) percentage : (size_t) speed;
+- (BOOL) abortProcessing;
 - (void) sendRemove;
 - (void) sendPause;
 - (void) sendRead;

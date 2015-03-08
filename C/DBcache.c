@@ -766,8 +766,10 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		char sortRequest[50], requestString[200];
 		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
 			strncpy(sortRequest, DBNAMETOID(RDB_projectName), 50);
-		else
+		else if((maskRequest & RDB_SORTMASK) == SORT_ID)
 			strncpy(sortRequest, DBNAMETOID(RDB_repo), 50);
+		else
+			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
 		
 		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);

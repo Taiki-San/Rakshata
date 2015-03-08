@@ -25,7 +25,7 @@
 		quit = false;
 		
 		//We have to make reference to entries of cache. In order to keep it updatable, we have to allocate memory for each entry
-		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_NAME, &sizeCache);
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID, &sizeCache);
 		PROJECT_DATA ** futureCache = calloc(sizeCache, sizeof(PROJECT_DATA *));
 		if(futureCache == NULL)
 		{
@@ -119,7 +119,7 @@
 	else	//Full update
 	{
 		uint newSize;
-		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_NAME, &newSize);
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID, &newSize);
 		
 		if(_cache != NULL && newSize != 0)
 		{
@@ -155,12 +155,17 @@
 			}
 			
 			//Ok, now, let's check if things were added, if some were removed
-			for (uint posFinal = 0, posNew = 0; posFinal < sizeCache; posFinal++)
+			for(uint posFinal = 0, offsetDeleted = 0, posNew = 0; posFinal < sizeCache;)
 			{
-    			if(usedOld[posFinal])
+    			if(usedOld[posFinal + offsetDeleted])
+				{
+					posFinal++;
 					continue;
+				}
 				else
-					usedOld[posFinal] = YES;
+					usedOld[posFinal + offsetDeleted] = YES;
+				
+				[self depreciateProject : cache[posFinal]];
 				
 				releaseCTData(*cache[posFinal]);
 
@@ -173,13 +178,15 @@
 					{
 						usedNew[posNew] = YES;
 						*cache[posFinal] = _cache[posNew];
+						posFinal++;
 						continue;
 					}
 				}
 				
-				free(cache[posFinal]);
+				free(cache[posFinal - offsetDeleted]);
 				
 				memcpy(&(cache[posFinal]), &(cache[posFinal + 1]), (sizeCache - posFinal - 1) * sizeof(PROJECT_DATA *));
+				offsetDeleted++;
 				sizeCache--;
 			}
 			
@@ -216,11 +223,45 @@
 				}
 			}
 		}
-		
 		free(_cache);
 	}
 }
-		   
+
+- (void) depreciateProject : (PROJECT_DATA *) project
+{
+	uint firstElement = UINT_MAX;
+	BOOL anythingWasDownloading = NO;
+	
+	for(uint i = 0; i < discardedCount; i++)
+	{
+		if((*todoList)[IDToPosition[i]] != NULL && (*todoList)[IDToPosition[i]]->datas == project)
+		{
+			//We have to abort this element
+			if((*todoList)[IDToPosition[i]]->rowViewResponsible != nil && [(__bridge id) (*todoList)[IDToPosition[i]]->rowViewResponsible class] == [RakMDLListView class])
+			{
+				if(firstElement == UINT_MAX)
+					firstElement = i;
+					
+				anythingWasDownloading |= [(__bridge RakMDLListView *) (*todoList)[IDToPosition[i]]->rowViewResponsible abortProcessing];
+			}
+			else
+			{
+#ifdef DEV_VERSION
+				NSLog(@"Invalid item: %@", (*todoList)[IDToPosition[i]]->rowViewResponsible);
+#endif
+			}
+		}
+	}
+	
+	if(firstElement == UINT_MAX)
+		return;
+	
+	[self discardElement:firstElement withSimilar:YES];
+	
+	if(anythingWasDownloading)
+		MDLDownloadOver(false);
+}
+
 - (void) dealloc
 {
 	[RakDBUpdate unRegister : self];
@@ -441,9 +482,7 @@
 {
 	if(element < discardedCount)
 	{
-		PROJECT_DATA project;
-		if(similar)
-			project = *(*todoList)[IDToPosition[element]]->datas;
+		PROJECT_DATA * project = similar ? (*todoList)[IDToPosition[element]]->datas : NULL;
 		
 		if(similar)
 		{
@@ -452,7 +491,7 @@
 			for(uint posDiscarded = 0; posDiscarded < discardedCount; posDiscarded++)
 			{
 				//We remove every similar project from which the download is done
-				if((*todoList)[IDToPosition[posDiscarded]]->datas->cacheDBID == project.cacheDBID && (status[IDToPosition[posDiscarded]]) != NULL && *(status[IDToPosition[posDiscarded]]) == MDL_CODE_INSTALL_OVER)
+				if((*todoList)[IDToPosition[posDiscarded]]->datas == project && status[IDToPosition[posDiscarded]] != NULL && (*(status[IDToPosition[posDiscarded]]) == MDL_CODE_INSTALL_OVER || *(status[IDToPosition[posDiscarded]]) == MDL_CODE_ABORTED))
 					indexRemoved[nbRemoved++] = posDiscarded;
 				else
 					IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded + 1];
@@ -464,11 +503,8 @@
 		}
 		else
 		{
-			discardedCount--;
-			for(uint posDiscarded = element; posDiscarded < discardedCount; posDiscarded++)
-			{
-				IDToPosition[posDiscarded] = IDToPosition[posDiscarded+1];
-			}
+			memcpy(IDToPosition, &(IDToPosition[1]), --discardedCount * sizeof(*IDToPosition));
+			[_list deleteElements : &element : 1];
 		}
 	}
 }

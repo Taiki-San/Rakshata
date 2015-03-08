@@ -179,7 +179,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 
             sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
 			
-			if(projectDB[posCatalogue]->projectID != projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
+			if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->projectID != projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
             {
 				currentProject = projectDB[posCatalogue];
             }

@@ -28,8 +28,9 @@ enum getCopyDBCodes
 	//Sorting type
 	SORT_NAME				= 0x0,
 	SORT_REPO				= 0x2,
-	RDB_SORTMASK			= 0x2,
-	SORT_DEFAULT			= SORT_NAME,
+	SORT_ID					= 0x4, 
+	RDB_SORTMASK			= 0x6,
+	SORT_DEFAULT			= SORT_ID,
 };
 
 enum

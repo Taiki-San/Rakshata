@@ -91,8 +91,8 @@
 			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
 	}
 	
-	for(uint i = 0; i < length; i++)
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(indexes[i])}];
+	while(length--)
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(indexes[length])}];
 
 }
 
@@ -144,6 +144,9 @@
     if (result == nil)
 	{
 		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row];
+		
+		if(result.invalidData)
+			[_tableView reloadData];
 
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		
@@ -152,11 +155,12 @@
 	else
 	{
 		[result updateData : row : _tableView.frame.size.width];
+
+		if(result.invalidData)
+			[_tableView reloadData];
 	}
 	
-	// Return the result
 	return result;
-	
 }
 
 - (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
