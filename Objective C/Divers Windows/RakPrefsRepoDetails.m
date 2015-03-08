@@ -238,7 +238,7 @@ enum
 	PROJECT_DATA readerProject = [reader activeProject], CTProject = [CT activeProject];
 	uint64_t ID = getRepoID(_repo);
 	
-	if(getRepoID(CTProject.repo) == ID || getRepoID(readerProject.repo) == ID || 1)
+	if((CTProject.isInitialized && getRepoID(CTProject.repo) == ID) || (readerProject.isInitialized && getRepoID(readerProject.repo) == ID))
 	{
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
 

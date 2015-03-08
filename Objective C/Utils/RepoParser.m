@@ -201,6 +201,11 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 {
 	if(nbSubRepo == NULL)
 		return NULL;
+	else if(array == nil)
+	{
+		*nbSubRepo = 0;
+		return NULL;
+	}
 	
 	size_t count = [array count];
 	
@@ -377,7 +382,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	trusted = validateTrust(objectForKey(parseData, JSON_REPO_TRUSTED, @"trusted"), localSource);	//Not required, so if it doesn't work, there is no big deal
 	
 	array = objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository");
-	if(array == nil || ![array isKindOfClass:[NSArray class]])
+	if(array != nil && ![array isKindOfClass:[NSArray class]])
 		goto error;
 	
 	//Okay, the root parsing is over, the sub-repo parsing is performed by an other routine
@@ -575,10 +580,8 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root)
 		[dict setObject:@(YES) forKey:JSON_REPO_TRUSTED];
 	
 	array = rebuildRepoTree(root->subRepo, root->nombreSubrepo, root->subRepoAreExtra);
-	if(array == nil)
-		return nil;
-	
-	[dict setObject:array forKey:JSON_REPO_REPO_TREE];
+	if(array != nil)
+		[dict setObject:array forKey:JSON_REPO_REPO_TREE];
 	
 	return [NSDictionary dictionaryWithDictionary:dict];
 }
