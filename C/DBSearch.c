@@ -10,10 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
+#include "dbCache.h"
 
-extern sqlite3 *cache;
-extern uint nbElem;
 static bool initialized = false;
 
 static uint nbAuthor = 0, nbTag = 0, nbType = 0;

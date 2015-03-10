@@ -105,6 +105,10 @@
 		B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
 		B6A2C44219958FA6007D9DEB /* RakFavsInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */; };
 		B6A6ACE81AAED60700CAF51E /* RakRadioButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACE71AAED60700CAF51E /* RakRadioButton.m */; };
+		B6A6ACEF1AAEED3A00CAF51E /* DBCacheIO.c in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACEE1AAEED3A00CAF51E /* DBCacheIO.c */; };
+		B6A6ACF11AAEEE0100CAF51E /* DBCacheQuery.c in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACF01AAEEE0100CAF51E /* DBCacheQuery.c */; };
+		B6A6ACF31AAEEF0000CAF51E /* DBCacheInit.c in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACF21AAEEF0000CAF51E /* DBCacheInit.c */; };
+		B6A6ACF51AAEEF4D00CAF51E /* DBCacheRepo.c in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
@@ -376,6 +380,11 @@
 		B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakFavsInfo.m; path = Reader/RakFavsInfo.m; sourceTree = "<group>"; };
 		B6A6ACE61AAED60700CAF51E /* RakRadioButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakRadioButton.h; path = Utils/RakRadioButton.h; sourceTree = "<group>"; };
 		B6A6ACE71AAED60700CAF51E /* RakRadioButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakRadioButton.m; path = Utils/RakRadioButton.m; sourceTree = "<group>"; };
+		B6A6ACED1AAEEAB900CAF51E /* dbCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = dbCache.h; path = C/dbCache.h; sourceTree = "<group>"; };
+		B6A6ACEE1AAEED3A00CAF51E /* DBCacheIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheIO.c; path = C/DBCacheIO.c; sourceTree = "<group>"; };
+		B6A6ACF01AAEEE0100CAF51E /* DBCacheQuery.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheQuery.c; path = C/DBCacheQuery.c; sourceTree = "<group>"; };
+		B6A6ACF21AAEEF0000CAF51E /* DBCacheInit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheInit.c; path = C/DBCacheInit.c; sourceTree = "<group>"; };
+		B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheRepo.c; path = C/DBCacheRepo.c; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
 		B6B46DAE18FB34FE00EB1FE6 /* RakList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakList.h; path = Utils/RakList.h; sourceTree = "<group>"; };
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -832,6 +841,21 @@
 			name = Header;
 			sourceTree = "<group>";
 		};
+		B6A6ACEC1AAEEA9C00CAF51E /* DBCache */ = {
+			isa = PBXGroup;
+			children = (
+				B6FE79E018B903B4004BE38D /* DBcache.c */,
+				B6A6ACED1AAEEAB900CAF51E /* dbCache.h */,
+				B6A6ACF21AAEEF0000CAF51E /* DBCacheInit.c */,
+				B6A6ACEE1AAEED3A00CAF51E /* DBCacheIO.c */,
+				B6A6ACF01AAEEE0100CAF51E /* DBCacheQuery.c */,
+				B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */,
+				B678D0311977178A00D7FE6A /* DBrecent.c */,
+				B62935D41A7E71E800DE20E2 /* DBSearch.c */,
+			);
+			name = DBCache;
+			sourceTree = "<group>";
+		};
 		B6B3830F188740E7005B5F01 /* Deep Prefs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1213,11 +1237,9 @@
 			children = (
 				B6F6ECA418A3001400E3B55B /* chapitre.c */,
 				B6F6ECAF18A3001400E3B55B /* CTCommon.c */,
-				B6FE79E018B903B4004BE38D /* DBcache.c */,
+				B6A6ACEC1AAEEA9C00CAF51E /* DBCache */,
 				B61279FC1A586B5E0034C241 /* dbProperties.h */,
-				B678D0311977178A00D7FE6A /* DBrecent.c */,
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
-				B62935D41A7E71E800DE20E2 /* DBSearch.c */,
 				B62C9EF218BD73D500CE910F /* DBTools.c */,
 				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
 				B678D033197717A600D7FE6A /* ProjectParser.m */,
@@ -1394,6 +1416,7 @@
 				B6824AF01AA8AB8D001837D6 /* RakPrefsRepoDetails.m in Sources */,
 				B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */,
 				B6F6ECF618A3001400E3B55B /* error.c in Sources */,
+				B6A6ACF31AAEEF0000CAF51E /* DBCacheInit.c in Sources */,
 				B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */,
 				B6F6ECFE18A3001400E3B55B /* lecteur_loading.c in Sources */,
 				B6D43D7218E70E780030B7FF /* RakCTCoreViewButtons.m in Sources */,
@@ -1413,6 +1436,7 @@
 				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
 				B6748AE21A936E80003FBC1D /* RakCTSynopsis.m in Sources */,
 				B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */,
+				B6A6ACF11AAEEE0100CAF51E /* DBCacheQuery.c in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,
 				B67845A519634C83007372C7 /* crc32.c in Sources */,
@@ -1426,6 +1450,7 @@
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6E8E1B219ABAE6200930E6D /* RakPrefsRemindPopover.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
+				B6A6ACF51AAEEF4D00CAF51E /* DBCacheRepo.c in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B62935D71A7E848A00DE20E2 /* tagManagement.c in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,
@@ -1458,6 +1483,7 @@
 				B678675418F5F407004AA6B4 /* RakSerieView.m in Sources */,
 				B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */,
 				B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */,
+				B6A6ACEF1AAEED3A00CAF51E /* DBCacheIO.c in Sources */,
 				B69FBE921A756472009ACBEF /* RakSRHeader.m in Sources */,
 				B642480B19D57DF000679D78 /* RakGradientView.m in Sources */,
 				B62C9EF318BD73D500CE910F /* DBTools.c in Sources */,
