@@ -181,6 +181,41 @@
 	return NSMakeSize(frame.size.width, [self.cell cellSizeForBounds: frame].height);
 }
 
+#pragma mark - Handle clic
+
+- (void) overrideMouseDown : (NSEvent *) theEvent
+{
+	[super mouseDown:theEvent];
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(self.clicTarget == nil)
+		[super mouseDown:theEvent];
+	else
+		[super mouseDown:theEvent];
+}
+
+- (void) overrideMouseUp : (NSEvent *) theEvent
+{
+	[super mouseUp:theEvent];
+}
+
+- (void) mouseUp : (NSEvent *) theEvent
+{
+	if(self.clicTarget != nil)
+	{
+		if([self.clicTarget respondsToSelector:self.clicAction])
+		{
+			IMP imp = [self.clicTarget methodForSelector:self.clicAction];
+			void (*func)(id, SEL, id) = (void *)imp;
+			func(self.clicTarget, self.clicAction, self);
+		}
+	}
+	else
+		[super mouseUp:theEvent];
+}
+
 @end
 
 @implementation RakFormatterLength

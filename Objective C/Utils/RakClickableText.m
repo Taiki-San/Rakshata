@@ -66,23 +66,18 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	if(_URL == nil || _clicTarget == nil)
-		[super mouseDown:theEvent];
+	if(_URL != nil)
+		[self mouseDown:theEvent];
+	else
+		[self overrideMouseUp:theEvent];
 }
 
 - (void) mouseUp : (NSEvent *) theEvent
 {
-	if(_URL != nil && _clicTarget != nil)
-	{
-		if([_clicTarget respondsToSelector:_clicAction])
-		{
-			IMP imp = [_clicTarget methodForSelector:_clicAction];
-			void (*func)(id, SEL, id) = (void *)imp;
-			func(_clicTarget, _clicAction, self);
-		}
-	}
-	else
+	if(_URL != nil)
 		[super mouseUp:theEvent];
+	else
+		[self overrideMouseUp:theEvent];
 }
 
 #pragma mark - Color

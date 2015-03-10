@@ -19,9 +19,6 @@
 
 @property id URL;
 
-@property (weak) id clicTarget;
-@property SEL clicAction;
-
 - (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (NSObject *) responder;
 
 @end

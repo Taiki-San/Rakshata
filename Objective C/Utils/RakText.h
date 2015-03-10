@@ -21,11 +21,17 @@
 
 @property CGFloat fixedWidth;
 
+@property (weak) id clicTarget;
+@property SEL clicAction;
+
 - (instancetype)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color;
 
 - (NSColor *) getBorderColor;
 - (void) additionalDrawing;
+
+- (void) overrideMouseDown : (NSEvent *) theEvent;
+- (void) overrideMouseUp : (NSEvent *) theEvent;
 
 @end
 
