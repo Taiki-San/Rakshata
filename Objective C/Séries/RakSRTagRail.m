@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
-
 @implementation RakSRTagRail
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (CGFloat) baseSearchBar

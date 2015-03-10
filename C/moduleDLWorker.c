@@ -10,8 +10,6 @@
  **                                                                                          **
  *********************************************************************************************/
 
-#include "db.h"
-
 volatile bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)

@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
-
 charType * getTypeForCode(uint32_t tagID)
 {
 	return getTagForCode(tagID);

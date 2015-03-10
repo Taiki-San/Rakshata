@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
-
 @implementation RakSRSearchTabGroup
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID

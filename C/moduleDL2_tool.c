@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "db.h"
-
 /*Loaders divers*/
 
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)

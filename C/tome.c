@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "db.h"
-
 int getPosForID(PROJECT_DATA data, bool installed, int ID)
 {
 	if((installed && data.tomesInstalled == NULL) || (!installed && data.tomesFull == NULL))

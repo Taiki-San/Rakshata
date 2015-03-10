@@ -11,7 +11,6 @@
  *********************************************************************************************/
 
 #include "lecteur.h"
-#include "db.h"
 
 uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {

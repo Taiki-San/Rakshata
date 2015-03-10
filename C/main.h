@@ -26,7 +26,7 @@
 #include "prototypes.h"
 #include "structures.h"
 #include "fonctions.h"
-#include "db_external.h"
+#include "db.h"
 
 extern char * COMPTE_PRINCIPAL_MAIL;
 extern MUTEX_VAR DBRefreshMutex;

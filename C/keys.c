@@ -11,7 +11,6 @@
 *********************************************************************************************/
 
 #include "crypto/crypto.h"
-#include "db.h"
 
 #define MK_TOKEN "TyrionGetPoisond"
 #define MK_TOKEN_LENGTH 16

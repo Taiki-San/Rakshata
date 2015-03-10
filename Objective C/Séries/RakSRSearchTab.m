@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
-
 #define LAST_BLOCK_POSITION 5
 
 @implementation RakSRSearchTab

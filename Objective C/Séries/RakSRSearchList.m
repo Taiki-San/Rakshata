@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
-
 @implementation RakSRSearchList
 
 - (instancetype) init : (NSRect) frame : (byte) type

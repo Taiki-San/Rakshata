@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "db.h"
-
 bool checkIfFaved(PROJECT_DATA* projectDB, char **favs)
 {
     bool generateOwnCache = false;

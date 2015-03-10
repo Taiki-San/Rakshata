@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "db.h"
 #define BUTTON_NAME @"clearTag"
 
 @implementation RakSRTagItem
