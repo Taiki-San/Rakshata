@@ -13,7 +13,7 @@
 #include "dbCache.h"
 
 sqlite3 *cache = NULL;
-uint nbElem = 0;
+uint nbElemInCache = 0;
 
 ROOT_REPO_DATA ** rootRepoList = NULL;
 uint lengthRootRepo = 0;
@@ -89,7 +89,7 @@ uint setupBDDCache()
 	}
 	
 	free(isUpdated);	isUpdated = NULL;
-	nbElem = lengthRepo = lengthRootRepo = lengthIsUpdated = 0;
+	nbElemInCache = lengthRepo = lengthRootRepo = lengthIsUpdated = 0;
 	
 	//On parse les teams
 	ROOT_REPO_DATA ** internalRootRepoList = loadRootRepo(repoDB, &nombreRootRepo);
@@ -181,7 +181,7 @@ uint setupBDDCache()
 				flushDB();
 			
 			cache = internalDB;
-			nbElem = nombreProject;
+			nbElemInCache = nombreProject;
 			
 			rootRepoList = internalRootRepoList;
 			lengthRootRepo = nombreRootRepo;
@@ -291,7 +291,7 @@ void flushDB()
 	sqlite3_finalize(request);
 	sqlite3_close_v2(cache);
 	cache = NULL;
-	nbElem = 0;
+	nbElemInCache = 0;
 
 	freeRepo(repoList);
 	lengthRepo = 0;
@@ -469,13 +469,13 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 		{
 			if(canUseOptimization)
 			{
-				while(pos < nbElem && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
+				while(pos < nbElemInCache && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
 					pos++;
 				
 				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
 					output[pos++] = true;
 				
-				else if(pos < nbElem)		//Élément supprimé
+				else if(pos < nbElemInCache)		//Élément supprimé
 					continue;
 				
 				else
@@ -483,7 +483,7 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 			}
 			else
 			{
-				for(pos = 0; pos < nbElem && data[pos].cacheDBID != sqlite3_column_int(request, RDB_ID-1); pos++);
+				for(pos = 0; pos < nbElemInCache && data[pos].cacheDBID != sqlite3_column_int(request, RDB_ID-1); pos++);
 				
 				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
 					output[pos] = true;

@@ -160,7 +160,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
 		return NULL;
 	
-	output = malloc((nbElem + 1) * sizeof(PROJECT_DATA));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
+	output = malloc((nbElemInCache + 1) * sizeof(PROJECT_DATA));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
 	if(output != NULL)
 	{
 		//On craft la requète en fonctions des arguments
@@ -181,7 +181,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		sqlite3_stmt* request = NULL;
 		sqlite3_prepare_v2(cache, requestString, -1, &request, NULL);
 		
-		while(pos < nbElem && sqlite3_step(request) == SQLITE_ROW)
+		while(pos < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 		{
 			if(!copyOutputDBToStruct(request, &output[pos]))
 				continue;

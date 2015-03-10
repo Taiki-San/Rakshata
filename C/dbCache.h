@@ -15,7 +15,7 @@
 //Extremly limited header, have direct access to critical DB
 
 extern sqlite3 *cache;
-extern uint nbElem;
+extern uint nbElemInCache;
 
 extern ROOT_REPO_DATA ** rootRepoList;
 extern uint lengthRootRepo;

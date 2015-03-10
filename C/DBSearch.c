@@ -716,7 +716,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 	
 	sqlite3_stmt * request;
 	
-	size_t maxLength = nbElem;
+	size_t maxLength = nbElemInCache;
 	uint * output = malloc(maxLength * sizeof(uint));	//We allocate more space, but will reduce at the end
 	
 	if(output == NULL)
@@ -760,14 +760,14 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 	}
 	
 	size_t realLength = 0;
-	while (realLength < nbElem && sqlite3_step(request) == SQLITE_ROW)
+	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 	{
 		output[realLength++] = sqlite3_column_int(request, 0);
 	}
 	
 	sqlite3_finalize(request);
 	
-	if(realLength < nbElem)
+	if(realLength < nbElemInCache)
 	{
 		if(realLength == 0)	//No data :/
 		{
@@ -787,7 +787,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 
 char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 {
-	char ** output = calloc(nbElem, sizeof(char *));
+	char ** output = calloc(nbElemInCache, sizeof(char *));
 	if(output == NULL)
 		return NULL;
 	
@@ -804,7 +804,7 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	}
 	
 	size_t realLength = 0;
-	while (realLength < nbElem && sqlite3_step(request) == SQLITE_ROW)
+	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 	{
 		output[realLength] = strdup((void*) sqlite3_column_text(request, 0));
 		

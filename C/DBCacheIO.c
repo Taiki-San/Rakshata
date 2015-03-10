@@ -65,7 +65,7 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	output = sqlite3_step(internalRequest) == SQLITE_DONE;
 	
 	sqlite3_reset(internalRequest);
-	nbElem++;
+	nbElemInCache++;
 	
 	return output;
 }
@@ -203,7 +203,7 @@ void removeFromCache(PROJECT_DATA data)
 	sqlite3_step(request);
 	sqlite3_finalize(request);
 	
-	nbElem--;
+	nbElemInCache--;
 }
 
 void removeRepoFromCache(REPO_DATA repo)
@@ -226,7 +226,7 @@ void removeRepoFromCache(REPO_DATA repo)
 		free((void*) sqlite3_column_int64(request, 1));
 		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 		
-		nbElem--;
+		nbElemInCache--;
 	}
 	sqlite3_finalize(request);
 	
