@@ -12,4 +12,18 @@
 
 @implementation RakRadioButton
 
+- (instancetype) init
+{
+	self = [super init];
+
+	if(self != nil)
+	{
+		[self setButtonType:NSSwitchButton];
+		[self setImagePosition:NSImageOnly];
+		[self sizeToFit];
+	}
+	
+	return self;
+}
+
 @end

@@ -137,6 +137,8 @@
 "PREFS-DELETE-CANCEL" = "Annuler";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 
+"PREFS-REPO-SWITCH-MESSAGE" = "Afficher les groupes de sources";
+
 "PREFS-DELETE-KILL-USE" = "Arrêt d'utilisation des ressources à supprimer";
 "PREFS-DELETE-REMOVE" = "Nettoyage des traces";
 "PREFS-DELETE-PURGE" = "Suppression des fichiers";

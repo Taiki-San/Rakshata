@@ -15,6 +15,9 @@ enum
 	BORDER = 5,
 	WIDTH = 800,
 	HEIGHT = 400,
+	
+	RADIO_OFFSET = 35,
+	TEXT_RADIO_OFFSET = 5
 };
 
 @implementation RakPrefsRepoView
@@ -25,6 +28,8 @@ enum
 	
 	if(self != nil)
 	{
+		activeElementInRoot = activeElementInSubRepo = UINT_MAX;
+
 		root = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRoot, true);
 		repo = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false);
 		
@@ -50,6 +55,24 @@ enum
 			
 			[self addSubview:[list getContent]];
 		}
+		
+		radioSwitch = [[RakRadioButton alloc] init];
+		if(radioSwitch != nil)
+		{
+			radioSwitch.target = self;
+			radioSwitch.action = @selector(buttonClicked);
+			
+			[radioSwitch setFrameOrigin:NSMakePoint(RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - radioSwitch.bounds.size.height / 2)];
+			
+			[self addSubview:radioSwitch];
+			
+			switchMessage = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-REPO-SWITCH-MESSAGE", nil) :[self textColor]];
+			if(switchMessage != nil)
+			{
+				[switchMessage setFrameOrigin:NSMakePoint(NSMaxX(radioSwitch.frame) + TEXT_RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - switchMessage.bounds.size.height / 2)];
+				[self addSubview:switchMessage];
+			}
+		}
 	}
 	
 	return self;
@@ -74,7 +97,26 @@ enum
 	return frame;
 }
 
+- (NSColor *) textColor
+{
+	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
+}
+
 #pragma mark - Data interface
+
+- (void) buttonClicked
+{
+	BOOL isRoot = radioSwitch.state == NSOnState;
+	
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+
+		details.animator.alphaValue = 0;
+		list.rootMode = isRoot;
+
+	} completionHandler:^{
+		[self selectionUpdate:isRoot :isRoot ? activeElementInRoot : activeElementInSubRepo];
+	}];
+}
 
 - (void **) listForMode : (BOOL) rootMode
 {
@@ -114,10 +156,20 @@ enum
 	void ** _list = [self listForMode:isRoot];
 	
 	if(_list == NULL || index >= [self sizeForMode:isRoot])
+	{
+		if(self.alphaValue)
+			details.animator.alphaValue = 0;
 		return;
+	}
+	else if(isRoot)
+		activeElementInRoot = index;
+	else
+		activeElementInSubRepo = index;
+		
 	
 	if(list.rootMode != isRoot)
 	{
+		[radioSwitch setState : isRoot ? NSOnState : NSOffState];
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			list.rootMode = isRoot;
 		} completionHandler:^{

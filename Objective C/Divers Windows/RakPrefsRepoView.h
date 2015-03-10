@@ -27,6 +27,7 @@
 @interface RakPrefsRepoDetails : NSView
 
 - (instancetype) initWithRepo : (NSRect) frame : (BOOL) isRoot : (void *) repo : (RakPrefsRepoView *) responder;
+
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (BOOL) animated;
 
 @end
@@ -37,9 +38,13 @@
 	REPO_DATA ** repo;
 	
 	uint nbRoot, nbRepo;
+	uint activeElementInRoot, activeElementInSubRepo;
 	
 	RakPrefsRepoList * list;
 	RakPrefsRepoDetails * details;
+	
+	RakRadioButton * radioSwitch;
+	RakText * switchMessage;
 }
 
 - (void **) listForMode : (BOOL) rootMode;

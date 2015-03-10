@@ -243,10 +243,7 @@
 	
 	if(accept == nil)
 	{
-		accept = [[RakAuthTermsButton alloc] initWithFrame : container.bounds];
-		[accept setButtonType:NSSwitchButton];
-		[accept setImagePosition:NSImageOnly];
-		[accept sizeToFit];
+		accept = [[RakAuthTermsButton alloc] init];
 		accept.controller = self;
 		
 		[accept setFrameOrigin:NSMakePoint(0, 49 + terms.bounds.size.height / 2 - accept.bounds.size.height / 2)];

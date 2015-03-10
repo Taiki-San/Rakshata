@@ -60,24 +60,42 @@ enum
 {
 	if(animated)
 	{
-		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-			
-			context.duration = 0.2f;
-			self.animator.alphaValue = 0;
-			
-		} completionHandler:^{
+		if(self.alphaValue)
+		{
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+				
+				context.duration = 0.2f;
+				self.animator.alphaValue = 0;
+				
+			} completionHandler:^{
+				[self _updateContent:isRoot :repo];
+				
+				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+					
+					context.duration = 0.2f;
+					self.animator.alphaValue = 1;
+					
+				} completionHandler:^{}];
+			}];
+		}
+		else
+		{
 			[self _updateContent:isRoot :repo];
 			
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
+				
 				context.duration = 0.2f;
 				self.animator.alphaValue = 1;
-			
+				
 			} completionHandler:^{}];
-		}];
+		}
 	}
 	else
+	{
 		[self _updateContent:isRoot :repo];
+		if(self.alphaValue == 0)
+			self.alphaValue = 1;
+	}
 }
 
 - (void) _updateContent:(BOOL)isRoot :(void *)repo
