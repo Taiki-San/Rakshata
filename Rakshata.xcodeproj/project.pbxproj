@@ -104,6 +104,7 @@
 		B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1E36718F9E92F001D1F8E /* RakWindow.m */; };
 		B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
 		B6A2C44219958FA6007D9DEB /* RakFavsInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */; };
+		B6A6ACE81AAED60700CAF51E /* RakRadioButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACE71AAED60700CAF51E /* RakRadioButton.m */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
@@ -373,6 +374,8 @@
 		B6A1F59C1975684100A3AACD /* RakPageScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageScrollView.m; path = Reader/RakPageScrollView.m; sourceTree = "<group>"; };
 		B6A2C44019958FA6007D9DEB /* RakFavsInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakFavsInfo.h; path = Reader/RakFavsInfo.h; sourceTree = "<group>"; };
 		B6A2C44119958FA6007D9DEB /* RakFavsInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakFavsInfo.m; path = Reader/RakFavsInfo.m; sourceTree = "<group>"; };
+		B6A6ACE61AAED60700CAF51E /* RakRadioButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakRadioButton.h; path = Utils/RakRadioButton.h; sourceTree = "<group>"; };
+		B6A6ACE71AAED60700CAF51E /* RakRadioButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakRadioButton.m; path = Utils/RakRadioButton.m; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
 		B6B46DAE18FB34FE00EB1FE6 /* RakList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakList.h; path = Utils/RakList.h; sourceTree = "<group>"; };
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -635,6 +638,8 @@
 				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
 				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
+				B6A6ACE61AAED60700CAF51E /* RakRadioButton.h */,
+				B6A6ACE71AAED60700CAF51E /* RakRadioButton.m */,
 				B64C926619571DDF000D60CC /* RakSegmentedButtonCell.h */,
 				B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */,
 			);
@@ -1430,6 +1435,7 @@
 				B62B45011A8FAAEA0096FA45 /* RakCTSerieHeader.m in Sources */,
 				B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */,
 				B623390A18DBB7F800FC188A /* RakContentView.m in Sources */,
+				B6A6ACE81AAED60700CAF51E /* RakRadioButton.m in Sources */,
 				B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */,
 				B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */,
 				B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */,

@@ -338,7 +338,10 @@
 	else
 		return;
 	
-	[self.controller focusLeft : self : flag];
+	if(self.controller != nil && [self.controller respondsToSelector : @selector(focusLeft::)])
+	{
+		[self.controller focusLeft : self : flag];
+	}
 }
 
 @end

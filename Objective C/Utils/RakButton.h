@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakRadioButton.h"
+
 @interface RakButton: NSButton
 {
 	BOOL haveBackground;

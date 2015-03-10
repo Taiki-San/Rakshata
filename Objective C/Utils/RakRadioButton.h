@@ -10,57 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	AUTH_STATE_GOOD,
-	AUTH_STATE_LOADING,
-	AUTH_STATE_NONE,
-	AUTH_STATE_INVALID
-};
+@interface RakRadioButton : NSButton
 
-enum
-{
-	AUTH_MODE_DEFAULT,
-	AUTH_MODE_NEW_ACCOUNT,
-	AUTH_MODE_LOGIN,
-};
-
-@interface RakEmailField : RakText <NSTextFieldDelegate>
-{
-	uint currentEditingSession;
-	
-	RakAuthController * authController;
-}
-
-@property byte currentStatus;
-
-- (void) addController : (RakAuthController *) controller;
+@property (weak) id controller;
 
 @end
-
-@interface RakPassField : RakText <NSTextFieldDelegate>
-{
-	RakAuthController * authController;
-}
-
-- (void) addController : (RakAuthController *) controller;
-
-@property byte currentStatus;
-
-@end
-
-@interface RakAuthText : NSView
-{
-	NSColor * backgroundColor;
-}
-
-@property (strong) NSString * URL;
-
-- (id)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
-
-@end
-
-@interface RakAuthTermsButton : RakRadioButton
-
-@end
-
