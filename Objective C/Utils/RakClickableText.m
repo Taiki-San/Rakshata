@@ -67,7 +67,7 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	if(_URL != nil)
-		[self mouseDown:theEvent];
+		[super mouseDown:theEvent];
 	else
 		[self overrideMouseUp:theEvent];
 }

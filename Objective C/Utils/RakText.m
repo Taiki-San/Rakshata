@@ -192,8 +192,6 @@
 {
 	if(self.clicTarget == nil)
 		[super mouseDown:theEvent];
-	else
-		[super mouseDown:theEvent];
 }
 
 - (void) overrideMouseUp : (NSEvent *) theEvent

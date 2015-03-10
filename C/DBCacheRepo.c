@@ -233,3 +233,54 @@ bool isAppropriateNumberOfRepo(uint requestedNumber)
 {
 	return requestedNumber == lengthRepo;
 }
+
+uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
+{
+	uint output = 0;
+	sqlite3_stmt * request = NULL;
+	
+	MUTEX_LOCK(cacheMutex);
+	
+	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL) == SQLITE_OK)
+	{
+		if(isRoot)
+		{
+			ROOT_REPO_DATA * root = repo;
+			
+			if(root->subRepo != NULL)
+			{
+				for(uint i = 0; i < root->nombreSubrepo; i++)
+				{
+					sqlite3_bind_int64(request, 1, getRepoID(&(root->subRepo[i])));
+					if (sqlite3_step(request) == SQLITE_ROW)
+					{
+						uint newValue = sqlite3_column_int(request, 0);
+						if(newValue + output < newValue)
+						{
+							output = UINT_MAX;
+							break;
+						}
+						else
+							output += newValue;
+					}
+					
+					sqlite3_reset(request);
+				}
+			}
+		}
+		else
+		{
+			sqlite3_bind_int64(request, 1, getRepoID(repo));
+			if (sqlite3_step(request) == SQLITE_ROW)
+			{
+				output = sqlite3_column_int(request, 0);
+			}
+		}
+		
+		sqlite3_finalize(request);
+	}
+	
+	MUTEX_UNLOCK(cacheMutex);
+	
+	return output;
+}

@@ -279,16 +279,18 @@ void flushDB()
 	MUTEX_LOCK(cacheMutex);
 
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL);
-	
-	while(sqlite3_step(request) == SQLITE_ROW)
+	if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL) == SQLITE_OK)
 	{
-		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
-		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
+		while(sqlite3_step(request) == SQLITE_ROW)
+		{
+			free((void*) sqlite3_column_int64(request, 0));
+			free((void*) sqlite3_column_int64(request, 1));
+			freeTomeList((void*) sqlite3_column_int64(request, 2), true);
+		}
+		
+		sqlite3_finalize(request);
 	}
 	
-	sqlite3_finalize(request);
 	sqlite3_close_v2(cache);
 	cache = NULL;
 	nbElemInCache = 0;

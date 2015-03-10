@@ -771,8 +771,8 @@
 		B69D467C1AA7C5C600B471AC /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
 				B69F74021AA635AB008AA51B /* RakPrefsTools.h */,
+				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
 				B69F74031AA635AB008AA51B /* RakPrefsTools.m */,
 				B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */,
 				B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */,
@@ -1783,7 +1783,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = Rakshata;
-				RUN_CLANG_STATIC_ANALYZER = YES;
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx10.9;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = all;

@@ -13,14 +13,14 @@
 enum
 {
 	IMAGE_BORDER = 50,
-	TEXT_BORDER = 3,
-	BUTTON_BORDER = 50
+	TEXT_BORDER = 0,
+	BUTTON_BORDER = 40
 };
 
 @interface RakPrefsRepoDetails()
 {
 	NSImage * repoImage;
-	RakClickableText * URL, * group;
+	RakClickableText * URL, * group, * nbElement;
 	RakText * data;
 	
 	RakDeleteButton * flushButton, * deleteButton;
@@ -113,6 +113,8 @@ enum
 		imageFrame.size = repoImage.size;
 		imageFrame.origin.x = _bounds.size.width / 2 - imageFrame.size.width / 2;
 		imageFrame.origin.y = (baseY -= IMAGE_BORDER + imageFrame.size.height);
+		
+		[self setNeedsDisplay:YES];
 	}
 	else
 		imageFrame = NSZeroRect;
@@ -131,25 +133,58 @@ enum
 					[self addSubview:URL];
 				}
 			}
+			else
+				URL.hidden = NO;
 			
 			[URL setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - URL.bounds.size.width / 2, (baseY -= TEXT_BORDER + URL.bounds.size.height))];
 			URL.URL = [NSString stringWithUTF8String : ((REPO_DATA *) repo)->website];
 		}
 		else
 		{
-			[URL removeFromSuperview];
-			URL = nil;
+			URL.hidden = YES;
 		}
 		
 		//Metadata on repo
 		NSString * string = [NSString stringWithFormat:@"[%s]%s", ((REPO_DATA *) repo)->language, ((REPO_DATA *) repo)->isMature ? " [-18]" : ""];
-		if(data == nil)
+		if(string != nil)
 		{
-			data = [[RakText alloc] initWithText:string :[self textColor]];
-			[self addSubview:data];
+			if(data == nil)
+			{
+				data = [[RakText alloc] initWithText:string :[self textColor]];
+				[self addSubview:data];
+			}
+			else
+			{
+				data.hidden = NO;
+				data.stringValue = string;
+			}
 		}
 		else
-			data.stringValue = string;
+			data.hidden = YES;
+		
+		uint nbProject = getNumberInstalledProjectForRepo(false, repo);
+		if(nbProject == 0)
+			string = NSLocalizedString(@"PREFS-REPO-NO-ACTIVE-PROJECT", nil);
+		else if(nbProject == 1)
+			string = NSLocalizedString(@"PREFS-REPO-ONE-ACTIVE-PROJECT", nil);
+		else
+			string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-REPO-%zu-ACTIVE-PROJECT", nil), nbProject];
+
+		if(nbElement == nil)
+		{
+			nbElement = [[RakClickableText alloc] initWithText:string :[self textColor] responder:self];
+			if(nbElement != nil)
+			{
+				nbElement.URL = @(42);
+				[self addSubview:nbElement];
+			}
+		}
+		else
+		{
+			nbElement.hidden = NO;
+			nbElement.stringValue = string;
+			[nbElement sizeToFit];
+		}
 		
 		if(flushButton == nil)
 		{
@@ -166,6 +201,8 @@ enum
 				[self addSubview:flushButton];
 			}
 		}
+		else
+			flushButton.hidden = NO;
 		
 		if(deleteButton == nil)
 		{
@@ -182,20 +219,26 @@ enum
 				[self addSubview:deleteButton];
 			}
 		}
+		else
+			deleteButton.hidden = NO;
 		
 		//Resizing
-		[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= TEXT_BORDER + data.bounds.size.height))];
+		if(!data.isHidden)
+			[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= TEXT_BORDER + data.bounds.size.height))];
+		
+		if(!nbElement.isHidden)
+			[nbElement setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - nbElement.bounds.size.width / 2, (baseY -= TEXT_BORDER + nbElement.bounds.size.height))];
 		
 		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 4 - flushButton.bounds.size.width / 2, BUTTON_BORDER)];
 		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width - _bounds.size.width / 4 - deleteButton.bounds.size.width / 2, BUTTON_BORDER)];
 	}
 	else
 	{
-		[URL removeFromSuperview];
-		[data removeFromSuperview];
-		
-		URL = nil;
-		data = nil;
+		URL.hidden = YES;
+		data.hidden = YES;
+		nbElement.hidden = YES;
+		flushButton.hidden = YES;
+		deleteButton.hidden = YES;
 	}
 }
 
@@ -203,10 +246,17 @@ enum
 
 - (void) respondTo : (RakClickableText *) sender
 {
-	NSString * string = sender.URL;
-	
-	if(string != nil)
-		ouvrirSite([string UTF8String]);
+	if(sender == nbElement)
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getStringForWchar(_repo->name) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_repo)), SR_NOTIF_OPTYPE : @(YES)}];
+	}
+	else
+	{
+		NSString * string = sender.URL;
+		
+		if(string != nil)
+			ouvrirSite([string UTF8String]);
+	}
 }
 
 - (void) nukeTheDB

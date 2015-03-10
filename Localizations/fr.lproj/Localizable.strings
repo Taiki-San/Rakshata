@@ -122,18 +122,21 @@
 "PREFS-TITLE-GENERAL" = "Général";
 "PREFS-TITLE-REPO" = "Sources";
 "PREFS-TITLE-FAVS" = "Favoris";
-"PREFS-ROOT-NO-ACTIVE-REPO" = "Aucun élement actif";
-"PREFS-ROOT-ONE-ACTIVE-REPO" = "Un élement actif";
-"PREFS-ROOT-%zu-ACTIVE-REPO" = "%1$zu élements actifs";
+"PREFS-ROOT-NO-ACTIVE-REPO" = "Aucune source active";
+"PREFS-ROOT-ONE-ACTIVE-REPO" = "Une source active";
+"PREFS-ROOT-%zu-ACTIVE-REPO" = "%1$zu sources actives";
 "PREFS-ROOT-GROUPS-%@" = "Groupe: %1$@";
 "PREFS-ROOT-NO-GROUP" = "Aucun groupe";
+"PREFS-REPO-NO-ACTIVE-PROJECT" = "Aucune série installée";
+"PREFS-REPO-ONE-ACTIVE-PROJECT" = "Une série installée";
+"PREFS-REPO-%zu-ACTIVE-PROJECT" = "%1$zu séries installées";
 "WEBSITE" = "Site Internet";
 "PREFS-DELETE-CONTENT" = "Supprimer\nle contenu";
 "PREFS-DELETE-SOURCE" = "Désactiver\nla source";
 "PREFS-DELETE-CONTENT-TITLE" = "Êtes vous sûr de vouloir supprimer le contenu de cette source?";
-"PREFS-DELETE-CONTENT-MESSAGE" = "Cette option supprimera tous les projets distribués par cette source que vous avez téléchargé. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
+"PREFS-DELETE-CONTENT-MESSAGE" = "Cette option supprimera toutes les séries distribués par cette source que vous avez téléchargé. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
 "PREFS-DELETE-SOURCE-TITLE" = "Désactiver la source supprimera le contenu";
-"PREFS-DELETE-SOURCE-MESSAGE" = "Désactiver la source fera disparaitre son contenu du catalogue et supprimera tous les projets distribués par cette source. La source pourra être réajouter depuis ce menu. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
+"PREFS-DELETE-SOURCE-MESSAGE" = "Désactiver la source fera disparaitre son contenu du catalogue et supprimera toutes les séries distribués par cette source. La source pourra être réajouter depuis ce menu. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
 "PREFS-DELETE-CANCEL" = "Annuler";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 

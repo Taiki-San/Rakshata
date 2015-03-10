@@ -38,6 +38,13 @@ enum
 
 @end
 
+@interface RakPrefsRepoList()
+{
+	BOOL refreshing;
+}
+
+@end
+
 @implementation RakPrefsRepoList
 
 - (instancetype) initWithFrame : (NSRect) frame
@@ -61,7 +68,8 @@ enum
 
 - (void) tableViewSelectionDidChange:(NSNotification *)notification
 {
-	[_responder selectionUpdate:_rootMode :selectedRowIndex];
+	if(!refreshing)
+		[_responder selectionUpdate:_rootMode :selectedRowIndex];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -84,12 +92,16 @@ enum
 		return;
 	}
 	
+	refreshing = YES;
+	
 	[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _nbData)] withAnimation:NSTableViewAnimationSlideLeft];
 	
 	_rootMode = rootMode;
 	_nbData = [_responder sizeForMode:_rootMode];
 	
 	[_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _nbData)] withAnimation:NSTableViewAnimationSlideLeft];
+	
+	refreshing = NO;
 }
 
 #pragma mark - Tableview code

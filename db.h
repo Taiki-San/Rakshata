@@ -143,6 +143,7 @@ void updateProjectImages(void * _todo);
 bool isInstalled(char * basePath);
 void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
+uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 
 /**tagManagement.c**/
 charType * getTypeForCode(uint32_t tagID);

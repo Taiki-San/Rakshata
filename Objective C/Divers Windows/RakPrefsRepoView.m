@@ -69,6 +69,9 @@ enum
 			switchMessage = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-REPO-SWITCH-MESSAGE", nil) :[self textColor]];
 			if(switchMessage != nil)
 			{
+				switchMessage.clicTarget = self;
+				switchMessage.clicAction = @selector(textClicked);
+
 				[switchMessage setFrameOrigin:NSMakePoint(NSMaxX(radioSwitch.frame) + TEXT_RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - switchMessage.bounds.size.height / 2)];
 				[self addSubview:switchMessage];
 			}
@@ -104,6 +107,11 @@ enum
 
 #pragma mark - Data interface
 
+- (void) textClicked
+{
+	[radioSwitch performClick:nil];
+}
+
 - (void) buttonClicked
 {
 	BOOL isRoot = radioSwitch.state == NSOnState;
@@ -111,7 +119,6 @@ enum
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 
 		details.animator.alphaValue = 0;
-		list.rootMode = isRoot;
 
 	} completionHandler:^{
 		[self selectionUpdate:isRoot :isRoot ? activeElementInRoot : activeElementInSubRepo];
@@ -157,8 +164,12 @@ enum
 	
 	if(_list == NULL || index >= [self sizeForMode:isRoot])
 	{
-		if(self.alphaValue)
+		if(details.alphaValue)
 			details.animator.alphaValue = 0;
+
+		if(list.rootMode != isRoot)
+			list.rootMode = isRoot;
+		
 		return;
 	}
 	else if(isRoot)
