@@ -35,13 +35,24 @@
 			[self addSubview:_title];
 		}
 		
-		if([self setStringToSynopsis : project])
+		if([self setStringToSynopsis : project.description])
 		{
 			[self updateFrame : frame : headerSize : NO];
 		}
 	}
 	
 	return self;
+}
+
+- (void) updateProject : (PROJECT_DATA) project
+{
+	if(project.isInitialized)
+		[self updateSynopsis:project.description];
+	else
+	{
+		wchar_t empty = 0;
+		[self updateSynopsis:&empty];
+	}
 }
 
 - (BOOL) postProcessScrollView
@@ -118,6 +129,7 @@
 {
 	parentFrame = [self frameFromParent:parentFrame];
 
+	parentFrame.origin.y = 0;
 	parentFrame.origin.x += image.width;
 	parentFrame.size.width -= image.width + SYNOPSIS_BORDER;
 	

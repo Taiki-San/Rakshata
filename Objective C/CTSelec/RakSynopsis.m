@@ -10,10 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@implementation RakCTSynopsis
-
-- (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame
+enum
 {
+	COMPACT_OFFSET = 3
+};
+
+@implementation RakSynopsis
+
+- (instancetype) initWithSynopsis : (charType *) synopsis : (NSRect) frame : (BOOL) haveScroller
+{
+	_haveScroller = haveScroller;
+
 	self = [self initWithFrame:[self frameFromParent:frame]];
 	
 	if(self != nil)
@@ -21,16 +28,16 @@
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
 		
-		if([self setStringToSynopsis : project])
+		if([self setStringToSynopsis : synopsis])
 			[self updateFrame : frame : NO];
 	}
 	
 	return self;
 }
 
-- (void) updateProject : (PROJECT_DATA) newProject
+- (void) updateSynopsis : (charType *) synopsis
 {
-	if(placeholderString && newProject.description[0] == 0)
+	if(placeholderString && synopsis[0] == 0)
 		return;
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
@@ -40,7 +47,7 @@
 		
 	} completionHandler:^{
 		
-		[self setStringToSynopsis : newProject];
+		[self setStringToSynopsis : synopsis];
 		
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
@@ -53,7 +60,7 @@
 	}];
 }
 
-- (BOOL) setStringToSynopsis : (PROJECT_DATA) project
+- (BOOL) setStringToSynopsis : (charType *) synopsis
 {
 	BOOL needPostProcessing = NO;
 	
@@ -67,7 +74,7 @@
 		if(_synopsis == nil)
 			return NO;
 		
-		_synopsis.fixedWidth = self.bounds.size.width - SYNOPSIS_MAIN_TEXT_BORDER;
+		_synopsis.fixedWidth = self.bounds.size.width - [RakScroller width] - (_haveScroller ? COMPACT_OFFSET : 0);
 		[_synopsis setFrameOrigin : NSZeroPoint];
 		
 		[_synopsis setAlignment:NSJustifiedTextAlignment];
@@ -77,11 +84,11 @@
 	}
 	
 	//Update text
-	if(project.isInitialized && project.description[0] != 0)
+	if(synopsis[0] != 0)
 	{
 		placeholderString = NO;
 		
-		[_synopsis setStringValue : getStringForWchar(project.description)];
+		[_synopsis setStringValue : getStringForWchar(synopsis)];
 		
 		if(!_scrollview.hasVerticalScroller)
 			_scrollview.hasVerticalScroller = YES;
@@ -141,7 +148,9 @@
 		return NO;
 	}
 	
-	_scrollview.verticalScroller.alphaValue = 0;
+	if(!_haveScroller)
+		_scrollview.verticalScroller.alphaValue = 0;
+
 	_scrollview.documentView = _synopsis;
 	[self addSubview:_scrollview];
 	
@@ -181,6 +190,8 @@
 	
 	[self _updateFrame:mainFrame :animated];
 	
+	mainFrame.origin = NSZeroPoint;
+	
 	NSRect scrollviewRect = [self frameForContent : mainFrame];
 	
 	if(animated)
@@ -205,7 +216,7 @@
 {
 	if(_synopsis != nil)
 	{
-		const CGFloat newSynopsisWidth = mainFrame.size.width - SYNOPSIS_BORDER;
+		const CGFloat newSynopsisWidth = mainFrame.size.width - [RakScroller width] - (_haveScroller ? COMPACT_OFFSET : 0);
 		
 		if(_synopsis.fixedWidth != newSynopsisWidth)
 			_synopsis.fixedWidth = newSynopsisWidth;
@@ -234,10 +245,12 @@
 
 - (NSRect) frameFromParent : (NSRect) parentFrame
 {
-	parentFrame.origin.x = SYNOPSIS_BORDER;
-	parentFrame.size.width -= SYNOPSIS_BORDER;
+	if(!_haveScroller)
+	{
+		parentFrame.origin.x = SYNOPSIS_BORDER / 2;
+		parentFrame.size.width -= SYNOPSIS_BORDER;
+	}
 	
-	parentFrame.origin.y = 0;
 	parentFrame.size.height -= SYNOPSIS_TOP_BORDER_WIDTH;
 	
 	return parentFrame;
@@ -249,25 +262,51 @@
 	
 	NSPoint origin = NSCenteredRect(scrollviewBounds, _placeholder.bounds);
 	
-	origin.x -= SYNOPSIS_MAIN_TEXT_BORDER / 2 + 15;
+	if(!_haveScroller)
+		origin.x -= SYNOPSIS_MAIN_TEXT_BORDER / 2 + 15;
 	
 	return origin;
 }
 
 - (NSRect) frameForContent : (NSRect) mainBounds
 {
-	mainBounds.origin.x = SYNOPSIS_MAIN_TEXT_BORDER;
 	mainBounds.origin.y = SYNOPSIS_SPACING;
 	mainBounds.size.height -= SYNOPSIS_SPACING;
 	
 	if(_synopsis == nil)
-		mainBounds.size.width -= SYNOPSIS_MAIN_TEXT_BORDER;
+		mainBounds.size.width -= _haveScroller ? 0 : SYNOPSIS_MAIN_TEXT_BORDER;
 	else
-		mainBounds.size.width = _synopsis.fixedWidth;
+		mainBounds.size.width = _synopsis.fixedWidth + (_haveScroller ? [RakScroller width] + COMPACT_OFFSET : 0);
 	
-	mainBounds.size.width += 30;	//Scroller width
-	
+	if(!_haveScroller)
+	{
+		mainBounds.origin.x = SYNOPSIS_MAIN_TEXT_BORDER / 2;
+		mainBounds.size.width += [RakScroller width];	//Scroller width
+	}
+	else
+	{
+		mainBounds.origin.x = COMPACT_OFFSET;
+		mainBounds.size.width -= COMPACT_OFFSET;
+	}
+
 	return mainBounds;
+}
+
+#pragma mark - Background
+
+- (void) setHaveBackground:(BOOL)haveBackground
+{
+	_haveBackground = haveBackground;
+	
+	if(_haveBackground)
+		self.layer.backgroundColor = [self backgroundColor].CGColor;
+	else
+		self.layer.backgroundColor = [NSColor clearColor].CGColor;
+}
+
+- (NSColor *) backgroundColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil];
 }
 
 @end

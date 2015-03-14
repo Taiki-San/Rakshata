@@ -58,7 +58,7 @@
 		B66ED1941949C77A002A333F /* RakDragView.m in Sources */ = {isa = PBXBuildFile; fileRef = B66ED1931949C77A002A333F /* RakDragView.m */; };
 		B66ED1981949EC20002A333F /* theme 1 in Resources */ = {isa = PBXBuildFile; fileRef = B66ED1971949EC20002A333F /* theme 1 */; };
 		B6748ADF1A936D77003FBC1D /* RakSRDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748ADE1A936D77003FBC1D /* RakSRDetails.m */; };
-		B6748AE21A936E80003FBC1D /* RakCTSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748AE11A936E80003FBC1D /* RakCTSynopsis.m */; };
+		B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748AE11A936E80003FBC1D /* RakSynopsis.m */; };
 		B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */; };
 		B67845A319631311007372C7 /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = B67845A119631311007372C7 /* encoding.c */; };
 		B67845A519634C83007372C7 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = B67845A419634C83007372C7 /* crc32.c */; };
@@ -298,8 +298,8 @@
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
 		B6748ADD1A936D77003FBC1D /* RakSRDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRDetails.h; path = CTSelec/RakSRDetails.h; sourceTree = "<group>"; };
 		B6748ADE1A936D77003FBC1D /* RakSRDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRDetails.m; path = CTSelec/RakSRDetails.m; sourceTree = "<group>"; };
-		B6748AE01A936E80003FBC1D /* RakCTSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSynopsis.h; path = CTSelec/RakCTSynopsis.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
-		B6748AE11A936E80003FBC1D /* RakCTSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSynopsis.m; path = CTSelec/RakCTSynopsis.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
+		B6748AE01A936E80003FBC1D /* RakSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = RakSynopsis.h; path = CTSelec/RakSynopsis.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
+		B6748AE11A936E80003FBC1D /* RakSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; name = RakSynopsis.m; path = CTSelec/RakSynopsis.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
 		B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakReaderBottomBar.h; path = Reader/RakReaderBottomBar.h; sourceTree = "<group>"; };
 		B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakReaderBottomBar.m; path = Reader/RakReaderBottomBar.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B67845A119631311007372C7 /* encoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encoding.c; path = C/externals/encoding.c; sourceTree = "<group>"; };
@@ -608,6 +608,8 @@
 		B62935DC1A803A9400DE20E2 /* RakText */ = {
 			isa = PBXGroup;
 			children = (
+				B6748AE01A936E80003FBC1D /* RakSynopsis.h */,
+				B6748AE11A936E80003FBC1D /* RakSynopsis.m */,
 				B69D46831AA86A1F00B471AC /* RakClickableText.h */,
 				B69D46841AA86A1F00B471AC /* RakClickableText.m */,
 				B678674C18F5ED4A004AA6B4 /* RakMenuText.h */,
@@ -752,8 +754,6 @@
 		B6748AE31A936E95003FBC1D /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				B6748AE01A936E80003FBC1D /* RakCTSynopsis.h */,
-				B6748AE11A936E80003FBC1D /* RakCTSynopsis.m */,
 				B6E9427B197F2D5B000F268E /* RakCTTools.h */,
 				B6E9427C197F2D5B000F268E /* RakCTTools.m */,
 			);
@@ -1432,7 +1432,7 @@
 				B6BC730B1A90093000018BE9 /* RakSRSuggestions.m in Sources */,
 				B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */,
 				B6FCB425196C1F8E0026C64C /* RakForegroundView.m in Sources */,
-				B6748AE21A936E80003FBC1D /* RakCTSynopsis.m in Sources */,
+				B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */,
 				B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */,
 				B6A6ACF11AAEEE0100CAF51E /* DBCacheQuery.c in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
@@ -1781,7 +1781,7 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null";
 				PRODUCT_NAME = Rakshata;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx10.9;

@@ -15,21 +15,23 @@
 #define SYNOPSIS_BORDER 			20
 #define SYNOPSIS_MAIN_TEXT_BORDER 	10
 
-@interface RakCTSynopsis : NSView
+@interface RakSynopsis : NSView
 {
 	RakListScrollView * _scrollview;
 	RakText * _synopsis;
 	RakText * _placeholder;
 	
 	BOOL placeholderString;
+	BOOL _haveScroller;
 }
 
 @property (readonly) CGFloat titleHeight;
+@property (nonatomic) BOOL haveBackground;
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame;
-- (void) updateProject : (PROJECT_DATA) newProject;
+- (instancetype) initWithSynopsis : (charType *) synopsis : (NSRect) frame : (BOOL) haveScroller;
+- (void) updateSynopsis : (charType *) newSynopsis;
 
-- (BOOL) setStringToSynopsis : (PROJECT_DATA) project;
+- (BOOL) setStringToSynopsis : (charType *) synopsis;
 
 - (BOOL) postProcessScrollView;
 - (BOOL) generatedScrollView : (NSRect) frame;

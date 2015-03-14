@@ -602,11 +602,14 @@ void setUninstalled(bool isRoot, uint repoID)
 				{
 					REPO_DATA repo = rootRepoList[i]->subRepo[posRepo];
 					
-					sqlite3_bind_int(request, 1, getRepoID(&repo));
-					sqlite3_step(request);
-					sqlite3_reset(request);
-					
-					notifyUpdateRepo(repo);
+					if(repo.active)
+					{
+						sqlite3_bind_int(request, 1, getRepoID(&repo));
+						sqlite3_step(request);
+						sqlite3_reset(request);
+						
+						notifyUpdateRepo(repo);
+					}
 				}
 				
 				break;

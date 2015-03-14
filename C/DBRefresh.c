@@ -99,7 +99,7 @@ void updateRepo()
 		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldRootData[posRepo]);
 		if(parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
-			removeNonInstalledSubRepo(&(newData->subRepo), &(newData->nombreSubrepo), true);
+			removeNonInstalledSubRepo(&(newData->subRepo), newData->nombreSubrepo, true);
 
 			newIcons = enforceRepoExtra(newData, true);
 			

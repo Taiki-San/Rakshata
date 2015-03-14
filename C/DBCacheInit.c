@@ -40,31 +40,43 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 	for(uint pos = 0; pos < nbRoot; pos++)
 	{
 		if(root[pos] != NULL)
-			nbSubRepo += root[pos]->nombreSubrepo;
+		{
+			for(uint posSub = 0, length = root[pos]->nombreSubrepo; posSub < length; posSub++)
+			{
+				if(root[pos]->subRepo[posSub].active)
+					nbSubRepo++;
+			}
+		}
 	}
 	
 	REPO_DATA ** output = calloc(nbSubRepo + 1, sizeof(REPO_DATA *));
 	if(output != NULL)
 	{
-		for(uint pos = 0, indexRoot = 0, posInRoot = 0; pos < nbSubRepo && indexRoot < nbRoot && root[indexRoot] != NULL; pos++)
+		uint pos = 0, indexRoot = 0, posInRoot = 0;
+		
+		while(pos < nbSubRepo && indexRoot < nbRoot && root[indexRoot] != NULL)
 		{
 			if(posInRoot >= root[indexRoot]->nombreSubrepo)
 			{
 				indexRoot++;
 				posInRoot = 0;
 			}
-			
-			output[pos] = malloc(sizeof(REPO_DATA));
-			if(output[pos] == NULL)
+			else if(root[indexRoot]->subRepo[posInRoot].active)
 			{
-				while (pos-- > 0)
-					free(output[pos]);
-				free(output);
-				return NULL;
+				output[pos] = malloc(sizeof(REPO_DATA));
+				if(output[pos] == NULL)
+				{
+					while (pos-- > 0)
+						free(output[pos]);
+					free(output);
+					return NULL;
+				}
+				
+				if(indexRoot < nbRoot && root[indexRoot] != NULL)
+					*output[pos] = root[indexRoot]->subRepo[posInRoot++];
+				
+				pos++;
 			}
-			
-			if(indexRoot < nbRoot && root[indexRoot] != NULL)
-				*output[pos] = root[indexRoot]->subRepo[posInRoot++];
 		}
 		
 		if(nbSubRepo == 0)

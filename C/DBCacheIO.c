@@ -284,15 +284,12 @@ void deleteSubRepo(uint64_t repoID)
 			ROOT_REPO_DATA * rootRepo = rootRepoList[pos];
 			length = rootRepo->nombreSubrepo;
 			
-			for(uint subPos = 0, copyIndex = 0, subID = getSubrepoFromRepoID(repoID); subPos < length; subPos++)
+			for(uint subPos = 0, subID = getSubrepoFromRepoID(repoID); subPos < length; subPos++)
 			{
 				if(rootRepo->subRepo[subPos].repoID == subID)
 				{
-					(rootRepo->nombreSubrepo)--;
-				}
-				else if(subPos != copyIndex)
-				{
-					rootRepo->subRepo[subPos] = rootRepo->subRepo[copyIndex];
+					rootRepo->subRepo[subPos].active = false;
+					break;
 				}
 			}
 			break;

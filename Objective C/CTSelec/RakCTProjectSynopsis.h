@@ -10,12 +10,13 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTProjectSynopsis : RakCTSynopsis
+@interface RakCTProjectSynopsis : RakSynopsis
 {
 	RakMenuText * _title;
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project : (NSRect) frame : (NSSize) headerSize;
+- (void) updateProject : (PROJECT_DATA) project;
 
 - (void) setFrame : (NSRect) frameRect : (NSSize) headerSize;
 - (void) resizeAnimation : (NSRect) frameRect : (NSSize) headerSize;

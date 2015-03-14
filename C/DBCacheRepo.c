@@ -139,7 +139,7 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, const uint newAmountOfRepo)
 		
 		subChildCount = rootRepoList[prevParent]->nombreSubrepo;
 		
-		//Find our specefic repo
+		//Find our specific repo
 		for(prevChild++; prevChild < subChildCount && rootRepoList[prevParent]->subRepo[prevChild].repoID != repoList[pos]->repoID; prevChild++);
 		if(prevChild == subChildCount)
 		{
@@ -152,14 +152,14 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData, const uint newAmountOfRepo)
 	}
 }
 
-void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool haveExtra)
+void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveExtra)
 {
-	if(_subRepo == NULL || *_subRepo == NULL || nbSubRepo == NULL || *nbSubRepo == 0)
+	if(_subRepo == NULL || *_subRepo == NULL || nbSubRepo == 0)
 		return;
 	
 	REPO_DATA * subRepo = *_subRepo;
 	uint parentID, validatedCount = 0;
-	bool validated[*nbSubRepo];
+	bool validated[nbSubRepo];
 	
 	memset(validated, 0, sizeof(validated));
 	
@@ -172,7 +172,7 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool hav
 	{
 		if(repoList[pos] != NULL && repoList[pos]->parentRepoID == parentID)
 		{
-			for(uint posSub = 0, currentID; posSub < *nbSubRepo; posSub++)
+			for(uint posSub = 0, currentID; posSub < nbSubRepo; posSub++)
 			{
 				currentID = haveExtra ? ((REPO_DATA_EXTRA *) subRepo)[0].data->repoID : subRepo[posSub].repoID;
 				if(currentID == repoList[pos]->repoID && !validated[posSub])
@@ -185,25 +185,13 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint * nbSubRepo, bool hav
 		}
 	}
 	
-	if(validatedCount != *nbSubRepo)
+	if(validatedCount != nbSubRepo)
 	{
-		if(validatedCount == 0)
-			*_subRepo = NULL;
-		else
+		for(uint pos = 0; pos < nbSubRepo; pos++)
 		{
-			REPO_DATA * newSubrepo = calloc(validatedCount, sizeof(REPO_DATA));
-			
-			for(uint pos = 0, posValidated = 0; pos < *nbSubRepo; pos++)
-			{
-				if(validated[pos])
-					newSubrepo[posValidated++] = subRepo[pos];
-			}
-			
-			*_subRepo = newSubrepo;
-			free(subRepo);
+			if(!validated[pos])
+				repoList[pos]->active = false;
 		}
-		
-		*nbSubRepo = validatedCount;
 	}
 }
 
@@ -251,6 +239,9 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 			{
 				for(uint i = 0; i < root->nombreSubrepo; i++)
 				{
+					if(!root->subRepo[i].active)
+						continue;
+					
 					sqlite3_bind_int64(request, 1, getRepoID(&(root->subRepo[i])));
 					if (sqlite3_step(request) == SQLITE_ROW)
 					{

@@ -14,7 +14,7 @@
 #import "RakCTSelectionList.h"
 #import "RakStarView.h"
 
-#import "RakCTSynopsis.h"
+#import "RakSynopsis.h"
 #import "RakCTTools.h"
 #import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"

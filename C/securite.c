@@ -210,6 +210,9 @@ void get_file_date(const char *filename, char *date, void* internalData)
 
 void KSTriggered(REPO_DATA repo)
 {
+	if(!repo.active)
+		return;
+	
     //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
     char path[LENGTH_PROJECT_NAME+10], *encodedRepo = getPathForRepo(&repo);
 

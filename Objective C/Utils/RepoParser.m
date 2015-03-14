@@ -128,7 +128,7 @@ bool validateTrust(NSString * input, bool localSource)
 	return false;
 }
 
-REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool * error)
+REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)
 {
 	REPO_DATA output;
 	output.active = false;
@@ -146,6 +146,7 @@ fail:	//We'll jump back here when it's starting to go wrong
 		*error = false;
 	
 	//Allocate everything we're going to need
+	bool isActive = true;
 	NSString *name, *URL, *language, *website;
 	NSNumber *repoID, *type, *isMature;
 	
@@ -179,6 +180,15 @@ fail:	//We'll jump back here when it's starting to go wrong
 	if(isMature == nil || ![isMature isKindOfClass:[NSNumber class]])
 		goto fail;
 	
+	if(isLocal)
+	{
+		NSNumber * _isActive = objectForKey(dict, JSON_REPO_SUB_ACTIVE, @"is_active_repo");
+		if(_isActive == nil || ![_isActive isKindOfClass:[NSNumber class]])
+			goto fail;
+		
+		isActive = [_isActive boolValue];
+	}
+	
 	//Great, parsing is over, copy time
 	
 	output.repoID = [repoID unsignedIntValue];
@@ -190,14 +200,14 @@ fail:	//We'll jump back here when it's starting to go wrong
 	output.isMature = [isMature boolValue];
 	
 	output.parentRepoID = parentID;
-	output.active = true;
+	output.active = isActive;
 	
 	return output;
 }
 
 #pragma mark - Main parsers
 
-void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint parentID)
+void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint parentID, bool localRepo)
 {
 	if(nbSubRepo == NULL)
 		return NULL;
@@ -232,7 +242,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 
 		if(!wantExtra)
 		{
-			output[pos] = parseSingleSubRepo(repo, parentID, &error);
+			output[pos] = parseSingleSubRepo(repo, parentID, localRepo, &error);
 			
 			if(error)
 				failure++;
@@ -281,7 +291,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 				}
 			}
 			
-			*(outputExtra[pos].data) = parseSingleSubRepo(repo, parentID, &error);
+			*(outputExtra[pos].data) = parseSingleSubRepo(repo, parentID, localRepo, &error);
 			
 			if(error)
 			{
@@ -396,7 +406,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 		rootWip->repoID = [ID unsignedIntValue];
 	}
 
-	rootWip->subRepo = parseSubRepo(array, wantExtra, &(rootWip->nombreSubrepo), rootWip->repoID);
+	rootWip->subRepo = parseSubRepo(array, wantExtra, &(rootWip->nombreSubrepo), rootWip->repoID, localSource);
 	rootWip->subRepoAreExtra = wantExtra;
 	
 	wstrncpy(rootWip->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
@@ -550,6 +560,7 @@ NSArray * rebuildRepoTree(REPO_DATA * subRepo, uint nombreSubrepo, bool isExtra)
 		[dict setObject:[NSString stringWithUTF8String:element->URL] forKey:JSON_REPO_URL];
 		[dict setObject:[NSString stringWithUTF8String:element->website] forKey:JSON_REPO_SUB_WEBSITE];
 		[dict setObject:@(element->isMature) forKey:JSON_REPO_SUB_MATURE];
+		[dict setObject:@(element->active) forKey:JSON_REPO_SUB_ACTIVE];
 		
 		[output addObject:dict];
 	}

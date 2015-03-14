@@ -148,6 +148,9 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 	
 	for(uint i = 0; i < nbSubRepo; i++)
 	{
+		if(!data[i].data->active)
+			continue;
+		
 		//We create the file path
 		char * encodedHash = getPathForRepo(data[i].data);
 		if(encodedHash == NULL)
