@@ -13,8 +13,13 @@
 enum
 {
 	IMAGE_BORDER = 50,
-	TEXT_BORDER = 0,
-	BUTTON_BORDER = 40
+	IMAGE_BORDER_ROOT = 10,
+	BUTTON_BORDER = 40,
+	BUTTON_SEPARATOR = 10,
+	SYNOPSIS_HEIGHT = 80,
+	SYNOPSIS_VERTICAL_BORDER = 5,
+	CONTENT_BORDER = 10,
+	LIST_HEIGHT = 130
 };
 
 @interface RakPrefsRepoDetails()
@@ -24,6 +29,9 @@ enum
 	RakText * data;
 	
 	RakDeleteButton * flushButton, * deleteButton;
+	
+	RakSynopsis * description;
+	RakPrefsRepoList * subrepoList;
 	
 	NSRect imageFrame;
 	
@@ -51,7 +59,35 @@ enum
 
 - (NSRect) getFrame : (NSRect) parentFrame
 {
-	return NSMakeRect(PREFS_REPO_LIST_WIDTH, PREFS_REPO_BORDER_BELOW_LIST, parentFrame.size.width - PREFS_REPO_LIST_WIDTH, parentFrame.size.height - PREFS_REPO_BORDER_BELOW_LIST);
+	parentFrame.origin.x = PREFS_REPO_LIST_WIDTH;
+	parentFrame.origin.y = CONTENT_BORDER;
+	
+	parentFrame.size.width -= PREFS_REPO_LIST_WIDTH;
+	parentFrame.size.height -= CONTENT_BORDER;
+	
+	return parentFrame;
+}
+
+- (NSRect) getSynopsisFrame : (NSRect) parentFrame
+{
+	parentFrame.origin.y = imageFrame.origin.y - SYNOPSIS_VERTICAL_BORDER - SYNOPSIS_HEIGHT;
+	parentFrame.size.height = SYNOPSIS_HEIGHT;
+
+	parentFrame.origin.x = CONTENT_BORDER;
+	parentFrame.size.width -= 2 * CONTENT_BORDER;
+	
+	return parentFrame;
+}
+
+- (NSRect) listFrame : (NSRect) parentFrame
+{
+	parentFrame.origin.y = 0;
+	parentFrame.size.height = LIST_HEIGHT;
+	
+	parentFrame.origin.x = CONTENT_BORDER;
+	parentFrame.size.width -= 2 * CONTENT_BORDER;
+	
+	return parentFrame;
 }
 
 #pragma mark - Interface
@@ -112,7 +148,7 @@ enum
 	{
 		imageFrame.size = repoImage.size;
 		imageFrame.origin.x = _bounds.size.width / 2 - imageFrame.size.width / 2;
-		imageFrame.origin.y = (baseY -= IMAGE_BORDER + imageFrame.size.height);
+		imageFrame.origin.y = (baseY -= (isRoot ? IMAGE_BORDER_ROOT : IMAGE_BORDER) + imageFrame.size.height);
 		
 		[self setNeedsDisplay:YES];
 	}
@@ -121,6 +157,9 @@ enum
 	
 	if(!isRoot)
 	{
+		description.hidden = YES;
+		subrepoList.hidden = YES;
+		
 		//URL field
 		if(((REPO_DATA *) repo)->website)
 		{
@@ -136,7 +175,7 @@ enum
 			else
 				URL.hidden = NO;
 			
-			[URL setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - URL.bounds.size.width / 2, (baseY -= TEXT_BORDER + URL.bounds.size.height))];
+			[URL setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - URL.bounds.size.width / 2, (baseY -= URL.bounds.size.height))];
 			URL.URL = [NSString stringWithUTF8String : ((REPO_DATA *) repo)->website];
 		}
 		else
@@ -224,13 +263,13 @@ enum
 		
 		//Resizing
 		if(!data.isHidden)
-			[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= TEXT_BORDER + data.bounds.size.height))];
+			[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= data.bounds.size.height))];
 		
 		if(!nbElement.isHidden)
-			[nbElement setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - nbElement.bounds.size.width / 2, (baseY -= TEXT_BORDER + nbElement.bounds.size.height))];
+			[nbElement setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - nbElement.bounds.size.width / 2, (baseY -= nbElement.bounds.size.height))];
 		
-		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 4 - flushButton.bounds.size.width / 2, BUTTON_BORDER)];
-		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width - _bounds.size.width / 4 - deleteButton.bounds.size.width / 2, BUTTON_BORDER)];
+		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - BUTTON_SEPARATOR - flushButton.bounds.size.width, BUTTON_BORDER)];
+		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 + BUTTON_SEPARATOR, BUTTON_BORDER)];
 	}
 	else
 	{
@@ -239,7 +278,94 @@ enum
 		nbElement.hidden = YES;
 		flushButton.hidden = YES;
 		deleteButton.hidden = YES;
+		
+		if(description == nil)
+		{
+			description = [[RakSynopsis alloc] initWithSynopsis:[self selectDescription:repo] :[self getSynopsisFrame : _bounds] : YES];
+			if(description != NULL)
+			{
+				description.haveBackground = YES;
+				[self addSubview:description];
+			}
+		}
+		else
+		{
+			description.hidden = NO;
+			[description setStringToSynopsis:[self selectDescription:repo]];
+		}
+		
+		if(subrepoList == nil)
+		{
+			subrepoList = [RakPrefsRepoList alloc];
+			if(subrepoList != nil)
+			{
+				subrepoList.responder = self;
+				subrepoList.detailMode = YES;
+				
+				subrepoList = [subrepoList initWithFrame:[self listFrame : _bounds]];
+				
+				[self addSubview:[subrepoList getContent]];
+			}
+		}
+		else
+		{
+			subrepoList.hidden = NO;
+			[subrepoList reloadContent:NO];
+		}
 	}
+}
+
+- (charType *) selectDescription : (ROOT_REPO_DATA *) root
+{
+	const uint nbSubRepo = root->nombreSubrepo;
+	
+	if(root == NULL || !nbSubRepo || root->descriptions == NULL || root->langueDescriptions == NULL)
+		return NULL;
+	
+	if(nbSubRepo == 1)
+		return L"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";//root->descriptions[0];
+	
+	for(NSString * element in [NSLocale preferredLanguages])
+	{
+		for(uint i = 0; i < nbSubRepo; i++)
+		{
+			if(!strcmp([element cStringUsingEncoding:NSASCIIStringEncoding], root->langueDescriptions[i]))
+				return root->descriptions[i];
+		}
+	}
+	
+	//If we couldn't find a perfect hit, we try to use english
+	for(uint i = 0; i < nbSubRepo; i++)
+	{
+		if(root->langueDescriptions[i] != NULL && !strcmp(root->langueDescriptions[i], "en"))
+			return root->descriptions[i];
+	}
+	
+#ifdef DEV_VERSION
+	NSLog(@"Couldn't find a proper language in %@", [NSLocale preferredLanguages]);
+#endif
+
+	return NULL;
+}
+
+#pragma mark - List data interface
+
+- (void *) dataForMode : (BOOL) rootMode index : (uint) index
+{
+	if(index >= ((ROOT_REPO_DATA *) _repo)->nombreSubrepo)
+		return NULL;
+	
+	return &(((ROOT_REPO_DATA *) _repo)->subRepo[index]);
+}
+
+- (uint) sizeForMode : (BOOL) rootMode
+{
+	return ((ROOT_REPO_DATA *) _repo)->nombreSubrepo;
+}
+
+- (void) selectionUpdate : (BOOL) isRoot : (uint) index
+{
+	[_responder selectionUpdate:isRoot :index];
 }
 
 #pragma mark - Responder
@@ -280,6 +406,11 @@ enum
 
 - (void) nukeEverything
 {
+	[self nukeEverything:nil];
+}
+
+- (void) nukeEverything : (id) responder
+{
 	NSAlert * alert = [[NSAlert alloc] init];
 	
 	if(alert != nil)
@@ -293,6 +424,8 @@ enum
 		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
 			if(returnCode != -NSModalResponseStop)
 				[self deleteContent:YES];
+			else
+				[responder cancelSelection];
 		}];
 	}
 }

@@ -55,6 +55,10 @@ enum
 			
 			[self addSubview:[list getContent]];
 		}
+		else
+		{
+			[list reloadContent:NO];
+		}
 		
 		radioSwitch = [[RakRadioButton alloc] init];
 		if(radioSwitch != nil)
@@ -89,10 +93,10 @@ enum
 - (NSRect) listFrame
 {
 	NSRect frame = _bounds;
-	const CGFloat height = frame.size.height - PREFS_REPO_BORDER_BELOW_LIST;
+	const CGFloat height = frame.size.height - PREFS_REPO_BORDER_BELOW_LIST - BORDER;
 	
 	frame.origin.x = BORDER;
-	frame.origin.y = frame.size.height - height - BORDER;
+	frame.origin.y = frame.size.height - height;
 
 	frame.size.width = PREFS_REPO_LIST_WIDTH;
 	frame.size.height = height;
@@ -125,9 +129,15 @@ enum
 	}];
 }
 
-- (void **) listForMode : (BOOL) rootMode
+- (void *) dataForMode : (BOOL) rootMode index : (uint) index
 {
-	return rootMode ? (void**) root : (void**) repo;
+	if((rootMode ? nbRoot : nbRepo) <= index)
+		return NULL;
+	
+	if(rootMode)
+		return ((ROOT_REPO_DATA **) root)[index];
+	
+	return ((REPO_DATA **) repo)[index];
 }
 
 - (uint) sizeForMode : (BOOL) rootMode
@@ -160,9 +170,9 @@ enum
 
 - (void) selectionUpdate : (BOOL) isRoot : (uint) index
 {
-	void ** _list = [self listForMode:isRoot];
+	void * _data = [self dataForMode:isRoot index:index];
 	
-	if(_list == NULL || index >= [self sizeForMode:isRoot])
+	if(_data == NULL)
 	{
 		if(details.alphaValue)
 			details.animator.alphaValue = 0;
@@ -190,12 +200,12 @@ enum
 	
 	if(details == nil)
 	{
-		details = [[RakPrefsRepoDetails alloc] initWithRepo:_bounds :isRoot :_list[index] : self];
+		details = [[RakPrefsRepoDetails alloc] initWithRepo:_bounds :isRoot :_data : self];
 		if(details != nil)
 			[self addSubview: details];
 	}
 	else
-		[details updateContent:isRoot :_list[index] : YES];
+		[details updateContent:isRoot :_data : YES];
 }
 
 @end

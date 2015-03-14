@@ -183,10 +183,8 @@ fail:	//We'll jump back here when it's starting to go wrong
 	if(isLocal)
 	{
 		NSNumber * _isActive = objectForKey(dict, JSON_REPO_SUB_ACTIVE, @"is_active_repo");
-		if(_isActive == nil || ![_isActive isKindOfClass:[NSNumber class]])
-			goto fail;
-		
-		isActive = [_isActive boolValue];
+		if(_isActive != nil && [_isActive isKindOfClass:[NSNumber class]])
+			isActive = [_isActive boolValue];
 	}
 	
 	//Great, parsing is over, copy time

@@ -13,6 +13,8 @@
 enum
 {
 	LIST_ROW_HEIGHT = 45,
+	LIST_ROW_COMPACT_HEIGHT = 25,
+	LIST_ROW_COMPACT_WIDTH = 25,
 	LIST_ROW_IMAGE_DIAMETER = 40,
 	
 	OFFSET_IMAGE_ROW = 10,
@@ -21,26 +23,32 @@ enum
 	OFFSET_DETAIL_Y = 6
 };
 
-@interface RakPrefsRepoListItem : NSView
+@interface RakPrefsRepoListItem()
 {
 	NSImage * image;
 	RakText * title;
 	RakClickableText * detail;
+	RakRadioButton * activationButton;
+	
+	BOOL _isCompact;
+	BOOL _isDetailColumn;
 	
 	NSRect imageFrame;
 }
 
 @property BOOL highlighted;
-@property RakPrefsRepoView * __weak responder;
+@property id __weak responder;
 
-- (instancetype) initWithRepo : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
-- (void) updateContent : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
+- (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
+- (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 
 @end
 
 @interface RakPrefsRepoList()
 {
 	BOOL refreshing;
+	
+	NSTableColumn * _detailColumn;
 }
 
 @end
@@ -56,6 +64,18 @@ enum
 		_nbData = [_responder sizeForMode:_rootMode];
 		
 		[self applyContext:frame : selectedRowIndex : -1];
+		
+		if(_detailMode)
+		{
+			_detailColumn = [[NSTableColumn alloc] init];
+
+			if(_detailColumn != nil)
+			{
+				((NSTableColumn *) [_tableView.tableColumns firstObject]).width -= LIST_ROW_COMPACT_WIDTH;
+				_detailColumn.width = LIST_ROW_COMPACT_WIDTH;
+				[_tableView addTableColumn:_detailColumn];
+			}
+		}
 		
 		scrollView.wantsLayer = YES;
 		scrollView.layer.cornerRadius = 3;
@@ -91,7 +111,12 @@ enum
 		_rootMode = rootMode;
 		return;
 	}
-	
+
+	[self reloadContent : rootMode];
+}
+
+- (void) reloadContent : (BOOL) rootMode
+{
 	refreshing = YES;
 	
 	[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _nbData)] withAnimation:NSTableViewAnimationSlideLeft];
@@ -111,30 +136,30 @@ enum
 	return _nbData;
 }
 
-- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+- (CGFloat) tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-	return LIST_ROW_HEIGHT;
+	return _detailMode ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT;
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
-	void ** list = [_responder listForMode:_rootMode];
-	if(list == NULL || row >= [_responder sizeForMode:_rootMode])
+	void * data = [_responder dataForMode:_rootMode index:row];
+	if(data == NULL)
 		return nil;
 	
 	NSString * detail = nil;
-	if(!_rootMode && list[row] != NULL)
-		detail = [_responder nameOfParent: ((REPO_DATA *) list[row])->parentRepoID];
+	if(!_rootMode && !_detailMode)
+		detail = [_responder nameOfParent: ((REPO_DATA *) data)->parentRepoID];
 
 	RakPrefsRepoListItem * result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if (result == nil)
 	{
-		result = [[RakPrefsRepoListItem alloc] initWithRepo :_rootMode : list[row] : detail];
+		result = [[RakPrefsRepoListItem alloc] initWithRepo : _detailMode : tableColumn == _detailColumn : _rootMode : data : detail];
 		if(result != nil)
 			result.responder = _responder;
 	}
 	else
-		[result updateContent:_rootMode :list[row] :detail];
+		[result updateContent : _detailMode : tableColumn == _detailColumn :_rootMode :data :detail];
 	
 	return result;
 }
@@ -152,79 +177,118 @@ enum
 
 @implementation RakPrefsRepoListItem
 
-- (instancetype) initWithRepo : (BOOL) isRoot : (void *) repo : (NSString *) detailString
+- (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
-	self = [self initWithFrame:NSMakeRect(0, 0, 300, LIST_ROW_HEIGHT)];
+	self = [self initWithFrame:NSMakeRect(0, 0, 300, isCompact ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT)];
 	
 	if(self != nil)
 	{
 		[Prefs getCurrentTheme:self];
-		[self updateContent:isRoot :repo :detailString];
+		[self updateContent:isCompact :isDetailColumn :isRoot :repo :detailString];
 	}
 	
 	return self;
 }
 
-- (void) updateContent : (BOOL) isRoot : (void *) repo : (NSString *) detailString
+- (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
-	//Image
-	image = loadImageForRepo(isRoot, repo);
+	_isCompact = isCompact;
+	_isDetailColumn = isDetailColumn;
 	
-	//Title
-	NSString * string = getStringForWchar(isRoot ? ((ROOT_REPO_DATA *) repo)->name : ((REPO_DATA *) repo)->name);
-	
-	if(title == nil)
+	if(isDetailColumn)
 	{
-		title = [[RakText alloc] initWithText:string :[self textColor]];
-		if(title != nil)
-		{
-			title.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:15];
-			[title sizeToFit];
-			
-			[self addSubview:title];
-		}
-	}
-	else
-	{
-		title.stringValue = string;
-		[title sizeToFit];
-	}
-	
-	//Detail
-	if(isRoot)
-	{
-		if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 0)
-			string = NSLocalizedString(@"PREFS-ROOT-NO-ACTIVE-REPO", nil);
-		else if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 1)
-			string = NSLocalizedString(@"PREFS-ROOT-ONE-ACTIVE-REPO", nil);
-		else
-			string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-%zu-ACTIVE-REPO", nil), ((ROOT_REPO_DATA *) repo)->nombreSubrepo];
-	}
-	else
-	{
-		if(detailString == nil)
-			string = NSLocalizedString(@"PREFS-ROOT-NO-GROUP", nil);
-		else
-			string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-GROUPS-%@", nil), detailString];
-	}
-	
-	if(detail == nil)
-	{
-		detail = [[RakClickableText alloc] initWithText:string :[self detailTextColor] responder:self];
+		image = nil;
+		title.hidden = YES;
+		detail.hidden = YES;
 		
-		if(detail != nil)
+		if(activationButton == nil)
 		{
-			if(!isRoot)
-				detail.URL = @(((REPO_DATA *) repo)->parentRepoID);
-			
-			detail.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:12];
-			[detail sizeToFit];
-			
-			[self addSubview:detail];
+			activationButton = [[RakRadioButton alloc] init];
+			if(activationButton != nil)
+			{
+				activationButton.target = self;
+				activationButton.action = @selector(buttonClicked);
+				
+				[self addSubview:activationButton];
+			}
 		}
+		else
+			activationButton.hidden = NO;
 	}
 	else
-		detail.stringValue = string;
+	{
+		title.hidden = NO;
+		detail.hidden = NO;
+		activationButton.hidden = YES;
+
+		//Image
+		image = loadImageForRepo(isRoot, repo);
+		
+		//Title
+		NSString * string = getStringForWchar(isRoot ? ((ROOT_REPO_DATA *) repo)->name : ((REPO_DATA *) repo)->name);
+		
+		if(title == nil)
+		{
+			title = [[RakText alloc] initWithText:string :[self textColor]];
+			if(title != nil)
+			{
+				if(!_isCompact)
+					title.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:15];
+				[title sizeToFit];
+				
+				[self addSubview:title];
+			}
+		}
+		else
+		{
+			title.stringValue = string;
+			[title sizeToFit];
+		}
+		
+		//Detail
+		if(!_isCompact)
+		{
+			if(isRoot)
+			{
+				if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 0)
+					string = NSLocalizedString(@"PREFS-ROOT-NO-ACTIVE-REPO", nil);
+				else if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 1)
+					string = NSLocalizedString(@"PREFS-ROOT-ONE-ACTIVE-REPO", nil);
+				else
+					string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-%zu-ACTIVE-REPO", nil), ((ROOT_REPO_DATA *) repo)->nombreSubrepo];
+			}
+			else
+			{
+				if(detailString == nil)
+					string = NSLocalizedString(@"PREFS-ROOT-NO-GROUP", nil);
+				else
+					string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-GROUPS-%@", nil), detailString];
+			}
+			
+			if(detail == nil)
+			{
+				detail = [[RakClickableText alloc] initWithText:string :[self detailTextColor] responder:self];
+				
+				if(detail != nil)
+				{
+					if(!isRoot)
+						detail.URL = @(((REPO_DATA *) repo)->parentRepoID);
+					
+					detail.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:12];
+					[detail sizeToFit];
+					
+					[self addSubview:detail];
+				}
+			}
+			else
+			{
+				detail.hidden = NO;
+				detail.stringValue = string;
+			}
+		}
+		else
+			detail.hidden = YES;
+	}
 }
 
 - (void) respondTo : (RakClickableText *) sender
@@ -237,16 +301,48 @@ enum
 	}
 }
 
+- (void) buttonClicked
+{
+	if(activationButton.state == NSOnState)
+		[_responder nukeEverything : self];
+	else
+	{
+		
+	}
+}
+
+- (void) cancelSelection
+{
+	activationButton.state = NSOffState;
+}
+
 #pragma mark - Drawing
 
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
 	
-	imageFrame = NSMakeRect(OFFSET_IMAGE_ROW, frameRect.size.height / 2 - LIST_ROW_IMAGE_DIAMETER / 2, LIST_ROW_IMAGE_DIAMETER, LIST_ROW_IMAGE_DIAMETER);
-	
-	[title setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_TITLE_Y)];
-	[detail setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_DETAIL_Y)];
+	if(_isDetailColumn)
+	{
+		frameRect.origin = NSZeroPoint;
+		[activationButton setFrameOrigin:NSMakePoint(0, frameRect.size.height / 2 - activationButton.bounds.size.height / 2)];
+	}
+	else
+	{
+		const CGFloat diameter = _isCompact ? LIST_ROW_IMAGE_DIAMETER / 2 : LIST_ROW_IMAGE_DIAMETER;
+		
+		imageFrame = NSMakeRect(OFFSET_IMAGE_ROW, frameRect.size.height / 2 - diameter / 2, diameter, diameter);
+		
+		if(_isCompact)
+		{
+			[title setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, _bounds.size.height / 2 - title.bounds.size.height / 2)];
+		}
+		else
+		{
+			[title setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_TITLE_Y)];
+			[detail setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_DETAIL_Y)];
+		}
+	}
 }
 
 - (void) drawRect:(NSRect)dirtyRect
@@ -256,6 +352,9 @@ enum
 		[[self backgroundColor] setFill];
 		NSRectFill(dirtyRect);
 	}
+	
+	if(_isDetailColumn)
+		return;
 
 	[NSGraphicsContext saveGraphicsState];
 	
