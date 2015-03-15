@@ -399,17 +399,17 @@ enum
 		
 		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
 			if(returnCode != -NSModalResponseStop)
-				[self deleteContent:NO];
+				[self deleteContent : NO : _repo];
 		}];
 	}
 }
 
 - (void) nukeEverything
 {
-	[self nukeEverything:nil];
+	[self nukeEverything:nil : _repo];
 }
 
-- (void) nukeEverything : (id) responder
+- (void) nukeEverything : (id) responder : (REPO_DATA *) repoData
 {
 	NSAlert * alert = [[NSAlert alloc] init];
 	
@@ -423,21 +423,21 @@ enum
 		
 		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
 			if(returnCode != -NSModalResponseStop)
-				[self deleteContent:YES];
+				[self deleteContent:YES : repoData];
 			else
 				[responder cancelSelection];
 		}];
 	}
 }
 
-- (void) deleteContent : (BOOL) nukeRepo
+- (void) deleteContent : (BOOL) nukeRepo : (REPO_DATA *) repoData
 {
 	NSString * windowTitle = self.window.title;
 	CTSelec * CT = [[NSApp delegate] CT];
 	Reader * reader = [[NSApp delegate] reader];
 	
 	PROJECT_DATA readerProject = [reader activeProject], CTProject = [CT activeProject];
-	uint64_t ID = getRepoID(_repo);
+	uint64_t ID = getRepoID(repoData);
 	
 	if((CTProject.isInitialized && getRepoID(CTProject.repo) == ID) || (readerProject.isInitialized && getRepoID(readerProject.repo) == ID))
 	{
@@ -481,7 +481,7 @@ enum
 	if(nukeRepo)
 	{
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-REMOVE", nil);
-		removeRepoFromCache(*_repo);
+		removeRepoFromCache(*repoData);
 		deleteSubRepo(ID);
 		syncCacheToDisk(SYNC_ALL);
 	}
@@ -490,7 +490,7 @@ enum
 
 	//Delete projects
 	char path[256];
-	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(_repo));
+	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(repoData));
 	removeFolder(path);
 	
 	if(nukeRepo)

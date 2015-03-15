@@ -123,7 +123,7 @@ void updateRepo()
 	if(iconsData != NULL)
 		createNewThread(updateProjectImages, iconsData);
 	
-	updateRootRepoCache(oldRootData, -1);
+	updateRootRepoCache(oldRootData);
 	free(oldRootData);
 }
 

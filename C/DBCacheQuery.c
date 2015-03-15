@@ -252,6 +252,8 @@ REPO_DATA * getRepoForID(uint64_t repoID)
 
 void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 {
+	MUTEX_LOCK(cacheMutex);
+	
 	//+1 used to free everything
 	uint sizeElem = wantRoot ? sizeof(ROOT_REPO_DATA) : sizeof(REPO_DATA), length = wantRoot ? lengthRootRepo : lengthRepo;
 	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output = calloc(length + 1, sizeof(void*));
@@ -381,32 +383,42 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 	else
 		*nbRepo = 0;
 	
+	MUTEX_UNLOCK(cacheMutex);
+	
 	return output;
 }
 
 void freeRootRepo(ROOT_REPO_DATA ** root)
 {
+	if(root == NULL)
+		return;
+	
 	for(uint i = 0; root[i] != NULL; i++)
 	{
-		free(root[i]->subRepo);
-		
-		if(root[i]->descriptions != NULL)
-		{
-			for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
-				free(root[i]->descriptions[j]);
-		}
-		
-		if(root[i]->langueDescriptions != NULL)
-		{
-			for(uint j = 0, length = root[i]->nombreDescriptions; j < length; j++)
-				free(root[i]->langueDescriptions[j]);
-		}
-		
-		free(root[i]->descriptions);
-		free(root[i]->langueDescriptions);
-		free(root[i]);
+		freeSingleRootRepo(root[i]);
 	}
 	
+	free(root);
+}
+
+void freeSingleRootRepo(ROOT_REPO_DATA * root)
+{
+	free(root->subRepo);
+	
+	if(root->descriptions != NULL)
+	{
+		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+			free(root->descriptions[j]);
+	}
+	
+	if(root->langueDescriptions != NULL)
+	{
+		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+			free(root->langueDescriptions[j]);
+	}
+	
+	free(root->descriptions);
+	free(root->langueDescriptions);
 	free(root);
 }
 

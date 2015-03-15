@@ -38,7 +38,7 @@
 - (instancetype) initWithRepo : (NSRect) frame : (BOOL) isRoot : (void *) repo : (RakPrefsRepoView *) responder;
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (BOOL) animated;
 
-- (void) nukeEverything : (id) responder;
+- (void) nukeEverything : (id) responder : (REPO_DATA *) repoData;
 
 @end
 

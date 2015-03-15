@@ -78,47 +78,165 @@ void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 	}
 }
 
-//Be carefull, you can't add repo using this method, only existing repo will be updated with new root data
-void updateRootRepoCache(ROOT_REPO_DATA ** repoData, const uint newAmountOfRepo)
+void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 {
+	if(newRoot == NULL)
+		return;
+	
 	uint lengthRepoCopy = lengthRootRepo;
 	
-	ROOT_REPO_DATA ** newReceiver;
+	//We cautiously insert the new entries in the root store
+	//calloc important, otherwise, we have to set last entries to NULL
+	ROOT_REPO_DATA ** newReceiver = calloc(lengthRepoCopy + newRootEntries + 1, sizeof(ROOT_REPO_DATA*));
+	if(newReceiver == NULL)
+		return;
 	
-	if(newAmountOfRepo != -1)	//Resize teamList
+	memcpy(newReceiver, rootRepoList, lengthRepoCopy);
+	
+	for(uint count = 0; count < newRootEntries; count++, lengthRepoCopy++)
 	{
-		newReceiver = calloc(lengthRepoCopy + newAmountOfRepo + 1, sizeof(ROOT_REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
-		if(newReceiver == NULL)
-			return;
+		if(newRoot[lengthRepoCopy] != NULL)
+			newReceiver[lengthRepoCopy] = newRoot[lengthRepoCopy];
+		else
+			lengthRepoCopy--;
+	}
+
+	//Remove collisions in the case there might be
+	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
+
+	
+	//Actual update
+	MUTEX_LOCK(cacheMutex);
+	
+	void * buf = rootRepoList;
+	rootRepoList = newReceiver;
+	free(buf);
+	lengthRootRepo = lengthRepoCopy;
+	
+	MUTEX_UNLOCK(cacheMutex);
+	
+	//We now update the standard repo store
+	ROOT_REPO_DATA * element;
+	REPO_DATA ** tmpRepo[newRootEntries];
+	uint repoSize[newRootEntries], cumulativeSize = 0;
+	
+	//We extract all the active repo
+	for(uint posRoot = 0; posRoot < newRootEntries; posRoot++)
+	{
+		element = newRoot[posRoot];
+		tmpRepo[posRoot] = NULL;
+		repoSize[posRoot] = 0;
 		
-		memcpy(newReceiver, rootRepoList, lengthRepoCopy);
-		
-		for(uint count = 0; count < newAmountOfRepo; count++, lengthRepoCopy++)
+		//We get the size of the chunk to insert
+		for(uint posSub = 0; posSub < element->nombreSubrepo; posSub++)
 		{
-			if(newReceiver[lengthRepoCopy] != NULL && repoData[lengthRepoCopy] != NULL)
+			if(element->subRepo[posSub].active)
+				repoSize[posRoot]++;
+		}
+
+		//Empty chunk
+		if(repoSize[posRoot] == 0)
+			continue;
+		
+		//We allocate the array to receive the new REPO_DATA
+		tmpRepo[posRoot] = calloc(repoSize[posRoot], sizeof(REPO_DATA *));
+		if(tmpRepo[posRoot] == NULL)
+		{
+			repoSize[posRoot] = 0;
+			continue;
+		}
+		
+		for(uint posSub = 0; posSub < repoSize[posRoot]; posSub++)
+		{
+			tmpRepo[posRoot][posSub] = malloc(sizeof(REPO_DATA));
+			if(tmpRepo[posRoot] == NULL)
 			{
-				memcpy(newReceiver[lengthRepoCopy], repoData[lengthRepoCopy], sizeof(ROOT_REPO_DATA));
-				free(repoData[lengthRepoCopy]);
+				while(posSub-- > 0)
+					free(tmpRepo[posRoot][posSub]);
+				
+				free(tmpRepo[posRoot]);
+				tmpRepo[posRoot] = NULL;
+				repoSize[posRoot] = 0;
+				
+				continue;
 			}
-			else if(repoData[lengthRepoCopy] != NULL)
+		}
+		
+		//the REPO_DATA structure is thankfully static, so copying it is trivial
+		for(uint posSub = 0, posOut = 0; posSub < element->nombreSubrepo && posOut < repoSize[posRoot]; posSub++)
+		{
+			if(element->subRepo[posSub].active)
 			{
-				newReceiver[lengthRepoCopy] = repoData[lengthRepoCopy];
+				*tmpRepo[posRoot][posOut++] = element->subRepo[posSub];
+				cumulativeSize++;	//We may theorically risk an overflow here, but come on, 4B repo? It'd take ages to refresh and it'll break elsewhere earlier
 			}
-			else
-				lengthRepoCopy--;
 		}
 	}
-	else
-		newReceiver = rootRepoList;
 	
-	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
-	if(rootRepoList != newReceiver)
+	//We will finally start messing with the shared structure
+	MUTEX_LOCK(cacheMutex);
+	
+	cumulativeSize += lengthRepo;
+
+	REPO_DATA ** mainList = realloc(repoList, (cumulativeSize + 1) * sizeof(REPO_DATA *));
+	if(mainList == NULL)
 	{
-		void * buf = rootRepoList;
-		rootRepoList = newReceiver;
-		free(buf);
-		lengthRootRepo = lengthRepoCopy;
+		for(uint posRoot = 0; posRoot < newRootEntries; posRoot++)
+		{
+			for(uint posSub = 0; posSub < repoSize[posRoot]; free(tmpRepo[posRoot][posSub++]));
+			free(tmpRepo[posRoot]);
+		}
+		
+		MUTEX_UNLOCK(cacheMutex);
+		return;
 	}
+	
+	uint currentRoot = 0, currentSub = 0;
+	while(lengthRepo < cumulativeSize && currentRoot < newRootEntries)
+	{
+		if(currentSub < repoSize[currentRoot])
+			mainList[lengthRepo++] = tmpRepo[currentRoot][currentSub++];
+		else
+		{
+			free(tmpRepo[currentRoot++]);
+			currentSub = 0;
+		}
+	}
+	
+	repoList = mainList;
+	MUTEX_UNLOCK(cacheMutex);
+}
+
+void updateRootRepoCache(ROOT_REPO_DATA ** repoData)
+{
+	if(repoData == NULL)
+		return;
+	
+	MUTEX_LOCK(cacheMutex);
+	
+	//We update the root store
+	for(uint i = 0, posInMain = 0; i < lengthRootRepo; i++)
+	{
+		//We find the previous entry
+		if(rootRepoList[posInMain]->repoID != repoData[i]->repoID)
+		{
+			for(; posInMain < lengthRootRepo && rootRepoList[posInMain]->repoID != repoData[i]->repoID; posInMain++);
+			if(posInMain >= lengthRootRepo)
+			{
+				for(posInMain = 0; posInMain < lengthRootRepo && rootRepoList[posInMain]->repoID != repoData[i]->repoID; posInMain++);
+				if(posInMain >= lengthRootRepo)
+				{
+					posInMain = 0;
+					continue;
+				}
+			}
+		}
+		
+		freeSingleRootRepo(rootRepoList[posInMain]);
+		*rootRepoList[posInMain] = *repoData[i];
+	}
+	
+	MUTEX_UNLOCK(cacheMutex);
 	
 	//We updated the root store, we now have to update the repo store
 	//From then on, we can fail without significant issues, as this list will get rebuild at next launch

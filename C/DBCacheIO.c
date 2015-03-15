@@ -206,6 +206,23 @@ void removeFromCache(PROJECT_DATA data)
 	nbElemInCache--;
 }
 
+void consolidateCache()
+{
+	sqlite3_stmt* request = NULL;
+	sqlite3_prepare_v2(cache, "VACUUM", -1, &request, NULL);
+	sqlite3_step(request);
+	sqlite3_finalize(request);
+}
+
+#pragma mark - Repo
+
+void addRootRepoToDB(ROOT_REPO_DATA * newRepo)
+{
+	insertRootRepoCache(&newRepo, 1);
+	syncCacheToDisk(SYNC_REPO);
+	resetUpdateDBCache();
+}
+
 void removeRepoFromCache(REPO_DATA repo)
 {
 	if(cache == NULL)
@@ -234,6 +251,52 @@ void removeRepoFromCache(REPO_DATA repo)
 	sqlite3_bind_int(request, 1, repoID);
 	sqlite3_step(request);
 	sqlite3_finalize(request);
+	
+	MUTEX_UNLOCK(cacheMutex);
+}
+
+void activateRepo(REPO_DATA repo)
+{
+	MUTEX_LOCK(cacheMutex);
+	
+	bool alreadyActive = false;
+	
+	for(uint i = 0; i < lengthRootRepo; i++)
+	{
+		if(rootRepoList[i]->repoID == repo.parentRepoID)
+		{
+			for(uint j = 0, length = rootRepoList[i]->nombreSubrepo; j < length; j++)
+			{
+				if(rootRepoList[i]->subRepo[j].repoID == repo.repoID)
+				{
+					if(!rootRepoList[i]->subRepo[j].active)
+						rootRepoList[i]->subRepo[j].active = true;
+					else
+						alreadyActive = true;
+					
+					break;
+				}
+			}
+			
+			break;
+		}
+	}
+	
+	if(!alreadyActive)
+	{
+		REPO_DATA ** newRepoList = realloc(repoList, lengthRepo + 2);
+		if(newRepoList != NULL)
+		{
+			newRepoList[lengthRepo] = malloc(sizeof(REPO_DATA));
+			if(newRepoList[lengthRepo] != NULL)
+			{
+				*newRepoList[lengthRepo] = repo;
+				newRepoList[++lengthRepo] = NULL;
+			}
+			
+			repoList = newRepoList;
+		}
+	}
 	
 	MUTEX_UNLOCK(cacheMutex);
 }
@@ -298,89 +361,3 @@ void deleteSubRepo(uint64_t repoID)
 	
 	MUTEX_UNLOCK(cacheMutex);
 }
-
-void consolidateCache()
-{
-	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "VACUUM", -1, &request, NULL);
-	sqlite3_step(request);
-	sqlite3_finalize(request);
-}
-
-#pragma mark - Repo
-
-bool addRepoToDB(ROOT_REPO_DATA * newRepo)
-{
-	uint nbRepo, nbRootRepo, subLength = newRepo->nombreSubrepo;
-	ROOT_REPO_DATA **oldRootData = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRootRepo, true), **newRootData = NULL, *newRootEntry = NULL;
-	REPO_DATA **oldData = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false), **newData = NULL;
-	void * newEntry[subLength];
-	bool allocFail = false;
-	
-	//If there was no repo before
-	if(oldRootData == NULL || oldData == NULL)
-	{
-		freeRootRepo(oldRootData);	nbRootRepo = 0;
-		freeRepo(oldData);			nbRepo = 0;
-	}
-	
-	//We get the memory to fit the previous store and the new repo
-	newRootData = malloc((nbRootRepo + 2) * sizeof(ROOT_REPO_DATA *));
-	newRootEntry = malloc(sizeof(ROOT_REPO_DATA));
-	
-	newData	= malloc((nbRepo + subLength + 1) * sizeof(REPO_DATA*));
-	
-	for(uint i = 0; i < subLength; i++)
-	{
-		newEntry[i] = malloc(sizeof(REPO_DATA));
-		if(newEntry[i] == NULL)
-		{
-			for(uint j = 0; j < i; free(newEntry[j++]));
-			allocFail = true;
-			break;
-		}
-	}
-	
-	//Allocation error
-	if(newRootData == NULL || newRootEntry == NULL || newData == NULL || allocFail)
-	{
-		freeRootRepo(oldRootData);
-		free(newRootData);
-		free(newRootEntry);
-		freeRepo(oldData);
-		free(newData);
-		
-		if(!allocFail)
-			for(uint i = 0; i < subLength; free(newEntry[i++]));
-		
-		return false;
-	}
-	
-	memcpy(newRootData, oldRootData, nbRootRepo * sizeof(ROOT_REPO_DATA));
-	
-	memcpy(newRootEntry, newRepo, sizeof(ROOT_REPO_DATA));
-	newRootData[nbRootRepo] = newRootEntry;
-	newRootData[nbRootRepo + 1] = NULL;
-	
-	memcpy(newData, oldData, nbRepo * sizeof(REPO_DATA*));
-	
-	for(uint i = 0; i < subLength; i++)
-	{
-		memcpy(newEntry[i], &(newRepo->subRepo[i]), sizeof(REPO_DATA));
-		newData[nbRepo + i] = newEntry[i];
-	}
-	
-	newData[nbRepo + subLength] = NULL;
-	
-	updateRootRepoCache(newRootData, 1);
-	syncCacheToDisk(SYNC_REPO);
-	resetUpdateDBCache();
-	
-	freeRootRepo(oldRootData);
-	free(newRootData);
-	freeRepo(oldData);
-	freeRepo(newData);
-	
-	return true;
-}
-

@@ -32,6 +32,8 @@ enum
 	
 	BOOL _isCompact;
 	BOOL _isDetailColumn;
+
+	REPO_DATA * _repoUsedInDetail;
 	
 	NSRect imageFrame;
 }
@@ -201,6 +203,11 @@ enum
 		title.hidden = YES;
 		detail.hidden = YES;
 		
+		if(repo == NULL)
+			return;
+		
+		_repoUsedInDetail = repo;
+		
 		if(activationButton == nil)
 		{
 			activationButton = [[RakRadioButton alloc] init];
@@ -214,6 +221,8 @@ enum
 		}
 		else
 			activationButton.hidden = NO;
+		
+		activationButton.state = _repoUsedInDetail->active ? NSOnState : NSOffState;
 	}
 	else
 	{
@@ -304,11 +313,9 @@ enum
 - (void) buttonClicked
 {
 	if(activationButton.state == NSOnState)
-		[_responder nukeEverything : self];
+		activateRepo(*_repoUsedInDetail);
 	else
-	{
-		
-	}
+		[_responder nukeEverything : self : _repoUsedInDetail];
 }
 
 - (void) cancelSelection
