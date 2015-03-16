@@ -223,19 +223,20 @@ memoryFail:
 
 char ** loadChapterConfigDat(char* input, int *nombrePage)
 {
-    char ** output;
-    int i, j, scriptUtilise = 0;
+    char ** output, current;
+	int i, j;
+	bool scriptUsed = false;
     FILE* file_input = fopen(input, "r");
+
 	if(file_input == NULL)
         return NULL;
 	
-    fscanfs(file_input, "%d", nombrePage);
+    fscanf(file_input, "%d", nombrePage);
 	
-    if(fgetc(file_input) != EOF)
+    if((current = fgetc(file_input)) != EOF)
     {
-        fseek(file_input, -1, SEEK_CUR);
-        if(fgetc(file_input) == 'N')
-            scriptUtilise = 1;
+        if(current == 'N')
+			scriptUsed = true;
         else
             fseek(file_input, -1, SEEK_CUR);
 		
@@ -250,14 +251,15 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
 				continue;
 			}
 			
-            if(!scriptUtilise)
+            if(!scriptUsed)
                 fscanfs(file_input, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
-			
             else
                 fscanfs(file_input, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
-            changeTo(output[i], '&', ' ');
+
+			changeTo(output[i], '&', ' ');
         }
-        output[i] = malloc(LONGUEUR_NOM_PAGE);
+
+		output[i] = malloc(LONGUEUR_NOM_PAGE);
         output[i][0] = 0;
     }
 	
@@ -265,16 +267,20 @@ char ** loadChapterConfigDat(char* input, int *nombrePage)
     {
         (*nombrePage)++;
         output = calloc(5+*nombrePage, sizeof(char*));
+		
         for(i = 0; i < *nombrePage; i++)
         {
             output[i] = malloc(LONGUEUR_NOM_PAGE+1);
             snprintf(output[i], LONGUEUR_NOM_PAGE, "%d.jpg", i);	//Sadly, legacy, use png as a default would have been more clever
         }
-        output[i] = malloc(LONGUEUR_NOM_PAGE);
+		
+		output[i] = malloc(LONGUEUR_NOM_PAGE);
         output[i][0] = 0;
     }
+	
     fclose(file_input);
-    for(i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
+	
+	for(i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
 	
     char temp[300];
     for(i = *nombrePage; i >= 0; i--)

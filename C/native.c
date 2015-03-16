@@ -174,7 +174,7 @@ int sscanfs(char *char_input, const char *format, ...)
         if(format[format_read] != '%' && format[format_read] != ' ' && format[format_read] != *char_input) //Si on attend pas d'argument, on attend d'arriver au char demandé
             while((j = *(++char_input)) != format[format_read] && j != 0);
 
-        else if(format[format_read] == '%') //Les choses interessantes commenencent
+        else if(format[format_read] == '%') //Les choses interéssantes commencent
         {
             format_read++;
             switch(format[format_read])
@@ -342,19 +342,19 @@ void removeFolder(char *path)
 		buttonCancel.next = NULL;
 		
 		internalUIAlert("Suppression detectee", path, &buttonOK);
+
+		char temp2[300];
+		snprintf(temp2, 300, "Will remove %s/*\n", path);
+		logR(temp2);
 	}
 #endif
+	
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
 
     directory = opendir(path);
-    if ( directory == NULL )
+    if(directory == NULL)
     {
-#ifdef DEV_VERSION
-        char temp[300];
-        snprintf(temp, 300, "Can't open directory %s\n", path);
-        logR(temp);
-#endif
         remove(path);
         return;
     }
@@ -368,12 +368,14 @@ void removeFolder(char *path)
 
         snprintf(buffer, size, "%s/%s", path, entry->d_name);
 
-        if(checkDirExist(buffer))
+		if(checkDirExist(buffer))	//Recursive call on a directory
 		{
 #ifdef DEV_VERSION
 			depth++;
-			removeFolder(buffer); // On est sur un dossier, on appelle cette fonction.
+			removeFolder(buffer);
 			depth--;
+#else
+			removeFolder(buffer);
 #endif
 		}
         else
@@ -382,12 +384,6 @@ void removeFolder(char *path)
 
 	closedir(directory);
     rmdir(path); //Maintenant le dossier doit être vide, on le supprime.
-
-#ifdef DEV_VERSION
-    char temp2[300];
-    snprintf(temp2, 300, "Removed: %s\n", path);
-    logR(temp2);
-#endif
 }
 
 void ouvrirSite(const char *URL)
@@ -447,8 +443,8 @@ bool checkDirExist(char *dirname)
     if(directory != NULL)
     {
         closedir(directory);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 

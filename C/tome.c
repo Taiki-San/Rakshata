@@ -231,7 +231,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 		if((config = fopen(temp, "r")) != NULL)
 		{
 			*dernierLu = VALEUR_FIN_STRUCT;
-			fscanfs(config, "%d", dernierLu);
+			fscanf(config, "%d", dernierLu);
 			fclose(config);
 		}
     }

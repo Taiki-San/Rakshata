@@ -87,7 +87,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 		
 		if(file != NULL)
 		{
-			fscanfs(file, "%d", dernierLu);
+			fscanf(file, "%d", dernierLu);
 			fclose(file);
 		}
     }
@@ -162,7 +162,7 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool car
 		if(sharedData != NULL)	//On arrive à ouvrir le fichier
 		{
 			uint IDTomeLinked = VALEUR_FIN_STRUCT;
-			fscanfs(sharedData, "%d", &IDTomeLinked);
+			fscanf(sharedData, "%d", &IDTomeLinked);
 			fclose(sharedData);
 
 			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
