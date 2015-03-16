@@ -273,7 +273,6 @@ void removeRepoFromCache(REPO_DATA repo)
 		sqlite3_bind_int64(deleteRequest, 1, sqlite3_column_int64(request, 3));
 		sqlite3_step(deleteRequest);
 		sqlite3_reset(deleteRequest);
-#warning "Remove from search"
 		
 		nbElemInCache--;
 	}
@@ -315,7 +314,7 @@ void activateRepo(REPO_DATA repo)
 	
 	if(!alreadyActive)
 	{
-		REPO_DATA ** newRepoList = realloc(repoList, lengthRepo + 2);
+		REPO_DATA ** newRepoList = realloc(repoList, (lengthRepo + 2) * sizeof(REPO_DATA *));
 		if(newRepoList != NULL)
 		{
 			newRepoList[lengthRepo] = malloc(sizeof(REPO_DATA));

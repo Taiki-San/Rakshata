@@ -201,10 +201,12 @@
 					
 					while(posNew < newSize)
 					{
-						for(; posNew < newSize && !usedNew[posNew]; posNew++);
+						for(; posNew < newSize && usedNew[posNew]; posNew++);
 						
 						if(posNew < newSize)
 						{
+							usedNew[posNew] = YES;
+
 							cache[sizeCache] = malloc(sizeof(PROJECT_DATA));
 							if(cache[sizeCache] != NULL)
 							{
