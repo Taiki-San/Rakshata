@@ -96,10 +96,12 @@ bool addRecentEntry(PROJECT_DATA data, bool wasItADL)
 
 bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL)
 {
-	bool output = false, haveToUpdate = false;
+	bool output = false, haveToUpdate = false, localDB = true;
 	
 	if(database == NULL)
 		database = getPtrRecentDB();
+	else
+		localDB = false;
 	
 	if(database == NULL)
 		return false;
@@ -109,7 +111,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	if(sqlite3_prepare_v2(database, "BEGIN EXCLUSIVE TRANSACTION", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		sqlite3_finalize(request);
-		sqlite3_close(database);
+	
+		if(localDB)
+			closeRecentDB(database);
 		return false;
 	}
 	
@@ -196,7 +200,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 		sqlite3_step(request);
 
 	sqlite3_finalize(request);
-	closeRecentDB(database);
+	
+	if(localDB)
+		closeRecentDB(database);
 	
 	if(haveToUpdate)
 		updateRecentSeries();
@@ -280,20 +286,20 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 				{
 					//We craft a PROJECT_DATA structure for updateRecentEntry
 					uint lengthTeam = strlen(team) + 1;
-					PROJECT_DATA tmpProject;
+					PROJECT_DATA tmpProject = getEmptyProject();
+
 					REPO_DATA tmpRepo;
-					memset(&tmpProject, 0, sizeof(tmpProject));
 					memset(&tmpRepo, 0, sizeof(tmpRepo));
 
 					strncpy(tmpRepo.URL, team, lengthTeam);
 					tmpProject.repo = &tmpRepo;
 					tmpProject.projectID = projectID;
 					
-					sqlite3_finalize(request);	//Will release team, so must be called after strncpy
+					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
+					sqlite3_finalize(request);
 					
 					updateRecentEntry(database, tmpProject, 0, wantDL);
 					
-					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
 					if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
 						break;
 				}

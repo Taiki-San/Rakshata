@@ -25,6 +25,7 @@
 	uint * cacheList;
 	
 	BOOL * activatedList;
+	uint * sortedToFiltered;
 	uint * filteredToSorted;
 	
 	//Views

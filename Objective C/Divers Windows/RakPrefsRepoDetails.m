@@ -493,9 +493,7 @@ enum
 	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(repoData));
 	removeFolder(path);
 	
-	if(nukeRepo)
-		[RakDBUpdate postNotificationFullUpdate];
-	else
+	if(!nukeRepo)
 		setUninstalled(false, ID);	//Update DB, and notify everything
 	
 	self.window.title = windowTitle;

@@ -219,8 +219,34 @@ void consolidateCache()
 void addRootRepoToDB(ROOT_REPO_DATA * newRepo)
 {
 	insertRootRepoCache(&newRepo, 1);
-	syncCacheToDisk(SYNC_REPO);
-	resetUpdateDBCache();
+	
+	//We update the project cache with the new data
+	PROJECT_DATA empty = getEmptyProject();
+	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
+	for(uint i = 0; i < newRepo->nombreSubrepo; i++)
+	{
+		if(newRepo->subRepo[i].active)
+		{
+			empty.repo = &newRepo->subRepo[i];
+			
+			newIcon = updateProjectsFromRepo(&empty, 0, 0, false);
+			
+			if(newIcon != NULL)
+			{
+				if(iconData == NULL)
+					iconData = endIcon = newIcon;
+				else
+					endIcon->next = newIcon;
+				
+				while(endIcon->next != NULL)
+					endIcon = endIcon->next;
+			}
+		}
+	}
+	
+	createNewThread(updateProjectImages, iconData);
+	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
+	notifyFullUpdate();
 }
 
 void removeRepoFromCache(REPO_DATA repo)
@@ -233,8 +259,9 @@ void removeRepoFromCache(REPO_DATA repo)
 	uint64_t repoID = getRepoID(&repo);
 	
 	//On libère la mémoire des éléments remplacés
-	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", -1, &request, NULL);
+	sqlite3_stmt* request = NULL, *deleteRequest = NULL;
+	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", -1, &request, NULL);
+	sqlite3_prepare_v2(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &deleteRequest, NULL);
 	sqlite3_bind_int64(request, 1, repoID);
 	
 	while(sqlite3_step(request) == SQLITE_ROW)
@@ -243,16 +270,20 @@ void removeRepoFromCache(REPO_DATA repo)
 		free((void*) sqlite3_column_int64(request, 1));
 		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 		
+		sqlite3_bind_int64(deleteRequest, 1, sqlite3_column_int64(request, 3));
+		sqlite3_step(deleteRequest);
+		sqlite3_reset(deleteRequest);
+#warning "Remove from search"
+		
 		nbElemInCache--;
 	}
-	sqlite3_finalize(request);
-	
-	sqlite3_prepare_v2(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", -1, &request, NULL);
-	sqlite3_bind_int(request, 1, repoID);
-	sqlite3_step(request);
+	sqlite3_finalize(deleteRequest);
 	sqlite3_finalize(request);
 	
 	MUTEX_UNLOCK(cacheMutex);
+	
+	syncCacheToDisk(SYNC_REPO);
+	notifyFullUpdate();
 }
 
 void activateRepo(REPO_DATA repo)
@@ -299,6 +330,16 @@ void activateRepo(REPO_DATA repo)
 	}
 	
 	MUTEX_UNLOCK(cacheMutex);
+	
+	if(!alreadyActive)
+	{
+		//We now, we need to update the new repo to reflect changes
+		ICONS_UPDATE * iconData = refreshRepo(&repo, false);
+
+		createNewThread(updateProjectImages, iconData);
+		syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
+		notifyFullUpdate();
+	}
 }
 
 void deleteSubRepo(uint64_t repoID)
@@ -360,4 +401,5 @@ void deleteSubRepo(uint64_t repoID)
 	}
 	
 	MUTEX_UNLOCK(cacheMutex);
+	syncCacheToDisk(SYNC_REPO);
 }

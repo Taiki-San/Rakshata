@@ -183,7 +183,7 @@
 					}
 				}
 				
-				free(cache[posFinal - offsetDeleted]);
+				free(cache[posFinal]);
 				
 				memcpy(&(cache[posFinal]), &(cache[posFinal + 1]), (sizeCache - posFinal - 1) * sizeof(PROJECT_DATA *));
 				offsetDeleted++;

@@ -18,7 +18,7 @@
 	
 	if(self != nil)
 	{
-		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&nbElemFull :&nbElemActivated : YES])
+		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&sortedToFiltered :&nbElemFull :&nbElemActivated : YES])
 			return nil;
 		
 		//Okay, we have all our data, we can register for updates
@@ -34,7 +34,17 @@
 	return self;
 }
 
-- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated : (BOOL) includeCacheRefresh
+//We craft two lists in order to make diffing feasable in O(n)
+
+//cacheList contain a sorted list of the cacheID in the active projects
+//orderedToSorted contain the indexes of the elements whose cacheID was at this position in cacheList
+//filteredToSorted tell the index of the item of rank N in case of filters
+
+//cacheList makes it easy to detect insertion and deletion
+//orderedToSorted makes it easy to detect moves
+//filteredToSorted serve as a jumptable to deal with filters
+
+- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint **) _orderedToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated : (BOOL) includeCacheRefresh
 {
 	if(!includeCacheRefresh && project == NULL)
 		includeCacheRefresh = YES;
@@ -64,23 +74,33 @@
 		return NO;
 	}
 	
+	const uint invalidValue = UINT_MAX;
+
 	//We alloc memory for everything
 	*_cacheList = malloc(*_nbElemFull * sizeof(uint));
 	*_activatedList = calloc(*_nbElemFull, sizeof(BOOL));
 	*_filteredToSorted = malloc(*_nbElemActivated * sizeof(uint));
+	*_orderedToSorted = malloc(*_nbElemFull * sizeof(uint));
 	
-	if(*_cacheList == NULL || *_activatedList == NULL || *_filteredToSorted == NULL)
+	if(*_cacheList == NULL || *_activatedList == NULL || *_filteredToSorted == NULL || 	*_orderedToSorted == NULL)
 	{
 		if(includeCacheRefresh)
+		{
 			freeProjectData(*_project);
+			*_project = NULL;
+		}
 		free(filtered);
-		free(*_cacheList);
-		free(*_activatedList);
-		free(*_filteredToSorted);
+		free(*_cacheList);			*_cacheList = NULL;
+		free(*_activatedList);		*_activatedList = NULL;
+		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
 	else
+	{
 		memset(*_cacheList, UINT_MAX, *_nbElemFull * sizeof(uint));
+		memset(*_orderedToSorted, invalidValue, *_nbElemFull * sizeof(uint));
+	}
 	
 	//We look for the highest value
 	uint highestValue = *_nbElemFull;
@@ -93,25 +113,32 @@
 	if(highestValue == UINT_MAX)	//We would get an overflow
 	{
 		if(includeCacheRefresh)
+		{
 			freeProjectData(*_project);
+			*_project = NULL;
+		}
 		free(filtered);
-		free(*_cacheList);
-		free(*_activatedList);
-		free(*_filteredToSorted);
+		free(*_cacheList);			*_cacheList = NULL;
+		free(*_activatedList);		*_activatedList = NULL;
+		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
 	
 	//We create a buffer large enough to fit every data at the index of its value
-	const uint invalidValue = UINT_MAX;
 	uint * collector = malloc(++highestValue * sizeof(uint));
 	if(collector == NULL)
 	{
 		if(includeCacheRefresh)
+		{
 			freeProjectData(*_project);
+			*_project = NULL;
+		}
 		free(filtered);
-		free(*_cacheList);
-		free(*_activatedList);
-		free(*_filteredToSorted);
+		free(*_cacheList);			*_cacheList = NULL;
+		free(*_activatedList);		*_activatedList = NULL;
+		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
 	memset(collector, invalidValue, highestValue * sizeof(uint));
@@ -121,15 +148,12 @@
 		collector[(*_project)[i].cacheDBID] = i;
 	
 	//We compact the large dataset in the reduced final structure
-	uint orderedToSorted[*_nbElemFull];
-	memset(orderedToSorted, invalidValue, *_nbElemFull * sizeof(uint));
-	
 	for(uint i = 0, pos = 0; i < highestValue; i++)
 	{
 		if(collector[i] != invalidValue)
 		{
 			(*_cacheList)[pos] = i;
-			orderedToSorted[pos++] = collector[i];
+			(*_orderedToSorted)[pos++] = collector[i];
 		}
 	}
 	
@@ -147,7 +171,7 @@
 		{
 			if(filtered[filteredPos] == (*_cacheList)[i])
 			{
-				(*_activatedList)[orderedToSorted[i]] = YES;
+				(*_activatedList)[(*_orderedToSorted)[i]] = YES;
 				filteredPos++;
 			}
 		}
@@ -333,10 +357,10 @@
 - (void) updateContext : (BOOL) includeCacheRefresh
 {
 	PROJECT_DATA * newProject;
-	uint * newCacheList, * newFilteredToSorted, newNbElemFull, newNbElemActivated;
+	uint * newCacheList, * newFilteredToSorted, * newSortedToFiltered, newNbElemFull, newNbElemActivated;
 	BOOL * newActivatedList;
 	
-	if([self initData:&newProject :&newCacheList :&newActivatedList :&newFilteredToSorted :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
+	if([self initData:&newProject :&newCacheList :&newActivatedList :&newFilteredToSorted :&newSortedToFiltered :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
 	{
 		uint removal[nbElemActivated], insertion[newNbElemActivated], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
 		uint _filteredToSorted[nbElemActivated], _newFilteredToSorted[newNbElemActivated];
@@ -350,12 +374,12 @@
 			if(cacheList[_filteredToSorted[posOld]] < newCacheList[_newFilteredToSorted[posNew]])
 			{
 				_filteredToSorted[posOld] = UINT_MAX;	//Invalidate the entry
-				removal[nbRemoval++] = posOld++;
+				removal[nbRemoval++] = sortedToFiltered[posOld++];
 			}
 			else if(cacheList[_filteredToSorted[posOld]] > newCacheList[_newFilteredToSorted[posNew]])
 			{
 				_newFilteredToSorted[posNew] = UINT_MAX;
-				insertion[nbInsertion++] = posNew++;
+				insertion[nbInsertion++] = newSortedToFiltered[posNew++];
 			}
 			else
 			{
@@ -364,20 +388,27 @@
 			}
 		}
 
-		while(posOld < nbElemActivated)			{	_filteredToSorted[posOld] = UINT_MAX;		removal[nbRemoval++] = posOld++;		}
-		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[posNew] = UINT_MAX;	insertion[nbInsertion++] = posNew++;	}
+		while(posOld < nbElemActivated)			{	_filteredToSorted[posOld] = UINT_MAX;		removal[nbRemoval++] = sortedToFiltered[posOld++];			}
+		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[posNew] = UINT_MAX;	insertion[nbInsertion++] = newSortedToFiltered[posNew++];	}
 		
 		//Then we look for moves
 		posOld = posNew = 0;
+		uint deletedInOld = 0, deletedInNew = 0;
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
 		{
 			if(_filteredToSorted[posOld] == UINT_MAX)
+			{
 				posOld++;
+				deletedInOld++;
+			}
 
 			else if(_newFilteredToSorted[posNew] == UINT_MAX)
+			{
 				posNew++;
+				deletedInNew++;
+			}
 			
-			else if(_filteredToSorted[posOld] != newFilteredToSorted[posNew])
+			else if(_filteredToSorted[posOld] - deletedInOld != newFilteredToSorted[posNew] - deletedInNew)
 			{
 				removal[nbRemoval++] = posOld++;
 				insertion[nbInsertion++] = posNew++;
@@ -398,6 +429,7 @@
 		project = newProject;
 		cacheList = newCacheList;
 		filteredToSorted = newFilteredToSorted;
+		sortedToFiltered = newSortedToFiltered;
 		activatedList = newActivatedList;
 		nbElemActivated = newNbElemActivated;
 		nbElemFull = newNbElemFull;
@@ -411,6 +443,13 @@
 		//Apply changes, yay
 		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
 		
+		if(nbRemoval)
+			qsort(removal, nbRemoval, sizeof(uint), sortNumbers);
+		
+		if(nbInsertion)
+			qsort(insertion, nbInsertion, sizeof(uint), sortNumbers);
+
+		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
 		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
 		for(uint i = 0; i < nbInsertion; i++)
 		{

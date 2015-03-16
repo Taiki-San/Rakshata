@@ -20,6 +20,11 @@ void changeTo(char *string, char toFind, char toPut)
     }
 }
 
+int sortNumbers(const void *a, const void *b)
+{
+    return ( *(uint*)a - *(uint*)b );
+}
+
 int sortProjects(const void *a, const void *b)
 {
     const PROJECT_DATA *struc1 = a;

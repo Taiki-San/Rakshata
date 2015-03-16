@@ -288,12 +288,15 @@ void updateProjects()
 						{
 							for(posRepo = 0; posRepo < realNumberOfRepo && (repo[posRepo]->parentRepoID != oldData[posBase].repo->parentRepoID || repo[posRepo]->repoID != oldData[posBase].repo->repoID); posRepo++);
 							
+							//Okay, the repo was probably deleted
 							if(posRepo == realNumberOfRepo)
 							{
+#ifdef DEV_VERSION
 								char temp[100+LONGUEUR_URL];
-								snprintf(temp, sizeof(temp), "Missing repo, WTF? %d - %d", oldData[posBase].repo->parentRepoID, oldData[posBase].repo->repoID);
+								snprintf(temp, sizeof(temp), "Repo deleted during refresh? %d - %d", oldData[posBase].repo->parentRepoID, oldData[posBase].repo->repoID);
 								logR(temp);
-								
+#endif
+								posBase = posEnd;								
 								continue;
 							}
 						}

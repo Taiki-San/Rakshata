@@ -159,6 +159,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)
 void changeTo(char *string, char toFind, char toPut);
+int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 int sortRootRepo(const void *a, const void *b);
