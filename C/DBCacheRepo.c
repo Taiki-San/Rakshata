@@ -80,7 +80,7 @@ void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 
 void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 {
-	if(newRoot == NULL)
+	if(newRoot == NULL || newRootEntries == 0)
 		return;
 	
 	uint lengthRepoCopy = lengthRootRepo;
@@ -103,7 +103,6 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 
 	//Remove collisions in the case there might be
 	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
-
 	
 	//Actual update
 	MUTEX_LOCK(cacheMutex);
@@ -202,6 +201,8 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 			currentSub = 0;
 		}
 	}
+	
+	for(; currentRoot < newRootEntries; free(tmpRepo[currentRoot++]));
 	
 	repoList = mainList;
 	MUTEX_UNLOCK(cacheMutex);
@@ -307,7 +308,7 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveE
 	{
 		for(uint pos = 0; pos < nbSubRepo; pos++)
 		{
-			if(!validated[pos])
+			if(!validated[pos] && repoList[pos] != NULL)
 				repoList[pos]->active = false;
 		}
 	}
