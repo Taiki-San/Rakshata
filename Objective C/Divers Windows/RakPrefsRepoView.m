@@ -14,7 +14,7 @@ enum
 {
 	BORDER = 5,
 	WIDTH = 800,
-	HEIGHT = 400,
+	HEIGHT = 410,
 	
 	RADIO_OFFSET = 35,
 	TEXT_RADIO_OFFSET = 5
@@ -66,7 +66,7 @@ enum
 			radioSwitch.target = self;
 			radioSwitch.action = @selector(buttonClicked);
 			
-			[radioSwitch setFrameOrigin:NSMakePoint(RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - radioSwitch.bounds.size.height / 2)];
+			[radioSwitch setFrameOrigin:NSMakePoint(RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - radioSwitch.bounds.size.height / 2 + 3)];
 			
 			[self addSubview:radioSwitch];
 			
@@ -76,9 +76,23 @@ enum
 				switchMessage.clicTarget = self;
 				switchMessage.clicAction = @selector(textClicked);
 
-				[switchMessage setFrameOrigin:NSMakePoint(NSMaxX(radioSwitch.frame) + TEXT_RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - switchMessage.bounds.size.height / 2)];
+				[switchMessage setFrameOrigin:NSMakePoint(NSMaxX(radioSwitch.frame) + TEXT_RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - switchMessage.bounds.size.height / 2 + 3)];
 				[self addSubview:switchMessage];
 			}
+		}
+		
+		placeholder = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-REPO-PLACEHOLDER-TUTORIAL", nil) :[self placeholderColor]];
+		if(placeholder != nil)
+		{
+			[placeholder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:13]];
+			[placeholder.cell setWraps:YES];
+			
+			CGFloat availableWidth = (WIDTH - BORDER - PREFS_REPO_LIST_WIDTH);
+			placeholder.fixedWidth = availableWidth * 0.8;
+			
+			[placeholder setFrameOrigin:NSMakePoint(BORDER + PREFS_REPO_LIST_WIDTH + availableWidth / 10, HEIGHT / 2 - placeholder.bounds.size.height / 2)];
+			
+			[self addSubview:placeholder];
 		}
 	}
 	
@@ -109,6 +123,11 @@ enum
 	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
 }
 
+- (NSColor *) placeholderColor
+{
+	return [Prefs getSystemColor:GET_COLOR_PLACEHOLDER_REPO :nil];
+}
+
 #pragma mark - Data interface
 
 - (void) textClicked
@@ -123,6 +142,7 @@ enum
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 
 		details.animator.alphaValue = 0;
+		placeholder.animator.alphaValue = 1;
 
 	} completionHandler:^{
 		[self selectionUpdate:isRoot :isRoot ? activeElementInRoot : activeElementInSubRepo];
@@ -175,7 +195,10 @@ enum
 	if(_data == NULL)
 	{
 		if(details.alphaValue)
+		{
 			details.animator.alphaValue = 0;
+			placeholder.animator.alphaValue = 1;
+		}
 
 		if(list.rootMode != isRoot)
 			list.rootMode = isRoot;
@@ -197,6 +220,9 @@ enum
 			[list selectIndex : index];
 		}];
 	}
+	
+	if(placeholder.alphaValue)
+		placeholder.animator.alphaValue = 0;
 	
 	if(details == nil)
 	{

@@ -371,6 +371,13 @@ enum
 		case GET_COLOR_BORDER_PREFS_HEADER:
 		{
 			output = [NSColor colorWithDeviceWhite:70/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_PLACEHOLDER_REPO:
+		{
+			output = [NSColor colorWithDeviceWhite:200 alpha:0.7];
+			break;
 		}
 	}
 	

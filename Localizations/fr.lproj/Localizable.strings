@@ -140,6 +140,7 @@
 "PREFS-DELETE-CANCEL" = "Annuler";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 
+"PREFS-REPO-PLACEHOLDER-TUTORIAL" = "Vous pouvez ici contrôler les sources auxquelles vous êtes abonnés.\n\nVous pouvez purger le contenu installé ou supprimer de Rakshata les sources de votre choix.\n\nVous pouvez aussi controller les sources à travers les groupes auxquelles elles appartiennent (par exemple, activer ou désactiver les sources du groupe).";
 "PREFS-REPO-SWITCH-MESSAGE" = "Afficher les groupes de sources";
 
 "PREFS-DELETE-KILL-USE" = "Arrêt d'utilisation des ressources à supprimer";

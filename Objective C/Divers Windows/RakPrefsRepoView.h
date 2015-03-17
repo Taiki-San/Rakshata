@@ -54,7 +54,7 @@
 	RakPrefsRepoDetails * details;
 	
 	RakRadioButton * radioSwitch;
-	RakText * switchMessage;
+	RakText * switchMessage, * placeholder;
 }
 
 - (void *) dataForMode : (BOOL) rootMode index : (uint) index;
