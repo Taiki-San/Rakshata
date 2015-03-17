@@ -106,7 +106,8 @@
 			NSRect newWindowFrame = window.frame;
 
 			CGFloat diff = old.bounds.size.height - new.bounds.size.height;
-			newWindowFrame.size.height -= diff;
+
+			newWindowFrame.size.height -= diff + 0.5;
 			newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff / 2);
 			
 			diff = old.bounds.size.width - new.bounds.size.width;
