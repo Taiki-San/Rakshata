@@ -16,7 +16,6 @@
 
 #import "RakSynopsis.h"
 #import "RakCTTools.h"
-#import "RakCTCoreViewButtons.h"
 #import "RakCTHeader.h"
 
 #import "RakCTSerieHeader.h"

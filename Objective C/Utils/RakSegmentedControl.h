@@ -10,16 +10,19 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTCoreViewButtons : NSSegmentedControl
+@interface RakSegmentedControl : NSSegmentedControl
 {
-	RakCTAnimationController * animationController;
+	id animationController;
 }
 
 @property (unsafe_unretained) id postAnimationTarget;
 @property SEL postAnimationAction;
 
+- (id) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
+
+- (NSRect) getButtonFrame : (NSRect) superviewFrame;
+
 - (void) resizeAnimation : (NSRect) frameRect;
 - (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 
 @end
-

@@ -257,6 +257,24 @@
 
 @end
 
+@implementation RakCTCoreViewButtons
+
+- (NSRect) getButtonFrame : (NSRect) superviewFrame
+{
+	NSRect frame = self.frame;
+	
+	frame.size.height = CT_READERMODE_HEIGHT_CT_BUTTON;
+	if(frame.size.width > superviewFrame.size.width)
+		frame.size.width = superviewFrame.size.width;
+	
+	frame.origin.y = superviewFrame.size.height - frame.size.height;
+	frame.origin.x = superviewFrame.size.width / 2 - frame.size.width / 2;
+	
+	return frame;
+}
+
+@end
+
 NSString * priceString(uint price)
 {
 	if(price != 0)

@@ -53,4 +53,8 @@
 
 @end
 
+@interface RakCTCoreViewButtons : RakSegmentedControl
+
+@end
+
 NSString * priceString(uint price);

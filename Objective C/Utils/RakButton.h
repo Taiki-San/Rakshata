@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #import "RakRadioButton.h"
+#import "RakSegmentedControl.h"
 
 @interface RakButton: NSButton
 {

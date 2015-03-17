@@ -10,28 +10,31 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@implementation RakCTCoreViewButtons
+@implementation RakSegmentedControl
 
-- (id)initWithFrame:(NSRect)frame
+- (id) initWithFrame : (NSRect) frame : (NSArray *) buttonMessages
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	
 	if (self != nil)
 	{
-		uint widthButton;
+		__block uint widthButton;
 		
-		[self setSegmentCount:2];
-		[self setLabel:NSLocalizedString(@"CHAPTERS", nil) forSegment:0];
-		[self setEnabled:NO forSegment:0];
-		[self sizeToFit];
-		widthButton = self.frame.size.width - 20;
-		[self setWidth:widthButton forSegment:0];
+		[self setSegmentCount:[buttonMessages count]];
 		
-		[self setLabel:NSLocalizedString(@"VOLUMES", nil) forSegment:1];
-		[self setEnabled:NO forSegment:1];
-		[self sizeToFit];
-		widthButton = self.frame.size.width - widthButton - 1;	//Hack to properly draw the buttons below
-		[self setWidth:widthButton forSegment:1];
+		[buttonMessages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			[self setLabel:obj forSegment:idx];
+			[self setEnabled:NO forSegment:idx];
+			[self sizeToFit];
+			
+			if(idx == 0)
+				widthButton = self.frame.size.width - 20;
+			else
+				widthButton = self.frame.size.width - widthButton - 1;	//Hack to properly draw the buttons below
+			
+			[self setWidth:widthButton forSegment:idx];
+			
+		}];
 		
 		[self setFrameOrigin:[self getButtonFrame:frame].origin];
 	}
@@ -41,16 +44,7 @@
 
 - (NSRect) getButtonFrame : (NSRect) superviewFrame
 {
-	NSRect frame = self.frame;
-	
-	frame.size.height = CT_READERMODE_HEIGHT_CT_BUTTON;
-	if(frame.size.width > superviewFrame.size.width)
-		frame.size.width = superviewFrame.size.width;
-	
-	frame.origin.y = superviewFrame.size.height - frame.size.height;
-	frame.origin.x = superviewFrame.size.width / 2 - frame.size.width / 2;
-	
-	return frame;
+	return superviewFrame;
 }
 
 - (void) setLabel:(NSString *)label forSegment:(NSInteger)segment
@@ -63,7 +57,7 @@
 {
 	NSRect newFrame = [self getButtonFrame:frameRect];
 	[super setFrame: newFrame];
-
+	
 	if(newFrame.size.width == frameRect.size.width)
 	{
 		[self sizeToFit];
@@ -96,7 +90,7 @@
 	if(animationController == nil)
 	{
 		animationController = [[RakCTAnimationController alloc] init: initialPos : [newValue integerValue] - initialPos : self.cell];
-
+		
 		if(animationController == nil)
 			return NO;
 	}
@@ -105,7 +99,7 @@
 	
 	[(RakCTSelection*) self.superview feedAnimationController:animationController];
 	[animationController startAnimation];
-
+	
 	return YES;
 }
 

@@ -143,7 +143,7 @@
 
 - (void) setupButtons : (BOOL*) isTome
 {
-	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame:self.bounds];
+	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame : _bounds : @[NSLocalizedString(@"CHAPTERS", nil), NSLocalizedString(@"VOLUMES", nil)]];
 	
 	if(!data.isInitialized)
 	{
