@@ -43,8 +43,8 @@
 		[header selectElem:PREFS_BUTTON_CODE_REPO];
 		[contentView addSubview:header];
 	}
-	
-	[self focusChanged:PREFS_BUTTON_CODE_REPO];
+	else
+		[self focusChanged:PREFS_BUTTON_CODE_REPO];
 }
 
 - (Class) contentClass
@@ -74,13 +74,13 @@
 - (void) focusChanged : (byte) newTab
 {
 	NSView * old = [self viewForCode : activeView : NO], * new = [self viewForCode : newTab : YES];
-	
+
 	if(old == nil)
 	{
 		NSRect newWindowFrame = window.frame;
-		NSSize oldSize = old == nil ? [self mainFrame].size : old.bounds.size;
+		NSSize oldSize = [self mainFrame].size;
 		
-		CGFloat diff = oldSize.height - new.bounds.size.height;
+		CGFloat diff = oldSize.height + 4 - new.bounds.size.height;
 		newWindowFrame.size.height -= diff;
 		newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff / 2);
 		
@@ -91,7 +91,7 @@
 		[header setFrameSize:NSMakeSize(newWindowFrame.size.width - 4, PREF_BUTTON_BAR_HEIGHT)];
 		[window setFrame:newWindowFrame display:YES animate:NO];
 	}
-	else
+	else if(old != new)
 	{
 		new.alphaValue = 0;
 		new.hidden = NO;
@@ -167,7 +167,7 @@
 
 		case PREFS_BUTTON_CODE_REPO:
 		{
-			if(generalView != nil)
+			if(repoView != nil)
 				return repoView;
 			
 			else if(createIfNeeded)
