@@ -320,7 +320,7 @@ enum
 
 - (void) cancelSelection
 {
-	activationButton.state = NSOffState;
+	activationButton.state = NSOnState;
 }
 
 #pragma mark - Drawing
