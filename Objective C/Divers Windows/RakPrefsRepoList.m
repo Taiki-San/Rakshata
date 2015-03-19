@@ -50,6 +50,8 @@ enum
 {
 	BOOL refreshing;
 	
+	uint lastTransmittedSelectedRowIndex;
+	
 	NSTableColumn * _detailColumn;
 }
 
@@ -79,6 +81,8 @@ enum
 			}
 		}
 		
+		lastTransmittedSelectedRowIndex = LIST_INVALID_SELECTION;
+		
 		scrollView.wantsLayer = YES;
 		scrollView.layer.cornerRadius = 3;
 		scrollView.drawsBackground = YES;
@@ -91,7 +95,24 @@ enum
 - (void) tableViewSelectionDidChange:(NSNotification *)notification
 {
 	if(!refreshing)
-		[_responder selectionUpdate:_rootMode :selectedRowIndex];
+	{
+		if(selectedRowIndex != lastTransmittedSelectedRowIndex)
+		{
+			lastTransmittedSelectedRowIndex = selectedRowIndex;
+			[_responder selectionUpdate:_rootMode :selectedRowIndex];
+		}
+		else
+		{
+			[scrollView.nextResponder mouseUp:nil];
+		}
+	}
+}
+
+- (void) resetSelection:(NSTableView *)tableView
+{
+	lastTransmittedSelectedRowIndex = VALEUR_FIN_STRUCT;
+	
+	[super resetSelection:tableView];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -259,9 +280,17 @@ enum
 		{
 			if(isRoot)
 			{
-				if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 0)
+				uint nombreSubrepo = 0;
+				
+				for(uint i = 0, length = ((ROOT_REPO_DATA *) repo)->nombreSubrepo; i < length; i++)
+				{
+					if(((ROOT_REPO_DATA *) repo)->subRepo[i].active)
+						nombreSubrepo++;
+				}
+				
+				if(nombreSubrepo == 0)
 					string = NSLocalizedString(@"PREFS-ROOT-NO-ACTIVE-REPO", nil);
-				else if(((ROOT_REPO_DATA *) repo)->nombreSubrepo == 1)
+				else if(nombreSubrepo == 1)
 					string = NSLocalizedString(@"PREFS-ROOT-ONE-ACTIVE-REPO", nil);
 				else
 					string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-%zu-ACTIVE-REPO", nil), ((ROOT_REPO_DATA *) repo)->nombreSubrepo];

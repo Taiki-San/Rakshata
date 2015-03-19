@@ -99,6 +99,16 @@ enum
 	return self;
 }
 
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	if(details.alphaValue != 0)
+	{
+		[self selectionUpdate:list.rootMode :UINT_MAX];
+	}
+}
+
+#pragma mark - UI
+
 - (NSRect) frame
 {
 	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, WIDTH, HEIGHT);
@@ -202,6 +212,8 @@ enum
 
 		if(list.rootMode != isRoot)
 			list.rootMode = isRoot;
+		else
+			[list resetSelection:nil];
 		
 		return;
 	}
