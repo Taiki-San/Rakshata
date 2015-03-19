@@ -14,7 +14,7 @@ enum
 {
 	IMAGE_BORDER = 50,
 	IMAGE_BORDER_ROOT = 10,
-	BUTTON_BORDER = 40,
+	BUTTON_BORDER = 60,
 	BUTTON_SEPARATOR = 10,
 	SYNOPSIS_HEIGHT = 80,
 	SYNOPSIS_VERTICAL_BORDER = 5,
@@ -59,11 +59,11 @@ enum
 
 - (NSRect) getFrame : (NSRect) parentFrame
 {
-	parentFrame.origin.x = PREFS_REPO_LIST_WIDTH;
+	parentFrame.origin.x = PREFS_REPO_LIST_WIDTH + 10;
 	parentFrame.origin.y = CONTENT_BORDER;
 	
-	parentFrame.size.width -= PREFS_REPO_LIST_WIDTH;
-	parentFrame.size.height -= CONTENT_BORDER;
+	parentFrame.size.width -= parentFrame.origin.x;
+	parentFrame.size.height -= parentFrame.origin.y;
 	
 	return parentFrame;
 }
@@ -512,6 +512,21 @@ enum
 			 fromRect:NSZeroRect
 			operation:NSCompositeSourceOver
 			 fraction:1.0];
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	NSPoint cursor = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	
+	//Check the X coordinate
+	if(flushButton != nil && deleteButton != nil && cursor.x > flushButton.frame.origin.x && cursor.x < NSMaxX(deleteButton.frame))
+	{
+		//Okay, we are between the two buttons, let's check on the Y coordinate
+		if(cursor.y > MIN(flushButton.frame.origin.y, deleteButton.frame.origin.y) && cursor.y < NSMaxY(imageFrame))
+			return;
+	}
+	
+	[super mouseUp:theEvent];
 }
 
 @end
