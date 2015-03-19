@@ -21,10 +21,10 @@ sqlite3_stmt * getAddToCacheRequest()
 	return request;
 }
 
-bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled)
+uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled, bool wantID)
 {
 	if(!data.isInitialized)
-		return false;
+		return 0;
 	
 	sqlite3_stmt * internalRequest = NULL;
 	
@@ -40,8 +40,6 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	lengthP = wchar_to_utf8(data.projectName, lengthP, utf8Project, sizeof(utf8Project), 0);			utf8Project[lengthP] = 0;
 	lengthD = wchar_to_utf8(data.description, lengthD, utf8Descriptions, sizeof(utf8Descriptions), 0);	utf8Descriptions[lengthD] = 0;
 	lengthA = wchar_to_utf8(data.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
-	
-	bool output;
 	
 	sqlite3_bind_int64(internalRequest, 1, repoID);
 	sqlite3_bind_int(internalRequest, 2, data.projectID);
@@ -62,12 +60,36 @@ bool addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	sqlite3_bind_int64(internalRequest, 17, (int64_t) data.tomesFull);
 	sqlite3_bind_int(internalRequest, 18, data.favoris);
 	
-	output = sqlite3_step(internalRequest) == SQLITE_DONE;
+	bool output = sqlite3_step(internalRequest) == SQLITE_DONE;
 	
-	sqlite3_reset(internalRequest);
+	if(request != NULL)
+		sqlite3_reset(internalRequest);
+	else
+		sqlite3_finalize(internalRequest);
+	
+	if(!output)
+		return false;
+	
 	nbElemInCache++;
 	
-	return output;
+	if(!wantID)
+		return true;
+	
+	//Eh, we need to return the new cacheID
+	
+	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_ID)"FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &internalRequest, NULL);
+	
+	sqlite3_bind_int64(internalRequest, 1, repoID);
+	sqlite3_bind_int(internalRequest, 2, data.projectID);
+
+	if(sqlite3_step(internalRequest) != SQLITE_ROW)
+		return false;
+
+	uint cacheID = sqlite3_column_int(internalRequest, 0);
+	
+	sqlite3_finalize(internalRequest);
+	
+	return cacheID;
 }
 
 bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)

@@ -220,10 +220,9 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		
 		else						//Nouveau projet
 		{
-			newData[posNew].cacheDBID = 0;
-			
-			addToCache(request, newData[posNew], repoID, false);
-			insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
+			newData[posNew].cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
+			if(newData[posNew].cacheDBID != 0)
+				insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
 			
 			posNew++;
 		}
@@ -249,10 +248,9 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	while (posNew < magnitudeNewData)
 	{
-		newData[posNew].cacheDBID = 0;
-		
-		addToCache(request, newData[posNew], repoID, false);
-		insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
+		newData[posNew].cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
+		if(newData[posNew].cacheDBID != 0)
+			insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
 		
 		posNew++;
 	}

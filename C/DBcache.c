@@ -157,7 +157,7 @@ uint setupBDDCache()
 				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
-					if(addToCache(request, projects[pos], getRepoID(projects[pos].repo), isInstalled(pathInstall)))
+					if(addToCache(request, projects[pos], getRepoID(projects[pos].repo), isInstalled(pathInstall), false))
 					{
 						projects[pos].cacheDBID = cacheID++;
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
