@@ -31,7 +31,7 @@
 		[self resetWindow];
 	}
 	
-	[window orderFront:self];
+	[window makeKeyAndOrderFront:self];
 }
 
 - (BOOL) windowShouldClose:(id)sender
