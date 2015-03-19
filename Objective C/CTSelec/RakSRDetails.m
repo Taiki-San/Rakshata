@@ -153,6 +153,8 @@ enum
 		_project = project;
 		
 		[self setFrame:_frame];
+		
+		[self setNeedsDisplay:YES];
 	}
 	else
 	{
