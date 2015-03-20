@@ -12,6 +12,12 @@
 
 #define NOTIFICATION_SEARCH_UPDATED	@"RakNotificationSearchUpdated"
 
+@interface RakSRStupidDataStructure : NSObject
+
+@property uint index;
+
+@end
+
 @interface RakSRContentManager : NSObject
 {
 	BOOL _initialized;

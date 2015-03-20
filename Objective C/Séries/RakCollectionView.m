@@ -78,15 +78,12 @@
 
 #pragma mark - Generate views
 
-- (NSCollectionViewItem *) newItemForRepresentedObject:(id)object
+- (NSCollectionViewItem *) newItemForRepresentedObject : (RakSRStupidDataStructure *) object
 {
-	uint cacheCode;
-	
-	if(object == nil || ![object isKindOfClass:[NSNumber class]])
+	if(object == nil || ![object isKindOfClass:[RakSRStupidDataStructure class]])
 		return nil;
 	
-	cacheCode = [object unsignedIntValue];	
-	PROJECT_DATA * project = [_manager getDataAtIndex:cacheCode];
+	PROJECT_DATA * project = [_manager getDataAtIndex:object.index];
 	if(project == NULL)
 		return nil;
 	

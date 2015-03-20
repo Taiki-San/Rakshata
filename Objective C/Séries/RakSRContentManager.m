@@ -10,6 +10,9 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@implementation RakSRStupidDataStructure
+@end
+
 @implementation RakSRContentManager
 
 - (instancetype) init
@@ -27,8 +30,13 @@
 		
 		_sharedReference = [NSMutableArray array];
 		
+		RakSRStupidDataStructure * element;
 		for(uint i = 0; i < nbElemActivated; i++)
-			[_sharedReference addObject:@(filteredToSorted[i])];
+		{
+			element = [[RakSRStupidDataStructure alloc] init];
+			element.index = filteredToSorted[i];
+			[_sharedReference addObject:element];
+		}
 	}
 	
 	return self;
@@ -451,9 +459,14 @@
 
 		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
 		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
+		
+		RakSRStupidDataStructure * element;
 		for(uint i = 0; i < nbInsertion; i++)
 		{
-			[content insertObject:@(filteredToSorted[insertion[i]]) atIndex:insertion[i]];
+			element = [[RakSRStupidDataStructure alloc] init];
+			element.index = filteredToSorted[insertion[i]];
+
+			[content insertObject:element atIndex:insertion[i]];
 		}
 	}
 }
