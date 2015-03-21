@@ -424,7 +424,7 @@
 	{
 		self.distractionFree = NO;
 		[Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0];
-		[bottomBar.animator setAlphaValue:1];
+		[self fadeBottomBar:1];
 	}
 }
 
