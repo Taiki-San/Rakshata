@@ -173,6 +173,8 @@
 {
 	if(!textCell)
 		[self setImage:nil];
+	
+	[Prefs deRegisterForChanges:self];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

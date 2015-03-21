@@ -10,6 +10,11 @@
  **                                                                                         **
  ********************************************************************************************/
 
+enum
+{
+	BORDER_BUTTON = 20
+};
+
 @implementation RakSegmentedControl
 
 - (id) initWithFrame : (NSRect) frame : (NSArray *) buttonMessages
@@ -18,21 +23,26 @@
 	
 	if (self != nil)
 	{
-		__block uint widthButton;
+		__block uint oldWidthButton = 0;
 		
 		[self setSegmentCount:[buttonMessages count]];
 		
 		[buttonMessages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+
 			[self setLabel:obj forSegment:idx];
 			[self setEnabled:NO forSegment:idx];
 			[self sizeToFit];
 			
+			CGFloat widthButton;
+
 			if(idx == 0)
-				widthButton = self.frame.size.width - 20;
+				widthButton = self.frame.size.width - BORDER_BUTTON;
 			else
-				widthButton = self.frame.size.width - widthButton - 1;	//Hack to properly draw the buttons below
+				widthButton = self.frame.size.width - oldWidthButton - 1;	//Hack to properly draw the buttons below
 			
 			[self setWidth:widthButton forSegment:idx];
+			
+			oldWidthButton += widthButton;
 			
 		}];
 		

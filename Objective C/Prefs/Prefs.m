@@ -79,6 +79,9 @@ enum
 	if(prefsCache == nil)
 		[self initCache];
 	
+	if(prefsCache.themeCode == newTheme)
+		return;
+	
 	prefsCache.themeCode = newTheme;
 	
 	RakAppDelegate * core = [NSApp delegate];

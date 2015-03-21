@@ -46,6 +46,8 @@
 	tabCT = [tabCT init:contentView : [context objectAtIndex:2]];
 	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
 	tabReader = [tabReader init:contentView : [context objectAtIndex:4]];
+	
+	[self.window makeKeyWindow];
 }
 
 - (RakContentView*) getContentView

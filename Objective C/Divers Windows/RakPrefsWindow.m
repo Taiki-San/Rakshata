@@ -155,7 +155,7 @@
 
 			else if(createIfNeeded)
 			{
-				generalView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				generalView = [[RakPrefsGeneralView alloc] initWithFrame:[self mainFrame]];
 				
 				if(generalView != nil)
 					[contentView addSubview:generalView];
