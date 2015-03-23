@@ -14,7 +14,8 @@ enum
 {
 	BORDER = 200,
 	THEME_BASE_Y = 350,
-	EMAIL_BASE_Y = 270
+	EMAIL_BASE_Y = 270,
+	RESET_BASE_Y = 200
 };
 
 @interface RakPrefsGeneralView ()
@@ -23,7 +24,7 @@ enum
 	
 	RakText * textTheme, * email;
 	
-	RakButton * disconnect;
+	RakButton * disconnect, * resetRemind;
 }
 
 @end
@@ -81,6 +82,16 @@ enum
 		}
 		else if(email != nil)
 			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+		
+		resetRemind = [RakButton allocWithText:@"Réinitialiser les alertes" :NSZeroRect];
+		if(resetRemind != nil)
+		{
+			[resetRemind sizeToFit];
+			
+			[resetRemind setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - resetRemind.bounds.size.width / 2, RESET_BASE_Y)];
+			
+			[self addSubview:resetRemind];
+		}
 	}
 	
 	return self;

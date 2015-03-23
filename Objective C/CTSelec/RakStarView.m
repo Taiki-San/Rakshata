@@ -26,7 +26,7 @@ enum
 		stars = [[NSImageView alloc] init];	//NSMakeRect(0, 0, 50, 9)
 		if(stars != nil)
 		{
-			stars.image = [[NSImage alloc] initByReferencingFile:@"stars.png"];
+			stars.image = [[NSBundle mainBundle] imageForResource:@"stars"];
 			[stars setFrame: (NSRect) {NSZeroPoint, stars.image.size}];
 
 			[self addSubview:stars];
