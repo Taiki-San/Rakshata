@@ -256,7 +256,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	}
 	
 	flushSearchJumpTable(searchData);
-	sqlite3_finalize(request);
+	destroyRequest(request);
 }
 
 /**************		REFRESH ICONS		**************/

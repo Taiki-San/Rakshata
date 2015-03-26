@@ -46,50 +46,50 @@ void buildSearchTables(sqlite3 *_cache)
 	
 	sqlite3_stmt* request = NULL;
 	
-	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
-	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_TAG"("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDBS_tagCode)" INTEGER NOT NULL, "DBNAMETOID(RDBS_tagType)" INTEGER NOT NULL);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_TAG"("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDBS_tagCode)" INTEGER NOT NULL, "DBNAMETOID(RDBS_tagType)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return;
 	}
 
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
-	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
-	if(sqlite3_prepare_v2(_cache, "CREATE TABLE "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL);", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return;
 	}
 	
 	//We need at least one (invalid) data :/
-	if(sqlite3_prepare_v2(_cache, "	INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "	INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return;
 	}
 	
 	initialized = true;
-	sqlite3_finalize(request);
+	destroyRequest(request);
 }
 
 void * buildSearchJumpTable(sqlite3 * _cache)
@@ -106,52 +106,52 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	if(output == NULL)
 		return NULL;
 	
-	if(sqlite3_prepare_v2(_cache, "INSERT INTO "TABLE_NAME_AUTHOR"("DBNAMETOID(RDB_authors)") values(?1);", -1, &(output->addAuthor), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_AUTHOR"("DBNAMETOID(RDB_authors)") values(?1);", &(output->addAuthor)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TAG)");", -1, &(output->addTag), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TAG)");", &(output->addTag)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TYPE)");", -1, &(output->addType), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TYPE)");", &(output->addType)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_authors)" = ?1;", -1, &(output->getAuthorID), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_authors)" = ?1;", &(output->getAuthorID)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND "DBNAMETOID(RDBS_tagCode)" = ?1;", -1, &(output->getTagID), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND "DBNAMETOID(RDBS_tagCode)" = ?1;", &(output->getTagID)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)" AND "DBNAMETOID(RDBS_tagCode)" = ?1;", -1, &(output->getTypeID), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)" AND "DBNAMETOID(RDBS_tagCode)" = ?1;", &(output->getTypeID)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "INSERT INTO "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)", "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)") values(?1, ?2, ?3);", -1, &(output->addProject), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)", "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)") values(?1, ?2, ?3);", &(output->addProject)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 
-	if(sqlite3_prepare_v2(_cache, "UPDATE "TABLE_NAME_CORRES" SET "DBNAMETOID(RDBS_dataID)" = ?2 WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?3;", -1, &(output->updateProject), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "UPDATE "TABLE_NAME_CORRES" SET "DBNAMETOID(RDBS_dataID)" = ?2 WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?3;", &(output->updateProject)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &(output->removeProject), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1", &(output->removeProject)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
 	
-	if(sqlite3_prepare_v2(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &(output->readProject), NULL) != SQLITE_OK)
+	if(createRequest(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", &(output->readProject)) != SQLITE_OK)
 		goto fail;
 	else
 		stage++;
@@ -159,15 +159,15 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	if(0)
 	{
 fail:
-		if(stage > 0)	sqlite3_finalize(output->addAuthor);
-		if(stage > 1)	sqlite3_finalize(output->addTag);
-		if(stage > 2)	sqlite3_finalize(output->addType);
-		if(stage > 3)	sqlite3_finalize(output->getAuthorID);
-		if(stage > 4)	sqlite3_finalize(output->getTagID);
-		if(stage > 5)	sqlite3_finalize(output->getTypeID);
-		if(stage > 6)	sqlite3_finalize(output->addProject);
-		if(stage > 7)	sqlite3_finalize(output->updateProject);
-		if(stage > 8)	sqlite3_finalize(output->removeProject);
+		if(stage > 0)	destroyRequest(output->addAuthor);
+		if(stage > 1)	destroyRequest(output->addTag);
+		if(stage > 2)	destroyRequest(output->addType);
+		if(stage > 3)	destroyRequest(output->getAuthorID);
+		if(stage > 4)	destroyRequest(output->getTagID);
+		if(stage > 5)	destroyRequest(output->getTypeID);
+		if(stage > 6)	destroyRequest(output->addProject);
+		if(stage > 7)	destroyRequest(output->updateProject);
+		if(stage > 8)	destroyRequest(output->removeProject);
 		
 		free(output);
 		output = NULL;
@@ -183,16 +183,16 @@ void flushSearchJumpTable(void * _table)
 	if(table == NULL)
 		return;
 	
-	sqlite3_finalize(table->addAuthor);
-	sqlite3_finalize(table->addTag);
-	sqlite3_finalize(table->addType);
-	sqlite3_finalize(table->getAuthorID);
-	sqlite3_finalize(table->getTagID);
-	sqlite3_finalize(table->getTypeID);
-	sqlite3_finalize(table->addProject);
-	sqlite3_finalize(table->updateProject);
-	sqlite3_finalize(table->removeProject);
-	sqlite3_finalize(table->readProject);
+	destroyRequest(table->addAuthor);
+	destroyRequest(table->addTag);
+	destroyRequest(table->addType);
+	destroyRequest(table->getAuthorID);
+	destroyRequest(table->getTagID);
+	destroyRequest(table->getTypeID);
+	destroyRequest(table->addProject);
+	destroyRequest(table->updateProject);
+	destroyRequest(table->removeProject);
+	destroyRequest(table->readProject);
 	
 	free(table);
 }
@@ -475,7 +475,7 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	sqlite3_stmt * request;
 	
-	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2 LIMIT 1", -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2 LIMIT 1", &request) != SQLITE_OK)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -483,13 +483,13 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	if(sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 0)
 	{
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return false;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 
-	if(sqlite3_prepare_v2(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);", -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);", &request) != SQLITE_OK)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -497,7 +497,7 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	notifyRestrictionChanged();
 	
@@ -511,7 +511,7 @@ bool removeRestriction(uint64_t code, byte type)
 	
 	sqlite3_stmt * request;
 	
-	if(sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;", -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;", &request) != SQLITE_OK)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -519,7 +519,7 @@ bool removeRestriction(uint64_t code, byte type)
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	notifyRestrictionChanged();
 	
@@ -559,7 +559,7 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	
 	sqlite3_stmt * request;
 	
-	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;", -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;", &request) != SQLITE_OK)
 		return;
 	
 	sqlite3_bind_int64(request, 1, data);
@@ -567,16 +567,16 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	
 	bool nothingRemaining = sqlite3_step(request) == SQLITE_DONE;
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	//We have to delete the entry
 	if(nothingRemaining)
 	{
-		if(type == RDBS_TYPE_AUTHOR && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL) == SQLITE_OK);
+		if(type == RDBS_TYPE_AUTHOR && createRequest(cache, "DELETE FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK);
 
-		else if(type == RDBS_TYPE_TAG && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)"", -1, &request, NULL) == SQLITE_OK);
+		else if(type == RDBS_TYPE_TAG && createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)"", &request) == SQLITE_OK);
 		
-		else if(type == RDBS_TYPE_TYPE && sqlite3_prepare_v2(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)"", -1, &request, NULL) == SQLITE_OK);
+		else if(type == RDBS_TYPE_TYPE && createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)"", &request) == SQLITE_OK);
 		
 		else
 			return;
@@ -586,7 +586,7 @@ void checkIfRemainingAndDelete(uint data, byte type)
 		if(sqlite3_step(request) == SQLITE_DONE)
 			updateElementCount(type, -1);
 			
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 }
 
@@ -605,7 +605,7 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 		request = ((SEARCH_JUMPTABLE) table)->readProject;
 	else
 	{
-		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", -1, &request, NULL) != SQLITE_OK)
+		if(createRequest(cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", &request) != SQLITE_OK)
 			return false;
 	}
 
@@ -628,7 +628,7 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 	sqlite3_reset(request);
 	
 	if(table == NULL)
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	
 	return true;
 }
@@ -643,19 +643,19 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	if(type == RDBS_TYPE_AUTHOR)
 	{
 		*dataLength = nbAuthor;
-		if(sqlite3_prepare_v2(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" ASC;", -1, &request, NULL) != SQLITE_OK)
+		if(createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" ASC;", &request) != SQLITE_OK)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_TAG)
 	{
 		*dataLength = nbTag;
-		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";", -1, &request, NULL) != SQLITE_OK)
+		if(createRequest(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";", &request) != SQLITE_OK)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_TYPE)
 	{
 		*dataLength = nbType;
-		if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)";", -1, &request, NULL) != SQLITE_OK)
+		if(createRequest(cache, "SELECT "DBNAMETOID(RDBS_tagCode)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TYPE)";", &request) != SQLITE_OK)
 			return NULL;
 	}
 	else
@@ -670,7 +670,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 		free(codes);
 		free(*dataName);	*dataName = NULL;
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return NULL;
 	}
 	
@@ -702,7 +702,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 		codes[pos++] = sqlite3_column_int64(request, 1);
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	return codes;
 }
@@ -750,7 +750,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 
 	}
 	
-	if(sqlite3_prepare_v2(cache, requestString, -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, requestString, &request) != SQLITE_OK)
 	{
 #ifdef DEV_VERSION
 		logR(requestString);
@@ -765,7 +765,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery)
 		output[realLength++] = sqlite3_column_int(request, 0);
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	if(realLength < nbElemInCache)
 	{
@@ -797,7 +797,7 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	
 	sqlite3_stmt * request;
 	
-	if(sqlite3_prepare_v2(cache, requestText, -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, requestText, &request) != SQLITE_OK)
 	{
 		free(output);
 		return NULL;
@@ -812,7 +812,7 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 			realLength++;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	if(nbProject != NULL)
 		*nbProject = realLength;

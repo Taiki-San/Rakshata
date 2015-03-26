@@ -48,6 +48,13 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveE
 void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo);
 bool isAppropriateNumberOfRepo(uint requestedNumber);
 
+/**DBDebug.c**/
+int createRequest(sqlite3 *db, const char *zSql, sqlite3_stmt **ppStmt);
+int destroyRequest(sqlite3_stmt *pStmt);
+#ifdef DEV_VERSION
+void errorLogCallback(void *pArg, int iErrCode, const char *zMsg);
+#endif
+
 /**DBSearch.c**/
 void buildSearchTables(sqlite3 *_cache);
 void * buildSearchJumpTable(sqlite3 * _cache);

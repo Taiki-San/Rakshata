@@ -179,7 +179,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		
 		
 		sqlite3_stmt* request = NULL;
-		sqlite3_prepare_v2(cache, requestString, -1, &request, NULL);
+		createRequest(cache, requestString, &request);
 		
 		while(pos < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -191,7 +191,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		}
 		
 		output[pos] = getEmptyProject();
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		
 		if(nbElemCopied != NULL)
 			*nbElemCopied = pos;

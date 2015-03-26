@@ -16,7 +16,7 @@ sqlite3_stmt * getAddToCacheRequest()
 {
 	sqlite3_stmt * request = NULL;
 	
-	sqlite3_prepare_v2(cache, "INSERT INTO rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_tag)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);", -1, &request, NULL);
+	createRequest(cache, "INSERT INTO rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_tag)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);", &request);
 	
 	return request;
 }
@@ -65,7 +65,7 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	if(request != NULL)
 		sqlite3_reset(internalRequest);
 	else
-		sqlite3_finalize(internalRequest);
+		destroyRequest(internalRequest);
 	
 	if(!output)
 		return false;
@@ -77,7 +77,7 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	
 	//Eh, we need to return the new cacheID
 	
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_ID)"FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &internalRequest, NULL);
+	createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)"FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &internalRequest);
 	
 	sqlite3_bind_int64(internalRequest, 1, repoID);
 	sqlite3_bind_int(internalRequest, 2, data.projectID);
@@ -87,7 +87,7 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 
 	uint cacheID = sqlite3_column_int(internalRequest, 0);
 	
-	sqlite3_finalize(internalRequest);
+	destroyRequest(internalRequest);
 	
 	return cacheID;
 }
@@ -104,13 +104,13 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	//On libère la mémoire des éléments remplacés
 	if(whatCanIUse == RDB_UPDATE_ID)
 	{
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 		sqlite3_bind_int(request, 1, data.cacheDBID);
 		DBID = data.cacheDBID;
 	}
 	else
 	{
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
 		sqlite3_bind_int64(request, 1, getRepoID(data.repo));
 		sqlite3_bind_int(request, 2, projectID);
 	}
@@ -126,11 +126,11 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	}
 	else
 	{
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		return false;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	//We convert wchar_t to utf8
 	size_t lengthP = wstrlen(data.projectName), lengthD = wstrlen(data.description), lengthA = wstrlen(data.authorName);
@@ -141,7 +141,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	lengthA = wchar_to_utf8(data.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
 	
 	//On pratique le remplacement effectif
-	sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_type)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_tag)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_chapitresPrice)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_DRM)" = ?13, "DBNAMETOID(RDB_tomes)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_ID)" = ?16", -1, &request, NULL);
+	createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_type)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_tag)" = ?8, "DBNAMETOID(RDB_nombreChapitre)" = ?9, "DBNAMETOID(RDB_chapitres)" = ?10, "DBNAMETOID(RDB_chapitresPrice)" = ?11, "DBNAMETOID(RDB_nombreTomes)" = ?12, "DBNAMETOID(RDB_DRM)" = ?13, "DBNAMETOID(RDB_tomes)" = ?14, "DBNAMETOID(RDB_favoris)" = ?15 WHERE "DBNAMETOID(RDB_ID)" = ?16", &request);
 	
 	sqlite3_bind_text(request, 1, utf8Project, lengthP, SQLITE_STATIC);
 	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);
@@ -197,7 +197,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
 		return false;
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	return true;
 }
@@ -209,7 +209,7 @@ void removeFromCache(PROJECT_DATA data)
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 	sqlite3_bind_int(request, 1, data.cacheDBID);
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
@@ -218,12 +218,12 @@ void removeFromCache(PROJECT_DATA data)
 		free((void*) sqlite3_column_int64(request, 1));
 		freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 	}
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
-	sqlite3_prepare_v2(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+	createRequest(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 	sqlite3_bind_int(request, 1, data.cacheDBID);
 	sqlite3_step(request);
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	
 	nbElemInCache--;
 }
@@ -231,9 +231,9 @@ void removeFromCache(PROJECT_DATA data)
 void consolidateCache()
 {
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "VACUUM", -1, &request, NULL);
+	createRequest(cache, "VACUUM", &request);
 	sqlite3_step(request);
-	sqlite3_finalize(request);
+	destroyRequest(request);
 }
 
 #pragma mark - Repo
@@ -282,8 +282,8 @@ void removeRepoFromCache(REPO_DATA repo)
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = NULL, *deleteRequest = NULL;
-	sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", -1, &request, NULL);
-	sqlite3_prepare_v2(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &deleteRequest, NULL);
+	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1", &request);
+	createRequest(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &deleteRequest);
 	sqlite3_bind_int64(request, 1, repoID);
 	
 	while(sqlite3_step(request) == SQLITE_ROW)
@@ -298,8 +298,8 @@ void removeRepoFromCache(REPO_DATA repo)
 		
 		nbElemInCache--;
 	}
-	sqlite3_finalize(deleteRequest);
-	sqlite3_finalize(request);
+	destroyRequest(deleteRequest);
+	destroyRequest(request);
 	
 	MUTEX_UNLOCK(cacheMutex);
 	

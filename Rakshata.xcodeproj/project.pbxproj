@@ -133,6 +133,7 @@
 		B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */; };
 		B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
+		B6C655F31AC412F400AE32BA /* DBDebug.c in Sources */ = {isa = PBXBuildFile; fileRef = B6C655F21AC412F400AE32BA /* DBDebug.c */; };
 		B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */; };
 		B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
@@ -424,6 +425,7 @@
 		B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHImage.m; path = CTSelec/RakCTHImage.m; sourceTree = "<group>"; };
 		B6C64E57194BB6EB0066A7BD /* RakDragItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragItem.h; path = Utils/RakDragItem.h; sourceTree = "<group>"; };
 		B6C64E58194BB6EB0066A7BD /* RakDragItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragItem.m; path = Utils/RakDragItem.m; sourceTree = "<group>"; };
+		B6C655F21AC412F400AE32BA /* DBDebug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBDebug.c; path = C/DBDebug.c; sourceTree = "<group>"; };
 		B6C8C87218DF7BCE004316A5 /* RakContextRestoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContextRestoration.h; path = Prefs/RakContextRestoration.h; sourceTree = "<group>"; };
 		B6C8C87318DF7BCE004316A5 /* RakContextRestoration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContextRestoration.m; path = Prefs/RakContextRestoration.m; sourceTree = "<group>"; };
 		B6CBD2A11A7C2E380051EECB /* RakSRSearchTab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTab.h; path = "Séries/RakSRSearchTab.h"; sourceTree = "<group>"; };
@@ -855,6 +857,7 @@
 				B6A6ACEE1AAEED3A00CAF51E /* DBCacheIO.c */,
 				B6A6ACF01AAEEE0100CAF51E /* DBCacheQuery.c */,
 				B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */,
+				B6C655F21AC412F400AE32BA /* DBDebug.c */,
 				B61279FC1A586B5E0034C241 /* dbProperties.h */,
 				B678D0311977178A00D7FE6A /* DBrecent.c */,
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
@@ -1438,6 +1441,7 @@
 				B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */,
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,
+				B6C655F31AC412F400AE32BA /* DBDebug.c in Sources */,
 				B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */,
 				B678D034197717A600D7FE6A /* ProjectParser.m in Sources */,
 				B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */,

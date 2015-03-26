@@ -348,7 +348,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 	
 	MUTEX_LOCK(cacheMutex);
 	
-	if(sqlite3_prepare_v2(cache, "SELECT COUNT() FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL) == SQLITE_OK)
+	if(createRequest(cache, "SELECT COUNT() FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_isInstalled)" = 1", &request) == SQLITE_OK)
 	{
 		if(isRoot)
 		{
@@ -387,7 +387,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 			}
 		}
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 	
 	MUTEX_UNLOCK(cacheMutex);

@@ -27,15 +27,6 @@ uint lengthIsUpdated = 0;
 bool mutexInitialized;
 MUTEX_VAR cacheMutex;
 
-//Routines génériques
-
-#ifdef DEV_VERSION
-void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)
-{
-	fprintf(stderr, "(%d) %s\n", iErrCode, zMsg);
-}
-#endif
-
 uint setupBDDCache()
 {
 	uint nombreRootRepo, nombreRepo, nombreProject = 0;
@@ -121,19 +112,19 @@ uint setupBDDCache()
 	//On vas parser les projets
 	sqlite3_stmt* request = NULL;
 		
-	if(sqlite3_prepare_v2(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_repo)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_tag)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitresPrice)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_DRM)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)");", -1, &request, NULL) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(internalDB, "CREATE TABLE rakSQLite ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_repo)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_type)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_tag)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitresPrice)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_DRM)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL); CREATE INDEX poniesShallRule ON rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		//abort, couldn't setup DB
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		sqlite3_close(internalDB);
 		goto fail;
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 	buildSearchTables(internalDB);
 	
 	//On est bon, let's go
-    if(sqlite3_prepare_v2(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_tag)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);", -1, &request, NULL) == SQLITE_OK)	//préparation de la requête qui sera utilisée
+    if(createRequest(internalDB, "INSERT INTO rakSQLite("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_type)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_tag)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_favoris)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);", &request) == SQLITE_OK)	//préparation de la requête qui sera utilisée
 	{
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
 		size_t decodedLength = strlen(projectDB);
@@ -173,7 +164,7 @@ uint setupBDDCache()
 			flushSearchJumpTable(searchData);
 		}
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 		
 		if(nombreProject)
 		{
@@ -279,7 +270,7 @@ void flushDB()
 	MUTEX_LOCK(cacheMutex);
 
 	sqlite3_stmt* request = NULL;
-	if(sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", -1, &request, NULL) == SQLITE_OK)
+	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", &request) == SQLITE_OK)
 	{
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -288,7 +279,7 @@ void flushDB()
 			freeTomeList((void*) sqlite3_column_int64(request, 2), true);
 		}
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 	
 	sqlite3_close_v2(cache);
@@ -336,10 +327,10 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 
 	if(installed)
 	{
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", -1, &request, NULL);
+		createRequest(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", &request);
 	}
 	else
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", -1, &request, NULL);
+		createRequest(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
 	
 	sqlite3_bind_int64(request, 1, IDRepo);
 	sqlite3_bind_int(request, 2, projectID);
@@ -368,7 +359,7 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 			logR("[Error]: Request not found, something went wrong when parsing the data :/");
 	}
 	
-	sqlite3_finalize(request);
+	destroyRequest(request);
 
 	return output;
 }
@@ -378,9 +369,9 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 	sqlite3_stmt* request = NULL;
 	
 	if(wantTome)
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 	else
-		sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 	
 	sqlite3_bind_int(request, 1, cacheID);
 
@@ -465,7 +456,7 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 		
 		
 		sqlite3_stmt* request = NULL;
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", -1, &request, NULL);
+		createRequest(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", &request);
 		
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -492,7 +483,7 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 			}
 		}
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 	
 	return output;
@@ -503,7 +494,7 @@ bool isProjectInstalledInCache (uint ID)
 	bool output = false;
 	
 	sqlite3_stmt* request = NULL;
-	sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+	createRequest(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 
 	if(cache != NULL)
 	{
@@ -515,7 +506,7 @@ bool isProjectInstalledInCache (uint ID)
 				output = true;
 		}
 			
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 	
 	return output;
@@ -528,13 +519,13 @@ PROJECT_DATA getElementByID(uint cacheID)
 	
 	if(cache != NULL && cacheID != UINT_MAX)
 	{
-		sqlite3_prepare_v2(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL);
+		createRequest(cache, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 		sqlite3_bind_int(request, 1, cacheID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 			copyOutputDBToStruct(request, &output);
 		
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 
 	return output;
@@ -547,14 +538,14 @@ void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData)
 	
 	sqlite3_stmt * request = NULL;
 	
-	if(cache != NULL && sqlite3_prepare_v2(cache, "SELECT "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL) == SQLITE_OK)
+	if(cache != NULL && createRequest(cache, "SELECT "DBNAMETOID(RDB_tomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
 		sqlite3_bind_int(request, 1, cacheID);
 		if(sqlite3_step(request) == SQLITE_ROW)
 			freeTomeList((void*) sqlite3_column_int64(request, 0), true);
 		
-		sqlite3_finalize(request);
-		if(sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_tomes)" = ?1 WHERE "DBNAMETOID(RDB_ID)" = ?2", -1, &request, NULL) == SQLITE_OK)
+		destroyRequest(request);
+		if(createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_tomes)" = ?1 WHERE "DBNAMETOID(RDB_ID)" = ?2", &request) == SQLITE_OK)
 		{
 			void* buffer = malloc((nbTomes + 1) * sizeof(META_TOME));
 			if(buffer != NULL)
@@ -563,7 +554,7 @@ void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData)
 			sqlite3_bind_int64(request, 1, (int64_t) buffer);
 			sqlite3_bind_int(request, 2, cacheID);
 			sqlite3_step(request);
-			sqlite3_finalize(request);
+			destroyRequest(request);
 		}
 	}
 }
@@ -575,11 +566,11 @@ void setInstalled(uint cacheID)
 	
 	sqlite3_stmt * request = NULL;
 
-	if(cache != NULL && sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 1 WHERE "DBNAMETOID(RDB_ID)" = ?1", -1, &request, NULL) == SQLITE_OK)
+	if(cache != NULL && createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 1 WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
 		sqlite3_bind_int(request, 1, cacheID);
 		sqlite3_step(request);
-		sqlite3_finalize(request);
+		destroyRequest(request);
 	}
 }
 
@@ -589,7 +580,7 @@ void setUninstalled(bool isRoot, uint repoID)
 		return;
 	
 	sqlite3_stmt * request = NULL;
-	if(sqlite3_prepare_v2(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?2", -1, &request, NULL) != SQLITE_OK)
+	if(createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?2", &request) != SQLITE_OK)
 		return;
 	
 	if(isRoot)
@@ -624,5 +615,5 @@ void setUninstalled(bool isRoot, uint repoID)
 		sqlite3_step(request);
 	}
 
-	sqlite3_finalize(request);
+	destroyRequest(request);
 }
