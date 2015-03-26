@@ -297,10 +297,12 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					
 					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
 					sqlite3_finalize(request);
+					closeRecentDB(database);
 					
-					updateRecentEntry(database, tmpProject, 0, wantDL);
+					updateRecentEntry(NULL, tmpProject, 0, wantDL);
 					
-					if(sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
+					database = getPtrRecentDB();
+					if(database == NULL || sqlite3_prepare_v2(database, requestString, -1, &request, NULL) != SQLITE_OK)
 						break;
 				}
 			}

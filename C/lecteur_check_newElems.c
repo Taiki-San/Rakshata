@@ -37,7 +37,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if (fullData[posStart].repo == NULL || projectDB->repo->parentRepoID != fullData[posStart].repo->parentRepoID || projectDB->repo->repoID != fullData[posStart].repo->repoID)
+		if (fullData[posEnd].repo == NULL || projectDB->repo->parentRepoID != fullData[posEnd].repo->parentRepoID || projectDB->repo->repoID != fullData[posEnd].repo->repoID)
 			break;
 	}
 	
