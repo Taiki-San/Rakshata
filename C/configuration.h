@@ -10,7 +10,7 @@
 **																							**
 *********************************************************************************************/
 
-#define MAINTAIN_SUPER_LEGACY_COMPATIBILITY
+//#define MAINTAIN_SUPER_LEGACY_COMPATIBILITY
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 
 //DB configuration
@@ -20,10 +20,9 @@
 #ifndef DEV_VERSION
 	#define PAID_CONTENT_ONLY_FOR_PAID_REPO
 #else
-	//#define VERBOSE_REQUEST
+//	#define VERBOSE_REQUEST
+//	#define DEBUG_CT_DEALLOC	//LEAK A LOT OF MEMORY!!!
 #endif
-
-#define REPO_DEFAULT_OPEN_WEBSITE 0
 
 //UI configuration
 #define LARGE_FONT_FOR_PLACEHOLDERS

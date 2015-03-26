@@ -26,7 +26,7 @@ extern char *isUpdated;
 extern uint lengthIsUpdated;
 
 extern bool mutexInitialized;
-extern MUTEX_VAR cacheMutex;
+extern MUTEX_VAR cacheMutex, cacheParseMutex;
 
 /**DBCache.c**/
 sqlite3_stmt * getAddToCacheRequest();

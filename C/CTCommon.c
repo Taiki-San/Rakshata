@@ -67,10 +67,23 @@ void releaseCTData(PROJECT_DATA data)
 {
 	if(data.isInitialized)
 	{
+#ifdef DEBUG_CT_DEALLOC
+		if(data.chapitresFull != NULL)
+		{
+			if(data.projectID == 17)
+				printf("Should be freeing %p\n", data.chapitresFull);
+				
+			if(data.chapitresFull[0] == 13371337)
+				logR("WTF");
+			else
+				data.chapitresFull[0] = 13371337;
+		}
+#else
 		free(data.chapitresFull);
 		free(data.chapitresInstalled);
 		free(data.chapitresPrix);
 		freeTomeList(data.tomesFull, true);
 		freeTomeList(data.tomesInstalled, true);
+#endif
 	}
 }

@@ -98,7 +98,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	void * buffer;
 	sqlite3_stmt *request = NULL;
 	
-	if(cache == NULL && !setupBDDCache() && !data.isInitialized)	//Échec du chargement
+	if(!data.isInitialized || (cache == NULL && !setupBDDCache()))	//Échec du chargement
 		return false;
 	
 	//On libère la mémoire des éléments remplacés
@@ -115,6 +115,8 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 		sqlite3_bind_int(request, 2, projectID);
 	}
 	
+	MUTEX_LOCK(cacheParseMutex);
+	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
@@ -127,6 +129,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	else
 	{
 		destroyRequest(request);
+		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
 	}
 	
@@ -195,7 +198,12 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 16, DBID);	//WHERE
 	
 	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
+	{
+		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
+	}
+
+	MUTEX_UNLOCK(cacheParseMutex);
 	
 	destroyRequest(request);
 	

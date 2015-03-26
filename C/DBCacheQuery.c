@@ -15,7 +15,9 @@
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 {
 	void* buffer;
-	
+
+	MUTEX_LOCK(cacheParseMutex);
+
 	//Repo
 	buffer = getRepoForID(sqlite3_column_int64(state, RDB_repo-1));
 	if(buffer != NULL)				//Si la team est pas valable, on drop complètement le projet
@@ -24,6 +26,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	{
 		output->isInitialized = false;
 		output->repo = NULL;	//L'appelant est signalé d'ignorer l'élément
+		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
 	}
 	
@@ -38,7 +41,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	//Nom du projet
 	buffer = (void*) sqlite3_column_text(state, RDB_projectName-1);
 	if(buffer == NULL)
+	{
+		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
+	}
 	else
 	{
 		size_t length = strlen(buffer);
@@ -145,6 +151,8 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	
 	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
 	output->isInitialized = true;
+	
+	MUTEX_UNLOCK(cacheParseMutex);
 	
 	return true;
 }

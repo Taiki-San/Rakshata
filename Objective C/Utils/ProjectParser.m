@@ -88,10 +88,10 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 						if([entry3 superclass] != [NSNumber class])
 							continue;
 						
-						output[pos] = [entry3 integerValue];
+						output[pos++] = [entry3 integerValue];
 
 #ifdef DEV_VERSION
-						if(output[pos++] == 0xdeadbead)
+						if(output[pos - 1] == 0xdeadbead)
 						{
 							logR("Error: this value (-559038803) is forbiden, moved by one");
 							output[pos - 1]--;
