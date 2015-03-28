@@ -10,6 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
+//Don't forget to reflect any addition to +haveAnyRemindedValue
 #define PREFS_REMIND_DELETE @"DefaultPopoverDelete"
 #define PREFS_REMIND_AUTODL @"DefaultPopoverAutoDL"
 #define PREFS_REMIND_FAVS @"PopoverFavoriteDisplayed"
@@ -19,5 +20,8 @@
 + (void) setValueReminded : (NSString *) element : (BOOL) value;
 + (BOOL) getValueReminded : (NSString *) element : (BOOL *) value;
 + (void) removeValueReminded : (NSString *) element;
+
++ (BOOL) haveAnyRemindedValue;
++ (void) flushRemindedValues;
 
 @end

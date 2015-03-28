@@ -41,4 +41,35 @@
 	[defaults removeObjectForKey:element];
 }
 
++ (BOOL) haveAnyRemindedValue
+{
+	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS];
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	
+	if(defaults == nil)
+		return NO;
+	
+	for(NSString * element in data)
+	{
+		NSNumber* object = [defaults objectForKey:element];
+		
+		if(object != nil && [object boolValue])
+			return YES;
+	}
+	
+	return NO;
+}
+
++ (void) flushRemindedValues
+{
+	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS];
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	
+	if(defaults != nil)
+	{
+		for(NSString * element in data)
+			[defaults removeObjectForKey:element];
+	}
+}
+
 @end

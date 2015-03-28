@@ -147,6 +147,14 @@
 "PREFS-DELETE-REMOVE" = "Nettoyage des traces";
 "PREFS-DELETE-PURGE" = "Suppression des fichiers";
 
+"PREFS-GENERAL-THEME-DARK" = "Thème sombre";
+"PREFS-GENERAL-THEME-LIGHT" = "Thème clair";
+"PREFS-GENERAL-THEME-CUSTOM" = "Thème customisé";
+"PREFS-GENERAL-CHOOSE-THEME" = "Thème graphique : ";
+"PREFS-GENERAL-LOGGED-IN-ON-%s" = "Vous êtes connecté avec le compte %1$s";
+"PREFS-GENERAL-LOGOUT" = "Déconnecter";
+"PREFS-GENERAL-RESET-ALERTS" = "Réinitialiser les alertes";
+
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";
 "COPYRIGHT" = "© 2011-2015 Taiki. Tous droits réservées";

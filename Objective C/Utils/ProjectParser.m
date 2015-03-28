@@ -93,6 +93,7 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 #ifdef DEV_VERSION
 						if(output[pos - 1] == 0xdeadbead)
 						{
+							//This value is used to signal a deallocated memory area, it'd crash if ran in debugger
 							logR("Error: this value (-559038803) is forbiden, moved by one");
 							output[pos - 1]--;
 						}

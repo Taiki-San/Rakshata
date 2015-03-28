@@ -13,9 +13,13 @@
 enum
 {
 	BORDER = 200,
-	THEME_BASE_Y = 350,
-	EMAIL_BASE_Y = 270,
-	RESET_BASE_Y = 200
+
+	WIDTH = 800,
+	HEIGHT = 210,
+
+	THEME_BASE_Y = 160,
+	EMAIL_BASE_Y = 90,
+	RESET_BASE_Y = 25
 };
 
 @interface RakPrefsGeneralView ()
@@ -33,13 +37,12 @@ enum
 
 - (instancetype) initWithFrame : (NSRect) frameRect
 {
-	self = [super initWithFrame:frameRect];
+	self = [super initWithFrame:NSMakeRect(0, 0, WIDTH, HEIGHT)];
 	
 	if(self != nil)
 	{
 		//Theme change
-		
-		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:_bounds :@[@"Thème sombre", @"Thème clair", @"Thème customisé"]];
+		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:_bounds :@[NSLocalizedString(@"PREFS-GENERAL-THEME-DARK", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-LIGHT", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-CUSTOM", nil)]];
 		
 		if(themeSwitch != nil)
 		{
@@ -53,7 +56,7 @@ enum
 			[self addSubview:themeSwitch];
 		}
 		
-		textTheme = [[RakText alloc] initWithText:@"Thème graphique : " : [self titleColor]];
+		textTheme = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-GENERAL-CHOOSE-THEME", nil) : [self titleColor]];
 		if(textTheme != nil)
 		{
 			[textTheme setFrameOrigin:NSMakePoint(BORDER - textTheme.frame.size.width, THEME_BASE_Y - textTheme.bounds.size.height / 2)];
@@ -63,16 +66,18 @@ enum
 		
 		//Email
 		
-		email = [[RakText alloc] initWithText:[NSString stringWithFormat:@"Vous êtes connecté avec le compte %s", COMPTE_PRINCIPAL_MAIL] :[self textColor]];
+		email = [[RakText alloc] initWithText:[NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-GENERAL-LOGGED-IN-ON-%s", nil), COMPTE_PRINCIPAL_MAIL] :[self textColor]];
 		if(email != nil)
 		{
 			[self addSubview: email];
 		}
 		
-		disconnect = [RakButton allocWithText:@"Déconnecter" :NSZeroRect];
+		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil) :NSZeroRect];
 		if(disconnect != nil)
 		{
 			[disconnect sizeToFit];
+			
+			[disconnect setEnabled:NO];
 			
 			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 			[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
@@ -83,9 +88,14 @@ enum
 		else if(email != nil)
 			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 		
-		resetRemind = [RakButton allocWithText:@"Réinitialiser les alertes" :NSZeroRect];
+		resetRemind = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-RESET-ALERTS", nil) :NSZeroRect];
 		if(resetRemind != nil)
 		{
+			[resetRemind setEnabled:[RakPrefsRemindPopover haveAnyRemindedValue]];
+			
+			resetRemind.target = self;
+			resetRemind.action = @selector(toogleReset);
+			
 			[resetRemind sizeToFit];
 			
 			[resetRemind setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - resetRemind.bounds.size.width / 2, RESET_BASE_Y)];
@@ -95,6 +105,11 @@ enum
 	}
 	
 	return self;
+}
+
+- (NSRect) frame
+{
+	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, WIDTH, HEIGHT);
 }
 
 - (NSColor *) titleColor
@@ -133,6 +148,12 @@ enum
 			break;
 		}
 	}
+}
+
+- (void) toogleReset
+{
+	[RakPrefsRemindPopover flushRemindedValues];
+	[resetRemind setEnabled:NO];
 }
 
 @end
