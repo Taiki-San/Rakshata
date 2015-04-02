@@ -21,6 +21,10 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 //Repo parser
 NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
+//Rak parser
+//This function will perform a lot of network task, and thus should _really_ be run in a thread
+ROOT_REPO_DATA ** parserRakFile(NSString * fileContent, uint * nbElem);
+
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 
 #define JSON_PROJ_PROJECTS @"0"
@@ -81,3 +85,10 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 #define JSON_REPO_SUB_MATURE		@"14"
 #define JSON_REPO_SUB_ACTIVE		@"16"
 #define JSON_REPO_ID				@"15"
+
+//.Rak file parser
+#define JSON_RAK_MIN_VERSION	@"0"
+#define JSON_RAK_PAYLOAD		@"1"
+#define JSON_RAK_TYPE			@"2"
+#define JSON_RAK_URL			@"3"
+#define JSON_RAK_PRESELECTION	@"4"

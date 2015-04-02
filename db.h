@@ -138,9 +138,11 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
+int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo);
 void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);
 
 /******		DBTools.c	  ******/
+bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);
 void updateProjectImages(void * _todo);
 bool isInstalled(char * basePath);
 void resetUpdateDBCache();

@@ -24,13 +24,17 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 			*output = parseRemoteRepo(data);
 			if(*output != NULL)
 			{
-				(*output)->repoID = previousData->repoID;
-				
-				if((*output)->nombreSubrepo != 0)
+				if(previousData != NULL)
 				{
-					for(uint i = 0, length = (*output)->nombreSubrepo; i < length; i++)
-						((REPO_DATA_EXTRA *)(*output)->subRepo)[i].data->parentRepoID = previousData->repoID;
+					(*output)->repoID = previousData->repoID;
+					
+					if((*output)->nombreSubrepo != 0)
+					{
+						for(uint i = 0, length = (*output)->nombreSubrepo; i < length; i++)
+							((REPO_DATA_EXTRA *)(*output)->subRepo)[i].data->parentRepoID = previousData->repoID;
+					}
 				}
+				
 				return true;
 			}
 			else if(!strcmp(data, "internal_error"))
@@ -54,6 +58,10 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 	return false;
 }
 
+bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output)
+{
+	return parseRemoteRepoEntry(data, NULL, version, output);
+}
 
 /**********		REFRESH PROJECTS		***********/
 

@@ -144,7 +144,10 @@
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-	NSLog(@"%s", (const char*) [[NSData dataWithContentsOfFile:filename] bytes]);
+	RakAddRepoController * lol = [[RakAddRepoController alloc] init];
+
+	[lol performSelectorInBackground:@selector(analyseFileContent:) withObject:[NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil]];
+
 	return YES;
 }
 
@@ -164,7 +167,7 @@
 
 #pragma mark - Menu interface
 
-#pragma mark Entryp point for about and preference windows
+#pragma mark Entry point for about and preference windows
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {

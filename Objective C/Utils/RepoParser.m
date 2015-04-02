@@ -115,6 +115,7 @@ charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	return output;
 }
 
+#warning "Need to implement trust"
 bool validateTrust(NSString * input, bool localSource)
 {
 	if(!localSource)
