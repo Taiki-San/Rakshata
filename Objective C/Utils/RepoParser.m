@@ -178,7 +178,7 @@ fail:	//We'll jump back here when it's starting to go wrong
 		goto fail;
 	
 	isMature = objectForKey(dict, JSON_REPO_SUB_MATURE, @"mature_content");
-	if(isMature == nil || ![isMature isKindOfClass:[NSNumber class]])
+	if(isMature != nil && ![isMature isKindOfClass:[NSNumber class]])
 		goto fail;
 	
 	if(isLocal)
@@ -196,7 +196,7 @@ fail:	//We'll jump back here when it's starting to go wrong
 	output.type = [type unsignedCharValue];
 	strncpy(output.URL, [URL cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
 	strncpy(output.website, [website cStringUsingEncoding:NSASCIIStringEncoding], REPO_WEBSITE_LENGTH);
-	output.isMature = [isMature boolValue];
+	output.isMature = isMature != nil ? [isMature boolValue] : NO;
 	
 	output.parentRepoID = parentID;
 	output.active = isActive;
