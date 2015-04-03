@@ -12,15 +12,43 @@
 
 #include "JSONParser.h"
 
+@interface RakAddRepoController()
+{
+	NSData * _fileContentCopy;
+}
+
+@end
+
 @implementation RakAddRepoController
 
-- (void) analyseFileContent : (NSString *) fileContent
+- (void) analyseFileContent : (NSData *) fileContent
 {
-	output = parserRakFile(fileContent, &nbRoot);
+	_fileContentCopy = fileContent;
+	
+	output = parserRakFile(_fileContentCopy, &nbRoot);
 	window = ((RakAppDelegate *) [NSApp delegate]).window;
+	
+	ICONS_UPDATE * iconsData = NULL, * newIcons, * endIcons;
+	for(uint i = 0; i < nbRoot; i++)
+	{
+		newIcons = enforceRepoExtra(output[i], true);
+		
+		if(newIcons != NULL)
+		{
+			if(iconsData == NULL)
+				endIcons = iconsData = newIcons;
+			else
+				endIcons->next = newIcons;
+			
+			while(endIcons->next != NULL)
+				endIcons = endIcons->next;
+		}
+	}
 	
 	if(window != nil)
 		[self queryUser];
+	
+	updateProjectImages(iconsData);
 }
 
 - (void) queryUser
@@ -38,6 +66,7 @@
 		NSWindow * queryWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(200, 200, mainView.bounds.size.width, mainView.bounds.size.height) styleMask:0 backing:NSBackingStoreBuffered defer:YES];
 		if(queryWindow != nil)
 		{
+			queryWindow.backgroundColor = [NSColor clearColor];
 			queryWindow.contentView = mainView;
 			
 			[window beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];

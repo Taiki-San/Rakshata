@@ -341,10 +341,12 @@ enum
 
 - (void) buttonClicked
 {
-	if(activationButton.state == NSOnState)
-		activateRepo(*_repoUsedInDetail);
-	else
-		[_responder nukeEverything : self : _repoUsedInDetail];
+	[_responder statusTriggered : self : _repoUsedInDetail];
+}
+
+- (BOOL) getButtonState
+{
+	return activationButton.state == NSOnState;
 }
 
 - (void) cancelSelection

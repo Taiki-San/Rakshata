@@ -144,9 +144,7 @@
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-	RakAddRepoController * lol = [[RakAddRepoController alloc] init];
-
-	[lol performSelectorInBackground:@selector(analyseFileContent:) withObject:[NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil]];
+	[[[RakAddRepoController alloc] init] performSelectorInBackground:@selector(analyseFileContent:) withObject:[NSData dataWithContentsOfFile:filename]];
 
 	return YES;
 }

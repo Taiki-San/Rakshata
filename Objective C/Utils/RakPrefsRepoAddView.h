@@ -10,16 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakPrefsRepoAddView.h"
+@interface RakPrefsRepoAddView : NSView
 
-@interface RakAddRepoController : NSObject
-{
-	RakWindow * window;
-
-	uint nbRoot;
-	ROOT_REPO_DATA ** output;
-}
-
-- (void) analyseFileContent : (NSData *) fileContent;
+- (instancetype) initWithRoot : (ROOT_REPO_DATA **) root nbElem : (uint) nbRoot;
 
 @end

@@ -10,9 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-/** Window behavior **/
-#define BORDER_WIDTH 4
-
 #pragma mark	-	Reader
 
 /** Reader itself **/

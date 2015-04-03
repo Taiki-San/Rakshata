@@ -348,6 +348,14 @@ enum
 	return NULL;
 }
 
+- (void) statusTriggered : (id) responder : (REPO_DATA *) repoData
+{
+	if([responder getButtonState])
+		activateRepo(*repoData);
+	else
+		[self nukeEverything:responder :repoData];
+}
+
 #pragma mark - List data interface
 
 - (void *) dataForMode : (BOOL) rootMode index : (uint) index

@@ -12,10 +12,10 @@
 
 #include "JSONParser.h"
 
-ROOT_REPO_DATA ** parserRakFile(NSString * fileContent, uint * nbElem)
+ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 {
 	NSError * parseError = nil;
-	NSDictionary * parseData = [NSJSONSerialization JSONObjectWithData:[fileContent dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&parseError];
+	NSDictionary * parseData = [NSJSONSerialization JSONObjectWithData:fileContent options:0 error:&parseError];
 	
 	if(parseError != nil)
 	{
