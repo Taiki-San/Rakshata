@@ -22,8 +22,10 @@
 	//UI elements
 	CGContextRef contextBorder;
 	
-	RakText * title, * titleList;
-	RakPrefsRepoList * subrepoList;
+	RakText * title;
+	RakListScrollView * scrollview;
+	RakPrefsAddRepoList * subrepoList;
+	RakButton * cancelButton, * confirmButton;
 }
 
 @end
@@ -35,15 +37,16 @@ enum
 	
 	TOP_DARK_BORDER = 2,	//Dark window border have to be drawn at the top of the modal window
 	
-	TOP_BORDER_TITLE = 8,	//Border at the top of the title text
+	TOP_BORDER_TITLE = 10,	//Border at the top of the title text
 	
-	TITLE_LIST_SEPARATOR = 4,	//Border below title
-	LIST_SEPARATOR = (TITLE_LIST_SEPARATOR + 20),	//Border at the top of the list
+	LIST_SEPARATOR = 12,	//Border at the top of the list
 	
-	LIST_HEIGHT = 150,	//Usable height
+	LIST_HEIGHT = 200,	//Usable height
 	
 	BORDER_WIDTH = 15,	//Border at the right or the left of the window
 	WIDTH_BORDERED = (WIDTH - 2 * BORDER_WIDTH),	//Usable width
+
+	SCROLL_VIEW_RADIUS = 3,
 };
 
 @implementation RakPrefsRepoAddView
@@ -91,26 +94,13 @@ enum
 	NSString * definition = nil;
 
 	//Localize the definition of the subrepo we are asking the user to select
-	if(_nbRoot > 1)
-		definition = NSLocalizedString(@"PREFS-ADD-REPO-SEVERAL-REPO-IN-SEVERAL-ROOTS", nil);
-	else if(_nbRepo > 1)
-		definition = NSLocalizedString(@"PREFS-ADD-REPO-SEVERAL-REPO-IN-ROOT", nil);
+	if(_nbRepo > 1)
+		definition = NSLocalizedString(@"PREFS-ADD-REPO-SEVERAL-REPO", nil);
 	else
-		definition = NSLocalizedString(@"PREFS-ADD-REPO-ONE-REPO-IN-ROOT", nil);
+		definition = NSLocalizedString(@"PREFS-ADD-REPO-ONE-REPO", nil);
 	
-	//We combine root's name
-	NSString * names = getStringForWchar(_root[0]->name);
-	
-	if(_nbRoot > 1)
-	{
-		for(uint pos = 1; pos < _nbRoot - 1; pos++)
-			names = [NSString stringWithFormat:@"%@, %@", names, getStringForWchar(_root[pos]->name)];
-		
-		names = [NSString stringWithFormat:@"%@ %@ %@", names, NSLocalizedString(@"PREFS-ADD-REPO-FINAL-LINK", nil), getStringForWchar(_root[_nbRoot - 1]->name)];
-	}
-
 	//We craft the final string
-	return [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ADD-REPO-CONFIRM-INSERT-%@-FROM-%@", nil), definition, names];
+	return [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ADD-REPO-CONFIRM-INSERT-%@", nil), definition];
 }
 
 - (void *) dataForMode : (BOOL) rootMode index : (uint) index
@@ -133,6 +123,11 @@ enum
 
 - (void) selectionUpdate : (BOOL) isRoot : (uint) index	{}
 
+- (void) cancelClicked
+{
+	NSLog(@"%@", self.window);
+}
+
 #pragma mark - Generate UI
 
 - (void) generateUI
@@ -150,29 +145,43 @@ enum
 		[self addSubview:title];
 	}
 	
-	//Subtext for the list
-	titleList = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-ADD-REPO-TITLE-LIST", nil) :[self getTitleColor]];
-	if(titleList != nil)
-	{
-		[titleList setFrameOrigin:NSMakePoint(BORDER_WIDTH, NSMaxY(title.frame) + TITLE_LIST_SEPARATOR)];
-		[self addSubview:titleList];
-	}
-	
 	//List
-	subrepoList = [RakPrefsRepoList alloc];
+	subrepoList = [RakPrefsAddRepoList alloc];
 	if(subrepoList != nil)
 	{
-		subrepoList.responder = self;
-		subrepoList.detailMode = YES;
+		subrepoList = [subrepoList initWithRepo: _root : _nbRoot : [self listFrame]];
 		
-		subrepoList = [subrepoList initWithFrame:[self listFrame]];
+		scrollview = [[RakListScrollView alloc] initWithFrame:[self listFrame]];
+		if(scrollview != nil)
+		{
+			scrollview.wantsLayer = YES;
+			
+			scrollview.layer.cornerRadius = SCROLL_VIEW_RADIUS;
+			
+			scrollview.documentView = [subrepoList getContent];
+			[self addSubview:scrollview];
+		}
+	}
+	
+	//Buttons
+	cancelButton = [RakButton allocWithText:@"Annuler" :NSZeroRect];
+	if(cancelButton != nil)
+	{
+		[cancelButton sizeToFit];
 		
-		[self addSubview:[subrepoList getContent]];
+		cancelButton.target = self;
+		cancelButton.action = @selector(cancelClicked);
+		
+		[cancelButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + 25)];
+		
+		[self addSubview:cancelButton];
 	}
 }
 
-- (void) craftBackgroundShape
+- (void) drawBackground
 {
+	[[self backgroundColor] setFill];
+	
 	contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	
 	NSSize currentSize = _bounds.size;
@@ -186,16 +195,16 @@ enum
 	CGContextAddLineToPoint(contextBorder, radius, currentSize.height);
 	CGContextAddArc(contextBorder, radius, currentSize.height - radius, radius, M_PI_2, M_PI, 0);
 	CGContextAddLineToPoint(contextBorder, 0, TOP_DARK_BORDER);
+
+	CGContextFillPath(contextBorder);
 }
 
 - (void) drawRect:(NSRect)dirtyRect
 {
-	[[self backgroundColor] setFill];
+	[self drawBackground];
 	
-	if(contextBorder == nil)
-		[self craftBackgroundShape];
-
-	CGContextFillPath(contextBorder);
+	[[self listBackgroundColor] setFill];
+	[[NSBezierPath bezierPathWithRoundedRect:scrollview.frame xRadius:SCROLL_VIEW_RADIUS yRadius:SCROLL_VIEW_RADIUS] fill];
 
 	[[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil] setFill];
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, TOP_DARK_BORDER));
@@ -221,6 +230,11 @@ enum
 - (NSColor *) backgroundColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_ADD_REPO :nil];
+}
+
+- (NSColor *) listBackgroundColor
+{
+	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL :nil];
 }
 
 @end

@@ -28,6 +28,9 @@
 
 @interface RakPrefsRepoListItem : NSView
 
+- (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
+- (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
+
 - (BOOL) getButtonState;
 - (void) cancelSelection;
 

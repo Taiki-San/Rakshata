@@ -12,7 +12,7 @@
 
 #include "JSONParser.h"
 
-ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
+ROOT_REPO_DATA ** parserRakFile(NSData *  __strong fileContent, uint * nbElem)
 {
 	NSError * parseError = nil;
 	NSDictionary * parseData = [NSJSONSerialization JSONObjectWithData:fileContent options:0 error:&parseError];

@@ -41,9 +41,6 @@ enum
 @property BOOL highlighted;
 @property id __weak responder;
 
-- (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
-- (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
-
 @end
 
 @interface RakPrefsRepoList()

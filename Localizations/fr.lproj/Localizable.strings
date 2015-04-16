@@ -155,12 +155,11 @@
 "PREFS-GENERAL-LOGOUT" = "Déconnecter";
 "PREFS-GENERAL-RESET-ALERTS" = "Réinitialiser les alertes";
 
-"PREFS-ADD-REPO-CONFIRM-INSERT-%@-FROM-%@" = "Confirmez-vous l'ajout %1$@ de %2$@?";
-"PREFS-ADD-REPO-ONE-REPO-IN-ROOT" = "de la source";
-"PREFS-ADD-REPO-SEVERAL-REPO-IN-ROOT" = "du groupe";
-"PREFS-ADD-REPO-SEVERAL-REPO-IN-SEVERAL-ROOTS" = "des sources";
-"PREFS-ADD-REPO-FINAL-LINK" = "et";	//In the case there are several roots, they are listed that way: "XX, YY and ZZ", so "PREFS-ADD-REPO-FINAL-LINK" = "and"
-"PREFS-ADD-REPO-TITLE-LIST" = "Sources à activer";
+"PREFS-ADD-REPO-CONFIRM-INSERT-%@" = "Souhaitez vous ajouter %1$@?";
+"PREFS-ADD-REPO-ONE-REPO" = "cette source";
+"PREFS-ADD-REPO-SEVERAL-REPO" = "les sources suivantes";
+"PREFS-ADD-COLUMN-NAME-REPO_NAME" = "Sources";
+"PREFS-ADD-COLUMN-NAME-ACTIVE" = "Active";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

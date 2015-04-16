@@ -10,18 +10,55 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakPrefsAddTools.h"
-#import "RakPrefsAddRepoList.h"
-#import "RakPrefsRepoAddView.h"
+@implementation RakPrefsAddRepoItem
 
-@interface RakAddRepoController : NSObject
+- (instancetype) initWithRepo : (void *) data : (BOOL) isRoot
 {
-	RakWindow * window;
-
-	uint nbRoot;
-	ROOT_REPO_DATA ** output;
+	self = [self init];
+	
+	if(self != nil)
+	{
+		_data = data;
+		_isRootItem = isRoot;
+		
+		if(_isRootItem)
+		{
+			self.expanded = YES;
+			dataString = getStringForWchar(((ROOT_REPO_DATA *) _data)->name);
+			_nbChildren = ((ROOT_REPO_DATA *) _data)->nombreSubrepo;
+		}
+		else
+		{
+			dataString = getStringForWchar(((REPO_DATA *) _data)->name);
+		}
+	}
+	
+	return self;
 }
 
-- (void) analyseFileContent : (NSData *) fileContent;
+- (void *) getRepo
+{
+	return _data;
+}
+
+- (instancetype) getChildAtIndex:(NSInteger)index
+{
+	id output = nil;
+	if(_isRootItem && index < _nbChildren && ([children count] >= index || (output = [children objectAtIndex:index]) == nil))
+	{
+		output = [[RakPrefsAddRepoItem alloc] initWithRepo:&(((ROOT_REPO_DATA *) _data)->subRepo[index]) :NO];
+		[self setChild:output atIndex:index];
+	}
+	
+	return output;
+}
+
+@end
+
+@interface RakPrefsAddListCell()
+
+@end
+
+@implementation RakPrefsAddListCell
 
 @end
