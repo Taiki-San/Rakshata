@@ -19,37 +19,18 @@
 	if(self != nil)
 	{
 		initializationStage = INIT_FIRST_STAGE;
-		[Prefs getCurrentTheme:self];		//register
-		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		_nbRoot = 3;
 		
 		rootItems[0] = rootItems[1] = rootItems[2] = nil;
 		readerMode = _readerMode;
 		
-		[self loadContent];
 		[self restoreState:state];
+		[self loadContent];
 		
-		if(_data != nil)
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		
+		if([self initializeMain:frame])
 		{
-			content = [[RakTreeView alloc] initWithFrame:frame];
-			[content setFrame:frame];
-			column = [[NSTableColumn alloc] initWithIdentifier:@"The Solar Empire shall fall!"];
-			column.width = column.maxWidth = column.minWidth = content.frame.size.width;	//Lock the width
-			
-			//Customisation
-			[content setIndentationPerLevel:[content indentationPerLevel] / 2];
-			[content setBackgroundColor:[NSColor clearColor]];
-			[content setFocusRingType:NSFocusRingTypeNone];
-			[content setAutoresizesOutlineColumn:NO];
-			
-			//End of setup
-			[content setDelegate:self];
-			[content setDataSource:self];
-			[content addTableColumn:column];
-			[content setOutlineTableColumn:column];
-			
-			//We need some tweaks to be sure everything is properly deployed
-			[content expandItem:nil expandChildren:YES];
-			
 			initializationStage = INIT_OVER;
 			
 			uint8_t i = 0;
@@ -65,10 +46,15 @@
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(needUpdateRecent:) name:@"RakSeriesNeedUpdateRecent" object:nil];
 		}
 		else
-			self = nil;
+			return nil;
 	}
 	
 	return self;
+}
+
+- (void) moreFlushing
+{
+	[RakDBUpdate unRegister : self];
 }
 
 - (void) restoreState : (NSString *) state
@@ -122,25 +108,12 @@
 	}
 }
 
-- (RakTreeView *) getContent
+- (void) additionalResizing : (NSRect) frame : (BOOL) animated
 {
-	return content;
-}
-
-- (void) dealloc
-{
-	[content removeFromSuperview];
-	[RakDBUpdate unRegister : self];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void) setFrame: (NSRect) frame
-{
-	column.width = column.maxWidth = column.minWidth = frame.size.width;
-
-	[content setFrame:frame];
-	
-	[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
+	if(animated)
+		[_mainList resizeAnimation:[self getMainListFrame : frame : content]];
+	else
+		[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
 	
 	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
 	{
@@ -150,56 +123,7 @@
 			break;
 		}
 	}
-	
-	[content reloadData];
-}
 
-- (void) resizeAnimation : (NSRect) frame
-{
-	column.width = column.maxWidth = column.minWidth = frame.size.width;
-	
-	[content.animator setFrame:frame];
-	[content setDefaultFrame:frame];
-	
-	frame.origin = NSZeroPoint;
-	
-	[_mainList resizeAnimation:[self getMainListFrame : frame : content]];
-
-	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
-	{
-		if([rootItems[i] isMainList])
-		{
-			[rootItems[i] resetMainListHeight];
-			break;
-		}
-	}
-	
-	[content reloadData];
-}
-
-- (void) setFrameOrigin : (NSPoint) newOrigin
-{
-	[content setFrameOrigin:newOrigin];
-}
-
-#pragma mark - Color
-
-- (NSColor *) getFontTopColor
-{
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE : nil];
-}
-
-- (NSColor *) getFontClickableColor
-{
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return;
-
-	[content reloadData];
 }
 
 #pragma mark - Loading routines
@@ -402,16 +326,6 @@
 
 #pragma mark - Context change
 
-- (BOOL) isHidden
-{
-	return content.isHidden;
-}
-
-- (void) setHidden:(BOOL)hidden
-{
-	content.hidden = hidden;
-}
-
 - (BOOL) installOnly
 {
 	return _mainList != NULL ? _mainList.installOnlyMode : NO;
@@ -427,22 +341,9 @@
 
 #pragma mark - Data source to the view
 
-- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+- (uint) getNbRoot
 {
-    if(item == nil)
-	{
-		return (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) + 1;
-	}
-	else if ([item isRootItem])
-		return [item getNbChildren];
-	
-	return 0;
-}
-
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
-{
-	return item == nil ? YES : [item isRootItem];
+	return (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) + 1;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
@@ -492,15 +393,12 @@
 	return output;
 }
 
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item
 {
-	if(item == NULL)
-		return @"Invalid data :(";
-	else
-		return [item getData];
+	return [super outlineView:outlineView shouldShowOutlineCellForItem:item] && ![item isMainList];
 }
 
-#pragma mark - Delegate to the view
+#pragma mark - Delegate of the view
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
@@ -524,33 +422,6 @@
 	[RakTabView broadcastUpdateContext: content : tmp : NO : VALEUR_FIN_STRUCT];
 	
 	return YES;
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item
-{
-	((RakSerieListItem*) item).expanded = YES;
-	return YES;
-}
-
-- (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item
-{
-	((RakSerieListItem*) item).expanded = NO;
-	return YES;
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
-{
-	return item != nil && ![item isRootItem];
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
-{
-	return NO;
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item
-{
-	return [item isRootItem] && ![item isMainList];
 }
 
 - (CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item
@@ -579,18 +450,6 @@
 	}
 	
 	return output;
-}
-
-///			Manipulation we view added/removed
-
-- (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
-{
-	
-}
-
-- (void)outlineView:(NSOutlineView *)outlineView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
-{
-	
 }
 
 ///		Craft views
@@ -751,7 +610,7 @@
 {
 	if(currentDraggedItem != nil)
 	{
-		PROJECT_DATA project = [currentDraggedItem getRawDataChild];
+		PROJECT_DATA project = [(RakSerieListItem*) currentDraggedItem getRawDataChild];
 		if(project.isInitialized)
 			return project;
 	}
@@ -763,7 +622,7 @@
 {
 	if(currentDraggedItem != nil)
 	{
-		PROJECT_DATA project = [currentDraggedItem getRawDataChild];
+		PROJECT_DATA project = [(RakSerieListItem*) currentDraggedItem getRawDataChild];
 		if(project.isInitialized)
 			return [[self class] contentNameForDrag:project];
 	}

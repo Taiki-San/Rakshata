@@ -82,9 +82,7 @@
 		
 		selection = [NSMutableArray array];
 		
-		_tableView.rowHeight = 14;
-		
-		NSString * notificationName = [self getNotificationName];
+ 		NSString * notificationName = [self getNotificationName];
 		if(notificationName != nil)
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerFired:) name:notificationName object:nil];
 	}
@@ -122,6 +120,11 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return _data == NULL ? 0 : _nbData;
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+	return 14;
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row

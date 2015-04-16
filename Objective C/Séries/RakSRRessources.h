@@ -18,15 +18,6 @@
 
 @end
 
-@interface RakTreeView : NSOutlineView
-{
-	NSRect _defaultFrame;
-}
-
-- (void) setDefaultFrame : (NSRect) frame;
-
-@end
-
 @interface RakTableRowView : NSTableRowView
 
 @end

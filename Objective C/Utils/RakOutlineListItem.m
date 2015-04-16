@@ -10,28 +10,51 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSerieListItem : RakOutlineListItem
+@implementation RakOutlineListItem
+
+- (id) init
 {
-	BOOL _isRecentList;
-	BOOL _isDLList;
-	BOOL _isMainList;
+	self = [super init];
 	
-	CGFloat _mainListHeight;
+	if(self != nil)
+	{
+		children = [[NSMutableArray alloc] init];
+	}
 	
-	PROJECT_DATA dataChild;
+	return self;
 }
 
-- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
+- (BOOL) isRootItem
+{
+	return _isRootItem;
+}
 
-- (BOOL) isRecentList;
-- (BOOL) isDLList;
-- (BOOL) isMainList;
+- (uint) getNbChildren
+{
+	if([self isRootItem])
+		return _nbChildren;
+	return 0;
+}
 
-- (void) setMainListHeight : (CGFloat) height;
-- (void) resetMainListHeight;
+- (void) setChild : (id) child atIndex : (NSInteger) index
+{
+	if(children != nil)
+	{
+		[children insertObject:child atIndex:index];
+	}
+}
 
-- (void) setNbChildren : (uint) nbChildren : (BOOL) flush;
+- (id) getChildAtIndex : (NSInteger) index
+{
+	if(children != nil && [children count] > index)
+		return [children objectAtIndex:index];
+	
+	return nil;
+}
 
-- (PROJECT_DATA) getRawDataChild;
+- (id) getData
+{
+	return dataString;
+}
 
 @end

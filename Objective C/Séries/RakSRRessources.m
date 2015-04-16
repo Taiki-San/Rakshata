@@ -30,43 +30,6 @@
 
 @end
 
-@implementation RakTreeView
-
-- (id)makeViewWithIdentifier:(NSString *)identifier owner:(id)owner
-{
-	id view = [super makeViewWithIdentifier:identifier owner:owner];
-	
-	if ([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
-	{
-		uint themeID = [Prefs getCurrentTheme:nil];
-		[(NSButton *)view setImage:[RakResPath craftResNameFromContext:@"TD->" :NO :YES :themeID]];
-		[(NSButton *)view setAlternateImage:[RakResPath craftResNameFromContext:@"TD-v" :NO :YES :themeID]];
-	}
-	
-	return view;
-}
-
-- (NSRect) frame
-{
-	if(_defaultFrame.size.height != 0)
-		return _defaultFrame;
-	else
-		return [super frame];
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	_defaultFrame = frameRect;
-	[super setFrame:_defaultFrame];
-}
-
-- (void) setDefaultFrame : (NSRect) frame
-{
-	_defaultFrame = frame;
-}
-
-@end
-
 @implementation RakSRSubMenu
 
 - (CGFloat) getFontSize

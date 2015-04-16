@@ -26,7 +26,7 @@ enum {
 
 #import "RakSerieListItem.h"
 
-@interface RakSerieList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination>
+@interface RakSerieList : RakOutlineList
 {
 	int initializationStage;
 	BOOL stateSubLists[2];
@@ -36,34 +36,21 @@ enum {
 	
 	uint8_t _nbElemReadDisplayed;
 	uint8_t _nbElemDLDisplayed;
-	NSPointerArray * _data;
 	
+	NSPointerArray * _data;
 	RakSerieListItem* rootItems[3];
 	
-	RakTreeView * content;
-	NSTableColumn * column;
 	RakSerieMainList * _mainList;
-	
-	RakSerieListItem * currentDraggedItem;
 	
 	BOOL readerMode;
 }
 
-@property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 @property BOOL installOnly;
 
 - (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state;
 - (void) restoreState : (NSString *) state;
 
-- (RakTreeView *) getContent;
 - (NSString*) getContextToGTFO;
-
-- (void) setFrame: (NSRect) frame;
-- (void) setFrameOrigin : (NSPoint) newOrigin;
-- (void) resizeAnimation : (NSRect) frame;
-
-- (NSColor *) getFontTopColor;
-- (NSColor *) getFontClickableColor;
 
 - (void) loadContent;
 - (void) loadRecentFromDB;

@@ -10,28 +10,25 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSerieListItem : RakOutlineListItem
+@interface RakOutlineListItem : NSObject
 {
-	BOOL _isRecentList;
-	BOOL _isDLList;
-	BOOL _isMainList;
+	BOOL _isRootItem;
+	uint _nbChildren;
+	NSMutableArray * children;
 	
-	CGFloat _mainListHeight;
-	
-	PROJECT_DATA dataChild;
+	NSString * dataString;
 }
 
-- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
+@property BOOL expanded;
+@property (readonly, getter=getHeight) CGFloat height;
 
-- (BOOL) isRecentList;
-- (BOOL) isDLList;
-- (BOOL) isMainList;
+- (BOOL) isRootItem;
 
-- (void) setMainListHeight : (CGFloat) height;
-- (void) resetMainListHeight;
+- (uint) getNbChildren;
 
-- (void) setNbChildren : (uint) nbChildren : (BOOL) flush;
+- (void) setChild : (id) child atIndex : (NSInteger) index;
+- (id) getChildAtIndex : (NSInteger) index;
 
-- (PROJECT_DATA) getRawDataChild;
+- (id) getData;
 
 @end

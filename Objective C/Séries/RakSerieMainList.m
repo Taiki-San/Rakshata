@@ -318,6 +318,29 @@
 	return _data == NULL ? 0 : _nbData;
 }
 
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+	if(preloadedRow == nil)
+		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
+	
+	((RakText *) preloadedRow).stringValue = [self tableView:tableView objectValueForTableColumn:nil row:row];
+	
+	return preloadedRow.bounds.size.height;
+}
+
+- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+{
+	NSView * output = [super tableView:tableView viewForTableColumn:tableColumn row:row];
+	
+	if(output != nil && [output isKindOfClass:[RakText class]])
+	{
+		[((RakText *) output).cell setWraps:YES];
+		((RakText *) output).fixedWidth = tableColumn.width;
+	}
+	
+	return output;
+}
+
 - (NSString*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if(rowIndex < _nbData)

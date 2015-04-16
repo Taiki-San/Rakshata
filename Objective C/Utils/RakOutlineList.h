@@ -10,28 +10,46 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSerieListItem : RakOutlineListItem
+#import "RakOutlineListItem.h"
+
+@interface RakTreeView : NSOutlineView
 {
-	BOOL _isRecentList;
-	BOOL _isDLList;
-	BOOL _isMainList;
-	
-	CGFloat _mainListHeight;
-	
-	PROJECT_DATA dataChild;
+	NSRect _defaultFrame;
 }
 
-- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
+- (void) setDefaultFrame : (NSRect) frame;
 
-- (BOOL) isRecentList;
-- (BOOL) isDLList;
-- (BOOL) isMainList;
+@end
 
-- (void) setMainListHeight : (CGFloat) height;
-- (void) resetMainListHeight;
+@interface RakOutlineList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination>
+{
+	uint _nbRoot;
 
-- (void) setNbChildren : (uint) nbChildren : (BOOL) flush;
+	RakTreeView * content;
+	NSTableColumn * firstColumn;
 
-- (PROJECT_DATA) getRawDataChild;
+	RakOutlineListItem * currentDraggedItem;
+	
+	uint nbColumn;
+}
+
+@property (getter=isHidden, setter=setHidden:)				BOOL hidden;
+
+- (BOOL) initializeMain : (NSRect) frame;
+- (RakTreeView *) getContent;
+
+- (void) moreFlushing;
+
+- (void) setColumnWidth : (NSTableColumn *) _column : (uint) index : (CGFloat) fullWidth;
+
+- (void) setFrame: (NSRect) frame;
+- (void) setFrameOrigin : (NSPoint) newOrigin;
+- (void) resizeAnimation : (NSRect) frame;
+- (void) additionalResizing : (NSRect) frame : (BOOL) animated;
+
+- (NSColor *) getFontTopColor;
+- (NSColor *) getFontClickableColor;
+
+- (uint) getNbRoot;
 
 @end

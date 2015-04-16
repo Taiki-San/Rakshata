@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #import "RakListScrollView.h"
+#import "RakOutlineList.h"
 
 #define RAKLIST_MAIN_COLUMN_ID @"For the New Lunar Republic!"
 #define LIST_INVALID_SELECTION	UINT_MAX
@@ -50,6 +51,8 @@ typedef struct smartReload_data
 	uint _nbData;
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
+	
+	NSView * preloadedRow;
 	
 	uint selectedRowIndex;
 	uint selectedColumnIndex;

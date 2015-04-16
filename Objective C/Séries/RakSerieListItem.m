@@ -33,28 +33,28 @@
 				case INIT_FIRST_STAGE:
 				{
 					_isRecentList = YES;
-					dataRoot = NSLocalizedString(@"RECENT-OPEN", nil);
+					dataString = NSLocalizedString(@"RECENT-OPEN", nil);
 					break;
 				}
 					
 				case INIT_SECOND_STAGE:
 				{
 					_isDLList = YES;
-					dataRoot = NSLocalizedString(@"RECENT-DL", nil);
+					dataString = NSLocalizedString(@"RECENT-DL", nil);
 					break;
 				}
 					
 				case INIT_THIRD_STAGE:
 				{
 					_isMainList = YES;
-					dataRoot = NSLocalizedString(@"FULL-LIST", nil);
+					dataString = NSLocalizedString(@"FULL-LIST", nil);
 					break;
 				}
 			}
 		}
 		else
 		{
-			dataRoot	= nil;
+			dataString = nil;
 			
 			if(data == NULL && initStage == INIT_FINAL_STAGE)
 				_isMainList = YES;
@@ -77,11 +77,6 @@
 	}
 	
 	return self;
-}
-
-- (BOOL) isRootItem
-{
-	return _isRootItem;
 }
 
 - (BOOL) isRecentList
@@ -136,27 +131,12 @@
 		[children removeAllObjects];
 }
 
-- (uint) getNbChildren
+- (id) getData
 {
-	if([self isRootItem])
-		return _nbChildren;
-	return 0;
-}
+	if(!_isRootItem && dataChild.isInitialized)
+	   return getStringForWchar(dataChild.projectName);
 
-- (void) setChild : (id) child atIndex : (NSInteger) index
-{
-	if(children != nil)
-	{
-		[children insertObject:child atIndex:index];
-	}
-}
-
-- (id) getChildAtIndex : (NSInteger) index
-{
-	if(children != nil && [children count] > index)
-		return [children objectAtIndex:index];
-	
-	return nil;
+	return [super getData];
 }
 
 - (PROJECT_DATA) getRawDataChild
@@ -166,16 +146,6 @@
 
 	else
 		return dataChild;
-}
-
-- (NSString*) getData
-{
-	if(_isRootItem && dataRoot != NULL)
-		return dataRoot;
-	else if(!_isRootItem && dataChild.isInitialized)
-		return getStringForWchar(dataChild.projectName);
-	else
-		return @"Internal error :(";
 }
 
 @end
