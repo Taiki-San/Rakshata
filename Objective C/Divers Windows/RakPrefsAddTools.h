@@ -15,6 +15,7 @@
 	void * _data;
 }
 
+- (instancetype) initWithRepo : (void *) data : (BOOL) isRoot;
 - (void *) getRepo;
 
 @end
