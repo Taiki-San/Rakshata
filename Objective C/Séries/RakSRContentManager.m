@@ -379,12 +379,12 @@
 		//First, we detect suppressions/deletions
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
 		{
-			if(cacheList[_filteredToSorted[posOld]] < newCacheList[_newFilteredToSorted[posNew]])
+			if(cacheList[posOld] < newCacheList[posNew])
 			{
 				_filteredToSorted[posOld] = UINT_MAX;	//Invalidate the entry
 				removal[nbRemoval++] = sortedToFiltered[posOld++];
 			}
-			else if(cacheList[_filteredToSorted[posOld]] > newCacheList[_newFilteredToSorted[posNew]])
+			else if(cacheList[posOld] > newCacheList[posNew])
 			{
 				_newFilteredToSorted[posNew] = UINT_MAX;
 				insertion[nbInsertion++] = newSortedToFiltered[posNew++];
