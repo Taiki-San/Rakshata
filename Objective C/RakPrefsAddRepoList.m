@@ -42,26 +42,11 @@ enum
 	{
 		_rootCache = root;
 		_nbRoot = nbRoot;
-		nbColumn = 2;
 		
 		rootItems = [NSMutableArray array];
 		
 		[self initializeMain:frame];
-		
-		uint pos = 0;
-		NSArray * names = @[NSLocalizedString(@"PREFS-ADD-COLUMN-NAME-REPO_NAME", nil), NSLocalizedString(@"PREFS-ADD-COLUMN-NAME-ACTIVE", nil)];
-		for (NSTableColumn * column in content.tableColumns)
-		{
-			if(pos >= [names count])
-				break;
-			
-			NSTableHeaderCell * cell = [[NSTableHeaderCell alloc] initTextCell:[names objectAtIndex:pos++]];
-			
-			if (cell != nil)
-			{
-				[column setHeaderCell:cell];
-			}
-		}
+		[content setHeaderView:nil];
 	}
 	
 	return self;
@@ -69,7 +54,12 @@ enum
 
 - (void) setColumnWidth : (NSTableColumn *) _column : (uint) index : (CGFloat) fullWidth
 {
-	[super setColumnWidth:_column :index :index ? BUTTON_WIDTH : (fullWidth - BUTTON_WIDTH)];
+	[super setColumnWidth:_column :index :fullWidth - [content indentationPerLevel]];
+}
+
+- (void) setFrame:(NSRect)frame
+{
+	[super setFrame:frame];
 }
 
 #pragma mark - Data source stuffs
@@ -119,45 +109,39 @@ enum
 	return rowView;
 }
 
-- (id) createViewWithItem : (RakPrefsAddRepoItem *) item isFirstColumn : (BOOL) isFirstColumn
+- (id) createViewWithItem : (RakPrefsAddRepoItem *) item
 {
-	return [[RakPrefsRepoListItem alloc] initWithRepo:YES :!isFirstColumn :[item isRootItem] :[item getRepo] :nil];
+	RakPrefsRepoListItem* output = [RakPrefsRepoListItem alloc];
+	
+	output.wantActivationState = YES;
+	
+	return [output initWithRepo:YES :NO :[item isRootItem] :[item getRepo] :nil];
 }
 
-- (void) updateViewWithItem : (RakPrefsRepoListItem*) view : (RakPrefsAddRepoItem *) item isFirstColumn : (BOOL) isFirstColumn
+- (void) updateViewWithItem : (RakPrefsRepoListItem*) view : (RakPrefsAddRepoItem *) item
 {
-	[view updateContent:YES :!isFirstColumn :[item isRootItem] :[item getRepo] :nil];
+	[view updateContent:YES :NO :[item isRootItem] :[item getRepo] :nil];
 }
-
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(RakPrefsAddRepoItem *)item
 {
 	RakPrefsRepoListItem * rowView;
 	
-	if(tableColumn == nil || tableColumn == firstColumn)
+	rowView = [outlineView makeViewWithIdentifier:@"WillIEverReleasingThisSoftware?" owner:self];
+	if(rowView == nil)
 	{
-		rowView = [outlineView makeViewWithIdentifier:@"WillIEverReleasingThisSoftware?" owner:self];
-		if(rowView == nil)
-		{
-			rowView = [self createViewWithItem : item isFirstColumn: YES];
-			rowView.identifier = @"WillIEverReleasingThisSoftware?";
-		}
-		else
-			[self updateViewWithItem:rowView :item isFirstColumn:YES];
+		rowView = [self createViewWithItem : item];
+		rowView.identifier = @"WillIEverReleasingThisSoftware?";
 	}
 	else
-	{
-		rowView = [outlineView makeViewWithIdentifier:@"IfYou'reReadingThisProbably" owner:self];
-		if(rowView == nil)
-		{
-			rowView = [self createViewWithItem : item isFirstColumn: NO];
-			rowView.identifier = @"IfYou'reReadingThisProbably";
-		}
-		else
-			[self updateViewWithItem:rowView :item isFirstColumn:NO];
-	}
+		[self updateViewWithItem:rowView :item];
 	
 	return rowView;
+}
+
+- (NSColor *) headerTextColor
+{
+	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
 }
 
 @end

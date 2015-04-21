@@ -158,8 +158,6 @@
 "PREFS-ADD-REPO-CONFIRM-INSERT-%@" = "Souhaitez vous ajouter %1$@?";
 "PREFS-ADD-REPO-ONE-REPO" = "cette source";
 "PREFS-ADD-REPO-SEVERAL-REPO" = "les sources suivantes";
-"PREFS-ADD-COLUMN-NAME-REPO_NAME" = "Sources";
-"PREFS-ADD-COLUMN-NAME-ACTIVE" = "Active";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

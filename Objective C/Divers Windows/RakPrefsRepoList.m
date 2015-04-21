@@ -30,6 +30,7 @@ enum
 	RakClickableText * detail;
 	RakRadioButton * activationButton;
 	
+	BOOL _isRoot;
 	BOOL _isCompact;
 	BOOL _isDetailColumn;
 
@@ -212,14 +213,18 @@ enum
 
 - (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
+	_isRoot = isRoot;
 	_isCompact = isCompact;
 	_isDetailColumn = isDetailColumn;
 	
-	if(isDetailColumn)
+	if(isDetailColumn || _wantActivationState)
 	{
-		image = nil;
-		title.hidden = YES;
-		detail.hidden = YES;
+		if(!_wantActivationState)
+		{
+			image = nil;
+			title.hidden = YES;
+			detail.hidden = YES;
+		}
 		
 		if(repo == NULL)
 			return;
@@ -242,11 +247,14 @@ enum
 		
 		activationButton.state = _repoUsedInDetail->active ? NSOnState : NSOffState;
 	}
-	else
+	
+	if(!isDetailColumn)
 	{
 		title.hidden = NO;
 		detail.hidden = NO;
-		activationButton.hidden = YES;
+		
+		if(!_wantActivationState)
+			activationButton.hidden = YES;
 
 		//Image
 		image = loadImageForRepo(isRoot, repo);
@@ -357,12 +365,13 @@ enum
 {
 	[super setFrame:frameRect];
 	
-	if(_isDetailColumn)
+	if(_isDetailColumn || _wantActivationState)
 	{
 		frameRect.origin = NSZeroPoint;
-		[activationButton setFrameOrigin:NSMakePoint(0, frameRect.size.height / 2 - activationButton.bounds.size.height / 2)];
+		[activationButton setFrameOrigin:NSMakePoint(_isDetailColumn ? 0 : (frameRect.size.width - activationButton.bounds.size.width - (_isRoot ? 0 : 2)), frameRect.size.height / 2 - activationButton.bounds.size.height / 2)];
 	}
-	else
+	
+	if(!_isDetailColumn)
 	{
 		const CGFloat diameter = _isCompact ? LIST_ROW_IMAGE_DIAMETER / 2 : LIST_ROW_IMAGE_DIAMETER;
 		

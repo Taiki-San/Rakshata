@@ -28,6 +28,8 @@
 
 @interface RakPrefsRepoListItem : NSView
 
+@property BOOL wantActivationState;
+
 - (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 - (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 

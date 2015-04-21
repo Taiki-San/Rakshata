@@ -37,7 +37,7 @@ enum
 	
 	TOP_DARK_BORDER = 2,	//Dark window border have to be drawn at the top of the modal window
 	
-	TOP_BORDER_TITLE = 10,	//Border at the top of the title text
+	TOP_BORDER_TITLE = 12,	//Border at the top of the title text
 	
 	LIST_SEPARATOR = 12,	//Border at the top of the list
 	
@@ -125,7 +125,7 @@ enum
 
 - (void) cancelClicked
 {
-	NSLog(@"%@", self.window);
+	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
 }
 
 #pragma mark - Generate UI
