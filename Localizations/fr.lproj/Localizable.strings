@@ -137,7 +137,7 @@
 "PREFS-DELETE-CONTENT-MESSAGE" = "Cette option supprimera toutes les séries distribués par cette source que vous avez téléchargé. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
 "PREFS-DELETE-SOURCE-TITLE" = "Désactiver la source supprimera le contenu";
 "PREFS-DELETE-SOURCE-MESSAGE" = "Désactiver la source fera disparaitre son contenu du catalogue et supprimera toutes les séries distribués par cette source. La source pourra être réajouter depuis ce menu. Si vous souhaitez les relire, vous aurez à les télécharger de nouveau";
-"PREFS-DELETE-CANCEL" = "Annuler";
+"PREFS-CANCEL" = "Annuler";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 
 "PREFS-REPO-PLACEHOLDER-TUTORIAL" = "Vous pouvez ici contrôler les sources auxquelles vous êtes abonnés.\n\nVous pouvez purger le contenu installé ou supprimer de Rakshata les sources de votre choix.\n\nVous pouvez aussi controller les sources à travers les groupes auxquelles elles appartiennent (par exemple, activer ou désactiver les sources du groupe).";

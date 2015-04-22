@@ -167,7 +167,7 @@ enum
 	}
 	
 	//Buttons
-	cancelButton = [RakButton allocWithText:@"Annuler" :NSZeroRect];
+	cancelButton = [RakButton allocWithText:NSLocalizedString(@"PREFS-CANCEL", nil) :NSZeroRect];
 	if(cancelButton != nil)
 	{
 		[cancelButton sizeToFit];

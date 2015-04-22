@@ -23,7 +23,7 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
 //Rak parser
 //This function will perform a lot of network task, and thus should _really_ be run in a thread
-ROOT_REPO_DATA ** parserRakFile(NSData * __strong fileContent, uint * nbElem);
+ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 

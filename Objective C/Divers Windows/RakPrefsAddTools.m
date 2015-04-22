@@ -54,11 +54,3 @@
 }
 
 @end
-
-@interface RakPrefsAddListCell()
-
-@end
-
-@implementation RakPrefsAddListCell
-
-@end

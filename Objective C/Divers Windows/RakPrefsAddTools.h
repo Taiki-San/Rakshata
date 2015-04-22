@@ -19,7 +19,3 @@
 - (void *) getRepo;
 
 @end
-
-@interface RakPrefsAddListCell : NSTableHeaderCell
-
-@end
