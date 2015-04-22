@@ -34,6 +34,26 @@
 		return [super frame];
 }
 
+- (void) setFrameSize:(NSSize)newSize
+{
+	[super setFrameSize:newSize];
+	
+	if(_wantUpdateScrollview)
+	{
+		RakListScrollView * view = (id) self.superview;
+		
+		if(view == nil)
+			return;
+		
+		view = (id) view.superview;
+		if(view == nil || ![view isKindOfClass:[RakListScrollView class]])
+			return;
+		
+		if(!view.hasVerticalScroller)
+			[view updateScrollerState:view.frame];
+	}
+}
+
 - (void) setFrame:(NSRect)frameRect
 {
 	_defaultFrame = frameRect;

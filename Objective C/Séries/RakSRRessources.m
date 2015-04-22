@@ -28,6 +28,24 @@
 	
 }
 
+- (void) setForcedWidth:(CGFloat)forcedWidth
+{
+	haveForcedWidth = YES;
+	_forcedWidth = forcedWidth;
+	
+	NSSize size = _frame.size;
+	if(size.width != _forcedWidth)
+	{
+		[self setFrameSize:size];
+	}
+}
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	newSize.width = _forcedWidth;
+	[super setFrameSize:newSize];
+}
+
 @end
 
 @implementation RakSRSubMenu

@@ -149,7 +149,10 @@ enum
 	subrepoList = [RakPrefsAddRepoList alloc];
 	if(subrepoList != nil)
 	{
-		subrepoList = [subrepoList initWithRepo: _root : _nbRoot : [self listFrame]];
+		NSRect frame = [self listFrame];
+		frame.size.width -= [RakScroller width];
+		
+		subrepoList = [subrepoList initWithRepo: _root : _nbRoot : frame];
 		
 		scrollview = [[RakListScrollView alloc] initWithFrame:[self listFrame]];
 		if(scrollview != nil)

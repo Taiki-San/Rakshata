@@ -37,6 +37,7 @@ enum
 	REPO_DATA * _repoUsedInDetail;
 	
 	NSRect imageFrame;
+	BOOL haveFixedWidth;
 }
 
 @property BOOL highlighted;
@@ -200,7 +201,7 @@ enum
 
 - (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
-	self = [self initWithFrame:NSMakeRect(0, 0, 300, isCompact ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT)];
+	self = [self initWithFrame:NSMakeRect(0, 0, haveFixedWidth ? _fixedWidth : 300, isCompact ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT)];
 	
 	if(self != nil)
 	{
@@ -359,10 +360,37 @@ enum
 	activationButton.state = NSOnState;
 }
 
-#pragma mark - Drawing
+#pragma mark - Frame forcing & drawing
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	if(haveFixedWidth)
+		newSize.width = _fixedWidth;
+	
+	[super setFrameSize:newSize];
+}
+
+- (void) setFixedWidth:(CGFloat)fixedWidth
+{
+	if(!haveFixedWidth)
+		haveFixedWidth = YES;
+	
+	_fixedWidth = fixedWidth;
+	
+	NSRect frame = self.frame;
+
+	if(frame.size.width != _fixedWidth)
+	{
+		frame.size.width = _fixedWidth;
+		[self setFrame:frame];
+	}
+}
 
 - (void) setFrame:(NSRect)frameRect
 {
+	if(haveFixedWidth)
+		frameRect.size.width = _fixedWidth;
+
 	[super setFrame:frameRect];
 	
 	if(_isDetailColumn || _wantActivationState)

@@ -19,6 +19,8 @@
 
 - (void) setDefaultFrame : (NSRect) frame;
 
+@property BOOL wantUpdateScrollview;
+
 @end
 
 @interface RakOutlineList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination>

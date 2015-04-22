@@ -15,6 +15,8 @@
 	ROOT_REPO_DATA ** _rootCache;
 
 	NSMutableArray * rootItems;
+	
+	CGFloat givenWidth, contentWidth;
 }
 
 @end
@@ -42,11 +44,14 @@ enum
 	{
 		_rootCache = root;
 		_nbRoot = nbRoot;
+		givenWidth = frame.size.width - 5;
 		
 		rootItems = [NSMutableArray array];
 		
 		[self initializeMain:frame];
-		[content setHeaderView:nil];
+		
+		content.wantUpdateScrollview = YES;
+		content.headerView = nil;
 	}
 	
 	return self;
@@ -55,11 +60,6 @@ enum
 - (void) setColumnWidth : (NSTableColumn *) _column : (uint) index : (CGFloat) fullWidth
 {
 	[super setColumnWidth:_column :index :fullWidth - [content indentationPerLevel]];
-}
-
-- (void) setFrame:(NSRect)frame
-{
-	[super setFrame:frame];
 }
 
 #pragma mark - Data source stuffs
@@ -99,12 +99,14 @@ enum
 	if (![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakPrefsAddRepoItem class] || ![item isRootItem]))
 		return nil;
 	
-	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
-	if (!rowView)
+	RakTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
+	if(rowView == nil)
 	{
 		rowView = [[RakTableRowView alloc] init];
 		rowView.identifier = @"HeaderRowView";
 	}
+
+	rowView.forcedWidth = givenWidth;
 	
 	return rowView;
 }
@@ -115,12 +117,21 @@ enum
 	
 	output.wantActivationState = YES;
 	
-	return [output initWithRepo:YES :NO :[item isRootItem] :[item getRepo] :nil];
+	output = [output initWithRepo:YES :NO :[item isRootItem] :[item getRepo] :nil];
+	
+	if(contentWidth == 0)
+		contentWidth = content.frame.size.width - [content indentationPerLevel];
+
+	output.fixedWidth = contentWidth - ([item isRootItem] ? 0 : 5);
+	
+	return output;
 }
 
 - (void) updateViewWithItem : (RakPrefsRepoListItem*) view : (RakPrefsAddRepoItem *) item
 {
 	[view updateContent:YES :NO :[item isRootItem] :[item getRepo] :nil];
+
+	view.fixedWidth = contentWidth - ([item isRootItem] ? 0 : 5);
 }
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(RakPrefsAddRepoItem *)item

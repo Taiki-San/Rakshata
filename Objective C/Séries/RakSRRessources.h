@@ -19,6 +19,11 @@
 @end
 
 @interface RakTableRowView : NSTableRowView
+{
+	BOOL haveForcedWidth;
+}
+
+@property (nonatomic) CGFloat forcedWidth;
 
 @end
 
