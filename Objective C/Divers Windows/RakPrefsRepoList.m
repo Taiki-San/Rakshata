@@ -23,14 +23,13 @@ enum
 	OFFSET_DETAIL_Y = 6
 };
 
-@interface RakPrefsRepoListItem()
+@interface RakPrefsRepoListItemView()
 {
 	NSImage * image;
 	RakText * title;
 	RakClickableText * detail;
 	RakRadioButton * activationButton;
 	
-	BOOL _isRoot;
 	BOOL _isCompact;
 	BOOL _isDetailColumn;
 
@@ -41,7 +40,6 @@ enum
 }
 
 @property BOOL highlighted;
-@property id __weak responder;
 
 @end
 
@@ -173,10 +171,10 @@ enum
 	if(!_rootMode && !_detailMode)
 		detail = [_responder nameOfParent: ((REPO_DATA *) data)->parentRepoID];
 
-	RakPrefsRepoListItem * result = [tableView makeViewWithIdentifier : _identifier owner:self];
+	RakPrefsRepoListItemView * result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if (result == nil)
 	{
-		result = [[RakPrefsRepoListItem alloc] initWithRepo : _detailMode : tableColumn == _detailColumn : _rootMode : data : detail];
+		result = [[RakPrefsRepoListItemView alloc] initWithRepo : _detailMode : tableColumn == _detailColumn : _rootMode : data : detail];
 		if(result != nil)
 			result.responder = _responder;
 	}
@@ -186,9 +184,9 @@ enum
 	return result;
 }
 
-- (void) graphicSelection:(RakPrefsRepoListItem *)view :(BOOL)select
+- (void) graphicSelection:(RakPrefsRepoListItemView *)view :(BOOL)select
 {
-	if([view class] == [RakPrefsRepoListItem class])
+	if([view class] == [RakPrefsRepoListItemView class])
 	{
 		view.highlighted = select;
 		[view setNeedsDisplay:YES];
@@ -197,7 +195,7 @@ enum
 
 @end
 
-@implementation RakPrefsRepoListItem
+@implementation RakPrefsRepoListItemView
 
 - (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {

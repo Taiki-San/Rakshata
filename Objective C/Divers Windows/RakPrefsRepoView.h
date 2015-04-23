@@ -26,7 +26,10 @@
 
 @end
 
-@interface RakPrefsRepoListItem : NSView
+@interface RakPrefsRepoListItemView : NSView
+
+@property BOOL isRoot;
+@property id __weak responder;
 
 @property BOOL wantActivationState;
 @property (nonatomic) CGFloat fixedWidth;

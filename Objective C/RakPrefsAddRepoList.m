@@ -113,7 +113,7 @@ enum
 
 - (id) createViewWithItem : (RakPrefsAddRepoItem *) item
 {
-	RakPrefsRepoListItem* output = [RakPrefsRepoListItem alloc];
+	RakPrefsRepoListItemView* output = [RakPrefsRepoListItemView alloc];
 	
 	output.wantActivationState = YES;
 	
@@ -127,7 +127,7 @@ enum
 	return output;
 }
 
-- (void) updateViewWithItem : (RakPrefsRepoListItem*) view : (RakPrefsAddRepoItem *) item
+- (void) updateViewWithItem : (RakPrefsRepoListItemView*) view : (RakPrefsAddRepoItem *) item
 {
 	[view updateContent:YES :NO :[item isRootItem] :[item getRepo] :nil];
 
