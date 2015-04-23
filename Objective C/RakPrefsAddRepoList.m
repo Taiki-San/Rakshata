@@ -28,7 +28,8 @@ enum
 	ACTIVATION_STATE_OFF,
 	
 	BUTTON_WIDTH = 40,
-	ROW_HEIGHT = 30
+	ROW_HEIGHT = 30,
+	GIVEN_WIDTH_OFFSET = 5
 };
 
 @implementation RakPrefsAddRepoList
@@ -44,7 +45,7 @@ enum
 	{
 		_rootCache = root;
 		_nbRoot = nbRoot;
-		givenWidth = frame.size.width - 5;
+		givenWidth = frame.size.width - GIVEN_WIDTH_OFFSET;
 		
 		rootItems = [NSMutableArray array];
 		
@@ -103,10 +104,9 @@ enum
 	if(rowView == nil)
 	{
 		rowView = [[RakTableRowView alloc] init];
+		rowView.forcedWidth = givenWidth;
 		rowView.identifier = @"HeaderRowView";
 	}
-
-	rowView.forcedWidth = givenWidth;
 	
 	return rowView;
 }
@@ -119,9 +119,10 @@ enum
 	
 	output = [output initWithRepo:YES :NO :[item isRootItem] :[item getRepo] :nil];
 	
-	if(contentWidth == 0)
-		contentWidth = content.frame.size.width - [content indentationPerLevel];
-
+	if(!contentWidth)
+		contentWidth = givenWidth + GIVEN_WIDTH_OFFSET - [RakScroller width] - [content indentationPerLevel];
+	
+	output.responder = self;
 	output.fixedWidth = contentWidth - ([item isRootItem] ? 0 : 5);
 	
 	return output;
@@ -136,13 +137,13 @@ enum
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(RakPrefsAddRepoItem *)item
 {
-	RakPrefsRepoListItem * rowView;
+	RakPrefsRepoListItemView * rowView;
 	
-	rowView = [outlineView makeViewWithIdentifier:@"WillIEverReleasingThisSoftware?" owner:self];
+	rowView = [outlineView makeViewWithIdentifier:@"WillIEverReleaseThisSoftware?" owner:self];
 	if(rowView == nil)
 	{
 		rowView = [self createViewWithItem : item];
-		rowView.identifier = @"WillIEverReleasingThisSoftware?";
+		rowView.identifier = @"WillIEverReleaseThisSoftware?";
 	}
 	else
 		[self updateViewWithItem:rowView :item];
