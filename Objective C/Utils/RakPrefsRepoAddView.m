@@ -24,7 +24,7 @@
 	
 	RakText * title;
 	RakListScrollView * scrollview;
-	RakPrefsAddRepoList * subrepoList;
+	RakAddRepoList * subrepoList;
 	RakButton * cancelButton, * confirmButton;
 }
 
@@ -146,7 +146,7 @@ enum
 	}
 	
 	//List
-	subrepoList = [RakPrefsAddRepoList alloc];
+	subrepoList = [RakAddRepoList alloc];
 	if(subrepoList != nil)
 	{
 		NSRect frame = [self listFrame];

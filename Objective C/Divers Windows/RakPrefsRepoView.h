@@ -27,6 +27,11 @@
 @end
 
 @interface RakPrefsRepoListItemView : NSView
+{
+	RakRadioButton * activationButton;
+	
+	REPO_DATA * _repoUsedInDetail;
+}
 
 @property BOOL isRoot;
 @property id __weak responder;
@@ -38,6 +43,7 @@
 - (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 
 - (BOOL) getButtonState;
+- (void) refreshButtonState;
 - (void) cancelSelection;
 
 @end

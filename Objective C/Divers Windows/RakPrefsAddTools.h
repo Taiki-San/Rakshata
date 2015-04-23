@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsAddRepoItem : RakOutlineListItem
+@interface RakAddRepoItem : RakOutlineListItem
 {
 	void * _data;
 }
@@ -19,3 +19,11 @@
 - (void *) getRepo;
 
 @end
+
+@interface RakAddRepoListItemView : RakPrefsRepoListItemView
+
+@property BOOL unloaded;
+
+@end
+
+#define REFRESH_ADD_REPO_ITEM_STATUS @"RakAddRepoItemNotification"

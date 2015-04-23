@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsAddRepoList : RakOutlineList
+@interface RakAddRepoList : RakOutlineList
 
 - (instancetype) initWithRepo : (ROOT_REPO_DATA **) root : (uint) nbRoot : (NSRect) frame;
 

@@ -28,12 +28,9 @@ enum
 	NSImage * image;
 	RakText * title;
 	RakClickableText * detail;
-	RakRadioButton * activationButton;
 	
 	BOOL _isCompact;
 	BOOL _isDetailColumn;
-
-	REPO_DATA * _repoUsedInDetail;
 	
 	NSRect imageFrame;
 	BOOL haveFixedWidth;
@@ -244,7 +241,7 @@ enum
 		else
 			activationButton.hidden = NO;
 		
-		activationButton.state = _repoUsedInDetail->active ? NSOnState : NSOffState;
+		[self refreshButtonState];
 	}
 	
 	if(!isDetailColumn)
@@ -343,6 +340,8 @@ enum
 	}
 }
 
+#pragma mark - Button management
+
 - (void) buttonClicked
 {
 	[_responder statusTriggered : self : _repoUsedInDetail];
@@ -350,7 +349,12 @@ enum
 
 - (BOOL) getButtonState
 {
-	return activationButton.state == NSOnState;
+	return activationButton.state != NSOffState;
+}
+
+- (void) refreshButtonState
+{
+	activationButton.state = _repoUsedInDetail->active ? NSOnState : NSOffState;
 }
 
 - (void) cancelSelection
