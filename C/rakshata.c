@@ -22,10 +22,18 @@ MUTEX_VAR networkMutex;
 	int NSApplicationMain(int argc, const char *argv[]);
 #endif
 
+void cleanup()
+{
+	free(COMPTE_PRINCIPAL_MAIL);
+	flushRecentMutex();
+	flushDB();
+	releaseDNSCache();
+	MUTEX_DESTROY(DBRefreshMutex);
+	MUTEX_DESTROY(networkMutex);
+}
+
 int main(int argc, const char *argv[])
 {
-	int ret_value = -1;
-
 	//Initialisation
 	MUTEX_CREATE(DBRefreshMutex);
 	MUTEX_CREATE(networkMutex);
@@ -37,16 +45,10 @@ int main(int argc, const char *argv[])
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 	
 	if(setupBDDCache() != 0)
-	    ret_value = NSApplicationMain(argc, argv);
+	{
+		atexit(cleanup);
+		NSApplicationMain(argc, argv);
+	}
 
-	//Cleanup
-	free(COMPTE_PRINCIPAL_MAIL);
-	flushRecentMutex();
-	flushDB();
-	releaseDNSCache();
-	MUTEX_DESTROY(DBRefreshMutex);
-	MUTEX_DESTROY(networkMutex);
-
-    return ret_value;
+	return -1;
 }
-
