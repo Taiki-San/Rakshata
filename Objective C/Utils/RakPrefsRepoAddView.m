@@ -45,7 +45,9 @@ enum
 	
 	BORDER_WIDTH = 15,	//Border at the right or the left of the window
 	WIDTH_BORDERED = (WIDTH - 2 * BORDER_WIDTH),	//Usable width
-
+	
+	OFFSET_BUTTONS = 20,
+	
 	SCROLL_VIEW_RADIUS = 3,
 };
 
@@ -85,6 +87,19 @@ enum
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	if(_root != NULL)
+	{
+		for(uint i = 0; i < _nbRoot; i++)
+			freeSingleRootRepo(_root[i]);
+
+		free(_root);
+	}
+	
+	free(linearizedRepo);
 }
 
 #pragma mark - Generate data
@@ -128,6 +143,48 @@ enum
 	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
 }
 
+- (void) confirmClicked
+{
+	uint nbRejected = 0;
+	ROOT_REPO_DATA * collector[_nbRoot];
+	
+	//We check which repo are at least partially selected
+	for(uint posRoot = 0; posRoot < _nbRoot; posRoot++)
+	{
+		uint posSub = _root[posRoot]->nombreSubrepo;
+		
+		while(posSub-- > 0)
+		{
+			if(_root[posRoot]->subRepo[posSub].active)
+			{
+				posSub = 0;
+				break;
+			}
+		}
+		
+		//We couldn't find a single valid item
+		if(posSub != 0)
+		{
+			collector[nbRejected++] = _root[posRoot];
+			_root[posRoot] = NULL;
+		}
+	}
+
+	//Perform the heavy task: insert in the DB and refresh in order to get the projects
+	addRootRepoToDB(_root, _nbRoot);
+
+	//We remove the window
+	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
+	
+	//We update the context so dealloc will only deallocate what have to be
+	if(nbRejected)
+	{
+		memcpy(_root, collector, nbRejected * sizeof(ROOT_REPO_DATA *));
+	}
+
+	_nbRoot = nbRejected;
+}
+
 #pragma mark - Generate UI
 
 - (void) generateUI
@@ -167,17 +224,26 @@ enum
 	}
 	
 	//Buttons
-	cancelButton = [RakButton allocWithText:NSLocalizedString(@"PREFS-CANCEL", nil) :NSZeroRect];
+	cancelButton = [RakButton allocWithText:NSLocalizedString(@"PREFS-CANCEL", nil)];
 	if(cancelButton != nil)
 	{
-		[cancelButton sizeToFit];
-		
 		cancelButton.target = self;
 		cancelButton.action = @selector(cancelClicked);
 		
-		[cancelButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + 25)];
-		
+		[cancelButton setFrameOrigin:NSMakePoint(_bounds.size.width / 3 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
+
 		[self addSubview:cancelButton];
+	}
+	
+	confirmButton = [RakButton allocWithText:NSLocalizedString(@"PREFS-ADD-REPO-CONFIRM", nil)];
+	if(confirmButton != nil)
+	{
+		confirmButton.target = self;
+		confirmButton.action = @selector(confirmClicked);
+		
+		[confirmButton setFrameOrigin:NSMakePoint(_bounds.size.width * 2 / 3 - confirmButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
+
+		[self addSubview:confirmButton];
 	}
 }
 

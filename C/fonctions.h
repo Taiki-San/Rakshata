@@ -102,7 +102,6 @@ bool checkDirExist(char *dirname);
 
 /**Repo.c**/
 bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput);
-bool addRepo(char * URL, byte type);
 char * getPathForRepo(REPO_DATA * repo);
 char * getPathForRootRepo(ROOT_REPO_DATA * repo);
 byte defineTypeRepo(char *URL);

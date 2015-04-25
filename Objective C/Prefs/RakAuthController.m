@@ -254,12 +254,14 @@
 	
 	if(confirm == nil)
 	{
-		confirm = [RakButton allocWithText:NSLocalizedString(@"AUTH-CREATE", nil) : container.bounds];
-		[confirm sizeToFit];
-		[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
-		[container addSubview:confirm];
-		[confirm setTarget:self];
-		[confirm setAction:@selector(clickedSignup)];
+		confirm = [RakButton allocWithText:NSLocalizedString(@"AUTH-CREATE", nil)];
+		if(confirm != nil)
+		{
+			[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
+			[container addSubview:confirm];
+			[confirm setTarget:self];
+			[confirm setAction:@selector(clickedSignup)];
+		}
 	}
 	else
 		[confirm setHidden:NO];
@@ -336,25 +338,28 @@
 	
 	if(forgottenPass == nil)
 	{
-		forgottenPass = [RakButton allocWithText:NSLocalizedString(@"AUTH-PASS-FORGOTTEN", nil) : frame];
-		[forgottenPass sizeToFit];
-		[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
-	
-		[container addSubview:forgottenPass];
+		forgottenPass = [RakButton allocWithText:NSLocalizedString(@"AUTH-PASS-FORGOTTEN", nil)];
+		if(forgottenPass != nil)
+		{
+			[forgottenPass setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - forgottenPass.frame.size.height / 2 + 3)];
+			[container addSubview:forgottenPass];
+		}
 	}
 	else
 		[forgottenPass setHidden:NO];
 	
 	if(_login == nil)
 	{
-		_login = [RakButton allocWithText:NSLocalizedString(@"AUTH-LOGIN", nil) : frame];
-		[_login sizeToFit];
-		[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
-
-		[_login setTarget:self];
-		[_login setAction:@selector(clickedLogin)];
-
-		[container addSubview:_login];
+		_login = [RakButton allocWithText:NSLocalizedString(@"AUTH-LOGIN", nil)];
+		if(_login != nil)
+		{
+			[_login setFrameOrigin:NSMakePoint(0, frame.size.height / 2 - _login.frame.size.height / 2 + 3)];
+			
+			[_login setTarget:self];
+			[_login setAction:@selector(clickedLogin)];
+			
+			[container addSubview:_login];
+		}
 	}
 	else
 		[_login setHidden:NO];

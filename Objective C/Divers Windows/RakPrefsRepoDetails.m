@@ -227,7 +227,7 @@ enum
 		
 		if(flushButton == nil)
 		{
-			flushButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-CONTENT", nil) :NSZeroRect];
+			flushButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-CONTENT", nil)];
 			if(flushButton != nil)
 			{
 				[flushButton.cell setBorderWidth:2];
@@ -245,7 +245,7 @@ enum
 		
 		if(deleteButton == nil)
 		{
-			deleteButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-SOURCE", nil) :NSZeroRect];
+			deleteButton = [RakDeleteButton allocWithText:NSLocalizedString(@"PREFS-DELETE-SOURCE", nil)];
 			if(deleteButton != nil)
 			{
 				[deleteButton.cell setBorderWidth:2];

@@ -72,11 +72,9 @@ enum
 			[self addSubview: email];
 		}
 		
-		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil) :NSZeroRect];
+		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil)];
 		if(disconnect != nil)
 		{
-			[disconnect sizeToFit];
-			
 			[disconnect setEnabled:NO];
 			
 			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
@@ -88,15 +86,13 @@ enum
 		else if(email != nil)
 			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 		
-		resetRemind = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-RESET-ALERTS", nil) :NSZeroRect];
+		resetRemind = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-RESET-ALERTS", nil)];
 		if(resetRemind != nil)
 		{
 			[resetRemind setEnabled:[RakPrefsRemindPopover haveAnyRemindedValue]];
 			
 			resetRemind.target = self;
 			resetRemind.action = @selector(toogleReset);
-			
-			[resetRemind sizeToFit];
 			
 			[resetRemind setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - resetRemind.bounds.size.width / 2, RESET_BASE_Y)];
 			

@@ -36,7 +36,6 @@ void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output);
 
 //Repository
-void addRootRepoToDB(ROOT_REPO_DATA * newRepo);
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
 uint getFreeRootRepoID();

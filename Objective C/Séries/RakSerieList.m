@@ -29,8 +29,12 @@
 		
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
-		if([self initializeMain:frame])
+		[self initializeMain:frame];
+		
+		if(content != nil)
 		{
+			[content expandItem:nil expandChildren:YES];
+
 			initializationStage = INIT_OVER;
 			
 			uint8_t i = 0;

@@ -34,11 +34,9 @@
 		}
 		else
 		{
-			close = [RakButton allocWithText:@"Refermer ▲" :_bounds];
+			close = [RakButton allocWithText:@"Refermer ▲"];
 			if(close != nil)
 			{
-				[close sizeToFit];
-
 				close.hasBorder = NO;
 				[close setButtonType:NSOnOffButton];
 				

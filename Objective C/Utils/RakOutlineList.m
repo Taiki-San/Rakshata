@@ -81,11 +81,14 @@
 	return self;
 }
 
-- (BOOL) initializeMain : (NSRect) frame
+- (void) initializeMain : (NSRect) frame
 {
 	[Prefs getCurrentTheme:self];		//register
 	
 	content = [[RakTreeView alloc] initWithFrame:frame];
+	
+	if(content == nil)
+		return;
 	
 	for (uint i = 0; i < nbColumn; i++)
 	{
@@ -112,11 +115,6 @@
 	//End of setup
 	[content setDelegate:self];
 	[content setDataSource:self];
-	
-	//We need some tweaks to be sure everything is properly deployed
-	[content expandItem:nil expandChildren:YES];
-
-	return YES;
 }
 
 - (void) setColumnWidth : (NSTableColumn *) _column : (uint) index : (CGFloat) fullWidth

@@ -49,6 +49,11 @@
 	return output;
 }
 
++ (instancetype) allocWithText : (NSString*) string
+{
+	return [self allocWithText:string :NSZeroRect];
+}
+
 + (instancetype) allocWithText : (NSString*) string : (NSRect) frame
 {
 	RakButton* output = [self new];
@@ -62,6 +67,8 @@
 		
 		if(!NSEqualRects(frame, NSZeroRect))
 			[output setFrame:frame];
+		else
+			[output sizeToFit];
 	}
 	
 	return output;

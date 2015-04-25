@@ -37,7 +37,7 @@
 
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 
-- (BOOL) initializeMain : (NSRect) frame;
+- (void) initializeMain : (NSRect) frame;
 - (RakTreeView *) getContent;
 
 - (void) moreFlushing;

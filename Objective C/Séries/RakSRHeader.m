@@ -59,10 +59,9 @@
 	}
 #endif
 	
-	storeSwitch = [RakButton allocWithText:NSLocalizedString(@"PROJ-STORE", nil) :frame];
+	storeSwitch = [RakButton allocWithText:NSLocalizedString(@"PROJ-STORE", nil)];
 	if(storeSwitch != nil)
 	{
-		[storeSwitch sizeToFit];
 		[storeSwitch setFrameSize:NSMakeSize(storeSwitch.bounds.size.width, preferenceButton.bounds.size.height)];
 		
 		storeSwitch.hasBorder = NO;

@@ -49,10 +49,9 @@
 		[self addSubview : contentText];
 	}
 	
-	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"OK", nil) : _bounds];
+	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"OK", nil)];
 	if(button != nil)
 	{
-		[button sizeToFit];
 		[button setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
 		
 		[button setTarget:self];

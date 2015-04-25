@@ -25,7 +25,8 @@
 
 + (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
 + (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
-+ (id) allocWithText : (NSString*) string : (NSRect) frame;
++ (instancetype) allocWithText : (NSString*) string : (NSRect) frame;
++ (instancetype) allocWithText : (NSString*) string;
 
 - (void) triggerBackground;
 

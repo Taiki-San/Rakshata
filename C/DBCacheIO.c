@@ -246,30 +246,34 @@ void consolidateCache()
 
 #pragma mark - Repo
 
-void addRootRepoToDB(ROOT_REPO_DATA * newRepo)
+void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 {
-	insertRootRepoCache(&newRepo, 1);
+	insertRootRepoCache(newRepo, nbRoot);
 	
 	//We update the project cache with the new data
 	PROJECT_DATA empty = getEmptyProject();
 	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
-	for(uint i = 0; i < newRepo->nombreSubrepo; i++)
+	
+	for(uint posRoot = 0; posRoot < nbRoot; posRoot++)
 	{
-		if(newRepo->subRepo[i].active)
+		for(uint i = 0; i < newRepo[posRoot]->nombreSubrepo; i++)
 		{
-			empty.repo = &newRepo->subRepo[i];
-			
-			newIcon = updateProjectsFromRepo(&empty, 0, 0, false);
-			
-			if(newIcon != NULL)
+			if(newRepo[posRoot]->subRepo[i].active)
 			{
-				if(iconData == NULL)
-					iconData = endIcon = newIcon;
-				else
-					endIcon->next = newIcon;
+				empty.repo = &newRepo[posRoot]->subRepo[i];
 				
-				while(endIcon->next != NULL)
-					endIcon = endIcon->next;
+				newIcon = updateProjectsFromRepo(&empty, 0, 0, false);
+				
+				if(newIcon != NULL)
+				{
+					if(iconData == NULL)
+						iconData = endIcon = newIcon;
+					else
+						endIcon->next = newIcon;
+					
+					while(endIcon->next != NULL)
+						endIcon = endIcon->next;
+				}
 			}
 		}
 	}

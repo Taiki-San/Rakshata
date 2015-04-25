@@ -91,6 +91,7 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
 
 //Repository
+void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot);
 void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot);
 void activateRepo(REPO_DATA repo);
 void removeRepoFromCache(REPO_DATA repo);

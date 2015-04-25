@@ -83,26 +83,54 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 	if(newRoot == NULL || newRootEntries == 0)
 		return;
 	
-	uint lengthRepoCopy = lengthRootRepo;
+	uint lengthRepoCopy = lengthRootRepo, expectedOutputSize = lengthRepoCopy + newRootEntries;
 	
 	//We cautiously insert the new entries in the root store
 	//calloc important, otherwise, we have to set last entries to NULL
-	ROOT_REPO_DATA ** newReceiver = calloc(lengthRepoCopy + newRootEntries + 1, sizeof(ROOT_REPO_DATA*));
+	ROOT_REPO_DATA ** newReceiver = calloc(expectedOutputSize + 1, sizeof(ROOT_REPO_DATA*));
 	if(newReceiver == NULL)
 		return;
 	
-	memcpy(newReceiver, rootRepoList, lengthRepoCopy);
+	memcpy(newReceiver, rootRepoList, lengthRepoCopy * sizeof(ROOT_REPO_DATA *));
 	
 	for(uint count = 0; count < newRootEntries; count++, lengthRepoCopy++)
 	{
-		if(newRoot[lengthRepoCopy] != NULL)
-			newReceiver[lengthRepoCopy] = newRoot[lengthRepoCopy];
+		if(newRoot[count] != NULL)
+			newReceiver[lengthRepoCopy] = newRoot[count];
 		else
 			lengthRepoCopy--;
 	}
-
+	
 	//Remove collisions in the case there might be
 	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
+	
+	//We compact the list
+	uint base = 0;
+	for(uint carry = 1; base < lengthRepoCopy; carry++)
+	{
+		if(newReceiver[base] == NULL)
+		{
+			while(carry < lengthRepoCopy && newReceiver[carry] == NULL)
+				carry++;
+			
+			if(carry < lengthRepoCopy)
+			{
+				newReceiver[base] = newReceiver[carry];
+				newReceiver[carry] = NULL;
+			}
+			else
+				break;
+		}
+	}
+
+	//If we didn't use some entries, we release them
+	if(base < expectedOutputSize)
+	{
+		lengthRepoCopy = base;
+		void * tmp = realloc(newReceiver, (lengthRepoCopy + 1) * sizeof(ROOT_REPO_DATA *));
+		if(tmp != NULL)
+			newReceiver = tmp;
+	}
 	
 	//Actual update
 	MUTEX_LOCK(cacheMutex);
@@ -327,11 +355,15 @@ void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo)
 			if(data[posToCompareWith] == NULL)
 				continue;
 			
-			if(data[posBase]->repoID == data[posToCompareWith]->repoID)
-			{
-				free(data[posToCompareWith]);
-				data[posToCompareWith] = NULL;
-			}
+			//If the item already have an ID
+			if(data[posToCompareWith]->repoID != 0 && data[posBase]->repoID != data[posToCompareWith]->repoID)
+				continue;
+			//If the mean to access the repo is different
+			else if(data[posBase]->type != data[posToCompareWith]->type || strcmp(data[posBase]->URL, data[posToCompareWith]->URL))
+				continue;
+
+			freeSingleRootRepo(data[posToCompareWith]);
+			data[posToCompareWith] = NULL;
 		}
 	}
 }

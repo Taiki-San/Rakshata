@@ -100,7 +100,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 			uint max = output[nbRealElements]->nombreSubrepo;
 			
 			for (uint pos = 0; pos < max; pos++)
-				output[nbRealElements]->subRepo[pos].active = false;
+				((REPO_DATA_EXTRA*) output[nbRealElements]->subRepo)[pos].data->active = false;
 			
 			if(preselection != nil)
 			{
@@ -111,7 +111,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 					
 					uint currentValue = [object unsignedIntValue];
 					if(currentValue < max)
-						output[nbRealElements]->subRepo[currentValue].active = true;
+						((REPO_DATA_EXTRA*) output[nbRealElements]->subRepo)[currentValue].data->active = true;
 				}
 			}
 
