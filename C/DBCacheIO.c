@@ -248,19 +248,32 @@ void consolidateCache()
 
 void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 {
+	uint oldEnd = lengthRepo;
+	void * lastElement = repoList[oldEnd - 1];
 	insertRootRepoCache(newRepo, nbRoot);
 	
-	//We update the project cache with the new data
-	PROJECT_DATA empty = getEmptyProject();
-	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
-	
-	for(uint posRoot = 0; posRoot < nbRoot; posRoot++)
+	//We recover the begining of the added repo section
+	if(oldEnd >= lengthRepo || repoList[oldEnd - 1] != lastElement)
 	{
-		for(uint i = 0; i < newRepo[posRoot]->nombreSubrepo; i++)
+		for(oldEnd = 0; oldEnd < lengthRepo && repoList[oldEnd] != lastElement; oldEnd++);
+	}
+	
+	//If repo were actually added
+	if(oldEnd != lengthRepo)
+	{
+		//We dump the existing base
+		uint localLength;
+		REPO_DATA ** repo = (REPO_DATA **) getCopyKnownRepo(&localLength, false);
+
+		if(repo != NULL)
 		{
-			if(newRepo[posRoot]->subRepo[i].active)
+			//We update the project cache with the new data
+			PROJECT_DATA empty = getEmptyProject();
+			ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
+
+			for(uint posList = oldEnd; posList < localLength; posList++)
 			{
-				empty.repo = &newRepo[posRoot]->subRepo[i];
+				empty.repo = repo[posList];
 				
 				newIcon = updateProjectsFromRepo(&empty, 0, 0, false);
 				
@@ -275,10 +288,12 @@ void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 						endIcon = endIcon->next;
 				}
 			}
+			
+			createNewThread(updateProjectImages, iconData);
+			freeRepo(repo);
 		}
 	}
 	
-	createNewThread(updateProjectImages, iconData);
 	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 	notifyFullUpdate();
 }

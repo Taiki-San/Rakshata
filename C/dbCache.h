@@ -41,7 +41,7 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
 uint getFreeRootRepoID();
 void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo);
-void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries);
+void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries);
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData);
 void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveExtra);
 void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo);

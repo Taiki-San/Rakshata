@@ -78,43 +78,50 @@ void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 	}
 }
 
-void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
+void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 {
 	if(newRoot == NULL || newRootEntries == 0)
 		return;
 	
-	uint lengthRepoCopy = lengthRootRepo, expectedOutputSize = lengthRepoCopy + newRootEntries;
+	uint lengthRepoCopy = lengthRootRepo, newLengthRepo = lengthRepoCopy, baseNewRoot = lengthRepoCopy;
 	
 	//We cautiously insert the new entries in the root store
 	//calloc important, otherwise, we have to set last entries to NULL
-	ROOT_REPO_DATA ** newReceiver = calloc(expectedOutputSize + 1, sizeof(ROOT_REPO_DATA*));
+	ROOT_REPO_DATA ** newReceiver = calloc(lengthRepoCopy + newRootEntries + 1, sizeof(ROOT_REPO_DATA*));
 	if(newReceiver == NULL)
 		return;
 	
 	memcpy(newReceiver, rootRepoList, lengthRepoCopy * sizeof(ROOT_REPO_DATA *));
 	
-	for(uint count = 0; count < newRootEntries; count++, lengthRepoCopy++)
+	for(uint count = 0; count < newRootEntries; count++, newLengthRepo++)
 	{
 		if(newRoot[count] != NULL)
-			newReceiver[lengthRepoCopy] = newRoot[count];
+			newReceiver[newLengthRepo] = newRoot[count];
 		else
-			lengthRepoCopy--;
+			newLengthRepo--;
 	}
 	
 	//Remove collisions in the case there might be
-	getRideOfDuplicateInRootRepo(newReceiver, lengthRepoCopy);
+	getRideOfDuplicateInRootRepo(newReceiver, newLengthRepo);
 	
 	//We compact the list
 	uint base = 0;
-	for(uint carry = 1; base < lengthRepoCopy; carry++)
+	for(uint carry = 1; base < newLengthRepo; base++)
 	{
 		if(newReceiver[base] == NULL)
 		{
-			while(carry < lengthRepoCopy && newReceiver[carry] == NULL)
+			if(carry <= base)
+				carry = base + 1;
+			
+			while(carry < newLengthRepo && newReceiver[carry] == NULL)
 				carry++;
 			
-			if(carry < lengthRepoCopy)
+			if(carry < newLengthRepo)
 			{
+				//If we move the base of the new elements
+				if(carry == baseNewRoot)
+					baseNewRoot = base;
+					
 				newReceiver[base] = newReceiver[carry];
 				newReceiver[carry] = NULL;
 			}
@@ -124,10 +131,10 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 	}
 
 	//If we didn't use some entries, we release them
-	if(base < expectedOutputSize)
+	if(base < lengthRepoCopy + newRootEntries)
 	{
-		lengthRepoCopy = base;
-		void * tmp = realloc(newReceiver, (lengthRepoCopy + 1) * sizeof(ROOT_REPO_DATA *));
+		newLengthRepo = base;
+		void * tmp = realloc(newReceiver, (newLengthRepo + 1) * sizeof(ROOT_REPO_DATA *));
 		if(tmp != NULL)
 			newReceiver = tmp;
 	}
@@ -138,9 +145,11 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 	void * buf = rootRepoList;
 	rootRepoList = newReceiver;
 	free(buf);
-	lengthRootRepo = lengthRepoCopy;
+	lengthRootRepo = newLengthRepo;
 	
 	MUTEX_UNLOCK(cacheMutex);
+	
+	newRootEntries = newLengthRepo - baseNewRoot;
 	
 	//We now update the standard repo store
 	ROOT_REPO_DATA * element;
@@ -148,53 +157,56 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, const uint newRootEntries)
 	uint repoSize[newRootEntries], cumulativeSize = 0;
 	
 	//We extract all the active repo
-	for(uint posRoot = 0; posRoot < newRootEntries; posRoot++)
+	for(uint posRoot = baseNewRoot, posInOut = 0; posRoot < newLengthRepo; posRoot++, posInOut++)
 	{
-		element = newRoot[posRoot];
-		tmpRepo[posRoot] = NULL;
-		repoSize[posRoot] = 0;
+		element = newReceiver[posRoot];
+		tmpRepo[posInOut] = NULL;
+		repoSize[posInOut] = 0;
+		
+		if(element == NULL)
+			continue;
 		
 		//We get the size of the chunk to insert
 		for(uint posSub = 0; posSub < element->nombreSubrepo; posSub++)
 		{
 			if(element->subRepo[posSub].active)
-				repoSize[posRoot]++;
+				repoSize[posInOut]++;
 		}
 
 		//Empty chunk
-		if(repoSize[posRoot] == 0)
+		if(repoSize[posInOut] == 0)
 			continue;
 		
 		//We allocate the array to receive the new REPO_DATA
-		tmpRepo[posRoot] = calloc(repoSize[posRoot], sizeof(REPO_DATA *));
-		if(tmpRepo[posRoot] == NULL)
+		tmpRepo[posInOut] = calloc(repoSize[posInOut], sizeof(REPO_DATA *));
+		if(tmpRepo[posInOut] == NULL)
 		{
-			repoSize[posRoot] = 0;
+			repoSize[posInOut] = 0;
 			continue;
 		}
 		
-		for(uint posSub = 0; posSub < repoSize[posRoot]; posSub++)
+		for(uint posSub = 0; posSub < repoSize[posInOut]; posSub++)
 		{
-			tmpRepo[posRoot][posSub] = malloc(sizeof(REPO_DATA));
-			if(tmpRepo[posRoot] == NULL)
+			tmpRepo[posInOut][posSub] = malloc(sizeof(REPO_DATA));
+			if(tmpRepo[posInOut] == NULL)
 			{
 				while(posSub-- > 0)
-					free(tmpRepo[posRoot][posSub]);
+					free(tmpRepo[posInOut][posSub]);
 				
-				free(tmpRepo[posRoot]);
-				tmpRepo[posRoot] = NULL;
-				repoSize[posRoot] = 0;
+				free(tmpRepo[posInOut]);
+				tmpRepo[posInOut] = NULL;
+				repoSize[posInOut] = 0;
 				
 				continue;
 			}
 		}
 		
 		//the REPO_DATA structure is thankfully static, so copying it is trivial
-		for(uint posSub = 0, posOut = 0; posSub < element->nombreSubrepo && posOut < repoSize[posRoot]; posSub++)
+		for(uint posSub = 0, posOut = 0; posSub < element->nombreSubrepo && posOut < repoSize[posInOut]; posSub++)
 		{
 			if(element->subRepo[posSub].active)
 			{
-				*tmpRepo[posRoot][posOut++] = element->subRepo[posSub];
+				*tmpRepo[posInOut][posOut++] = element->subRepo[posSub];
 				cumulativeSize++;	//We may theorically risk an overflow here, but come on, 4B repo? It'd take ages to refresh and it'll break elsewhere earlier
 			}
 		}
