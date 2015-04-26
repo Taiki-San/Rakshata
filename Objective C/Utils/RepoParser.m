@@ -204,6 +204,29 @@ fail:	//We'll jump back here when it's starting to go wrong
 	return output;
 }
 
+bool shouldDumpRoot(ROOT_REPO_DATA * root)
+{
+	if(root == NULL)
+		return false;
+	
+	for(uint i = 0; i < root->nombreSubrepo; i++)
+	{
+		if(root->subRepoAreExtra)
+		{
+			if(((REPO_DATA_EXTRA *) root->subRepo)[i].data->active)
+				return true;
+		}
+		else
+		{
+			if(root->subRepo[i].active)
+				return true;
+		}
+	}
+
+	
+	return false;
+}
+
 #pragma mark - Main parsers
 
 void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint parentID, bool localRepo)
@@ -569,7 +592,7 @@ NSArray * rebuildRepoTree(REPO_DATA * subRepo, uint nombreSubrepo, bool isExtra)
 
 NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root)
 {
-	if(root == NULL)
+	if(!shouldDumpRoot(root))
 		return nil;
 	
 	//Will leak one empty element if no description but don't survive the end of the function, so we don't care
