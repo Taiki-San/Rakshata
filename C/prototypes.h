@@ -10,16 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-#include <time.h>
-#include <curl/curl.h>
-#include <sys/stat.h>
-#include <dirent.h>
-
 #ifdef _WIN32
 	#ifdef __MINGW32__
 		#include <io.h>
@@ -46,6 +36,7 @@
     #include <utime.h>
     #include <unistd.h>
 
+	#include <sys/stat.h>
 	#include <sys/types.h>
 	#include <sys/file.h>
 	#include <sys/wait.h>

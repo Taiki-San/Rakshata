@@ -38,7 +38,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>12659</string>
+	<string>12660</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.entertainment</string>
 	<key>LSMinimumSystemVersion</key>
@@ -46,7 +46,7 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2011-2014 Taiki. All rights reserved.</string>
+	<string>Copyright © 2011-2015 Taiki. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>window</string>
 	<key>NSPrincipalClass</key>
