@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakRadioButton
+@implementation RakSwitchButton
 
 - (instancetype) init
 {

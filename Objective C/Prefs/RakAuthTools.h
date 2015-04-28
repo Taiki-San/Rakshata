@@ -60,7 +60,7 @@ enum
 
 @end
 
-@interface RakAuthTermsButton : RakRadioButton
+@interface RakAuthTermsButton : RakSwitchButton
 
 @end
 

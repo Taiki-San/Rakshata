@@ -28,7 +28,7 @@
 
 @interface RakPrefsRepoListItemView : NSView
 {
-	RakRadioButton * activationButton;
+	RakSwitchButton * activationButton;
 	
 	REPO_DATA * _repoUsedInDetail;
 }
@@ -69,7 +69,7 @@
 	RakPrefsRepoList * list;
 	RakPrefsRepoDetails * details;
 	
-	RakRadioButton * radioSwitch;
+	RakSwitchButton * radioSwitch;
 	RakText * switchMessage, * placeholder;
 }
 

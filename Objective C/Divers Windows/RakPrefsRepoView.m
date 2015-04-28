@@ -60,7 +60,7 @@ enum
 			[list reloadContent:NO];
 		}
 		
-		radioSwitch = [[RakRadioButton alloc] init];
+		radioSwitch = [[RakSwitchButton alloc] init];
 		if(radioSwitch != nil)
 		{
 			radioSwitch.target = self;

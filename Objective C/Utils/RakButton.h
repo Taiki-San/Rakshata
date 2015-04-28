@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakRadioButton.h"
+#import "RakSwitchButton.h"
 #import "RakSegmentedControl.h"
 
 @interface RakButton: NSButton

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakRadioButton : NSButton
+@interface RakSwitchButton : NSButton
 
 @property (weak) id controller;
 

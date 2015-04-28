@@ -229,7 +229,7 @@ enum
 		
 		if(activationButton == nil)
 		{
-			activationButton = [[RakRadioButton alloc] init];
+			activationButton = [[RakSwitchButton alloc] init];
 			if(activationButton != nil)
 			{
 				activationButton.target = self;
