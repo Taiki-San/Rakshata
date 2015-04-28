@@ -22,7 +22,7 @@ void changeTo(char *string, char toFind, char toPut)
 
 int sortNumbers(const void *a, const void *b)
 {
-    return ( *(uint*)a - *(uint*)b );
+	return ( *(uint*)a > *(uint*)b ) ? 1 : (( *(uint*)a == *(uint*)b ) ? 0 : -1);
 }
 
 int sortProjects(const void *a, const void *b)

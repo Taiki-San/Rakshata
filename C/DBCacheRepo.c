@@ -139,6 +139,49 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 			newReceiver = tmp;
 	}
 	
+	//We set the repoID of our new roots
+	if(baseNewRoot > 0)
+	{
+		//We get our used ID
+		uint usedID[baseNewRoot];
+		for(uint i = 0; i < baseNewRoot; i++)
+		{
+			if(newReceiver[i] != NULL)
+				usedID[i] = newReceiver[i]->repoID;
+			else
+				usedID[i] = UINT_MAX;
+		}
+		
+		//We sort them
+		qsort(usedID, baseNewRoot, sizeof(uint), sortNumbers);
+		
+		//We now picks our IDs
+		for(uint pos = baseNewRoot, currentID = 1, currentPosUsed = 0; pos < newLengthRepo;)
+		{
+			if(currentPosUsed < baseNewRoot)
+			{
+				if(currentID == usedID[currentPosUsed])
+				{
+					currentID++;
+					currentPosUsed++;
+					continue;
+				}
+				else if(currentID > usedID[currentPosUsed])
+				{
+					currentPosUsed++;
+					continue;
+				}
+			}
+			
+			newReceiver[pos++]->repoID = currentID++;
+		}
+	}
+	else	//There was no root earlier, let's insert ours from the begining
+	{
+		for(uint i = baseNewRoot; i < newLengthRepo; i++)
+			newReceiver[i]->repoID = i + 1;
+	}
+	
 	//Actual update
 	MUTEX_LOCK(cacheMutex);
 	
@@ -254,7 +297,7 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData)
 		return;
 	
 	MUTEX_LOCK(cacheMutex);
-	
+
 	//We update the root store
 	for(uint i = 0, posInMain = 0; i < lengthRootRepo; i++)
 	{

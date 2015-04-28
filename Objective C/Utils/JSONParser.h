@@ -67,7 +67,6 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_HASH_DD_2X @"35"
 
 //Repo parser
-
 #define JSON_REPO_MIN_VERSION		@"0"
 #define JSON_REPO_NAME				@"1"
 #define JSON_REPO_TYPE				@"2"
