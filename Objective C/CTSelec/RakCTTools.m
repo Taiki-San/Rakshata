@@ -12,9 +12,6 @@
 
 @implementation RakCTAnimationController
 
-#define ANIMATION_DURATION 0.15f
-#define ANIMATION_FRAME	(ANIMATION_DURATION * 60.0f)
-
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell
 {
 	self = [super init];
@@ -24,7 +21,7 @@
 		_initialState = initialPos;
 		_animationDiff = diff;
 		_cell = cell;
-		state = ANIMATION_FRAME;
+		state = animationFrame;
 	}
 	
 	return self;
@@ -38,43 +35,10 @@
 	_volume = volume;
 }
 
-- (void) addAction : (id) target : (SEL) action
-{
-	postAnimationTarget = target;
-	postAnimationAction = action;
-}
-
-- (void) updateState : (NSInteger) initialPos : (CGFloat) diff
-{
-	_initialState = initialPos;
-	_animationDiff = diff;
-}
-
 #pragma mark - Animation Control
 
-- (void) startAnimation
+- (void) initiateCustomAnimation : (CGFloat) stepsRemaining
 {
-	if(_animation != nil)
-	{
-		[self abortAnimation];
-	}
-	
-	state = ANIMATION_FRAME - state;
-	
-	CGFloat duration = ANIMATION_DURATION - state / ANIMATION_FRAME, steps = ANIMATION_FRAME - state;
-	
-	_animation = [[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut];
-	[_animation setFrameRate:60];
-	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
-	[_animation setDelegate:self];
-	
-	NSAnimationProgress progress = 0;
-	for(uint i = 0; i < steps; i++)
-	{
-		[_animation addProgressMark:progress];
-		progress += 1.0f / steps;
-	}
-
 	if(_chapter != nil && _volume != nil)
 	{
 		_chapter.alphaValue = 1;		_volume.alphaValue = 1;
@@ -83,11 +47,11 @@
 		
 		if(!state)
 		{
-			distanceToCoverPerMark = (width - _chapter.frame.origin.x) / ANIMATION_FRAME;
-
+			distanceToCoverPerMark = (width - _chapter.frame.origin.x) / animationFrame;
+			
 			chapOrigin = _chapter.frame.origin;
 			volOrigin = _volume.frame.origin;
-
+			
 			if(_initialState == 0)
 			{
 				volOrigin.x = width;
@@ -107,17 +71,9 @@
 			if (_initialState == 0)		delta -= volOrigin.x;
 			else						delta -= chapOrigin.x;
 			
-			distanceToCoverPerMark = delta / steps;
+			distanceToCoverPerMark = delta / stepsRemaining;
 		}
 	}
-	
-	[_animation startAnimation];
-}
-
-- (void) abortAnimation
-{
-	[_animation stopAnimation];
-	_animation = nil;
 }
 
 #pragma mark - Animation Work
@@ -130,31 +86,23 @@
 	chapOrigin.x += distanceToCoverPerMark;		[_chapter setFrameOrigin:chapOrigin];
 	volOrigin.x += distanceToCoverPerMark;		[_volume setFrameOrigin:volOrigin];
 	
-	state++;
+	[super animation:animation didReachProgressMark:progress];
 }
 
-- (void)animationDidEnd:(NSAnimation *)animation
+- (void) animationDidEnd:(NSAnimation *)animation
 {
-	if(animation == _animation)
-	{
-		if(state >= ANIMATION_FRAME)
-		{
-			state = ANIMATION_FRAME;
-			[_cell updateAnimationStatus:NO :1];
-			
-			NSRect superviewFrame = _chapter.superview.frame;
-			_chapter.frame = superviewFrame;
-			_volume.frame = superviewFrame;
-			
-			IMP imp = [postAnimationTarget methodForSelector:postAnimationAction];
-			void (*func)(id, SEL, id) = (void *)imp;
-			func(postAnimationTarget, postAnimationAction, _cell.controlView);
-		}
-		
-		_animation = nil;
-	}
+	[super animationDidEnd:animation];
 	
 	[_cell.controlView setNeedsDisplay:YES];
+}
+
+- (void) postProcessingBeforeAction
+{
+	[_cell updateAnimationStatus:NO :1];
+	
+	NSRect superviewFrame = _chapter.superview.frame;
+	_chapter.frame = superviewFrame;
+	_volume.frame = superviewFrame;
 }
 
 @end

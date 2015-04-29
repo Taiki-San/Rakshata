@@ -10,21 +10,11 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTAnimationController : NSObject <NSAnimationDelegate>
+@interface RakCTAnimationController : RakAnimationController
 {
 	RakSegmentedButtonCell * _cell;
 	RakCTSelectionListContainer * _chapter;
 	RakCTSelectionListContainer * _volume;
-	
-	id postAnimationTarget;
-	SEL postAnimationAction;
-
-	
-	NSAnimation * _animation;
-	uint state;
-	
-	CGFloat _animationDiff;
-	NSInteger _initialState;
 	
 	CGFloat distanceToCoverPerMark;
 	NSPoint chapOrigin;
@@ -34,11 +24,6 @@
 - (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;
 
 - (void) addCTContent : (RakCTSelectionListContainer*) chapter : (RakCTSelectionListContainer*) volume;
-- (void) addAction : (id) target : (SEL) action;
-- (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
-
-- (void) startAnimation;
-- (void) abortAnimation;
 
 @end
 
