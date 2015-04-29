@@ -136,6 +136,7 @@ enum
 		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
 		case GET_COLOR_FONT_BUTTON_UNAVAILABLE:
 		case GET_COLOR_SEARCHTAB_BORDER_BAR:
+		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_ON:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
 			break;
@@ -386,6 +387,24 @@ enum
 		case GET_COLOR_BACKGROUND_ADD_REPO:
 		{
 			output = [NSColor colorWithDeviceWhite:60/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_OFF:
+		{
+			output = [NSColor colorWithDeviceWhite:58/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_MIXED:
+		{
+			output = [NSColor colorWithSRGBRed:90/255.0f green:136/255.0f blue:165/255.0f alpha:1.0];
+			break;
+		}
+			
+		case GET_COLOR_BORDER_SWITCH_BUTTON:
+		{
+			output = [NSColor colorWithDeviceWhite:148/255.0f alpha:1.0];
 			break;
 		}
 	}
