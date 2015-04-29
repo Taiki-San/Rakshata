@@ -21,6 +21,6 @@
 #define MAXFILENAME (256)
 
 int do_extract(unzFile uf, char* input, char* output_path, bool extractWithoutPath, bool overwrite, const char* password);
-int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, bool *overwrite, const char* password, unsigned char* passwordPageCrypted);
-bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, bool overwrite, const char* password, unsigned char* passwordPageCrypted);
+int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, unsigned char* passwordPageCrypted);
+bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted);
 

@@ -334,8 +334,7 @@ extern int ZEXPORT unzOpenCurrentFile OF((unzFile file));
   If there is no error, the return value is UNZ_OK.
 */
 
-extern int ZEXPORT unzOpenCurrentFilePassword OF((unzFile file,
-                                                  const char* password));
+extern int ZEXPORT unzOpenCurrentFilePassword OF((unzFile file));
 /*
   Open for reading data the current file in the zipfile.
   password is a crypting password
@@ -358,8 +357,7 @@ extern int ZEXPORT unzOpenCurrentFile2 OF((unzFile file,
 extern int ZEXPORT unzOpenCurrentFile3 OF((unzFile file,
                                            int* method,
                                            int* level,
-                                           int raw,
-                                           const char* password));
+                                           int raw));
 /*
   Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
     if raw==1

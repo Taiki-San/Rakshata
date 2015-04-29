@@ -65,7 +65,7 @@
 	/*end*/
 #endif
 
-int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, bool* overwrite, const char* password, unsigned char* passwordPageCrypted)
+int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, unsigned char* passwordPageCrypted)
 {
     char* filename_withoutpath, *p;
     int err = UNZ_OK;
@@ -123,7 +123,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 			snprintf(write_filename, size, "%s/%s", output_path, filename_inzip);
         }
 		
-		err = unzOpenCurrentFilePassword(uf,password);
+		err = unzOpenCurrentFilePassword(uf);
 
 #ifdef DEV_VERSION
 		if (err!=UNZ_OK)
@@ -293,7 +293,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 }
 
 
-int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPath, bool overwrite, const char* password)
+int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPath)
 {
     unz_global_info64 gi;
     int err;
@@ -310,7 +310,7 @@ int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPa
 
     for (uint i = 0; i < gi.number_entry; i++)
     {
-        if (do_extract_currentfile(uf,input,output_path, &extractWithoutPath, &overwrite, NULL, NULL) != UNZ_OK)
+        if (do_extract_currentfile(uf, input, output_path, &extractWithoutPath, NULL) != UNZ_OK)
             break;
 
         if (i + 1 < gi.number_entry)
@@ -331,7 +331,7 @@ int do_extract(unzFile uf, char *input, char *output_path, bool extractWithoutPa
     return 0;
 }
 
-bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, bool overwrite, const char* password, unsigned char* passwordPageCrypted)
+bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted)
 {
     if (unzLocateFile(uf, filename, CASESENSITIVITY) != UNZ_OK)
     {
@@ -343,6 +343,6 @@ bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extr
         return false;
     }
 
-    return do_extract_currentfile(uf, filename, output_path, &extractWithoutPath, &overwrite, password, passwordPageCrypted) == UNZ_OK;
+    return do_extract_currentfile(uf, filename, output_path, &extractWithoutPath, passwordPageCrypted) == UNZ_OK;
 }
 

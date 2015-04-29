@@ -21,12 +21,12 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
     unz_global_info64 gi;
     int err;
 
-    err = unzGetGlobalInfo64(uf,&gi);
+    err = unzGetGlobalInfo64(uf, &gi);
     if (err!=UNZ_OK)
 	{
 #ifdef DEV_VERSION
 	    char temp[100];
-		sprintf(temp, "error %d with zipfile in unzGetGlobalInfo \n",err);
+		snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetGlobalInfo", err);
 		logR(temp);
 #endif
 		return false;
@@ -43,7 +43,7 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
         if (err != UNZ_OK)
         {
             char temp[100];
-			snprintf(temp, 100, "error %d with zipfile in unzGetCurrentFileInfo", err);
+			snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
             logR(temp);
             break;
         }
@@ -56,7 +56,7 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
             if (err != UNZ_OK)
             {
                 char temp[100];
-                snprintf(temp, 100, "error %d with zipfile in unzGetCurrentFileInfo", err);
+                snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
                 logR(temp);
                 break;
             }
@@ -102,7 +102,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         free(zipFileName);
         free(zipOutput);
 #ifdef DEV_VERSION
-        logR("Failed at allocate memory\n");
+        logR("Failed at allocate memory");
 #endif
         return false;
     }
@@ -142,7 +142,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 			if(uf == NULL)
 			{
 				char temp[lengthInput + 64];
-				snprintf(temp, sizeof(temp), "Can't open %s\n", zipFileName);
+				snprintf(temp, sizeof(temp), "Can't open %s", zipFileName);
 				logR(temp);
 				goto quit;
 			}
@@ -163,7 +163,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         if (!checkDirExist(path)) //Si réechoue
         {
             char temp[lengthPath + 100];
-            snprintf(temp, sizeof(temp), "Error changing into %s, aborting\n", outputZip);
+            snprintf(temp, sizeof(temp), "Error changing into %s, aborting", outputZip);
             logR(temp);
             goto quit;
         }
@@ -191,7 +191,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
     {
         if(checkNameFileZip(filename[i]))
         {
-			ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, 1, NULL, project.haveDRM ? pass[i] : NULL);
+			ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, project.haveDRM ? pass[i] : NULL);
             nombreFichiersDecompresses++;
 
             if(i + 1 < nombreFichiers)
