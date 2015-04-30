@@ -160,6 +160,7 @@
 		B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; };
 		B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC482218E5E03E00288C3B /* RakChapterView.m */; };
+		B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ED38561AF183B8007293E5 /* RakAnimationController.m */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
 		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
@@ -481,6 +482,8 @@
 		B6EBD8091953934600642EB8 /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
 		B6EC482118E5E03E00288C3B /* RakChapterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakChapterView.h; path = CTSelec/RakChapterView.h; sourceTree = "<group>"; };
 		B6EC482218E5E03E00288C3B /* RakChapterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakChapterView.m; path = CTSelec/RakChapterView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6ED38551AF183B8007293E5 /* RakAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAnimationController.h; path = Utils/RakAnimationController.h; sourceTree = "<group>"; };
+		B6ED38561AF183B8007293E5 /* RakAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAnimationController.m; path = Utils/RakAnimationController.m; sourceTree = "<group>"; };
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
@@ -1083,6 +1086,7 @@
 		B6CC724918723084003A745B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B6ED38511AF14557007293E5 /* Animation */,
 				B62935DE1A803AD800DE20E2 /* Button */,
 				B6694F55194A8A8200D656A9 /* Drag'n Drop */,
 				B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */,
@@ -1204,6 +1208,15 @@
 				B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */,
 			);
 			name = General;
+			sourceTree = "<group>";
+		};
+		B6ED38511AF14557007293E5 /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				B6ED38551AF183B8007293E5 /* RakAnimationController.h */,
+				B6ED38561AF183B8007293E5 /* RakAnimationController.m */,
+			);
+			name = Animation;
 			sourceTree = "<group>";
 		};
 		B6ED459018C3A3E900DE4E41 /* Lecteur Core */ = {
@@ -1527,6 +1540,7 @@
 				B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */,
 				B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */,
 				B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */,
+				B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* unzip.c in Sources */,
 				B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */,
 				B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */,

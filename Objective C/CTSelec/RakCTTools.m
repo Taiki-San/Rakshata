@@ -21,7 +21,7 @@
 		_initialState = initialPos;
 		_animationDiff = diff;
 		_cell = cell;
-		state = animationFrame;
+		self.stage = self.animationFrame;
 	}
 	
 	return self;
@@ -45,9 +45,9 @@
 		
 		CGFloat width = _chapter.superview.frame.size.width;
 		
-		if(!state)
+		if(!self.stage)
 		{
-			distanceToCoverPerMark = (width - _chapter.frame.origin.x) / animationFrame;
+			distanceToCoverPerMark = (width - _chapter.frame.origin.x) / self.animationFrame;
 			
 			chapOrigin = _chapter.frame.origin;
 			volOrigin = _volume.frame.origin;

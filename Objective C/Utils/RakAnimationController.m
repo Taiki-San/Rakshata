@@ -27,7 +27,7 @@
 - (void) setAnimationDuration : (CGFloat) animationDuration
 {
 	_animationDuration = animationDuration;
-	animationFrame = animationDuration / 60.0f;
+	_animationFrame = floor(animationDuration * 60.0f);
 }
 
 #pragma mark - Context update
@@ -53,17 +53,21 @@
 		[self abortAnimation];
 	}
 	
-	state = animationFrame - state;
+	_stage = _animationFrame - _stage;
 	
-	CGFloat duration = _animationDuration - state / animationFrame, steps = animationFrame - state;
+	CGFloat duration = _animationDuration - _stage / _animationFrame;
+	uint steps = _animationFrame - _stage;
 	
 	_animation = [[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut];
-	[_animation setFrameRate:60];
-	[_animation setAnimationBlockingMode:NSAnimationNonblocking];
-	[_animation setDelegate:self];
+	if(_animation == nil)
+		return;
+	
+	_animation.frameRate = 60;
+	_animation.animationBlockingMode = NSAnimationNonblocking;
+	_animation.delegate = self;
 	
 	NSAnimationProgress progress = 0;
-	for(uint i = 0; i < steps; i++)
+	for(CGFloat i = 0; i < steps; i++)
 	{
 		[_animation addProgressMark:progress];
 		progress += 1.0f / steps;
@@ -89,16 +93,16 @@
 
 - (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
 {
-	state++;
+	_stage++;
 }
 
 - (void) animationDidEnd:(NSAnimation *)animation
 {
 	if(animation == _animation)
 	{
-		if(state >= animationFrame)
+		if(_stage >= _animationFrame)
 		{
-			state = animationFrame;
+			_stage = _animationFrame;
 			
 			[self postProcessingBeforeAction];
 			

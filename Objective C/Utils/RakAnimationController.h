@@ -12,19 +12,18 @@
 
 @interface RakAnimationController : NSObject <NSAnimationDelegate>
 {
-	CGFloat animationFrame;
-
 	id postAnimationTarget;
 	SEL postAnimationAction;
 	
 	NSAnimation * _animation;
-	uint state;
 	
 	CGFloat _animationDiff;
 	NSInteger _initialState;
 }
 
 @property (nonatomic) CGFloat animationDuration;
+@property uint stage;
+@property uint animationFrame;
 
 - (void) addAction : (id) target : (SEL) action;
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff;

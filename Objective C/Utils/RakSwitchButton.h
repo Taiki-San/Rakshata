@@ -11,6 +11,9 @@
  *********************************************************************************************/
 
 @interface RakSwitchButton : NSButton
+{
+	
+}
 
 @property (weak) id controller;
 
