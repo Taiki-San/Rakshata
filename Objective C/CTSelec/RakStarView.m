@@ -12,7 +12,6 @@
 
 enum
 {
-	SEPARATOR = 0,
 	WIDTH = 50,
 	HEIGHT = 9,
 	
@@ -88,6 +87,8 @@ uint _currentTheme;
 {
 	if(wantNumber == _wantNumber)
 		return;
+	else
+		_wantNumber = wantNumber;
 	
 	if(!wantNumber)
 	{
@@ -114,8 +115,6 @@ uint _currentTheme;
 		
 		[self refreshFrame];
 	}
-	
-	_wantNumber = wantNumber;
 }
 
 - (NSString *) numberOfRatings
@@ -130,10 +129,10 @@ uint _currentTheme;
 {
 	if(_wantNumber)
 	{
-		[self setFrameSize:NSMakeSize(number.bounds.size.width + SEPARATOR + WIDTH, MAX(HEIGHT, number.bounds.size.height))];
+		[self setFrameSize:NSMakeSize(number.bounds.size.width + WIDTH, MAX(HEIGHT, number.bounds.size.height))];
 		
 		[number setFrameOrigin:NSMakePoint(0, self.bounds.size.height / 2 - number.bounds.size.height / 2)];
-		basePoint = NSMakePoint(number.bounds.size.width + SEPARATOR, self.bounds.size.height / 2 - HEIGHT / 2);
+		basePoint = NSMakePoint(number.bounds.size.width, self.bounds.size.height / 2 - HEIGHT / 2);
 	}
 	else
 	{
