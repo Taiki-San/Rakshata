@@ -446,6 +446,7 @@
 			if(output < 21)
 				output = 21;
 			
+			_maxHeight = output;
 			[item setMainListHeight:output];
 		}
 		
@@ -533,6 +534,9 @@
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
 	frame.size.width -= 2 * outlineView.indentationPerLevel + 5;
+	
+	if(_maxHeight != 0)
+		frame.size.height = _maxHeight;
 	
 	return frame;
 }

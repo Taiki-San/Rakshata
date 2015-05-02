@@ -16,6 +16,8 @@
 	bool* _installed;
 	uint _nbElemInstalled;
 	uint* _jumpToInstalled;
+	
+	BOOL installedRequested;
 }
 
 @property (setter=setInstallOnly:, getter=installOnlyMode) BOOL installOnlyMode;

@@ -32,7 +32,7 @@ enum {
 	BOOL stateSubLists[2];
 	NSInteger stateMainList[2];
 	
-	CGFloat _forcedHeight;
+	CGFloat _maxHeight;
 	
 	uint8_t _nbElemReadDisplayed;
 	uint8_t _nbElemDLDisplayed;

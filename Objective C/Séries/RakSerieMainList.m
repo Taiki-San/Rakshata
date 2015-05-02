@@ -23,13 +23,19 @@
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		_data = getCopyCache(SORT_NAME | RDB_LOADALL, &_nbElemFull);
 		_installed = getInstalledFromData(_data, _nbElemFull);
+		installedRequested = installOnly;
 		
 		if(installOnly)
 		{
 			[self updateJumpTable];
-			_nbData = _nbElemInstalled;
+			
+			if(_nbElemInstalled != 0)
+				_nbData = _nbElemInstalled;
+			else
+				installOnly = NO;
 		}
-		else
+
+		if(!installOnly)
 			_nbData = _nbElemFull;
 		
 		if(selectedDBID != LIST_INVALID_SELECTION)
@@ -75,16 +81,20 @@
 {
 	if((installedOnly && _jumpToInstalled != NULL) || (!installedOnly && _jumpToInstalled == NULL))
 		return;
+	else
+		installedRequested = installedOnly;
 	
 	NSMutableIndexSet * index = [[NSMutableIndexSet alloc] init];
 	
-	if(installedOnly)
+	if(installedOnly && _nbElemInstalled)
 	{
 		[self updateJumpTable];
 		_nbData = _nbElemInstalled;
 	}
 	else
 	{
+		installedOnly = NO;
+		
 		void * tmp = _jumpToInstalled;
 
 		_jumpToInstalled = NULL;
@@ -183,7 +193,8 @@
 	{
 		uint nbElem, oldNbElem = _nbElemFull;
 		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem), *oldData = _data;
-		bool * newInstalled, *oldInstalled = _installed;
+		bool * newInstalled, *oldInstalled = _installed, needSwapInstalled = NO, newState;
+
 		if(projects == NULL)
 			return;
 		
@@ -201,8 +212,17 @@
 		_nbElemFull = nbElem;
 		
 		uint element = [self getSelectedElement];
-		if(self.installOnlyMode)
+		if(installedRequested)
+		{
+			BOOL wasInstalled = self.installOnlyMode;
+			
 			[self updateJumpTable];
+			if((!wasInstalled && _nbElemInstalled) || (wasInstalled && _nbElemInstalled == 0))
+			{
+				needSwapInstalled = YES;
+				newState = !wasInstalled;
+			}
+		}
 		
 		[self smartReload : [self getSmartReloadData : oldData : oldNbElem : oldInstalled] : oldNbElem : [self getSmartReloadData : _data : _nbElemFull : _installed]: _nbElemFull];
 		
@@ -211,6 +231,9 @@
 		
 		if(element != LIST_INVALID_SELECTION)
 			[self selectElement : element];
+		
+		if(needSwapInstalled)
+			self.installOnlyMode = newState;
 	}
 }
 
@@ -320,7 +343,9 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-	if(preloadedRow == nil)
+	if(row >= _nbData)
+		return 0;
+	else if(preloadedRow == nil)
 		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
 	
 	((RakText *) preloadedRow).stringValue = [self tableView:tableView objectValueForTableColumn:nil row:row];

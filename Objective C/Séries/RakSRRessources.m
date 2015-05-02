@@ -42,7 +42,9 @@
 
 - (void) setFrameSize:(NSSize)newSize
 {
-	newSize.width = _forcedWidth;
+	if(haveForcedWidth)
+		newSize.width = _forcedWidth;
+	
 	[super setFrameSize:newSize];
 }
 
