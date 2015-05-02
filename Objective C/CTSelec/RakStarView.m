@@ -12,8 +12,15 @@
 
 enum
 {
-	SEPARATOR = 0
+	SEPARATOR = 0,
+	WIDTH = 50,
+	HEIGHT = 9,
+	
+	NB_STAR = 5
 };
+
+static 	NSImage * starActive, * starIdle;
+uint _currentTheme;
 
 @implementation RakStarView
 
@@ -23,28 +30,40 @@ enum
 	
 	if(self != nil)
 	{
-		stars = [[NSImageView alloc] init];	//NSMakeRect(0, 0, 50, 9)
-		if(stars != nil)
+		uint currentTheme = [Prefs getCurrentTheme:self];
+		
+		if(starActive == nil)
 		{
-			stars.image = [[NSBundle mainBundle] imageForResource:@"stars"];
-			[stars setFrame: (NSRect) {NSZeroPoint, stars.image.size}];
-
-			[self addSubview:stars];
-//			[stars setNumberOfMajorTickMarks:5];
-//			stars.cell = [[NSLevelIndicatorCell alloc] initWithLevelIndicatorStyle:NSRatingLevelIndicatorStyle];
+			starActive = [RakResPath getImageFromTheme :@"ratingSelected" :currentTheme];
+			_currentTheme = currentTheme;
 		}
-		else
+		if(starIdle == nil)
+		{
+			starIdle = [RakResPath getImageFromTheme :@"ratingEmpty" :currentTheme];
+			_currentTheme = currentTheme;
+		}
+		
+		if(starActive == nil || starIdle == nil)
 			return nil;
 
 		_wantNumber = NO;
 		_project = project;
+		
+		rating = (getRandom() % 50) / 10.0f;
 
-		[self setFrameSize : stars.image.size];
-		[Prefs getCurrentTheme:self];
+		[self setFrameSize : NSMakeSize(WIDTH, HEIGHT)];
+		basePoint = NSZeroPoint;
 	}
 	
 	return self;
 }
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
+}
+
+#pragma mark - Context update
 
 - (void) updateProject : (PROJECT_DATA) project
 {
@@ -60,11 +79,9 @@ enum
 	}
 	
 	_project = project;
-}
-
-- (void) dealloc
-{
-	[Prefs deRegisterForChanges:self];
+	rating = (getRandom() % 50) / 10.0f;
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setWantNumber:(BOOL)wantNumber
@@ -76,8 +93,8 @@ enum
 	{
 		number.hidden = YES;
 
-		[self setFrameSize:stars.bounds.size];
-		[stars setFrameOrigin:NSZeroPoint];
+		[self setFrameSize:NSMakeSize(WIDTH, HEIGHT)];
+		basePoint = NSZeroPoint;
 	}
 	else
 	{
@@ -101,11 +118,6 @@ enum
 	_wantNumber = wantNumber;
 }
 
-- (BOOL) wantNumber
-{
-	return _wantNumber;
-}
-
 - (NSString *) numberOfRatings
 {
 	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
@@ -116,13 +128,21 @@ enum
 
 - (void) refreshFrame
 {
-	[self setFrameSize:NSMakeSize(number.bounds.size.width + SEPARATOR + stars.bounds.size.width, MAX(stars.bounds.size.height, number.bounds.size.height))];
-	
-	[number setFrameOrigin:NSMakePoint(0, self.bounds.size.height / 2 - number.bounds.size.height / 2)];
-	[stars setFrameOrigin:NSMakePoint(number.bounds.size.width + SEPARATOR, self.bounds.size.height / 2 - stars.bounds.size.height / 2)];
+	if(_wantNumber)
+	{
+		[self setFrameSize:NSMakeSize(number.bounds.size.width + SEPARATOR + WIDTH, MAX(HEIGHT, number.bounds.size.height))];
+		
+		[number setFrameOrigin:NSMakePoint(0, self.bounds.size.height / 2 - number.bounds.size.height / 2)];
+		basePoint = NSMakePoint(number.bounds.size.width + SEPARATOR, self.bounds.size.height / 2 - HEIGHT / 2);
+	}
+	else
+	{
+		[self setFrameSize:NSMakeSize(WIDTH, HEIGHT)];
+		basePoint = NSZeroPoint;
+	}
 }
 
-#pragma mark - Color
+#pragma mark - Drawing
 
 - (NSColor *) textColor
 {
@@ -134,8 +154,57 @@ enum
 	if([object class] != [Prefs class])
 		return;
 	
-	if(number != nil)
-		number.textColor = [self textColor];
+	uint currentTheme = [Prefs getCurrentTheme:nil];
+	
+	if(currentTheme != _currentTheme)
+	{
+		starActive = [RakResPath getImageFromTheme :@"ratingSelected" :currentTheme];
+		starIdle = [RakResPath getImageFromTheme :@"ratingEmpty" :currentTheme];
+		
+		_currentTheme = currentTheme;
+	}
+	
+	[self setNeedsDisplay:YES];
+}
+
+- (void) drawRect : (NSRect) dirtyRect
+{
+	NSPoint workingPoint = basePoint;
+	CGFloat intermediaryPoint = 0;
+	uint i;
+	
+	for(i = 0; i < rating; i++)
+	{
+		if(i != floor(rating))
+		{
+			[starActive drawAtPoint:workingPoint fromRect:NSZeroRect operation:NSCompositeCopy fraction:1];
+			workingPoint.x += starActive.size.width;
+		}
+		else
+		{
+			intermediaryPoint = starActive.size.width * (rating - floor(rating));
+			[starActive drawAtPoint:workingPoint fromRect:NSMakeRect(0, 0, intermediaryPoint, starActive.size.height) operation:NSCompositeCopy fraction:1];
+			workingPoint.x += intermediaryPoint;
+			break;
+		}
+	}
+	
+	while(i < NB_STAR)
+	{
+		if (intermediaryPoint != 0)
+		{
+			[starIdle drawAtPoint:workingPoint fromRect:NSMakeRect(intermediaryPoint, 0, starActive.size.width - intermediaryPoint, starActive.size.height) operation:NSCompositeCopy fraction:1];
+			
+			workingPoint.x += starActive.size.width - intermediaryPoint;
+			intermediaryPoint = 0;
+		}
+		else
+		{
+			[starIdle drawAtPoint:workingPoint fromRect:NSZeroRect operation:NSCompositeCopy fraction:1];
+			workingPoint.x += starIdle.size.width;
+		}
+		i++;
+	}
 }
 
 @end

@@ -12,15 +12,15 @@
 
 @interface RakStarView : NSView
 {
-	BOOL _wantNumber;
-	
 	PROJECT_DATA _project;
 
-	NSImageView * stars;	//NSLevelIndicator
+	CGFloat rating;
+	NSPoint basePoint;
+	
 	RakText * number;
 }
 
-@property BOOL wantNumber;
+@property (nonatomic) BOOL wantNumber;
 
 - (instancetype) init : (PROJECT_DATA) project;
 - (void) updateProject : (PROJECT_DATA) project;
