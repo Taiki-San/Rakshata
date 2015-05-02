@@ -128,7 +128,7 @@
 	
 	if(projectImageBase == nil)
 	{
-		projectImageBase = [RakResPath craftResNameFromContext:@"defaultCTImage" :NO :YES : 1];
+		projectImageBase = [RakResPath getImageFromTheme:@"defaultCTImage" :1];
 	}
 	
 	if(projectImageBase != nil)

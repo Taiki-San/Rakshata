@@ -27,6 +27,7 @@ enum RAKBUTTON_STATES
 
 @interface RakResPath : NSObject
 
++ (NSImage *) getImageFromTheme : (NSString *) baseName : (uint) themeID;
 + (NSImage *) craftResNameFromContext: (NSString*) baseName : (BOOL) highlighted : (BOOL) available : (uint) themeID;
 
 @end

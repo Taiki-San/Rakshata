@@ -12,6 +12,11 @@
 
 @implementation RakResPath
 
++ (NSImage *) getImageFromTheme : (NSString *) baseName : (uint) themeID
+{
+	return [self craftResNameFromContext:baseName :NO :YES :themeID];
+}
+
 + (NSImage *) craftResNameFromContext: (NSString*) baseName : (BOOL) highlighted : (BOOL) available : (uint) themeID
 {
 	NSString * pathPortionHighlighted, *pathPortionAvailable, *fullFileName;

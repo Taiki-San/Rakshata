@@ -32,7 +32,7 @@
 			
 			if(projectImage.image == nil)
 			{
-				projectImage.image = [RakResPath craftResNameFromContext:@"defaultDragImage" :NO :YES : 1];
+				projectImage.image = [RakResPath getImageFromTheme:@"defaultDragImage" :1];
 			}
 			free(encodedHash);
 		}
