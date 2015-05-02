@@ -154,7 +154,7 @@
 - (void) setCTViewHidden : (BOOL) CTViewHidden
 {
 	if(!CTViewHidden && compactList != nil)
-		compactList.installOnly = YES;
+		compactList.installOnly = NO;
 	
 	[super setCTViewHidden:CTViewHidden];
 }

@@ -32,6 +32,8 @@ enum {
 	BOOL stateSubLists[2];
 	NSInteger stateMainList[2];
 	
+	//The OutlineList will contract to the minimum height to fit, so we need to save the maximum allowed height in order
+	//to size properl the main list
 	CGFloat _maxHeight;
 	
 	uint8_t _nbElemReadDisplayed;

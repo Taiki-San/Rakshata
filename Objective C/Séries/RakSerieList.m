@@ -19,6 +19,7 @@
 	if(self != nil)
 	{
 		initializationStage = INIT_FIRST_STAGE;
+		_maxHeight = frame.size.height;
 		_nbRoot = 3;
 		
 		rootItems[0] = rootItems[1] = rootItems[2] = nil;
@@ -330,6 +331,18 @@
 
 #pragma mark - Context change
 
+- (void) setFrame:(NSRect)frame
+{
+	_maxHeight = frame.size.height;
+	[super setFrame:frame];
+}
+
+- (void) resizeAnimation:(NSRect)frame
+{
+	_maxHeight = frame.size.height;
+	[super resizeAnimation:frame];
+}
+
 - (BOOL) installOnly
 {
 	return _mainList != NULL ? _mainList.installOnlyMode : NO;
@@ -441,12 +454,11 @@
 		{
 			CGFloat p = [outlineView intercellSpacing].height;	//Padding
 			
-			output = content.frame.size.height - ((_nbElemReadDisplayed != 0) * (21 + p) + rootItems[0].expanded * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (21 + p) + rootItems[1].expanded * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (21 + p) + p);
+			output = _maxHeight - ((_nbElemReadDisplayed != 0) * (21 + p) + rootItems[0].expanded * (_nbElemReadDisplayed * ([outlineView rowHeight] + p)) + (_nbElemDLDisplayed != 0) * (21 + p) + rootItems[1].expanded * (_nbElemDLDisplayed * ([outlineView rowHeight] + p)) + (21 + p) + p);
 			
 			if(output < 21)
 				output = 21;
 			
-			_maxHeight = output;
 			[item setMainListHeight:output];
 		}
 		
@@ -534,9 +546,6 @@
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
 	frame.size.width -= 2 * outlineView.indentationPerLevel + 5;
-	
-	if(_maxHeight != 0)
-		frame.size.height = _maxHeight;
 	
 	return frame;
 }
