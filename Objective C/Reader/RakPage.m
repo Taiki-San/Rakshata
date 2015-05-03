@@ -96,24 +96,7 @@
 	
 	[container setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
 	
-	if(_scrollView != nil)
-	{
-		if(self.mainThread != TAB_READER)
-			frameRect.origin = _scrollView.frame.origin;
-		
-		[_scrollView.superview setFrame:container.frame];
-		
-		NSSize oldSize = _scrollView.frame.size;
-		
-		[self initialPositionning : _scrollView];
-		[self updateScrollerAfterResize : _scrollView : oldSize];
-		
-		if(isAnimated)
-			[_scrollView.animator setFrame:_scrollView.scrollViewFrame];
-		else
-			[_scrollView setFrame:_scrollView.scrollViewFrame];
-	}
-	else
+	if(_scrollView == nil)
 	{
 		RakImageView * view = [mainScroller.selectedViewController.view.subviews objectAtIndex:0];
 		if([view class] == [RakImageView class])
@@ -121,13 +104,33 @@
 			NSRect frame = view.frame;		//view is smaller than the smallest possible reader, so its h/w won't change
 			
 			frame.origin.y = frameRect.size.height / 2 - frame.size.height / 2;
-
+			
 			if(self.mainThread == TAB_READER)
 				frame.origin.x = frameRect.size.width / 2 - frame.size.width / 2;
 			
 			[view.superview setFrame:frame];
+			return;
 		}
+		else if([view class] != [RakPageScrollView class])
+			return;
+		
+		_scrollView = (id) view;
 	}
+
+	if(self.mainThread != TAB_READER)
+		frameRect.origin = _scrollView.frame.origin;
+	
+	[_scrollView.superview setFrame:container.frame];
+	
+	NSSize oldSize = _scrollView.frame.size;
+	
+	[self initialPositionning : _scrollView];
+	[self updateScrollerAfterResize : _scrollView : oldSize];
+	
+	if(isAnimated)
+		[_scrollView.animator setFrame:_scrollView.scrollViewFrame];
+	else
+		[_scrollView setFrame:_scrollView.scrollViewFrame];
 }
 
 /*Event handling*/
@@ -699,27 +702,32 @@
 				nextDataLoaded = dataLoaded;
 				
 				memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
-				_data.pageCourante = _data.nombrePage - 1;
+				
+				if(byChangingPage)
+					_data.pageCourante = _data.nombrePage - 1;
+				else
+					_data.pageCourante = 0;
+				
 				dataLoaded = previousDataLoaded;
 				
 				previousDataLoaded = NO;
 			}
 			
-			if(!byChangingPage)
-				_data.pageCourante = 0;
-			
 			id currentPageView = mainScroller.arrangedObjects[currentPage];
 			
 			[self updateContext : YES];
 			
-			//We inject the page we already loaded inside mainScroller
-			NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
-			
-			[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
-			
-			MUTEX_LOCK(cacheMutex);
-			mainScroller.arrangedObjects = array;
-			MUTEX_UNLOCK(cacheMutex);
+			if(byChangingPage)
+			{
+				//We inject the page we already loaded inside mainScroller
+				NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
+				
+				[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
+
+				MUTEX_LOCK(cacheMutex);
+				mainScroller.arrangedObjects = array;
+				MUTEX_UNLOCK(cacheMutex);
+			}
 		}
 		else
 		{

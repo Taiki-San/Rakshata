@@ -77,7 +77,7 @@ bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**Lecteur.c**/
-char ** loadChapterConfigDat(char* input, int *nombrePage);
+char ** loadChapterConfigDat(char* input, uint *nombrePage);
 
 /**Native.c**/
 int mkdirR(char *path);

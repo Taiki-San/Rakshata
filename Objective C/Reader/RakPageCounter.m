@@ -17,7 +17,7 @@
 	if(target.initWithNoContent)
 		return nil;
 	
-    self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg+1] :[self getFontColor]];
+    self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg] :[self getFontColor]];
     if (self)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];

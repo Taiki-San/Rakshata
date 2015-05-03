@@ -37,11 +37,6 @@
 			close = [RakButton allocWithText:@"Refermer ▲"];
 			if(close != nil)
 			{
-				close.hasBorder = NO;
-				[close setButtonType:NSOnOffButton];
-				
-				[close triggerBackground];
-	
 				[close setTarget:self];
 				[close setAction:@selector(close)];
 

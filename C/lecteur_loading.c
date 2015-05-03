@@ -27,13 +27,13 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 
 bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
 {
-    int i, prevPos = 0, nombrePages = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
-	uint nombreToursRequis = 1;
+    int i, prevPos = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
+	uint nombreToursRequis = 1, nombrePageInChunck = 0;
 	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
-    dataReader->nombrePage = 1;
+    dataReader->nombrePage = 0;
     dataReader->nomPages = dataReader->path = NULL;
     dataReader->pathNumber = dataReader->chapitreTomeCPT = NULL;
 	dataReader->pageCouranteDuChapitre = NULL;
@@ -96,11 +96,11 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 		
         snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedRepo, projectDB.projectID, name, CONFIGFILE);
 		
-        nomPagesTmp = loadChapterConfigDat(input_path, &nombrePages);
+        nomPagesTmp = loadChapterConfigDat(input_path, &nombrePageInChunck);
         if(nomPagesTmp != NULL)
         {
             /*On réalloue la mémoire en utilisant un buffer intermédiaire*/
-            dataReader->nombrePage += nombrePages;
+            dataReader->nombrePage += nombrePageInChunck;
 			
             ///pathNumber
             intermediaryPtr = realloc(dataReader->pathNumber, (dataReader->nombrePage+1) * sizeof(int));
@@ -160,7 +160,7 @@ memoryFail:
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}
-                dataReader->nombrePage -= nombrePages;
+                dataReader->nombrePage -= nombrePageInChunck;
                 nombreTours--;
             }
             else
@@ -196,7 +196,7 @@ memoryFail:
 
 				posID++;
 
-				for(i = 0; nomPagesTmp[i] != NULL; free(nomPagesTmp[i++]));
+				for(i = 0; i < nombrePageInChunck; free(nomPagesTmp[i++]));
             }
 			
 			free(nomPagesTmp);
@@ -221,80 +221,124 @@ memoryFail:
     return true;
 }
 
-char ** loadChapterConfigDat(char* input, int *nombrePage)
+char ** loadChapterConfigDat(char* input, uint *nombrePage)
 {
     char ** output, current;
-	int i, j;
 	bool scriptUsed = false;
-    FILE* file_input = fopen(input, "r");
+    FILE* fileInput = fopen(input, "r");
 
-	if(file_input == NULL)
+	if(fileInput == NULL)
         return NULL;
 	
-    fscanf(file_input, "%d", nombrePage);
+    fscanf(fileInput, "%d", nombrePage);
 	
-    if((current = fgetc(file_input)) != EOF)
+	//We got to the next line
+	while((current = fgetc(fileInput)) != EOF && (current == '\n' || current == '\r'));
+	
+	//We extract the data from the file
+    if(current != EOF)
     {
-        if(current == 'N')
+		if(current == 'N')
 			scriptUsed = true;
         else
-            fseek(file_input, -1, SEEK_CUR);
+            fseek(fileInput, -1, SEEK_CUR);
 		
-        output = calloc(5+*nombrePage, sizeof(char*));
+        output = calloc(*nombrePage, sizeof(char*));
 		
-        for(i = 0; i < *nombrePage; i++)
+        for(uint i = 0, j; i < *nombrePage; i++)
         {
             output[i] = malloc(LONGUEUR_NOM_PAGE+1);
 			if(output[i] == NULL)
 			{
 				memoryError(LONGUEUR_NOM_PAGE+1);
-				continue;
+				while(i-- != 0)
+					free(output[i]);
+				free(output);
+				*nombrePage = 0;
+				return NULL;
 			}
 			
             if(!scriptUsed)
-                fscanfs(file_input, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
+                fscanfs(fileInput, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
             else
-                fscanfs(file_input, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
+                fscanfs(fileInput, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
 
 			changeTo(output[i], '&', ' ');
         }
-
-		output[i] = malloc(LONGUEUR_NOM_PAGE);
-        output[i][0] = 0;
     }
-	
     else
     {
-        (*nombrePage)++;
-        output = calloc(5+*nombrePage, sizeof(char*));
+        output = malloc(++(*nombrePage) * sizeof(char*));
 		
-        for(i = 0; i < *nombrePage; i++)
+        for(uint i = 0; i < *nombrePage; i++)
         {
-            output[i] = malloc(LONGUEUR_NOM_PAGE+1);
-            snprintf(output[i], LONGUEUR_NOM_PAGE, "%d.jpg", i);	//Sadly, legacy, use png as a default would have been more clever
+            output[i] = malloc(20);
+			if(output[i] == NULL)
+			{
+				memoryError(20);
+				while(i-- != 0)
+					free(output[i]);
+				free(output);
+				*nombrePage = 0;
+				return NULL;
+			}
+			else
+				snprintf(output[i], 20, "%d.jpg", i);	//Sadly, legacy, use png as a default would have been more clever
         }
-		
-		output[i] = malloc(LONGUEUR_NOM_PAGE);
-        output[i][0] = 0;
     }
 	
-    fclose(file_input);
+    fclose(fileInput);
 	
-	for(i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
+	//We remove config.dat from the path
+	for(uint i = strlen(input); i > 0 && input[i] != '/'; input[i--] = 0);
 	
-    char temp[300];
-    for(i = *nombrePage; i >= 0; i--)
+	//We then check that all those files exists
+	bool needCompact = false;
+	char temp[300];
+    for(uint i = 0; i < *nombrePage; i++)
     {
         if(output[i] != NULL && output[i][0])
         {
             snprintf(temp, 300, "%s%s", input, output[i]);
-            if(checkFileExist(temp))
+            if(!checkFileExist(temp))
             {
-                *nombrePage = i;
-                break;
+				free(output[i]);
+				output[i] = NULL;
+				needCompact = true;
             }
         }
+		else
+			needCompact = true;
     }
+	
+	//We compact the list if invalid items were detected
+	if(needCompact)
+	{
+		uint validEntries = 0;
+		for(uint carry = 0; validEntries < *nombrePage; validEntries++)
+		{
+			if(output[validEntries] == NULL)
+			{
+				if(carry <= validEntries)
+					carry = validEntries + 1;
+				
+				for(; carry < *nombrePage && output[carry] == NULL; carry++);
+				
+				if(carry < *nombrePage)
+				{
+					output[validEntries] = output[carry];
+					output[carry] = NULL;
+				}
+			}
+		}
+		
+		void * tmp = realloc(output, validEntries * sizeof(char *));
+		if(tmp != NULL)
+			output = tmp;
+		
+		*nombrePage = validEntries;
+	}
+	
     return output;
 }
 

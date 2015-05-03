@@ -36,7 +36,6 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT);
 
 bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure);
 bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int chapitre_tome, DATA_LECTURE* dataReader);
-char ** loadChapterConfigDat(char* input, int *nombrePage);
 void releaseDataReader(DATA_LECTURE *data);
 
 bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);

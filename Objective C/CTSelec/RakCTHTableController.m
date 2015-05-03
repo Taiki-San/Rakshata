@@ -120,8 +120,9 @@
 	else
 		[self.scrollView setFrame : newFrame];
 	
-	[[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID] setWidth : newFrame.size.width * 2 / 5];
-	[[_tableView tableColumnWithIdentifier : RCTH_DETAILS_ID] setWidth : newFrame.size.width * 1 / 2];
+	//Force columns width
+	[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID].width = newFrame.size.width * 2 / 5;
+	[_tableView tableColumnWithIdentifier : RCTH_DETAILS_ID].width = newFrame.size.width / 2;
 }
 
 #pragma mark - UI tools
@@ -161,10 +162,11 @@
 	
 	//TableView columns init
 	NSTableColumn * titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_TITLE_ID];
-	[titles setWidth:_tableView.frame.size.width * 2 / 5];
+	titles.width = _tableView.frame.size.width * 2 / 5;
 	[_tableView addTableColumn:titles];
+
 	titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_DETAILS_ID];
-	[titles setWidth:_tableView.frame.size.width * 1 / 2];
+	titles.width = _tableView.frame.size.width * 3 / 5;
 	[_tableView addTableColumn:titles];
 
 	//End of setup
@@ -183,6 +185,7 @@
 	parentBounds.origin.x = parentBounds.size.width / 2;
 	
 	parentBounds.size.width -= parentBounds.origin.x;
+	parentBounds.size.width *= 9 / 10.0f;
 	parentBounds.size.height -= 2 * BOTTOM_BORDER;
 	
 	return parentBounds;

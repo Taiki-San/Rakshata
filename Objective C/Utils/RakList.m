@@ -371,6 +371,9 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
+	if(rowIndex == UINT_MAX)
+		return NO;
+	
 	[self resetSelection:tableView];
 	[tableView commitClic];
 
@@ -586,15 +589,21 @@
 
 - (void) fullAnimatedReload : (uint) oldElem : (uint) newElem
 {
+	[self fullAnimatedReload:oldElem :newElem : NO];
+}
+
+//Reverted order allow to tweak in which direction the animation will go, for now used for fancy reloading
+- (void) fullAnimatedReload : (uint) oldElem : (uint) newElem : (BOOL) revertedOrder
+{
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setDuration:CT_TRANSITION_ANIMATION];
 		
 		if(oldElem != 0)
-			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] withAnimation:NSTableViewAnimationSlideLeft];
+			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] withAnimation:revertedOrder ? NSTableViewAnimationSlideRight : NSTableViewAnimationSlideLeft];
 		
 		if(newElem != 0)
-			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem / _nbCoupleColumn + (newElem % _nbCoupleColumn != 0))] withAnimation:NSTableViewAnimationSlideRight];
+			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem / _nbCoupleColumn + (newElem % _nbCoupleColumn != 0))] withAnimation: revertedOrder ? NSTableViewAnimationSlideLeft : NSTableViewAnimationSlideRight];
 		
 	} completionHandler:^{
 

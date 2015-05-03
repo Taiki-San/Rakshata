@@ -219,7 +219,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         /*On va écrire les clées dans un config.enc
           Pour ça, on va classer les clées avec la longueur des clées, les nettoyer et les chiffrer*/
 		
-        int nombreFichierDansConfigFile = 0;
+        uint nombreFichierDansConfigFile = 0;
         char **nomPage = NULL;
 		unsigned char temp[256], *hugeBuffer = NULL;
 		

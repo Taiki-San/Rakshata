@@ -122,12 +122,13 @@ int fscanfs(FILE* stream, const char *format, ...)
                 case 'd':
                 {
                     int *number = NULL, negatif = 0;
-                    char buffer[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                    char buffer[10] = {0};
 
-                    number = va_arg (pointer_argument, int*);
+                    number = va_arg(pointer_argument, int*);
 
                     if(!number)
                         break;
+					
                     for(j = 0; (j < '0' ||  j > '9') && j != EOF;)
                     {
                         j = fgetc(stream);
@@ -137,6 +138,7 @@ int fscanfs(FILE* stream, const char *format, ...)
                                 negatif = 1;
                         }
                     }
+					
                     buffer[0] = j;
 
                     for(i = 1; i < 9 /*limite de int*/ && (j = fgetc(stream)) >= '0' && j <= '9'; buffer[i++] = j);

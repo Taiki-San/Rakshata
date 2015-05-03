@@ -123,13 +123,14 @@
 
 - (void) setHidden : (BOOL) flag
 {
-	if(!flag && self.isHidden)
+	if(!flag && self.isHidden && !NSEqualRects(_cachedFrame, NSZeroRect))
 	{
 		forceUpdate = YES;
 		[self setFrame:_cachedFrame];
+		_cachedFrame = NSZeroRect;
 		forceUpdate = NO;
 	}
-
+	
 	[super setHidden:flag];
 }
 

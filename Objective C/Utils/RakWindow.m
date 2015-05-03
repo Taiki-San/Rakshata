@@ -79,6 +79,20 @@
 
 - (void) sendEvent:(NSEvent *)event
 {
+	//In some cases, the window would end up becoming the first responder, which is not an expected scenario
+	if(self.firstResponder == self)
+	{
+		uint thread;
+		[Prefs getPref:PREFS_GET_MAIN_THREAD :&thread];
+		
+		if(thread == TAB_SERIES)
+			[self makeFirstResponder:[[NSApp delegate] serie]];
+		else if(thread == TAB_CT)
+			[self makeFirstResponder:[[NSApp delegate] CT]];
+		else if(thread == TAB_READER)
+			[self makeFirstResponder:[[NSApp delegate] reader]];
+	}
+	
 	if(!self.fullscreen)
 	{
 		if([event type] == NSLeftMouseDown)

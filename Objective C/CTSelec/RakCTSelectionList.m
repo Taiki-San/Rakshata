@@ -93,9 +93,11 @@
 	
 	void * newDataBuf = NULL, *newData, *newPrices = NULL, *installedData = NULL, *oldData = NULL, *oldInstalled = NULL;
 	uint allocSize, nbElem, nbInstalledData, nbChapterPrice = 0, *installedJumpTable = NULL, nbOldElem, nbOldInstalled = 0;
-	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID, isTome = self.isTome;
-	
+	BOOL *installedTable = NULL, sameProject = projectData.cacheDBID == project.cacheDBID, orderProjects = NO, isTome = self.isTome;
 	NSInteger element = _tableView != nil ? [self getSelectedElement] : 0;
+	
+	if(!sameProject)
+		orderProjects = compareStrings(projectData.projectName, 0, project.projectName, 0, COMPARE_UTF32) == NSOrderedDescending;
 	
 	if(isTome)
 	{
@@ -260,7 +262,7 @@
 				nbOldElem = nbOldInstalled;
 				newElem = _nbInstalled;
 			}
-			[self fullAnimatedReload : nbOldElem :newElem];
+			[self fullAnimatedReload :nbOldElem :newElem :orderProjects];
 		}
 
 		//Add the column
