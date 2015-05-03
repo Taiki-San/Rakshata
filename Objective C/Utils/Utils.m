@@ -19,7 +19,7 @@
 
 @end
 
-NSString * getStringForWchar(charType * string)
+NSString * getStringForWchar(const charType * string)
 {
 	if(string == NULL)
 		return @"";
@@ -38,4 +38,12 @@ NSString * getStringForWchar(charType * string)
 		output = @"";
 	
 	return output;
+}
+
+int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int compareEncoding)
+{
+	NSString * stringA = compareEncoding == COMPARE_UTF8 ? [[NSString alloc] initWithBytes:a length:lengthA encoding:NSUTF8StringEncoding] : getStringForWchar(a);
+	NSString * stringB = compareEncoding == COMPARE_UTF8 ? [[NSString alloc] initWithBytes:b length:lengthB encoding:NSUTF8StringEncoding] : getStringForWchar(b);
+	
+	return [stringA localizedCompare:stringB];
 }

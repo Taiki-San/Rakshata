@@ -81,10 +81,16 @@ void buildSearchTables(sqlite3 *_cache)
 	}
 	
 	//We need at least one (invalid) data :/
-	if(createRequest(_cache, "	INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
+		return;
+	}
+	
+	if(createCollate(_cache) != SQLITE_OK)
+	{
+		initialized = false;
 		return;
 	}
 	
@@ -643,7 +649,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	if(type == RDBS_TYPE_AUTHOR)
 	{
 		*dataLength = nbAuthor;
-		if(createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" ASC;", &request) != SQLITE_OK)
+		if(createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" COLLATE "SORT_FUNC" ASC;", &request) != SQLITE_OK)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_TAG)
@@ -793,7 +799,7 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	
 	uint length = strlen(start);
 	char requestText[length + 200];
-	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM rakSQLite WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\" ORDER BY "DBNAMETOID(RDB_projectName)" ASC", start);
+	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM rakSQLite WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\" ORDER BY "DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC" ASC", start);
 	
 	sqlite3_stmt * request;
 	

@@ -574,3 +574,17 @@ PROJECT_DATA getEmptyProject()
 	
 	return project;
 }
+
+#pragma mark - Sort function
+
+//Declared in 
+
+int compareProjects(void * null, int lengthA, const char * a, int lengthB, const char * b)
+{
+	return compareStrings(a, lengthA, b, lengthB, COMPARE_UTF8);
+}
+
+int createCollate(sqlite3 * database)
+{
+	return sqlite3_create_collation_v2(database, SORT_FUNC, SQLITE_UTF8, NULL, (void*) compareProjects, NULL);
+}

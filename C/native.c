@@ -271,11 +271,7 @@ size_t wstrlen(const charType * input)
 
 int wstrcmp(const charType * a, const charType * b)
 {
-	for ( ; *a == *b; a++, b++)
-		if (*a == '\0')
-			return 0;
-	
-	return ((*(unsigned char *)a < *(unsigned char *)b) ? -1 : +1);
+	return compareStrings(a, 0, b, 0, COMPARE_UTF32);
 }
 
 charType * wstrdup(const charType * input)

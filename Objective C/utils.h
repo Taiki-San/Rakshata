@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-NSString * getStringForWchar(charType * string);
+NSString * getStringForWchar(const charType * string);
 
 @interface RakFlippedView : NSView
 @end

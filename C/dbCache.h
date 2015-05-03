@@ -86,6 +86,7 @@ uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbEl
 
 void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
+int createCollate(sqlite3 * database);
 
 //========= Obfuscation	==========//
 
@@ -123,6 +124,8 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 #define RDB_REC_projectID	4
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
+
+#define SORT_FUNC "LEGOLAS"
 
 enum SEARCH_REQUEST
 {
