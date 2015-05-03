@@ -101,7 +101,7 @@
 
 - (BOOL) isValidIndex : (uint) index
 {
-	return index < [_manager nbElement];
+	return index < [_manager nbActivatedElement];
 }
 
 - (uint) cacheIDForIndex : (uint) index
@@ -306,11 +306,10 @@
 	
 	const NSSize minimumSize = self.minItemSize;
 	const NSRect documentFrame = ((NSScrollView *) scrollview).visibleRect;
-	uint nbCol = MIN(floor(documentFrame.size.width / minimumSize.width), [_manager nbElement] - 1);
+	uint nbCol = MIN(floor(documentFrame.size.width / minimumSize.width), [_manager nbActivatedElement]);
 	
 	if(nbCol == UINT_MAX || nbCol < 3)	//nbElement = 0, ou une seule ligne
 		return nbCol;
-	
 	
 	//We validate the number of columns
 	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:nbCol - 1].view;
@@ -329,7 +328,7 @@
 	}
 	else	//Too low
 	{
-		const uint nbElem = [_manager nbElement];
+		const uint nbElem = [_manager nbActivatedElement];
 		while(++nbCol < nbElem && first.frame.origin.y == nextLine.frame.origin.y)
 		{
 			nextLine = [self itemAtIndex:nbCol].view;

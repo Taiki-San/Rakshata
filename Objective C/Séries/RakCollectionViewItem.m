@@ -136,19 +136,11 @@ enum	{	BORDER_BOTTOM	= 7	};
 	if(!_project.isInitialized)
 		return;
 	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 
 		if(*_sharedActive == sessionCode)
 		{
-			@autoreleasepool
-			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
-				
-				[CATransaction begin];
-				[CATransaction setDisableActions:YES];
-			}
-			
-			[CATransaction commit];
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
 		}
 	});
 }
