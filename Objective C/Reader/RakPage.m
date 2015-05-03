@@ -781,7 +781,7 @@
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
         [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
-	if(dataLoaded)
+	if(!dataLoaded)
 	{
 		if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
 		{
@@ -815,7 +815,7 @@
 	{
 		MUTEX_LOCK(cacheMutex);
 	
-		[array replaceObjectAtIndex:_data.pageCourante withObject:@(_data.pageCourante)];
+		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
 
 		mainScroller.arrangedObjects = array;
 		mainScroller.selectedIndex = _data.pageCourante + 1;
@@ -830,7 +830,7 @@
 {
 	NSData * imageData = [self getPage : page : data];
 	
-	if(imageData == nil)
+	if(imageData == nil || imageData.length == 0)
 		return nil;
 	
 	NSImage * image = [[NSImage alloc] initWithData : imageData];
