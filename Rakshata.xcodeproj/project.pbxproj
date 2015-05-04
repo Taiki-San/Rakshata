@@ -442,7 +442,7 @@
 		B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchTab.m; path = "Séries/RakSRSearchTab.m"; sourceTree = "<group>"; };
 		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = "Rakshata-Prefix.pch"; path = "Objective C/Rakshata-Prefix.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6CF07CC1868DD58009B16A3 /* rakshata.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = rakshata.pch; path = "Objective C/rakshata.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RakAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakAppDelegate.m; sourceTree = "<group>"; };
 		B6CF07DC1868DD58009B16A3 /* RakshataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -611,13 +611,13 @@
 			name = Prefs;
 			sourceTree = "<group>";
 		};
-		B6251F711A98CBF0001C4F06 /* Divers fenêtres */ = {
+		B6251F711A98CBF0001C4F06 /* Subwindows */ = {
 			isa = PBXGroup;
 			children = (
 				B69D467D1AA7C5D300B471AC /* About */,
 				B69D467C1AA7C5C600B471AC /* Preferences */,
 			);
-			name = "Divers fenêtres";
+			name = Subwindows;
 			sourceTree = "<group>";
 		};
 		B62808B119EB00FF0067EE82 /* CT List */ = {
@@ -1110,7 +1110,7 @@
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6CF07BC1868DD58009B16A3 /* Products */,
-				B6CF07CC1868DD58009B16A3 /* Rakshata-Prefix.pch */,
+				B6CF07CC1868DD58009B16A3 /* rakshata.pch */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
@@ -1156,7 +1156,6 @@
 			isa = PBXGroup;
 			children = (
 				B6CC724318723044003A745B /* CT */,
-				B6251F711A98CBF0001C4F06 /* Divers fenêtres */,
 				B6CC724618723071003A745B /* MDL */,
 				B6218242187351A3008AC5DD /* Prefs */,
 				B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */,
@@ -1164,6 +1163,7 @@
 				B66CDD31189C545F007B9389 /* RakTabView */,
 				B6CC724718723077003A745B /* Reader */,
 				B6CC72481872307D003A745B /* Series */,
+				B6251F711A98CBF0001C4F06 /* Subwindows */,
 				B6CC724918723084003A745B /* Utils */,
 			);
 			name = "Objective-C";
@@ -1764,7 +1764,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_FAST_MATH = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/Rakshata-Prefix.pch";
+				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
 				GCC_UNROLL_LOOPS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
@@ -1837,7 +1837,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/Rakshata-Prefix.pch";
+				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
