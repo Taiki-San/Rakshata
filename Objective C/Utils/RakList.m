@@ -452,8 +452,11 @@
 		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
-			_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
-			[self graphicSelection:view :NO];
+			if([view isKindOfClass:[RakText class]])
+			{
+				_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
+				[self graphicSelection:view :NO];
+			}
 		}
 		
 		CGFloat rowToDeselect = selectedRowIndex;
