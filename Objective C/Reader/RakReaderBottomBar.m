@@ -356,7 +356,7 @@
 {
 	if(_parent.distractionFree && self.alphaValue != 1.0f)
 	{
-		[_parent abordFadeTimer];
+		[_parent abortFadeTimer];
 		self.highjackedMouseEvents = YES;
 		[_parent fadeBottomBar:1.0f];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
 	}

@@ -79,7 +79,7 @@
 - (void) switchDistractionFree;
 - (void) shouldLeaveDistractionFreeMode;
 - (void) startFadeTimer : (NSPoint) cursorPosition;
-- (void) abordFadeTimer;
+- (void) abortFadeTimer;
 - (void) cursorShouldFadeAway;
 - (void) fadeBottomBar : (CGFloat) alpha;
 

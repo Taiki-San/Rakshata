@@ -331,7 +331,7 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	[self abordFadeTimer];
+	[self abortFadeTimer];
 }
 
 - (void) collapseAllTabs : (bool) forced
@@ -442,7 +442,7 @@
 
 - (void) startFadeTimer : (NSPoint) cursorPosition
 {
-	[self abordFadeTimer];
+	[self abortFadeTimer];
 	
 	cursorPosBeforeLastMove = cursorPosition;
 	delaySinceLastMove = [NSTimer scheduledTimerWithTimeInterval:READER_DELAY_CURSOR_FADE target:self selector:@selector(cursorShouldFadeAway) userInfo:nil repeats:NO];
@@ -454,7 +454,7 @@
 	}
 }
 
-- (void) abordFadeTimer
+- (void) abortFadeTimer
 {
 	if(delaySinceLastMove != nil)
 	{
@@ -468,11 +468,15 @@
 	delaySinceLastMove = nil;
 	
 	NSPoint point = [NSEvent mouseLocation];
-
-	if(cursorPosBeforeLastMove.x == point.x && cursorPosBeforeLastMove.y == point.y)
+	
+	if(!bottomBarHidden)
 	{
 		bottomBarHidden = YES;
 		[self fadeBottomBar: READER_BB_ALPHA_DF_STATIC];
+	}
+
+	if(cursorPosBeforeLastMove.x == point.x && cursorPosBeforeLastMove.y == point.y)
+	{
 		[NSCursor setHiddenUntilMouseMoves:YES];
 	}
 }
@@ -484,8 +488,6 @@
 	
 	[NSAnimationContext beginGrouping];
 	[[NSAnimationContext currentContext] setDuration:0.1f];
-	
-	[bottomBar.animator setAlphaValue:alpha];
 	
 	if(alpha == 0)
 	{
@@ -499,6 +501,8 @@
 		[bottomBar setAlphaValue:0];
 		[bottomBar setHidden:NO];
 	}
+	
+	[bottomBar.animator setAlphaValue:alpha];
 	
 	[NSAnimationContext endGrouping];
 }
