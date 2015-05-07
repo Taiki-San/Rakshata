@@ -235,13 +235,22 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 		{
 			if(!getTomeDetails(output))
 			{
-				free(output);
+				MDLFlushElement(output);
 				output = NULL;
 			}
 		}
 	}
 	
 	return output;
+}
+
+void MDLFlushElement(DATA_LOADED * element)
+{
+	if(element == NULL)
+		return;
+	
+	free(element->listChapitreOfTome);
+	free(element);
 }
 
 char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)

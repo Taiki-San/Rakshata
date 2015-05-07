@@ -326,10 +326,7 @@
 		DATA_LOADED * newElement = MDLCreateElement(cache[pos], isTome, element);
 		
 		if(newElement == NULL)
-		{
-			free(newElement);
 			return;
-		}
 		
 		int8_t **newStatus = realloc(status, (nbElem + 1) * sizeof(int8_t*));
 		uint *newIDToPosition = realloc(IDToPosition, (discardedCount + 1) * sizeof(uint));
@@ -359,14 +356,18 @@
 		IDToPosition[discardedCount++] = nbElem++;
 		
 		DATA_LOADED ** newTodoList = realloc(*todoList, nbElem * sizeof(DATA_LOADED *));
-		
 		if(newTodoList == NULL)
 		{
 			free(status[nbElem]);			status[nbElem] = NULL;
+			MDLFlushElement(newElement);	newElement = NULL;
+			IDToPosition[discardedCount++] = nbElem++;
+			discardedCount--;	nbElem--;
 		}
-
-		int curPos = nbElem - 1;
-		*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, &newElement);
+		else
+		{
+			int curPos = nbElem - 1;
+			*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, &newElement);
+		}
 	}
 	
 	if(!partOfBatch && discardedCount)

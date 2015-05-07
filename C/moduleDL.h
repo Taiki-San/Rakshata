@@ -176,6 +176,7 @@ char* internalCraftBaseURL(REPO_DATA repoData, uint* length);
 DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
+void MDLFlushElement(DATA_LOADED * element);
 char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);

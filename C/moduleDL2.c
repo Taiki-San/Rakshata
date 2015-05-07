@@ -112,9 +112,7 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PRO
     /*On libère la mémoire*/
     for(uint i = 0; i < nbElemTotal; i++)
     {
-		if((*todoList)[i] != NULL)
-			free((*todoList)[i]->listChapitreOfTome);
-        free((*todoList)[i]);
+		MDLFlushElement((*todoList)[i]);
         free(status[i]);
     }
 

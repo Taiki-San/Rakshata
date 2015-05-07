@@ -54,11 +54,6 @@
 	return nbElem * (cellHeight + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
 }
 
-- (void) resizeAnimation: (NSRect) frameRect
-{
-	[scrollView.animator setFrame: [self getFrameFromParent:frameRect]];
-}
-
 - (void) setScrollerHidden : (BOOL) hidden
 {
 	if(scrollView != nil)
