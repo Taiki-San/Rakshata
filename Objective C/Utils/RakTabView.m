@@ -77,17 +77,33 @@
 	
 	if(!project.isInitialized || project.repo == NULL)
 		return NO;
-	
+
+	//We get our current tab
 	while (sender != nil && [sender superclass] != [RakTabView class])
 		sender = [sender superview];
 	
 	if(sender == nil)
 		return NO;
 	
-	//Ladies and gentlemen, your eyes are about to burn
 	
+	//Sanity checks
+	BOOL shouldFreeAfterward = NO;
+	if((project.tomesInstalled == NULL && project.nombreTomesInstalled != 0) || (project.chapitresInstalled == NULL && project.nombreChapitreInstalled != 0))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Incomplete structure received, trying to correct it");
+#endif
+		
+		project = getElementByID(project.cacheDBID);
+		shouldFreeAfterward = YES;
+	}
+	
+	//Ladies and gentlemen, your eyes are about to burn
 	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[NSData alloc] initWithBytes:&project length:sizeof(project)], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
     [[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_UPDATE_TAB_CONTENT object:sender userInfo:userInfo];
+
+	if(shouldFreeAfterward)
+		releaseCTData(project);
 	
 	return YES;
 }

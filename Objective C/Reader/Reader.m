@@ -548,6 +548,9 @@
 		
 		if(isTome)
 		{
+			if(project.tomesInstalled == NULL)
+				return;
+			
 			META_TOME tome = project.tomesInstalled[position];
 			
 			if(tome.readingName[0])
@@ -557,6 +560,9 @@
 		}
 		else
 		{
+			if(project.chapitresInstalled == NULL)
+				return;
+			
 			int element = project.chapitresInstalled[position];
 			
 			if(element % 10)
