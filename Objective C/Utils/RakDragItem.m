@@ -27,15 +27,7 @@ typedef struct project_data_for_drag_drop
 	self.isTome = isTome;
 	self.selection = element;
 	
-	if(element == VALEUR_FIN_STRUCT)
-	{
-		if(isTome)
-			canDL = (project.nombreTomes != VALEUR_FIN_STRUCT && project.nombreTomes != project.nombreTomesInstalled);
-		else
-			canDL = (project.nombreChapitre != VALEUR_FIN_STRUCT && project.nombreChapitre != project.nombreChapitreInstalled);
-	}
-	else
-		canDL = !checkReadable(project, isTome, element);
+	canDL = [[self class] canDL:project isTome:isTome element:element];
 }
 
 - (id) initWithData : (NSData *) data
@@ -89,6 +81,19 @@ typedef struct project_data_for_drag_drop
 		}
 	}
 	return YES;
+}
+
++ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element
+{
+	if(element == VALEUR_FIN_STRUCT)
+	{
+		if(isTome)
+			return (project.nombreTomes != VALEUR_FIN_STRUCT && project.nombreTomes != project.nombreTomesInstalled);
+
+		return (project.nombreChapitre != VALEUR_FIN_STRUCT && project.nombreChapitre != project.nombreChapitreInstalled);
+	}
+
+	return !checkReadable(project, isTome, element);
 }
 
 + (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed

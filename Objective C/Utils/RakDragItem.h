@@ -28,6 +28,7 @@
 - (NSData *) getData;
 - (BOOL) canDL;
 + (BOOL) canDL : (NSPasteboard*) pasteboard;
++ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
 + (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
 
 @end

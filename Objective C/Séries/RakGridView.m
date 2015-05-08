@@ -12,6 +12,22 @@
 
 #define BORDER 3
 
+@interface RakGridViewDragImage : NSImage
+
+@property BOOL itemCanDL;
+
+@end
+
+@implementation RakGridViewDragImage
+
+//Dealloc will be called at the end of the D&D session
+- (void) dealloc
+{
+	[RakList propagateDragAndDropChangeState : NO : _itemCanDL];
+}
+
+@end
+
 @implementation RakGridView
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager
@@ -146,7 +162,21 @@
 	if(!_dragProject.isInitialized)
 		return nil;
 	
-	return [self initializeImageForItem : _dragProject : [RakSerieList contentNameForDrag:_dragProject] : _currentDragItem];
+	NSImage * image = [self initializeImageForItem : _dragProject : [RakSerieList contentNameForDrag:_dragProject] : _currentDragItem];
+	
+	if(image == nil)
+		return nil;
+	
+	//We use a different object in order to hook dealloc
+	RakGridViewDragImage * output = [[RakGridViewDragImage alloc] initWithSize:image.size];
+	[output addRepresentations:image.representations];
+
+	//Let's see if we can or not DL this element
+	output.itemCanDL = [RakDragItem canDL:_dragProject isTome:YES element:VALEUR_FIN_STRUCT] || [RakDragItem canDL:_dragProject isTome:NO element:VALEUR_FIN_STRUCT];
+	
+	[RakList propagateDragAndDropChangeState : YES : output.itemCanDL];
+	
+	return output;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard
