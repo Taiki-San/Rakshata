@@ -318,7 +318,10 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 							currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos--].isNative;
 						}
 						else
+						{
 							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((CONTENT_TOME *) structure)[pos - counter].ID), @(((CONTENT_TOME *) structure)[pos].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+							currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos + 1].isNative;
+						}
 						
 					}
 					else
@@ -384,8 +387,10 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 		{
 			if(pricesValid)
 				[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, pricesInBurst] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
-			else
+			else if(isChapter)
 				[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
+			else
+				[output addObject:[NSDictionary dictionaryWithObjects:@[currentBurst, @(currentNativeIfNotChap)] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_VOL_ISRESERVEDTOVOL]]];
 		}
 	}
 	
@@ -399,7 +404,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 	else
 		*nbElem = 0;
 	
-	if(volumeBloc == nil || [volumeBloc superclass] != [NSArray class])
+	if(volumeBloc == nil || ![volumeBloc isKindOfClass:[NSArray class]])
 		return NULL;
 	
 	size_t nbElemMax = [volumeBloc count];
@@ -433,7 +438,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			description = objectForKey(dict, JSON_PROJ_VOL_DESCRIPTION, @"Description");
 			
 			content = objectForKey(dict, JSON_PROJ_CHAPTERS, @"chapters");
-			if(content == nil || [content class] != [NSArray class])	continue;
+			if(content == nil || ![content isKindOfClass:[NSArray class]])	continue;
 			
 			if(paidContent)
 				priceObj = objectForKey(dict, JSON_PROJ_PRICE, @"price");
