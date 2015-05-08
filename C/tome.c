@@ -78,7 +78,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d/", encodedRepo, projectDB.projectID);
 	free(encodedRepo);
 	
-	for(posDetails = 0; cache[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
+	for(posDetails = 0; posDetails < projectDB.tomesFull[pos].lengthDetails; posDetails++)
 	{
 		if(cache[posDetails].isNative)
 		{
@@ -122,90 +122,6 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	}
 	
     return true;
-}
-
-bool parseTomeDetails(PROJECT_DATA projectDB, int ID, CONTENT_TOME ** output)
-{
-	//Sanitisation de base
-	if(output == NULL || ID == VALEUR_FIN_STRUCT)
-		return false;
-	
-	if(*output != NULL)
-	{
-		free(*output);
-		*output = NULL;
-	}
-	
-	uint bufferSize, posBuf;
-	char pathConfigFile[LENGTH_PROJECT_NAME*5+350], *fileBuffer, *encodedRepo = getPathForRepo(projectDB.repo);
-    FILE* config;
-	
-	if(encodedRepo == NULL)
-		return false;
-	
-	//On charge le fichier dans un buffer en mémoire pour accélérer les IO
-	snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, ID);
-	free(encodedRepo);
-	
-	bufferSize = getFileSize(pathConfigFile);
-	
-	if(!bufferSize || (config = fopen(pathConfigFile, "r")) == NULL)
-		return false;
-		
-	fileBuffer = malloc(bufferSize + 1);
-	if(fileBuffer == NULL)
-	{
-		fclose(config);
-		return false;
-	}
-	
-	posBuf = fread(fileBuffer, sizeof(char), bufferSize, config);
-	fileBuffer[posBuf] = 0;
-	
-	fclose(config);
-	
-	//On commence à parser
-	uint elemMax = countSpaces(fileBuffer) + 1, posOut;
-	int curID;
-	CONTENT_TOME * workingBuffer = malloc((elemMax + 1) * sizeof(CONTENT_TOME));
-	
-	if(workingBuffer == NULL)
-		return false;
-	
-	for(posOut = posBuf = 0; fileBuffer[posBuf] && posOut < elemMax;)
-	{
-		curID = extractNumFromConfigTome(&fileBuffer[posBuf], ID);
-		if(curID != VALEUR_FIN_STRUCT)
-		{
-			workingBuffer[posOut].ID = curID;
-			workingBuffer[posOut].isNative = (fileBuffer[posBuf] == 'C');
-			posOut++;
-		}
-		
-		while(fileBuffer[posBuf])
-		{
-			if(fileBuffer[posBuf++] == ' ' && (fileBuffer[posBuf] == 'C' || fileBuffer[posBuf] == 'T'))
-				break;
-		}
-	}
-	
-	if(posOut == 0)	//Rien n'a été lu
-	{
-		free(workingBuffer);
-		return false;
-	}
-
-	else if(posOut < elemMax)
-	{
-		void* buf = realloc(workingBuffer, (posOut + 1) * sizeof(CONTENT_TOME));
-		if(buf != NULL)
-			workingBuffer = buf;
-	}
-	
-	workingBuffer[posOut].ID = VALEUR_FIN_STRUCT;
-	*output = workingBuffer;
-	free(fileBuffer);
-	return true;
 }
 
 void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
@@ -273,23 +189,21 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 		return;
 	
 	memcpy(output, input, (nombreTomes+1) * sizeof(META_TOME));
-	for(uint pos = 0, nbElem; pos < nombreTomes && input[pos].ID != VALEUR_FIN_STRUCT; pos++)
+	for(uint pos = 0; pos < nombreTomes && input[pos].ID != VALEUR_FIN_STRUCT; pos++)
 	{
 		if(input[pos].details == NULL)
 			continue;
+		
+		if(input[pos].lengthDetails > 0)
+		{
+			output[pos].details = malloc(input[pos].lengthDetails * sizeof(CONTENT_TOME));
+			if(output[pos].details != NULL)
+				memcpy(output[pos].details, input[pos].details, input[pos].lengthDetails * sizeof(CONTENT_TOME));
+		}
 		else
 			output[pos].details = NULL;
-		
-		for (nbElem = 0; input[pos].details[nbElem].ID != VALEUR_FIN_STRUCT; nbElem++);
-		
-		if(nbElem > 0)
-		{
-			output[pos].details = malloc((nbElem + 1) * sizeof(CONTENT_TOME));
-			if(output[pos].details != NULL)
-				memcpy(output[pos].details, input[pos].details, (nbElem + 1) * sizeof(CONTENT_TOME));
-			
-		}
 	}
+
 	output[nombreTomes].ID = VALEUR_FIN_STRUCT;
 	output[nombreTomes].details = NULL;
 }
@@ -304,36 +218,6 @@ void freeTomeList(META_TOME * data, bool includeDetails)
 			free(data[i].details);
 
 	free(data);
-}
-
-void printTomeDatas(PROJECT_DATA projectDB, char *bufferDL, int tome)
-{
-    char bufferPath[256], *encodedRepo = getPathForRepo(projectDB.repo);
-    FILE* out;
-	
-    if(encodedRepo == NULL)
-		return;
-
-	snprintf(bufferPath, sizeof(bufferPath), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, projectDB.projectID, tome);
-	free(encodedRepo);
-	
-	if((out = fopen(bufferPath, "w+")) == NULL)
-	{
-		createPath(bufferPath); //If I can't create the file, I try to create its path, then retry
-		out = fopen(bufferPath, "w+");
-		if(out == NULL)
-			return;
-	}
-	
-	uint lengthBufferDL = strlen(bufferDL);
-	if(fwrite(bufferDL, sizeof(char), lengthBufferDL, out) != lengthBufferDL) //Write data then check if everything went fine
-	{
-		logR("Failed at write tome infos");
-#ifdef DEV_VERSION
-		logR(bufferDL);
-#endif
-	}
-	fclose(out);
 }
 
 int extractNumFromConfigTome(char *input, int ID)
@@ -394,7 +278,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		
 		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
 		
-		for(uint posDetails = 0; details[posDetails].ID != VALEUR_FIN_STRUCT; posDetails++)
+		for(uint posDetails = 0; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
 		{
 			if(details[posDetails].isNative)
 			{

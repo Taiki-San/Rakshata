@@ -49,8 +49,10 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 			return false;
 		
 		localBuffer = projectDB.tomesInstalled[pos].details;
-		for(pos = 0; localBuffer[pos].ID != VALEUR_FIN_STRUCT; pos++);
-		nombreToursRequis = pos;
+		nombreToursRequis = projectDB.tomesInstalled[pos].lengthDetails;
+		
+		if(localBuffer == NULL)
+			return false;
 	}
     else
 		nombreToursRequis = 1;

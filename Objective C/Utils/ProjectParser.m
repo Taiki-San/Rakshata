@@ -12,7 +12,7 @@
 
 #include "JSONParser.h"
 
-int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint ** chaptersPrice)
+void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapter, BOOL paidContent, uint ** chaptersPrice)
 {
 	if(nbElem != NULL)
 		*nbElem = 0;
@@ -23,21 +23,27 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 	if(paidContent && chaptersPrice == NULL)
 		return NULL;
 	
-	int * output = NULL;
+	void * output = NULL;
 	uint counterVar = 0, *counter, pos = 0, pricePos = 0;
 	size_t nbSubBloc = [chapterBloc count];
 
 	if (nbSubBloc == 0)
 	{
-		output = malloc(sizeof(int));
-		if (output != nil)
-			output[0] = VALEUR_FIN_STRUCT;
+		if(isChapter)
+		{
+			output = malloc(sizeof(int));
+			if (output != nil)
+				((int *)output)[0] = VALEUR_FIN_STRUCT;
+		}
 	}
 	else
 	{
 		id entry1, entry2 = nil;
 		int jump, first, last, sum;
 		void* tmp;
+		
+		BOOL isNativeIfVolume = NO;
+		uint typeSize = isChapter ? sizeof(int) : sizeof(CONTENT_TOME);
 		
 		if (nbElem != NULL)		counter = nbElem;
 		else					counter = &counterVar;
@@ -47,60 +53,82 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 			if([dictionary superclass] != [NSMutableDictionary class])	continue;
 			
 			entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_DETAILS, @"details");
-			if(paidContent)
+			if(isChapter && paidContent)
 				entry2 = objectForKey(dictionary, JSON_PROJ_PRICE, @"price");
-			
-			if(entry1 != nil && [(NSObject*)entry1 superclass] == [NSArray class])	//This is a special chunck
+			else if(!isChapter)
+				entry2 = objectForKey(dictionary, JSON_PROJ_VOL_ISRESERVEDTOVOL, @"privateTome");
+				
+			if(entry1 != nil && [(NSObject*) entry1 superclass] == [NSArray class])	//This is a special chunck
 			{
 				*counter += [(NSArray*) entry1 count];
 				
 				if(!*counter)
 					continue;
 				
-				else if((tmp = realloc(output, (*counter + 1) * sizeof(int))) != NULL)
+				else if((tmp = realloc(output, (*counter + 1) * typeSize)) != NULL)
 				{
 					output = tmp;
 					
-					if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+					if(isChapter)
 					{
-						*chaptersPrice = tmp;
-						
-						if(entry2 == nil)
-							memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
-						else
+						if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
 						{
-							uint count = *counter;
-							for(NSNumber * entry3 in entry2)
+							*chaptersPrice = tmp;
+							
+							if(entry2 == nil)
+								memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
+							else
 							{
-								if(pricePos > count)
-									break;
-								
-								if([entry3 superclass] != [NSNumber class])
-									continue;
-								
-								(*chaptersPrice)[pricePos++] = [entry3 unsignedIntValue];
+								uint count = *counter;
+								for(NSNumber * entry3 in entry2)
+								{
+									if(pricePos > count)
+										break;
+									
+									if([entry3 superclass] != [NSNumber class])
+										continue;
+									
+									(*chaptersPrice)[pricePos++] = [entry3 unsignedIntValue];
+								}
 							}
 						}
 					}
+					else	//Volume detail option telling if native or not
+					{
+						if(entry2 != nil && [entry2 isKindOfClass:[NSNumber class]])
+							isNativeIfVolume = [entry2 boolValue];
+						else
+							isNativeIfVolume = NO;
+					}
 
+					//Actual parsing of details
 					for(NSNumber * entry3 in entry1)
 					{
 						if([entry3 superclass] != [NSNumber class])
 							continue;
 						
-						output[pos++] = [entry3 integerValue];
-
+						int value = [entry3 integerValue];
+						
 #ifdef DEV_VERSION
-						if(output[pos - 1] == 0xdeadbead)
+						if(value == 0xdeadbead)
 						{
 							//This value is used to signal a deallocated memory area, it'd crash if ran in debugger
 							logR("Error: this value (-559038803) is forbiden, moved by one");
-							output[pos - 1]--;
+							value--;
 						}
 #endif
+						if(isChapter)
+							((int *)output)[pos++] = value;
+						else
+						{
+							((CONTENT_TOME *) output)[pos].ID = value;
+							((CONTENT_TOME *) output)[pos++].isNative = isNativeIfVolume;
+						}
+
 					}
-					
-					output[pos] = VALEUR_FIN_STRUCT;
+
+					if(isChapter)
+						((int *)output)[pos] = VALEUR_FIN_STRUCT;
 
 				}
 			}
@@ -119,17 +147,38 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 				if(sum > 0)	*counter += sum;
 				else		continue;
 				
-				if((tmp = realloc(output, (*counter + 1) * sizeof(int))) != NULL)
+
+				
+				if((tmp = realloc(output, (*counter + 1) * typeSize)) != NULL)
 				{
 					output = tmp;
-			
-					for (output[pos++] = first; pos < *counter; pos++)
-						output[pos] = output[pos-1] + jump;
+
+					if(!isChapter)
+					{
+						//Check if native of not if volume
+						if(entry2 != nil && [entry2 isKindOfClass:[NSNumber class]])
+							isNativeIfVolume = [entry2 boolValue];
+						else
+							isNativeIfVolume = NO;
+
+						//The first element have to be initialized early
+						((CONTENT_TOME *) output)[pos].isNative = isNativeIfVolume;
+						for (((CONTENT_TOME *) output)[pos++].ID = first; pos < *counter; pos++)
+						{
+							((CONTENT_TOME *) output)[pos].ID = ((CONTENT_TOME *) output)[pos - 1].ID + jump;
+							((CONTENT_TOME *) output)[pos].isNative = isNativeIfVolume;
+						}
+					}
+					else
+					{
+						for(((int *)output)[pos++] = first; pos < *counter; pos++)
+							((int *)output)[pos] = ((int *)output)[pos-1] + jump;
 						
-					output[pos] = VALEUR_FIN_STRUCT;
+						((int *)output)[pos] = VALEUR_FIN_STRUCT;
+					}
 				}
 				
-				if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+				if(isChapter && entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
 				{
 					*chaptersPrice = tmp;
 					
@@ -151,11 +200,12 @@ int * getChapters(NSArray * chapterBloc, uint * nbElem, BOOL paidContent, uint *
 	return output;
 }
 
-NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
+NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapterPrices, uint length)
 {
-	if(chapter == NULL)		return nil;
+	if(structure == NULL || length == 0)		return nil;
 	
 	NSMutableArray * output = [NSMutableArray new], *currentDetail = nil, *currentBurst = nil, *pricesInBurst, *priceDetail = nil;
+	BOOL currentNativeIfNotChap = NO;
 	
 	if(output == nil)		return nil;
 	
@@ -163,33 +213,68 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 	{
 		currentDetail = [NSMutableArray array];
 		
-		for(uint i = 0; i < length; [currentDetail addObject:@(chapter[i++])]);
-		
-		if(chapterPrices != NULL)
+		if(isChapter)
 		{
-			NSMutableArray * prices = [NSMutableArray array];
+			for(uint i = 0; i < length; [currentDetail addObject:@(((int *) structure)[i++])]);
 			
-			for(uint i = 0; i < length; [prices addObject:@(chapterPrices[i++])]);
-			
-			[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, prices] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
+			if(chapterPrices != NULL)
+			{
+				NSMutableArray * prices = [NSMutableArray array];
+				
+				for(uint i = 0; i < length; [prices addObject:@(chapterPrices[i++])]);
+				
+				[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, prices] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_PRICE]]];
+			}
+			else
+				[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
 		}
 		else
-			[output addObject:[NSDictionary dictionaryWithObject:currentDetail forKey : JSON_PROJ_CHAP_DETAILS]];
-		
+		{
+			currentNativeIfNotChap = ((CONTENT_TOME *) structure)[0].isNative;
+			
+			for(uint i = 0; i < length; [currentDetail addObject:@(((CONTENT_TOME *) structure)[i++].ID)])
+			{
+				if(((CONTENT_TOME *) structure)[i].isNative != currentNativeIfNotChap)
+				{
+					[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, @(currentNativeIfNotChap)] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_VOL_ISRESERVEDTOVOL]]];
+					
+					currentDetail = [NSMutableArray array];
+					currentNativeIfNotChap = ((CONTENT_TOME *) structure)[i].isNative;
+				}
+			}
+			
+			[output addObject:[NSDictionary dictionaryWithObjects:@[currentDetail, @(currentNativeIfNotChap)] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_VOL_ISRESERVEDTOVOL]]];
+		}
+			
 		currentDetail = nil;
 	}
 	else
 	{
 		//We create a diff table
+		int first;
 		uint diff[length-1];
-		for(uint i = 0; i < length-1; i++)
-			diff[i] = chapter[i+1] - chapter[i];
+		
+		if(isChapter)
+		{
+			first = ((int *) structure)[0];
+
+			for(uint i = 0; i < length-1; i++)
+				diff[i] = ((int *) structure)[i+1] - ((int *) structure)[i];
+		}
+		else
+		{
+			first = ((CONTENT_TOME *) structure)[0].ID;
+			currentNativeIfNotChap = ((CONTENT_TOME *) structure)[0].isNative;
+			
+			for(uint i = 0; i < length-1; i++)
+				diff[i] = ((CONTENT_TOME *) structure)[i+1].ID - ((CONTENT_TOME *) structure)[i].ID;
+		}
 		
 		//We look for burst
 		int repeatingDiff = diff[0];
-		currentBurst = [NSMutableArray arrayWithObject:@(chapter[0])];
+		currentBurst = [NSMutableArray arrayWithObject:@(first)];
 		
-		bool pricesValid = chapterPrices != NULL;
+		bool pricesValid = isChapter && chapterPrices != NULL;
 		
 		if(pricesValid)
 		{
@@ -197,7 +282,7 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 
 			if(chapterPrices[0] != chapterPrices[1])
 			{
-				currentDetail = [NSMutableArray arrayWithObject:@(chapter[0])];
+				currentDetail = [NSMutableArray arrayWithObject:@(((int *) structure)[0])];
 				currentBurst = [NSMutableArray new];
 				priceDetail = [NSMutableArray arrayWithObject:@(chapterPrices[0])];
 				pricesInBurst = [NSMutableArray new];
@@ -206,7 +291,9 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 		
 		for (uint pos = 1, counter = 1; pos < length; pos++)
 		{
-			if(pos == length-1 || diff[pos] != repeatingDiff || (pricesValid && chapterPrices[pos] != chapterPrices[pos + 1]))
+			if(pos == length-1 || diff[pos] != repeatingDiff ||
+			   (pricesValid && chapterPrices[pos] != chapterPrices[pos + 1]) ||
+			   (!isChapter && ((CONTENT_TOME *) structure)[pos].isNative != currentNativeIfNotChap))
 			{
 				if(counter > 5)
 				{
@@ -221,35 +308,62 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 					}
 					
 					//Because diff tell us how far is the next element, a != diff mean the next element break the chain, so the last one of the burst is the current one
-					if(pricesValid)
-						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP, JSON_PROJ_PRICE]]];
+					//However, it gets a bit tricky thanks to currentNativeState (!isChapter only, thankfully)
+					if(!isChapter)
+					{
+						//If the native state changed, we are offseted by one, but this branch is > 5 so we don't really care beside applying the offset
+						if(((CONTENT_TOME *) structure)[pos].isNative != currentNativeIfNotChap)
+						{
+							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((CONTENT_TOME *) structure)[pos - counter].ID), @(((CONTENT_TOME *) structure)[pos - 1].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+							currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos--].isNative;
+						}
+						else
+							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((CONTENT_TOME *) structure)[pos - counter].ID), @(((CONTENT_TOME *) structure)[pos].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+						
+					}
 					else
-						[output addObject:[NSDictionary dictionaryWithObjects:@[@(chapter[pos - counter]), @(chapter[pos]), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+					{
+						if(pricesValid)
+							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((int *) structure)[pos - counter]), @(((int *) structure)[pos]), @(repeatingDiff), @(chapterPrices[pos])] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP, JSON_PROJ_PRICE]]];
+						else
+							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((int *) structure)[pos - counter]), @(((int *) structure)[pos]), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+					}
 				}
 				else
 				{
-					if(pos == length - 1)
+					if(!isChapter && ((CONTENT_TOME *) structure)[pos].isNative != currentNativeIfNotChap)
 					{
-						[currentBurst addObject:@(chapter[pos])];
-						if(pricesValid)
-							[pricesInBurst addObject:@(chapterPrices[pos])];
+						[output addObject:[NSDictionary dictionaryWithObjects:@[currentBurst, @(currentNativeIfNotChap)] forKeys : @[JSON_PROJ_CHAP_DETAILS, JSON_PROJ_VOL_ISRESERVEDTOVOL]]];
+						
+						currentBurst = nil;
+						currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos].isNative;
 					}
-					
-					if(currentDetail == nil)
+					else
 					{
-						currentDetail = [NSMutableArray new];
+						if(pos == length - 1)
+						{
+							//We're comparing to the next element, so once we reach the end, and there is no element after us, we know we're good
+							[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : ((CONTENT_TOME *) structure)[pos].ID)];
+							if(pricesValid)
+								[pricesInBurst addObject:@(chapterPrices[pos])];
+						}
+						
+						if(currentDetail == nil)
+						{
+							currentDetail = [NSMutableArray new];
+							
+							if(pricesValid)
+								priceDetail = [NSMutableArray new];
+						}
+						
+						[currentDetail addObjectsFromArray:currentBurst];
 						
 						if(pricesValid)
-							priceDetail = [NSMutableArray new];
+							[priceDetail addObjectsFromArray:pricesInBurst];
 					}
-					
-					[currentDetail addObjectsFromArray:currentBurst];
-
-					if(pricesValid)
-						[priceDetail addObjectsFromArray:pricesInBurst];
 				}
 				
-				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapter[pos])];
+				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(isChapter ? ((int *) structure)[pos] : ((CONTENT_TOME *) structure)[pos].ID)];
 				if(pricesValid)
 					pricesInBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray arrayWithObject:@(chapterPrices[pos])];
 
@@ -257,7 +371,7 @@ NSArray * recoverChapterBloc(int * chapter, uint * chapterPrices, uint length)
 			}
 			else
 			{
-				[currentBurst addObject:@(chapter[pos])];
+				[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : ((CONTENT_TOME *) structure)[pos].ID)];
 				
 				if(pricesValid)
 					[pricesInBurst addObject:@(chapterPrices[pos+1])];
@@ -294,6 +408,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 	if(output != NULL)
 	{
 		uint cache = 0;
+		NSArray * content;
 		NSDictionary * dict;
 		NSString *description, *readingName;
 		NSNumber *readingID, *internalID, *priceObj;
@@ -315,12 +430,18 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID");
 			if(internalID == nil || [internalID superclass] != [NSNumber class])	continue;
 
-			(*nbElem)++;
-			
 			description = objectForKey(dict, JSON_PROJ_VOL_DESCRIPTION, @"Description");
+			
+			content = objectForKey(dict, JSON_PROJ_CHAPTERS, @"chapters");
+			if(content == nil || [content class] != [NSArray class])	continue;
 			
 			if(paidContent)
 				priceObj = objectForKey(dict, JSON_PROJ_PRICE, @"price");
+			
+			output[cache].details = parseChapterStructure(content, &(output[cache].lengthDetails), NO, NO, NULL);
+			
+			if(output[cache].details == NULL)
+				continue;
 			
 			output[cache].ID = [internalID intValue];
 			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
@@ -333,10 +454,11 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			
 			if(priceObj == nil || ![priceObj isKindOfClass:[NSNumber class]])	output[cache].price = UINT_MAX;
 			else							output[cache].price = [priceObj unsignedIntValue];
-		
-			output[cache++].details = NULL;
+			
+			cache++;
 		}
 		
+		*nbElem = cache;
 		output[*nbElem].details = NULL;
 		output[*nbElem].ID = VALEUR_FIN_STRUCT;
 	}
@@ -373,6 +495,13 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		if(paidContent && volume[pos].price != UINT_MAX)
 			[dict setObject:@(volume[pos].price) forKey:JSON_PROJ_PRICE];
 		
+		if(volume->details != NULL)
+		{
+			NSArray * data = recoverChapterStructure(volume->details, NO, NULL, volume->lengthDetails);
+			if(data != nil)
+				[dict setObject:data forKey:JSON_PROJ_CHAPTERS];
+		}
+		
 		[output addObject:dict];
 	}
 	
@@ -406,7 +535,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	uint nbChapters = 0, nbVolumes = 0;
-	chapters = getChapters(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, isPaidContent, &chaptersPrices);
+	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, YES, isPaidContent, &chaptersPrices);
 	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
 
 	if(nbChapters == 0 && nbVolumes == 0)									goto end;
@@ -475,7 +604,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.projectID) forKey:JSON_PROJ_ID];
 	[output setObject:getStringForWchar(project.projectName) forKey:JSON_PROJ_PROJECT_NAME];
 	
-	buf = recoverChapterBloc(project.chapitresFull, project.chapitresPrix, project.nombreChapitre);
+	buf = recoverChapterStructure(project.chapitresFull, YES, project.chapitresPrix, project.nombreChapitre);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAPTERS];
 	
 	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes, project.isPaid);
@@ -585,14 +714,6 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 					project = &((PROJECT_DATA*)outputData)[validElements++];
 				
 				project->repo = repo;
-				if(project->tomesFull != NULL)
-				{
-					for(uint i = 0; i < project->nombreTomes; i++)
-					{
-						project->tomesFull[i].details = NULL;
-						parseTomeDetails(*project, project->tomesFull[i].ID, &(project->tomesFull[i].details));
-					}
-				}
 			}
 		}
 		

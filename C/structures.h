@@ -29,9 +29,13 @@ typedef struct details_tome_data
 typedef struct tome_metadata
 {
 	CONTENT_TOME * details;
+	
 	int ID;
 	int readingID;
+	
 	uint price;
+	uint lengthDetails;
+	
 	charType readingName[MAX_TOME_NAME_LENGTH];
 	charType description[TOME_DESCRIPTION_LENGTH];
 } META_TOME;

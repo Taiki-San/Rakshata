@@ -233,11 +233,30 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 		
 		if(isTome)
 		{
-			if(!getTomeDetails(output))
+			uint index = 0;
+			for(; index < data->nombreTomes; index++)
+			{
+				if(data->tomesFull[index].ID == element)
+					break;
+			}
+			
+			//Couldn't find the entry
+			if(index == data->nombreTomes)
 			{
 				MDLFlushElement(output);
 				output = NULL;
 			}
+			
+			output->nbElemList = data->tomesFull[index].lengthDetails;
+			output->listChapitreOfTome = malloc(output->nbElemList * sizeof(CONTENT_TOME));
+			
+			if(output->listChapitreOfTome == NULL)
+			{
+				MDLFlushElement(output);
+				output = NULL;
+			}
+			
+			memcpy(&(output->listChapitreOfTome), data->tomesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));
 		}
 	}
 	
@@ -343,7 +362,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		if(buf == NULL)
 			return NOT_INSTALLED;
 		
-		for(pos2 = 0; buf[pos2].ID != VALEUR_FIN_STRUCT; pos2++)
+		for(pos2 = 0; pos2 < projectData.tomesFull[pos].lengthDetails; pos2++)
 		{
 			if(buf[pos2].ID == IDChap && buf[pos2].isNative)
 			{
@@ -419,226 +438,6 @@ bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2)
         return false;
 
     return true;
-}
-
-bool getTomeDetails(DATA_LOADED *tomeDatas)
-{
-	if(tomeDatas == NULL || tomeDatas->datas == NULL)
-		return false;
-	
-    uint length = strlen(tomeDatas->datas->repo->URL) * 4 / 3 + 110;
-    char *bufferDL = NULL;
-	bool mayHaveAlreadyBeenHere = false, ret_value = false;
-	
-	if(length < 110)	//overflow
-		return false;
-
-    char bufferPath[length], *encodedRepo = getPathForRepo(tomeDatas->datas->repo);
-	
-	if(encodedRepo == NULL)
-		return false;
-	
-	snprintf(bufferPath, length, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
-	length = getFileSize(bufferPath);
-	
-	if(length)
-    {
-		mayHaveAlreadyBeenHere = true;
-		bufferDL = malloc(length + 1);
-		if(bufferDL == NULL)
-			goto end;
-
-		FILE * cache = fopen(bufferPath, "rb");
-		length = fread(bufferDL, 1, length, cache);
-		fclose(cache);
-		
-		if(length)
-			bufferDL[length] = 0;
-		else
-			goto end;
-	}
-    else
-    {
-		char *URL = NULL;
-		bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-		if(bufferDL == NULL)
-			goto end;
-
-        ///Craft URL
-        if (tomeDatas->datas->repo->type == TYPE_DEPOT_DB || tomeDatas->datas->repo->type == TYPE_DEPOT_OTHER)
-        {
-            URL = internalCraftBaseURL(*tomeDatas->datas->repo, &length);
-            if(URL != NULL)
-                snprintf(URL, length, "%s/%d/Tome_%d.dat", URL, tomeDatas->datas->projectID, tomeDatas->identifier);
-        }
-        else if (isPaidProject(*tomeDatas->datas))
-        {
-            length = 100 + 15 + strlen(tomeDatas->datas->repo->URL) + 10 + 64; //Core URL + numbers + elements
-            URL = malloc(length);
-            if(URL != NULL)
-                snprintf(URL, length, "https://"SERVEUR_URL"/getTomeData.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&tome=%d", tomeDatas->datas->repo->URL, tomeDatas->datas->projectID, tomeDatas->identifier);
-        }
-
-        if(URL == NULL || download_mem(URL, NULL, bufferDL, SIZE_BUFFER_UPDATE_DATABASE, tomeDatas->datas->repo->type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF) != CODE_RETOUR_OK)
-		{
-			free(URL);
-			goto end;
-		}
-
-		bufferDL[SIZE_BUFFER_UPDATE_DATABASE-1] = 0; //Au cas où
-		free(URL);
-		
-		if(!isDownloadValid(bufferDL))
-			goto end;
-    }
-
-    int i, nombreEspace, posBuf, posStartNbrTmp;
-	char temp[100], basePath[100];
-	
-	snprintf(basePath, 100, "Tome_%d/Chapitre_", tomeDatas->identifier);
-	
-	//We downloaded the detail of the tome, great, now, parsing time
-	
-	//Count the elements in the come
-	nombreEspace = countSpaces(bufferDL);	//We count spaces in the file, there won't be more elements, but maybe less (invalid data)
-	
-	//+ 1 because there is no space after last element
-	DATA_LOADED_TOME_DETAILS * output = calloc(nombreEspace + 1, sizeof(DATA_LOADED_TOME_DETAILS));
-	if(output == NULL)
-		goto end;
-	
-	//On parse chaque élément
-	for(posBuf = tomeDatas->nbElemList = 0; bufferDL[posBuf] && tomeDatas->nbElemList <= nombreEspace;)
-	{
-		//On saute les espaces avant
-		for(; bufferDL[posBuf] == ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
-		
-		//Read
-		posBuf += sscanfs(&bufferDL[posBuf], "%s", temp, 100);
-		for(; bufferDL[posBuf] && bufferDL[posBuf] != ' ' && posBuf < SIZE_BUFFER_UPDATE_DATABASE; posBuf++);
-		
-		//on place posStart juste avant le # du chapitre
-		if(!strncmp(temp, "Chapitre_", 9))
-			posStartNbrTmp = 9;
-		else if(!strncmp(temp, basePath, strlen(basePath)))
-			posStartNbrTmp = strlen(basePath);
-		else
-			continue;
-		
-		//On vérifie qu'on a bien un nombre à la fin de la chaîne
-		for(i = 0; i < 9 && isNbr(temp[posStartNbrTmp+i]); i++);
-		
-		//Si la chaîne ne se finit pas par un nombre
-		if(temp[posStartNbrTmp+i] && temp[posStartNbrTmp+i] != '.')
-			continue;
-		
-		int chapitre = 0;
-		
-		//Si nombre trop important, on tronque
-		if(i == 9)
-			temp[posStartNbrTmp + 9] = 0;
-		
-		//On lit le nombre
-		sscanfs(&temp[posStartNbrTmp], "%d", &chapitre);
-		chapitre *= 10;
-		
-		//Si un complément
-		if(temp[posStartNbrTmp+i] == '.' && isNbr(temp[posStartNbrTmp+i+1]))
-		{
-			chapitre += (int) temp[posStartNbrTmp+i+1] - '0';
-		}
-		
-		output[tomeDatas->nbElemList].element = chapitre;
-		output[tomeDatas->nbElemList].subFolder = posStartNbrTmp != 9;
-		tomeDatas->nbElemList++;
-	}
-	
-	if(tomeDatas->nbElemList == 0)
-	{
-		free(output);	output = NULL;
-		goto end;
-	}
-	
-	tomeDatas->listChapitreOfTome = output;
-	printTomeDatas(*tomeDatas->datas, bufferDL, tomeDatas->identifier);
-	
-	//We add the name of the tome
-	if(tomeDatas->datas != NULL && tomeDatas->datas->tomesFull != NULL)
-	{
-		//On cherche notre correspondance dans la structure afin de choper le nom du tome
-		i = getPosForID(*tomeDatas->datas, false, tomeDatas->identifier);
-		
-		if(i != -1)
-		{
-			if(tomeDatas->datas->tomesFull[i].readingName[0] != 0)
-				tomeDatas->tomeName = tomeDatas->datas->tomesFull[i].readingName;
-		}
-	}
-	
-	if(mayHaveAlreadyBeenHere)
-	{
-		//On va vérifier si le tome est pas déjà lisible
-		uint lengthTmp = strlen(tomeDatas->datas->repo->URL) * 4 / 3 + 110;
-		char bufferPathTmp[lengthTmp];
-		
-		snprintf(bufferPathTmp, lengthTmp, PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, tomeDatas->datas->projectID, tomeDatas->identifier);
-		rename(bufferPath, bufferPathTmp);
-		
-		refreshTomeList(tomeDatas->datas);
-		
-		for(uint pos = 0; pos < tomeDatas->datas->nombreTomes; pos++)
-		{
-			if(tomeDatas->datas->tomesFull[pos].ID == tomeDatas->identifier)
-			{
-				parseTomeDetails(*tomeDatas->datas, tomeDatas->identifier, &(tomeDatas->datas->tomesFull[pos].details));
-				break;
-			}
-		}
-		
-		if(checkTomeReadable(*tomeDatas->datas, tomeDatas->identifier)) //Si déjà lisible, on le dégage de la liste
-		{
-			free(tomeDatas->listChapitreOfTome);
-			tomeDatas->listChapitreOfTome = NULL;
-			goto end;
-		}
-		else
-			rename(bufferPath, bufferPathTmp);
-	}
-	else
-	{
-		if(tomeDatas->datas->tomesFull == NULL)
-			tomeDatas->datas->nombreTomes = 0;
-		
-		for(uint pos = 0; pos < tomeDatas->datas->nombreTomes; pos++)
-		{
-			if(tomeDatas->datas->tomesFull[pos].ID == tomeDatas->identifier)
-			{
-				CONTENT_TOME ** details = &tomeDatas->datas->tomesFull[pos].details;
-				*details = malloc((tomeDatas->nbElemList + 1) * sizeof(CONTENT_TOME));
-				
-				if(*details != NULL)
-				{
-					for(i = 0; i < tomeDatas->nbElemList; i++)
-					{
-						(*details)[i].ID = tomeDatas->listChapitreOfTome[i].element;
-						(*details)[i].isNative = !tomeDatas->listChapitreOfTome[i].subFolder;
-					}
-					
-					(*details)[i].ID = VALEUR_FIN_STRUCT;
-				}
-				break;
-			}
-		}
-	}
-
-	updateTomeDetails(tomeDatas->datas->cacheDBID, tomeDatas->datas->nombreTomes, tomeDatas->datas->tomesFull);
-	ret_value = true;
-	
-end:
-	
-    free(bufferDL);
-	free(encodedRepo);
-    return ret_value;
 }
 
 int sortProjectsToDownload(const void *a, const void *b)

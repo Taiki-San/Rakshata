@@ -65,7 +65,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	
 	if(a.tomesFull != NULL && b.tomesFull != NULL)
 	{
-		for(uint i = 0, j; i < a.nombreTomes; i++)
+		for(uint i = 0, j, max; i < a.nombreTomes; i++)
 		{
 			if(a.tomesFull[i].price != b.tomesFull[i].price)
 				return false;
@@ -75,12 +75,17 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 			
 			if(a.tomesFull[i].details == NULL ^ b.tomesFull[i].details == NULL)
 				return false;
-			
+
 			if(a.tomesFull[i].details != NULL)
 			{
-				for (j = 0; a.tomesFull[i].details[j].ID != VALEUR_FIN_STRUCT && b.tomesFull[i].details[j].ID != VALEUR_FIN_STRUCT; j++);
-				if(a.tomesFull[i].details[j].ID != b.tomesFull[i].details[j].ID)
+				if(a.tomesFull[i].lengthDetails != b.tomesFull[i].lengthDetails)
 					return false;
+
+				for(j = 0, max = a.tomesFull[i].lengthDetails; j < max; j++)
+				{
+					if(a.tomesFull[i].details[j].ID != b.tomesFull[i].details[j].ID)
+						return false;
+				}
 			}
 		}
 	}
@@ -306,23 +311,6 @@ void addToRegistry(bool firstStart)
     RegCloseKey(hkey);
     free(bin);
 #endif
-}
-
-uint countSpaces(char * data)
-{
-	uint nbrSpaces;
-	for(uint pos = nbrSpaces = 0; data[pos];)
-	{
-		if(data[pos++] == ' ')
-		{
-			for(; data[pos] == ' '; pos++);
-			
-			if(data[pos] != 0)		//Si des espaces à la fin, on s'en fout
-				nbrSpaces++;
-			
-		}
-	}
-	return nbrSpaces;
 }
 
 uint32_t getFileSize(const char *filename)

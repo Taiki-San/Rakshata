@@ -56,12 +56,6 @@ enum downloadStatusCodes {
 	DLSTATUS_ABORT		= 0xf0
 };
 
-typedef struct
-{
-	int element;
-	bool subFolder;
-} DATA_LOADED_TOME_DETAILS;
-
 typedef struct data_loaded_from_download_list
 {
 	void * rowViewResponsible;
@@ -70,7 +64,7 @@ typedef struct data_loaded_from_download_list
     PROJECT_DATA* datas;
 	charType *tomeName;
 	
-	DATA_LOADED_TOME_DETAILS *listChapitreOfTome;	//Should be used to differentiate chapters from volumes
+	CONTENT_TOME *listChapitreOfTome;	//Should be used to differentiate chapters from volumes
 	
 	uint nbElemList;
 	int identifier;
@@ -180,7 +174,6 @@ void MDLFlushElement(DATA_LOADED * element);
 char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
-bool getTomeDetails(DATA_LOADED *tomeDatas);
 int sortProjectsToDownload(const void *a, const void *b);
 
 bool MDLDownloadOver(bool reanimateOnly);

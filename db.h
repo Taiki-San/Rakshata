@@ -109,7 +109,6 @@ void setUninstalled(bool isRoot, uint repoID);
 
 //Searches
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
-void updateTomeDetails(uint cacheID, uint nbTomes, META_TOME* tomeData);
 void setInstalled(uint cacheID);
 
 /**DBSearch.c**/

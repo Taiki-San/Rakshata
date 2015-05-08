@@ -29,6 +29,5 @@
 - (void) deleteElements : (uint*) indexes : (uint) length;
 
 - (CGFloat) contentHeight;
-- (void) resizeAnimation: (NSRect) frameRect;
 
 @end

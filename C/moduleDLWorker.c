@@ -73,8 +73,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         }
         else
 		{
-            todoListTmp.chapitre = input.todoList->listChapitreOfTome[i].element;
-            todoListTmp.subFolder = input.todoList->listChapitreOfTome[i].subFolder;
+            todoListTmp.chapitre = input.todoList->listChapitreOfTome[i].ID;
+            todoListTmp.subFolder = input.todoList->listChapitreOfTome[i].isNative;
             todoListTmp.partOfTome = input.todoList->identifier;
         }
 		
@@ -181,9 +181,9 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         for(i = 0; i < nombreElement; i++)
         {
             if(didElemGotDownloaded[i] && (listDL[i] == NULL || !MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
-																	isTome ? input.todoList->listChapitreOfTome[i].element : input.todoList->identifier,
+																	isTome ? input.todoList->listChapitreOfTome[i].ID : input.todoList->identifier,
 																	isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
-																	isTome ? input.todoList->listChapitreOfTome[i].subFolder : false,
+																	isTome ? input.todoList->listChapitreOfTome[i].isNative : false,
 																	(input.todoList->listChapitreOfTome != NULL && i == nombreElement-1)) ) )
 			{
                 error++;
