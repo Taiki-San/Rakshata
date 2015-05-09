@@ -164,6 +164,9 @@
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superview];
 	
+	if(self.mainThread == TAB_SERIES)
+		maximumSize.size.height = [[[NSApp delegate] serie] getHeightOfMainView];
+	
 	if(coreView != nil && !self.forcedToShowUp)
 	{
 		maximumSize.size.height = round(maximumSize.size.height);

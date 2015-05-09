@@ -23,5 +23,6 @@
 }
 
 - (id)init : (NSView*)contentView : (NSString *) state;
+- (CGFloat) getHeightOfMainView;
 
 @end

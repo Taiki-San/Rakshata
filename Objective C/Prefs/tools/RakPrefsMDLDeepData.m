@@ -22,13 +22,7 @@
 		mammouth = creator;
 		[self setExpectedBufferSize];
 		
-		widthMDLSerie = hex2intPrefs(inputData, 1000);
-		if(widthMDLSerie == -1)
-			widthMDLSerie = [self getDefaultSerieWidth];
-		else
-			widthMDLSerie /= 10;
-		
-		heightMDLReaderFocus = hex2intPrefs(&inputData[4], 1000);
+		heightMDLReaderFocus = hex2intPrefs(inputData, 1000);
 		if(heightMDLReaderFocus == -1)
 			heightMDLReaderFocus = [self getDefaultFocusReaderHeight];
 		else
@@ -67,7 +61,7 @@
 	if(output == NULL)
 		return;
 		
-	snprintf(output, 9, "%04x%04x", (uint) floor(widthMDLSerie * 10 + 0.5), (uint) floor(heightMDLReaderFocus * 10 + 0.5));
+	snprintf(output, 9, "%04x", (uint) floor(heightMDLReaderFocus * 10 + 0.5));
 	
 	//AAANNNND, We're done :D
 }
@@ -101,17 +95,7 @@
 
 - (NSRect) getFocusSerie
 {
-	NSRect output = NSZeroRect;
-	
-	output.size.width = widthMDLSerie;			//Pref modifiable
-
-	CGFloat widthSerie;
-	[Prefs getPref:PREFS_GET_TAB_SERIE_WIDTH: &widthSerie];
-	
-	output.origin.x = widthSerie - output.size.width;	//Fortement lié au précédent
-	[Prefs getPref:PREFS_GET_SERIE_FOOTER_HEIGHT: &output.size.height];
-	
-	return output;
+	return NSMakeRect(0, 0, 20, 100);
 }
 
 - (NSRect) getFocusCT

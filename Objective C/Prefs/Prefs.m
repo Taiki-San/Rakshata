@@ -722,17 +722,6 @@ enum
 			break;
 		}
 			
-		case PREFS_GET_SERIE_FOOTER_HEIGHT:
-		{
-			CGFloat *output = outputContainer;
-			*output = [tabSerieSize getFooterHeight];
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
 		case PREFS_GET_CT_FOOTER_HEIGHT:
 		{
 			CGFloat *output = outputContainer;

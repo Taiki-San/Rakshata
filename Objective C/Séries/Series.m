@@ -252,6 +252,13 @@
 	return frame;
 }
 
+#pragma mark - MDL routine
+
+- (CGFloat) getHeightOfMainView
+{
+	return coreView.currentValidHeight;
+}
+
 #pragma mark - Reader code
 
 - (int) getCodePref : (int) request
