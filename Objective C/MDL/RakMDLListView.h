@@ -12,6 +12,7 @@
 
 @interface RakMDLListView : NSView
 {
+	BOOL wasMultiLine;
 	BOOL isSecondTextHidden;
 	
 	RakButton * _pause;
@@ -33,7 +34,7 @@
 
 @property BOOL invalidData;
 
-- (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID;
+- (instancetype) init : (id) controller : (uint) rowID;
 - (void) initIcons;
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;

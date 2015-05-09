@@ -23,10 +23,10 @@
 	{
 		controller = _controller;
 		cellHeight = MDLLIST_CELL_HEIGHT;
-		dragInProgress = false;
+		dragInProgress = NO;
+		wasSerie = controller.isSerieMainThread;
 		
 		[self applyContext:frame : -1 : -1];
-		[_tableView setRowHeight:cellHeight];
 		[scrollView setHasHorizontalScroller:NO];
 		[self enableDrop];
 		
@@ -51,7 +51,7 @@
 	if(!nbElem)
 		return 0;
  
-	return nbElem * (cellHeight + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
+	return nbElem * ([self tableView:_tableView heightOfRow:0] + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
 }
 
 - (void) setScrollerHidden : (BOOL) hidden
@@ -61,6 +61,18 @@
 }
 
 #pragma mark - Interface
+
+- (void) checkIfShouldReload
+{
+	if(wasSerie != controller.isSerieMainThread)
+	{
+		wasSerie = !wasSerie;
+		
+		uint nbRow = [self numberOfRowsInTableView : _tableView];
+		
+		[self fullAnimatedReload:nbRow :nbRow];
+	}
+}
 
 - (void) deleteElements : (uint*) indexes : (uint) length
 {
@@ -96,6 +108,14 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return [controller getNbElem : YES];
+}
+
+- (CGFloat) tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+	if(wasSerie != controller.isSerieMainThread)
+		[self checkIfShouldReload];
+	
+	return wasSerie ? 40 : cellHeight;
 }
 
 - (NSNumber*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -138,7 +158,7 @@
     // There is no existing cell to reuse so create a new one
     if (result == nil)
 	{
-		result = [[RakMDLListView alloc] init:_tableView.frame.size.width :cellHeight :controller :row];
+		result = [[RakMDLListView alloc] init :controller :row];
 		
 		if(result.invalidData)
 			[_tableView reloadData];

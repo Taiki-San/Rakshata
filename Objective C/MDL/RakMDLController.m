@@ -541,4 +541,9 @@
 	[_tabMDL setWaitingLoginWrapper : request];
 }
 
+- (BOOL) isSerieMainThread
+{
+	return _tabMDL.mainThread == TAB_SERIES;
+}
+
 @end

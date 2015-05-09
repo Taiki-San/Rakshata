@@ -18,13 +18,16 @@
 	
 	CGFloat cellHeight;
 	
-	bool dragInProgress;
+	BOOL dragInProgress;
 	uint draggedElement;
+	
+	BOOL wasSerie;
 }
 
 - (id) init : (NSRect) frame : (RakMDLController *) _controller;
 - (void) wakeUp;
 - (void) setScrollerHidden : (BOOL) hidden;
+- (void) checkIfShouldReload;
 
 - (void) deleteElements : (uint*) indexes : (uint) length;
 

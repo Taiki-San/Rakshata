@@ -89,7 +89,7 @@
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
-/** Proxy work **/
+#pragma mark - Proxy work
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
@@ -104,6 +104,8 @@
 	[headerText.animator setFrame:[headerText getMenuFrame:newBound]];
 	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
 	[dropPlaceHolder.animator setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
+	
+	[MDLList checkIfShouldReload];
 }
 
 - (void) updateScroller : (BOOL) hidden
@@ -195,7 +197,7 @@
 	}
 }
 
-/** Color **/
+#pragma mark - Color
 
 - (NSColor*) getBackgroundColor
 {

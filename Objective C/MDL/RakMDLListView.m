@@ -10,11 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	REQUEST_OFFSET_WIDTH = 50
+};
+
 @implementation RakMDLListView
 
-- (id) init : (CGFloat) width : (CGFloat) height : (id) controller : (uint) rowID
+- (instancetype) init : (id) controller : (uint) rowID
 {
-	self = [self initWithFrame: NSMakeRect(0, 0, width, height)];
+	self = [self initWithFrame: NSZeroRect];
 	
 	if(self != nil)
 	{
@@ -22,6 +27,7 @@
 		_controller = controller;
 		_row = rowID;
 		_invalidData = NO;
+		wasMultiLine = _controller.isSerieMainThread;
 		
 		todoList = [_controller getData: _row : YES];
 		if(todoList == NULL || *todoList == NULL)
@@ -35,7 +41,7 @@
 		self.autoresizesSubviews = NO;
 		
 		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
-		if(requestName != nil)		{	[requestName setFrameSize:NSMakeSize(self.bounds.size.width - 50, requestName.bounds.size.height)];		[self addSubview:requestName];		}
+		if(requestName != nil)		[self addSubview:requestName];
 		
 		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
@@ -47,7 +53,6 @@
 		
 		iconWidth = [_remove frame].size.width;
 		
-		[self setPositionsOfStuffs];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rowDeleted:) name:@"RakMDLListViewRowDeleted" object:nil];
 	}
 	
@@ -150,16 +155,30 @@
 {
 	NSRect frame = _bounds, curFrame;
 	NSPoint newPoint;
+	BOOL stateUpdate = NO;
+	
+	if(wasMultiLine != (frame.size.height > 30))
+	{
+		stateUpdate = YES;
+		wasMultiLine = !wasMultiLine;
+	}
 	
 	//Text at extreme left
 	if (requestName != nil)
 	{
 		curFrame = requestName.frame;
 		
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-		newPoint.x = 5;
+		if(NSEqualRects(curFrame, NSZeroRect))
+		{
+			[requestName sizeToFit];
+			curFrame = requestName.frame;
+		}
 		
-		[requestName setFrameOrigin:newPoint];
+		curFrame.size.width = frame.size.width - REQUEST_OFFSET_WIDTH;
+		curFrame.origin.y = frame.size.height / 2 - curFrame.size.height / 2;
+		curFrame.origin.x = 5;
+		
+		[requestName setFrame:curFrame];
 	}
 	
 	newPoint.x = frame.size.width - 3;
@@ -294,7 +313,7 @@
 
 	NSNumber * deletedRow = [userInfo objectForKey:@"deletedRow"];
 
-	if(deletedRow != nil && _row >= [deletedRow unsignedIntValue])
+	if(deletedRow != nil && _row > [deletedRow unsignedIntValue])
 		_row--;
 }
 

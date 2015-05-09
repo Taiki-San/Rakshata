@@ -36,6 +36,7 @@
 
 @property RakMDLList * __weak list;
 @property BOOL requestCredentials;
+@property (readonly) BOOL isSerieMainThread;
 
 - (id) init : (MDL *) tabMDL : (NSString *) state;
 
