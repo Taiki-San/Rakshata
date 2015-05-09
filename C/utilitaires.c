@@ -10,16 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-void changeTo(char *string, char toFind, char toPut)
-{
-    while(*string)
-    {
-        if (*string == toFind)
-            *string = toPut;
-        string++;
-    }
-}
-
 int sortNumbers(const void *a, const void *b)
 {
 	return ( *(uint*)a > *(uint*)b ) ? 1 : (( *(uint*)a == *(uint*)b ) ? 0 : -1);
@@ -216,24 +206,6 @@ IMG_DATA* readFile(char * path)
 	return output;
 }
 
-void MajToMin(char* input)
-{
-    for(; *input; input++)
-    {
-        if(*input >= 'A' && *input <= 'Z')
-            *input += 'a' - 'A';
-    }
-}
-
-void minToMaj(char* input)
-{
-    for(; *input; input++)
-    {
-        if(*input >= 'a' && *input <= 'z')
-            *input += 'A' - 'a';
-    }
-}
-
 bool isDownloadValid(char *input)
 {
     int i = 0;
@@ -344,20 +316,3 @@ uint64_t getFileSize64(const char * filename)
     return 0;
 #endif
 }
-
-#if 0
-
-int removeDuplicate(int * array, uint length)
-{
-	int i, j, newLength = 0;
-	
-	for(i = 0; i < length; i++)
-	{
-		for(j = 0; j < newLength && array[i] != array[j]; j++);
-		
-		if(j == newLength)
-			array[newLength++] = array[i];
-	}
-	return newLength;
-}
-#endif

@@ -37,34 +37,6 @@ void strend(char *recepter, size_t length, const char *sender)
     }
 }
 
-char* mergeS(char* input1, char* input2)
-{
-    char *output = NULL;
-    output = ralloc(strlen(input1) + strlen(input2)+10);
-    if(output != NULL)
-    {
-        memcpy(output, input1, strlen(input1));
-        memcpy(output+strlen(output), input2, strlen(input2));
-        free(input1);
-    }
-    return output;
-}
-
-void *ralloc(size_t length)
-{
-    void* memory_allocated = calloc(1, length);
-    if(memory_allocated == NULL)
-        memoryError(length);
-    return memory_allocated;
-}
-
-int charToInt(char *input)
-{
-    int output = 0;
-    sscanf(input, "%d", &output);
-    return output;
-}
-
 int fscanfs(FILE* stream, const char *format, ...)
 {
     int i = 0, j = 0, format_read = 0, nbElemRead = 0;
@@ -145,7 +117,7 @@ int fscanfs(FILE* stream, const char *format, ...)
                     for(; j != ' ' && j != '\n' && j != EOF; j = fgetc(stream)); //On finis le mot si on a bloqué un buffer overflow
 
                     buffer[i] = 0;
-                    *number = charToInt(buffer);
+                    *number = atoi(buffer);
                     if(negatif)
                         *number = *number *-1;
                     number = NULL;
@@ -231,7 +203,7 @@ int sscanfs(char *char_input, const char *format, ...)
                     for(; *char_input != ' ' && *char_input != '\n' && *char_input != '\r' && *char_input; char_input++); //On finis le mot si on a bloqué un buffer overflow
 
                     buffer[i] = 0;
-                    *number = charToInt(buffer);
+                    *number = atoi(buffer);
                     if(negative)
                         *number *= -1;
                     number = NULL;
@@ -405,34 +377,6 @@ void ouvrirSite(const char *URL)
             free(bufferCMD);
         }
     #endif
-}
-
-void lancementExternalBinary(char cheminDAcces[100])
-{
-	uint j = 0;
-    char superTemp[400];
-	char sanitizedDir[2 * 100];
-	
-	//Sanitizer
-	for(uint i = 0; j < sizeof(sanitizedDir) && cheminDAcces[i]; i++)
-	{
-		if(cheminDAcces[i] == '\\' || cheminDAcces[i] == '"')
-			sanitizedDir[j++] = '\\';
-		sanitizedDir[j++] = cheminDAcces[i];
-	}
-	sanitizedDir[MIN(j, sizeof(sanitizedDir) - 1)] = 0;
-
-#ifdef _WIN32
-    ShellExecute(NULL, "open", sanitizedDir, NULL, NULL, SW_SHOWDEFAULT);
-#else
-    #ifdef __APPLE__
-        snprintf(superTemp, 400, "open -n \"%s\"", sanitizedDir);
-    #else
-        snprintf(superTemp, 400, "\"./%s\" &", sanitizedDir);
-    #endif
-
-	system(superTemp);
-#endif
 }
 
 bool checkDirExist(char *dirname)

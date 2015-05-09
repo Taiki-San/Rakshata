@@ -40,6 +40,12 @@ int rijndaelSetupDecrypt(RK_KEY *rk, const unsigned char *key, int keybits);
 void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const rawData plaintext[16], rawData ciphertext[16]);
 void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16], rawData plaintext[16]);
 
+//Helpers
+int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB); //Cachés dans crypto/rijndael.c
+int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB);
+int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
+int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
+
 /*****************************************************
 **                                                  **
 **                      Serpent                     **

@@ -16,6 +16,34 @@
 
 #define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
 
+//Utils
+
+bool checkNameFileZip(char * fileToTest)
+{
+	if(!strncmp(fileToTest, "__MACOSX", 8) || !strncmp(fileToTest, ".DS_Store", 9))	//Dossier parasite de OSX
+		return false;
+	
+	//strlen(fileToTest) - 1 est le dernier caractère, strlen(fileToTest) donnant la longueur de la chaine
+	uint posLastChar = strlen(fileToTest) - 1;
+	
+	if(fileToTest[posLastChar] == '/' 		//Si c'est un dossier, le dernier caractère est /
+	   || (fileToTest[posLastChar - 3] == '.' && fileToTest[posLastChar - 2] == 'e' && fileToTest[posLastChar - 1] == 'x' && fileToTest[posLastChar] == 'e'))	//.exe
+		return false;
+	
+	return true;
+}
+
+void MajToMin(char* input)
+{
+	for(; *input; input++)
+	{
+		if(*input >= 'A' && *input <= 'Z')
+			*input += 'a' - 'A';
+	}
+}
+
+//Zip routines
+
 static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
 {
     unz_global_info64 gi;
@@ -91,10 +119,10 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 	{
 		zipInput = inputData;
 		lengthInput = zipInput != NULL ? strlen(zipInput) : 0;
-		zipFileName = ralloc(lengthInput + 5); //Input
+		zipFileName = calloc(1, lengthInput + 5); //Input
 	}
 	
-    zipOutput = ralloc(lengthOutput);
+    zipOutput = calloc(1, lengthOutput);
 
 	//Allocation error
     if((!size && zipFileName == NULL) || zipOutput == NULL)
@@ -151,7 +179,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
     else
     {
 		lengthPath = lengthOutput;
-        path = ralloc(lengthOutput + 3);
+        path = calloc(1, lengthOutput + 3);
         init_zmemfile(&fileops, ((DATA_DL_OBFS*)inputData)->data, ((DATA_DL_OBFS*)inputData)->mask, size);
         uf = unzOpen2(NULL, &fileops);
     }
@@ -169,7 +197,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         }
     }
 
-    pathToConfigFile = ralloc(strlen(path) + 50);
+    pathToConfigFile = calloc(1, strlen(path) + 50);
     snprintf(pathToConfigFile, strlen(path) + 50, "%s/%s", path, CONFIGFILE);
     if(checkFileExist(pathToConfigFile))
         goto quit;
@@ -318,7 +346,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 
 			internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
 
-            crashTemp(temp, 256);
+            crashTemp(temp, sizeof(temp));
             snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
             _AESEncrypt(hash, hugeBuffer, pathToConfigFile, INPUT_IN_MEMORY, 1);
             crashTemp(hash, SHA256_DIGEST_LENGTH);

@@ -105,7 +105,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
         if (*extractWithoutPath)
 		{
 			size = strlen(output_path) + strlen(filename_withoutpath) + 10;
-			write_filename = ralloc(size);
+			write_filename = calloc(1, size);
 			
 			if(write_filename == NULL)
 				return UNZ_INTERNALERROR;
@@ -115,7 +115,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 		else
 		{
 			size = strlen(filename_inzip) + strlen(output_path) + 10;
-            write_filename = ralloc(size);
+            write_filename = calloc(1, size);
 			
 			if(write_filename == NULL)
 				return UNZ_INTERNALERROR;

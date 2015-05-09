@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "crypto.h"
+
 char *loadPrefFile()
 {
 	size_t filesize = getFileSize(SETTINGS_FILE);
@@ -173,7 +175,7 @@ char* loadLargePrefs(char* flag)
 		{
 			prefs += i;
 			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag[0] || prefs[bufferSize+3] != '>'));
-			char* databaseRAW = ralloc(bufferSize + 5);
+			char* databaseRAW = calloc(1, bufferSize + 5);
 			if(databaseRAW != NULL)
 			{
 				memccpy(databaseRAW, prefs, 0, bufferSize);
@@ -194,9 +196,9 @@ char* loadLargePrefs(char* flag)
         else
 			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
 
-        crashTemp(buffer, 65000);
-        download_mem(temp, NULL, buffer, 65000, SSL_ON);
-        snprintf(buffer2, 65100, "<%s>\n%s\n</%s>\n", flag, buffer, flag);
+        crashTemp(buffer, sizeof(buffer));
+        download_mem(temp, NULL, buffer, sizeof(buffer), SSL_ON);
+        snprintf(buffer2, sizeof(buffer2), "<%s>\n%s\n</%s>\n", flag, buffer, flag);
         addToPref(flag, buffer2);
 		
 		uint length = strlen(buffer);

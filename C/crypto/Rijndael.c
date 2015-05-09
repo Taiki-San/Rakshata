@@ -1238,7 +1238,7 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
 
 #include "crypto.h"
 
-int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB)
+int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB)
 {
 	unsigned char *password = _password;
     char *path_input = _path_input, *path_output = _path_output;
@@ -1329,7 +1329,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
     return 0;
 }
 
-int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB)
+int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB)
 {
 	unsigned char *password = _password;
 	char *path_input = _path_input, *path_output = _path_output;
@@ -1412,3 +1412,12 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
     return 0;
 }
 
+int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+{
+	return _AESEncrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
+}
+
+int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+{
+	return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
+}

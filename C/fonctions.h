@@ -21,12 +21,6 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID);
 /**check.c**/
 void networkAndVersionTest();
 bool checkNetworkState(int state);
-void checkHostNonModifie();
-int checkFirstLineButtonPressed(int button_selected[8]);
-int checkSecondLineButtonPressed(int button_selected[8]);
-int checkButtonPressed(int button_selected[8]);
-int checkNameFileZip(char fileToTest[256]);
-bool checkPathEscape(char *string, int length);
 
 /**CTCommon.c**/
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
@@ -82,9 +76,6 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage);
 /**Native.c**/
 int mkdirR(char *path);
 void strend(char *recepter, size_t length, const char *sender);
-char* mergeS(char* input1, char* input2);
-void *ralloc(size_t length);
-int charToInt(char *input);
 int fscanfs(FILE* stream, const char *format, ...);
 int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(const void *input);
@@ -96,7 +87,6 @@ void usstrcpy(void* output, size_t length, const void* input);
 
 void removeFolder(char *path);
 void ouvrirSite(const char *URL);
-void lancementExternalBinary(char cheminDAcces[100]);
 #define checkFileExist(filename) (access(filename, F_OK) != -1)
 bool checkDirExist(char *dirname);
 
@@ -107,21 +97,16 @@ char * getPathForRootRepo(ROOT_REPO_DATA * repo);
 byte defineTypeRepo(char *URL);
 
 /**Securite.c**/
-int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB); //Cachés dans crypto/rijndael.c
-int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, int ECB);
-int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
-int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
-void get_file_date(const char *filename, char *date, void* internalData);
-void KSTriggered(REPO_DATA team);
+void getFileDate(const char *filename, char *date, void* internalData);
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page);
 void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
+void KSTriggered(REPO_DATA team);
 uint getRandom();
 
 /**Settings.c**/
-int affichageMenuGestion(); //Remplacer gestion par setting
 char *loadPrefFile();
 void addToPref(char* flag, char *stringToAdd);
 void removeFromPref(char* flag);
@@ -146,15 +131,11 @@ void freeTomeList(META_TOME * data, bool includeDetails);
 int extractNumFromConfigTome(char *input, int ID);
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
-/**Translation.c**/
-void setNewLangue(int newLangue);
-
 /**Unzip.c**/
 bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, size_t type);
 
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)
-void changeTo(char *string, char toFind, char toPut);
 int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
@@ -166,14 +147,10 @@ void createPath(char *output);
 IMG_DATA* readFile(char * path);
 #define isHexa(caract) (((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F')) ? 1 : 0)
 #define isNbr(caract) isdigit(caract)
-#define swapValues(a, b) { uint c; c = b; b = a; a = c; }
 #define MIN(a, b) (a < b ? a : b)
-void MajToMin(char* input);
-void minToMaj(char* input);
 bool isDownloadValid(char *input);
 int isJPEG(void *input);
 int isPNG(void *input);
 void addToRegistry(bool firstStart);
 uint32_t getFileSize(const char *filename);
 uint64_t getFileSize64(const char * filename);
-int removeDuplicate(int * array, uint length);

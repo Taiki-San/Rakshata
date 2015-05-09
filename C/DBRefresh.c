@@ -378,19 +378,3 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 	fprintf(fichier, "%d", dernierChapitre);
 	fclose(fichier);
 }
-
-int databaseVersion(char* projectDB)
-{
-    if(*projectDB == ' ' && *(projectDB+1) >= '0' && *(projectDB+1) <= '9')
-    {
-        projectDB++;
-        char buffer[10];
-        int i = 0;
-        for(; i < 9 && *projectDB >= '0' && *projectDB <= '9'; projectDB++)
-            buffer[i++] = *projectDB;
-        buffer[i] = 0;
-        return charToInt(buffer);
-    }
-    return 0;
-}
-

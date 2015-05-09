@@ -134,12 +134,11 @@ static void downloadChapterCore(DL_DATA *data)
 
 	//Check if a proxy is configured
     bool isProxyConfigured = false;
-	char IPProxy[40]; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
+	char IPProxy[40] = {0}; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
     FILE *proxyFile = fopen("proxy", "r"); //Check proxy
     if(proxyFile != NULL)
     {
         char lengthProxy = 0, c = 0, pos;
-        crashTemp(IPProxy, sizeof(IPProxy));
 		while(lengthProxy < sizeof(IPProxy) && (c = fgetc(proxyFile)) != EOF)
 		{
 			if(c == '.' || c == ':' || isHexa(c))
@@ -285,11 +284,11 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
             else
                 data->length = 3 * downloadData->totalExpectedSize / 2; //50% de marge
 			
-			output->data = ralloc(data->length);
+			output->data = calloc(1, data->length);
             if(output->data == NULL)
                 return -1;
 			
-			output->mask = ralloc(data->length);
+			output->mask = calloc(1, data->length);
             if(output->mask == NULL)
                 return -1;
         }

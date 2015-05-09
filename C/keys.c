@@ -80,7 +80,7 @@ byte getMasterKey(unsigned char *input)
     RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
     unsigned char hash[SHA256_DIGEST_LENGTH];
 
-    get_file_date(SECURE_DATABASE, date, NULL);
+    getFileDate(SECURE_DATABASE, date, NULL);
 	snprintf((char *) buffer, addressLength + 100, "%s%s", date, COMPTE_PRINCIPAL_MAIL);
 	
 #ifndef DEV_VERSION
@@ -342,7 +342,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	struct stat structure_time;
 #endif
 	
-	get_file_date(SECURE_DATABASE, date, &structure_time);
+	getFileDate(SECURE_DATABASE, date, &structure_time);
 	
 	if(date[0] == 0)
 	{
@@ -419,7 +419,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	}
 
 	char newDate[200];
-	get_file_date(SECURE_DATABASE, newDate, NULL);
+	getFileDate(SECURE_DATABASE, newDate, NULL);
     if(strcmp(newDate, date)) //Si on a été trop long et qu'il faut modifier la date du fichier
     {
 #ifdef _WIN32 //On change la date du fichier
@@ -487,7 +487,13 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
             _AESEncrypt(passDer, derivation, passSeed, EVERYTHING_IN_MEMORY, 1);
 
 			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
-			minToMaj(randomKeyHex);
+			
+			//Upper case the string
+			for(i = 0; randomKeyHex[i]; i++)
+			{
+				if(randomKeyHex[i] >= 'a' && randomKeyHex[i] <= 'z')
+					randomKeyHex[i] += 'A' - 'a';
+			}
 
             snprintf(URL, length + 512, "https://"SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 

@@ -12,16 +12,6 @@
 
 #include "crypto/crypto.h"
 
-int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
-{
-    return _AESEncrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
-}
-
-int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
-{
-    return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
-}
-
 void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 {
 	byte posIV;
@@ -176,7 +166,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 	output[WP_DIGEST_SIZE] = 0;
 }
 
-void get_file_date(const char *filename, char *date, void* internalData)
+void getFileDate(const char *filename, char *date, void* internalData)
 {
 	date[0] = 0;
 	
@@ -206,21 +196,6 @@ void get_file_date(const char *filename, char *date, void* internalData)
 	if(internalData != NULL)
 		memcpy(internalData, &buf, sizeof(buf));
 #endif
-}
-
-void KSTriggered(REPO_DATA repo)
-{
-	if(!repo.active)
-		return;
-	
-    //Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
-    char path[LENGTH_PROJECT_NAME+10], *encodedRepo = getPathForRepo(&repo);
-
-	if(encodedRepo != NULL)
-	{
-		snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
-		removeFolder(path);
-	}
 }
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
@@ -416,7 +391,7 @@ void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     for(; posBufferOut < 350 - 1 && isNbr(bufferDL[posBuffer]); temp[posBufferOut++] = bufferDL[posBuffer++]);
 
     temp[posBufferOut] = 0;
-	nbElemInKS = charToInt(temp);
+	nbElemInKS = atoi(temp);
 	
 	if(nbElemInKS >= NUMBER_MAX_REPO_KILLSWITCHE)
 		nbElemInKS = NUMBER_MAX_REPO_KILLSWITCHE -1;
@@ -443,6 +418,21 @@ bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][
     for(; dataKS[i][0] && i < NUMBER_MAX_REPO_KILLSWITCHE && strcmp(dataKS[i], hashedData); i++);
 
     return i < NUMBER_MAX_REPO_KILLSWITCHE && !strcmp(dataKS[i], hashedData);
+}
+
+void KSTriggered(REPO_DATA repo)
+{
+	if(!repo.active)
+		return;
+	
+	//Cette fonction est appelé si le killswitch est activé, elle recoit un nom de team, et supprime son dossier
+	char path[LENGTH_PROJECT_NAME+10], *encodedRepo = getPathForRepo(&repo);
+	
+	if(encodedRepo != NULL)
+	{
+		snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
+		removeFolder(path);
+	}
 }
 
 uint getRandom()

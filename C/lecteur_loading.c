@@ -264,8 +264,6 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
                 fscanfs(fileInput, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
             else
                 fscanfs(fileInput, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
-
-			changeTo(output[i], '&', ' ');
         }
     }
     else
