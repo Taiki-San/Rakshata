@@ -164,6 +164,7 @@
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superview];
 	
+	//Our height is synced to the height of the coreview of the serie tab if focus is on series
 	if(self.mainThread == TAB_SERIES)
 		maximumSize.size.height = [[[NSApp delegate] serie] getHeightOfMainView];
 	
@@ -175,23 +176,34 @@
 		
 		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here, it's empty
 		{
-			if(_lastFrame.size.height != - _lastFrame.origin.y)
+			//The animation is different depending of the focus
+			//Series make us slide to the left, while the others to the bottom
+			if(_lastFrame.size.width != - _lastFrame.origin.x && _lastFrame.size.height != - _lastFrame.origin.y)
 				needUpdateMainViews = YES;
 
-			maximumSize.size.height = contentHeight;
-			maximumSize.origin.y = -contentHeight;
+			if(self.mainThread == TAB_SERIES)
+			{
+				maximumSize.origin.x = -maximumSize.size.width;
+			}
+			else
+			{
+				maximumSize.size.height = contentHeight;
+				maximumSize.origin.y = -contentHeight;
+			}
 		}
 		
 		else if(maximumSize.size.height > contentHeight - 1)
 		{
-			maximumSize.size.height = contentHeight;
+			if(self.mainThread != TAB_SERIES)
+			{
+				maximumSize.size.height = contentHeight;
+				needUpdateMainViews = YES;
+			}
 			
-			needUpdateMainViews = YES;
-			[coreView updateScroller:NO];
-		}
-
-		else
 			[coreView updateScroller:YES];
+		}
+		else
+			[coreView updateScroller:NO];
 	}
 
 	[self setLastFrame:maximumSize];
@@ -221,7 +233,12 @@
 
 - (void) fastAnimatedRefreshLevel : (NSView*) superview
 {
-	[[NSApp delegate] CT].forceNextFrameUpdate = YES;
+	if(self.mainThread == TAB_SERIES)
+		[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+
+	else if(self.mainThread == TAB_CT)
+		[[NSApp delegate] CT].forceNextFrameUpdate = YES;
+	
 	[super fastAnimatedRefreshLevel:superview];
 }
 
@@ -342,7 +359,7 @@
 
 - (BOOL) isDisplayed
 {
-	return (self.forcedToShowUp || _lastFrame.origin.y != -_lastFrame.size.height);
+	return (self.forcedToShowUp || (_lastFrame.origin.y != -_lastFrame.size.height && _lastFrame.origin.x != -_lastFrame.size.width));
 }
 
 - (void) dragAndDropStarted : (BOOL)started : (BOOL) canDL

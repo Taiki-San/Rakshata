@@ -223,6 +223,16 @@
 		frame.size.width -= 2 * frame.origin.x;
 		frame.size.height -= SR_READERMODE_LATERAL_BORDER;
 	}
+	else
+	{
+		//If focus series, and MDL around, it's at our left
+		MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
+		if(tabMDL != nil)
+		{
+			frame.origin.x += [tabMDL lastFrame].size.width;
+			frame.size.width -= [tabMDL lastFrame].size.width;
+		}
+	}
 	
 	return frame;
 }

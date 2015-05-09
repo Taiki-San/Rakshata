@@ -31,6 +31,7 @@
 		for(RakTabView * currentView in validatedViews)
 			[currentView setUpViewForAnimation : mainThread];
 		
+		//MDL frame is used is some contexts because of where is appear
 		[[(RakAppDelegate*) [NSApp delegate] MDL] createFrame];
 		
 		for(RakTabView *currentView in validatedViews)
