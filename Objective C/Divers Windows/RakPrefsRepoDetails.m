@@ -291,7 +291,7 @@ enum
 		else
 		{
 			description.hidden = NO;
-			[description setStringToSynopsis:[self selectDescription:repo]];
+			[description setStringToSynopsis:getStringForWchar([self selectDescription:repo])];
 		}
 		
 		if(subrepoList == nil)

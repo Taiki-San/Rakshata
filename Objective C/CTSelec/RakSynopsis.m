@@ -28,7 +28,7 @@ enum
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
 		
-		if([self setStringToSynopsis : synopsis])
+		if([self setStringToSynopsis : getStringForWchar(synopsis)])
 			[self updateFrame : frame : NO];
 	}
 	
@@ -40,6 +40,8 @@ enum
 	if(placeholderString && synopsis[0] == 0)
 		return;
 	
+	NSString * localSynopsis = getStringForWchar(synopsis);
+	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
@@ -47,7 +49,7 @@ enum
 		
 	} completionHandler:^{
 		
-		[self setStringToSynopsis : synopsis];
+		[self setStringToSynopsis : localSynopsis];
 		
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
@@ -60,7 +62,7 @@ enum
 	}];
 }
 
-- (BOOL) setStringToSynopsis : (charType *) synopsis
+- (BOOL) setStringToSynopsis : (NSString *) synopsis
 {
 	BOOL needPostProcessing = NO;
 	
@@ -84,11 +86,11 @@ enum
 	}
 	
 	//Update text
-	if(synopsis[0] != 0)
+	if(synopsis != nil)
 	{
 		placeholderString = NO;
 		
-		[_synopsis setStringValue : getStringForWchar(synopsis)];
+		[_synopsis setStringValue : synopsis];
 		
 		if(!_scrollview.hasVerticalScroller)
 			_scrollview.hasVerticalScroller = YES;

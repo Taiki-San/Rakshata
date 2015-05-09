@@ -35,7 +35,7 @@
 			[self addSubview:_title];
 		}
 		
-		if([self setStringToSynopsis : project.description])
+		if([self setStringToSynopsis : getStringForWchar(project.description)])
 		{
 			[self updateFrame : frame : headerSize : NO];
 		}

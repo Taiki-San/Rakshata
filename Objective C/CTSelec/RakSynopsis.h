@@ -31,7 +31,7 @@
 - (instancetype) initWithSynopsis : (charType *) synopsis : (NSRect) frame : (BOOL) haveScroller;
 - (void) updateSynopsis : (charType *) newSynopsis;
 
-- (BOOL) setStringToSynopsis : (charType *) synopsis;
+- (BOOL) setStringToSynopsis : (NSString *) synopsis;
 
 - (BOOL) postProcessScrollView;
 - (BOOL) generatedScrollView : (NSRect) frame;
