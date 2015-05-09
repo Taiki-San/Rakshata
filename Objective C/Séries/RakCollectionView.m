@@ -127,7 +127,9 @@
 	[self mouseMoved:theEvent];
 }
 
+#ifdef DEV_VERSION
 //#define VERBOSE_HACK
+#endif
 
 - (void) mouseMoved:(NSEvent *)theEvent
 {
