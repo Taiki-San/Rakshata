@@ -227,7 +227,7 @@
 			view.hidden = YES;
 	}
 	
-	if([suggestions getContent].alphaValue == 0)
+	if(self.serieViewHidden && [suggestions getContent].alphaValue == 0)
 		suggestions.hidden = YES;
 	
 	if(self.serieViewHidden)
@@ -366,6 +366,12 @@ enum
 	
 	if(![_inOrOut boolValue])			//Leaving
 	{
+		if(suggestions.isHidden)
+		{
+			[suggestions getContent].alphaValue = 0;
+			suggestions.hidden = NO;
+		}
+		
 		[self changeSRFocus:mainDetailView :suggestions : DIR_RIGHT];
 	}
 	else if([suggestions getContent].alphaValue != 0)		//Suggestion -> Detail view
