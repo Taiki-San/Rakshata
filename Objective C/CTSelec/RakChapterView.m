@@ -366,8 +366,12 @@ enum
 	
 	if(![_inOrOut boolValue])			//Leaving
 	{
+		//At one point, because of a bug, suggestion would be hidden, as the test is cheap, we keep it in place if the issue happen again
 		if(suggestions.isHidden)
 		{
+#ifdef DEV_VERSION
+			NSLog(@"Suggestions was hidden, probably a bug");
+#endif
 			[suggestions getContent].alphaValue = 0;
 			suggestions.hidden = NO;
 		}
