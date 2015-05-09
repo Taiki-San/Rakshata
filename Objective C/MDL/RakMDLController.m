@@ -506,7 +506,7 @@
 		}
 		else
 		{
-			memcpy(IDToPosition, &(IDToPosition[1]), --discardedCount * sizeof(*IDToPosition));
+			memcpy(&(IDToPosition[element]), &(IDToPosition[element + 1]), (--discardedCount - element) * sizeof(*IDToPosition));
 			[_list deleteElements : &element : 1];
 		}
 	}
