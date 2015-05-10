@@ -10,6 +10,11 @@
  **                                                                                         **
  ********************************************************************************************/
 
+enum
+{
+	HEADER_TEXT_HEIGHT = 28
+};
+
 @implementation RakMDLView
 
 - (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller
@@ -21,8 +26,14 @@
 		_controller = controller;
 		[self setupInternal];
 		
-		headerText = [[RakMenuText alloc] initWithText:_bounds : NSLocalizedString(@"MDL-TAB-TITLE", nil)];
-		if(headerText != nil)	{	[self addSubview:headerText];		}
+		headerText = [[RakMenuText alloc] initWithText:[self getHeaderFrame : frame.size] : NSLocalizedString(@"MDL-TAB-TITLE", nil)];
+		if(headerText != nil)
+		{
+			headerText.ignoreInternalFrameMagic = YES;
+			headerText.barWidth = 1;
+
+			[self addSubview:headerText];
+		}
 		
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:_bounds] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
@@ -80,6 +91,11 @@
 	return NSMakePoint(frameSize.width / 2 - dropPlaceHolder.frame.size.width / 2, posY);
 }
 
+- (NSRect) getHeaderFrame : (NSSize) size
+{
+	return NSMakeRect(0, size.height - HEADER_TEXT_HEIGHT, size.width, HEADER_TEXT_HEIGHT);
+}
+
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
@@ -93,7 +109,7 @@
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
-	[headerText setFrame:newBound];
+	[headerText setFrame:[self getHeaderFrame : newBound.size]];
 	[MDLList setFrame:[self getMainListFrame:newBound]];
 
 	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
@@ -101,7 +117,7 @@
 
 - (void) resizeAnimationInternalViews : (NSRect) newBound
 {
-	[headerText.animator setFrame:[headerText getMenuFrame:newBound]];
+	[headerText resizeAnimation:[self getHeaderFrame : newBound.size]];
 	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
 	[dropPlaceHolder.animator setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
 	
