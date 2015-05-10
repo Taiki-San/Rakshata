@@ -231,6 +231,8 @@
 
 - (void) refreshViewSize
 {
+	_forceNextFrameUpdate = YES;
+	
 	[self setFrame:[self createFrame]];
 
 	[foregroundView setFrame:self.bounds];

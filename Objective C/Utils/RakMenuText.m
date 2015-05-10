@@ -61,7 +61,7 @@
 {
 	NSRect frame = [self getMenuFrame:frameRect];
 
-	frame.origin.x -= 1;	//On retina display, sometimes, 1 pixel wide borders may appear
+	frame.origin.x -= 1;	//On retina display, sometimes, 1 pixel (0.5 pt) wide borders may appear
 	frame.size.width += 2;
 	
 	[super setFrame : frame];

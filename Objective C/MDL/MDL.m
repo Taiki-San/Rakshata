@@ -40,7 +40,10 @@
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
+		
 		[self setFrame:[self createFrame]];	//Update the size if required
+
+		//Tell every over major entities to update now that their position relative to us finally mean something
 		needUpdateMainViews = YES;
 		[self updateDependingViews : NO];
 	}
@@ -225,7 +228,7 @@
 	else
 	{
 		for(RakTabView * view in @[[delegate serie], [delegate CT], [delegate reader]])
-			[view createFrame];
+			[view refreshViewSize];
 	}
 
 	needUpdateMainViews = NO;
